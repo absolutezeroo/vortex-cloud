@@ -15,14 +15,14 @@ namespace Turbo.Networking.Package;
 public sealed class PackageHandler(
     IRevisionManager revisionManager,
     MessageSystem messageSystem,
-    IErrorGroupingSink errorSink,
+    IErrorGroupingSink? errorSink,
     ITurboContextAccessor contextAccessor,
     ILogger<PackageHandler> logger
 ) : IPackageHandler<IClientPacket>
 {
     private readonly IRevisionManager _revisionManager = revisionManager;
     private readonly MessageSystem _messageSystem = messageSystem;
-    private readonly IErrorGroupingSink _errorSink = errorSink;
+    private readonly IErrorGroupingSink? _errorSink = errorSink;
     private readonly ITurboContextAccessor _contextAccessor = contextAccessor;
     private readonly ILogger<PackageHandler> _logger = logger;
 
@@ -66,16 +66,19 @@ public sealed class PackageHandler(
 
             var context = _contextAccessor.Current;
 
-            _errorSink.Record(
-                ex,
-                "package-handler",
-                $"packet:{packet.Header}",
-                context?.PlayerId,
-                context?.RoomId,
-                context?.CorrelationId.Value,
-                context?.SessionKey,
-                ctx.RemoteIpAddress
-            );
+            if (_errorSink is not null)
+            {
+                _errorSink.Record(
+                    ex,
+                    "package-handler",
+                    $"packet:{packet.Header}",
+                    context?.PlayerId,
+                    context?.RoomId,
+                    context?.CorrelationId.Value,
+                    context?.SessionKey,
+                    ctx.RemoteIpAddress
+                );
+            }
         }
     }
 }
