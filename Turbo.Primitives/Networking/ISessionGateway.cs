@@ -10,6 +10,7 @@ public interface ISessionGateway
     public ISessionContext? GetSession(SessionKey key);
     public ISessionContextObserver? GetSessionObserver(SessionKey key);
     public PlayerId GetPlayerId(SessionKey key);
+    public int GetActiveSessionCount();
     public Task AddSessionAsync(SessionKey key, ISessionContext ctx);
     public Task RemoveSessionAsync(SessionKey key, CancellationToken ct);
     public Task AddSessionToPlayerAsync(SessionKey key, PlayerId playerId);

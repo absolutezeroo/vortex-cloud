@@ -32,7 +32,9 @@ public sealed class ObservabilityModule : IHostPluginModule
         services.AddMetrics();
 
         services.TryAddSingleton<ITurboContextAccessor, TurboContextAccessor>();
+        services.TryAddSingleton<ILiveStatsAggregator, LiveStatsAggregator>();
         services.TryAddSingleton<ITurboMetrics, TurboMetrics>();
+        services.TryAddSingleton<IInfrastructureHealthService, InfrastructureHealthService>();
 
         // Durable observability: one bounded channel -> single background writer (no DB on the hot path).
         services.AddSingleton<AuditChannel>();

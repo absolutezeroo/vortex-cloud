@@ -7,9 +7,14 @@ namespace Turbo.Primitives.Observability;
 /// </summary>
 public interface ITurboMetrics
 {
-    void PacketReceived(string operation);
+    void PacketReceived(string operation, long? actorId = null, int? roomId = null);
 
-    void PacketCompleted(string operation, double elapsedMilliseconds);
+    void PacketCompleted(
+        string operation,
+        double elapsedMilliseconds,
+        long? actorId = null,
+        int? roomId = null
+    );
 
-    void PacketFailed(string operation);
+    void PacketFailed(string operation, long? actorId = null, int? roomId = null);
 }

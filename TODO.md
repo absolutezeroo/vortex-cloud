@@ -40,9 +40,9 @@ observability subscribes via `IEventHandler<T>` in `Turbo.Observability/Events`;
       retry and/or a dead-letter file.
 
 ## Live monitoring (Phase 2 — not built)
-- [ ] In-memory `LiveStatsAggregator` (pps, errors/min, latency P50/P95, top-K rooms/abusers, active
+- [x] In-memory `LiveStatsAggregator` (pps, errors/min, latency P50/P95, top-K rooms/abusers, active
       sessions/rooms) fed from the metrics, exposed via `/api/overview` (today it shows DB counts only).
-- [ ] Orleans/DB health → global `Healthy/Degraded/Critical` status.
+- [x] Orleans/DB health → global `Healthy/Degraded/Critical` status.
 
 ## Error / Incident center (Phase 4 — not built)
 - [ ] Wire `EventRegistry`/`MessageRegistry` `OnHandlerInvokeError` (today no-op) + `PackageHandler`

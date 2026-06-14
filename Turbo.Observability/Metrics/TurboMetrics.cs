@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Options;
+using Turbo.Observability.Runtime;
 using Turbo.Observability.Configuration;
 using Turbo.Observability.Diagnostics;
 using Turbo.Primitives.Observability;
@@ -21,11 +22,17 @@ public sealed class TurboMetrics : ITurboMetrics, IDisposable
     private readonly Counter<long> _packetReceived;
     private readonly Histogram<double> _packetDuration;
     private readonly Counter<long> _packetFailed;
+    private readonly ILiveStatsAggregator _liveStats;
 
-    public TurboMetrics(IMeterFactory meterFactory, IOptions<ObservabilityConfig> options)
+    public TurboMetrics(
+        IMeterFactory meterFactory,
+        ILiveStatsAggregator liveStats,
+        IOptions<ObservabilityConfig> options
+    )
     {
         _enabled = options.Value.MetricsEnabled;
         _meter = meterFactory.Create(TurboTelemetry.Name, TurboTelemetry.Version);
+        _liveStats = liveStats;
 
         _packetReceived = _meter.CreateCounter<long>(
             "turbo.packet.received",
@@ -44,22 +51,33 @@ public sealed class TurboMetrics : ITurboMetrics, IDisposable
         );
     }
 
-    public void PacketReceived(string operation)
+    public void PacketReceived(string operation, long? actorId = null, int? roomId = null)
     {
         if (_enabled)
             _packetReceived.Add(1, Tag(operation));
+
+        _liveStats.RecordPacketReceived(actorId, roomId);
     }
 
-    public void PacketCompleted(string operation, double elapsedMilliseconds)
+    public void PacketCompleted(
+        string operation,
+        double elapsedMilliseconds,
+        long? actorId = null,
+        int? roomId = null
+    )
     {
         if (_enabled)
             _packetDuration.Record(elapsedMilliseconds, Tag(operation));
+
+        _liveStats.RecordPacketCompleted(actorId, roomId, elapsedMilliseconds);
     }
 
-    public void PacketFailed(string operation)
+    public void PacketFailed(string operation, long? actorId = null, int? roomId = null)
     {
         if (_enabled)
             _packetFailed.Add(1, Tag(operation));
+
+        _liveStats.RecordPacketFailed(actorId, roomId);
     }
 
     private static KeyValuePair<string, object?> Tag(string operation) =>

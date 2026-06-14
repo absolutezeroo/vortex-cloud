@@ -11,9 +11,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Orleans;
 using Turbo.Database.Context;
 using Turbo.Observability.Configuration;
 using Turbo.Observability.Diagnostics;
+using Turbo.Observability.Runtime;
+using Turbo.Primitives.Networking;
+using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Rooms.Grains;
 using Turbo.Primitives.Observability;
 
 namespace Turbo.Observability.Dashboard;
@@ -28,6 +33,10 @@ public sealed class AdminApiService(
     IOptions<ObservabilityConfig> options,
     IDbContextFactory<TurboDbContext> dbContextFactory,
     IAuditSink auditSink,
+    IGrainFactory grainFactory,
+    ISessionGateway sessionGateway,
+    ILiveStatsAggregator liveStats,
+    IInfrastructureHealthService infrastructureHealth,
     ILogger<AdminApiService> logger
 ) : BackgroundService
 {
@@ -39,6 +48,10 @@ public sealed class AdminApiService(
     private readonly ObservabilityConfig _config = options.Value;
     private readonly IDbContextFactory<TurboDbContext> _dbContextFactory = dbContextFactory;
     private readonly IAuditSink _auditSink = auditSink;
+    private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly ISessionGateway _sessionGateway = sessionGateway;
+    private readonly ILiveStatsAggregator _liveStats = liveStats;
+    private readonly IInfrastructureHealthService _infrastructureHealth = infrastructureHealth;
     private readonly ILogger<AdminApiService> _logger = logger;
     private DateTime _startedAtUtc;
     private bool UseLegacyFallbackTokens =>
@@ -291,36 +304,58 @@ public sealed class AdminApiService(
         await WriteJsonAsync(ctx, 403, new { error = "forbidden" }, ct).ConfigureAwait(false);
     }
 
-    private Task<object> OverviewAsync(CancellationToken ct) =>
-        QueryAsync<object>(
-            async db =>
+    private async Task<object> OverviewAsync(CancellationToken ct)
+    {
+        var db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+
+        try
+        {
+            var health = await _infrastructureHealth.GetStatusAsync(ct).ConfigureAwait(false);
+            var live = await _liveStats.GetSnapshotAsync().ConfigureAwait(false);
+            var activeRooms = await _grainFactory.GetRoomDirectoryGrain()
+                .GetActiveRoomsAsync()
+                .ConfigureAwait(false);
+            var since = DateTime.UtcNow.AddHours(-1);
+
+            var byCategory = await db
+                .AuditEvents.AsNoTracking()
+                .Where(a => a.OccurredAt >= since)
+                .GroupBy(a => a.Category)
+                .Select(g => new { category = g.Key.ToString(), count = g.Count() })
+                .ToListAsync(ct)
+                .ConfigureAwait(false);
+
+            return new
             {
-                var since = DateTime.UtcNow.AddHours(-1);
-
-                var byCategory = await db
-                    .AuditEvents.AsNoTracking()
-                    .Where(a => a.OccurredAt >= since)
-                    .GroupBy(a => a.Category)
-                    .Select(g => new { category = g.Key.ToString(), count = g.Count() })
-                    .ToListAsync(ct)
-                    .ConfigureAwait(false);
-
-                return new
+                status = health.Overall,
+                health = health,
+                uptimeSeconds = (long)(DateTime.UtcNow - _startedAtUtc).TotalSeconds,
+                managedMemoryMb = GC.GetTotalMemory(false) / 1024 / 1024,
+                activeSessions = _sessionGateway.GetActiveSessionCount(),
+                activeRooms = activeRooms.Length,
+                live = new
                 {
-                    status = "ok",
-                    uptimeSeconds = (long)(DateTime.UtcNow - _startedAtUtc).TotalSeconds,
-                    managedMemoryMb = GC.GetTotalMemory(false) / 1024 / 1024,
-                    auditLastHourByCategory = byCategory,
-                    totals = new
-                    {
-                        audit = await db.AuditEvents.CountAsync(ct).ConfigureAwait(false),
-                        ledger = await db.EconomyLedger.CountAsync(ct).ConfigureAwait(false),
-                        items = await db.ItemEvents.CountAsync(ct).ConfigureAwait(false),
-                    },
-                };
-            },
-            ct
-        );
+                    packetsPerSecond = Math.Round(live.PacketsPerSecond, 2),
+                    errorsPerMinute = Math.Round(live.ErrorsPerMinute, 2),
+                    latencyP50Ms = Math.Round(live.LatencyP50Ms, 2),
+                    latencyP95Ms = Math.Round(live.LatencyP95Ms, 2),
+                    topAbusers = live.TopAbusers.Select(a => new { playerId = a.PlayerId, packetsPerMinute = a.PacketsPerMinute }),
+                    topRooms = live.TopRooms.Select(r => new { roomId = r.RoomId, packetsPerMinute = r.PacketsPerMinute }),
+                },
+                auditLastHourByCategory = byCategory,
+                totals = new
+                {
+                    audit = await db.AuditEvents.CountAsync(ct).ConfigureAwait(false),
+                    ledger = await db.EconomyLedger.CountAsync(ct).ConfigureAwait(false),
+                    items = await db.ItemEvents.CountAsync(ct).ConfigureAwait(false),
+                },
+            };
+        }
+        finally
+        {
+            await db.DisposeAsync().ConfigureAwait(false);
+        }
+    }
 
     private Task<object> AuditAsync(NameValueCollection query, CancellationToken ct) =>
         QueryAsync<object>(

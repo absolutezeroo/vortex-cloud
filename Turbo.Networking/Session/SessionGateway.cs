@@ -30,6 +30,8 @@ public sealed class SessionGateway(IGrainFactory grainFactory) : ISessionGateway
     public PlayerId GetPlayerId(SessionKey key) =>
         _sessionToPlayer.TryGetValue(key, out var playerId) ? playerId : -1;
 
+    public int GetActiveSessionCount() => _sessions.Count;
+
     public Task AddSessionAsync(SessionKey key, ISessionContext ctx)
     {
         _sessions[key] = ctx;

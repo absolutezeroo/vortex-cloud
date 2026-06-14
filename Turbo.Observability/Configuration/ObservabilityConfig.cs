@@ -23,6 +23,12 @@ public sealed class ObservabilityConfig
     /// <summary>Maximum number of audit events persisted per database round-trip.</summary>
     public int AuditBatchSize { get; init; } = 200;
 
+    /// <summary>Sliding window in seconds for live `/api/overview` aggregates.</summary>
+    public int LiveStatsWindowSeconds { get; init; } = 60;
+
+    /// <summary>Maximum number of top entries returned for live rooms/abusers.</summary>
+    public int LiveStatsTopK { get; init; } = 5;
+
     /// <summary>Retry attempts when durable audit batch persistence fails.</summary>
     public int AuditWriteRetryAttempts { get; init; } = 2;
 
