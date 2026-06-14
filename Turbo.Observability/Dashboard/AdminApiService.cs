@@ -41,6 +41,10 @@ public sealed class AdminApiService(
     private readonly IAuditSink _auditSink = auditSink;
     private readonly ILogger<AdminApiService> _logger = logger;
     private DateTime _startedAtUtc;
+    private bool UseLegacyFallbackTokens =>
+        string.IsNullOrWhiteSpace(_config.DashboardAdminToken)
+        && string.IsNullOrWhiteSpace(_config.DashboardEconomyToken)
+        && string.IsNullOrWhiteSpace(_config.DashboardModeratorToken);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -113,10 +117,11 @@ public sealed class AdminApiService(
             var query = ctx.Request.QueryString;
 
             var token = ctx.Request.Headers["X-Admin-Token"] ?? query["token"];
+            var role = ResolveDashboardRole(token);
 
-            if (!TokenMatches(token))
+            if (role == DashboardRole.None)
             {
-                EmitDashboardAudit(path, AuditResult.Denied, 401, "Unauthorized");
+                EmitDashboardAudit(path, AuditResult.Denied, 401, "Unauthorized", DashboardRole.None);
 
                 await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, ct)
                     .ConfigureAwait(false);
@@ -125,36 +130,90 @@ public sealed class AdminApiService(
 
             if (path is "/" or "/index.html")
             {
-                EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardHtml");
+                EmitDashboardAudit(
+                    path,
+                    AuditResult.Success,
+                    200,
+                    "DashboardHtml",
+                    role
+                );
                 await WriteHtmlAsync(ctx, ct).ConfigureAwait(false);
                 return;
             }
 
-            object? payload = path switch
+            object? payload;
+
+            if (path is "/api/overview")
             {
-                "/api/overview" => await OverviewAsync(ct).ConfigureAwait(false),
-                "/api/audit" => await AuditAsync(query, ct).ConfigureAwait(false),
-                "/api/economy" => await EconomyAsync(query, ct).ConfigureAwait(false),
-                "/api/search" => await SearchAsync(query, ct).ConfigureAwait(false),
-                _ when path.StartsWith("/api/item/", StringComparison.Ordinal) => await ItemAsync(
-                        path["/api/item/".Length..],
-                        query,
-                        ct
-                    )
-                    .ConfigureAwait(false),
-                _ => null,
-            };
+                if (!CanReadOverview(role))
+                {
+                    await WriteForbidden(ctx, path, "UnauthorizedRole", role, ct)
+                        .ConfigureAwait(false);
+                    return;
+                }
+
+                payload = await OverviewAsync(ct).ConfigureAwait(false);
+            }
+            else if (path is "/api/audit")
+            {
+                if (!CanReadAudit(role))
+                {
+                    await WriteForbidden(ctx, path, "UnauthorizedRole", role, ct)
+                        .ConfigureAwait(false);
+                    return;
+                }
+
+                payload = await AuditAsync(query, ct).ConfigureAwait(false);
+            }
+            else if (path is "/api/economy")
+            {
+                if (!CanReadEconomy(role))
+                {
+                    await WriteForbidden(ctx, path, "UnauthorizedRole", role, ct)
+                        .ConfigureAwait(false);
+                    return;
+                }
+
+                payload = await EconomyAsync(query, ct).ConfigureAwait(false);
+            }
+            else if (path is "/api/search")
+            {
+                if (!CanReadAudit(role))
+                {
+                    await WriteForbidden(ctx, path, "UnauthorizedRole", role, ct)
+                        .ConfigureAwait(false);
+                    return;
+                }
+
+                payload = await SearchAsync(query, ct).ConfigureAwait(false);
+            }
+            else if (path.StartsWith("/api/item/", StringComparison.Ordinal))
+            {
+                if (!CanReadAudit(role))
+                {
+                    await WriteForbidden(ctx, path, "UnauthorizedRole", role, ct)
+                        .ConfigureAwait(false);
+                    return;
+                }
+
+                payload = await ItemAsync(path["/api/item/".Length..], query, ct)
+                    .ConfigureAwait(false);
+            }
+            else
+            {
+                payload = null;
+            }
 
             if (payload is null)
             {
-                EmitDashboardAudit(path, AuditResult.Failed, 404, "NotFound");
+                EmitDashboardAudit(path, AuditResult.Failed, 404, "NotFound", role);
 
                 await WriteJsonAsync(ctx, 404, new { error = "not_found" }, ct)
                     .ConfigureAwait(false);
                 return;
             }
 
-            EmitDashboardAudit(path, AuditResult.Success, 200, "DataResponse");
+            EmitDashboardAudit(path, AuditResult.Success, 200, "DataResponse", role);
 
             await WriteJsonAsync(ctx, 200, payload, ct).ConfigureAwait(false);
         }
@@ -165,7 +224,8 @@ public sealed class AdminApiService(
                 ctx.Request.Url?.AbsolutePath ?? "/",
                 AuditResult.Failed,
                 500,
-                "InternalError"
+                "InternalError",
+                DashboardRole.None
             );
 
             try
@@ -184,7 +244,8 @@ public sealed class AdminApiService(
         string path,
         AuditResult result,
         int status,
-        string eventKind
+        string eventKind,
+        DashboardRole role
     )
     {
         _auditSink.Emit(
@@ -200,11 +261,34 @@ public sealed class AdminApiService(
                     {
                         path,
                         status,
+                        role = role.ToString().ToLowerInvariant(),
                         kind = eventKind,
                     }
                 ),
             }
         );
+    }
+
+    private static bool CanReadOverview(DashboardRole role) =>
+        role != DashboardRole.None;
+
+    private static bool CanReadAudit(DashboardRole role) =>
+        role is DashboardRole.Viewer or DashboardRole.Moderator or DashboardRole.Economy or DashboardRole.Admin;
+
+    private static bool CanReadEconomy(DashboardRole role) =>
+        role is DashboardRole.Economy or DashboardRole.Admin;
+
+    private async Task WriteForbidden(
+        HttpListenerContext ctx,
+        string path,
+        string eventKind,
+        DashboardRole role,
+        CancellationToken ct
+    )
+    {
+        EmitDashboardAudit(path, AuditResult.Denied, 403, eventKind, role);
+
+        await WriteJsonAsync(ctx, 403, new { error = "forbidden" }, ct).ConfigureAwait(false);
     }
 
     private Task<object> OverviewAsync(CancellationToken ct) =>
@@ -654,11 +738,46 @@ public sealed class AdminApiService(
         ctx.Response.Close();
     }
 
-    private bool TokenMatches(string? provided)
+    private DashboardRole ResolveDashboardRole(string? provided)
     {
-        var expected = SHA256.HashData(Encoding.UTF8.GetBytes(_config.DashboardToken));
-        var actual = SHA256.HashData(Encoding.UTF8.GetBytes(provided ?? string.Empty));
+        if (string.IsNullOrWhiteSpace(provided))
+            return DashboardRole.None;
+
+        if (UseLegacyFallbackTokens && TokenMatches(provided, _config.DashboardToken))
+            return DashboardRole.Admin;
+
+        if (TokenMatches(provided, _config.DashboardAdminToken))
+            return DashboardRole.Admin;
+
+        if (TokenMatches(provided, _config.DashboardEconomyToken))
+            return DashboardRole.Economy;
+
+        if (TokenMatches(provided, _config.DashboardModeratorToken))
+            return DashboardRole.Moderator;
+
+        if (TokenMatches(provided, _config.DashboardToken))
+            return DashboardRole.Viewer;
+
+        return DashboardRole.None;
+    }
+
+    private static bool TokenMatches(string provided, string expectedToken)
+    {
+        if (string.IsNullOrWhiteSpace(expectedToken))
+            return false;
+
+        var expected = SHA256.HashData(Encoding.UTF8.GetBytes(expectedToken));
+        var actual = SHA256.HashData(Encoding.UTF8.GetBytes(provided));
         return CryptographicOperations.FixedTimeEquals(expected, actual);
+    }
+
+    private enum DashboardRole
+    {
+        None,
+        Viewer,
+        Moderator,
+        Economy,
+        Admin,
     }
 
     private static int ParseLimit(string? value, int fallback, int max) =>

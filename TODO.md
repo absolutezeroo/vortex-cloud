@@ -30,7 +30,7 @@ observability subscribes via `IEventHandler<T>` in `Turbo.Observability/Events`;
 - [x] **IP hashing**: auth events don't carry IP. Add HMAC-SHA256(IP) to `PlayerLoggedIn/Failed`
       events and populate an `ip_hash` column. Never store raw IPs.
 - [x] **Audit the dashboard access itself** (`audit.viewed`) so console use is itself traceable.
-- [ ] **Fine-grained RBAC**: dashboard currently uses one shared token. Add roles
+- [x] **Fine-grained RBAC**: dashboard currently uses one shared token. Add roles
       (viewer / moderator / economy / admin).
 - [ ] **Retention / RGPD**: scheduled purge job per table + per-player anonymization procedure
       (replace identity columns with a tombstone, keep ledger integrity).

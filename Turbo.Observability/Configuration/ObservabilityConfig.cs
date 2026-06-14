@@ -49,4 +49,13 @@ public sealed class ObservabilityConfig
     /// <c>?token=</c>). Empty disables the dashboard.
     /// </summary>
     public string DashboardToken { get; init; } = string.Empty;
+
+    /// <summary>Token that grants full admin access.</summary>
+    public string DashboardAdminToken { get; init; } = string.Empty;
+
+    /// <summary>Token that grants economy-view access.</summary>
+    public string DashboardEconomyToken { get; init; } = string.Empty;
+
+    /// <summary>Token that grants moderator-level access.</summary>
+    public string DashboardModeratorToken { get; init; } = string.Empty;
 }
