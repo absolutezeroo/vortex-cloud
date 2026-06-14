@@ -15,15 +15,15 @@ namespace Turbo.Networking.Package;
 public sealed class PackageHandler(
     IRevisionManager revisionManager,
     MessageSystem messageSystem,
-    ITurboContextAccessor contextAccessor,
     ILogger<PackageHandler> logger,
+    ITurboContextAccessor? contextAccessor = null,
     IErrorGroupingSink? errorSink = null
 ) : IPackageHandler<IClientPacket>
 {
     private readonly IRevisionManager _revisionManager = revisionManager;
     private readonly MessageSystem _messageSystem = messageSystem;
     private readonly IErrorGroupingSink? _errorSink = errorSink;
-    private readonly ITurboContextAccessor _contextAccessor = contextAccessor;
+    private readonly ITurboContextAccessor? _contextAccessor = contextAccessor;
     private readonly ILogger<PackageHandler> _logger = logger;
 
     public async ValueTask Handle(IAppSession session, IClientPacket packet, CancellationToken ct)
@@ -64,7 +64,7 @@ public sealed class PackageHandler(
                 ctx.SessionKey
             );
 
-            var context = _contextAccessor.Current;
+            var context = _contextAccessor?.Current;
 
             if (_errorSink is not null)
             {
