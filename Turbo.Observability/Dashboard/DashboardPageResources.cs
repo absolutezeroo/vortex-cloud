@@ -1,6 +1,6 @@
 using System;
-using System.IO;
 using System.Collections.Concurrent;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -9,9 +9,7 @@ namespace Turbo.Observability.Dashboard;
 
 internal static class DashboardPageResources
 {
-    private const string HtmlResource = "DashboardPage.html";
-    private const string CssResource = "DashboardPage.css";
-    private const string ScriptResource = "DashboardPage.js";
+    private const string HtmlResource = "index.html";
 
     private static readonly Assembly AssetAssembly = typeof(DashboardPageResources).Assembly;
     private static readonly Encoding Utf8NoBom = new UTF8Encoding(
@@ -26,18 +24,16 @@ internal static class DashboardPageResources
     );
 
     public static byte[] PageBytes => HtmlContentBytes.Value;
-    public static byte[] CssBytes => CssContentBytes.Value;
-    public static byte[] ScriptBytes => ScriptContentBytes.Value;
     public static byte[] OverviewHtmlBytes => GetBytes(HtmlResource);
-    public static byte[] InvestigationHtmlBytes => GetBytes("DashboardInvestigationPage.html");
-    public static byte[] EconomyHtmlBytes => GetBytes("DashboardEconomyPage.html");
-    public static byte[] RoomsHtmlBytes => GetBytes("DashboardRoomsPage.html");
-    public static byte[] PacketsHtmlBytes => GetBytes("DashboardPacketsPage.html");
-    public static byte[] IncidentsHtmlBytes => GetBytes("DashboardIncidentsPage.html");
-    public static byte[] AuditHtmlBytes => GetBytes("DashboardAuditPage.html");
-    public static byte[] SharedScriptBytes => GetBytes(ScriptResource);
+    public static byte[] InvestigationHtmlBytes => GetBytes(HtmlResource);
+    public static byte[] EconomyHtmlBytes => GetBytes(HtmlResource);
+    public static byte[] RoomsHtmlBytes => GetBytes(HtmlResource);
+    public static byte[] PacketsHtmlBytes => GetBytes(HtmlResource);
+    public static byte[] IncidentsHtmlBytes => GetBytes(HtmlResource);
+    public static byte[] AuditHtmlBytes => GetBytes(HtmlResource);
 
     public static byte[] HtmlBytes(string fileName) => GetBytes(fileName);
+
     public static string ScriptText(string fileName) => GetText(fileName);
 
     public static bool TryGetResourceName(string fileName, out string resourceName)
@@ -57,7 +53,10 @@ internal static class DashboardPageResources
     {
         if (string.IsNullOrWhiteSpace(fileName))
         {
-            throw new ArgumentException("fileName must not be null or whitespace.", nameof(fileName));
+            throw new ArgumentException(
+                "fileName must not be null or whitespace.",
+                nameof(fileName)
+            );
         }
 
         return TextCache.GetOrAdd(fileName, LoadText);
@@ -67,7 +66,10 @@ internal static class DashboardPageResources
     {
         if (string.IsNullOrWhiteSpace(fileName))
         {
-            throw new ArgumentException("fileName must not be null or whitespace.", nameof(fileName));
+            throw new ArgumentException(
+                "fileName must not be null or whitespace.",
+                nameof(fileName)
+            );
         }
 
         return BytesCache.GetOrAdd(fileName, name => Utf8NoBom.GetBytes(GetText(name)));
@@ -77,7 +79,8 @@ internal static class DashboardPageResources
     {
         var resourceName = GetResourceName(fileName);
 
-        using var stream = AssetAssembly.GetManifestResourceStream(resourceName)
+        using var stream =
+            AssetAssembly.GetManifestResourceStream(resourceName)
             ?? throw new InvalidOperationException(
                 $"Embedded resource '{resourceName}' was not found in '{AssetAssembly.FullName}'."
             );
@@ -106,19 +109,8 @@ internal static class DashboardPageResources
     }
 
     private static readonly Lazy<string> HtmlContent = new(() => GetText(HtmlResource), true);
-    private static readonly Lazy<string> CssContent = new(() => GetText(CssResource), true);
-    private static readonly Lazy<string> ScriptContent = new(() => GetText(ScriptResource), true);
-
     private static readonly Lazy<byte[]> HtmlContentBytes = new(
         () => Utf8NoBom.GetBytes(HtmlContent.Value),
-        true
-    );
-    private static readonly Lazy<byte[]> CssContentBytes = new(
-        () => Utf8NoBom.GetBytes(CssContent.Value),
-        true
-    );
-    private static readonly Lazy<byte[]> ScriptContentBytes = new(
-        () => Utf8NoBom.GetBytes(ScriptContent.Value),
         true
     );
 }

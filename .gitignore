@@ -39,3 +39,4 @@ msbuild.wrn
 
 plugins/*
 plugins-shadow/*
+node_modules/

@@ -7,7 +7,7 @@ namespace Turbo.Observability.Audit;
 
 /// <summary>
 /// Channel-backed <see cref="IPerformanceLogSink"/>: stamps the ambient correlation id and capture time,
-/// then enqueues for the shared durable writer. Non-blocking — no database access on the caller's
+/// then enqueues for the shared durable writer. Non-blocking ï¿½ no database access on the caller's
 /// thread.
 /// </summary>
 public sealed class ChannelPerformanceLogSink(

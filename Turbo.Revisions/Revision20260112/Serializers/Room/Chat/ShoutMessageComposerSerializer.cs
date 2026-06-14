@@ -8,6 +8,16 @@ internal class ShoutMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, ShoutMessageComposer message)
     {
-        //
+        packet
+            .WriteInteger(message.ObjectId)
+            .WriteString(message.Text)
+            .WriteInteger((int)message.Gesture)
+            .WriteInteger(message.StyleId)
+            .WriteInteger(message.Links.Count);
+
+        foreach (var (one, two, three) in message.Links)
+            packet.WriteString(one).WriteString(two).WriteBoolean(three);
+
+        packet.WriteInteger(message.TrackingId);
     }
 }

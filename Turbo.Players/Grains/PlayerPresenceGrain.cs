@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Orleans;
 using Orleans.Streams;
 using Turbo.Players.Grains.Modules;
+using Turbo.Primitives.Events;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Orleans.Observers;
 using Turbo.Primitives.Players.Grains;
@@ -18,6 +19,7 @@ internal sealed partial class PlayerPresenceGrain
         IAsyncObserver<RoomOutbound>
 {
     internal readonly IGrainFactory _grainFactory;
+    internal readonly IEventPublisher _events;
     internal readonly PlayerPresenceLiveState _state;
 
     private readonly PlayerInventoryModule _inventoryModule;
@@ -29,9 +31,10 @@ internal sealed partial class PlayerPresenceGrain
     private readonly Queue<IComposer> _outgoingQueue = new();
     private bool _isProcessingQueue = false;
 
-    public PlayerPresenceGrain(IGrainFactory grainFactory)
+    public PlayerPresenceGrain(IGrainFactory grainFactory, IEventPublisher events)
     {
         _grainFactory = grainFactory;
+        _events = events;
 
         _state = new();
         _inventoryModule = new(this);

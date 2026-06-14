@@ -1,6 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Turbo.Database.Entities.Room;
 using Turbo.Primitives.Messages.Outgoing.Room.Chat;
+using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Object;
@@ -10,28 +14,7 @@ namespace Turbo.Rooms.Grains.Systems;
 public sealed class RoomChatSystem(RoomGrain roomGrain)
 {
     private readonly RoomGrain _roomGrain = roomGrain;
-
-    public async Task SendChatAsync(
-        RoomObjectId objectId,
-        string text,
-        AvatarGestureType gesture,
-        int styleId,
-        List<(string, string, bool)> links,
-        int trackingId
-    )
-    {
-        await _roomGrain.SendComposerToRoomAsync(
-            new ChatMessageComposer
-            {
-                ObjectId = objectId,
-                Text = text,
-                Gesture = gesture,
-                StyleId = styleId,
-                Links = links,
-                TrackingId = trackingId,
-            }
-        );
-    }
+    private static readonly int MaxChatMessageLength = 100;
 
     public async Task SendChatFromPlayerAsync(
         PlayerId playerId,
@@ -39,15 +22,123 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
         AvatarGestureType gesture,
         int styleId,
         List<(string, string, bool)> links,
-        int trackingId
+        int trackingId,
+        PlayerId? targetPlayerId = null
     )
     {
+        if (
+            targetPlayerId is not null
+            && !_roomGrain._state.AvatarsByPlayerId.ContainsKey(targetPlayerId.Value)
+        )
+        {
+            return;
+        }
+
         if (
             !_roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out var objectId)
             || !_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out var avatar)
         )
+        {
+            return;
+        }
+
+        await SendChatAsync(
+                avatar.ObjectId,
+                playerId,
+                text,
+                gesture,
+                styleId,
+                links,
+                trackingId,
+                targetPlayerId
+            )
+            .ConfigureAwait(false);
+    }
+
+    private async Task SendChatAsync(
+        RoomObjectId objectId,
+        PlayerId playerId,
+        string text,
+        AvatarGestureType gesture,
+        int styleId,
+        List<(string, string, bool)> links,
+        int trackingId,
+        PlayerId? targetPlayerId
+    )
+    {
+        if (string.IsNullOrWhiteSpace(text))
             return;
 
-        await SendChatAsync(avatar.ObjectId, text, gesture, styleId, links, trackingId);
+        if (targetPlayerId is null)
+        {
+            await _roomGrain
+                .SendComposerToRoomAsync(
+                    new ChatMessageComposer
+                    {
+                        ObjectId = objectId,
+                        Text = text,
+                        Gesture = gesture,
+                        StyleId = styleId,
+                        Links = links,
+                        TrackingId = trackingId,
+                    }
+                )
+                .ConfigureAwait(false);
+        }
+        else
+        {
+            var whisperComposer = new WhisperMessageComposer
+            {
+                ObjectId = objectId,
+                Text = text,
+                Gesture = gesture,
+                StyleId = styleId,
+                Links = links,
+                TrackingId = trackingId,
+            };
+
+            await Task.WhenAll(
+                    _roomGrain
+                        ._grainFactory.GetPlayerPresenceGrain(playerId)
+                        .SendComposerAsync(whisperComposer),
+                    _roomGrain
+                        ._grainFactory.GetPlayerPresenceGrain(targetPlayerId.Value)
+                        .SendComposerAsync(whisperComposer)
+                )
+                .ConfigureAwait(false);
+        }
+
+        await PersistChatAsync(playerId, targetPlayerId, text).ConfigureAwait(false);
+    }
+
+    private async Task PersistChatAsync(PlayerId playerId, PlayerId? targetPlayerId, string text)
+    {
+        try
+        {
+            await using var dbCtx = await _roomGrain
+                ._dbCtxFactory.CreateDbContextAsync()
+                .ConfigureAwait(false);
+
+            dbCtx.Chatlogs.Add(
+                new RoomChatlogEntity
+                {
+                    RoomEntityId = _roomGrain.RoomId,
+                    PlayerEntityId = playerId,
+                    TargetPlayerEntityId = targetPlayerId,
+                    Message =
+                        text.Length > MaxChatMessageLength ? text[..MaxChatMessageLength] : text,
+                }
+            );
+
+            await dbCtx.SaveChangesAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to persist room chat log for room {RoomId}.",
+                _roomGrain.RoomId
+            );
+        }
     }
 }

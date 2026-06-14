@@ -183,8 +183,18 @@ public sealed partial class RoomGrain
         AvatarGestureType gesture,
         int styleId,
         List<(string, string, bool)> links,
-        int trackingId
-    ) => ChatSystem.SendChatFromPlayerAsync(playerId, text, gesture, styleId, links, trackingId);
+        int trackingId,
+        PlayerId? targetPlayerId = null
+    ) =>
+        ChatSystem.SendChatFromPlayerAsync(
+            playerId,
+            text,
+            gesture,
+            styleId,
+            links,
+            trackingId,
+            targetPlayerId
+        );
 
     public Task<ImmutableArray<RoomAvatarSnapshot>> GetAllAvatarSnapshotsAsync(
         CancellationToken ct

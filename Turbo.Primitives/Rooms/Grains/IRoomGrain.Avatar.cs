@@ -48,7 +48,8 @@ public partial interface IRoomGrain
         AvatarGestureType gesture,
         int styleId,
         List<(string, string, bool)> links,
-        int trackingId
+        int trackingId,
+        PlayerId? targetPlayerId = null
     );
 
     public Task<ImmutableArray<RoomAvatarSnapshot>> GetAllAvatarSnapshotsAsync(

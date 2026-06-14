@@ -2,7 +2,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orleans;
+using Turbo.Primitives.Events;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Orleans.Observers;
@@ -10,14 +12,21 @@ using Turbo.Primitives.Players;
 
 namespace Turbo.Networking.Session;
 
-public sealed class SessionGateway(IGrainFactory grainFactory) : ISessionGateway
+public sealed class SessionGateway(
+    IGrainFactory grainFactory,
+    IEventPublisher events,
+    ILogger<SessionGateway> logger
+) : ISessionGateway
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly IEventPublisher _events = events;
+    private readonly ILogger<SessionGateway> _logger = logger;
 
     private readonly ConcurrentDictionary<SessionKey, ISessionContext> _sessions = new();
     private readonly ConcurrentDictionary<SessionKey, ObserverEntry> _sessionObservers = new();
     private readonly ConcurrentDictionary<SessionKey, PlayerId> _sessionToPlayer = new();
     private readonly ConcurrentDictionary<PlayerId, SessionKey> _playerToSession = new();
+    private readonly ConcurrentDictionary<PlayerId, DateTime> _playerConnectedAt = new();
 
     private sealed record ObserverEntry(SessionContextObserver Impl, ISessionContextObserver Ref);
 
@@ -81,8 +90,29 @@ public sealed class SessionGateway(IGrainFactory grainFactory) : ISessionGateway
 
         _sessionToPlayer[key] = playerId;
         _playerToSession[playerId] = key;
+        var connectedAt = DateTime.UtcNow;
+        _playerConnectedAt[playerId] = connectedAt;
 
         await playerPresence.RegisterSessionObserverAsync(observer).ConfigureAwait(false);
+        await PublishConnectedEventSafelyAsync(playerId, connectedAt).ConfigureAwait(false);
+    }
+
+    private async Task PublishConnectedEventSafelyAsync(PlayerId playerId, DateTime connectedAt)
+    {
+        try
+        {
+            await _events
+                .PublishAsync(new PlayerConnectedEvent(playerId, connectedAt))
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "Failed to publish player connected lifecycle event for {PlayerId}",
+                playerId
+            );
+        }
     }
 
     public async Task RemoveSessionFromPlayerAsync(PlayerId playerId, CancellationToken ct)
@@ -95,5 +125,44 @@ public sealed class SessionGateway(IGrainFactory grainFactory) : ISessionGateway
         var playerPresence = _grainFactory.GetPlayerPresenceGrain(playerId);
 
         await playerPresence.UnregisterSessionObserverAsync(ct).ConfigureAwait(false);
+
+        if (_playerConnectedAt.TryRemove(playerId, out var connectedAt))
+        {
+            await PublishDisconnectedEventSafelyAsync(playerId, connectedAt).ConfigureAwait(false);
+            return;
+        }
+
+        _logger.LogWarning(
+            "Player {PlayerId} disconnected without a recorded connect timestamp; skipping disconnect duration.",
+            playerId
+        );
+    }
+
+    private async Task PublishDisconnectedEventSafelyAsync(PlayerId playerId, DateTime connectedAt)
+    {
+        var disconnectedAt = DateTime.UtcNow;
+        var duration = disconnectedAt - connectedAt;
+
+        try
+        {
+            await _events
+                .PublishAsync(
+                    new PlayerDisconnectedEvent(
+                        playerId,
+                        connectedAt,
+                        disconnectedAt,
+                        Math.Max(0, (long)duration.TotalSeconds)
+                    )
+                )
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "Failed to publish player disconnected lifecycle event for {PlayerId}",
+                playerId
+            );
+        }
     }
 }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Orleans;
 using Orleans.Runtime;
 using Turbo.Primitives.Action;
+using Turbo.Primitives.Events;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Orleans.Snapshots.Room;
@@ -36,6 +37,9 @@ internal sealed partial class PlayerPresenceGrain
     public async Task SetActiveRoomAsync(RoomId roomId, CancellationToken ct)
     {
         if (roomId <= 0)
+            return;
+
+        if (_state.ActiveRoomId == roomId)
             return;
 
         await ClearActiveRoomAsync(ct);
@@ -71,7 +75,21 @@ internal sealed partial class PlayerPresenceGrain
             RoomId = roomId,
         };
 
-        await room.CreateAvatarFromPlayerAsync(ctx, playerSnapshot, ct);
+        var entered = await room.CreateAvatarFromPlayerAsync(ctx, playerSnapshot, ct);
+
+        if (entered)
+        {
+            var enteredAt = DateTime.UtcNow;
+            _state.ActiveRoomSinceUtc = enteredAt;
+            await _events.PublishAsync(
+                new PlayerEnteredRoomEvent(
+                    (PlayerId)this.GetPrimaryKeyLong(),
+                    roomId.Value,
+                    enteredAt
+                ),
+                ct
+            );
+        }
     }
 
     public async Task ClearActiveRoomAsync(CancellationToken ct)
@@ -80,9 +98,9 @@ internal sealed partial class PlayerPresenceGrain
             return;
 
         var prev = _state.ActiveRoomId;
-
-        _state.ActiveRoomId = -1;
-        _state.ActiveRoomSinceUtc = DateTime.UtcNow;
+        var leftAt = DateTime.UtcNow;
+        var duration = leftAt - _state.ActiveRoomSinceUtc;
+        var durationSeconds = (long)duration.TotalSeconds;
 
         var ctx = new ActionContext
         {
@@ -95,6 +113,13 @@ internal sealed partial class PlayerPresenceGrain
         var roomGrain = _grainFactory.GetRoomGrain(prev);
 
         await roomGrain.RemoveAvatarFromPlayerAsync(ctx, ctx.PlayerId, ct);
+        await _events.PublishAsync(
+            new PlayerLeftRoomEvent(ctx.PlayerId, prev.Value, leftAt, Math.Max(0, durationSeconds)),
+            ct
+        );
+
+        _state.ActiveRoomId = -1;
+        _state.ActiveRoomSinceUtc = leftAt;
 
         await _grainFactory
             .GetRoomDirectoryGrain()

@@ -26,11 +26,7 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
     private readonly Dictionary<string, int> _operationCounts = [];
     private readonly Dictionary<string, int> _failedOperationCounts = [];
 
-    public void RecordPacketReceived(
-        string operation,
-        long? actorId = null,
-        int? roomId = null
-    )
+    public void RecordPacketReceived(string operation, long? actorId = null, int? roomId = null)
     {
         var now = DateTime.UtcNow;
 
@@ -71,11 +67,7 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
         }
     }
 
-    public void RecordPacketFailed(
-        string operation,
-        long? actorId = null,
-        int? roomId = null
-    )
+    public void RecordPacketFailed(string operation, long? actorId = null, int? roomId = null)
     {
         var now = DateTime.UtcNow;
 
@@ -84,7 +76,8 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
             Prune(now);
             _failedTimestamps.Enqueue(now);
             _failedOperationSamples.Enqueue(new(now, operation));
-            _failedOperationCounts[operation] = _failedOperationCounts.GetValueOrDefault(operation) + 1;
+            _failedOperationCounts[operation] =
+                _failedOperationCounts.GetValueOrDefault(operation) + 1;
         }
     }
 
@@ -112,14 +105,20 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
                 .OrderByDescending(item => item.Value)
                 .ThenBy(item => item.Key)
                 .Take(_topK)
-                .Select(item => new LivePacketOperationSnapshot(item.Key, ToRatePerMinute(item.Value)))
+                .Select(item => new LivePacketOperationSnapshot(
+                    item.Key,
+                    ToRatePerMinute(item.Value)
+                ))
                 .ToArray();
 
             var topFailedOperations = _failedOperationCounts
                 .OrderByDescending(item => item.Value)
                 .ThenBy(item => item.Key)
                 .Take(_topK)
-                .Select(item => new LivePacketOperationSnapshot(item.Key, ToRatePerMinute(item.Value)))
+                .Select(item => new LivePacketOperationSnapshot(
+                    item.Key,
+                    ToRatePerMinute(item.Value)
+                ))
                 .ToArray();
 
             return Task.FromResult(
@@ -168,7 +167,9 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
             }
         }
 
-        while (_failedOperationSamples.Count > 0 && _failedOperationSamples.Peek().Timestamp < cutoff)
+        while (
+            _failedOperationSamples.Count > 0 && _failedOperationSamples.Peek().Timestamp < cutoff
+        )
         {
             var sample = _failedOperationSamples.Dequeue();
 

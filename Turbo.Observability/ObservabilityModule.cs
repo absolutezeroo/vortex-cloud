@@ -7,6 +7,10 @@ using Turbo.Observability.Audit;
 using Turbo.Observability.Configuration;
 using Turbo.Observability.Context;
 using Turbo.Observability.Dashboard;
+using Turbo.Observability.Dashboard.Api;
+using Turbo.Observability.Dashboard.Http;
+using Turbo.Observability.Dashboard.Infrastructure;
+using Turbo.Observability.Dashboard.Security;
 using Turbo.Observability.ErrorTracking;
 using Turbo.Observability.Metrics;
 using Turbo.Observability.Runtime;
@@ -37,17 +41,22 @@ public sealed class ObservabilityModule : IHostPluginModule
         services.TryAddSingleton<ITurboMetrics, TurboMetrics>();
         services.TryAddSingleton<IInfrastructureHealthService, InfrastructureHealthService>();
         services.TryAddSingleton<IIncidentDetectionService, IncidentDetectionService>();
+        services.TryAddSingleton<DashboardAccessPolicy>();
+        services.TryAddSingleton<DashboardAssetStore>();
+        services.TryAddSingleton<DashboardAuditEmitter>();
+        services.TryAddSingleton<DashboardApiService>();
+        services.TryAddSingleton<DashboardResponseWriter>();
         services.AddSingleton<ErrorGroupingChannel>();
         services.TryAddSingleton<IErrorGroupingSink, ChannelErrorGroupingSink>();
         services.AddHostedService<ErrorGroupingWriterService>();
 
         // Durable observability: one bounded channel -> single background writer (no DB on the hot path).
         services.AddSingleton<AuditChannel>();
-            services.TryAddSingleton<IAuditSink, ChannelAuditSink>();
-            services.TryAddSingleton<IEconomyLedger, ChannelEconomyLedger>();
-            services.TryAddSingleton<IItemForensics, ChannelItemForensics>();
-            services.TryAddSingleton<IPerformanceLogSink, ChannelPerformanceLogSink>();
-            services.AddHostedService<AuditWriterService>();
+        services.TryAddSingleton<IAuditSink, ChannelAuditSink>();
+        services.TryAddSingleton<IEconomyLedger, ChannelEconomyLedger>();
+        services.TryAddSingleton<IItemForensics, ChannelItemForensics>();
+        services.TryAddSingleton<IPerformanceLogSink, ChannelPerformanceLogSink>();
+        services.AddHostedService<AuditWriterService>();
 
         // Native admin dashboard (read-only HTTP API). Self-disables unless enabled + token set.
         services.AddHostedService<AdminApiService>();
