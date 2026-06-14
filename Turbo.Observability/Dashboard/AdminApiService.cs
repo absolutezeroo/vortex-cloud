@@ -44,6 +44,10 @@ public sealed class AdminApiService(
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     };
+    private const string HtmlContentType = "text/html; charset=utf-8";
+    private const string CssContentType = "text/css; charset=utf-8";
+    private const string JsonContentType = "application/json; charset=utf-8";
+    private const string JsContentType = "application/javascript; charset=utf-8";
 
     private readonly ObservabilityConfig _config = options.Value;
     private readonly IDbContextFactory<TurboDbContext> _dbContextFactory = dbContextFactory;
@@ -131,6 +135,20 @@ public sealed class AdminApiService(
 
             var token = ctx.Request.Headers["X-Admin-Token"] ?? query["token"];
             var role = ResolveDashboardRole(token);
+
+            if (path is "/assets/dashboard.css" or "/assets/dashboard.js")
+            {
+                if (string.Equals(path, "/assets/dashboard.css", StringComparison.OrdinalIgnoreCase))
+                {
+                    EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardCss", role);
+                    await WriteCssAsync(ctx, ct).ConfigureAwait(false);
+                    return;
+                }
+
+                EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardJs", role);
+                await WriteJsAsync(ctx, ct).ConfigureAwait(false);
+                return;
+            }
 
             if (role == DashboardRole.None)
             {
@@ -757,21 +775,34 @@ public sealed class AdminApiService(
     {
         var bytes = JsonSerializer.SerializeToUtf8Bytes(payload, Json);
         ctx.Response.StatusCode = status;
-        ctx.Response.ContentType = "application/json; charset=utf-8";
+        ctx.Response.ContentType = JsonContentType;
         ctx.Response.ContentLength64 = bytes.Length;
         await ctx.Response.OutputStream.WriteAsync(bytes, ct).ConfigureAwait(false);
         ctx.Response.Close();
     }
 
-    private static async Task WriteHtmlAsync(HttpListenerContext ctx, CancellationToken ct)
+    private static async Task WriteAssetAsync(
+        HttpListenerContext ctx,
+        byte[] bytes,
+        string contentType,
+        CancellationToken ct
+    )
     {
-        var bytes = Encoding.UTF8.GetBytes(DashboardHtml.Page);
         ctx.Response.StatusCode = 200;
-        ctx.Response.ContentType = "text/html; charset=utf-8";
+        ctx.Response.ContentType = contentType;
         ctx.Response.ContentLength64 = bytes.Length;
         await ctx.Response.OutputStream.WriteAsync(bytes, ct).ConfigureAwait(false);
         ctx.Response.Close();
     }
+
+    private static async Task WriteHtmlAsync(HttpListenerContext ctx, CancellationToken ct) =>
+        await WriteAssetAsync(ctx, DashboardHtml.PageBytes, HtmlContentType, ct).ConfigureAwait(false);
+
+    private static async Task WriteCssAsync(HttpListenerContext ctx, CancellationToken ct) =>
+        await WriteAssetAsync(ctx, DashboardHtml.CssBytes, CssContentType, ct).ConfigureAwait(false);
+
+    private static async Task WriteJsAsync(HttpListenerContext ctx, CancellationToken ct) =>
+        await WriteAssetAsync(ctx, DashboardHtml.ScriptBytes, JsContentType, ct).ConfigureAwait(false);
 
     private DashboardRole ResolveDashboardRole(string? provided)
     {
