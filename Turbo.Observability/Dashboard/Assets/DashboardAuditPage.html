@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Turbo Operations Center - Audit Feed</title>
+    <link rel="stylesheet" href="/assets/DashboardPage.css" />
+</head>
+<body data-section="audit">
+    <main class="layout">
+        <header class="topbar">
+            <div class="topbar-brand">
+                <h1>Turbo Operations Center</h1>
+                <p>Read-only observability dashboard</p>
+            </div>
+            <div class="topbar-status-wrap">
+                <span id="globalStatus" class="topbar-status">Not connected</span>
+                <span id="globalView" class="topbar-status">Current view: Audit feed</span>
+            </div>
+        </header>
+
+        <div class="dashboard-shell">
+            <nav class="section-nav" data-dashboard-nav aria-label="Sections"></nav>
+
+            <section class="view is-active">
+                <section class="panel">
+                    <div class="panel-head">
+                        <h2>Recent audit events</h2>
+                        <button id="refreshAudit" type="button">Refresh</button>
+                    </div>
+                    <div id="auditLoading" class="muted">Loading latest audit events...</div>
+                    <div class="compact-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>time</th>
+                                    <th>category</th>
+                                    <th>action</th>
+                                    <th>actor</th>
+                                    <th>target</th>
+                                    <th>result</th>
+                                    <th>cid</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditRows"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+        </div>
+    </main>
+
+    <script src="/assets/DashboardPage.js" defer></script>
+    <script src="/assets/DashboardAuditPage.js" defer></script>
+</body>
+</html>

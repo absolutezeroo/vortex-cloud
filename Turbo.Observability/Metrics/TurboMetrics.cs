@@ -56,7 +56,7 @@ public sealed class TurboMetrics : ITurboMetrics, IDisposable
         if (_enabled)
             _packetReceived.Add(1, Tag(operation));
 
-        _liveStats.RecordPacketReceived(actorId, roomId);
+        _liveStats.RecordPacketReceived(operation, actorId, roomId);
     }
 
     public void PacketCompleted(
@@ -77,7 +77,7 @@ public sealed class TurboMetrics : ITurboMetrics, IDisposable
         if (_enabled)
             _packetFailed.Add(1, Tag(operation));
 
-        _liveStats.RecordPacketFailed(actorId, roomId);
+        _liveStats.RecordPacketFailed(operation, actorId, roomId);
     }
 
     private static KeyValuePair<string, object?> Tag(string operation) =>

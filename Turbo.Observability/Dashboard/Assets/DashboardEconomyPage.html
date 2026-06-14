@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Turbo Operations Center - Economy</title>
+    <link rel="stylesheet" href="/assets/DashboardPage.css" />
+</head>
+<body data-section="economy">
+    <main class="layout">
+        <header class="topbar">
+            <div class="topbar-brand">
+                <h1>Turbo Operations Center</h1>
+                <p>Read-only observability dashboard</p>
+            </div>
+            <div class="topbar-status-wrap">
+                <span id="globalStatus" class="topbar-status">Not connected</span>
+                <span id="globalView" class="topbar-status">Current view: Economy</span>
+            </div>
+        </header>
+
+        <div class="dashboard-shell">
+            <nav class="section-nav" data-dashboard-nav aria-label="Sections"></nav>
+
+            <section class="view is-active">
+                <section class="panel">
+                    <div class="panel-head">
+                        <h2>Economy center</h2>
+                        <button id="refreshEconomy" type="button">Refresh recent</button>
+                    </div>
+                    <form id="economyForm" class="search-form" autocomplete="off">
+                        <label for="economyPlayerId" class="sr-only">Player id for economy lookup</label>
+                        <input
+                            id="economyPlayerId"
+                            type="number"
+                            min="1"
+                            placeholder="optional player id (blank = recent)"
+                        />
+                        <button type="submit">Load</button>
+                    </form>
+                    <div class="compact-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>time</th>
+                                    <th>player</th>
+                                    <th>currency</th>
+                                    <th>delta</th>
+                                    <th>after</th>
+                                    <th>reason</th>
+                                </tr>
+                            </thead>
+                            <tbody id="economyRows"></tbody>
+                        </table>
+                    </div>
+                    <p id="economyState" class="muted">Load economy view to inspect transactions.</p>
+                </section>
+            </section>
+        </div>
+    </main>
+
+    <script src="/assets/DashboardPage.js" defer></script>
+    <script src="/assets/DashboardEconomyPage.js" defer></script>
+</body>
+</html>

@@ -50,7 +50,7 @@ observability subscribes via `IEventHandler<T>` in `Turbo.Observability/Events`;
 - [x] Incident detection (DB slow, error spikes, login-failed spikes, Orleans degraded).
 
 ## Dashboard (Phase 5 — minimal version shipped)
-- [ ] Richer UI: Player Timeline, Room Inspector, Packet Center, Economy Center views (API exists for
+- [x] Richer UI: Player Timeline, Room Inspector, Packet Center, Economy Center views (API exists for
       audit/economy/item/search; add room timeline + packet stats).
 - [x] Pagination + time-range filters on the API.
 - [ ] Remote access story: `HttpListener` binds `localhost`; for remote needs URL ACL / reverse proxy

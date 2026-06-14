@@ -8,9 +8,9 @@
     <PackageReference Include="Microsoft.Orleans.Sdk" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Dashboard\Assets\DashboardPage.html" />
-    <EmbeddedResource Include="Dashboard\Assets\DashboardPage.css" />
-    <EmbeddedResource Include="Dashboard\Assets\DashboardPage.js" />
+    <EmbeddedResource Include="Dashboard\Assets\*.html" />
+    <EmbeddedResource Include="Dashboard\Assets\*.css" />
+    <EmbeddedResource Include="Dashboard\Assets\*.js" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Turbo.Contracts\Turbo.Contracts.csproj" />

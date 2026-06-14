@@ -17,12 +17,20 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
     private readonly Queue<DateTime> _receivedTimestamps = [];
     private readonly Queue<DateTime> _failedTimestamps = [];
     private readonly Queue<LatencySample> _latencySamples = [];
+    private readonly Queue<OperationSample> _operationSamples = [];
+    private readonly Queue<OperationSample> _failedOperationSamples = [];
     private readonly Queue<AbuserSample> _abuserSamples = [];
     private readonly Dictionary<int, int> _abuserCounts = [];
     private readonly Queue<RoomSample> _roomSamples = [];
     private readonly Dictionary<int, int> _roomCounts = [];
+    private readonly Dictionary<string, int> _operationCounts = [];
+    private readonly Dictionary<string, int> _failedOperationCounts = [];
 
-    public void RecordPacketReceived(long? actorId = null, int? roomId = null)
+    public void RecordPacketReceived(
+        string operation,
+        long? actorId = null,
+        int? roomId = null
+    )
     {
         var now = DateTime.UtcNow;
 
@@ -30,6 +38,8 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
         {
             Prune(now);
             _receivedTimestamps.Enqueue(now);
+            _operationSamples.Enqueue(new(now, operation));
+            _operationCounts[operation] = _operationCounts.GetValueOrDefault(operation) + 1;
 
             if (actorId is > 0 && actorId <= int.MaxValue)
             {
@@ -61,7 +71,11 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
         }
     }
 
-    public void RecordPacketFailed(long? actorId = null, int? roomId = null)
+    public void RecordPacketFailed(
+        string operation,
+        long? actorId = null,
+        int? roomId = null
+    )
     {
         var now = DateTime.UtcNow;
 
@@ -69,6 +83,8 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
         {
             Prune(now);
             _failedTimestamps.Enqueue(now);
+            _failedOperationSamples.Enqueue(new(now, operation));
+            _failedOperationCounts[operation] = _failedOperationCounts.GetValueOrDefault(operation) + 1;
         }
     }
 
@@ -92,6 +108,20 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
                 .Select(item => new LiveAbuserSnapshot(item.Key, ToRatePerMinute(item.Value)))
                 .ToArray();
 
+            var topOperations = _operationCounts
+                .OrderByDescending(item => item.Value)
+                .ThenBy(item => item.Key)
+                .Take(_topK)
+                .Select(item => new LivePacketOperationSnapshot(item.Key, ToRatePerMinute(item.Value)))
+                .ToArray();
+
+            var topFailedOperations = _failedOperationCounts
+                .OrderByDescending(item => item.Value)
+                .ThenBy(item => item.Key)
+                .Take(_topK)
+                .Select(item => new LivePacketOperationSnapshot(item.Key, ToRatePerMinute(item.Value)))
+                .ToArray();
+
             return Task.FromResult(
                 new LiveStatsSnapshot(
                     _receivedTimestamps.Count / _window.TotalSeconds,
@@ -104,7 +134,9 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
                         .ThenBy(item => item.Key)
                         .Take(_topK)
                         .Select(item => new LiveRoomSnapshot(item.Key, ToRatePerMinute(item.Value)))
-                        .ToArray()
+                        .ToArray(),
+                    topOperations,
+                    topFailedOperations
                 )
             );
         }
@@ -122,6 +154,32 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
 
         while (_latencySamples.Count > 0 && _latencySamples.Peek().Timestamp < cutoff)
             _latencySamples.Dequeue();
+
+        while (_operationSamples.Count > 0 && _operationSamples.Peek().Timestamp < cutoff)
+        {
+            var sample = _operationSamples.Dequeue();
+
+            if (_operationCounts.TryGetValue(sample.Operation, out var total))
+            {
+                if (total <= 1)
+                    _operationCounts.Remove(sample.Operation);
+                else
+                    _operationCounts[sample.Operation] = total - 1;
+            }
+        }
+
+        while (_failedOperationSamples.Count > 0 && _failedOperationSamples.Peek().Timestamp < cutoff)
+        {
+            var sample = _failedOperationSamples.Dequeue();
+
+            if (_failedOperationCounts.TryGetValue(sample.Operation, out var total))
+            {
+                if (total <= 1)
+                    _failedOperationCounts.Remove(sample.Operation);
+                else
+                    _failedOperationCounts[sample.Operation] = total - 1;
+            }
+        }
 
         while (_abuserSamples.Count > 0 && _abuserSamples.Peek().Timestamp < cutoff)
         {
@@ -167,11 +225,13 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
     private sealed record AbuserSample(DateTime Timestamp, int ActorId);
 
     private sealed record RoomSample(DateTime Timestamp, int RoomId);
+
+    private sealed record OperationSample(DateTime Timestamp, string Operation);
 }
 
 public interface ILiveStatsAggregator
 {
-    void RecordPacketReceived(long? actorId = null, int? roomId = null);
+    void RecordPacketReceived(string operation, long? actorId = null, int? roomId = null);
 
     void RecordPacketCompleted(
         long? actorId = null,
@@ -179,7 +239,7 @@ public interface ILiveStatsAggregator
         double elapsedMilliseconds = 0
     );
 
-    void RecordPacketFailed(long? actorId = null, int? roomId = null);
+    void RecordPacketFailed(string operation, long? actorId = null, int? roomId = null);
 
     Task<LiveStatsSnapshot> GetSnapshotAsync();
 }
@@ -190,9 +250,13 @@ public sealed record LiveStatsSnapshot(
     double LatencyP50Ms,
     double LatencyP95Ms,
     IReadOnlyList<LiveAbuserSnapshot> TopAbusers,
-    IReadOnlyList<LiveRoomSnapshot> TopRooms
+    IReadOnlyList<LiveRoomSnapshot> TopRooms,
+    IReadOnlyList<LivePacketOperationSnapshot> TopOperations,
+    IReadOnlyList<LivePacketOperationSnapshot> TopFailedOperations
 );
 
 public sealed record LiveAbuserSnapshot(int PlayerId, double PacketsPerMinute);
 
 public sealed record LiveRoomSnapshot(int RoomId, double PacketsPerMinute);
+
+public sealed record LivePacketOperationSnapshot(string Operation, double PacketsPerMinute);

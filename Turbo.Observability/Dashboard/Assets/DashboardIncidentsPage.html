@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Turbo Operations Center - Incident Center</title>
+    <link rel="stylesheet" href="/assets/DashboardPage.css" />
+</head>
+<body data-section="incidents">
+    <main class="layout">
+        <header class="topbar">
+            <div class="topbar-brand">
+                <h1>Turbo Operations Center</h1>
+                <p>Read-only observability dashboard</p>
+            </div>
+            <div class="topbar-status-wrap">
+                <span id="globalStatus" class="topbar-status">Not connected</span>
+                <span id="globalView" class="topbar-status">Current view: Incident center</span>
+            </div>
+        </header>
+
+        <div class="dashboard-shell">
+            <nav class="section-nav" data-dashboard-nav aria-label="Sections"></nav>
+
+            <section class="view is-active">
+                <section class="panel">
+                    <div class="panel-head">
+                        <h2>Incident center</h2>
+                        <button id="refreshIncidents" type="button">Refresh</button>
+                    </div>
+                    <p id="incidentOverall" class="muted incident-overall">No incident data yet.</p>
+                    <div id="incidentSignals" class="incident-signals"></div>
+                    <h3>Top error groups</h3>
+                    <div class="compact-table">
+                        <table id="incidentTopGroups">
+                            <thead>
+                                <tr>
+                                    <th>fingerprint</th>
+                                    <th>source / operation</th>
+                                    <th>type</th>
+                                    <th>total occurrences</th>
+                                    <th>last seen</th>
+                                </tr>
+                            </thead>
+                            <tbody id="incidentTopGroupsRows"></tbody>
+                        </table>
+                    </div>
+                    <div id="incidentTopGroupsEmpty" class="muted">No error groups in the current window.</div>
+                </section>
+            </section>
+        </div>
+    </main>
+
+    <script src="/assets/DashboardPage.js" defer></script>
+    <script src="/assets/DashboardIncidentsPage.js" defer></script>
+</body>
+</html>

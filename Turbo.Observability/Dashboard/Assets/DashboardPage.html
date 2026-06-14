@@ -4,77 +4,38 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
-    <title>Turbo Operations Center</title>
-    <link rel="stylesheet" href="/assets/dashboard.css" />
+    <title>Turbo Operations Center - Overview</title>
+    <link rel="stylesheet" href="/assets/DashboardPage.css" />
 </head>
-<body>
+<body data-section="overview">
     <main class="layout">
         <header class="topbar">
             <div class="topbar-brand">
                 <h1>Turbo Operations Center</h1>
                 <p>Read-only observability dashboard</p>
             </div>
-            <span id="globalStatus" class="topbar-status">Not connected</span>
+            <div class="topbar-status-wrap">
+                <span id="globalStatus" class="topbar-status">Not connected</span>
+                <span id="globalView" class="topbar-status">Current view: Overview</span>
+            </div>
         </header>
 
-        <section class="card-grid" id="overviewCards"></section>
+        <div class="dashboard-shell">
+            <nav class="section-nav" data-dashboard-nav aria-label="Sections"></nav>
 
-        <section class="panel">
-            <h2>Search</h2>
-            <form id="searchForm" class="search-form" autocomplete="off">
-                <label for="queryInput" class="sr-only">Search by player id, item id or correlation id</label>
-                <input id="queryInput" name="q" type="text" placeholder="player id / item id / correlation id" />
-                <button type="submit">Search</button>
-            </form>
-            <pre id="searchResult" class="codeblock">No search run yet.</pre>
-        </section>
-
-        <section class="panel">
-            <div class="panel-head">
-                <h2>Live incidents</h2>
-                <button id="refreshIncidents" type="button">Refresh</button>
-            </div>
-            <p id="incidentOverall" class="muted incident-overall">No incident data yet.</p>
-            <div id="incidentSignals" class="incident-signals"></div>
-            <h3>Top error groups</h3>
-            <table id="incidentTopGroups" aria-live="polite">
-                <thead>
-                    <tr>
-                        <th>fingerprint</th>
-                        <th>source / operation</th>
-                        <th>type</th>
-                        <th>total occurrences</th>
-                        <th>last seen</th>
-                    </tr>
-                </thead>
-                <tbody id="incidentTopGroupsRows"></tbody>
-            </table>
-            <div id="incidentTopGroupsEmpty" class="muted">No error groups in the current window.</div>
-        </section>
-
-        <section class="panel">
-            <div class="panel-head">
-                <h2>Recent audit events</h2>
-                <button id="refreshAudit" type="button">Refresh</button>
-            </div>
-            <div id="auditLoading" class="muted">Loading latest audit events...</div>
-            <table aria-live="polite">
-                <thead>
-                    <tr>
-                        <th>time</th>
-                        <th>category</th>
-                        <th>action</th>
-                        <th>actor</th>
-                        <th>target</th>
-                        <th>result</th>
-                        <th>cid</th>
-                    </tr>
-                </thead>
-                <tbody id="auditRows"></tbody>
-            </table>
-        </section>
+            <section class="view is-active">
+                <section class="panel">
+                    <div class="panel-head">
+                        <h2>Overview</h2>
+                        <button id="refreshOverview" type="button">Refresh</button>
+                    </div>
+                    <section class="card-grid" id="overviewCards"></section>
+                </section>
+            </section>
+        </div>
     </main>
 
-    <script src="/assets/dashboard.js" defer></script>
+    <script src="/assets/DashboardPage.js" defer></script>
+    <script src="/assets/DashboardOverviewPage.js" defer></script>
 </body>
 </html>

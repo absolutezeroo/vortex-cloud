@@ -138,41 +138,178 @@ public sealed class AdminApiService(
             var token = ctx.Request.Headers["X-Admin-Token"] ?? query["token"];
             var role = ResolveDashboardRole(token);
 
-            if (path is "/assets/dashboard.css" or "/assets/dashboard.js")
+            if (path.StartsWith("/assets/", StringComparison.OrdinalIgnoreCase))
             {
-                if (
-                    string.Equals(path, "/assets/dashboard.css", StringComparison.OrdinalIgnoreCase)
-                )
+                var asset = path["/assets/".Length..];
+
+                if (!IsSafeAsset(asset))
                 {
-                    EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardCss", role);
-                    await WriteCssAsync(ctx, ct).ConfigureAwait(false);
+                    EmitDashboardAudit(path, AuditResult.Failed, 404, "InvalidAsset", role);
+
+                    await WriteJsonAsync(ctx, 404, new { error = "not_found" }, ct)
+                        .ConfigureAwait(false);
                     return;
                 }
 
-                EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardJs", role);
-                await WriteJsAsync(ctx, ct).ConfigureAwait(false);
+                var contentType = GetAssetContentType(asset);
+                var bytes = DashboardPageResources.GetBytes(asset);
+
+                EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardAsset", role);
+                await WriteAssetAsync(ctx, bytes, contentType, ct).ConfigureAwait(false);
                 return;
             }
 
-            if (role == DashboardRole.None)
+            if (path is "/" or "/index.html" or "/overview" or "/overview.html")
             {
-                EmitDashboardAudit(
-                    path,
-                    AuditResult.Denied,
-                    401,
-                    "Unauthorized",
-                    DashboardRole.None
-                );
+                if (role == DashboardRole.None)
+                {
+                    EmitDashboardAudit(
+                        path,
+                        AuditResult.Denied,
+                        401,
+                        "Unauthorized",
+                        DashboardRole.None
+                    );
 
-                await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, ct)
-                    .ConfigureAwait(false);
-                return;
-            }
+                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, ct)
+                        .ConfigureAwait(false);
+                    return;
+                }
 
-            if (path is "/" or "/index.html")
-            {
                 EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardHtml", role);
-                await WriteHtmlAsync(ctx, ct).ConfigureAwait(false);
+                await WriteHtmlAsync(ctx, "DashboardPage.html", ct).ConfigureAwait(false);
+                return;
+            }
+
+            if (path is "/investigation" or "/investigation.html")
+            {
+                if (role == DashboardRole.None)
+                {
+                    EmitDashboardAudit(
+                        path,
+                        AuditResult.Denied,
+                        401,
+                        "Unauthorized",
+                        DashboardRole.None
+                    );
+
+                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, ct)
+                        .ConfigureAwait(false);
+                    return;
+                }
+
+                EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardHtml", role);
+                await WriteHtmlAsync(ctx, "DashboardInvestigationPage.html", ct).ConfigureAwait(false);
+                return;
+            }
+
+            if (path is "/economy" or "/economy.html")
+            {
+                if (role == DashboardRole.None)
+                {
+                    EmitDashboardAudit(
+                        path,
+                        AuditResult.Denied,
+                        401,
+                        "Unauthorized",
+                        DashboardRole.None
+                    );
+
+                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, ct)
+                        .ConfigureAwait(false);
+                    return;
+                }
+
+                EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardHtml", role);
+                await WriteHtmlAsync(ctx, "DashboardEconomyPage.html", ct).ConfigureAwait(false);
+                return;
+            }
+
+            if (path is "/rooms" or "/rooms.html")
+            {
+                if (role == DashboardRole.None)
+                {
+                    EmitDashboardAudit(
+                        path,
+                        AuditResult.Denied,
+                        401,
+                        "Unauthorized",
+                        DashboardRole.None
+                    );
+
+                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, ct)
+                        .ConfigureAwait(false);
+                    return;
+                }
+
+                EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardHtml", role);
+                await WriteHtmlAsync(ctx, "DashboardRoomsPage.html", ct).ConfigureAwait(false);
+                return;
+            }
+
+            if (path is "/packets" or "/packets.html")
+            {
+                if (role == DashboardRole.None)
+                {
+                    EmitDashboardAudit(
+                        path,
+                        AuditResult.Denied,
+                        401,
+                        "Unauthorized",
+                        DashboardRole.None
+                    );
+
+                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, ct)
+                        .ConfigureAwait(false);
+                    return;
+                }
+
+                EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardHtml", role);
+                await WriteHtmlAsync(ctx, "DashboardPacketsPage.html", ct).ConfigureAwait(false);
+                return;
+            }
+
+            if (path is "/incidents" or "/incidents.html")
+            {
+                if (role == DashboardRole.None)
+                {
+                    EmitDashboardAudit(
+                        path,
+                        AuditResult.Denied,
+                        401,
+                        "Unauthorized",
+                        DashboardRole.None
+                    );
+
+                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, ct)
+                        .ConfigureAwait(false);
+                    return;
+                }
+
+                EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardHtml", role);
+                await WriteHtmlAsync(ctx, "DashboardIncidentsPage.html", ct).ConfigureAwait(false);
+                return;
+            }
+
+            if (path is "/audit" or "/audit.html")
+            {
+                if (role == DashboardRole.None)
+                {
+                    EmitDashboardAudit(
+                        path,
+                        AuditResult.Denied,
+                        401,
+                        "Unauthorized",
+                        DashboardRole.None
+                    );
+
+                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, ct)
+                        .ConfigureAwait(false);
+                    return;
+                }
+
+                EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardHtml", role);
+                await WriteHtmlAsync(ctx, "DashboardAuditPage.html", ct).ConfigureAwait(false);
                 return;
             }
 
@@ -182,7 +319,7 @@ public sealed class AdminApiService(
             {
                 if (!CanReadOverview(role))
                 {
-                    await WriteForbidden(ctx, path, "UnauthorizedRole", role, ct)
+                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, ct)
                         .ConfigureAwait(false);
                     return;
                 }
@@ -193,18 +330,29 @@ public sealed class AdminApiService(
             {
                 if (!CanReadOverview(role))
                 {
-                    await WriteForbidden(ctx, path, "UnauthorizedRole", role, ct)
+                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, ct)
                         .ConfigureAwait(false);
                     return;
                 }
 
                 payload = await IncidentsAsync(ct).ConfigureAwait(false);
             }
+            else if (path is "/api/packet-stats")
+            {
+                if (!CanReadOverview(role))
+                {
+                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, ct)
+                        .ConfigureAwait(false);
+                    return;
+                }
+
+                payload = await PacketStatsAsync(ct).ConfigureAwait(false);
+            }
             else if (path is "/api/audit")
             {
                 if (!CanReadAudit(role))
                 {
-                    await WriteForbidden(ctx, path, "UnauthorizedRole", role, ct)
+                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, ct)
                         .ConfigureAwait(false);
                     return;
                 }
@@ -215,7 +363,7 @@ public sealed class AdminApiService(
             {
                 if (!CanReadEconomy(role))
                 {
-                    await WriteForbidden(ctx, path, "UnauthorizedRole", role, ct)
+                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, ct)
                         .ConfigureAwait(false);
                     return;
                 }
@@ -226,7 +374,7 @@ public sealed class AdminApiService(
             {
                 if (!CanReadAudit(role))
                 {
-                    await WriteForbidden(ctx, path, "UnauthorizedRole", role, ct)
+                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, ct)
                         .ConfigureAwait(false);
                     return;
                 }
@@ -237,13 +385,36 @@ public sealed class AdminApiService(
             {
                 if (!CanReadAudit(role))
                 {
-                    await WriteForbidden(ctx, path, "UnauthorizedRole", role, ct)
+                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, ct)
                         .ConfigureAwait(false);
                     return;
                 }
 
                 payload = await ItemAsync(path["/api/item/".Length..], query, ct)
                     .ConfigureAwait(false);
+            }
+            else if (path.StartsWith("/api/room/", StringComparison.Ordinal))
+            {
+                if (!CanReadAudit(role))
+                {
+                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, ct)
+                        .ConfigureAwait(false);
+                    return;
+                }
+
+                var roomRoute = path["/api/room/".Length..];
+                var roomIdText = roomRoute.Split('/', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+
+                if (string.IsNullOrWhiteSpace(roomIdText) || !int.TryParse(roomIdText, out var roomId))
+                {
+                    EmitDashboardAudit(path, AuditResult.Failed, 400, "InvalidRoomId", role);
+
+                    await WriteJsonAsync(ctx, 400, new { error = "invalid_room_id" }, ct)
+                        .ConfigureAwait(false);
+                    return;
+                }
+
+                payload = await RoomTimelineAsync(roomId, query, ct).ConfigureAwait(false);
             }
             else
             {
@@ -328,7 +499,30 @@ public sealed class AdminApiService(
     private static bool CanReadEconomy(DashboardRole role) =>
         role is DashboardRole.Economy or DashboardRole.Admin;
 
-    private async Task WriteForbidden(
+    private async Task<object> PacketStatsAsync(CancellationToken ct)
+    {
+        var live = await _liveStats.GetSnapshotAsync().ConfigureAwait(false);
+
+        return new
+        {
+            packetsPerSecond = Math.Round(live.PacketsPerSecond, 2),
+            errorsPerMinute = Math.Round(live.ErrorsPerMinute, 2),
+            latencyP50Ms = Math.Round(live.LatencyP50Ms, 2),
+            latencyP95Ms = Math.Round(live.LatencyP95Ms, 2),
+            topOperations = live.TopOperations.Select(o => new
+            {
+                operation = o.Operation,
+                packetsPerMinute = Math.Round(o.PacketsPerMinute, 2),
+            }),
+            topFailedOperations = live.TopFailedOperations.Select(o => new
+            {
+                operation = o.Operation,
+                packetsPerMinute = Math.Round(o.PacketsPerMinute, 2),
+            }),
+        };
+    }
+
+    private async Task WriteForbiddenAsync(
         HttpListenerContext ctx,
         string path,
         string eventKind,
@@ -773,6 +967,116 @@ public sealed class AdminApiService(
             ct
         );
 
+    private Task<object?> RoomTimelineAsync(
+        int roomId,
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<object?>(
+            async db =>
+            {
+                var room = await db.Rooms.AsNoTracking()
+                    .Where(r => r.Id == roomId)
+                    .Select(r => new
+                    {
+                        r.Id,
+                        r.Name,
+                        r.Description,
+                        OwnerPlayerId = r.PlayerEntityId,
+                        r.UsersNow,
+                        r.PlayersMax,
+                        LastActive = r.LastActive,
+                        ModelName = r.RoomModelEntity.Name,
+                    })
+                    .FirstOrDefaultAsync(ct)
+                    .ConfigureAwait(false);
+
+                if (room is null)
+                {
+                    return null;
+                }
+
+                var limit = ParseLimit(query["limit"], 80, 500);
+                var page = ParsePage(query["page"]);
+                var offset = Math.Max(0, (page - 1) * limit);
+                var since = ParseDateTime(query["since"]);
+                var until = ParseDateTime(query["until"]);
+
+                var entriesQuery = db.RoomEntryLogs.AsNoTracking().Where(e => e.RoomEntityId == roomId);
+                var chatQuery = db.Chatlogs.AsNoTracking().Where(c => c.RoomEntityId == roomId);
+
+                if (since is not null)
+                {
+                    entriesQuery = entriesQuery.Where(e => e.CreatedAt >= since.Value);
+                    chatQuery = chatQuery.Where(c => c.CreatedAt >= since.Value);
+                }
+
+                if (until is not null)
+                {
+                    entriesQuery = entriesQuery.Where(e => e.CreatedAt <= until.Value);
+                    chatQuery = chatQuery.Where(c => c.CreatedAt <= until.Value);
+                }
+
+                var entryCount = await entriesQuery.CountAsync(ct).ConfigureAwait(false);
+                var chatCount = await chatQuery.CountAsync(ct).ConfigureAwait(false);
+
+                var timeline = await entriesQuery
+                    .Select(e => new
+                    {
+                        e.CreatedAt,
+                        EventType = "entry",
+                        PlayerId = (int?)e.PlayerEntityId,
+                        PlayerName = e.PlayerEntity.Name,
+                        Message = (string?)null,
+                        TargetPlayerId = (int?)null,
+                        TargetPlayerName = (string?)null,
+                    })
+                    .Concat(
+                        chatQuery.Select(c => new
+                        {
+                            c.CreatedAt,
+                            EventType = "chat",
+                            PlayerId = (int?)c.PlayerEntityId,
+                            PlayerName = c.PlayerEntity.Name,
+                            Message = (string?)c.Message,
+                            TargetPlayerId = (int?)c.TargetPlayerEntityId,
+                            TargetPlayerName = c.TargetPlayerEntity != null
+                                ? (string?)c.TargetPlayerEntity.Name
+                                : null,
+                        })
+                    )
+                    .OrderByDescending(e => e.CreatedAt)
+                    .ThenBy(e => e.EventType)
+                    .Skip(offset)
+                    .Take(limit)
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                return new
+                {
+                    room = new
+                    {
+                        roomId = room.Id,
+                        room.Name,
+                        room.Description,
+                        room.OwnerPlayerId,
+                        room.UsersNow,
+                        room.PlayersMax,
+                        room.LastActive,
+                        room.ModelName,
+                    },
+                    page,
+                    limit,
+                    offset,
+                    count = timeline.Count,
+                    total = entryCount + chatCount,
+                    totals = new { entries = entryCount, chats = chatCount },
+                    timeline,
+                };
+            },
+            ct
+        );
+
     private async Task<T> QueryAsync<T>(Func<TurboDbContext, Task<T>> work, CancellationToken ct)
     {
         var db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
@@ -816,17 +1120,42 @@ public sealed class AdminApiService(
         ctx.Response.Close();
     }
 
-    private static async Task WriteHtmlAsync(HttpListenerContext ctx, CancellationToken ct) =>
-        await WriteAssetAsync(ctx, DashboardHtml.PageBytes, HtmlContentType, ct)
-            .ConfigureAwait(false);
+    private static async Task WriteHtmlAsync(
+        HttpListenerContext ctx,
+        string htmlResource,
+        CancellationToken ct
+    ) => await WriteAssetAsync(ctx, DashboardPageResources.GetBytes(htmlResource), HtmlContentType, ct)
+        .ConfigureAwait(false);
 
-    private static async Task WriteCssAsync(HttpListenerContext ctx, CancellationToken ct) =>
-        await WriteAssetAsync(ctx, DashboardHtml.CssBytes, CssContentType, ct)
-            .ConfigureAwait(false);
+    private static string GetAssetContentType(string assetName)
+    {
+        var extension = System.IO.Path.GetExtension(assetName).ToLowerInvariant();
 
-    private static async Task WriteJsAsync(HttpListenerContext ctx, CancellationToken ct) =>
-        await WriteAssetAsync(ctx, DashboardHtml.ScriptBytes, JsContentType, ct)
-            .ConfigureAwait(false);
+        return extension switch
+        {
+            ".css" => CssContentType,
+            ".js" => JsContentType,
+            ".html" => HtmlContentType,
+            _ => "application/octet-stream",
+        };
+    }
+
+    private static bool IsSafeAsset(string assetName)
+    {
+        if (string.IsNullOrWhiteSpace(assetName))
+            return false;
+
+        if (assetName.Contains('/', StringComparison.Ordinal))
+            return false;
+
+        if (assetName.Contains('\\', StringComparison.Ordinal))
+            return false;
+
+        if (assetName.Contains("..", StringComparison.Ordinal))
+            return false;
+
+        return DashboardPageResources.TryGetResourceName(assetName, out _);
+    }
 
     private DashboardRole ResolveDashboardRole(string? provided)
     {
