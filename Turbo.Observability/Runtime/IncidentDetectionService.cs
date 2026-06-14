@@ -62,14 +62,15 @@ public sealed class IncidentDetectionService(
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(false);
 
-            var since = DateTime.UtcNow.AddMinutes(-_lookbackMinutes);
-            var windowMinutes = (DateTime.UtcNow - since).TotalMinutes;
-            var errorSpikes = await db
+            var now = DateTime.UtcNow;
+            var since = now.AddMinutes(-_lookbackMinutes);
+            var windowMinutes = Math.Max(1.0, (now - since).TotalMinutes);
+            var errorCount = await db
                 .ErrorOccurrences.AsNoTracking()
                 .CountAsync(o => o.OccurredAt >= since, ct)
-                .ConfigureAwait(false) / windowMinutes;
+                .ConfigureAwait(false);
 
-            var loginFailedSpikes = await db
+            var loginFailedCount = await db
                 .AuditEvents.AsNoTracking()
                 .CountAsync(
                     e =>
@@ -78,7 +79,7 @@ public sealed class IncidentDetectionService(
                         && e.OccurredAt >= since,
                     ct
                 )
-                .ConfigureAwait(false) / windowMinutes;
+                .ConfigureAwait(false);
 
             var topGroups = await db
                 .ErrorGroups.AsNoTracking()
@@ -101,6 +102,9 @@ public sealed class IncidentDetectionService(
                 ))
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
+
+            var errorSpikes = errorCount / windowMinutes;
+            var loginFailedSpikes = loginFailedCount / windowMinutes;
 
             EvaluateErrorSpikes(errorSpikes, incidents);
             EvaluateLoginFailedSpikes(loginFailedSpikes, incidents);

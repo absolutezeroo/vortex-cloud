@@ -49,6 +49,9 @@ public sealed class AdminApiService(
     private const string CssContentType = "text/css; charset=utf-8";
     private const string JsonContentType = "application/json; charset=utf-8";
     private const string JsContentType = "application/javascript; charset=utf-8";
+    private const string CspHeader =
+        "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'none';";
+    private static readonly TimeSpan RequestTimeout = TimeSpan.FromSeconds(20);
 
     private readonly ObservabilityConfig _config = options.Value;
     private readonly IDbContextFactory<TurboDbContext> _dbContextFactory = dbContextFactory;
@@ -84,6 +87,7 @@ public sealed class AdminApiService(
         using var listener = new HttpListener();
         var prefix = $"http://{_config.DashboardHost}:{_config.DashboardPort}/";
         listener.Prefixes.Add(prefix);
+        listener.IgnoreWriteExceptions = true;
 
         try
         {
@@ -130,9 +134,25 @@ public sealed class AdminApiService(
 
     private async Task HandleRequestAsync(HttpListenerContext ctx, CancellationToken ct)
     {
+        if (!IsGetOrHead(ctx.Request.HttpMethod))
+        {
+            await WriteJsonAsync(ctx, 405, new { error = "method_not_allowed" }, ct)
+                .ConfigureAwait(false);
+            return;
+        }
+
+        using var requestCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        requestCts.CancelAfter(RequestTimeout);
+
         try
         {
-            var path = ctx.Request.Url?.AbsolutePath ?? "/";
+            var path = ctx.Request.Url?.AbsolutePath.TrimEnd('/') ?? "/";
+            if (string.IsNullOrEmpty(path))
+                path = "/";
+
+            if (path.Length > 1 && !path.StartsWith('/'))
+                path = $"/{path}";
+
             var query = ctx.Request.QueryString;
 
             var token = ctx.Request.Headers["X-Admin-Token"] ?? query["token"];
@@ -146,7 +166,7 @@ public sealed class AdminApiService(
                 {
                     EmitDashboardAudit(path, AuditResult.Failed, 404, "InvalidAsset", role);
 
-                    await WriteJsonAsync(ctx, 404, new { error = "not_found" }, ct)
+                    await WriteJsonAsync(ctx, 404, new { error = "not_found" }, requestCts.Token)
                         .ConfigureAwait(false);
                     return;
                 }
@@ -155,7 +175,7 @@ public sealed class AdminApiService(
                 var bytes = DashboardPageResources.GetBytes(asset);
 
                 EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardAsset", role);
-                await WriteAssetAsync(ctx, bytes, contentType, ct).ConfigureAwait(false);
+                await WriteAssetAsync(ctx, bytes, contentType, requestCts.Token).ConfigureAwait(false);
                 return;
             }
 
@@ -171,13 +191,13 @@ public sealed class AdminApiService(
                         DashboardRole.None
                     );
 
-                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, ct)
+                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, requestCts.Token)
                         .ConfigureAwait(false);
                     return;
                 }
 
                 EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardHtml", role);
-                await WriteHtmlAsync(ctx, "DashboardPage.html", ct).ConfigureAwait(false);
+                await WriteHtmlAsync(ctx, "DashboardPage.html", requestCts.Token).ConfigureAwait(false);
                 return;
             }
 
@@ -193,13 +213,14 @@ public sealed class AdminApiService(
                         DashboardRole.None
                     );
 
-                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, ct)
+                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, requestCts.Token)
                         .ConfigureAwait(false);
                     return;
                 }
 
                 EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardHtml", role);
-                await WriteHtmlAsync(ctx, "DashboardInvestigationPage.html", ct).ConfigureAwait(false);
+                await WriteHtmlAsync(ctx, "DashboardInvestigationPage.html", requestCts.Token)
+                    .ConfigureAwait(false);
                 return;
             }
 
@@ -215,13 +236,13 @@ public sealed class AdminApiService(
                         DashboardRole.None
                     );
 
-                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, ct)
+                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, requestCts.Token)
                         .ConfigureAwait(false);
                     return;
                 }
 
                 EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardHtml", role);
-                await WriteHtmlAsync(ctx, "DashboardEconomyPage.html", ct).ConfigureAwait(false);
+                await WriteHtmlAsync(ctx, "DashboardEconomyPage.html", requestCts.Token).ConfigureAwait(false);
                 return;
             }
 
@@ -237,13 +258,13 @@ public sealed class AdminApiService(
                         DashboardRole.None
                     );
 
-                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, ct)
+                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, requestCts.Token)
                         .ConfigureAwait(false);
                     return;
                 }
 
                 EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardHtml", role);
-                await WriteHtmlAsync(ctx, "DashboardRoomsPage.html", ct).ConfigureAwait(false);
+                await WriteHtmlAsync(ctx, "DashboardRoomsPage.html", requestCts.Token).ConfigureAwait(false);
                 return;
             }
 
@@ -259,13 +280,13 @@ public sealed class AdminApiService(
                         DashboardRole.None
                     );
 
-                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, ct)
+                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, requestCts.Token)
                         .ConfigureAwait(false);
                     return;
                 }
 
                 EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardHtml", role);
-                await WriteHtmlAsync(ctx, "DashboardPacketsPage.html", ct).ConfigureAwait(false);
+                await WriteHtmlAsync(ctx, "DashboardPacketsPage.html", requestCts.Token).ConfigureAwait(false);
                 return;
             }
 
@@ -281,13 +302,14 @@ public sealed class AdminApiService(
                         DashboardRole.None
                     );
 
-                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, ct)
+                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, requestCts.Token)
                         .ConfigureAwait(false);
                     return;
                 }
 
                 EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardHtml", role);
-                await WriteHtmlAsync(ctx, "DashboardIncidentsPage.html", ct).ConfigureAwait(false);
+                await WriteHtmlAsync(ctx, "DashboardIncidentsPage.html", requestCts.Token)
+                    .ConfigureAwait(false);
                 return;
             }
 
@@ -303,13 +325,13 @@ public sealed class AdminApiService(
                         DashboardRole.None
                     );
 
-                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, ct)
+                    await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, requestCts.Token)
                         .ConfigureAwait(false);
                     return;
                 }
 
                 EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardHtml", role);
-                await WriteHtmlAsync(ctx, "DashboardAuditPage.html", ct).ConfigureAwait(false);
+                await WriteHtmlAsync(ctx, "DashboardAuditPage.html", requestCts.Token).ConfigureAwait(false);
                 return;
             }
 
@@ -319,85 +341,85 @@ public sealed class AdminApiService(
             {
                 if (!CanReadOverview(role))
                 {
-                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, ct)
+                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, requestCts.Token)
                         .ConfigureAwait(false);
                     return;
                 }
 
-                payload = await OverviewAsync(ct).ConfigureAwait(false);
+                payload = await OverviewAsync(requestCts.Token).ConfigureAwait(false);
             }
             else if (path is "/api/incidents")
             {
                 if (!CanReadOverview(role))
                 {
-                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, ct)
+                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, requestCts.Token)
                         .ConfigureAwait(false);
                     return;
                 }
 
-                payload = await IncidentsAsync(ct).ConfigureAwait(false);
+                payload = await IncidentsAsync(requestCts.Token).ConfigureAwait(false);
             }
             else if (path is "/api/packet-stats")
             {
                 if (!CanReadOverview(role))
                 {
-                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, ct)
+                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, requestCts.Token)
                         .ConfigureAwait(false);
                     return;
                 }
 
-                payload = await PacketStatsAsync(ct).ConfigureAwait(false);
+                payload = await PacketStatsAsync(requestCts.Token).ConfigureAwait(false);
             }
             else if (path is "/api/audit")
             {
                 if (!CanReadAudit(role))
                 {
-                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, ct)
+                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, requestCts.Token)
                         .ConfigureAwait(false);
                     return;
                 }
 
-                payload = await AuditAsync(query, ct).ConfigureAwait(false);
+                payload = await AuditAsync(query, requestCts.Token).ConfigureAwait(false);
             }
             else if (path is "/api/economy")
             {
                 if (!CanReadEconomy(role))
                 {
-                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, ct)
+                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, requestCts.Token)
                         .ConfigureAwait(false);
                     return;
                 }
 
-                payload = await EconomyAsync(query, ct).ConfigureAwait(false);
+                payload = await EconomyAsync(query, requestCts.Token).ConfigureAwait(false);
             }
             else if (path is "/api/search")
             {
                 if (!CanReadAudit(role))
                 {
-                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, ct)
+                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, requestCts.Token)
                         .ConfigureAwait(false);
                     return;
                 }
 
-                payload = await SearchAsync(query, ct).ConfigureAwait(false);
+                payload = await SearchAsync(query, requestCts.Token).ConfigureAwait(false);
             }
             else if (path.StartsWith("/api/item/", StringComparison.Ordinal))
             {
                 if (!CanReadAudit(role))
                 {
-                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, ct)
+                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, requestCts.Token)
                         .ConfigureAwait(false);
                     return;
                 }
 
-                payload = await ItemAsync(path["/api/item/".Length..], query, ct)
+                payload = await ItemAsync(path["/api/item/".Length..], query, requestCts.Token)
                     .ConfigureAwait(false);
             }
             else if (path.StartsWith("/api/room/", StringComparison.Ordinal))
             {
                 if (!CanReadAudit(role))
                 {
-                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, ct)
+                    await WriteForbiddenAsync(ctx, path, "UnauthorizedRole", role, requestCts.Token)
                         .ConfigureAwait(false);
                     return;
                 }
@@ -409,12 +431,12 @@ public sealed class AdminApiService(
                 {
                     EmitDashboardAudit(path, AuditResult.Failed, 400, "InvalidRoomId", role);
 
-                    await WriteJsonAsync(ctx, 400, new { error = "invalid_room_id" }, ct)
+                    await WriteJsonAsync(ctx, 400, new { error = "invalid_room_id" }, requestCts.Token)
                         .ConfigureAwait(false);
                     return;
                 }
 
-                payload = await RoomTimelineAsync(roomId, query, ct).ConfigureAwait(false);
+                payload = await RoomTimelineAsync(roomId, query, requestCts.Token).ConfigureAwait(false);
             }
             else
             {
@@ -425,17 +447,40 @@ public sealed class AdminApiService(
             {
                 EmitDashboardAudit(path, AuditResult.Failed, 404, "NotFound", role);
 
-                await WriteJsonAsync(ctx, 404, new { error = "not_found" }, ct)
+                await WriteJsonAsync(ctx, 404, new { error = "not_found" }, requestCts.Token)
                     .ConfigureAwait(false);
                 return;
             }
 
             EmitDashboardAudit(path, AuditResult.Success, 200, "DataResponse", role);
 
-            await WriteJsonAsync(ctx, 200, payload, ct).ConfigureAwait(false);
+            await WriteJsonAsync(ctx, 200, payload, requestCts.Token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+        {
+            EmitDashboardAudit(
+                ctx.Request.Url?.AbsolutePath ?? "/",
+                AuditResult.Failed,
+                408,
+                "RequestTimeout",
+                DashboardRole.None
+            );
+
+            try
+            {
+                await WriteJsonAsync(ctx, 408, new { error = "timeout" }, ct)
+                    .ConfigureAwait(false);
+            }
+            catch
+            {
+                // best effort
+            }
         }
         catch (Exception ex)
         {
+            if (ct.IsCancellationRequested)
+                return;
+
             _logger.LogError(TurboEventIds.DashboardFault, ex, "Turbo dashboard request failed");
             EmitDashboardAudit(
                 ctx.Request.Url?.AbsolutePath ?? "/",
@@ -447,7 +492,7 @@ public sealed class AdminApiService(
 
             try
             {
-                await WriteJsonAsync(ctx, 500, new { error = "internal" }, ct)
+                await WriteJsonAsync(ctx, 500, new { error = "internal" }, requestCts.Token)
                     .ConfigureAwait(false);
             }
             catch
@@ -1099,11 +1144,20 @@ public sealed class AdminApiService(
     )
     {
         var bytes = JsonSerializer.SerializeToUtf8Bytes(payload, Json);
-        ctx.Response.StatusCode = status;
-        ctx.Response.ContentType = JsonContentType;
-        ctx.Response.ContentLength64 = bytes.Length;
-        await ctx.Response.OutputStream.WriteAsync(bytes, ct).ConfigureAwait(false);
-        ctx.Response.Close();
+        var isHeadRequest = IsHeadRequest(ctx.Request.HttpMethod);
+        var response = ctx.Response;
+        response.StatusCode = status;
+        ApplySecurityHeaders(response);
+        response.AddHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        response.AddHeader("Pragma", "no-cache");
+        response.AddHeader("Expires", "0");
+        response.ContentType = JsonContentType;
+        response.ContentLength64 = isHeadRequest ? 0 : bytes.Length;
+
+        if (!isHeadRequest)
+            await response.OutputStream.WriteAsync(bytes, ct).ConfigureAwait(false);
+
+        response.Close();
     }
 
     private static async Task WriteAssetAsync(
@@ -1113,11 +1167,32 @@ public sealed class AdminApiService(
         CancellationToken ct
     )
     {
-        ctx.Response.StatusCode = 200;
-        ctx.Response.ContentType = contentType;
-        ctx.Response.ContentLength64 = bytes.Length;
-        await ctx.Response.OutputStream.WriteAsync(bytes, ct).ConfigureAwait(false);
-        ctx.Response.Close();
+        var isHeadRequest = IsHeadRequest(ctx.Request.HttpMethod);
+        var response = ctx.Response;
+        response.StatusCode = 200;
+        ApplySecurityHeaders(response);
+        response.AddHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        response.AddHeader("Pragma", "no-cache");
+        response.AddHeader("Expires", "0");
+        response.ContentType = contentType;
+        response.ContentLength64 = isHeadRequest ? 0 : bytes.Length;
+
+        if (!isHeadRequest)
+            await response.OutputStream.WriteAsync(bytes, ct).ConfigureAwait(false);
+
+        response.Close();
+    }
+
+    private static void ApplySecurityHeaders(HttpListenerResponse response)
+    {
+        response.Headers["X-Content-Type-Options"] = "nosniff";
+        response.Headers["Referrer-Policy"] = "no-referrer";
+        response.Headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
+        response.Headers["Cross-Origin-Opener-Policy"] = "same-origin";
+        response.Headers["Cross-Origin-Resource-Policy"] = "same-origin";
+        response.Headers["X-Frame-Options"] = "DENY";
+        response.Headers["X-XSS-Protection"] = "0";
+        response.Headers["Content-Security-Policy"] = CspHeader;
     }
 
     private static async Task WriteHtmlAsync(
@@ -1223,4 +1298,11 @@ public sealed class AdminApiService(
 
         return null;
     }
+
+    private static bool IsHeadRequest(string? method) =>
+        string.Equals(method, "HEAD", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsGetOrHead(string? method) =>
+        string.Equals(method, "GET", StringComparison.OrdinalIgnoreCase)
+        || IsHeadRequest(method);
 }
