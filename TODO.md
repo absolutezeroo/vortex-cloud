@@ -52,7 +52,7 @@ observability subscribes via `IEventHandler<T>` in `Turbo.Observability/Events`;
 ## Dashboard (Phase 5 — minimal version shipped)
 - [ ] Richer UI: Player Timeline, Room Inspector, Packet Center, Economy Center views (API exists for
       audit/economy/item/search; add room timeline + packet stats).
-- [ ] Pagination + time-range filters on the API.
+- [x] Pagination + time-range filters on the API.
 - [ ] Remote access story: `HttpListener` binds `localhost`; for remote needs URL ACL / reverse proxy
       / TLS. Or migrate the dashboard to ASP.NET (`WebApplication`) — note this requires reworking the
       `IHostPluginModule(HostApplicationBuilder)` contract, since the host is `Host.CreateApplicationBuilder`.
