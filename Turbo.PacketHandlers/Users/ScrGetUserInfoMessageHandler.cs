@@ -31,7 +31,8 @@ public class ScrGetUserInfoMessageHandler(IGrainFactory grainFactory)
             .GetClubSubscriptionAsync(ct)
             .ConfigureAwait(false);
 
-        await ctx.SendComposerAsync(BuildScrSendUserInfo(message.ProductName, sub), ct).ConfigureAwait(false);
+        await ctx.SendComposerAsync(BuildScrSendUserInfo(message.ProductName, sub), ct)
+            .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
                 new AccountPreferencesEventMessageComposer
@@ -54,7 +55,10 @@ public class ScrGetUserInfoMessageHandler(IGrainFactory grainFactory)
             .ConfigureAwait(false);
     }
 
-    private static ScrSendUserInfoMessageComposer BuildScrSendUserInfo(string productName, ClubSubscriptionSnapshot sub)
+    private static ScrSendUserInfoMessageComposer BuildScrSendUserInfo(
+        string productName,
+        ClubSubscriptionSnapshot sub
+    )
     {
         var daysLeft = sub.DaysLeft;
         var rem = daysLeft % 31;

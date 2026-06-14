@@ -28,12 +28,13 @@ public class CancelMarketplaceOfferMessageHandler(IGrainFactory grainFactory)
             .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-            new MarketplaceCancelOfferResultEventMessageComposer
-            {
-                OfferId = message.OfferId,
-                Success = success,
-            },
-            ct
-        ).ConfigureAwait(false);
+                new MarketplaceCancelOfferResultEventMessageComposer
+                {
+                    OfferId = message.OfferId,
+                    Success = success,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

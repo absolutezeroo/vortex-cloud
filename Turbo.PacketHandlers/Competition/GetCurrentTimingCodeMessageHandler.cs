@@ -14,8 +14,7 @@ public class GetCurrentTimingCodeMessageHandler : IMessageHandler<GetCurrentTimi
         CancellationToken ct
     )
     {
-        await ctx
-            .SendComposerAsync(
+        await ctx.SendComposerAsync(
                 new CurrentTimingCodeMessageComposer
                 {
                     SlotConfig = message.SlotConfig,

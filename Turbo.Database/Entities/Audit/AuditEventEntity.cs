@@ -16,6 +16,7 @@ namespace Turbo.Database.Entities.Audit;
 /// </summary>
 [Table("audit_events")]
 [Index(nameof(CorrelationId))]
+[Index(nameof(IpHash))]
 [Index(nameof(ActorPlayerId), nameof(OccurredAt))]
 [Index(nameof(TargetPlayerId), nameof(OccurredAt))]
 [Index(nameof(RoomId), nameof(OccurredAt))]
@@ -59,6 +60,10 @@ public class AuditEventEntity : TurboEntity
 
     [Column("item_id")]
     public long? ItemId { get; set; }
+
+    [Column("ip_hash")]
+    [MaxLength(64)]
+    public string? IpHash { get; set; }
 
     /// <summary>Optional structured (JSON) payload with action-specific detail.</summary>
     [Column("data", TypeName = "text")]

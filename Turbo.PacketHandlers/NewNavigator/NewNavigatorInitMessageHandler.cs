@@ -29,17 +29,13 @@ public class NewNavigatorInitMessageHandler(
             .GetTopLevelContextAsync()
             .ConfigureAwait(false);
 
-        var savedSearches = await navigatorGrain
-            .GetSavedSearchesAsync(ct)
-            .ConfigureAwait(false);
+        var savedSearches = await navigatorGrain.GetSavedSearchesAsync(ct).ConfigureAwait(false);
 
         var collapsedCategories = await navigatorGrain
             .GetCollapsedCategoriesAsync(ct)
             .ConfigureAwait(false);
 
-        var prefs = await navigatorGrain
-            .GetWindowPreferencesAsync(ct)
-            .ConfigureAwait(false);
+        var prefs = await navigatorGrain.GetWindowPreferencesAsync(ct).ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
                 new NavigatorMetaDataMessage { TopLevelContexts = topLevelContexts },
@@ -51,7 +47,10 @@ public class NewNavigatorInitMessageHandler(
             .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-                new NavigatorCollapsedCategoriesMessage { CollapsedCategoryIds = collapsedCategories },
+                new NavigatorCollapsedCategoriesMessage
+                {
+                    CollapsedCategoryIds = collapsedCategories,
+                },
                 ct
             )
             .ConfigureAwait(false);

@@ -27,8 +27,13 @@ public class UnblockUserMessageHandler(IGrainFactory grainFactory)
         await grain.UnblockUserAsync(PlayerId.Parse(message.PlayerId), ct).ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-            new BlockUserUpdateMessageComposer { PlayerId = message.PlayerId, IsBlocked = false },
-            ct
-        ).ConfigureAwait(false);
+                new BlockUserUpdateMessageComposer
+                {
+                    PlayerId = message.PlayerId,
+                    IsBlocked = false,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

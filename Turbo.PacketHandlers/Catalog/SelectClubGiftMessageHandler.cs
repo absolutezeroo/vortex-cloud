@@ -9,8 +9,10 @@ using Turbo.Primitives.Orleans;
 
 namespace Turbo.PacketHandlers.Catalog;
 
-public class SelectClubGiftMessageHandler(IGrainFactory grainFactory, ICatalogClubGiftProvider clubGiftProvider)
-    : IMessageHandler<SelectClubGiftMessage>
+public class SelectClubGiftMessageHandler(
+    IGrainFactory grainFactory,
+    ICatalogClubGiftProvider clubGiftProvider
+) : IMessageHandler<SelectClubGiftMessage>
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ICatalogClubGiftProvider _clubGiftProvider = clubGiftProvider;
@@ -41,12 +43,13 @@ public class SelectClubGiftMessageHandler(IGrainFactory grainFactory, ICatalogCl
             .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-            new ClubGiftSelectedEventMessageComposer
-            {
-                ProductCode = message.ProductCode,
-                Products = offer.Products,
-            },
-            ct
-        ).ConfigureAwait(false);
+                new ClubGiftSelectedEventMessageComposer
+                {
+                    ProductCode = message.ProductCode,
+                    Products = offer.Products,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

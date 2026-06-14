@@ -11,8 +11,8 @@ using Orleans.Streams;
 using Turbo.Database.Context;
 using Turbo.Logging;
 using Turbo.Primitives;
+using Turbo.Primitives.Events;
 using Turbo.Primitives.Networking;
-using Turbo.Primitives.Observability;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Orleans.Snapshots.Room;
 using Turbo.Primitives.Orleans.Snapshots.Room.Settings;
@@ -39,7 +39,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     internal readonly IRoomAvatarProvider _avatarProvider;
     internal readonly IRoomWiredVariablesProvider _wiredVariablesProvider;
     internal readonly IGrainFactory _grainFactory;
-    internal readonly IItemForensics _itemForensics;
+    internal readonly IEventPublisher _events;
 
     internal IAsyncStream<RoomOutbound> _roomOutbound = default!;
 
@@ -71,7 +71,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         IRoomAvatarProvider avatarProvider,
         IRoomWiredVariablesProvider wiredVariablesProvider,
         IGrainFactory grainFactory,
-        IItemForensics itemForensics
+        IEventPublisher events
     )
     {
         _dbCtxFactory = dbCtxFactory;
@@ -83,7 +83,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         _avatarProvider = avatarProvider;
         _wiredVariablesProvider = wiredVariablesProvider;
         _grainFactory = grainFactory;
-        _itemForensics = itemForensics;
+        _events = events;
 
         _state = new() { RoomId = (RoomId)this.GetPrimaryKeyLong() };
         PathingSystem = new(this);
@@ -93,7 +93,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         ObjectModule = new(this);
         AvatarModule = new(this);
         FurniModule = new(this);
-        ActionModule = new(this, _itemForensics);
+        ActionModule = new(this);
 
         AvatarTickSystem = new(this);
         RollerSystem = new(this);

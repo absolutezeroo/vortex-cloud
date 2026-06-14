@@ -9,10 +9,10 @@ using Orleans;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Messenger;
 using Turbo.Database.Entities.Players;
+using Turbo.Primitives.Events;
 using Turbo.Primitives.FriendList.Enums;
 using Turbo.Primitives.FriendList.Grains;
 using Turbo.Primitives.Messages.Outgoing.FriendList;
-using Turbo.Primitives.Observability;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Rooms.Enums;
@@ -23,7 +23,7 @@ namespace Turbo.Players.Grains;
 internal sealed class MessengerGrain(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
-    IAuditSink auditSink,
+    IEventPublisher events,
     ILogger<MessengerGrain> logger
 ) : Grain, IMessengerGrain
 {
@@ -413,17 +413,9 @@ internal sealed class MessengerGrain(
 
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
 
-            auditSink.Emit(
-                new AuditEvent
-                {
-                    Category = AuditCategory.Social,
-                    Action = "social.friend_request_accepted",
-                    Severity = AuditSeverity.Info,
-                    Result = AuditResult.Success,
-                    ActorPlayerId = (int)SelfId,
-                    TargetPlayerId = requesterId,
-                }
-            );
+            await events
+                .PublishAsync(new FriendRequestAcceptedEvent((int)SelfId, requesterId), ct)
+                .ConfigureAwait(false);
 
             // Update self in-memory
             _incomingRequests.Remove(requesterId);
@@ -521,17 +513,9 @@ internal sealed class MessengerGrain(
 
             removed.Add(friendId);
 
-            auditSink.Emit(
-                new AuditEvent
-                {
-                    Category = AuditCategory.Social,
-                    Action = "social.friend_removed",
-                    Severity = AuditSeverity.Notice,
-                    Result = AuditResult.Success,
-                    ActorPlayerId = (int)SelfId,
-                    TargetPlayerId = friendId,
-                }
-            );
+            await events
+                .PublishAsync(new FriendRemovedEvent((int)SelfId, friendId), ct)
+                .ConfigureAwait(false);
 
             // Notify friend's grain — fire-and-forget
             var friendGrain = grainFactory.GetMessengerGrain(friendKey);
@@ -619,17 +603,9 @@ internal sealed class MessengerGrain(
 
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
 
-        auditSink.Emit(
-            new AuditEvent
-            {
-                Category = AuditCategory.Social,
-                Action = "social.user_blocked",
-                Severity = AuditSeverity.Notice,
-                Result = AuditResult.Success,
-                ActorPlayerId = (int)SelfId,
-                TargetPlayerId = targetId.Value,
-            }
-        );
+        await events
+            .PublishAsync(new UserBlockedEvent((int)SelfId, targetId.Value), ct)
+            .ConfigureAwait(false);
     }
 
     public async Task UnblockUserAsync(PlayerId targetId, CancellationToken ct)
@@ -647,17 +623,9 @@ internal sealed class MessengerGrain(
             )
             .ExecuteDeleteAsync(ct);
 
-        auditSink.Emit(
-            new AuditEvent
-            {
-                Category = AuditCategory.Social,
-                Action = "social.user_unblocked",
-                Severity = AuditSeverity.Info,
-                Result = AuditResult.Success,
-                ActorPlayerId = (int)SelfId,
-                TargetPlayerId = targetId.Value,
-            }
-        );
+        await events
+            .PublishAsync(new UserUnblockedEvent((int)SelfId, targetId.Value), ct)
+            .ConfigureAwait(false);
     }
 
     public async Task IgnoreUserAsync(PlayerId targetId, CancellationToken ct)

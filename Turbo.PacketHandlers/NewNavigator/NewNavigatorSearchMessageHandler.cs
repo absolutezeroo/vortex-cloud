@@ -58,9 +58,7 @@ public class NewNavigatorSearchMessageHandler(
 
         if (searchCode == "categories" && string.IsNullOrEmpty(filterValue))
         {
-            blocks = await _navigatorService
-                .GetCategoryBlocksAsync(ct)
-                .ConfigureAwait(false);
+            blocks = await _navigatorService.GetCategoryBlocksAsync(ct).ConfigureAwait(false);
         }
         else
         {

@@ -6,5 +6,6 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Users;
 
 internal class IgnoreUserMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new IgnoreUserMessage { UserId = packet.PopInt() };
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new IgnoreUserMessage { UserId = packet.PopInt() };
 }

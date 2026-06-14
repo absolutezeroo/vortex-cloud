@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +10,7 @@ using Turbo.Database.Context;
 using Turbo.Database.Entities.Catalog;
 using Turbo.Primitives.Catalog.Grains;
 using Turbo.Primitives.Catalog.Snapshots;
-using Turbo.Primitives.Observability;
+using Turbo.Primitives.Events;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Players.Enums.Wallet;
@@ -22,7 +21,7 @@ namespace Turbo.Catalog.Grains;
 public sealed class LtdRaffleGrain(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
-    IAuditSink auditSink,
+    IEventPublisher events,
     ILogger<LtdRaffleGrain> logger
 ) : Grain, ILtdRaffleGrain
 {
@@ -124,19 +123,9 @@ public sealed class LtdRaffleGrain(
 
         _currentBatch.Add(entry);
 
-        auditSink.Emit(
-            new AuditEvent
-            {
-                Category = AuditCategory.Economy,
-                Action = "economy.ltd.raffle_entry",
-                Severity = AuditSeverity.Info,
-                Result = AuditResult.Success,
-                ActorPlayerId = playerIdInt,
-                Data = JsonSerializer.Serialize(
-                    new { seriesId = SeriesId, cost = _series.CostCredits }
-                ),
-            }
-        );
+        await events
+            .PublishAsync(new LtdRaffleEnteredEvent(playerIdInt, SeriesId, _series.CostCredits), ct)
+            .ConfigureAwait(false);
 
         return new LtdRaffleEntryResult { Success = true, ErrorCode = string.Empty };
     }
@@ -268,24 +257,17 @@ public sealed class LtdRaffleGrain(
                     ct
                 );
 
-            auditSink.Emit(
-                new AuditEvent
-                {
-                    Category = AuditCategory.Economy,
-                    Action = "economy.ltd.won",
-                    Severity = AuditSeverity.Notice,
-                    Result = AuditResult.Success,
-                    ActorPlayerId = winner.PlayerEntityId,
-                    Data = JsonSerializer.Serialize(
-                        new
-                        {
-                            seriesId = SeriesId,
-                            serialNumber,
-                            furniDefinitionId = _furniDefinitionId,
-                        }
+            await events
+                .PublishAsync(
+                    new LtdRaffleWonEvent(
+                        winner.PlayerEntityId,
+                        SeriesId,
+                        serialNumber,
+                        _furniDefinitionId
                     ),
-                }
-            );
+                    ct
+                )
+                .ConfigureAwait(false);
 
             // Refund non-winners
             if (_series.CostCredits > 0)

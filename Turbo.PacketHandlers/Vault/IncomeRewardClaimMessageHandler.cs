@@ -28,12 +28,13 @@ public class IncomeRewardClaimMessageHandler(IGrainFactory grainFactory)
             .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-            new IncomeRewardClaimResponseMessageComposer
-            {
-                RewardCategory = message.Category,
-                Result = success,
-            },
-            ct
-        ).ConfigureAwait(false);
+                new IncomeRewardClaimResponseMessageComposer
+                {
+                    RewardCategory = message.Category,
+                    Result = success,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

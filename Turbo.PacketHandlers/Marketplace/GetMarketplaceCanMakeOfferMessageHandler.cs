@@ -16,8 +16,9 @@ public class GetMarketplaceCanMakeOfferMessageHandler
     )
     {
         await ctx.SendComposerAsync(
-            new MarketplaceCanMakeOfferResultMessageComposer { CanMakeOffer = true },
-            ct
-        ).ConfigureAwait(false);
+                new MarketplaceCanMakeOfferResultMessageComposer { CanMakeOffer = true },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

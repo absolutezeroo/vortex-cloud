@@ -48,18 +48,26 @@ public class PurchaseFromCatalogAsGiftMessageHandler(
         if (!snapshot.OffersById.TryGetValue(message.OfferCode, out var offer))
         {
             await ctx.SendComposerAsync(
-                new PurchaseNotAllowedMessageComposer { ErrorType = CatalogPurchaseErrorType.OfferNotFound },
-                ct
-            ).ConfigureAwait(false);
+                    new PurchaseNotAllowedMessageComposer
+                    {
+                        ErrorType = CatalogPurchaseErrorType.OfferNotFound,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
             return;
         }
 
         if (!offer.CanGift)
         {
             await ctx.SendComposerAsync(
-                new PurchaseNotAllowedMessageComposer { ErrorType = CatalogPurchaseErrorType.PurchaseFailed },
-                ct
-            ).ConfigureAwait(false);
+                    new PurchaseNotAllowedMessageComposer
+                    {
+                        ErrorType = CatalogPurchaseErrorType.PurchaseFailed,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
             return;
         }
 
@@ -76,14 +84,17 @@ public class PurchaseFromCatalogAsGiftMessageHandler(
             {
                 var failure = result.Failure;
                 await ctx.SendComposerAsync(
-                    new NotEnoughBalanceMessageComposer
-                    {
-                        NotEnoughCredits = failure?.CurrencyKind.CurrencyType == CurrencyType.Credits,
-                        NotEnoughActivityPoints = failure?.CurrencyKind.CurrencyType == CurrencyType.ActivityPoints,
-                        ActivityPointType = failure?.CurrencyKind.ActivityPointType ?? 0,
-                    },
-                    ct
-                ).ConfigureAwait(false);
+                        new NotEnoughBalanceMessageComposer
+                        {
+                            NotEnoughCredits =
+                                failure?.CurrencyKind.CurrencyType == CurrencyType.Credits,
+                            NotEnoughActivityPoints =
+                                failure?.CurrencyKind.CurrencyType == CurrencyType.ActivityPoints,
+                            ActivityPointType = failure?.CurrencyKind.ActivityPointType ?? 0,
+                        },
+                        ct
+                    )
+                    .ConfigureAwait(false);
                 return;
             }
         }
@@ -102,29 +113,35 @@ public class PurchaseFromCatalogAsGiftMessageHandler(
         var list = new List<WalletDebitRequest>();
 
         if (offer.CostCredits > 0)
-            list.Add(new WalletDebitRequest
-            {
-                CurrencyKind = new CurrencyKind { CurrencyType = CurrencyType.Credits },
-                Amount = offer.CostCredits,
-            });
+            list.Add(
+                new WalletDebitRequest
+                {
+                    CurrencyKind = new CurrencyKind { CurrencyType = CurrencyType.Credits },
+                    Amount = offer.CostCredits,
+                }
+            );
 
         if (offer.CostSilver > 0)
-            list.Add(new WalletDebitRequest
-            {
-                CurrencyKind = new CurrencyKind { CurrencyType = CurrencyType.Silver },
-                Amount = offer.CostSilver,
-            });
+            list.Add(
+                new WalletDebitRequest
+                {
+                    CurrencyKind = new CurrencyKind { CurrencyType = CurrencyType.Silver },
+                    Amount = offer.CostSilver,
+                }
+            );
 
         if (offer.CostCurrency > 0)
-            list.Add(new WalletDebitRequest
-            {
-                CurrencyKind = new CurrencyKind
+            list.Add(
+                new WalletDebitRequest
                 {
-                    CurrencyType = CurrencyType.ActivityPoints,
-                    ActivityPointType = offer.CurrencyTypeId,
-                },
-                Amount = offer.CostCurrency,
-            });
+                    CurrencyKind = new CurrencyKind
+                    {
+                        CurrencyType = CurrencyType.ActivityPoints,
+                        ActivityPointType = offer.CurrencyTypeId,
+                    },
+                    Amount = offer.CostCurrency,
+                }
+            );
 
         return list;
     }

@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Turbo.Logging;
 using Turbo.Primitives;
 using Turbo.Primitives.Action;
+using Turbo.Primitives.Events;
 using Turbo.Primitives.Inventory.Snapshots;
-using Turbo.Primitives.Observability;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Object;
@@ -65,26 +65,27 @@ public sealed partial class RoomActionModule
 
         await inventory.RemoveFurnitureAsync(item.ObjectId, ct);
 
-        _itemForensics.Record(
-            new ItemForensicEvent
-            {
-                ItemId = item.ObjectId.Value,
-                EventType = ItemEventType.Placed,
-                ActorPlayerId = ctx.PlayerId.Value,
-                ToOwnerId = item.OwnerId.Value,
-                RoomId = _roomGrain.RoomId.Value,
-                Data = JsonSerializer.Serialize(
-                    new
-                    {
-                        x,
-                        y,
-                        z = z.ToString(),
-                        wallOffset,
-                        rotation = rot.ToString(),
-                    }
+        await _roomGrain
+            ._events.PublishAsync(
+                new ItemPlacedEvent(
+                    item.ObjectId.Value,
+                    ctx.PlayerId.Value,
+                    item.OwnerId.Value,
+                    _roomGrain.RoomId.Value,
+                    JsonSerializer.Serialize(
+                        new
+                        {
+                            x,
+                            y,
+                            z = z.ToString(),
+                            wallOffset,
+                            rotation = rot.ToString(),
+                        }
+                    )
                 ),
-            }
-        );
+                ct
+            )
+            .ConfigureAwait(false);
 
         return true;
     }
@@ -130,25 +131,26 @@ public sealed partial class RoomActionModule
         )
             return false;
 
-        _itemForensics.Record(
-            new ItemForensicEvent
-            {
-                ItemId = itemId.Value,
-                EventType = ItemEventType.Moved,
-                ActorPlayerId = ctx.PlayerId.Value,
-                RoomId = _roomGrain.RoomId.Value,
-                Data = JsonSerializer.Serialize(
-                    new
-                    {
-                        x,
-                        y,
-                        z = z.ToString(),
-                        wallOffset,
-                        rotation = rot.ToString(),
-                    }
+        await _roomGrain
+            ._events.PublishAsync(
+                new ItemMovedEvent(
+                    itemId.Value,
+                    ctx.PlayerId.Value,
+                    _roomGrain.RoomId.Value,
+                    JsonSerializer.Serialize(
+                        new
+                        {
+                            x,
+                            y,
+                            z = z.ToString(),
+                            wallOffset,
+                            rotation = rot.ToString(),
+                        }
+                    )
                 ),
-            }
-        );
+                ct
+            )
+            .ConfigureAwait(false);
 
         return true;
     }

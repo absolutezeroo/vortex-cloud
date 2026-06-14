@@ -26,17 +26,16 @@ public class GetMessengerHistoryMessageHandler(IGrainFactory grainFactory)
         var grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
         var friendId = PlayerId.Parse(message.ChatId);
 
-        var history = await grain
-            .GetMessageHistoryAsync(friendId, ct)
-            .ConfigureAwait(false);
+        var history = await grain.GetMessageHistoryAsync(friendId, ct).ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-            new ConsoleMessageHistoryMessageComposer
-            {
-                ChatId = message.ChatId,
-                Messages = history,
-            },
-            ct
-        ).ConfigureAwait(false);
+                new ConsoleMessageHistoryMessageComposer
+                {
+                    ChatId = message.ChatId,
+                    Messages = history,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

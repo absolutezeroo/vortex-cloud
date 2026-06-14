@@ -136,7 +136,6 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
 
                 //throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
             }
-                
 
             var path = _roomGrain.PathingSystem.FindPath(
                 avatar,

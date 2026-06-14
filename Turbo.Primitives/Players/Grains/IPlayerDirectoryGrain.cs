@@ -16,5 +16,9 @@ public interface IPlayerDirectoryGrain : IGrainWithStringKey
     );
     public Task<PlayerId?> GetPlayerIdAsync(string userName, CancellationToken ct);
     public Task SetPlayerNameAsync(PlayerId playerId, string name, CancellationToken ct);
-    public Task<List<MessengerSearchResultSnapshot>> SearchPlayersAsync(string query, int limit, CancellationToken ct);
+    public Task<List<MessengerSearchResultSnapshot>> SearchPlayersAsync(
+        string query,
+        int limit,
+        CancellationToken ct
+    );
 }

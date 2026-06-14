@@ -26,7 +26,11 @@ public class SendRoomInviteMessageHandler(IGrainFactory grainFactory)
         foreach (var friendId in message.FriendIds)
         {
             var friendGrain = _grainFactory.GetMessengerGrain(PlayerId.Parse(friendId));
-            _ = friendGrain.ReceiveRoomInviteAsync(ctx.PlayerId, message.Message, CancellationToken.None);
+            _ = friendGrain.ReceiveRoomInviteAsync(
+                ctx.PlayerId,
+                message.Message,
+                CancellationToken.None
+            );
         }
 
         await ValueTask.CompletedTask.ConfigureAwait(false);

@@ -16,8 +16,7 @@ public readonly record struct Altitude
 
     public int ToInt() => (int)(Value * 100);
 
-    public override string ToString()
-        => Value.ToString("0.##", CultureInfo.InvariantCulture);
+    public override string ToString() => Value.ToString("0.##", CultureInfo.InvariantCulture);
 
     public static implicit operator double(Altitude id) => id.Value;
 

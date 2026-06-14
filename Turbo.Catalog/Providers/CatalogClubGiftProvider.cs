@@ -34,8 +34,8 @@ public sealed class CatalogClubGiftProvider(
     {
         await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var entities = await dbCtx.CatalogClubGifts
-            .AsNoTracking()
+        var entities = await dbCtx
+            .CatalogClubGifts.AsNoTracking()
             .OrderBy(x => x.SortOrder)
             .ThenBy(x => x.Id)
             .ToListAsync(ct)
@@ -46,13 +46,17 @@ public sealed class CatalogClubGiftProvider(
         _logger.LogInformation("Loaded {Count} HC club gift offers from database", _offers.Count);
     }
 
-    private CatalogOfferSnapshot BuildSnapshot(Database.Entities.Catalog.CatalogClubGiftEntity e, int index)
+    private CatalogOfferSnapshot BuildSnapshot(
+        Database.Entities.Catalog.CatalogClubGiftEntity e,
+        int index
+    )
     {
         var productType = e.ProductType.FromLegacyString();
 
-        var spriteId = productType is not ProductType.Badge && e.FurniDefinitionId.HasValue
-            ? _furnitureProvider.TryGetDefinition(e.FurniDefinitionId.Value)?.SpriteId ?? -1
-            : -1;
+        var spriteId =
+            productType is not ProductType.Badge && e.FurniDefinitionId.HasValue
+                ? _furnitureProvider.TryGetDefinition(e.FurniDefinitionId.Value)?.SpriteId ?? -1
+                : -1;
 
         var product = new CatalogProductSnapshot
         {

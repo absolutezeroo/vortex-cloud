@@ -31,6 +31,15 @@ public partial interface IInventoryGrain
         CancellationToken ct
     );
 
-    public Task GrantFurnitureDefinitionAsync(int definitionId, string? extraData, CancellationToken ct);
-    public Task GrantLtdFurnitureAsync(int furniDefinitionId, int serialNumber, int seriesSize, CancellationToken ct);
+    public Task GrantFurnitureDefinitionAsync(
+        int definitionId,
+        string? extraData,
+        CancellationToken ct
+    );
+    public Task GrantLtdFurnitureAsync(
+        int furniDefinitionId,
+        int serialNumber,
+        int seriesSize,
+        CancellationToken ct
+    );
 }

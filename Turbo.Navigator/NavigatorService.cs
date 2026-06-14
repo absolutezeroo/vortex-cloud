@@ -51,42 +51,44 @@ public sealed class NavigatorService(
                 .GetRoomsByCategoryAsync(cat.Id, ct)
                 .ConfigureAwait(false);
 
-            blocks.Add(new NavigatorSearchResultBlockSnapshot
-            {
-                SearchCode = "categories",
-                Text = cat.Name,
-                ActionAllowed = NavigatorActionAllowedType.Collapsed,
-                Localization = string.Empty,
-                ForceClosed = false,
-                ViewMode = NavigatorViewModeType.Rows,
-                Results =
-                [
-                    .. rooms.Select(x =>
-                    {
-                        var active = activeById.TryGetValue(x.RoomId, out var ar) ? ar : null;
-                        return new NavigatorSearchResultSnapshot
+            blocks.Add(
+                new NavigatorSearchResultBlockSnapshot
+                {
+                    SearchCode = "categories",
+                    Text = cat.Name,
+                    ActionAllowed = NavigatorActionAllowedType.Collapsed,
+                    Localization = string.Empty,
+                    ForceClosed = false,
+                    ViewMode = NavigatorViewModeType.Rows,
+                    Results =
+                    [
+                        .. rooms.Select(x =>
                         {
-                            RoomId = x.RoomId,
-                            Name = active?.Name ?? x.Name,
-                            OwnerId = active?.OwnerId ?? x.OwnerId,
-                            OwnerName = active?.OwnerName ?? x.OwnerName,
-                            DoorMode = x.DoorMode,
-                            Population = active?.Population ?? 0,
-                            PlayersMax = x.PlayersMax,
-                            Description = active?.Description ?? x.Description,
-                            TradeType = x.TradeType,
-                            Score = x.Score,
-                            Ranking = x.Ranking,
-                            CategoryId = x.CategoryId,
-                            Tags = x.Tags,
-                            AllowBlocking = x.AllowBlocking,
-                            AllowPets = x.AllowPets,
-                            AllowPetsEat = x.AllowPetsEat,
-                            LastUpdatedUtc = x.LastUpdatedUtc,
-                        };
-                    }),
-                ],
-            });
+                            var active = activeById.TryGetValue(x.RoomId, out var ar) ? ar : null;
+                            return new NavigatorSearchResultSnapshot
+                            {
+                                RoomId = x.RoomId,
+                                Name = active?.Name ?? x.Name,
+                                OwnerId = active?.OwnerId ?? x.OwnerId,
+                                OwnerName = active?.OwnerName ?? x.OwnerName,
+                                DoorMode = x.DoorMode,
+                                Population = active?.Population ?? 0,
+                                PlayersMax = x.PlayersMax,
+                                Description = active?.Description ?? x.Description,
+                                TradeType = x.TradeType,
+                                Score = x.Score,
+                                Ranking = x.Ranking,
+                                CategoryId = x.CategoryId,
+                                Tags = x.Tags,
+                                AllowBlocking = x.AllowBlocking,
+                                AllowPets = x.AllowPets,
+                                AllowPetsEat = x.AllowPetsEat,
+                                LastUpdatedUtc = x.LastUpdatedUtc,
+                            };
+                        }),
+                    ],
+                }
+            );
         }
 
         return [.. blocks];
@@ -153,14 +155,18 @@ public sealed class NavigatorService(
         {
             return filterType switch
             {
-                NavigatorSearchFilterType.RoomName =>
-                    await _navigatorProvider.GetRoomsByNameAsync(filterValue, ct).ConfigureAwait(false),
-                NavigatorSearchFilterType.Owner =>
-                    await _navigatorProvider.GetRoomsByOwnerNameAsync(filterValue, ct).ConfigureAwait(false),
-                NavigatorSearchFilterType.Tag =>
-                    await _navigatorProvider.GetRoomsByTagAsync(filterValue, ct).ConfigureAwait(false),
-                _ =>
-                    await _navigatorProvider.GetRoomsByNameAsync(filterValue, ct).ConfigureAwait(false),
+                NavigatorSearchFilterType.RoomName => await _navigatorProvider
+                    .GetRoomsByNameAsync(filterValue, ct)
+                    .ConfigureAwait(false),
+                NavigatorSearchFilterType.Owner => await _navigatorProvider
+                    .GetRoomsByOwnerNameAsync(filterValue, ct)
+                    .ConfigureAwait(false),
+                NavigatorSearchFilterType.Tag => await _navigatorProvider
+                    .GetRoomsByTagAsync(filterValue, ct)
+                    .ConfigureAwait(false),
+                _ => await _navigatorProvider
+                    .GetRoomsByNameAsync(filterValue, ct)
+                    .ConfigureAwait(false),
             };
         }
 
@@ -168,14 +174,16 @@ public sealed class NavigatorService(
 
         return queryType switch
         {
-            NavigatorQueryType.MyRooms =>
-                await _navigatorProvider.GetRoomsByOwnerAsync(playerId, ct).ConfigureAwait(false),
-            NavigatorQueryType.MyFavorites =>
-                await _navigatorProvider.GetFavoriteRoomsAsync(playerId, ct).ConfigureAwait(false),
-            NavigatorQueryType.ByFlatCategory =>
-                await _navigatorProvider.GetRoomsByCategoryAsync(0, ct).ConfigureAwait(false),
-            _ =>
-                await _navigatorProvider.GetAllRoomsAsync(ct).ConfigureAwait(false),
+            NavigatorQueryType.MyRooms => await _navigatorProvider
+                .GetRoomsByOwnerAsync(playerId, ct)
+                .ConfigureAwait(false),
+            NavigatorQueryType.MyFavorites => await _navigatorProvider
+                .GetFavoriteRoomsAsync(playerId, ct)
+                .ConfigureAwait(false),
+            NavigatorQueryType.ByFlatCategory => await _navigatorProvider
+                .GetRoomsByCategoryAsync(0, ct)
+                .ConfigureAwait(false),
+            _ => await _navigatorProvider.GetAllRoomsAsync(ct).ConfigureAwait(false),
         };
     }
 }

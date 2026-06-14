@@ -36,14 +36,15 @@ public class BuyMarketplaceOfferMessageHandler(IGrainFactory grainFactory)
         };
 
         await ctx.SendComposerAsync(
-            new MarketplaceBuyOfferResultEventMessageComposer
-            {
-                Result = as3Result,
-                OfferId = message.OfferId,
-                NewPrice = 0,
-                OldOfferId = message.OfferId,
-            },
-            ct
-        ).ConfigureAwait(false);
+                new MarketplaceBuyOfferResultEventMessageComposer
+                {
+                    Result = as3Result,
+                    OfferId = message.OfferId,
+                    NewPrice = 0,
+                    OldOfferId = message.OfferId,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

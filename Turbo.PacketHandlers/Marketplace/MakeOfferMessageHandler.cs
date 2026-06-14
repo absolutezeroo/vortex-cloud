@@ -8,8 +8,7 @@ using Turbo.Primitives.Orleans;
 
 namespace Turbo.PacketHandlers.Marketplace;
 
-public class MakeOfferMessageHandler(IGrainFactory grainFactory)
-    : IMessageHandler<MakeOfferMessage>
+public class MakeOfferMessageHandler(IGrainFactory grainFactory) : IMessageHandler<MakeOfferMessage>
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
 
@@ -31,8 +30,9 @@ public class MakeOfferMessageHandler(IGrainFactory grainFactory)
         var as3Result = result == 0 ? 1 : 5;
 
         await ctx.SendComposerAsync(
-            new MarketplaceMakeOfferResultMessageComposer { Result = as3Result },
-            ct
-        ).ConfigureAwait(false);
+                new MarketplaceMakeOfferResultMessageComposer { Result = as3Result },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

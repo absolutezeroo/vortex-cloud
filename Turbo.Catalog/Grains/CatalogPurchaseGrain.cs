@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -11,8 +10,8 @@ using Turbo.Primitives.Catalog;
 using Turbo.Primitives.Catalog.Enums;
 using Turbo.Primitives.Catalog.Grains;
 using Turbo.Primitives.Catalog.Snapshots;
+using Turbo.Primitives.Events;
 using Turbo.Primitives.Grains.Players;
-using Turbo.Primitives.Observability;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Players.Enums.Wallet;
@@ -23,13 +22,13 @@ namespace Turbo.Catalog.Grains;
 public sealed partial class CatalogPurchaseGrain(
     IGrainFactory grainFactory,
     ICatalogService catalogService,
-    IAuditSink auditSink,
+    IEventPublisher events,
     ILogger<CatalogPurchaseGrain> logger
 ) : Grain, ICatalogPurchaseGrain
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ICatalogService _catalogService = catalogService;
-    private readonly IAuditSink _auditSink = auditSink;
+    private readonly IEventPublisher _events = events;
     private readonly ILogger<CatalogPurchaseGrain> _logger = logger;
 
     public async Task<CatalogOfferSnapshot> PurchaseOfferFromCatalogAsync(
@@ -91,25 +90,18 @@ public sealed partial class CatalogPurchaseGrain(
                 .ConfigureAwait(false);
         }
 
-        _auditSink.Emit(
-            new AuditEvent
-            {
-                Category = AuditCategory.Economy,
-                Action = "economy.catalog_purchase",
-                Severity = AuditSeverity.Info,
-                Result = AuditResult.Success,
-                ActorPlayerId = this.GetPrimaryKeyLong(),
-                Data = JsonSerializer.Serialize(
-                    new
-                    {
-                        catalogType = catalogType.ToString(),
-                        offerId,
-                        quantity,
-                        creditCost,
-                    }
+        await _events
+            .PublishAsync(
+                new CatalogPurchasedEvent(
+                    (int)this.GetPrimaryKeyLong(),
+                    catalogType.ToString(),
+                    offerId,
+                    quantity,
+                    creditCost
                 ),
-            }
-        );
+                ct
+            )
+            .ConfigureAwait(false);
 
         return offer;
     }

@@ -31,26 +31,29 @@ public class ScrGetKickbackInfoMessageHandler(IGrainFactory grainFactory)
         var now = DateTime.UtcNow;
         var streakBonus = Math.Min(sub.TotalMonths, 31);
         var monthlyReward = (int)(sub.CreditsSpentThisPeriod * 0.1);
-        var minutesUntilPayday = sub.IsActive && sub.PaydayAt.HasValue && sub.PaydayAt.Value > now
-            ? (int)(sub.PaydayAt.Value - now).TotalMinutes
-            : 0;
+        var minutesUntilPayday =
+            sub.IsActive && sub.PaydayAt.HasValue && sub.PaydayAt.Value > now
+                ? (int)(sub.PaydayAt.Value - now).TotalMinutes
+                : 0;
 
         await ctx.SendComposerAsync(
-            new ScrSendKickbackInfoMessageComposer
-            {
-                CurrentHcStreak = sub.TotalMonths,
-                FirstSubscriptionDate = sub.IsActive && sub.TotalMonths > 0
-                    ? sub.ExpiresAt.AddMonths(-sub.TotalMonths).ToString("yyyy-MM-dd")
-                    : string.Empty,
-                KickbackPercentage = sub.IsActive ? 0.1 : 0.0,
-                TotalCreditsMissed = 0,
-                TotalCreditsRewarded = sub.TotalCreditsRewarded,
-                TotalCreditsSpent = sub.TotalCreditsSpent,
-                CreditRewardForStreakBonus = sub.IsActive ? streakBonus : 0,
-                CreditRewardForMonthlySpent = sub.IsActive ? monthlyReward : 0,
-                TimeUntilPayday = minutesUntilPayday,
-            },
-            ct
-        ).ConfigureAwait(false);
+                new ScrSendKickbackInfoMessageComposer
+                {
+                    CurrentHcStreak = sub.TotalMonths,
+                    FirstSubscriptionDate =
+                        sub.IsActive && sub.TotalMonths > 0
+                            ? sub.ExpiresAt.AddMonths(-sub.TotalMonths).ToString("yyyy-MM-dd")
+                            : string.Empty,
+                    KickbackPercentage = sub.IsActive ? 0.1 : 0.0,
+                    TotalCreditsMissed = 0,
+                    TotalCreditsRewarded = sub.TotalCreditsRewarded,
+                    TotalCreditsSpent = sub.TotalCreditsSpent,
+                    CreditRewardForStreakBonus = sub.IsActive ? streakBonus : 0,
+                    CreditRewardForMonthlySpent = sub.IsActive ? monthlyReward : 0,
+                    TimeUntilPayday = minutesUntilPayday,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

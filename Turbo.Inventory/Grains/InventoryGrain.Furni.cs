@@ -13,11 +13,11 @@ using Turbo.Inventory.Furniture;
 using Turbo.Logging;
 using Turbo.Primitives;
 using Turbo.Primitives.Catalog.Snapshots;
+using Turbo.Primitives.Events;
 using Turbo.Primitives.Furniture.Enums;
 using Turbo.Primitives.Furniture.StuffData;
 using Turbo.Primitives.Inventory.Furniture;
 using Turbo.Primitives.Inventory.Snapshots;
-using Turbo.Primitives.Observability;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Rooms.Object;
 using Turbo.Primitives.Rooms.Snapshots.Furniture;
@@ -169,18 +169,22 @@ public sealed partial class InventoryGrain
                     ct
                 );
 
-                _itemForensics.Record(
-                    new ItemForensicEvent
-                    {
-                        ItemId = entity.Id,
-                        EventType = ItemEventType.CatalogPurchase,
-                        ActorPlayerId = this.GetPrimaryKeyLong(),
-                        ToOwnerId = entity.PlayerEntityId,
-                        Data = JsonSerializer.Serialize(
-                            new { definitionId = entity.FurnitureDefinitionEntityId }
+                await _events
+                    .PublishAsync(
+                        new ItemCreatedEvent(
+                            entity.Id,
+                            entity.PlayerEntityId,
+                            JsonSerializer.Serialize(
+                                new
+                                {
+                                    source = "catalog",
+                                    definitionId = entity.FurnitureDefinitionEntityId,
+                                }
+                            )
                         ),
-                    }
-                );
+                        ct
+                    )
+                    .ConfigureAwait(false);
             }
 
             var presence = _grainFactory.GetPlayerPresenceGrain(this.GetPrimaryKeyLong());
@@ -279,23 +283,23 @@ public sealed partial class InventoryGrain
                 )
                 .ConfigureAwait(false);
 
-            _itemForensics.Record(
-                new ItemForensicEvent
-                {
-                    ItemId = entity.Id,
-                    EventType = ItemEventType.Created,
-                    ActorPlayerId = entity.PlayerEntityId,
-                    ToOwnerId = entity.PlayerEntityId,
-                    Data = JsonSerializer.Serialize(
-                        new
-                        {
-                            source = "ltd",
-                            serial = serialNumber,
-                            seriesSize,
-                        }
+            await _events
+                .PublishAsync(
+                    new ItemCreatedEvent(
+                        entity.Id,
+                        entity.PlayerEntityId,
+                        JsonSerializer.Serialize(
+                            new
+                            {
+                                source = "ltd",
+                                serial = serialNumber,
+                                seriesSize,
+                            }
+                        )
                     ),
-                }
-            );
+                    ct
+                )
+                .ConfigureAwait(false);
         }
         finally
         {

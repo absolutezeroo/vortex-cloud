@@ -37,17 +37,20 @@ public class HabboSearchMessageHandler(IGrainFactory grainFactory)
         // Friends who match go in the "friends" list, exclude them from "others"
         var friendIds = new HashSet<int>(friendResults.Select(f => f.PlayerId.Value));
         var otherResults = globalResults
-            .Where(r => !friendIds.Contains(r.PlayerId.Value) && r.PlayerId.Value != ctx.PlayerId.Value)
+            .Where(r =>
+                !friendIds.Contains(r.PlayerId.Value) && r.PlayerId.Value != ctx.PlayerId.Value
+            )
             .Take(SearchLimit)
             .ToList();
 
         await ctx.SendComposerAsync(
-            new HabboSearchResultMessageComposer
-            {
-                Friends = friendResults,
-                Others = otherResults,
-            },
-            ct
-        ).ConfigureAwait(false);
+                new HabboSearchResultMessageComposer
+                {
+                    Friends = friendResults,
+                    Others = otherResults,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

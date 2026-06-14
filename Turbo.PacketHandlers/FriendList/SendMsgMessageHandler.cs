@@ -25,25 +25,28 @@ public class SendMsgMessageHandler(IGrainFactory grainFactory) : IMessageHandler
         var grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
         var receiverId = PlayerId.Parse(message.ChatId);
 
-        var error = await grain.SendMessageAsync(
-            receiverId,
-            message.Message,
-            message.ChatId,
-            message.ConfirmationId,
-            ct
-        ).ConfigureAwait(false);
+        var error = await grain
+            .SendMessageAsync(
+                receiverId,
+                message.Message,
+                message.ChatId,
+                message.ConfirmationId,
+                ct
+            )
+            .ConfigureAwait(false);
 
         if (error.HasValue)
         {
             await ctx.SendComposerAsync(
-                new InstantMessageErrorMessageComposer
-                {
-                    ErrorCode = error.Value,
-                    PlayerId = message.ChatId,
-                    Message = message.Message,
-                },
-                ct
-            ).ConfigureAwait(false);
+                    new InstantMessageErrorMessageComposer
+                    {
+                        ErrorCode = error.Value,
+                        PlayerId = message.ChatId,
+                        Message = message.Message,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
         }
     }
 }

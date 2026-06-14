@@ -40,8 +40,10 @@ public class PurchaseFromCatalogMessageHandler(
 
         var snapshot = _catalogService.GetCatalogSnapshot(CatalogType.Normal);
 
-        if (snapshot.PagesById.TryGetValue(message.PageId, out var page)
-            && page.Layout == CatalogPageLayout.ClubBuy)
+        if (
+            snapshot.PagesById.TryGetValue(message.PageId, out var page)
+            && page.Layout == CatalogPageLayout.ClubBuy
+        )
         {
             await HandleClubPurchaseAsync(message, ctx, ct);
             return;
@@ -61,9 +63,13 @@ public class PurchaseFromCatalogMessageHandler(
         if (clubOffer is null)
         {
             await ctx.SendComposerAsync(
-                new PurchaseNotAllowedMessageComposer { ErrorType = CatalogPurchaseErrorType.OfferNotFound },
-                ct
-            ).ConfigureAwait(false);
+                    new PurchaseNotAllowedMessageComposer
+                    {
+                        ErrorType = CatalogPurchaseErrorType.OfferNotFound,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
             return;
         }
 
@@ -71,20 +77,24 @@ public class PurchaseFromCatalogMessageHandler(
         {
             var wallet = _grainFactory.GetPlayerWalletGrain(ctx.PlayerId);
             var credits = await wallet
-                .GetAmountForCurrencyAsync(new CurrencyKind { CurrencyType = CurrencyType.Credits }, ct)
+                .GetAmountForCurrencyAsync(
+                    new CurrencyKind { CurrencyType = CurrencyType.Credits },
+                    ct
+                )
                 .ConfigureAwait(false);
 
             if (credits < clubOffer.PriceCredits)
             {
                 await ctx.SendComposerAsync(
-                    new NotEnoughBalanceMessageComposer
-                    {
-                        NotEnoughCredits = true,
-                        NotEnoughActivityPoints = false,
-                        ActivityPointType = 0,
-                    },
-                    ct
-                ).ConfigureAwait(false);
+                        new NotEnoughBalanceMessageComposer
+                        {
+                            NotEnoughCredits = true,
+                            NotEnoughActivityPoints = false,
+                            ActivityPointType = 0,
+                        },
+                        ct
+                    )
+                    .ConfigureAwait(false);
                 return;
             }
         }
@@ -107,56 +117,62 @@ public class PurchaseFromCatalogMessageHandler(
         foreach (var offer in _clubOfferProvider.GetAll())
         {
             var expiry = baseDate.AddMonths(offer.Months).AddDays(offer.ExtraDays);
-            refreshedOffers.Add(offer with
-            {
-                DaysLeftAfterPurchase = (int)(expiry - now).TotalDays,
-                Year = expiry.Year,
-                Month = expiry.Month,
-                Day = expiry.Day,
-            });
+            refreshedOffers.Add(
+                offer with
+                {
+                    DaysLeftAfterPurchase = (int)(expiry - now).TotalDays,
+                    Year = expiry.Year,
+                    Month = expiry.Month,
+                    Day = expiry.Day,
+                }
+            );
         }
 
         await ctx.SendComposerAsync(
-            new UserRightsMessage
-            {
-                ClubLevel = clubLevel,
-                SecurityLevel = SecurityLevelType.None,
-                IsAmbassador = false,
-            },
-            ct
-        ).ConfigureAwait(false);
+                new UserRightsMessage
+                {
+                    ClubLevel = clubLevel,
+                    SecurityLevel = SecurityLevelType.None,
+                    IsAmbassador = false,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
 
         if (sub.IsActive)
         {
             var daysLeft = sub.DaysLeft;
             var rem = daysLeft % 31;
             await ctx.SendComposerAsync(
-                new ScrSendUserInfoMessageComposer
-                {
-                    ProductName = "habbo_club",
-                    DaysToPeriodEnd = rem == 0 ? 31 : rem,
-                    MemberPeriods = sub.TotalMonths,
-                    PeriodsSubscribedAhead = daysLeft / 31 - (rem == 0 ? 1 : 0),
-                    ResponseType = 2,
-                    HasEverBeenMember = sub.TotalMonths > 0 || sub.IsActive,
-                    IsVIP = sub.IsVip,
-                    PastClubDays = sub.TotalMonths * 31,
-                    PastVipDays = sub.IsVip ? sub.TotalMonths * 31 : 0,
-                    MinutesUntilExpiration = (int)(sub.ExpiresAt - DateTime.UtcNow).TotalMinutes,
-                    MinutesSinceLastModified = 0,
-                },
-                ct
-            ).ConfigureAwait(false);
+                    new ScrSendUserInfoMessageComposer
+                    {
+                        ProductName = "habbo_club",
+                        DaysToPeriodEnd = rem == 0 ? 31 : rem,
+                        MemberPeriods = sub.TotalMonths,
+                        PeriodsSubscribedAhead = daysLeft / 31 - (rem == 0 ? 1 : 0),
+                        ResponseType = 2,
+                        HasEverBeenMember = sub.TotalMonths > 0 || sub.IsActive,
+                        IsVIP = sub.IsVip,
+                        PastClubDays = sub.TotalMonths * 31,
+                        PastVipDays = sub.IsVip ? sub.TotalMonths * 31 : 0,
+                        MinutesUntilExpiration = (int)
+                            (sub.ExpiresAt - DateTime.UtcNow).TotalMinutes,
+                        MinutesSinceLastModified = 0,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
         }
 
         await ctx.SendComposerAsync(
-            new HabboClubOffersMessageComposer
-            {
-                Offers = refreshedOffers,
-                Source = ClubOfferRequestSourceType.Unknown,
-            },
-            ct
-        ).ConfigureAwait(false);
+                new HabboClubOffersMessageComposer
+                {
+                    Offers = refreshedOffers,
+                    Source = ClubOfferRequestSourceType.Unknown,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 
     private async ValueTask HandleCatalogPurchaseAsync(

@@ -68,6 +68,11 @@ namespace Turbo.Database.Migrations
                         .HasColumnType("datetime(6)")
                         .HasColumnName("deleted_at");
 
+                    b.Property<string>("IpHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)")
+                        .HasColumnName("ip_hash");
+
                     b.Property<long?>("ItemId")
                         .HasColumnType("bigint")
                         .HasColumnName("item_id");
@@ -106,6 +111,8 @@ namespace Turbo.Database.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CorrelationId");
+
+                    b.HasIndex("IpHash");
 
                     b.HasIndex("ActorPlayerId", "OccurredAt");
 

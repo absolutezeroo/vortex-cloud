@@ -56,10 +56,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
         var playerId = (int)this.GetPrimaryKeyLong();
 
         var existing = await dbCtx
-            .PlayerNavigatorPreferences.FirstOrDefaultAsync(
-                e => e.PlayerEntityId == playerId,
-                ct
-            )
+            .PlayerNavigatorPreferences.FirstOrDefaultAsync(e => e.PlayerEntityId == playerId, ct)
             .ConfigureAwait(false);
 
         if (existing is null)
@@ -228,18 +225,17 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
             .FirstOrDefaultAsync(e => e.PlayerEntityId == playerId, ct)
             .ConfigureAwait(false);
 
-        _preferences =
-            prefsEntity is null
-                ? new NavigatorWindowPreferencesSnapshot()
-                : new NavigatorWindowPreferencesSnapshot
-                {
-                    WindowX = prefsEntity.WindowX,
-                    WindowY = prefsEntity.WindowY,
-                    WindowWidth = prefsEntity.WindowWidth,
-                    WindowHeight = prefsEntity.WindowHeight,
-                    LeftPaneHidden = prefsEntity.LeftPaneHidden,
-                    ResultsMode = prefsEntity.ResultsMode,
-                };
+        _preferences = prefsEntity is null
+            ? new NavigatorWindowPreferencesSnapshot()
+            : new NavigatorWindowPreferencesSnapshot
+            {
+                WindowX = prefsEntity.WindowX,
+                WindowY = prefsEntity.WindowY,
+                WindowWidth = prefsEntity.WindowWidth,
+                WindowHeight = prefsEntity.WindowHeight,
+                LeftPaneHidden = prefsEntity.LeftPaneHidden,
+                ResultsMode = prefsEntity.ResultsMode,
+            };
 
         var savedSearchEntities = await dbCtx
             .PlayerNavigatorSavedSearches.AsNoTracking()

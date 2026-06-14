@@ -28,14 +28,15 @@ public class GetMarketplaceItemStatsMessageHandler(IGrainFactory grainFactory)
             .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-            new MarketplaceItemStatsEventMessageComposer
-            {
-                AvgPrice = stats.AvgPrice,
-                OfferCount = stats.OfferCount,
-                CategoryId = message.CategoryId,
-                TypeId = message.TypeId,
-            },
-            ct
-        ).ConfigureAwait(false);
+                new MarketplaceItemStatsEventMessageComposer
+                {
+                    AvgPrice = stats.AvgPrice,
+                    OfferCount = stats.OfferCount,
+                    CategoryId = message.CategoryId,
+                    TypeId = message.TypeId,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

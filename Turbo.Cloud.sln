@@ -3,6 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
+GlobalSection(ExtensibilityGlobals) = postSolution
+	NuGetEnablePackageRestore = true
+EndGlobalSection
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Turbo.Contracts", "Turbo.Contracts\Turbo.Contracts.csproj", "{EF13738C-CE94-4330-B92F-F8B93C26B39B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Turbo.Database", "Turbo.Database\Turbo.Database.csproj", "{1EE0E4A1-557D-4779-A65E-73BBAD110CC2}"

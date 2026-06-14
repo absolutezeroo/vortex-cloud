@@ -27,8 +27,8 @@ public class GetBadgesMessageHandler(IDbContextFactory<TurboDbContext> dbCtxFact
 
         await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var entities = await dbCtx.PlayerBadges
-            .AsNoTracking()
+        var entities = await dbCtx
+            .PlayerBadges.AsNoTracking()
             .Where(b => b.PlayerEntityId == ctx.PlayerId)
             .ToListAsync(ct)
             .ConfigureAwait(false);
@@ -41,10 +41,7 @@ public class GetBadgesMessageHandler(IDbContextFactory<TurboDbContext> dbCtxFact
             })
             .ToImmutableArray();
 
-        await ctx.SendComposerAsync(
-                new BadgesEventMessageComposer { Badges = badges },
-                ct
-            )
+        await ctx.SendComposerAsync(new BadgesEventMessageComposer { Badges = badges }, ct)
             .ConfigureAwait(false);
     }
 }

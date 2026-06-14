@@ -45,16 +45,19 @@ public class GetRoomEntryDataMessageHandler(IGrainFactory grainFactory)
         var danceComposers = avatarSnapshots
             .OfType<RoomPlayerAvatarSnapshot>()
             .Where(x => x.DanceType != AvatarDanceType.None)
-            .Select(x => (IComposer)new DanceMessageComposer
-            {
-                ObjectId = x.ObjectId,
-                DanceType = x.DanceType,
-            })
+            .Select(x =>
+                (IComposer)
+                    new DanceMessageComposer { ObjectId = x.ObjectId, DanceType = x.DanceType }
+            )
             .ToArray();
 
         await playerPresence
             .SendComposerAsync(
-                new ObjectsMessageComposer { OwnerNames = ownersSnapshot, FloorItems = floorSnapshot },
+                new ObjectsMessageComposer
+                {
+                    OwnerNames = ownersSnapshot,
+                    FloorItems = floorSnapshot,
+                },
                 new ItemsMessageComposer { OwnerNames = ownersSnapshot, WallItems = wallSnapshot },
                 new UsersMessageComposer { Avatars = avatarSnapshots },
                 new UserUpdateMessageComposer { Avatars = avatarSnapshots },

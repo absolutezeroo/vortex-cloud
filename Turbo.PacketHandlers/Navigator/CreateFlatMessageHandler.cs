@@ -17,20 +17,23 @@ public class CreateFlatMessageHandler(IRoomService roomService) : IMessageHandle
         CancellationToken ct
     )
     {
-        var (roomId, name) = await _roomService.CreateRoomAsync(
-            message.FlatName,
-            message.FlatDescription,
-            message.FlatModelName,
-            message.CategoryID,
-            message.MaxPlayers,
-            message.TradeSetting,
-            ctx.PlayerId,
-            ct
-        ).ConfigureAwait(false);
+        var (roomId, name) = await _roomService
+            .CreateRoomAsync(
+                message.FlatName,
+                message.FlatDescription,
+                message.FlatModelName,
+                message.CategoryID,
+                message.MaxPlayers,
+                message.TradeSetting,
+                ctx.PlayerId,
+                ct
+            )
+            .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-            new FlatCreatedMessageComposer { RoomId = roomId, Name = name },
-            ct
-        ).ConfigureAwait(false);
+                new FlatCreatedMessageComposer { RoomId = roomId, Name = name },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

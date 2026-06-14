@@ -24,19 +24,23 @@ internal sealed partial class RoomService
         CancellationToken ct
     )
     {
-        await using var dbCtx = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using var dbCtx = await _dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
 
-        var model = await dbCtx.RoomModels
-            .FirstOrDefaultAsync(x => x.Name == modelName && x.DeletedAt == null, ct)
-            .ConfigureAwait(false)
-            ?? await dbCtx.RoomModels
-                .FirstOrDefaultAsync(x => x.DeletedAt == null, ct)
+        var model =
+            await dbCtx
+                .RoomModels.FirstOrDefaultAsync(x => x.Name == modelName && x.DeletedAt == null, ct)
+                .ConfigureAwait(false)
+            ?? await dbCtx
+                .RoomModels.FirstOrDefaultAsync(x => x.DeletedAt == null, ct)
                 .ConfigureAwait(false)
             ?? throw new InvalidOperationException("No room models available.");
 
-        var player = await dbCtx.Players
-            .FirstOrDefaultAsync(x => x.Id == playerId.Value && x.DeletedAt == null, ct)
-            .ConfigureAwait(false)
+        var player =
+            await dbCtx
+                .Players.FirstOrDefaultAsync(x => x.Id == playerId.Value && x.DeletedAt == null, ct)
+                .ConfigureAwait(false)
             ?? throw new InvalidOperationException($"Player {playerId} not found.");
 
         var trimmedName = name.Trim();
@@ -79,7 +83,9 @@ internal sealed partial class RoomService
 
         _logger.LogInformation(
             "Room created: RoomId={RoomId} Name={Name} Owner={PlayerId}",
-            room.Id, trimmedName, playerId
+            room.Id,
+            trimmedName,
+            playerId
         );
 
         return (room.Id, trimmedName);

@@ -9,8 +9,7 @@ using Turbo.Primitives.Players;
 
 namespace Turbo.PacketHandlers.Users;
 
-public class BlockUserMessageHandler(IGrainFactory grainFactory)
-    : IMessageHandler<BlockUserMessage>
+public class BlockUserMessageHandler(IGrainFactory grainFactory) : IMessageHandler<BlockUserMessage>
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
 
@@ -27,8 +26,13 @@ public class BlockUserMessageHandler(IGrainFactory grainFactory)
         await grain.BlockUserAsync(PlayerId.Parse(message.PlayerId), ct).ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-            new BlockUserUpdateMessageComposer { PlayerId = message.PlayerId, IsBlocked = true },
-            ct
-        ).ConfigureAwait(false);
+                new BlockUserUpdateMessageComposer
+                {
+                    PlayerId = message.PlayerId,
+                    IsBlocked = true,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

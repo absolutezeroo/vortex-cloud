@@ -27,6 +27,9 @@ public readonly record struct AuditEvent
 
     public long? ItemId { get; init; }
 
+    /// <summary>Hashed source IP (never store the raw IP).</summary>
+    public string? IpHash { get; init; }
+
     /// <summary>Optional structured (JSON) payload carrying action-specific detail.</summary>
     public string? Data { get; init; }
 }

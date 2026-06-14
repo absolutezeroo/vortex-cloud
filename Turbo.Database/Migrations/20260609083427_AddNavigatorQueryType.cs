@@ -15,26 +15,24 @@ namespace Turbo.Database.Migrations
                 table: "navigator_top_level_contexts",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 0
+            );
 
             migrationBuilder.AddColumn<int>(
                 name: "query_type",
                 table: "navigator_quick_links",
                 type: "int",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 0
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "query_type",
-                table: "navigator_top_level_contexts");
+            migrationBuilder.DropColumn(name: "query_type", table: "navigator_top_level_contexts");
 
-            migrationBuilder.DropColumn(
-                name: "query_type",
-                table: "navigator_quick_links");
+            migrationBuilder.DropColumn(name: "query_type", table: "navigator_quick_links");
         }
     }
 }

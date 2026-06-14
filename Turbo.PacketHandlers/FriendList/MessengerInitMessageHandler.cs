@@ -39,15 +39,16 @@ public class MessengerInitMessageHandler(IGrainFactory grainFactory)
         var friends = await friendsTask.ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-            new MessengerInitMessageComposer
-            {
-                UserFriendLimit = UserFriendLimit,
-                NormalFriendLimit = NormalFriendLimit,
-                ExtendedFriendLimit = ExtendedFriendLimit,
-                FriendCategories = categories,
-            },
-            ct
-        ).ConfigureAwait(false);
+                new MessengerInitMessageComposer
+                {
+                    UserFriendLimit = UserFriendLimit,
+                    NormalFriendLimit = NormalFriendLimit,
+                    ExtendedFriendLimit = ExtendedFriendLimit,
+                    FriendCategories = categories,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
 
         // Fragment the friend list (max 500 per packet)
         var totalFragments = Math.Max(1, (int)Math.Ceiling(friends.Count / (double)FragmentSize));
@@ -60,14 +61,15 @@ public class MessengerInitMessageHandler(IGrainFactory grainFactory)
             );
 
             await ctx.SendComposerAsync(
-                new FriendListFragmentMessageComposer
-                {
-                    TotalFragments = totalFragments,
-                    FragmentIndex = i,
-                    Fragment = fragment,
-                },
-                ct
-            ).ConfigureAwait(false);
+                    new FriendListFragmentMessageComposer
+                    {
+                        TotalFragments = totalFragments,
+                        FragmentIndex = i,
+                        Fragment = fragment,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
         }
 
         // Notify online — delivers pending messages and notifies friends fire-and-forget

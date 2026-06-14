@@ -1032,10 +1032,7 @@ public class Revision20260112 : IRevision
                 MessageEvent.GetFurnitureAliasesMessageEvent,
                 new GetFurnitureAliasesMessageParser()
             },
-            {
-                MessageEvent.GetRoomEntryDataMessageEvent,
-                new GetRoomEntryDataMessageParser()
-            },
+            { MessageEvent.GetRoomEntryDataMessageEvent, new GetRoomEntryDataMessageParser() },
             { MessageEvent.GetItemDataMessageEvent, new GetItemDataMessageParser() },
             { MessageEvent.GetPetCommandsMessageEvent, new GetPetCommandsMessageParser() },
             {
@@ -3252,7 +3249,9 @@ public class Revision20260112 : IRevision
             },
             {
                 typeof(IgnoreResultMessageComposer),
-                new IgnoreResultMessageComposerSerializer(MessageComposer.IgnoreResultMessageComposer)
+                new IgnoreResultMessageComposerSerializer(
+                    MessageComposer.IgnoreResultMessageComposer
+                )
             },
             {
                 typeof(IgnoredUsersMessageComposer),

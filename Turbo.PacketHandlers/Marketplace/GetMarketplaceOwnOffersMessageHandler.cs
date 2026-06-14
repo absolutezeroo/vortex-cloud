@@ -28,8 +28,13 @@ public class GetMarketplaceOwnOffersMessageHandler(IGrainFactory grainFactory)
             .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-            new MarketPlaceOwnOffersEventMessageComposer { CreditsWaiting = creditsOwed, Offers = offers },
-            ct
-        ).ConfigureAwait(false);
+                new MarketPlaceOwnOffersEventMessageComposer
+                {
+                    CreditsWaiting = creditsOwed,
+                    Offers = offers,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

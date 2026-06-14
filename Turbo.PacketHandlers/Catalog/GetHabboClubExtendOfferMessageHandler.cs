@@ -10,8 +10,10 @@ using Turbo.Primitives.Orleans;
 
 namespace Turbo.PacketHandlers.Catalog;
 
-public class GetHabboClubExtendOfferMessageHandler(IGrainFactory grainFactory, ICatalogClubOfferProvider clubOfferProvider)
-    : IMessageHandler<GetHabboClubExtendOfferMessage>
+public class GetHabboClubExtendOfferMessageHandler(
+    IGrainFactory grainFactory,
+    ICatalogClubOfferProvider clubOfferProvider
+) : IMessageHandler<GetHabboClubExtendOfferMessage>
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ICatalogClubOfferProvider _clubOfferProvider = clubOfferProvider;
@@ -31,9 +33,7 @@ public class GetHabboClubExtendOfferMessageHandler(IGrainFactory grainFactory, I
             .ConfigureAwait(false);
 
         // Show the 1-month offer matching the player's current level (VIP id=3, Basic id=1)
-        var baseOffer = sub.IsVip
-            ? _clubOfferProvider.FindById(3)
-            : _clubOfferProvider.FindById(1);
+        var baseOffer = sub.IsVip ? _clubOfferProvider.FindById(3) : _clubOfferProvider.FindById(1);
 
         if (baseOffer is null)
             return;
@@ -51,15 +51,16 @@ public class GetHabboClubExtendOfferMessageHandler(IGrainFactory grainFactory, I
         };
 
         await ctx.SendComposerAsync(
-            new HabboClubExtendOfferMessageComposer
-            {
-                Offer = personalizedOffer,
-                OriginalPricePerMonth = baseOffer.PriceCredits,
-                OriginalActivityPointPricePerMonth = baseOffer.PriceActivityPoints,
-                OriginalActivityPointType = baseOffer.PriceActivityPointType,
-                SubscriptionDaysLeft = sub.DaysLeft,
-            },
-            ct
-        ).ConfigureAwait(false);
+                new HabboClubExtendOfferMessageComposer
+                {
+                    Offer = personalizedOffer,
+                    OriginalPricePerMonth = baseOffer.PriceCredits,
+                    OriginalActivityPointPricePerMonth = baseOffer.PriceActivityPoints,
+                    OriginalActivityPointType = baseOffer.PriceActivityPointType,
+                    SubscriptionDaysLeft = sub.DaysLeft,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

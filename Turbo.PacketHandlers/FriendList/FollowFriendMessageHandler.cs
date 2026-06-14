@@ -29,9 +29,13 @@ public class FollowFriendMessageHandler(IGrainFactory grainFactory)
         if (!isFriend)
         {
             await ctx.SendComposerAsync(
-                new FollowFriendFailedMessageComposer { ErrorCode = FollowFriendErrorCodeType.NotFriend },
-                ct
-            ).ConfigureAwait(false);
+                    new FollowFriendFailedMessageComposer
+                    {
+                        ErrorCode = FollowFriendErrorCodeType.NotFriend,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
             return;
         }
 
@@ -41,9 +45,13 @@ public class FollowFriendMessageHandler(IGrainFactory grainFactory)
         if (!isOnline)
         {
             await ctx.SendComposerAsync(
-                new FollowFriendFailedMessageComposer { ErrorCode = FollowFriendErrorCodeType.Offline },
-                ct
-            ).ConfigureAwait(false);
+                    new FollowFriendFailedMessageComposer
+                    {
+                        ErrorCode = FollowFriendErrorCodeType.Offline,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
             return;
         }
 
@@ -52,9 +60,13 @@ public class FollowFriendMessageHandler(IGrainFactory grainFactory)
         if (activeRoom.RoomId <= 0)
         {
             await ctx.SendComposerAsync(
-                new FollowFriendFailedMessageComposer { ErrorCode = FollowFriendErrorCodeType.HotelView },
-                ct
-            ).ConfigureAwait(false);
+                    new FollowFriendFailedMessageComposer
+                    {
+                        ErrorCode = FollowFriendErrorCodeType.HotelView,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
             return;
         }
 

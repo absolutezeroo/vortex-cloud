@@ -28,8 +28,9 @@ public class IncomeRewardStatusMessageHandler(IGrainFactory grainFactory)
             .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-            new IncomeRewardStatusMessageComposer { IncomeRewards = rewards },
-            ct
-        ).ConfigureAwait(false);
+                new IncomeRewardStatusMessageComposer { IncomeRewards = rewards },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

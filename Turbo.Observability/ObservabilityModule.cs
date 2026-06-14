@@ -6,6 +6,7 @@ using Turbo.Contracts.Plugins;
 using Turbo.Observability.Audit;
 using Turbo.Observability.Configuration;
 using Turbo.Observability.Context;
+using Turbo.Observability.Dashboard;
 using Turbo.Observability.Metrics;
 using Turbo.Observability.Runtime;
 using Turbo.Primitives.Observability;
@@ -13,10 +14,10 @@ using Turbo.Primitives.Observability;
 namespace Turbo.Observability;
 
 /// <summary>
-/// Registers the foundational observability brick: the trace-context accessor (correlation id +
-/// Orleans propagation + logging scope + activity), the metrics façade, the audit abstraction
-/// (no-op default) and the incoming grain-call filter. It deliberately registers no dashboard,
-/// exporter or database writer yet — those arrive in later phases.
+/// Registers the observability module: the trace-context accessor (correlation id + Orleans
+/// propagation + logging scope + activity), the metrics façade, the durable audit pipeline
+/// (event-handler sinks -> bounded channel -> background writer), the grain-call filter and the
+/// native admin dashboard (self-disabled unless configured with a token).
 /// </summary>
 public sealed class ObservabilityModule : IHostPluginModule
 {
@@ -39,6 +40,9 @@ public sealed class ObservabilityModule : IHostPluginModule
         services.TryAddSingleton<IEconomyLedger, ChannelEconomyLedger>();
         services.TryAddSingleton<IItemForensics, ChannelItemForensics>();
         services.AddHostedService<AuditWriterService>();
+
+        // Native admin dashboard (read-only HTTP API). Self-disables unless enabled + token set.
+        services.AddHostedService<AdminApiService>();
 
         // Orleans resolves all registered IIncomingGrainCallFilter instances from the container.
         services.AddSingleton<IIncomingGrainCallFilter, ObservabilityGrainCallFilter>();

@@ -13,6 +13,7 @@ public interface ISessionContext
     public string RevisionId { get; }
     public DateTime LastActivityUtc { get; }
     public CancellationTokenSource HeartbeatCts { get; }
+    public string? RemoteIpAddress { get; }
     public IRc4Engine? CryptoIn { get; }
     public IRc4Engine? CryptoOut { get; }
     public ArrayBufferWriter<byte>? WsBuffer { get; }

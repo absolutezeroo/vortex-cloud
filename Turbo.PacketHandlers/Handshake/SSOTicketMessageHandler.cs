@@ -12,18 +12,18 @@ using Turbo.Primitives.Messages.Outgoing.Inventory.Achievements;
 using Turbo.Primitives.Messages.Outgoing.Inventory.Avatareffect;
 using Turbo.Primitives.Messages.Outgoing.Inventory.Clothing;
 using Turbo.Primitives.Messages.Outgoing.Inventory.Purse;
-using Turbo.Primitives.Players.Enums.Wallet;
-using Turbo.Primitives.Players.Wallet;
 using Turbo.Primitives.Messages.Outgoing.Mysterybox;
 using Turbo.Primitives.Messages.Outgoing.Navigator;
 using Turbo.Primitives.Messages.Outgoing.Notifications;
 using Turbo.Primitives.Messages.Outgoing.Perk;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Networking;
-using Turbo.Primitives.Orleans.Snapshots.Players;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Players;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Players.Enums;
+using Turbo.Primitives.Players.Enums.Wallet;
+using Turbo.Primitives.Players.Wallet;
 
 namespace Turbo.PacketHandlers.Handshake;
 
@@ -47,7 +47,7 @@ public class SSOTicketMessageHandler(
         {
             var ticket = message.SSO;
             var playerId = await _authService
-                .GetPlayerIdFromTicketAsync(ticket, ct)
+                .GetPlayerIdFromTicketAsync(ticket, ctx.RemoteIpAddress, ct)
                 .ConfigureAwait(false);
 
             if (playerId <= 0)
@@ -136,11 +136,12 @@ public class SSOTicketMessageHandler(
 
             var wallet = _grainFactory.GetPlayerWalletGrain(playerId);
             var credits = await wallet
-                .GetAmountForCurrencyAsync(new CurrencyKind { CurrencyType = CurrencyType.Credits }, ct)
+                .GetAmountForCurrencyAsync(
+                    new CurrencyKind { CurrencyType = CurrencyType.Credits },
+                    ct
+                )
                 .ConfigureAwait(false);
-            var activityPoints = await wallet
-                .GetActivityPointsAsync(ct)
-                .ConfigureAwait(false);
+            var activityPoints = await wallet.GetActivityPointsAsync(ct).ConfigureAwait(false);
 
             await ctx.SendComposerAsync(
                     new CreditBalanceEventMessageComposer { Balance = $"{credits}.0" },

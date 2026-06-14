@@ -32,9 +32,10 @@ public class AcceptFriendMessageHandler(IGrainFactory grainFactory)
             .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-            new AcceptFriendResultMessageComposer { Failures = failures },
-            ct
-        ).ConfigureAwait(false);
+                new AcceptFriendResultMessageComposer { Failures = failures },
+                ct
+            )
+            .ConfigureAwait(false);
 
         // Send updated friend list to self
         var friends = await grain.GetFriendsAsync(ct).ConfigureAwait(false);
@@ -46,24 +47,27 @@ public class AcceptFriendMessageHandler(IGrainFactory grainFactory)
             if (snapshot is null)
                 continue;
 
-            newFriends.Add(new FriendListUpdateSnapshot
-            {
-                ActionType = FriendListUpdateActionType.Added,
-                FriendId = friendId,
-                Friend = snapshot,
-            });
+            newFriends.Add(
+                new FriendListUpdateSnapshot
+                {
+                    ActionType = FriendListUpdateActionType.Added,
+                    FriendId = friendId,
+                    Friend = snapshot,
+                }
+            );
         }
 
         if (newFriends.Count > 0)
         {
             await ctx.SendComposerAsync(
-                new FriendListUpdateMessageComposer
-                {
-                    FriendCategories = [],
-                    Updates = newFriends,
-                },
-                ct
-            ).ConfigureAwait(false);
+                    new FriendListUpdateMessageComposer
+                    {
+                        FriendCategories = [],
+                        Updates = newFriends,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
         }
     }
 }

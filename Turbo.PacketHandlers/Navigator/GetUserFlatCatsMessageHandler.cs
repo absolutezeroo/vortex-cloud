@@ -20,10 +20,7 @@ public class GetUserFlatCatsMessageHandler(INavigatorService navigatorService)
     {
         var categories = _navigatorService.GetFlatCategories();
 
-        await ctx.SendComposerAsync(
-                new UserFlatCatsMessageComposer { Categories = categories },
-                ct
-            )
+        await ctx.SendComposerAsync(new UserFlatCatsMessageComposer { Categories = categories }, ct)
             .ConfigureAwait(false);
     }
 }

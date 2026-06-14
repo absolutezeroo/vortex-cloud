@@ -1,21 +1,31 @@
 using System.Threading;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Turbo.Database.Context;
+using Turbo.Authentication.Configuration;
 using Turbo.Primitives.Authentication;
-using Turbo.Primitives.Observability;
+using Turbo.Primitives.Events;
 
 namespace Turbo.Authentication;
 
 public sealed class AuthenticationService(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
-    IAuditSink auditSink
+    IEventPublisher events,
+    IOptions<AuthenticationConfig> options
 ) : IAuthenticationService
 {
     private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
-    private readonly IAuditSink _auditSink = auditSink;
+    private readonly IEventPublisher _events = events;
+    private readonly string _ipHashSecret = options.Value.IpHashSecret;
 
-    public async Task<int> GetPlayerIdFromTicketAsync(string ticket, CancellationToken ct = default)
+    public async Task<int> GetPlayerIdFromTicketAsync(
+        string ticket,
+        string? remoteIp = null,
+        CancellationToken ct = default
+    )
     {
         if (ticket is null || ticket.Length == 0)
             return 0;
@@ -34,15 +44,9 @@ public sealed class AuthenticationService(
 
             if (entity is null)
             {
-                _auditSink.Emit(
-                    new AuditEvent
-                    {
-                        Category = AuditCategory.Auth,
-                        Action = "auth.login.failed",
-                        Severity = AuditSeverity.Notice,
-                        Result = AuditResult.Failed,
-                    }
-                );
+                await _events
+                    .PublishAsync(new PlayerLoginFailedEvent(HashIp(remoteIp)), ct)
+                    .ConfigureAwait(false);
 
                 return 0;
             }
@@ -56,16 +60,12 @@ public sealed class AuthenticationService(
             //     await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
             // }
 
-            _auditSink.Emit(
-                new AuditEvent
-                {
-                    Category = AuditCategory.Auth,
-                    Action = "auth.login.success",
-                    Severity = AuditSeverity.Info,
-                    Result = AuditResult.Success,
-                    ActorPlayerId = entity.PlayerEntityId,
-                }
-            );
+            await _events
+                .PublishAsync(
+                    new PlayerLoggedInEvent(entity.PlayerEntityId, HashIp(remoteIp)),
+                    ct
+                )
+                .ConfigureAwait(false);
 
             return entity.PlayerEntityId;
         }
@@ -73,5 +73,22 @@ public sealed class AuthenticationService(
         {
             await dbCtx.DisposeAsync().ConfigureAwait(false);
         }
+    }
+
+    private string? HashIp(string? remoteIp)
+    {
+        if (string.IsNullOrWhiteSpace(remoteIp))
+            return null;
+
+        var key = _ipHashSecret;
+        if (string.IsNullOrWhiteSpace(key))
+            return null;
+
+        var keyBytes = Encoding.UTF8.GetBytes(key);
+        var ipBytes = Encoding.UTF8.GetBytes(remoteIp.Trim());
+
+        var hash = HMACSHA256.HashData(keyBytes, ipBytes);
+
+        return Convert.ToHexString(hash).ToLowerInvariant();
     }
 }

@@ -27,8 +27,9 @@ public class IgnoreUserMessageHandler(IGrainFactory grainFactory)
         await grain.IgnoreUserAsync(PlayerId.Parse(message.UserId), ct).ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-            new IgnoreResultMessageComposer { UserId = message.UserId, ResultCode = 1 },
-            ct
-        ).ConfigureAwait(false);
+                new IgnoreResultMessageComposer { UserId = message.UserId, ResultCode = 1 },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

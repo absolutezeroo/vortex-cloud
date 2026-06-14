@@ -17,17 +17,18 @@ public class GetBundleDiscountRulesetMessageHandler
     )
     {
         await ctx.SendComposerAsync(
-            new BundleDiscountRulesetMessageComposer
-            {
-                BundleDiscountRuleset = new BundleDiscountRulesetSnapshot(
-                    MaxPurchaseSize: 100,
-                    BundleSize: 6,
-                    BundleDiscountSize: 1,
-                    BonusThreshold: 0,
-                    AdditionalBonusDiscountThresholdQuantities: []
-                ),
-            },
-            ct
-        ).ConfigureAwait(false);
+                new BundleDiscountRulesetMessageComposer
+                {
+                    BundleDiscountRuleset = new BundleDiscountRulesetSnapshot(
+                        MaxPurchaseSize: 100,
+                        BundleSize: 6,
+                        BundleDiscountSize: 1,
+                        BonusThreshold: 0,
+                        AdditionalBonusDiscountThresholdQuantities: []
+                    ),
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

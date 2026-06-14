@@ -6,10 +6,10 @@ using Orleans;
 using Turbo.Database.Context;
 using Turbo.Inventory.Configuration;
 using Turbo.Inventory.Grains.Modules;
+using Turbo.Primitives.Events;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Inventory.Factories;
 using Turbo.Primitives.Inventory.Grains;
-using Turbo.Primitives.Observability;
 
 namespace Turbo.Inventory.Grains;
 
@@ -21,7 +21,7 @@ public sealed partial class InventoryGrain : Grain, IInventoryGrain
     private readonly IFurnitureDefinitionProvider _furnitureDefinitionProvider;
     private readonly IInventoryFurnitureLoader _furnitureItemsLoader;
     private readonly IStuffDataFactory _stuffDataFactory;
-    private readonly IItemForensics _itemForensics;
+    private readonly IEventPublisher _events;
 
     private readonly InventoryLiveState _state;
     private readonly InventoryFurniModule _furniModule;
@@ -33,7 +33,7 @@ public sealed partial class InventoryGrain : Grain, IInventoryGrain
         IFurnitureDefinitionProvider furnitureDefinitionProvider,
         IInventoryFurnitureLoader furnitureItemsLoader,
         IStuffDataFactory stuffDataFactory,
-        IItemForensics itemForensics
+        IEventPublisher events
     )
     {
         _dbCtxFactory = dbContextFactory;
@@ -42,7 +42,7 @@ public sealed partial class InventoryGrain : Grain, IInventoryGrain
         _furnitureDefinitionProvider = furnitureDefinitionProvider;
         _furnitureItemsLoader = furnitureItemsLoader;
         _stuffDataFactory = stuffDataFactory;
-        _itemForensics = itemForensics;
+        _events = events;
 
         _state = new();
         _furniModule = new InventoryFurniModule(this, _state, _furnitureItemsLoader);

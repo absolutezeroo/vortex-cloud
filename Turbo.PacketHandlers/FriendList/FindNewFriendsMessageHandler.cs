@@ -15,8 +15,9 @@ public class FindNewFriendsMessageHandler : IMessageHandler<FindNewFriendsMessag
     )
     {
         await ctx.SendComposerAsync(
-            new FindFriendsProcessResultMessageComposer { Success = true },
-            ct
-        ).ConfigureAwait(false);
+                new FindFriendsProcessResultMessageComposer { Success = true },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

@@ -19,17 +19,29 @@ public interface INavigatorProvider
 
     Task<List<RoomInfoSnapshot>> GetAllRoomsAsync(CancellationToken ct = default);
 
-    Task<List<RoomInfoSnapshot>> GetRoomsByOwnerAsync(PlayerId playerId, CancellationToken ct = default);
+    Task<List<RoomInfoSnapshot>> GetRoomsByOwnerAsync(
+        PlayerId playerId,
+        CancellationToken ct = default
+    );
 
-    Task<List<RoomInfoSnapshot>> GetRoomsByCategoryAsync(int categoryId, CancellationToken ct = default);
+    Task<List<RoomInfoSnapshot>> GetRoomsByCategoryAsync(
+        int categoryId,
+        CancellationToken ct = default
+    );
 
     Task<List<RoomInfoSnapshot>> GetRoomsByNameAsync(string name, CancellationToken ct = default);
 
-    Task<List<RoomInfoSnapshot>> GetRoomsByOwnerNameAsync(string ownerName, CancellationToken ct = default);
+    Task<List<RoomInfoSnapshot>> GetRoomsByOwnerNameAsync(
+        string ownerName,
+        CancellationToken ct = default
+    );
 
     Task<List<RoomInfoSnapshot>> GetRoomsByTagAsync(string tag, CancellationToken ct = default);
 
-    Task<List<RoomInfoSnapshot>> GetFavoriteRoomsAsync(PlayerId playerId, CancellationToken ct = default);
+    Task<List<RoomInfoSnapshot>> GetFavoriteRoomsAsync(
+        PlayerId playerId,
+        CancellationToken ct = default
+    );
 
     Task ReloadAsync(CancellationToken ct = default);
 }

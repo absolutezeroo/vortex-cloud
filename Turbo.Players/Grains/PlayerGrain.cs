@@ -111,15 +111,17 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
 
         await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
-        await dbCtx.PlayerSubscriptions
-            .Where(x =>
+        await dbCtx
+            .PlayerSubscriptions.Where(x =>
                 x.PlayerEntityId == (int)_state.PlayerId
-                && x.SubscriptionType == SubscriptionType.HabboClub)
+                && x.SubscriptionType == SubscriptionType.HabboClub
+            )
             .ExecuteUpdateAsync(
-                up => up
-                    .SetProperty(p => p.GiftsAvailable, _state.ClubGiftsAvailable)
-                    .SetProperty(p => p.NextGiftAt, _state.ClubNextGiftAt),
-                ct)
+                up =>
+                    up.SetProperty(p => p.GiftsAvailable, _state.ClubGiftsAvailable)
+                        .SetProperty(p => p.NextGiftAt, _state.ClubNextGiftAt),
+                ct
+            )
             .ConfigureAwait(false);
     }
 
@@ -141,10 +143,14 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
         _state.CreatedAt = entity.CreatedAt;
         _state.LastUpdated = entity.UpdatedAt;
 
-        var sub = await dbCtx.PlayerSubscriptions.AsNoTracking()
-            .FirstOrDefaultAsync(x =>
-                x.PlayerEntityId == (int)_state.PlayerId
-                && x.SubscriptionType == SubscriptionType.HabboClub, ct);
+        var sub = await dbCtx
+            .PlayerSubscriptions.AsNoTracking()
+            .FirstOrDefaultAsync(
+                x =>
+                    x.PlayerEntityId == (int)_state.PlayerId
+                    && x.SubscriptionType == SubscriptionType.HabboClub,
+                ct
+            );
 
         if (sub is not null && sub.ExpiresAt > DateTime.UtcNow)
         {
@@ -157,7 +163,8 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
             await CheckAndGrantGiftTokensAsync(ct);
         }
 
-        var kickback = await dbCtx.PlayerKickbacks.AsNoTracking()
+        var kickback = await dbCtx
+            .PlayerKickbacks.AsNoTracking()
             .FirstOrDefaultAsync(x => x.PlayerEntityId == (int)_state.PlayerId, ct);
 
         if (kickback is not null)
@@ -242,36 +249,45 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
         var isActive = _state.ClubLevel > 0 && _state.ClubExpiresAt > DateTime.UtcNow;
         var daysLeft = isActive ? (int)(_state.ClubExpiresAt - DateTime.UtcNow).TotalDays : 0;
 
-        return Task.FromResult(new ClubSubscriptionSnapshot
-        {
-            IsActive = isActive,
-            IsVip = _state.ClubLevel >= 2,
-            ExpiresAt = _state.ClubExpiresAt,
-            DaysLeft = daysLeft,
-            TotalMonths = _state.ClubTotalMonths,
-            GiftsAvailable = _state.ClubGiftsAvailable,
-            NextGiftAt = _state.ClubNextGiftAt,
-            PaydayAt = _state.KickbackPaydayAt,
-            CreditsSpentThisPeriod = _state.KickbackCreditsSpent,
-            TotalCreditsRewarded = _state.KickbackTotalRewarded,
-            TotalCreditsSpent = _state.KickbackTotalSpent,
-        });
+        return Task.FromResult(
+            new ClubSubscriptionSnapshot
+            {
+                IsActive = isActive,
+                IsVip = _state.ClubLevel >= 2,
+                ExpiresAt = _state.ClubExpiresAt,
+                DaysLeft = daysLeft,
+                TotalMonths = _state.ClubTotalMonths,
+                GiftsAvailable = _state.ClubGiftsAvailable,
+                NextGiftAt = _state.ClubNextGiftAt,
+                PaydayAt = _state.KickbackPaydayAt,
+                CreditsSpentThisPeriod = _state.KickbackCreditsSpent,
+                TotalCreditsRewarded = _state.KickbackTotalRewarded,
+                TotalCreditsSpent = _state.KickbackTotalSpent,
+            }
+        );
     }
 
-    public async Task PurchaseClubAsync(int months, bool isVip, int costCredits, CancellationToken ct)
+    public async Task PurchaseClubAsync(
+        int months,
+        bool isVip,
+        int costCredits,
+        CancellationToken ct
+    )
     {
         var walletGrain = _grainFactory.GetPlayerWalletGrain(_state.PlayerId);
 
-        var debitResult = await walletGrain.TryDebitAsync(
-            [
-                new WalletDebitRequest
-                {
-                    CurrencyKind = new CurrencyKind { CurrencyType = CurrencyType.Credits },
-                    Amount = costCredits,
-                },
-            ],
-            ct
-        ).ConfigureAwait(false);
+        var debitResult = await walletGrain
+            .TryDebitAsync(
+                [
+                    new WalletDebitRequest
+                    {
+                        CurrencyKind = new CurrencyKind { CurrencyType = CurrencyType.Credits },
+                        Amount = costCredits,
+                    },
+                ],
+                ct
+            )
+            .ConfigureAwait(false);
 
         if (!debitResult.Succeeded)
             return;
@@ -286,9 +302,10 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
 
         // First purchase or expired sub: gift cycle starts now + 31 days.
         // Renewal: keep existing cycle so the player doesn't lose their countdown.
-        var newNextGiftAt = isRenewal && _state.ClubNextGiftAt.HasValue
-            ? _state.ClubNextGiftAt
-            : now.AddDays(GiftCycleDays);
+        var newNextGiftAt =
+            isRenewal && _state.ClubNextGiftAt.HasValue
+                ? _state.ClubNextGiftAt
+                : now.AddDays(GiftCycleDays);
 
         _state.ClubLevel = newLevel;
         _state.ClubExpiresAt = newExpiry;
@@ -302,10 +319,12 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
 
         await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
-        var existing = await dbCtx.PlayerSubscriptions
-            .FirstOrDefaultAsync(x =>
+        var existing = await dbCtx.PlayerSubscriptions.FirstOrDefaultAsync(
+            x =>
                 x.PlayerEntityId == (int)_state.PlayerId
-                && x.SubscriptionType == SubscriptionType.HabboClub, ct);
+                && x.SubscriptionType == SubscriptionType.HabboClub,
+            ct
+        );
 
         if (existing is not null)
         {
@@ -317,21 +336,23 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
         }
         else
         {
-            var playerEntity = await dbCtx.Players
-                .FindAsync([_state.PlayerId.Value], ct)
+            var playerEntity =
+                await dbCtx.Players.FindAsync([_state.PlayerId.Value], ct)
                 ?? throw new TurboException(TurboErrorCodeEnum.PlayerNotFound);
 
-            dbCtx.PlayerSubscriptions.Add(new PlayerSubscriptionEntity
-            {
-                PlayerEntityId = (int)_state.PlayerId,
-                SubscriptionType = SubscriptionType.HabboClub,
-                Level = newLevel,
-                ExpiresAt = newExpiry,
-                TotalMonths = newTotalMonths,
-                GiftsAvailable = newGiftsAvailable,
-                NextGiftAt = newNextGiftAt,
-                PlayerEntity = playerEntity,
-            });
+            dbCtx.PlayerSubscriptions.Add(
+                new PlayerSubscriptionEntity
+                {
+                    PlayerEntityId = (int)_state.PlayerId,
+                    SubscriptionType = SubscriptionType.HabboClub,
+                    Level = newLevel,
+                    ExpiresAt = newExpiry,
+                    TotalMonths = newTotalMonths,
+                    GiftsAvailable = newGiftsAvailable,
+                    NextGiftAt = newNextGiftAt,
+                    PlayerEntity = playerEntity,
+                }
+            );
         }
 
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -348,9 +369,15 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
 
         await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
-        await dbCtx.PlayerSubscriptions
-            .Where(x => x.PlayerEntityId == (int)_state.PlayerId && x.SubscriptionType == SubscriptionType.HabboClub)
-            .ExecuteUpdateAsync(up => up.SetProperty(p => p.GiftsAvailable, _state.ClubGiftsAvailable), ct)
+        await dbCtx
+            .PlayerSubscriptions.Where(x =>
+                x.PlayerEntityId == (int)_state.PlayerId
+                && x.SubscriptionType == SubscriptionType.HabboClub
+            )
+            .ExecuteUpdateAsync(
+                up => up.SetProperty(p => p.GiftsAvailable, _state.ClubGiftsAvailable),
+                ct
+            )
             .ConfigureAwait(false);
 
         return true;
@@ -407,8 +434,10 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
 
         await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
-        var existing = await dbCtx.PlayerKickbacks
-            .FirstOrDefaultAsync(x => x.PlayerEntityId == (int)_state.PlayerId, ct);
+        var existing = await dbCtx.PlayerKickbacks.FirstOrDefaultAsync(
+            x => x.PlayerEntityId == (int)_state.PlayerId,
+            ct
+        );
 
         if (existing is not null)
         {
@@ -419,19 +448,21 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
         }
         else
         {
-            var playerEntity = await dbCtx.Players
-                .FindAsync([(int)_state.PlayerId], ct)
+            var playerEntity =
+                await dbCtx.Players.FindAsync([(int)_state.PlayerId], ct)
                 ?? throw new TurboException(TurboErrorCodeEnum.PlayerNotFound);
 
-            dbCtx.PlayerKickbacks.Add(new PlayerKickbackEntity
-            {
-                PlayerEntityId = (int)_state.PlayerId,
-                PaydayAt = _state.KickbackPaydayAt,
-                CreditsSpent = _state.KickbackCreditsSpent,
-                TotalRewarded = _state.KickbackTotalRewarded,
-                TotalSpent = _state.KickbackTotalSpent,
-                PlayerEntity = playerEntity,
-            });
+            dbCtx.PlayerKickbacks.Add(
+                new PlayerKickbackEntity
+                {
+                    PlayerEntityId = (int)_state.PlayerId,
+                    PaydayAt = _state.KickbackPaydayAt,
+                    CreditsSpent = _state.KickbackCreditsSpent,
+                    TotalRewarded = _state.KickbackTotalRewarded,
+                    TotalSpent = _state.KickbackTotalSpent,
+                    PlayerEntity = playerEntity,
+                }
+            );
         }
 
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Orleans;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Players;
-using Turbo.Primitives.Observability;
+using Turbo.Primitives.Events;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players.Enums.Wallet;
 using Turbo.Primitives.Players.Grains;
@@ -21,18 +21,25 @@ internal sealed class PlayerWalletGrain(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
     ICurrencyTypeProvider currencyTypeProvider,
     IGrainFactory grainFactory,
-    IEconomyLedger economyLedger
+    IEventPublisher events
 ) : Grain, IPlayerWalletGrain
 {
     private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ICurrencyTypeProvider _currencyTypeProvider = currencyTypeProvider;
     private readonly IGrainFactory _grainFactory = grainFactory;
-    private readonly IEconomyLedger _economyLedger = economyLedger;
+    private readonly IEventPublisher _events = events;
 
-    private static (string Currency, int? ActivityPointType) DescribeCurrency(CurrencyKind kind) =>
-        kind.CurrencyType == CurrencyType.ActivityPoints
-            ? ("ActivityPoints", kind.ActivityPointType)
-            : (kind.CurrencyType.ToString(), null);
+    private (string Currency, int? ActivityPointType) DescribeCurrency(CurrencyKind kind)
+    {
+        // Resolve the human currency name from the currency_types table; fall back to the enum name.
+        var name =
+            _currencyTypeProvider.GetCurrencyTypeByKind(kind)?.Name ?? kind.CurrencyType.ToString();
+
+        var activityPointType =
+            kind.CurrencyType == CurrencyType.ActivityPoints ? kind.ActivityPointType : null;
+
+        return (name, activityPointType);
+    }
 
     private readonly Dictionary<CurrencyKind, WalletCurrencySnapshot> _currenciesByKind = [];
 
@@ -99,17 +106,18 @@ internal sealed class PlayerWalletGrain(
 
                 var (currency, activityPointType) = DescribeCurrency(update.CurrencyKind);
 
-                _economyLedger.Record(
-                    new EconomyLedgerEvent
-                    {
-                        PlayerId = this.GetPrimaryKeyLong(),
-                        Currency = currency,
-                        ActivityPointType = activityPointType,
-                        Delta = -update.ChangedBy,
-                        BalanceAfter = update.Amount,
-                        Reason = EconomyReason.Debit,
-                    }
-                );
+                await _events
+                    .PublishAsync(
+                        new CurrencyChangedEvent(
+                            (int)this.GetPrimaryKeyLong(),
+                            currency,
+                            activityPointType,
+                            -update.ChangedBy,
+                            update.Amount
+                        ),
+                        ct
+                    )
+                    .ConfigureAwait(false);
             }
         }
 
@@ -263,16 +271,20 @@ internal sealed class PlayerWalletGrain(
 
         _currenciesByKind[creditsKind] = snapshot with { Amount = entity.Amount };
 
-        _economyLedger.Record(
-            new EconomyLedgerEvent
-            {
-                PlayerId = this.GetPrimaryKeyLong(),
-                Currency = "Credits",
-                Delta = amount,
-                BalanceAfter = entity.Amount,
-                Reason = EconomyReason.Grant,
-            }
-        );
+        var (creditsCurrency, creditsActivityPointType) = DescribeCurrency(creditsKind);
+
+        await _events
+            .PublishAsync(
+                new CurrencyChangedEvent(
+                    (int)this.GetPrimaryKeyLong(),
+                    creditsCurrency,
+                    creditsActivityPointType,
+                    amount,
+                    entity.Amount
+                ),
+                ct
+            )
+            .ConfigureAwait(false);
 
         var playerPresence = _grainFactory.GetPlayerPresenceGrain((int)this.GetPrimaryKeyLong());
         await playerPresence.OnCurrencyUpdateAsync(
@@ -320,17 +332,20 @@ internal sealed class PlayerWalletGrain(
 
         _currenciesByKind[activityKind] = snapshot with { Amount = entity.Amount };
 
-        _economyLedger.Record(
-            new EconomyLedgerEvent
-            {
-                PlayerId = this.GetPrimaryKeyLong(),
-                Currency = "ActivityPoints",
-                ActivityPointType = activityPointType,
-                Delta = amount,
-                BalanceAfter = entity.Amount,
-                Reason = EconomyReason.Grant,
-            }
-        );
+        var (activityCurrency, _) = DescribeCurrency(activityKind);
+
+        await _events
+            .PublishAsync(
+                new CurrencyChangedEvent(
+                    (int)this.GetPrimaryKeyLong(),
+                    activityCurrency,
+                    activityPointType,
+                    amount,
+                    entity.Amount
+                ),
+                ct
+            )
+            .ConfigureAwait(false);
 
         var playerPresence = _grainFactory.GetPlayerPresenceGrain((int)this.GetPrimaryKeyLong());
         await playerPresence.OnCurrencyUpdateAsync(

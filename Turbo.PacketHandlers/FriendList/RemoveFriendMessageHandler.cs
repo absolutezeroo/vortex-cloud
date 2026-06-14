@@ -35,21 +35,20 @@ public class RemoveFriendMessageHandler(IGrainFactory grainFactory)
         var updates = new List<FriendListUpdateSnapshot>();
         foreach (var friendId in removed)
         {
-            updates.Add(new FriendListUpdateSnapshot
-            {
-                ActionType = FriendListUpdateActionType.Removed,
-                FriendId = friendId,
-                Friend = null,
-            });
+            updates.Add(
+                new FriendListUpdateSnapshot
+                {
+                    ActionType = FriendListUpdateActionType.Removed,
+                    FriendId = friendId,
+                    Friend = null,
+                }
+            );
         }
 
         await ctx.SendComposerAsync(
-            new FriendListUpdateMessageComposer
-            {
-                FriendCategories = [],
-                Updates = updates,
-            },
-            ct
-        ).ConfigureAwait(false);
+                new FriendListUpdateMessageComposer { FriendCategories = [], Updates = updates },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

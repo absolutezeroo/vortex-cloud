@@ -24,12 +24,23 @@ public class GetMarketplaceOffersMessageHandler(IGrainFactory grainFactory)
 
         var (offers, totalFound) = await _grainFactory
             .GetMarketplaceSearchGrain()
-            .GetOffersAsync(message.MinPrice, message.MaxPrice, message.SearchQuery, message.SortOrder, ct)
+            .GetOffersAsync(
+                message.MinPrice,
+                message.MaxPrice,
+                message.SearchQuery,
+                message.SortOrder,
+                ct
+            )
             .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-            new MarketPlaceOffersEventMessageComposer { Offers = offers, TotalFound = totalFound },
-            ct
-        ).ConfigureAwait(false);
+                new MarketPlaceOffersEventMessageComposer
+                {
+                    Offers = offers,
+                    TotalFound = totalFound,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

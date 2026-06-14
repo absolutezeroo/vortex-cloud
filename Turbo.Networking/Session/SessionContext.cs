@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using SuperSocket.Connection;
@@ -24,6 +25,8 @@ public class SessionContext(IPackageEncoder<OutgoingPackage> packageEncoder)
     public DateTime LastActivityUtc { get; private set; } = DateTime.UtcNow;
     public AsyncSignal PongWaiter { get; } = new();
     public CancellationTokenSource HeartbeatCts { get; } = new();
+    public string? RemoteIpAddress =>
+        Connection?.RemoteEndPoint is IPEndPoint ipEndpoint ? ipEndpoint.Address?.ToString() : null;
     public IRc4Engine? CryptoIn { get; private set; }
     public IRc4Engine? CryptoOut { get; private set; }
 

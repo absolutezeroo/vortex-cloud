@@ -22,4 +22,31 @@ public sealed class ObservabilityConfig
 
     /// <summary>Maximum number of audit events persisted per database round-trip.</summary>
     public int AuditBatchSize { get; init; } = 200;
+
+    /// <summary>Retry attempts when durable audit batch persistence fails.</summary>
+    public int AuditWriteRetryAttempts { get; init; } = 2;
+
+    /// <summary>Delay between retry attempts for failed durable audit writes.</summary>
+    public int AuditWriteRetryDelayMs { get; init; } = 250;
+
+    /// <summary>Path to dead-letter file for batches that cannot be written to DB.</summary>
+    public string AuditDeadLetterPath { get; init; } = "logs/audit-dead-letter.jsonl";
+
+    /// <summary>
+    /// Enables the native admin dashboard HTTP API. Off by default; it additionally refuses to start
+    /// unless <see cref="DashboardToken"/> is set, so there is never anonymous admin access.
+    /// </summary>
+    public bool DashboardEnabled { get; init; }
+
+    /// <summary>Host the dashboard binds to. Keep "localhost" unless a reverse proxy fronts it.</summary>
+    public string DashboardHost { get; init; } = "localhost";
+
+    /// <summary>TCP port for the dashboard HTTP API.</summary>
+    public int DashboardPort { get; init; } = 9000;
+
+    /// <summary>
+    /// Shared secret required on every dashboard request (header <c>X-Admin-Token</c> or
+    /// <c>?token=</c>). Empty disables the dashboard.
+    /// </summary>
+    public string DashboardToken { get; init; } = string.Empty;
 }

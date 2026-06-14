@@ -8,6 +8,9 @@ namespace Turbo.Primitives.Messages.Outgoing.Catalog;
 [GenerateSerializer, Immutable]
 public sealed record ClubGiftSelectedEventMessageComposer : IComposer
 {
-    [Id(0)] public required string ProductCode { get; init; }
-    [Id(1)] public required IReadOnlyList<CatalogProductSnapshot> Products { get; init; }
+    [Id(0)]
+    public required string ProductCode { get; init; }
+
+    [Id(1)]
+    public required IReadOnlyList<CatalogProductSnapshot> Products { get; init; }
 }

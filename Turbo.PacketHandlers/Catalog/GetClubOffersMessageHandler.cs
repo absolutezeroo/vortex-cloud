@@ -12,8 +12,10 @@ using Turbo.Primitives.Orleans;
 
 namespace Turbo.PacketHandlers.Catalog;
 
-public class GetClubOffersMessageHandler(IGrainFactory grainFactory, ICatalogClubOfferProvider clubOfferProvider)
-    : IMessageHandler<GetClubOffersMessage>
+public class GetClubOffersMessageHandler(
+    IGrainFactory grainFactory,
+    ICatalogClubOfferProvider clubOfferProvider
+) : IMessageHandler<GetClubOffersMessage>
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ICatalogClubOfferProvider _clubOfferProvider = clubOfferProvider;
@@ -39,22 +41,25 @@ public class GetClubOffersMessageHandler(IGrainFactory grainFactory, ICatalogClu
         foreach (var offer in _clubOfferProvider.GetAll())
         {
             var expiry = baseDate.AddMonths(offer.Months).AddDays(offer.ExtraDays);
-            personalizedOffers.Add(offer with
-            {
-                DaysLeftAfterPurchase = (int)(expiry - now).TotalDays,
-                Year = expiry.Year,
-                Month = expiry.Month,
-                Day = expiry.Day,
-            });
+            personalizedOffers.Add(
+                offer with
+                {
+                    DaysLeftAfterPurchase = (int)(expiry - now).TotalDays,
+                    Year = expiry.Year,
+                    Month = expiry.Month,
+                    Day = expiry.Day,
+                }
+            );
         }
 
         await ctx.SendComposerAsync(
-            new HabboClubOffersMessageComposer
-            {
-                Offers = personalizedOffers,
-                Source = message.RequestSource,
-            },
-            ct
-        ).ConfigureAwait(false);
+                new HabboClubOffersMessageComposer
+                {
+                    Offers = personalizedOffers,
+                    Source = message.RequestSource,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

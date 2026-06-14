@@ -8,6 +8,9 @@ namespace Turbo.Primitives.Messages.Outgoing.Marketplace;
 [GenerateSerializer, Immutable]
 public sealed record MarketPlaceOwnOffersEventMessageComposer : IComposer
 {
-    [Id(0)] public required int CreditsWaiting { get; init; }
-    [Id(1)] public required List<MarketplaceOfferSnapshot> Offers { get; init; }
+    [Id(0)]
+    public required int CreditsWaiting { get; init; }
+
+    [Id(1)]
+    public required List<MarketplaceOfferSnapshot> Offers { get; init; }
 }

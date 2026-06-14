@@ -29,12 +29,13 @@ public class GetRelationshipStatusInfoMessageHandler(IGrainFactory grainFactory)
             .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-            new RelationshipStatusInfoEventMessageComposer
-            {
-                UserId = message.UserId,
-                Relations = relations,
-            },
-            ct
-        ).ConfigureAwait(false);
+                new RelationshipStatusInfoEventMessageComposer
+                {
+                    UserId = message.UserId,
+                    Relations = relations,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

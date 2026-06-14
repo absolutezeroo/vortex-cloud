@@ -63,7 +63,9 @@ internal sealed class PlayerInventoryModule(PlayerPresenceGrain presenceGrain)
     }
 
     public Task OnFurnitureAddedAsync(FurnitureItemSnapshot snapshot, CancellationToken ct) =>
-        _presenceGrain.SendComposerAsync(new FurniListAddOrUpdateEventMessageComposer { Item = snapshot });
+        _presenceGrain.SendComposerAsync(
+            new FurniListAddOrUpdateEventMessageComposer { Item = snapshot }
+        );
 
     public Task OnFurnitureRemovedAsync(RoomObjectId itemId, CancellationToken ct) =>
         _presenceGrain.SendComposerAsync(

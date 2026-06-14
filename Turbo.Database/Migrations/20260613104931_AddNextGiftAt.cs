@@ -15,15 +15,14 @@ namespace Turbo.Database.Migrations
                 name: "next_gift_at",
                 table: "player_subscriptions",
                 type: "datetime(6)",
-                nullable: true);
+                nullable: true
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "next_gift_at",
-                table: "player_subscriptions");
+            migrationBuilder.DropColumn(name: "next_gift_at", table: "player_subscriptions");
         }
     }
 }

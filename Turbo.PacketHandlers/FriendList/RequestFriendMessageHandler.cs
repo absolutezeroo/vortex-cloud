@@ -31,13 +31,14 @@ public class RequestFriendMessageHandler(IGrainFactory grainFactory)
         if (targetId is null)
         {
             await ctx.SendComposerAsync(
-                new MessengerErrorMessageComposer
-                {
-                    ClientMessageId = 0,
-                    ErrorCode = FriendListErrorCodeType.FriendRequestNotFound,
-                },
-                ct
-            ).ConfigureAwait(false);
+                    new MessengerErrorMessageComposer
+                    {
+                        ClientMessageId = 0,
+                        ErrorCode = FriendListErrorCodeType.FriendRequestNotFound,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
             return;
         }
 
@@ -49,13 +50,14 @@ public class RequestFriendMessageHandler(IGrainFactory grainFactory)
         if (error.HasValue)
         {
             await ctx.SendComposerAsync(
-                new MessengerErrorMessageComposer
-                {
-                    ClientMessageId = 0,
-                    ErrorCode = error.Value,
-                },
-                ct
-            ).ConfigureAwait(false);
+                    new MessengerErrorMessageComposer
+                    {
+                        ClientMessageId = 0,
+                        ErrorCode = error.Value,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
         }
     }
 }

@@ -25,9 +25,7 @@ public class GetFriendRequestsMessageHandler(IGrainFactory grainFactory)
         var grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
         var requests = await grain.GetFriendRequestsAsync(ct).ConfigureAwait(false);
 
-        await ctx.SendComposerAsync(
-            new FriendRequestsMessageComposer { Requests = requests },
-            ct
-        ).ConfigureAwait(false);
+        await ctx.SendComposerAsync(new FriendRequestsMessageComposer { Requests = requests }, ct)
+            .ConfigureAwait(false);
     }
 }

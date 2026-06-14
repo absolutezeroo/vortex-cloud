@@ -23,10 +23,8 @@ public class DeclineFriendMessageHandler(IGrainFactory grainFactory)
 
         var grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
 
-        await grain.DeclineFriendRequestsAsync(
-            message.Friends ?? [],
-            message.DeclineAll,
-            ct
-        ).ConfigureAwait(false);
+        await grain
+            .DeclineFriendRequestsAsync(message.Friends ?? [], message.DeclineAll, ct)
+            .ConfigureAwait(false);
     }
 }

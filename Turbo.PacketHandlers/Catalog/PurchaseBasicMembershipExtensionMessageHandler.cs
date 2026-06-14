@@ -12,8 +12,10 @@ using Turbo.Primitives.Players.Enums;
 
 namespace Turbo.PacketHandlers.Catalog;
 
-public class PurchaseBasicMembershipExtensionMessageHandler(IGrainFactory grainFactory, ICatalogClubOfferProvider clubOfferProvider)
-    : IMessageHandler<PurchaseBasicMembershipExtensionMessage>
+public class PurchaseBasicMembershipExtensionMessageHandler(
+    IGrainFactory grainFactory,
+    ICatalogClubOfferProvider clubOfferProvider
+) : IMessageHandler<PurchaseBasicMembershipExtensionMessage>
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ICatalogClubOfferProvider _clubOfferProvider = clubOfferProvider;
@@ -33,42 +35,46 @@ public class PurchaseBasicMembershipExtensionMessageHandler(IGrainFactory grainF
 
         var playerGrain = _grainFactory.GetPlayerGrain(ctx.PlayerId);
 
-        await playerGrain.PurchaseClubAsync(offer.Months, false, offer.PriceCredits, ct)
+        await playerGrain
+            .PurchaseClubAsync(offer.Months, false, offer.PriceCredits, ct)
             .ConfigureAwait(false);
 
         var sub = await playerGrain.GetClubSubscriptionAsync(ct).ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-            new UserRightsMessage
-            {
-                ClubLevel = ClubLevelType.Club,
-                SecurityLevel = SecurityLevelType.None,
-                IsAmbassador = false,
-            },
-            ct
-        ).ConfigureAwait(false);
+                new UserRightsMessage
+                {
+                    ClubLevel = ClubLevelType.Club,
+                    SecurityLevel = SecurityLevelType.None,
+                    IsAmbassador = false,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
 
         if (sub.IsActive)
         {
             var daysLeft = sub.DaysLeft;
             var rem = daysLeft % 31;
             await ctx.SendComposerAsync(
-                new ScrSendUserInfoMessageComposer
-                {
-                    ProductName = "habbo_club",
-                    DaysToPeriodEnd = rem == 0 ? 31 : rem,
-                    MemberPeriods = sub.TotalMonths,
-                    PeriodsSubscribedAhead = daysLeft / 31 - (rem == 0 ? 1 : 0),
-                    ResponseType = 2,
-                    HasEverBeenMember = sub.TotalMonths > 0 || sub.IsActive,
-                    IsVIP = sub.IsVip,
-                    PastClubDays = sub.TotalMonths * 31,
-                    PastVipDays = 0,
-                    MinutesUntilExpiration = (int)(sub.ExpiresAt - DateTime.UtcNow).TotalMinutes,
-                    MinutesSinceLastModified = 0,
-                },
-                ct
-            ).ConfigureAwait(false);
+                    new ScrSendUserInfoMessageComposer
+                    {
+                        ProductName = "habbo_club",
+                        DaysToPeriodEnd = rem == 0 ? 31 : rem,
+                        MemberPeriods = sub.TotalMonths,
+                        PeriodsSubscribedAhead = daysLeft / 31 - (rem == 0 ? 1 : 0),
+                        ResponseType = 2,
+                        HasEverBeenMember = sub.TotalMonths > 0 || sub.IsActive,
+                        IsVIP = sub.IsVip,
+                        PastClubDays = sub.TotalMonths * 31,
+                        PastVipDays = 0,
+                        MinutesUntilExpiration = (int)
+                            (sub.ExpiresAt - DateTime.UtcNow).TotalMinutes,
+                        MinutesSinceLastModified = 0,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
         }
     }
 }

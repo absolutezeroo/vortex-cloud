@@ -12,8 +12,10 @@ using Turbo.Primitives.Orleans;
 
 namespace Turbo.PacketHandlers.Catalog;
 
-public class GetClubGiftInfoMessageHandler(IGrainFactory grainFactory, ICatalogClubGiftProvider clubGiftProvider)
-    : IMessageHandler<GetClubGiftInfoMessage>
+public class GetClubGiftInfoMessageHandler(
+    IGrainFactory grainFactory,
+    ICatalogClubGiftProvider clubGiftProvider
+) : IMessageHandler<GetClubGiftInfoMessage>
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ICatalogClubGiftProvider _clubGiftProvider = clubGiftProvider;
@@ -35,27 +37,31 @@ public class GetClubGiftInfoMessageHandler(IGrainFactory grainFactory, ICatalogC
         var offers = _clubGiftProvider.GetAll();
 
         var now = DateTime.UtcNow;
-        var daysUntilNextGift = sub.IsActive && sub.NextGiftAt.HasValue && sub.NextGiftAt.Value > now
-            ? (int)Math.Ceiling((sub.NextGiftAt.Value - now).TotalDays)
-            : 0;
+        var daysUntilNextGift =
+            sub.IsActive && sub.NextGiftAt.HasValue && sub.NextGiftAt.Value > now
+                ? (int)Math.Ceiling((sub.NextGiftAt.Value - now).TotalDays)
+                : 0;
 
-        var giftData = offers.Select(o => new ClubGiftOfferData
-        {
-            OfferId = o.Id,
-            IsVip = o.ClubLevel > 1,
-            DaysRequired = 0,
-            IsSelectable = sub.GiftsAvailable > 0,
-        }).ToList();
+        var giftData = offers
+            .Select(o => new ClubGiftOfferData
+            {
+                OfferId = o.Id,
+                IsVip = o.ClubLevel > 1,
+                DaysRequired = 0,
+                IsSelectable = sub.GiftsAvailable > 0,
+            })
+            .ToList();
 
         await ctx.SendComposerAsync(
-            new ClubGiftInfoEventMessageComposer
-            {
-                DaysUntilNextGift = daysUntilNextGift,
-                GiftsAvailable = sub.GiftsAvailable,
-                Offers = offers,
-                GiftData = giftData,
-            },
-            ct
-        ).ConfigureAwait(false);
+                new ClubGiftInfoEventMessageComposer
+                {
+                    DaysUntilNextGift = daysUntilNextGift,
+                    GiftsAvailable = sub.GiftsAvailable,
+                    Offers = offers,
+                    GiftData = giftData,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

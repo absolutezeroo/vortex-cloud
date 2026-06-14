@@ -24,8 +24,8 @@ public class SetActivatedBadgesMessageHandler(IDbContextFactory<TurboDbContext> 
 
         await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        await dbCtx.PlayerBadges
-            .Where(b => b.PlayerEntityId == ctx.PlayerId && b.SlotId > 0)
+        await dbCtx
+            .PlayerBadges.Where(b => b.PlayerEntityId == ctx.PlayerId && b.SlotId > 0)
             .ExecuteUpdateAsync(up => up.SetProperty(b => b.SlotId, 0), ct)
             .ConfigureAwait(false);
 
@@ -34,8 +34,10 @@ public class SetActivatedBadgesMessageHandler(IDbContextFactory<TurboDbContext> 
             if (slotId <= 0 || string.IsNullOrWhiteSpace(badgeCode))
                 continue;
 
-            await dbCtx.PlayerBadges
-                .Where(b => b.PlayerEntityId == ctx.PlayerId && b.BadgeCode == badgeCode)
+            await dbCtx
+                .PlayerBadges.Where(b =>
+                    b.PlayerEntityId == ctx.PlayerId && b.BadgeCode == badgeCode
+                )
                 .ExecuteUpdateAsync(up => up.SetProperty(b => b.SlotId, slotId), ct)
                 .ConfigureAwait(false);
         }

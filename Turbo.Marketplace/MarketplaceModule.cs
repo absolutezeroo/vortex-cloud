@@ -8,7 +8,5 @@ public sealed class MarketplaceModule : IHostPluginModule
 {
     public string Key => "turbo-marketplace";
 
-    public void ConfigureServices(IServiceCollection services, HostApplicationBuilder builder)
-    {
-    }
+    public void ConfigureServices(IServiceCollection services, HostApplicationBuilder builder) { }
 }

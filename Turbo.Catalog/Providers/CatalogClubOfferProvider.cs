@@ -34,29 +34,31 @@ public sealed class CatalogClubOfferProvider(
     {
         await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var entities = await dbCtx.CatalogClubOffers
-            .AsNoTracking()
+        var entities = await dbCtx
+            .CatalogClubOffers.AsNoTracking()
             .OrderBy(x => x.SortOrder)
             .ThenBy(x => x.Id)
             .ToListAsync(ct)
             .ConfigureAwait(false);
 
-        _offers = entities.Select(e => new ClubOffer
-        {
-            OfferId = e.Id,
-            ProductCode = e.ProductCode,
-            PriceCredits = e.PriceCredits,
-            PriceActivityPoints = e.PriceActivityPoints,
-            PriceActivityPointType = e.PriceActivityPointType,
-            IsVip = e.IsVip,
-            Months = e.Months,
-            ExtraDays = e.ExtraDays,
-            IsGiftable = e.IsGiftable,
-            DaysLeftAfterPurchase = 0,
-            Year = 0,
-            Month = 0,
-            Day = 0,
-        }).ToList();
+        _offers = entities
+            .Select(e => new ClubOffer
+            {
+                OfferId = e.Id,
+                ProductCode = e.ProductCode,
+                PriceCredits = e.PriceCredits,
+                PriceActivityPoints = e.PriceActivityPoints,
+                PriceActivityPointType = e.PriceActivityPointType,
+                IsVip = e.IsVip,
+                Months = e.Months,
+                ExtraDays = e.ExtraDays,
+                IsGiftable = e.IsGiftable,
+                DaysLeftAfterPurchase = 0,
+                Year = 0,
+                Month = 0,
+                Day = 0,
+            })
+            .ToList();
 
         _logger.LogInformation("Loaded {Count} HC club offers from database", _offers.Count);
     }

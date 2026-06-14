@@ -44,7 +44,10 @@ internal sealed class PlayerVaultGrain(
         return Task.FromResult(snapshots);
     }
 
-    public async Task<bool> ClaimCategoryAsync(VaultRewardCategoryType category, CancellationToken ct)
+    public async Task<bool> ClaimCategoryAsync(
+        VaultRewardCategoryType category,
+        CancellationToken ct
+    )
     {
         var toGrant = _pendingRewards
             .Where(r => (VaultRewardCategoryType)r.RewardCategory == category)
@@ -75,8 +78,8 @@ internal sealed class PlayerVaultGrain(
 
         await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        await dbCtx.PlayerVaultIncomeRewards
-            .Where(r => ids.Contains(r.Id))
+        await dbCtx
+            .PlayerVaultIncomeRewards.Where(r => ids.Contains(r.Id))
             .ExecuteDeleteAsync(ct)
             .ConfigureAwait(false);
 
@@ -109,12 +112,9 @@ internal sealed class PlayerVaultGrain(
             if (existing is not null)
             {
                 existing.Amount += amount;
-                await dbCtx.PlayerVaultIncomeRewards
-                    .Where(r => r.Id == existing.Id)
-                    .ExecuteUpdateAsync(
-                        up => up.SetProperty(p => p.Amount, existing.Amount),
-                        ct
-                    )
+                await dbCtx
+                    .PlayerVaultIncomeRewards.Where(r => r.Id == existing.Id)
+                    .ExecuteUpdateAsync(up => up.SetProperty(p => p.Amount, existing.Amount), ct)
                     .ConfigureAwait(false);
                 return;
             }
@@ -141,8 +141,8 @@ internal sealed class PlayerVaultGrain(
 
         await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var rows = await dbCtx.PlayerVaultIncomeRewards
-            .AsNoTracking()
+        var rows = await dbCtx
+            .PlayerVaultIncomeRewards.AsNoTracking()
             .Where(r => r.PlayerEntityId == (int)this.GetPrimaryKeyLong())
             .ToListAsync(ct)
             .ConfigureAwait(false);

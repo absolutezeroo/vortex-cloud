@@ -9,7 +9,15 @@ namespace Turbo.Primitives.Players.Grains;
 public interface IPlayerNavigatorGrain : IGrainWithIntegerKey
 {
     Task<NavigatorWindowPreferencesSnapshot> GetWindowPreferencesAsync(CancellationToken ct);
-    Task UpdateWindowPreferencesAsync(int x, int y, int width, int height, bool leftPaneHidden, int resultsMode, CancellationToken ct);
+    Task UpdateWindowPreferencesAsync(
+        int x,
+        int y,
+        int width,
+        int height,
+        bool leftPaneHidden,
+        int resultsMode,
+        CancellationToken ct
+    );
 
     Task<List<NavigatorQuickLinkSnapshot>> GetSavedSearchesAsync(CancellationToken ct);
     Task AddSavedSearchAsync(string searchCode, string filter, CancellationToken ct);

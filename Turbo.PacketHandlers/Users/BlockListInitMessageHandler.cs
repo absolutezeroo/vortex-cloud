@@ -26,8 +26,9 @@ public class BlockListInitMessageHandler(IGrainFactory grainFactory)
         var blockedIds = await grain.GetBlockedUserIdsAsync(ct).ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-            new BlockListMessageComposer { BlockedPlayerIds = blockedIds },
-            ct
-        ).ConfigureAwait(false);
+                new BlockListMessageComposer { BlockedPlayerIds = blockedIds },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

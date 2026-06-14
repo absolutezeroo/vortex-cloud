@@ -25,13 +25,16 @@ public sealed class NavigatorProvider(
 
     private ImmutableArray<NavigatorTopLevelContextSnapshot> _topLevelContexts = [];
     private ImmutableArray<NavigatorFlatCategorySnapshot> _flatCategories = [];
-    private ImmutableDictionary<string, NavigatorQueryType> _queryTypeBySearchCode = ImmutableDictionary<string, NavigatorQueryType>.Empty;
+    private ImmutableDictionary<string, NavigatorQueryType> _queryTypeBySearchCode =
+        ImmutableDictionary<string, NavigatorQueryType>.Empty;
 
     public Task<ImmutableArray<NavigatorTopLevelContextSnapshot>> GetTopLevelContextsAsync() =>
         Task.FromResult(_topLevelContexts);
 
     public NavigatorQueryType ResolveQueryType(string searchCode) =>
-        _queryTypeBySearchCode.TryGetValue(searchCode, out var qt) ? qt : NavigatorQueryType.AllRooms;
+        _queryTypeBySearchCode.TryGetValue(searchCode, out var qt)
+            ? qt
+            : NavigatorQueryType.AllRooms;
 
     public ImmutableArray<NavigatorFlatCategorySnapshot> GetFlatCategories() => _flatCategories;
 
@@ -156,8 +159,10 @@ public sealed class NavigatorProvider(
         ];
 
         _queryTypeBySearchCode = _topLevelContexts
-            .SelectMany(ctx => ctx.QuickLinks.Select(ql => (ql.SearchCode, ql.QueryType))
-                .Append((ctx.SearchCode, ctx.QueryType)))
+            .SelectMany(ctx =>
+                ctx.QuickLinks.Select(ql => (ql.SearchCode, ql.QueryType))
+                    .Append((ctx.SearchCode, ctx.QueryType))
+            )
             .ToImmutableDictionary(x => x.SearchCode, x => x.QueryType);
 
         var flatCatEntities = await dbCtx
@@ -191,11 +196,7 @@ public sealed class NavigatorProvider(
 
     private static IQueryable<Database.Entities.Room.RoomEntity> BuildRoomQuery(
         TurboDbContext dbCtx
-    ) =>
-        dbCtx
-            .Rooms.AsNoTracking()
-            .Where(x => x.DeletedAt == null)
-            .Include(x => x.PlayerEntity);
+    ) => dbCtx.Rooms.AsNoTracking().Where(x => x.DeletedAt == null).Include(x => x.PlayerEntity);
 }
 
 file static class RoomQueryExtensions

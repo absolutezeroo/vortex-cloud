@@ -9,6 +9,7 @@ namespace Turbo.Observability.Diagnostics;
 /// <item>1000-1099 observability core</item>
 /// <item>1100-1199 networking / packet pipeline</item>
 /// <item>1200-1299 audit pipeline</item>
+/// <item>1300-1399 dashboard</item>
 /// <item>2000-2099 authentication</item>
 /// <item>3000-3099 economy</item>
 /// </list>
@@ -22,4 +23,17 @@ public static class TurboEventIds
 
     public static readonly EventId AuditDropped = new(1200, nameof(AuditDropped));
     public static readonly EventId AuditWriteFailed = new(1201, nameof(AuditWriteFailed));
+    public static readonly EventId AuditWriteRetry = new(1202, nameof(AuditWriteRetry));
+    public static readonly EventId AuditWriteDeadLettered = new(
+        1203,
+        nameof(AuditWriteDeadLettered)
+    );
+    public static readonly EventId AuditDeadLetterWriteFailed = new(
+        1204,
+        nameof(AuditDeadLetterWriteFailed)
+    );
+
+    public static readonly EventId DashboardReady = new(1300, nameof(DashboardReady));
+    public static readonly EventId DashboardDisabled = new(1301, nameof(DashboardDisabled));
+    public static readonly EventId DashboardFault = new(1302, nameof(DashboardFault));
 }

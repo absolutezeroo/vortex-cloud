@@ -9,8 +9,7 @@ using Turbo.Primitives.Orleans;
 
 namespace Turbo.PacketHandlers.FriendList;
 
-public class VisitUserMessageHandler(IGrainFactory grainFactory)
-    : IMessageHandler<VisitUserMessage>
+public class VisitUserMessageHandler(IGrainFactory grainFactory) : IMessageHandler<VisitUserMessage>
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
 
@@ -37,9 +36,13 @@ public class VisitUserMessageHandler(IGrainFactory grainFactory)
         if (!isOnline)
         {
             await ctx.SendComposerAsync(
-                new FollowFriendFailedMessageComposer { ErrorCode = FollowFriendErrorCodeType.Offline },
-                ct
-            ).ConfigureAwait(false);
+                    new FollowFriendFailedMessageComposer
+                    {
+                        ErrorCode = FollowFriendErrorCodeType.Offline,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
             return;
         }
 
@@ -48,9 +51,13 @@ public class VisitUserMessageHandler(IGrainFactory grainFactory)
         if (activeRoom.RoomId <= 0)
         {
             await ctx.SendComposerAsync(
-                new FollowFriendFailedMessageComposer { ErrorCode = FollowFriendErrorCodeType.HotelView },
-                ct
-            ).ConfigureAwait(false);
+                    new FollowFriendFailedMessageComposer
+                    {
+                        ErrorCode = FollowFriendErrorCodeType.HotelView,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
             return;
         }
 

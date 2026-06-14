@@ -145,8 +145,8 @@ internal class PlayerDirectoryGrain(IDbContextFactory<TurboDbContext> dbCtxFacto
 
         await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
-        var players = await dbCtx.Players
-            .AsNoTracking()
+        var players = await dbCtx
+            .Players.AsNoTracking()
             .Where(p => p.Name.Contains(query) && p.DeletedAt == null)
             .OrderBy(p => p.Name)
             .Take(limit)
@@ -160,18 +160,20 @@ internal class PlayerDirectoryGrain(IDbContextFactory<TurboDbContext> dbCtxFacto
             })
             .ToListAsync(ct);
 
-        return players.Select(p => new MessengerSearchResultSnapshot
-        {
-            PlayerId = PlayerId.Parse(p.Id),
-            Name = p.Name,
-            Motto = p.Motto ?? string.Empty,
-            Online = false,
-            FollowingAllowed = true,
-            UnknownString = string.Empty,
-            Gender = p.Gender,
-            Figure = p.Figure,
-            RealName = string.Empty,
-        }).ToList();
+        return players
+            .Select(p => new MessengerSearchResultSnapshot
+            {
+                PlayerId = PlayerId.Parse(p.Id),
+                Name = p.Name,
+                Motto = p.Motto ?? string.Empty,
+                Online = false,
+                FollowingAllowed = true,
+                UnknownString = string.Empty,
+                Gender = p.Gender,
+                Figure = p.Figure,
+                RealName = string.Empty,
+            })
+            .ToList();
     }
 
     private void SetNameCache(PlayerId playerId, string name)

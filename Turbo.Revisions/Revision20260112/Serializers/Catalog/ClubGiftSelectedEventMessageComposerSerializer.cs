@@ -12,9 +12,7 @@ internal class ClubGiftSelectedEventMessageComposerSerializer(int header)
         ClubGiftSelectedEventMessageComposer message
     )
     {
-        packet
-            .WriteString(message.ProductCode)
-            .WriteInteger(message.Products.Count);
+        packet.WriteString(message.ProductCode).WriteInteger(message.Products.Count);
 
         foreach (var product in message.Products)
             CatalogProductSerializer.Serialize(packet, product);

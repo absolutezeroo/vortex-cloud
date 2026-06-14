@@ -26,8 +26,9 @@ public class GetIgnoredUsersMessageHandler(IGrainFactory grainFactory)
         var ignoredIds = await grain.GetIgnoredUserIdsAsync(ct).ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-            new IgnoredUsersMessageComposer { IgnoredUserIds = ignoredIds },
-            ct
-        ).ConfigureAwait(false);
+                new IgnoredUsersMessageComposer { IgnoredUserIds = ignoredIds },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

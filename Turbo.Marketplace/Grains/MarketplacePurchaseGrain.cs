@@ -58,7 +58,10 @@ public sealed class MarketplacePurchaseGrain(
         if (!removed)
             return (1, 0);
 
-        var furniType = snapshot.Definition.ProductType == Turbo.Primitives.Furniture.Enums.ProductType.Wall ? 2 : 1;
+        var furniType =
+            snapshot.Definition.ProductType == Turbo.Primitives.Furniture.Enums.ProductType.Wall
+                ? 2
+                : 1;
 
         var offer = new MarketplaceOfferEntity
         {
@@ -84,8 +87,8 @@ public sealed class MarketplacePurchaseGrain(
     {
         await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var offer = await dbCtx.MarketplaceOffers
-            .FirstOrDefaultAsync(
+        var offer = await dbCtx
+            .MarketplaceOffers.FirstOrDefaultAsync(
                 o => o.Id == offerId && o.SellerEntityId == (int)this.GetPrimaryKeyLong(),
                 ct
             )
@@ -113,12 +116,10 @@ public sealed class MarketplacePurchaseGrain(
         await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         var now = DateTime.UtcNow;
-        var offer = await dbCtx.MarketplaceOffers
-            .FirstOrDefaultAsync(
+        var offer = await dbCtx
+            .MarketplaceOffers.FirstOrDefaultAsync(
                 o =>
-                    o.Id == offerId
-                    && o.State == MarketplaceOfferState.Active
-                    && o.ExpiresAt > now,
+                    o.Id == offerId && o.State == MarketplaceOfferState.Active && o.ExpiresAt > now,
                 ct
             )
             .ConfigureAwait(false);
@@ -160,12 +161,11 @@ public sealed class MarketplacePurchaseGrain(
     {
         await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var soldOffers = await dbCtx.MarketplaceOffers
-            .Where(
-                o =>
-                    o.SellerEntityId == (int)this.GetPrimaryKeyLong()
-                    && o.State == MarketplaceOfferState.Sold
-                    && o.CreditsOwed > 0
+        var soldOffers = await dbCtx
+            .MarketplaceOffers.Where(o =>
+                o.SellerEntityId == (int)this.GetPrimaryKeyLong()
+                && o.State == MarketplaceOfferState.Sold
+                && o.CreditsOwed > 0
             )
             .ToListAsync(ct)
             .ConfigureAwait(false);
@@ -195,11 +195,10 @@ public sealed class MarketplacePurchaseGrain(
         await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         var now = DateTime.UtcNow;
-        var offers = await dbCtx.MarketplaceOffers
-            .Where(
-                o =>
-                    o.SellerEntityId == (int)this.GetPrimaryKeyLong()
-                    && o.State != MarketplaceOfferState.Cancelled
+        var offers = await dbCtx
+            .MarketplaceOffers.Where(o =>
+                o.SellerEntityId == (int)this.GetPrimaryKeyLong()
+                && o.State != MarketplaceOfferState.Cancelled
             )
             .ToListAsync(ct)
             .ConfigureAwait(false);

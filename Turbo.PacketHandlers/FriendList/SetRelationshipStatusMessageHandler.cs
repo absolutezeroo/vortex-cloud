@@ -23,10 +23,8 @@ public class SetRelationshipStatusMessageHandler(IGrainFactory grainFactory)
 
         var grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
 
-        await grain.SetRelationshipStatusAsync(
-            message.FriendId,
-            message.RelationType,
-            ct
-        ).ConfigureAwait(false);
+        await grain
+            .SetRelationshipStatusAsync(message.FriendId, message.RelationType, ct)
+            .ConfigureAwait(false);
     }
 }

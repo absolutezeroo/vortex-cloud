@@ -30,22 +30,20 @@ public sealed class MarketplaceSearchGrain(IDbContextFactory<TurboDbContext> dbC
 
         var now = DateTime.UtcNow;
 
-        var query = dbCtx.MarketplaceOffers
-            .Include(o => o.FurnitureDefinitionEntity)
-            .Where(
-                o =>
-                    o.State == MarketplaceOfferState.Active
-                    && o.ExpiresAt > now
-                    && o.Price >= minPrice
-                    && (maxPrice <= 0 || o.Price <= maxPrice)
+        var query = dbCtx
+            .MarketplaceOffers.Include(o => o.FurnitureDefinitionEntity)
+            .Where(o =>
+                o.State == MarketplaceOfferState.Active
+                && o.ExpiresAt > now
+                && o.Price >= minPrice
+                && (maxPrice <= 0 || o.Price <= maxPrice)
             );
 
         if (!string.IsNullOrWhiteSpace(searchQuery))
         {
-            query = query.Where(
-                o =>
-                    o.FurnitureDefinitionEntity != null
-                    && o.FurnitureDefinitionEntity.Name.Contains(searchQuery)
+            query = query.Where(o =>
+                o.FurnitureDefinitionEntity != null
+                && o.FurnitureDefinitionEntity.Name.Contains(searchQuery)
             );
         }
 
@@ -53,8 +51,7 @@ public sealed class MarketplaceSearchGrain(IDbContextFactory<TurboDbContext> dbC
 
         var totalFound = raw.Count;
 
-        var grouped = raw
-            .GroupBy(o => o.SpriteId)
+        var grouped = raw.GroupBy(o => o.SpriteId)
             .Select(g =>
             {
                 var avgPrice = (int)g.Average(o => o.Price);
@@ -95,12 +92,11 @@ public sealed class MarketplaceSearchGrain(IDbContextFactory<TurboDbContext> dbC
 
         var now = DateTime.UtcNow;
 
-        var offers = await dbCtx.MarketplaceOffers
-            .Where(
-                o =>
-                    o.SpriteId == spriteId
-                    && o.State == MarketplaceOfferState.Active
-                    && o.ExpiresAt > now
+        var offers = await dbCtx
+            .MarketplaceOffers.Where(o =>
+                o.SpriteId == spriteId
+                && o.State == MarketplaceOfferState.Active
+                && o.ExpiresAt > now
             )
             .ToListAsync(ct)
             .ConfigureAwait(false);
