@@ -114,9 +114,114 @@ body {
     background: linear-gradient(160deg, rgba(80, 53, 12, 0.46), rgba(17, 27, 42, 0.88));
 }
 
+.metric-card--critical {
+    border-color: rgba(255, 107, 107, 0.45);
+    background: linear-gradient(160deg, rgba(78, 14, 14, 0.56), rgba(17, 27, 42, 0.88));
+}
+
 .panel h2 {
     margin: 0 0 12px;
     font-size: 1.05rem;
+}
+
+h3 {
+    margin: 20px 0 10px;
+    font-size: 0.95rem;
+    color: var(--muted);
+}
+
+.incident-overall {
+    margin: 0 0 8px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+.incident-overall--healthy {
+    border-color: rgba(87, 226, 170, 0.3);
+    color: var(--ok);
+}
+
+.incident-overall--degraded {
+    border-color: rgba(255, 213, 101, 0.45);
+    color: #ffb56b;
+}
+
+.incident-overall--critical {
+    border-color: rgba(255, 107, 107, 0.45);
+    color: var(--danger);
+}
+
+.incident-signals {
+    margin-top: 8px;
+    display: grid;
+    gap: 8px;
+}
+
+.incident-signal {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.incident-signal--degraded {
+    border-color: rgba(255, 213, 101, 0.45);
+}
+
+.incident-signal--critical {
+    border-color: rgba(255, 107, 107, 0.45);
+}
+
+.incident-signal-title {
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    align-items: center;
+    font-weight: 600;
+}
+
+.incident-badge {
+    border-radius: 999px;
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+    font-size: 0.75rem;
+}
+
+.incident-badge.incident-signal--degraded {
+    border-color: rgba(255, 213, 101, 0.65);
+    color: #ffca76;
+}
+
+.incident-badge.incident-signal--critical {
+    border-color: rgba(255, 107, 107, 0.65);
+    color: var(--danger);
+}
+
+.incident-signal-code {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 0.74rem;
+    word-break: break-word;
+}
+
+.incident-signal-summary,
+.incident-signal-meta {
+    margin: 6px 0 0;
+    font-size: 0.82rem;
+}
+
+.incident-signal-meta {
+    color: var(--muted);
+}
+
+#incidentTopGroups {
+    display: block;
+    margin-top: 10px;
+    width: 100%;
+    overflow-x: auto;
 }
 
 .search-form {

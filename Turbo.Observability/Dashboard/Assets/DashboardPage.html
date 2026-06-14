@@ -31,6 +31,29 @@
 
         <section class="panel">
             <div class="panel-head">
+                <h2>Live incidents</h2>
+                <button id="refreshIncidents" type="button">Refresh</button>
+            </div>
+            <p id="incidentOverall" class="muted incident-overall">No incident data yet.</p>
+            <div id="incidentSignals" class="incident-signals"></div>
+            <h3>Top error groups</h3>
+            <table id="incidentTopGroups" aria-live="polite">
+                <thead>
+                    <tr>
+                        <th>fingerprint</th>
+                        <th>source / operation</th>
+                        <th>type</th>
+                        <th>total occurrences</th>
+                        <th>last seen</th>
+                    </tr>
+                </thead>
+                <tbody id="incidentTopGroupsRows"></tbody>
+            </table>
+            <div id="incidentTopGroupsEmpty" class="muted">No error groups in the current window.</div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
                 <h2>Recent audit events</h2>
                 <button id="refreshAudit" type="button">Refresh</button>
             </div>

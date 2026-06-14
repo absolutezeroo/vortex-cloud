@@ -1,14 +1,14 @@
-using System.Diagnostics;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Networking;
-using Turbo.Primitives.Players;
-using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Observability;
+using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Players;
 
 namespace Turbo.Messages;
 
@@ -45,7 +45,12 @@ public sealed class MessageSystem(
             : ToPlayerId(_sessionGateway.GetPlayerId(meta.SessionKey));
         var roomId = await ResolveRoomIdAsync(actorId).ConfigureAwait(false);
 
-        using var scope = _contextAccessor.BeginScope(operation, meta?.SessionKey.ToString());
+        using var scope = _contextAccessor.BeginScope(
+            operation,
+            meta?.SessionKey.ToString(),
+            playerId: actorId,
+            roomId: roomId
+        );
 
         _metrics.PacketReceived(operation, actorId, roomId);
         var startedAt = Stopwatch.GetTimestamp();
@@ -70,7 +75,8 @@ public sealed class MessageSystem(
         }
     }
 
-    private static long? ToPlayerId(PlayerId playerId) => playerId.Value > 0 ? playerId.Value : null;
+    private static long? ToPlayerId(PlayerId playerId) =>
+        playerId.Value > 0 ? playerId.Value : null;
 
     private async Task<int?> ResolveRoomIdAsync(long? actorId)
     {

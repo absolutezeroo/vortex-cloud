@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Turbo.Authentication.Configuration;
 using Turbo.Contracts.Plugins;
 using Turbo.Primitives.Authentication;
-using Turbo.Authentication.Configuration;
 
 namespace Turbo.Authentication;
 

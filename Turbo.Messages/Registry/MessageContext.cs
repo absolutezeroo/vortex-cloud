@@ -16,6 +16,7 @@ public sealed class MessageContext(ISessionContext session, PlayerId playerId, R
     public PlayerId PlayerId => _playerId;
     public RoomId RoomId => _roomId;
     public SessionKey SessionKey => _session.SessionKey;
+    public string? RemoteIpAddress => _session.RemoteIpAddress;
 
     public ActionContext AsActionContext() =>
         new()

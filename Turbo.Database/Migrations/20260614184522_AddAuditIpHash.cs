@@ -15,12 +15,14 @@ namespace Turbo.Database.Migrations
                 table: "audit_events",
                 type: "varchar(64)",
                 maxLength: 64,
-                nullable: true);
+                nullable: true
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_audit_events_ip_hash",
                 table: "audit_events",
-                column: "ip_hash");
+                column: "ip_hash"
+            );
         }
 
         /// <inheritdoc />

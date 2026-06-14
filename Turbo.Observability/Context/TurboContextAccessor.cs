@@ -43,17 +43,21 @@ public sealed class TurboContextAccessor : ITurboContextAccessor
     public ITurboTraceScope BeginScope(
         string operation,
         string? sessionKey = null,
-        CorrelationId? correlationId = null
+        CorrelationId? correlationId = null,
+        long? playerId = null,
+        int? roomId = null
     )
     {
         var previous = Ambient.Value;
         var id = correlationId ?? CorrelationId.New();
+        var resolvedPlayerId = playerId ?? previous?.PlayerId;
+        var resolvedRoomId = roomId ?? previous?.RoomId;
         var context = new TurboContext(
             id,
             operation,
             sessionKey ?? previous?.SessionKey,
-            previous?.PlayerId,
-            previous?.RoomId
+            resolvedPlayerId,
+            resolvedRoomId
         );
 
         Ambient.Value = context;

@@ -10,7 +10,9 @@ namespace Turbo.Observability.Runtime;
 public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : ILiveStatsAggregator
 {
     private readonly object _sync = new();
-    private readonly TimeSpan _window = TimeSpan.FromSeconds(Math.Max(1, config.Value.LiveStatsWindowSeconds));
+    private readonly TimeSpan _window = TimeSpan.FromSeconds(
+        Math.Max(1, config.Value.LiveStatsWindowSeconds)
+    );
     private readonly int _topK = Math.Max(1, config.Value.LiveStatsTopK);
     private readonly Queue<DateTime> _receivedTimestamps = [];
     private readonly Queue<DateTime> _failedTimestamps = [];
@@ -44,7 +46,11 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
         }
     }
 
-    public void RecordPacketCompleted(long? actorId = null, int? roomId = null, double elapsedMilliseconds = 0)
+    public void RecordPacketCompleted(
+        long? actorId = null,
+        int? roomId = null,
+        double elapsedMilliseconds = 0
+    )
     {
         var now = DateTime.UtcNow;
 
@@ -157,7 +163,9 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
         _window.TotalSeconds <= 0 ? 0 : count * 60d / _window.TotalSeconds;
 
     private sealed record LatencySample(DateTime Timestamp, double DurationMs);
+
     private sealed record AbuserSample(DateTime Timestamp, int ActorId);
+
     private sealed record RoomSample(DateTime Timestamp, int RoomId);
 }
 
@@ -186,4 +194,5 @@ public sealed record LiveStatsSnapshot(
 );
 
 public sealed record LiveAbuserSnapshot(int PlayerId, double PacketsPerMinute);
+
 public sealed record LiveRoomSnapshot(int RoomId, double PacketsPerMinute);

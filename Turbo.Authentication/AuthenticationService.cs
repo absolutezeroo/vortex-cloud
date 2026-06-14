@@ -1,12 +1,12 @@
-using System.Threading;
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Turbo.Database.Context;
 using Turbo.Authentication.Configuration;
+using Turbo.Database.Context;
 using Turbo.Primitives.Authentication;
 using Turbo.Primitives.Events;
 
@@ -62,10 +62,7 @@ public sealed class AuthenticationService(
             // }
 
             await _events
-                .PublishAsync(
-                    new PlayerLoggedInEvent(entity.PlayerEntityId, HashIp(remoteIp)),
-                    ct
-                )
+                .PublishAsync(new PlayerLoggedInEvent(entity.PlayerEntityId, HashIp(remoteIp)), ct)
                 .ConfigureAwait(false);
 
             return entity.PlayerEntityId;

@@ -9,6 +9,11 @@
     const queryInput = document.getElementById('queryInput');
     const searchResult = document.getElementById('searchResult');
     const refreshAuditBtn = document.getElementById('refreshAudit');
+    const refreshIncidentsBtn = document.getElementById('refreshIncidents');
+    const incidentOverallEl = document.getElementById('incidentOverall');
+    const incidentSignalsEl = document.getElementById('incidentSignals');
+    const incidentTopGroupsRowsEl = document.getElementById('incidentTopGroupsRows');
+    const incidentTopGroupsEmptyEl = document.getElementById('incidentTopGroupsEmpty');
 
     const numberFormatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
     const decimalFormatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
@@ -67,6 +72,22 @@
         }
     }
 
+    function severityClass(severity) {
+        if (!severity) {
+            return '';
+        }
+
+        if (severity.toLowerCase() === 'critical') {
+            return 'incident-signal--critical';
+        }
+
+        if (severity.toLowerCase() === 'degraded') {
+            return 'incident-signal--degraded';
+        }
+
+        return '';
+    }
+
     function renderOverviewCard(data) {
         const live = data.live || {};
         cardsEl.innerHTML = '';
@@ -109,6 +130,11 @@
             { label: 'Audit total', value: numberFormatter.format(data.totals?.audit || 0) },
             { label: 'Ledger total', value: numberFormatter.format(data.totals?.ledger || 0) },
             { label: 'Item events total', value: numberFormatter.format(data.totals?.items || 0) },
+            {
+                label: 'Performance logs total',
+                value: numberFormatter.format(data.totals?.performance || 0),
+                detail: 'client telemetry payload count',
+            },
         ];
 
         cards.forEach((item) => {
@@ -175,6 +201,93 @@
         }
     }
 
+    function renderIncidentRows(rows) {
+        if (!rows?.length) {
+            incidentSignalsEl.innerHTML = '<p class="muted">No active incidents.</p>';
+            return;
+        }
+
+        incidentSignalsEl.innerHTML = rows
+            .map((row) => {
+                const severity = escapeHtml(row.severity || 'healthy');
+                const title = escapeHtml(row.title || 'Incident');
+                const summary = escapeHtml(row.summary || '');
+                const code = escapeHtml(row.code || '');
+                const observed = Number.parseFloat(row.observed || 0);
+                const threshold = Number.parseFloat(row.threshold || 0);
+
+                return `
+                    <article class="incident-signal ${severityClass(severity)}">
+                        <p class="incident-signal-title">${title}
+                            <span class="incident-badge ${severityClass(severity)}">${severity}</span>
+                        </p>
+                        <p class="incident-signal-code">${code}</p>
+                        <p class="incident-signal-summary">${summary}</p>
+                        <p class="incident-signal-meta">Observed: ${decimalFormatter.format(observed)} / Threshold: ${decimalFormatter.format(threshold)}</p>
+                    </article>
+                `;
+            })
+            .join('');
+    }
+
+    function renderTopErrorGroups(groups) {
+        if (!groups?.length) {
+            incidentTopGroupsRowsEl.innerHTML = '';
+            incidentTopGroupsEmptyEl.style.display = 'block';
+            return;
+        }
+
+        incidentTopGroupsEmptyEl.style.display = 'none';
+
+        incidentTopGroupsRowsEl.innerHTML = groups
+            .map((group) => {
+                const fingerprint = escapeHtml(group.fingerprint || 'n/a');
+                const source = escapeHtml(`${group.source || 'n/a'} / ${group.operation || 'n/a'}`);
+                const type = escapeHtml(group.exceptionType || 'n/a');
+                const occurrences = Number.parseFloat(group.totalOccurrences || 0);
+                const lastSeen = escapeHtml(group.lastSeenAt || '');
+
+                return `
+                    <tr>
+                        <td><code>${fingerprint}</code></td>
+                        <td>${source}</td>
+                        <td>${type}</td>
+                        <td>${numberFormatter.format(occurrences)}</td>
+                        <td class="muted">${lastSeen}</td>
+                    </tr>
+                `;
+            })
+            .join('');
+    }
+
+    async function refreshIncidents() {
+        try {
+            const data = await request('/api/incidents');
+
+            const overall = (data?.overallSeverity || 'Healthy').toUpperCase();
+            const normalizedOverall =
+                overall === 'CRITICAL'
+                    ? 'Critical'
+                    : overall === 'DEGRADED'
+                        ? 'Degraded'
+                        : 'Healthy';
+
+            incidentOverallEl.className = `incident-overall incident-overall--${normalizedOverall.toLowerCase()}`;
+            incidentOverallEl.textContent =
+                `${normalizedOverall} (errors/min: ${decimalFormatter.format(data?.errorSpikesPerMinute || 0)} | login-failed/min: ${decimalFormatter.format(data?.loginFailedSpikesPerMinute || 0)})`;
+
+            renderIncidentRows(data?.signals || []);
+            renderTopErrorGroups(data?.topErrorGroups || []);
+        } catch (err) {
+            incidentOverallEl.className = 'incident-overall';
+            incidentOverallEl.textContent = `Incident snapshot failed: ${err.message}`;
+            incidentSignalsEl.innerHTML = '<p class="muted">No data.</p>';
+            incidentTopGroupsRowsEl.innerHTML = '';
+            incidentTopGroupsEmptyEl.style.display = 'block';
+            incidentTopGroupsEmptyEl.textContent = 'Could not load top error groups.';
+        }
+    }
+
     async function performSearch(event) {
         event.preventDefault();
 
@@ -197,6 +310,7 @@
 
     searchForm.addEventListener('submit', performSearch);
     refreshAuditBtn.addEventListener('click', refreshAudit);
+    refreshIncidentsBtn.addEventListener('click', refreshIncidents);
 
     statusEl.textContent = statusAuthMessage();
     searchResult.textContent = token
@@ -206,8 +320,10 @@
     setInterval(() => {
         refreshOverview();
         refreshAudit();
+        refreshIncidents();
     }, API_REFRESH_MS);
 
     refreshAudit();
     refreshOverview();
+    refreshIncidents();
 })();

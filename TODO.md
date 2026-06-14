@@ -45,9 +45,9 @@ observability subscribes via `IEventHandler<T>` in `Turbo.Observability/Events`;
 - [x] Orleans/DB health → global `Healthy/Degraded/Critical` status.
 
 ## Error / Incident center (Phase 4 — not built)
-- [ ] Wire `EventRegistry`/`MessageRegistry` `OnHandlerInvokeError` (today no-op) + `PackageHandler`
+- [x] Wire `EventRegistry`/`MessageRegistry` `OnHandlerInvokeError` (today no-op) + `PackageHandler`
       catch into an error-grouping service (fingerprint → `error_groups` / `error_occurrences`).
-- [ ] Incident detection (DB slow, error spikes, login-failed spikes, Orleans degraded).
+- [x] Incident detection (DB slow, error spikes, login-failed spikes, Orleans degraded).
 
 ## Dashboard (Phase 5 — minimal version shipped)
 - [ ] Richer UI: Player Timeline, Room Inspector, Packet Center, Economy Center views (API exists for

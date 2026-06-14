@@ -64,4 +64,46 @@ public sealed class ObservabilityConfig
 
     /// <summary>Token that grants moderator-level access.</summary>
     public string DashboardModeratorToken { get; init; } = string.Empty;
+
+    /// <summary>Bounded capacity of the in-memory error-grouping queue.</summary>
+    public int ErrorGroupingChannelCapacity { get; init; } = 10_000;
+
+    /// <summary>Maximum number of grouped error rows persisted per writer batch.</summary>
+    public int ErrorTrackingBatchSize { get; init; } = 150;
+
+    /// <summary>Retry attempts when error-grouping writes fail.</summary>
+    public int ErrorTrackingWriteRetryAttempts { get; init; } = 2;
+
+    /// <summary>Delay between error-grouping write retries (milliseconds).</summary>
+    public int ErrorTrackingWriteRetryDelayMs { get; init; } = 250;
+
+    /// <summary>Latency threshold (ms) above which DB health is marked degraded.</summary>
+    public int DatabaseProbeDegradedMs { get; init; } = 250;
+
+    /// <summary>Latency threshold (ms) above which DB health is marked critical.</summary>
+    public int DatabaseProbeCriticalMs { get; init; } = 1200;
+
+    /// <summary>Latency threshold (ms) above which Orleans health is marked degraded.</summary>
+    public int OrleansProbeDegradedMs { get; init; } = 350;
+
+    /// <summary>Latency threshold (ms) above which Orleans health is marked critical.</summary>
+    public int OrleansProbeCriticalMs { get; init; } = 1200;
+
+    /// <summary>Incident detection rolling window in minutes.</summary>
+    public int IncidentLookbackMinutes { get; init; } = 5;
+
+    /// <summary>Degraded threshold for runtime error rate (errors/minute).</summary>
+    public int ErrorSpikesDegradedPerMinute { get; init; } = 20;
+
+    /// <summary>Critical threshold for runtime error rate (errors/minute).</summary>
+    public int ErrorSpikesCriticalPerMinute { get; init; } = 80;
+
+    /// <summary>Degraded threshold for login-failed rate (fails/minute).</summary>
+    public int LoginFailedSpikesDegradedPerMinute { get; init; } = 8;
+
+    /// <summary>Critical threshold for login-failed rate (fails/minute).</summary>
+    public int LoginFailedSpikesCriticalPerMinute { get; init; } = 20;
+
+    /// <summary>Number of top error groups returned in an incident snapshot.</summary>
+    public int IncidentTopErrorGroups { get; init; } = 5;
 }

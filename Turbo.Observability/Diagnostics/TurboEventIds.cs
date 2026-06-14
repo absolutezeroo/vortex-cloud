@@ -36,4 +36,27 @@ public static class TurboEventIds
     public static readonly EventId DashboardReady = new(1300, nameof(DashboardReady));
     public static readonly EventId DashboardDisabled = new(1301, nameof(DashboardDisabled));
     public static readonly EventId DashboardFault = new(1302, nameof(DashboardFault));
+
+    public static readonly EventId HandlerPipelineError = new(1400, nameof(HandlerPipelineError));
+    public static readonly EventId ErrorGroupingDropped = new(1401, nameof(ErrorGroupingDropped));
+    public static readonly EventId ErrorGroupingWriteRetry = new(
+        1402,
+        nameof(ErrorGroupingWriteRetry)
+    );
+    public static readonly EventId ErrorGroupingWriteFailed = new(
+        1403,
+        nameof(ErrorGroupingWriteFailed)
+    );
+    public static readonly EventId ErrorGroupingWriteDeadLettered = new(
+        1404,
+        nameof(ErrorGroupingWriteDeadLettered)
+    );
+    public static readonly EventId ErrorGroupingDeadLetterWriteFailed = new(
+        1405,
+        nameof(ErrorGroupingDeadLetterWriteFailed)
+    );
+    public static readonly EventId ErrorGroupingRecordFailed = new(
+        1406,
+        nameof(ErrorGroupingRecordFailed)
+    );
 }

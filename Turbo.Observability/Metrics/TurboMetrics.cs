@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Options;
-using Turbo.Observability.Runtime;
 using Turbo.Observability.Configuration;
 using Turbo.Observability.Diagnostics;
+using Turbo.Observability.Runtime;
 using Turbo.Primitives.Observability;
 
 namespace Turbo.Observability.Metrics;

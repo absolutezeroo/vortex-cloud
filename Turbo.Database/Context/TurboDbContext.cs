@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Turbo.Database.Entities.Audit;
 using Turbo.Database.Entities.Catalog;
+using Turbo.Database.Entities.Errors;
 using Turbo.Database.Entities.Furniture;
 using Turbo.Database.Entities.Marketplace;
 using Turbo.Database.Entities.Messenger;
@@ -87,6 +88,10 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
     public DbSet<PlayerSubscriptionEntity> PlayerSubscriptions { get; init; }
 
     public DbSet<PlayerKickbackEntity> PlayerKickbacks { get; init; }
+
+    public DbSet<ErrorGroupEntity> ErrorGroups { get; init; }
+
+    public DbSet<ErrorOccurrenceEntity> ErrorOccurrences { get; init; }
 
     public DbSet<PlayerVaultIncomeRewardEntity> PlayerVaultIncomeRewards { get; init; }
 

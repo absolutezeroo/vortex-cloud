@@ -7,6 +7,7 @@ using SuperSocket.Server.Abstractions.Session;
 using Turbo.Messages;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Networking.Revisions;
+using Turbo.Primitives.Observability;
 using Turbo.Primitives.Packets;
 
 namespace Turbo.Networking.Package;
@@ -14,11 +15,15 @@ namespace Turbo.Networking.Package;
 public sealed class PackageHandler(
     IRevisionManager revisionManager,
     MessageSystem messageSystem,
+    IErrorGroupingSink errorSink,
+    ITurboContextAccessor contextAccessor,
     ILogger<PackageHandler> logger
 ) : IPackageHandler<IClientPacket>
 {
     private readonly IRevisionManager _revisionManager = revisionManager;
     private readonly MessageSystem _messageSystem = messageSystem;
+    private readonly IErrorGroupingSink _errorSink = errorSink;
+    private readonly ITurboContextAccessor _contextAccessor = contextAccessor;
     private readonly ILogger<PackageHandler> _logger = logger;
 
     public async ValueTask Handle(IAppSession session, IClientPacket packet, CancellationToken ct)
@@ -39,9 +44,7 @@ public sealed class PackageHandler(
 
                 _logger.LogDebug("Incoming {Message}", message);
 
-                await _messageSystem
-                    .PublishAsync(message, ctx, CancellationToken.None)
-                    .ConfigureAwait(false);
+                await _messageSystem.PublishAsync(message, ctx, ct).ConfigureAwait(false);
             }
             else
             {
@@ -59,6 +62,19 @@ public sealed class PackageHandler(
                 "Failed to process packet {Packet} for session {SessionKey}",
                 packet.Header,
                 ctx.SessionKey
+            );
+
+            var context = _contextAccessor.Current;
+
+            _errorSink.Record(
+                ex,
+                "package-handler",
+                $"packet:{packet.Header}",
+                context?.PlayerId,
+                context?.RoomId,
+                context?.CorrelationId.Value,
+                context?.SessionKey,
+                ctx.RemoteIpAddress
             );
         }
     }

@@ -17,9 +17,9 @@ using Turbo.Observability.Configuration;
 using Turbo.Observability.Diagnostics;
 using Turbo.Observability.Runtime;
 using Turbo.Primitives.Networking;
+using Turbo.Primitives.Observability;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Rooms.Grains;
-using Turbo.Primitives.Observability;
 
 namespace Turbo.Observability.Dashboard;
 
@@ -36,6 +36,7 @@ public sealed class AdminApiService(
     IGrainFactory grainFactory,
     ISessionGateway sessionGateway,
     ILiveStatsAggregator liveStats,
+    IIncidentDetectionService incidentDetection,
     IInfrastructureHealthService infrastructureHealth,
     ILogger<AdminApiService> logger
 ) : BackgroundService
@@ -55,6 +56,7 @@ public sealed class AdminApiService(
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
     private readonly ILiveStatsAggregator _liveStats = liveStats;
+    private readonly IIncidentDetectionService _incidentDetection = incidentDetection;
     private readonly IInfrastructureHealthService _infrastructureHealth = infrastructureHealth;
     private readonly ILogger<AdminApiService> _logger = logger;
     private DateTime _startedAtUtc;
@@ -138,7 +140,9 @@ public sealed class AdminApiService(
 
             if (path is "/assets/dashboard.css" or "/assets/dashboard.js")
             {
-                if (string.Equals(path, "/assets/dashboard.css", StringComparison.OrdinalIgnoreCase))
+                if (
+                    string.Equals(path, "/assets/dashboard.css", StringComparison.OrdinalIgnoreCase)
+                )
                 {
                     EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardCss", role);
                     await WriteCssAsync(ctx, ct).ConfigureAwait(false);
@@ -152,7 +156,13 @@ public sealed class AdminApiService(
 
             if (role == DashboardRole.None)
             {
-                EmitDashboardAudit(path, AuditResult.Denied, 401, "Unauthorized", DashboardRole.None);
+                EmitDashboardAudit(
+                    path,
+                    AuditResult.Denied,
+                    401,
+                    "Unauthorized",
+                    DashboardRole.None
+                );
 
                 await WriteJsonAsync(ctx, 401, new { error = "unauthorized" }, ct)
                     .ConfigureAwait(false);
@@ -161,13 +171,7 @@ public sealed class AdminApiService(
 
             if (path is "/" or "/index.html")
             {
-                EmitDashboardAudit(
-                    path,
-                    AuditResult.Success,
-                    200,
-                    "DashboardHtml",
-                    role
-                );
+                EmitDashboardAudit(path, AuditResult.Success, 200, "DashboardHtml", role);
                 await WriteHtmlAsync(ctx, ct).ConfigureAwait(false);
                 return;
             }
@@ -184,6 +188,17 @@ public sealed class AdminApiService(
                 }
 
                 payload = await OverviewAsync(ct).ConfigureAwait(false);
+            }
+            else if (path is "/api/incidents")
+            {
+                if (!CanReadOverview(role))
+                {
+                    await WriteForbidden(ctx, path, "UnauthorizedRole", role, ct)
+                        .ConfigureAwait(false);
+                    return;
+                }
+
+                payload = await IncidentsAsync(ct).ConfigureAwait(false);
             }
             else if (path is "/api/audit")
             {
@@ -284,7 +299,8 @@ public sealed class AdminApiService(
             {
                 Category = AuditCategory.Security,
                 Action = "audit.viewed",
-                Severity = result == AuditResult.Success ? AuditSeverity.Info : AuditSeverity.Warning,
+                Severity =
+                    result == AuditResult.Success ? AuditSeverity.Info : AuditSeverity.Warning,
                 Result = result,
                 IpHash = null,
                 Data = JsonSerializer.Serialize(
@@ -300,11 +316,14 @@ public sealed class AdminApiService(
         );
     }
 
-    private static bool CanReadOverview(DashboardRole role) =>
-        role != DashboardRole.None;
+    private static bool CanReadOverview(DashboardRole role) => role != DashboardRole.None;
 
     private static bool CanReadAudit(DashboardRole role) =>
-        role is DashboardRole.Viewer or DashboardRole.Moderator or DashboardRole.Economy or DashboardRole.Admin;
+        role
+            is DashboardRole.Viewer
+                or DashboardRole.Moderator
+                or DashboardRole.Economy
+                or DashboardRole.Admin;
 
     private static bool CanReadEconomy(DashboardRole role) =>
         role is DashboardRole.Economy or DashboardRole.Admin;
@@ -329,8 +348,10 @@ public sealed class AdminApiService(
         try
         {
             var health = await _infrastructureHealth.GetStatusAsync(ct).ConfigureAwait(false);
+            var incidents = await _incidentDetection.DetectAsync(ct).ConfigureAwait(false);
             var live = await _liveStats.GetSnapshotAsync().ConfigureAwait(false);
-            var activeRooms = await _grainFactory.GetRoomDirectoryGrain()
+            var activeRooms = await _grainFactory
+                .GetRoomDirectoryGrain()
                 .GetActiveRoomsAsync()
                 .ConfigureAwait(false);
             var since = DateTime.UtcNow.AddHours(-1);
@@ -351,14 +372,23 @@ public sealed class AdminApiService(
                 managedMemoryMb = GC.GetTotalMemory(false) / 1024 / 1024,
                 activeSessions = _sessionGateway.GetActiveSessionCount(),
                 activeRooms = activeRooms.Length,
+                incidents = incidents,
                 live = new
                 {
                     packetsPerSecond = Math.Round(live.PacketsPerSecond, 2),
                     errorsPerMinute = Math.Round(live.ErrorsPerMinute, 2),
                     latencyP50Ms = Math.Round(live.LatencyP50Ms, 2),
                     latencyP95Ms = Math.Round(live.LatencyP95Ms, 2),
-                    topAbusers = live.TopAbusers.Select(a => new { playerId = a.PlayerId, packetsPerMinute = a.PacketsPerMinute }),
-                    topRooms = live.TopRooms.Select(r => new { roomId = r.RoomId, packetsPerMinute = r.PacketsPerMinute }),
+                    topAbusers = live.TopAbusers.Select(a => new
+                    {
+                        playerId = a.PlayerId,
+                        packetsPerMinute = a.PacketsPerMinute,
+                    }),
+                    topRooms = live.TopRooms.Select(r => new
+                    {
+                        roomId = r.RoomId,
+                        packetsPerMinute = r.PacketsPerMinute,
+                    }),
                 },
                 auditLastHourByCategory = byCategory,
                 totals = new
@@ -366,6 +396,7 @@ public sealed class AdminApiService(
                     audit = await db.AuditEvents.CountAsync(ct).ConfigureAwait(false),
                     ledger = await db.EconomyLedger.CountAsync(ct).ConfigureAwait(false),
                     items = await db.ItemEvents.CountAsync(ct).ConfigureAwait(false),
+                    performance = await db.PerformanceLogs.CountAsync(ct).ConfigureAwait(false),
                 },
             };
         }
@@ -374,6 +405,9 @@ public sealed class AdminApiService(
             await db.DisposeAsync().ConfigureAwait(false);
         }
     }
+
+    private Task<IncidentDetectionSnapshot> IncidentsAsync(CancellationToken ct) =>
+        _incidentDetection.DetectAsync(ct);
 
     private Task<object> AuditAsync(NameValueCollection query, CancellationToken ct) =>
         QueryAsync<object>(
@@ -523,8 +557,7 @@ public sealed class AdminApiService(
 
                 var total = await q.CountAsync(ct).ConfigureAwait(false);
 
-                var rows = await q
-                    .OrderBy(i => i.OccurredAt)
+                var rows = await q.OrderBy(i => i.OccurredAt)
                     .Skip(offset)
                     .Take(limit)
                     .Select(i => new
@@ -572,9 +605,7 @@ public sealed class AdminApiService(
                 // Correlation id: 32 hex chars (Guid "N").
                 if (term.Length == 32 && term.All(Uri.IsHexDigit))
                 {
-                    var audit = db
-                        .AuditEvents.AsNoTracking()
-                        .Where(a => a.CorrelationId == term);
+                    var audit = db.AuditEvents.AsNoTracking().Where(a => a.CorrelationId == term);
 
                     if (since is not null)
                         audit = audit.Where(a => a.OccurredAt >= since.Value);
@@ -592,9 +623,7 @@ public sealed class AdminApiService(
                     if (until is not null)
                         ledger = ledger.Where(l => l.OccurredAt <= until.Value);
 
-                    var items = db
-                        .ItemEvents.AsNoTracking()
-                        .Where(i => i.CorrelationId == term);
+                    var items = db.ItemEvents.AsNoTracking().Where(i => i.CorrelationId == term);
 
                     if (since is not null)
                         items = items.Where(i => i.OccurredAt >= since.Value);
@@ -671,9 +700,7 @@ public sealed class AdminApiService(
                     if (until is not null)
                         audit = audit.Where(a => a.OccurredAt <= until.Value);
 
-                    var ledger = db
-                        .EconomyLedger.AsNoTracking()
-                        .Where(l => l.PlayerId == id);
+                    var ledger = db.EconomyLedger.AsNoTracking().Where(l => l.PlayerId == id);
 
                     if (since is not null)
                         ledger = ledger.Where(l => l.OccurredAt >= since.Value);
@@ -681,9 +708,7 @@ public sealed class AdminApiService(
                     if (until is not null)
                         ledger = ledger.Where(l => l.OccurredAt <= until.Value);
 
-                    var itemHistory = db
-                        .ItemEvents.AsNoTracking()
-                        .Where(i => i.ItemId == id);
+                    var itemHistory = db.ItemEvents.AsNoTracking().Where(i => i.ItemId == id);
 
                     if (since is not null)
                         itemHistory = itemHistory.Where(i => i.OccurredAt >= since.Value);
@@ -731,11 +756,7 @@ public sealed class AdminApiService(
                             .OrderBy(i => i.OccurredAt)
                             .Skip(offset)
                             .Take(limit)
-                            .Select(i => new
-                            {
-                                i.OccurredAt,
-                                eventType = i.EventType.ToString(),
-                            })
+                            .Select(i => new { i.OccurredAt, eventType = i.EventType.ToString() })
                             .ToListAsync(ct)
                             .ConfigureAwait(false),
                         itemTotal = await itemHistory.CountAsync(ct).ConfigureAwait(false),
@@ -796,13 +817,16 @@ public sealed class AdminApiService(
     }
 
     private static async Task WriteHtmlAsync(HttpListenerContext ctx, CancellationToken ct) =>
-        await WriteAssetAsync(ctx, DashboardHtml.PageBytes, HtmlContentType, ct).ConfigureAwait(false);
+        await WriteAssetAsync(ctx, DashboardHtml.PageBytes, HtmlContentType, ct)
+            .ConfigureAwait(false);
 
     private static async Task WriteCssAsync(HttpListenerContext ctx, CancellationToken ct) =>
-        await WriteAssetAsync(ctx, DashboardHtml.CssBytes, CssContentType, ct).ConfigureAwait(false);
+        await WriteAssetAsync(ctx, DashboardHtml.CssBytes, CssContentType, ct)
+            .ConfigureAwait(false);
 
     private static async Task WriteJsAsync(HttpListenerContext ctx, CancellationToken ct) =>
-        await WriteAssetAsync(ctx, DashboardHtml.ScriptBytes, JsContentType, ct).ConfigureAwait(false);
+        await WriteAssetAsync(ctx, DashboardHtml.ScriptBytes, JsContentType, ct)
+            .ConfigureAwait(false);
 
     private DashboardRole ResolveDashboardRole(string? provided)
     {
@@ -870,6 +894,4 @@ public sealed class AdminApiService(
 
         return null;
     }
-
 }
-

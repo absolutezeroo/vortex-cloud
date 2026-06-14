@@ -27,6 +27,8 @@ public interface ITurboContextAccessor
     ITurboTraceScope BeginScope(
         string operation,
         string? sessionKey = null,
-        CorrelationId? correlationId = null
+        CorrelationId? correlationId = null,
+        long? playerId = null,
+        int? roomId = null
     );
 }
