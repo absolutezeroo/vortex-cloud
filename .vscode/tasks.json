@@ -1,0 +1,120 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "restore-turbo-cloud",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "restore",
+                "${workspaceFolder}"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "build-debug-turbo-cloud",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "${workspaceFolder}",
+                "-c",
+                "Debug",
+                "--no-restore",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "dependsOn": [],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "build-release-turbo-cloud",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "${workspaceFolder}",
+                "-c",
+                "Release",
+                "--no-restore",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "dependsOn": [
+                "restore-turbo-cloud"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "roslyn-turbo-cloud",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "format"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "csharpier-turbo-cloud",
+            "type": "shell",
+            "command": "dotnet csharpier format .",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "format-turbo-cloud",
+            "type": "shell",
+            "dependsOn": [
+                "roslyn-turbo-cloud",
+                "csharpier-turbo-cloud"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "copy-debug-turbo-sample-plugin",
+            "type": "shell",
+            "problemMatcher": [],
+            "osx": {
+                "command": "bash",
+                "args": [
+                    "-c",
+                    "srcDll='${workspaceFolder}/../turbo-sample-plugin/TurboSamplePlugin/bin/Debug/net9.0/TurboSamplePlugin.dll'; srcManifest='${workspaceFolder}/../turbo-sample-plugin/TurboSamplePlugin/manifest.json'; dst='${workspaceFolder}/Turbo.Main/bin/Debug/net9.0/plugins/sample-plugin'; mkdir -p \"$dst\"; cp -f \"$srcDll\" \"$dst/\"; cp -f \"$srcManifest\" \"$dst/\""
+                ]
+            },
+            "linux": {
+                "command": "bash",
+                "args": [
+                    "-c",
+                    "srcDll='${workspaceFolder}/../turbo-sample-plugin/TurboSamplePlugin/bin/Debug/net9.0/TurboSamplePlugin.dll'; srcManifest='${workspaceFolder}/../turbo-sample-plugin/TurboSamplePlugin/manifest.json'; dst='${workspaceFolder}/Turbo.Main/bin/Debug/net9.0/plugins/sample-plugin'; mkdir -p \"$dst\"; cp -f \"$srcDll\" \"$dst/\"; cp -f \"$srcManifest\" \"$dst/\""
+                ]
+            },
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "Copy-Item -Path \"${workspaceFolder}/../turbo-sample-plugin/TurboSamplePlugin/bin/Debug/net9.0/TurboSamplePlugin.dll\" -Destination \"${workspaceFolder}/Turbo.Main/bin/Debug/net9.0/plugins/sample-plugin/TurboSamplePlugin.dll\" -Force; Copy-Item -Path \"${workspaceFolder}/../turbo-sample-plugin/TurboSamplePlugin/manifest.json\" -Destination \"${workspaceFolder}/Turbo.Main/bin/Debug/net9.0/plugins/sample-plugin/manifest.json\" -Force"
+                ]
+            }
+        },
+        {
+            "label": "prepare-debug-turbo-cloud-and-turbo-sample-plugin",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "build-debug-turbo-cloud",
+                "copy-debug-turbo-sample-plugin",
+            ]
+        }
+    ]
+}

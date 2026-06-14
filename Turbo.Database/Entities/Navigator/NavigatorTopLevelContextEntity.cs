@@ -1,0 +1,30 @@
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+using Turbo.Primitives.Navigator.Enums;
+
+namespace Turbo.Database.Entities.Navigator;
+
+[Table("navigator_top_level_contexts")]
+[Index(nameof(SearchCode), IsUnique = true)]
+public class NavigatorTopLevelContextEntity : TurboEntity
+{
+    [Column("search_code")]
+    public required string SearchCode { get; set; }
+
+    [Column("visible")]
+    [DefaultValue(true)]
+    public required bool Visible { get; set; }
+
+    [Column("query_type")]
+    [DefaultValue(NavigatorQueryType.AllRooms)]
+    public NavigatorQueryType QueryType { get; set; } = NavigatorQueryType.AllRooms;
+
+    [Column("order_num")]
+    [DefaultValue(0)]
+    public required int OrderNum { get; set; }
+
+    [InverseProperty("TopLevelContextEntity")]
+    public List<NavigatorQuickLinkEntity>? QuickLinks { get; set; }
+}

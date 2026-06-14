@@ -1,0 +1,12 @@
+using Orleans;
+using Turbo.Primitives.Networking;
+using Turbo.Primitives.Rooms.Enums;
+
+namespace Turbo.Primitives.Messages.Outgoing.Room.Furniture;
+
+[GenerateSerializer, Immutable]
+public sealed record CustomUserNotificationMessageComposer : IComposer
+{
+    [Id(0)]
+    public required CustomUserNotificationType Code { get; init; }
+}

@@ -1,0 +1,15 @@
+{
+    "files.exclude": {
+        "**/bin": true,
+        "**/obj": true
+    },
+    "files.eol": "\n",
+    "editor.formatOnSave": true,
+    // Make CSharpier the only formatter for C#
+    "[csharp]": {
+        "editor.defaultFormatter": "csharpier.csharpier-vscode",
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        }
+    }
+}

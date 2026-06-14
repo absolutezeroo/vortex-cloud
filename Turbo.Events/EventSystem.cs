@@ -1,0 +1,19 @@
+using System.Threading;
+using System.Threading.Tasks;
+using Turbo.Events.Registry;
+using Turbo.Primitives.Events;
+
+namespace Turbo.Events;
+
+public sealed class EventSystem(EventRegistry registry)
+{
+    private readonly EventRegistry _registry = registry;
+
+    public async Task PublishAsync(IEvent env, CancellationToken ct = default)
+    {
+        if (_registry is null)
+            return;
+
+        await _registry.PublishAsync(env, null, ct).ConfigureAwait(false);
+    }
+}
