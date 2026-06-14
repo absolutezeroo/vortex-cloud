@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
@@ -138,6 +138,7 @@ public sealed class AdminApiService(
                 "/api/search" => await SearchAsync(query, ct).ConfigureAwait(false),
                 _ when path.StartsWith("/api/item/", StringComparison.Ordinal) => await ItemAsync(
                         path["/api/item/".Length..],
+                        query,
                         ct
                     )
                     .ConfigureAwait(false),
@@ -242,7 +243,19 @@ public sealed class AdminApiService(
             async db =>
             {
                 var limit = ParseLimit(query["limit"], 50, 500);
+                var page = ParsePage(query["page"]);
+                var offset = Math.Max(0, (page - 1) * limit);
+
                 var q = db.AuditEvents.AsNoTracking();
+
+                var since = ParseDateTime(query["since"]);
+                var until = ParseDateTime(query["until"]);
+
+                if (since is not null)
+                    q = q.Where(a => a.OccurredAt >= since.Value);
+
+                if (until is not null)
+                    q = q.Where(a => a.OccurredAt <= until.Value);
 
                 if (int.TryParse(query["actor"], out var actor))
                     q = q.Where(a => a.ActorPlayerId == actor);
@@ -257,7 +270,10 @@ public sealed class AdminApiService(
                 if (!string.IsNullOrWhiteSpace(action))
                     q = q.Where(a => a.Action == action);
 
+                var total = await q.CountAsync(ct).ConfigureAwait(false);
+
                 var rows = await q.OrderByDescending(a => a.OccurredAt)
+                    .Skip(offset)
                     .Take(limit)
                     .Select(a => new
                     {
@@ -278,7 +294,15 @@ public sealed class AdminApiService(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                return new { count = rows.Count, items = rows };
+                return new
+                {
+                    count = rows.Count,
+                    page,
+                    limit,
+                    total,
+                    offset,
+                    items = rows,
+                };
             },
             ct
         );
@@ -288,12 +312,26 @@ public sealed class AdminApiService(
             async db =>
             {
                 var limit = ParseLimit(query["limit"], 50, 500);
+                var page = ParsePage(query["page"]);
+                var offset = Math.Max(0, (page - 1) * limit);
                 var q = db.EconomyLedger.AsNoTracking();
+
+                var since = ParseDateTime(query["since"]);
+                var until = ParseDateTime(query["until"]);
+
+                if (since is not null)
+                    q = q.Where(l => l.OccurredAt >= since.Value);
+
+                if (until is not null)
+                    q = q.Where(l => l.OccurredAt <= until.Value);
 
                 if (int.TryParse(query["player"], out var player))
                     q = q.Where(l => l.PlayerId == player);
 
+                var total = await q.CountAsync(ct).ConfigureAwait(false);
+
                 var rows = await q.OrderByDescending(l => l.OccurredAt)
+                    .Skip(offset)
                     .Take(limit)
                     .Select(l => new
                     {
@@ -311,12 +349,20 @@ public sealed class AdminApiService(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                return new { count = rows.Count, items = rows };
+                return new
+                {
+                    count = rows.Count,
+                    page,
+                    limit,
+                    total,
+                    offset,
+                    items = rows,
+                };
             },
             ct
         );
 
-    private Task<object?> ItemAsync(string idText, CancellationToken ct)
+    private Task<object?> ItemAsync(string idText, NameValueCollection query, CancellationToken ct)
     {
         if (!long.TryParse(idText, out var itemId))
             return Task.FromResult<object?>(null);
@@ -324,10 +370,26 @@ public sealed class AdminApiService(
         return QueryAsync<object?>(
             async db =>
             {
-                var rows = await db
-                    .ItemEvents.AsNoTracking()
-                    .Where(i => i.ItemId == itemId)
+                var limit = ParseLimit(query["limit"], 50, 500);
+                var page = ParsePage(query["page"]);
+                var offset = Math.Max(0, (page - 1) * limit);
+                var q = db.ItemEvents.AsNoTracking().Where(i => i.ItemId == itemId);
+
+                var since = ParseDateTime(query["since"]);
+                var until = ParseDateTime(query["until"]);
+
+                if (since is not null)
+                    q = q.Where(i => i.OccurredAt >= since.Value);
+
+                if (until is not null)
+                    q = q.Where(i => i.OccurredAt <= until.Value);
+
+                var total = await q.CountAsync(ct).ConfigureAwait(false);
+
+                var rows = await q
                     .OrderBy(i => i.OccurredAt)
+                    .Skip(offset)
+                    .Take(limit)
                     .Select(i => new
                     {
                         i.Id,
@@ -346,6 +408,10 @@ public sealed class AdminApiService(
                 return new
                 {
                     itemId,
+                    page,
+                    limit,
+                    total,
+                    offset,
                     count = rows.Count,
                     history = rows,
                 };
@@ -359,64 +425,146 @@ public sealed class AdminApiService(
             async db =>
             {
                 var term = (query["q"] ?? string.Empty).Trim();
+                var limit = ParseLimit(query["limit"], 50, 500);
+                var page = ParsePage(query["page"]);
+                var offset = Math.Max(0, (page - 1) * limit);
+
+                var since = ParseDateTime(query["since"]);
+                var until = ParseDateTime(query["until"]);
 
                 // Correlation id: 32 hex chars (Guid "N").
                 if (term.Length == 32 && term.All(Uri.IsHexDigit))
                 {
+                    var audit = db
+                        .AuditEvents.AsNoTracking()
+                        .Where(a => a.CorrelationId == term);
+
+                    if (since is not null)
+                        audit = audit.Where(a => a.OccurredAt >= since.Value);
+
+                    if (until is not null)
+                        audit = audit.Where(a => a.OccurredAt <= until.Value);
+
+                    var ledger = db
+                        .EconomyLedger.AsNoTracking()
+                        .Where(l => l.CorrelationId == term);
+
+                    if (since is not null)
+                        ledger = ledger.Where(l => l.OccurredAt >= since.Value);
+
+                    if (until is not null)
+                        ledger = ledger.Where(l => l.OccurredAt <= until.Value);
+
+                    var items = db
+                        .ItemEvents.AsNoTracking()
+                        .Where(i => i.CorrelationId == term);
+
+                    if (since is not null)
+                        items = items.Where(i => i.OccurredAt >= since.Value);
+
+                    if (until is not null)
+                        items = items.Where(i => i.OccurredAt <= until.Value);
+
+                    var auditRows = await audit
+                        .OrderBy(a => a.OccurredAt)
+                        .Skip(offset)
+                        .Take(limit)
+                        .Select(a => new
+                        {
+                            a.OccurredAt,
+                            category = a.Category.ToString(),
+                            a.Action,
+                            a.ActorPlayerId,
+                        })
+                        .ToListAsync(ct)
+                        .ConfigureAwait(false);
+
+                    var ledgerRows = await ledger
+                        .OrderBy(l => l.OccurredAt)
+                        .Skip(offset)
+                        .Take(limit)
+                        .Select(l => new
+                        {
+                            l.OccurredAt,
+                            l.PlayerId,
+                            l.Currency,
+                            l.Delta,
+                        })
+                        .ToListAsync(ct)
+                        .ConfigureAwait(false);
+
+                    var itemRows = await items
+                        .OrderBy(i => i.OccurredAt)
+                        .Skip(offset)
+                        .Take(limit)
+                        .Select(i => new
+                        {
+                            i.OccurredAt,
+                            i.ItemId,
+                            eventType = i.EventType.ToString(),
+                        })
+                        .ToListAsync(ct)
+                        .ConfigureAwait(false);
+
                     return new
                     {
                         kind = "correlationId",
                         term,
-                        audit = await db
-                            .AuditEvents.AsNoTracking()
-                            .Where(a => a.CorrelationId == term)
-                            .OrderBy(a => a.OccurredAt)
-                            .Select(a => new
-                            {
-                                a.OccurredAt,
-                                category = a.Category.ToString(),
-                                a.Action,
-                                a.ActorPlayerId,
-                            })
-                            .ToListAsync(ct)
-                            .ConfigureAwait(false),
-                        ledger = await db
-                            .EconomyLedger.AsNoTracking()
-                            .Where(l => l.CorrelationId == term)
-                            .Select(l => new
-                            {
-                                l.OccurredAt,
-                                l.PlayerId,
-                                l.Currency,
-                                l.Delta,
-                            })
-                            .ToListAsync(ct)
-                            .ConfigureAwait(false),
-                        items = await db
-                            .ItemEvents.AsNoTracking()
-                            .Where(i => i.CorrelationId == term)
-                            .Select(i => new
-                            {
-                                i.OccurredAt,
-                                i.ItemId,
-                                eventType = i.EventType.ToString(),
-                            })
-                            .ToListAsync(ct)
-                            .ConfigureAwait(false),
+                        page,
+                        limit,
+                        offset,
+                        auditTotal = await audit.CountAsync(ct).ConfigureAwait(false),
+                        ledgerTotal = await ledger.CountAsync(ct).ConfigureAwait(false),
+                        itemTotal = await items.CountAsync(ct).ConfigureAwait(false),
+                        audit = auditRows,
+                        ledger = ledgerRows,
+                        items = itemRows,
                     };
                 }
 
                 if (int.TryParse(term, out var id))
                 {
+                    var audit = db
+                        .AuditEvents.AsNoTracking()
+                        .Where(a => a.ActorPlayerId == id || a.TargetPlayerId == id);
+
+                    if (since is not null)
+                        audit = audit.Where(a => a.OccurredAt >= since.Value);
+
+                    if (until is not null)
+                        audit = audit.Where(a => a.OccurredAt <= until.Value);
+
+                    var ledger = db
+                        .EconomyLedger.AsNoTracking()
+                        .Where(l => l.PlayerId == id);
+
+                    if (since is not null)
+                        ledger = ledger.Where(l => l.OccurredAt >= since.Value);
+
+                    if (until is not null)
+                        ledger = ledger.Where(l => l.OccurredAt <= until.Value);
+
+                    var itemHistory = db
+                        .ItemEvents.AsNoTracking()
+                        .Where(i => i.ItemId == id);
+
+                    if (since is not null)
+                        itemHistory = itemHistory.Where(i => i.OccurredAt >= since.Value);
+
+                    if (until is not null)
+                        itemHistory = itemHistory.Where(i => i.OccurredAt <= until.Value);
+
                     return new
                     {
                         kind = "id",
                         term,
-                        asActor = await db
-                            .AuditEvents.AsNoTracking()
-                            .Where(a => a.ActorPlayerId == id || a.TargetPlayerId == id)
+                        page,
+                        limit,
+                        offset,
+                        asActor = await audit
                             .OrderByDescending(a => a.OccurredAt)
-                            .Take(50)
+                            .Skip(offset)
+                            .Take(limit)
                             .Select(a => new
                             {
                                 a.OccurredAt,
@@ -427,11 +575,11 @@ public sealed class AdminApiService(
                             })
                             .ToListAsync(ct)
                             .ConfigureAwait(false),
-                        ledger = await db
-                            .EconomyLedger.AsNoTracking()
-                            .Where(l => l.PlayerId == id)
+                        auditTotal = await audit.CountAsync(ct).ConfigureAwait(false),
+                        ledger = await ledger
                             .OrderByDescending(l => l.OccurredAt)
-                            .Take(50)
+                            .Skip(offset)
+                            .Take(limit)
                             .Select(l => new
                             {
                                 l.OccurredAt,
@@ -441,14 +589,19 @@ public sealed class AdminApiService(
                             })
                             .ToListAsync(ct)
                             .ConfigureAwait(false),
-                        itemHistory = await db
-                            .ItemEvents.AsNoTracking()
-                            .Where(i => i.ItemId == id)
+                        ledgerTotal = await ledger.CountAsync(ct).ConfigureAwait(false),
+                        itemHistory = await itemHistory
                             .OrderBy(i => i.OccurredAt)
-                            .Take(50)
-                            .Select(i => new { i.OccurredAt, eventType = i.EventType.ToString() })
+                            .Skip(offset)
+                            .Take(limit)
+                            .Select(i => new
+                            {
+                                i.OccurredAt,
+                                eventType = i.EventType.ToString(),
+                            })
                             .ToListAsync(ct)
                             .ConfigureAwait(false),
+                        itemTotal = await itemHistory.CountAsync(ct).ConfigureAwait(false),
                     };
                 }
 
@@ -510,4 +663,28 @@ public sealed class AdminApiService(
 
     private static int ParseLimit(string? value, int fallback, int max) =>
         int.TryParse(value, out var n) ? Math.Clamp(n, 1, max) : fallback;
+
+    private static int ParsePage(string? value)
+    {
+        if (!int.TryParse(value, out var page))
+            return 1;
+
+        return Math.Max(1, page);
+    }
+
+    private static DateTime? ParseDateTime(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+
+        if (DateTimeOffset.TryParse(value, out var parsedOffset))
+            return parsedOffset.UtcDateTime;
+
+        if (DateTime.TryParse(value, out var parsedDate))
+            return parsedDate;
+
+        return null;
+    }
+
 }
+
