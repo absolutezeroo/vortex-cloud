@@ -15,9 +15,9 @@ namespace Turbo.Networking.Package;
 public sealed class PackageHandler(
     IRevisionManager revisionManager,
     MessageSystem messageSystem,
-    IErrorGroupingSink? errorSink,
     ITurboContextAccessor contextAccessor,
-    ILogger<PackageHandler> logger
+    ILogger<PackageHandler> logger,
+    IErrorGroupingSink? errorSink = null
 ) : IPackageHandler<IClientPacket>
 {
     private readonly IRevisionManager _revisionManager = revisionManager;
