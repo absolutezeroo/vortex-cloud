@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Turbo.Observability.Configuration;
 
 namespace Turbo.Observability.Runtime;
 
-internal sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : ILiveStatsAggregator
+public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : ILiveStatsAggregator
 {
-    private readonly Lock _sync = new();
+    private readonly object _sync = new();
     private readonly TimeSpan _window = TimeSpan.FromSeconds(Math.Max(1, config.Value.LiveStatsWindowSeconds));
     private readonly int _topK = Math.Max(1, config.Value.LiveStatsTopK);
     private readonly Queue<DateTime> _receivedTimestamps = [];
@@ -160,7 +161,7 @@ internal sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) 
     private sealed record RoomSample(DateTime Timestamp, int RoomId);
 }
 
-internal interface ILiveStatsAggregator
+public interface ILiveStatsAggregator
 {
     void RecordPacketReceived(long? actorId = null, int? roomId = null);
 
@@ -175,7 +176,7 @@ internal interface ILiveStatsAggregator
     Task<LiveStatsSnapshot> GetSnapshotAsync();
 }
 
-internal sealed record LiveStatsSnapshot(
+public sealed record LiveStatsSnapshot(
     double PacketsPerSecond,
     double ErrorsPerMinute,
     double LatencyP50Ms,
@@ -184,5 +185,5 @@ internal sealed record LiveStatsSnapshot(
     IReadOnlyList<LiveRoomSnapshot> TopRooms
 );
 
-internal sealed record LiveAbuserSnapshot(int PlayerId, double PacketsPerMinute);
-internal sealed record LiveRoomSnapshot(int RoomId, double PacketsPerMinute);
+public sealed record LiveAbuserSnapshot(int PlayerId, double PacketsPerMinute);
+public sealed record LiveRoomSnapshot(int RoomId, double PacketsPerMinute);

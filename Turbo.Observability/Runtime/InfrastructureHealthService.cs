@@ -9,7 +9,7 @@ using Turbo.Primitives.Players.Grains;
 
 namespace Turbo.Observability.Runtime;
 
-internal sealed class InfrastructureHealthService(
+public sealed class InfrastructureHealthService(
     IDbContextFactory<TurboDbContext> dbContextFactory,
     IClusterClient clusterClient,
     ILogger<InfrastructureHealthService> logger
@@ -30,7 +30,7 @@ internal sealed class InfrastructureHealthService(
         var orleans = await orleansTask.ConfigureAwait(false);
 
         return new(
-            Merge(database.Overall, orleans.Overall),
+            Merge(database.Status, orleans.Status),
             database,
             orleans
         );
@@ -46,15 +46,15 @@ internal sealed class InfrastructureHealthService(
             var canConnect = await db.Database.CanConnectAsync(ct).ConfigureAwait(false);
 
             if (!canConnect)
-                return new("database", HealthStatus.Degraded, "CanConnectAsync returned false.");
+                return new("database", HealthStatus.Degraded.ToString().ToLowerInvariant(), "CanConnectAsync returned false.");
 
-            return new("database", HealthStatus.Healthy, "connected");
+            return new("database", HealthStatus.Healthy.ToString().ToLowerInvariant(), "connected");
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Database health probe failed.");
 
-            return new("database", HealthStatus.Critical, ex.Message);
+            return new("database", HealthStatus.Critical.ToString().ToLowerInvariant(), ex.Message);
         }
     }
 
@@ -65,40 +65,50 @@ internal sealed class InfrastructureHealthService(
             var probe = _clusterClient.GetGrain<IPlayerPresenceGrain>(1);
             await probe.IsOnlineAsync(ct).ConfigureAwait(false);
 
-            return new("orleans", HealthStatus.Healthy, "player-presence grain reachable");
+            return new("orleans", HealthStatus.Healthy.ToString().ToLowerInvariant(), "player-presence grain reachable");
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Orleans health probe failed.");
 
-            return new("orleans", HealthStatus.Critical, ex.Message);
+            return new("orleans", HealthStatus.Critical.ToString().ToLowerInvariant(), ex.Message);
         }
     }
 
-    private static string Merge(HealthStatus left, HealthStatus right)
+    private static string Merge(string left, string right)
     {
-        if (left == HealthStatus.Critical || right == HealthStatus.Critical)
+        var normalizedLeft = NormalizeStatus(left);
+        var normalizedRight = NormalizeStatus(right);
+
+        if (normalizedLeft == HealthStatus.Critical || normalizedRight == HealthStatus.Critical)
             return HealthStatus.Critical.ToString().ToLowerInvariant();
 
-        if (left == HealthStatus.Degraded || right == HealthStatus.Degraded)
+        if (normalizedLeft == HealthStatus.Degraded || normalizedRight == HealthStatus.Degraded)
             return HealthStatus.Degraded.ToString().ToLowerInvariant();
 
         return HealthStatus.Healthy.ToString().ToLowerInvariant();
     }
+
+    private static HealthStatus NormalizeStatus(string value) =>
+        value.Equals("critical", StringComparison.OrdinalIgnoreCase)
+            ? HealthStatus.Critical
+            : value.Equals("degraded", StringComparison.OrdinalIgnoreCase)
+                ? HealthStatus.Degraded
+                : HealthStatus.Healthy;
 }
 
-internal interface IInfrastructureHealthService
+public interface IInfrastructureHealthService
 {
     Task<InfrastructureHealthSnapshot> GetStatusAsync(CancellationToken ct);
 }
 
-internal sealed record InfrastructureHealthSnapshot(
+public sealed record InfrastructureHealthSnapshot(
     string Overall,
     HealthComponentSnapshot Database,
     HealthComponentSnapshot Orleans
 );
 
-internal sealed record HealthComponentSnapshot(string Name, string Status, string Detail);
+public sealed record HealthComponentSnapshot(string Name, string Status, string Detail);
 
 internal enum HealthStatus
 {
