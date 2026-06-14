@@ -64,12 +64,12 @@ public sealed class IncidentDetectionService(
 
             var since = DateTime.UtcNow.AddMinutes(-_lookbackMinutes);
             var windowMinutes = (DateTime.UtcNow - since).TotalMinutes;
-
-            var errorsTask = db
+            var errorSpikes = await db
                 .ErrorOccurrences.AsNoTracking()
-                .CountAsync(o => o.OccurredAt >= since, ct);
+                .CountAsync(o => o.OccurredAt >= since, ct)
+                .ConfigureAwait(false) / windowMinutes;
 
-            var loginFailedTask = db
+            var loginFailedSpikes = await db
                 .AuditEvents.AsNoTracking()
                 .CountAsync(
                     e =>
@@ -77,9 +77,10 @@ public sealed class IncidentDetectionService(
                         && e.Action == "auth.login.failed"
                         && e.OccurredAt >= since,
                     ct
-                );
+                )
+                .ConfigureAwait(false) / windowMinutes;
 
-            var topGroupsTask = db
+            var topGroups = await db
                 .ErrorGroups.AsNoTracking()
                 .Where(g => g.LastSeenAt >= since)
                 .OrderByDescending(g => g.TotalOccurrences)
@@ -98,17 +99,13 @@ public sealed class IncidentDetectionService(
                     g.LastRoomId,
                     g.LastCorrelationId
                 ))
-                .ToListAsync(ct);
-
-            await Task.WhenAll(errorsTask, loginFailedTask, topGroupsTask).ConfigureAwait(false);
-
-            var errorSpikes = errorsTask.Result / windowMinutes;
-            var loginFailedSpikes = loginFailedTask.Result / windowMinutes;
+                .ToListAsync(ct)
+                .ConfigureAwait(false);
 
             EvaluateErrorSpikes(errorSpikes, incidents);
             EvaluateLoginFailedSpikes(loginFailedSpikes, incidents);
 
-            return BuildSnapshot(incidents, topGroupsTask.Result, errorSpikes, loginFailedSpikes);
+            return BuildSnapshot(incidents, topGroups, errorSpikes, loginFailedSpikes);
         }
         catch (Exception ex) when (!ct.IsCancellationRequested)
         {
