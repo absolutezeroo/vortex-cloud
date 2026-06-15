@@ -10,6 +10,7 @@
   import PacketsPage from './pages/PacketsPage.svelte';
   import IncidentsPage from './pages/IncidentsPage.svelte';
   import AuditPage from './pages/AuditPage.svelte';
+  import OperationsPage from './pages/OperationsPage.svelte';
 
   const routes = [
     { path: '/overview', label: 'Overview', short: 'Live health' },
@@ -20,6 +21,7 @@
     { path: '/packets', label: 'Packet center', short: 'Traffic' },
     { path: '/incidents', label: 'Incident center', short: 'Signals' },
     { path: '/audit', label: 'Audit feed', short: 'Security' },
+    { path: '/operations', label: 'Operations', short: 'Admin actions' },
   ];
 
   let token = new URLSearchParams(window.location.search).get('token') || '';
@@ -74,6 +76,8 @@
     <IncidentsPage />
   {:else if currentRoute === '/audit'}
     <AuditPage {openPlayer} {openItem} />
+  {:else if currentRoute === '/operations'}
+    <OperationsPage />
   {/if}
 </AppShell>
 

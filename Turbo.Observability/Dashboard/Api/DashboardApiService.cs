@@ -31,6 +31,9 @@ internal sealed class DashboardApiService(
     private readonly IIncidentDetectionService _incidentDetection = incidentDetection;
     private readonly IInfrastructureHealthService _infrastructureHealth = infrastructureHealth;
 
+    private static readonly TimeSpan TotalsCacheTtl = TimeSpan.FromSeconds(30);
+    private volatile CachedTotals? _cachedTotals;
+
     public async Task<object> PacketStatsAsync(CancellationToken ct)
     {
         var live = await _liveStats.GetSnapshotAsync().ConfigureAwait(false);
@@ -80,6 +83,8 @@ internal sealed class DashboardApiService(
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
+            var totals = await GetTotalsAsync(db, ct).ConfigureAwait(false);
+
             return new
             {
                 status = health.Overall,
@@ -109,10 +114,11 @@ internal sealed class DashboardApiService(
                 auditLastHourByCategory = byCategory,
                 totals = new
                 {
-                    audit = await db.AuditEvents.CountAsync(ct).ConfigureAwait(false),
-                    ledger = await db.EconomyLedger.CountAsync(ct).ConfigureAwait(false),
-                    items = await db.ItemEvents.CountAsync(ct).ConfigureAwait(false),
-                    performance = await db.PerformanceLogs.CountAsync(ct).ConfigureAwait(false),
+                    audit = totals.Audit,
+                    ledger = totals.Ledger,
+                    items = totals.Items,
+                    performance = totals.Performance,
+                    asOf = totals.AtUtc,
                 },
             };
         }
@@ -181,21 +187,12 @@ internal sealed class DashboardApiService(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var playerIds = rows.SelectMany(a => new[] { a.ActorPlayerId, a.TargetPlayerId })
-                    .Select(ToPlayerId)
-                    .Where(id => id.HasValue)
-                    .Select(id => id.GetValueOrDefault())
-                    .Distinct()
-                    .ToList();
+                var playerIds = NormalizeIds(
+                    rows.SelectMany(a => new[] { a.ActorPlayerId, a.TargetPlayerId })
+                );
 
-                var playerNames =
-                    playerIds.Count > 0
-                        ? await db
-                            .Players.AsNoTracking()
-                            .Where(p => playerIds.Contains(p.Id))
-                            .ToDictionaryAsync(p => p.Id, p => p.Name, ct)
-                            .ConfigureAwait(false)
-                        : new Dictionary<int, string>();
+                var playerNames = await LoadPlayerNamesAsync(db, playerIds, ct)
+                    .ConfigureAwait(false);
 
                 var rowsWithNames = rows.Select(a => new
                     {
@@ -272,20 +269,10 @@ internal sealed class DashboardApiService(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var playerIds = rows.Select(l => ToPlayerId(l.PlayerId))
-                    .Where(playerId => playerId.HasValue)
-                    .Select(playerId => playerId.GetValueOrDefault())
-                    .Distinct()
-                    .ToList();
+                var playerIds = NormalizeIds(rows.Select(l => (long?)l.PlayerId));
 
-                var playerNames =
-                    playerIds.Count > 0
-                        ? await db
-                            .Players.AsNoTracking()
-                            .Where(p => playerIds.Contains(p.Id))
-                            .ToDictionaryAsync(p => p.Id, p => p.Name, ct)
-                            .ConfigureAwait(false)
-                        : new Dictionary<int, string>();
+                var playerNames = await LoadPlayerNamesAsync(db, playerIds, ct)
+                    .ConfigureAwait(false);
 
                 var rowsWithNames = rows.Select(l => new
                     {
@@ -381,37 +368,17 @@ internal sealed class DashboardApiService(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var rowPlayerIds = rows.SelectMany(r =>
-                        new[] { r.ActorPlayerId, r.FromOwnerId, r.ToOwnerId }
-                    )
-                    .Select(ToPlayerId)
-                    .Where(playerId => playerId.HasValue)
-                    .Select(playerId => playerId.GetValueOrDefault())
-                    .Distinct()
-                    .ToList();
+                var rowPlayerIds = NormalizeIds(
+                    rows.SelectMany(r => new[] { r.ActorPlayerId, r.FromOwnerId, r.ToOwnerId })
+                );
 
-                var rowPlayerNames =
-                    rowPlayerIds.Count > 0
-                        ? await db
-                            .Players.AsNoTracking()
-                            .Where(p => rowPlayerIds.Contains(p.Id))
-                            .ToDictionaryAsync(p => p.Id, p => p.Name, ct)
-                            .ConfigureAwait(false)
-                        : new Dictionary<int, string>();
+                var rowPlayerNames = await LoadPlayerNamesAsync(db, rowPlayerIds, ct)
+                    .ConfigureAwait(false);
 
-                var rowRoomIds = rows.Select(r => r.RoomId)
-                    .Where(roomId => roomId.HasValue)
-                    .Distinct()
-                    .ToList();
+                var rowRoomIds = NormalizeIds(rows.Select(r => r.RoomId));
 
-                var rowRoomNames =
-                    rowRoomIds.Count > 0
-                        ? await db
-                            .Rooms.AsNoTracking()
-                            .Where(r => rowRoomIds.Contains(r.Id))
-                            .ToDictionaryAsync(r => r.Id, r => r.Name, ct)
-                            .ConfigureAwait(false)
-                        : new Dictionary<int, string>();
+                var rowRoomNames = await LoadRoomNamesAsync(db, rowRoomIds, ct)
+                    .ConfigureAwait(false);
 
                 var rowsWithNames = rows.Select(r => new
                     {
@@ -505,21 +472,10 @@ internal sealed class DashboardApiService(
                         .ToListAsync(ct)
                         .ConfigureAwait(false);
 
-                    var auditActorIds = auditRows
-                        .Select(a => ToPlayerId(a.ActorPlayerId))
-                        .Where(id => id.HasValue)
-                        .Select(id => id.GetValueOrDefault())
-                        .Distinct()
-                        .ToList();
+                    var auditActorIds = NormalizeIds(auditRows.Select(a => a.ActorPlayerId));
 
-                    var auditActorNames =
-                        auditActorIds.Count > 0
-                            ? await db
-                                .Players.AsNoTracking()
-                                .Where(p => auditActorIds.Contains(p.Id))
-                                .ToDictionaryAsync(p => p.Id, p => p.Name, ct)
-                                .ConfigureAwait(false)
-                            : new Dictionary<int, string>();
+                    var auditActorNames = await LoadPlayerNamesAsync(db, auditActorIds, ct)
+                        .ConfigureAwait(false);
 
                     var auditRowsWithNames = auditRows
                         .Select(a => new
@@ -713,37 +669,19 @@ internal sealed class DashboardApiService(
                         .ToListAsync(ct)
                         .ConfigureAwait(false);
 
-                    var itemRoomIds = itemEvents
-                        .Select(i => i.RoomId)
-                        .Where(roomId => roomId.HasValue)
-                        .Distinct()
-                        .ToList();
+                    var itemRoomIds = NormalizeIds(itemEvents.Select(i => i.RoomId));
 
-                    var itemRoomNames =
-                        itemRoomIds.Count > 0
-                            ? await db
-                                .Rooms.AsNoTracking()
-                                .Where(r => itemRoomIds.Contains(r.Id))
-                                .ToDictionaryAsync(r => r.Id, r => r.Name, ct)
-                                .ConfigureAwait(false)
-                            : new Dictionary<int, string>();
+                    var itemRoomNames = await LoadRoomNamesAsync(db, itemRoomIds, ct)
+                        .ConfigureAwait(false);
 
-                    var itemPartyIds = itemEvents
-                        .SelectMany(i => new[] { i.actorPlayerId, i.fromOwnerId, i.toOwnerId })
-                        .Select(ToPlayerId)
-                        .Where(itemPartyId => itemPartyId.HasValue)
-                        .Select(itemPartyId => itemPartyId.GetValueOrDefault())
-                        .Distinct()
-                        .ToList();
+                    var itemPartyIds = NormalizeIds(
+                        itemEvents.SelectMany(i =>
+                            new[] { i.actorPlayerId, i.fromOwnerId, i.toOwnerId }
+                        )
+                    );
 
-                    var itemPartyNames =
-                        itemPartyIds.Count > 0
-                            ? await db
-                                .Players.AsNoTracking()
-                                .Where(p => itemPartyIds.Contains(p.Id))
-                                .ToDictionaryAsync(p => p.Id, p => p.Name, ct)
-                                .ConfigureAwait(false)
-                            : new Dictionary<int, string>();
+                    var itemPartyNames = await LoadPlayerNamesAsync(db, itemPartyIds, ct)
+                        .ConfigureAwait(false);
 
                     var itemEventsWithRooms = itemEvents
                         .Select(i => new
@@ -889,38 +827,17 @@ internal sealed class DashboardApiService(
                         .ToListAsync(ct)
                         .ConfigureAwait(false);
 
-                    var actorAndTargetIds = asActorRows
-                        .SelectMany(r => new[] { r.ActorPlayerId, r.TargetPlayerId })
-                        .Select(ToPlayerId)
-                        .Where(id => id.HasValue)
-                        .Select(id => id.GetValueOrDefault())
-                        .Distinct()
-                        .ToList();
+                    var actorAndTargetIds = NormalizeIds(
+                        asActorRows.SelectMany(r => new[] { r.ActorPlayerId, r.TargetPlayerId })
+                    );
 
-                    var actorAndTargetNames =
-                        actorAndTargetIds.Count > 0
-                            ? await db
-                                .Players.AsNoTracking()
-                                .Where(p => actorAndTargetIds.Contains(p.Id))
-                                .ToDictionaryAsync(p => p.Id, p => p.Name, ct)
-                                .ConfigureAwait(false)
-                            : new Dictionary<int, string>();
+                    var actorAndTargetNames = await LoadPlayerNamesAsync(db, actorAndTargetIds, ct)
+                        .ConfigureAwait(false);
 
-                    var auditRoomIds = asActorRows
-                        .Select(r => r.RoomId)
-                        .Where(roomId => roomId.HasValue)
-                        .Select(roomId => roomId.GetValueOrDefault())
-                        .Distinct()
-                        .ToList();
+                    var auditRoomIds = NormalizeIds(asActorRows.Select(r => r.RoomId));
 
-                    var auditRoomNames =
-                        auditRoomIds.Count > 0
-                            ? await db
-                                .Rooms.AsNoTracking()
-                                .Where(r => auditRoomIds.Contains(r.Id))
-                                .ToDictionaryAsync(r => r.Id, r => r.Name, ct)
-                                .ConfigureAwait(false)
-                            : new Dictionary<int, string>();
+                    var auditRoomNames = await LoadRoomNamesAsync(db, auditRoomIds, ct)
+                        .ConfigureAwait(false);
 
                     var asActor = asActorRows
                         .Select(r => new
@@ -967,40 +884,25 @@ internal sealed class DashboardApiService(
                         .ToListAsync(ct)
                         .ConfigureAwait(false);
 
-                    var itemHistoryRoomIds = itemHistoryRows
-                        .Select(row => row.RoomId)
-                        .Where(roomId => roomId.HasValue)
-                        .Select(roomId => roomId.GetValueOrDefault())
-                        .Distinct()
-                        .ToList();
+                    var itemHistoryRoomIds = NormalizeIds(
+                        itemHistoryRows.Select(row => row.RoomId)
+                    );
 
-                    var itemHistoryPartyIds = itemHistoryRows
-                        .SelectMany(row =>
+                    var itemHistoryPartyIds = NormalizeIds(
+                        itemHistoryRows.SelectMany(row =>
                             new[] { row.ActorPlayerId, row.FromOwnerId, row.ToOwnerId }
                         )
-                        .Select(ToPlayerId)
-                        .Where(playerId => playerId.HasValue)
-                        .Select(playerId => playerId.GetValueOrDefault())
-                        .Distinct()
-                        .ToList();
+                    );
 
-                    var itemHistoryRoomNames =
-                        itemHistoryRoomIds.Count > 0
-                            ? await db
-                                .Rooms.AsNoTracking()
-                                .Where(r => itemHistoryRoomIds.Contains(r.Id))
-                                .ToDictionaryAsync(r => r.Id, r => r.Name, ct)
-                                .ConfigureAwait(false)
-                            : new Dictionary<int, string>();
+                    var itemHistoryRoomNames = await LoadRoomNamesAsync(db, itemHistoryRoomIds, ct)
+                        .ConfigureAwait(false);
 
-                    var itemHistoryPartyNames =
-                        itemHistoryPartyIds.Count > 0
-                            ? await db
-                                .Players.AsNoTracking()
-                                .Where(p => itemHistoryPartyIds.Contains(p.Id))
-                                .ToDictionaryAsync(p => p.Id, p => p.Name, ct)
-                                .ConfigureAwait(false)
-                            : new Dictionary<int, string>();
+                    var itemHistoryPartyNames = await LoadPlayerNamesAsync(
+                            db,
+                            itemHistoryPartyIds,
+                            ct
+                        )
+                        .ConfigureAwait(false);
 
                     var itemHistoryWithNames = itemHistoryRows
                         .Select(row => new
@@ -1104,6 +1006,7 @@ internal sealed class DashboardApiService(
                 var limit = ParseLimit(query["limit"], 80, 500);
                 var page = ParsePage(query["page"]);
                 var offset = Math.Max(0, (page - 1) * limit);
+                var take = offset + limit;
                 var since = ParseDateTime(query["since"]);
                 var until = ParseDateTime(query["until"]);
 
@@ -1132,6 +1035,8 @@ internal sealed class DashboardApiService(
                 var itemCount = await itemQuery.CountAsync(ct).ConfigureAwait(false);
 
                 var entryTimeline = await entriesQuery
+                    .OrderByDescending(e => e.CreatedAt)
+                    .Take(take)
                     .Select(e => new
                     {
                         e.CreatedAt,
@@ -1147,6 +1052,8 @@ internal sealed class DashboardApiService(
                     .ConfigureAwait(false);
 
                 var chatTimeline = await chatQuery
+                    .OrderByDescending(c => c.CreatedAt)
+                    .Take(take)
                     .Select(c => new
                     {
                         c.CreatedAt,
@@ -1164,6 +1071,8 @@ internal sealed class DashboardApiService(
                     .ConfigureAwait(false);
 
                 var rawItemTimeline = await itemQuery
+                    .OrderByDescending(i => i.OccurredAt)
+                    .Take(take)
                     .Select(i => new
                     {
                         CreatedAt = i.OccurredAt,
@@ -1190,21 +1099,12 @@ internal sealed class DashboardApiService(
                     })
                     .ToList();
 
-                var itemPlayerIds = itemTimeline
-                    .SelectMany(e => new[] { e.PlayerId, e.TargetPlayerId })
-                    .Where(playerId => playerId.HasValue)
-                    .Select(playerId => playerId.GetValueOrDefault())
-                    .Distinct()
-                    .ToList();
+                var itemPlayerIds = NormalizeIds(
+                    itemTimeline.SelectMany(e => new[] { e.PlayerId, e.TargetPlayerId })
+                );
 
-                var itemPlayerNames =
-                    itemPlayerIds.Count > 0
-                        ? await db
-                            .Players.AsNoTracking()
-                            .Where(p => itemPlayerIds.Contains(p.Id))
-                            .ToDictionaryAsync(p => p.Id, p => p.Name, ct)
-                            .ConfigureAwait(false)
-                        : new Dictionary<int, string>();
+                var itemPlayerNames = await LoadPlayerNamesAsync(db, itemPlayerIds, ct)
+                    .ConfigureAwait(false);
 
                 var itemTimelineEnriched = itemTimeline
                     .Select(i => new
@@ -1262,6 +1162,136 @@ internal sealed class DashboardApiService(
             ct
         );
 
+    public Task<object> PlayersAsync(NameValueCollection query, CancellationToken ct)
+    {
+        var online = _sessionGateway.GetOnlinePlayerIds().Select(p => p.Value).ToHashSet();
+
+        return QueryAsync<object>(
+            async db =>
+            {
+                var term = (query["q"] ?? string.Empty).Trim();
+                var limit = ParseLimit(query["limit"], 50, 200);
+
+                List<PlayerRow> rows;
+
+                if (term.Length == 0)
+                {
+                    // Browsing: surface online players first, then the most recent accounts.
+                    var onlineIds = online.ToList();
+
+                    var onlineRows =
+                        onlineIds.Count > 0
+                            ? await db
+                                .Players.AsNoTracking()
+                                .Where(p => onlineIds.Contains(p.Id))
+                                .OrderBy(p => p.Name)
+                                .Take(limit)
+                                .Select(p => new PlayerRow(p.Id, p.Name))
+                                .ToListAsync(ct)
+                                .ConfigureAwait(false)
+                            : new List<PlayerRow>();
+
+                    var remaining = limit - onlineRows.Count;
+
+                    var fillRows =
+                        remaining > 0
+                            ? await db
+                                .Players.AsNoTracking()
+                                .Where(p => !onlineIds.Contains(p.Id))
+                                .OrderByDescending(p => p.Id)
+                                .Take(remaining)
+                                .Select(p => new PlayerRow(p.Id, p.Name))
+                                .ToListAsync(ct)
+                                .ConfigureAwait(false)
+                            : new List<PlayerRow>();
+
+                    rows = onlineRows.Concat(fillRows).ToList();
+                }
+                else
+                {
+                    var players = db.Players.AsNoTracking();
+
+                    if (int.TryParse(term, out var id))
+                        players = players.Where(p => p.Name.Contains(term) || p.Id == id);
+                    else
+                        players = players.Where(p => p.Name.Contains(term));
+
+                    rows = await players
+                        .OrderBy(p => p.Name)
+                        .Take(limit)
+                        .Select(p => new PlayerRow(p.Id, p.Name))
+                        .ToListAsync(ct)
+                        .ConfigureAwait(false);
+                }
+
+                var items = rows.Select(p => new
+                    {
+                        id = p.Id,
+                        name = p.Name,
+                        online = online.Contains(p.Id),
+                    })
+                    .OrderByDescending(p => p.online)
+                    .ThenBy(p => p.name)
+                    .ToList();
+
+                return new
+                {
+                    count = items.Count,
+                    online = online.Count,
+                    items,
+                };
+            },
+            ct
+        );
+    }
+
+    public Task<object> FurnitureDefinitionsAsync(
+        NameValueCollection query,
+        CancellationToken ct
+    ) =>
+        QueryAsync<object>(
+            async db =>
+            {
+                var term = (query["q"] ?? string.Empty).Trim();
+                var limit = ParseLimit(query["limit"], 50, 200);
+
+                var definitions = db.FurnitureDefinitions.AsNoTracking();
+
+                if (term.Length > 0)
+                {
+                    if (int.TryParse(term, out var id))
+                        definitions = definitions.Where(f =>
+                            f.Name.Contains(term) || f.Id == id || f.SpriteId == id
+                        );
+                    else
+                        definitions = definitions.Where(f => f.Name.Contains(term));
+                }
+
+                var items = await definitions
+                    .OrderBy(f => f.Name)
+                    .Take(limit)
+                    .Select(f => new
+                    {
+                        id = f.Id,
+                        spriteId = f.SpriteId,
+                        name = f.Name,
+                        type = f.ProductType.ToString(),
+                        category = f.FurniCategory.ToString(),
+                        width = f.Width,
+                        length = f.Length,
+                        canTrade = f.CanTrade,
+                        canSell = f.CanSell,
+                        // Reserved: populated once a furni asset host is configured.
+                        iconUrl = (string?)null,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                return new { count = items.Count, items };
+            },
+            ct
+        );
+
     private async Task<T> QueryAsync<T>(Func<TurboDbContext, Task<T>> work, CancellationToken ct)
     {
         var db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
@@ -1275,6 +1305,77 @@ internal sealed class DashboardApiService(
             await db.DisposeAsync().ConfigureAwait(false);
         }
     }
+
+    /// <summary>
+    /// Row-count totals are full-table scans on tables that grow without bound, so they are cached
+    /// for a short interval instead of being recomputed on every overview poll. Concurrent cache
+    /// misses simply recompute the same value, so no lock is needed.
+    /// </summary>
+    private async Task<CachedTotals> GetTotalsAsync(TurboDbContext db, CancellationToken ct)
+    {
+        var cached = _cachedTotals;
+
+        if (cached is not null && DateTime.UtcNow - cached.AtUtc < TotalsCacheTtl)
+            return cached;
+
+        var fresh = new CachedTotals(
+            DateTime.UtcNow,
+            await db.AuditEvents.CountAsync(ct).ConfigureAwait(false),
+            await db.EconomyLedger.CountAsync(ct).ConfigureAwait(false),
+            await db.ItemEvents.CountAsync(ct).ConfigureAwait(false),
+            await db.PerformanceLogs.CountAsync(ct).ConfigureAwait(false)
+        );
+
+        _cachedTotals = fresh;
+
+        return fresh;
+    }
+
+    private sealed record CachedTotals(
+        DateTime AtUtc,
+        long Audit,
+        long Ledger,
+        long Items,
+        long Performance
+    );
+
+    private sealed record PlayerRow(int Id, string Name);
+
+    private static List<int> NormalizeIds(IEnumerable<long?> ids) =>
+        ids.Select(ToPlayerId)
+            .Where(id => id.HasValue)
+            .Select(id => id.GetValueOrDefault())
+            .Distinct()
+            .ToList();
+
+    private static List<int> NormalizeIds(IEnumerable<int?> ids) =>
+        ids.Where(id => id.HasValue).Select(id => id.GetValueOrDefault()).Distinct().ToList();
+
+    private static async Task<Dictionary<int, string>> LoadPlayerNamesAsync(
+        TurboDbContext db,
+        IReadOnlyList<int> playerIds,
+        CancellationToken ct
+    ) =>
+        playerIds.Count == 0
+            ? new Dictionary<int, string>()
+            : await db
+                .Players.AsNoTracking()
+                .Where(p => playerIds.Contains(p.Id))
+                .ToDictionaryAsync(p => p.Id, p => p.Name, ct)
+                .ConfigureAwait(false);
+
+    private static async Task<Dictionary<int, string>> LoadRoomNamesAsync(
+        TurboDbContext db,
+        IReadOnlyList<int> roomIds,
+        CancellationToken ct
+    ) =>
+        roomIds.Count == 0
+            ? new Dictionary<int, string>()
+            : await db
+                .Rooms.AsNoTracking()
+                .Where(r => roomIds.Contains(r.Id))
+                .ToDictionaryAsync(r => r.Id, r => r.Name, ct)
+                .ConfigureAwait(false);
 
     private static int ParseLimit(string? value, int fallback, int max) =>
         int.TryParse(value, out var n) ? Math.Clamp(n, 1, max) : fallback;

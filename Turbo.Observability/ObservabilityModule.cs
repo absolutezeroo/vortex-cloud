@@ -10,6 +10,7 @@ using Turbo.Observability.Dashboard;
 using Turbo.Observability.Dashboard.Api;
 using Turbo.Observability.Dashboard.Http;
 using Turbo.Observability.Dashboard.Infrastructure;
+using Turbo.Observability.Dashboard.Operations;
 using Turbo.Observability.Dashboard.Security;
 using Turbo.Observability.ErrorTracking;
 using Turbo.Observability.Metrics;
@@ -45,6 +46,7 @@ public sealed class ObservabilityModule : IHostPluginModule
         services.TryAddSingleton<DashboardAssetStore>();
         services.TryAddSingleton<DashboardAuditEmitter>();
         services.TryAddSingleton<DashboardApiService>();
+        services.TryAddSingleton<DashboardOperationsService>();
         services.TryAddSingleton<DashboardResponseWriter>();
         services.AddSingleton<ErrorGroupingChannel>();
         services.TryAddSingleton<IErrorGroupingSink, ChannelErrorGroupingSink>();

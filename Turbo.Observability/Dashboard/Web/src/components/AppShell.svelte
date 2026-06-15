@@ -8,6 +8,7 @@
     Search,
     Server,
     ShieldAlert,
+    Wrench,
   } from '@lucide/svelte';
 
   export let routes = [];
@@ -25,6 +26,7 @@
     '/economy': Coins,
     '/incidents': ShieldAlert,
     '/audit': ScrollText,
+    '/operations': Wrench,
   };
 
   function href(route) {

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -40,6 +42,8 @@ public sealed class SessionGateway(
         _sessionToPlayer.TryGetValue(key, out var playerId) ? playerId : -1;
 
     public int GetActiveSessionCount() => _sessions.Count;
+
+    public IReadOnlyCollection<PlayerId> GetOnlinePlayerIds() => _playerToSession.Keys.ToArray();
 
     public Task AddSessionAsync(SessionKey key, ISessionContext ctx)
     {
