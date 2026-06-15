@@ -6,6 +6,7 @@ using Turbo.Database.Entities.Furniture;
 using Turbo.Database.Entities.Marketplace;
 using Turbo.Database.Entities.Messenger;
 using Turbo.Database.Entities.Navigator;
+using Turbo.Database.Entities.Permissions;
 using Turbo.Database.Entities.Players;
 using Turbo.Database.Entities.Room;
 using Turbo.Database.Entities.Security;
@@ -61,6 +62,14 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
 
     public DbSet<RoomChatlogEntity> Chatlogs { get; init; }
     public DbSet<SecurityTicketEntity> SecurityTickets { get; init; }
+
+    public DbSet<PlayerAccountEntity> PlayerAccounts { get; init; }
+
+    public DbSet<RoleEntity> Roles { get; init; }
+
+    public DbSet<RolePermissionEntity> RolePermissions { get; init; }
+
+    public DbSet<PlayerAccountRoleEntity> PlayerAccountRoles { get; init; }
 
     public DbSet<NavigatorTopLevelContextEntity> NavigatorTopLevelContexts { get; init; }
 

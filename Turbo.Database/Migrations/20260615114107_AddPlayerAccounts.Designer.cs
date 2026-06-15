@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Turbo.Database.Context;
 
@@ -11,9 +12,11 @@ using Turbo.Database.Context;
 namespace Turbo.Database.Migrations
 {
     [DbContext(typeof(TurboDbContext))]
-    partial class TurboDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260615114107_AddPlayerAccounts")]
+    partial class AddPlayerAccounts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2015,143 +2018,6 @@ namespace Turbo.Database.Migrations
                     b.ToTable("navigator_top_level_contexts");
                 });
 
-            modelBuilder.Entity("Turbo.Database.Entities.Permissions.PlayerAccountRoleEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("created_at");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<int>("PlayerAccountEntityId")
-                        .HasColumnType("int")
-                        .HasColumnName("account_id");
-
-                    b.Property<int>("RoleEntityId")
-                        .HasColumnType("int")
-                        .HasColumnName("role_id");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("updated_at");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoleEntityId");
-
-                    b.HasIndex("PlayerAccountEntityId", "RoleEntityId")
-                        .IsUnique();
-
-                    b.ToTable("player_account_roles");
-                });
-
-            modelBuilder.Entity("Turbo.Database.Entities.Permissions.RoleEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("created_at");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
-                        .HasColumnName("key");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("varchar(128)")
-                        .HasColumnName("name");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("updated_at");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Key")
-                        .IsUnique();
-
-                    b.ToTable("roles");
-                });
-
-            modelBuilder.Entity("Turbo.Database.Entities.Permissions.RolePermissionEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CapabilityKey")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("varchar(128)")
-                        .HasColumnName("capability_key");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("created_at");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<int>("RoleEntityId")
-                        .HasColumnType("int")
-                        .HasColumnName("role_id");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("updated_at");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoleEntityId", "CapabilityKey")
-                        .IsUnique();
-
-                    b.ToTable("role_permissions");
-                });
-
             modelBuilder.Entity("Turbo.Database.Entities.Players.PlayerAccountEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -3808,36 +3674,6 @@ namespace Turbo.Database.Migrations
                     b.Navigation("TopLevelContextEntity");
                 });
 
-            modelBuilder.Entity("Turbo.Database.Entities.Permissions.PlayerAccountRoleEntity", b =>
-                {
-                    b.HasOne("Turbo.Database.Entities.Players.PlayerAccountEntity", "PlayerAccount")
-                        .WithMany()
-                        .HasForeignKey("PlayerAccountEntityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Turbo.Database.Entities.Permissions.RoleEntity", "RoleEntity")
-                        .WithMany("PlayerAccountRoles")
-                        .HasForeignKey("RoleEntityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PlayerAccount");
-
-                    b.Navigation("RoleEntity");
-                });
-
-            modelBuilder.Entity("Turbo.Database.Entities.Permissions.RolePermissionEntity", b =>
-                {
-                    b.HasOne("Turbo.Database.Entities.Permissions.RoleEntity", "RoleEntity")
-                        .WithMany("Permissions")
-                        .HasForeignKey("RoleEntityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("RoleEntity");
-                });
-
             modelBuilder.Entity("Turbo.Database.Entities.Players.PlayerBadgeEntity", b =>
                 {
                     b.HasOne("Turbo.Database.Entities.Players.PlayerEntity", "PlayerEntity")
@@ -4156,13 +3992,6 @@ namespace Turbo.Database.Migrations
             modelBuilder.Entity("Turbo.Database.Entities.Navigator.NavigatorTopLevelContextEntity", b =>
                 {
                     b.Navigation("QuickLinks");
-                });
-
-            modelBuilder.Entity("Turbo.Database.Entities.Permissions.RoleEntity", b =>
-                {
-                    b.Navigation("Permissions");
-
-                    b.Navigation("PlayerAccountRoles");
                 });
 
             modelBuilder.Entity("Turbo.Database.Entities.Players.PlayerAccountEntity", b =>

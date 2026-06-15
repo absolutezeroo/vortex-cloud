@@ -20,6 +20,7 @@
     definitionId: '',
     defName: '',
     defSprite: '',
+    defIcon: '',
     extraData: '',
     reason: '',
   };
@@ -324,6 +325,7 @@
                   definitionId: f.id,
                   defName: f.name,
                   defSprite: f.spriteId,
+                  defIcon: f.iconUrl,
                 }),
             )}
         >
@@ -331,7 +333,11 @@
         </button>
         {#if item.definitionId}
           <span class="op-chip">
-            <span class="op-sprite">{item.defSprite}</span>
+            {#if item.defIcon}
+              <img class="op-sprite" src={item.defIcon} alt="" />
+            {:else}
+              <span class="op-sprite">{item.defSprite}</span>
+            {/if}
             {item.defName} <small>#{item.definitionId}</small>
           </span>
         {:else}
@@ -515,6 +521,7 @@
     color: var(--accent);
     font-size: 0.68rem;
     font-weight: 700;
+    object-fit: contain;
   }
 
   .op-actions {

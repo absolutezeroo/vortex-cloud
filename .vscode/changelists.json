@@ -1,0 +1,39 @@
+{
+  "changelists": [
+    {
+      "name": "Default",
+      "files": [
+        "Turbo.Database/Context/TurboDbContext.cs",
+        "Turbo.Database/Entities/Players/PlayerEntity.cs",
+        "Turbo.Main/Program.cs",
+        "Turbo.Main/Turbo.Main.csproj",
+        "Turbo.Observability/Configuration/ObservabilityConfig.cs",
+        "Turbo.Observability/Dashboard/Api/DashboardApiService.cs",
+        "Turbo.Observability/Dashboard/Assets/dashboard-DqdPyIXK.js",
+        "Turbo.Observability/Dashboard/Assets/dashboard-N2l71KjK.css",
+        "Turbo.Observability/Dashboard/Assets/index.html",
+        "Turbo.Observability/Dashboard/Http/DashboardResponseWriter.cs",
+        "Turbo.Observability/Dashboard/Web/src/pages/OperationsPage.svelte",
+        "appsettings.json",
+        "Turbo.Database/Entities/Players/PlayerAccountEntity.cs",
+        "Turbo.Observability/Dashboard/Assets/dashboard-BlrvQi5K.js",
+        "Turbo.Observability/Dashboard/Assets/dashboard-SARgn84q.css",
+        "Turbo.WebApi/Configuration/WebApiConfig.cs",
+        "Turbo.WebApi/Http/WebApiResponseWriter.cs",
+        "Turbo.WebApi/Services/IWebApiAuthService.cs",
+        "Turbo.WebApi/Services/IWebApiPlayerService.cs",
+        "Turbo.WebApi/Services/WebApiAuthService.cs",
+        "Turbo.WebApi/Services/WebApiPlayerService.cs",
+        "Turbo.WebApi/Session/WebApiSessionStore.cs",
+        "Turbo.WebApi/Turbo.WebApi.csproj",
+        "Turbo.WebApi/WebApiModule.cs",
+        "Turbo.WebApi/WebApiService.cs",
+        ".vscode/changelists.json",
+        "Turbo.Primitives/Permissions/Capabilities.cs",
+        "Turbo.Primitives/Permissions/IPermissionService.cs",
+        "Turbo.Primitives/Permissions/PermissionSet.cs"
+      ]
+    }
+  ],
+  "active": "Default"
+}

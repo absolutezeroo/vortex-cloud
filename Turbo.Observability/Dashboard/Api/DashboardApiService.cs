@@ -5,8 +5,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Orleans;
 using Turbo.Database.Context;
+using Turbo.Observability.Configuration;
 using Turbo.Observability.Runtime;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Observability;
@@ -21,7 +23,8 @@ internal sealed class DashboardApiService(
     ISessionGateway sessionGateway,
     ILiveStatsAggregator liveStats,
     IIncidentDetectionService incidentDetection,
-    IInfrastructureHealthService infrastructureHealth
+    IInfrastructureHealthService infrastructureHealth,
+    IOptions<ObservabilityConfig> options
 )
 {
     private readonly IDbContextFactory<TurboDbContext> _dbContextFactory = dbContextFactory;
@@ -30,6 +33,7 @@ internal sealed class DashboardApiService(
     private readonly ILiveStatsAggregator _liveStats = liveStats;
     private readonly IIncidentDetectionService _incidentDetection = incidentDetection;
     private readonly IInfrastructureHealthService _infrastructureHealth = infrastructureHealth;
+    private readonly ObservabilityConfig _config = options.Value;
 
     private static readonly TimeSpan TotalsCacheTtl = TimeSpan.FromSeconds(30);
     private volatile CachedTotals? _cachedTotals;
@@ -1267,30 +1271,53 @@ internal sealed class DashboardApiService(
                         definitions = definitions.Where(f => f.Name.Contains(term));
                 }
 
-                var items = await definitions
+                var rows = await definitions
                     .OrderBy(f => f.Name)
                     .Take(limit)
                     .Select(f => new
                     {
+                        f.Id,
+                        f.SpriteId,
+                        f.Name,
+                        type = f.ProductType.ToString(),
+                        category = f.FurniCategory.ToString(),
+                        f.Width,
+                        f.Length,
+                        f.CanTrade,
+                        f.CanSell,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                var items = rows.Select(f => new
+                    {
                         id = f.Id,
                         spriteId = f.SpriteId,
                         name = f.Name,
-                        type = f.ProductType.ToString(),
-                        category = f.FurniCategory.ToString(),
+                        type = f.type,
+                        category = f.category,
                         width = f.Width,
                         length = f.Length,
                         canTrade = f.CanTrade,
                         canSell = f.CanSell,
-                        // Reserved: populated once a furni asset host is configured.
-                        iconUrl = (string?)null,
+                        iconUrl = BuildFurniIconUrl(f.Name),
                     })
-                    .ToListAsync(ct)
-                    .ConfigureAwait(false);
+                    .ToList();
 
                 return new { count = items.Count, items };
             },
             ct
         );
+
+    private string? BuildFurniIconUrl(string name)
+    {
+        var template = _config.FurniIconUrlTemplate;
+
+        if (string.IsNullOrWhiteSpace(template) || string.IsNullOrEmpty(name))
+            return null;
+
+        return template.Replace("{name}", Uri.EscapeDataString(name), StringComparison.Ordinal);
+    }
 
     private async Task<T> QueryAsync<T>(Func<TurboDbContext, Task<T>> work, CancellationToken ct)
     {

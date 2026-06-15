@@ -1,8 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Turbo.Authentication.Configuration;
+using Turbo.Authentication.Permissions;
 using Turbo.Contracts.Plugins;
 using Turbo.Primitives.Authentication;
+using Turbo.Primitives.Permissions;
 
 namespace Turbo.Authentication;
 
@@ -17,5 +19,7 @@ public sealed class AuthenticationModule : IHostPluginModule
         );
 
         services.AddSingleton<IAuthenticationService, AuthenticationService>();
+        services.AddSingleton<IPermissionService, PermissionService>();
+        services.AddHostedService<PermissionSeederService>();
     }
 }

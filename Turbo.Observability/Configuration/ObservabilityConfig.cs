@@ -65,6 +65,15 @@ public sealed class ObservabilityConfig
     /// <summary>Token that grants moderator-level access.</summary>
     public string DashboardModeratorToken { get; init; } = string.Empty;
 
+    /// <summary>
+    /// Optional URL template for furniture icons shown in the operations picker. Use <c>{name}</c>
+    /// as the definition-name placeholder, for example
+    /// <c>http://your-host/dcr/hof_furni/icons/{name}_icon.png</c>. Empty hides icons (a sprite-id
+    /// tile is shown instead). When set, the icon host origin is added to the dashboard CSP
+    /// <c>img-src</c> so the images are allowed to load.
+    /// </summary>
+    public string FurniIconUrlTemplate { get; init; } = string.Empty;
+
     /// <summary>Bounded capacity of the in-memory error-grouping queue.</summary>
     public int ErrorGroupingChannelCapacity { get; init; } = 10_000;
 

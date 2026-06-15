@@ -57,6 +57,7 @@
     <ProjectReference Include="..\Turbo.Primitives\Turbo.Primitives.csproj" />
     <ProjectReference Include="..\Turbo.Revisions\Turbo.Revisions.csproj" />
     <ProjectReference Include="..\Turbo.Rooms\Turbo.Rooms.csproj" />
+    <ProjectReference Include="..\Turbo.WebApi\Turbo.WebApi.csproj" />
     <ProjectReference Include="..\Turbo.Runtime\Turbo.Runtime.csproj" />
   </ItemGroup>
 </Project>

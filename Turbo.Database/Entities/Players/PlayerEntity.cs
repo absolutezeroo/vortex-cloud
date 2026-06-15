@@ -16,6 +16,12 @@ namespace Turbo.Database.Entities.Players;
 [Index(nameof(Name), IsUnique = true)]
 public class PlayerEntity : TurboEntity
 {
+    [Column("account_id")]
+    public int? PlayerAccountEntityId { get; set; }
+
+    [ForeignKey(nameof(PlayerAccountEntityId))]
+    public PlayerAccountEntity? PlayerAccount { get; set; }
+
     [Column("name")]
     public required string Name { get; set; }
 

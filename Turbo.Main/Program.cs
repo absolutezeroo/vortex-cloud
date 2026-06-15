@@ -21,6 +21,7 @@ using Turbo.Messages.Extensions;
 using Turbo.Navigator;
 using Turbo.Networking.Extensions;
 using Turbo.Observability;
+using Turbo.WebApi;
 using Turbo.PacketHandlers;
 using Turbo.Players;
 using Turbo.Plugins.Extensions;
@@ -106,6 +107,7 @@ internal class Program
         builder.Services.AddHostPlugin<NavigatorModule>(builder);
         builder.Services.AddHostPlugin<RoomModule>(builder);
         builder.Services.AddHostPlugin<PacketHandlersModule>(builder);
+        builder.Services.AddHostPlugin<WebApiModule>(builder);
 
         builder.Services.AddSingleton<AssemblyProcessor>();
         builder.Services.AddSingleton<ConsoleCommandService>();
