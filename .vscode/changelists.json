@@ -2,9 +2,7 @@
   "changelists": [
     {
       "name": "Default",
-      "files": [
-        ".vscode/changelists.json"
-      ]
+      "files": []
     }
   ],
   "active": "Default"
