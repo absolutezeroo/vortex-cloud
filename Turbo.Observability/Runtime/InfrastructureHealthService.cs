@@ -95,9 +95,6 @@ public sealed class InfrastructureHealthService(
 
         try
         {
-            var probe = _clusterClient.GetGrain<IPlayerPresenceGrain>(1);
-            await probe.IsOnlineAsync(ct).ConfigureAwait(false);
-
             var hosts = await _clusterClient
                 .GetGrain<IManagementGrain>(0)
                 .GetHosts(false)
