@@ -15,6 +15,7 @@ using Turbo.Primitives.Networking;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Rooms;
+using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Object;
 using Turbo.Rooms.Configuration;
 
@@ -25,7 +26,8 @@ internal sealed partial class RoomService(
     IOptions<RoomConfig> roomConfig,
     ISessionGateway sessionGateway,
     IGrainFactory grainFactory,
-    IDbContextFactory<TurboDbContext> dbContextFactory
+    IDbContextFactory<TurboDbContext> dbContextFactory,
+    IRoomModerationStore roomModerationStore
 ) : IRoomService
 {
     private readonly ILogger<IRoomService> _logger = logger;
@@ -33,6 +35,7 @@ internal sealed partial class RoomService(
     private readonly ISessionGateway _sessionGateway = sessionGateway;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IDbContextFactory<TurboDbContext> _dbContextFactory = dbContextFactory;
+    private readonly IRoomModerationStore _roomModerationStore = roomModerationStore;
 
     public async Task OpenRoomForPlayerIdAsync(
         ActionContext ctx,
@@ -45,6 +48,20 @@ internal sealed partial class RoomService(
         {
             var playerPresence = _grainFactory.GetPlayerPresenceGrain(playerId);
             var pendingRoom = await playerPresence.GetPendingRoomAsync().ConfigureAwait(false);
+
+            if (
+                await _roomModerationStore
+                    .IsBannedAsync(roomId.Value, playerId.Value, ct)
+                    .ConfigureAwait(false)
+            )
+            {
+                await playerPresence
+                    .SendComposerAsync(
+                        new CantConnectMessageComposer { ErrorType = RoomConnectionErrorType.Banned }
+                    )
+                    .ConfigureAwait(false);
+                return;
+            }
 
             if (pendingRoom.RoomId == roomId)
                 return;

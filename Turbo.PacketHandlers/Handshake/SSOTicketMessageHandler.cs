@@ -20,6 +20,7 @@ using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Orleans.Snapshots.Players;
+using Turbo.Primitives.Permissions;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Players.Enums;
 using Turbo.Primitives.Players.Enums.Wallet;
@@ -30,12 +31,14 @@ namespace Turbo.PacketHandlers.Handshake;
 public class SSOTicketMessageHandler(
     IAuthenticationService authService,
     ISessionGateway sessionGateway,
-    IGrainFactory grainFactory
+    IGrainFactory grainFactory,
+    IPermissionService permissionService
 ) : IMessageHandler<SSOTicketMessage>
 {
     private readonly IAuthenticationService _authService = authService;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly IPermissionService _permissionService = permissionService;
 
     public async ValueTask HandleAsync(
         SSOTicketMessage message,
@@ -69,6 +72,12 @@ public class SSOTicketMessageHandler(
             var clubLevel = sub.IsActive
                 ? (sub.IsVip ? ClubLevelType.Vip : ClubLevelType.Club)
                 : ClubLevelType.None;
+
+            var permissions = await _permissionService
+                .ResolveForPlayerAsync(playerId, ct)
+                .ConfigureAwait(false);
+
+            var securityLevel = SecurityLevelPolicy.Resolve(permissions);
 
             await ctx.SendComposerAsync(
                     new AuthenticationOKMessage
@@ -111,7 +120,7 @@ public class SSOTicketMessageHandler(
                     new UserRightsMessage
                     {
                         ClubLevel = clubLevel,
-                        SecurityLevel = SecurityLevelType.Administrator,
+                        SecurityLevel = securityLevel,
                         IsAmbassador = false,
                     },
                     ct

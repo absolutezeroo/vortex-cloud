@@ -42,6 +42,18 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
             return;
         }
 
+        if (IsUserMuted(playerId, out var secondsRemaining))
+        {
+            await _roomGrain
+                ._grainFactory.GetPlayerPresenceGrain(playerId)
+                .SendComposerAsync(
+                    new RemainingMutePeriodMessageComposer { SecondsRemaining = secondsRemaining }
+                )
+                .ConfigureAwait(false);
+
+            return;
+        }
+
         await SendChatAsync(
                 avatar.ObjectId,
                 playerId,
@@ -140,5 +152,21 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
                 _roomGrain.RoomId
             );
         }
+    }
+
+    private bool IsUserMuted(PlayerId playerId, out int secondsRemaining)
+    {
+        if (
+            _roomGrain._state.MuteExpiresUtc.TryGetValue(playerId, out var mutedUntil)
+            && mutedUntil > DateTime.UtcNow
+        )
+        {
+            secondsRemaining = (int)Math.Ceiling((mutedUntil - DateTime.UtcNow).TotalSeconds);
+            return true;
+        }
+
+        _roomGrain._state.MuteExpiresUtc.Remove(playerId);
+        secondsRemaining = 0;
+        return false;
     }
 }

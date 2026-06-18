@@ -14,6 +14,7 @@ using Turbo.Primitives;
 using Turbo.Primitives.Events;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Permissions;
 using Turbo.Primitives.Orleans.Snapshots.Room;
 using Turbo.Primitives.Orleans.Snapshots.Room.Settings;
 using Turbo.Primitives.Players;
@@ -40,6 +41,8 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     internal readonly IRoomWiredVariablesProvider _wiredVariablesProvider;
     internal readonly IGrainFactory _grainFactory;
     internal readonly IEventPublisher _events;
+    internal readonly IPermissionService _permissionService;
+    internal readonly IRoomModerationStore _moderationStore;
 
     internal IAsyncStream<RoomOutbound> _roomOutbound = default!;
 
@@ -71,7 +74,9 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         IRoomAvatarProvider avatarProvider,
         IRoomWiredVariablesProvider wiredVariablesProvider,
         IGrainFactory grainFactory,
-        IEventPublisher events
+        IEventPublisher events,
+        IPermissionService permissionService,
+        IRoomModerationStore moderationStore
     )
     {
         _dbCtxFactory = dbCtxFactory;
@@ -84,6 +89,8 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         _wiredVariablesProvider = wiredVariablesProvider;
         _grainFactory = grainFactory;
         _events = events;
+        _permissionService = permissionService;
+        _moderationStore = moderationStore;
 
         _state = new() { RoomId = (RoomId)this.GetPrimaryKeyLong() };
         PathingSystem = new(this);
@@ -117,6 +124,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         }
 
         await HydrateRoomStateAsync(ct);
+        await HydrateModerationStateAsync(ct);
 
         await _grainFactory.GetRoomDirectoryGrain().UpsertActiveRoomAsync(_state.RoomSnapshot);
 
@@ -266,5 +274,15 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         var mod = delta % offset;
 
         return mod == 0 ? now : now + (offset - mod);
+    }
+
+    private async Task HydrateModerationStateAsync(CancellationToken ct)
+    {
+        var activeMutes = await _moderationStore.GetActiveMutesAsync(_state.RoomId.Value, ct);
+
+        _state.MuteExpiresUtc.Clear();
+
+        foreach (var mute in activeMutes)
+            _state.MuteExpiresUtc[(PlayerId)mute.PlayerId] = mute.ExpiresUtc;
     }
 }

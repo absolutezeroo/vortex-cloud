@@ -6,5 +6,11 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Moderator;
 
 internal class ModAlertMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new ModAlertMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new ModAlertMessage
+        {
+            UserId = packet.PopInt(),
+            Message = packet.PopString(),
+            Topic = packet.PopInt(),
+        };
 }
