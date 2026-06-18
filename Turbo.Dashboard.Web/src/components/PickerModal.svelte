@@ -10,7 +10,7 @@
   export let onClose;
   export let canSelect = true;
 
-  const endpoint = kind === 'furniture' ? '/api/furniture' : '/api/players';
+  const endpoint = kind === 'furniture' ? '/api/v1/directory/furniture' : '/api/v1/directory/players';
 
   let query = '';
   let rows = [];

@@ -16,7 +16,7 @@
     error = '';
 
     try {
-      const data = await apiGet('/api/audit?limit=80');
+      const data = await apiGet('/api/v1/forensics/audit?limit=80');
       rows = data.items || [];
     } catch (err) {
       if (isPermissionDeniedError(err)) {

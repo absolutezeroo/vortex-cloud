@@ -20,6 +20,7 @@ import AuditPage from '../pages/AuditPage.svelte';
 import ModerationPage from '../pages/ModerationPage.svelte';
 import OperationsPage from '../pages/OperationsPage.svelte';
 import AccessDeniedPage from '../pages/AccessDeniedPage.svelte';
+import ApiExplorerPage from '../pages/ApiExplorerPage.svelte';
 
 // Display + permission metadata for the navigation sidebar. Order is the nav order.
 export const NAV = [
@@ -33,6 +34,7 @@ export const NAV = [
   { path: '/audit', label: 'Audit feed', short: 'Security', caps: ROUTE_PERMISSIONS.audit, component: AuditPage },
   { path: '/moderation', label: 'Moderation', short: 'Stats and trends', caps: ROUTE_PERMISSIONS.moderation, component: ModerationPage },
   { path: '/operations', label: 'Operations', short: 'Admin actions', caps: ROUTE_PERMISSIONS.operations, component: OperationsPage },
+  { path: '/api-explorer', label: 'API explorer', short: 'Routes and contract', caps: ROUTE_PERMISSIONS.apiExplorer, component: ApiExplorerPage },
 ];
 
 const canSee = (caps) => () => hasDashboardCapability(get(identity), caps);

@@ -20,7 +20,7 @@
     error = '';
 
     try {
-      data = await apiGet(`/api/room/${encodeURIComponent(roomId.trim())}?limit=120`);
+      data = await apiGet(`/api/v1/directory/rooms/${encodeURIComponent(roomId.trim())}?limit=120`);
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;

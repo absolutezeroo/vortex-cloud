@@ -19,6 +19,7 @@ export const ROUTE_PERMISSIONS = {
   rooms: [CAPABILITIES.auditRead],
   audit: [CAPABILITIES.auditRead],
   moderation: [CAPABILITIES.auditRead],
+  apiExplorer: [CAPABILITIES.overviewRead],
   operations: [
     CAPABILITIES.opsGrantCurrency,
     CAPABILITIES.opsGrantItem,

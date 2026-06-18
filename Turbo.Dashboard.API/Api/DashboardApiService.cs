@@ -15,6 +15,7 @@ using Turbo.Observability.Runtime;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Observability;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Players.Enums;
 using Turbo.Primitives.Rooms.Grains;
 
 namespace Turbo.Dashboard.API.Api;
@@ -546,6 +547,226 @@ internal sealed class DashboardApiService(
                     total,
                     offset,
                     items = rowsWithNames,
+                };
+            },
+            ct
+        );
+
+    public Task<object> ClubSubscriptionsAsync(NameValueCollection query, CancellationToken ct) =>
+        QueryAsync<object>(
+            async db =>
+            {
+                var nowUtc = DateTime.UtcNow;
+                var until = ParseDateTime(query["until"]) ?? nowUtc;
+                var since = ParseDateTime(query["since"]) ?? nowUtc.AddDays(-30);
+
+                if (since > until)
+                    (since, until) = (until, since);
+
+                if (until - since > TimeSpan.FromDays(365))
+                    since = until.AddDays(-365);
+
+                var subscriptions = await db
+                    .PlayerSubscriptions.AsNoTracking()
+                    .Select(s => new
+                    {
+                        playerId = s.PlayerEntityId,
+                        type = s.SubscriptionType,
+                        level = s.Level,
+                        s.ExpiresAt,
+                        s.TotalMonths,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                var playerIds = NormalizeIds(subscriptions.Select(s => (long?)s.playerId));
+                var playerNames = await LoadPlayerNamesAsync(db, playerIds, ct).ConfigureAwait(false);
+
+                var activeSubscriptions = subscriptions.Where(s => s.ExpiresAt > nowUtc).ToList();
+                var totalSubscriptions = subscriptions.Count;
+                var inactiveCount = totalSubscriptions - activeSubscriptions.Count;
+                var expiringIn7Days = activeSubscriptions.Count(s => s.ExpiresAt <= nowUtc.AddDays(7));
+                var expiringIn30Days = activeSubscriptions.Count(s => s.ExpiresAt <= nowUtc.AddDays(30));
+                var activeRate = totalSubscriptions > 0
+                    ? Math.Round((double)activeSubscriptions.Count / totalSubscriptions, 4)
+                    : 0d;
+
+                var byType = subscriptions
+                    .GroupBy(s => s.type)
+                    .Select(g =>
+                    {
+                        var activeByType = g.Where(s => s.ExpiresAt > nowUtc).ToList();
+                        var averageRemainingDays = activeByType.Count > 0
+                            ? Math.Round(
+                                activeByType
+                                    .Select(s => (s.ExpiresAt - nowUtc).TotalDays)
+                                    .Average(),
+                                2
+                            )
+                            : 0d;
+
+                        var averageTotalMonths = Math.Round(g.Select(s => s.TotalMonths).DefaultIfEmpty(0).Average(), 2);
+
+                        return new
+                        {
+                            type = g.Key.ToString(),
+                            total = g.Count(),
+                            active = activeByType.Count,
+                            inactive = g.Count() - activeByType.Count,
+                            averageRemainingDays,
+                            averageTotalMonths,
+                        };
+                    })
+                    .OrderBy(x => x.type)
+                    .ToList();
+
+                var events = await db
+                    .AuditEvents.AsNoTracking()
+                    .Where(e =>
+                        e.Category == AuditCategory.Economy
+                        && e.OccurredAt >= since
+                        && e.OccurredAt <= until
+                        && (
+                            e.Action == "economy.hc.purchase"
+                            || e.Action == "economy.hc.renew"
+                            || e.Action == "economy.hc.expired"
+                        )
+                    )
+                    .Select(e => new
+                    {
+                        e.OccurredAt,
+                        e.Action,
+                        e.ActorPlayerId,
+                        e.Data,
+                    })
+                    .OrderBy(e => e.OccurredAt)
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                var clubEvents = events
+                    .Select(e => new ClubSubscriptionEvent(
+                        e.OccurredAt,
+                        e.Action,
+                        e.ActorPlayerId,
+                        e.Data
+                    ))
+                    .ToList();
+
+                var actorIds = NormalizeIds(clubEvents.Select(e => e.ActorPlayerId));
+                var actorNames = await LoadPlayerNamesAsync(db, actorIds, ct).ConfigureAwait(false);
+
+                var enrichedEvents = clubEvents
+                    .Select(e =>
+                    {
+                        var payload = ParseClubSubscriptionPayload(e.Data);
+
+                        return new
+                        {
+                            e.OccurredAt,
+                            e.Action,
+                            actorPlayerId = ToPlayerId(e.ActorPlayerId),
+                            actorPlayerName = ResolvePlayerName(actorNames, ToPlayerId(e.ActorPlayerId)),
+                            payload?.Months,
+                            payload?.TotalMonths,
+                            payload?.CreditCost,
+                            payload?.IsRenewal,
+                            payload?.IsVip,
+                        };
+                    })
+                    .OrderByDescending(e => e.OccurredAt)
+                    .ToList();
+
+                var purchases = clubEvents.Count(e => e.Action == "economy.hc.purchase");
+                var renewals = clubEvents.Count(e => e.Action == "economy.hc.renew");
+                var expired = clubEvents.Count(e => e.Action == "economy.hc.expired");
+                var renewalShare = purchases + renewals > 0
+                    ? Math.Round((double)renewals / (purchases + renewals), 4)
+                    : 0d;
+
+                var bucketSize = ResolveBucketSize(since, until);
+                var lifecycle = BuildSubscriptionTimeline(
+                    clubEvents.Select(e => (e.OccurredAt, e.Action)).ToList(),
+                    since,
+                    until,
+                    bucketSize
+                );
+
+                var byMonths = enrichedEvents
+                    .Where(e => e.Months is not null)
+                    .GroupBy(e => e.Months!.Value)
+                    .Select(g => new
+                    {
+                        months = g.Key,
+                        total = g.Count(),
+                        purchases = g.Count(e => e.Action == "economy.hc.purchase"),
+                        renewals = g.Count(e => e.Action == "economy.hc.renew"),
+                        expired = g.Count(e => e.Action == "economy.hc.expired"),
+                    })
+                    .OrderBy(g => g.months)
+                    .ToList();
+
+                var recentEvents = enrichedEvents
+                    .Take(30)
+                    .Select(e => new
+                    {
+                        e.OccurredAt,
+                        e.Action,
+                        e.actorPlayerId,
+                        e.actorPlayerName,
+                        e.Months,
+                        e.TotalMonths,
+                        e.CreditCost,
+                        e.IsRenewal,
+                        e.IsVip,
+                    })
+                    .ToList();
+
+                var topExpiring = activeSubscriptions
+                    .Where(s => s.ExpiresAt <= nowUtc.AddDays(14))
+                    .OrderBy(s => s.ExpiresAt)
+                    .Take(10)
+                    .Select(s => new
+                    {
+                        playerId = s.playerId,
+                        playerName = ResolvePlayerName(playerNames, s.playerId),
+                        type = s.type.ToString(),
+                        level = s.level,
+                        totalMonths = s.TotalMonths,
+                        expiresAt = s.ExpiresAt,
+                        remainingDays = Math.Round(
+                            Math.Max(0, (s.ExpiresAt - nowUtc).TotalDays),
+                            2
+                        ),
+                    })
+                    .ToList();
+
+                return new
+                {
+                    window = new { since, until },
+                    totals = new
+                    {
+                        totalSubscriptions,
+                        activeSubscriptions = activeSubscriptions.Count,
+                        inactiveSubscriptions = inactiveCount,
+                        expiringIn7Days,
+                        expiringIn30Days,
+                        activeRate,
+                    },
+                    byType,
+                    topExpiring,
+                    lifecycle = new
+                    {
+                        totals = new
+                        {
+                            purchases,
+                            renewals,
+                            expired,
+                            renewalShare,
+                        },
+                        byMonths,
+                        recentEvents,
+                        timeline = lifecycle,
+                    },
                 };
             },
             ct
@@ -1610,6 +1831,13 @@ internal sealed class DashboardApiService(
         long Performance
     );
 
+    private sealed record ClubSubscriptionEvent(
+        DateTime OccurredAt,
+        string Action,
+        long? ActorPlayerId,
+        string? Data
+    );
+
     private sealed record ModerationEventRow(
         long Id,
         DateTime OccurredAt,
@@ -1626,6 +1854,22 @@ internal sealed class DashboardApiService(
         string Bucket,
         string Label,
         int Count
+    );
+
+    private sealed record SubscriptionTimelinePoint(
+        string Bucket,
+        string Label,
+        int Purchases,
+        int Renewals,
+        int Expired
+    );
+
+    private sealed record ClubSubscriptionPayload(
+        int? Months,
+        int? TotalMonths,
+        int? CreditCost,
+        bool? IsVip,
+        bool? IsRenewal
     );
 
     private static HashSet<long> DetectRenewedBanEventIds(
@@ -1687,6 +1931,57 @@ internal sealed class DashboardApiService(
                 pair.Key.ToString("O"),
                 FormatTimelineLabel(pair.Key, bucketSize),
                 pair.Value
+            ))
+            .ToList();
+    }
+
+    private static List<SubscriptionTimelinePoint> BuildSubscriptionTimeline(
+        IReadOnlyList<(DateTime OccurredAt, string Action)> events,
+        DateTime since,
+        DateTime until,
+        TimeSpan bucketSize
+    )
+    {
+        if (events.Count == 0)
+            return [];
+
+        var bucketMap = new Dictionary<DateTime, (int purchases, int renewals, int expired)>();
+
+        var cursor = ResolveTimelineBucket(since, bucketSize);
+        var end = ResolveTimelineBucket(until, bucketSize);
+
+        while (cursor <= end)
+        {
+            bucketMap[cursor] = (purchases: 0, renewals: 0, expired: 0);
+            cursor = cursor.Add(bucketSize);
+        }
+
+        foreach (var evt in events)
+        {
+            var bucket = ResolveTimelineBucket(evt.OccurredAt, bucketSize);
+            var counts = bucketMap.TryGetValue(bucket, out var current)
+                ? current
+                : (purchases: 0, renewals: 0, expired: 0);
+
+            counts = evt.Action switch
+            {
+                "economy.hc.purchase" => (counts.purchases + 1, counts.renewals, counts.expired),
+                "economy.hc.renew" => (counts.purchases, counts.renewals + 1, counts.expired),
+                "economy.hc.expired" => (counts.purchases, counts.renewals, counts.expired + 1),
+                _ => counts,
+            };
+
+            bucketMap[bucket] = counts;
+        }
+
+        return bucketMap
+            .OrderBy(pair => pair.Key)
+            .Select(pair => new SubscriptionTimelinePoint(
+                pair.Key.ToString("O"),
+                FormatTimelineLabel(pair.Key, bucketSize),
+                pair.Value.purchases,
+                pair.Value.renewals,
+                pair.Value.expired
             ))
             .ToList();
     }
@@ -1772,6 +2067,62 @@ internal sealed class DashboardApiService(
         {
             return null;
         }
+    }
+
+    private static ClubSubscriptionPayload? ParseClubSubscriptionPayload(string? data)
+    {
+        if (string.IsNullOrWhiteSpace(data))
+            return null;
+
+        try
+        {
+            using var doc = JsonDocument.Parse(data);
+            var root = doc.RootElement;
+
+            return new ClubSubscriptionPayload(
+                TryParseInt(root, "months"),
+                TryParseInt(root, "totalMonths"),
+                TryParseInt(root, "creditCost"),
+                TryParseBool(root, "isVip"),
+                TryParseBool(root, "isRenewal")
+            );
+        }
+        catch
+        {
+            // Intentionally ignore malformed payloads.
+            return null;
+        }
+    }
+
+    private static int? TryParseInt(JsonElement root, string propertyName)
+    {
+        if (!root.TryGetProperty(propertyName, out var property))
+            return null;
+
+        if (property.ValueKind == JsonValueKind.Number && property.TryGetInt32(out var parsed))
+            return parsed;
+
+        if (property.ValueKind == JsonValueKind.String && int.TryParse(property.GetString(), out parsed))
+            return parsed;
+
+        return null;
+    }
+
+    private static bool? TryParseBool(JsonElement root, string propertyName)
+    {
+        if (!root.TryGetProperty(propertyName, out var property))
+            return null;
+
+        if (property.ValueKind == JsonValueKind.True || property.ValueKind == JsonValueKind.False)
+            return property.GetBoolean();
+
+        if (
+            property.ValueKind == JsonValueKind.String
+            && bool.TryParse(property.GetString(), out var parsed)
+        )
+            return parsed;
+
+        return null;
     }
 
     private static string? FormatModerationDuration(int? seconds)

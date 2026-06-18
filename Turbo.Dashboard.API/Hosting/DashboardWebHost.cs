@@ -135,6 +135,7 @@ internal sealed class DashboardWebHost(
         DashboardEndpoints.MapAuth(app);
         DashboardEndpoints.MapReadApi(app, startedAtUtc);
         DashboardEndpoints.MapOperations(app);
+        DashboardEndpoints.MapMeta(app);
 
         if (_config.DashboardFrontendEnabled)
             DashboardEndpoints.MapFrontend(app);
@@ -278,8 +279,8 @@ internal sealed class DashboardWebHost(
         app.UseAuthorization();
 
         // HTTP access audit trail. Login/logout audit themselves; operation success is audited by
-        // DashboardOperationsService (with correlation id), so for /api/ops/* only the failures are
-        // logged here to avoid double records.
+        // DashboardOperationsService (with correlation id), so for operation routes only failures are
+        // logged here to avoid duplicate records.
         app.Use(
             async (ctx, next) =>
             {
@@ -294,7 +295,9 @@ internal sealed class DashboardWebHost(
                     return;
 
                 var status = ctx.Response.StatusCode;
-                var isOperation = path.StartsWith("/api/ops/", StringComparison.Ordinal);
+                var isOperation =
+                    path.StartsWith("/api/ops/", StringComparison.Ordinal)
+                    || path.StartsWith("/api/v1/operations/", StringComparison.Ordinal);
 
                 if (isOperation && status == StatusCodes.Status200OK)
                     return;

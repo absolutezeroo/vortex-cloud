@@ -102,7 +102,7 @@
     stage(
       'credits',
       'Give credits',
-      '/api/ops/currency/credits',
+      '/api/v1/operations/currency/credits',
       positive(credits.playerId) && positive(credits.amount) && reasonOk(credits.reason),
       {
         playerId: Number(credits.playerId),
@@ -125,7 +125,7 @@
     stage(
       'activity',
       'Give activity points',
-      '/api/ops/currency/activity-points',
+      '/api/v1/operations/currency/activity-points',
       positive(activity.playerId) &&
         nonNegative(activity.type) &&
         positive(activity.amount) &&
@@ -152,7 +152,7 @@
     stage(
       'item',
       'Give furniture',
-      '/api/ops/item/grant',
+      '/api/v1/operations/items/grant',
       positive(item.playerId) && positive(item.definitionId) && reasonOk(item.reason),
       {
         playerId: Number(item.playerId),
@@ -176,7 +176,7 @@
     stage(
       'kick',
       'Kick player',
-      '/api/ops/player/kick',
+      '/api/v1/operations/players/kick',
       positive(kick.playerId) && reasonOk(kick.reason),
       { playerId: Number(kick.playerId), reason: kick.reason.trim() },
       `Force-disconnect ${kick.playerName || 'player'} (#${kick.playerId}).`,

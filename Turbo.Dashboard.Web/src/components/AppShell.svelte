@@ -28,6 +28,7 @@
     '/incidents': ShieldAlert,
     '/audit': ScrollText,
     '/moderation': ShieldAlert,
+    '/api-explorer': ScrollText,
     '/operations': Wrench,
   };
 

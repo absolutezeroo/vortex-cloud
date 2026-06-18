@@ -30,7 +30,7 @@
     forbidden = false;
     error = '';
     try {
-      const data = await apiGet(`/api/search?q=${encodeURIComponent(term)}`);
+      const data = await apiGet(`/api/v1/directory/search?q=${encodeURIComponent(term)}`);
       const nextRows = [];
 
       if (data.kind === 'id') {

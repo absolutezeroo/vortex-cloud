@@ -26,8 +26,8 @@
 
     try {
       data = $modal.type === 'item'
-        ? await apiGet(`/api/item/${encodeURIComponent($modal.id)}`)
-        : await apiGet(`/api/search?q=${encodeURIComponent($modal.id)}`);
+        ? await apiGet(`/api/v1/directory/entity/${encodeURIComponent($modal.id)}`)
+        : await apiGet(`/api/v1/directory/search?q=${encodeURIComponent($modal.id)}`);
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -207,5 +207,4 @@
     </section>
   </div>
 {/if}
-
 

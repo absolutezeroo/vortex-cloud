@@ -9,12 +9,23 @@
   let error = '';
   let forbidden = false;
 
+  $: topOperations = data?.topOperations || [];
+  $: topFailedOperations = data?.topFailedOperations || [];
+  $: topOpsScale = Math.max(
+    1,
+    ...topOperations.map((row) => Number(row.packetsPerMinute || 0)),
+  );
+  $: topFailedScale = Math.max(
+    1,
+    ...topFailedOperations.map((row) => Number(row.packetsPerMinute || 0)),
+  );
+
   async function refresh() {
     forbidden = false;
     error = '';
 
     try {
-      data = await apiGet('/api/packet-stats');
+      data = await apiGet('/api/v1/monitoring/packet-stats');
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -52,6 +63,22 @@
 <section class="split-grid">
   <div class="panel">
     <h2>Top operations</h2>
+    <div class="bar-chart">
+      {#each topOperations as row}
+        <div class="bar-row">
+          <div class="bar-label">{row.operation}</div>
+          <div class="bar-track">
+            <div
+              class="bar-fill"
+              style={`width:${topOpsScale > 0 ? (Number(row.packetsPerMinute || 0) / topOpsScale) * 100 : 0}%;`}
+            ></div>
+          </div>
+          <span class="muted">{formatNumber(row.packetsPerMinute, 2)}</span>
+        </div>
+      {:else}
+        <p class="muted">No operation buckets.</p>
+      {/each}
+    </div>
     <table>
       <thead><tr><th>Operation</th><th>Packets/min</th></tr></thead>
       <tbody>
@@ -65,6 +92,22 @@
   </div>
   <div class="panel">
     <h2>Failed operations</h2>
+    <div class="bar-chart">
+      {#each topFailedOperations as row}
+        <div class="bar-row">
+          <div class="bar-label">{row.operation}</div>
+          <div class="bar-track">
+            <div
+              class="bar-fill"
+              style={`background: linear-gradient(90deg, rgba(223, 111, 123, 0.95), rgba(223, 111, 123, 0.55)); width:${topFailedScale > 0 ? (Number(row.packetsPerMinute || 0) / topFailedScale) * 100 : 0}%;`}
+            ></div>
+          </div>
+          <span class="muted">{formatNumber(row.packetsPerMinute, 2)}</span>
+        </div>
+      {:else}
+        <p class="muted">No failed packets.</p>
+      {/each}
+    </div>
     <table>
       <thead><tr><th>Operation</th><th>Packets/min</th></tr></thead>
       <tbody>

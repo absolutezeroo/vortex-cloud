@@ -78,8 +78,8 @@
 
   function csvEscape(value) {
     const text = value === null || value === undefined ? '' : String(value);
-    if (text.includes('\"') || text.includes(',') || text.includes('\n')) {
-      return `\"${text.replace(/\"/g, '\"\"')}\"`;
+    if (text.includes('"') || text.includes(',') || text.includes('\n')) {
+      return `"${text.replace(/"/g, '""')}"`;
     }
 
     return text;
@@ -141,7 +141,7 @@
 
     try {
       const params = buildParams();
-      data = await apiGet(`/api/moderation-stats?${params.toString()}`);
+      data = await apiGet(`/api/v1/forensics/moderation/stats?${params.toString()}`);
       updateSummary();
     } catch (err) {
       if (isPermissionDeniedError(err)) {
@@ -254,32 +254,32 @@
   });
 </script>
 
-<section class=\"panel\">
-  <div class=\"panel-head\">
+<section class="panel">
+  <div class="panel-head">
     <h2>Moderation statistics</h2>
-    <button type=\"button\" on:click={exportCsv}>Export CSV</button>
+    <button type="button" on:click={exportCsv}>Export CSV</button>
   </div>
 
-  <form class=\"toolbar-grid\" on:submit|preventDefault={refresh}>
+  <form class="toolbar-grid" on:submit|preventDefault={refresh}>
     <label>
       Since
-      <input type=\"datetime-local\" bind:value={since} />
+      <input type="datetime-local" bind:value={since} />
     </label>
     <label>
       Until
-      <input type=\"datetime-local\" bind:value={until} />
+      <input type="datetime-local" bind:value={until} />
     </label>
     <label>
       Actor
-      <input type=\"text\" bind:value={actor} placeholder=\"player id\" />
+      <input type="text" bind:value={actor} placeholder="player id" />
     </label>
     <label>
       Target
-      <input type=\"text\" bind:value={target} placeholder=\"player id\" />
+      <input type="text" bind:value={target} placeholder="player id" />
     </label>
     <label>
       Room
-      <input type=\"text\" bind:value={room} placeholder=\"room id\" />
+      <input type="text" bind:value={room} placeholder="room id" />
     </label>
     <label>
       Action
@@ -299,23 +299,23 @@
     </label>
     <label>
       Limit
-      <input type=\"number\" min=\"10\" max=\"500\" bind:value={limit} />
+      <input type="number" min="10" max="500" bind:value={limit} />
     </label>
 
-    <button type=\"submit\">Refresh</button>
+    <button type="submit">Refresh</button>
   </form>
 
-  <p class=\"muted\">{filterSummary}</p>
+  <p class="muted">{filterSummary}</p>
 
   {#if loading}
-    <p class=\"muted\">Loading moderation window...</p>
+    <p class="muted">Loading moderation window...</p>
   {:else if forbidden}
-    <AccessDeniedNotice message=\"Vous n'avez pas l'autorisation d'accéder aux statistiques de modération.\" />
+    <AccessDeniedNotice message="Vous n'avez pas l'autorisation d'accéder aux statistiques de modération." />
   {:else if error}
-    <p class=\"empty-state danger\">{error}</p>
+    <p class="empty-state danger">{error}</p>
   {/if}
 
-  <div class=\"metric-grid compact\">
+  <div class="metric-grid compact">
     <article><span>Total actions</span><strong>{formatNumber(data?.totals?.total || 0)}</strong></article>
     <article><span>Successful</span><strong>{formatNumber(data?.totals?.success || 0)}</strong></article>
     <article><span>Denied</span><strong>{formatNumber(data?.totals?.denied || 0)}</strong></article>
@@ -326,15 +326,15 @@
     <article><span>Bans retention</span><strong>{((data?.totals?.retentionRate || 0) * 100).toFixed(2)}%</strong></article>
   </div>
 
-  <div class=\"split-grid\" style=\"margin-top: 14px;\">
-    <article class=\"panel\">
+  <div class="split-grid" style="margin-top: 14px;">
+    <article class="panel">
       <h3>Actions distribution</h3>
-      <div class=\"chart-wrap\">
-        <div class=\"donut\" style={`background: ${pieStyle()};`}></div>
-        <div class=\"donut-legend\">
+      <div class="chart-wrap">
+        <div class="donut" style={`background: ${pieStyle()};`}></div>
+        <div class="donut-legend">
           {#each actionDistribution as entry}
             <div>
-              <span class=\"legend-dot\" style={`background: ${actionColors[entry.action] || actionColors.other};`}></span>
+              <span class="legend-dot" style={`background: ${actionColors[entry.action] || actionColors.other};`}></span>
               <span>{entry.action || 'unknown'} — {formatNumber(entry.count)}</span>
             </div>
           {/each}
@@ -342,26 +342,26 @@
       </div>
     </article>
 
-    <article class=\"panel\">
+    <article class="panel">
       <h3>Trend</h3>
-      <div class=\"bar-chart\">
+      <div class="bar-chart">
         {#each timelineRows as bucket}
-          <div class=\"bar-row\">
-            <div class=\"bar-label\">{bucket.label}</div>
-            <div class=\"bar-track\">
-              <div class=\"bar-fill\" style={`width:${rowMax > 0 ? `${(bucket.count / rowMax) * 100}%` : '0%'}`}></div>
+          <div class="bar-row">
+            <div class="bar-label">{bucket.label}</div>
+            <div class="bar-track">
+              <div class="bar-fill" style={`width:${rowMax > 0 ? `${(bucket.count / rowMax) * 100}%` : '0%'}`}></div>
             </div>
-            <span class=\"muted\">{bucket.count}</span>
+            <span class="muted">{bucket.count}</span>
           </div>
         {:else}
-          <p class=\"muted\">No buckets in selected window.</p>
+          <p class="muted">No buckets in selected window.</p>
         {/each}
       </div>
     </article>
   </div>
 
-  <section class=\"split-grid\" style=\"margin-top: 14px;\">
-    <div class=\"panel\">
+  <section class="split-grid" style="margin-top: 14px;">
+    <div class="panel">
       <h3>Top actors</h3>
       <table>
         <thead><tr><th>Actor</th><th>Rows</th></tr></thead>
@@ -374,13 +374,13 @@
               <td>{formatNumber(row.count)}</td>
             </tr>
           {:else}
-            <tr><td colspan=\"2\" class=\"muted\">No actor activity.</td></tr>
+            <tr><td colspan="2" class="muted">No actor activity.</td></tr>
           {/each}
         </tbody>
       </table>
     </div>
 
-    <div class=\"panel\">
+    <div class="panel">
       <h3>Top targets</h3>
       <table>
         <thead><tr><th>Target</th><th>Rows</th></tr></thead>
@@ -393,14 +393,14 @@
               <td>{formatNumber(row.count)}</td>
             </tr>
           {:else}
-            <tr><td colspan=\"2\" class=\"muted\">No target activity.</td></tr>
+            <tr><td colspan="2" class="muted">No target activity.</td></tr>
           {/each}
         </tbody>
       </table>
     </div>
   </section>
 
-  <div class=\"panel\" style=\"margin-top: 14px;\">
+  <div class="panel" style="margin-top: 14px;">
     <h3>Top rooms</h3>
     <table>
       <thead><tr><th>Room</th><th>Name</th><th>Rows</th></tr></thead>
@@ -412,16 +412,16 @@
             <td>{formatNumber(row.count)}</td>
           </tr>
         {:else}
-          <tr><td colspan=\"3\" class=\"muted\">No room activity.</td></tr>
+          <tr><td colspan="3" class="muted">No room activity.</td></tr>
         {/each}
       </tbody>
     </table>
   </div>
 
-  <div class=\"panel\" style=\"margin-top: 14px;\">
-    <div class=\"panel-head\">
+  <div class="panel" style="margin-top: 14px;">
+    <div class="panel-head">
       <h3>Recent moderation events</h3>
-      <span class=\"muted\">page {data?.totals?.page || 1} · page size {data?.totals?.limit || 0}</span>
+      <span class="muted">page {data?.totals?.page || 1} · page size {data?.totals?.limit || 0}</span>
     </div>
     <table>
       <thead>
@@ -453,17 +453,18 @@
             <td>{row.result}</td>
             <td>
               {#if row.isRenewal}
-                <span class=\"positive\">Yes</span>
+                <span class="positive">Yes</span>
               {:else}
                 No
               {/if}
             </td>
-            <td class=\"truncate\">{row.reason || '-'}</td>
+            <td class="truncate">{row.reason || '-'}</td>
           </tr>
         {:else}
-          <tr><td colspan=\"9\" class=\"muted\">No moderation events for this filter.</td></tr>
+          <tr><td colspan="9" class="muted">No moderation events for this filter.</td></tr>
         {/each}
       </tbody>
     </table>
   </div>
 </section>
+

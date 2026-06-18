@@ -24,6 +24,12 @@
   --ink: #e7edf5;
   --muted: #8b9aad;
   --muted-strong: #b3bfce;
+  --success-bg: rgba(86, 185, 145, 0.16);
+  --success-border: rgba(86, 185, 145, 0.45);
+  --warning-bg: rgba(212, 168, 78, 0.16);
+  --warning-border: rgba(212, 168, 78, 0.45);
+  --danger-bg: rgba(223, 111, 123, 0.16);
+  --danger-border: rgba(223, 111, 123, 0.45);
   --line: rgba(148, 163, 184, 0.16);
   --line-strong: rgba(148, 163, 184, 0.28);
   --accent: #5aa7c8;
@@ -210,11 +216,68 @@ button {
   border-radius: 999px;
   padding: 8px 12px;
   background: var(--surface);
-  color: var(--danger);
+  color: var(--muted);
 }
 
 .status-pill.ok {
   color: var(--ok);
+  border-color: var(--success-border);
+  background: var(--success-bg);
+}
+
+.status-pill.warning {
+  color: var(--warning);
+  border-color: var(--warning-border);
+  background: var(--warning-bg);
+}
+
+.status-pill.danger {
+  color: var(--danger);
+  border-color: var(--danger-border);
+  background: var(--danger-bg);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.24rem 0.58rem;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.status-badge--ok {
+  color: var(--ok);
+  background: var(--success-bg);
+  border-color: var(--success-border);
+}
+
+.status-badge--healthy {
+  color: var(--ok);
+  background: var(--success-bg);
+  border-color: var(--success-border);
+}
+
+.status-badge--warn {
+  color: var(--warning);
+  background: var(--warning-bg);
+  border-color: var(--warning-border);
+}
+
+.status-badge--bad {
+  color: var(--danger);
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+}
+
+.status-badge--unknown {
+  color: var(--muted-strong);
+  background: rgba(148, 163, 184, 0.14);
+  border-color: rgba(148, 163, 184, 0.34);
 }
 
 .panel {
