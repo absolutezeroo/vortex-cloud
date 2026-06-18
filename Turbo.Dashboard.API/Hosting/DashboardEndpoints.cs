@@ -148,6 +148,14 @@ internal static class DashboardEndpoints
             .WithTags(TagForensics);
 
         app.MapGet(
+                "/api/moderation-stats",
+                (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                    Ok(api.ModerationStatsAsync(ctx.QueryAsNameValues(), ct))
+            )
+            .RequireAuthorization(Capabilities.Dashboard.AuditRead)
+            .WithTags(TagForensics);
+
+        app.MapGet(
                 "/api/economy",
                 (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                     Ok(api.EconomyAsync(ctx.QueryAsNameValues(), ct))

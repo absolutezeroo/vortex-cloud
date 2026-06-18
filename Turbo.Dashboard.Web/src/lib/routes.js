@@ -17,6 +17,7 @@ import RoomsPage from '../pages/RoomsPage.svelte';
 import PacketsPage from '../pages/PacketsPage.svelte';
 import IncidentsPage from '../pages/IncidentsPage.svelte';
 import AuditPage from '../pages/AuditPage.svelte';
+import ModerationPage from '../pages/ModerationPage.svelte';
 import OperationsPage from '../pages/OperationsPage.svelte';
 import AccessDeniedPage from '../pages/AccessDeniedPage.svelte';
 
@@ -30,6 +31,7 @@ export const NAV = [
   { path: '/packets', label: 'Packet center', short: 'Traffic', caps: ROUTE_PERMISSIONS.packets, component: PacketsPage },
   { path: '/incidents', label: 'Incident center', short: 'Signals', caps: ROUTE_PERMISSIONS.incidents, component: IncidentsPage },
   { path: '/audit', label: 'Audit feed', short: 'Security', caps: ROUTE_PERMISSIONS.audit, component: AuditPage },
+  { path: '/moderation', label: 'Moderation', short: 'Stats and trends', caps: ROUTE_PERMISSIONS.moderation, component: ModerationPage },
   { path: '/operations', label: 'Operations', short: 'Admin actions', caps: ROUTE_PERMISSIONS.operations, component: OperationsPage },
 ];
 

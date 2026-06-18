@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -230,6 +231,245 @@ internal sealed class DashboardApiService(
                     total,
                     offset,
                     items = rowsWithNames,
+                };
+            },
+            ct
+        );
+
+    public Task<object> ModerationStatsAsync(NameValueCollection query, CancellationToken ct) =>
+        QueryAsync<object>(
+            async db =>
+            {
+                var nowUtc = DateTime.UtcNow;
+                var since = ParseDateTime(query["since"]) ?? nowUtc.AddHours(-24);
+                var until = ParseDateTime(query["until"]) ?? nowUtc;
+
+                if (since > until)
+                    (since, until) = (until, since);
+
+                if (until - since > TimeSpan.FromDays(60))
+                    since = until.AddDays(-60);
+
+                var limit = ParseLimit(query["limit"], 80, 500);
+                var page = ParsePage(query["page"]);
+                var offset = Math.Max(0, (page - 1) * limit);
+
+                var q = db.AuditEvents.AsNoTracking().Where(a => a.Category == AuditCategory.Moderation);
+
+                q = q.Where(a => a.OccurredAt >= since && a.OccurredAt <= until);
+
+                if (int.TryParse(query["actor"], out var actor))
+                    q = q.Where(a => a.ActorPlayerId == actor);
+
+                if (int.TryParse(query["target"], out var target))
+                    q = q.Where(a => a.TargetPlayerId == target);
+
+                if (int.TryParse(query["room"], out var room))
+                    q = q.Where(a => a.RoomId == room);
+
+                var action = query["action"]?.Trim();
+                if (!string.IsNullOrWhiteSpace(action))
+                    q = q.Where(a => a.Action == action);
+
+                if (Enum.TryParse<AuditResult>(query["result"], true, out var resultFilter))
+                    q = q.Where(a => a.Result == resultFilter);
+
+                var events = await q
+                    .OrderByDescending(a => a.OccurredAt)
+                    .Select(a => new ModerationEventRow(
+                        a.Id,
+                        a.OccurredAt,
+                        a.Action,
+                        a.Result.ToString(),
+                        a.ActorPlayerId,
+                        a.TargetPlayerId,
+                        a.RoomId,
+                        a.Data,
+                        a.CorrelationId
+                    ))
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                var total = events.Count;
+                var rows = events
+                    .Skip(offset)
+                    .Take(limit)
+                    .Select(e => new
+                    {
+                        e.Id,
+                        e.OccurredAt,
+                        e.Action,
+                        e.Result,
+                        e.ActorPlayerId,
+                        e.TargetPlayerId,
+                        e.RoomId,
+                        e.Data,
+                        e.CorrelationId,
+                    })
+                    .ToList();
+
+                var playerIds = NormalizeIds(
+                    events.SelectMany(e => new[] { e.ActorPlayerId, e.TargetPlayerId })
+                );
+                var roomIds = NormalizeIds(events.Select(e => e.RoomId));
+
+                var playerNames = await LoadPlayerNamesAsync(db, playerIds, ct)
+                    .ConfigureAwait(false);
+
+                var roomNames = await LoadRoomNamesAsync(db, roomIds, ct)
+                    .ConfigureAwait(false);
+
+                var renewedBanEventIds = DetectRenewedBanEventIds(events);
+
+                var rowsWithNames = rows
+                    .Select(r =>
+                    {
+                        var raw = events.FirstOrDefault(e => e.Id == r.Id && e.OccurredAt == r.OccurredAt);
+                        var durationSeconds = raw is null ? null : ParseModerationDurationSeconds(raw.Data);
+
+                        return new
+                        {
+                            r.Id,
+                            r.OccurredAt,
+                            r.Action,
+                            r.Result,
+                            r.ActorPlayerId,
+                            actorName = ResolvePlayerName(playerNames, r.ActorPlayerId),
+                            r.TargetPlayerId,
+                            targetName = ResolvePlayerName(playerNames, r.TargetPlayerId),
+                            r.RoomId,
+                            roomName = r.RoomId != null
+                                && roomNames.TryGetValue(r.RoomId.Value, out var roomName)
+                                    ? roomName
+                                    : null,
+                            durationSeconds,
+                            duration = FormatModerationDuration(durationSeconds),
+                            reason = raw is null ? null : SummarizeModerationReason(r.Action, raw.Data),
+                            isRenewal = r.Id != 0 && renewedBanEventIds.Contains(r.Id),
+                            r.CorrelationId,
+                        };
+                    })
+                    .ToList();
+
+                var byAction = events
+                    .GroupBy(e => e.Action)
+                    .Select(g => new
+                    {
+                        action = g.Key,
+                        count = g.Count(),
+                    })
+                    .OrderByDescending(g => g.count)
+                    .ThenBy(g => g.action)
+                    .ToList();
+
+                var byResult = events
+                    .GroupBy(e => e.Result)
+                    .Select(g => new
+                    {
+                        result = g.Key,
+                        count = g.Count(),
+                    })
+                    .OrderByDescending(g => g.count)
+                    .ThenBy(g => g.result)
+                    .ToList();
+
+                var topActors = events
+                    .Where(e => e.ActorPlayerId is not null)
+                    .GroupBy(e => e.ActorPlayerId!.Value)
+                    .OrderByDescending(g => g.Count())
+                    .ThenBy(g => g.Key)
+                    .Take(8)
+                    .Select(g => new
+                    {
+                        actorPlayerId = g.Key,
+                        actorName = ResolvePlayerName(playerNames, g.Key),
+                        count = g.Count(),
+                    })
+                    .ToList();
+
+                var topTargets = events
+                    .Where(e => e.TargetPlayerId is not null)
+                    .GroupBy(e => e.TargetPlayerId!.Value)
+                    .OrderByDescending(g => g.Count())
+                    .ThenBy(g => g.Key)
+                    .Take(8)
+                    .Select(g => new
+                    {
+                        targetPlayerId = g.Key,
+                        targetName = ResolvePlayerName(playerNames, g.Key),
+                        count = g.Count(),
+                    })
+                    .ToList();
+
+                var topRooms = events
+                    .Where(e => e.RoomId is not null)
+                    .GroupBy(e => e.RoomId!.Value)
+                    .OrderByDescending(g => g.Count())
+                    .ThenBy(g => g.Key)
+                    .Take(8)
+                    .Select(g => new
+                    {
+                        roomId = g.Key,
+                        roomName = roomNames.TryGetValue(g.Key, out var roomName)
+                            ? roomName
+                            : null,
+                        count = g.Count(),
+                    })
+                    .ToList();
+
+                var durations = events
+                    .Select(e => ParseModerationDurationSeconds(e.Data))
+                    .Where(seconds => seconds.HasValue && seconds.Value > 0)
+                    .Select(seconds => seconds!.Value)
+                    .ToList();
+
+                var totalBans = await db.RoomBans.AsNoTracking().CountAsync(ct).ConfigureAwait(false);
+                var activeBans = await db
+                    .RoomBans.AsNoTracking()
+                    .Where(b => b.DateExpires > nowUtc)
+                    .CountAsync(ct)
+                    .ConfigureAwait(false);
+                var inactiveBans = totalBans - activeBans;
+
+                var bucketSize = ResolveBucketSize(since, until);
+                var timeline = BuildModerationTimeline(events, since, until, bucketSize);
+
+                return new
+                {
+                    window = new { since, until },
+                    totals = new
+                    {
+                        total,
+                        limit,
+                        page,
+                        offset,
+                        success = byResult.FirstOrDefault(r => r.result == AuditResult.Success.ToString())
+                            ?.count ?? 0,
+                        denied = byResult.FirstOrDefault(r => r.result == AuditResult.Denied.ToString())
+                            ?.count ?? 0,
+                        failed = byResult.FirstOrDefault(r => r.result == AuditResult.Failed.ToString())
+                            ?.count ?? 0,
+                        retentionRate = totalBans > 0
+                            ? Math.Round((double)activeBans / totalBans, 4)
+                            : 0d,
+                        activeBans,
+                        inactiveBans,
+                        totalBans,
+                        renewalCount = renewedBanEventIds.Count,
+                        averageDurationSeconds = durations.Count > 0
+                            ? Math.Round(durations.Average(), 2)
+                            : 0d,
+                    },
+                    distribution = new
+                    {
+                        byAction,
+                        byResult,
+                    },
+                    timeline,
+                    topActors,
+                    topTargets,
+                    topRooms,
+                    rows = rowsWithNames,
                 };
             },
             ct
@@ -1369,6 +1609,189 @@ internal sealed class DashboardApiService(
         long Items,
         long Performance
     );
+
+    private sealed record ModerationEventRow(
+        long Id,
+        DateTime OccurredAt,
+        string Action,
+        string Result,
+        long? ActorPlayerId,
+        long? TargetPlayerId,
+        int? RoomId,
+        string? Data,
+        string? CorrelationId
+    );
+
+    private sealed record ModerationTimelinePoint(
+        string Bucket,
+        string Label,
+        int Count
+    );
+
+    private static HashSet<long> DetectRenewedBanEventIds(
+        IReadOnlyList<ModerationEventRow> events
+    )
+    {
+        if (events.Count == 0)
+            return [];
+
+        var lastBanByKey = new Dictionary<(long Actor, long Target, int Room), DateTime>();
+        var renewed = new HashSet<long>();
+
+        foreach (var evt in events.Where(e => e.Action == "moderation.ban").OrderBy(e => e.OccurredAt))
+        {
+            if (evt.ActorPlayerId is null || evt.TargetPlayerId is null || evt.RoomId is null)
+                continue;
+
+            var key = (evt.ActorPlayerId.Value, evt.TargetPlayerId.Value, evt.RoomId.Value);
+
+            if (lastBanByKey.TryGetValue(key, out _))
+                renewed.Add(evt.Id);
+
+            lastBanByKey[key] = evt.OccurredAt;
+        }
+
+        return renewed;
+    }
+
+    private static List<ModerationTimelinePoint> BuildModerationTimeline(
+        IReadOnlyList<ModerationEventRow> events,
+        DateTime since,
+        DateTime until,
+        TimeSpan bucketSize
+    )
+    {
+        if (events.Count == 0)
+            return [];
+
+        var bucketMap = new Dictionary<DateTime, int>();
+        var cursor = ResolveTimelineBucket(since, bucketSize);
+        var end = ResolveTimelineBucket(until, bucketSize);
+
+        while (cursor <= end)
+        {
+            bucketMap[cursor] = 0;
+            cursor = cursor.Add(bucketSize);
+        }
+
+        foreach (var evt in events)
+        {
+            var bucket = ResolveTimelineBucket(evt.OccurredAt, bucketSize);
+            bucketMap.TryGetValue(bucket, out var count);
+            bucketMap[bucket] = count + 1;
+        }
+
+        return bucketMap
+            .OrderBy(pair => pair.Key)
+            .Select(pair => new ModerationTimelinePoint(
+                pair.Key.ToString("O"),
+                FormatTimelineLabel(pair.Key, bucketSize),
+                pair.Value
+            ))
+            .ToList();
+    }
+
+    private static TimeSpan ResolveBucketSize(DateTime since, DateTime until)
+    {
+        var span = until - since;
+
+        if (span <= TimeSpan.FromHours(48))
+            return TimeSpan.FromHours(1);
+
+        if (span <= TimeSpan.FromDays(14))
+            return TimeSpan.FromDays(1);
+
+        return TimeSpan.FromDays(7);
+    }
+
+    private static DateTime ResolveTimelineBucket(DateTime value, TimeSpan bucketSize)
+    {
+        if (bucketSize.Ticks <= 0)
+            return value;
+
+        var ticks = value.Ticks - (value.Ticks % bucketSize.Ticks);
+        return new DateTime(ticks, value.Kind);
+    }
+
+    private static string FormatTimelineLabel(DateTime bucket, TimeSpan bucketSize)
+    {
+        if (bucketSize < TimeSpan.FromDays(1))
+            return bucket.ToString("MM/dd HH:mm");
+
+        if (bucketSize < TimeSpan.FromDays(14))
+            return bucket.ToString("MM/dd");
+
+        return bucket.ToString("yyyy/MM/dd");
+    }
+
+    private static int? ParseModerationDurationSeconds(string? data)
+    {
+        if (string.IsNullOrWhiteSpace(data))
+            return null;
+
+        try
+        {
+            using var doc = JsonDocument.Parse(data);
+            if (!doc.RootElement.TryGetProperty("durationSeconds", out var durationSeconds))
+                return null;
+
+            if (durationSeconds.ValueKind == JsonValueKind.Number && durationSeconds.TryGetInt32(out var parsed))
+                return parsed;
+
+            if (
+                durationSeconds.ValueKind == JsonValueKind.String
+                && int.TryParse(durationSeconds.GetString(), out parsed)
+            )
+                return parsed;
+        }
+        catch
+        {
+            // Intentionally ignore malformed payloads.
+        }
+
+        return null;
+    }
+
+    private static string? SummarizeModerationReason(string action, string? data)
+    {
+        if (string.IsNullOrWhiteSpace(data))
+            return null;
+
+        try
+        {
+            using var doc = JsonDocument.Parse(data);
+
+            return action switch
+            {
+                "moderation.denied" when doc.RootElement.TryGetProperty("action", out var deniedAction)
+                    => deniedAction.GetString(),
+                _ => null,
+            };
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static string? FormatModerationDuration(int? seconds)
+    {
+        if (seconds is null or <= 0)
+            return null;
+
+        var total = Math.Max(0, seconds.Value);
+        var minutes = total / 60;
+        var hours = minutes / 60;
+        var days = hours / 24;
+
+        if (days > 0)
+            return $"{days}d {hours % 24}h";
+
+        if (hours > 0)
+            return $"{hours}h {minutes % 60}m";
+
+        return $"{minutes}m";
+    }
 
     private sealed record PlayerRow(int Id, string Name);
 

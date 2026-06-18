@@ -27,6 +27,7 @@
     '/economy': Coins,
     '/incidents': ShieldAlert,
     '/audit': ScrollText,
+    '/moderation': ShieldAlert,
     '/operations': Wrench,
   };
 

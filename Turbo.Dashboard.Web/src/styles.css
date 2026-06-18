@@ -285,6 +285,96 @@ button {
   box-shadow: 0 0 0 3px rgba(90, 167, 200, 0.12);
 }
 
+.toolbar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.toolbar-grid label {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.toolbar-grid select,
+.toolbar-grid input {
+  min-width: 0;
+  width: 100%;
+}
+
+.chart-wrap {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  align-items: center;
+  gap: 14px;
+}
+
+.donut {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+}
+
+.donut-legend {
+  display: grid;
+  gap: 8px;
+}
+
+.donut-legend div {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.bar-chart {
+  display: grid;
+  gap: 8px;
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 130px 1fr 56px;
+  align-items: center;
+  gap: 10px;
+}
+
+.bar-label {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.bar-track {
+  height: 16px;
+  border-radius: 999px;
+  background: var(--line);
+  border: 1px solid var(--line-strong);
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(90, 167, 200, 0.95), rgba(90, 167, 200, 0.55));
+  transition: width 180ms ease;
+  min-width: 2px;
+}
+
+.split-grid .panel h3,
+.chart-wrap,
+.bar-row {
+  margin-top: 0;
+}
+
 .metric-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
