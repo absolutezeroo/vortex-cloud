@@ -43,7 +43,9 @@ internal sealed class WebApiResponseWriter
         int status,
         string errorCode,
         CancellationToken ct
-    ) => await WriteJsonAsync(ctx, status, new { error = errorCode }, null, ct).ConfigureAwait(false);
+    ) =>
+        await WriteJsonAsync(ctx, status, new { error = errorCode }, null, ct)
+            .ConfigureAwait(false);
 
     private static void ApplyCorsHeaders(HttpListenerRequest req, HttpListenerResponse res)
     {

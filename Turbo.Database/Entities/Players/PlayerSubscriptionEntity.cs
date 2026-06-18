@@ -30,6 +30,21 @@ public class PlayerSubscriptionEntity : TurboEntity
     [Column("next_gift_at")]
     public DateTime? NextGiftAt { get; set; }
 
+    [Column("past_club_days")]
+    public int PastClubDays { get; set; } = 0;
+
+    [Column("past_vip_days")]
+    public int PastVipDays { get; set; } = 0;
+
+    [Column("first_subscribed_at")]
+    public DateTime? FirstSubscribedAt { get; set; }
+
+    [Column("last_expired_at")]
+    public DateTime? LastExpiredAt { get; set; }
+
+    [Column("hc_badge_granted")]
+    public bool HcBadgeGranted { get; set; } = false;
+
     [ForeignKey(nameof(PlayerEntityId))]
     public required PlayerEntity PlayerEntity { get; set; }
 }

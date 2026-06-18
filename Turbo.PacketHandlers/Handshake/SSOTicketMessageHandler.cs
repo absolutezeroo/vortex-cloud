@@ -292,8 +292,8 @@ public class SSOTicketMessageHandler(
             ResponseType = 2,
             HasEverBeenMember = sub.TotalMonths > 0 || sub.IsActive,
             IsVIP = sub.IsVip,
-            PastClubDays = sub.TotalMonths * 31,
-            PastVipDays = sub.IsVip ? sub.TotalMonths * 31 : 0,
+            PastClubDays = sub.PastClubDays,
+            PastVipDays = sub.PastVipDays,
             MinutesUntilExpiration = sub.IsActive
                 ? (int)(sub.ExpiresAt - DateTime.UtcNow).TotalMinutes
                 : 0,

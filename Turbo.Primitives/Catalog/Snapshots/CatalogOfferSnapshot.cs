@@ -47,4 +47,7 @@ public sealed record CatalogOfferSnapshot
 
     [Id(13)]
     public required ImmutableArray<CatalogProductSnapshot> Products { get; init; }
+
+    [Id(14)]
+    public int DiscountPercent { get; init; }
 }

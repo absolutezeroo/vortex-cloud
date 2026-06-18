@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Turbo.Contracts.Plugins;
+using Turbo.Players.Configuration;
 using Turbo.Players.Providers;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Players.Providers;
@@ -13,6 +14,8 @@ public sealed class PlayerModule : IHostPluginModule
 
     public void ConfigureServices(IServiceCollection services, HostApplicationBuilder builder)
     {
+        services.Configure<ClubConfig>(builder.Configuration.GetSection(ClubConfig.SECTION_NAME));
+
         services.AddSingleton<ICurrencyTypeProvider, CurrencyTypeProvider>();
         services.AddSingleton<IPlayerService, PlayerService>();
     }

@@ -21,9 +21,7 @@ public sealed class PermissionSet
     {
         Roles = roles;
         _capabilities = new HashSet<string>(capabilities, StringComparer.Ordinal);
-        _wildcard = _capabilities.Contains(
-            Turbo.Primitives.Permissions.Capabilities.Wildcard
-        );
+        _wildcard = _capabilities.Contains(Turbo.Primitives.Permissions.Capabilities.Wildcard);
     }
 
     public IReadOnlyCollection<string> Roles { get; }

@@ -125,6 +125,7 @@ public sealed class CatalogSnapshotProvider<TTag>(
                         Visible = x.Visible,
                         ProductIds = ids,
                         Products = products,
+                        DiscountPercent = x.DiscountPercent,
                     };
                 })
                 .ToImmutableDictionary(x => x.Id);

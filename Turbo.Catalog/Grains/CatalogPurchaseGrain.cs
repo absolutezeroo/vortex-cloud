@@ -46,12 +46,17 @@ public sealed partial class CatalogPurchaseGrain(
         if (!snapshot.OffersById.TryGetValue(offerId, out var offer))
             throw new CatalogPurchaseException(CatalogPurchaseErrorType.OfferNotFound);
 
-        if (offer.ClubLevel > 0)
+        var isHabboClub = false;
+
+        // Resolve membership once when the offer either gates on club level or carries an HC discount.
+        if (offer.ClubLevel > 0 || offer.DiscountPercent > 0)
         {
             var sub = await _grainFactory
                 .GetPlayerGrain(PlayerId.Parse((int)this.GetPrimaryKeyLong()))
                 .GetClubSubscriptionAsync(ct)
                 .ConfigureAwait(false);
+
+            isHabboClub = sub.IsActive;
 
             var playerClubLevel = sub.IsActive ? (sub.IsVip ? 2 : 1) : 0;
 
@@ -59,9 +64,12 @@ public sealed partial class CatalogPurchaseGrain(
                 throw new CatalogPurchaseException(CatalogPurchaseErrorType.RequiresHabboClub);
         }
 
+        // HC members get the offer's configured discount off the credit cost (0 = no discount).
+        var discountPercent = isHabboClub ? Math.Clamp(offer.DiscountPercent, 0, 100) : 0;
+
         var creditCost = 0;
 
-        TryGetDebitRequests(offer, quantity, out var debitRequests);
+        TryGetDebitRequests(offer, quantity, discountPercent, out var debitRequests);
 
         if (debitRequests.Count > 0)
         {
@@ -109,19 +117,28 @@ public sealed partial class CatalogPurchaseGrain(
     private bool TryGetDebitRequests(
         CatalogOfferSnapshot offer,
         int quantity,
+        int discountPercent,
         out List<WalletDebitRequest> requests
     )
     {
         requests = [];
 
         if (offer.CostCredits > 0)
-            requests.Add(
-                new WalletDebitRequest
-                {
-                    CurrencyKind = new CurrencyKind { CurrencyType = CurrencyType.Credits },
-                    Amount = offer.CostCredits * quantity,
-                }
-            );
+        {
+            var creditAmount = offer.CostCredits * quantity;
+
+            if (discountPercent > 0)
+                creditAmount -= (int)(creditAmount * (discountPercent / 100.0));
+
+            if (creditAmount > 0)
+                requests.Add(
+                    new WalletDebitRequest
+                    {
+                        CurrencyKind = new CurrencyKind { CurrencyType = CurrencyType.Credits },
+                        Amount = creditAmount,
+                    }
+                );
+        }
 
         if (offer.CostSilver > 0)
             requests.Add(

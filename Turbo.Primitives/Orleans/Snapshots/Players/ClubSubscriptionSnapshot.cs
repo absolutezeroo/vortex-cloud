@@ -38,4 +38,10 @@ public sealed record ClubSubscriptionSnapshot
 
     [Id(10)]
     public int TotalCreditsSpent { get; init; }
+
+    [Id(11)]
+    public int PastClubDays { get; init; }
+
+    [Id(12)]
+    public int PastVipDays { get; init; }
 }

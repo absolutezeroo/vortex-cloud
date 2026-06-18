@@ -28,7 +28,12 @@ public interface IWebApiPlayerService
 
     Task<bool> SetNameAsync(int playerId, string name, CancellationToken ct);
 
-    Task<bool> SaveFigureAsync(int playerId, string figureString, string gender, CancellationToken ct);
+    Task<bool> SaveFigureAsync(
+        int playerId,
+        string figureString,
+        string gender,
+        CancellationToken ct
+    );
 
     Task<AvatarInfo?> GetAvatarAsync(int playerId, CancellationToken ct);
 }

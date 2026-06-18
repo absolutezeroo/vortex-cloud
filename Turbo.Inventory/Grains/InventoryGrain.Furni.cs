@@ -198,6 +198,49 @@ public sealed partial class InventoryGrain
         }
     }
 
+    public async Task GrantBadgeAsync(string badgeCode, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(badgeCode))
+            return;
+
+        var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+
+        try
+        {
+            var alreadyOwned = await dbCtx
+                .PlayerBadges.AnyAsync(
+                    b =>
+                        b.PlayerEntityId == (int)this.GetPrimaryKeyLong()
+                        && b.BadgeCode == badgeCode,
+                    ct
+                )
+                .ConfigureAwait(false);
+
+            if (alreadyOwned)
+                return;
+
+            dbCtx.PlayerBadges.Add(
+                new PlayerBadgeEntity
+                {
+                    PlayerEntityId = (int)this.GetPrimaryKeyLong(),
+                    BadgeCode = badgeCode,
+                    SlotId = 0,
+                    PlayerEntity = null!,
+                }
+            );
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+
+            var presence = _grainFactory.GetPlayerPresenceGrain(this.GetPrimaryKeyLong());
+
+            await presence.OnBadgeGrantedAsync(badgeCode, ct).ConfigureAwait(false);
+        }
+        finally
+        {
+            await dbCtx.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
     public async Task GrantFurnitureDefinitionAsync(
         int definitionId,
         string? extraData,

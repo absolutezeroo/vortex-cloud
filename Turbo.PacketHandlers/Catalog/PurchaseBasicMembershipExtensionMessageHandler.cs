@@ -5,6 +5,7 @@ using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Catalog.Providers;
 using Turbo.Primitives.Messages.Incoming.Catalog;
+using Turbo.Primitives.Messages.Outgoing.Catalog;
 using Turbo.Primitives.Messages.Outgoing.Handshake;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Orleans;
@@ -35,9 +36,16 @@ public class PurchaseBasicMembershipExtensionMessageHandler(
 
         var playerGrain = _grainFactory.GetPlayerGrain(ctx.PlayerId);
 
-        await playerGrain
+        var result = await playerGrain
             .PurchaseClubAsync(offer.Months, false, offer.PriceCredits, ct)
             .ConfigureAwait(false);
+
+        if (result != ClubPurchaseResult.Success)
+        {
+            await ctx.SendComposerAsync(new PurchaseErrorMessageComposer(), ct)
+                .ConfigureAwait(false);
+            return;
+        }
 
         var sub = await playerGrain.GetClubSubscriptionAsync(ct).ConfigureAwait(false);
 
@@ -66,8 +74,8 @@ public class PurchaseBasicMembershipExtensionMessageHandler(
                         ResponseType = 2,
                         HasEverBeenMember = sub.TotalMonths > 0 || sub.IsActive,
                         IsVIP = sub.IsVip,
-                        PastClubDays = sub.TotalMonths * 31,
-                        PastVipDays = 0,
+                        PastClubDays = sub.PastClubDays,
+                        PastVipDays = sub.PastVipDays,
                         MinutesUntilExpiration = (int)
                             (sub.ExpiresAt - DateTime.UtcNow).TotalMinutes,
                         MinutesSinceLastModified = 0,

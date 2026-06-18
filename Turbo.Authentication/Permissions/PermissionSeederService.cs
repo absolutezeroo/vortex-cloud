@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Turbo.Authentication.Configuration;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Permissions;
 
@@ -17,9 +19,12 @@ namespace Turbo.Authentication.Permissions;
 /// </summary>
 internal sealed class PermissionSeederService(
     IDbContextFactory<TurboDbContext> dbContextFactory,
+    IOptions<AuthenticationConfig> config,
     ILogger<PermissionSeederService> logger
 ) : IHostedService
 {
+    private readonly AuthenticationConfig _config = config.Value;
+
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         try
@@ -64,6 +69,8 @@ internal sealed class PermissionSeederService(
                         seed.Capabilities.Count
                     );
                 }
+
+                await EnsureBootstrapOwnerAsync(db, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -77,6 +84,72 @@ internal sealed class PermissionSeederService(
                 "Permission role seeding failed; ensure the permissions migration has been applied."
             );
         }
+    }
+
+    /// <summary>
+    /// Grants the configured bootstrap account the <c>owner</c> role so the very first administrator
+    /// can sign in (e.g. to the admin dashboard) before any role has been assigned. Idempotent: does
+    /// nothing if the email is unset, the account is missing, or the assignment already exists.
+    /// </summary>
+    private async Task EnsureBootstrapOwnerAsync(TurboDbContext db, CancellationToken ct)
+    {
+        var email = _config.BootstrapOwnerEmail?.Trim().ToLowerInvariant();
+
+        if (string.IsNullOrWhiteSpace(email))
+            return;
+
+        var accountId = await db
+            .PlayerAccounts.AsNoTracking()
+            .Where(a => a.Email == email)
+            .Select(a => (int?)a.Id)
+            .FirstOrDefaultAsync(ct)
+            .ConfigureAwait(false);
+
+        if (accountId is null)
+        {
+            logger.LogWarning(
+                "Bootstrap owner email '{Email}' has no matching account; skipping role assignment.",
+                email
+            );
+            return;
+        }
+
+        var ownerRoleId = await db
+            .Roles.AsNoTracking()
+            .Where(r => r.Key == DefaultRoles.OwnerKey)
+            .Select(r => (int?)r.Id)
+            .FirstOrDefaultAsync(ct)
+            .ConfigureAwait(false);
+
+        if (ownerRoleId is null)
+            return;
+
+        var alreadyAssigned = await db
+            .PlayerAccountRoles.AsNoTracking()
+            .AnyAsync(
+                x => x.PlayerAccountEntityId == accountId && x.RoleEntityId == ownerRoleId,
+                ct
+            )
+            .ConfigureAwait(false);
+
+        if (alreadyAssigned)
+            return;
+
+        db.PlayerAccountRoles.Add(
+            new PlayerAccountRoleEntity
+            {
+                PlayerAccountEntityId = accountId.Value,
+                RoleEntityId = ownerRoleId.Value,
+            }
+        );
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        logger.LogInformation(
+            "Granted 'owner' role to bootstrap account {AccountId} ({Email}).",
+            accountId,
+            email
+        );
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;

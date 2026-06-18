@@ -100,9 +100,31 @@ public class PurchaseFromCatalogMessageHandler(
         }
 
         var playerGrain = _grainFactory.GetPlayerGrain(ctx.PlayerId);
-        await playerGrain
+        var purchaseResult = await playerGrain
             .PurchaseClubAsync(clubOffer.Months, clubOffer.IsVip, clubOffer.PriceCredits, ct)
             .ConfigureAwait(false);
+
+        if (purchaseResult == ClubPurchaseResult.NotEnoughCredits)
+        {
+            await ctx.SendComposerAsync(
+                    new NotEnoughBalanceMessageComposer
+                    {
+                        NotEnoughCredits = true,
+                        NotEnoughActivityPoints = false,
+                        ActivityPointType = 0,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
+            return;
+        }
+
+        if (purchaseResult != ClubPurchaseResult.Success)
+        {
+            await ctx.SendComposerAsync(new PurchaseErrorMessageComposer(), ct)
+                .ConfigureAwait(false);
+            return;
+        }
 
         var sub = await playerGrain.GetClubSubscriptionAsync(ct).ConfigureAwait(false);
 
@@ -153,8 +175,8 @@ public class PurchaseFromCatalogMessageHandler(
                         ResponseType = 2,
                         HasEverBeenMember = sub.TotalMonths > 0 || sub.IsActive,
                         IsVIP = sub.IsVip,
-                        PastClubDays = sub.TotalMonths * 31,
-                        PastVipDays = sub.IsVip ? sub.TotalMonths * 31 : 0,
+                        PastClubDays = sub.PastClubDays,
+                        PastVipDays = sub.PastVipDays,
                         MinutesUntilExpiration = (int)
                             (sub.ExpiresAt - DateTime.UtcNow).TotalMinutes,
                         MinutesSinceLastModified = 0,

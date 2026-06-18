@@ -20,6 +20,11 @@ public sealed class PlayerLiveState
     public int ClubTotalMonths { get; set; } = 0;
     public int ClubGiftsAvailable { get; set; } = 0;
     public DateTime? ClubNextGiftAt { get; set; } = null;
+    public int ClubPastClubDays { get; set; } = 0;
+    public int ClubPastVipDays { get; set; } = 0;
+    public DateTime? ClubFirstSubscribedAt { get; set; } = null;
+    public DateTime? ClubLastExpiredAt { get; set; } = null;
+    public bool ClubBadgeGranted { get; set; } = false;
 
     public DateTime? KickbackPaydayAt { get; set; } = null;
     public int KickbackCreditsSpent { get; set; } = 0;

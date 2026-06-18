@@ -32,7 +32,16 @@ public class SelectClubGiftMessageHandler(
             return;
 
         var playerGrain = _grainFactory.GetPlayerGrain(ctx.PlayerId);
-        var consumed = await playerGrain.TryConsumeClubGiftAsync(ct).ConfigureAwait(false);
+
+        var sub = await playerGrain.GetClubSubscriptionAsync(ct).ConfigureAwait(false);
+
+        // A VIP-only gift cannot be claimed without an active VIP membership.
+        if (!sub.IsActive || (offer.ClubLevel > 1 && !sub.IsVip))
+            return;
+
+        var consumed = await playerGrain
+            .TryConsumeClubGiftAsync(message.ProductCode, ct)
+            .ConfigureAwait(false);
 
         if (!consumed)
             return;

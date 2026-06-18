@@ -31,6 +31,8 @@ public partial interface IInventoryGrain
         CancellationToken ct
     );
 
+    public Task GrantBadgeAsync(string badgeCode, CancellationToken ct);
+
     public Task GrantFurnitureDefinitionAsync(
         int definitionId,
         string? extraData,

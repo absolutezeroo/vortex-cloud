@@ -117,7 +117,9 @@ internal sealed class WebApiService(
 
             try
             {
-                await response.WriteErrorAsync(ctx, 500, "internal", cts.Token).ConfigureAwait(false);
+                await response
+                    .WriteErrorAsync(ctx, 500, "internal", cts.Token)
+                    .ConfigureAwait(false);
             }
             catch { }
         }
@@ -152,9 +154,7 @@ internal sealed class WebApiService(
             case "/api/public/authentication/logout" when method == "POST":
                 if (sessionId is not null)
                     sessions.RemoveSession(sessionId);
-                await response
-                    .WriteJsonAsync(ctx, 200, new { }, null, ct)
-                    .ConfigureAwait(false);
+                await response.WriteJsonAsync(ctx, 200, new { }, null, ct).ConfigureAwait(false);
                 return;
 
             // ── Registration: new account ─────────────────────────────────────
@@ -199,9 +199,7 @@ internal sealed class WebApiService(
 
             // ── Room select (no-op for now) ───────────────────────────────────
             case "/api/newuser/room/select" when method == "POST":
-                await response
-                    .WriteJsonAsync(ctx, 200, new { }, null, ct)
-                    .ConfigureAwait(false);
+                await response.WriteJsonAsync(ctx, 200, new { }, null, ct).ConfigureAwait(false);
                 return;
         }
 
@@ -214,7 +212,11 @@ internal sealed class WebApiService(
     {
         var body = await ReadBodyAsync<LoginRequest>(ctx.Request, ct).ConfigureAwait(false);
 
-        if (body is null || string.IsNullOrWhiteSpace(body.Email) || string.IsNullOrWhiteSpace(body.Password))
+        if (
+            body is null
+            || string.IsNullOrWhiteSpace(body.Email)
+            || string.IsNullOrWhiteSpace(body.Password)
+        )
         {
             await response
                 .WriteErrorAsync(ctx, 400, "pocket.auth.missing_credentials", ct)
@@ -222,15 +224,12 @@ internal sealed class WebApiService(
             return;
         }
 
-        var (success, sessionId, error) = await auth
-            .LoginAsync(body.Email, body.Password, ct)
+        var (success, sessionId, error) = await auth.LoginAsync(body.Email, body.Password, ct)
             .ConfigureAwait(false);
 
         if (!success)
         {
-            await response
-                .WriteJsonAsync(ctx, 401, new { error }, null, ct)
-                .ConfigureAwait(false);
+            await response.WriteJsonAsync(ctx, 401, new { error }, null, ct).ConfigureAwait(false);
             return;
         }
 
@@ -241,7 +240,11 @@ internal sealed class WebApiService(
     {
         var body = await ReadBodyAsync<RegisterRequest>(ctx.Request, ct).ConfigureAwait(false);
 
-        if (body is null || string.IsNullOrWhiteSpace(body.Email) || string.IsNullOrWhiteSpace(body.Password))
+        if (
+            body is null
+            || string.IsNullOrWhiteSpace(body.Email)
+            || string.IsNullOrWhiteSpace(body.Password)
+        )
         {
             await response
                 .WriteErrorAsync(ctx, 400, "pocket.auth.missing_credentials", ct)
@@ -249,21 +252,17 @@ internal sealed class WebApiService(
             return;
         }
 
-        var (success, accountId, error) = await auth
-            .RegisterAsync(body.Email, body.Password, ct)
+        var (success, accountId, error) = await auth.RegisterAsync(body.Email, body.Password, ct)
             .ConfigureAwait(false);
 
         if (!success)
         {
-            await response
-                .WriteJsonAsync(ctx, 409, new { error }, null, ct)
-                .ConfigureAwait(false);
+            await response.WriteJsonAsync(ctx, 409, new { error }, null, ct).ConfigureAwait(false);
             return;
         }
 
         // Auto-login after registration
-        var (loginOk, sessionId, _) = await auth
-            .LoginAsync(body.Email, body.Password, ct)
+        var (loginOk, sessionId, _) = await auth.LoginAsync(body.Email, body.Password, ct)
             .ConfigureAwait(false);
 
         await response
@@ -322,9 +321,7 @@ internal sealed class WebApiService(
 
         if (!success)
         {
-            await response
-                .WriteJsonAsync(ctx, 409, new { error }, null, ct)
-                .ConfigureAwait(false);
+            await response.WriteJsonAsync(ctx, 409, new { error }, null, ct).ConfigureAwait(false);
             return;
         }
 
@@ -429,15 +426,12 @@ internal sealed class WebApiService(
             }
         }
 
-        var (success, ticket, error) = await auth
-            .GetSsoTokenAsync(playerId, ip, ct)
+        var (success, ticket, error) = await auth.GetSsoTokenAsync(playerId, ip, ct)
             .ConfigureAwait(false);
 
         if (!success)
         {
-            await response
-                .WriteJsonAsync(ctx, 403, new { error }, null, ct)
-                .ConfigureAwait(false);
+            await response.WriteJsonAsync(ctx, 403, new { error }, null, ct).ConfigureAwait(false);
             return;
         }
 
@@ -522,9 +516,7 @@ internal sealed class WebApiService(
             .SaveFigureAsync(body.PlayerId, body.FigureString, body.Gender ?? "M", ct)
             .ConfigureAwait(false);
 
-        await response
-            .WriteJsonAsync(ctx, ok ? 200 : 404, new { }, null, ct)
-            .ConfigureAwait(false);
+        await response.WriteJsonAsync(ctx, ok ? 200 : 404, new { }, null, ct).ConfigureAwait(false);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

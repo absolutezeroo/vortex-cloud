@@ -9,6 +9,8 @@ namespace Turbo.Authentication.Permissions;
 /// </summary>
 internal static class DefaultRoles
 {
+    public const string OwnerKey = "owner";
+
     public sealed record RoleSeed(string Key, string Name, IReadOnlyList<string> Capabilities);
 
     public static readonly IReadOnlyList<RoleSeed> All =

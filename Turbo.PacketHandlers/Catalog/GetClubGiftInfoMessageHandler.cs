@@ -43,12 +43,19 @@ public class GetClubGiftInfoMessageHandler(
                 : 0;
 
         var giftData = offers
-            .Select(o => new ClubGiftOfferData
+            .Select(o =>
             {
-                OfferId = o.Id,
-                IsVip = o.ClubLevel > 1,
-                DaysRequired = 0,
-                IsSelectable = sub.GiftsAvailable > 0,
+                var isVipGift = o.ClubLevel > 1;
+                return new ClubGiftOfferData
+                {
+                    OfferId = o.Id,
+                    IsVip = isVipGift,
+                    DaysRequired = 0,
+                    // Only claimable with an active membership, a gift token in hand, and — for
+                    // VIP-only gifts — an active VIP tier.
+                    IsSelectable =
+                        sub.IsActive && sub.GiftsAvailable > 0 && (!isVipGift || sub.IsVip),
+                };
             })
             .ToList();
 

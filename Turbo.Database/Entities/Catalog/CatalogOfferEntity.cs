@@ -36,6 +36,10 @@ public class CatalogOfferEntity : TurboEntity
     [DefaultValue(0)]
     public required int ClubLevel { get; set; }
 
+    [Column("discount_percent")]
+    [DefaultValue(0)]
+    public int DiscountPercent { get; set; } = 0;
+
     [Column("visible")]
     [DefaultValue(true)]
     public required bool Visible { get; set; }

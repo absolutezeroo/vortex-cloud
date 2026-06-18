@@ -39,7 +39,10 @@ public sealed class WebApiAuthService(
             return (false, null, "pocket.auth.login_failed");
 
         // BCrypt.Verify is CPU-bound; run off the thread pool to avoid blocking the listener loop.
-        var valid = await Task.Run(() => BCrypt.Net.BCrypt.Verify(password, account.PasswordHash), ct)
+        var valid = await Task.Run(
+                () => BCrypt.Net.BCrypt.Verify(password, account.PasswordHash),
+                ct
+            )
             .ConfigureAwait(false);
 
         if (!valid)
@@ -68,14 +71,13 @@ public sealed class WebApiAuthService(
             return (false, 0, "pocket.auth.valid_email_required");
 
         // Work factor 12 is strong enough for production; run off the thread pool.
-        var hash = await Task.Run(() => BCrypt.Net.BCrypt.HashPassword(password, workFactor: 12), ct)
+        var hash = await Task.Run(
+                () => BCrypt.Net.BCrypt.HashPassword(password, workFactor: 12),
+                ct
+            )
             .ConfigureAwait(false);
 
-        var account = new PlayerAccountEntity
-        {
-            Email = normalizedEmail,
-            PasswordHash = hash,
-        };
+        var account = new PlayerAccountEntity { Email = normalizedEmail, PasswordHash = hash };
 
         db.PlayerAccounts.Add(account);
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -92,8 +94,7 @@ public sealed class WebApiAuthService(
         await using var db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         var player = await db
-            .Players
-            .FirstOrDefaultAsync(p => p.Id == playerId, ct)
+            .Players.FirstOrDefaultAsync(p => p.Id == playerId, ct)
             .ConfigureAwait(false);
 
         if (player is null)

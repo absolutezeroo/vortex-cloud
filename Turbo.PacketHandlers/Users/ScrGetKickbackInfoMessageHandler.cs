@@ -1,18 +1,23 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Players.Configuration;
 using Turbo.Primitives.Messages.Incoming.Users;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Orleans;
 
 namespace Turbo.PacketHandlers.Users;
 
-public class ScrGetKickbackInfoMessageHandler(IGrainFactory grainFactory)
-    : IMessageHandler<ScrGetKickbackInfoMessage>
+public class ScrGetKickbackInfoMessageHandler(
+    IGrainFactory grainFactory,
+    IOptions<ClubConfig> clubConfig
+) : IMessageHandler<ScrGetKickbackInfoMessage>
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly ClubConfig _clubConfig = clubConfig.Value;
 
     public async ValueTask HandleAsync(
         ScrGetKickbackInfoMessage message,
@@ -30,7 +35,9 @@ public class ScrGetKickbackInfoMessageHandler(IGrainFactory grainFactory)
 
         var now = DateTime.UtcNow;
         var streakBonus = Math.Min(sub.TotalMonths, 31);
-        var monthlyReward = (int)(sub.CreditsSpentThisPeriod * 0.1);
+        var monthlyReward = (int)(
+            sub.CreditsSpentThisPeriod * (_clubConfig.KickbackPercent / 100.0)
+        );
         var minutesUntilPayday =
             sub.IsActive && sub.PaydayAt.HasValue && sub.PaydayAt.Value > now
                 ? (int)(sub.PaydayAt.Value - now).TotalMinutes
@@ -44,7 +51,7 @@ public class ScrGetKickbackInfoMessageHandler(IGrainFactory grainFactory)
                         sub.IsActive && sub.TotalMonths > 0
                             ? sub.ExpiresAt.AddMonths(-sub.TotalMonths).ToString("yyyy-MM-dd")
                             : string.Empty,
-                    KickbackPercentage = sub.IsActive ? 0.1 : 0.0,
+                    KickbackPercentage = sub.IsActive ? _clubConfig.KickbackPercent / 100.0 : 0.0,
                     TotalCreditsMissed = 0,
                     TotalCreditsRewarded = sub.TotalCreditsRewarded,
                     TotalCreditsSpent = sub.TotalCreditsSpent,

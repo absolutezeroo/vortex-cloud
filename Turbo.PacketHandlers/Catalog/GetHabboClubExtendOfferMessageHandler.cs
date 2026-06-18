@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
@@ -32,15 +33,18 @@ public class GetHabboClubExtendOfferMessageHandler(
             .GetClubSubscriptionAsync(ct)
             .ConfigureAwait(false);
 
-        // Show the 1-month offer matching the player's current level (VIP id=3, Basic id=1)
-        var baseOffer = sub.IsVip ? _clubOfferProvider.FindById(3) : _clubOfferProvider.FindById(1);
+        var offerPool = _clubOfferProvider.GetAll().Where(x => x.IsVip == sub.IsVip).ToList();
+
+        // Keep the semantics of a 1-month renewal offer when possible, and fallback to the
+        // first matching tier offer if that data is missing.
+        var baseOffer = offerPool.FirstOrDefault(x => x.Months == 1) ?? offerPool.FirstOrDefault();
 
         if (baseOffer is null)
             return;
 
         var now = DateTime.UtcNow;
         var baseDate = sub.IsActive && sub.ExpiresAt > now ? sub.ExpiresAt : now;
-        var expiry = baseDate.AddMonths(baseOffer.Months);
+        var expiry = baseDate.AddMonths(baseOffer.Months).AddDays(baseOffer.ExtraDays);
 
         var personalizedOffer = baseOffer with
         {

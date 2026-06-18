@@ -21,9 +21,17 @@ namespace Turbo.Database.Context
 
             var connectionString = configuration["Turbo:Database:ConnectionString"];
 
+            // AutoDetect requires a live MySQL connection, which is unavailable when authoring
+            // migrations offline. Allow pinning the server version via configuration
+            // (Turbo:Database:ServerVersion, e.g. "8.0.32-mysql") to bypass detection.
+            var versionConfig = configuration["Turbo:Database:ServerVersion"];
+            var serverVersion = string.IsNullOrWhiteSpace(versionConfig)
+                ? ServerVersion.AutoDetect(connectionString)
+                : ServerVersion.Parse(versionConfig);
+
             optionsBuilder.UseMySql(
                 connectionString,
-                ServerVersion.AutoDetect(connectionString),
+                serverVersion,
                 options =>
                 {
                     options.MigrationsAssembly("Turbo.Database");
