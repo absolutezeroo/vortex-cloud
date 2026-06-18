@@ -39,10 +39,19 @@ public sealed class ObservabilityConfig
     public string AuditDeadLetterPath { get; init; } = "logs/audit-dead-letter.jsonl";
 
     /// <summary>
-    /// Enables the native admin dashboard HTTP API. Off by default; it additionally refuses to start
-    /// unless <see cref="DashboardToken"/> is set, so there is never anonymous admin access.
+    /// Enables the native admin dashboard HTTP API. Off by default. Access is authenticated per
+    /// account (email + password) and authorized by <c>dashboard.*</c> capabilities; there is no
+    /// anonymous access and no shared token.
     /// </summary>
     public bool DashboardEnabled { get; init; }
+
+    /// <summary>
+    /// Serves the bundled SPA front-end (shell HTML + hashed JS/CSS assets) from the dashboard
+    /// listener. On by default. Set to false to expose only the JSON API (for example when the
+    /// front-end is hosted elsewhere or you want metrics/API without serving the SPA); asset and
+    /// SPA-shell requests then return 404 while <c>/api/*</c> stays available.
+    /// </summary>
+    public bool DashboardFrontendEnabled { get; init; } = true;
 
     /// <summary>Host the dashboard binds to. Keep "localhost" unless a reverse proxy fronts it.</summary>
     public string DashboardHost { get; init; } = "localhost";
@@ -50,20 +59,8 @@ public sealed class ObservabilityConfig
     /// <summary>TCP port for the dashboard HTTP API.</summary>
     public int DashboardPort { get; init; } = 9000;
 
-    /// <summary>
-    /// Shared secret required on every dashboard request (header <c>X-Admin-Token</c> or
-    /// <c>?token=</c>). Empty disables the dashboard.
-    /// </summary>
-    public string DashboardToken { get; init; } = string.Empty;
-
-    /// <summary>Token that grants full admin access.</summary>
-    public string DashboardAdminToken { get; init; } = string.Empty;
-
-    /// <summary>Token that grants economy-view access.</summary>
-    public string DashboardEconomyToken { get; init; } = string.Empty;
-
-    /// <summary>Token that grants moderator-level access.</summary>
-    public string DashboardModeratorToken { get; init; } = string.Empty;
+    /// <summary>Lifetime of an authenticated dashboard session in minutes (minimum 5).</summary>
+    public int DashboardSessionLifetimeMinutes { get; init; } = 480;
 
     /// <summary>
     /// Optional URL template for furniture icons shown in the operations picker. Use <c>{name}</c>

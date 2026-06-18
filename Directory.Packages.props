@@ -30,12 +30,13 @@
     <PackageVersion Include="Microsoft.Orleans.Core.Abstractions" Version="9.2.1" />
     <PackageVersion Include="Microsoft.Orleans.Sdk" Version="9.2.1" />
     <PackageVersion Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
-    <PackageVersion Include="SuperSocket.Server" Version="2.0.2" />
-    <PackageVersion Include="SuperSocket.Server.Abstractions" Version="2.0.2" />
-    <PackageVersion Include="SuperSocket.ProtoBase" Version="2.0.2" />
-    <PackageVersion Include="SuperSocket.WebSocket.Server" Version="2.0.2" />
+    <PackageVersion Include="SuperSocket.Server" Version="2.1.0" />
+    <PackageVersion Include="SuperSocket.Server.Abstractions" Version="2.1.0" />
+    <PackageVersion Include="SuperSocket.ProtoBase" Version="2.1.0" />
+    <PackageVersion Include="SuperSocket.WebSocket.Server" Version="2.1.0" />
     <PackageVersion Include="Scrutor" Version="6.1.0" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="7.2.0" />
     <PackageVersion Include="BouncyCastle.Cryptography" Version="2.4.0" />
-    <PackageVersion Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageVersion Include="BCrypt.Net-Next" Version="4.2.0" />
   </ItemGroup>
 </Project>

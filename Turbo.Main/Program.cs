@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Turbo.Authentication;
 using Turbo.Catalog;
 using Turbo.Crypto.Extensions;
+using Turbo.Dashboard.API;
 using Turbo.Database.Extensions;
 using Turbo.Events.Extensions;
 using Turbo.Furniture;
@@ -21,12 +22,12 @@ using Turbo.Messages.Extensions;
 using Turbo.Navigator;
 using Turbo.Networking.Extensions;
 using Turbo.Observability;
-using Turbo.WebApi;
 using Turbo.PacketHandlers;
 using Turbo.Players;
 using Turbo.Plugins.Extensions;
 using Turbo.Rooms;
 using Turbo.Runtime.AssemblyProcessing;
+using Turbo.WebApi;
 
 namespace Turbo.Main;
 
@@ -104,6 +105,7 @@ internal class Program
         builder.Services.AddHostPlugin<PlayerModule>(builder);
         builder.Services.AddHostPlugin<InventoryModule>(builder);
         builder.Services.AddHostPlugin<MarketplaceModule>(builder);
+        builder.Services.AddHostPlugin<DashboardApiModule>(builder);
         builder.Services.AddHostPlugin<NavigatorModule>(builder);
         builder.Services.AddHostPlugin<RoomModule>(builder);
         builder.Services.AddHostPlugin<PacketHandlersModule>(builder);

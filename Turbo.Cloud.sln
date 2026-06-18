@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Global
-	NuGetEnablePackageRestore = true
-EndGlobal
-Section
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Turbo.Contracts", "Turbo.Contracts\Turbo.Contracts.csproj", "{EF13738C-CE94-4330-B92F-F8B93C26B39B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Turbo.Database", "Turbo.Database\Turbo.Database.csproj", "{1EE0E4A1-557D-4779-A65E-73BBAD110CC2}"
@@ -52,6 +48,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Turbo.Observability", "Turbo.Observability\Turbo.Observability.csproj", "{85D6A409-296E-4739-99B1-92C841ADB5F6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Turbo.WebApi", "Turbo.WebApi\Turbo.WebApi.csproj", "{C566CEC3-9098-4A2B-BB7E-C74CD316EFEE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Turbo.Dashboard.API", "Turbo.Dashboard.API\Turbo.Dashboard.API.csproj", "{A0394677-EA1B-4B0C-9B00-88FF3FB5FBFA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -339,6 +337,18 @@ Global
 		{C566CEC3-9098-4A2B-BB7E-C74CD316EFEE}.Release|x64.Build.0 = Release|Any CPU
 		{C566CEC3-9098-4A2B-BB7E-C74CD316EFEE}.Release|x86.ActiveCfg = Release|Any CPU
 		{C566CEC3-9098-4A2B-BB7E-C74CD316EFEE}.Release|x86.Build.0 = Release|Any CPU
+		{A0394677-EA1B-4B0C-9B00-88FF3FB5FBFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0394677-EA1B-4B0C-9B00-88FF3FB5FBFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0394677-EA1B-4B0C-9B00-88FF3FB5FBFA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A0394677-EA1B-4B0C-9B00-88FF3FB5FBFA}.Debug|x64.Build.0 = Debug|Any CPU
+		{A0394677-EA1B-4B0C-9B00-88FF3FB5FBFA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A0394677-EA1B-4B0C-9B00-88FF3FB5FBFA}.Debug|x86.Build.0 = Debug|Any CPU
+		{A0394677-EA1B-4B0C-9B00-88FF3FB5FBFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0394677-EA1B-4B0C-9B00-88FF3FB5FBFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0394677-EA1B-4B0C-9B00-88FF3FB5FBFA}.Release|x64.ActiveCfg = Release|Any CPU
+		{A0394677-EA1B-4B0C-9B00-88FF3FB5FBFA}.Release|x64.Build.0 = Release|Any CPU
+		{A0394677-EA1B-4B0C-9B00-88FF3FB5FBFA}.Release|x86.ActiveCfg = Release|Any CPU
+		{A0394677-EA1B-4B0C-9B00-88FF3FB5FBFA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
