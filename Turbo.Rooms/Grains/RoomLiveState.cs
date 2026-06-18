@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Turbo.Primitives.Orleans.Snapshots.Room;
 using Turbo.Primitives.Players;
@@ -30,6 +31,8 @@ public sealed class RoomLiveState
     public HashSet<RoomObjectId>[] TileAvatarStacks { get; internal set; } = [];
 
     public HashSet<PlayerId> PlayerIdsWithRights { get; } = [];
+
+    public Dictionary<PlayerId, DateTime> MuteExpiresUtc { get; } = [];
 
     public HashSet<int> DirtyHeightTileIds { get; set; } = [];
     public HashSet<RoomObjectId> DirtyItemIds { get; set; } = [];

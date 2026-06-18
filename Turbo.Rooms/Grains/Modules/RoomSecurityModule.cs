@@ -1,5 +1,7 @@
 using System.Threading.Tasks;
 using Turbo.Primitives.Action;
+using Turbo.Primitives.Permissions;
+using Turbo.Primitives.Players;
 using Turbo.Primitives.Rooms.Enums;
 
 namespace Turbo.Rooms.Grains.Modules;
@@ -68,16 +70,13 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
         return FurniturePickupType.None;
     }
 
-    public Task<bool> GetIsRoomOwnerAsync(ActionContext ctx)
+    public async Task<bool> GetIsRoomOwnerAsync(ActionContext ctx)
     {
-        var isOwner = false;
+        bool isExplicitOwner = _roomGrain._state.RoomSnapshot.OwnerId == ctx.PlayerId;
 
-        if (_roomGrain._state.RoomSnapshot.OwnerId == ctx.PlayerId)
-            isOwner = true;
+        PermissionSet permissions = await ResolvePermissionsAsync(ctx);
 
-        // if has perm any_room_owner true
-
-        return Task.FromResult(isOwner);
+        return RoomSecurityPolicy.IsRoomOwner(permissions, isExplicitOwner);
     }
 
     public async Task<RoomControllerType> GetControllerLevelAsync(ActionContext ctx)
@@ -85,26 +84,24 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
         if (ctx.Origin == ActionOrigin.System)
             return RoomControllerType.Moderator;
 
-        if (await GetIsRoomOwnerAsync(ctx))
-            return RoomControllerType.Owner;
+        PermissionSet permissions = await ResolvePermissionsAsync(ctx);
 
-        var isGroupRoom = false;
+        bool isExplicitOwner = _roomGrain._state.RoomSnapshot.OwnerId == ctx.PlayerId;
+        bool hasExplicitRights = _roomGrain._state.PlayerIdsWithRights.Contains(ctx.PlayerId);
 
-        if (isGroupRoom)
-        {
-            // if has perm group_admin GroupAdmin
-            // if has perm group_member GroupMember
+        return RoomSecurityPolicy.ResolveControllerLevel(
+            ctx.Origin,
+            permissions,
+            isExplicitOwner,
+            hasExplicitRights
+        );
+    }
 
-            // check if belongs to group
-        }
-        else
-        {
-            // if has perm room_rights Rights
+    private Task<PermissionSet> ResolvePermissionsAsync(ActionContext ctx)
+    {
+        if (ctx.PlayerId == PlayerId.Invalid)
+            return Task.FromResult(PermissionSet.Empty);
 
-            if (_roomGrain._state.PlayerIdsWithRights.Contains(ctx.PlayerId))
-                return RoomControllerType.Rights;
-        }
-
-        return RoomControllerType.None;
+        return _roomGrain._permissionService.ResolveForPlayerAsync(ctx.PlayerId);
     }
 }
