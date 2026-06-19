@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Turbo.Dashboard.API", "Turb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Turbo.Rooms.Tests", "Turbo.Rooms.Tests\Turbo.Rooms.Tests.csproj", "{0977A8C3-CB26-4A1B-BC18-421A9713E326}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Turbo.WebApi.Tests", "Turbo.WebApi.Tests\Turbo.WebApi.Tests.csproj", "{59D04569-6D3A-48D1-BDC2-63E214F7C704}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -363,6 +365,18 @@ Global
 		{0977A8C3-CB26-4A1B-BC18-421A9713E326}.Release|x64.Build.0 = Release|Any CPU
 		{0977A8C3-CB26-4A1B-BC18-421A9713E326}.Release|x86.ActiveCfg = Release|Any CPU
 		{0977A8C3-CB26-4A1B-BC18-421A9713E326}.Release|x86.Build.0 = Release|Any CPU
+		{59D04569-6D3A-48D1-BDC2-63E214F7C704}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59D04569-6D3A-48D1-BDC2-63E214F7C704}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59D04569-6D3A-48D1-BDC2-63E214F7C704}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{59D04569-6D3A-48D1-BDC2-63E214F7C704}.Debug|x64.Build.0 = Debug|Any CPU
+		{59D04569-6D3A-48D1-BDC2-63E214F7C704}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{59D04569-6D3A-48D1-BDC2-63E214F7C704}.Debug|x86.Build.0 = Debug|Any CPU
+		{59D04569-6D3A-48D1-BDC2-63E214F7C704}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59D04569-6D3A-48D1-BDC2-63E214F7C704}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59D04569-6D3A-48D1-BDC2-63E214F7C704}.Release|x64.ActiveCfg = Release|Any CPU
+		{59D04569-6D3A-48D1-BDC2-63E214F7C704}.Release|x64.Build.0 = Release|Any CPU
+		{59D04569-6D3A-48D1-BDC2-63E214F7C704}.Release|x86.ActiveCfg = Release|Any CPU
+		{59D04569-6D3A-48D1-BDC2-63E214F7C704}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
