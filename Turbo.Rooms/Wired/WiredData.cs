@@ -7,6 +7,17 @@ using Turbo.Primitives.Rooms.Wired;
 
 namespace Turbo.Rooms.Wired;
 
+/// <summary>
+/// Serializable, persisted configuration of a single wired box. Every field here is durable
+/// player config (selected items, delays, conditions, sources) and is round-tripped through
+/// the furni's <c>extra_data</c> "wired" section on room unload/reload.
+/// <para>
+/// Ephemeral runtime state — e.g. per-tick "already triggered" counters — must NOT be added
+/// here. That state belongs to the in-memory wired execution system and is intentionally
+/// dropped when the room deactivates. Adding it to this type would persist it and break the
+/// config/runtime boundary.
+/// </para>
+/// </summary>
 public class WiredData : IWiredData
 {
     [JsonIgnore]

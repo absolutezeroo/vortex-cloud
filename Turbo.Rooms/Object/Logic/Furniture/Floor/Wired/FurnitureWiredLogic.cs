@@ -33,8 +33,14 @@ public abstract class FurnitureWiredLogic(
     public abstract WiredType WiredType { get; }
     public abstract int WiredCode { get; }
 
+    // Wired boxes hold durable player configuration (selected items, delays, conditions,
+    // sources) and an enabled/disabled activation state. All of it must survive a room
+    // unload / reboot, so a wired furni persists exactly like any other furni (Persistent),
+    // not RoomActive. Only ephemeral runtime state — the per-tick "already triggered"
+    // counters — stays in memory; that lives in the wired execution system and is never
+    // serialized into WiredData, so it is correctly lost on unload by design.
     protected override StuffPersistanceType _stuffPersistanceType =>
-        StuffPersistanceType.RoomActive;
+        StuffPersistanceType.Persistent;
 
     protected IWiredData _wiredData = null!;
 
@@ -230,6 +236,19 @@ public abstract class FurnitureWiredLogic(
     {
         try
         {
+            // Guarantee the config is hydrated and the persistence callback is wired before
+            // we mutate it. A client can send an update before the wired stack has been
+            // processed (which is what normally triggers LoadWiredAsync); without this the
+            // mutation would NRE on a null _wiredData, get swallowed, and the player's
+            // configuration would be silently dropped instead of persisted.
+            if (_wiredData is null)
+            {
+                await FillInternalDataAsync(ct);
+
+                if (_wiredData is null)
+                    return false;
+            }
+
             var intParams = new List<int>();
             var stringParam = update.StringParam;
             var stuffIds = new List<int>();

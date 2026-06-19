@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Turbo.Primitives.Action;
 using Turbo.Primitives.Inventory.Snapshots;
 using Turbo.Primitives.Messages.Incoming.Userdefinedroomevents;
@@ -35,9 +36,16 @@ public sealed partial class RoomGrain
 
             return true;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // TODO handle exceptions
+            _logger.LogError(
+                ex,
+                "Failed to place floor item {ItemId} at ({X},{Y}) in room {RoomId}",
+                item.ItemId,
+                x,
+                y,
+                _state.RoomId
+            );
 
             return false;
         }
@@ -59,9 +67,16 @@ public sealed partial class RoomGrain
 
             return true;
         }
-        catch
+        catch (Exception ex)
         {
-            // TODO handle exceptions
+            _logger.LogError(
+                ex,
+                "Failed to move floor item {ItemId} to ({X},{Y}) in room {RoomId}",
+                itemId,
+                x,
+                y,
+                _state.RoomId
+            );
 
             return false;
         }
@@ -83,8 +98,12 @@ public sealed partial class RoomGrain
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
-            // TODO handle exceptions
+            _logger.LogError(
+                ex,
+                "Failed to apply wired update to item {ItemId} in room {RoomId}",
+                itemId,
+                _state.RoomId
+            );
 
             return false;
         }

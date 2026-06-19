@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Turbo.Primitives.Action;
 using Turbo.Primitives.Inventory.Snapshots;
 using Turbo.Primitives.Rooms.Enums;
@@ -30,9 +32,14 @@ public sealed partial class RoomGrain
 
             return true;
         }
-        catch
+        catch (Exception ex)
         {
-            // TODO handle exceptions
+            _logger.LogError(
+                ex,
+                "Failed to place wall item {ItemId} in room {RoomId}",
+                item.ItemId,
+                _state.RoomId
+            );
 
             return false;
         }
@@ -67,9 +74,14 @@ public sealed partial class RoomGrain
 
             return true;
         }
-        catch
+        catch (Exception ex)
         {
-            // TODO handle exceptions
+            _logger.LogError(
+                ex,
+                "Failed to move wall item {ItemId} in room {RoomId}",
+                itemId,
+                _state.RoomId
+            );
 
             return false;
         }
