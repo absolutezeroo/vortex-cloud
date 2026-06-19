@@ -152,6 +152,7 @@ Canonical integrated workflow lives in the plugin repo:
 ## Orleans Notes
 Turbo Cloud uses Orleans as its core runtime model for stateful domain workflows.
 For project-specific Orleans guidance, see `docs/orleans.md`.
+For a concrete end-to-end trace of a single packet through handlers, grains, and streams, see `docs/walkthroughs/request-lifecycle.md`.
 
 ## Troubleshooting
 ### MySQL connection errors
@@ -183,6 +184,15 @@ Canonical AI context files:
 - `AGENTS.md` (coding contract and review rules)
 - `CONTEXT.md` (architecture boundaries and placement rules)
 - `docs/patterns/` (golden implementation examples)
+- `docs/walkthroughs/request-lifecycle.md` (one packet, socket to client — the real flow)
+- `docs/walkthroughs/add-a-feature.md` (adding a feature, layer by layer)
+- `docs/patterns/vertical-slice.md` (handler + grain + test on a single feature)
+- `docs/glossary.md` (Habbo + Orleans terminology, each term mapped to its file)
+
+Planning & design references:
+- `ROADMAP.md` (completion plan: epics → stories → Definition of Done)
+- `DATA-MODEL.md` (authoritative schema for tables not yet in the codebase — groups, rentable space, pets, bots, … — plus naming conventions)
+- `PETS-DESIGN.md` (pet implementation: autonomous-agent behavior, state machine, persistence)
 
 Tool-specific adapters:
 - `.github/copilot-instructions.md` (GitHub Copilot)
@@ -192,7 +202,7 @@ Tool-specific adapters:
 Prompt recipe for any AI tool:
 1. Include task + exact target file paths.
 2. Attach `AGENTS.md` and `CONTEXT.md`.
-3. Reference one relevant file from `docs/patterns/`.
+3. Reference one relevant file from `docs/patterns/` or a walkthrough from `docs/walkthroughs/` (and the relevant `DATA-MODEL.md` section for schema work).
 4. Ask for edge-case handling and validation commands.
 
 Boost-style prompting pack:
