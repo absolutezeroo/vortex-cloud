@@ -6,5 +6,6 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Users;
 
 internal class DeactivateGuildMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new DeactivateGuildMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new DeactivateGuildMessage { GroupId = packet.PopInt() };
 }

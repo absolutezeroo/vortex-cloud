@@ -11,6 +11,6 @@ internal class GroupDetailsChangedMessageComposerSerializer(int header)
         GroupDetailsChangedMessageComposer message
     )
     {
-        //
+        packet.WriteInteger(message.GroupId);
     }
 }

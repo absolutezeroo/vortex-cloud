@@ -1,4 +1,5 @@
 using Orleans;
+using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Networking;
 
 namespace Turbo.Primitives.Messages.Outgoing.Groupforums;
@@ -6,5 +7,6 @@ namespace Turbo.Primitives.Messages.Outgoing.Groupforums;
 [GenerateSerializer, Immutable]
 public sealed record ForumThreadsMessageComposer : IComposer
 {
-    // TODO: add properties if/when identified
+    [Id(0)]
+    public required ForumThreadsPageSnapshot Page { get; init; }
 }

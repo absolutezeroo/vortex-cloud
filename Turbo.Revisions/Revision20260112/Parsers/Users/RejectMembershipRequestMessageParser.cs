@@ -6,5 +6,6 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Users;
 
 internal class RejectMembershipRequestMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new RejectMembershipRequestMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new RejectMembershipRequestMessage { GroupId = packet.PopInt(), UserId = packet.PopInt() };
 }

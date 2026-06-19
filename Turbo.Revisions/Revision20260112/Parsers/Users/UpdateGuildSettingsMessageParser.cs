@@ -6,5 +6,11 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Users;
 
 internal class UpdateGuildSettingsMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new UpdateGuildSettingsMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new UpdateGuildSettingsMessage
+        {
+            GroupId = packet.PopInt(),
+            GuildType = packet.PopInt(),
+            RightsLevel = packet.PopInt(),
+        };
 }

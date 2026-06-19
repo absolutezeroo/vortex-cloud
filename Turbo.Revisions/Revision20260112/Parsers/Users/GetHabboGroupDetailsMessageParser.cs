@@ -6,5 +6,10 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Users;
 
 internal class GetHabboGroupDetailsMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new GetHabboGroupDetailsMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new GetHabboGroupDetailsMessage
+        {
+            GroupId = packet.PopInt(),
+            RequestDetails = packet.PopBoolean(),
+        };
 }

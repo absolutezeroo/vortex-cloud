@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using Turbo.Database.Entities.Groups;
 using Turbo.Database.Entities.Navigator;
 using Turbo.Database.Entities.Players;
 using Turbo.Primitives.Navigator.Enums;
@@ -34,6 +35,11 @@ public class RoomEntity : TurboEntity
 
     [Column("category_id")]
     public int? NavigatorCategoryEntityId { get; set; }
+
+    // Group this room is the home room of, if any. Forms a circular link with groups.room_id;
+    // both sides are configured OnDelete non-cascade in TurboDbContext (DATA-MODEL §2.7).
+    [Column("group_id")]
+    public int? GroupEntityId { get; set; }
 
     [Column("users_now")]
     [DefaultValue(0)]
@@ -141,6 +147,9 @@ public class RoomEntity : TurboEntity
 
     [ForeignKey(nameof(NavigatorCategoryEntityId))]
     public NavigatorFlatCategoryEntity? NavigatorFlatCategoryEntity { get; set; }
+
+    [ForeignKey(nameof(GroupEntityId))]
+    public GroupEntity? GroupEntity { get; set; }
 
     [InverseProperty("RoomEntity")]
     public List<RoomBanEntity>? RoomBans { get; set; }

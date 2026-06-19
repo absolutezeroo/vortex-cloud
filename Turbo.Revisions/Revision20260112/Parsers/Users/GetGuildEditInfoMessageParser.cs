@@ -6,5 +6,6 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Users;
 
 internal class GetGuildEditInfoMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new GetGuildEditInfoMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new GetGuildEditInfoMessage { GroupId = packet.PopInt() };
 }

@@ -6,5 +6,13 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Groupforums;
 
 internal class UpdateForumSettingsMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new UpdateForumSettingsMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new UpdateForumSettingsMessage
+        {
+            GroupId = packet.PopInt(),
+            ReadPermission = packet.PopInt(),
+            PostMessagePermission = packet.PopInt(),
+            PostThreadPermission = packet.PopInt(),
+            ModeratePermission = packet.PopInt(),
+        };
 }

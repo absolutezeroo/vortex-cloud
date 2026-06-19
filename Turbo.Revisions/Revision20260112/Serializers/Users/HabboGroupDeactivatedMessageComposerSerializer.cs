@@ -11,6 +11,6 @@ internal class HabboGroupDeactivatedMessageComposerSerializer(int header)
         HabboGroupDeactivatedMessageComposer message
     )
     {
-        //
+        packet.WriteInteger(message.GroupId);
     }
 }

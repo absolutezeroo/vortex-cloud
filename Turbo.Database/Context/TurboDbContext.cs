@@ -3,6 +3,7 @@ using Turbo.Database.Entities.Audit;
 using Turbo.Database.Entities.Catalog;
 using Turbo.Database.Entities.Errors;
 using Turbo.Database.Entities.Furniture;
+using Turbo.Database.Entities.Groups;
 using Turbo.Database.Entities.Marketplace;
 using Turbo.Database.Entities.Messenger;
 using Turbo.Database.Entities.Navigator;
@@ -122,6 +123,18 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
 
     public DbSet<LtdRaffleEntryEntity> LtdRaffleEntries { get; init; }
 
+    public DbSet<GroupEntity> Groups { get; init; }
+
+    public DbSet<GroupMemberEntity> GroupMembers { get; init; }
+
+    public DbSet<GroupMembershipRequestEntity> GroupMembershipRequests { get; init; }
+
+    public DbSet<GroupForumSettingsEntity> GroupForumSettings { get; init; }
+
+    public DbSet<GroupForumThreadEntity> GroupForumThreads { get; init; }
+
+    public DbSet<GroupForumPostEntity> GroupForumPosts { get; init; }
+
     protected override void OnModelCreating(ModelBuilder mb)
     {
         base.OnModelCreating(mb);
@@ -133,5 +146,22 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
                 v => v.ToLayoutString(),
                 v => CatalogPageLayoutExtensions.FromLayoutString(v)
             );
+
+        // Circular link groups.room_id <-> rooms.group_id (DATA-MODEL §2.7). Both FKs are
+        // configured non-cascade so MySQL never builds a cascade cycle and so deleting one side
+        // never silently deletes the other — dissolving a group detaches rooms.group_id then
+        // soft-deletes. Modelled as two independent one-directional relationships (each nav owns
+        // its own FK; they are NOT inverses of one another).
+        mb.Entity<GroupEntity>()
+            .HasOne(g => g.RoomEntity)
+            .WithMany()
+            .HasForeignKey(g => g.RoomEntityId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        mb.Entity<RoomEntity>()
+            .HasOne(r => r.GroupEntity)
+            .WithMany()
+            .HasForeignKey(r => r.GroupEntityId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

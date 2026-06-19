@@ -6,5 +6,6 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Users;
 
 internal class GetMemberGuildItemCountMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new GetMemberGuildItemCountMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new GetMemberGuildItemCountMessage { GroupId = packet.PopInt(), UserId = packet.PopInt() };
 }

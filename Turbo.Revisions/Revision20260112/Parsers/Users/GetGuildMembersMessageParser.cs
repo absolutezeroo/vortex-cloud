@@ -6,5 +6,12 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Users;
 
 internal class GetGuildMembersMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new GetGuildMembersMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new GetGuildMembersMessage
+        {
+            GroupId = packet.PopInt(),
+            PageIndex = packet.PopInt(),
+            UserNameFilter = packet.PopString(),
+            SearchType = packet.PopInt(),
+        };
 }

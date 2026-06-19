@@ -11,6 +11,7 @@ internal class GuildMemberFurniCountInHQMessageComposerSerializer(int header)
         GuildMemberFurniCountInHQMessageComposer message
     )
     {
-        //
+        packet.WriteInteger(message.UserId);
+        packet.WriteInteger(message.FurniCount);
     }
 }

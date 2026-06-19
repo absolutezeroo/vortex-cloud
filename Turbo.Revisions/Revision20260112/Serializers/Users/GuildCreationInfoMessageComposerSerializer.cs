@@ -11,6 +11,24 @@ internal class GuildCreationInfoMessageComposerSerializer(int header)
         GuildCreationInfoMessageComposer message
     )
     {
-        //
+        var info = message.Info;
+
+        packet.WriteInteger(info.CostInCredits);
+
+        packet.WriteInteger(info.Rooms.Count);
+        foreach (var room in info.Rooms)
+        {
+            packet.WriteInteger(room.RoomId);
+            packet.WriteString(room.RoomName);
+            packet.WriteBoolean(room.HasControllers);
+        }
+
+        packet.WriteInteger(info.BadgeParts.Count);
+        foreach (var part in info.BadgeParts)
+        {
+            packet.WriteInteger(part.PartId);
+            packet.WriteInteger(part.ColorId);
+            packet.WriteInteger(part.Position);
+        }
     }
 }

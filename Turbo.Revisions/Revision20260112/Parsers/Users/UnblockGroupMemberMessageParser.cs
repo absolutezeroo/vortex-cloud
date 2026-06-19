@@ -6,5 +6,6 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Users;
 
 internal class UnblockGroupMemberMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new UnblockGroupMemberMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new UnblockGroupMemberMessage { GroupId = packet.PopInt(), UserId = packet.PopInt() };
 }

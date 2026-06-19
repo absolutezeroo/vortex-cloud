@@ -1,18 +1,33 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Users;
+using Turbo.Primitives.Messages.Outgoing.Users;
+using Turbo.Primitives.Orleans;
 
 namespace Turbo.PacketHandlers.Users;
 
-public class GetGuildEditorDataMessageHandler : IMessageHandler<GetGuildEditorDataMessage>
+public class GetGuildEditorDataMessageHandler(IGrainFactory grainFactory)
+    : IMessageHandler<GetGuildEditorDataMessage>
 {
+    private readonly IGrainFactory _grainFactory = grainFactory;
+
     public async ValueTask HandleAsync(
         GetGuildEditorDataMessage message,
         MessageContext ctx,
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        if (ctx.PlayerId <= 0)
+            return;
+
+        var data = await _grainFactory
+            .GetGroupDirectoryGrain()
+            .GetEditorDataAsync(ct)
+            .ConfigureAwait(false);
+
+        await ctx.SendComposerAsync(new GuildEditorDataMessageComposer { Data = data }, ct)
+            .ConfigureAwait(false);
     }
 }
