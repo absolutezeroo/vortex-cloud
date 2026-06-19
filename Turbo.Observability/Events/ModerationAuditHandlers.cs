@@ -60,11 +60,7 @@ public sealed class PlayerMutedInRoomAuditHandler(IAuditSink audit)
 public sealed class PlayerBannedInRoomAuditHandler(IAuditSink audit)
     : IEventHandler<PlayerBannedInRoomEvent>
 {
-    public ValueTask HandleAsync(
-        PlayerBannedInRoomEvent e,
-        EventContext ctx,
-        CancellationToken ct
-    )
+    public ValueTask HandleAsync(PlayerBannedInRoomEvent e, EventContext ctx, CancellationToken ct)
     {
         audit.Emit(
             new AuditEvent
