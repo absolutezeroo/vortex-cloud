@@ -269,6 +269,58 @@ public sealed partial class RoomFurniModule
         );
 
     /// <summary>
+    /// Validates that an existing item (<paramref name="itemId"/>) can be moved to
+    /// (<paramref name="x"/>, <paramref name="y"/>) within the footprint of the rented space
+    /// <paramref name="spaceItem"/>. All target tiles must remain inside the space, and the
+    /// normal tile-flag / height / stacking rules still apply.
+    /// </summary>
+    public async Task<bool> ValidateFloorItemMoveInRentedSpaceAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        int x,
+        int y,
+        Rotation rot,
+        IRoomFloorItem spaceItem
+    )
+    {
+        if (
+            !_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? raw)
+            || raw is not IRoomFloorItem tItem
+        )
+        {
+            return false;
+        }
+
+        if (!GetTileIdForFloorItem(spaceItem, out List<int> spaceTileIds))
+        {
+            return false;
+        }
+
+        if (
+            !_roomGrain.MapModule.GetTileIdForSize(
+                x,
+                y,
+                rot,
+                tItem.Definition.Width,
+                tItem.Definition.Length,
+                out List<int> newItemTileIds
+            )
+        )
+        {
+            return false;
+        }
+
+        HashSet<int> spaceTileSet = [.. spaceTileIds];
+
+        if (!newItemTileIds.All(t => spaceTileSet.Contains(t)))
+        {
+            return false;
+        }
+
+        return await ValidateFloorItemPlacementAsync(ctx, itemId, x, y, rot);
+    }
+
+    /// <summary>
     /// Validates that <paramref name="tItem"/> can be placed at (<paramref name="x"/>,
     /// <paramref name="y"/>) within the footprint of the rented space
     /// <paramref name="spaceItem"/>. All target tiles must fall inside the space's tiles,

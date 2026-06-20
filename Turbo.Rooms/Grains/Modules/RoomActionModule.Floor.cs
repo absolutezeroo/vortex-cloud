@@ -154,14 +154,36 @@ public sealed partial class RoomActionModule
         CancellationToken ct
     )
     {
-        if (!await _roomGrain.SecurityModule.CanManipulateFurniAsync(ctx))
+        if (await _roomGrain.SecurityModule.CanManipulateFurniAsync(ctx))
         {
-            throw new TurboException(TurboErrorCodeEnum.NoPermissionToManipulateFurni);
+            if (!await _roomGrain.FurniModule.ValidateFloorItemPlacementAsync(ctx, itemId, x, y, rot))
+            {
+                throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+            }
         }
-
-        if (!await _roomGrain.FurniModule.ValidateFloorItemPlacementAsync(ctx, itemId, x, y, rot))
+        else
         {
-            throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+            IRoomFloorItem? rentedSpace =
+                await _roomGrain.SecurityModule.FindRentedSpaceForOwnedItemAsync(ctx, itemId, ct);
+
+            if (rentedSpace is null)
+            {
+                throw new TurboException(TurboErrorCodeEnum.NoPermissionToManipulateFurni);
+            }
+
+            if (
+                !await _roomGrain.FurniModule.ValidateFloorItemMoveInRentedSpaceAsync(
+                    ctx,
+                    itemId,
+                    x,
+                    y,
+                    rot,
+                    rentedSpace
+                )
+            )
+            {
+                throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+            }
         }
 
         if (!await _roomGrain.FurniModule.MoveFloorItemByIdAsync(ctx, itemId, x, y, null, rot, ct))

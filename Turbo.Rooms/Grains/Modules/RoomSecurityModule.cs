@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,6 +61,44 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
     public async Task<bool> CanPlaceFurniAsync(ActionContext ctx)
     {
         return await CanManipulateFurniAsync(ctx);
+    }
+
+    /// <summary>
+    /// Returns the rentable-space floor item if <paramref name="ctx"/> player owns
+    /// <paramref name="itemId"/> and the item sits inside their active rented zone.
+    /// Used to gate move/use operations for renters.
+    /// </summary>
+    public async Task<IRoomFloorItem?> FindRentedSpaceForOwnedItemAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        CancellationToken ct
+    )
+    {
+        if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item))
+        {
+            return null;
+        }
+
+        if (item.OwnerId.Value != ctx.PlayerId.Value)
+        {
+            return null;
+        }
+
+        IRoomFloorItem? spaceItem = await FindRentedSpaceForPlayerAsync(ctx.PlayerId.Value, ct);
+
+        if (spaceItem is null)
+        {
+            return null;
+        }
+
+        if (!_roomGrain.FurniModule.GetTileIdForFloorItem(spaceItem, out List<int> spaceTileIds))
+        {
+            return null;
+        }
+
+        int itemTile = _roomGrain.MapModule.ToIdx(item.X, item.Y);
+
+        return spaceTileIds.Contains(itemTile) ? spaceItem : null;
     }
 
     /// <summary>

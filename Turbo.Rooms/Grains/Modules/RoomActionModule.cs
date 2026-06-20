@@ -89,10 +89,19 @@ public sealed partial class RoomActionModule(RoomGrain roomGrain)
 
         FurnitureUsageType usagePolicy = item.Logic.GetUsagePolicy();
 
-        if (
-            !await _roomGrain.SecurityModule.CanUseFurniAsync(ctx, usagePolicy)
-            || !await _roomGrain.FurniModule.UseItemByIdAsync(ctx, itemId, ct, param)
-        )
+        bool canUse = await _roomGrain.SecurityModule.CanUseFurniAsync(ctx, usagePolicy);
+
+        if (!canUse)
+        {
+            canUse =
+                await _roomGrain.SecurityModule.FindRentedSpaceForOwnedItemAsync(
+                    ctx,
+                    itemId,
+                    ct
+                ) is not null;
+        }
+
+        if (!canUse || !await _roomGrain.FurniModule.UseItemByIdAsync(ctx, itemId, ct, param))
         {
             return false;
         }
