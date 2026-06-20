@@ -47,7 +47,7 @@ public class RentableSpaceCancelRentMessageHandler(
             await ctx.SendComposerAsync(
                     new RentableSpaceRentFailedMessageComposer
                     {
-                        Reason = RentableSpaceRentFailedType.NotRentedByYou
+                        Reason = RentableSpaceRentFailedType.NotRentedByYou,
                     },
                     ct
                 )
@@ -69,7 +69,7 @@ public class RentableSpaceCancelRentMessageHandler(
                     RenterId = snapshot.RenterId,
                     RenterName = snapshot.RenterName,
                     TimeRemaining = snapshot.TimeRemaining,
-                    Price = snapshot.Price
+                    Price = snapshot.Price,
                 },
                 ct
             )

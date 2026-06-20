@@ -31,7 +31,7 @@ internal class CreateGuildMessageParser : IParser
             PrimaryColorId = primaryColorId,
             SecondaryColorId = secondaryColorId,
             BaseRoomId = baseRoomId,
-            BadgeParts = badgeParts
+            BadgeParts = badgeParts,
         };
     }
 }

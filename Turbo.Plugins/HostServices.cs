@@ -1,6 +1,6 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using Turbo.Contracts.Plugins;
+using Turbo.Primitives.Plugins;
 
 namespace Turbo.Plugins;
 

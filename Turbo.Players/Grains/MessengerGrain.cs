@@ -83,7 +83,7 @@ internal sealed class MessengerGrain(
                     RelationType = g.Key,
                     Count = g.Count(),
                     Name = first.Name,
-                    Figure = first.Figure
+                    Figure = first.Figure,
                 };
             })
             .ToList();
@@ -162,7 +162,7 @@ internal sealed class MessengerGrain(
                 PlayerEntityId = playerId,
                 RequestedPlayerEntityId = targetIdInt,
                 PlayerEntity = selfEntity,
-                RequestedPlayerEntity = null!
+                RequestedPlayerEntity = null!,
             }
         );
 
@@ -193,7 +193,7 @@ internal sealed class MessengerGrain(
             RequestId = requesterId.Value,
             RequesterUserId = requesterId,
             RequesterName = requesterName,
-            FigureString = requesterFigure
+            FigureString = requesterFigure,
         };
 
         IPlayerPresenceGrain presence = grainFactory.GetPlayerPresenceGrain(SelfId);
@@ -201,7 +201,7 @@ internal sealed class MessengerGrain(
             presence.SendComposerAsync(
                 new NewFriendRequestMessageComposer
                 {
-                    Request = _incomingRequests[requesterId.Value]
+                    Request = _incomingRequests[requesterId.Value],
                 }
             )
         );
@@ -231,7 +231,7 @@ internal sealed class MessengerGrain(
                     new AcceptFriendFailureSnapshot
                     {
                         SenderId = PlayerId.Parse(requesterId),
-                        ErrorCode = FriendListErrorCodeType.FriendRequestNotFound
+                        ErrorCode = FriendListErrorCodeType.FriendRequestNotFound,
                     }
                 );
                 continue;
@@ -243,7 +243,7 @@ internal sealed class MessengerGrain(
                     new AcceptFriendFailureSnapshot
                     {
                         SenderId = PlayerId.Parse(requesterId),
-                        ErrorCode = FriendListErrorCodeType.YouHitFriendLimit
+                        ErrorCode = FriendListErrorCodeType.YouHitFriendLimit,
                     }
                 );
                 continue;
@@ -274,7 +274,7 @@ internal sealed class MessengerGrain(
                     FriendPlayerEntityId = requesterId,
                     RelationType = MessengerFriendRelationType.Zero,
                     PlayerEntity = selfEntity,
-                    FriendPlayerEntity = friendEntity
+                    FriendPlayerEntity = friendEntity,
                 }
             );
 
@@ -285,7 +285,7 @@ internal sealed class MessengerGrain(
                     FriendPlayerEntityId = SelfId,
                     RelationType = MessengerFriendRelationType.Zero,
                     PlayerEntity = friendEntity,
-                    FriendPlayerEntity = selfEntity
+                    FriendPlayerEntity = selfEntity,
                 }
             );
 
@@ -312,7 +312,7 @@ internal sealed class MessengerGrain(
                 PersistedMessageUser = false,
                 VipMember = false,
                 PocketHabboUser = false,
-                RelationshipStatus = 0
+                RelationshipStatus = 0,
             };
 
             // Notify friend's grain — fire-and-forget
@@ -425,9 +425,9 @@ internal sealed class MessengerGrain(
                         {
                             ActionType = FriendListUpdateActionType.Removed,
                             FriendId = removedBy.Value,
-                            Friend = null
-                        }
-                    ]
+                            Friend = null,
+                        },
+                    ],
                 }
             )
         );
@@ -487,7 +487,7 @@ internal sealed class MessengerGrain(
                 PlayerEntityId = SelfId,
                 BlockedPlayerEntityId = targetId.Value,
                 PlayerEntity = selfEntity,
-                BlockedPlayerEntity = targetEntity
+                BlockedPlayerEntity = targetEntity,
             }
         );
 
@@ -545,7 +545,7 @@ internal sealed class MessengerGrain(
                 PlayerEntityId = SelfId,
                 IgnoredPlayerEntityId = targetId.Value,
                 PlayerEntity = selfEntity,
-                IgnoredPlayerEntity = targetEntity
+                IgnoredPlayerEntity = targetEntity,
             }
         );
 
@@ -610,7 +610,7 @@ internal sealed class MessengerGrain(
             Timestamp = now,
             Delivered = false,
             SenderEntity = selfEntity,
-            ReceiverEntity = receiverEntity
+            ReceiverEntity = receiverEntity,
         };
 
         dbCtx.MessengerMessages.Add(msgEntity);
@@ -662,7 +662,7 @@ internal sealed class MessengerGrain(
                     ConfirmationId = 0,
                     SenderId = senderId.Value,
                     SenderName = senderName,
-                    SenderFigure = senderFigure
+                    SenderFigure = senderFigure,
                 }
             )
         );
@@ -705,7 +705,7 @@ internal sealed class MessengerGrain(
                 SenderFigure = m.SenderEntity.Figure,
                 Message = m.Message,
                 SecondsSinceSent = (int)(now - m.Timestamp).TotalSeconds,
-                MessageId = m.Id.ToString()
+                MessageId = m.Id.ToString(),
             })
             .ToList();
     }
@@ -798,7 +798,7 @@ internal sealed class MessengerGrain(
                 PersistedMessageUser = false,
                 VipMember = false,
                 PocketHabboUser = false,
-                RelationshipStatus = 0
+                RelationshipStatus = 0,
             };
         }
         else
@@ -819,9 +819,9 @@ internal sealed class MessengerGrain(
                         {
                             ActionType = FriendListUpdateActionType.Updated,
                             FriendId = friendId.Value,
-                            Friend = updated
-                        }
-                    ]
+                            Friend = updated,
+                        },
+                    ],
                 }
             )
         );
@@ -869,7 +869,7 @@ internal sealed class MessengerGrain(
                 UnknownString = string.Empty,
                 Gender = f.Gender,
                 Figure = f.Figure,
-                RealName = f.RealName
+                RealName = f.RealName,
             })
             .ToList();
 
@@ -941,7 +941,7 @@ internal sealed class MessengerGrain(
                 RequestId = r.Id,
                 RequesterUserId = PlayerId.Parse(r.PlayerEntityId),
                 RequesterName = r.PlayerEntity.Name,
-                FigureString = r.PlayerEntity.Figure
+                FigureString = r.PlayerEntity.Figure,
             };
         }
 
@@ -988,7 +988,7 @@ internal sealed class MessengerGrain(
             PersistedMessageUser = false,
             VipMember = false,
             PocketHabboUser = false,
-            RelationshipStatus = (short)entity.RelationType
+            RelationshipStatus = (short)entity.RelationType,
         };
     }
 
@@ -1077,7 +1077,7 @@ internal sealed class MessengerGrain(
                     ConfirmationId = 0,
                     SenderId = msg.SenderEntityId,
                     SenderName = msg.SenderEntity.Name,
-                    SenderFigure = msg.SenderEntity.Figure
+                    SenderFigure = msg.SenderEntity.Figure,
                 }
             );
 

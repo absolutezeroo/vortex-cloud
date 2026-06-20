@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Orleans;
-using Turbo.Contracts.Plugins;
 using Turbo.Observability.Audit;
 using Turbo.Observability.Configuration;
 using Turbo.Observability.Context;
@@ -10,6 +9,7 @@ using Turbo.Observability.ErrorTracking;
 using Turbo.Observability.Metrics;
 using Turbo.Observability.Runtime;
 using Turbo.Primitives.Observability;
+using Turbo.Primitives.Plugins;
 
 namespace Turbo.Observability;
 

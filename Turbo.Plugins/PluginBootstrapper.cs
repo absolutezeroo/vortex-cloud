@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
-using Turbo.Contracts.Plugins;
+using Turbo.Primitives.Plugins;
 using Turbo.Runtime.AssemblyProcessing;
 
 namespace Turbo.Plugins;

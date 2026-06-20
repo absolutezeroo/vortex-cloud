@@ -10,10 +10,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Turbo.Contracts.Plugins;
 using Turbo.Logging.Extensions;
 using Turbo.Plugins.Configuration;
 using Turbo.Plugins.Exports;
+using Turbo.Primitives.Plugins;
 using Turbo.Runtime;
 using Turbo.Runtime.AssemblyProcessing;
 
@@ -29,7 +29,7 @@ public sealed class PluginManager(
     private static readonly ServiceProviderOptions SP_OPTIONS = new()
     {
         ValidateScopes = true,
-        ValidateOnBuild = false
+        ValidateOnBuild = false,
     };
 
     private readonly PluginConfig _config = config.Value;
@@ -116,7 +116,7 @@ public sealed class PluginManager(
         {
             List<(PluginManifest manifest, string folder)> discovered = DiscoverPlugins();
             IReadOnlyList<PluginManifest> manifests = PluginHelpers.SortManifests([
-                .. discovered.Select(d => d.manifest)
+                .. discovered.Select(d => d.manifest),
             ]);
             Dictionary<string, string> byKey = discovered.ToDictionary(
                 d => d.manifest.Key,
@@ -230,7 +230,7 @@ public sealed class PluginManager(
         {
             List<(PluginManifest manifest, string folder)> discovered = DiscoverPlugins();
             IReadOnlyList<PluginManifest> manifests = PluginHelpers.SortManifests([
-                .. discovered.Select(d => d.manifest)
+                .. discovered.Select(d => d.manifest),
             ]);
             Dictionary<string, string> byKey = discovered.ToDictionary(
                 d => d.manifest.Key,
@@ -341,9 +341,7 @@ public sealed class PluginManager(
     public async Task UnloadAllAsync(CancellationToken ct = default)
     {
         HashSet<string> keys = _live.Keys.ToHashSet(StringComparer.OrdinalIgnoreCase);
-        Dictionary<string, List<string>> dependents = new(
-            StringComparer.OrdinalIgnoreCase
-        );
+        Dictionary<string, List<string>> dependents = new(StringComparer.OrdinalIgnoreCase);
 
         foreach (KeyValuePair<string, ConcurrentBag<string>> kvp in _dependents)
         {
@@ -419,7 +417,7 @@ public sealed class PluginManager(
             Folder = folder,
             Instance = inst,
             ServiceProvider = sp,
-            Disposables = [sp]
+            Disposables = [sp],
         };
     }
 

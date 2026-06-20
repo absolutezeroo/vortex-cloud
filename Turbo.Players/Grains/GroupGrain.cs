@@ -132,7 +132,7 @@ internal sealed class GroupGrain(
             OpenToJoin = group.Type == GroupType.Open,
             MembersCanDecorate = !group.AdminOnlyDecoration,
             PendingMemberCount = pendingCount,
-            HasForum = group.ForumSettings?.Enabled ?? false
+            HasForum = group.ForumSettings?.Enabled ?? false,
         };
     }
 
@@ -200,8 +200,8 @@ internal sealed class GroupGrain(
                     UserId = r.PlayerEntityId,
                     UserName = r.PlayerEntity.Name,
                     Figure = r.PlayerEntity.Figure,
-                    MemberSince = r.CreatedAt.ToString("dd-MM-yyyy")
-                })
+                    MemberSince = r.CreatedAt.ToString("dd-MM-yyyy"),
+                }),
             ];
         }
         else
@@ -237,8 +237,8 @@ internal sealed class GroupGrain(
                     UserId = m.PlayerEntityId,
                     UserName = m.PlayerEntity.Name,
                     Figure = m.PlayerEntity.Figure,
-                    MemberSince = m.CreatedAt.ToString("dd-MM-yyyy")
-                })
+                    MemberSince = m.CreatedAt.ToString("dd-MM-yyyy"),
+                }),
             ];
         }
 
@@ -254,7 +254,7 @@ internal sealed class GroupGrain(
             PageSize = MembersPerPage,
             PageIndex = pageIndex,
             SearchType = searchType,
-            UserNameFilter = filter
+            UserNameFilter = filter,
         };
     }
 
@@ -308,7 +308,7 @@ internal sealed class GroupGrain(
                         GroupEntityId = GroupId,
                         PlayerEntityId = playerId,
                         GroupEntity = groupEntity,
-                        PlayerEntity = playerEntity
+                        PlayerEntity = playerEntity,
                     }
                 );
                 await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -328,7 +328,7 @@ internal sealed class GroupGrain(
                 PlayerEntityId = playerId,
                 Rank = GroupMemberRank.Member,
                 GroupEntity = groupEntity,
-                PlayerEntity = playerEntity
+                PlayerEntity = playerEntity,
             }
         );
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -380,7 +380,7 @@ internal sealed class GroupGrain(
             {
                 RoomId = r.Id,
                 RoomName = r.Name,
-                HasControllers = r.GroupEntityId == null || r.Id == group.RoomEntityId
+                HasControllers = r.GroupEntityId == null || r.Id == group.RoomEntityId,
             })
             .ToListAsync(ct);
 
@@ -407,7 +407,7 @@ internal sealed class GroupGrain(
             // The client iterates all 5 unconditionally — a short list causes a null-reference crash.
             BadgeParts = GuildBadgeLibrary.ParseBadgeCode(group.Badge),
             BadgeCode = group.Badge,
-            MembershipCount = membershipCount
+            MembershipCount = membershipCount,
         };
     }
 
@@ -566,7 +566,7 @@ internal sealed class GroupGrain(
                 PlayerEntityId = targetPlayerId,
                 Rank = GroupMemberRank.Member,
                 GroupEntity = group,
-                PlayerEntity = request.PlayerEntity
+                PlayerEntity = request.PlayerEntity,
             }
         );
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -584,7 +584,7 @@ internal sealed class GroupGrain(
             UserId = targetPlayerId,
             UserName = request.PlayerEntity.Name,
             Figure = request.PlayerEntity.Figure,
-            MemberSince = DateTime.UtcNow.ToString("dd-MM-yyyy")
+            MemberSince = DateTime.UtcNow.ToString("dd-MM-yyyy"),
         };
     }
 
@@ -660,7 +660,7 @@ internal sealed class GroupGrain(
                     PlayerEntityId = request.PlayerEntityId,
                     Rank = GroupMemberRank.Member,
                     GroupEntity = group,
-                    PlayerEntity = request.PlayerEntity
+                    PlayerEntity = request.PlayerEntity,
                 }
             );
             added.Add(
@@ -670,7 +670,7 @@ internal sealed class GroupGrain(
                     UserId = request.PlayerEntityId,
                     UserName = request.PlayerEntity.Name,
                     Figure = request.PlayerEntity.Figure,
-                    MemberSince = now.ToString("dd-MM-yyyy")
+                    MemberSince = now.ToString("dd-MM-yyyy"),
                 }
             );
         }
@@ -793,7 +793,7 @@ internal sealed class GroupGrain(
             UserId = targetPlayerId,
             UserName = member.PlayerEntity.Name,
             Figure = member.PlayerEntity.Figure,
-            MemberSince = member.CreatedAt.ToString("dd-MM-yyyy")
+            MemberSince = member.CreatedAt.ToString("dd-MM-yyyy"),
         };
     }
 

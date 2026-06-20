@@ -1,7 +1,6 @@
 using Orleans;
 using Turbo.Primitives.Catalog.Grains;
 using Turbo.Primitives.FriendList.Grains;
-using Turbo.Primitives.Grains.Players;
 using Turbo.Primitives.Groups.Grains;
 using Turbo.Primitives.Inventory.Grains;
 using Turbo.Primitives.Marketplace.Grains;

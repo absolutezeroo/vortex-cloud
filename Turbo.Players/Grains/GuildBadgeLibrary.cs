@@ -58,14 +58,14 @@ internal static class GuildBadgeLibrary
         "8b00ff", // 14 violet
         "ff00ff", // 15 magenta
         "ff69b4", // 16 pink
-        "8b4513" // 17 brown
+        "8b4513", // 17 brown
     ];
 
     private static readonly GroupBadgePartSnapshot EmptyLayer = new()
     {
         PartId = 0,
         ColorId = 0,
-        Position = 0
+        Position = 0,
     };
 
     /// <summary>Base shapes that form the bottom layer of a guild badge.</summary>
@@ -101,32 +101,32 @@ internal static class GuildBadgeLibrary
         {
             PartId = 1,
             ColorId = 1,
-            Position = 4
+            Position = 4,
         }, // base layer
         new()
         {
             PartId = 0,
             ColorId = 0,
-            Position = 0
+            Position = 0,
         }, // overlay 1 (empty)
         new()
         {
             PartId = 0,
             ColorId = 0,
-            Position = 0
+            Position = 0,
         }, // overlay 2 (empty)
         new()
         {
             PartId = 0,
             ColorId = 0,
-            Position = 0
+            Position = 0,
         }, // overlay 3 (empty)
         new()
         {
             PartId = 0,
             ColorId = 0,
-            Position = 0
-        } // overlay 4 (empty)
+            Position = 0,
+        }, // overlay 4 (empty)
     ];
 
     /// <summary>
@@ -164,7 +164,7 @@ internal static class GuildBadgeLibrary
                         {
                             PartId = partId,
                             ColorId = colorId,
-                            Position = position
+                            Position = position,
                         }
                     );
                 }
@@ -205,7 +205,7 @@ internal static class GuildBadgeLibrary
                 Id = i,
                 FileName = $"{prefix}_{i}",
                 // No separate mask layer in the default pack; an empty name means "no mask".
-                MaskFileName = string.Empty
+                MaskFileName = string.Empty,
             })
             .ToList();
     }

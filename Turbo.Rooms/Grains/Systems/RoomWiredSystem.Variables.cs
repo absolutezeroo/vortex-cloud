@@ -45,7 +45,7 @@ public sealed partial class RoomWiredSystem
             _ => throw new ArgumentOutOfRangeException(
                 nameof(key.TargetType),
                 $"Unsupported target type: {key.TargetType}"
-            )
+            ),
         };
     }
 
@@ -158,9 +158,7 @@ public sealed partial class RoomWiredSystem
     private WiredVariablesSnapshot BuildVariablesSnapshot()
     {
         List<WiredVariableHash> hashes = new();
-        List<WiredVariableSnapshot> snapshots = new(
-            _variableById.Count
-        );
+        List<WiredVariableSnapshot> snapshots = new(_variableById.Count);
 
         foreach (IWiredVariable variable in _variableById.Values)
         {
@@ -173,7 +171,7 @@ public sealed partial class RoomWiredSystem
         WiredVariablesSnapshot allVariablesSnapshot = new()
         {
             AllVariablesHash = WiredVariableHashBuilder.HashFromHashes(hashes),
-            Variables = snapshots
+            Variables = snapshots,
         };
 
         _roomGrain._state.AllVariablesHash = allVariablesSnapshot.AllVariablesHash;

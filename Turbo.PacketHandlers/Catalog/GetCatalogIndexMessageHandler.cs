@@ -9,9 +9,8 @@ using Turbo.Primitives.Messages.Outgoing.Catalog;
 
 namespace Turbo.PacketHandlers.Catalog;
 
-public class GetCatalogIndexMessageHandler(
-    ICatalogService catalogService
-) : IMessageHandler<GetCatalogIndexMessage>
+public class GetCatalogIndexMessageHandler(ICatalogService catalogService)
+    : IMessageHandler<GetCatalogIndexMessage>
 {
     private readonly ICatalogService _catalogService = catalogService;
 
@@ -28,8 +27,6 @@ public class GetCatalogIndexMessageHandler(
             await ctx.SendComposerAsync(new CatalogIndexMessageComposer { Catalog = snapshot }, ct)
                 .ConfigureAwait(false);
         }
-        catch (Exception)
-        {
-        }
+        catch (Exception) { }
     }
 }

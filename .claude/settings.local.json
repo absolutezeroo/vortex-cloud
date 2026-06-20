@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(git *)",
+      "PowerShell(dotnet csharpier check *)",
+      "PowerShell(dotnet ef migrations *)",
+      "Bash(dotnet ef *)",
+      "Bash(awk '/^ *)"
+    ]
+  },
+  "disabledMcpjsonServers": [
+    "godot"
+  ]
+}

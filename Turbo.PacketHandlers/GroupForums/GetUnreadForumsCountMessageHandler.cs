@@ -2,11 +2,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
-using Turbo.Primitives.Messages.Incoming.Groupforums;
+using Turbo.Primitives.Messages.Incoming.GroupForums;
 using Turbo.Primitives.Messages.Outgoing.Groupforums;
 using Turbo.Primitives.Orleans;
 
-namespace Turbo.PacketHandlers.Groupforums;
+namespace Turbo.PacketHandlers.GroupForums;
 
 public class GetUnreadForumsCountMessageHandler(IGrainFactory grainFactory)
     : IMessageHandler<GetUnreadForumsCountMessage>

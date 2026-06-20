@@ -138,9 +138,7 @@ public abstract class FurnitureWiredLogic(
                     sourceTypes = _wiredData.FurniSources[index];
                 }
             }
-            catch
-            {
-            }
+            catch { }
 
             sources.Add(sourceTypes);
             index++;
@@ -165,9 +163,7 @@ public abstract class FurnitureWiredLogic(
                     sourceTypes = _wiredData.PlayerSources[index];
                 }
             }
-            catch
-            {
-            }
+            catch { }
 
             sources.Add(sourceTypes);
             index++;
@@ -259,13 +255,11 @@ public abstract class FurnitureWiredLogic(
                             .. update
                                 .FurniSources[index]
                                 .Where(validFurniSources[index].Contains)
-                                .Take(source.Length)
+                                .Take(source.Length),
                         ];
                     }
                 }
-                catch
-                {
-                }
+                catch { }
 
                 furniSources.Add(sourceTypes);
                 index++;
@@ -287,13 +281,11 @@ public abstract class FurnitureWiredLogic(
                             .. update
                                 .PlayerSources[index]
                                 .Where(validPlayerSources[index].Contains)
-                                .Take(source.Length)
+                                .Take(source.Length),
                         ];
                     }
                 }
-                catch
-                {
-                }
+                catch { }
 
                 playerSources.Add(sourceTypes);
                 index++;
@@ -319,9 +311,7 @@ public abstract class FurnitureWiredLogic(
                         specific = Activator.CreateInstance(specType)!;
                     }
                 }
-                catch
-                {
-                }
+                catch { }
 
                 definitionSpecifics.Add(specific);
                 index++;
@@ -347,9 +337,7 @@ public abstract class FurnitureWiredLogic(
                         specific = Activator.CreateInstance(specType)!;
                     }
                 }
-                catch
-                {
-                }
+                catch { }
 
                 typeSpecifics.Add(specific);
                 index++;
@@ -412,9 +400,7 @@ public abstract class FurnitureWiredLogic(
                     specific = _wiredData.DefinitionSpecifics[index];
                 }
             }
-            catch
-            {
-            }
+            catch { }
 
             specific ??= Activator.CreateInstance(specType)!;
 
@@ -444,9 +430,7 @@ public abstract class FurnitureWiredLogic(
                     specific = _wiredData.TypeSpecifics[index];
                 }
             }
-            catch
-            {
-            }
+            catch { }
 
             specific ??= Activator.CreateInstance(specType)!;
 
@@ -604,9 +588,7 @@ public abstract class FurnitureWiredLogic(
                     break;
                 }
             }
-            catch
-            {
-            }
+            catch { }
         }
 
         return true;
@@ -724,7 +706,7 @@ public abstract class FurnitureWiredLogic(
             DefinitionSpecifics = GetDefinitionSpecifics(),
             TypeSpecifics = GetTypeSpecifics(),
             ContextSnapshots = GetWiredContextSnapshots(),
-            DefaultIntParams = GetDefaultIntParams()
+            DefaultIntParams = GetDefaultIntParams(),
         };
     }
 
@@ -792,7 +774,7 @@ public abstract class FurnitureWiredLogic(
             {
                 RoomId = _ctx.RoomId,
                 CausedBy = ctx,
-                StackIds = ids
+                StackIds = ids,
             },
             ct
         );

@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Turbo.Contracts.Plugins;
 using Turbo.Dashboard.API.Api;
 using Turbo.Dashboard.API.Hosting;
 using Turbo.Dashboard.API.Http;
@@ -9,6 +8,7 @@ using Turbo.Dashboard.API.Infrastructure;
 using Turbo.Dashboard.API.Operations;
 using Turbo.Dashboard.API.Security;
 using Turbo.Observability.Configuration;
+using Turbo.Primitives.Plugins;
 
 namespace Turbo.Dashboard.API;
 

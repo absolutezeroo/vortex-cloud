@@ -1,6 +1,6 @@
-using Turbo.Contracts.Plugins;
-using Turbo.Contracts.Plugins.Exports;
 using Turbo.Plugins.Exports;
+using Turbo.Primitives.Plugins;
+using Turbo.Primitives.Plugins.Exports;
 
 namespace Turbo.Plugins;
 

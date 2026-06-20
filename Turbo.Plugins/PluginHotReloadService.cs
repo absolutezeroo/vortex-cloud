@@ -23,7 +23,7 @@ public sealed class PluginHotReloadService(
         "manifest.json",
         "*.dll",
         "*.pdb",
-        "*.deps.json"
+        "*.deps.json",
     ];
 
     private readonly PluginConfig _config = config.Value;
@@ -90,7 +90,7 @@ public sealed class PluginHotReloadService(
                 | NotifyFilters.LastWrite
                 | NotifyFilters.CreationTime
                 | NotifyFilters.Size,
-            EnableRaisingEvents = true
+            EnableRaisingEvents = true,
         };
 
         watcher.Changed += OnFsEvent;
@@ -227,9 +227,7 @@ public sealed class PluginHotReloadService(
         string fileName = Path.GetFileName(path);
 
         return !string.IsNullOrWhiteSpace(fileName)
-               && WATCH_GLOBS.Any(glob =>
-                   FileSystemName.MatchesSimpleExpression(glob, fileName)
-               );
+            && WATCH_GLOBS.Any(glob => FileSystemName.MatchesSimpleExpression(glob, fileName));
     }
 
     private void DisposeWatchers()

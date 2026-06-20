@@ -4,13 +4,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Turbo.Catalog.Configuration;
 using Turbo.Catalog.Providers;
-using Turbo.Contracts.Plugins;
 using Turbo.Database.Context;
 using Turbo.Primitives.Catalog;
 using Turbo.Primitives.Catalog.Enums;
 using Turbo.Primitives.Catalog.Providers;
 using Turbo.Primitives.Catalog.Tags;
 using Turbo.Primitives.Furniture.Providers;
+using Turbo.Primitives.Plugins;
 
 namespace Turbo.Catalog;
 

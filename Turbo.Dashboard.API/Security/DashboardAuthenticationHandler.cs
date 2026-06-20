@@ -54,7 +54,7 @@ internal sealed class DashboardAuthenticationHandler(
         List<Claim> claims = new()
         {
             new Claim(ClaimTypes.Name, principal.Email),
-            new Claim(ClaimTypes.NameIdentifier, principal.AccountId.ToString())
+            new Claim(ClaimTypes.NameIdentifier, principal.AccountId.ToString()),
         };
 
         foreach (string capability in principal.Permissions.Capabilities)
@@ -63,10 +63,7 @@ internal sealed class DashboardAuthenticationHandler(
         }
 
         ClaimsIdentity identity = new(claims, SchemeName);
-        AuthenticationTicket ticket = new(
-            new ClaimsPrincipal(identity),
-            SchemeName
-        );
+        AuthenticationTicket ticket = new(new ClaimsPrincipal(identity), SchemeName);
 
         // Endpoints read the rich principal (capability checks + actor email) from here.
         Context.Items[PrincipalItemKey] = principal;

@@ -30,10 +30,7 @@ public sealed class GuildWireLayoutTests
     }
 
     /// <summary>Runs a registered serializer and returns a reader positioned past the 6-byte header.</summary>
-    private static ClientPacket SerializeAndReadBody(
-        Type composerType,
-        IComposer composer
-    )
+    private static ClientPacket SerializeAndReadBody(Type composerType, IComposer composer)
     {
         byte[] bytes = Revision.Serializers[composerType].Serialize(composer).ToArray();
         // AbstractSerializer prepends int length (4) + short header (2).
@@ -98,7 +95,7 @@ public sealed class GuildWireLayoutTests
             OpenToJoin = true,
             MembersCanDecorate = true,
             PendingMemberCount = 2,
-            HasForum = false
+            HasForum = false,
         };
 
         ClientPacket body = SerializeAndReadBody(
@@ -146,14 +143,14 @@ public sealed class GuildWireLayoutTests
                     UserId = 7,
                     UserName = "absolutezeroo",
                     Figure = "hd-1-1",
-                    MemberSince = "19-06-2026"
-                }
+                    MemberSince = "19-06-2026",
+                },
             ],
             AllowedToManage = true,
             PageSize = 14,
             PageIndex = 0,
             SearchType = 0,
-            UserNameFilter = ""
+            UserNameFilter = "",
         };
 
         ClientPacket body = SerializeAndReadBody(
@@ -209,9 +206,9 @@ public sealed class GuildWireLayoutTests
                     SecondaryColor = "7",
                     Favourite = false,
                     OwnerId = 7,
-                    HasForum = true
-                }
-            ]
+                    HasForum = true,
+                },
+            ],
         };
 
         ClientPacket body = SerializeAndReadBody(typeof(GuildMembershipsMessageComposer), composer);

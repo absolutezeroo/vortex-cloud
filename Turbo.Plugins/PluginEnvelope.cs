@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Turbo.Contracts.Plugins;
+using Turbo.Primitives.Plugins;
 using Turbo.Runtime.AssemblyProcessing;
 
 namespace Turbo.Plugins;

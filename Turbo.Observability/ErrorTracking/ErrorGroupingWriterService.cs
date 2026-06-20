@@ -27,7 +27,7 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     };
 
     private readonly int _batchSize;
@@ -194,7 +194,7 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
                             ActorPlayerId = record.ActorPlayerId,
                             RoomId = record.RoomId,
                             SessionKey = record.SessionKey,
-                            RemoteIp = record.RemoteIp
+                            RemoteIp = record.RemoteIp,
                         }
                     );
                 }
@@ -262,7 +262,7 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
                         SampleMessage = Truncate(first.Message, 255),
                         FirstSeenAt = first.OccurredAt,
                         LastSeenAt = first.OccurredAt,
-                        TotalOccurrences = 0
+                        TotalOccurrences = 0,
                     };
                 },
                 StringComparer.Ordinal
@@ -314,7 +314,7 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
                 new
                 {
                     happenedAtUtc = DateTime.UtcNow,
-                    records = batch.Select(MapDeadLetterPayload)
+                    records = batch.Select(MapDeadLetterPayload),
                 },
                 JsonOptions
             );
@@ -359,7 +359,7 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
             occurredAt = record.OccurredAt.ToString("O", CultureInfo.InvariantCulture),
             actorPlayerId = record.ActorPlayerId,
             roomId = record.RoomId,
-            correlationId = record.CorrelationId
+            correlationId = record.CorrelationId,
         };
     }
 }

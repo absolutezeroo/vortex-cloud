@@ -1,9 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Turbo.Messages.Registry;
-using Turbo.Primitives.Messages.Incoming.Groupforums;
+using Turbo.Primitives.Messages.Incoming.GroupForums;
 
-namespace Turbo.PacketHandlers.Groupforums;
+namespace Turbo.PacketHandlers.GroupForums;
 
 public class UpdateForumReadMarkerMessageHandler : IMessageHandler<UpdateForumReadMarkerMessage>
 {

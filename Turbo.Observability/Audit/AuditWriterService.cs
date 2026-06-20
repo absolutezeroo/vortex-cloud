@@ -29,7 +29,7 @@ public sealed class AuditWriterService : BackgroundService
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     };
 
     private readonly int _batchSize;
@@ -214,7 +214,7 @@ public sealed class AuditWriterService : BackgroundService
                 new
                 {
                     happenedAtUtc = DateTime.UtcNow,
-                    records = batch.ConvertAll(MapDeadLetterPayload)
+                    records = batch.ConvertAll(MapDeadLetterPayload),
                 },
                 JsonOptions
             );
@@ -254,30 +254,30 @@ public sealed class AuditWriterService : BackgroundService
                 kind = nameof(AuditRecord),
                 occurredAt = audit.OccurredAt,
                 correlationId = audit.CorrelationId,
-                audit = audit.Event
+                audit = audit.Event,
             },
             LedgerRecord ledger => new
             {
                 kind = nameof(LedgerRecord),
                 occurredAt = ledger.OccurredAt,
                 correlationId = ledger.CorrelationId,
-                ledger = ledger.Event
+                ledger = ledger.Event,
             },
             ItemRecord item => new
             {
                 kind = nameof(ItemRecord),
                 occurredAt = item.OccurredAt,
                 correlationId = item.CorrelationId,
-                item = item.Event
+                item = item.Event,
             },
             PerformanceLogRecord performanceLog => new
             {
                 kind = nameof(PerformanceLogRecord),
                 occurredAt = performanceLog.OccurredAt,
                 correlationId = performanceLog.CorrelationId,
-                performanceLog = performanceLog.Event
+                performanceLog = performanceLog.Event,
             },
-            _ => throw new ArgumentOutOfRangeException(nameof(record), record.GetType().Name, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(record), record.GetType().Name, null),
         };
     }
 
@@ -302,7 +302,7 @@ public sealed class AuditWriterService : BackgroundService
                 nameof(record),
                 record.GetType().Name,
                 "Unknown durable observability record type."
-            )
+            ),
         };
     }
 
@@ -321,7 +321,7 @@ public sealed class AuditWriterService : BackgroundService
             RoomId = record.Event.RoomId,
             ItemId = record.Event.ItemId,
             IpHash = record.Event.IpHash,
-            Data = record.Event.Data
+            Data = record.Event.Data,
         };
     }
 
@@ -337,7 +337,7 @@ public sealed class AuditWriterService : BackgroundService
             BalanceAfter = record.Event.BalanceAfter,
             Reason = record.Event.Reason,
             CorrelationId = record.CorrelationId,
-            RefId = record.Event.RefId
+            RefId = record.Event.RefId,
         };
     }
 
@@ -353,7 +353,7 @@ public sealed class AuditWriterService : BackgroundService
             ToOwnerId = record.Event.ToOwnerId,
             RoomId = record.Event.RoomId,
             CorrelationId = record.CorrelationId,
-            Data = record.Event.Data
+            Data = record.Event.Data,
         };
     }
 
@@ -370,7 +370,7 @@ public sealed class AuditWriterService : BackgroundService
             MemoryUsage = record.Event.MemoryUsage,
             GarbageCollections = record.Event.GarbageCollections,
             AverageFrameRate = record.Event.AverageFrameRate,
-            IPAddress = record.Event.IPAddress
+            IPAddress = record.Event.IPAddress,
         };
     }
 }

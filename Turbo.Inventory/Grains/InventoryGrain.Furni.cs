@@ -108,7 +108,7 @@ public sealed partial class InventoryGrain
                         new FurnitureEntity
                         {
                             PlayerEntityId = (int)this.GetPrimaryKeyLong(),
-                            FurnitureDefinitionEntityId = def.Id
+                            FurnitureDefinitionEntityId = def.Id,
                         }
                     );
                 }
@@ -155,7 +155,7 @@ public sealed partial class InventoryGrain
                         PlayerEntityId = (int)this.GetPrimaryKeyLong(),
                         BadgeCode = badgeCode,
                         SlotId = 0,
-                        PlayerEntity = null!
+                        PlayerEntity = null!,
                     }
                 );
 
@@ -179,7 +179,7 @@ public sealed partial class InventoryGrain
                         OwnerName = string.Empty,
                         Definition = def,
                         ExtraData = new ExtraData("{}"),
-                        StuffData = _stuffDataFactory.CreateStuffData((int)StuffDataType.LegacyKey)
+                        StuffData = _stuffDataFactory.CreateStuffData((int)StuffDataType.LegacyKey),
                     },
                     ct
                 );
@@ -193,7 +193,7 @@ public sealed partial class InventoryGrain
                                 new
                                 {
                                     source = "catalog",
-                                    definitionId = entity.FurnitureDefinitionEntityId
+                                    definitionId = entity.FurnitureDefinitionEntityId,
                                 }
                             )
                         ),
@@ -248,7 +248,7 @@ public sealed partial class InventoryGrain
                     PlayerEntityId = (int)this.GetPrimaryKeyLong(),
                     BadgeCode = badgeCode,
                     SlotId = 0,
-                    PlayerEntity = null!
+                    PlayerEntity = null!,
                 }
             );
 
@@ -280,7 +280,7 @@ public sealed partial class InventoryGrain
         {
             PlayerEntityId = (int)this.GetPrimaryKeyLong(),
             FurnitureDefinitionEntityId = def.Id,
-            ExtraData = extraData
+            ExtraData = extraData,
         };
 
         TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
@@ -298,7 +298,7 @@ public sealed partial class InventoryGrain
                         OwnerName = string.Empty,
                         Definition = def,
                         ExtraData = new ExtraData(extraData ?? "{}"),
-                        StuffData = _stuffDataFactory.CreateStuffData(StuffDataType.LegacyKey)
+                        StuffData = _stuffDataFactory.CreateStuffData(StuffDataType.LegacyKey),
                     },
                     ct
                 )
@@ -327,7 +327,7 @@ public sealed partial class InventoryGrain
         {
             PlayerEntityId = (int)this.GetPrimaryKeyLong(),
             FurnitureDefinitionEntityId = def.Id,
-            ExtraData = extraData
+            ExtraData = extraData,
         };
 
         TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
@@ -345,7 +345,7 @@ public sealed partial class InventoryGrain
                         OwnerName = string.Empty,
                         Definition = def,
                         ExtraData = new ExtraData(extraData),
-                        StuffData = _stuffDataFactory.CreateStuffData(StuffDataType.LegacyKey)
+                        StuffData = _stuffDataFactory.CreateStuffData(StuffDataType.LegacyKey),
                     },
                     ct
                 )
@@ -361,7 +361,7 @@ public sealed partial class InventoryGrain
                             {
                                 source = "ltd",
                                 serial = serialNumber,
-                                seriesSize
+                                seriesSize,
                             }
                         )
                     ),

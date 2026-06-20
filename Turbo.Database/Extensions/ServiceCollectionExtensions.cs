@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Turbo.Contracts.Plugins;
 using Turbo.Database.Configuration;
 using Turbo.Database.Context;
 using Turbo.Database.Delegates;
+using Turbo.Primitives.Plugins;
 
 namespace Turbo.Database.Extensions;
 

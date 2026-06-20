@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using Turbo.Primitives.Groups.Snapshots;
-using Turbo.Primitives.Messages.Incoming.Groupforums;
+using Turbo.Primitives.Messages.Incoming.GroupForums;
 using Turbo.Primitives.Messages.Outgoing.Groupforums;
 using Turbo.Primitives.Packets;
 using Xunit;

@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Turbo.Contracts.Plugins;
 using Turbo.Players.Configuration;
 using Turbo.Players.Providers;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Players.Providers;
+using Turbo.Primitives.Plugins;
 
 namespace Turbo.Players;
 

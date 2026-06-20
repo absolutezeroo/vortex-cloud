@@ -39,13 +39,13 @@ public sealed class RentableSpaceInvariantsTests
         FurnitureDefinitionEntity definition,
         FurnitureEntity furniture,
         RentableSpaceTermsEntity terms
-        ) Seed(TurboDbContext ctx, int playerId = 1, int furniId = 10)
+    ) Seed(TurboDbContext ctx, int playerId = 1, int furniId = 10)
     {
         CurrencyTypeEntity currency = new()
         {
             Name = "Credits",
             CurrencyType = CurrencyType.Credits,
-            Enabled = true
+            Enabled = true,
         };
         ctx.CurrencyTypes.Add(currency);
 
@@ -56,7 +56,7 @@ public sealed class RentableSpaceInvariantsTests
             Figure = "hr-115",
             Gender = AvatarGenderType.Male,
             PlayerStatus = PlayerStatusType.Offline,
-            PlayerPerks = PlayerPerkFlags.None
+            PlayerPerks = PlayerPerkFlags.None,
         };
         ctx.Players.Add(player);
 
@@ -77,7 +77,7 @@ public sealed class RentableSpaceInvariantsTests
             CanRecycle = false,
             CanTrade = false,
             CanGroup = false,
-            CanSell = false
+            CanSell = false,
         };
         ctx.FurnitureDefinitions.Add(definition);
 
@@ -85,7 +85,7 @@ public sealed class RentableSpaceInvariantsTests
         {
             Id = furniId,
             PlayerEntityId = playerId,
-            FurnitureDefinitionEntityId = definition.Id
+            FurnitureDefinitionEntityId = definition.Id,
         };
         ctx.Furnitures.Add(furniture);
 
@@ -97,7 +97,7 @@ public sealed class RentableSpaceInvariantsTests
             RentDurationSeconds = 3600,
             RequiresHc = false,
             FurnitureDefinitionEntity = definition,
-            CurrencyTypeEntity = currency
+            CurrencyTypeEntity = currency,
         };
         ctx.RentableSpaceTerms.Add(terms);
 
@@ -114,7 +114,7 @@ public sealed class RentableSpaceInvariantsTests
         RoomRentableSpaceEntity space1 = new()
         {
             FurnitureEntityId = furniture.Id,
-            FurnitureEntity = furniture
+            FurnitureEntity = furniture,
         };
         ctx.RoomRentableSpaces.Add(space1);
         ctx.SaveChanges();
@@ -145,7 +145,7 @@ public sealed class RentableSpaceInvariantsTests
             FurnitureEntityId = furniture.Id,
             FurnitureEntity = furniture,
             RenterPlayerEntityId = player.Id,
-            RentedUntil = DateTime.UtcNow.AddHours(1)
+            RentedUntil = DateTime.UtcNow.AddHours(1),
         };
         ctx.RoomRentableSpaces.Add(space);
         ctx.SaveChanges();
@@ -202,14 +202,14 @@ public sealed class RentableSpaceInvariantsTests
             PlayerEntityId = player.Id,
             FurnitureDefinitionEntityId = definition.Id,
             RoomEntityId = 99,
-            RentableSpaceFurnitureEntityId = spaceFurni.Id
+            RentableSpaceFurnitureEntityId = spaceFurni.Id,
         };
         FurnitureEntity item2 = new()
         {
             PlayerEntityId = player.Id,
             FurnitureDefinitionEntityId = definition.Id,
             RoomEntityId = 99,
-            RentableSpaceFurnitureEntityId = spaceFurni.Id
+            RentableSpaceFurnitureEntityId = spaceFurni.Id,
         };
         ctx.Furnitures.AddRange(item1, item2);
         ctx.SaveChanges();

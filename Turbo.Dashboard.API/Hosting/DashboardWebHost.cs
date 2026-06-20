@@ -51,7 +51,7 @@ internal sealed class DashboardWebHost(
         Capabilities.Dashboard.FurnitureRead,
         Capabilities.Dashboard.OpsGrantCurrency,
         Capabilities.Dashboard.OpsGrantItem,
-        Capabilities.Dashboard.OpsKickPlayer
+        Capabilities.Dashboard.OpsKickPlayer,
     ];
 
     private readonly ObservabilityConfig _config = options.Value;
@@ -215,7 +215,7 @@ internal sealed class DashboardWebHost(
                     Description =
                         "Operations and observability API for the Turbo emulator. Authenticate via "
                         + "POST /api/login (issues the dash_session cookie); endpoints are authorized "
-                        + "by dashboard.* capabilities."
+                        + "by dashboard.* capabilities.",
                 }
             );
 
@@ -228,7 +228,7 @@ internal sealed class DashboardWebHost(
                     Name = DashboardAuthenticationHandler.SessionCookieName,
                     Description =
                         "Session cookie issued by POST /api/login. Sent automatically by the browser "
-                        + "on same-origin requests."
+                        + "on same-origin requests.",
                 }
             );
 
@@ -240,7 +240,7 @@ internal sealed class DashboardWebHost(
                         document
                     ),
                     new List<string>()
-                }
+                },
             });
         });
     }
@@ -252,7 +252,8 @@ internal sealed class DashboardWebHost(
 
         // Hardened headers for the SPA + JSON API. Swagger UI ships an inline bootstrap script, so it
         // is exempt from the strict CSP (it is operator-only and same-origin).
-        app.Use(async (ctx, next) =>
+        app.Use(
+            async (ctx, next) =>
             {
                 if (
                     !(ctx.Request.Path.Value ?? "/").StartsWith(
@@ -281,7 +282,8 @@ internal sealed class DashboardWebHost(
         // HTTP access audit trail. Login/logout audit themselves; operation success is audited by
         // DashboardOperationsService (with correlation id), so for operation routes only failures are
         // logged here to avoid duplicate records.
-        app.Use(async (ctx, next) =>
+        app.Use(
+            async (ctx, next) =>
             {
                 await next().ConfigureAwait(false);
 
@@ -312,7 +314,7 @@ internal sealed class DashboardWebHost(
                     StatusCodes.Status200OK => AuditResult.Success,
                     StatusCodes.Status401Unauthorized or StatusCodes.Status403Forbidden =>
                         AuditResult.Denied,
-                    _ => AuditResult.Failed
+                    _ => AuditResult.Failed,
                 };
 
                 emitter.Emit(path, result, status, "HttpAccess", ctx.ActorEmail());

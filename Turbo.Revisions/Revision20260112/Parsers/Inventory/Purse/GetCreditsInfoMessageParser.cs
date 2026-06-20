@@ -1,4 +1,5 @@
 using Turbo.Primitives.Messages.Incoming.Inventory;
+using Turbo.Primitives.Messages.Incoming.Inventory.Purse;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Packets;
 

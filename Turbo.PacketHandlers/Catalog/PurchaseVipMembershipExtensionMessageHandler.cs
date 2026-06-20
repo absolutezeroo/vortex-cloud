@@ -5,7 +5,6 @@ using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Catalog;
 using Turbo.Primitives.Catalog.Providers;
-using Turbo.Primitives.Grains.Players;
 using Turbo.Primitives.Messages.Incoming.Catalog;
 using Turbo.Primitives.Messages.Outgoing.Catalog;
 using Turbo.Primitives.Messages.Outgoing.Handshake;
@@ -13,6 +12,7 @@ using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Orleans.Snapshots.Players;
 using Turbo.Primitives.Players.Enums;
+using Turbo.Primitives.Players.Grains;
 
 namespace Turbo.PacketHandlers.Catalog;
 

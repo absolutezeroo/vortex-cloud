@@ -31,7 +31,7 @@ public class WiredSelectorItemsInArea(
             new WiredParamRule(0),
             new WiredParamRule(0),
             new WiredParamRule(0),
-            new WiredParamRule(0)
+            new WiredParamRule(0),
         ];
     }
 
@@ -53,9 +53,7 @@ public class WiredSelectorItemsInArea(
                     output.SelectedFurniIds.Add(itemId);
                 }
             }
-            catch
-            {
-            }
+            catch { }
         }
 
         return Task.FromResult((IWiredSelectionSet)output);
