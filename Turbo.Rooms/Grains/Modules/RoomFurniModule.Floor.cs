@@ -312,7 +312,7 @@ public sealed partial class RoomFurniModule
 
         HashSet<int> spaceTileSet = [.. spaceTileIds];
 
-        if (!newItemTileIds.All(t => spaceTileSet.Contains(t)))
+        if (!newItemTileIds.All(spaceTileSet.Contains))
         {
             return false;
         }
@@ -356,7 +356,7 @@ public sealed partial class RoomFurniModule
 
         HashSet<int> spaceTileSet = [.. spaceTileIds];
 
-        if (!newItemTileIds.All(t => spaceTileSet.Contains(t)))
+        if (!newItemTileIds.All(spaceTileSet.Contains))
         {
             return false;
         }
