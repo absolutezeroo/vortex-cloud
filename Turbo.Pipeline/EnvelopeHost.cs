@@ -16,9 +16,9 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
     EnvelopeHostOptions<TEnvelope, TMeta, TContext> options
 )
 {
+    private readonly ConcurrentDictionary<Type, Bucket<TContext>> _byEvent = new();
     private readonly IServiceProvider _host = host;
     private readonly EnvelopeHostOptions<TEnvelope, TMeta, TContext> _opt = options;
-    private readonly ConcurrentDictionary<Type, Bucket<TContext>> _byEvent = new();
 
     public IDisposable RegisterHandler(
         Type envType,
@@ -92,12 +92,18 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
 
         Type t = env.GetType();
 
-        if (!_byEvent.TryGetValue(t, out Bucket<TContext>? bucket) && !_opt.EnableInheritanceDispatch)
+        if (
+            !_byEvent.TryGetValue(t, out Bucket<TContext>? bucket)
+            && !_opt.EnableInheritanceDispatch
+        )
         {
             return;
         }
 
-        Func<object, TContext, CancellationToken, ValueTask>? pipeline = GetOrBuildPipeline(t, bucket);
+        Func<object, TContext, CancellationToken, ValueTask>? pipeline = GetOrBuildPipeline(
+            t,
+            bucket
+        );
 
         if (pipeline is null)
         {
@@ -121,7 +127,9 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
                 return null;
             }
 
-            Func<object, TContext, CancellationToken, ValueTask>? cached = Volatile.Read(ref primaryBucket.CachedPipeline);
+            Func<object, TContext, CancellationToken, ValueTask>? cached = Volatile.Read(
+                ref primaryBucket.CachedPipeline
+            );
 
             if (
                 cached is not null
@@ -143,7 +151,10 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
                     return primaryBucket.CachedPipeline;
                 }
 
-                Func<object, TContext, CancellationToken, ValueTask> pipeline = BuildPipeline(primaryBucket.Handlers, primaryBucket.Behaviors);
+                Func<object, TContext, CancellationToken, ValueTask> pipeline = BuildPipeline(
+                    primaryBucket.Handlers,
+                    primaryBucket.Behaviors
+                );
 
                 primaryBucket.CachedPipeline = pipeline;
                 primaryBucket.CachedVersion = primaryBucket.Version;
@@ -153,11 +164,17 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
             }
         }
 
-        (ImmutableArray<HandlerReg<TContext>> handlers, ImmutableArray<BehaviorReg<TContext>> behaviors, int globalVersion) = ResolveForType(envType);
+        (
+            ImmutableArray<HandlerReg<TContext>> handlers,
+            ImmutableArray<BehaviorReg<TContext>> behaviors,
+            int globalVersion
+        ) = ResolveForType(envType);
 
         primaryBucket ??= _byEvent.GetOrAdd(envType, _ => new Bucket<TContext>());
 
-        Func<object, TContext, CancellationToken, ValueTask>? cached2 = Volatile.Read(ref primaryBucket.CachedPipeline);
+        Func<object, TContext, CancellationToken, ValueTask>? cached2 = Volatile.Read(
+            ref primaryBucket.CachedPipeline
+        );
 
         if (
             cached2 is not null
@@ -179,7 +196,10 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
                 return primaryBucket.CachedPipeline;
             }
 
-            Func<object, TContext, CancellationToken, ValueTask> pipeline = BuildPipeline(handlers, behaviors);
+            Func<object, TContext, CancellationToken, ValueTask> pipeline = BuildPipeline(
+                handlers,
+                behaviors
+            );
 
             primaryBucket.CachedPipeline = pipeline;
             primaryBucket.CachedVersion = globalVersion;
@@ -192,11 +212,13 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
             ImmutableArray<HandlerReg<TContext>>,
             ImmutableArray<BehaviorReg<TContext>>,
             int
-        ) ResolveForType(Type t)
+            ) ResolveForType(Type t)
         {
             IEnumerable<Type> types = EnumerateTypeGraph(t);
-            ImmutableArray<HandlerReg<TContext>>.Builder handlerBuilder = ImmutableArray.CreateBuilder<HandlerReg<TContext>>();
-            ImmutableArray<BehaviorReg<TContext>>.Builder behaviorBuilder = ImmutableArray.CreateBuilder<BehaviorReg<TContext>>();
+            ImmutableArray<HandlerReg<TContext>>.Builder handlerBuilder =
+                ImmutableArray.CreateBuilder<HandlerReg<TContext>>();
+            ImmutableArray<BehaviorReg<TContext>>.Builder behaviorBuilder =
+                ImmutableArray.CreateBuilder<BehaviorReg<TContext>>();
             int versionSum = 0;
 
             foreach (Type tp in types)
@@ -211,8 +233,7 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
 
             ImmutableArray<BehaviorReg<TContext>> behaviors = behaviorBuilder
                 .ToImmutable()
-                .Sort(
-                    static (a, b) =>
+                .Sort(static (a, b) =>
                     {
                         int cmp = a.Order.CompareTo(b.Order);
                         return cmp != 0 ? cmp : 0;
@@ -227,10 +248,14 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
             yield return t;
 
             for (Type? cur = t.BaseType; cur is not null; cur = cur.BaseType)
+            {
                 yield return cur;
+            }
 
             foreach (Type iface in t.GetInterfaces())
+            {
                 yield return iface;
+            }
         }
     }
 
@@ -241,7 +266,7 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
     {
         return async (env, ctx, ct) =>
         {
-            CompositeServiceProviderBag bag = new CompositeServiceProviderBag(_host);
+            CompositeServiceProviderBag bag = new(_host);
 
             Func<object, TContext, CancellationToken, ValueTask> terminal = async (env, ctx, ct) =>
                 await InvokeHandlersAsync(handlers, env, ctx, ct).ConfigureAwait(false);
@@ -318,7 +343,9 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
         if (_opt.HandlerMode == HandlerExecutionMode.Sequential)
         {
             for (int i = 0; i < regs.Length; i++)
+            {
                 await InvokeOneAsync(regs[i], env, ctx, ct).ConfigureAwait(false);
+            }
 
             return;
         }
@@ -332,7 +359,7 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
 
         if (_opt.MaxHandlerDegreeOfParallelism is int dop && dop > 0 && dop < regs.Length)
         {
-            List<Func<CancellationToken, ValueTask>> work = new List<Func<CancellationToken, ValueTask>>(regs.Length);
+            List<Func<CancellationToken, ValueTask>> work = new(regs.Length);
 
             for (int i = 0; i < regs.Length; i++)
             {
@@ -347,7 +374,9 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
             Task[] tasks = new Task[regs.Length];
 
             for (int i = 0; i < regs.Length; i++)
+            {
                 tasks[i] = InvokeOneAsync(regs[i], env, ctx, ct).AsTask();
+            }
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }

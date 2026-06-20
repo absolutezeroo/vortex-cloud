@@ -18,9 +18,10 @@ public static class AssemblyMemoryLoader
         }
 
         string baseDir = Path.GetDirectoryName(mainDllPath)!;
-        Dictionary<string, (byte[] asm, byte[]? pdb)> managed = new Dictionary<string, (byte[] asm, byte[]? pdb)>(
-            StringComparer.OrdinalIgnoreCase
-        );
+        Dictionary<string, (byte[] asm, byte[]? pdb)> managed = new Dictionary<
+            string,
+            (byte[] asm, byte[]? pdb)
+        >(StringComparer.OrdinalIgnoreCase);
 
         static byte[] ReadAll(string path) => File.ReadAllBytes(path);
 

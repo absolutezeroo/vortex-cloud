@@ -14,11 +14,15 @@ internal class FigureSetIdsEventMessageComposerSerializer(int header)
         packet.WriteInteger(message.FigureSetIds.Length);
 
         foreach (int figureSetId in message.FigureSetIds)
+        {
             packet.WriteInteger(figureSetId);
+        }
 
         packet.WriteInteger(message.BoundFurnitureNames.Length);
 
         foreach (string boundFurnitureName in message.BoundFurnitureNames)
+        {
             packet.WriteString(boundFurnitureName);
+        }
     }
 }

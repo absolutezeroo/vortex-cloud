@@ -2,6 +2,7 @@ namespace Turbo.Primitives.Rooms.Enums;
 
 public enum RentableSpaceRentFailedType
 {
+    None = 0,
     AlreadyRented = 100,
     NotRented = 101,
     NotRentedByYou = 102,

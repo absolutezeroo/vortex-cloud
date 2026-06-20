@@ -43,9 +43,13 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
             startRot = Rotation.North;
         }
 
-        IRoomPlayer avatar = _roomGrain._avatarProvider.CreateAvatarFromPlayerSnapshot(objectId, snapshot);
+        IRoomPlayer avatar = _roomGrain._avatarProvider.CreateAvatarFromPlayerSnapshot(
+            objectId,
+            snapshot
+        );
 
-        RoomControllerType controllerLevel = await _roomGrain.SecurityModule.GetControllerLevelAsync(ctx);
+        RoomControllerType controllerLevel =
+            await _roomGrain.SecurityModule.GetControllerLevelAsync(ctx);
 
         avatar.AddStatus(AvatarStatusType.FlatControl, ((int)controllerLevel).ToString());
 
@@ -69,8 +73,14 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
         try
         {
             if (
-                !_roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId)
-                || !_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar)
+                !_roomGrain._state.AvatarsByPlayerId.TryGetValue(
+                    playerId,
+                    out RoomObjectId objectId
+                )
+                || !_roomGrain._state.AvatarsByObjectId.TryGetValue(
+                    objectId,
+                    out IRoomAvatar? avatar
+                )
             )
             {
                 return;
@@ -92,8 +102,14 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
     {
         if (
             ctx.PlayerId <= 0
-            || !_roomGrain._state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out RoomObjectId objectIdValue)
-            || !_roomGrain._state.AvatarsByObjectId.TryGetValue(objectIdValue, out IRoomAvatar? avatar)
+            || !_roomGrain._state.AvatarsByPlayerId.TryGetValue(
+                ctx.PlayerId,
+                out RoomObjectId objectIdValue
+            )
+            || !_roomGrain._state.AvatarsByObjectId.TryGetValue(
+                objectIdValue,
+                out IRoomAvatar? avatar
+            )
             || !await WalkAvatarToAsync(avatar, targetX, targetY, ct)
         )
         {
@@ -249,7 +265,10 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
     {
         if (
             snapshot.PlayerId <= 0
-            || !_roomGrain._state.AvatarsByPlayerId.TryGetValue(snapshot.PlayerId, out RoomObjectId objectId)
+            || !_roomGrain._state.AvatarsByPlayerId.TryGetValue(
+                snapshot.PlayerId,
+                out RoomObjectId objectId
+            )
             || !_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar)
             || avatar is not IRoomPlayer avatarPlayer
             || !avatarPlayer.UpdateWithPlayer(snapshot)
@@ -280,7 +299,10 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
     {
         if (
             objectId <= 0
-            || !_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId.Value, out IRoomAvatar? avatar)
+            || !_roomGrain._state.AvatarsByObjectId.TryGetValue(
+                objectId.Value,
+                out IRoomAvatar? avatar
+            )
             || avatar is not IRoomPlayer player
             || !player.SetDance(danceType)
         )
@@ -303,7 +325,10 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
     {
         if (
             objectId <= 0
-            || !_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId.Value, out IRoomAvatar? avatar)
+            || !_roomGrain._state.AvatarsByObjectId.TryGetValue(
+                objectId.Value,
+                out IRoomAvatar? avatar
+            )
         )
         {
             return Task.FromResult(false);

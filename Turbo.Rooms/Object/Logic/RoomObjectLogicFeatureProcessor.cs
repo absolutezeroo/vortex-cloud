@@ -30,7 +30,8 @@ internal class RoomObjectLogicFeatureProcessor(IRoomObjectLogicProvider roomObje
                 continue;
             }
 
-            RoomObjectLogicAttribute? attribute = concrete.GetCustomAttribute<RoomObjectLogicAttribute>(false);
+            RoomObjectLogicAttribute? attribute =
+                concrete.GetCustomAttribute<RoomObjectLogicAttribute>(false);
 
             if (attribute is null)
             {

@@ -46,7 +46,9 @@ public sealed class GroupCreationTests
         context.SaveChanges();
 
         // Assert — exactly one settings row, linked to the group, carrying the defaults.
-        List<GroupForumSettingsEntity> settings = context.GroupForumSettings.Where(s => s.GroupEntityId == group.Id).ToList();
+        List<GroupForumSettingsEntity> settings = context
+            .GroupForumSettings.Where(s => s.GroupEntityId == group.Id)
+            .ToList();
 
         settings.Should().HaveCount(1, "the §2.4 invariant is one forum-settings row per group");
 

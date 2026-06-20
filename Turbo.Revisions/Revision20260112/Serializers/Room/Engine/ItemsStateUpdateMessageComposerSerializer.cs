@@ -12,6 +12,8 @@ internal class ItemsStateUpdateMessageComposerSerializer(int header)
         packet.WriteInteger(message.ObjectStates.Count);
 
         foreach ((RoomObjectId objectId, string state) in message.ObjectStates)
-            packet.WriteInteger((int)objectId).WriteString(state);
+        {
+            packet.WriteInteger(objectId).WriteString(state);
+        }
     }
 }

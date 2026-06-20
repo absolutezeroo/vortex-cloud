@@ -20,7 +20,9 @@ internal class ClubGiftInfoEventMessageComposerSerializer(int header)
             .WriteInteger(message.Offers.Count);
 
         foreach (CatalogOfferSnapshot offer in message.Offers)
+        {
             CatalogOfferSerializer.Serialize(packet, offer);
+        }
 
         packet.WriteInteger(message.GiftData.Count);
 

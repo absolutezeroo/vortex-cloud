@@ -9,7 +9,8 @@ namespace Turbo.Database.Context
     {
         public TurboDbContext CreateDbContext(string[] args)
         {
-            DbContextOptionsBuilder<TurboDbContext> optionsBuilder = new DbContextOptionsBuilder<TurboDbContext>();
+            DbContextOptionsBuilder<TurboDbContext> optionsBuilder =
+                new DbContextOptionsBuilder<TurboDbContext>();
 
             string basePath = Path.Combine(Directory.GetCurrentDirectory(), "..");
             IConfigurationRoot configuration = new ConfigurationBuilder()

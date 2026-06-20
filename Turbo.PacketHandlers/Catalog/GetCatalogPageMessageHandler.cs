@@ -32,7 +32,8 @@ public class GetCatalogPageMessageHandler(ICatalogService catalogService)
             }
 
             List<CatalogOfferSnapshot> offers = new List<CatalogOfferSnapshot>();
-            Dictionary<int, ImmutableArray<CatalogProductSnapshot>> offerProducts = new Dictionary<int, ImmutableArray<CatalogProductSnapshot>>();
+            Dictionary<int, ImmutableArray<CatalogProductSnapshot>> offerProducts =
+                new Dictionary<int, ImmutableArray<CatalogProductSnapshot>>();
 
             foreach (int offerId in page.OfferIds)
             {
@@ -44,7 +45,12 @@ public class GetCatalogPageMessageHandler(ICatalogService catalogService)
 
             foreach (CatalogOfferSnapshot offer in offers)
             {
-                if (!snapshot.OfferProductIds.TryGetValue(offer.Id, out ImmutableArray<int> productIds))
+                if (
+                    !snapshot.OfferProductIds.TryGetValue(
+                        offer.Id,
+                        out ImmutableArray<int> productIds
+                    )
+                )
                 {
                     continue;
                 }
@@ -53,7 +59,12 @@ public class GetCatalogPageMessageHandler(ICatalogService catalogService)
 
                 foreach (int productId in productIds)
                 {
-                    if (snapshot.ProductsById.TryGetValue(productId, out CatalogProductSnapshot? product))
+                    if (
+                        snapshot.ProductsById.TryGetValue(
+                            productId,
+                            out CatalogProductSnapshot? product
+                        )
+                    )
                     {
                         products.Add(product);
                     }

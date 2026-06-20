@@ -121,7 +121,8 @@ public sealed partial class RoomGrain
         CancellationToken ct
     ) =>
         Task.FromResult(
-            _state.ItemsById.TryGetValue(itemId, out IRoomItem? item) && item is IRoomFloorItem floorItem
+            _state.ItemsById.TryGetValue(itemId, out IRoomItem? item)
+            && item is IRoomFloorItem floorItem
                 ? floorItem.GetSnapshot()
                 : null
         );

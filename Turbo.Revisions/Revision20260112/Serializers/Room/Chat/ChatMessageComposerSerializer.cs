@@ -16,7 +16,9 @@ internal class ChatMessageComposerSerializer(int header)
             .WriteInteger(message.Links.Count);
 
         foreach ((string one, string two, bool three) in message.Links)
+        {
             packet.WriteString(one).WriteString(two).WriteBoolean(three);
+        }
 
         packet.WriteInteger(message.TrackingId);
     }

@@ -18,9 +18,11 @@ internal class CreateGuildMessageParser : IParser
         int secondaryColorId = packet.PopInt();
 
         int badgeCount = packet.PopInt();
-        List<int> badgeParts = new List<int>(badgeCount);
+        List<int> badgeParts = new(badgeCount);
         for (int i = 0; i < badgeCount; i++)
+        {
             badgeParts.Add(packet.PopInt());
+        }
 
         return new CreateGuildMessage
         {
@@ -29,7 +31,7 @@ internal class CreateGuildMessageParser : IParser
             PrimaryColorId = primaryColorId,
             SecondaryColorId = secondaryColorId,
             BaseRoomId = baseRoomId,
-            BadgeParts = badgeParts,
+            BadgeParts = badgeParts
         };
     }
 }

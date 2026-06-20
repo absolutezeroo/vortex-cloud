@@ -23,17 +23,22 @@ public class WiredSelectorItemsOnItem(
 {
     public override int WiredCode => (int)WiredSelectorType.FURNI_ON_FURNI;
 
-    public override List<WiredFurniSourceType[]> GetAllowedFurniSources() =>
+    public override List<WiredFurniSourceType[]> GetAllowedFurniSources()
+    {
+        return
         [
             [
                 WiredFurniSourceType.SelectedItems,
                 WiredFurniSourceType.SignalItems,
-                WiredFurniSourceType.TriggeredItem,
-            ],
+                WiredFurniSourceType.TriggeredItem
+            ]
         ];
+    }
 
-    public override List<IWiredParamRule> GetIntParamRules() =>
-        [new WiredEnumParamRule<WiredFurniSelectionType>(WiredFurniSelectionType.FurniAboveFurni)];
+    public override List<IWiredParamRule> GetIntParamRules()
+    {
+        return [new WiredEnumParamRule<WiredFurniSelectionType>(WiredFurniSelectionType.FurniAboveFurni)];
+    }
 
     public override async Task<IWiredSelectionSet> SelectAsync(
         IWiredProcessingContext ctx,
@@ -41,7 +46,7 @@ public class WiredSelectorItemsOnItem(
     )
     {
         IWiredSelectionSet input = await ctx.GetWiredSelectionSetAsync(this, ct);
-        WiredSelectionSet output = new WiredSelectionSet();
+        WiredSelectionSet output = new();
 
         foreach (int id in input.SelectedFurniIds)
         {
@@ -64,19 +69,27 @@ public class WiredSelectorItemsOnItem(
                 {
                     case WiredFurniSelectionType.FurniAboveFurni:
                     {
-                        IEnumerable<IRoomItem> aboveItems = floorStack.Where(i => i.Z > floorItem.Z);
+                        IEnumerable<IRoomItem> aboveItems = floorStack.Where(i =>
+                            i.Z > floorItem.Z
+                        );
 
                         foreach (IRoomItem aboveItem in aboveItems)
-                            output.SelectedFurniIds.Add((int)aboveItem.ObjectId);
+                        {
+                            output.SelectedFurniIds.Add(aboveItem.ObjectId);
+                        }
 
                         break;
                     }
                     case WiredFurniSelectionType.FurniUnderFurni:
                     {
-                        IEnumerable<IRoomItem> belowItems = floorStack.Where(i => i.Z < floorItem.Z);
+                        IEnumerable<IRoomItem> belowItems = floorStack.Where(i =>
+                            i.Z < floorItem.Z
+                        );
 
                         foreach (IRoomItem belowItem in belowItems)
-                            output.SelectedFurniIds.Add((int)belowItem.ObjectId);
+                        {
+                            output.SelectedFurniIds.Add(belowItem.ObjectId);
+                        }
 
                         break;
                     }
@@ -87,14 +100,18 @@ public class WiredSelectorItemsOnItem(
                         );
 
                         foreach (IRoomItem sameHeightItem in sameHeightItems)
-                            output.SelectedFurniIds.Add((int)sameHeightItem.ObjectId);
+                        {
+                            output.SelectedFurniIds.Add(sameHeightItem.ObjectId);
+                        }
 
                         break;
                     }
                     case WiredFurniSelectionType.AllFurniOnTile:
                     {
                         foreach (IRoomItem stackItem in floorStack)
-                            output.SelectedFurniIds.Add((int)stackItem.ObjectId);
+                        {
+                            output.SelectedFurniIds.Add(stackItem.ObjectId);
+                        }
 
                         break;
                     }
@@ -102,7 +119,6 @@ public class WiredSelectorItemsOnItem(
             }
             catch
             {
-                continue;
             }
         }
 

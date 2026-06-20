@@ -29,7 +29,9 @@ internal class SlideObjectBundleMessageComposerSerializer(int header)
 
         if (message.Avatar is not null)
         {
-            (SlideAvatarMoveType moveType, int objectId, Altitude prev, Altitude next) = message.Avatar.Value;
+            (SlideAvatarMoveType moveType, int objectId, Altitude prev, Altitude next) = message
+                .Avatar
+                .Value;
 
             packet
                 .WriteInteger((int)moveType)

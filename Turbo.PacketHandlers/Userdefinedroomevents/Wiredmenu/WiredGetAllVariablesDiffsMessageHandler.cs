@@ -45,7 +45,9 @@ public class WiredGetAllVariablesDiffsMessageHandler(IGrainFactory grainFactory)
 
                 try
                 {
-                    WiredVariableSnapshot existing = variables.Variables.First(x => x.VariableId == id);
+                    WiredVariableSnapshot existing = variables.Variables.First(x =>
+                        x.VariableId == id
+                    );
 
                     diffs.Add(existing);
                 }

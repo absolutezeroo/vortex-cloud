@@ -6,5 +6,6 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Room.Furniture;
 
 internal class RentableSpaceStatusMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new RentableSpaceStatusMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new RentableSpaceStatusMessage { FurnitureId = packet.PopInt() };
 }

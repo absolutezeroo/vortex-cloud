@@ -9,8 +9,9 @@ namespace Turbo.Revisions.Revision20260112.Parsers.RoomSettings;
 
 internal class SaveRoomSettingsMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) =>
-        new SaveRoomSettingsMessage
+    public IMessageEvent Parse(IClientPacket packet)
+    {
+        return new SaveRoomSettingsMessage
         {
             RoomId = packet.PopInt(),
             RoomName = packet.PopString(),
@@ -35,16 +36,19 @@ internal class SaveRoomSettingsMessageParser : IParser
             ChatScrollUpFrequency = (ChatScrollSpeedType)packet.PopInt(),
             ChatFullHearRange = packet.PopInt(),
             ChatFloodSensitivity = (ChatFloodSensitivityType)packet.PopInt(),
-            AllowNavigatorDynCats = packet.PopBoolean(),
+            AllowNavigatorDynCats = packet.PopBoolean()
         };
+    }
 
     private static List<string> ParseTags(IClientPacket packet)
     {
         int tagCount = packet.PopInt();
-        List<string> tags = new List<string>();
+        List<string> tags = new();
 
         for (int i = 0; i < tagCount; i++)
+        {
             tags.Add(packet.PopString());
+        }
 
         return tags;
     }

@@ -26,31 +26,35 @@ public sealed class PluginManager(
     ILogger<PluginManager> logger
 )
 {
-    private readonly ExportRegistry _exports = new();
+    private static readonly ServiceProviderOptions SP_OPTIONS = new()
+    {
+        ValidateScopes = true,
+        ValidateOnBuild = false
+    };
+
     private readonly PluginConfig _config = config.Value;
-    private readonly ILogger _logger = logger;
+
+    private readonly ConcurrentDictionary<string, ConcurrentBag<string>> _dependents = new(
+        StringComparer.OrdinalIgnoreCase
+    );
+
+    private readonly ExportRegistry _exports = new();
+
+    private readonly ConcurrentDictionary<string, SemaphoreSlim> _keyLocks = new(
+        StringComparer.OrdinalIgnoreCase
+    );
 
     private readonly ConcurrentDictionary<string, PluginEnvelope> _live = new(
         StringComparer.OrdinalIgnoreCase
     );
-    private readonly ConcurrentDictionary<string, ConcurrentBag<string>> _dependents = new(
-        StringComparer.OrdinalIgnoreCase
-    );
-    private readonly ConcurrentDictionary<string, SemaphoreSlim> _keyLocks = new(
-        StringComparer.OrdinalIgnoreCase
-    );
-    private readonly SemaphoreSlim _reloadGate = new(1, 1);
 
-    private static readonly ServiceProviderOptions SP_OPTIONS = new()
-    {
-        ValidateScopes = true,
-        ValidateOnBuild = false,
-    };
+    private readonly ILogger _logger = logger;
+    private readonly SemaphoreSlim _reloadGate = new(1, 1);
 
     private List<(PluginManifest manifest, string folder)> DiscoverPlugins()
     {
-        List<(PluginManifest, string)> list = new List<(PluginManifest, string)>(capacity: 16);
-        HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        List<(PluginManifest, string)> list = new(16);
+        HashSet<string> seen = new(StringComparer.OrdinalIgnoreCase);
 
         foreach (string devPath in _config.DevPluginPaths)
         {
@@ -111,14 +115,16 @@ public sealed class PluginManager(
         try
         {
             List<(PluginManifest manifest, string folder)> discovered = DiscoverPlugins();
-            IReadOnlyList<PluginManifest> manifests = PluginHelpers.SortManifests([.. discovered.Select(d => d.manifest)]);
+            IReadOnlyList<PluginManifest> manifests = PluginHelpers.SortManifests([
+                .. discovered.Select(d => d.manifest)
+            ]);
             Dictionary<string, string> byKey = discovered.ToDictionary(
                 d => d.manifest.Key,
                 d => d.folder,
                 StringComparer.OrdinalIgnoreCase
             );
-            List<PluginEnvelope> envs = new List<PluginEnvelope>();
-            List<Func<Task>> tasks = new List<Func<Task>>();
+            List<PluginEnvelope> envs = new();
+            List<Func<Task>> tasks = new();
 
             RebuildDependents(manifests);
 
@@ -168,7 +174,8 @@ public sealed class PluginManager(
                         await StopAndTearDownAsync(current, ct).ConfigureAwait(false);
                     }
 
-                    PluginEnvelope next = await BuildEnvelopeAsync(asm, m, folder, ct).ConfigureAwait(false);
+                    PluginEnvelope next = await BuildEnvelopeAsync(asm, m, folder, ct)
+                        .ConfigureAwait(false);
 
                     _live[m.Key] = next;
                     envs.Add(next);
@@ -222,7 +229,9 @@ public sealed class PluginManager(
         try
         {
             List<(PluginManifest manifest, string folder)> discovered = DiscoverPlugins();
-            IReadOnlyList<PluginManifest> manifests = PluginHelpers.SortManifests([.. discovered.Select(d => d.manifest)]);
+            IReadOnlyList<PluginManifest> manifests = PluginHelpers.SortManifests([
+                .. discovered.Select(d => d.manifest)
+            ]);
             Dictionary<string, string> byKey = discovered.ToDictionary(
                 d => d.manifest.Key,
                 d => d.folder,
@@ -247,14 +256,21 @@ public sealed class PluginManager(
 
             try
             {
-                foreach (PluginDependency dep in manifest.Dependencies.Where(dep => !_live.ContainsKey(dep.Key)))
+                foreach (
+                    PluginDependency dep in manifest.Dependencies.Where(dep =>
+                        !_live.ContainsKey(dep.Key)
+                    )
+                )
                 {
                     throw new InvalidOperationException(
                         $"Cannot reload {key}; dependency {dep.Key} is not active."
                     );
                 }
 
-                if (_dependents.TryGetValue(key, out ConcurrentBag<string>? deps) && deps.Any(_live.ContainsKey))
+                if (
+                    _dependents.TryGetValue(key, out ConcurrentBag<string>? deps)
+                    && deps.Any(_live.ContainsKey)
+                )
                 {
                     throw new InvalidOperationException(
                         $"Cannot reload {key} while dependents are active: {string.Join(",", deps.Where(_live.ContainsKey))}"
@@ -299,7 +315,10 @@ public sealed class PluginManager(
 
         try
         {
-            if (_dependents.TryGetValue(key, out ConcurrentBag<string>? deps) && deps.Any(_live.ContainsKey))
+            if (
+                _dependents.TryGetValue(key, out ConcurrentBag<string>? deps)
+                && deps.Any(_live.ContainsKey)
+            )
             {
                 throw new InvalidOperationException(
                     $"Cannot unload {key}; dependents active: {string.Join(",", deps.Where(_live.ContainsKey))}"
@@ -322,7 +341,9 @@ public sealed class PluginManager(
     public async Task UnloadAllAsync(CancellationToken ct = default)
     {
         HashSet<string> keys = _live.Keys.ToHashSet(StringComparer.OrdinalIgnoreCase);
-        Dictionary<string, List<string>> dependents = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, List<string>> dependents = new(
+            StringComparer.OrdinalIgnoreCase
+        );
 
         foreach (KeyValuePair<string, ConcurrentBag<string>> kvp in _dependents)
         {
@@ -337,7 +358,8 @@ public sealed class PluginManager(
 
         while (keys.Count > 0)
         {
-            List<string> leafs = keys.Where(k => !dependents.Values.Any(list => list.Contains(k))).ToList();
+            List<string> leafs = keys.Where(k => !dependents.Values.Any(list => list.Contains(k)))
+                .ToList();
 
             if (leafs.Count == 0)
             {
@@ -397,13 +419,13 @@ public sealed class PluginManager(
             Folder = folder,
             Instance = inst,
             ServiceProvider = sp,
-            Disposables = [sp],
+            Disposables = [sp]
         };
     }
 
     private async Task UnloadRemovedAsync(IEnumerable<string> keys, CancellationToken ct)
     {
-        HashSet<string> keep = new HashSet<string>(keys, StringComparer.OrdinalIgnoreCase);
+        HashSet<string> keep = new(keys, StringComparer.OrdinalIgnoreCase);
         List<string> removed = _live.Keys.Where(k => !keep.Contains(k)).ToList();
 
         foreach (string k in removed)
@@ -435,7 +457,7 @@ public sealed class PluginManager(
         PluginManifest manifest
     )
     {
-        ServiceCollection services = new ServiceCollection();
+        ServiceCollection services = new();
 
         services.AddSingleton(manifest);
         services.AddSingleton<IPluginCatalog>(new PluginCatalog(_exports));
@@ -462,7 +484,8 @@ public sealed class PluginManager(
                 await svc.StartAsync(ct).ConfigureAwait(false);
             }
             catch
-            { /* bubble via plugin Start */
+            {
+                /* bubble via plugin Start */
             }
         }
 
@@ -528,7 +551,7 @@ public sealed class PluginManager(
 
             if (env.Disposables.Count > 0)
             {
-                foreach (var inst in env.Disposables)
+                foreach (object inst in env.Disposables)
                 {
                     try
                     {
@@ -577,8 +600,10 @@ public sealed class PluginManager(
         }
     }
 
-    private SemaphoreSlim GetKeyGate(string key) =>
-        _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+    private SemaphoreSlim GetKeyGate(string key)
+    {
+        return _keyLocks.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
+    }
 
     private void RebuildDependents(IEnumerable<PluginManifest> manifests)
     {
@@ -587,7 +612,9 @@ public sealed class PluginManager(
         foreach (PluginManifest manifest in manifests)
         {
             foreach (PluginDependency dep in manifest.Dependencies)
+            {
                 _dependents.GetOrAdd(dep.Key, _ => []).Add(manifest.Key);
+            }
         }
     }
 }

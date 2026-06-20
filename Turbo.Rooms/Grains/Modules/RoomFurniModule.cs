@@ -20,8 +20,10 @@ public sealed partial class RoomFurniModule(RoomGrain roomGrain)
 {
     private readonly RoomGrain _roomGrain = roomGrain;
 
-    public Task<ImmutableDictionary<PlayerId, string>> GetAllOwnersAsync(CancellationToken ct) =>
-        Task.FromResult(_roomGrain._state.OwnerNamesById.ToImmutableDictionary());
+    public Task<ImmutableDictionary<PlayerId, string>> GetAllOwnersAsync(CancellationToken ct)
+    {
+        return Task.FromResult(_roomGrain._state.OwnerNamesById.ToImmutableDictionary());
+    }
 
     internal async Task EnsureFurniLoadedAsync(CancellationToken ct)
     {
@@ -30,18 +32,26 @@ public sealed partial class RoomFurniModule(RoomGrain roomGrain)
             return;
         }
 
-        (IReadOnlyList<IRoomFloorItem> floorItems, IReadOnlyList<IRoomWallItem> wallItems, IReadOnlyDictionary<PlayerId, string> ownerNames) = await _roomGrain._itemsLoader.LoadByRoomIdAsync(
+        (
+            IReadOnlyList<IRoomFloorItem> floorItems,
+            IReadOnlyList<IRoomWallItem> wallItems,
+            IReadOnlyDictionary<PlayerId, string> ownerNames
+        ) = await _roomGrain._itemsLoader.LoadByRoomIdAsync(
             (RoomId)_roomGrain.GetPrimaryKeyLong(),
             ct
         );
 
         foreach ((PlayerId id, string name) in ownerNames)
+        {
             _roomGrain._state.OwnerNamesById.TryAdd(id, name);
+        }
 
         _roomGrain._state.IsTileComputationPaused = true;
 
         foreach (IRoomFloorItem item in floorItems)
+        {
             await _roomGrain.ObjectModule.AttatchObjectAsync(item, ct);
+        }
 
         _roomGrain._state.IsTileComputationPaused = false;
 
@@ -49,7 +59,9 @@ public sealed partial class RoomFurniModule(RoomGrain roomGrain)
         _roomGrain._state.DirtyHeightTileIds.Clear();
 
         foreach (IRoomWallItem item in wallItems)
+        {
             await _roomGrain.ObjectModule.AttatchObjectAsync(item, ct);
+        }
 
         _roomGrain._state.IsFurniLoaded = true;
     }
@@ -91,10 +103,12 @@ public sealed partial class RoomFurniModule(RoomGrain roomGrain)
     public Task<RoomItemSnapshot?> GetItemSnapshotByIdAsync(
         RoomObjectId objectId,
         CancellationToken ct
-    ) =>
-        Task.FromResult(
+    )
+    {
+        return Task.FromResult(
             _roomGrain._state.ItemsById.TryGetValue(objectId, out IRoomItem? item)
                 ? item.GetSnapshot()
                 : null
         );
+    }
 }

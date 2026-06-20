@@ -41,7 +41,10 @@ internal static class WebApiAppConfigurator
 
         if (config.HttpsEnabled)
         {
-            if (config.HstsEnabled) app.UseHsts();
+            if (config.HstsEnabled)
+            {
+                app.UseHsts();
+            }
 
             app.UseHttpsRedirection();
         }
@@ -121,7 +124,10 @@ internal static class WebApiAppConfigurator
 
     private static void AddHttpsRedirection(IServiceCollection services, WebApiConfig config)
     {
-        if (!config.HttpsEnabled) return;
+        if (!config.HttpsEnabled)
+        {
+            return;
+        }
 
         services.AddHttpsRedirection(options => options.HttpsPort = config.HttpsPort);
     }
@@ -151,7 +157,7 @@ internal static class WebApiAppConfigurator
 
     private static void ApplySecurityHeaders(HttpResponse response)
     {
-        var headers = response.Headers;
+        IHeaderDictionary headers = response.Headers;
         headers["X-Content-Type-Options"] = "nosniff";
         headers["X-Frame-Options"] = "DENY";
         headers["Referrer-Policy"] = "no-referrer";

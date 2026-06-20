@@ -46,13 +46,16 @@ public sealed class MessageRegistry(
                 }
 
                 IGrainFactory grainFactory = serviceProvider.GetRequiredService<IGrainFactory>();
-                ISessionGateway sessionGateway = serviceProvider.GetRequiredService<ISessionGateway>();
+                ISessionGateway sessionGateway =
+                    serviceProvider.GetRequiredService<ISessionGateway>();
                 PlayerId playerId = sessionGateway.GetPlayerId(data.SessionKey);
                 int roomId = -1;
 
                 if (playerId > 0)
                 {
-                    IPlayerPresenceGrain playerPresence = grainFactory.GetPlayerPresenceGrain(playerId);
+                    IPlayerPresenceGrain playerPresence = grainFactory.GetPlayerPresenceGrain(
+                        playerId
+                    );
                     RoomPointerSnapshot activeRoom = await playerPresence
                         .GetActiveRoomAsync()
                         .ConfigureAwait(false);

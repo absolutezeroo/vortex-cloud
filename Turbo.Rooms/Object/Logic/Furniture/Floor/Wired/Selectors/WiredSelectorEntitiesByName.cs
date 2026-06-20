@@ -28,7 +28,10 @@ public class WiredSelectorEntitiesByName(
     )
     {
         WiredSelectionSet output = new WiredSelectionSet();
-        HashSet<string> names = _wiredData.StringParam.Split('/').Select(n => n.Trim().ToLower()).ToHashSet();
+        HashSet<string> names = _wiredData
+            .StringParam.Split('/')
+            .Select(n => n.Trim().ToLower())
+            .ToHashSet();
 
         foreach (IRoomAvatar avatar in _roomGrain._state.AvatarsByObjectId.Values)
         {

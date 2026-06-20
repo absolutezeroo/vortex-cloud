@@ -96,8 +96,12 @@ public sealed class MessageSystem(
 
         try
         {
-            IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain((int)actorId.Value);
-            RoomPointerSnapshot room = await playerPresence.GetActiveRoomAsync().ConfigureAwait(false);
+            IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(
+                (int)actorId.Value
+            );
+            RoomPointerSnapshot room = await playerPresence
+                .GetActiveRoomAsync()
+                .ConfigureAwait(false);
 
             return room.RoomId > 0 ? room.RoomId.Value : null;
         }

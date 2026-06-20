@@ -20,7 +20,8 @@ public class GetUserFlatCatsMessageHandler(INavigatorService navigatorService)
         CancellationToken ct
     )
     {
-        ImmutableArray<NavigatorFlatCategorySnapshot> categories = _navigatorService.GetFlatCategories();
+        ImmutableArray<NavigatorFlatCategorySnapshot> categories =
+            _navigatorService.GetFlatCategories();
 
         await ctx.SendComposerAsync(new UserFlatCatsMessageComposer { Categories = categories }, ct)
             .ConfigureAwait(false);

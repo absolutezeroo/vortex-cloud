@@ -38,11 +38,15 @@ public class GetHabboClubExtendOfferMessageHandler(
             .GetClubSubscriptionAsync(ct)
             .ConfigureAwait(false);
 
-        List<ClubOffer> offerPool = _clubOfferProvider.GetAll().Where(x => x.IsVip == sub.IsVip).ToList();
+        List<ClubOffer> offerPool = _clubOfferProvider
+            .GetAll()
+            .Where(x => x.IsVip == sub.IsVip)
+            .ToList();
 
         // Keep the semantics of a 1-month renewal offer when possible, and fallback to the
         // first matching tier offer if that data is missing.
-        ClubOffer? baseOffer = offerPool.FirstOrDefault(x => x.Months == 1) ?? offerPool.FirstOrDefault();
+        ClubOffer? baseOffer =
+            offerPool.FirstOrDefault(x => x.Months == 1) ?? offerPool.FirstOrDefault();
 
         if (baseOffer is null)
         {

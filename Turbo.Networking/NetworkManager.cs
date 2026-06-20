@@ -104,7 +104,8 @@ public sealed class NetworkManager(
 
     private void CreateTcpSocket()
     {
-        ISuperSocketHostBuilder<IClientPacket>? builder = SuperSocketHostBuilder.Create<IClientPacket>();
+        ISuperSocketHostBuilder<IClientPacket>? builder =
+            SuperSocketHostBuilder.Create<IClientPacket>();
 
         builder.ConfigureServerOptions((ctx, config) => config.GetSection("TcpServer"));
         builder.ConfigureLogging((ctx, logging) => logging.ClearProviders());

@@ -22,7 +22,9 @@ internal class CatalogPageMessageComposerSerializer(int header)
         packet.WriteInteger(message.Offers.Length);
 
         foreach (CatalogOfferSnapshot offer in message.Offers)
+        {
             CatalogOfferSerializer.Serialize(packet, offer);
+        }
 
         packet
             .WriteInteger(message.OfferId)
@@ -30,6 +32,8 @@ internal class CatalogPageMessageComposerSerializer(int header)
             .WriteInteger(message.FrontPageItems.Length);
 
         foreach (CatalogFrontPageItemSnapshot frontPageItem in message.FrontPageItems)
+        {
             CatalogFrontPageItemSerializer.Serialize(packet, frontPageItem);
+        }
     }
 }

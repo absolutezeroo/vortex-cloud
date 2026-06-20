@@ -39,7 +39,9 @@ public sealed class RoomObjectLogicProvider(IServiceProvider host) : IRoomObject
             Console.WriteLine(
                 $"[RoomObjectLogicProvider] Logic type '{logicType}' not found, falling back to default_floor"
             );
-            reg = _logics.TryGetValue("default_floor", out RoomObjectLogicReg? defaultReg) ? defaultReg : null;
+            reg = _logics.TryGetValue("default_floor", out RoomObjectLogicReg? defaultReg)
+                ? defaultReg
+                : null;
         }
 
         if (reg is null)

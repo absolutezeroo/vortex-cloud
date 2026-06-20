@@ -14,7 +14,10 @@ internal class MarketPlaceOffersEventMessageComposerSerializer(int header)
     {
         packet.WriteInteger(message.Offers.Count);
         foreach (MarketplaceOfferSnapshot offer in message.Offers)
-            MarketplaceOfferWriter.WriteOffer(packet, offer, includeOfferCount: true);
+        {
+            MarketplaceOfferWriter.WriteOffer(packet, offer, true);
+        }
+
         packet.WriteInteger(message.TotalFound);
     }
 }

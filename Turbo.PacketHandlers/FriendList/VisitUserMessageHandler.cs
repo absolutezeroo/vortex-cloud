@@ -53,7 +53,9 @@ public class VisitUserMessageHandler(IGrainFactory grainFactory) : IMessageHandl
             return;
         }
 
-        RoomPointerSnapshot activeRoom = await targetPresence.GetActiveRoomAsync().ConfigureAwait(false);
+        RoomPointerSnapshot activeRoom = await targetPresence
+            .GetActiveRoomAsync()
+            .ConfigureAwait(false);
 
         if (activeRoom.RoomId <= 0)
         {

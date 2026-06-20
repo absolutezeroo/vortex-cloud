@@ -62,7 +62,9 @@ internal sealed partial class PlayerPresenceGrain
             .GetRoomDirectoryGrain()
             .AddPlayerToRoomAsync((int)this.GetPrimaryKeyLong(), next, ct);
 
-        IStreamProvider? provider = this.GetStreamProvider(OrleansStreamProviders.ROOM_STREAM_PROVIDER);
+        IStreamProvider? provider = this.GetStreamProvider(
+            OrleansStreamProviders.ROOM_STREAM_PROVIDER
+        );
         StreamId streamId = StreamId.Create(OrleansStreamNames.ROOM_STREAM, roomId.Value);
         IAsyncStream<RoomOutbound>? stream = provider.GetStream<RoomOutbound>(streamId);
 

@@ -28,10 +28,12 @@ public sealed class AssemblyProcessor(IEnumerable<IAssemblyFeatureProcessor> pro
         catch
         {
             foreach (Task<IDisposable> t in tasks)
+            {
                 if (t.IsCompletedSuccessfully)
                 {
                     (await t.ConfigureAwait(false)).Dispose();
                 }
+            }
 
             throw;
         }

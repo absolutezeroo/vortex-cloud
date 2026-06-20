@@ -7,13 +7,13 @@ using Turbo.Contracts.Plugins;
 
 namespace Turbo.Plugins;
 
-internal static partial class PluginHelpers
+internal static class PluginHelpers
 {
-    private static JsonSerializerOptions _jsonSerializerOptions = new()
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
         PropertyNameCaseInsensitive = true,
         ReadCommentHandling = JsonCommentHandling.Skip,
-        AllowTrailingCommas = true,
+        AllowTrailingCommas = true
     };
 
     public static PluginManifest ReadManifest(string dir)
@@ -72,9 +72,16 @@ internal static partial class PluginHelpers
         IReadOnlyList<PluginManifest> manifests
     )
     {
-        Dictionary<string, PluginManifest> byKey = manifests.ToDictionary(m => m.Key, StringComparer.OrdinalIgnoreCase);
-        Dictionary<string, int> indeg = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-        Dictionary<string, List<string>> graph = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, PluginManifest> byKey = manifests.ToDictionary(
+            m => m.Key,
+            StringComparer.OrdinalIgnoreCase
+        );
+        Dictionary<string, int> indeg = new(
+            StringComparer.OrdinalIgnoreCase
+        );
+        Dictionary<string, List<string>> graph = new(
+            StringComparer.OrdinalIgnoreCase
+        );
 
         foreach (PluginManifest m in manifests)
         {
@@ -96,8 +103,8 @@ internal static partial class PluginHelpers
             }
         }
 
-        Queue<string> q = new Queue<string>(indeg.Where(kv => kv.Value == 0).Select(kv => kv.Key));
-        List<string> order = new List<string>();
+        Queue<string> q = new(indeg.Where(kv => kv.Value == 0).Select(kv => kv.Key));
+        List<string> order = new();
 
         while (q.Count > 0)
         {
@@ -105,10 +112,12 @@ internal static partial class PluginHelpers
             order.Add(k);
 
             foreach (string n in graph[k])
+            {
                 if (--indeg[n] == 0)
                 {
                     q.Enqueue(n);
                 }
+            }
         }
 
         if (order.Count != manifests.Count)

@@ -23,35 +23,45 @@ public sealed class PluginHotReloadService(
         "manifest.json",
         "*.dll",
         "*.pdb",
-        "*.deps.json",
+        "*.deps.json"
     ];
 
-    private readonly PluginManager _pluginManager = pluginManager;
     private readonly PluginConfig _config = config.Value;
+    private readonly CancellationTokenSource _cts = new();
     private readonly ILogger<PluginHotReloadService> _logger = logger;
+
+    private readonly PluginManager _pluginManager = pluginManager;
     private readonly SemaphoreSlim _reloadGate = new(1, 1);
     private readonly Lock _stateLock = new();
-    private readonly CancellationTokenSource _cts = new();
     private readonly List<FileSystemWatcher> _watchers = [];
 
     private Timer? _debounceTimer;
-    private bool _pendingReload;
     private string? _lastPath;
+    private bool _pendingReload;
     private int _shutdownStarted;
+
+    public void Dispose()
+    {
+        Shutdown();
+        _reloadGate.Dispose();
+        _cts.Dispose();
+    }
 
     public Task StartAsync(CancellationToken ct)
     {
         _debounceTimer = new Timer(
             _ => _ = Task.Run(ProcessReloadAsync, _cts.Token),
-            state: null,
+            null,
             Timeout.Infinite,
             Timeout.Infinite
         );
 
-        WatchDirectory(_config.PluginFolderPath, includeSubdirectories: true);
+        WatchDirectory(_config.PluginFolderPath, true);
 
         foreach (string devPath in _config.DevPluginPaths)
-            WatchDirectory(Path.GetFullPath(devPath), includeSubdirectories: false);
+        {
+            WatchDirectory(Path.GetFullPath(devPath), false);
+        }
 
         _logger.LogInformation("Plugin hot reload is enabled.");
 
@@ -64,13 +74,6 @@ public sealed class PluginHotReloadService(
         return Task.CompletedTask;
     }
 
-    public void Dispose()
-    {
-        Shutdown();
-        _reloadGate.Dispose();
-        _cts.Dispose();
-    }
-
     private void WatchDirectory(string path, bool includeSubdirectories)
     {
         if (!Directory.Exists(path))
@@ -78,7 +81,7 @@ public sealed class PluginHotReloadService(
             return;
         }
 
-        FileSystemWatcher watcher = new FileSystemWatcher(path)
+        FileSystemWatcher watcher = new(path)
         {
             IncludeSubdirectories = includeSubdirectories,
             NotifyFilter =
@@ -87,7 +90,7 @@ public sealed class PluginHotReloadService(
                 | NotifyFilters.LastWrite
                 | NotifyFilters.CreationTime
                 | NotifyFilters.Size,
-            EnableRaisingEvents = true,
+            EnableRaisingEvents = true
         };
 
         watcher.Changed += OnFsEvent;
@@ -224,9 +227,9 @@ public sealed class PluginHotReloadService(
         string fileName = Path.GetFileName(path);
 
         return !string.IsNullOrWhiteSpace(fileName)
-            && WATCH_GLOBS.Any(glob =>
-                FileSystemName.MatchesSimpleExpression(glob, fileName, ignoreCase: true)
-            );
+               && WATCH_GLOBS.Any(glob =>
+                   FileSystemName.MatchesSimpleExpression(glob, fileName)
+               );
     }
 
     private void DisposeWatchers()

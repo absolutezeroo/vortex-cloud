@@ -42,7 +42,9 @@ public sealed class NavigatorProvider(
 
     public async Task<List<RoomInfoSnapshot>> GetAllRoomsAsync(CancellationToken ct = default)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
 
         return await BuildRoomQuery(dbCtx)
             .OrderByDescending(x => x.UsersNow)
@@ -55,7 +57,9 @@ public sealed class NavigatorProvider(
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
 
         return await BuildRoomQuery(dbCtx)
             .Where(x => x.PlayerEntityId == playerId.Value)
@@ -68,7 +72,9 @@ public sealed class NavigatorProvider(
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
 
         return await BuildRoomQuery(dbCtx)
             .Where(x => x.NavigatorCategoryEntityId == categoryId)
@@ -81,7 +87,9 @@ public sealed class NavigatorProvider(
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
 
         string lower = name.ToLowerInvariant();
 
@@ -96,7 +104,9 @@ public sealed class NavigatorProvider(
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
 
         string lower = ownerName.ToLowerInvariant();
 
@@ -128,7 +138,9 @@ public sealed class NavigatorProvider(
 
     public async Task ReloadAsync(CancellationToken ct = default)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
 
         List<NavigatorTopLevelContextEntity> topLevelEntities = await dbCtx
             .NavigatorTopLevelContexts.AsNoTracking()

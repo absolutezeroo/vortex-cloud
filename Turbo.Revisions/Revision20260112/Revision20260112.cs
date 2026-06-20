@@ -217,6 +217,10 @@ public class Revision20260112 : IRevision
                 MessageEvent.GetBundleDiscountRulesetEvent,
                 new GetBundleDiscountRulesetMessageParser()
             },
+            {
+                MessageEvent.GetBundleDiscountRulesetVortexEvent,
+                new GetBundleDiscountRulesetMessageParser()
+            },
             { MessageEvent.GetCatalogIndexEvent, new GetCatalogIndexMessageParser() },
             { MessageEvent.GetCatalogPageEvent, new GetCatalogPageMessageParser() },
             {
@@ -228,6 +232,10 @@ public class Revision20260112 : IRevision
             { MessageEvent.GetClubOffersMessageEvent, new GetClubOffersMessageParser() },
             {
                 MessageEvent.GetGiftWrappingConfigurationEvent,
+                new GetGiftWrappingConfigurationMessageParser()
+            },
+            {
+                MessageEvent.GetGiftWrappingConfigurationVortexEvent,
                 new GetGiftWrappingConfigurationMessageParser()
             },
             {

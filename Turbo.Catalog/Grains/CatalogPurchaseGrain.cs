@@ -74,7 +74,12 @@ public sealed partial class CatalogPurchaseGrain(
 
         int creditCost = 0;
 
-        TryGetDebitRequests(offer, quantity, discountPercent, out List<WalletDebitRequest> debitRequests);
+        TryGetDebitRequests(
+            offer,
+            quantity,
+            discountPercent,
+            out List<WalletDebitRequest> debitRequests
+        );
 
         if (debitRequests.Count > 0)
         {

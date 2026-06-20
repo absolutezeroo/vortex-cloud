@@ -18,38 +18,50 @@ internal sealed partial class PlayerPresenceGrain
         IPlayerPresenceGrain,
         IAsyncObserver<RoomOutbound>
 {
-    internal readonly IGrainFactory _grainFactory;
     internal readonly IEventPublisher _events;
-    internal readonly PlayerPresenceLiveState _state;
+    internal readonly IGrainFactory _grainFactory;
 
     private readonly PlayerInventoryModule _inventoryModule;
-    private readonly PlayerWalletModule _walletModule;
-
-    private ISessionContextObserver? _sessionObserver = null;
-    private StreamSubscriptionHandle<RoomOutbound>? _roomOutboundSub = null;
 
     private readonly Queue<IComposer> _outgoingQueue = new();
-    private bool _isProcessingQueue = false;
+    internal readonly PlayerPresenceLiveState _state;
+    private readonly PlayerWalletModule _walletModule;
+    private bool _isProcessingQueue;
+    private StreamSubscriptionHandle<RoomOutbound>? _roomOutboundSub;
+
+    private ISessionContextObserver? _sessionObserver;
 
     public PlayerPresenceGrain(IGrainFactory grainFactory, IEventPublisher events)
     {
         _grainFactory = grainFactory;
         _events = events;
 
-        _state = new();
-        _inventoryModule = new(this);
-        _walletModule = new(this);
+        _state = new PlayerPresenceLiveState();
+        _inventoryModule = new PlayerInventoryModule(this);
+        _walletModule = new PlayerWalletModule(this);
     }
 
-    public override Task OnActivateAsync(CancellationToken ct)
+    public Task OnNextAsync(RoomOutbound item, StreamSequenceToken? token = null)
+    {
+        if (
+            _sessionObserver is null
+            || (item.ExcludedPlayerIds is not null
+                && item.ExcludedPlayerIds.Contains((int)this.GetPrimaryKeyLong()))
+        )
+        {
+            return Task.CompletedTask;
+        }
+
+        return SendComposerAsync(item.Composer);
+    }
+
+    public Task OnCompletedAsync()
     {
         return Task.CompletedTask;
     }
 
-    public override Task OnDeactivateAsync(DeactivationReason reason, CancellationToken ct)
+    public Task OnErrorAsync(Exception ex)
     {
-        _outgoingQueue.Clear();
-
         return Task.CompletedTask;
     }
 
@@ -67,8 +79,10 @@ internal sealed partial class PlayerPresenceGrain
         _sessionObserver = null;
     }
 
-    public Task<bool> IsOnlineAsync(CancellationToken ct) =>
-        Task.FromResult(_sessionObserver is not null);
+    public Task<bool> IsOnlineAsync(CancellationToken ct)
+    {
+        return Task.FromResult(_sessionObserver is not null);
+    }
 
     public Task SendComposerAsync(IComposer composer)
     {
@@ -87,7 +101,9 @@ internal sealed partial class PlayerPresenceGrain
         if (composers.Length > 0)
         {
             foreach (IComposer composer in composers)
+            {
                 _outgoingQueue.Enqueue(composer);
+            }
 
             _ = ProcessOutgoingQueueAsync();
         }
@@ -95,23 +111,17 @@ internal sealed partial class PlayerPresenceGrain
         return Task.CompletedTask;
     }
 
-    public Task OnNextAsync(RoomOutbound item, StreamSequenceToken? token = null)
+    public override Task OnActivateAsync(CancellationToken ct)
     {
-        if (
-            _sessionObserver is null
-            || item.ExcludedPlayerIds is not null
-                && item.ExcludedPlayerIds.Contains((int)this.GetPrimaryKeyLong())
-        )
-        {
-            return Task.CompletedTask;
-        }
-
-        return SendComposerAsync(item.Composer);
+        return Task.CompletedTask;
     }
 
-    public Task OnCompletedAsync() => Task.CompletedTask;
+    public override Task OnDeactivateAsync(DeactivationReason reason, CancellationToken ct)
+    {
+        _outgoingQueue.Clear();
 
-    public Task OnErrorAsync(Exception ex) => Task.CompletedTask;
+        return Task.CompletedTask;
+    }
 
     private async Task ProcessOutgoingQueueAsync()
     {

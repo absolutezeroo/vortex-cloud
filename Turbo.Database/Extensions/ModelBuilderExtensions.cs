@@ -20,7 +20,9 @@ public static class ModelBuilderExtensions
             Type clr = entityType.ClrType;
             EntityTypeBuilder entity = modelBuilder.Entity(clr);
 
-            foreach (PropertyInfo prop in clr.GetProperties(BindingFlags.Instance | BindingFlags.Public))
+            foreach (
+                PropertyInfo prop in clr.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+            )
             {
                 // Skip if property not mapped
                 IMutableProperty? propMeta = entityType.FindProperty(prop.Name);
@@ -30,7 +32,8 @@ public static class ModelBuilderExtensions
                 }
 
                 // 1) SQL default
-                DefaultValueSqlAttribute? sqlAttr = prop.GetCustomAttribute<DefaultValueSqlAttribute>();
+                DefaultValueSqlAttribute? sqlAttr =
+                    prop.GetCustomAttribute<DefaultValueSqlAttribute>();
                 if (sqlAttr is not null)
                 {
                     entity.Property(prop.Name).HasDefaultValueSql(sqlAttr.Sql);
@@ -76,9 +79,11 @@ public static class ModelBuilderExtensions
                 .SelectMany(t => t.GetProperties())
                 .Where(p => p.ClrType == typeof(string))
         )
+        {
             p.SetMaxLength(p.GetMaxLength() ?? 512);
+        }
 
-        ValueConverter<DateTime, DateTime> utc = new ValueConverter<DateTime, DateTime>(
+        ValueConverter<DateTime, DateTime> utc = new(
             v => v.Kind == DateTimeKind.Utc ? v : DateTime.SpecifyKind(v, DateTimeKind.Utc),
             v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
         );
@@ -89,7 +94,9 @@ public static class ModelBuilderExtensions
                 .SelectMany(t => t.GetProperties())
                 .Where(p => p.ClrType == typeof(DateTime))
         )
+        {
             p.SetValueConverter(utc);
+        }
 
         foreach (
             IMutableProperty p in mb

@@ -41,7 +41,9 @@ public class AcceptFriendMessageHandler(IGrainFactory grainFactory)
             .ConfigureAwait(false);
 
         // Send updated friend list to self
-        List<MessengerFriendSnapshot> friends = await grain.GetFriendsAsync(ct).ConfigureAwait(false);
+        List<MessengerFriendSnapshot> friends = await grain
+            .GetFriendsAsync(ct)
+            .ConfigureAwait(false);
         List<FriendListUpdateSnapshot> newFriends = new List<FriendListUpdateSnapshot>();
 
         foreach (int friendId in message.Friends)

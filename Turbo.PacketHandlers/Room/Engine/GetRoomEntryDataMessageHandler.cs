@@ -39,7 +39,9 @@ public class GetRoomEntryDataMessageHandler(IGrainFactory grainFactory)
         }
 
         IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(ctx.PlayerId);
-        RoomPendingSnapshot pendingRoom = await playerPresence.GetPendingRoomAsync().ConfigureAwait(false);
+        RoomPendingSnapshot pendingRoom = await playerPresence
+            .GetPendingRoomAsync()
+            .ConfigureAwait(false);
         RoomId roomId = pendingRoom.RoomId;
 
         if (roomId <= 0)
@@ -48,10 +50,18 @@ public class GetRoomEntryDataMessageHandler(IGrainFactory grainFactory)
         }
 
         IRoomGrain room = _grainFactory.GetRoomGrain(roomId);
-        ImmutableDictionary<PlayerId, string> ownersSnapshot = await room.GetAllOwnersAsync(ct).ConfigureAwait(false);
-        ImmutableArray<RoomFloorItemSnapshot> floorSnapshot = await room.GetAllFloorItemSnapshotsAsync(ct).ConfigureAwait(false);
-        ImmutableArray<RoomWallItemSnapshot> wallSnapshot = await room.GetAllWallItemSnapshotsAsync(ct).ConfigureAwait(false);
-        ImmutableArray<RoomAvatarSnapshot> avatarSnapshots = await room.GetAllAvatarSnapshotsAsync(ct).ConfigureAwait(false);
+        ImmutableDictionary<PlayerId, string> ownersSnapshot = await room.GetAllOwnersAsync(ct)
+            .ConfigureAwait(false);
+        ImmutableArray<RoomFloorItemSnapshot> floorSnapshot =
+            await room.GetAllFloorItemSnapshotsAsync(ct).ConfigureAwait(false);
+        ImmutableArray<RoomWallItemSnapshot> wallSnapshot = await room.GetAllWallItemSnapshotsAsync(
+                ct
+            )
+            .ConfigureAwait(false);
+        ImmutableArray<RoomAvatarSnapshot> avatarSnapshots = await room.GetAllAvatarSnapshotsAsync(
+                ct
+            )
+            .ConfigureAwait(false);
 
         IComposer[] danceComposers = avatarSnapshots
             .OfType<RoomPlayerAvatarSnapshot>()

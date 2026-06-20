@@ -16,6 +16,8 @@ internal class FurniListEventMessageComposerSerializer(int header)
             .WriteInteger(message.Items.Length);
 
         foreach (FurnitureItemSnapshot item in message.Items)
+        {
             FurnitureItemSerializer.Serialize(packet, item);
+        }
     }
 }

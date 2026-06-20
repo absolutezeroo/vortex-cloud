@@ -37,14 +37,18 @@ public sealed class NavigatorService(
         CancellationToken ct
     )
     {
-        ImmutableArray<NavigatorFlatCategorySnapshot> categories = _navigatorProvider.GetFlatCategories();
+        ImmutableArray<NavigatorFlatCategorySnapshot> categories =
+            _navigatorProvider.GetFlatCategories();
         ImmutableArray<RoomSummarySnapshot> activeRooms = await _grainFactory
             .GetRoomDirectoryGrain()
             .GetActiveRoomsAsync()
             .ConfigureAwait(false);
-        Dictionary<RoomId, RoomSummarySnapshot> activeById = activeRooms.ToDictionary(x => x.RoomId);
+        Dictionary<RoomId, RoomSummarySnapshot> activeById = activeRooms.ToDictionary(x =>
+            x.RoomId
+        );
 
-        List<NavigatorSearchResultBlockSnapshot> blocks = new List<NavigatorSearchResultBlockSnapshot>(categories.Length);
+        List<NavigatorSearchResultBlockSnapshot> blocks =
+            new List<NavigatorSearchResultBlockSnapshot>(categories.Length);
 
         foreach (NavigatorFlatCategorySnapshot cat in categories)
         {
@@ -65,7 +69,12 @@ public sealed class NavigatorService(
                     [
                         .. rooms.Select(x =>
                         {
-                            RoomSummarySnapshot? active = activeById.TryGetValue(x.RoomId, out RoomSummarySnapshot? ar) ? ar : null;
+                            RoomSummarySnapshot? active = activeById.TryGetValue(
+                                x.RoomId,
+                                out RoomSummarySnapshot? ar
+                            )
+                                ? ar
+                                : null;
                             return new NavigatorSearchResultSnapshot
                             {
                                 RoomId = x.RoomId,
@@ -103,7 +112,13 @@ public sealed class NavigatorService(
         CancellationToken ct
     )
     {
-        List<RoomInfoSnapshot> rooms = await FetchRoomsAsync(searchCode, filterType, filterValue, playerId, ct)
+        List<RoomInfoSnapshot> rooms = await FetchRoomsAsync(
+                searchCode,
+                filterType,
+                filterValue,
+                playerId,
+                ct
+            )
             .ConfigureAwait(false);
 
         ImmutableArray<RoomSummarySnapshot> activeRooms = await _grainFactory
@@ -111,13 +126,20 @@ public sealed class NavigatorService(
             .GetActiveRoomsAsync()
             .ConfigureAwait(false);
 
-        Dictionary<RoomId, RoomSummarySnapshot> activeById = activeRooms.ToDictionary(x => x.RoomId);
+        Dictionary<RoomId, RoomSummarySnapshot> activeById = activeRooms.ToDictionary(x =>
+            x.RoomId
+        );
 
         return
         [
             .. rooms.Select(x =>
             {
-                RoomSummarySnapshot? active = activeById.TryGetValue(x.RoomId, out RoomSummarySnapshot? ar) ? ar : null;
+                RoomSummarySnapshot? active = activeById.TryGetValue(
+                    x.RoomId,
+                    out RoomSummarySnapshot? ar
+                )
+                    ? ar
+                    : null;
 
                 return new NavigatorSearchResultSnapshot
                 {

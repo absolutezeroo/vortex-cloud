@@ -41,7 +41,9 @@ public class JoinHabboGroupMessageHandler(IGrainFactory grainFactory)
         }
 
         // Refresh the detail view so membership status / counts update client-side.
-        GroupDetailsSnapshot? details = await grain.GetDetailsAsync(ctx.PlayerId, ct).ConfigureAwait(false);
+        GroupDetailsSnapshot? details = await grain
+            .GetDetailsAsync(ctx.PlayerId, ct)
+            .ConfigureAwait(false);
         if (details is not null)
         {
             await ctx.SendComposerAsync(

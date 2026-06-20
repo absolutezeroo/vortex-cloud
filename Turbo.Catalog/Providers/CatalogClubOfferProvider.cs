@@ -21,22 +21,29 @@ public sealed class CatalogClubOfferProvider(
 
     private IReadOnlyList<ClubOffer> _offers = [];
 
-    public IReadOnlyList<ClubOffer> GetAll() => _offers;
+    public IReadOnlyList<ClubOffer> GetAll()
+    {
+        return _offers;
+    }
 
     public ClubOffer? FindById(int offerId)
     {
         foreach (ClubOffer offer in _offers)
+        {
             if (offer.OfferId == offerId)
             {
                 return offer;
             }
+        }
 
         return null;
     }
 
     public async Task ReloadAsync(CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
 
         List<CatalogClubOfferEntity> entities = await dbCtx
             .CatalogClubOffers.AsNoTracking()
@@ -60,7 +67,7 @@ public sealed class CatalogClubOfferProvider(
                 DaysLeftAfterPurchase = 0,
                 Year = 0,
                 Month = 0,
-                Day = 0,
+                Day = 0
             })
             .ToList();
 

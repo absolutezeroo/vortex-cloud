@@ -11,7 +11,9 @@ internal class SetActivatedBadgesMessageParser : IParser
 
     public IMessageEvent Parse(IClientPacket packet)
     {
-        List<(int SlotId, string BadgeCode)> slots = new List<(int SlotId, string BadgeCode)>(SlotCount);
+        List<(int SlotId, string BadgeCode)> slots = new List<(int SlotId, string BadgeCode)>(
+            SlotCount
+        );
 
         for (int i = 0; i < SlotCount; i++)
         {

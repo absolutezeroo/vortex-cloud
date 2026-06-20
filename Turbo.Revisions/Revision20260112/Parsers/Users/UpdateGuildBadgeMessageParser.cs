@@ -12,9 +12,11 @@ internal class UpdateGuildBadgeMessageParser : IParser
         int groupId = packet.PopInt();
 
         int badgeCount = packet.PopInt();
-        List<int> badgeParts = new List<int>(badgeCount);
+        List<int> badgeParts = new(badgeCount);
         for (int i = 0; i < badgeCount; i++)
+        {
             badgeParts.Add(packet.PopInt());
+        }
 
         return new UpdateGuildBadgeMessage { GroupId = groupId, BadgeParts = badgeParts };
     }

@@ -19,7 +19,6 @@ using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Orleans.Snapshots.Room;
 using Turbo.Primitives.Orleans.Snapshots.Room.Settings;
 using Turbo.Primitives.Permissions;
-using Turbo.Primitives.Players;
 using Turbo.Primitives.Rooms;
 using Turbo.Primitives.Rooms.Events;
 using Turbo.Primitives.Rooms.Grains;
@@ -33,38 +32,36 @@ namespace Turbo.Rooms.Grains;
 
 public sealed partial class RoomGrain : Grain, IRoomGrain
 {
-    internal readonly IDbContextFactory<TurboDbContext> _dbCtxFactory;
-    internal readonly RoomConfig _roomConfig;
-    internal readonly ILogger<IRoomGrain> _logger;
-    internal readonly IRoomModelProvider _roomModelProvider;
-    internal readonly IRoomItemsProvider _itemsLoader;
-    internal readonly IRoomObjectLogicProvider _logicProvider;
     internal readonly IRoomAvatarProvider _avatarProvider;
-    internal readonly IRoomWiredVariablesProvider _wiredVariablesProvider;
-    internal readonly IGrainFactory _grainFactory;
+    internal readonly IDbContextFactory<TurboDbContext> _dbCtxFactory;
     internal readonly IEventPublisher _events;
-    internal readonly IPermissionService _permissionService;
+    internal readonly IGrainFactory _grainFactory;
+    internal readonly IRoomItemsProvider _itemsLoader;
+    internal readonly ILogger<IRoomGrain> _logger;
+    internal readonly IRoomObjectLogicProvider _logicProvider;
     internal readonly IRoomModerationStore _moderationStore;
-
-    internal IAsyncStream<RoomOutbound> _roomOutbound = default!;
+    internal readonly IPermissionService _permissionService;
+    internal readonly RoomConfig _roomConfig;
+    internal readonly IRoomModelProvider _roomModelProvider;
 
     internal readonly RoomLiveState _state;
-
-    public readonly RoomEventModule EventModule;
-    public readonly RoomSecurityModule SecurityModule;
-    public readonly RoomMapModule MapModule;
-    public readonly RoomObjectModule ObjectModule;
-    public readonly RoomAvatarModule AvatarModule;
-    public readonly RoomFurniModule FurniModule;
+    internal readonly IRoomWiredVariablesProvider _wiredVariablesProvider;
     public readonly RoomActionModule ActionModule;
-
-    public readonly RoomPathingSystem PathingSystem;
+    public readonly RoomAvatarModule AvatarModule;
     public readonly RoomAvatarTickSystem AvatarTickSystem;
-    public readonly RoomRollerSystem RollerSystem;
-    public readonly RoomWiredSystem WiredSystem;
     public readonly RoomChatSystem ChatSystem;
 
-    public RoomId RoomId => _state.RoomId;
+    public readonly RoomEventModule EventModule;
+    public readonly RoomFurniModule FurniModule;
+    public readonly RoomMapModule MapModule;
+    public readonly RoomObjectModule ObjectModule;
+
+    public readonly RoomPathingSystem PathingSystem;
+    public readonly RoomRollerSystem RollerSystem;
+    public readonly RoomSecurityModule SecurityModule;
+    public readonly RoomWiredSystem WiredSystem;
+
+    internal IAsyncStream<RoomOutbound> _roomOutbound = default!;
 
     public RoomGrain(
         IDbContextFactory<TurboDbContext> dbCtxFactory,
@@ -94,23 +91,79 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         _permissionService = permissionService;
         _moderationStore = moderationStore;
 
-        _state = new() { RoomId = (RoomId)this.GetPrimaryKeyLong() };
-        PathingSystem = new(this);
-        EventModule = new(this);
-        SecurityModule = new(this);
-        MapModule = new(this);
-        ObjectModule = new(this);
-        AvatarModule = new(this);
-        FurniModule = new(this);
-        ActionModule = new(this);
+        _state = new RoomLiveState { RoomId = (RoomId)this.GetPrimaryKeyLong() };
+        PathingSystem = new RoomPathingSystem(this);
+        EventModule = new RoomEventModule(this);
+        SecurityModule = new RoomSecurityModule(this);
+        MapModule = new RoomMapModule(this);
+        ObjectModule = new RoomObjectModule(this);
+        AvatarModule = new RoomAvatarModule(this);
+        FurniModule = new RoomFurniModule(this);
+        ActionModule = new RoomActionModule(this);
 
-        AvatarTickSystem = new(this);
-        RollerSystem = new(this);
-        WiredSystem = new(this);
-        ChatSystem = new(this);
+        AvatarTickSystem = new RoomAvatarTickSystem(this);
+        RollerSystem = new RoomRollerSystem(this);
+        WiredSystem = new RoomWiredSystem(this);
+        ChatSystem = new RoomChatSystem(this);
 
         EventModule.Register(RollerSystem);
         EventModule.Register(WiredSystem);
+    }
+
+    public RoomId RoomId => _state.RoomId;
+
+    public void DeactivateRoom()
+    {
+        DeactivateOnIdle();
+    }
+
+    public void DelayRoomDeactivation()
+    {
+        DelayDeactivation(TimeSpan.FromMilliseconds(_roomConfig.RoomDeactivationDelayMs));
+    }
+
+    public async Task EnsureRoomActiveAsync(CancellationToken ct)
+    {
+        DelayRoomDeactivation();
+
+        await MapModule.EnsureMapBuiltAsync(ct);
+        await FurniModule.EnsureFurniLoadedAsync(ct);
+    }
+
+    public Task<RoomSnapshot> GetSnapshotAsync()
+    {
+        return Task.FromResult(_state.RoomSnapshot);
+    }
+
+    public async Task<RoomSummarySnapshot> GetSummaryAsync()
+    {
+        int population = await GetRoomPopulationAsync();
+
+        return new RoomSummarySnapshot
+        {
+            RoomId = _state.RoomSnapshot.RoomId,
+            Name = _state.RoomSnapshot.Name,
+            Description = _state.RoomSnapshot.Description,
+            OwnerId = _state.RoomSnapshot.OwnerId,
+            OwnerName = _state.RoomSnapshot.OwnerName,
+            Population = population,
+            LastUpdatedUtc = DateTime.UtcNow
+        };
+    }
+
+    public async Task<int> GetRoomPopulationAsync()
+    {
+        return await _grainFactory.GetRoomDirectoryGrain().GetRoomPopulationAsync(_state.RoomId);
+    }
+
+    public Task PublishRoomEventAsync(RoomEvent evt, CancellationToken ct)
+    {
+        return EventModule.PublishAsync(evt, ct);
+    }
+
+    public Task SendComposerToRoomAsync(IComposer composer)
+    {
+        return _roomOutbound.OnNextAsync(new RoomOutbound { RoomId = _state.RoomId, Composer = composer });
     }
 
     public override async Task OnActivateAsync(CancellationToken ct)
@@ -130,9 +183,14 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
         await _grainFactory.GetRoomDirectoryGrain().UpsertActiveRoomAsync(_state.RoomSnapshot);
 
-        IStreamProvider? provider = this.GetStreamProvider(OrleansStreamProviders.ROOM_STREAM_PROVIDER);
+        IStreamProvider? provider = this.GetStreamProvider(
+            OrleansStreamProviders.ROOM_STREAM_PROVIDER
+        );
 
-        StreamId streamId = StreamId.Create(OrleansStreamNames.ROOM_STREAM, this.GetPrimaryKeyLong());
+        StreamId streamId = StreamId.Create(
+            OrleansStreamNames.ROOM_STREAM,
+            this.GetPrimaryKeyLong()
+        );
 
         _roomOutbound = provider.GetStream<RoomOutbound>(streamId);
 
@@ -163,49 +221,8 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         }
         catch (Exception)
         {
-            return;
         }
     }
-
-    public void DeactivateRoom() => DeactivateOnIdle();
-
-    public void DelayRoomDeactivation() =>
-        DelayDeactivation(TimeSpan.FromMilliseconds(_roomConfig.RoomDeactivationDelayMs));
-
-    public async Task EnsureRoomActiveAsync(CancellationToken ct)
-    {
-        DelayRoomDeactivation();
-
-        await MapModule.EnsureMapBuiltAsync(ct);
-        await FurniModule.EnsureFurniLoadedAsync(ct);
-    }
-
-    public Task<RoomSnapshot> GetSnapshotAsync() => Task.FromResult(_state.RoomSnapshot);
-
-    public async Task<RoomSummarySnapshot> GetSummaryAsync()
-    {
-        int population = await GetRoomPopulationAsync();
-
-        return new RoomSummarySnapshot
-        {
-            RoomId = _state.RoomSnapshot.RoomId,
-            Name = _state.RoomSnapshot.Name,
-            Description = _state.RoomSnapshot.Description,
-            OwnerId = _state.RoomSnapshot.OwnerId,
-            OwnerName = _state.RoomSnapshot.OwnerName,
-            Population = population,
-            LastUpdatedUtc = DateTime.UtcNow,
-        };
-    }
-
-    public async Task<int> GetRoomPopulationAsync() =>
-        await _grainFactory.GetRoomDirectoryGrain().GetRoomPopulationAsync(_state.RoomId);
-
-    public Task PublishRoomEventAsync(RoomEvent evt, CancellationToken ct) =>
-        EventModule.PublishAsync(evt, ct);
-
-    public Task SendComposerToRoomAsync(IComposer composer) =>
-        _roomOutbound.OnNextAsync(new RoomOutbound { RoomId = _state.RoomId, Composer = composer });
 
     private async Task HydrateRoomStateAsync(CancellationToken ct)
     {
@@ -216,7 +233,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
             RoomEntity entity =
                 await dbCtx
                     .Rooms.AsNoTracking()
-                    .SingleOrDefaultAsync(e => e.Id == (int)_state.RoomId.Value, ct)
+                    .SingleOrDefaultAsync(e => e.Id == _state.RoomId.Value, ct)
                 ?? throw new TurboException(TurboErrorCodeEnum.RoomNotFound);
 
             _state.Model = _roomModelProvider.GetModelById(entity.RoomModelEntityId);
@@ -226,7 +243,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                 RoomId = entity.Id,
                 Name = entity.Name ?? string.Empty,
                 Description = entity.Description ?? string.Empty,
-                OwnerId = (PlayerId)entity.PlayerEntityId,
+                OwnerId = entity.PlayerEntityId,
                 OwnerName = string.Empty,
                 Population = 0,
                 DoorMode = entity.DoorMode,
@@ -244,7 +261,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                 {
                     WhoCanMute = entity.MuteType,
                     WhoCanKick = entity.KickType,
-                    WhoCanBan = entity.BanType,
+                    WhoCanBan = entity.BanType
                 },
                 ChatSettings = new ChatSettingsSnapshot
                 {
@@ -252,15 +269,11 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                     BubbleWidth = entity.ChatBubbleType,
                     ScrollSpeed = entity.ChatSpeedType,
                     FullHearRange = entity.ChatDistance,
-                    FloodSensitivity = entity.ChatFloodType,
+                    FloodSensitivity = entity.ChatFloodType
                 },
                 WorldType = _state.Model.Name,
-                LastUpdatedUtc = DateTime.UtcNow,
+                LastUpdatedUtc = DateTime.UtcNow
             };
-        }
-        catch (Exception)
-        {
-            throw;
         }
         finally
         {
@@ -268,7 +281,10 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         }
     }
 
-    internal long NowMs() => (long)(Stopwatch.GetTimestamp() * 1000.0 / Stopwatch.Frequency);
+    internal long NowMs()
+    {
+        return (long)(Stopwatch.GetTimestamp() * 1000.0 / Stopwatch.Frequency);
+    }
 
     internal long AlignToNextBoundary(long now, int offset)
     {
@@ -280,11 +296,16 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
     private async Task HydrateModerationStateAsync(CancellationToken ct)
     {
-        IReadOnlyList<RoomMuteRecord> activeMutes = await _moderationStore.GetActiveMutesAsync(_state.RoomId.Value, ct);
+        IReadOnlyList<RoomMuteRecord> activeMutes = await _moderationStore.GetActiveMutesAsync(
+            _state.RoomId.Value,
+            ct
+        );
 
         _state.MuteExpiresUtc.Clear();
 
         foreach (RoomMuteRecord mute in activeMutes)
-            _state.MuteExpiresUtc[(PlayerId)mute.PlayerId] = mute.ExpiresUtc;
+        {
+            _state.MuteExpiresUtc[mute.PlayerId] = mute.ExpiresUtc;
+        }
     }
 }

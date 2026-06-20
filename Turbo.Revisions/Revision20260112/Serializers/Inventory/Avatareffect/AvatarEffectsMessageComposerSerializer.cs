@@ -13,6 +13,8 @@ internal class AvatarEffectsMessageComposerSerializer(int header)
         packet.WriteInteger(message.Effects.Length);
 
         foreach (AvatarEffectSnapshot effect in message.Effects)
+        {
             AvatarEffectSerializer.Serialize(packet, effect);
+        }
     }
 }

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using FluentAssertions;
 using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Incoming.Users;
@@ -11,8 +11,8 @@ using Rev = Turbo.Revisions.Revision20260112.Revision20260112;
 namespace Turbo.Revisions.Tests.Groups;
 
 /// <summary>
-/// Verifies the guild packets serialize / parse with exactly the wire layout the Flash client
-/// (vortex-client) expects. These lock the byte contract that the empty stubs lacked.
+///     Verifies the guild packets serialize / parse with exactly the wire layout the Flash client
+///     (vortex-client) expects. These lock the byte contract that the empty stubs lacked.
 /// </summary>
 public sealed class GuildWireLayoutTests
 {
@@ -22,23 +22,23 @@ public sealed class GuildWireLayoutTests
     private static readonly Rev Revision = new();
 
     /// <summary>Writes packet fields the same way the client composer does, for parser input.</summary>
-    private static ClientPacket BuildClientPacket(int header, System.Action<ServerPacket> write)
+    private static ClientPacket BuildClientPacket(int header, Action<ServerPacket> write)
     {
-        ServerPacket sp = new ServerPacket(header);
+        ServerPacket sp = new(header);
         write(sp);
         return new ClientPacket(header, sp.ToArray());
     }
 
     /// <summary>Runs a registered serializer and returns a reader positioned past the 6-byte header.</summary>
     private static ClientPacket SerializeAndReadBody(
-        System.Type composerType,
-        Turbo.Primitives.Networking.IComposer composer
+        Type composerType,
+        IComposer composer
     )
     {
         byte[] bytes = Revision.Serializers[composerType].Serialize(composer).ToArray();
         // AbstractSerializer prepends int length (4) + short header (2).
         byte[] body = new byte[bytes.Length - 6];
-        System.Array.Copy(bytes, 6, body, 0, body.Length);
+        Array.Copy(bytes, 6, body, 0, body.Length);
         return new ClientPacket(0, body);
     }
 
@@ -58,7 +58,9 @@ public sealed class GuildWireLayoutTests
                 sp.WriteInteger(7); // secondary color id
                 sp.WriteInteger(6); // flattened badge length
                 foreach (int v in new[] { 1, 2, 0, 3, 4, 1 })
+                {
                     sp.WriteInteger(v);
+                }
             }
         );
 
@@ -76,7 +78,7 @@ public sealed class GuildWireLayoutTests
     [Fact]
     public void HabboGroupDetailsSerializer_WritesClientLayout()
     {
-        GroupDetailsSnapshot details = new GroupDetailsSnapshot
+        GroupDetailsSnapshot details = new()
         {
             GroupId = 5,
             IsGuild = true,
@@ -96,7 +98,7 @@ public sealed class GuildWireLayoutTests
             OpenToJoin = true,
             MembersCanDecorate = true,
             PendingMemberCount = 2,
-            HasForum = false,
+            HasForum = false
         };
 
         ClientPacket body = SerializeAndReadBody(
@@ -129,7 +131,7 @@ public sealed class GuildWireLayoutTests
     [Fact]
     public void GuildMembersSerializer_WritesPagedMemberList()
     {
-        GroupMembersPageSnapshot page = new GroupMembersPageSnapshot
+        GroupMembersPageSnapshot page = new()
         {
             GroupId = 5,
             GroupName = "Pixel Painters",
@@ -144,14 +146,14 @@ public sealed class GuildWireLayoutTests
                     UserId = 7,
                     UserName = "absolutezeroo",
                     Figure = "hd-1-1",
-                    MemberSince = "19-06-2026",
-                },
+                    MemberSince = "19-06-2026"
+                }
             ],
             AllowedToManage = true,
             PageSize = 14,
             PageIndex = 0,
             SearchType = 0,
-            UserNameFilter = "",
+            UserNameFilter = ""
         };
 
         ClientPacket body = SerializeAndReadBody(
@@ -194,7 +196,7 @@ public sealed class GuildWireLayoutTests
     [Fact]
     public void GuildMembershipsSerializer_WritesGuildList()
     {
-        GuildMembershipsMessageComposer composer = new GuildMembershipsMessageComposer
+        GuildMembershipsMessageComposer composer = new()
         {
             Memberships =
             [
@@ -207,9 +209,9 @@ public sealed class GuildWireLayoutTests
                     SecondaryColor = "7",
                     Favourite = false,
                     OwnerId = 7,
-                    HasForum = true,
-                },
-            ],
+                    HasForum = true
+                }
+            ]
         };
 
         ClientPacket body = SerializeAndReadBody(typeof(GuildMembershipsMessageComposer), composer);

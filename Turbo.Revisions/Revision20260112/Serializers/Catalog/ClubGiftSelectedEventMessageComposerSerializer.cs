@@ -16,6 +16,8 @@ internal class ClubGiftSelectedEventMessageComposerSerializer(int header)
         packet.WriteString(message.ProductCode).WriteInteger(message.Products.Count);
 
         foreach (CatalogProductSnapshot product in message.Products)
+        {
             CatalogProductSerializer.Serialize(packet, product);
+        }
     }
 }

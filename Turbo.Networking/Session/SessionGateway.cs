@@ -55,7 +55,8 @@ public sealed class SessionGateway(
             _ =>
             {
                 SessionContextObserver impl = new SessionContextObserver(key, this);
-                ISessionContextObserver objRef = _grainFactory.CreateObjectReference<ISessionContextObserver>(impl);
+                ISessionContextObserver objRef =
+                    _grainFactory.CreateObjectReference<ISessionContextObserver>(impl);
 
                 return new ObserverEntry(impl, objRef);
             },

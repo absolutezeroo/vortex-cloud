@@ -66,13 +66,19 @@ internal sealed class PlayerWalletGrain(
                 .Database.BeginTransactionAsync(ct)
                 .ConfigureAwait(false);
 
-            List<WalletCurrencyUpdateSnapshot> updates = new List<WalletCurrencyUpdateSnapshot>(normalizedRequests.Count);
+            List<WalletCurrencyUpdateSnapshot> updates = new List<WalletCurrencyUpdateSnapshot>(
+                normalizedRequests.Count
+            );
 
             foreach (WalletDebitRequest request in normalizedRequests)
             {
                 try
                 {
-                    WalletCurrencyUpdateSnapshot update = await ProcessDebitRequestAsync(dbCtx, request, ct);
+                    WalletCurrencyUpdateSnapshot update = await ProcessDebitRequestAsync(
+                        dbCtx,
+                        request,
+                        ct
+                    );
 
                     if (update.ChangedBy != request.Amount)
                     {
@@ -144,7 +150,12 @@ internal sealed class PlayerWalletGrain(
                 continue;
             }
 
-            if (_currenciesByKind.TryGetValue(update.CurrencyKind, out WalletCurrencySnapshot? snapshot))
+            if (
+                _currenciesByKind.TryGetValue(
+                    update.CurrencyKind,
+                    out WalletCurrencySnapshot? snapshot
+                )
+            )
             {
                 _currenciesByKind[update.CurrencyKind] = snapshot with
                 {
@@ -158,7 +169,9 @@ internal sealed class PlayerWalletGrain(
 
     public Task<int> GetAmountForCurrencyAsync(CurrencyKind kind, CancellationToken ct) =>
         Task.FromResult(
-            _currenciesByKind.TryGetValue(kind, out WalletCurrencySnapshot? snapshot) ? snapshot.Amount : 0
+            _currenciesByKind.TryGetValue(kind, out WalletCurrencySnapshot? snapshot)
+                ? snapshot.Amount
+                : 0
         );
 
     public Task<Dictionary<int, int>> GetActivityPointsAsync(CancellationToken ct)
@@ -230,7 +243,12 @@ internal sealed class PlayerWalletGrain(
         int currentAmount = 0;
         int cost = request.Amount;
 
-        if (_currenciesByKind.TryGetValue(request.CurrencyKind, out WalletCurrencySnapshot? snapshot))
+        if (
+            _currenciesByKind.TryGetValue(
+                request.CurrencyKind,
+                out WalletCurrencySnapshot? snapshot
+            )
+        )
         {
             PlayerCurrencyEntity? entity = await dbCtx
                 .PlayerCurrencies.Where(x =>
@@ -308,7 +326,9 @@ internal sealed class PlayerWalletGrain(
             )
             .ConfigureAwait(false);
 
-        IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain((int)this.GetPrimaryKeyLong());
+        IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(
+            (int)this.GetPrimaryKeyLong()
+        );
         await playerPresence.OnCurrencyUpdateAsync(
             new WalletCurrencyUpdateSnapshot
             {
@@ -375,7 +395,9 @@ internal sealed class PlayerWalletGrain(
             )
             .ConfigureAwait(false);
 
-        IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain((int)this.GetPrimaryKeyLong());
+        IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(
+            (int)this.GetPrimaryKeyLong()
+        );
         await playerPresence.OnCurrencyUpdateAsync(
             new WalletCurrencyUpdateSnapshot
             {
@@ -400,7 +422,9 @@ internal sealed class PlayerWalletGrain(
 
         foreach (PlayerCurrencyEntity entity in entities)
         {
-            CurrencyTypeSnapshot? currencyType = _currencyTypeProvider.GetCurrencyType(entity.CurrencyTypeEntityId);
+            CurrencyTypeSnapshot? currencyType = _currencyTypeProvider.GetCurrencyType(
+                entity.CurrencyTypeEntityId
+            );
 
             if (currencyType is null || !currencyType.Enabled)
             {
@@ -425,7 +449,9 @@ internal sealed class PlayerWalletGrain(
 
         if (!_currenciesByKind.ContainsKey(creditsKind))
         {
-            CurrencyTypeSnapshot? creditType = _currencyTypeProvider.GetCurrencyTypeByKind(creditsKind);
+            CurrencyTypeSnapshot? creditType = _currencyTypeProvider.GetCurrencyTypeByKind(
+                creditsKind
+            );
 
             if (creditType is not null)
             {

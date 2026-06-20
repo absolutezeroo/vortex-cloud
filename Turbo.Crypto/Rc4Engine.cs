@@ -6,11 +6,11 @@ namespace Turbo.Crypto;
 public sealed class Rc4Engine : IRc4Engine
 {
     private readonly byte[] _data = new byte[256];
-    private int _i;
-    private int _j;
-    private byte[]? _workingKey;
     private readonly int _dropN;
     private readonly object _sync = new();
+    private readonly byte[]? _workingKey;
+    private int _i;
+    private int _j;
 
     public Rc4Engine(byte[] key, int dropN = 0)
     {
@@ -78,7 +78,7 @@ public sealed class Rc4Engine : IRc4Engine
     public byte[] Peek(byte[] inputData, int inputOffset = 0, int? length = null)
     {
         ArgumentNullException.ThrowIfNull(inputData);
-        int len = length ?? (inputData.Length - inputOffset);
+        int len = length ?? inputData.Length - inputOffset;
         if (inputOffset < 0 || len < 0)
         {
             throw new ArgumentOutOfRangeException();
@@ -146,7 +146,9 @@ public sealed class Rc4Engine : IRc4Engine
         lock (_sync)
         {
             for (int v = 0; v < 256; v++)
+            {
                 _data[v] = (byte)v;
+            }
 
             _i = 0;
             _j = 0;
@@ -159,7 +161,9 @@ public sealed class Rc4Engine : IRc4Engine
             }
 
             for (int n = 0; n < _dropN; n++)
+            {
                 _ = NextKeyStreamByte_NoLock();
+            }
         }
     }
 
@@ -172,5 +176,8 @@ public sealed class Rc4Engine : IRc4Engine
         return _data[t];
     }
 
-    private static void Swap(byte[] s, int a, int b) => (s[b], s[a]) = (s[a], s[b]);
+    private static void Swap(byte[] s, int a, int b)
+    {
+        (s[b], s[a]) = (s[a], s[b]);
+    }
 }

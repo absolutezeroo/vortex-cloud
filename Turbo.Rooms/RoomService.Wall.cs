@@ -88,7 +88,9 @@ internal sealed partial class RoomService
             return;
         }
 
-        RoomWallItemSnapshot? item = await roomGrain.GetWallItemSnapshotByIdAsync(itemId, ct).ConfigureAwait(false);
+        RoomWallItemSnapshot? item = await roomGrain
+            .GetWallItemSnapshotByIdAsync(itemId, ct)
+            .ConfigureAwait(false);
 
         if (item is null)
         {

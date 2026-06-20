@@ -58,7 +58,9 @@ internal sealed class PlayerVaultGrain(
             return false;
         }
 
-        IPlayerWalletGrain walletGrain = _grainFactory.GetPlayerWalletGrain(this.GetPrimaryKeyLong());
+        IPlayerWalletGrain walletGrain = _grainFactory.GetPlayerWalletGrain(
+            this.GetPrimaryKeyLong()
+        );
 
         foreach (PlayerVaultIncomeRewardEntity reward in toGrant)
         {
@@ -78,7 +80,9 @@ internal sealed class PlayerVaultGrain(
 
         List<int> ids = toGrant.Select(r => r.Id).ToList();
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
 
         await dbCtx
             .PlayerVaultIncomeRewards.Where(r => ids.Contains(r.Id))
@@ -103,7 +107,9 @@ internal sealed class PlayerVaultGrain(
             return;
         }
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
 
         if (string.IsNullOrEmpty(productCode))
         {
@@ -143,7 +149,9 @@ internal sealed class PlayerVaultGrain(
     {
         _pendingRewards.Clear();
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
 
         List<PlayerVaultIncomeRewardEntity> rows = await dbCtx
             .PlayerVaultIncomeRewards.AsNoTracking()

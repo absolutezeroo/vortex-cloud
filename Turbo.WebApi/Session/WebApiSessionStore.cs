@@ -45,7 +45,10 @@ public sealed class WebApiSessionStore
 
     public void SetSelectedPlayer(string? sessionId, int playerId)
     {
-        if (!string.IsNullOrWhiteSpace(sessionId) && _sessions.TryGetValue(sessionId, out SessionEntry? e))
+        if (
+            !string.IsNullOrWhiteSpace(sessionId)
+            && _sessions.TryGetValue(sessionId, out SessionEntry? e)
+        )
         {
             _sessions[sessionId] = e with { SelectedPlayerId = playerId };
         }

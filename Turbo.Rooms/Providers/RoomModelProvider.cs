@@ -22,15 +22,18 @@ public sealed class RoomModelProvider(
 {
     private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<IRoomModelProvider> _logger = logger;
+
     private ImmutableDictionary<int, RoomModelSnapshot> _modelsById = ImmutableDictionary<
         int,
         RoomModelSnapshot
     >.Empty;
 
-    public RoomModelSnapshot GetModelById(int modelId) =>
-        _modelsById.TryGetValue(modelId, out RoomModelSnapshot? model)
+    public RoomModelSnapshot GetModelById(int modelId)
+    {
+        return _modelsById.TryGetValue(modelId, out RoomModelSnapshot? model)
             ? model
             : throw new KeyNotFoundException($"Room model not found: ModelId={modelId}");
+    }
 
     public async Task ReloadAsync(CancellationToken ct = default)
     {
@@ -61,7 +64,7 @@ public sealed class RoomModelProvider(
                         Height = compiledModel.Height,
                         Size = compiledModel.Width * compiledModel.Height,
                         BaseHeights = compiledModel.Heights,
-                        BaseFlags = compiledModel.Flags,
+                        BaseFlags = compiledModel.Flags
                     };
                 })
                 .ToImmutableDictionary(x => x.Id);
@@ -77,8 +80,10 @@ public sealed class RoomModelProvider(
         }
     }
 
-    private static string CleanModelString(string model) =>
-        model.Trim().ToLower().Replace("\r\n", "\r").Replace("\n", "\r");
+    private static string CleanModelString(string model)
+    {
+        return model.Trim().ToLower().Replace("\r\n", "\r").Replace("\n", "\r");
+    }
 
     private static CompiledRoomModelSnapshot CompileModelFromString(string model)
     {
@@ -102,7 +107,7 @@ public sealed class RoomModelProvider(
             for (int x = 0; x < width; x++)
             {
                 int idx = y * width + x;
-                char ch = (x < row.Length) ? row[x] : 'x';
+                char ch = x < row.Length ? row[x] : 'x';
 
                 if (ch.Equals('x'))
                 {
@@ -128,20 +133,22 @@ public sealed class RoomModelProvider(
             Width = width,
             Height = height,
             Heights = heights,
-            Flags = flags,
+            Flags = flags
         };
     }
 
     private static List<string> SplitLines(string s)
     {
-        List<string> lines = new List<string>();
+        List<string> lines = new();
 
-        using StringReader sr = new StringReader(s);
+        using StringReader sr = new(s);
 
         string? line;
 
         while ((line = sr.ReadLine()) is not null)
+        {
             lines.Add(line);
+        }
 
         return lines;
     }

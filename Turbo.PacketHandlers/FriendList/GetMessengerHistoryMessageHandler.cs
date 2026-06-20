@@ -31,7 +31,9 @@ public class GetMessengerHistoryMessageHandler(IGrainFactory grainFactory)
         IMessengerGrain grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
         PlayerId friendId = PlayerId.Parse(message.ChatId);
 
-        List<MessageHistoryEntrySnapshot> history = await grain.GetMessageHistoryAsync(friendId, ct).ConfigureAwait(false);
+        List<MessageHistoryEntrySnapshot> history = await grain
+            .GetMessageHistoryAsync(friendId, ct)
+            .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
                 new ConsoleMessageHistoryMessageComposer

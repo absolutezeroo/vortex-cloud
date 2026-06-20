@@ -1302,6 +1302,10 @@ namespace Turbo.Database.Migrations
                         .HasColumnType("int")
                         .HasColumnName("player_id");
 
+                    b.Property<int?>("RentableSpaceFurnitureEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("rentable_space_furniture_id");
+
                     b.Property<int?>("RoomEntityId")
                         .HasColumnType("int")
                         .HasColumnName("room_id");
@@ -1347,6 +1351,8 @@ namespace Turbo.Database.Migrations
                     b.HasIndex("FurnitureDefinitionEntityId");
 
                     b.HasIndex("PlayerEntityId");
+
+                    b.HasIndex("RentableSpaceFurnitureEntityId");
 
                     b.HasIndex("RoomEntityId");
 
@@ -1397,6 +1403,112 @@ namespace Turbo.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("furniture_teleport_links");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Furniture.RentableSpaceTermsEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<int>("CurrencyTypeEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("currency_type_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int>("FurnitureDefinitionEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("furniture_definition_id");
+
+                    b.Property<int>("Price")
+                        .HasColumnType("int")
+                        .HasColumnName("price");
+
+                    b.Property<int>("RentDurationSeconds")
+                        .HasColumnType("int")
+                        .HasColumnName("rent_duration_seconds");
+
+                    b.Property<bool>("RequiresHc")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("requires_hc");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CurrencyTypeEntityId");
+
+                    b.HasIndex("FurnitureDefinitionEntityId")
+                        .IsUnique();
+
+                    b.ToTable("rentable_space_terms");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Furniture.RoomRentableSpaceEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int>("FurnitureEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("furniture_id");
+
+                    b.Property<DateTime?>("RentedUntil")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("rented_until");
+
+                    b.Property<int?>("RenterPlayerEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("renter_player_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FurnitureEntityId")
+                        .IsUnique();
+
+                    b.HasIndex("RenterPlayerEntityId");
+
+                    b.ToTable("room_rentable_spaces");
                 });
 
             modelBuilder.Entity("Turbo.Database.Entities.Groups.GroupEntity", b =>
@@ -4061,6 +4173,11 @@ namespace Turbo.Database.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Turbo.Database.Entities.Furniture.FurnitureEntity", "RentableSpaceFurnitureEntity")
+                        .WithMany()
+                        .HasForeignKey("RentableSpaceFurnitureEntityId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Turbo.Database.Entities.Room.RoomEntity", "RoomEntity")
                         .WithMany()
                         .HasForeignKey("RoomEntityId");
@@ -4068,6 +4185,8 @@ namespace Turbo.Database.Migrations
                     b.Navigation("FurnitureDefinitionEntity");
 
                     b.Navigation("PlayerEntity");
+
+                    b.Navigation("RentableSpaceFurnitureEntity");
 
                     b.Navigation("RoomEntity");
                 });
@@ -4089,6 +4208,42 @@ namespace Turbo.Database.Migrations
                     b.Navigation("FurnitureEntityOne");
 
                     b.Navigation("FurnitureEntityTwo");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Furniture.RentableSpaceTermsEntity", b =>
+                {
+                    b.HasOne("Turbo.Database.Entities.Catalog.CurrencyTypeEntity", "CurrencyTypeEntity")
+                        .WithMany()
+                        .HasForeignKey("CurrencyTypeEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Turbo.Database.Entities.Furniture.FurnitureDefinitionEntity", "FurnitureDefinitionEntity")
+                        .WithMany()
+                        .HasForeignKey("FurnitureDefinitionEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CurrencyTypeEntity");
+
+                    b.Navigation("FurnitureDefinitionEntity");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Furniture.RoomRentableSpaceEntity", b =>
+                {
+                    b.HasOne("Turbo.Database.Entities.Furniture.FurnitureEntity", "FurnitureEntity")
+                        .WithMany()
+                        .HasForeignKey("FurnitureEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Turbo.Database.Entities.Players.PlayerEntity", "RenterPlayerEntity")
+                        .WithMany()
+                        .HasForeignKey("RenterPlayerEntityId");
+
+                    b.Navigation("FurnitureEntity");
+
+                    b.Navigation("RenterPlayerEntity");
                 });
 
             modelBuilder.Entity("Turbo.Database.Entities.Groups.GroupEntity", b =>

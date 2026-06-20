@@ -54,7 +54,9 @@ public class PurchaseVipMembershipExtensionMessageHandler(
             return;
         }
 
-        ClubSubscriptionSnapshot sub = await playerGrain.GetClubSubscriptionAsync(ct).ConfigureAwait(false);
+        ClubSubscriptionSnapshot sub = await playerGrain
+            .GetClubSubscriptionAsync(ct)
+            .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
                 new UserRightsMessage

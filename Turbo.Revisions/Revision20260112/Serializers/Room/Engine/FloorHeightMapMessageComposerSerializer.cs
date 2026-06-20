@@ -18,6 +18,8 @@ internal class FloorHeightMapMessageComposerSerializer(int header)
             .WriteInteger(message.AreaHideData.Count);
 
         foreach (AreaHideDataSnapshot area in message.AreaHideData)
+        {
             AreaHideDataSerializer.Serialize(packet, area);
+        }
     }
 }

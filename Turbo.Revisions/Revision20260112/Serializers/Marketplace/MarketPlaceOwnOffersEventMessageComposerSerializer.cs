@@ -15,6 +15,8 @@ internal class MarketPlaceOwnOffersEventMessageComposerSerializer(int header)
         packet.WriteInteger(message.CreditsWaiting);
         packet.WriteInteger(message.Offers.Count);
         foreach (MarketplaceOfferSnapshot offer in message.Offers)
-            MarketplaceOfferWriter.WriteOffer(packet, offer, includeOfferCount: false);
+        {
+            MarketplaceOfferWriter.WriteOffer(packet, offer, false);
+        }
     }
 }

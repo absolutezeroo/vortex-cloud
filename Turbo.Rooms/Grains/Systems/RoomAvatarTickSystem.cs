@@ -26,9 +26,11 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
         }
 
         while (now >= _roomGrain._state.NextAvatarBoundaryMs)
+        {
             _roomGrain._state.NextAvatarBoundaryMs += _roomGrain._roomConfig.AvatarTickMs;
+        }
 
-        List<RoomAvatarSnapshot> dirtySnapshots = new List<RoomAvatarSnapshot>();
+        List<RoomAvatarSnapshot> dirtySnapshots = new();
 
         foreach (IRoomAvatar avatar in _roomGrain._state.AvatarsByObjectId.Values)
         {
@@ -64,7 +66,6 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
             }
             catch (Exception)
             {
-                continue;
             }
         }
 
@@ -136,7 +137,10 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
 
             if (
                 prevHighestItemId > 0
-                && _roomGrain._state.ItemsById.TryGetValue(prevHighestItemId, out IRoomItem? prevFloorItem)
+                && _roomGrain._state.ItemsById.TryGetValue(
+                    prevHighestItemId,
+                    out IRoomItem? prevFloorItem
+                )
             )
             {
                 await ((IRoomFloorItem)prevFloorItem).Logic.OnWalkOffAsync(
@@ -150,7 +154,10 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
 
             if (
                 nextHighestItemId > 0
-                && _roomGrain._state.ItemsById.TryGetValue(nextHighestItemId, out IRoomItem? nextFloorItem)
+                && _roomGrain._state.ItemsById.TryGetValue(
+                    nextHighestItemId,
+                    out IRoomItem? nextFloorItem
+                )
             )
             {
                 await ((IRoomFloorItem)nextFloorItem).Logic.OnWalkOnAsync(

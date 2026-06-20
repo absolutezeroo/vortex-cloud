@@ -18,9 +18,9 @@ using Turbo.Primitives.Players;
 namespace Turbo.Players.Grains;
 
 /// <summary>
-/// One grain per group (key = group id). Reads detail/member views, applies membership joins and
-/// owner/admin management. All DB access goes through <see cref="IDbContextFactory{TurboDbContext}"/>;
-/// callers are handlers that only orchestrate. State changes raise domain events for metrics/plugins.
+///     One grain per group (key = group id). Reads detail/member views, applies membership joins and
+///     owner/admin management. All DB access goes through <see cref="IDbContextFactory{TurboDbContext}" />;
+///     callers are handlers that only orchestrate. State changes raise domain events for metrics/plugins.
 /// </summary>
 internal sealed class GroupGrain(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
@@ -132,7 +132,7 @@ internal sealed class GroupGrain(
             OpenToJoin = group.Type == GroupType.Open,
             MembersCanDecorate = !group.AdminOnlyDecoration,
             PendingMemberCount = pendingCount,
-            HasForum = group.ForumSettings?.Enabled ?? false,
+            HasForum = group.ForumSettings?.Enabled ?? false
         };
     }
 
@@ -200,8 +200,8 @@ internal sealed class GroupGrain(
                     UserId = r.PlayerEntityId,
                     UserName = r.PlayerEntity.Name,
                     Figure = r.PlayerEntity.Figure,
-                    MemberSince = r.CreatedAt.ToString("dd-MM-yyyy"),
-                }),
+                    MemberSince = r.CreatedAt.ToString("dd-MM-yyyy")
+                })
             ];
         }
         else
@@ -237,8 +237,8 @@ internal sealed class GroupGrain(
                     UserId = m.PlayerEntityId,
                     UserName = m.PlayerEntity.Name,
                     Figure = m.PlayerEntity.Figure,
-                    MemberSince = m.CreatedAt.ToString("dd-MM-yyyy"),
-                }),
+                    MemberSince = m.CreatedAt.ToString("dd-MM-yyyy")
+                })
             ];
         }
 
@@ -254,7 +254,7 @@ internal sealed class GroupGrain(
             PageSize = MembersPerPage,
             PageIndex = pageIndex,
             SearchType = searchType,
-            UserNameFilter = filter,
+            UserNameFilter = filter
         };
     }
 
@@ -308,7 +308,7 @@ internal sealed class GroupGrain(
                         GroupEntityId = GroupId,
                         PlayerEntityId = playerId,
                         GroupEntity = groupEntity,
-                        PlayerEntity = playerEntity,
+                        PlayerEntity = playerEntity
                     }
                 );
                 await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -328,7 +328,7 @@ internal sealed class GroupGrain(
                 PlayerEntityId = playerId,
                 Rank = GroupMemberRank.Member,
                 GroupEntity = groupEntity,
-                PlayerEntity = playerEntity,
+                PlayerEntity = playerEntity
             }
         );
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -380,7 +380,7 @@ internal sealed class GroupGrain(
             {
                 RoomId = r.Id,
                 RoomName = r.Name,
-                HasControllers = r.GroupEntityId == null || r.Id == group.RoomEntityId,
+                HasControllers = r.GroupEntityId == null || r.Id == group.RoomEntityId
             })
             .ToListAsync(ct);
 
@@ -407,7 +407,7 @@ internal sealed class GroupGrain(
             // The client iterates all 5 unconditionally — a short list causes a null-reference crash.
             BadgeParts = GuildBadgeLibrary.ParseBadgeCode(group.Badge),
             BadgeCode = group.Badge,
-            MembershipCount = membershipCount,
+            MembershipCount = membershipCount
         };
     }
 
@@ -416,55 +416,62 @@ internal sealed class GroupGrain(
         string name,
         string description,
         CancellationToken ct
-    ) =>
-        MutateAsAdminAsync(
+    )
+    {
+        return MutateAsAdminAsync(
             actor,
-            (group) =>
+            group =>
             {
                 group.Name = name;
                 group.Description = string.IsNullOrEmpty(description) ? null : description;
             },
             ct
         );
+    }
 
     public Task<bool> UpdateColorsAsync(
         PlayerId actor,
         int primaryColorId,
         int secondaryColorId,
         CancellationToken ct
-    ) =>
-        MutateAsAdminAsync(
+    )
+    {
+        return MutateAsAdminAsync(
             actor,
-            (group) =>
+            group =>
             {
                 group.ColorOne = primaryColorId.ToString();
                 group.ColorTwo = secondaryColorId.ToString();
             },
             ct
         );
+    }
 
     public Task<bool> UpdateBadgeAsync(
         PlayerId actor,
         IReadOnlyList<int> badgeParts,
         CancellationToken ct
-    ) =>
-        MutateAsAdminAsync(
+    )
+    {
+        return MutateAsAdminAsync(
             actor,
-            (group) => group.Badge = GroupDirectoryGrain.BuildBadgeCode(badgeParts),
+            group => group.Badge = GroupDirectoryGrain.BuildBadgeCode(badgeParts),
             ct
         );
+    }
 
     public Task<bool> UpdateSettingsAsync(
         PlayerId actor,
         int guildType,
         int rightsLevel,
         CancellationToken ct
-    ) =>
+    )
+    {
         // Settings (join policy + decoration rights) are owner-only.
-        MutateAsync(
+        return MutateAsync(
             actor,
-            ownerOnly: true,
-            (group) =>
+            true,
+            group =>
             {
                 if (guildType is >= 0 and <= 2)
                 {
@@ -475,6 +482,7 @@ internal sealed class GroupGrain(
             },
             ct
         );
+    }
 
     public async Task<bool> DeactivateAsync(PlayerId actor, CancellationToken ct)
     {
@@ -558,7 +566,7 @@ internal sealed class GroupGrain(
                 PlayerEntityId = targetPlayerId,
                 Rank = GroupMemberRank.Member,
                 GroupEntity = group,
-                PlayerEntity = request.PlayerEntity,
+                PlayerEntity = request.PlayerEntity
             }
         );
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -576,7 +584,7 @@ internal sealed class GroupGrain(
             UserId = targetPlayerId,
             UserName = request.PlayerEntity.Name,
             Figure = request.PlayerEntity.Figure,
-            MemberSince = DateTime.UtcNow.ToString("dd-MM-yyyy"),
+            MemberSince = DateTime.UtcNow.ToString("dd-MM-yyyy")
         };
     }
 
@@ -641,7 +649,7 @@ internal sealed class GroupGrain(
         }
 
         DateTime now = DateTime.UtcNow;
-        List<GroupMemberSnapshot> added = new List<GroupMemberSnapshot>(requests.Count);
+        List<GroupMemberSnapshot> added = new(requests.Count);
 
         foreach (GroupMembershipRequestEntity request in requests)
         {
@@ -652,7 +660,7 @@ internal sealed class GroupGrain(
                     PlayerEntityId = request.PlayerEntityId,
                     Rank = GroupMemberRank.Member,
                     GroupEntity = group,
-                    PlayerEntity = request.PlayerEntity,
+                    PlayerEntity = request.PlayerEntity
                 }
             );
             added.Add(
@@ -662,7 +670,7 @@ internal sealed class GroupGrain(
                     UserId = request.PlayerEntityId,
                     UserName = request.PlayerEntity.Name,
                     Figure = request.PlayerEntity.Figure,
-                    MemberSince = now.ToString("dd-MM-yyyy"),
+                    MemberSince = now.ToString("dd-MM-yyyy")
                 }
             );
         }
@@ -671,12 +679,14 @@ internal sealed class GroupGrain(
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
 
         foreach (GroupMemberSnapshot member in added)
+        {
             await events
                 .PublishAsync(
                     new GroupMembershipAcceptedEvent(actor.Value, GroupId, member.UserId),
                     ct
                 )
                 .ConfigureAwait(false);
+        }
 
         return added;
     }
@@ -783,7 +793,7 @@ internal sealed class GroupGrain(
             UserId = targetPlayerId,
             UserName = member.PlayerEntity.Name,
             Figure = member.PlayerEntity.Figure,
-            MemberSince = member.CreatedAt.ToString("dd-MM-yyyy"),
+            MemberSince = member.CreatedAt.ToString("dd-MM-yyyy")
         };
     }
 
@@ -817,7 +827,10 @@ internal sealed class GroupGrain(
         PlayerId actor,
         Action<GroupEntity> mutate,
         CancellationToken ct
-    ) => MutateAsync(actor, ownerOnly: false, mutate, ct);
+    )
+    {
+        return MutateAsync(actor, false, mutate, ct);
+    }
 
     private async Task<bool> MutateAsync(
         PlayerId actor,
@@ -904,5 +917,8 @@ internal sealed class GroupGrain(
         return isAdmin ? group : null;
     }
 
-    private static int ParseColorId(string value) => int.TryParse(value, out int id) ? id : 0;
+    private static int ParseColorId(string value)
+    {
+        return int.TryParse(value, out int id) ? id : 0;
+    }
 }

@@ -40,7 +40,9 @@ public class SelectClubGiftMessageHandler(
 
         IPlayerGrain playerGrain = _grainFactory.GetPlayerGrain(ctx.PlayerId);
 
-        ClubSubscriptionSnapshot sub = await playerGrain.GetClubSubscriptionAsync(ct).ConfigureAwait(false);
+        ClubSubscriptionSnapshot sub = await playerGrain
+            .GetClubSubscriptionAsync(ct)
+            .ConfigureAwait(false);
 
         // A VIP-only gift cannot be claimed without an active VIP membership.
         if (!sub.IsActive || (offer.ClubLevel > 1 && !sub.IsVip))

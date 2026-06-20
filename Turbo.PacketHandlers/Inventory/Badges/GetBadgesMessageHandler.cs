@@ -29,7 +29,9 @@ public class GetBadgesMessageHandler(IDbContextFactory<TurboDbContext> dbCtxFact
             return;
         }
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
 
         List<PlayerBadgeEntity> entities = await dbCtx
             .PlayerBadges.AsNoTracking()

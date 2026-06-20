@@ -20,11 +20,15 @@ namespace Turbo.Rooms.Grains.Systems;
 
 public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
 {
+    private readonly List<List<int>> _rollerIdSets = [];
     private readonly RoomGrain _roomGrain = roomGrain;
 
-    private readonly List<List<int>> _rollerIdSets = [];
-
     private bool _isDirtyRollers = true;
+
+    public Task OnRoomEventAsync(RoomEvent evt, CancellationToken ct)
+    {
+        return HandleRoomEventAsync(evt, ct);
+    }
 
     public Task ProcessRollersAsync(long now, CancellationToken ct)
     {
@@ -34,7 +38,10 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
         }
 
         while (now >= _roomGrain._state.NextRollerBoundaryMs)
+        {
             _roomGrain._state.NextRollerBoundaryMs += _roomGrain._roomConfig.RollerTickMs;
+        }
+
         ComputeRollers();
 
         if (_rollerIdSets.Count == 0)
@@ -42,9 +49,9 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
             return Task.CompletedTask;
         }
 
-        List<RollerMovePlan> currentPlans = new List<RollerMovePlan>();
-        HashSet<int> reservedTileIdxs = new HashSet<int>();
-        HashSet<int> nextAvatarTiles = new HashSet<int>(
+        List<RollerMovePlan> currentPlans = new();
+        HashSet<int> reservedTileIdxs = new();
+        HashSet<int> nextAvatarTiles = new(
             _roomGrain
                 ._state.AvatarsByObjectId.Values.Where(x => x.NextTileId >= 0)
                 .Select(x => x.NextTileId)
@@ -94,8 +101,8 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
                         continue;
                     }
 
-                    List<IRoomItem> items = new List<IRoomItem>();
-                    List<IRoomAvatar> avatars = new List<IRoomAvatar>();
+                    List<IRoomItem> items = new();
+                    List<IRoomAvatar> avatars = new();
                     bool canAvatarMove = true;
 
                     foreach (RoomObjectId itemId in _roomGrain._state.TileFloorStacks[fromIdx])
@@ -159,8 +166,8 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
                                     ObjectId = x.ObjectId,
                                     RoomObject = x,
                                     FromZ = x.Z,
-                                    ToZ = x.Z - rollerHeight + toTileHeight,
-                                }),
+                                    ToZ = x.Z - rollerHeight + toTileHeight
+                                })
                             ],
                             MovedAvatars =
                             [
@@ -171,10 +178,10 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
                                         ObjectId = x.ObjectId,
                                         RoomObject = x,
                                         FromZ = x.Z,
-                                        ToZ = x.Z - rollerHeight + toTileHeight,
+                                        ToZ = x.Z - rollerHeight + toTileHeight
                                     };
-                                }),
-                            ],
+                                })
+                            ]
                         }
                     );
 
@@ -182,7 +189,6 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
                 }
                 catch (Exception)
                 {
-                    continue;
                 }
             }
         }
@@ -192,7 +198,7 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
             return Task.CompletedTask;
         }
 
-        List<IComposer> composers = new List<IComposer>();
+        List<IComposer> composers = new();
 
         foreach (RollerMovePlan plan in currentPlans)
         {
@@ -200,17 +206,22 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
             (int toX, int toY) = _roomGrain.MapModule.GetTileXY(plan.ToIdx);
 
             foreach (RollerMovedObject item in plan.MovedFloorItems)
+            {
                 _roomGrain.MapModule.RollFloorItem(
                     (IRoomFloorItem)item.RoomObject,
                     plan.ToIdx,
                     item.ToZ
                 );
+            }
+
             foreach (RollerMovedObject avatar in plan.MovedAvatars)
+            {
                 _roomGrain.MapModule.RollAvatar(
                     (IRoomAvatar)avatar.RoomObject,
                     plan.ToIdx,
                     avatar.ToZ
                 );
+            }
 
             if (plan.MovedAvatars.Count > 0)
             {
@@ -234,14 +245,14 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
                                 [
                                     .. plan.MovedFloorItems.Select(x =>
                                         (x.RoomObject.ObjectId, x.FromZ, x.ToZ)
-                                    ),
+                                    )
                                 ],
                                 Avatar = (
                                     SlideAvatarMoveType.Slide,
                                     avatar.RoomObject.ObjectId,
                                     avatar.FromZ + avatarObject.PostureOffset,
                                     avatar.ToZ + avatarObject.PostureOffset
-                                ),
+                                )
                             }
                         );
 
@@ -264,7 +275,7 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
                                 avatar.RoomObject.ObjectId,
                                 avatar.FromZ + avatarObject.PostureOffset,
                                 avatar.ToZ + avatarObject.PostureOffset
-                            ),
+                            )
                         }
                     );
                 }
@@ -283,16 +294,19 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
                         [
                             .. plan.MovedFloorItems.Select(x =>
                                 (x.RoomObject.ObjectId, x.FromZ, x.ToZ)
-                            ),
+                            )
                         ],
-                        Avatar = null,
+                        Avatar = null
                     }
                 );
             }
         }
 
         foreach (IComposer composer in composers)
+        {
             _ = _roomGrain.SendComposerToRoomAsync(composer);
+        }
+
         return Task.CompletedTask;
     }
 
@@ -314,7 +328,11 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
             return;
         }
 
-        foreach (IGrouping<Rotation, IRoomItem> group in rollers.GroupBy(x => x.Rotation).OrderBy(x => x.Key))
+        foreach (
+            IGrouping<Rotation, IRoomItem> group in rollers
+                .GroupBy(x => x.Rotation)
+                .OrderBy(x => x.Key)
+        )
         {
             IEnumerable<IRoomItem> stack = OrderRollersFrontToBack(group);
 
@@ -323,9 +341,6 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
 
         _isDirtyRollers = false;
     }
-
-    public Task OnRoomEventAsync(RoomEvent evt, CancellationToken ct) =>
-        HandleRoomEventAsync(evt, ct);
 
     private Task HandleRoomEventAsync(RoomEvent evt, CancellationToken ct)
     {
@@ -358,7 +373,7 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
             Rotation.West => list.OrderBy(r => r.X).ThenBy(r => r.Y),
             Rotation.South => list.OrderByDescending(r => r.Y).ThenBy(r => r.X),
             Rotation.North => list.OrderBy(r => r.Y).ThenBy(r => r.X),
-            _ => list.OrderBy(r => r.Y).ThenBy(r => r.X),
+            _ => list.OrderBy(r => r.Y).ThenBy(r => r.X)
         };
     }
 }

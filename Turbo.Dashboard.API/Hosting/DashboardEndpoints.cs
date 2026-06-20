@@ -513,7 +513,8 @@ internal static class DashboardEndpoints
 
     private static IResult IssueSession(HttpContext ctx, DashboardLoginResult result)
     {
-        DashboardSessionStore sessions = ctx.RequestServices.GetRequiredService<DashboardSessionStore>();
+        DashboardSessionStore sessions =
+            ctx.RequestServices.GetRequiredService<DashboardSessionStore>();
         ctx.Response.Cookies.Append(
             DashboardAuthenticationHandler.SessionCookieName,
             result.SessionId!,

@@ -10,6 +10,28 @@ public sealed class CompositeDisposable(IEnumerable<IDisposable>? items = null) 
     private readonly List<IDisposable> _items = items?.ToList() ?? [];
     private int _disposed;
 
+    public void Dispose()
+    {
+        if (Interlocked.Exchange(ref _disposed, 1) == 1)
+        {
+            return;
+        }
+
+        for (int i = _items.Count - 1; i >= 0; i--)
+        {
+            try
+            {
+                _items[i].Dispose();
+            }
+            catch
+            {
+                /* swallow on unload */
+            }
+        }
+
+        _items.Clear();
+    }
+
     public void Add(IDisposable d)
     {
         if (d != null)
@@ -24,24 +46,5 @@ public sealed class CompositeDisposable(IEnumerable<IDisposable>? items = null) 
         {
             _items.AddRange(ds.Where(d => d != null));
         }
-    }
-
-    public void Dispose()
-    {
-        if (Interlocked.Exchange(ref _disposed, 1) == 1)
-        {
-            return;
-        }
-
-        for (int i = _items.Count - 1; i >= 0; i--)
-            try
-            {
-                _items[i].Dispose();
-            }
-            catch
-            { /* swallow on unload */
-            }
-
-        _items.Clear();
     }
 }

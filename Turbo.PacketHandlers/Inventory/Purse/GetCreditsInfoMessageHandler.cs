@@ -33,7 +33,9 @@ public class GetCreditsInfoMessageHandler(IGrainFactory grainFactory)
         int credits = await wallet
             .GetAmountForCurrencyAsync(new CurrencyKind { CurrencyType = CurrencyType.Credits }, ct)
             .ConfigureAwait(false);
-        Dictionary<int, int> activityPoints = await wallet.GetActivityPointsAsync(ct).ConfigureAwait(false);
+        Dictionary<int, int> activityPoints = await wallet
+            .GetActivityPointsAsync(ct)
+            .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
                 new CreditBalanceEventMessageComposer { Balance = $"{credits}.0" },

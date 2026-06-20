@@ -89,7 +89,10 @@ internal sealed class InventoryFurnitureLoader(
         // TODO we need to get the correct stuff data key
 
         ExtraData extraData = new ExtraData(entity.ExtraData);
-        string jsonData = extraData.TryGetSection(ExtraDataSectionType.STUFF, out JsonElement element)
+        string jsonData = extraData.TryGetSection(
+            ExtraDataSectionType.STUFF,
+            out JsonElement element
+        )
             ? element.GetRawText()
             : "{}";
 

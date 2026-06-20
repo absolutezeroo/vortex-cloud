@@ -12,7 +12,12 @@ internal class CatalogIndexMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, CatalogIndexMessageComposer message)
     {
-        if (!message.Catalog.PagesById.TryGetValue(message.Catalog.RootPageId, out CatalogPageSnapshot? rootPage))
+        if (
+            !message.Catalog.PagesById.TryGetValue(
+                message.Catalog.RootPageId,
+                out CatalogPageSnapshot? rootPage
+            )
+        )
         {
             return;
         }
@@ -35,7 +40,9 @@ internal class CatalogIndexMessageComposerSerializer(int header)
         packet.WriteInteger(page.OfferIds.Length);
 
         foreach (int offerId in page.OfferIds)
+        {
             packet.WriteInteger(offerId);
+        }
 
         List<CatalogPageSnapshot> children = [];
 
@@ -50,6 +57,8 @@ internal class CatalogIndexMessageComposerSerializer(int header)
         packet.WriteInteger(children.Count);
 
         foreach (CatalogPageSnapshot child in children)
+        {
             SerializePage(packet, snapshot, child);
+        }
     }
 }

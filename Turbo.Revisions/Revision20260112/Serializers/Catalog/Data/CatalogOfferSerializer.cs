@@ -18,7 +18,9 @@ internal class CatalogOfferSerializer
             .WriteInteger(offer.Products.Length);
 
         foreach (CatalogProductSnapshot product in offer.Products)
+        {
             CatalogProductSerializer.Serialize(packet, product);
+        }
 
         packet
             .WriteInteger(offer.ClubLevel)
@@ -40,7 +42,9 @@ internal class CatalogOfferSerializer
             .WriteInteger(offer.Products.Length);
 
         foreach (CatalogProductSnapshot product in offer.Products)
+        {
             CatalogProductSerializer.Serialize(packet, product);
+        }
 
         packet.WriteInteger(offer.ClubLevel).WriteBoolean(offer.CanBundle);
     }

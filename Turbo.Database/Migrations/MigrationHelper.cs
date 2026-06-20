@@ -20,7 +20,9 @@ public static class MigrationHelper
         if (alc is not null)
         {
             using (alc.EnterContextualReflection())
+            {
                 await db.Database.MigrateAsync(ct).ConfigureAwait(false);
+            }
         }
         else
         {

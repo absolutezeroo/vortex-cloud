@@ -29,7 +29,9 @@ public sealed class FurnitureDefinitionProvider(
         ImmutableDictionary<int, FurnitureDefinitionSnapshot>.Empty;
 
     public FurnitureDefinitionSnapshot? TryGetDefinition(int id) =>
-        _definitionsById.TryGetValue(id, out FurnitureDefinitionSnapshot? definition) ? definition : null;
+        _definitionsById.TryGetValue(id, out FurnitureDefinitionSnapshot? definition)
+            ? definition
+            : null;
 
     public async Task ReloadAsync(CancellationToken ct = default)
     {

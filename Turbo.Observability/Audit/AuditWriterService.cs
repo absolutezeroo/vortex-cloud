@@ -19,26 +19,27 @@ using Turbo.Observability.Diagnostics;
 namespace Turbo.Observability.Audit;
 
 /// <summary>
-/// Single background consumer of the durable-observability channel. It batches records of every family
-/// (audit, economy ledger, item forensics, performance logs), routes each to its table, and persists them with one
-/// <c>SaveChanges</c> per batch — keeping all durable writes off the gameplay hot path. A failed
-/// flush retries a bounded number of times and then writes to a dead-letter file to avoid losing audit
-/// history.
+///     Single background consumer of the durable-observability channel. It batches records of every family
+///     (audit, economy ledger, item forensics, performance logs), routes each to its table, and persists them with one
+///     <c>SaveChanges</c> per batch — keeping all durable writes off the gameplay hot path. A failed
+///     flush retries a bounded number of times and then writes to a dead-letter file to avoid losing audit
+///     history.
 /// </summary>
 public sealed class AuditWriterService : BackgroundService
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
+
+    private readonly int _batchSize;
 
     private readonly AuditChannel _channel;
     private readonly IDbContextFactory<TurboDbContext> _dbContextFactory;
-    private readonly int _batchSize;
-    private readonly int _retryAttempts;
-    private readonly int _retryDelayMs;
     private readonly string _deadLetterPath;
     private readonly ILogger<AuditWriterService> _logger;
+    private readonly int _retryAttempts;
+    private readonly int _retryDelayMs;
 
     public AuditWriterService(
         AuditChannel channel,
@@ -64,14 +65,16 @@ public sealed class AuditWriterService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         ChannelReader<DurableRecord> reader = _channel.Reader;
-        List<DurableRecord> batch = new List<DurableRecord>(_batchSize);
+        List<DurableRecord> batch = new(_batchSize);
 
         try
         {
             while (await reader.WaitToReadAsync(stoppingToken).ConfigureAwait(false))
             {
                 while (batch.Count < _batchSize && reader.TryRead(out DurableRecord? record))
+                {
                     batch.Add(record);
+                }
 
                 if (batch.Count > 0)
                 {
@@ -112,7 +115,9 @@ public sealed class AuditWriterService : BackgroundService
         batch.Clear();
 
         while (reader.TryRead(out DurableRecord? record))
+        {
             batch.Add(record);
+        }
 
         if (batch.Count == 0)
         {
@@ -138,12 +143,16 @@ public sealed class AuditWriterService : BackgroundService
         {
             try
             {
-                TurboDbContext db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+                TurboDbContext db = await _dbContextFactory
+                    .CreateDbContextAsync(ct)
+                    .ConfigureAwait(false);
 
                 try
                 {
                     foreach (DurableRecord record in batch)
+                    {
                         db.Add(MapEntity(record));
+                    }
 
                     await db.SaveChangesAsync(ct).ConfigureAwait(false);
                 }
@@ -205,7 +214,7 @@ public sealed class AuditWriterService : BackgroundService
                 new
                 {
                     happenedAtUtc = DateTime.UtcNow,
-                    records = batch.ConvertAll(MapDeadLetterPayload),
+                    records = batch.ConvertAll(MapDeadLetterPayload)
                 },
                 JsonOptions
             );
@@ -236,39 +245,41 @@ public sealed class AuditWriterService : BackgroundService
         }
     }
 
-    private static object MapDeadLetterPayload(DurableRecord record) =>
-        record switch
+    private static object MapDeadLetterPayload(DurableRecord record)
+    {
+        return record switch
         {
             AuditRecord audit => new
             {
                 kind = nameof(AuditRecord),
                 occurredAt = audit.OccurredAt,
                 correlationId = audit.CorrelationId,
-                audit = audit.Event,
+                audit = audit.Event
             },
             LedgerRecord ledger => new
             {
                 kind = nameof(LedgerRecord),
                 occurredAt = ledger.OccurredAt,
                 correlationId = ledger.CorrelationId,
-                ledger = ledger.Event,
+                ledger = ledger.Event
             },
             ItemRecord item => new
             {
                 kind = nameof(ItemRecord),
                 occurredAt = item.OccurredAt,
                 correlationId = item.CorrelationId,
-                item = item.Event,
+                item = item.Event
             },
             PerformanceLogRecord performanceLog => new
             {
                 kind = nameof(PerformanceLogRecord),
                 occurredAt = performanceLog.OccurredAt,
                 correlationId = performanceLog.CorrelationId,
-                performanceLog = performanceLog.Event,
+                performanceLog = performanceLog.Event
             },
-            _ => throw new ArgumentOutOfRangeException(nameof(record), record.GetType().Name, null),
+            _ => throw new ArgumentOutOfRangeException(nameof(record), record.GetType().Name, null)
         };
+    }
 
     private void EnsureDirectory(string path)
     {
@@ -279,8 +290,9 @@ public sealed class AuditWriterService : BackgroundService
         }
     }
 
-    private static object MapEntity(DurableRecord record) =>
-        record switch
+    private static object MapEntity(DurableRecord record)
+    {
+        return record switch
         {
             AuditRecord audit => MapAudit(audit),
             LedgerRecord ledger => MapLedger(ledger),
@@ -290,11 +302,13 @@ public sealed class AuditWriterService : BackgroundService
                 nameof(record),
                 record.GetType().Name,
                 "Unknown durable observability record type."
-            ),
+            )
         };
+    }
 
-    private static AuditEventEntity MapAudit(AuditRecord record) =>
-        new()
+    private static AuditEventEntity MapAudit(AuditRecord record)
+    {
+        return new AuditEventEntity
         {
             OccurredAt = record.OccurredAt,
             Category = record.Event.Category,
@@ -307,11 +321,13 @@ public sealed class AuditWriterService : BackgroundService
             RoomId = record.Event.RoomId,
             ItemId = record.Event.ItemId,
             IpHash = record.Event.IpHash,
-            Data = record.Event.Data,
+            Data = record.Event.Data
         };
+    }
 
-    private static EconomyLedgerEntity MapLedger(LedgerRecord record) =>
-        new()
+    private static EconomyLedgerEntity MapLedger(LedgerRecord record)
+    {
+        return new EconomyLedgerEntity
         {
             OccurredAt = record.OccurredAt,
             PlayerId = record.Event.PlayerId,
@@ -321,11 +337,13 @@ public sealed class AuditWriterService : BackgroundService
             BalanceAfter = record.Event.BalanceAfter,
             Reason = record.Event.Reason,
             CorrelationId = record.CorrelationId,
-            RefId = record.Event.RefId,
+            RefId = record.Event.RefId
         };
+    }
 
-    private static ItemEventEntity MapItem(ItemRecord record) =>
-        new()
+    private static ItemEventEntity MapItem(ItemRecord record)
+    {
+        return new ItemEventEntity
         {
             OccurredAt = record.OccurredAt,
             ItemId = record.Event.ItemId,
@@ -335,11 +353,13 @@ public sealed class AuditWriterService : BackgroundService
             ToOwnerId = record.Event.ToOwnerId,
             RoomId = record.Event.RoomId,
             CorrelationId = record.CorrelationId,
-            Data = record.Event.Data,
+            Data = record.Event.Data
         };
+    }
 
-    private static PerformanceLogEntity MapPerformanceLog(PerformanceLogRecord record) =>
-        new()
+    private static PerformanceLogEntity MapPerformanceLog(PerformanceLogRecord record)
+    {
+        return new PerformanceLogEntity
         {
             ElapsedTime = record.Event.ElapsedTime,
             UserAgent = record.Event.UserAgent,
@@ -350,6 +370,7 @@ public sealed class AuditWriterService : BackgroundService
             MemoryUsage = record.Event.MemoryUsage,
             GarbageCollections = record.Event.GarbageCollections,
             AverageFrameRate = record.Event.AverageFrameRate,
-            IPAddress = record.Event.IPAddress,
+            IPAddress = record.Event.IPAddress
         };
+    }
 }

@@ -16,7 +16,7 @@ public static class WiredVariableHashBuilder
         WiredVariableTargetType targetType
     )
     {
-        XxHash32 hasher = new XxHash32();
+        XxHash32 hasher = new();
 
         WriteString(ref hasher, variableName);
         WriteInt32(ref hasher, (int)targetType);
@@ -30,7 +30,7 @@ public static class WiredVariableHashBuilder
     public static WiredVariableHash HashVariable(IWiredVariable varDef)
     {
         WiredVariableSnapshot snapshot = varDef.GetVarSnapshot();
-        XxHash32 hasher = new XxHash32();
+        XxHash32 hasher = new();
 
         WriteString(ref hasher, snapshot.VariableName);
         WriteInt32(ref hasher, (int)snapshot.AvailabilityType);
@@ -39,7 +39,9 @@ public static class WiredVariableHashBuilder
         WriteInt32(ref hasher, snapshot.TextConnectors.Count);
 
         foreach (string s in snapshot.TextConnectors.Values)
+        {
             WriteString(ref hasher, s);
+        }
 
         Span<byte> hashBytes = stackalloc byte[4];
         hasher.GetHashAndReset(hashBytes);
@@ -55,7 +57,7 @@ public static class WiredVariableHashBuilder
         Dictionary<WiredVariableValue, string> textConnectors
     )
     {
-        XxHash32 hasher = new XxHash32();
+        XxHash32 hasher = new();
 
         WriteString(ref hasher, name);
         WriteInt32(ref hasher, (int)availabilityType);
@@ -64,7 +66,9 @@ public static class WiredVariableHashBuilder
         WriteInt32(ref hasher, textConnectors.Count);
 
         foreach (string s in textConnectors.Values)
+        {
             WriteString(ref hasher, s);
+        }
 
         Span<byte> hashBytes = stackalloc byte[4];
         hasher.GetHashAndReset(hashBytes);
@@ -74,12 +78,14 @@ public static class WiredVariableHashBuilder
 
     public static WiredVariableHash HashFromHashes(IReadOnlyList<WiredVariableHash> hashes)
     {
-        XxHash32 hasher = new XxHash32();
+        XxHash32 hasher = new();
 
         WriteInt32(ref hasher, hashes.Count);
 
         for (int i = 0; i < hashes.Count; i++)
+        {
             WriteInt32(ref hasher, hashes[i].Value);
+        }
 
         Span<byte> hashBytes = stackalloc byte[4];
         hasher.GetHashAndReset(hashBytes);

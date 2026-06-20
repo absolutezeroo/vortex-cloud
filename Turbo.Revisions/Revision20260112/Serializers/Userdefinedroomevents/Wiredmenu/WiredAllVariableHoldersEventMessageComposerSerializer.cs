@@ -20,6 +20,8 @@ internal class WiredAllVariableHoldersEventMessageComposerSerializer(int header)
         packet.WriteInteger(message.ObjectValues.Count);
 
         foreach ((RoomObjectId objectId, int value) in message.ObjectValues)
+        {
             packet.WriteInteger(objectId).WriteInteger(value);
+        }
     }
 }

@@ -19,14 +19,18 @@ internal class WiredVariablesForObjectEventMessageComposerSerializer(int header)
             .WriteInteger(message.VariableValues.Count);
 
         foreach ((WiredVariableId id, WiredVariableValue value) in message.VariableValues)
+        {
             packet.WriteString(id.ToString()).WriteInteger(value);
+        }
 
         if (message.TargetType == WiredVariableTargetType.Furni)
         {
             packet.WriteInteger(message.ConfiguredInWireds.Count);
 
             foreach (int id in message.ConfiguredInWireds)
+            {
                 packet.WriteInteger(id);
+            }
         }
     }
 }

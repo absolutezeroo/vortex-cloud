@@ -6,23 +6,25 @@ using Turbo.Primitives.Groups.Snapshots;
 namespace Turbo.Players.Grains;
 
 /// <summary>
-/// Static catalogue of the guild badge designer's building blocks: the selectable base shapes,
-/// overlay symbols, and the badge / guild colour swatches the client renders in the badge editor
-/// (<c>GuildEditorDataMessageEvent</c>) and the creation wizard's default badge.
-///
-/// <para>
-/// Wire contract (reverse-engineered from the client's <c>BadgePartData</c> /
-/// <c>GuildColorData</c>): a part is (id, fileName, maskFileName) and the client loads the asset as
-/// <c>badgepart_{fileName}.png</c>; a colour is (id, hex) where the client parses the hex string
-/// base-16. The badge code persisted on the group embeds the <em>part ids</em> and <em>colour
-/// ids</em> defined here, so these ids must stay stable to keep existing badges rendering.
-/// </para>
-///
-/// <para>
-/// File names follow the conventional Habbo scheme (<c>base_N</c> / <c>symbol_N</c>); the actual
-/// glyphs come from the client's asset pack. Extend the ranges / palette here to expose more parts
-/// — nothing else needs to change.
-/// </para>
+///     Static catalogue of the guild badge designer's building blocks: the selectable base shapes,
+///     overlay symbols, and the badge / guild colour swatches the client renders in the badge editor
+///     (<c>GuildEditorDataMessageEvent</c>) and the creation wizard's default badge.
+///     <para>
+///         Wire contract (reverse-engineered from the client's <c>BadgePartData</c> /
+///         <c>GuildColorData</c>): a part is (id, fileName, maskFileName) and the client loads the asset as
+///         <c>badgepart_{fileName}.png</c>; a colour is (id, hex) where the client parses the hex string
+///         base-16. The badge code persisted on the group embeds the <em>part ids</em> and
+///         <em>
+///             colour
+///             ids
+///         </em>
+///         defined here, so these ids must stay stable to keep existing badges rendering.
+///     </para>
+///     <para>
+///         File names follow the conventional Habbo scheme (<c>base_N</c> / <c>symbol_N</c>); the actual
+///         glyphs come from the client's asset pack. Extend the ranges / palette here to expose more parts
+///         — nothing else needs to change.
+///     </para>
 /// </summary>
 internal static class GuildBadgeLibrary
 {
@@ -30,6 +32,11 @@ internal static class GuildBadgeLibrary
     // surface more parts once the matching badgepart_* assets ship in the client pack.
     private const int BaseShapeCount = 16;
     private const int SymbolCount = 60;
+
+    // Number of badge layers the client badge editor always has. This is a hard client constant
+    // (5 BadgeLayerCtrl instances created unconditionally); the server must always send exactly
+    // this many GuildBadgeSettings entries or the client crashes with a null-reference.
+    public const int LayerCount = 5;
 
     // Standard guild badge colour palette (RRGGBB, no leading '#'); the client parses base-16.
     // These are the classic Habbo guild swatches; ids are 1-based and stable.
@@ -51,8 +58,15 @@ internal static class GuildBadgeLibrary
         "8b00ff", // 14 violet
         "ff00ff", // 15 magenta
         "ff69b4", // 16 pink
-        "8b4513", // 17 brown
+        "8b4513" // 17 brown
     ];
+
+    private static readonly GroupBadgePartSnapshot EmptyLayer = new()
+    {
+        PartId = 0,
+        ColorId = 0,
+        Position = 0
+    };
 
     /// <summary>Base shapes that form the bottom layer of a guild badge.</summary>
     public static List<GroupBadgePartOptionSnapshot> BaseParts { get; } =
@@ -72,72 +86,60 @@ internal static class GuildBadgeLibrary
     public static List<GroupColorOptionSnapshot> SecondaryColors { get; } = BuildColors();
 
     /// <summary>
-    /// The badge a fresh guild starts with in the creation wizard.
-    /// <para>
-    /// IMPORTANT: The client badge editor always has exactly 5 layers (indices 0–4) and iterates
-    /// <c>_badgeInitData[0..4]</c> unconditionally — a missing entry causes a null-reference crash.
-    /// We therefore always send exactly 5 <c>GuildBadgeSettings</c> entries: layer 0 (the base
-    /// shape) is pre-filled with part 1, colour 1, centred (position 4); layers 1–4 are empty
-    /// (partId=0, colorId=0, position=0).
-    /// </para>
+    ///     The badge a fresh guild starts with in the creation wizard.
+    ///     <para>
+    ///         IMPORTANT: The client badge editor always has exactly 5 layers (indices 0–4) and iterates
+    ///         <c>_badgeInitData[0..4]</c> unconditionally — a missing entry causes a null-reference crash.
+    ///         We therefore always send exactly 5 <c>GuildBadgeSettings</c> entries: layer 0 (the base
+    ///         shape) is pre-filled with part 1, colour 1, centred (position 4); layers 1–4 are empty
+    ///         (partId=0, colorId=0, position=0).
+    ///     </para>
     /// </summary>
     public static List<GroupBadgePartSnapshot> DefaultBadgeParts { get; } =
     [
-        new GroupBadgePartSnapshot
+        new()
         {
             PartId = 1,
             ColorId = 1,
-            Position = 4,
+            Position = 4
         }, // base layer
-        new GroupBadgePartSnapshot
+        new()
         {
             PartId = 0,
             ColorId = 0,
-            Position = 0,
+            Position = 0
         }, // overlay 1 (empty)
-        new GroupBadgePartSnapshot
+        new()
         {
             PartId = 0,
             ColorId = 0,
-            Position = 0,
+            Position = 0
         }, // overlay 2 (empty)
-        new GroupBadgePartSnapshot
+        new()
         {
             PartId = 0,
             ColorId = 0,
-            Position = 0,
+            Position = 0
         }, // overlay 3 (empty)
-        new GroupBadgePartSnapshot
+        new()
         {
             PartId = 0,
             ColorId = 0,
-            Position = 0,
-        }, // overlay 4 (empty)
+            Position = 0
+        } // overlay 4 (empty)
     ];
 
-    // Number of badge layers the client badge editor always has. This is a hard client constant
-    // (5 BadgeLayerCtrl instances created unconditionally); the server must always send exactly
-    // this many GuildBadgeSettings entries or the client crashes with a null-reference.
-    public const int LayerCount = 5;
-
-    private static readonly GroupBadgePartSnapshot EmptyLayer = new()
-    {
-        PartId = 0,
-        ColorId = 0,
-        Position = 0,
-    };
-
     /// <summary>
-    /// Parses a stored badge code (e.g. <c>b010104b020201</c>) into exactly <see cref="LayerCount"/>
-    /// layer entries, padding with empty layers as needed. The client badge editor iterates all 5
-    /// layers unconditionally; a short list causes a null-reference crash.
+    ///     Parses a stored badge code (e.g. <c>b010104b020201</c>) into exactly <see cref="LayerCount" />
+    ///     layer entries, padding with empty layers as needed. The client badge editor iterates all 5
+    ///     layers unconditionally; a short list causes a null-reference crash.
     /// </summary>
     /// <remarks>
-    /// Badge code format per segment: <c>b{partId:D2}{colorId:D2}{position}</c>.
+    ///     Badge code format per segment: <c>b{partId:D2}{colorId:D2}{position}</c>.
     /// </remarks>
     public static List<GroupBadgePartSnapshot> ParseBadgeCode(string? badgeCode)
     {
-        List<GroupBadgePartSnapshot> result = new List<GroupBadgePartSnapshot>(LayerCount);
+        List<GroupBadgePartSnapshot> result = new(LayerCount);
 
         if (!string.IsNullOrEmpty(badgeCode))
         {
@@ -162,7 +164,7 @@ internal static class GuildBadgeLibrary
                         {
                             PartId = partId,
                             ColorId = colorId,
-                            Position = position,
+                            Position = position
                         }
                     );
                 }
@@ -173,14 +175,16 @@ internal static class GuildBadgeLibrary
 
         // Pad to exactly LayerCount entries.
         while (result.Count < LayerCount)
+        {
             result.Add(EmptyLayer);
+        }
 
         return result;
     }
 
     /// <summary>
-    /// Resolves a colour id (as stored in <c>GroupEntity.ColorOne</c>/<c>ColorTwo</c>) to its hex
-    /// string for display. Unknown / unset ids fall back to the first palette entry.
+    ///     Resolves a colour id (as stored in <c>GroupEntity.ColorOne</c>/<c>ColorTwo</c>) to its hex
+    ///     string for display. Unknown / unset ids fall back to the first palette entry.
     /// </summary>
     public static string ResolveColorHex(string? colorId)
     {
@@ -192,20 +196,24 @@ internal static class GuildBadgeLibrary
         return PaletteHex[0];
     }
 
-    private static List<GroupBadgePartOptionSnapshot> BuildParts(string prefix, int count) =>
-        Enumerable
+    private static List<GroupBadgePartOptionSnapshot> BuildParts(string prefix, int count)
+    {
+        return Enumerable
             .Range(1, count)
             .Select(i => new GroupBadgePartOptionSnapshot
             {
                 Id = i,
                 FileName = $"{prefix}_{i}",
                 // No separate mask layer in the default pack; an empty name means "no mask".
-                MaskFileName = string.Empty,
+                MaskFileName = string.Empty
             })
             .ToList();
+    }
 
-    private static List<GroupColorOptionSnapshot> BuildColors() =>
-        PaletteHex
+    private static List<GroupColorOptionSnapshot> BuildColors()
+    {
+        return PaletteHex
             .Select((hex, index) => new GroupColorOptionSnapshot { Id = index + 1, ColorHex = hex })
             .ToList();
+    }
 }

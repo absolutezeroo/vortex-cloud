@@ -24,7 +24,9 @@ internal class ExtendedProfileMessageComposerSerializer(int header)
             .WriteInteger(message.Guilds.Count);
 
         foreach (GuildInfoSnapshot guild in message.Guilds)
+        {
             GuildInfoSerializer.Serialize(packet, guild);
+        }
 
         packet
             .WriteInteger(message.LastAccessSinceInSeconds)

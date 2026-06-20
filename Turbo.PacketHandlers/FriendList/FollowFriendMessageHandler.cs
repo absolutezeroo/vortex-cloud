@@ -44,7 +44,9 @@ public class FollowFriendMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        IPlayerPresenceGrain friendPresence = _grainFactory.GetPlayerPresenceGrain(message.PlayerId);
+        IPlayerPresenceGrain friendPresence = _grainFactory.GetPlayerPresenceGrain(
+            message.PlayerId
+        );
         bool isOnline = await friendPresence.IsOnlineAsync(ct).ConfigureAwait(false);
 
         if (!isOnline)
@@ -60,7 +62,9 @@ public class FollowFriendMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        RoomPointerSnapshot activeRoom = await friendPresence.GetActiveRoomAsync().ConfigureAwait(false);
+        RoomPointerSnapshot activeRoom = await friendPresence
+            .GetActiveRoomAsync()
+            .ConfigureAwait(false);
 
         if (activeRoom.RoomId <= 0)
         {

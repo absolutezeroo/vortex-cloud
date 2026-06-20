@@ -10,11 +10,15 @@ internal class CatalogPageLocalizationSerializer
         packet.WriteInteger(message.ImageData.Count);
 
         foreach (string data in message.ImageData)
+        {
             packet.WriteString(data);
+        }
 
         packet.WriteInteger(message.TextData.Count);
 
         foreach (string data in message.TextData)
+        {
             packet.WriteString(data);
+        }
     }
 }

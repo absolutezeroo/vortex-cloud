@@ -1,8 +1,9 @@
-using System.Collections.Generic;
+using System;
 using FluentAssertions;
 using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Incoming.Users;
 using Turbo.Primitives.Messages.Outgoing.Users;
+using Turbo.Primitives.Networking;
 using Turbo.Primitives.Packets;
 using Xunit;
 using Rev = Turbo.Revisions.Revision20260112.Revision20260112;
@@ -19,21 +20,21 @@ public sealed class GuildManagementWireLayoutTests
 
     private static readonly Rev Revision = new();
 
-    private static ClientPacket BuildClientPacket(int header, System.Action<ServerPacket> write)
+    private static ClientPacket BuildClientPacket(int header, Action<ServerPacket> write)
     {
-        ServerPacket sp = new ServerPacket(header);
+        ServerPacket sp = new(header);
         write(sp);
         return new ClientPacket(header, sp.ToArray());
     }
 
     private static ClientPacket SerializeAndReadBody(
-        System.Type composerType,
-        Turbo.Primitives.Networking.IComposer composer
+        Type composerType,
+        IComposer composer
     )
     {
         byte[] bytes = Revision.Serializers[composerType].Serialize(composer).ToArray();
         byte[] body = new byte[bytes.Length - 6];
-        System.Array.Copy(bytes, 6, body, 0, body.Length);
+        Array.Copy(bytes, 6, body, 0, body.Length);
         return new ClientPacket(0, body);
     }
 
@@ -47,7 +48,9 @@ public sealed class GuildManagementWireLayoutTests
                 sp.WriteInteger(5); // groupId
                 sp.WriteInteger(6); // flattened length
                 foreach (int v in new[] { 1, 2, 0, 3, 4, 1 })
+                {
                     sp.WriteInteger(v);
+                }
             }
         );
 
@@ -115,7 +118,7 @@ public sealed class GuildManagementWireLayoutTests
     [Fact]
     public void GuildEditInfoSerializer_WritesClientLayout()
     {
-        GroupEditInfoSnapshot info = new GroupEditInfoSnapshot
+        GroupEditInfoSnapshot info = new()
         {
             OwnedRooms =
             [
@@ -123,8 +126,8 @@ public sealed class GuildManagementWireLayoutTests
                 {
                     RoomId = 42,
                     RoomName = "HQ",
-                    HasControllers = true,
-                },
+                    HasControllers = true
+                }
             ],
             IsOwner = true,
             GroupId = 5,
@@ -139,7 +142,7 @@ public sealed class GuildManagementWireLayoutTests
             Url = "",
             BadgeParts = [],
             BadgeCode = "b0102",
-            MembershipCount = 9,
+            MembershipCount = 9
         };
 
         ClientPacket body = SerializeAndReadBody(
@@ -182,8 +185,8 @@ public sealed class GuildManagementWireLayoutTests
                     UserId = 7,
                     UserName = "bob",
                     Figure = "hd-1-1",
-                    MemberSince = "19-06-2026",
-                },
+                    MemberSince = "19-06-2026"
+                }
             }
         );
 

@@ -81,8 +81,12 @@ internal sealed class DashboardApiService(
 
         try
         {
-            InfrastructureHealthSnapshot health = await _infrastructureHealth.GetStatusAsync(ct).ConfigureAwait(false);
-            IncidentDetectionSnapshot incidents = await _incidentDetection.DetectAsync(ct).ConfigureAwait(false);
+            InfrastructureHealthSnapshot health = await _infrastructureHealth
+                .GetStatusAsync(ct)
+                .ConfigureAwait(false);
+            IncidentDetectionSnapshot incidents = await _incidentDetection
+                .DetectAsync(ct)
+                .ConfigureAwait(false);
             LiveStatsSnapshot live = await _liveStats.GetSnapshotAsync().ConfigureAwait(false);
             ImmutableArray<RoomSummarySnapshot> activeRooms = await _grainFactory
                 .GetRoomDirectoryGrain()
@@ -180,7 +184,13 @@ internal sealed class DashboardApiService(
                     q = q.Where(a => a.TargetPlayerId == target);
                 }
 
-                if (Enum.TryParse<AuditCategory>(query["category"], ignoreCase: true, out AuditCategory cat))
+                if (
+                    Enum.TryParse<AuditCategory>(
+                        query["category"],
+                        ignoreCase: true,
+                        out AuditCategory cat
+                    )
+                )
                 {
                     q = q.Where(a => a.Category == cat);
                 }
@@ -350,7 +360,8 @@ internal sealed class DashboardApiService(
                 Dictionary<int, string> playerNames = await LoadPlayerNamesAsync(db, playerIds, ct)
                     .ConfigureAwait(false);
 
-                Dictionary<int, string> roomNames = await LoadRoomNamesAsync(db, roomIds, ct).ConfigureAwait(false);
+                Dictionary<int, string> roomNames = await LoadRoomNamesAsync(db, roomIds, ct)
+                    .ConfigureAwait(false);
 
                 HashSet<long> renewedBanEventIds = DetectRenewedBanEventIds(events);
 
@@ -440,7 +451,9 @@ internal sealed class DashboardApiService(
                     .Select(g => new
                     {
                         roomId = g.Key,
-                        roomName = roomNames.TryGetValue(g.Key, out string? roomName) ? roomName : null,
+                        roomName = roomNames.TryGetValue(g.Key, out string? roomName)
+                            ? roomName
+                            : null,
                         count = g.Count(),
                     })
                     .ToList();
@@ -463,7 +476,12 @@ internal sealed class DashboardApiService(
                 int inactiveBans = totalBans - activeBans;
 
                 TimeSpan bucketSize = ResolveBucketSize(since, until);
-                List<ModerationTimelinePoint> timeline = BuildModerationTimeline(events, since, until, bucketSize);
+                List<ModerationTimelinePoint> timeline = BuildModerationTimeline(
+                    events,
+                    since,
+                    until,
+                    bucketSize
+                );
 
                 return new
                 {
@@ -705,7 +723,8 @@ internal sealed class DashboardApiService(
                     .ToList();
 
                 List<int> actorIds = NormalizeIds(clubEvents.Select(e => e.ActorPlayerId));
-                Dictionary<int, string> actorNames = await LoadPlayerNamesAsync(db, actorIds, ct).ConfigureAwait(false);
+                Dictionary<int, string> actorNames = await LoadPlayerNamesAsync(db, actorIds, ct)
+                    .ConfigureAwait(false);
 
                 var enrichedEvents = clubEvents
                     .Select(e =>
@@ -841,7 +860,9 @@ internal sealed class DashboardApiService(
                 int limit = ParseLimit(query["limit"], 50, 500);
                 int page = ParsePage(query["page"]);
                 int offset = Math.Max(0, (page - 1) * limit);
-                IQueryable<ItemEventEntity> q = db.ItemEvents.AsNoTracking().Where(i => i.ItemId == itemId);
+                IQueryable<ItemEventEntity> q = db
+                    .ItemEvents.AsNoTracking()
+                    .Where(i => i.ItemId == itemId);
 
                 DateTime? since = ParseDateTime(query["since"]);
                 DateTime? until = ParseDateTime(query["until"]);
@@ -903,7 +924,11 @@ internal sealed class DashboardApiService(
                     rows.SelectMany(r => new[] { r.ActorPlayerId, r.FromOwnerId, r.ToOwnerId })
                 );
 
-                Dictionary<int, string> rowPlayerNames = await LoadPlayerNamesAsync(db, rowPlayerIds, ct)
+                Dictionary<int, string> rowPlayerNames = await LoadPlayerNamesAsync(
+                        db,
+                        rowPlayerIds,
+                        ct
+                    )
                     .ConfigureAwait(false);
 
                 List<int> rowRoomIds = NormalizeIds(rows.Select(r => r.RoomId));
@@ -963,7 +988,9 @@ internal sealed class DashboardApiService(
                 // Correlation id: 32 hex chars (Guid "N").
                 if (term.Length == 32 && term.All(Uri.IsHexDigit))
                 {
-                    IQueryable<AuditEventEntity> audit = db.AuditEvents.AsNoTracking().Where(a => a.CorrelationId == term);
+                    IQueryable<AuditEventEntity> audit = db
+                        .AuditEvents.AsNoTracking()
+                        .Where(a => a.CorrelationId == term);
 
                     if (since is not null)
                     {
@@ -989,7 +1016,9 @@ internal sealed class DashboardApiService(
                         ledger = ledger.Where(l => l.OccurredAt <= until.Value);
                     }
 
-                    IQueryable<ItemEventEntity> items = db.ItemEvents.AsNoTracking().Where(i => i.CorrelationId == term);
+                    IQueryable<ItemEventEntity> items = db
+                        .ItemEvents.AsNoTracking()
+                        .Where(i => i.CorrelationId == term);
 
                     if (since is not null)
                     {
@@ -1017,7 +1046,11 @@ internal sealed class DashboardApiService(
 
                     List<int> auditActorIds = NormalizeIds(auditRows.Select(a => a.ActorPlayerId));
 
-                    Dictionary<int, string> auditActorNames = await LoadPlayerNamesAsync(db, auditActorIds, ct)
+                    Dictionary<int, string> auditActorNames = await LoadPlayerNamesAsync(
+                            db,
+                            auditActorIds,
+                            ct
+                        )
                         .ConfigureAwait(false);
 
                     var auditRowsWithNames = auditRows
@@ -1214,7 +1247,11 @@ internal sealed class DashboardApiService(
 
                     List<int> itemRoomIds = NormalizeIds(itemEvents.Select(i => i.RoomId));
 
-                    Dictionary<int, string> itemRoomNames = await LoadRoomNamesAsync(db, itemRoomIds, ct)
+                    Dictionary<int, string> itemRoomNames = await LoadRoomNamesAsync(
+                            db,
+                            itemRoomIds,
+                            ct
+                        )
                         .ConfigureAwait(false);
 
                     List<int> itemPartyIds = NormalizeIds(
@@ -1223,7 +1260,11 @@ internal sealed class DashboardApiService(
                         )
                     );
 
-                    Dictionary<int, string> itemPartyNames = await LoadPlayerNamesAsync(db, itemPartyIds, ct)
+                    Dictionary<int, string> itemPartyNames = await LoadPlayerNamesAsync(
+                            db,
+                            itemPartyIds,
+                            ct
+                        )
                         .ConfigureAwait(false);
 
                     var itemEventsWithRooms = itemEvents
@@ -1336,7 +1377,9 @@ internal sealed class DashboardApiService(
                         audit = audit.Where(a => a.OccurredAt <= until.Value);
                     }
 
-                    IQueryable<EconomyLedgerEntity> ledger = db.EconomyLedger.AsNoTracking().Where(l => l.PlayerId == id);
+                    IQueryable<EconomyLedgerEntity> ledger = db
+                        .EconomyLedger.AsNoTracking()
+                        .Where(l => l.PlayerId == id);
 
                     if (since is not null)
                     {
@@ -1386,12 +1429,20 @@ internal sealed class DashboardApiService(
                         asActorRows.SelectMany(r => new[] { r.ActorPlayerId, r.TargetPlayerId })
                     );
 
-                    Dictionary<int, string> actorAndTargetNames = await LoadPlayerNamesAsync(db, actorAndTargetIds, ct)
+                    Dictionary<int, string> actorAndTargetNames = await LoadPlayerNamesAsync(
+                            db,
+                            actorAndTargetIds,
+                            ct
+                        )
                         .ConfigureAwait(false);
 
                     List<int> auditRoomIds = NormalizeIds(asActorRows.Select(r => r.RoomId));
 
-                    Dictionary<int, string> auditRoomNames = await LoadRoomNamesAsync(db, auditRoomIds, ct)
+                    Dictionary<int, string> auditRoomNames = await LoadRoomNamesAsync(
+                            db,
+                            auditRoomIds,
+                            ct
+                        )
                         .ConfigureAwait(false);
 
                     var asActor = asActorRows
@@ -1449,7 +1500,11 @@ internal sealed class DashboardApiService(
                         )
                     );
 
-                    Dictionary<int, string> itemHistoryRoomNames = await LoadRoomNamesAsync(db, itemHistoryRoomIds, ct)
+                    Dictionary<int, string> itemHistoryRoomNames = await LoadRoomNamesAsync(
+                            db,
+                            itemHistoryRoomIds,
+                            ct
+                        )
                         .ConfigureAwait(false);
 
                     Dictionary<int, string> itemHistoryPartyNames = await LoadPlayerNamesAsync(
@@ -1467,7 +1522,10 @@ internal sealed class DashboardApiService(
                             row.ItemId,
                             row.RoomId,
                             roomName = row.RoomId != null
-                            && itemHistoryRoomNames.TryGetValue(row.RoomId.Value, out string? roomName)
+                            && itemHistoryRoomNames.TryGetValue(
+                                row.RoomId.Value,
+                                out string? roomName
+                            )
                                 ? roomName
                                 : null,
                             row.ActorPlayerId,
@@ -1568,8 +1626,12 @@ internal sealed class DashboardApiService(
                 IQueryable<RoomEntryLogEntity> entriesQuery = db
                     .RoomEntryLogs.AsNoTracking()
                     .Where(e => e.RoomEntityId == roomId);
-                IQueryable<RoomChatlogEntity> chatQuery = db.Chatlogs.AsNoTracking().Where(c => c.RoomEntityId == roomId);
-                IQueryable<ItemEventEntity> itemQuery = db.ItemEvents.AsNoTracking().Where(i => i.RoomId == roomId);
+                IQueryable<RoomChatlogEntity> chatQuery = db
+                    .Chatlogs.AsNoTracking()
+                    .Where(c => c.RoomEntityId == roomId);
+                IQueryable<ItemEventEntity> itemQuery = db
+                    .ItemEvents.AsNoTracking()
+                    .Where(i => i.RoomId == roomId);
 
                 if (since is not null)
                 {
@@ -1658,7 +1720,11 @@ internal sealed class DashboardApiService(
                     itemTimeline.SelectMany(e => new[] { e.PlayerId, e.TargetPlayerId })
                 );
 
-                Dictionary<int, string> itemPlayerNames = await LoadPlayerNamesAsync(db, itemPlayerIds, ct)
+                Dictionary<int, string> itemPlayerNames = await LoadPlayerNamesAsync(
+                        db,
+                        itemPlayerIds,
+                        ct
+                    )
                     .ConfigureAwait(false);
 
                 var itemTimelineEnriched = itemTimeline
@@ -1814,7 +1880,8 @@ internal sealed class DashboardApiService(
                 string term = (query["q"] ?? string.Empty).Trim();
                 int limit = ParseLimit(query["limit"], 50, 200);
 
-                IQueryable<FurnitureDefinitionEntity> definitions = db.FurnitureDefinitions.AsNoTracking();
+                IQueryable<FurnitureDefinitionEntity> definitions =
+                    db.FurnitureDefinitions.AsNoTracking();
 
                 if (term.Length > 0)
                 {
@@ -1973,11 +2040,14 @@ internal sealed class DashboardApiService(
             return [];
         }
 
-        Dictionary<(long Actor, long Target, int Room), DateTime> lastBanByKey = new Dictionary<(long Actor, long Target, int Room), DateTime>();
+        Dictionary<(long Actor, long Target, int Room), DateTime> lastBanByKey =
+            new Dictionary<(long Actor, long Target, int Room), DateTime>();
         HashSet<long> renewed = new HashSet<long>();
 
         foreach (
-            ModerationEventRow evt in events.Where(e => e.Action == "moderation.ban").OrderBy(e => e.OccurredAt)
+            ModerationEventRow evt in events
+                .Where(e => e.Action == "moderation.ban")
+                .OrderBy(e => e.OccurredAt)
         )
         {
             if (evt.ActorPlayerId is null || evt.TargetPlayerId is null || evt.RoomId is null)
@@ -1985,7 +2055,11 @@ internal sealed class DashboardApiService(
                 continue;
             }
 
-            (long, long, int) key = (evt.ActorPlayerId.Value, evt.TargetPlayerId.Value, evt.RoomId.Value);
+            (long, long, int) key = (
+                evt.ActorPlayerId.Value,
+                evt.TargetPlayerId.Value,
+                evt.RoomId.Value
+            );
 
             if (lastBanByKey.TryGetValue(key, out _))
             {
@@ -2049,7 +2123,8 @@ internal sealed class DashboardApiService(
             return [];
         }
 
-        Dictionary<DateTime, (int purchases, int renewals, int expired)> bucketMap = new Dictionary<DateTime, (int purchases, int renewals, int expired)>();
+        Dictionary<DateTime, (int purchases, int renewals, int expired)> bucketMap =
+            new Dictionary<DateTime, (int purchases, int renewals, int expired)>();
 
         DateTime cursor = ResolveTimelineBucket(since, bucketSize);
         DateTime end = ResolveTimelineBucket(until, bucketSize);
@@ -2063,7 +2138,10 @@ internal sealed class DashboardApiService(
         foreach ((DateTime OccurredAt, string Action) evt in events)
         {
             DateTime bucket = ResolveTimelineBucket(evt.OccurredAt, bucketSize);
-            (int purchases, int renewals, int expired) counts = bucketMap.TryGetValue(bucket, out (int purchases, int renewals, int expired) current)
+            (int purchases, int renewals, int expired) counts = bucketMap.TryGetValue(
+                bucket,
+                out (int purchases, int renewals, int expired) current
+            )
                 ? current
                 : (purchases: 0, renewals: 0, expired: 0);
 

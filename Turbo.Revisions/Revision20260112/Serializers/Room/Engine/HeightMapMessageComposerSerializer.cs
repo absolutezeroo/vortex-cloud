@@ -11,6 +11,8 @@ internal class HeightMapMessageComposerSerializer(int header)
         packet.WriteInteger(message.Width).WriteInteger(message.Size);
 
         foreach (short height in message.Heights)
+        {
             packet.WriteShort(height);
+        }
     }
 }

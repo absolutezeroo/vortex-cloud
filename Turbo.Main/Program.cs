@@ -69,7 +69,9 @@ internal class Program
         if (builder.Environment.IsDevelopment())
         {
             bootstrapLogger.LogInformation("=== Configuration Providers ===");
-            foreach (IConfigurationProvider p in ((IConfigurationRoot)builder.Configuration).Providers)
+            foreach (
+                IConfigurationProvider p in ((IConfigurationRoot)builder.Configuration).Providers
+            )
             {
                 if (p is JsonConfigurationProvider jp)
                 {
@@ -120,7 +122,8 @@ internal class Program
 
         IHost host = builder.Build();
 
-        IHostApplicationLifetime lifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
+        IHostApplicationLifetime lifetime =
+            host.Services.GetRequiredService<IHostApplicationLifetime>();
         CancellationToken ct = lifetime.ApplicationStopping;
 
         try

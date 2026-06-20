@@ -21,24 +21,26 @@ public class WiredSelectorItemsInArea(
     IRoomFloorItemContext ctx
 ) : FurnitureWiredSelectorLogic(grainFactory, stuffDataFactory, ctx)
 {
+    private readonly HashSet<int> _tileIds = [];
     public override int WiredCode => (int)WiredSelectorType.FURNI_IN_AREA;
 
-    private readonly HashSet<int> _tileIds = [];
-
-    public override List<IWiredParamRule> GetIntParamRules() =>
+    public override List<IWiredParamRule> GetIntParamRules()
+    {
+        return
         [
             new WiredParamRule(0),
             new WiredParamRule(0),
             new WiredParamRule(0),
-            new WiredParamRule(0),
+            new WiredParamRule(0)
         ];
+    }
 
     public override Task<IWiredSelectionSet> SelectAsync(
         IWiredProcessingContext ctx,
         CancellationToken ct
     )
     {
-        WiredSelectionSet output = new WiredSelectionSet();
+        WiredSelectionSet output = new();
 
         foreach (int tileId in _tileIds)
         {
@@ -47,11 +49,12 @@ public class WiredSelectorItemsInArea(
                 HashSet<RoomObjectId> itemIds = _roomGrain._state.TileFloorStacks[tileId];
 
                 foreach (RoomObjectId itemId in itemIds)
-                    output.SelectedFurniIds.Add((int)itemId);
+                {
+                    output.SelectedFurniIds.Add(itemId);
+                }
             }
             catch
             {
-                continue;
             }
         }
 
@@ -92,7 +95,7 @@ public class WiredSelectorItemsInArea(
                     continue;
                 }
 
-                int tileId = (y * mapW) + x;
+                int tileId = y * mapW + x;
 
                 _tileIds.Add(tileId);
                 size++;
@@ -124,7 +127,7 @@ public class WiredSelectorItemsInArea(
                         break;
                     }
 
-                    int tileId = (y * mapW) + x;
+                    int tileId = y * mapW + x;
 
                     if (selectedTiles.Contains(tileId))
                     {

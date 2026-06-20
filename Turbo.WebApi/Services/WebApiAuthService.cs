@@ -83,7 +83,11 @@ public sealed class WebApiAuthService(
             )
             .ConfigureAwait(false);
 
-        PlayerAccountEntity account = new PlayerAccountEntity { Email = normalizedEmail, PasswordHash = hash };
+        PlayerAccountEntity account = new PlayerAccountEntity
+        {
+            Email = normalizedEmail,
+            PasswordHash = hash,
+        };
 
         db.PlayerAccounts.Add(account);
         await db.SaveChangesAsync(ct).ConfigureAwait(false);

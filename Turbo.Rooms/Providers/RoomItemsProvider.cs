@@ -46,7 +46,9 @@ internal sealed class RoomItemsProvider(
         IReadOnlyDictionary<PlayerId, string>
     )> LoadByRoomIdAsync(RoomId roomId, CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
 
         List<FurnitureEntity> entities = await dbCtx
             .Furnitures.AsNoTracking()
@@ -57,7 +59,10 @@ internal sealed class RoomItemsProvider(
         List<IRoomFloorItem> floorItems = new List<IRoomFloorItem>();
         List<IRoomWallItem> wallItems = new List<IRoomWallItem>();
 
-        List<PlayerId> ownerIdsUnique = entities.Select(x => (PlayerId)x.PlayerEntityId).Distinct().ToList();
+        List<PlayerId> ownerIdsUnique = entities
+            .Select(x => (PlayerId)x.PlayerEntityId)
+            .Distinct()
+            .ToList();
         ImmutableDictionary<PlayerId, string> ownerNames = await _grainFactory
             .GetPlayerDirectoryGrain()
             .GetPlayerNamesAsync(ownerIdsUnique, ct)

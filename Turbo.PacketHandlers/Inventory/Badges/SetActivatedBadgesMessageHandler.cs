@@ -24,7 +24,9 @@ public class SetActivatedBadgesMessageHandler(IDbContextFactory<TurboDbContext> 
             return;
         }
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
 
         await dbCtx
             .PlayerBadges.Where(b => b.PlayerEntityId == ctx.PlayerId && b.SlotId > 0)

@@ -120,7 +120,9 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
 
         await WriteToDatabaseAsync(ct);
 
-        IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain((int)this.GetPrimaryKeyLong());
+        IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(
+            (int)this.GetPrimaryKeyLong()
+        );
 
         await playerPresence.OnFigureUpdatedAsync(await GetSummaryAsync(ct), ct);
 
@@ -133,7 +135,9 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
 
         await WriteToDatabaseAsync(ct);
 
-        IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain((int)this.GetPrimaryKeyLong());
+        IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(
+            (int)this.GetPrimaryKeyLong()
+        );
 
         await playerPresence.OnPlayerUpdatedAsync(await GetSummaryAsync(ct), ct);
 
@@ -405,7 +409,9 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
         else
         {
             bool hadPriorSub = _state.ClubExpiresAt > DateTime.MinValue;
-            double lapsedDays = hadPriorSub ? (now - _state.ClubExpiresAt).TotalDays : double.MaxValue;
+            double lapsedDays = hadPriorSub
+                ? (now - _state.ClubExpiresAt).TotalDays
+                : double.MaxValue;
             newTotalMonths =
                 lapsedDays > _clubConfig.StreakGraceDays ? months : _state.ClubTotalMonths + months;
         }
@@ -518,7 +524,9 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
     {
         try
         {
-            IInventoryGrain inventory = _grainFactory.GetInventoryGrain((int)this.GetPrimaryKeyLong());
+            IInventoryGrain inventory = _grainFactory.GetInventoryGrain(
+                (int)this.GetPrimaryKeyLong()
+            );
 
             if (!_state.ClubBadgeGranted)
             {
@@ -656,7 +664,9 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
 
             if (totalReward > 0)
             {
-                IPlayerWalletGrain wallet = _grainFactory.GetPlayerWalletGrain((int)this.GetPrimaryKeyLong());
+                IPlayerWalletGrain wallet = _grainFactory.GetPlayerWalletGrain(
+                    (int)this.GetPrimaryKeyLong()
+                );
                 await wallet.GrantCreditsAsync(totalReward, ct).ConfigureAwait(false);
                 _state.KickbackTotalRewarded += totalReward;
 

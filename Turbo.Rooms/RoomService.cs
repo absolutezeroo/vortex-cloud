@@ -51,7 +51,9 @@ internal sealed partial class RoomService(
         try
         {
             IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(playerId);
-            RoomPendingSnapshot pendingRoom = await playerPresence.GetPendingRoomAsync().ConfigureAwait(false);
+            RoomPendingSnapshot pendingRoom = await playerPresence
+                .GetPendingRoomAsync()
+                .ConfigureAwait(false);
 
             if (
                 await _roomModerationStore

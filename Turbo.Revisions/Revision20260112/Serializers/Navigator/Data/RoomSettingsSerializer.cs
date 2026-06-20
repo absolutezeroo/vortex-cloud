@@ -24,7 +24,9 @@ internal class RoomSettingsSerializer
             .WriteInteger(message.Tags.Length);
 
         foreach (string tag in message.Tags)
+        {
             packet.WriteString(tag);
+        }
 
         RoomBitmaskFlags bitmask = RoomBitmaskFlags.None;
 

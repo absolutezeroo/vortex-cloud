@@ -30,7 +30,9 @@ public class RemoveFriendMessageHandler(IGrainFactory grainFactory)
 
         IMessengerGrain grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
 
-        List<int> removed = await grain.RemoveFriendsAsync(message.FriendIds, ct).ConfigureAwait(false);
+        List<int> removed = await grain
+            .RemoveFriendsAsync(message.FriendIds, ct)
+            .ConfigureAwait(false);
 
         if (removed.Count == 0)
         {

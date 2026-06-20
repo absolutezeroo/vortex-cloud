@@ -21,32 +21,49 @@ namespace Turbo.Rooms.Grains.Modules;
 public sealed partial class RoomMapModule(RoomGrain roomGrain)
 {
     private readonly RoomGrain _roomGrain = roomGrain;
-
-    private RoomMapSnapshot? _mapSnapshot = null;
     private bool _dirty = true;
+
+    private RoomMapSnapshot? _mapSnapshot;
 
     public int Width => _roomGrain._state.Model?.Width ?? 0;
     public int Height => _roomGrain._state.Model?.Height ?? 0;
     public int Size => _roomGrain._state.Model?.Size ?? 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int ToIdx(int x, int y) => y * Width + x;
+    public int ToIdx(int x, int y)
+    {
+        return y * Width + x;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetX(int idx) => idx % Width;
+    public int GetX(int idx)
+    {
+        return idx % Width;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetY(int idx) => idx / Width;
+    public int GetY(int idx)
+    {
+        return idx / Width;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetDistanceBetween(int a, int b) =>
-        Math.Abs((a % Width) - (b % Width)) + Math.Abs(a / Width - b / Width);
+    public int GetDistanceBetween(int a, int b)
+    {
+        return Math.Abs((a % Width) - (b % Width)) + Math.Abs(a / Width - b / Width);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool InBounds(int x, int y) => (uint)x < (uint)Width && (uint)y < (uint)Height;
+    public bool InBounds(int x, int y)
+    {
+        return (uint)x < (uint)Width && (uint)y < (uint)Height;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool InBounds(int idx) => (uint)idx < (uint)(Width * Height);
+    public bool InBounds(int idx)
+    {
+        return (uint)idx < (uint)(Width * Height);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsDiagonal(int idxA, int idxB)
@@ -77,7 +94,7 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
             Rotation.SouthWest => (-1, 1),
             Rotation.West => (-1, 0),
             Rotation.NorthWest => (-1, -1),
-            _ => (0, 0),
+            _ => (0, 0)
         };
     }
 
@@ -157,7 +174,7 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
         {
             IRoomFloorItem floor => AddFloorItem(floor),
             IRoomWallItem wall => AddWallItem(wall),
-            _ => false,
+            _ => false
         };
     }
 
@@ -167,7 +184,7 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
         {
             IRoomFloorItem floor => RemoveFloorItem(floor),
             IRoomWallItem wall => RemoveWallItem(wall),
-            _ => false,
+            _ => false
         };
     }
 
@@ -182,13 +199,13 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
         }
 
         return _roomGrain.PublishRoomEventAsync(
-            new PlayerClickedTileEvent()
+            new PlayerClickedTileEvent
             {
                 PlayerId = ctx.PlayerId,
                 TileX = x,
                 TileY = y,
                 RoomId = _roomGrain.RoomId,
-                CausedBy = ctx,
+                CausedBy = ctx
             },
             ct
         );
@@ -197,10 +214,15 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
     public void ComputeAllTiles()
     {
         for (int idx = 0; idx < Size; idx++)
+        {
             ComputeTile(idx);
+        }
     }
 
-    public void ComputeTile(int x, int y) => ComputeTile(ToIdx(x, y));
+    public void ComputeTile(int x, int y)
+    {
+        ComputeTile(ToIdx(x, y));
+    }
 
     public void ComputeTile(int id)
     {
@@ -212,7 +234,7 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
         Altitude nextHeight = _roomGrain._state.Model?.BaseHeights[id] ?? 0.0;
         RoomTileFlags nextFlags =
             _roomGrain._state.Model?.BaseFlags[id]
-            ?? (RoomTileFlags.Disabled | RoomTileFlags.Closed);
+            ?? RoomTileFlags.Disabled | RoomTileFlags.Closed;
         HashSet<RoomObjectId> floorStack = _roomGrain._state.TileFloorStacks[id];
         HashSet<RoomObjectId> avatarStack = _roomGrain._state.TileAvatarStacks[id];
 
@@ -224,7 +246,12 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
 
             foreach (RoomObjectId objectId in avatarStack)
             {
-                if (!_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar))
+                if (
+                    !_roomGrain._state.AvatarsByObjectId.TryGetValue(
+                        objectId,
+                        out IRoomAvatar? avatar
+                    )
+                )
                 {
                     continue;
                 }
@@ -313,11 +340,14 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
         return _mapSnapshot;
     }
 
-    public Task<RoomTileSnapshot> GetTileSnapshotAsync(int x, int y, CancellationToken ct) =>
-        GetTileSnapshotAsync(ToIdx(x, y), ct);
+    public Task<RoomTileSnapshot> GetTileSnapshotAsync(int x, int y, CancellationToken ct)
+    {
+        return GetTileSnapshotAsync(ToIdx(x, y), ct);
+    }
 
-    public Task<RoomTileSnapshot> GetTileSnapshotAsync(int id, CancellationToken ct) =>
-        Task.FromResult(
+    public Task<RoomTileSnapshot> GetTileSnapshotAsync(int id, CancellationToken ct)
+    {
+        return Task.FromResult(
             new RoomTileSnapshot
             {
                 X = (byte)(id % (_roomGrain._state.Model?.Width ?? 0)),
@@ -327,13 +357,14 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
                 Flags = _roomGrain._state.TileFlags[id],
                 HighestObjectId = _roomGrain._state.TileHighestFloorItems[id],
                 FloorObjectIds = [.. _roomGrain._state.TileFloorStacks[id]],
-                AvatarObjectIds = [.. _roomGrain._state.TileAvatarStacks[id]],
+                AvatarObjectIds = [.. _roomGrain._state.TileAvatarStacks[id]]
             }
         );
+    }
 
     private RoomMapSnapshot BuildSnapshot()
     {
-        return new()
+        return new RoomMapSnapshot
         {
             ModelName = _roomGrain._state.Model?.Name ?? string.Empty,
             ModelData = _roomGrain._state.Model?.Model ?? string.Empty,
@@ -343,7 +374,7 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
             DoorX = _roomGrain._state.Model?.DoorX ?? 0,
             DoorY = _roomGrain._state.Model?.DoorY ?? 0,
             DoorRotation = _roomGrain._state.Model?.DoorRotation ?? 0,
-            TileEncodedHeights = [.. _roomGrain._state.TileEncodedHeights],
+            TileEncodedHeights = [.. _roomGrain._state.TileEncodedHeights]
         };
     }
 
@@ -393,7 +424,7 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
                 Altitude height = _roomGrain._state.Model?.BaseHeights[id] ?? Altitude.Zero;
                 RoomTileFlags flags =
                     _roomGrain._state.Model?.BaseFlags[id]
-                    ?? (RoomTileFlags.Disabled | RoomTileFlags.Closed | RoomTileFlags.StackBlocked);
+                    ?? RoomTileFlags.Disabled | RoomTileFlags.Closed | RoomTileFlags.StackBlocked;
 
                 tileHeights[id] = height;
                 tileEncodedHeights[id] = EncodeHeight(

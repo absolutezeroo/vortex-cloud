@@ -14,6 +14,8 @@ internal class MOTDNotificationEventMessageComposerSerializer(int header)
         packet.WriteInteger(message.Messages.Count);
 
         foreach (string motd in message.Messages)
+        {
             packet.WriteString(motd);
+        }
     }
 }

@@ -12,9 +12,11 @@ internal class PerkAllowancesMessageComposerSerializer(int header)
         packet.WriteInteger(message.Perks.Count());
 
         foreach (PerkAllowanceItem perk in message.Perks)
+        {
             packet
                 .WriteString(perk.Code)
                 .WriteString(perk.ErrorMessage)
                 .WriteBoolean(perk.IsAllowed);
+        }
     }
 }

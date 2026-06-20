@@ -50,7 +50,7 @@ internal sealed record ErrorGroupingRecord(
             topStackLine
         );
 
-        return new(
+        return new ErrorGroupingRecord(
             fingerprint,
             source,
             operation,
@@ -72,7 +72,9 @@ internal sealed record ErrorGroupingRecord(
         Exception? current = ex;
 
         while (current.InnerException is not null)
+        {
             current = current.InnerException;
+        }
 
         return current;
     }
@@ -98,7 +100,7 @@ internal sealed record ErrorGroupingRecord(
         string? topStackLine
     )
     {
-        StringBuilder builder = new StringBuilder(capacity: 256);
+        StringBuilder builder = new(256);
         builder.Append(source);
         builder.Append('|');
         builder.Append(operation);

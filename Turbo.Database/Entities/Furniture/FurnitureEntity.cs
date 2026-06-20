@@ -45,9 +45,19 @@ public class FurnitureEntity : TurboEntity
     [ForeignKey(nameof(PlayerEntityId))]
     public PlayerEntity? PlayerEntity { get; set; }
 
+    /// <summary>
+    /// Tag: set to the rentable-space furni id when this item was placed inside a rented space
+    /// (DATA-MODEL §3.3). Cleared when the rental expires and the item returns to inventory.
+    /// </summary>
+    [Column("rentable_space_furniture_id")]
+    public int? RentableSpaceFurnitureEntityId { get; set; }
+
     [ForeignKey(nameof(FurnitureDefinitionEntityId))]
     public FurnitureDefinitionEntity? FurnitureDefinitionEntity { get; set; }
 
     [ForeignKey(nameof(RoomEntityId))]
     public RoomEntity? RoomEntity { get; set; }
+
+    [ForeignKey(nameof(RentableSpaceFurnitureEntityId))]
+    public FurnitureEntity? RentableSpaceFurnitureEntity { get; set; }
 }

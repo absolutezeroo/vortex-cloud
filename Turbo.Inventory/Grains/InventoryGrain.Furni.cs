@@ -29,9 +29,6 @@ namespace Turbo.Inventory.Grains;
 
 public sealed partial class InventoryGrain
 {
-    public Task EnsureFurnitureReadyAsync(CancellationToken ct) =>
-        _furniModule.EnsureFurnitureReadyAsync(ct);
-
     public async Task<bool> AddFurnitureAsync(IFurnitureItem item, CancellationToken ct)
     {
         if (!await _furniModule.AddFurnitureAsync(item, ct))
@@ -39,7 +36,9 @@ public sealed partial class InventoryGrain
             return false;
         }
 
-        IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(this.GetPrimaryKeyLong());
+        IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(
+            this.GetPrimaryKeyLong()
+        );
 
         await presence.OnFurnitureAddedAsync(item.GetSnapshot(), ct);
 
@@ -58,7 +57,9 @@ public sealed partial class InventoryGrain
             return false;
         }
 
-        IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(this.GetPrimaryKeyLong());
+        IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(
+            this.GetPrimaryKeyLong()
+        );
 
         await presence.OnFurnitureAddedAsync(item.GetSnapshot(), ct);
 
@@ -72,7 +73,9 @@ public sealed partial class InventoryGrain
             return false;
         }
 
-        IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(this.GetPrimaryKeyLong());
+        IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(
+            this.GetPrimaryKeyLong()
+        );
 
         await presence.OnFurnitureRemovedAsync(itemId, ct);
 
@@ -88,8 +91,8 @@ public sealed partial class InventoryGrain
     {
         quantity = Math.Max(1, quantity);
 
-        List<FurnitureEntity> furniEntities = new List<FurnitureEntity>();
-        List<string> badgeCodes = new List<string>();
+        List<FurnitureEntity> furniEntities = new();
+        List<string> badgeCodes = new();
 
         foreach (CatalogProductSnapshot product in offer.Products)
         {
@@ -100,13 +103,15 @@ public sealed partial class InventoryGrain
                     ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
 
                 for (int i = 0; i < quantity; i++)
+                {
                     furniEntities.Add(
                         new FurnitureEntity
                         {
                             PlayerEntityId = (int)this.GetPrimaryKeyLong(),
-                            FurnitureDefinitionEntityId = def.Id,
+                            FurnitureDefinitionEntityId = def.Id
                         }
                     );
+                }
 
                 continue;
             }
@@ -117,7 +122,6 @@ public sealed partial class InventoryGrain
             )
             {
                 badgeCodes.Add(product.ExtraParam);
-                continue;
             }
         }
 
@@ -127,7 +131,7 @@ public sealed partial class InventoryGrain
         {
             dbCtx.AddRange(furniEntities);
 
-            List<string> grantedBadgeCodes = new List<string>();
+            List<string> grantedBadgeCodes = new();
 
             foreach (string badgeCode in badgeCodes)
             {
@@ -151,7 +155,7 @@ public sealed partial class InventoryGrain
                         PlayerEntityId = (int)this.GetPrimaryKeyLong(),
                         BadgeCode = badgeCode,
                         SlotId = 0,
-                        PlayerEntity = null!,
+                        PlayerEntity = null!
                     }
                 );
 
@@ -168,14 +172,14 @@ public sealed partial class InventoryGrain
                     ) ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
 
                 await AddFurnitureAsync(
-                    new FurnitureItem()
+                    new FurnitureItem
                     {
                         ItemId = entity.Id,
                         OwnerId = entity.PlayerEntityId,
                         OwnerName = string.Empty,
                         Definition = def,
                         ExtraData = new ExtraData("{}"),
-                        StuffData = _stuffDataFactory.CreateStuffData((int)StuffDataType.LegacyKey),
+                        StuffData = _stuffDataFactory.CreateStuffData((int)StuffDataType.LegacyKey)
                     },
                     ct
                 );
@@ -189,7 +193,7 @@ public sealed partial class InventoryGrain
                                 new
                                 {
                                     source = "catalog",
-                                    definitionId = entity.FurnitureDefinitionEntityId,
+                                    definitionId = entity.FurnitureDefinitionEntityId
                                 }
                             )
                         ),
@@ -198,10 +202,14 @@ public sealed partial class InventoryGrain
                     .ConfigureAwait(false);
             }
 
-            IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(this.GetPrimaryKeyLong());
+            IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(
+                this.GetPrimaryKeyLong()
+            );
 
             foreach (string badgeCode in grantedBadgeCodes)
+            {
                 await presence.OnBadgeGrantedAsync(badgeCode, ct);
+            }
         }
         finally
         {
@@ -240,13 +248,15 @@ public sealed partial class InventoryGrain
                     PlayerEntityId = (int)this.GetPrimaryKeyLong(),
                     BadgeCode = badgeCode,
                     SlotId = 0,
-                    PlayerEntity = null!,
+                    PlayerEntity = null!
                 }
             );
 
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
 
-            IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(this.GetPrimaryKeyLong());
+            IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(
+                this.GetPrimaryKeyLong()
+            );
 
             await presence.OnBadgeGrantedAsync(badgeCode, ct).ConfigureAwait(false);
         }
@@ -266,11 +276,11 @@ public sealed partial class InventoryGrain
             _furnitureDefinitionProvider.TryGetDefinition(definitionId)
             ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
 
-        FurnitureEntity entity = new FurnitureEntity
+        FurnitureEntity entity = new()
         {
             PlayerEntityId = (int)this.GetPrimaryKeyLong(),
             FurnitureDefinitionEntityId = def.Id,
-            ExtraData = extraData,
+            ExtraData = extraData
         };
 
         TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
@@ -288,7 +298,7 @@ public sealed partial class InventoryGrain
                         OwnerName = string.Empty,
                         Definition = def,
                         ExtraData = new ExtraData(extraData ?? "{}"),
-                        StuffData = _stuffDataFactory.CreateStuffData(StuffDataType.LegacyKey),
+                        StuffData = _stuffDataFactory.CreateStuffData(StuffDataType.LegacyKey)
                     },
                     ct
                 )
@@ -313,11 +323,11 @@ public sealed partial class InventoryGrain
 
         string extraData = $"{{\"serial\":{serialNumber},\"seriesSize\":{seriesSize}}}";
 
-        FurnitureEntity entity = new FurnitureEntity
+        FurnitureEntity entity = new()
         {
             PlayerEntityId = (int)this.GetPrimaryKeyLong(),
             FurnitureDefinitionEntityId = def.Id,
-            ExtraData = extraData,
+            ExtraData = extraData
         };
 
         TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
@@ -335,7 +345,7 @@ public sealed partial class InventoryGrain
                         OwnerName = string.Empty,
                         Definition = def,
                         ExtraData = new ExtraData(extraData),
-                        StuffData = _stuffDataFactory.CreateStuffData(StuffDataType.LegacyKey),
+                        StuffData = _stuffDataFactory.CreateStuffData(StuffDataType.LegacyKey)
                     },
                     ct
                 )
@@ -351,7 +361,7 @@ public sealed partial class InventoryGrain
                             {
                                 source = "ltd",
                                 serial = serialNumber,
-                                seriesSize,
+                                seriesSize
                             }
                         )
                     ),
@@ -368,9 +378,20 @@ public sealed partial class InventoryGrain
     public Task<FurnitureItemSnapshot?> GetItemSnapshotAsync(
         RoomObjectId itemId,
         CancellationToken ct
-    ) => _furniModule.GetItemSnapshotAsync(itemId, ct);
+    )
+    {
+        return _furniModule.GetItemSnapshotAsync(itemId, ct);
+    }
 
     public Task<ImmutableArray<FurnitureItemSnapshot>> GetAllItemSnapshotsAsync(
         CancellationToken ct
-    ) => _furniModule.GetAllItemSnapshotsAsync(ct);
+    )
+    {
+        return _furniModule.GetAllItemSnapshotsAsync(ct);
+    }
+
+    public Task EnsureFurnitureReadyAsync(CancellationToken ct)
+    {
+        return _furniModule.EnsureFurnitureReadyAsync(ct);
+    }
 }

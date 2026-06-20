@@ -25,8 +25,8 @@ internal static class DashboardSecurityHeaders
         }
 
         return "default-src 'self'; script-src 'self'; style-src 'self'; "
-               + imgSrc
-               + "; connect-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'none';";
+            + imgSrc
+            + "; connect-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'none';";
     }
 
     public static void Apply(HttpResponse response, string csp)

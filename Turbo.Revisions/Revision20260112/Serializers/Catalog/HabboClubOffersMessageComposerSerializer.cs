@@ -11,7 +11,10 @@ internal class HabboClubOffersMessageComposerSerializer(int header)
     {
         packet.WriteInteger(message.Offers.Count);
         foreach (ClubOffer offer in message.Offers)
+        {
             SerializeOffer(packet, offer);
+        }
+
         packet.WriteInteger((int)message.Source);
     }
 

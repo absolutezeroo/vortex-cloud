@@ -33,13 +33,17 @@ public class NewNavigatorInitMessageHandler(
             .GetTopLevelContextAsync()
             .ConfigureAwait(false);
 
-        List<NavigatorQuickLinkSnapshot> savedSearches = await navigatorGrain.GetSavedSearchesAsync(ct).ConfigureAwait(false);
+        List<NavigatorQuickLinkSnapshot> savedSearches = await navigatorGrain
+            .GetSavedSearchesAsync(ct)
+            .ConfigureAwait(false);
 
         List<string> collapsedCategories = await navigatorGrain
             .GetCollapsedCategoriesAsync(ct)
             .ConfigureAwait(false);
 
-        NavigatorWindowPreferencesSnapshot prefs = await navigatorGrain.GetWindowPreferencesAsync(ct).ConfigureAwait(false);
+        NavigatorWindowPreferencesSnapshot prefs = await navigatorGrain
+            .GetWindowPreferencesAsync(ct)
+            .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
                 new NavigatorMetaDataMessage { TopLevelContexts = topLevelContexts },

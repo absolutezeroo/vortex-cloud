@@ -32,7 +32,9 @@ internal sealed class WsPackageHandler(
         }
 
         foreach (ReadOnlyMemory<byte> segment in package.Data)
+        {
             ctx.WsBuffer?.Write(segment.Span);
+        }
 
         while (true)
         {
@@ -48,7 +50,9 @@ internal sealed class WsPackageHandler(
                 break;
             }
 
-            SequenceReader<byte> reader = new SequenceReader<byte>(new ReadOnlySequence<byte>(memory));
+            SequenceReader<byte> reader = new(
+                new ReadOnlySequence<byte>(memory)
+            );
 
             IClientPacket? packet = _decoder.TryRead(ref reader, ctx);
 

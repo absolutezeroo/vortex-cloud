@@ -133,7 +133,9 @@ public class PurchaseFromCatalogMessageHandler(
             return;
         }
 
-        ClubSubscriptionSnapshot sub = await playerGrain.GetClubSubscriptionAsync(ct).ConfigureAwait(false);
+        ClubSubscriptionSnapshot sub = await playerGrain
+            .GetClubSubscriptionAsync(ct)
+            .ConfigureAwait(false);
 
         ClubLevelType clubLevel = sub.IsActive
             ? (sub.IsVip ? ClubLevelType.Vip : ClubLevelType.Club)
@@ -212,7 +214,9 @@ public class PurchaseFromCatalogMessageHandler(
     {
         try
         {
-            ICatalogPurchaseGrain purchaseGrain = _grainFactory.GetCatalogPurchaseGrain(ctx.PlayerId);
+            ICatalogPurchaseGrain purchaseGrain = _grainFactory.GetCatalogPurchaseGrain(
+                ctx.PlayerId
+            );
             CatalogOfferSnapshot offer = await purchaseGrain
                 .PurchaseOfferFromCatalogAsync(
                     CatalogType.Normal,

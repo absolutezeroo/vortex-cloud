@@ -13,7 +13,9 @@ public static class ServiceCollectionExtensions
         HostApplicationBuilder builder
     )
     {
-        IConfigurationSection pluginSection = builder.Configuration.GetSection(PluginConfig.SECTION_NAME);
+        IConfigurationSection pluginSection = builder.Configuration.GetSection(
+            PluginConfig.SECTION_NAME
+        );
 
         services.Configure<PluginConfig>(pluginSection);
 

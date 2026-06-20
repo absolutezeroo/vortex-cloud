@@ -1,10 +1,12 @@
 using Orleans;
 using Turbo.Primitives.Networking;
+using Turbo.Primitives.Snapshots.Catalog;
 
 namespace Turbo.Primitives.Messages.Outgoing.Catalog;
 
-[GenerateSerializer, Immutable]
+[GenerateSerializer]
+[Immutable]
 public sealed record GiftWrappingConfigurationEventMessageComposer : IComposer
 {
-    // TODO: add properties if/when identified
+    [Id(0)] public required GiftWrappingConfigurationSnapshot Configuration { get; init; }
 }

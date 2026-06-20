@@ -20,9 +20,9 @@ internal sealed class InventoryFurniModule(
     IInventoryFurnitureLoader furnitureItemsLoader
 )
 {
+    private readonly IInventoryFurnitureLoader _furnitureItemsLoader = furnitureItemsLoader;
     private readonly InventoryGrain _inventoryGrain = inventoryGrain;
     private readonly InventoryLiveState _state = liveState;
-    private readonly IInventoryFurnitureLoader _furnitureItemsLoader = furnitureItemsLoader;
 
     public async Task EnsureFurnitureReadyAsync(CancellationToken ct)
     {
@@ -63,7 +63,9 @@ internal sealed class InventoryFurniModule(
     {
         await EnsureFurnitureReadyAsync(ct);
 
-        return _state.FurnitureById.TryGetValue(itemId, out IFurnitureItem? item) ? item.GetSnapshot() : null;
+        return _state.FurnitureById.TryGetValue(itemId, out IFurnitureItem? item)
+            ? item.GetSnapshot()
+            : null;
     }
 
     public async Task<ImmutableArray<FurnitureItemSnapshot>> GetAllItemSnapshotsAsync(
@@ -85,6 +87,8 @@ internal sealed class InventoryFurniModule(
         );
 
         foreach (IFurnitureItem item in items)
+        {
             await AddFurnitureAsync(item, ct);
+        }
     }
 }

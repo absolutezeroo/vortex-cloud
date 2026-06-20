@@ -37,7 +37,7 @@ public enum CatalogPageLayout
     Trophies,
     VipBuy,
     OldMarketplace,
-    OldMarketplaceOwnItems,
+    OldMarketplaceOwnItems
 }
 
 public static class CatalogPageLayoutExtensions
@@ -77,7 +77,7 @@ public static class CatalogPageLayoutExtensions
         [CatalogPageLayout.Trophies] = "trophies",
         [CatalogPageLayout.VipBuy] = "vip_buy",
         [CatalogPageLayout.OldMarketplace] = "old_layout_marketplace",
-        [CatalogPageLayout.OldMarketplaceOwnItems] = "old_layout_marketplace_own_items",
+        [CatalogPageLayout.OldMarketplaceOwnItems] = "old_layout_marketplace_own_items"
     };
 
     private static readonly Dictionary<string, CatalogPageLayout> _fromWire;
@@ -86,12 +86,20 @@ public static class CatalogPageLayoutExtensions
     {
         _fromWire = new Dictionary<string, CatalogPageLayout>(_toWire.Count);
         foreach (KeyValuePair<CatalogPageLayout, string> kv in _toWire)
+        {
             _fromWire[kv.Value] = kv.Key;
+        }
     }
 
-    public static string ToLayoutString(this CatalogPageLayout layout) =>
-        _toWire.TryGetValue(layout, out string? s) ? s : "default_3x3";
+    public static string ToLayoutString(this CatalogPageLayout layout)
+    {
+        return _toWire.TryGetValue(layout, out string? s) ? s : "default_3x3";
+    }
 
-    public static CatalogPageLayout FromLayoutString(string value) =>
-        _fromWire.TryGetValue(value, out CatalogPageLayout layout) ? layout : CatalogPageLayout.Default3x3;
+    public static CatalogPageLayout FromLayoutString(string value)
+    {
+        return _fromWire.TryGetValue(value, out CatalogPageLayout layout)
+            ? layout
+            : CatalogPageLayout.Default3x3;
+    }
 }

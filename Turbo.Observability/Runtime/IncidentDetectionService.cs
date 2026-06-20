@@ -52,7 +52,9 @@ public sealed class IncidentDetectionService(
     public async Task<IncidentDetectionSnapshot> DetectAsync(CancellationToken ct)
     {
         List<IncidentSignal> incidents = new List<IncidentSignal>();
-        InfrastructureHealthSnapshot health = await _healthService.GetStatusAsync(ct).ConfigureAwait(false);
+        InfrastructureHealthSnapshot health = await _healthService
+            .GetStatusAsync(ct)
+            .ConfigureAwait(false);
 
         EvaluateHealthSignals(health, incidents);
 

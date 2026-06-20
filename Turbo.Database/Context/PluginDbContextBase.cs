@@ -18,8 +18,12 @@ public class PluginDbContextBase<TContent>(
     {
         base.OnModelCreating(mb);
 
-        foreach (IMutableForeignKey fk in mb.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+        foreach (
+            IMutableForeignKey fk in mb.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys())
+        )
+        {
             fk.DeleteBehavior = DeleteBehavior.Restrict;
+        }
 
         mb.ApplyTablePrefix(_prefix());
     }

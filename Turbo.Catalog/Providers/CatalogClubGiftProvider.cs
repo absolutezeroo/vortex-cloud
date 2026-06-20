@@ -33,7 +33,9 @@ public sealed class CatalogClubGiftProvider(
 
     public async Task ReloadAsync(CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
 
         List<CatalogClubGiftEntity> entities = await dbCtx
             .CatalogClubGifts.AsNoTracking()

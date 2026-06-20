@@ -23,7 +23,11 @@ public sealed class ChannelPerformanceLogSink(
     public void Record(in PerformanceLogEvent entry)
     {
         string? correlationId = _contextAccessor.Current?.CorrelationId.Value;
-        PerformanceLogRecord record = new PerformanceLogRecord(entry, DateTime.UtcNow, correlationId);
+        PerformanceLogRecord record = new PerformanceLogRecord(
+            entry,
+            DateTime.UtcNow,
+            correlationId
+        );
 
         if (!_channel.TryWrite(record))
         {

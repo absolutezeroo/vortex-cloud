@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -15,14 +16,14 @@ namespace Turbo.Rooms.Grains.Systems;
 public sealed partial class RoomWiredSystem
 {
     private readonly HashSet<int> _dirtyVariableBoxIds = [];
-    private readonly Dictionary<int, WiredVariableId> _variableIdBoxId = [];
-    private readonly Dictionary<WiredVariableId, IWiredVariable> _variableById = [];
 
     private readonly FurnitureActiveStore _furnitureActiveStore = new();
     private readonly PlayerActiveStore _playerActiveStore = new();
     private readonly RoomActiveStore _roomActiveStore = new();
+    private readonly Dictionary<WiredVariableId, IWiredVariable> _variableById = [];
+    private readonly Dictionary<int, WiredVariableId> _variableIdBoxId = [];
 
-    private WiredVariablesSnapshot? _variablesSnapshot = null;
+    private WiredVariablesSnapshot? _variablesSnapshot;
 
     public IWiredVariable? GetVariableById(WiredVariableId id)
     {
@@ -41,25 +42,27 @@ public sealed partial class RoomWiredSystem
             WiredVariableTargetType.Furni => _furnitureActiveStore.TryGetStore(key, out store),
             WiredVariableTargetType.User => _playerActiveStore.TryGetStore(key, out store),
             WiredVariableTargetType.Global => _roomActiveStore.TryGetStore(key, out store),
-            _ => throw new System.ArgumentOutOfRangeException(
+            _ => throw new ArgumentOutOfRangeException(
                 nameof(key.TargetType),
                 $"Unsupported target type: {key.TargetType}"
-            ),
+            )
         };
     }
 
-    public Task<WiredVariablesSnapshot> GetWiredVariablesSnapshotAsync(CancellationToken ct) =>
-        Task.FromResult(_variablesSnapshot ??= BuildVariablesSnapshot());
+    public Task<WiredVariablesSnapshot> GetWiredVariablesSnapshotAsync(CancellationToken ct)
+    {
+        return Task.FromResult(_variablesSnapshot ??= BuildVariablesSnapshot());
+    }
 
     public Task<
         List<(WiredVariableId id, WiredVariableValue value)>
     > GetAllVariablesForBindingAsync(WiredVariableBinding binding, CancellationToken ct)
     {
-        List<(WiredVariableId id, WiredVariableValue value)> variableValues = new List<(WiredVariableId id, WiredVariableValue value)>();
+        List<(WiredVariableId id, WiredVariableValue value)> variableValues = new();
 
         foreach ((WiredVariableId id, IWiredVariable variable) in _variableById)
         {
-            WiredVariableKey key = new WiredVariableKey(id, binding.TargetType, binding.TargetId);
+            WiredVariableKey key = new(id, binding.TargetType, binding.TargetId);
 
             if (!variable.TryGetValue(key, out WiredVariableValue value))
             {
@@ -74,10 +77,13 @@ public sealed partial class RoomWiredSystem
 
     private Task ProcessInternalVariablesAsync(long now, CancellationToken ct)
     {
-        IEnumerable<IWiredVariable> variables = _roomGrain._wiredVariablesProvider.BuildVariablesForRoom(_roomGrain);
+        IEnumerable<IWiredVariable> variables =
+            _roomGrain._wiredVariablesProvider.BuildVariablesForRoom(_roomGrain);
 
         foreach (IWiredVariable variable in variables)
+        {
             ProcessVariable(variable);
+        }
 
         return Task.CompletedTask;
     }
@@ -93,7 +99,9 @@ public sealed partial class RoomWiredSystem
         _dirtyVariableBoxIds.Clear();
 
         foreach (int boxId in dirtyVariableBoxIds)
+        {
             await ProcessVariableBoxAsync(boxId, ct);
+        }
 
         _variablesSnapshot = null;
     }
@@ -149,8 +157,10 @@ public sealed partial class RoomWiredSystem
 
     private WiredVariablesSnapshot BuildVariablesSnapshot()
     {
-        List<WiredVariableHash> hashes = new List<WiredVariableHash>();
-        List<WiredVariableSnapshot> snapshots = new List<WiredVariableSnapshot>(_variableById.Count);
+        List<WiredVariableHash> hashes = new();
+        List<WiredVariableSnapshot> snapshots = new(
+            _variableById.Count
+        );
 
         foreach (IWiredVariable variable in _variableById.Values)
         {
@@ -160,10 +170,10 @@ public sealed partial class RoomWiredSystem
             snapshots.Add(snapshot);
         }
 
-        WiredVariablesSnapshot allVariablesSnapshot = new WiredVariablesSnapshot()
+        WiredVariablesSnapshot allVariablesSnapshot = new()
         {
             AllVariablesHash = WiredVariableHashBuilder.HashFromHashes(hashes),
-            Variables = snapshots,
+            Variables = snapshots
         };
 
         _roomGrain._state.AllVariablesHash = allVariablesSnapshot.AllVariablesHash;

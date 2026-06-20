@@ -25,29 +25,12 @@ public sealed class RoomPersistenceGrain(
 ) : Grain, IRoomPersistenceGrain
 {
     private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
-    private readonly RoomConfig _roomConfig = roomConfig.Value;
+
+    private readonly Dictionary<long, RoomItemSnapshot> _dirtyItems = [];
     private readonly ILogger<IRoomPersistenceGrain> _logger = logger;
-
-    private Dictionary<long, RoomItemSnapshot> _dirtyItems = [];
     private readonly HashSet<RoomObjectId> _removedItemIds = [];
+    private readonly RoomConfig _roomConfig = roomConfig.Value;
     private IDisposable? _timer;
-
-    public override Task OnActivateAsync(CancellationToken ct)
-    {
-        _timer = this.RegisterGrainTimer<object?>(
-            static async (self, ct) => await ((RoomPersistenceGrain)self!).FlushDirtyItemsAsync(ct),
-            this,
-            TimeSpan.FromMilliseconds(_roomConfig.DirtyItemsTickMs),
-            TimeSpan.FromMilliseconds(_roomConfig.DirtyItemsTickMs)
-        );
-
-        return Task.CompletedTask;
-    }
-
-    public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken ct)
-    {
-        await FlushDirtyItemsAsync(ct);
-    }
 
     public Task EnqueueDirtyItemAsync(
         RoomId roomId,
@@ -73,9 +56,28 @@ public sealed class RoomPersistenceGrain(
     )
     {
         foreach (RoomItemSnapshot snapshot in snapshots)
+        {
             _dirtyItems[snapshot.ObjectId] = snapshot;
+        }
 
         return Task.CompletedTask;
+    }
+
+    public override Task OnActivateAsync(CancellationToken ct)
+    {
+        _timer = this.RegisterGrainTimer<object?>(
+            static async (self, ct) => await ((RoomPersistenceGrain)self!).FlushDirtyItemsAsync(ct),
+            this,
+            TimeSpan.FromMilliseconds(_roomConfig.DirtyItemsTickMs),
+            TimeSpan.FromMilliseconds(_roomConfig.DirtyItemsTickMs)
+        );
+
+        return Task.CompletedTask;
+    }
+
+    public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken ct)
+    {
+        await FlushDirtyItemsAsync(ct);
     }
 
     private async Task FlushDirtyItemsAsync(CancellationToken ct)
@@ -91,7 +93,9 @@ public sealed class RoomPersistenceGrain(
             .ToArray();
 
         foreach (RoomItemSnapshot item in batch)
+        {
             _dirtyItems.Remove(item.ObjectId);
+        }
 
         try
         {
@@ -99,7 +103,7 @@ public sealed class RoomPersistenceGrain(
 
             foreach (RoomItemSnapshot item in batch)
             {
-                FurnitureEntity dbEntity = new FurnitureEntity
+                FurnitureEntity dbEntity = new()
                 {
                     Id = item.ObjectId.Value,
                     PlayerEntityId = item.OwnerId.Value,
@@ -107,7 +111,7 @@ public sealed class RoomPersistenceGrain(
                     Y = item.Y,
                     Z = item.Z,
                     Rotation = item.Rotation,
-                    ExtraData = item.ExtraData,
+                    ExtraData = item.ExtraData
                 };
 
                 dbCtx.Attach(dbEntity);

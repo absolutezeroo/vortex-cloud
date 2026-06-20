@@ -25,28 +25,40 @@ public class WiredSelectorItemsInNeighborhood(
 {
     public override int WiredCode => (int)WiredSelectorType.FURNI_IN_NEIGHBORHOOD;
 
-    public override List<WiredFurniSourceType[]> GetAllowedFurniSources() =>
+    public override List<WiredFurniSourceType[]> GetAllowedFurniSources()
+    {
+        return
         [
             [
                 WiredFurniSourceType.SelectedItems,
                 WiredFurniSourceType.SignalItems,
-                WiredFurniSourceType.TriggeredItem,
-            ],
+                WiredFurniSourceType.TriggeredItem
+            ]
         ];
+    }
 
-    public override List<WiredPlayerSourceType[]> GetAllowedPlayerSources() =>
+    public override List<WiredPlayerSourceType[]> GetAllowedPlayerSources()
+    {
+        return
         [
-            [WiredPlayerSourceType.TriggeredUser, WiredPlayerSourceType.SignalUsers],
+            [WiredPlayerSourceType.TriggeredUser, WiredPlayerSourceType.SignalUsers]
         ];
+    }
 
-    public override List<IWiredParamRule> GetIntParamRules() =>
+    public override List<IWiredParamRule> GetIntParamRules()
+    {
+        return
         [
             new WiredBoolParamRule(false), // merged source
             new WiredParamRule(0), // rootX
-            new WiredParamRule(0), // rootY
+            new WiredParamRule(0) // rootY
         ];
+    }
 
-    public override IWiredParamRule? GetIntParamTailRule() => new WiredParamRule(0);
+    public override IWiredParamRule? GetIntParamTailRule()
+    {
+        return new WiredParamRule(0);
+    }
 
     public override async Task<IWiredSelectionSet> SelectAsync(
         IWiredProcessingContext ctx,
@@ -54,7 +66,7 @@ public class WiredSelectorItemsInNeighborhood(
     )
     {
         IWiredSelectionSet input = await ctx.GetWiredSelectionSetAsync(this, ct);
-        WiredSelectionSet output = new WiredSelectionSet();
+        WiredSelectionSet output = new();
 
         foreach (int id in input.SelectedFurniIds)
         {
@@ -87,17 +99,17 @@ public class WiredSelectorItemsInNeighborhood(
                         HashSet<RoomObjectId> itemIds = _roomGrain._state.TileFloorStacks[tileId];
 
                         foreach (RoomObjectId itemId in itemIds)
-                            output.SelectedFurniIds.Add((int)itemId);
+                        {
+                            output.SelectedFurniIds.Add(itemId);
+                        }
                     }
                     catch
                     {
-                        continue;
                     }
                 }
             }
             catch
             {
-                continue;
             }
         }
 
@@ -107,7 +119,10 @@ public class WiredSelectorItemsInNeighborhood(
             {
                 if (
                     !_roomGrain._state.AvatarsByPlayerId.TryGetValue(id, out RoomObjectId objectId)
-                    || !_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar)
+                    || !_roomGrain._state.AvatarsByObjectId.TryGetValue(
+                        objectId,
+                        out IRoomAvatar? avatar
+                    )
                 )
                 {
                     continue;
@@ -132,17 +147,17 @@ public class WiredSelectorItemsInNeighborhood(
                         HashSet<RoomObjectId> itemIds = _roomGrain._state.TileFloorStacks[tileId];
 
                         foreach (RoomObjectId itemId in itemIds)
-                            output.SelectedFurniIds.Add((int)itemId);
+                        {
+                            output.SelectedFurniIds.Add(itemId);
+                        }
                     }
                     catch
                     {
-                        continue;
                     }
                 }
             }
             catch
             {
-                continue;
             }
         }
 
@@ -180,18 +195,16 @@ public class WiredSelectorItemsInNeighborhood(
                 continue;
             }
 
-            yield return (y * width) + x;
+            yield return y * width + x;
         }
     }
-
-    private readonly record struct SpiralEntry(short Dx, short Dy, int Rank);
 
     private static List<SpiralEntry> WalkSpiral(int radius)
     {
         int size = radius * 2 + 1;
         int total = size * size;
 
-        List<SpiralEntry> result = new List<SpiralEntry>(total);
+        List<SpiralEntry> result = new(total);
 
         int x = 0;
         int y = 0;
@@ -208,13 +221,13 @@ public class WiredSelectorItemsInNeighborhood(
                 for (int i = 0; i < stepLen && rank < total; i++)
                 {
                     x++;
-                    result.Add(new((short)x, (short)y, rank++));
+                    result.Add(new SpiralEntry((short)x, (short)y, rank++));
                 }
 
                 for (int i = 0; i < stepLen && rank < total; i++)
                 {
                     y++;
-                    result.Add(new((short)x, (short)y, rank++));
+                    result.Add(new SpiralEntry((short)x, (short)y, rank++));
                 }
 
                 stepLen++;
@@ -222,13 +235,13 @@ public class WiredSelectorItemsInNeighborhood(
                 for (int i = 0; i < stepLen && rank < total; i++)
                 {
                     x--;
-                    result.Add(new((short)x, (short)y, rank++));
+                    result.Add(new SpiralEntry((short)x, (short)y, rank++));
                 }
 
                 for (int i = 0; i < stepLen && rank < total; i++)
                 {
                     y--;
-                    result.Add(new((short)x, (short)y, rank++));
+                    result.Add(new SpiralEntry((short)x, (short)y, rank++));
                 }
 
                 stepLen++;
@@ -264,8 +277,12 @@ public class WiredSelectorItemsInNeighborhood(
     private static int UnpackByte(byte b, bool[] mask, int bitIndex, int totalBits)
     {
         for (int bit = 0; bit < 8 && bitIndex < totalBits; bit++)
+        {
             mask[bitIndex++] = ((b >> bit) & 1) != 0;
+        }
 
         return bitIndex;
     }
+
+    private readonly record struct SpiralEntry(short Dx, short Dy, int Rank);
 }

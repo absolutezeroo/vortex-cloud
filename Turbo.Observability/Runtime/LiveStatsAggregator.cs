@@ -9,22 +9,23 @@ namespace Turbo.Observability.Runtime;
 
 public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : ILiveStatsAggregator
 {
+    private readonly Dictionary<int, int> _abuserCounts = [];
+    private readonly Queue<AbuserSample> _abuserSamples = [];
+    private readonly Dictionary<string, int> _failedOperationCounts = [];
+    private readonly Queue<OperationSample> _failedOperationSamples = [];
+    private readonly Queue<DateTime> _failedTimestamps = [];
+    private readonly Queue<LatencySample> _latencySamples = [];
+    private readonly Dictionary<string, int> _operationCounts = [];
+    private readonly Queue<OperationSample> _operationSamples = [];
+    private readonly Queue<DateTime> _receivedTimestamps = [];
+    private readonly Dictionary<int, int> _roomCounts = [];
+    private readonly Queue<RoomSample> _roomSamples = [];
     private readonly object _sync = new();
+    private readonly int _topK = Math.Max(1, config.Value.LiveStatsTopK);
+
     private readonly TimeSpan _window = TimeSpan.FromSeconds(
         Math.Max(1, config.Value.LiveStatsWindowSeconds)
     );
-    private readonly int _topK = Math.Max(1, config.Value.LiveStatsTopK);
-    private readonly Queue<DateTime> _receivedTimestamps = [];
-    private readonly Queue<DateTime> _failedTimestamps = [];
-    private readonly Queue<LatencySample> _latencySamples = [];
-    private readonly Queue<OperationSample> _operationSamples = [];
-    private readonly Queue<OperationSample> _failedOperationSamples = [];
-    private readonly Queue<AbuserSample> _abuserSamples = [];
-    private readonly Dictionary<int, int> _abuserCounts = [];
-    private readonly Queue<RoomSample> _roomSamples = [];
-    private readonly Dictionary<int, int> _roomCounts = [];
-    private readonly Dictionary<string, int> _operationCounts = [];
-    private readonly Dictionary<string, int> _failedOperationCounts = [];
 
     public void RecordPacketReceived(string operation, long? actorId = null, int? roomId = null)
     {
@@ -34,19 +35,19 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
         {
             Prune(now);
             _receivedTimestamps.Enqueue(now);
-            _operationSamples.Enqueue(new(now, operation));
+            _operationSamples.Enqueue(new OperationSample(now, operation));
             _operationCounts[operation] = _operationCounts.GetValueOrDefault(operation) + 1;
 
             if (actorId is > 0 && actorId <= int.MaxValue)
             {
                 int actor = (int)actorId;
-                _abuserSamples.Enqueue(new(now, actor));
+                _abuserSamples.Enqueue(new AbuserSample(now, actor));
                 _abuserCounts[actor] = _abuserCounts.GetValueOrDefault(actor) + 1;
             }
 
             if (roomId is > 0)
             {
-                _roomSamples.Enqueue(new(now, roomId.Value));
+                _roomSamples.Enqueue(new RoomSample(now, roomId.Value));
                 _roomCounts[roomId.Value] = _roomCounts.GetValueOrDefault(roomId.Value) + 1;
             }
         }
@@ -63,7 +64,7 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
         lock (_sync)
         {
             Prune(now);
-            _latencySamples.Enqueue(new(now, elapsedMilliseconds));
+            _latencySamples.Enqueue(new LatencySample(now, elapsedMilliseconds));
         }
     }
 
@@ -75,7 +76,7 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
         {
             Prune(now);
             _failedTimestamps.Enqueue(now);
-            _failedOperationSamples.Enqueue(new(now, operation));
+            _failedOperationSamples.Enqueue(new OperationSample(now, operation));
             _failedOperationCounts[operation] =
                 _failedOperationCounts.GetValueOrDefault(operation) + 1;
         }
@@ -146,13 +147,19 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
         DateTime cutoff = now - _window;
 
         while (_receivedTimestamps.Count > 0 && _receivedTimestamps.Peek() < cutoff)
+        {
             _receivedTimestamps.Dequeue();
+        }
 
         while (_failedTimestamps.Count > 0 && _failedTimestamps.Peek() < cutoff)
+        {
             _failedTimestamps.Dequeue();
+        }
 
         while (_latencySamples.Count > 0 && _latencySamples.Peek().Timestamp < cutoff)
+        {
             _latencySamples.Dequeue();
+        }
 
         while (_operationSamples.Count > 0 && _operationSamples.Peek().Timestamp < cutoff)
         {
@@ -236,8 +243,10 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
         return values[index];
     }
 
-    private double ToRatePerMinute(int count) =>
-        _window.TotalSeconds <= 0 ? 0 : count * 60d / _window.TotalSeconds;
+    private double ToRatePerMinute(int count)
+    {
+        return _window.TotalSeconds <= 0 ? 0 : count * 60d / _window.TotalSeconds;
+    }
 
     private sealed record LatencySample(DateTime Timestamp, double DurationMs);
 

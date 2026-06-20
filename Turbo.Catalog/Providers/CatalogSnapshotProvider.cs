@@ -108,10 +108,16 @@ public sealed class CatalogSnapshotProvider<TTag>(
             ImmutableDictionary<int, CatalogOfferSnapshot> offersById = offers
                 .Select(x =>
                 {
-                    ImmutableArray<int> ids = offerProductIds.TryGetValue(x.Id, out ImmutableArray<int> productIds)
+                    ImmutableArray<int> ids = offerProductIds.TryGetValue(
+                        x.Id,
+                        out ImmutableArray<int> productIds
+                    )
                         ? productIds
                         : [];
-                    ImmutableArray<CatalogProductSnapshot> products = ids.Select(x => productsById[x]).ToImmutableArray();
+                    ImmutableArray<CatalogProductSnapshot> products = ids.Select(x =>
+                            productsById[x]
+                        )
+                        .ToImmutableArray();
 
                     return new CatalogOfferSnapshot()
                     {
@@ -134,7 +140,10 @@ public sealed class CatalogSnapshotProvider<TTag>(
                 })
                 .ToImmutableDictionary(x => x.Id);
 
-            ImmutableArray<int> rootChildIds = pageChildrenIds.TryGetValue(-1, out ImmutableArray<int> rootChildren)
+            ImmutableArray<int> rootChildIds = pageChildrenIds.TryGetValue(
+                -1,
+                out ImmutableArray<int> rootChildren
+            )
                 ? rootChildren
                 : ImmutableArray<int>.Empty;
 
@@ -165,8 +174,12 @@ public sealed class CatalogSnapshotProvider<TTag>(
                     ImageData = x.ImageData ?? [],
                     TextData = x.TextData ?? [],
                     Visible = x.Visible,
-                    OfferIds = pageOfferIds.TryGetValue(x.Id, out ImmutableArray<int> offerIds) ? offerIds : [],
-                    ChildIds = pageChildrenIds.TryGetValue(x.Id, out ImmutableArray<int> childIds) ? childIds : [],
+                    OfferIds = pageOfferIds.TryGetValue(x.Id, out ImmutableArray<int> offerIds)
+                        ? offerIds
+                        : [],
+                    ChildIds = pageChildrenIds.TryGetValue(x.Id, out ImmutableArray<int> childIds)
+                        ? childIds
+                        : [],
                 })
                 .Prepend(virtualRoot)
                 .ToImmutableDictionary(x => x.Id);

@@ -33,11 +33,20 @@ public class HabboSearchMessageHandler(IGrainFactory grainFactory)
         IMessengerGrain grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
         IPlayerDirectoryGrain directory = _grainFactory.GetPlayerDirectoryGrain();
 
-        Task<List<MessengerSearchResultSnapshot>> friendResultsTask = grain.GetFriendSearchResultsAsync(message.SearchQuery, ct);
-        Task<List<MessengerSearchResultSnapshot>> globalResultsTask = directory.SearchPlayersAsync(message.SearchQuery, SearchLimit, ct);
+        Task<List<MessengerSearchResultSnapshot>> friendResultsTask =
+            grain.GetFriendSearchResultsAsync(message.SearchQuery, ct);
+        Task<List<MessengerSearchResultSnapshot>> globalResultsTask = directory.SearchPlayersAsync(
+            message.SearchQuery,
+            SearchLimit,
+            ct
+        );
 
-        List<MessengerSearchResultSnapshot> friendResults = await friendResultsTask.ConfigureAwait(false);
-        List<MessengerSearchResultSnapshot> globalResults = await globalResultsTask.ConfigureAwait(false);
+        List<MessengerSearchResultSnapshot> friendResults = await friendResultsTask.ConfigureAwait(
+            false
+        );
+        List<MessengerSearchResultSnapshot> globalResults = await globalResultsTask.ConfigureAwait(
+            false
+        );
 
         // Friends who match go in the "friends" list, exclude them from "others"
         HashSet<int> friendIds = new HashSet<int>(friendResults.Select(f => f.PlayerId.Value));

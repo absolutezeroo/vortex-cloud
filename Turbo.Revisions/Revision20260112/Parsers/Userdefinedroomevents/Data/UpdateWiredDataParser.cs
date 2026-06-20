@@ -9,11 +9,13 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Userdefinedroomevents.Data;
 
 internal abstract class UpdateWiredDataParser : IParser
 {
+    public virtual Type UpdateMessageType => typeof(UpdateWiredMessage);
+
     public IMessageEvent Parse(IClientPacket packet)
     {
         int id = packet.PopInt();
 
-        List<int> intParams = new List<int>();
+        List<int> intParams = new();
         int intParamCount = packet.PopInt();
 
         if (intParamCount > 0)
@@ -28,7 +30,7 @@ internal abstract class UpdateWiredDataParser : IParser
 
         string stringParam = packet.PopString();
 
-        List<int> stuffIds = new List<int>();
+        List<int> stuffIds = new();
         int stuffIdCount = packet.PopInt();
 
         if (stuffIdCount > 0)
@@ -43,7 +45,7 @@ internal abstract class UpdateWiredDataParser : IParser
 
         List<object> definitionSpecifics = ParseSpecifics(packet, GetRequiredDefinitionSpecifics());
 
-        List<WiredFurniSourceType[]> furniSources = new List<WiredFurniSourceType[]>();
+        List<WiredFurniSourceType[]> furniSources = new();
         int furniSourceCount = packet.PopInt();
 
         if (furniSourceCount > 0)
@@ -51,14 +53,14 @@ internal abstract class UpdateWiredDataParser : IParser
             while (furniSourceCount > 0)
             {
                 furniSources.Add([
-                    WiredFurniSourceTypeExtensions.FromProtocolId((WiredSourceType)packet.PopInt()),
+                    WiredFurniSourceTypeExtensions.FromProtocolId((WiredSourceType)packet.PopInt())
                 ]);
 
                 furniSourceCount--;
             }
         }
 
-        List<WiredPlayerSourceType[]> userSources = new List<WiredPlayerSourceType[]>();
+        List<WiredPlayerSourceType[]> userSources = new();
         int userSourceCount = packet.PopInt();
 
         if (userSourceCount > 0)
@@ -68,14 +70,14 @@ internal abstract class UpdateWiredDataParser : IParser
                 userSources.Add([
                     WiredPlayerSourceTypeExtensions.FromProtocolId(
                         (WiredSourceType)packet.PopInt()
-                    ),
+                    )
                 ]);
 
                 userSourceCount--;
             }
         }
 
-        List<string> variableIds = new List<string>();
+        List<string> variableIds = new();
         int variableIdCount = packet.PopInt();
 
         if (variableIdCount > 0)
@@ -90,7 +92,7 @@ internal abstract class UpdateWiredDataParser : IParser
 
         List<object> typeSpecifics = ParseSpecifics(packet, GetRequiredTypeSpecifics());
 
-        List<int> stuffIds2 = new List<int>();
+        List<int> stuffIds2 = new();
         int stuffId2Count = packet.PopInt();
 
         if (stuffId2Count > 0)
@@ -103,7 +105,8 @@ internal abstract class UpdateWiredDataParser : IParser
             }
         }
 
-        UpdateWiredMessage message = (UpdateWiredMessage)Activator.CreateInstance(UpdateMessageType)!;
+        UpdateWiredMessage message = (UpdateWiredMessage)
+            Activator.CreateInstance(UpdateMessageType)!;
 
         return message with
         {
@@ -116,21 +119,25 @@ internal abstract class UpdateWiredDataParser : IParser
             FurniSources = furniSources,
             PlayerSources = userSources,
             VariableIds = variableIds,
-            TypeSpecifics = typeSpecifics,
+            TypeSpecifics = typeSpecifics
         };
     }
 
-    public virtual Type UpdateMessageType => typeof(UpdateWiredMessage);
+    public virtual List<object> GetRequiredDefinitionSpecifics()
+    {
+        return [];
+    }
 
-    public virtual List<object> GetRequiredDefinitionSpecifics() => [];
-
-    public virtual List<object> GetRequiredTypeSpecifics() => [];
+    public virtual List<object> GetRequiredTypeSpecifics()
+    {
+        return [];
+    }
 
     private List<object> ParseSpecifics(IClientPacket packet, List<object> requiredSpecifics)
     {
-        List<object> specifics = new List<object>();
+        List<object> specifics = new();
 
-        foreach (var specific in requiredSpecifics)
+        foreach (object specific in requiredSpecifics)
         {
             if (specific is int)
             {

@@ -58,10 +58,13 @@ internal sealed class DashboardWebHost(
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if (!_config.DashboardEnabled) return;
+        if (!_config.DashboardEnabled)
+        {
+            return;
+        }
 
-        var startedAtUtc = DateTime.UtcNow;
-        var prefix = $"http://{_config.DashboardHost}:{_config.DashboardPort}";
+        DateTime startedAtUtc = DateTime.UtcNow;
+        string prefix = $"http://{_config.DashboardHost}:{_config.DashboardPort}";
 
         WebApplication app;
 
@@ -117,7 +120,7 @@ internal sealed class DashboardWebHost(
 
     private WebApplication BuildApp(string prefix, Func<DateTime> startedAtUtc)
     {
-        var builder = WebApplication.CreateSlimBuilder();
+        WebApplicationBuilder builder = WebApplication.CreateSlimBuilder();
         builder.WebHost.UseUrls(prefix);
 
         // The dashboard web app keeps its own logging quiet; lifecycle messages come from the parent
@@ -128,7 +131,7 @@ internal sealed class DashboardWebHost(
         ConfigureAuth(builder.Services);
         ConfigureSwagger(builder.Services);
 
-        var app = builder.Build();
+        WebApplication app = builder.Build();
 
         ConfigurePipeline(app);
 
@@ -137,7 +140,10 @@ internal sealed class DashboardWebHost(
         DashboardEndpoints.MapOperations(app);
         DashboardEndpoints.MapMeta(app);
 
-        if (_config.DashboardFrontendEnabled) DashboardEndpoints.MapFrontend(app);
+        if (_config.DashboardFrontendEnabled)
+        {
+            DashboardEndpoints.MapFrontend(app);
+        }
 
         return app;
     }
@@ -172,7 +178,8 @@ internal sealed class DashboardWebHost(
         services.AddAuthorization(authorization =>
         {
             // One policy per capability; a wildcard ("*") capability satisfies every policy.
-            foreach (var capability in DashboardCapabilities)
+            foreach (string capability in DashboardCapabilities)
+            {
                 authorization.AddPolicy(
                     capability,
                     policy =>
@@ -184,6 +191,7 @@ internal sealed class DashboardWebHost(
                                 Capabilities.Wildcard
                             )
                 );
+            }
         });
     }
 
@@ -224,25 +232,23 @@ internal sealed class DashboardWebHost(
                 }
             );
 
-            swagger.AddSecurityRequirement(document =>
-                new OpenApiSecurityRequirement
+            swagger.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+            {
                 {
-                    {
-                        new OpenApiSecuritySchemeReference(
-                            DashboardAuthenticationHandler.SchemeName,
-                            document
-                        ),
-                        new List<string>()
-                    }
+                    new OpenApiSecuritySchemeReference(
+                        DashboardAuthenticationHandler.SchemeName,
+                        document
+                    ),
+                    new List<string>()
                 }
-            );
+            });
         });
     }
 
     private void ConfigurePipeline(WebApplication app)
     {
-        var csp = DashboardSecurityHeaders.BuildCsp(_config.FurniIconUrlTemplate);
-        var emitter = app.Services.GetRequiredService<DashboardAuditEmitter>();
+        string csp = DashboardSecurityHeaders.BuildCsp(_config.FurniIconUrlTemplate);
+        DashboardAuditEmitter emitter = app.Services.GetRequiredService<DashboardAuditEmitter>();
 
         // Hardened headers for the SPA + JSON API. Swagger UI ships an inline bootstrap script, so it
         // is exempt from the strict CSP (it is operator-only and same-origin).
@@ -254,7 +260,9 @@ internal sealed class DashboardWebHost(
                         StringComparison.OrdinalIgnoreCase
                     )
                 )
+                {
                     DashboardSecurityHeaders.Apply(ctx.Response, csp);
+                }
 
                 await next().ConfigureAwait(false);
             }
@@ -277,20 +285,29 @@ internal sealed class DashboardWebHost(
             {
                 await next().ConfigureAwait(false);
 
-                var path = ctx.Request.Path.Value ?? "/";
+                string path = ctx.Request.Path.Value ?? "/";
 
-                if (!path.StartsWith("/api/", StringComparison.Ordinal)) return;
+                if (!path.StartsWith("/api/", StringComparison.Ordinal))
+                {
+                    return;
+                }
 
-                if (path is "/api/login" or "/api/logout") return;
+                if (path is "/api/login" or "/api/logout")
+                {
+                    return;
+                }
 
-                var status = ctx.Response.StatusCode;
-                var isOperation =
+                int status = ctx.Response.StatusCode;
+                bool isOperation =
                     path.StartsWith("/api/ops/", StringComparison.Ordinal)
                     || path.StartsWith("/api/v1/operations/", StringComparison.Ordinal);
 
-                if (isOperation && status == StatusCodes.Status200OK) return;
+                if (isOperation && status == StatusCodes.Status200OK)
+                {
+                    return;
+                }
 
-                var result = status switch
+                AuditResult result = status switch
                 {
                     StatusCodes.Status200OK => AuditResult.Success,
                     StatusCodes.Status401Unauthorized or StatusCodes.Status403Forbidden =>

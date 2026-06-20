@@ -22,7 +22,9 @@ internal sealed class PlayerInventoryModule(PlayerPresenceGrain presenceGrain)
         IInventoryGrain inventoryGrain = _presenceGrain._grainFactory.GetInventoryGrain(
             _presenceGrain.GetPrimaryKeyLong()
         );
-        ImmutableArray<FurnitureItemSnapshot> items = await inventoryGrain.GetAllItemSnapshotsAsync(ct);
+        ImmutableArray<FurnitureItemSnapshot> items = await inventoryGrain.GetAllItemSnapshotsAsync(
+            ct
+        );
         int furniPerFragment = 100;
 
         int totalFragments = (int)

@@ -22,10 +22,10 @@ using Turbo.Primitives.Players.Wallet;
 namespace Turbo.Players.Grains;
 
 /// <summary>
-/// Singleton grain handling group operations not bound to one existing group: the creation wizard,
-/// creating a group (charged via the wallet, with its 1:1 forum-settings row through
-/// <see cref="GroupFactory"/>), the player's memberships/favourite, and badge-editor data.
-/// Per-group reads/mutations live on <see cref="GroupGrain"/>.
+///     Singleton grain handling group operations not bound to one existing group: the creation wizard,
+///     creating a group (charged via the wallet, with its 1:1 forum-settings row through
+///     <see cref="GroupFactory" />), the player's memberships/favourite, and badge-editor data.
+///     Per-group reads/mutations live on <see cref="GroupGrain" />.
 /// </summary>
 internal sealed class GroupDirectoryGrain(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
@@ -59,7 +59,7 @@ internal sealed class GroupDirectoryGrain(
                 RoomId = r.Id,
                 RoomName = r.Name,
                 // A room can host a guild only if it is not already a guild base.
-                HasControllers = r.GroupEntityId == null,
+                HasControllers = r.GroupEntityId == null
             })
             .ToListAsync(ct);
 
@@ -68,7 +68,7 @@ internal sealed class GroupDirectoryGrain(
             CostInCredits = CreationCostInCredits,
             Rooms = rooms,
             // Default starting badge the wizard pre-fills; the player edits it before confirming.
-            BadgeParts = GuildBadgeLibrary.DefaultBadgeParts,
+            BadgeParts = GuildBadgeLibrary.DefaultBadgeParts
         };
     }
 
@@ -114,8 +114,8 @@ internal sealed class GroupDirectoryGrain(
                     new WalletDebitRequest
                     {
                         CurrencyKind = new CurrencyKind { CurrencyType = CurrencyType.Credits },
-                        Amount = CreationCostInCredits,
-                    },
+                        Amount = CreationCostInCredits
+                    }
                 ],
                 ct
             )
@@ -132,14 +132,14 @@ internal sealed class GroupDirectoryGrain(
         }
 
         GroupEntity group = GroupFactory.Create(
-            name: name,
-            badge: BuildBadgeCode(badgeParts),
-            roomEntityId: baseRoomId,
-            ownerPlayerEntityId: ownerId,
-            type: GroupType.Open,
-            colorOne: primaryColorId.ToString(),
-            colorTwo: secondaryColorId.ToString(),
-            description: string.IsNullOrEmpty(description) ? null : description
+            name,
+            BuildBadgeCode(badgeParts),
+            baseRoomId,
+            ownerId,
+            GroupType.Open,
+            primaryColorId.ToString(),
+            secondaryColorId.ToString(),
+            string.IsNullOrEmpty(description) ? null : description
         );
         group.RoomEntity = room;
         group.OwnerPlayerEntity = ownerEntity;
@@ -156,7 +156,7 @@ internal sealed class GroupDirectoryGrain(
                 PlayerEntityId = ownerId,
                 Rank = GroupMemberRank.Admin,
                 GroupEntity = group,
-                PlayerEntity = ownerEntity,
+                PlayerEntity = ownerEntity
             }
         );
 
@@ -250,7 +250,7 @@ internal sealed class GroupDirectoryGrain(
                 SecondaryColor = GuildBadgeLibrary.ResolveColorHex(g.ColorTwo),
                 Favourite = favouriteGroupId == g.Id,
                 OwnerId = g.OwnerPlayerEntityId,
-                HasForum = g.ForumSettings?.Enabled ?? false,
+                HasForum = g.ForumSettings?.Enabled ?? false
             })
             .ToList();
     }
@@ -282,7 +282,7 @@ internal sealed class GroupDirectoryGrain(
             }
         }
 
-        int? newValue = favourite ? groupId : (int?)null;
+        int? newValue = favourite ? groupId : null;
 
         await dbCtx
             .Players.Where(p => p.Id == playerId)
@@ -294,20 +294,22 @@ internal sealed class GroupDirectoryGrain(
             .ConfigureAwait(false);
     }
 
-    public Task<GroupEditorDataSnapshot> GetEditorDataAsync(CancellationToken ct) =>
+    public Task<GroupEditorDataSnapshot> GetEditorDataAsync(CancellationToken ct)
+    {
         // Badge designer palette: base shapes, overlay symbols and colour swatches the client
         // renders in the editor. Sourced from GuildBadgeLibrary (the part/colour ids are stable
         // and are what the persisted badge code references).
-        Task.FromResult(
+        return Task.FromResult(
             new GroupEditorDataSnapshot
             {
                 BaseParts = GuildBadgeLibrary.BaseParts,
                 LayerParts = GuildBadgeLibrary.LayerParts,
                 BadgeColors = GuildBadgeLibrary.BadgeColors,
                 PrimaryColors = GuildBadgeLibrary.PrimaryColors,
-                SecondaryColors = GuildBadgeLibrary.SecondaryColors,
+                SecondaryColors = GuildBadgeLibrary.SecondaryColors
             }
         );
+    }
 
     public async Task<List<GroupBadgeSnapshot>> GetBadgesAsync(
         PlayerId player,
@@ -364,7 +366,7 @@ internal sealed class GroupDirectoryGrain(
                 g.Id,
                 g.Name,
                 g.Description,
-                g.Badge,
+                g.Badge
             })
             .ToListAsync(ct);
 
@@ -375,7 +377,7 @@ internal sealed class GroupDirectoryGrain(
                 ListCode = listCode,
                 TotalAmount = totalAmount,
                 StartIndex = startIndex,
-                Forums = [],
+                Forums = []
             };
         }
 
@@ -429,7 +431,7 @@ internal sealed class GroupDirectoryGrain(
                 ModeratePermissionError = string.Empty,
                 ReportPermissionError = string.Empty,
                 CanChangeSettings = false,
-                IsStaff = false,
+                IsStaff = false
             })
             .ToList();
 
@@ -438,19 +440,21 @@ internal sealed class GroupDirectoryGrain(
             ListCode = listCode,
             TotalAmount = totalAmount,
             StartIndex = startIndex,
-            Forums = forums,
+            Forums = forums
         };
     }
 
-    public Task<int> GetUnreadForumsCountAsync(PlayerId player, CancellationToken ct) =>
+    public Task<int> GetUnreadForumsCountAsync(PlayerId player, CancellationToken ct)
+    {
         // Per-user read markers are not tracked yet (UpdateForumReadMarker is accepted but not
         // persisted), so there is no unread state to count. Returns 0; revisit with read tracking.
-        Task.FromResult(0);
+        return Task.FromResult(0);
+    }
 
     /// <summary>
-    /// Assembles a deterministic guild badge code from the flattened part triples
-    /// (partId, colorId, position) the client submits. Exact glyph rendering depends on the
-    /// badge-parts config (the GuildEditorData feature); this preserves the player's selection.
+    ///     Assembles a deterministic guild badge code from the flattened part triples
+    ///     (partId, colorId, position) the client submits. Exact glyph rendering depends on the
+    ///     badge-parts config (the GuildEditorData feature); this preserves the player's selection.
     /// </summary>
     internal static string BuildBadgeCode(IReadOnlyList<int> parts)
     {
@@ -461,7 +465,9 @@ internal sealed class GroupDirectoryGrain(
 
         string code = string.Empty;
         for (int i = 0; i + 2 < parts.Count; i += 3)
+        {
             code += $"b{parts[i]:D2}{parts[i + 1]:D2}{parts[i + 2]}";
+        }
 
         return code.Length == 0 ? "b00000" : code;
     }

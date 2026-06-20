@@ -135,6 +135,10 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
 
     public DbSet<GroupForumPostEntity> GroupForumPosts { get; init; }
 
+    public DbSet<RentableSpaceTermsEntity> RentableSpaceTerms { get; init; }
+
+    public DbSet<RoomRentableSpaceEntity> RoomRentableSpaces { get; init; }
+
     protected override void OnModelCreating(ModelBuilder mb)
     {
         base.OnModelCreating(mb);
@@ -163,5 +167,13 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
             .WithMany()
             .HasForeignKey(r => r.GroupEntityId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // Self-referencing FK on furniture.rentable_space_furniture_id (DATA-MODEL §3.3).
+        // Non-cascade: deleting a space furni must not cascade-delete the items placed in it.
+        mb.Entity<FurnitureEntity>()
+            .HasOne(f => f.RentableSpaceFurnitureEntity)
+            .WithMany()
+            .HasForeignKey(f => f.RentableSpaceFurnitureEntityId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

@@ -25,23 +25,66 @@ namespace Turbo.Rooms.Grains.Systems;
 
 public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventListener
 {
-    private readonly RoomGrain _roomGrain = roomGrain;
-
     private readonly HashSet<int> _dirtyStackIds = [];
-    private readonly Dictionary<int, IWiredStack> _stacksById = [];
-    private readonly Dictionary<Type, List<int>> _stackIdsByEventType = [];
 
     private readonly Queue<RoomEvent> _eventQueue = new();
+
     private readonly Dictionary<
         WiredExecutionKey,
         WiredPendingStackExecution
     > _pendingStackExecutions = [];
+
+    private readonly RoomGrain _roomGrain = roomGrain;
+    private readonly Dictionary<Type, List<int>> _stackIdsByEventType = [];
+    private readonly Dictionary<int, IWiredStack> _stacksById = [];
+
     private readonly PriorityQueue<(WiredExecutionKey key, long version), long> _stackSchedule =
         new();
 
-    private int _tickMs => _roomGrain._roomConfig.WiredTickMs;
     private bool _firstRun = true;
-    private long _nextStackExecutionId = 0;
+    private long _nextStackExecutionId;
+
+    private int _tickMs => _roomGrain._roomConfig.WiredTickMs;
+
+    public Task OnRoomEventAsync(RoomEvent evt, CancellationToken ct)
+    {
+        if (evt is null)
+        {
+            return Task.CompletedTask;
+        }
+
+        switch (evt)
+        {
+            case RoomWiredStackChangedEvent stackEvt:
+            {
+                foreach (int stackId in stackEvt.StackIds)
+                {
+                    _dirtyStackIds.Add(stackId);
+                }
+            }
+                break;
+            case WiredVariableBoxChangedEvent boxEvt:
+            {
+                foreach (int boxId in boxEvt.BoxIds)
+                {
+                    _dirtyVariableBoxIds.Add(boxId);
+                }
+            }
+                break;
+            case PlayerLeftEvent playerLeftEvt:
+                _playerActiveStore.RemovePlayerStore(playerLeftEvt.PlayerId);
+                _eventQueue.Enqueue(evt);
+                break;
+            case RoomItemDetachedEvent detatchedEvt:
+                _furnitureActiveStore.RemoveFurnitureStore(detatchedEvt.ObjectId);
+                break;
+            default:
+                _eventQueue.Enqueue(evt);
+                break;
+        }
+
+        return Task.CompletedTask;
+    }
 
     public async Task ProcessWiredAsync(long now, CancellationToken ct)
     {
@@ -51,7 +94,9 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         }
 
         while (now >= _roomGrain._state.NextWiredBoundaryMs)
+        {
             _roomGrain._state.NextWiredBoundaryMs += _tickMs;
+        }
 
         if (_firstRun)
         {
@@ -81,45 +126,12 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         //await RunDueScheduledStackExecutionsAsync(now, ct);
     }
 
-    public Task OnRoomEventAsync(RoomEvent evt, CancellationToken ct)
-    {
-        if (evt is null)
-        {
-            return Task.CompletedTask;
-        }
-
-        switch (evt)
-        {
-            case RoomWiredStackChangedEvent stackEvt:
-                {
-                    foreach (int stackId in stackEvt.StackIds)
-                        _dirtyStackIds.Add(stackId);
-                }
-                break;
-            case WiredVariableBoxChangedEvent boxEvt:
-                {
-                    foreach (int boxId in boxEvt.BoxIds)
-                        _dirtyVariableBoxIds.Add(boxId);
-                }
-                break;
-            case PlayerLeftEvent playerLeftEvt:
-                _playerActiveStore.RemovePlayerStore(playerLeftEvt.PlayerId);
-                _eventQueue.Enqueue(evt);
-                break;
-            case RoomItemDetachedEvent detatchedEvt:
-                _furnitureActiveStore.RemoveFurnitureStore(detatchedEvt.ObjectId);
-                break;
-            default:
-                _eventQueue.Enqueue(evt);
-                break;
-        }
-
-        return Task.CompletedTask;
-    }
-
     private async Task ProcessRoomEventAsync(RoomEvent evt, long now, CancellationToken ct)
     {
-        if (evt is null || !_stackIdsByEventType.TryGetValue(evt.GetType(), out List<int>? stackIds))
+        if (
+            evt is null
+            || !_stackIdsByEventType.TryGetValue(evt.GetType(), out List<int>? stackIds)
+        )
         {
             return;
         }
@@ -132,7 +144,9 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             }
 
             foreach (IWiredTrigger trigger in stack.Triggers)
+            {
                 await FireTriggerWithEventAsync(trigger, evt, stack, now, ct);
+            }
         }
     }
 
@@ -154,11 +168,11 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             return;
         }
 
-        WiredProcessingContext ctx = new WiredProcessingContext(_roomGrain)
+        WiredProcessingContext ctx = new(_roomGrain)
         {
             Event = evt,
             Stack = stack,
-            Trigger = trigger,
+            Trigger = trigger
         };
 
         if (evt.CausedBy.Origin == ActionOrigin.Player && evt.CausedBy.PlayerId > 0)
@@ -178,7 +192,9 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         }
 
         foreach (IWiredAddon addon in ctx.Stack.Addons)
+        {
             await addon.MutatePolicyAsync(ctx, ct);
+        }
 
         if (!EvaluateConditions(ctx.Stack.Conditions, ctx))
         {
@@ -193,12 +209,16 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         _ = ctx.Trigger.FlashActivationStateAsync(ct);
 
         foreach (IWiredAddon addon in ctx.Stack.Addons)
+        {
             await addon.BeforeEffectsAsync(ctx, ct);
+        }
 
         ScheduleStackExecution(ctx, now, ct);
 
         foreach (IWiredAddon addon in ctx.Stack.Addons)
+        {
             await addon.AfterEffectsAsync(ctx, ct);
+        }
     }
 
     private void ScheduleStackExecution(
@@ -214,12 +234,12 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             return;
         }
 
-        WiredExecutionKey key = new WiredExecutionKey(
+        WiredExecutionKey key = new(
             ctx.Stack.StackId,
             Interlocked.Increment(ref _nextStackExecutionId)
         );
 
-        WiredPendingStackExecution pending = new WiredPendingStackExecution
+        WiredPendingStackExecution pending = new()
         {
             Stack = ctx.Stack,
             Actions = actions,
@@ -229,7 +249,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             SelectorPool = ctx.SelectorPool,
             Version = 1,
             DueAtMs = dueAtMs,
-            NextActionIndex = 0,
+            NextActionIndex = 0
         };
 
         _pendingStackExecutions[key] = pending;
@@ -300,10 +320,8 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
                 {
                     return false;
                 }
-                else
-                {
-                    pending.WaitingActionIndex = null;
-                }
+
+                pending.WaitingActionIndex = null;
             }
             else
             {
@@ -321,11 +339,11 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
 
             try
             {
-                WiredExecutionContext ctx = new WiredExecutionContext(_roomGrain)
+                WiredExecutionContext ctx = new(_roomGrain)
                 {
                     Policy = pending.Policy,
                     Selected = new WiredSelectionSet().UnionWith(pending.Selected),
-                    SelectorPool = new WiredSelectionSet().UnionWith(pending.SelectorPool),
+                    SelectorPool = new WiredSelectionSet().UnionWith(pending.SelectorPool)
                 };
 
                 _ = action.FlashActivationStateAsync(ct);
@@ -334,7 +352,9 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
 
                 _ = FlushWiredContextAsync(ctx);
             }
-            catch { }
+            catch
+            {
+            }
 
             pending.NextActionIndex = i + 1;
         }
@@ -374,7 +394,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
                     Users = ctx.UserMoves,
                     FloorItems = ctx.FloorItemMoves,
                     WallItems = ctx.WallItemMoves,
-                    UserDirections = ctx.UserDirections,
+                    UserDirections = ctx.UserDirections
                 }
             );
         }
@@ -407,7 +427,9 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         _dirtyStackIds.Clear();
 
         foreach (int stackId in dirtyStackIds)
+        {
             await ProcessWiredStackAsync(stackId, ct);
+        }
 
         _stackIdsByEventType.Clear();
 
@@ -446,7 +468,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             return;
         }
 
-        WiredStack stack = new WiredStack { StackId = stackId };
+        WiredStack stack = new() { StackId = stackId };
 
         foreach (IRoomItem item in wiredItems)
         {
@@ -476,7 +498,6 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             }
             catch (Exception)
             {
-                continue;
             }
         }
 
@@ -494,7 +515,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         {
             WiredEffectModeType.FirstOnly => [actions[0]],
             WiredEffectModeType.Random => [actions[Random.Shared.Next(actions.Count)]],
-            _ => [.. actions],
+            _ => [.. actions]
         };
     }
 
@@ -513,7 +534,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             WiredConditionModeType.None => true,
             WiredConditionModeType.Any => conditions.Exists(c => c.Evaluate(ctx)),
             WiredConditionModeType.All => conditions.TrueForAll(c => c.Evaluate(ctx)),
-            _ => conditions.TrueForAll(c => c.Evaluate(ctx)),
+            _ => conditions.TrueForAll(c => c.Evaluate(ctx))
         };
     }
 }

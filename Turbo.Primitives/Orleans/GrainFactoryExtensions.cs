@@ -121,4 +121,9 @@ public static class GrainFactoryExtensions
 
     public static IGroupForumGrain GetGroupForumGrain(this IGrainFactory factory, int groupId) =>
         factory.GetGrain<IGroupForumGrain>(groupId);
+
+    public static IRentableSpaceGrain GetRentableSpaceGrain(
+        this IGrainFactory factory,
+        int furnitureId
+    ) => factory.GetGrain<IRentableSpaceGrain>(furnitureId);
 }

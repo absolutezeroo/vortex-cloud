@@ -12,18 +12,17 @@ public sealed class RoomPlayerAvatar
     : RoomAvatar<IRoomPlayer, IRoomPlayerLogic, IRoomPlayerContext>,
         IRoomPlayer
 {
-    public override RoomObjectType AvatarType { get; } = RoomObjectType.Player;
-
-    public required PlayerId PlayerId { get; init; }
-    public AvatarGenderType Gender { get; private set; } = AvatarGenderType.Male;
-    public AvatarDanceType DanceType { get; private set; } = AvatarDanceType.None;
-
     public int GroupId { get; init; } = -1;
     public int GroupStatus { get; init; } = -1;
     public string GroupName { get; init; } = string.Empty;
     public string SwimFigure { get; init; } = string.Empty;
     public int ActivityPoints { get; init; } = 0;
     public bool IsModerator { get; init; } = false;
+    public override RoomObjectType AvatarType { get; } = RoomObjectType.Player;
+
+    public required PlayerId PlayerId { get; init; }
+    public AvatarGenderType Gender { get; private set; } = AvatarGenderType.Male;
+    public AvatarDanceType DanceType { get; private set; } = AvatarDanceType.None;
 
     public bool UpdateWithPlayer(PlayerSummarySnapshot snapshot)
     {
@@ -59,12 +58,14 @@ public sealed class RoomPlayerAvatar
 
     protected override RoomPlayerAvatarSnapshot BuildSnapshot()
     {
-        StringBuilder statusString = new StringBuilder("/");
+        StringBuilder statusString = new("/");
 
         foreach ((AvatarStatusType type, string value) in Statuses)
+        {
             statusString.Append($"{type.ToLegacyString()} {value}/");
+        }
 
-        return new()
+        return new RoomPlayerAvatarSnapshot
         {
             AvatarType = AvatarType,
             WebId = PlayerId.Value,
@@ -85,7 +86,7 @@ public sealed class RoomPlayerAvatar
             GroupName = GroupName,
             SwimFigure = SwimFigure,
             ActivityPoints = ActivityPoints,
-            IsModerator = IsModerator,
+            IsModerator = IsModerator
         };
     }
 }

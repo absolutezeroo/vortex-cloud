@@ -32,7 +32,9 @@ public sealed partial class RoomActionModule(RoomGrain roomGrain)
             throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
         }
 
-        FurniturePickupType pickupType = await _roomGrain.SecurityModule.GetFurniPickupTypeAsync(ctx);
+        FurniturePickupType pickupType = await _roomGrain.SecurityModule.GetFurniPickupTypeAsync(
+            ctx
+        );
 
         if (pickupType == FurniturePickupType.None)
         {

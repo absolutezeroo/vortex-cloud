@@ -68,6 +68,7 @@ internal static class MessageEvent
     public const int BuildersClubQueryFurniCountMessageEvent = 2340;
     public const int GetBonusRareInfoMessageEvent = 75;
     public const int GetBundleDiscountRulesetEvent = 2496;
+    public const int GetBundleDiscountRulesetVortexEvent = 1811;
     public const int GetCatalogIndexEvent = 1606;
     public const int GetCatalogPageEvent = 2400;
     public const int GetCatalogPageWithEarliestExpiryEvent = 3841;
@@ -75,6 +76,7 @@ internal static class MessageEvent
     public const int GetClubGiftInfoRequestMessageEvent = 1422;
     public const int GetClubOffersMessageEvent = 2965;
     public const int GetGiftWrappingConfigurationEvent = 1496;
+    public const int GetGiftWrappingConfigurationVortexEvent = 3863;
     public const int GetHabboClubExtendOfferMessageEvent = 1808;
     public const int GetIsOfferGiftableEvent = 3892;
     public const int GetLimitedOfferAppearingNextEvent = 3747;

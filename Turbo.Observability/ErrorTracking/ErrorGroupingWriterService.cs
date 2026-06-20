@@ -20,23 +20,24 @@ using Turbo.Observability.Diagnostics;
 namespace Turbo.Observability.ErrorTracking;
 
 /// <summary>
-/// Background worker that flushes grouped technical errors from an in-memory channel to
-/// <c>error_groups</c> and <c>error_occurrences</c> with bounded retry and dead-lettering.
+///     Background worker that flushes grouped technical errors from an in-memory channel to
+///     <c>error_groups</c> and <c>error_occurrences</c> with bounded retry and dead-lettering.
 /// </summary>
 internal sealed class ErrorGroupingWriterService : BackgroundService
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
+
+    private readonly int _batchSize;
 
     private readonly ErrorGroupingChannel _channel;
     private readonly IDbContextFactory<TurboDbContext> _dbContextFactory;
-    private readonly int _batchSize;
-    private readonly int _retryAttempts;
-    private readonly int _retryDelayMs;
     private readonly string _deadLetterPath;
     private readonly ILogger<ErrorGroupingWriterService> _logger;
+    private readonly int _retryAttempts;
+    private readonly int _retryDelayMs;
 
     public ErrorGroupingWriterService(
         ErrorGroupingChannel channel,
@@ -57,14 +58,16 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         ChannelReader<ErrorGroupingRecord> reader = _channel.Reader;
-        List<ErrorGroupingRecord> batch = new List<ErrorGroupingRecord>(_batchSize);
+        List<ErrorGroupingRecord> batch = new(_batchSize);
 
         try
         {
             while (await reader.WaitToReadAsync(stoppingToken).ConfigureAwait(false))
             {
                 while (batch.Count < _batchSize && reader.TryRead(out ErrorGroupingRecord? record))
+                {
                     batch.Add(record);
+                }
 
                 if (batch.Count > 0)
                 {
@@ -104,7 +107,9 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
         batch.Clear();
 
         while (reader.TryRead(out ErrorGroupingRecord? record))
+        {
             batch.Add(record);
+        }
 
         if (batch.Count == 0)
         {
@@ -135,12 +140,21 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
                     .CreateDbContextAsync(ct)
                     .ConfigureAwait(false);
 
-                Dictionary<string, ErrorGroupEntity> groupsByFingerprint = await LoadOrCreateGroupsAsync(db, batch, ct)
-                    .ConfigureAwait(false);
+                Dictionary<string, ErrorGroupEntity> groupsByFingerprint =
+                    await LoadOrCreateGroupsAsync(db, batch, ct).ConfigureAwait(false);
+
+                // Persist new groups first so their auto-generated IDs are available
+                // before ErrorOccurrenceEntity.GroupId is set.
+                await db.SaveChangesAsync(ct).ConfigureAwait(false);
 
                 foreach (ErrorGroupingRecord record in batch)
                 {
-                    if (!groupsByFingerprint.TryGetValue(record.Fingerprint, out ErrorGroupEntity? group))
+                    if (
+                        !groupsByFingerprint.TryGetValue(
+                            record.Fingerprint,
+                            out ErrorGroupEntity? group
+                        )
+                    )
                     {
                         continue;
                     }
@@ -180,7 +194,7 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
                             ActorPlayerId = record.ActorPlayerId,
                             RoomId = record.RoomId,
                             SessionKey = record.SessionKey,
-                            RemoteIp = record.RemoteIp,
+                            RemoteIp = record.RemoteIp
                         }
                     );
                 }
@@ -248,7 +262,7 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
                         SampleMessage = Truncate(first.Message, 255),
                         FirstSeenAt = first.OccurredAt,
                         LastSeenAt = first.OccurredAt,
-                        TotalOccurrences = 0,
+                        TotalOccurrences = 0
                     };
                 },
                 StringComparer.Ordinal
@@ -260,9 +274,13 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
             .ConfigureAwait(false);
 
         foreach (KeyValuePair<string, ErrorGroupEntity> existingPair in existing)
+        {
             byFingerprint[existingPair.Key] = existingPair.Value;
+        }
 
-        List<ErrorGroupEntity> toInsert = byFingerprint.Values.Where(group => group.Id == 0).ToList();
+        List<ErrorGroupEntity> toInsert = byFingerprint
+            .Values.Where(group => group.Id == 0)
+            .ToList();
 
         if (toInsert.Count > 0)
         {
@@ -296,7 +314,7 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
                 new
                 {
                     happenedAtUtc = DateTime.UtcNow,
-                    records = batch.Select(MapDeadLetterPayload),
+                    records = batch.Select(MapDeadLetterPayload)
                 },
                 JsonOptions
             );
@@ -322,13 +340,16 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
         }
     }
 
-    private static string Truncate(string? s, int maxLength) =>
-        string.IsNullOrEmpty(s) ? string.Empty
-        : s.Length <= maxLength ? s
-        : s[..maxLength];
+    private static string Truncate(string? s, int maxLength)
+    {
+        return string.IsNullOrEmpty(s) ? string.Empty
+            : s.Length <= maxLength ? s
+            : s[..maxLength];
+    }
 
-    private static object MapDeadLetterPayload(ErrorGroupingRecord record) =>
-        new
+    private static object MapDeadLetterPayload(ErrorGroupingRecord record)
+    {
+        return new
         {
             source = record.Source,
             operation = record.Operation,
@@ -338,6 +359,7 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
             occurredAt = record.OccurredAt.ToString("O", CultureInfo.InvariantCulture),
             actorPlayerId = record.ActorPlayerId,
             roomId = record.RoomId,
-            correlationId = record.CorrelationId,
+            correlationId = record.CorrelationId
         };
+    }
 }
