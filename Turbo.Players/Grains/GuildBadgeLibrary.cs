@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Turbo.Primitives.Groups.Snapshots;
@@ -75,11 +76,86 @@ internal static class GuildBadgeLibrary
     public static List<GroupColorOptionSnapshot> SecondaryColors { get; } = BuildColors();
 
     /// <summary>
-    /// The badge a fresh guild starts with in the creation wizard: a single base shape (part 1)
-    /// in the first colour, centred. The player edits from here before confirming.
+    /// The badge a fresh guild starts with in the creation wizard.
+    /// <para>
+    /// IMPORTANT: The client badge editor always has exactly 5 layers (indices 0–4) and iterates
+    /// <c>_badgeInitData[0..4]</c> unconditionally — a missing entry causes a null-reference crash.
+    /// We therefore always send exactly 5 <c>GuildBadgeSettings</c> entries: layer 0 (the base
+    /// shape) is pre-filled with part 1, colour 1, centred (position 4); layers 1–4 are empty
+    /// (partId=0, colorId=0, position=0).
+    /// </para>
     /// </summary>
     public static List<GroupBadgePartSnapshot> DefaultBadgeParts { get; } =
-        [new GroupBadgePartSnapshot { PartId = 1, ColorId = 1, Position = 4 }];
+        [
+            new GroupBadgePartSnapshot { PartId = 1, ColorId = 1, Position = 4 }, // base layer
+            new GroupBadgePartSnapshot { PartId = 0, ColorId = 0, Position = 0 }, // overlay 1 (empty)
+            new GroupBadgePartSnapshot { PartId = 0, ColorId = 0, Position = 0 }, // overlay 2 (empty)
+            new GroupBadgePartSnapshot { PartId = 0, ColorId = 0, Position = 0 }, // overlay 3 (empty)
+            new GroupBadgePartSnapshot { PartId = 0, ColorId = 0, Position = 0 }, // overlay 4 (empty)
+        ];
+
+    // Number of badge layers the client badge editor always has. This is a hard client constant
+    // (5 BadgeLayerCtrl instances created unconditionally); the server must always send exactly
+    // this many GuildBadgeSettings entries or the client crashes with a null-reference.
+    public const int LayerCount = 5;
+
+    private static readonly GroupBadgePartSnapshot EmptyLayer = new()
+    {
+        PartId = 0,
+        ColorId = 0,
+        Position = 0,
+    };
+
+    /// <summary>
+    /// Parses a stored badge code (e.g. <c>b010104b020201</c>) into exactly <see cref="LayerCount"/>
+    /// layer entries, padding with empty layers as needed. The client badge editor iterates all 5
+    /// layers unconditionally; a short list causes a null-reference crash.
+    /// </summary>
+    /// <remarks>
+    /// Badge code format per segment: <c>b{partId:D2}{colorId:D2}{position}</c>.
+    /// </remarks>
+    public static List<GroupBadgePartSnapshot> ParseBadgeCode(string? badgeCode)
+    {
+        var result = new List<GroupBadgePartSnapshot>(LayerCount);
+
+        if (!string.IsNullOrEmpty(badgeCode))
+        {
+            // Each segment is 'b' + 2-digit partId + 2-digit colorId + 1-digit position = 6 chars.
+            var i = 0;
+            while (i + 5 < badgeCode.Length && result.Count < LayerCount)
+            {
+                if (badgeCode[i] != 'b')
+                {
+                    i++;
+                    continue;
+                }
+
+                if (
+                    int.TryParse(badgeCode.AsSpan(i + 1, 2), out var partId)
+                    && int.TryParse(badgeCode.AsSpan(i + 3, 2), out var colorId)
+                    && int.TryParse(badgeCode.AsSpan(i + 5, 1), out var position)
+                )
+                {
+                    result.Add(
+                        new GroupBadgePartSnapshot
+                        {
+                            PartId = partId,
+                            ColorId = colorId,
+                            Position = position,
+                        }
+                    );
+                }
+
+                i += 6;
+            }
+        }
+
+        // Pad to exactly LayerCount entries.
+        while (result.Count < LayerCount)
+            result.Add(EmptyLayer);
+
+        return result;
+    }
 
     /// <summary>
     /// Resolves a colour id (as stored in <c>GroupEntity.ColorOne</c>/<c>ColorTwo</c>) to its hex

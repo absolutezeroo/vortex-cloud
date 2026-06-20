@@ -384,8 +384,9 @@ internal sealed class GroupGrain(
             GuildRightsLevel = group.AdminOnlyDecoration ? 1 : 0,
             Locked = group.Type == GroupType.Private,
             Url = string.Empty,
-            // The editor pre-fill of parts needs the parts config; the rendered code is sent as-is.
-            BadgeParts = [],
+            // Parse the stored badge code into exactly 5 layer entries (one per client layer).
+            // The client iterates all 5 unconditionally — a short list causes a null-reference crash.
+            BadgeParts = GuildBadgeLibrary.ParseBadgeCode(group.Badge),
             BadgeCode = group.Badge,
             MembershipCount = membershipCount,
         };
