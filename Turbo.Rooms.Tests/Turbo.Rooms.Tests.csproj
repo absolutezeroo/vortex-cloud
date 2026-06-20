@@ -11,11 +11,14 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Turbo.Database\Turbo.Database.csproj" />
     <ProjectReference Include="..\Turbo.Events\Turbo.Events.csproj" />
     <ProjectReference Include="..\Turbo.Furniture\Turbo.Furniture.csproj" />
     <ProjectReference Include="..\Turbo.Observability\Turbo.Observability.csproj" />
+    <ProjectReference Include="..\Turbo.Players\Turbo.Players.csproj" />
     <ProjectReference Include="..\Turbo.Primitives\Turbo.Primitives.csproj" />
     <ProjectReference Include="..\Turbo.Rooms\Turbo.Rooms.csproj" />
   </ItemGroup>

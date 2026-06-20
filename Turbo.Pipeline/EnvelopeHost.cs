@@ -90,14 +90,26 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
             return;
         }
 
+        await PublishWithContextAsync(env, meta, ct).ConfigureAwait(false);
+    }
+
+    public async Task<TContext> PublishWithContextAsync(
+        TEnvelope env,
+        TMeta? meta,
+        CancellationToken ct
+    )
+    {
+        ArgumentNullException.ThrowIfNull(env);
+
         Type t = env.GetType();
+        TContext ctx = await _opt.CreateContextAsync(env, meta).ConfigureAwait(false);
 
         if (
             !_byEvent.TryGetValue(t, out Bucket<TContext>? bucket)
             && !_opt.EnableInheritanceDispatch
         )
         {
-            return;
+            return ctx;
         }
 
         Func<object, TContext, CancellationToken, ValueTask>? pipeline = GetOrBuildPipeline(
@@ -107,12 +119,12 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
 
         if (pipeline is null)
         {
-            return;
+            return ctx;
         }
 
-        TContext ctx = await _opt.CreateContextAsync(env, meta).ConfigureAwait(false);
-
         await pipeline(env, ctx, ct).ConfigureAwait(false);
+
+        return ctx;
     }
 
     private Func<object, TContext, CancellationToken, ValueTask>? GetOrBuildPipeline(
@@ -212,7 +224,7 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
             ImmutableArray<HandlerReg<TContext>>,
             ImmutableArray<BehaviorReg<TContext>>,
             int
-            ) ResolveForType(Type t)
+        ) ResolveForType(Type t)
         {
             IEnumerable<Type> types = EnumerateTypeGraph(t);
             ImmutableArray<HandlerReg<TContext>>.Builder handlerBuilder =
@@ -233,7 +245,8 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
 
             ImmutableArray<BehaviorReg<TContext>> behaviors = behaviorBuilder
                 .ToImmutable()
-                .Sort(static (a, b) =>
+                .Sort(
+                    static (a, b) =>
                     {
                         int cmp = a.Order.CompareTo(b.Order);
                         return cmp != 0 ? cmp : 0;
@@ -269,7 +282,14 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
             CompositeServiceProviderBag bag = new(_host);
 
             Func<object, TContext, CancellationToken, ValueTask> terminal = async (env, ctx, ct) =>
+            {
+                if (ShouldShortCircuit(ctx))
+                {
+                    return;
+                }
+
                 await InvokeHandlersAsync(handlers, env, ctx, ct).ConfigureAwait(false);
+            };
 
             for (int i = behaviors.Length - 1; i >= 0; i--)
             {
@@ -278,6 +298,11 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
 
                 terminal = async (env, ctx, ct) =>
                 {
+                    if (ShouldShortCircuit(ctx))
+                    {
+                        return;
+                    }
+
                     IServiceProvider sp = bag.Get(beh.ServiceProvider);
 
                     object? inst = null;
@@ -295,13 +320,25 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
                         return;
                     }
 
+                    bool nextInvoked = false;
+
                     try
                     {
                         await beh.Invoker(
                                 inst,
                                 env,
                                 ctx,
-                                async () => await next(env, ctx, ct).ConfigureAwait(false),
+                                async () =>
+                                {
+                                    nextInvoked = true;
+
+                                    if (ShouldShortCircuit(ctx))
+                                    {
+                                        return;
+                                    }
+
+                                    await next(env, ctx, ct).ConfigureAwait(false);
+                                },
                                 ct
                             )
                             .ConfigureAwait(false);
@@ -309,6 +346,11 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
                     catch (Exception ex)
                     {
                         _opt.OnBehaviorInvokeError?.Invoke(ex, env);
+
+                        if (!nextInvoked && !ShouldShortCircuit(ctx))
+                        {
+                            await next(env, ctx, ct).ConfigureAwait(false);
+                        }
                     }
                     finally
                     {
@@ -381,6 +423,8 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
     }
+
+    private bool ShouldShortCircuit(TContext ctx) => _opt.ShouldShortCircuit?.Invoke(ctx) == true;
 
     private async ValueTask InvokeOneAsync(
         HandlerReg<TContext> h,

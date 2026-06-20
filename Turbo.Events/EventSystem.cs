@@ -5,7 +5,9 @@ using Turbo.Primitives.Events;
 
 namespace Turbo.Events;
 
-public sealed class EventSystem(EventRegistry registry) : IEventPublisher
+public sealed class EventSystem(EventRegistry registry)
+    : IEventPublisher,
+        ICancellableEventPublisher
 {
     private readonly EventRegistry _registry = registry;
 
@@ -17,5 +19,13 @@ public sealed class EventSystem(EventRegistry registry) : IEventPublisher
         }
 
         await _registry.PublishAsync(@event, null, ct).ConfigureAwait(false);
+    }
+
+    public async Task<EventContext> PublishCancellableAsync(
+        IEvent @event,
+        CancellationToken ct = default
+    )
+    {
+        return await _registry.PublishWithContextAsync(@event, null, ct).ConfigureAwait(false);
     }
 }

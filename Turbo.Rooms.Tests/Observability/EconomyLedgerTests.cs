@@ -20,7 +20,7 @@ public sealed class EconomyLedgerTests
 
         await handler.HandleAsync(
             new CurrencyChangedEvent(7, "Credits", null, -25, 75),
-            new EventContext(),
+            Context(),
             CancellationToken.None
         );
 
@@ -41,7 +41,7 @@ public sealed class EconomyLedgerTests
 
         await handler.HandleAsync(
             new CurrencyChangedEvent(8, "ActivityPoints", 5, 40, 140),
-            new EventContext(),
+            Context(),
             CancellationToken.None
         );
 
@@ -62,7 +62,7 @@ public sealed class EconomyLedgerTests
 
         await handler.HandleAsync(
             new CurrencyChangedEvent(9, "Credits", null, 0, 75),
-            new EventContext(),
+            Context(),
             CancellationToken.None
         );
 
@@ -83,7 +83,7 @@ public sealed class EconomyLedgerTests
 
         foreach (CurrencyChangedEvent movement in movements)
         {
-            await handler.HandleAsync(movement, new EventContext(), CancellationToken.None);
+            await handler.HandleAsync(movement, Context(), CancellationToken.None);
         }
 
         ledger.Entries.Should().HaveCount(movements.Count);
@@ -98,8 +98,8 @@ public sealed class EconomyLedgerTests
         CurrencyChangedLedgerHandler handler = new CurrencyChangedLedgerHandler(ledger);
         CurrencyChangedEvent movement = new CurrencyChangedEvent(11, "Credits", null, -30, 70);
 
-        await handler.HandleAsync(movement, new EventContext(), CancellationToken.None);
-        await handler.HandleAsync(movement, new EventContext(), CancellationToken.None);
+        await handler.HandleAsync(movement, Context(), CancellationToken.None);
+        await handler.HandleAsync(movement, Context(), CancellationToken.None);
 
         ledger.Entries.Should().HaveCount(2);
         ledger.Entries[1].Should().BeEquivalentTo(ledger.Entries[0]);
@@ -113,6 +113,11 @@ public sealed class EconomyLedgerTests
         }
 
         return EconomyReason.Grant;
+    }
+
+    private static EventContext Context()
+    {
+        return new EventContext { CorrelationId = string.Empty };
     }
 
     private sealed class RecordingEconomyLedger : IEconomyLedger

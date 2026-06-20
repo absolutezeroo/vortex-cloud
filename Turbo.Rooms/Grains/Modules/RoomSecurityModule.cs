@@ -19,18 +19,7 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
             return true;
         }
 
-        bool isGroupRoom = false;
-
-        if (isGroupRoom)
-        {
-            bool canGroupDecorate = false;
-
-            if (controllerLevel >= RoomControllerType.GroupRights && canGroupDecorate)
-            {
-                return true;
-            }
-        }
-        else
+        if (_roomGrain._state.RoomSnapshot.GroupId is null)
         {
             if (controllerLevel >= RoomControllerType.Rights)
             {

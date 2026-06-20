@@ -28,7 +28,16 @@ public sealed class EventRegistry(
     {
         return new EnvelopeHostOptions<IEvent, object, EventContext>
         {
-            CreateContextAsync = (env, session) => Task.FromResult(new EventContext()),
+            CreateContextAsync = (env, session) =>
+                Task.FromResult(
+                    new EventContext
+                    {
+                        CorrelationId =
+                            contextAccessor.Current?.CorrelationId.Value
+                            ?? CorrelationId.None.Value,
+                    }
+                ),
+            ShouldShortCircuit = static ctx => ctx.Cancel,
             EnableInheritanceDispatch = true,
             HandlerMode = HandlerExecutionMode.Parallel,
             MaxHandlerDegreeOfParallelism = null,

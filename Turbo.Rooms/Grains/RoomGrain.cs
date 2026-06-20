@@ -147,7 +147,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
             OwnerId = _state.RoomSnapshot.OwnerId,
             OwnerName = _state.RoomSnapshot.OwnerName,
             Population = population,
-            LastUpdatedUtc = DateTime.UtcNow
+            LastUpdatedUtc = DateTime.UtcNow,
         };
     }
 
@@ -163,7 +163,9 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
     public Task SendComposerToRoomAsync(IComposer composer)
     {
-        return _roomOutbound.OnNextAsync(new RoomOutbound { RoomId = _state.RoomId, Composer = composer });
+        return _roomOutbound.OnNextAsync(
+            new RoomOutbound { RoomId = _state.RoomId, Composer = composer }
+        );
     }
 
     public override async Task OnActivateAsync(CancellationToken ct)
@@ -219,9 +221,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
             await _grainFactory.GetRoomDirectoryGrain().RemoveActiveRoomAsync(_state.RoomId);
         }
-        catch (Exception)
-        {
-        }
+        catch (Exception) { }
     }
 
     private async Task HydrateRoomStateAsync(CancellationToken ct)
@@ -256,12 +256,13 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                 AllowBlocking = entity.AllowBlocking,
                 AllowPets = entity.AllowPets,
                 AllowPetsEat = entity.AllowPetsEat,
+                GroupId = entity.GroupEntityId,
                 Password = entity.Password ?? string.Empty,
                 ModSettings = new ModSettingsSnapshot
                 {
                     WhoCanMute = entity.MuteType,
                     WhoCanKick = entity.KickType,
-                    WhoCanBan = entity.BanType
+                    WhoCanBan = entity.BanType,
                 },
                 ChatSettings = new ChatSettingsSnapshot
                 {
@@ -269,10 +270,10 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                     BubbleWidth = entity.ChatBubbleType,
                     ScrollSpeed = entity.ChatSpeedType,
                     FullHearRange = entity.ChatDistance,
-                    FloodSensitivity = entity.ChatFloodType
+                    FloodSensitivity = entity.ChatFloodType,
                 },
                 WorldType = _state.Model.Name,
-                LastUpdatedUtc = DateTime.UtcNow
+                LastUpdatedUtc = DateTime.UtcNow,
             };
         }
         finally

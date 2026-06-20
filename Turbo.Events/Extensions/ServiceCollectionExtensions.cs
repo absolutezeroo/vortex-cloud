@@ -15,6 +15,9 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<EventRegistry>();
         services.AddSingleton<EventSystem>();
         services.AddSingleton<IEventPublisher>(sp => sp.GetRequiredService<EventSystem>());
+        services.AddSingleton<ICancellableEventPublisher>(sp =>
+            sp.GetRequiredService<EventSystem>()
+        );
 
         return services;
     }

@@ -10,6 +10,7 @@ using Turbo.Database.Context;
 using Turbo.Database.Entities.Groups;
 using Turbo.Database.Entities.Players;
 using Turbo.Database.Entities.Room;
+using Turbo.Events.Registry;
 using Turbo.Primitives.Events;
 using Turbo.Primitives.Groups.Enums;
 using Turbo.Primitives.Groups.Grains;
@@ -31,6 +32,7 @@ internal sealed class GroupDirectoryGrain(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
     IEventPublisher events,
+    ICancellableEventPublisher cancellableEvents,
     ILogger<GroupDirectoryGrain> logger
 ) : Grain, IGroupDirectoryGrain
 {
@@ -59,7 +61,7 @@ internal sealed class GroupDirectoryGrain(
                 RoomId = r.Id,
                 RoomName = r.Name,
                 // A room can host a guild only if it is not already a guild base.
-                HasControllers = r.GroupEntityId == null
+                HasControllers = r.GroupEntityId == null,
             })
             .ToListAsync(ct);
 
@@ -68,7 +70,7 @@ internal sealed class GroupDirectoryGrain(
             CostInCredits = CreationCostInCredits,
             Rooms = rooms,
             // Default starting badge the wizard pre-fills; the player edits it before confirming.
-            BadgeParts = GuildBadgeLibrary.DefaultBadgeParts
+            BadgeParts = GuildBadgeLibrary.DefaultBadgeParts,
         };
     }
 
@@ -104,6 +106,25 @@ internal sealed class GroupDirectoryGrain(
             return null;
         }
 
+        EventContext creatingContext = await cancellableEvents
+            .PublishCancellableAsync(
+                new GroupCreatingEvent(ownerId, name, baseRoomId, CreationCostInCredits),
+                ct
+            )
+            .ConfigureAwait(false);
+
+        if (creatingContext.Cancel)
+        {
+            logger.LogInformation(
+                "Group creation for player {OwnerId} on room {RoomId} was cancelled: {Reason}",
+                ownerId,
+                baseRoomId,
+                creatingContext.CancelReason ?? string.Empty
+            );
+
+            return null;
+        }
+
         // Charge the creation cost through the wallet — this is the "purchase". The wallet writes
         // the economy ledger entry, emits CurrencyChangedEvent and pushes the new balance to the
         // client; we only proceed if the debit succeeds (insufficient funds → abort, no group).
@@ -114,8 +135,8 @@ internal sealed class GroupDirectoryGrain(
                     new WalletDebitRequest
                     {
                         CurrencyKind = new CurrencyKind { CurrencyType = CurrencyType.Credits },
-                        Amount = CreationCostInCredits
-                    }
+                        Amount = CreationCostInCredits,
+                    },
                 ],
                 ct
             )
@@ -156,7 +177,7 @@ internal sealed class GroupDirectoryGrain(
                 PlayerEntityId = ownerId,
                 Rank = GroupMemberRank.Admin,
                 GroupEntity = group,
-                PlayerEntity = ownerEntity
+                PlayerEntity = ownerEntity,
             }
         );
 
@@ -250,7 +271,7 @@ internal sealed class GroupDirectoryGrain(
                 SecondaryColor = GuildBadgeLibrary.ResolveColorHex(g.ColorTwo),
                 Favourite = favouriteGroupId == g.Id,
                 OwnerId = g.OwnerPlayerEntityId,
-                HasForum = g.ForumSettings?.Enabled ?? false
+                HasForum = g.ForumSettings?.Enabled ?? false,
             })
             .ToList();
     }
@@ -306,7 +327,7 @@ internal sealed class GroupDirectoryGrain(
                 LayerParts = GuildBadgeLibrary.LayerParts,
                 BadgeColors = GuildBadgeLibrary.BadgeColors,
                 PrimaryColors = GuildBadgeLibrary.PrimaryColors,
-                SecondaryColors = GuildBadgeLibrary.SecondaryColors
+                SecondaryColors = GuildBadgeLibrary.SecondaryColors,
             }
         );
     }
@@ -366,7 +387,7 @@ internal sealed class GroupDirectoryGrain(
                 g.Id,
                 g.Name,
                 g.Description,
-                g.Badge
+                g.Badge,
             })
             .ToListAsync(ct);
 
@@ -377,7 +398,7 @@ internal sealed class GroupDirectoryGrain(
                 ListCode = listCode,
                 TotalAmount = totalAmount,
                 StartIndex = startIndex,
-                Forums = []
+                Forums = [],
             };
         }
 
@@ -431,7 +452,7 @@ internal sealed class GroupDirectoryGrain(
                 ModeratePermissionError = string.Empty,
                 ReportPermissionError = string.Empty,
                 CanChangeSettings = false,
-                IsStaff = false
+                IsStaff = false,
             })
             .ToList();
 
@@ -440,7 +461,7 @@ internal sealed class GroupDirectoryGrain(
             ListCode = listCode,
             TotalAmount = totalAmount,
             StartIndex = startIndex,
-            Forums = forums
+            Forums = forums,
         };
     }
 

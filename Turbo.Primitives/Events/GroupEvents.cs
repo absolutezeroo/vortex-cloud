@@ -4,6 +4,14 @@ namespace Turbo.Primitives.Events;
 // Turbo.Observability turn them into audit/metrics, and plugins observe them via IEventHandler/
 // IEventBehavior. Keep them as the single source of truth for "what happened to a group".
 
+/// <summary>A player is about to create a guild. Cancellable by event behaviors.</summary>
+public sealed record GroupCreatingEvent(
+    int ActorPlayerId,
+    string GroupName,
+    int RoomId,
+    int CreditCost
+) : IEvent;
+
 /// <summary>A player created a guild (and was charged <paramref name="CreditCost"/> credits).</summary>
 public sealed record GroupCreatedEvent(
     int ActorPlayerId,

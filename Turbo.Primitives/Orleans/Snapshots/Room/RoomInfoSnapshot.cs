@@ -36,4 +36,7 @@ public record RoomInfoSnapshot : RoomSummarySnapshot
 
     [Id(9)]
     public required bool AllowPetsEat { get; init; } = false;
+
+    [Id(10)]
+    public int? GroupId { get; init; }
 }
