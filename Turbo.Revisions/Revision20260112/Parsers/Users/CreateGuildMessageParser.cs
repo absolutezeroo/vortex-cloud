@@ -11,9 +11,11 @@ internal class CreateGuildMessageParser : IParser
     {
         var name = packet.PopString();
         var description = packet.PopString();
+        // Wire order: name, description, baseRoomId, primaryColorId, secondaryColorId, badgeParts
+        // (client CreateGuildMessageComposer arg order: name, desc, roomId, primaryColor, secondaryColor, badge)
+        var baseRoomId = packet.PopInt();
         var primaryColorId = packet.PopInt();
         var secondaryColorId = packet.PopInt();
-        var baseRoomId = packet.PopInt();
 
         var badgeCount = packet.PopInt();
         var badgeParts = new List<int>(badgeCount);

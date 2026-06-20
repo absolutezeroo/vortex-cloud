@@ -44,15 +44,17 @@ public sealed class GuildWireLayoutTests
     [Fact]
     public void CreateGuildParser_ReadsClientLayout()
     {
+        // Wire order from CreateGuildMessageComposer.as: name, desc, baseRoomId, primaryColorId,
+        // secondaryColorId, badge[] — roomId is 3rd, not the colors.
         var packet = BuildClientPacket(
             CreateGuildEvent,
             sp =>
             {
                 sp.WriteString("Pixel Painters");
                 sp.WriteString("We paint pixels");
+                sp.WriteInteger(42); // base room id (3rd — matches client arg order)
                 sp.WriteInteger(3); // primary color id
                 sp.WriteInteger(7); // secondary color id
-                sp.WriteInteger(42); // base room id
                 sp.WriteInteger(6); // flattened badge length
                 foreach (var v in new[] { 1, 2, 0, 3, 4, 1 })
                     sp.WriteInteger(v);
