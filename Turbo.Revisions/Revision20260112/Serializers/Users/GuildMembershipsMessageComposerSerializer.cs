@@ -8,6 +8,17 @@ internal class GuildMembershipsMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, GuildMembershipsMessageComposer message)
     {
-        //
+        packet.WriteInteger(message.Memberships.Count);
+        foreach (var guild in message.Memberships)
+        {
+            packet.WriteInteger(guild.GroupId);
+            packet.WriteString(guild.GroupName);
+            packet.WriteString(guild.BadgeCode);
+            packet.WriteString(guild.PrimaryColor);
+            packet.WriteString(guild.SecondaryColor);
+            packet.WriteBoolean(guild.Favourite);
+            packet.WriteInteger(guild.OwnerId);
+            packet.WriteBoolean(guild.HasForum);
+        }
     }
 }

@@ -1,19 +1,43 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Users;
+using Turbo.Primitives.Messages.Outgoing.Users;
+using Turbo.Primitives.Orleans;
 
 namespace Turbo.PacketHandlers.Users;
 
-public class ApproveAllMembershipRequestsMessageHandler
+public class ApproveAllMembershipRequestsMessageHandler(IGrainFactory grainFactory)
     : IMessageHandler<ApproveAllMembershipRequestsMessage>
 {
+    private readonly IGrainFactory _grainFactory = grainFactory;
+
     public async ValueTask HandleAsync(
         ApproveAllMembershipRequestsMessage message,
         MessageContext ctx,
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        if (ctx.PlayerId <= 0 || message.GroupId <= 0)
+            return;
+
+        var added = await _grainFactory
+            .GetGroupGrain(message.GroupId)
+            .ApproveAllMembershipsAsync(ctx.PlayerId, ct)
+            .ConfigureAwait(false);
+
+        foreach (var member in added)
+        {
+            await ctx.SendComposerAsync(
+                    new GuildMembershipUpdatedMessageComposer
+                    {
+                        GroupId = message.GroupId,
+                        Member = member,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
+        }
     }
 }

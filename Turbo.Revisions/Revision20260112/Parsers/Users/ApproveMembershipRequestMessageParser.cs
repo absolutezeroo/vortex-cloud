@@ -6,5 +6,6 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Users;
 
 internal class ApproveMembershipRequestMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new ApproveMembershipRequestMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new ApproveMembershipRequestMessage { GroupId = packet.PopInt(), UserId = packet.PopInt() };
 }

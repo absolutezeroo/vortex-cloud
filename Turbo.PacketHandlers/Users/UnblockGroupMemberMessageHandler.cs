@@ -13,6 +13,7 @@ public class UnblockGroupMemberMessageHandler : IMessageHandler<UnblockGroupMemb
         CancellationToken ct
     )
     {
+        // TODO: per-group block list not yet modelled (deferred slice).
         await ValueTask.CompletedTask.ConfigureAwait(false);
     }
 }

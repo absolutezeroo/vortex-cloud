@@ -1,4 +1,5 @@
 using Orleans;
+using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Networking;
 
 namespace Turbo.Primitives.Messages.Outgoing.Users;
@@ -6,5 +7,6 @@ namespace Turbo.Primitives.Messages.Outgoing.Users;
 [GenerateSerializer, Immutable]
 public sealed record GuildEditInfoMessageComposer : IComposer
 {
-    // TODO: add properties if/when identified
+    [Id(0)]
+    public required GroupEditInfoSnapshot Info { get; init; }
 }

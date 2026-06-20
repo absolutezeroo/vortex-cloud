@@ -2,6 +2,7 @@ using Orleans;
 using Turbo.Primitives.Catalog.Grains;
 using Turbo.Primitives.FriendList.Grains;
 using Turbo.Primitives.Grains.Players;
+using Turbo.Primitives.Groups.Grains;
 using Turbo.Primitives.Inventory.Grains;
 using Turbo.Primitives.Marketplace.Grains;
 using Turbo.Primitives.Players;
@@ -111,4 +112,13 @@ public static class GrainFactoryExtensions
 
     public static ILtdRaffleGrain GetLtdRaffleGrain(this IGrainFactory factory, int seriesId) =>
         factory.GetGrain<ILtdRaffleGrain>(seriesId);
+
+    public static IGroupGrain GetGroupGrain(this IGrainFactory factory, int groupId) =>
+        factory.GetGrain<IGroupGrain>(groupId);
+
+    public static IGroupDirectoryGrain GetGroupDirectoryGrain(this IGrainFactory factory) =>
+        factory.GetGrain<IGroupDirectoryGrain>(SingletonGrainId.GLOBAL);
+
+    public static IGroupForumGrain GetGroupForumGrain(this IGrainFactory factory, int groupId) =>
+        factory.GetGrain<IGroupForumGrain>(groupId);
 }

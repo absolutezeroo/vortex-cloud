@@ -51,6 +51,11 @@ public class PlayerEntity : TurboEntity
     [Column("room_chat_style_id")]
     public int? RoomChatStyleId { get; set; }
 
+    // The player's favourite guild, surfaced on the guild badge in the UI. Plain scalar (no FK
+    // navigation) to avoid yet another circular relationship through groups/rooms.
+    [Column("favourite_group_id")]
+    public int? FavouriteGroupId { get; set; }
+
     [InverseProperty("PlayerEntity")]
     public List<PlayerBadgeEntity>? PlayerBadges { get; set; }
 

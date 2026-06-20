@@ -6,5 +6,12 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Groupforums;
 
 internal class UpdateThreadMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new UpdateThreadMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new UpdateThreadMessage
+        {
+            GroupId = packet.PopInt(),
+            ThreadId = packet.PopInt(),
+            IsLocked = packet.PopBoolean(),
+            IsSticky = packet.PopBoolean(),
+        };
 }

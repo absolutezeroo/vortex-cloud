@@ -6,5 +6,6 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Users;
 
 internal class AddAdminRightsToMemberMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new AddAdminRightsToMemberMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new AddAdminRightsToMemberMessage { GroupId = packet.PopInt(), UserId = packet.PopInt() };
 }

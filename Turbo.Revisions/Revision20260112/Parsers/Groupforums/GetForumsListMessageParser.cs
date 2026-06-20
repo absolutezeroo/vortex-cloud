@@ -6,5 +6,11 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Groupforums;
 
 internal class GetForumsListMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new GetForumsListMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new GetForumsListMessage
+        {
+            ListCode = packet.PopInt(),
+            StartIndex = packet.PopInt(),
+            Amount = packet.PopInt(),
+        };
 }

@@ -11,6 +11,13 @@ internal class GuildMembershipUpdatedMessageComposerSerializer(int header)
         GuildMembershipUpdatedMessageComposer message
     )
     {
-        //
+        packet.WriteInteger(message.GroupId);
+
+        var member = message.Member;
+        packet.WriteInteger(member.RoleType);
+        packet.WriteInteger(member.UserId);
+        packet.WriteString(member.UserName);
+        packet.WriteString(member.Figure);
+        packet.WriteString(member.MemberSince);
     }
 }

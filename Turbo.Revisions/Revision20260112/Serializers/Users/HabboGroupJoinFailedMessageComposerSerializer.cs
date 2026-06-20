@@ -11,6 +11,6 @@ internal class HabboGroupJoinFailedMessageComposerSerializer(int header)
         HabboGroupJoinFailedMessageComposer message
     )
     {
-        //
+        packet.WriteInteger(message.Reason);
     }
 }

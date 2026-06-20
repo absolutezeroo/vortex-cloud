@@ -11,6 +11,7 @@ internal class GuildMemberMgmtFailedMessageComposerSerializer(int header)
         GuildMemberMgmtFailedMessageComposer message
     )
     {
-        //
+        packet.WriteInteger(message.GroupId);
+        packet.WriteInteger(message.Reason);
     }
 }

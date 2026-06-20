@@ -8,6 +8,7 @@ internal class GuildCreatedMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, GuildCreatedMessageComposer message)
     {
-        //
+        packet.WriteInteger(message.BaseRoomId);
+        packet.WriteInteger(message.GroupId);
     }
 }

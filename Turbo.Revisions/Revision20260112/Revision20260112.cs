@@ -1906,6 +1906,46 @@ public class Revision20260112 : IRevision
                     MessageComposer.UnreadForumsCountMessageComposer
                 )
             },
+            {
+                typeof(ForumsListMessageComposer),
+                new ForumsListMessageComposerSerializer(MessageComposer.ForumsListMessageComposer)
+            },
+            {
+                typeof(ForumDataMessageComposer),
+                new ForumDataMessageComposerSerializer(MessageComposer.ForumDataMessageComposer)
+            },
+            {
+                typeof(ForumThreadsMessageComposer),
+                new ForumThreadsMessageComposerSerializer(
+                    MessageComposer.ForumThreadsMessageComposer
+                )
+            },
+            {
+                typeof(ThreadMessagesMessageComposer),
+                new ThreadMessagesMessageComposerSerializer(
+                    MessageComposer.ThreadMessagesMessageComposer
+                )
+            },
+            {
+                typeof(PostThreadMessageComposer),
+                new PostThreadMessageComposerSerializer(MessageComposer.PostThreadMessageComposer)
+            },
+            {
+                typeof(PostMessageMessageComposer),
+                new PostMessageMessageComposerSerializer(MessageComposer.PostMessageMessageComposer)
+            },
+            {
+                typeof(UpdateThreadMessageComposer),
+                new UpdateThreadMessageComposerSerializer(
+                    MessageComposer.UpdateThreadMessageComposer
+                )
+            },
+            {
+                typeof(UpdateMessageMessageComposer),
+                new UpdateMessageMessageComposerSerializer(
+                    MessageComposer.UpdateMessageMessageComposer
+                )
+            },
             #endregion
 
             #region Inventory
@@ -3203,6 +3243,102 @@ public class Revision20260112 : IRevision
             #endregion
 
             #region Users
+            {
+                typeof(GuildCreatedMessageComposer),
+                new GuildCreatedMessageComposerSerializer(
+                    MessageComposer.GuildCreatedMessageComposer
+                )
+            },
+            {
+                typeof(GuildCreationInfoMessageComposer),
+                new GuildCreationInfoMessageComposerSerializer(
+                    MessageComposer.GuildCreationInfoMessageComposer
+                )
+            },
+            {
+                typeof(HabboGroupDetailsMessageComposer),
+                new HabboGroupDetailsMessageComposerSerializer(
+                    MessageComposer.HabboGroupDetailsMessageComposer
+                )
+            },
+            {
+                typeof(GuildMembershipsMessageComposer),
+                new GuildMembershipsMessageComposerSerializer(
+                    MessageComposer.GuildMembershipsMessageComposer
+                )
+            },
+            {
+                typeof(GuildMembersMessageComposer),
+                new GuildMembersMessageComposerSerializer(
+                    MessageComposer.GuildMembersMessageComposer
+                )
+            },
+            {
+                typeof(HabboGroupJoinFailedMessageComposer),
+                new HabboGroupJoinFailedMessageComposerSerializer(
+                    MessageComposer.HabboGroupJoinFailedMessageComposer
+                )
+            },
+            {
+                typeof(GuildEditInfoMessageComposer),
+                new GuildEditInfoMessageComposerSerializer(
+                    MessageComposer.GuildEditInfoMessageComposer
+                )
+            },
+            {
+                typeof(GuildEditorDataMessageComposer),
+                new GuildEditorDataMessageComposerSerializer(
+                    MessageComposer.GuildEditorDataMessageComposer
+                )
+            },
+            {
+                typeof(GuildEditFailedMessageComposer),
+                new GuildEditFailedMessageComposerSerializer(
+                    MessageComposer.GuildEditFailedMessageComposer
+                )
+            },
+            {
+                typeof(GuildMembershipUpdatedMessageComposer),
+                new GuildMembershipUpdatedMessageComposerSerializer(
+                    MessageComposer.GuildMembershipUpdatedMessageComposer
+                )
+            },
+            {
+                typeof(GuildMembershipRejectedMessageComposer),
+                new GuildMembershipRejectedMessageComposerSerializer(
+                    MessageComposer.GuildMembershipRejectedMessageComposer
+                )
+            },
+            {
+                typeof(GuildMemberMgmtFailedMessageComposer),
+                new GuildMemberMgmtFailedMessageComposerSerializer(
+                    MessageComposer.GuildMemberMgmtFailedMessageComposer
+                )
+            },
+            {
+                typeof(HabboGroupDeactivatedMessageComposer),
+                new HabboGroupDeactivatedMessageComposerSerializer(
+                    MessageComposer.HabboGroupDeactivatedMessageComposer
+                )
+            },
+            {
+                typeof(HabboGroupBadgesMessageComposer),
+                new HabboGroupBadgesMessageComposerSerializer(
+                    MessageComposer.HabboGroupBadgesMessageComposer
+                )
+            },
+            {
+                typeof(GuildMemberFurniCountInHQMessageComposer),
+                new GuildMemberFurniCountInHQMessageComposerSerializer(
+                    MessageComposer.GuildMemberFurniCountInHQMessageComposer
+                )
+            },
+            {
+                typeof(GroupDetailsChangedMessageComposer),
+                new GroupDetailsChangedMessageComposerSerializer(
+                    MessageComposer.GroupDetailsChangedMessageComposer
+                )
+            },
             {
                 typeof(AccountSafetyLockStatusChangeMessageComposer),
                 new AccountSafetyLockStatusChangeMessageComposerSerializer(

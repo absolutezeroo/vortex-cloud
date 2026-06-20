@@ -1399,6 +1399,391 @@ namespace Turbo.Database.Migrations
                     b.ToTable("furniture_teleport_links");
                 });
 
+            modelBuilder.Entity("Turbo.Database.Entities.Groups.GroupEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AdminOnlyDecoration")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("admin_only_decoration");
+
+                    b.Property<string>("Badge")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("badge");
+
+                    b.Property<string>("ColorOne")
+                        .IsRequired()
+                        .HasMaxLength(12)
+                        .HasColumnType("varchar(12)")
+                        .HasColumnName("color_one");
+
+                    b.Property<string>("ColorTwo")
+                        .IsRequired()
+                        .HasMaxLength(12)
+                        .HasColumnType("varchar(12)")
+                        .HasColumnName("color_two");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("OwnerPlayerEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("player_id");
+
+                    b.Property<int>("RoomEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("room_id");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("type");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerPlayerEntityId");
+
+                    b.HasIndex("RoomEntityId")
+                        .IsUnique();
+
+                    b.ToTable("groups");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Groups.GroupForumPostEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int>("GroupEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("group_id");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("text")
+                        .HasColumnName("message");
+
+                    b.Property<int>("PlayerEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("player_id");
+
+                    b.Property<int>("State")
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("state");
+
+                    b.Property<int>("ThreadEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("thread_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupEntityId");
+
+                    b.HasIndex("PlayerEntityId");
+
+                    b.HasIndex("ThreadEntityId");
+
+                    b.ToTable("group_forum_posts");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Groups.GroupForumSettingsEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<bool>("Enabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("enabled");
+
+                    b.Property<int>("GroupEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("group_id");
+
+                    b.Property<int>("ModPermission")
+                        .HasColumnType("int")
+                        .HasDefaultValue(1)
+                        .HasColumnName("mod_permission");
+
+                    b.Property<int>("PostPermission")
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("post_permission");
+
+                    b.Property<int>("ReadPermission")
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("read_permission");
+
+                    b.Property<int>("ThreadPermission")
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("thread_permission");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupEntityId")
+                        .IsUnique();
+
+                    b.ToTable("group_forum_settings");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Groups.GroupForumThreadEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int>("GroupEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("group_id");
+
+                    b.Property<bool>("IsPinned")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_pinned");
+
+                    b.Property<DateTime?>("LastPostAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("last_post_at");
+
+                    b.Property<int?>("LastPostPlayerEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("last_post_player_id");
+
+                    b.Property<int>("PlayerEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("player_id");
+
+                    b.Property<int>("PostCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("post_count");
+
+                    b.Property<int>("State")
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("state");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("subject");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupEntityId");
+
+                    b.HasIndex("LastPostAt");
+
+                    b.HasIndex("LastPostPlayerEntityId");
+
+                    b.HasIndex("PlayerEntityId");
+
+                    b.ToTable("group_forum_threads");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Groups.GroupMemberEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int>("GroupEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("group_id");
+
+                    b.Property<int>("PlayerEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("player_id");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("rank");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerEntityId");
+
+                    b.HasIndex("GroupEntityId", "PlayerEntityId")
+                        .IsUnique();
+
+                    b.ToTable("group_members");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Groups.GroupMembershipRequestEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int>("GroupEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("group_id");
+
+                    b.Property<int>("PlayerEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("player_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerEntityId");
+
+                    b.HasIndex("GroupEntityId", "PlayerEntityId")
+                        .IsUnique();
+
+                    b.ToTable("group_membership_requests");
+                });
+
             modelBuilder.Entity("Turbo.Database.Entities.Marketplace.MarketplaceOfferEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -2413,6 +2798,10 @@ namespace Turbo.Database.Migrations
                         .HasColumnType("datetime(6)")
                         .HasColumnName("deleted_at");
 
+                    b.Property<int?>("FavouriteGroupId")
+                        .HasColumnType("int")
+                        .HasColumnName("favourite_group_id");
+
                     b.Property<string>("Figure")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -3118,6 +3507,10 @@ namespace Turbo.Database.Migrations
                         .HasDefaultValue(0)
                         .HasColumnName("door_mode");
 
+                    b.Property<int?>("GroupEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("group_id");
+
                     b.Property<bool>("HideWalls")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(1)")
@@ -3223,6 +3616,8 @@ namespace Turbo.Database.Migrations
                         .HasColumnName("wall_height");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GroupEntityId");
 
                     b.HasIndex("NavigatorCategoryEntityId");
 
@@ -3692,6 +4087,126 @@ namespace Turbo.Database.Migrations
                     b.Navigation("FurnitureEntityTwo");
                 });
 
+            modelBuilder.Entity("Turbo.Database.Entities.Groups.GroupEntity", b =>
+                {
+                    b.HasOne("Turbo.Database.Entities.Players.PlayerEntity", "OwnerPlayerEntity")
+                        .WithMany()
+                        .HasForeignKey("OwnerPlayerEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Turbo.Database.Entities.Room.RoomEntity", "RoomEntity")
+                        .WithMany()
+                        .HasForeignKey("RoomEntityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("OwnerPlayerEntity");
+
+                    b.Navigation("RoomEntity");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Groups.GroupForumPostEntity", b =>
+                {
+                    b.HasOne("Turbo.Database.Entities.Groups.GroupEntity", "GroupEntity")
+                        .WithMany()
+                        .HasForeignKey("GroupEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Turbo.Database.Entities.Players.PlayerEntity", "PlayerEntity")
+                        .WithMany()
+                        .HasForeignKey("PlayerEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Turbo.Database.Entities.Groups.GroupForumThreadEntity", "ThreadEntity")
+                        .WithMany("Posts")
+                        .HasForeignKey("ThreadEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GroupEntity");
+
+                    b.Navigation("PlayerEntity");
+
+                    b.Navigation("ThreadEntity");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Groups.GroupForumSettingsEntity", b =>
+                {
+                    b.HasOne("Turbo.Database.Entities.Groups.GroupEntity", "GroupEntity")
+                        .WithOne("ForumSettings")
+                        .HasForeignKey("Turbo.Database.Entities.Groups.GroupForumSettingsEntity", "GroupEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GroupEntity");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Groups.GroupForumThreadEntity", b =>
+                {
+                    b.HasOne("Turbo.Database.Entities.Groups.GroupEntity", "GroupEntity")
+                        .WithMany()
+                        .HasForeignKey("GroupEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Turbo.Database.Entities.Players.PlayerEntity", "LastPostPlayerEntity")
+                        .WithMany()
+                        .HasForeignKey("LastPostPlayerEntityId");
+
+                    b.HasOne("Turbo.Database.Entities.Players.PlayerEntity", "PlayerEntity")
+                        .WithMany()
+                        .HasForeignKey("PlayerEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GroupEntity");
+
+                    b.Navigation("LastPostPlayerEntity");
+
+                    b.Navigation("PlayerEntity");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Groups.GroupMemberEntity", b =>
+                {
+                    b.HasOne("Turbo.Database.Entities.Groups.GroupEntity", "GroupEntity")
+                        .WithMany("Members")
+                        .HasForeignKey("GroupEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Turbo.Database.Entities.Players.PlayerEntity", "PlayerEntity")
+                        .WithMany()
+                        .HasForeignKey("PlayerEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GroupEntity");
+
+                    b.Navigation("PlayerEntity");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Groups.GroupMembershipRequestEntity", b =>
+                {
+                    b.HasOne("Turbo.Database.Entities.Groups.GroupEntity", "GroupEntity")
+                        .WithMany()
+                        .HasForeignKey("GroupEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Turbo.Database.Entities.Players.PlayerEntity", "PlayerEntity")
+                        .WithMany()
+                        .HasForeignKey("PlayerEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GroupEntity");
+
+                    b.Navigation("PlayerEntity");
+                });
+
             modelBuilder.Entity("Turbo.Database.Entities.Marketplace.MarketplaceOfferEntity", b =>
                 {
                     b.HasOne("Turbo.Database.Entities.Furniture.FurnitureDefinitionEntity", "FurnitureDefinitionEntity")
@@ -4064,6 +4579,11 @@ namespace Turbo.Database.Migrations
 
             modelBuilder.Entity("Turbo.Database.Entities.Room.RoomEntity", b =>
                 {
+                    b.HasOne("Turbo.Database.Entities.Groups.GroupEntity", "GroupEntity")
+                        .WithMany()
+                        .HasForeignKey("GroupEntityId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Turbo.Database.Entities.Navigator.NavigatorFlatCategoryEntity", "NavigatorFlatCategoryEntity")
                         .WithMany()
                         .HasForeignKey("NavigatorCategoryEntityId");
@@ -4079,6 +4599,8 @@ namespace Turbo.Database.Migrations
                         .HasForeignKey("RoomModelEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("GroupEntity");
 
                     b.Navigation("NavigatorFlatCategoryEntity");
 
@@ -4177,6 +4699,18 @@ namespace Turbo.Database.Migrations
             modelBuilder.Entity("Turbo.Database.Entities.Furniture.FurnitureDefinitionEntity", b =>
                 {
                     b.Navigation("Furnitures");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Groups.GroupEntity", b =>
+                {
+                    b.Navigation("ForumSettings");
+
+                    b.Navigation("Members");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Groups.GroupForumThreadEntity", b =>
+                {
+                    b.Navigation("Posts");
                 });
 
             modelBuilder.Entity("Turbo.Database.Entities.Navigator.NavigatorTopLevelContextEntity", b =>

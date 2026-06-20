@@ -8,6 +8,6 @@ internal class GuildEditFailedMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, GuildEditFailedMessageComposer message)
     {
-        //
+        packet.WriteInteger(message.Reason);
     }
 }

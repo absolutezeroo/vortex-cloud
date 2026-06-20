@@ -7,7 +7,11 @@ namespace Turbo.Primitives.Rooms.Grains;
 
 public partial interface IRoomGrain
 {
-    public Task<bool> KickUserAsync(ActionContext actorCtx, PlayerId targetPlayerId, CancellationToken ct);
+    public Task<bool> KickUserAsync(
+        ActionContext actorCtx,
+        PlayerId targetPlayerId,
+        CancellationToken ct
+    );
     public Task<bool> MuteUserAsync(
         ActionContext actorCtx,
         PlayerId targetPlayerId,

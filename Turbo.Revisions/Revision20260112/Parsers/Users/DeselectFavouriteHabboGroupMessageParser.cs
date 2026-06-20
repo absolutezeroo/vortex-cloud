@@ -6,5 +6,6 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Users;
 
 internal class DeselectFavouriteHabboGroupMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new DeselectFavouriteHabboGroupMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new DeselectFavouriteHabboGroupMessage { GroupId = packet.PopInt() };
 }

@@ -11,6 +11,7 @@ internal class GuildMembershipRejectedMessageComposerSerializer(int header)
         GuildMembershipRejectedMessageComposer message
     )
     {
-        //
+        packet.WriteInteger(message.GroupId);
+        packet.WriteInteger(message.UserId);
     }
 }

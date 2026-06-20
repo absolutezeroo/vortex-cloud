@@ -6,5 +6,10 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Users;
 
 internal class RemoveAdminRightsFromMemberMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new RemoveAdminRightsFromMemberMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new RemoveAdminRightsFromMemberMessage
+        {
+            GroupId = packet.PopInt(),
+            UserId = packet.PopInt(),
+        };
 }
