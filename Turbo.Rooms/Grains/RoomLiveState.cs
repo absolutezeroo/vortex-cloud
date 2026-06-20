@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Turbo.Primitives.Orleans.Snapshots.Room;
+using Turbo.Primitives.Pets.Snapshots;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Rooms;
 using Turbo.Primitives.Rooms.Enums;
@@ -20,6 +21,7 @@ public sealed class RoomLiveState
     public Dictionary<RoomObjectId, IRoomItem> ItemsById { get; } = [];
     public Dictionary<RoomObjectId, IRoomAvatar> AvatarsByObjectId { get; } = [];
     public Dictionary<PlayerId, RoomObjectId> AvatarsByPlayerId { get; } = [];
+    public Dictionary<int, PetSnapshot> PetsById { get; } = [];
     public Dictionary<PlayerId, string> OwnerNamesById { get; } = [];
 
     public RoomModelSnapshot? Model { get; internal set; } = null;
@@ -43,6 +45,7 @@ public sealed class RoomLiveState
 
     public bool IsMapReady { get; internal set; } = false;
     public bool IsFurniLoaded { get; internal set; } = false;
+    public bool IsPetsLoaded { get; internal set; } = false;
     public bool IsTileComputationPaused { get; internal set; } = false;
 
     public long EpochMs { get; set; } = 0;

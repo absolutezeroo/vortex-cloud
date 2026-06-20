@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orleans;
 using Turbo.Database.Context;
@@ -22,6 +23,7 @@ public sealed partial class InventoryGrain : Grain, IInventoryGrain
     private readonly IInventoryFurnitureLoader _furnitureItemsLoader;
     private readonly IStuffDataFactory _stuffDataFactory;
     private readonly IEventPublisher _events;
+    private readonly ILogger<InventoryGrain> _logger;
 
     private readonly InventoryLiveState _state;
     private readonly InventoryFurniModule _furniModule;
@@ -33,7 +35,8 @@ public sealed partial class InventoryGrain : Grain, IInventoryGrain
         IFurnitureDefinitionProvider furnitureDefinitionProvider,
         IInventoryFurnitureLoader furnitureItemsLoader,
         IStuffDataFactory stuffDataFactory,
-        IEventPublisher events
+        IEventPublisher events,
+        ILogger<InventoryGrain> logger
     )
     {
         _dbCtxFactory = dbContextFactory;
@@ -43,6 +46,7 @@ public sealed partial class InventoryGrain : Grain, IInventoryGrain
         _furnitureItemsLoader = furnitureItemsLoader;
         _stuffDataFactory = stuffDataFactory;
         _events = events;
+        _logger = logger;
 
         _state = new();
         _furniModule = new InventoryFurniModule(this, _state, _furnitureItemsLoader);

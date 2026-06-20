@@ -1,0 +1,163 @@
+﻿using System;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Orleans;
+using Turbo.Database.Context;
+using Turbo.Database.Entities.Pets;
+using Turbo.Primitives.Pets;
+using Turbo.Primitives.Pets.Snapshots;
+using Turbo.Primitives.Players;
+using Turbo.Primitives.Rooms.Enums;
+
+namespace Turbo.Inventory.Grains;
+
+public sealed partial class InventoryGrain
+{
+    public async Task<PetSnapshot> CreatePetAsync(PetCreateRequest request, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            throw new ArgumentException("Pet name is required.", nameof(request));
+        }
+
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+
+        try
+        {
+            PetEntity entity = new()
+            {
+                OwnerPlayerEntityId = (int)this.GetPrimaryKeyLong(),
+                RoomEntityId = null,
+                Name = request.Name.Trim(),
+                Type = request.Type,
+                Race = request.Race,
+                Color = request.Color,
+                Gender = request.Gender,
+                Level = 1,
+                Experience = 0,
+                Energy = request.Energy,
+                Nutrition = request.Nutrition,
+                Respect = 0,
+                X = 0,
+                Y = 0,
+                Z = 0,
+                Direction = (int)Rotation.South,
+                OwnerPlayerEntity = null!,
+            };
+
+            dbCtx.Pets.Add(entity);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+
+            return ToSnapshot(entity);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to create pet for player {PlayerId}",
+                this.GetPrimaryKeyLong()
+            );
+            throw;
+        }
+        finally
+        {
+            await dbCtx.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    public async Task<PetSnapshot?> GetPetSnapshotAsync(int petId, CancellationToken ct)
+    {
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+
+        try
+        {
+            PetEntity? entity = await dbCtx
+                .Pets.AsNoTracking()
+                .Where(p =>
+                    p.Id == petId
+                    && p.OwnerPlayerEntityId == (int)this.GetPrimaryKeyLong()
+                    && p.DeletedAt == null
+                )
+                .SingleOrDefaultAsync(ct)
+                .ConfigureAwait(false);
+
+            return entity is null ? null : ToSnapshot(entity);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to get pet {PetId} for player {PlayerId}",
+                petId,
+                this.GetPrimaryKeyLong()
+            );
+            throw;
+        }
+        finally
+        {
+            await dbCtx.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    public async Task<ImmutableArray<PetSnapshot>> GetAllPetSnapshotsAsync(CancellationToken ct)
+    {
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+
+        try
+        {
+            PetEntity[] entities = await dbCtx
+                .Pets.AsNoTracking()
+                .Where(p =>
+                    p.OwnerPlayerEntityId == (int)this.GetPrimaryKeyLong()
+                    && p.RoomEntityId == null
+                    && p.DeletedAt == null
+                )
+                .OrderBy(p => p.Id)
+                .ToArrayAsync(ct)
+                .ConfigureAwait(false);
+
+            return entities.Select(ToSnapshot).ToImmutableArray();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to list pet inventory for player {PlayerId}",
+                this.GetPrimaryKeyLong()
+            );
+            throw;
+        }
+        finally
+        {
+            await dbCtx.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    internal static PetSnapshot ToSnapshot(PetEntity entity)
+    {
+        return new PetSnapshot
+        {
+            PetId = entity.Id,
+            OwnerId = new PlayerId(entity.OwnerPlayerEntityId),
+            RoomId = entity.RoomEntityId,
+            Name = entity.Name,
+            Type = entity.Type,
+            Race = entity.Race,
+            Color = entity.Color,
+            Gender = entity.Gender,
+            Level = entity.Level,
+            Experience = entity.Experience,
+            Energy = entity.Energy,
+            Nutrition = entity.Nutrition,
+            Respect = entity.Respect,
+            X = entity.X,
+            Y = entity.Y,
+            Z = entity.Z,
+            Direction = (Rotation)entity.Direction,
+        };
+    }
+}

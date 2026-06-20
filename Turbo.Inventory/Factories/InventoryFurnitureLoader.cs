@@ -47,7 +47,11 @@ internal sealed class InventoryFurnitureLoader(
         {
             List<FurnitureEntity> entities = await dbCtx
                 .Furnitures.AsNoTracking()
-                .Where(x => x.PlayerEntityId == (int)playerId && x.RoomEntityId == null)
+                .Where(x =>
+                    x.PlayerEntityId == (int)playerId
+                    && x.RoomEntityId == null
+                    && x.DeletedAt == null
+                )
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 

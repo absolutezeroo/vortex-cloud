@@ -19,6 +19,9 @@ public enum TurboErrorCodeEnum
     InvalidMoveTarget,
     NoPermissionToPlaceFurni,
     NoPermissionToManipulateFurni,
+    PetNotFound,
+    PetFoodNotFound,
+    NoPermissionToManipulatePet,
 }
 
 public static class ErrorCodeExtensions
@@ -46,6 +49,10 @@ public static class ErrorCodeExtensions
                 "You do not have permission to place furniture.",
             TurboErrorCodeEnum.NoPermissionToManipulateFurni =>
                 "You do not have permission to manipulate furniture.",
+            TurboErrorCodeEnum.PetNotFound => "The specified pet could not be found.",
+            TurboErrorCodeEnum.PetFoodNotFound => "The specified pet food could not be found.",
+            TurboErrorCodeEnum.NoPermissionToManipulatePet =>
+                "You do not have permission to manipulate this pet.",
             _ => "An unknown error occurred.",
         };
 }

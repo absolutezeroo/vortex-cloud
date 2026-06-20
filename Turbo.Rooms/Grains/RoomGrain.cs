@@ -57,6 +57,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     public readonly RoomObjectModule ObjectModule;
 
     public readonly RoomPathingSystem PathingSystem;
+    public readonly RoomPetSystem PetSystem;
     public readonly RoomRollerSystem RollerSystem;
     public readonly RoomSecurityModule SecurityModule;
     public readonly RoomWiredSystem WiredSystem;
@@ -102,6 +103,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         ActionModule = new RoomActionModule(this);
 
         AvatarTickSystem = new RoomAvatarTickSystem(this);
+        PetSystem = new RoomPetSystem(this);
         RollerSystem = new RoomRollerSystem(this);
         WiredSystem = new RoomWiredSystem(this);
         ChatSystem = new RoomChatSystem(this);
@@ -128,6 +130,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
         await MapModule.EnsureMapBuiltAsync(ct);
         await FurniModule.EnsureFurniLoadedAsync(ct);
+        await PetSystem.EnsurePetsLoadedAsync(ct);
     }
 
     public Task<RoomSnapshot> GetSnapshotAsync()

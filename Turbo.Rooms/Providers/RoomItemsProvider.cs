@@ -52,7 +52,7 @@ internal sealed class RoomItemsProvider(
 
         List<FurnitureEntity> entities = await dbCtx
             .Furnitures.AsNoTracking()
-            .Where(x => x.RoomEntityId == (int)roomId)
+            .Where(x => x.RoomEntityId == (int)roomId && x.DeletedAt == null)
             .ToListAsync(ct)
             .ConfigureAwait(false);
 

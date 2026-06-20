@@ -8,6 +8,7 @@ using Turbo.Database.Entities.Marketplace;
 using Turbo.Database.Entities.Messenger;
 using Turbo.Database.Entities.Navigator;
 using Turbo.Database.Entities.Permissions;
+using Turbo.Database.Entities.Pets;
 using Turbo.Database.Entities.Players;
 using Turbo.Database.Entities.Room;
 using Turbo.Database.Entities.Security;
@@ -138,6 +139,10 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
     public DbSet<RentableSpaceTermsEntity> RentableSpaceTerms { get; init; }
 
     public DbSet<RoomRentableSpaceEntity> RoomRentableSpaces { get; init; }
+
+    public DbSet<PetEntity> Pets { get; init; }
+
+    public DbSet<PetFoodEntity> PetFood { get; init; }
 
     protected override void OnModelCreating(ModelBuilder mb)
     {
