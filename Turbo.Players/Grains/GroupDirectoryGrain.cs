@@ -65,7 +65,8 @@ internal sealed class GroupDirectoryGrain(
         {
             CostInCredits = CreationCostInCredits,
             Rooms = rooms,
-            BadgeParts = [],
+            // Default starting badge the wizard pre-fills; the player edits it before confirming.
+            BadgeParts = GuildBadgeLibrary.DefaultBadgeParts,
         };
     }
 
@@ -236,8 +237,9 @@ internal sealed class GroupDirectoryGrain(
                 GroupId = g.Id,
                 GroupName = g.Name,
                 BadgeCode = g.Badge,
-                PrimaryColor = g.ColorOne,
-                SecondaryColor = g.ColorTwo,
+                // ColorOne/ColorTwo store the palette colour id; resolve to hex for the client.
+                PrimaryColor = GuildBadgeLibrary.ResolveColorHex(g.ColorOne),
+                SecondaryColor = GuildBadgeLibrary.ResolveColorHex(g.ColorTwo),
                 Favourite = favouriteGroupId == g.Id,
                 OwnerId = g.OwnerPlayerEntityId,
                 HasForum = g.ForumSettings?.Enabled ?? false,
@@ -283,17 +285,17 @@ internal sealed class GroupDirectoryGrain(
     }
 
     public Task<GroupEditorDataSnapshot> GetEditorDataAsync(CancellationToken ct) =>
-        // Palette/parts config is the GuildEditorData seed feature (not yet seeded). Returning
-        // empty swatch lists keeps the editor functional (it just shows no preset parts) instead
-        // of sending a malformed packet.
+        // Badge designer palette: base shapes, overlay symbols and colour swatches the client
+        // renders in the editor. Sourced from GuildBadgeLibrary (the part/colour ids are stable
+        // and are what the persisted badge code references).
         Task.FromResult(
             new GroupEditorDataSnapshot
             {
-                BaseParts = [],
-                LayerParts = [],
-                BadgeColors = [],
-                PrimaryColors = [],
-                SecondaryColors = [],
+                BaseParts = GuildBadgeLibrary.BaseParts,
+                LayerParts = GuildBadgeLibrary.LayerParts,
+                BadgeColors = GuildBadgeLibrary.BadgeColors,
+                PrimaryColors = GuildBadgeLibrary.PrimaryColors,
+                SecondaryColors = GuildBadgeLibrary.SecondaryColors,
             }
         );
 
