@@ -64,9 +64,7 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
 
                 dirtySnapshots.Add(avatar.GetSnapshot());
             }
-            catch (Exception)
-            {
-            }
+            catch (Exception) { }
         }
 
         if (dirtySnapshots.Count == 0)

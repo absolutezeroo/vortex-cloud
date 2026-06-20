@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Groups.Snapshots;
-using Turbo.Primitives.Messages.Incoming.Groupforums;
+using Turbo.Primitives.Messages.Incoming.GroupForums;
 using Turbo.Primitives.Messages.Outgoing.Groupforums;
 using Turbo.Primitives.Orleans;
 
-namespace Turbo.PacketHandlers.Groupforums;
+namespace Turbo.PacketHandlers.GroupForums;
 
 public class UpdateForumSettingsMessageHandler(IGrainFactory grainFactory)
     : IMessageHandler<UpdateForumSettingsMessage>

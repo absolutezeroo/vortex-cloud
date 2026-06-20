@@ -86,7 +86,7 @@ public sealed class RoomPlayerAvatar
             GroupName = GroupName,
             SwimFigure = SwimFigure,
             ActivityPoints = ActivityPoints,
-            IsModerator = IsModerator
+            IsModerator = IsModerator,
         };
     }
 }

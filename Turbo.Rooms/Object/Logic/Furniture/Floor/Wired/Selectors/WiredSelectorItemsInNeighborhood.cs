@@ -32,8 +32,8 @@ public class WiredSelectorItemsInNeighborhood(
             [
                 WiredFurniSourceType.SelectedItems,
                 WiredFurniSourceType.SignalItems,
-                WiredFurniSourceType.TriggeredItem
-            ]
+                WiredFurniSourceType.TriggeredItem,
+            ],
         ];
     }
 
@@ -41,7 +41,7 @@ public class WiredSelectorItemsInNeighborhood(
     {
         return
         [
-            [WiredPlayerSourceType.TriggeredUser, WiredPlayerSourceType.SignalUsers]
+            [WiredPlayerSourceType.TriggeredUser, WiredPlayerSourceType.SignalUsers],
         ];
     }
 
@@ -51,7 +51,7 @@ public class WiredSelectorItemsInNeighborhood(
         [
             new WiredBoolParamRule(false), // merged source
             new WiredParamRule(0), // rootX
-            new WiredParamRule(0) // rootY
+            new WiredParamRule(0), // rootY
         ];
     }
 
@@ -103,14 +103,10 @@ public class WiredSelectorItemsInNeighborhood(
                             output.SelectedFurniIds.Add(itemId);
                         }
                     }
-                    catch
-                    {
-                    }
+                    catch { }
                 }
             }
-            catch
-            {
-            }
+            catch { }
         }
 
         foreach (int id in input.SelectedPlayerIds)
@@ -151,14 +147,10 @@ public class WiredSelectorItemsInNeighborhood(
                             output.SelectedFurniIds.Add(itemId);
                         }
                     }
-                    catch
-                    {
-                    }
+                    catch { }
                 }
             }
-            catch
-            {
-            }
+            catch { }
         }
 
         return output;

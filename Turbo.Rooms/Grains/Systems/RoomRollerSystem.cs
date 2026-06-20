@@ -166,8 +166,8 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
                                     ObjectId = x.ObjectId,
                                     RoomObject = x,
                                     FromZ = x.Z,
-                                    ToZ = x.Z - rollerHeight + toTileHeight
-                                })
+                                    ToZ = x.Z - rollerHeight + toTileHeight,
+                                }),
                             ],
                             MovedAvatars =
                             [
@@ -178,18 +178,16 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
                                         ObjectId = x.ObjectId,
                                         RoomObject = x,
                                         FromZ = x.Z,
-                                        ToZ = x.Z - rollerHeight + toTileHeight
+                                        ToZ = x.Z - rollerHeight + toTileHeight,
                                     };
-                                })
-                            ]
+                                }),
+                            ],
                         }
                     );
 
                     reservedTileIdxs.Add(toIdx);
                 }
-                catch (Exception)
-                {
-                }
+                catch (Exception) { }
             }
         }
 
@@ -245,14 +243,14 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
                                 [
                                     .. plan.MovedFloorItems.Select(x =>
                                         (x.RoomObject.ObjectId, x.FromZ, x.ToZ)
-                                    )
+                                    ),
                                 ],
                                 Avatar = (
                                     SlideAvatarMoveType.Slide,
                                     avatar.RoomObject.ObjectId,
                                     avatar.FromZ + avatarObject.PostureOffset,
                                     avatar.ToZ + avatarObject.PostureOffset
-                                )
+                                ),
                             }
                         );
 
@@ -275,7 +273,7 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
                                 avatar.RoomObject.ObjectId,
                                 avatar.FromZ + avatarObject.PostureOffset,
                                 avatar.ToZ + avatarObject.PostureOffset
-                            )
+                            ),
                         }
                     );
                 }
@@ -294,9 +292,9 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
                         [
                             .. plan.MovedFloorItems.Select(x =>
                                 (x.RoomObject.ObjectId, x.FromZ, x.ToZ)
-                            )
+                            ),
                         ],
-                        Avatar = null
+                        Avatar = null,
                     }
                 );
             }
@@ -373,7 +371,7 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
             Rotation.West => list.OrderBy(r => r.X).ThenBy(r => r.Y),
             Rotation.South => list.OrderByDescending(r => r.Y).ThenBy(r => r.X),
             Rotation.North => list.OrderBy(r => r.Y).ThenBy(r => r.X),
-            _ => list.OrderBy(r => r.Y).ThenBy(r => r.X)
+            _ => list.OrderBy(r => r.Y).ThenBy(r => r.X),
         };
     }
 }

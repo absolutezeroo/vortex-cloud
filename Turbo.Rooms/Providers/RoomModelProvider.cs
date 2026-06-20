@@ -64,7 +64,7 @@ public sealed class RoomModelProvider(
                         Height = compiledModel.Height,
                         Size = compiledModel.Width * compiledModel.Height,
                         BaseHeights = compiledModel.Heights,
-                        BaseFlags = compiledModel.Flags
+                        BaseFlags = compiledModel.Flags,
                     };
                 })
                 .ToImmutableDictionary(x => x.Id);
@@ -133,7 +133,7 @@ public sealed class RoomModelProvider(
             Width = width,
             Height = height,
             Heights = heights,
-            Flags = flags
+            Flags = flags,
         };
     }
 

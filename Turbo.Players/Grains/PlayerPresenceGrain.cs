@@ -45,8 +45,10 @@ internal sealed partial class PlayerPresenceGrain
     {
         if (
             _sessionObserver is null
-            || (item.ExcludedPlayerIds is not null
-                && item.ExcludedPlayerIds.Contains((int)this.GetPrimaryKeyLong()))
+            || (
+                item.ExcludedPlayerIds is not null
+                && item.ExcludedPlayerIds.Contains((int)this.GetPrimaryKeyLong())
+            )
         )
         {
             return Task.CompletedTask;

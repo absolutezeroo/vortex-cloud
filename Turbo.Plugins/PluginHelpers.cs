@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Turbo.Contracts.Plugins;
+using Turbo.Primitives.Plugins;
 
 namespace Turbo.Plugins;
 
@@ -13,7 +13,7 @@ internal static class PluginHelpers
     {
         PropertyNameCaseInsensitive = true,
         ReadCommentHandling = JsonCommentHandling.Skip,
-        AllowTrailingCommas = true
+        AllowTrailingCommas = true,
     };
 
     public static PluginManifest ReadManifest(string dir)
@@ -76,12 +76,8 @@ internal static class PluginHelpers
             m => m.Key,
             StringComparer.OrdinalIgnoreCase
         );
-        Dictionary<string, int> indeg = new(
-            StringComparer.OrdinalIgnoreCase
-        );
-        Dictionary<string, List<string>> graph = new(
-            StringComparer.OrdinalIgnoreCase
-        );
+        Dictionary<string, int> indeg = new(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, List<string>> graph = new(StringComparer.OrdinalIgnoreCase);
 
         foreach (PluginManifest m in manifests)
         {

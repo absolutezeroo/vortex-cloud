@@ -36,7 +36,7 @@ internal class SaveRoomSettingsMessageParser : IParser
             ChatScrollUpFrequency = (ChatScrollSpeedType)packet.PopInt(),
             ChatFullHearRange = packet.PopInt(),
             ChatFloodSensitivity = (ChatFloodSensitivityType)packet.PopInt(),
-            AllowNavigatorDynCats = packet.PopBoolean()
+            AllowNavigatorDynCats = packet.PopBoolean(),
         };
     }
 

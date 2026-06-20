@@ -11,7 +11,10 @@ internal static class DashboardHttpContextExtensions
     /// <summary>The rich principal stashed by <see cref="DashboardAuthenticationHandler" />, or null.</summary>
     public static DashboardPrincipal? GetDashboardPrincipal(this HttpContext ctx)
     {
-        return ctx.Items.TryGetValue(DashboardAuthenticationHandler.PrincipalItemKey, out object? value)
+        return ctx.Items.TryGetValue(
+            DashboardAuthenticationHandler.PrincipalItemKey,
+            out object? value
+        )
             ? value as DashboardPrincipal
             : null;
     }

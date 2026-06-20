@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Turbo.Contracts.Plugins;
+using Turbo.Primitives.Plugins;
 using Turbo.WebApi.Configuration;
 using Turbo.WebApi.Hosting;
 using Turbo.WebApi.Services;

@@ -50,9 +50,7 @@ internal sealed class WsPackageHandler(
                 break;
             }
 
-            SequenceReader<byte> reader = new(
-                new ReadOnlySequence<byte>(memory)
-            );
+            SequenceReader<byte> reader = new(new ReadOnlySequence<byte>(memory));
 
             IClientPacket? packet = _decoder.TryRead(ref reader, ctx);
 

@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Turbo.Contracts.Plugins.Exports;
+using Turbo.Primitives.Plugins.Exports;
 
 namespace Turbo.Plugins.Exports;
 

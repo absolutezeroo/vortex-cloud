@@ -37,7 +37,7 @@ public enum CatalogPageLayout
     Trophies,
     VipBuy,
     OldMarketplace,
-    OldMarketplaceOwnItems
+    OldMarketplaceOwnItems,
 }
 
 public static class CatalogPageLayoutExtensions
@@ -77,7 +77,7 @@ public static class CatalogPageLayoutExtensions
         [CatalogPageLayout.Trophies] = "trophies",
         [CatalogPageLayout.VipBuy] = "vip_buy",
         [CatalogPageLayout.OldMarketplace] = "old_layout_marketplace",
-        [CatalogPageLayout.OldMarketplaceOwnItems] = "old_layout_marketplace_own_items"
+        [CatalogPageLayout.OldMarketplaceOwnItems] = "old_layout_marketplace_own_items",
     };
 
     private static readonly Dictionary<string, CatalogPageLayout> _fromWire;

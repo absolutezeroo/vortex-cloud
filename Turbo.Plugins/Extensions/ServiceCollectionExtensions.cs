@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Turbo.Contracts.Plugins;
 using Turbo.Plugins.Configuration;
+using Turbo.Primitives.Plugins;
 
 namespace Turbo.Plugins.Extensions;
 

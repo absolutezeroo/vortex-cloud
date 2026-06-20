@@ -31,7 +31,8 @@ internal static class WebApiAppConfigurator
 
     public static void ConfigurePipeline(WebApplication app, WebApiConfig config)
     {
-        app.Use(async (ctx, next) =>
+        app.Use(
+            async (ctx, next) =>
             {
                 ApplySecurityHeaders(ctx.Response);
 
@@ -116,7 +117,7 @@ internal static class WebApiAppConfigurator
                         Window = TimeSpan.FromSeconds(limit.WindowSeconds),
                         QueueLimit = limit.QueueLimit,
                         QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                        AutoReplenishment = true
+                        AutoReplenishment = true,
                     }
                 )
         );
@@ -149,7 +150,7 @@ internal static class WebApiAppConfigurator
                     Description =
                         "Client-facing onboarding API for the Turbo emulator: login, registration, "
                         + "avatar management and SSO ticket issuance. Sensitive endpoints are rate "
-                        + "limited and the session is carried by the habbo-web-session cookie."
+                        + "limited and the session is carried by the habbo-web-session cookie.",
                 }
             )
         );

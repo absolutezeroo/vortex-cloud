@@ -94,7 +94,7 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
             Rotation.SouthWest => (-1, 1),
             Rotation.West => (-1, 0),
             Rotation.NorthWest => (-1, -1),
-            _ => (0, 0)
+            _ => (0, 0),
         };
     }
 
@@ -174,7 +174,7 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
         {
             IRoomFloorItem floor => AddFloorItem(floor),
             IRoomWallItem wall => AddWallItem(wall),
-            _ => false
+            _ => false,
         };
     }
 
@@ -184,7 +184,7 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
         {
             IRoomFloorItem floor => RemoveFloorItem(floor),
             IRoomWallItem wall => RemoveWallItem(wall),
-            _ => false
+            _ => false,
         };
     }
 
@@ -205,7 +205,7 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
                 TileX = x,
                 TileY = y,
                 RoomId = _roomGrain.RoomId,
-                CausedBy = ctx
+                CausedBy = ctx,
             },
             ct
         );
@@ -233,8 +233,7 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
 
         Altitude nextHeight = _roomGrain._state.Model?.BaseHeights[id] ?? 0.0;
         RoomTileFlags nextFlags =
-            _roomGrain._state.Model?.BaseFlags[id]
-            ?? RoomTileFlags.Disabled | RoomTileFlags.Closed;
+            _roomGrain._state.Model?.BaseFlags[id] ?? RoomTileFlags.Disabled | RoomTileFlags.Closed;
         HashSet<RoomObjectId> floorStack = _roomGrain._state.TileFloorStacks[id];
         HashSet<RoomObjectId> avatarStack = _roomGrain._state.TileAvatarStacks[id];
 
@@ -357,7 +356,7 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
                 Flags = _roomGrain._state.TileFlags[id],
                 HighestObjectId = _roomGrain._state.TileHighestFloorItems[id],
                 FloorObjectIds = [.. _roomGrain._state.TileFloorStacks[id]],
-                AvatarObjectIds = [.. _roomGrain._state.TileAvatarStacks[id]]
+                AvatarObjectIds = [.. _roomGrain._state.TileAvatarStacks[id]],
             }
         );
     }
@@ -374,7 +373,7 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
             DoorX = _roomGrain._state.Model?.DoorX ?? 0,
             DoorY = _roomGrain._state.Model?.DoorY ?? 0,
             DoorRotation = _roomGrain._state.Model?.DoorRotation ?? 0,
-            TileEncodedHeights = [.. _roomGrain._state.TileEncodedHeights]
+            TileEncodedHeights = [.. _roomGrain._state.TileEncodedHeights],
         };
     }
 

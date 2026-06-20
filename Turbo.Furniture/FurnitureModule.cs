@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Turbo.Contracts.Plugins;
 using Turbo.Furniture.Configuration;
 using Turbo.Furniture.Providers;
 using Turbo.Primitives.Furniture;
 using Turbo.Primitives.Furniture.Providers;
+using Turbo.Primitives.Plugins;
 
 namespace Turbo.Furniture;
 

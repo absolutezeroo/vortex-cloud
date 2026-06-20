@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Turbo.Contracts.Plugins;
 using Turbo.Inventory.Configuration;
 using Turbo.Inventory.Factories;
 using Turbo.Primitives.Inventory;
 using Turbo.Primitives.Inventory.Factories;
+using Turbo.Primitives.Plugins;
 
 namespace Turbo.Inventory;
 

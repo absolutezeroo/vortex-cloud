@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Inventory;
+using Turbo.Primitives.Messages.Incoming.Inventory.Purse;
 using Turbo.Primitives.Messages.Outgoing.Inventory.Purse;
 using Turbo.Primitives.Messages.Outgoing.Notifications;
 using Turbo.Primitives.Orleans;

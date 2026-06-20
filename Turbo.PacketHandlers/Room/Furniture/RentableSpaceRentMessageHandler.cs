@@ -36,7 +36,7 @@ public class RentableSpaceRentMessageHandler(IGrainFactory grainFactory)
             await ctx.SendComposerAsync(
                     new RentableSpaceRentFailedMessageComposer
                     {
-                        Reason = (RentableSpaceRentFailedType)failureCode.Value
+                        Reason = (RentableSpaceRentFailedType)failureCode.Value,
                     },
                     ct
                 )
@@ -58,7 +58,7 @@ public class RentableSpaceRentMessageHandler(IGrainFactory grainFactory)
                     RenterId = snapshot.RenterId,
                     RenterName = snapshot.RenterName,
                     TimeRemaining = snapshot.TimeRemaining,
-                    Price = snapshot.Price
+                    Price = snapshot.Price,
                 },
                 ct
             )

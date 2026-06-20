@@ -53,7 +53,7 @@ internal abstract class UpdateWiredDataParser : IParser
             while (furniSourceCount > 0)
             {
                 furniSources.Add([
-                    WiredFurniSourceTypeExtensions.FromProtocolId((WiredSourceType)packet.PopInt())
+                    WiredFurniSourceTypeExtensions.FromProtocolId((WiredSourceType)packet.PopInt()),
                 ]);
 
                 furniSourceCount--;
@@ -70,7 +70,7 @@ internal abstract class UpdateWiredDataParser : IParser
                 userSources.Add([
                     WiredPlayerSourceTypeExtensions.FromProtocolId(
                         (WiredSourceType)packet.PopInt()
-                    )
+                    ),
                 ]);
 
                 userSourceCount--;
@@ -119,7 +119,7 @@ internal abstract class UpdateWiredDataParser : IParser
             FurniSources = furniSources,
             PlayerSources = userSources,
             VariableIds = variableIds,
-            TypeSpecifics = typeSpecifics
+            TypeSpecifics = typeSpecifics,
         };
     }
 

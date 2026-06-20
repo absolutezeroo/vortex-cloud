@@ -30,14 +30,19 @@ public class WiredSelectorItemsOnItem(
             [
                 WiredFurniSourceType.SelectedItems,
                 WiredFurniSourceType.SignalItems,
-                WiredFurniSourceType.TriggeredItem
-            ]
+                WiredFurniSourceType.TriggeredItem,
+            ],
         ];
     }
 
     public override List<IWiredParamRule> GetIntParamRules()
     {
-        return [new WiredEnumParamRule<WiredFurniSelectionType>(WiredFurniSelectionType.FurniAboveFurni)];
+        return
+        [
+            new WiredEnumParamRule<WiredFurniSelectionType>(
+                WiredFurniSelectionType.FurniAboveFurni
+            ),
+        ];
     }
 
     public override async Task<IWiredSelectionSet> SelectAsync(
@@ -117,9 +122,7 @@ public class WiredSelectorItemsOnItem(
                     }
                 }
             }
-            catch
-            {
-            }
+            catch { }
         }
 
         return output;

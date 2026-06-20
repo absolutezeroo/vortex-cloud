@@ -13,7 +13,7 @@ using Turbo.Furniture.Configuration;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Furniture.Snapshots;
 
-namespace Turbo.Furniture;
+namespace Turbo.Furniture.Providers;
 
 public sealed class FurnitureDefinitionProvider(
     IOptions<FurnitureConfig> config,

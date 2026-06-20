@@ -8,7 +8,6 @@
     <PackageReference Include="Microsoft.Orleans.Persistence.Memory" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Turbo.Contracts\Turbo.Contracts.csproj" />
     <ProjectReference Include="..\Turbo.Furniture\Turbo.Furniture.csproj" />
     <ProjectReference Include="..\Turbo.Logging\Turbo.Logging.csproj" />
     <ProjectReference Include="..\Turbo.Messages\Turbo.Messages.csproj" />

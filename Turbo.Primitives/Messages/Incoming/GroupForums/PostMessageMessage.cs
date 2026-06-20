@@ -1,6 +1,6 @@
 using Turbo.Primitives.Networking;
 
-namespace Turbo.Primitives.Messages.Incoming.Groupforums;
+namespace Turbo.Primitives.Messages.Incoming.GroupForums;
 
 public record PostMessageMessage : IMessageEvent
 {

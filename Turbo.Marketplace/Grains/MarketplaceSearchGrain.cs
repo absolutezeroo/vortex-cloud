@@ -26,11 +26,13 @@ public sealed class MarketplaceSearchGrain(IDbContextFactory<TurboDbContext> dbC
         CancellationToken ct
     )
     {
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
 
-        var now = DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow;
 
-        var query = dbCtx
+        IQueryable<MarketplaceOfferEntity> query = dbCtx
             .MarketplaceOffers.Include(o => o.FurnitureDefinitionEntity)
             .Where(o =>
                 o.State == MarketplaceOfferState.Active
@@ -47,16 +49,16 @@ public sealed class MarketplaceSearchGrain(IDbContextFactory<TurboDbContext> dbC
             );
         }
 
-        var raw = await query.ToListAsync(ct).ConfigureAwait(false);
+        List<MarketplaceOfferEntity> raw = await query.ToListAsync(ct).ConfigureAwait(false);
 
-        var totalFound = raw.Count;
+        int totalFound = raw.Count;
 
-        var grouped = raw.GroupBy(o => o.SpriteId)
+        IEnumerable<MarketplaceOfferSnapshot> grouped = raw.GroupBy(o => o.SpriteId)
             .Select(g =>
             {
-                var avgPrice = (int)g.Average(o => o.Price);
-                var offerCount = g.Count();
-                var cheapest = g.OrderBy(o => o.Price).First();
+                int avgPrice = (int)g.Average(o => o.Price);
+                int offerCount = g.Count();
+                MarketplaceOfferEntity cheapest = g.OrderBy(o => o.Price).First();
 
                 return new MarketplaceOfferSnapshot
                 {
@@ -88,11 +90,13 @@ public sealed class MarketplaceSearchGrain(IDbContextFactory<TurboDbContext> dbC
         CancellationToken ct
     )
     {
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
 
-        var now = DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow;
 
-        var offers = await dbCtx
+        List<MarketplaceOfferEntity> offers = await dbCtx
             .MarketplaceOffers.Where(o =>
                 o.SpriteId == spriteId
                 && o.State == MarketplaceOfferState.Active
@@ -114,9 +118,9 @@ public sealed class MarketplaceSearchGrain(IDbContextFactory<TurboDbContext> dbC
             };
         }
 
-        var avgPrice = (int)offers.Average(o => o.Price);
-        var minPrice = offers.Min(o => o.Price);
-        var maxPrice = offers.Max(o => o.Price);
+        int avgPrice = (int)offers.Average(o => o.Price);
+        int minPrice = offers.Min(o => o.Price);
+        int maxPrice = offers.Max(o => o.Price);
 
         return new MarketplaceItemStatsSnapshot
         {

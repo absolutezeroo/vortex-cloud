@@ -11,7 +11,6 @@
     <PackageReference Include="Microsoft.Orleans.Persistence.Memory" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Turbo.Contracts\Turbo.Contracts.csproj" />
     <ProjectReference Include="..\Turbo.Crypto\Turbo.Crypto.csproj" />
     <ProjectReference Include="..\Turbo.Database\Turbo.Database.csproj" />
     <ProjectReference Include="..\Turbo.Events\Turbo.Events.csproj" />

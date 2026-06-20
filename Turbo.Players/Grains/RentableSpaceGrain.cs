@@ -52,11 +52,10 @@ internal sealed class RentableSpaceGrain(
 
         int remaining = rented ? (int)(_space!.RentedUntil!.Value - now).TotalSeconds : 0;
 
-        RentableSpaceRentFailedType errorCode = rented
-            ? RentableSpaceRentFailedType.AlreadyRented
-            : _terms is null
-                ? RentableSpaceRentFailedType.Disabled
-                : RentableSpaceRentFailedType.None;
+        RentableSpaceRentFailedType errorCode =
+            rented ? RentableSpaceRentFailedType.AlreadyRented
+            : _terms is null ? RentableSpaceRentFailedType.Disabled
+            : RentableSpaceRentFailedType.None;
 
         return Task.FromResult(
             new RentableSpaceStatusSnapshot
@@ -66,7 +65,7 @@ internal sealed class RentableSpaceGrain(
                 RenterId = _space?.RenterPlayerEntityId ?? 0,
                 RenterName = _renterName,
                 TimeRemaining = remaining,
-                Price = _terms?.Price ?? 0
+                Price = _terms?.Price ?? 0,
             }
         );
     }
@@ -132,7 +131,7 @@ internal sealed class RentableSpaceGrain(
         CurrencyKind kind = new()
         {
             CurrencyType = _terms.CurrencyTypeEntity.CurrencyType,
-            ActivityPointType = _terms.CurrencyTypeEntity.ActivityPointType
+            ActivityPointType = _terms.CurrencyTypeEntity.ActivityPointType,
         };
 
         WalletDebitResult debitResult = await grainFactory
@@ -169,7 +168,7 @@ internal sealed class RentableSpaceGrain(
                 FurnitureEntityId = FurnitureId,
                 RenterPlayerEntityId = renterPlayerId,
                 RentedUntil = rentedUntil,
-                FurnitureEntity = furniEntity
+                FurnitureEntity = furniEntity,
             };
             db.RoomRentableSpaces.Add(newSpace);
             await db.SaveChangesAsync(ct);
@@ -360,7 +359,7 @@ internal sealed class RentableSpaceGrain(
                         RenterId = 0,
                         RenterName = string.Empty,
                         TimeRemaining = 0,
-                        Price = _terms?.Price ?? 0
+                        Price = _terms?.Price ?? 0,
                     }
                 )
                 .ConfigureAwait(false);

@@ -67,7 +67,7 @@ public sealed class CatalogClubOfferProvider(
                 DaysLeftAfterPurchase = 0,
                 Year = 0,
                 Month = 0,
-                Day = 0
+                Day = 0,
             })
             .ToList();
 

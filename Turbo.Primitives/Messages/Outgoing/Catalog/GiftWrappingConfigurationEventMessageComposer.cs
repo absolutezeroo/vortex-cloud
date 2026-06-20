@@ -8,5 +8,6 @@ namespace Turbo.Primitives.Messages.Outgoing.Catalog;
 [Immutable]
 public sealed record GiftWrappingConfigurationEventMessageComposer : IComposer
 {
-    [Id(0)] public required GiftWrappingConfigurationSnapshot Configuration { get; init; }
+    [Id(0)]
+    public required GiftWrappingConfigurationSnapshot Configuration { get; init; }
 }

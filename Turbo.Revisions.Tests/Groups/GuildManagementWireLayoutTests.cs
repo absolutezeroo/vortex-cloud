@@ -27,10 +27,7 @@ public sealed class GuildManagementWireLayoutTests
         return new ClientPacket(header, sp.ToArray());
     }
 
-    private static ClientPacket SerializeAndReadBody(
-        Type composerType,
-        IComposer composer
-    )
+    private static ClientPacket SerializeAndReadBody(Type composerType, IComposer composer)
     {
         byte[] bytes = Revision.Serializers[composerType].Serialize(composer).ToArray();
         byte[] body = new byte[bytes.Length - 6];
@@ -126,8 +123,8 @@ public sealed class GuildManagementWireLayoutTests
                 {
                     RoomId = 42,
                     RoomName = "HQ",
-                    HasControllers = true
-                }
+                    HasControllers = true,
+                },
             ],
             IsOwner = true,
             GroupId = 5,
@@ -142,7 +139,7 @@ public sealed class GuildManagementWireLayoutTests
             Url = "",
             BadgeParts = [],
             BadgeCode = "b0102",
-            MembershipCount = 9
+            MembershipCount = 9,
         };
 
         ClientPacket body = SerializeAndReadBody(
@@ -185,8 +182,8 @@ public sealed class GuildManagementWireLayoutTests
                     UserId = 7,
                     UserName = "bob",
                     Figure = "hd-1-1",
-                    MemberSince = "19-06-2026"
-                }
+                    MemberSince = "19-06-2026",
+                },
             }
         );
 

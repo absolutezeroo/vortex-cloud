@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Turbo.Contracts.Plugins;
+using Turbo.Primitives.Plugins;
 using Turbo.Primitives.Rooms;
 using Turbo.Primitives.Rooms.Providers;
 using Turbo.Rooms.Configuration;

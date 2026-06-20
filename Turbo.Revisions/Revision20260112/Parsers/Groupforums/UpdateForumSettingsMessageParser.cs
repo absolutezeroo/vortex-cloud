@@ -1,4 +1,4 @@
-using Turbo.Primitives.Messages.Incoming.Groupforums;
+using Turbo.Primitives.Messages.Incoming.GroupForums;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Packets;
 

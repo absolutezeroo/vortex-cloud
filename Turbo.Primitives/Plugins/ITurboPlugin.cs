@@ -2,9 +2,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Turbo.Contracts.Plugins.Exports;
+using Turbo.Primitives.Plugins.Exports;
 
-namespace Turbo.Contracts.Plugins;
+namespace Turbo.Primitives.Plugins;
 
 public interface ITurboPlugin : IAsyncDisposable
 {

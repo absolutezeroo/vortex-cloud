@@ -56,20 +56,20 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         switch (evt)
         {
             case RoomWiredStackChangedEvent stackEvt:
-            {
-                foreach (int stackId in stackEvt.StackIds)
                 {
-                    _dirtyStackIds.Add(stackId);
+                    foreach (int stackId in stackEvt.StackIds)
+                    {
+                        _dirtyStackIds.Add(stackId);
+                    }
                 }
-            }
                 break;
             case WiredVariableBoxChangedEvent boxEvt:
-            {
-                foreach (int boxId in boxEvt.BoxIds)
                 {
-                    _dirtyVariableBoxIds.Add(boxId);
+                    foreach (int boxId in boxEvt.BoxIds)
+                    {
+                        _dirtyVariableBoxIds.Add(boxId);
+                    }
                 }
-            }
                 break;
             case PlayerLeftEvent playerLeftEvt:
                 _playerActiveStore.RemovePlayerStore(playerLeftEvt.PlayerId);
@@ -172,7 +172,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         {
             Event = evt,
             Stack = stack,
-            Trigger = trigger
+            Trigger = trigger,
         };
 
         if (evt.CausedBy.Origin == ActionOrigin.Player && evt.CausedBy.PlayerId > 0)
@@ -249,7 +249,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             SelectorPool = ctx.SelectorPool,
             Version = 1,
             DueAtMs = dueAtMs,
-            NextActionIndex = 0
+            NextActionIndex = 0,
         };
 
         _pendingStackExecutions[key] = pending;
@@ -343,7 +343,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
                 {
                     Policy = pending.Policy,
                     Selected = new WiredSelectionSet().UnionWith(pending.Selected),
-                    SelectorPool = new WiredSelectionSet().UnionWith(pending.SelectorPool)
+                    SelectorPool = new WiredSelectionSet().UnionWith(pending.SelectorPool),
                 };
 
                 _ = action.FlashActivationStateAsync(ct);
@@ -352,9 +352,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
 
                 _ = FlushWiredContextAsync(ctx);
             }
-            catch
-            {
-            }
+            catch { }
 
             pending.NextActionIndex = i + 1;
         }
@@ -394,7 +392,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
                     Users = ctx.UserMoves,
                     FloorItems = ctx.FloorItemMoves,
                     WallItems = ctx.WallItemMoves,
-                    UserDirections = ctx.UserDirections
+                    UserDirections = ctx.UserDirections,
                 }
             );
         }
@@ -496,9 +494,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
                         break;
                 }
             }
-            catch (Exception)
-            {
-            }
+            catch (Exception) { }
         }
 
         _stacksById[stackId] = stack;
@@ -515,7 +511,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         {
             WiredEffectModeType.FirstOnly => [actions[0]],
             WiredEffectModeType.Random => [actions[Random.Shared.Next(actions.Count)]],
-            _ => [.. actions]
+            _ => [.. actions],
         };
     }
 
@@ -534,7 +530,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             WiredConditionModeType.None => true,
             WiredConditionModeType.Any => conditions.Exists(c => c.Evaluate(ctx)),
             WiredConditionModeType.All => conditions.TrueForAll(c => c.Evaluate(ctx)),
-            _ => conditions.TrueForAll(c => c.Evaluate(ctx))
+            _ => conditions.TrueForAll(c => c.Evaluate(ctx)),
         };
     }
 }

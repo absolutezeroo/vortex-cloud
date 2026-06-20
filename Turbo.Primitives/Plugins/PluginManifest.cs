@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Turbo.Contracts.Plugins;
+namespace Turbo.Primitives.Plugins;
 
 public sealed class PluginManifest
 {
