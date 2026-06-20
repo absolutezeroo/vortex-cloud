@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Turbo.Contracts.Plugins.Exports;
+namespace Turbo.Primitives.Plugins.Exports;
 
 public interface IExportBinder
 {

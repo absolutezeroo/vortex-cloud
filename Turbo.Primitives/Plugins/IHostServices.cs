@@ -1,4 +1,4 @@
-namespace Turbo.Contracts.Plugins;
+namespace Turbo.Primitives.Plugins;
 
 public interface IHostServices
 {

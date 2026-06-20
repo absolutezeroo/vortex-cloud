@@ -1,6 +1,6 @@
-using Turbo.Contracts.Plugins.Exports;
+using Turbo.Primitives.Plugins.Exports;
 
-namespace Turbo.Contracts.Plugins;
+namespace Turbo.Primitives.Plugins;
 
 public interface IPluginCatalog
 {

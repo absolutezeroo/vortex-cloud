@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Turbo.Contracts.Plugins;
+namespace Turbo.Primitives.Plugins;
 
 public interface IHostPluginModule
 {

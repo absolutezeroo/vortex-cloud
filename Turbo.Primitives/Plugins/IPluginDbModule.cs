@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Turbo.Contracts.Plugins;
+namespace Turbo.Primitives.Plugins;
 
 public interface IPluginDbModule
 {
