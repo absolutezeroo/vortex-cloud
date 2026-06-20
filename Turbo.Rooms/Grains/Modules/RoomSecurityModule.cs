@@ -1,8 +1,16 @@
+using System;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Turbo.Database.Context;
 using Turbo.Primitives.Action;
 using Turbo.Primitives.Permissions;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Rooms.Enums;
+using Turbo.Primitives.Rooms.Object;
+using Turbo.Primitives.Rooms.Object.Furniture;
+using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 
 namespace Turbo.Rooms.Grains.Modules;
 
@@ -51,9 +59,49 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
 
     public async Task<bool> CanPlaceFurniAsync(ActionContext ctx)
     {
-        // TODO placement rules?
-
         return await CanManipulateFurniAsync(ctx);
+    }
+
+    /// <summary>
+    /// Returns the rentable-space floor item that <paramref name="playerId"/> is currently
+    /// renting in this room, or null if none exists.
+    /// </summary>
+    public async Task<IRoomFloorItem?> FindRentedSpaceForPlayerAsync(
+        int playerId,
+        CancellationToken ct
+    )
+    {
+        if (playerId <= 0)
+        {
+            return null;
+        }
+
+        DateTime now = DateTime.UtcNow;
+        int roomId = _roomGrain._state.RoomId.Value;
+
+        await using TurboDbContext db = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct);
+
+        int furnitureId = await (
+            from rrs in db.RoomRentableSpaces.AsNoTracking()
+            join f in db.Furnitures.AsNoTracking() on rrs.FurnitureEntityId equals f.Id
+            where rrs.RenterPlayerEntityId == playerId
+                && rrs.DeletedAt == null
+                && rrs.RentedUntil > now
+                && f.RoomEntityId == roomId
+                && f.DeletedAt == null
+            select rrs.FurnitureEntityId
+        ).FirstOrDefaultAsync(ct);
+
+        if (furnitureId == 0)
+        {
+            return null;
+        }
+
+        RoomObjectId objectId = new(furnitureId);
+
+        return _roomGrain._state.ItemsById.TryGetValue(objectId, out IRoomItem? item)
+            ? item as IRoomFloorItem
+            : null;
     }
 
     public async Task<FurniturePickupType> GetFurniPickupTypeAsync(ActionContext ctx)
@@ -62,8 +110,6 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
         {
             return FurniturePickupType.SendToOwner;
         }
-
-        // if can steal furni, SendToRequester
 
         if (await GetControllerLevelAsync(ctx) >= RoomControllerType.GroupAdmin)
         {

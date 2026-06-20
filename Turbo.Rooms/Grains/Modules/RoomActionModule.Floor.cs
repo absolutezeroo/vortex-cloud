@@ -1,6 +1,11 @@
+using System;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Turbo.Database.Context;
 using Turbo.Logging;
 using Turbo.Primitives;
 using Turbo.Primitives.Action;
@@ -28,11 +33,6 @@ public sealed partial class RoomActionModule
         CancellationToken ct
     )
     {
-        if (!await _roomGrain.SecurityModule.CanPlaceFurniAsync(ctx))
-        {
-            throw new TurboException(TurboErrorCodeEnum.NoPermissionToPlaceFurni);
-        }
-
         IRoomItem item = _roomGrain._itemsLoader.CreateFromFurnitureItemSnapshot(snapshot);
 
         if (item is not IRoomFloorItem floorItem)
@@ -40,17 +40,48 @@ public sealed partial class RoomActionModule
             throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
         }
 
-        if (
-            !await _roomGrain.FurniModule.ValidateNewFloorItemPlacementAsync(
-                ctx,
-                floorItem,
-                x,
-                y,
-                rot
-            )
-        )
+        IRoomFloorItem? rentedSpace = null;
+
+        if (await _roomGrain.SecurityModule.CanManipulateFurniAsync(ctx))
         {
-            throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+            if (
+                !await _roomGrain.FurniModule.ValidateNewFloorItemPlacementAsync(
+                    ctx,
+                    floorItem,
+                    x,
+                    y,
+                    rot
+                )
+            )
+            {
+                throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+            }
+        }
+        else
+        {
+            rentedSpace = await _roomGrain.SecurityModule.FindRentedSpaceForPlayerAsync(
+                ctx.PlayerId.Value,
+                ct
+            );
+
+            if (rentedSpace is null)
+            {
+                throw new TurboException(TurboErrorCodeEnum.NoPermissionToPlaceFurni);
+            }
+
+            if (
+                !await _roomGrain.FurniModule.ValidateNewFloorItemPlacementInRentedSpaceAsync(
+                    ctx,
+                    floorItem,
+                    x,
+                    y,
+                    rot,
+                    rentedSpace
+                )
+            )
+            {
+                throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+            }
         }
 
         if (!await _roomGrain.FurniModule.PlaceFloorItemAsync(ctx, floorItem, x, y, rot, ct))
@@ -61,6 +92,35 @@ public sealed partial class RoomActionModule
         IInventoryGrain inventory = _roomGrain._grainFactory.GetInventoryGrain(item.OwnerId);
 
         await inventory.RemoveFurnitureAsync(item.ObjectId, ct);
+
+        if (rentedSpace is not null)
+        {
+            try
+            {
+                await using TurboDbContext db = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct);
+                await db
+                    .Furnitures.Where(f =>
+                        f.Id == floorItem.ObjectId.Value && f.DeletedAt == null
+                    )
+                    .ExecuteUpdateAsync(
+                        s =>
+                            s.SetProperty(
+                                f => f.RentableSpaceFurnitureEntityId,
+                                (int?)rentedSpace.ObjectId.Value
+                            ),
+                        ct
+                    );
+            }
+            catch (Exception ex)
+            {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Failed to tag furniture {FurniId} with rentable space {SpaceId}",
+                    floorItem.ObjectId.Value,
+                    rentedSpace.ObjectId.Value
+                );
+            }
+        }
 
         await _roomGrain
             ._events.PublishAsync(
