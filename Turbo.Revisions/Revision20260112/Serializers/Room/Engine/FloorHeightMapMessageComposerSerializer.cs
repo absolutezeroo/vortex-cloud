@@ -1,4 +1,5 @@
 using Turbo.Primitives.Messages.Outgoing.Room.Engine;
+using Turbo.Primitives.Orleans.Snapshots.Room.Furniture;
 using Turbo.Primitives.Packets;
 using Turbo.Primitives.Rooms.Enums;
 using Turbo.Revisions.Revision20260112.Serializers.Room.Engine.Data;
@@ -16,7 +17,7 @@ internal class FloorHeightMapMessageComposerSerializer(int header)
             .WriteString(message.ModelData)
             .WriteInteger(message.AreaHideData.Count);
 
-        foreach (var area in message.AreaHideData)
+        foreach (AreaHideDataSnapshot area in message.AreaHideData)
             AreaHideDataSerializer.Serialize(packet, area);
     }
 }

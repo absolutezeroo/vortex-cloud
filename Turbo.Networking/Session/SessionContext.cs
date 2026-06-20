@@ -61,7 +61,9 @@ public class SessionContext(IPackageEncoder<OutgoingPackage> packageEncoder)
         CryptoIn = new Rc4Engine(key);
 
         if (setCryptoOut)
+        {
             CryptoOut = new Rc4Engine(key);
+        }
     }
 
     public async Task SendComposerAsync(IComposer composer, CancellationToken ct)

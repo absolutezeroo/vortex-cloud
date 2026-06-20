@@ -20,9 +20,11 @@ public class IncomeRewardClaimMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var success = await _grainFactory
+        bool success = await _grainFactory
             .GetPlayerVaultGrain(ctx.PlayerId)
             .ClaimCategoryAsync(message.Category, ct)
             .ConfigureAwait(false);

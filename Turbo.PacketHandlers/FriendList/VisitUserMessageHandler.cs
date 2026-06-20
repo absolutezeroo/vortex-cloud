@@ -6,6 +6,9 @@ using Turbo.Primitives.FriendList.Enums;
 using Turbo.Primitives.Messages.Incoming.FriendList;
 using Turbo.Primitives.Messages.Outgoing.FriendList;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Room;
+using Turbo.Primitives.Players;
+using Turbo.Primitives.Players.Grains;
 
 namespace Turbo.PacketHandlers.FriendList;
 
@@ -20,18 +23,22 @@ public class VisitUserMessageHandler(IGrainFactory grainFactory) : IMessageHandl
     )
     {
         if (ctx.PlayerId <= 0 || string.IsNullOrWhiteSpace(message.PlayerName))
+        {
             return;
+        }
 
-        var directory = _grainFactory.GetPlayerDirectoryGrain();
-        var targetId = await directory
+        IPlayerDirectoryGrain directory = _grainFactory.GetPlayerDirectoryGrain();
+        PlayerId? targetId = await directory
             .GetPlayerIdAsync(message.PlayerName, ct)
             .ConfigureAwait(false);
 
         if (targetId is null)
+        {
             return;
+        }
 
-        var targetPresence = _grainFactory.GetPlayerPresenceGrain(targetId.Value);
-        var isOnline = await targetPresence.IsOnlineAsync(ct).ConfigureAwait(false);
+        IPlayerPresenceGrain targetPresence = _grainFactory.GetPlayerPresenceGrain(targetId.Value);
+        bool isOnline = await targetPresence.IsOnlineAsync(ct).ConfigureAwait(false);
 
         if (!isOnline)
         {
@@ -46,7 +53,7 @@ public class VisitUserMessageHandler(IGrainFactory grainFactory) : IMessageHandl
             return;
         }
 
-        var activeRoom = await targetPresence.GetActiveRoomAsync().ConfigureAwait(false);
+        RoomPointerSnapshot activeRoom = await targetPresence.GetActiveRoomAsync().ConfigureAwait(false);
 
         if (activeRoom.RoomId <= 0)
         {
@@ -61,7 +68,7 @@ public class VisitUserMessageHandler(IGrainFactory grainFactory) : IMessageHandl
             return;
         }
 
-        var selfPresence = _grainFactory.GetPlayerPresenceGrain(ctx.PlayerId);
+        IPlayerPresenceGrain selfPresence = _grainFactory.GetPlayerPresenceGrain(ctx.PlayerId);
         await selfPresence.SetActiveRoomAsync(activeRoom.RoomId, ct).ConfigureAwait(false);
     }
 }

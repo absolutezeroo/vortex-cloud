@@ -21,8 +21,8 @@ public static class SuperSocketHostBuilderExtensions
             {
                 services.AddSingleton(sp =>
                 {
-                    var gateway = sp.GetRequiredService<ISessionGateway>();
-                    var revisionManager = sp.GetRequiredService<IRevisionManager>();
+                    ISessionGateway gateway = sp.GetRequiredService<ISessionGateway>();
+                    IRevisionManager revisionManager = sp.GetRequiredService<IRevisionManager>();
 
                     return new SessionHandlers
                     {
@@ -40,9 +40,11 @@ public static class SuperSocketHostBuilderExtensions
                         Closed = async (session, e) =>
                         {
                             if (session is ISessionContext ctx)
+                            {
                                 await gateway
                                     .RemoveSessionAsync(ctx.SessionKey, CancellationToken.None)
                                     .ConfigureAwait(false);
+                            }
                         },
                     };
                 });
@@ -61,14 +63,17 @@ public static class SuperSocketHostBuilderExtensions
             {
                 services.AddSingleton(sp =>
                 {
-                    var config = sp.GetRequiredService<NetworkingConfig>();
+                    NetworkingConfig config = sp.GetRequiredService<NetworkingConfig>();
 
                     return new SessionHandlers
                     {
                         Connected = session =>
                         {
                             if (session is not ISessionContext ctx)
+                            {
                                 return new ValueTask();
+                            }
+
                             ctx.Touch();
 
                             _ = RunHeartbeatAsync(ctx, config, ctx.HeartbeatCts.Token);
@@ -77,7 +82,9 @@ public static class SuperSocketHostBuilderExtensions
                         Closed = async (session, e) =>
                         {
                             if (session is not ISessionContext ctx)
+                            {
                                 return;
+                            }
 
                             await ctx.HeartbeatCts.CancelAsync().ConfigureAwait(false);
 

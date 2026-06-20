@@ -14,8 +14,10 @@ public abstract class UserVariable<TAvatar>(RoomGrain roomGrain) : WiredInternal
     {
         value = WiredVariableValue.Default;
 
-        if (!CanBind(key) || !TryGetAvatarForKey(key, out var avatar) || avatar is null)
+        if (!CanBind(key) || !TryGetAvatarForKey(key, out TAvatar? avatar) || avatar is null)
+        {
             return false;
+        }
 
         value = GetValueForAvatar(avatar);
 
@@ -29,10 +31,12 @@ public abstract class UserVariable<TAvatar>(RoomGrain roomGrain) : WiredInternal
         avatar = default;
 
         if (
-            !_roomGrain._state.AvatarsByObjectId.TryGetValue(key.TargetId, out var found)
+            !_roomGrain._state.AvatarsByObjectId.TryGetValue(key.TargetId, out IRoomAvatar? found)
             || found is not TAvatar typed
         )
+        {
             return false;
+        }
 
         avatar = typed;
 

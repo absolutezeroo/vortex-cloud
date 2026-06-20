@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Orleans;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Groups;
+using Turbo.Database.Entities.Players;
 using Turbo.Primitives.Events;
 using Turbo.Primitives.Groups.Enums;
 using Turbo.Primitives.Groups.Grains;
@@ -40,16 +41,18 @@ internal sealed class GroupForumGrain(
 
     public async Task<ForumSnapshot?> GetForumAsync(PlayerId viewer, CancellationToken ct)
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var group = await dbCtx
+        GroupEntity? group = await dbCtx
             .Groups.AsNoTracking()
             .Include(g => g.ForumSettings)
             .FirstOrDefaultAsync(g => g.Id == GroupId && g.DeletedAt == null, ct);
         if (group is null || group.ForumSettings is null)
+        {
             return null;
+        }
 
-        var role = await GetRoleAsync(dbCtx, group, viewer.Value, ct);
+        ForumRole role = await GetRoleAsync(dbCtx, group, viewer.Value, ct);
         return await BuildForumSnapshotAsync(dbCtx, group, group.ForumSettings, role, ct);
     }
 
@@ -60,23 +63,27 @@ internal sealed class GroupForumGrain(
         CancellationToken ct
     )
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var group = await dbCtx
+        GroupEntity? group = await dbCtx
             .Groups.AsNoTracking()
             .Include(g => g.ForumSettings)
             .FirstOrDefaultAsync(g => g.Id == GroupId && g.DeletedAt == null, ct);
         if (group is null || group.ForumSettings is null)
+        {
             return null;
+        }
 
-        var role = await GetRoleAsync(dbCtx, group, viewer.Value, ct);
+        ForumRole role = await GetRoleAsync(dbCtx, group, viewer.Value, ct);
         if (!CanRead(group.ForumSettings, role))
+        {
             return null;
+        }
 
-        var take = NormalizeAmount(amount);
-        var skip = Math.Max(startIndex, 0);
+        int take = NormalizeAmount(amount);
+        int skip = Math.Max(startIndex, 0);
 
-        var threads = await dbCtx
+        List<GroupForumThreadEntity> threads = await dbCtx
             .GroupForumThreads.AsNoTracking()
             .Include(t => t.PlayerEntity)
             .Include(t => t.LastPostPlayerEntity)
@@ -92,7 +99,7 @@ internal sealed class GroupForumGrain(
             .Take(take)
             .ToListAsync(ct);
 
-        var now = DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow;
         return new ForumThreadsPageSnapshot
         {
             GroupId = GroupId,
@@ -109,23 +116,27 @@ internal sealed class GroupForumGrain(
         CancellationToken ct
     )
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var group = await dbCtx
+        GroupEntity? group = await dbCtx
             .Groups.AsNoTracking()
             .Include(g => g.ForumSettings)
             .FirstOrDefaultAsync(g => g.Id == GroupId && g.DeletedAt == null, ct);
         if (group is null || group.ForumSettings is null)
+        {
             return null;
+        }
 
-        var role = await GetRoleAsync(dbCtx, group, viewer.Value, ct);
+        ForumRole role = await GetRoleAsync(dbCtx, group, viewer.Value, ct);
         if (!CanRead(group.ForumSettings, role))
+        {
             return null;
+        }
 
-        var take = NormalizeAmount(amount);
-        var skip = Math.Max(startIndex, 0);
+        int take = NormalizeAmount(amount);
+        int skip = Math.Max(startIndex, 0);
 
-        var posts = await dbCtx
+        List<GroupForumPostEntity> posts = await dbCtx
             .GroupForumPosts.AsNoTracking()
             .Include(p => p.PlayerEntity)
             .Where(p =>
@@ -136,10 +147,10 @@ internal sealed class GroupForumGrain(
             .Take(take)
             .ToListAsync(ct);
 
-        var authorPostCounts = await GetAuthorPostCountsAsync(dbCtx, posts, ct);
+        Dictionary<int, int> authorPostCounts = await GetAuthorPostCountsAsync(dbCtx, posts, ct);
 
-        var now = DateTime.UtcNow;
-        var messages = posts
+        DateTime now = DateTime.UtcNow;
+        List<ForumPostSnapshot> messages = posts
             .Select(
                 (p, i) =>
                     BuildPostSnapshot(
@@ -169,31 +180,39 @@ internal sealed class GroupForumGrain(
     )
     {
         if (string.IsNullOrWhiteSpace(message))
+        {
             return null;
+        }
 
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var group = await dbCtx
+        GroupEntity? group = await dbCtx
             .Groups.Include(g => g.ForumSettings)
             .FirstOrDefaultAsync(g => g.Id == GroupId && g.DeletedAt == null, ct);
         if (group is null || group.ForumSettings is null || !group.ForumSettings.Enabled)
+        {
             return null;
+        }
 
-        var actorId = actor.Value;
-        var role = await GetRoleAsync(dbCtx, group, actorId, ct);
+        int actorId = actor.Value;
+        ForumRole role = await GetRoleAsync(dbCtx, group, actorId, ct);
 
-        var actorEntity = await dbCtx.Players.FindAsync([actorId], ct);
+        PlayerEntity? actorEntity = await dbCtx.Players.FindAsync([actorId], ct);
         if (actorEntity is null)
+        {
             return null;
+        }
 
-        var now = DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow;
 
         if (threadId == 0)
         {
             if (!Allows(group.ForumSettings.ThreadPermission, role))
+            {
                 return null;
+            }
 
-            var thread = new GroupForumThreadEntity
+            GroupForumThreadEntity thread = new GroupForumThreadEntity
             {
                 GroupEntityId = GroupId,
                 PlayerEntityId = actorId,
@@ -244,23 +263,29 @@ internal sealed class GroupForumGrain(
         else
         {
             if (!Allows(group.ForumSettings.PostPermission, role))
+            {
                 return null;
+            }
 
-            var thread = await dbCtx.GroupForumThreads.FirstOrDefaultAsync(
+            GroupForumThreadEntity? thread = await dbCtx.GroupForumThreads.FirstOrDefaultAsync(
                 t => t.Id == threadId && t.GroupEntityId == GroupId && t.DeletedAt == null,
                 ct
             );
             if (thread is null || thread.State == GroupForumThreadState.Hidden)
+            {
                 return null;
+            }
 
             // A locked thread only accepts posts from moderators.
             if (
                 thread.State == GroupForumThreadState.Locked
                 && !Allows(group.ForumSettings.ModPermission, role)
             )
+            {
                 return null;
+            }
 
-            var post = new GroupForumPostEntity
+            GroupForumPostEntity post = new GroupForumPostEntity
             {
                 ThreadEntityId = thread.Id,
                 GroupEntityId = GroupId,
@@ -282,7 +307,7 @@ internal sealed class GroupForumGrain(
                 .PublishAsync(new ForumPostCreatedEvent(actorId, GroupId, thread.Id, post.Id), ct)
                 .ConfigureAwait(false);
 
-            var authorPostCount = await dbCtx.GroupForumPosts.CountAsync(
+            int authorPostCount = await dbCtx.GroupForumPosts.CountAsync(
                 p =>
                     p.GroupEntityId == GroupId
                     && p.PlayerEntityId == actorId
@@ -315,13 +340,15 @@ internal sealed class GroupForumGrain(
         CancellationToken ct
     )
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var (group, role) = await LoadForModerationAsync(dbCtx, actor, ct);
+        (GroupEntity? group, ForumRole role) = await LoadForModerationAsync(dbCtx, actor, ct);
         if (group is null)
+        {
             return null;
+        }
 
-        var thread = await dbCtx
+        GroupForumThreadEntity? thread = await dbCtx
             .GroupForumThreads.Include(t => t.PlayerEntity)
             .Include(t => t.LastPostPlayerEntity)
             .FirstOrDefaultAsync(
@@ -329,12 +356,16 @@ internal sealed class GroupForumGrain(
                 ct
             );
         if (thread is null)
+        {
             return null;
+        }
 
         thread.IsPinned = isSticky;
         // Preserve a Hidden state; otherwise toggle Locked/Open.
         if (thread.State != GroupForumThreadState.Hidden)
+        {
             thread.State = isLocked ? GroupForumThreadState.Locked : GroupForumThreadState.Open;
+        }
 
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
 
@@ -355,13 +386,15 @@ internal sealed class GroupForumGrain(
         CancellationToken ct
     )
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var (group, role) = await LoadForModerationAsync(dbCtx, actor, ct);
+        (GroupEntity? group, ForumRole role) = await LoadForModerationAsync(dbCtx, actor, ct);
         if (group is null)
+        {
             return null;
+        }
 
-        var thread = await dbCtx
+        GroupForumThreadEntity? thread = await dbCtx
             .GroupForumThreads.Include(t => t.PlayerEntity)
             .Include(t => t.LastPostPlayerEntity)
             .FirstOrDefaultAsync(
@@ -369,7 +402,9 @@ internal sealed class GroupForumGrain(
                 ct
             );
         if (thread is null)
+        {
             return null;
+        }
 
         thread.State = MapThreadAction(action);
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -392,13 +427,15 @@ internal sealed class GroupForumGrain(
         CancellationToken ct
     )
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var (group, role) = await LoadForModerationAsync(dbCtx, actor, ct);
+        (GroupEntity? group, ForumRole role) = await LoadForModerationAsync(dbCtx, actor, ct);
         if (group is null)
+        {
             return null;
+        }
 
-        var post = await dbCtx
+        GroupForumPostEntity? post = await dbCtx
             .GroupForumPosts.Include(p => p.PlayerEntity)
             .FirstOrDefaultAsync(
                 p =>
@@ -409,7 +446,9 @@ internal sealed class GroupForumGrain(
                 ct
             );
         if (post is null)
+        {
             return null;
+        }
 
         post.State = MapPostAction(action);
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -433,19 +472,23 @@ internal sealed class GroupForumGrain(
         CancellationToken ct
     )
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var group = await dbCtx
+        GroupEntity? group = await dbCtx
             .Groups.Include(g => g.ForumSettings)
             .FirstOrDefaultAsync(g => g.Id == GroupId && g.DeletedAt == null, ct);
         if (group is null || group.ForumSettings is null)
+        {
             return null;
+        }
 
         // Forum settings are owner-only.
         if (group.OwnerPlayerEntityId != actor.Value)
+        {
             return null;
+        }
 
-        var settings = group.ForumSettings;
+        GroupForumSettingsEntity? settings = group.ForumSettings;
         settings.Enabled = true;
         settings.ReadPermission = ClampPermission(readPermission);
         settings.PostPermission = ClampPermission(postMessagePermission);
@@ -469,9 +512,11 @@ internal sealed class GroupForumGrain(
     )
     {
         if (group.OwnerPlayerEntityId == playerId)
+        {
             return ForumRole.Owner;
+        }
 
-        var membership = await dbCtx
+        GroupMemberEntity? membership = await dbCtx
             .GroupMembers.AsNoTracking()
             .FirstOrDefaultAsync(
                 m =>
@@ -505,13 +550,15 @@ internal sealed class GroupForumGrain(
         CancellationToken ct
     )
     {
-        var group = await dbCtx
+        GroupEntity? group = await dbCtx
             .Groups.Include(g => g.ForumSettings)
             .FirstOrDefaultAsync(g => g.Id == GroupId && g.DeletedAt == null, ct);
         if (group is null || group.ForumSettings is null)
+        {
             return (null, ForumRole.None);
+        }
 
-        var role = await GetRoleAsync(dbCtx, group, actor.Value, ct);
+        ForumRole role = await GetRoleAsync(dbCtx, group, actor.Value, ct);
         return Allows(group.ForumSettings.ModPermission, role)
             ? (group, role)
             : (null, ForumRole.None);
@@ -525,7 +572,7 @@ internal sealed class GroupForumGrain(
         CancellationToken ct
     )
     {
-        var totalThreads = await dbCtx.GroupForumThreads.CountAsync(
+        int totalThreads = await dbCtx.GroupForumThreads.CountAsync(
             t =>
                 t.GroupEntityId == GroupId
                 && t.DeletedAt == null
@@ -533,7 +580,7 @@ internal sealed class GroupForumGrain(
             ct
         );
 
-        var totalMessages = await dbCtx.GroupForumPosts.CountAsync(
+        int totalMessages = await dbCtx.GroupForumPosts.CountAsync(
             p =>
                 p.GroupEntityId == GroupId
                 && p.DeletedAt == null
@@ -541,7 +588,7 @@ internal sealed class GroupForumGrain(
             ct
         );
 
-        var lastPost = await dbCtx
+        GroupForumPostEntity? lastPost = await dbCtx
             .GroupForumPosts.AsNoTracking()
             .Include(p => p.PlayerEntity)
             .Where(p =>
@@ -552,11 +599,11 @@ internal sealed class GroupForumGrain(
             .OrderByDescending(p => p.Id)
             .FirstOrDefaultAsync(ct);
 
-        var now = DateTime.UtcNow;
-        var canRead = CanRead(settings, role);
-        var canPostMessage = settings.Enabled && Allows(settings.PostPermission, role);
-        var canPostThread = settings.Enabled && Allows(settings.ThreadPermission, role);
-        var canModerate = Allows(settings.ModPermission, role);
+        DateTime now = DateTime.UtcNow;
+        bool canRead = CanRead(settings, role);
+        bool canPostMessage = settings.Enabled && Allows(settings.PostPermission, role);
+        bool canPostThread = settings.Enabled && Allows(settings.ThreadPermission, role);
+        bool canModerate = Allows(settings.ModPermission, role);
 
         return new ForumSnapshot
         {
@@ -651,9 +698,11 @@ internal sealed class GroupForumGrain(
     )
     {
         if (posts.Count == 0)
+        {
             return [];
+        }
 
-        var authorIds = posts.Select(p => p.PlayerEntityId).Distinct().ToList();
+        List<int> authorIds = posts.Select(p => p.PlayerEntityId).Distinct().ToList();
 
         return await dbCtx
             .GroupForumPosts.AsNoTracking()

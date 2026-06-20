@@ -13,7 +13,7 @@ public sealed class SessionContextObserver(SessionKey sessionKey, ISessionGatewa
 
     public async Task SendComposerAsync(IComposer composer, CancellationToken ct)
     {
-        var ctx = _sessionGateway.GetSession(_sessionKey);
+        ISessionContext? ctx = _sessionGateway.GetSession(_sessionKey);
 
         if (ctx is not null)
         {

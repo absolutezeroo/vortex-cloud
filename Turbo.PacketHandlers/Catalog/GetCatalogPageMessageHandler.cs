@@ -24,31 +24,39 @@ public class GetCatalogPageMessageHandler(ICatalogService catalogService)
     {
         try
         {
-            var snapshot = _catalogService.GetCatalogSnapshot(message.CatalogType);
+            CatalogSnapshot snapshot = _catalogService.GetCatalogSnapshot(message.CatalogType);
 
-            if (!snapshot.PagesById.TryGetValue(message.PageId, out var page))
-                return;
-
-            var offers = new List<CatalogOfferSnapshot>();
-            var offerProducts = new Dictionary<int, ImmutableArray<CatalogProductSnapshot>>();
-
-            foreach (var offerId in page.OfferIds)
+            if (!snapshot.PagesById.TryGetValue(message.PageId, out CatalogPageSnapshot? page))
             {
-                if (snapshot.OffersById.TryGetValue(offerId, out var offer))
-                    offers.Add(offer);
+                return;
             }
 
-            foreach (var offer in offers)
+            List<CatalogOfferSnapshot> offers = new List<CatalogOfferSnapshot>();
+            Dictionary<int, ImmutableArray<CatalogProductSnapshot>> offerProducts = new Dictionary<int, ImmutableArray<CatalogProductSnapshot>>();
+
+            foreach (int offerId in page.OfferIds)
             {
-                if (!snapshot.OfferProductIds.TryGetValue(offer.Id, out var productIds))
-                    continue;
-
-                var products = new List<CatalogProductSnapshot>();
-
-                foreach (var productId in productIds)
+                if (snapshot.OffersById.TryGetValue(offerId, out CatalogOfferSnapshot? offer))
                 {
-                    if (snapshot.ProductsById.TryGetValue(productId, out var product))
+                    offers.Add(offer);
+                }
+            }
+
+            foreach (CatalogOfferSnapshot offer in offers)
+            {
+                if (!snapshot.OfferProductIds.TryGetValue(offer.Id, out ImmutableArray<int> productIds))
+                {
+                    continue;
+                }
+
+                List<CatalogProductSnapshot> products = new List<CatalogProductSnapshot>();
+
+                foreach (int productId in productIds)
+                {
+                    if (snapshot.ProductsById.TryGetValue(productId, out CatalogProductSnapshot? product))
+                    {
                         products.Add(product);
+                    }
                 }
 
                 offerProducts[offer.Id] = [.. products];

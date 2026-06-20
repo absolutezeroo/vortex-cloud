@@ -19,7 +19,9 @@ public class DanceMessageHandler(IGrainFactory grainFactory) : IMessageHandler<D
     )
     {
         if (ctx is null || ctx.PlayerId <= 0 || ctx.RoomId <= 0)
+        {
             return;
+        }
 
         if (
             !await _grainFactory

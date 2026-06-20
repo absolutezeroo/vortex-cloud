@@ -23,9 +23,9 @@ public sealed class PluginBootstrapper(
 
     public async Task StartAsync(CancellationToken ct)
     {
-        var tasks = new List<Func<Task>>();
+        List<Func<Task>> tasks = new List<Func<Task>>();
 
-        foreach (var p in _hostPlugins)
+        foreach (IHostPluginModule p in _hostPlugins)
         {
             tasks.Add(() => _processor.ProcessAsync(p.GetType().Assembly, _serviceProvider, ct));
         }

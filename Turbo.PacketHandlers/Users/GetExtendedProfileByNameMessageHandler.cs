@@ -5,6 +5,9 @@ using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Users;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Players;
+using Turbo.Primitives.Players;
+using Turbo.Primitives.Players.Grains;
 
 namespace Turbo.PacketHandlers.Users;
 
@@ -24,15 +27,17 @@ public class GetExtendedProfileByNameMessageHandler
         CancellationToken ct
     )
     {
-        var directoryGrain = _grainFactory.GetPlayerDirectoryGrain();
-        var playerId = await directoryGrain
+        IPlayerDirectoryGrain directoryGrain = _grainFactory.GetPlayerDirectoryGrain();
+        PlayerId? playerId = await directoryGrain
             .GetPlayerIdAsync(message.UserName, ct)
             .ConfigureAwait(false);
 
         if (playerId is null)
+        {
             return;
+        }
 
-        var snapshot = await _grainFactory
+        PlayerExtendedProfileSnapshot snapshot = await _grainFactory
             .GetPlayerGrain(playerId.Value)
             .GetExtendedProfileSnapshotAsync(ct)
             .ConfigureAwait(false);

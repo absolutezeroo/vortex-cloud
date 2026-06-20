@@ -1,3 +1,5 @@
+using Turbo.Primitives.Catalog;
+using Turbo.Primitives.Catalog.Snapshots;
 using Turbo.Primitives.Messages.Outgoing.Catalog;
 using Turbo.Primitives.Packets;
 using Turbo.Revisions.Revision20260112.Serializers.Catalog.Data;
@@ -17,12 +19,12 @@ internal class ClubGiftInfoEventMessageComposerSerializer(int header)
             .WriteInteger(message.GiftsAvailable)
             .WriteInteger(message.Offers.Count);
 
-        foreach (var offer in message.Offers)
+        foreach (CatalogOfferSnapshot offer in message.Offers)
             CatalogOfferSerializer.Serialize(packet, offer);
 
         packet.WriteInteger(message.GiftData.Count);
 
-        foreach (var gift in message.GiftData)
+        foreach (ClubGiftOfferData gift in message.GiftData)
         {
             packet
                 .WriteInteger(gift.OfferId)

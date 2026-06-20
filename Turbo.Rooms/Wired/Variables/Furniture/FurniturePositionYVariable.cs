@@ -3,6 +3,7 @@ using Turbo.Primitives.Rooms.Enums.Wired;
 using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Object.Furniture.Wall;
+using Turbo.Primitives.Rooms.Snapshots.Wired.Variables;
 using Turbo.Primitives.Rooms.Wired;
 using Turbo.Primitives.Rooms.Wired.Variable;
 using Turbo.Rooms.Grains;
@@ -34,14 +35,16 @@ public sealed class FurniturePositionYVariable(RoomGrain roomGrain)
         WiredVariableValue value
     )
     {
-        var snapshot = GetVarSnapshot();
+        WiredVariableSnapshot snapshot = GetVarSnapshot();
 
         if (
             !snapshot.Flags.Has(WiredVariableFlags.CanWriteValue)
             || !CanBind(key)
-            || !TryGetItemForKey(key, out var item)
+            || !TryGetItemForKey(key, out IRoomItem? item)
         )
+        {
             return false;
+        }
 
         switch (item)
         {

@@ -14,7 +14,7 @@ internal sealed class ErrorGroupingChannel
 
     public ErrorGroupingChannel(IOptions<ObservabilityConfig> options)
     {
-        var capacity =
+        int capacity =
             options.Value.ErrorGroupingChannelCapacity > 0
                 ? options.Value.ErrorGroupingChannelCapacity
                 : 10_000;

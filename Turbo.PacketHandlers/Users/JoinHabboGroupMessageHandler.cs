@@ -2,6 +2,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.Groups.Grains;
+using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Incoming.Users;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Orleans;
@@ -20,11 +22,13 @@ public class JoinHabboGroupMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0 || message.GroupId <= 0)
+        {
             return;
+        }
 
-        var grain = _grainFactory.GetGroupGrain(message.GroupId);
+        IGroupGrain grain = _grainFactory.GetGroupGrain(message.GroupId);
 
-        var failureReason = await grain.JoinAsync(ctx.PlayerId, ct).ConfigureAwait(false);
+        int? failureReason = await grain.JoinAsync(ctx.PlayerId, ct).ConfigureAwait(false);
 
         if (failureReason is not null)
         {
@@ -37,7 +41,7 @@ public class JoinHabboGroupMessageHandler(IGrainFactory grainFactory)
         }
 
         // Refresh the detail view so membership status / counts update client-side.
-        var details = await grain.GetDetailsAsync(ctx.PlayerId, ct).ConfigureAwait(false);
+        GroupDetailsSnapshot? details = await grain.GetDetailsAsync(ctx.PlayerId, ct).ConfigureAwait(false);
         if (details is not null)
         {
             await ctx.SendComposerAsync(

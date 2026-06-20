@@ -13,7 +13,7 @@ public sealed class RoomAvatarProvider : IRoomAvatarProvider
         PlayerSummarySnapshot snapshot
     )
     {
-        var avatar = new RoomPlayerAvatar { ObjectId = objectId, PlayerId = snapshot.PlayerId };
+        RoomPlayerAvatar avatar = new RoomPlayerAvatar { ObjectId = objectId, PlayerId = snapshot.PlayerId };
 
         avatar.UpdateWithPlayer(snapshot);
 

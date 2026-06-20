@@ -8,8 +8,8 @@ internal class UpdateForumReadMarkerMessageParser : IParser
 {
     public IMessageEvent Parse(IClientPacket packet)
     {
-        var count = packet.PopInt();
-        for (var i = 0; i < count; i++)
+        int count = packet.PopInt();
+        for (int i = 0; i < count; i++)
         {
             packet.PopInt();
             packet.PopInt();

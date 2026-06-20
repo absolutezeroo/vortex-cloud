@@ -20,9 +20,11 @@ public class CancelMarketplaceOfferMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var success = await _grainFactory
+        bool success = await _grainFactory
             .GetMarketplacePurchaseGrain(ctx.PlayerId)
             .CancelOrRedeemOfferAsync(message.OfferId, ct)
             .ConfigureAwait(false);

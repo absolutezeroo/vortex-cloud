@@ -29,7 +29,7 @@ public sealed class WiredPersistenceRoundTripTests
     /// </summary>
     private static string PersistWired(WiredData wired, string? existingExtraData = null)
     {
-        var extraData = new ExtraData(existingExtraData);
+        ExtraData extraData = new ExtraData(existingExtraData);
 
         // Mirrors FurnitureWiredLogic.FillInternalDataAsync's SetAction callback.
         extraData.UpdateSection(
@@ -47,9 +47,9 @@ public sealed class WiredPersistenceRoundTripTests
     private static WiredData? ReloadWired(string persistedExtraData)
     {
         // Mirrors RoomItemsProvider.LoadByRoomIdAsync rehydrating the column into ExtraData.
-        var extraData = new ExtraData(persistedExtraData);
+        ExtraData extraData = new ExtraData(persistedExtraData);
 
-        return extraData.TryGetSection(ExtraDataSectionType.WIRED, out var wiredElement)
+        return extraData.TryGetSection(ExtraDataSectionType.WIRED, out JsonElement wiredElement)
             ? wiredElement.Deserialize<WiredData>()
             : null;
     }
@@ -59,7 +59,7 @@ public sealed class WiredPersistenceRoundTripTests
     {
         // Arrange — a player places a wired box and configures it (selected items, delays,
         // conditions, variables) just like ApplyWiredUpdateAsync would set on _wiredData.
-        var configured = new WiredData
+        WiredData configured = new WiredData
         {
             IntParams = new List<int> { 5, 1, 0, 250 },
             StringParam = "hello wired",
@@ -69,8 +69,8 @@ public sealed class WiredPersistenceRoundTripTests
         };
 
         // Act — room runs (persist to extra_data), unloads (column string), reloads.
-        var persisted = PersistWired(configured);
-        var reloaded = ReloadWired(persisted);
+        string persisted = PersistWired(configured);
+        WiredData? reloaded = ReloadWired(persisted);
 
         // Assert — the configuration is identical after the round-trip.
         reloaded.Should().NotBeNull();
@@ -86,7 +86,7 @@ public sealed class WiredPersistenceRoundTripTests
     {
         // A wired box that was never configured has no "wired" section; reload must not throw
         // and must surface "no persisted config" rather than corrupt data.
-        var reloaded = ReloadWired("{}");
+        WiredData? reloaded = ReloadWired("{}");
 
         reloaded.Should().BeNull();
     }
@@ -97,26 +97,26 @@ public sealed class WiredPersistenceRoundTripTests
         // DoD: "aucune autre furni n'est impactée". At the data level, writing the wired
         // section must preserve any sibling section (e.g. a furni's "stuff"/state section),
         // and vice versa — the sections are independent keys in the same extra_data blob.
-        var withStuff = new ExtraData(null);
+        ExtraData withStuff = new ExtraData(null);
         withStuff.UpdateSection(ExtraDataSectionType.STUFF, JsonSerializer.SerializeToNode("5"));
 
-        var wired = new WiredData
+        WiredData wired = new WiredData
         {
             IntParams = new List<int> { 7 },
             StringParam = "keep-me",
         };
-        var persisted = PersistWired(wired, withStuff.GetJsonString());
+        string persisted = PersistWired(wired, withStuff.GetJsonString());
 
         // The stuff (state) section is still present and untouched...
-        var roundTripped = new ExtraData(persisted);
+        ExtraData roundTripped = new ExtraData(persisted);
         roundTripped
-            .TryGetSection(ExtraDataSectionType.STUFF, out var stuffElement)
+            .TryGetSection(ExtraDataSectionType.STUFF, out JsonElement stuffElement)
             .Should()
             .BeTrue();
         stuffElement.GetString().Should().Be("5");
 
         // ...and the wired config also round-trips alongside it.
-        var reloaded = ReloadWired(persisted);
+        WiredData? reloaded = ReloadWired(persisted);
         reloaded.Should().NotBeNull();
         reloaded!.IntParams.Should().Equal(wired.IntParams);
         reloaded.StringParam.Should().Be(wired.StringParam);

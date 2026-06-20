@@ -5,10 +5,12 @@ using Turbo.Logging;
 using Turbo.Primitives;
 using Turbo.Primitives.Action;
 using Turbo.Primitives.Events;
+using Turbo.Primitives.Inventory.Grains;
 using Turbo.Primitives.Inventory.Snapshots;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Object;
+using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Object.Furniture.Wall;
 
 namespace Turbo.Rooms.Grains.Modules;
@@ -27,12 +29,16 @@ public sealed partial class RoomActionModule
     )
     {
         if (!await _roomGrain.SecurityModule.CanPlaceFurniAsync(ctx))
+        {
             throw new TurboException(TurboErrorCodeEnum.NoPermissionToPlaceFurni);
+        }
 
-        var item = _roomGrain._itemsLoader.CreateFromFurnitureItemSnapshot(snapshot);
+        IRoomItem item = _roomGrain._itemsLoader.CreateFromFurnitureItemSnapshot(snapshot);
 
         if (item is not IRoomWallItem wallItem)
+        {
             throw new TurboException(TurboErrorCodeEnum.WallItemNotFound);
+        }
 
         if (
             !await _roomGrain.FurniModule.ValidateNewWallItemPlacementAsync(
@@ -45,7 +51,9 @@ public sealed partial class RoomActionModule
                 rot
             )
         )
+        {
             throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+        }
 
         if (
             !await _roomGrain.FurniModule.PlaceWallItemAsync(
@@ -59,9 +67,11 @@ public sealed partial class RoomActionModule
                 ct
             )
         )
+        {
             return false;
+        }
 
-        var inventory = _roomGrain._grainFactory.GetInventoryGrain(item.OwnerId);
+        IInventoryGrain inventory = _roomGrain._grainFactory.GetInventoryGrain(item.OwnerId);
 
         await inventory.RemoveFurnitureAsync(item.ObjectId, ct);
 
@@ -102,7 +112,9 @@ public sealed partial class RoomActionModule
     )
     {
         if (!await _roomGrain.SecurityModule.CanManipulateFurniAsync(ctx))
+        {
             throw new TurboException(TurboErrorCodeEnum.NoPermissionToManipulateFurni);
+        }
 
         if (
             !await _roomGrain.FurniModule.ValidateWallItemPlacementAsync(
@@ -115,7 +127,9 @@ public sealed partial class RoomActionModule
                 rot
             )
         )
+        {
             throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+        }
 
         if (
             !await _roomGrain.FurniModule.MoveWallItemByIdAsync(
@@ -129,7 +143,9 @@ public sealed partial class RoomActionModule
                 ct
             )
         )
+        {
             return false;
+        }
 
         await _roomGrain
             ._events.PublishAsync(

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ using Turbo.Logging;
 using Turbo.Primitives;
 using Turbo.Primitives.Furniture.Enums;
 using Turbo.Primitives.Furniture.Providers;
+using Turbo.Primitives.Furniture.Snapshots;
 using Turbo.Primitives.Furniture.StuffData;
 using Turbo.Primitives.Inventory.Factories;
 using Turbo.Primitives.Inventory.Furniture;
@@ -39,28 +41,28 @@ internal sealed class InventoryFurnitureLoader(
         CancellationToken ct
     )
     {
-        var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {
-            var entities = await dbCtx
+            List<FurnitureEntity> entities = await dbCtx
                 .Furnitures.AsNoTracking()
                 .Where(x => x.PlayerEntityId == (int)playerId && x.RoomEntityId == null)
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
-            var items = new List<IFurnitureItem>();
+            List<IFurnitureItem> items = new List<IFurnitureItem>();
 
-            var ownerName = await _grainFactory
+            string ownerName = await _grainFactory
                 .GetPlayerDirectoryGrain()
                 .GetPlayerNameAsync(playerId, ct)
                 .ConfigureAwait(false);
 
-            foreach (var entity in entities)
+            foreach (FurnitureEntity entity in entities)
             {
                 try
                 {
-                    var item = CreateFromEntity(entity, ownerName);
+                    IFurnitureItem item = CreateFromEntity(entity, ownerName);
 
                     items.Add(item);
                 }
@@ -80,14 +82,14 @@ internal sealed class InventoryFurnitureLoader(
 
     public IFurnitureItem CreateFromEntity(FurnitureEntity entity, string? ownerName)
     {
-        var definition =
+        FurnitureDefinitionSnapshot definition =
             _defsProvider.TryGetDefinition(entity.FurnitureDefinitionEntityId)
             ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
 
         // TODO we need to get the correct stuff data key
 
-        var extraData = new ExtraData(entity.ExtraData);
-        var jsonData = extraData.TryGetSection(ExtraDataSectionType.STUFF, out var element)
+        ExtraData extraData = new ExtraData(entity.ExtraData);
+        string jsonData = extraData.TryGetSection(ExtraDataSectionType.STUFF, out JsonElement element)
             ? element.GetRawText()
             : "{}";
 
@@ -107,7 +109,7 @@ internal sealed class InventoryFurnitureLoader(
 
     public IFurnitureItem CreateFromRoomItemSnapshot(RoomItemSnapshot snapshot)
     {
-        var definition =
+        FurnitureDefinitionSnapshot definition =
             _defsProvider.TryGetDefinition(snapshot.DefinitionId)
             ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
 

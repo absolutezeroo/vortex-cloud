@@ -23,7 +23,9 @@ internal sealed class MapStuffData : StuffDataBase, IMapStuffData
     public override void SetState(string state)
     {
         if (string.IsNullOrEmpty(state))
+        {
             state = DEFAULT_STATE;
+        }
 
         Data[STATE_KEY] = state;
 
@@ -32,8 +34,10 @@ internal sealed class MapStuffData : StuffDataBase, IMapStuffData
 
     public string GetValue(string key)
     {
-        if (Data.TryGetValue(key, out var value))
+        if (Data.TryGetValue(key, out string? value))
+        {
             return value;
+        }
 
         return string.Empty;
     }

@@ -38,10 +38,14 @@ public sealed class RoomPlayerAvatar
     public bool SetDance(AvatarDanceType danceType = AvatarDanceType.None)
     {
         if (DanceType == danceType)
+        {
             return false;
+        }
 
         if (HasStatus(AvatarStatusType.Sit, AvatarStatusType.Lay))
+        {
             return false;
+        }
 
         // check if dance valid
         // check if dance is hc only / validate hc
@@ -55,9 +59,9 @@ public sealed class RoomPlayerAvatar
 
     protected override RoomPlayerAvatarSnapshot BuildSnapshot()
     {
-        var statusString = new StringBuilder("/");
+        StringBuilder statusString = new StringBuilder("/");
 
-        foreach (var (type, value) in Statuses)
+        foreach ((AvatarStatusType type, string value) in Statuses)
             statusString.Append($"{type.ToLegacyString()} {value}/");
 
         return new()

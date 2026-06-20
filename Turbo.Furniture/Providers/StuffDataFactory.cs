@@ -32,7 +32,7 @@ public sealed class StuffDataFactory : IStuffDataFactory
 
         if (!string.IsNullOrEmpty(jsonData))
         {
-            var reader = new ExtraData(jsonData);
+            ExtraData reader = new ExtraData(jsonData);
 
             return CreateStuffDataFromExtraData(type, reader);
         }
@@ -44,7 +44,7 @@ public sealed class StuffDataFactory : IStuffDataFactory
     {
         type = (StuffDataType)((int)type & StuffDataBase.TYPE_MASK);
 
-        if (extraData.TryGetSection(ExtraDataSectionType.STUFF, out var stuffElement))
+        if (extraData.TryGetSection(ExtraDataSectionType.STUFF, out JsonElement stuffElement))
         {
             return type switch
             {
@@ -63,9 +63,9 @@ public sealed class StuffDataFactory : IStuffDataFactory
 
     public StuffDataSnapshot FromStuffData(IStuffData data)
     {
-        var bitmask = data.GetBitmask();
-        var uniqueNumber = data.UniqueNumber;
-        var uniqueSeries = data.UniqueSeries;
+        int bitmask = data.GetBitmask();
+        int uniqueNumber = data.UniqueNumber;
+        int uniqueSeries = data.UniqueSeries;
 
         return data switch
         {

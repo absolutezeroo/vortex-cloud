@@ -7,6 +7,7 @@ using Turbo.Primitives.Messages.Outgoing.Userdefinedroomevents;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Rooms.Enums.Wired;
+using Turbo.Primitives.Rooms.Snapshots.Wired;
 
 namespace Turbo.PacketHandlers.Userdefinedroomevents;
 
@@ -21,17 +22,21 @@ public class OpenMessageHandler(IGrainFactory grainFactory) : IMessageHandler<Op
     )
     {
         if (ctx is null || ctx.PlayerId <= 0 || ctx.RoomId <= 0 || message.Id <= 0)
+        {
             return;
+        }
 
-        var wiredData = await _grainFactory
+        WiredDataSnapshot? wiredData = await _grainFactory
             .GetRoomGrain(ctx.RoomId)
             .GetWiredDataSnapshotByFloorItemIdAsync(message.Id, ct)
             .ConfigureAwait(false);
 
         if (wiredData is null)
+        {
             return;
+        }
 
-        var wiredType = wiredData.WiredType;
+        WiredType wiredType = wiredData.WiredType;
         IComposer? composer = null;
 
         switch (wiredType)
@@ -57,7 +62,9 @@ public class OpenMessageHandler(IGrainFactory grainFactory) : IMessageHandler<Op
         }
 
         if (composer is null)
+        {
             return;
+        }
 
         _ = ctx.SendComposerAsync(composer, ct).ConfigureAwait(false);
     }

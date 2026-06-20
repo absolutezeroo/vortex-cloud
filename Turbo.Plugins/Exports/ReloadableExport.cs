@@ -19,19 +19,23 @@ public sealed class ReloadableExport<T> : IExport<T>
     {
         ArgumentNullException.ThrowIfNull(value);
 
-        var previous = Interlocked.Exchange(ref _current, value);
-        var subs = _subs;
+        T? previous = Interlocked.Exchange(ref _current, value);
+        ImmutableArray<Action<T>> subs = _subs;
 
         try
         {
             if (previous is IAsyncDisposable a)
+            {
                 await a.DisposeAsync().ConfigureAwait(false);
+            }
             else if (previous is IDisposable d)
+            {
                 d.Dispose();
+            }
         }
         catch { }
 
-        foreach (var s in subs)
+        foreach (Action<T> s in subs)
         {
             try
             {
@@ -45,7 +49,7 @@ public sealed class ReloadableExport<T> : IExport<T>
     {
         ImmutableInterlocked.Update(ref _subs, a => a.Add(onSwap));
 
-        var current = _current;
+        T? current = _current;
         if (current is not null)
         {
             try

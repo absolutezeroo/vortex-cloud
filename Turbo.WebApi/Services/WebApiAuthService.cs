@@ -28,27 +28,31 @@ public sealed class WebApiAuthService(
         CancellationToken ct
     )
     {
-        await using var db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var account = await db
+        PlayerAccountEntity? account = await db
             .PlayerAccounts.AsNoTracking()
             .FirstOrDefaultAsync(a => a.Email == email.ToLowerInvariant(), ct)
             .ConfigureAwait(false);
 
         if (account is null)
+        {
             return (false, null, "pocket.auth.login_failed");
+        }
 
         // BCrypt.Verify is CPU-bound; run off the thread pool to avoid blocking the listener loop.
-        var valid = await Task.Run(
+        bool valid = await Task.Run(
                 () => BCrypt.Net.BCrypt.Verify(password, account.PasswordHash),
                 ct
             )
             .ConfigureAwait(false);
 
         if (!valid)
+        {
             return (false, null, "pocket.auth.login_failed");
+        }
 
-        var sessionId = _sessions.CreateSession(account.Id);
+        string sessionId = _sessions.CreateSession(account.Id);
         return (true, sessionId, null);
     }
 
@@ -58,26 +62,28 @@ public sealed class WebApiAuthService(
         CancellationToken ct
     )
     {
-        await using var db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var normalizedEmail = email.ToLowerInvariant();
+        string normalizedEmail = email.ToLowerInvariant();
 
-        var exists = await db
+        bool exists = await db
             .PlayerAccounts.AsNoTracking()
             .AnyAsync(a => a.Email == normalizedEmail, ct)
             .ConfigureAwait(false);
 
         if (exists)
+        {
             return (false, 0, "pocket.auth.valid_email_required");
+        }
 
         // Work factor 12 is strong enough for production; run off the thread pool.
-        var hash = await Task.Run(
+        string? hash = await Task.Run(
                 () => BCrypt.Net.BCrypt.HashPassword(password, workFactor: 12),
                 ct
             )
             .ConfigureAwait(false);
 
-        var account = new PlayerAccountEntity { Email = normalizedEmail, PasswordHash = hash };
+        PlayerAccountEntity account = new PlayerAccountEntity { Email = normalizedEmail, PasswordHash = hash };
 
         db.PlayerAccounts.Add(account);
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -91,23 +97,27 @@ public sealed class WebApiAuthService(
         CancellationToken ct
     )
     {
-        await using var db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var player = await db
+        PlayerEntity? player = await db
             .Players.FirstOrDefaultAsync(p => p.Id == playerId, ct)
             .ConfigureAwait(false);
 
         if (player is null)
+        {
             return (false, null, "pocket.auth.login_failed");
+        }
 
-        var existing = await db
+        SecurityTicketEntity? existing = await db
             .SecurityTickets.FirstOrDefaultAsync(t => t.PlayerEntityId == playerId, ct)
             .ConfigureAwait(false);
 
         if (existing is not null)
+        {
             db.SecurityTickets.Remove(existing);
+        }
 
-        var ticket = Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N");
+        string ticket = Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N");
 
         db.SecurityTickets.Add(
             new SecurityTicketEntity

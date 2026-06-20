@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.FriendList.Enums;
+using Turbo.Primitives.FriendList.Grains;
 using Turbo.Primitives.Messages.Incoming.FriendList;
 using Turbo.Primitives.Messages.Outgoing.FriendList;
 using Turbo.Primitives.Orleans;
@@ -23,11 +24,13 @@ public class AcceptFriendMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0 || message.Friends.Count == 0)
+        {
             return;
+        }
 
-        var grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
+        IMessengerGrain grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
 
-        var failures = await grain
+        List<AcceptFriendFailureSnapshot> failures = await grain
             .AcceptFriendRequestsAsync(message.Friends, ct)
             .ConfigureAwait(false);
 
@@ -38,14 +41,16 @@ public class AcceptFriendMessageHandler(IGrainFactory grainFactory)
             .ConfigureAwait(false);
 
         // Send updated friend list to self
-        var friends = await grain.GetFriendsAsync(ct).ConfigureAwait(false);
-        var newFriends = new List<FriendListUpdateSnapshot>();
+        List<MessengerFriendSnapshot> friends = await grain.GetFriendsAsync(ct).ConfigureAwait(false);
+        List<FriendListUpdateSnapshot> newFriends = new List<FriendListUpdateSnapshot>();
 
-        foreach (var friendId in message.Friends)
+        foreach (int friendId in message.Friends)
         {
-            var snapshot = friends.Find(f => f.PlayerId.Value == friendId);
+            MessengerFriendSnapshot? snapshot = friends.Find(f => f.PlayerId.Value == friendId);
             if (snapshot is null)
+            {
                 continue;
+            }
 
             newFriends.Add(
                 new FriendListUpdateSnapshot

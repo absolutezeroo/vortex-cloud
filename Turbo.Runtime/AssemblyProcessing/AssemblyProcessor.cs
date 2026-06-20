@@ -17,19 +17,21 @@ public sealed class AssemblyProcessor(IEnumerable<IAssemblyFeatureProcessor> pro
         CancellationToken ct = default
     )
     {
-        var tasks = _processors.Select(p => p.ProcessAsync(asm, sp, ct)).ToArray();
+        Task<IDisposable>[] tasks = _processors.Select(p => p.ProcessAsync(asm, sp, ct)).ToArray();
 
         try
         {
-            var regs = await Task.WhenAll(tasks).ConfigureAwait(false);
+            IDisposable[] regs = await Task.WhenAll(tasks).ConfigureAwait(false);
 
             return new CompositeDisposable(regs.AsEnumerable().Reverse());
         }
         catch
         {
-            foreach (var t in tasks)
+            foreach (Task<IDisposable> t in tasks)
                 if (t.IsCompletedSuccessfully)
+                {
                     (await t.ConfigureAwait(false)).Dispose();
+                }
 
             throw;
         }

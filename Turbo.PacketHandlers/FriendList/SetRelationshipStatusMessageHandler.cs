@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.FriendList.Grains;
 using Turbo.Primitives.Messages.Incoming.FriendList;
 using Turbo.Primitives.Orleans;
 
@@ -19,9 +20,11 @@ public class SetRelationshipStatusMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
+        IMessengerGrain grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
 
         await grain
             .SetRelationshipStatusAsync(message.FriendId, message.RelationType, ct)

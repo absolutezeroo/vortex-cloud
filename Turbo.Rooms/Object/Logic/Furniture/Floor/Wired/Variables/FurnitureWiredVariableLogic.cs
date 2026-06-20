@@ -45,7 +45,7 @@ public abstract class FurnitureWiredVariableLogic
 
     public virtual bool CanBind(in WiredVariableKey key)
     {
-        var snapshot = GetVarSnapshot();
+        WiredVariableSnapshot snapshot = GetVarSnapshot();
 
         return key.VariableId == snapshot.VariableId && key.TargetType == snapshot.TargetType;
     }
@@ -54,8 +54,10 @@ public abstract class FurnitureWiredVariableLogic
     {
         value = WiredVariableValue.Default;
 
-        if (!CanBind(key) || !TryGetStore(key, out var store) || store is null)
+        if (!CanBind(key) || !TryGetStore(key, out KeyValueStore? store) || store is null)
+        {
             return false;
+        }
 
         return store.TryGetValue(key, out value);
     }
@@ -66,16 +68,18 @@ public abstract class FurnitureWiredVariableLogic
         bool replace = false
     )
     {
-        var snapshot = GetVarSnapshot();
+        WiredVariableSnapshot snapshot = GetVarSnapshot();
 
         if (
             !snapshot.Flags.Has(WiredVariableFlags.CanCreateAndDelete)
             || !CanBind(key)
-            || !TryGetStore(key, out var store)
+            || !TryGetStore(key, out KeyValueStore? store)
             || store is null
             || (store.ContainsKey(key) && !replace)
         )
+        {
             return Task.FromResult(false);
+        }
 
         return store.GiveValueAsync(key, value, replace);
     }
@@ -86,16 +90,20 @@ public abstract class FurnitureWiredVariableLogic
         WiredVariableValue value
     )
     {
-        if (!TryGetStore(key, out var store) || store is null || !store.ContainsKey(key))
+        if (!TryGetStore(key, out KeyValueStore? store) || store is null || !store.ContainsKey(key))
+        {
             return Task.FromResult(false);
+        }
 
         return store.SetValueAsync(ctx, key, value);
     }
 
     public virtual bool RemoveValue(WiredVariableKey key)
     {
-        if (!TryGetStore(key, out var store) || store is null)
+        if (!TryGetStore(key, out KeyValueStore? store) || store is null)
+        {
             return false;
+        }
 
         return store.RemoveValue(key);
     }
@@ -108,7 +116,7 @@ public abstract class FurnitureWiredVariableLogic
 
         await base.FillInternalDataAsync(ct);
 
-        var snapshot = GetVarSnapshot();
+        WiredVariableSnapshot snapshot = GetVarSnapshot();
 
         if (snapshot.AvailabilityType == WiredAvailabilityType.Persistent)
         {
@@ -117,7 +125,7 @@ public abstract class FurnitureWiredVariableLogic
                 if (
                     _ctx.RoomObject.ExtraData.TryGetSection(
                         ExtraDataSectionType.STORAGE,
-                        out var storageElement
+                        out JsonElement storageElement
                     )
                 )
                 {
@@ -156,8 +164,8 @@ public abstract class FurnitureWiredVariableLogic
 
     protected virtual WiredVariableSnapshot BuildVarSnapshot()
     {
-        var textConnectors = GetTextConnectors();
-        var variableHash = WiredVariableHashBuilder.HashValues(
+        Dictionary<WiredVariableValue, string> textConnectors = GetTextConnectors();
+        WiredVariableHash variableHash = WiredVariableHashBuilder.HashValues(
             _wiredData.StringParam,
             AvailabilityType,
             TargetType,

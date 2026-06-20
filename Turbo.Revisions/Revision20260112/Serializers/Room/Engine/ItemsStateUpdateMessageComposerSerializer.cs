@@ -1,5 +1,6 @@
 using Turbo.Primitives.Messages.Outgoing.Room.Engine;
 using Turbo.Primitives.Packets;
+using Turbo.Primitives.Rooms.Object;
 
 namespace Turbo.Revisions.Revision20260112.Serializers.Room.Engine;
 
@@ -10,7 +11,7 @@ internal class ItemsStateUpdateMessageComposerSerializer(int header)
     {
         packet.WriteInteger(message.ObjectStates.Count);
 
-        foreach (var (objectId, state) in message.ObjectStates)
+        foreach ((RoomObjectId objectId, string state) in message.ObjectStates)
             packet.WriteInteger((int)objectId).WriteString(state);
     }
 }

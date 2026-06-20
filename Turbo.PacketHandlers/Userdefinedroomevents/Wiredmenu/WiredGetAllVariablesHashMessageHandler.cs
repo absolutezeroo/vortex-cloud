@@ -5,6 +5,7 @@ using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredmenu;
 using Turbo.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Rooms.Snapshots.Wired.Variables;
 
 namespace Turbo.PacketHandlers.Userdefinedroomevents.Wiredmenu;
 
@@ -20,9 +21,11 @@ public class WiredGetAllVariablesHashMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx is null || ctx.PlayerId <= 0 || ctx.RoomId <= 0)
+        {
             return;
+        }
 
-        var variables = await _grainFactory
+        WiredVariablesSnapshot variables = await _grainFactory
             .GetRoomGrain(ctx.RoomId)
             .GetWiredVariablesSnapshotAsync(ct)
             .ConfigureAwait(false);

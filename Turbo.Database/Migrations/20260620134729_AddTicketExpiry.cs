@@ -15,15 +15,14 @@ namespace Turbo.Database.Migrations
                 name: "expires_at",
                 table: "security_tickets",
                 type: "datetime(6)",
-                nullable: true);
+                nullable: true
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "expires_at",
-                table: "security_tickets");
+            migrationBuilder.DropColumn(name: "expires_at", table: "security_tickets");
         }
     }
 }

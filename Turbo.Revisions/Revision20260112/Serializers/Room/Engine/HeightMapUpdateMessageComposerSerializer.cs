@@ -10,7 +10,7 @@ internal class HeightMapUpdateMessageComposerSerializer(int header)
     {
         packet.WriteByte((byte)message.TileHeights.Length);
 
-        foreach (var tile in message.TileHeights)
+        foreach ((int X, int Y, short Height) tile in message.TileHeights)
             packet.WriteByte((byte)tile.X).WriteByte((byte)tile.Y).WriteShort(tile.Height);
     }
 }

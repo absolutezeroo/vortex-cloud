@@ -17,7 +17,9 @@ internal sealed class VoteStuffData : StuffDataBase, IVoteStuffData
     public override void SetState(string state)
     {
         if (string.IsNullOrEmpty(state))
+        {
             state = DEFAULT_STATE;
+        }
 
         Data = state;
 

@@ -3,10 +3,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Turbo.Primitives.Action;
 using Turbo.Primitives.Furniture.Enums;
+using Turbo.Primitives.Inventory.Grains;
+using Turbo.Primitives.Inventory.Snapshots;
 using Turbo.Primitives.Messages.Outgoing.Room.Engine;
+using Turbo.Primitives.Networking;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Rooms.Enums;
+using Turbo.Primitives.Rooms.Grains;
 using Turbo.Primitives.Rooms.Object;
+using Turbo.Primitives.Rooms.Snapshots.Furniture;
 
 namespace Turbo.Rooms;
 
@@ -24,20 +29,24 @@ internal sealed partial class RoomService
     )
     {
         if (ctx.Origin != ActionOrigin.Player || ctx.PlayerId <= 0 || ctx.RoomId <= 0)
+        {
             return;
+        }
 
         try
         {
-            var inventoryGrain = _grainFactory.GetInventoryGrain(ctx.PlayerId);
+            IInventoryGrain inventoryGrain = _grainFactory.GetInventoryGrain(ctx.PlayerId);
 
-            var snapshot = await inventoryGrain
+            FurnitureItemSnapshot? snapshot = await inventoryGrain
                 .GetItemSnapshotAsync(itemId, ct)
                 .ConfigureAwait(false);
 
             if (snapshot is null || snapshot.Definition.ProductType != ProductType.Wall)
+            {
                 return;
+            }
 
-            var roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+            IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
 
             if (
                 !await roomGrain
@@ -64,27 +73,35 @@ internal sealed partial class RoomService
     )
     {
         if (ctx.PlayerId <= 0 || ctx.RoomId <= 0 || itemId <= 0)
+        {
             return;
+        }
 
-        var roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
 
         if (
             await roomGrain
                 .MoveWallItemByIdAsync(ctx, itemId, x, y, z, wallOffset, rot, ct)
                 .ConfigureAwait(false)
         )
+        {
             return;
+        }
 
-        var item = await roomGrain.GetWallItemSnapshotByIdAsync(itemId, ct).ConfigureAwait(false);
+        RoomWallItemSnapshot? item = await roomGrain.GetWallItemSnapshotByIdAsync(itemId, ct).ConfigureAwait(false);
 
         if (item is null)
+        {
             return;
+        }
 
-        var session = _sessionGateway.GetSession(ctx.SessionKey);
+        ISessionContext? session = _sessionGateway.GetSession(ctx.SessionKey);
 
         if (session is not null)
+        {
             await session
                 .SendComposerAsync(new ItemUpdateMessageComposer { WallItem = item }, ct)
                 .ConfigureAwait(false);
+        }
     }
 }

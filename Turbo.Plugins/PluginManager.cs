@@ -49,19 +49,21 @@ public sealed class PluginManager(
 
     private List<(PluginManifest manifest, string folder)> DiscoverPlugins()
     {
-        var list = new List<(PluginManifest, string)>(capacity: 16);
-        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        List<(PluginManifest, string)> list = new List<(PluginManifest, string)>(capacity: 16);
+        HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var devPath in _config.DevPluginPaths)
+        foreach (string devPath in _config.DevPluginPaths)
         {
-            var dir = Path.GetFullPath(devPath);
+            string dir = Path.GetFullPath(devPath);
 
             if (!Directory.Exists(dir))
+            {
                 continue;
+            }
 
             try
             {
-                var manifest = PluginHelpers.ReadManifest(dir);
+                PluginManifest manifest = PluginHelpers.ReadManifest(dir);
 
                 if (seen.Add(manifest.Key))
                 {
@@ -76,16 +78,21 @@ public sealed class PluginManager(
         }
 
         if (!Directory.Exists(_config.PluginFolderPath))
-            return list;
         {
-            foreach (var dir in Directory.EnumerateDirectories(_config.PluginFolderPath))
+            return list;
+        }
+
+        {
+            foreach (string dir in Directory.EnumerateDirectories(_config.PluginFolderPath))
             {
                 try
                 {
-                    var manifest = PluginHelpers.ReadManifest(dir);
+                    PluginManifest manifest = PluginHelpers.ReadManifest(dir);
 
                     if (seen.Add(manifest.Key))
+                    {
                         list.Add((manifest, dir));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -103,24 +110,24 @@ public sealed class PluginManager(
 
         try
         {
-            var discovered = DiscoverPlugins();
-            var manifests = PluginHelpers.SortManifests([.. discovered.Select(d => d.manifest)]);
-            var byKey = discovered.ToDictionary(
+            List<(PluginManifest manifest, string folder)> discovered = DiscoverPlugins();
+            IReadOnlyList<PluginManifest> manifests = PluginHelpers.SortManifests([.. discovered.Select(d => d.manifest)]);
+            Dictionary<string, string> byKey = discovered.ToDictionary(
                 d => d.manifest.Key,
                 d => d.folder,
                 StringComparer.OrdinalIgnoreCase
             );
-            var envs = new List<PluginEnvelope>();
-            var tasks = new List<Func<Task>>();
+            List<PluginEnvelope> envs = new List<PluginEnvelope>();
+            List<Func<Task>> tasks = new List<Func<Task>>();
 
             RebuildDependents(manifests);
 
-            foreach (var m in manifests)
+            foreach (PluginManifest m in manifests)
             {
-                var gate = GetKeyGate(m.Key);
+                SemaphoreSlim gate = GetKeyGate(m.Key);
 
                 await gate.WaitAsync(ct).ConfigureAwait(false);
-                var folder = byKey[m.Key];
+                string folder = byKey[m.Key];
                 LoadedAssembly asm;
 
                 try
@@ -144,29 +151,31 @@ public sealed class PluginManager(
 
                 try
                 {
-                    var current = _live.GetValueOrDefault(m.Key);
+                    PluginEnvelope? current = _live.GetValueOrDefault(m.Key);
 
                     if (current is not null)
                     {
                         if (
-                            _dependents.TryGetValue(m.Key, out var deps)
+                            _dependents.TryGetValue(m.Key, out ConcurrentBag<string>? deps)
                             && deps.Any(_live.ContainsKey)
                         )
+                        {
                             throw new InvalidOperationException(
                                 $"Cannot reload {m.Key} while dependents are active: {string.Join(",", deps.Where(_live.ContainsKey))}"
                             );
+                        }
 
                         await StopAndTearDownAsync(current, ct).ConfigureAwait(false);
                     }
 
-                    var next = await BuildEnvelopeAsync(asm, m, folder, ct).ConfigureAwait(false);
+                    PluginEnvelope next = await BuildEnvelopeAsync(asm, m, folder, ct).ConfigureAwait(false);
 
                     _live[m.Key] = next;
                     envs.Add(next);
 
                     tasks.Add(async () =>
                     {
-                        var disp = await processor
+                        IDisposable disp = await processor
                             .ProcessAsync(asm.Assembly, next.ServiceProvider, ct)
                             .ConfigureAwait(false);
 
@@ -189,12 +198,14 @@ public sealed class PluginManager(
                 }
             }
 
-            var degree = Math.Max(2, Environment.ProcessorCount * 4);
+            int degree = Math.Max(2, Environment.ProcessorCount * 4);
 
             await BoundedHelper.RunAsync(tasks, degree, ct).ConfigureAwait(false);
 
             if (unloadRemoved)
+            {
                 await UnloadRemovedAsync(envs.Select(d => d.Key), ct).ConfigureAwait(false);
+            }
 
             _logger.LogInformation("Loaded {Count} plugins", _live.Count);
         }
@@ -210,9 +221,9 @@ public sealed class PluginManager(
 
         try
         {
-            var discovered = DiscoverPlugins();
-            var manifests = PluginHelpers.SortManifests([.. discovered.Select(d => d.manifest)]);
-            var byKey = discovered.ToDictionary(
+            List<(PluginManifest manifest, string folder)> discovered = DiscoverPlugins();
+            IReadOnlyList<PluginManifest> manifests = PluginHelpers.SortManifests([.. discovered.Select(d => d.manifest)]);
+            Dictionary<string, string> byKey = discovered.ToDictionary(
                 d => d.manifest.Key,
                 d => d.folder,
                 StringComparer.OrdinalIgnoreCase
@@ -220,45 +231,49 @@ public sealed class PluginManager(
 
             RebuildDependents(manifests);
 
-            if (!byKey.TryGetValue(key, out var folder))
+            if (!byKey.TryGetValue(key, out string? folder))
             {
                 await UnloadAsync(key, ct).ConfigureAwait(false);
                 _logger.LogInformation("Plugin {Key} was removed from disk and unloaded.", key);
                 return;
             }
 
-            var manifest = manifests.First(m =>
+            PluginManifest manifest = manifests.First(m =>
                 string.Equals(m.Key, key, StringComparison.OrdinalIgnoreCase)
             );
 
-            var gate = GetKeyGate(key);
+            SemaphoreSlim gate = GetKeyGate(key);
             await gate.WaitAsync(ct).ConfigureAwait(false);
 
             try
             {
-                foreach (var dep in manifest.Dependencies.Where(dep => !_live.ContainsKey(dep.Key)))
+                foreach (PluginDependency dep in manifest.Dependencies.Where(dep => !_live.ContainsKey(dep.Key)))
                 {
                     throw new InvalidOperationException(
                         $"Cannot reload {key}; dependency {dep.Key} is not active."
                     );
                 }
 
-                if (_dependents.TryGetValue(key, out var deps) && deps.Any(_live.ContainsKey))
+                if (_dependents.TryGetValue(key, out ConcurrentBag<string>? deps) && deps.Any(_live.ContainsKey))
+                {
                     throw new InvalidOperationException(
                         $"Cannot reload {key} while dependents are active: {string.Join(",", deps.Where(_live.ContainsKey))}"
                     );
+                }
 
-                var asm = GetLoadedPluginAssembly(manifest, folder);
-                var current = _live.GetValueOrDefault(key);
+                LoadedAssembly asm = GetLoadedPluginAssembly(manifest, folder);
+                PluginEnvelope? current = _live.GetValueOrDefault(key);
 
                 if (current is not null)
+                {
                     await StopAndTearDownAsync(current, ct).ConfigureAwait(false);
+                }
 
-                var next = await BuildEnvelopeAsync(asm, manifest, folder, ct)
+                PluginEnvelope next = await BuildEnvelopeAsync(asm, manifest, folder, ct)
                     .ConfigureAwait(false);
                 _live[key] = next;
 
-                var disp = await processor
+                IDisposable disp = await processor
                     .ProcessAsync(asm.Assembly, next.ServiceProvider, ct)
                     .ConfigureAwait(false);
                 next.Disposables.Add(disp);
@@ -278,18 +293,20 @@ public sealed class PluginManager(
 
     private async Task UnloadAsync(string key, CancellationToken ct = default)
     {
-        var gate = GetKeyGate(key);
+        SemaphoreSlim gate = GetKeyGate(key);
 
         await gate.WaitAsync(ct).ConfigureAwait(false);
 
         try
         {
-            if (_dependents.TryGetValue(key, out var deps) && deps.Any(_live.ContainsKey))
+            if (_dependents.TryGetValue(key, out ConcurrentBag<string>? deps) && deps.Any(_live.ContainsKey))
+            {
                 throw new InvalidOperationException(
                     $"Cannot unload {key}; dependents active: {string.Join(",", deps.Where(_live.ContainsKey))}"
                 );
+            }
 
-            if (_live.TryRemove(key, out var env))
+            if (_live.TryRemove(key, out PluginEnvelope? env))
             {
                 await StopAndTearDownAsync(env, ct).ConfigureAwait(false);
 
@@ -304,26 +321,30 @@ public sealed class PluginManager(
 
     public async Task UnloadAllAsync(CancellationToken ct = default)
     {
-        var keys = _live.Keys.ToHashSet(StringComparer.OrdinalIgnoreCase);
-        var dependents = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+        HashSet<string> keys = _live.Keys.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, List<string>> dependents = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var kvp in _dependents)
+        foreach (KeyValuePair<string, ConcurrentBag<string>> kvp in _dependents)
         {
-            var dep = kvp.Key;
-            var list = kvp.Value.Where(keys.Contains).ToList();
+            string dep = kvp.Key;
+            List<string> list = kvp.Value.Where(keys.Contains).ToList();
 
             if (list.Count > 0)
+            {
                 dependents[dep] = list;
+            }
         }
 
         while (keys.Count > 0)
         {
-            var leafs = keys.Where(k => !dependents.Values.Any(list => list.Contains(k))).ToList();
+            List<string> leafs = keys.Where(k => !dependents.Values.Any(list => list.Contains(k))).ToList();
 
             if (leafs.Count == 0)
+            {
                 leafs = [.. keys];
+            }
 
-            foreach (var k in leafs)
+            foreach (string k in leafs)
             {
                 try
                 {
@@ -341,7 +362,7 @@ public sealed class PluginManager(
 
     private static LoadedAssembly GetLoadedPluginAssembly(PluginManifest manifest, string folder)
     {
-        var asmPath = PluginHelpers.GetAssemblyPath(folder, manifest);
+        string asmPath = PluginHelpers.GetAssemblyPath(folder, manifest);
 
         return AssemblyMemoryLoader.LoadFromBytes(asmPath);
     }
@@ -353,14 +374,16 @@ public sealed class PluginManager(
         CancellationToken ct
     )
     {
-        var inst = CreatePluginInstance(asm.Assembly);
+        ITurboPlugin inst = CreatePluginInstance(asm.Assembly);
 
         if (!string.Equals(inst.Key, m.Key, StringComparison.Ordinal))
+        {
             throw new InvalidOperationException(
                 $"Plugin key mismatch: manifest={m.Key} entry={inst.Key}"
             );
+        }
 
-        var sp = CreatePluginServiceProvider(inst, m);
+        ServiceProvider sp = CreatePluginServiceProvider(inst, m);
 
         await inst.BindExportsAsync(new ExportBinder(_exports), sp).ConfigureAwait(false);
         await StartPluginAsync(inst, sp, ct).ConfigureAwait(false);
@@ -380,10 +403,10 @@ public sealed class PluginManager(
 
     private async Task UnloadRemovedAsync(IEnumerable<string> keys, CancellationToken ct)
     {
-        var keep = new HashSet<string>(keys, StringComparer.OrdinalIgnoreCase);
-        var removed = _live.Keys.Where(k => !keep.Contains(k)).ToList();
+        HashSet<string> keep = new HashSet<string>(keys, StringComparer.OrdinalIgnoreCase);
+        List<string> removed = _live.Keys.Where(k => !keep.Contains(k)).ToList();
 
-        foreach (var k in removed)
+        foreach (string k in removed)
         {
             try
             {
@@ -398,7 +421,7 @@ public sealed class PluginManager(
 
     private static ITurboPlugin CreatePluginInstance(Assembly asm)
     {
-        var pluginType =
+        Type pluginType =
             AssemblyExplorer.FindType(asm, typeof(ITurboPlugin))
             ?? throw new InvalidOperationException(
                 $"Failed to find ITurboPlugin in assembly '{asm.GetName().Name}'."
@@ -412,7 +435,7 @@ public sealed class PluginManager(
         PluginManifest manifest
     )
     {
-        var services = new ServiceCollection();
+        ServiceCollection services = new ServiceCollection();
 
         services.AddSingleton(manifest);
         services.AddSingleton<IPluginCatalog>(new PluginCatalog(_exports));
@@ -432,7 +455,7 @@ public sealed class PluginManager(
     {
         await ProcessMigrationsAsync(sp, ct).ConfigureAwait(false);
 
-        foreach (var svc in sp.GetServices<IHostedService>())
+        foreach (IHostedService svc in sp.GetServices<IHostedService>())
         {
             try
             {
@@ -451,15 +474,17 @@ public sealed class PluginManager(
         CancellationToken ct
     )
     {
-        var scope = pluginRoot.CreateAsyncScope();
+        AsyncServiceScope scope = pluginRoot.CreateAsyncScope();
 
         try
         {
-            var sp = scope.ServiceProvider;
-            var dbModule = sp.GetService<IPluginDbModule>();
+            IServiceProvider sp = scope.ServiceProvider;
+            IPluginDbModule? dbModule = sp.GetService<IPluginDbModule>();
 
             if (dbModule is null)
+            {
                 return;
+            }
 
             await dbModule.MigrateAsync(sp, ct).ConfigureAwait(false);
         }
@@ -475,7 +500,7 @@ public sealed class PluginManager(
         {
             if (env.ServiceProvider is { } sp)
             {
-                foreach (var svc in sp.GetServices<IHostedService>())
+                foreach (IHostedService svc in sp.GetServices<IHostedService>())
                 {
                     try
                     {
@@ -538,15 +563,17 @@ public sealed class PluginManager(
 
         if (env.Alc is not null)
         {
-            var unloaded = await AssemblyMemoryLoader
+            bool unloaded = await AssemblyMemoryLoader
                 .UnloadAndWaitAsync(env.Alc, 5000, ct)
                 .ConfigureAwait(false);
 
             if (!unloaded)
+            {
                 _logger.LogWarning(
                     "ALC for plugin {Key} did not unload within timeout. Possible memory leak from retained type references.",
                     env.Manifest.Key
                 );
+            }
         }
     }
 
@@ -557,9 +584,9 @@ public sealed class PluginManager(
     {
         _dependents.Clear();
 
-        foreach (var manifest in manifests)
+        foreach (PluginManifest manifest in manifests)
         {
-            foreach (var dep in manifest.Dependencies)
+            foreach (PluginDependency dep in manifest.Dependencies)
                 _dependents.GetOrAdd(dep.Key, _ => []).Add(manifest.Key);
         }
     }

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Catalog;
+using Turbo.Primitives.Catalog.Snapshots;
 using Turbo.Primitives.Messages.Incoming.Catalog;
 using Turbo.Primitives.Messages.Outgoing.Catalog;
 
@@ -21,7 +22,7 @@ public class GetCatalogIndexMessageHandler(ICatalogService catalogService)
     {
         try
         {
-            var snapshot = _catalogService.GetCatalogSnapshot(message.CatalogType);
+            CatalogSnapshot snapshot = _catalogService.GetCatalogSnapshot(message.CatalogType);
 
             await ctx.SendComposerAsync(new CatalogIndexMessageComposer { Catalog = snapshot }, ct)
                 .ConfigureAwait(false);

@@ -8,6 +8,7 @@ using Turbo.Primitives;
 using Turbo.Primitives.Action;
 using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Object;
+using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Snapshots.Furniture;
 using Turbo.Rooms.Object.Logic.Furniture.Floor;
@@ -25,16 +26,20 @@ public sealed partial class RoomFurniModule
         CancellationToken ct
     )
     {
-        var tileIdx = _roomGrain.MapModule.ToIdx(x, y);
+        int tileIdx = _roomGrain.MapModule.ToIdx(x, y);
 
         if (!_roomGrain.MapModule.InBounds(tileIdx))
+        {
             throw new TurboException(TurboErrorCodeEnum.TileOutOfBounds);
+        }
 
         if (
             !await _roomGrain.ObjectModule.AttatchObjectAsync(item, ct)
             || !_roomGrain.MapModule.PlaceFloorItem(item, tileIdx, rot)
         )
+        {
             return false;
+        }
 
         await item.Logic.OnPlaceAsync(ctx, ct);
 
@@ -56,16 +61,20 @@ public sealed partial class RoomFurniModule
     )
     {
         if (
-            !_roomGrain._state.ItemsById.TryGetValue(itemId, out var item)
+            !_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item)
             || item is not IRoomFloorItem floor
         )
+        {
             throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+        }
 
-        var prevIdx = _roomGrain.MapModule.ToIdx(item.X, item.Y);
-        var nextIdx = _roomGrain.MapModule.ToIdx(x, y);
+        int prevIdx = _roomGrain.MapModule.ToIdx(item.X, item.Y);
+        int nextIdx = _roomGrain.MapModule.ToIdx(x, y);
 
         if (!_roomGrain.MapModule.MoveFloorItem(floor, nextIdx, z, rot))
+        {
             return false;
+        }
 
         await _roomGrain.SendComposerToRoomAsync(item.GetUpdateComposer());
 
@@ -83,10 +92,12 @@ public sealed partial class RoomFurniModule
     )
     {
         if (
-            !_roomGrain._state.ItemsById.TryGetValue(itemId, out var item)
+            !_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item)
             || item is not IRoomFloorItem tItem
         )
+        {
             throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+        }
 
         if (
             _roomGrain.MapModule.GetTileIdForSize(
@@ -95,25 +106,27 @@ public sealed partial class RoomFurniModule
                 rot,
                 tItem.Definition.Width,
                 tItem.Definition.Length,
-                out var tileIds
+                out List<int> tileIds
             )
         )
         {
-            foreach (var idx in tileIds)
+            foreach (int idx in tileIds)
             {
-                var tileFlags = _roomGrain._state.TileFlags[idx];
-                var tileHeight = _roomGrain._state.TileHeights[idx];
-                var highestItemId = _roomGrain._state.TileHighestFloorItems[idx];
-                var isRotating = false;
+                RoomTileFlags tileFlags = _roomGrain._state.TileFlags[idx];
+                Altitude tileHeight = _roomGrain._state.TileHeights[idx];
+                RoomObjectId highestItemId = _roomGrain._state.TileHighestFloorItems[idx];
+                bool isRotating = false;
 
-                if (_roomGrain._state.ItemsById.TryGetValue(highestItemId, out var bItem))
+                if (_roomGrain._state.ItemsById.TryGetValue(highestItemId, out IRoomItem? bItem))
                 {
                     if (bItem == tItem)
                     {
                         tileHeight -= tItem.GetStackHeight();
 
                         if (tItem.Rotation != rot)
+                        {
                             isRotating = true;
+                        }
                     }
                 }
 
@@ -135,10 +148,14 @@ public sealed partial class RoomFurniModule
                         )
                     )
                 )
+                {
                     return Task.FromResult(false);
+                }
 
                 if (bItem == tItem)
+                {
                     continue;
+                }
 
                 if (bItem is not null && bItem != tItem)
                 {
@@ -150,7 +167,9 @@ public sealed partial class RoomFurniModule
                             || tItem.Logic is FurnitureRollerLogic
                         )
                     )
+                    {
                         return Task.FromResult(false);
+                    }
 
                     // if is a stack helper, allow placement
                 }
@@ -175,22 +194,24 @@ public sealed partial class RoomFurniModule
                 rot,
                 tItem.Definition.Width,
                 tItem.Definition.Length,
-                out var tileIds
+                out List<int> tileIds
             )
         )
         {
-            foreach (var id in tileIds)
+            foreach (int id in tileIds)
             {
-                var tileFlags = _roomGrain._state.TileFlags[id];
-                var tileHeight = _roomGrain._state.TileHeights[id];
-                var highestItemId = _roomGrain._state.TileHighestFloorItems[id];
+                RoomTileFlags tileFlags = _roomGrain._state.TileFlags[id];
+                Altitude tileHeight = _roomGrain._state.TileHeights[id];
+                RoomObjectId highestItemId = _roomGrain._state.TileHighestFloorItems[id];
                 IRoomFloorItem? bItem = null;
 
                 if (
-                    _roomGrain._state.ItemsById.TryGetValue(highestItemId, out var item)
+                    _roomGrain._state.ItemsById.TryGetValue(highestItemId, out IRoomItem? item)
                     && item is IRoomFloorItem floorItem
                 )
+                {
                     bItem = floorItem;
+                }
 
                 if (
                     tileFlags.Has(RoomTileFlags.Disabled)
@@ -202,7 +223,9 @@ public sealed partial class RoomFurniModule
                     )
                     || (tileFlags.Has(RoomTileFlags.AvatarOccupied) && !tItem.Logic.CanWalk())
                 )
+                {
                     return Task.FromResult(false);
+                }
 
                 if (bItem is not null)
                 {
@@ -214,7 +237,9 @@ public sealed partial class RoomFurniModule
                             || tItem.Logic is FurnitureRollerLogic
                         )
                     )
+                    {
                         return Task.FromResult(false);
+                    }
                     // if is a stack helper, allow placement
                 }
             }

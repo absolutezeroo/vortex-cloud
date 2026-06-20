@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,15 +36,19 @@ public sealed class PermissionService(
     )
     {
         if (accountId <= 0)
+        {
             return PermissionSet.Empty;
+        }
 
         if (
-            _byAccount.TryGetValue(accountId, out var entry)
+            _byAccount.TryGetValue(accountId, out CacheEntry entry)
             && entry.ExpiresAtUtc > DateTime.UtcNow
         )
+        {
             return entry.Set;
+        }
 
-        var set = await LoadAccountAsync(accountId, ct).ConfigureAwait(false);
+        PermissionSet set = await LoadAccountAsync(accountId, ct).ConfigureAwait(false);
         _byAccount[accountId] = new CacheEntry(set, DateTime.UtcNow + CacheTtl);
 
         return set;
@@ -55,9 +60,11 @@ public sealed class PermissionService(
     )
     {
         if (playerId <= 0)
+        {
             return PermissionSet.Empty;
+        }
 
-        var accountId = await ResolveAccountIdAsync(playerId, ct).ConfigureAwait(false);
+        int accountId = await ResolveAccountIdAsync(playerId, ct).ConfigureAwait(false);
 
         return accountId <= 0
             ? PermissionSet.Empty
@@ -68,20 +75,24 @@ public sealed class PermissionService(
 
     public void InvalidatePlayer(int playerId)
     {
-        if (_playerToAccount.TryGetValue(playerId, out var accountId))
+        if (_playerToAccount.TryGetValue(playerId, out int accountId))
+        {
             InvalidateAccount(accountId);
+        }
     }
 
     private async Task<int> ResolveAccountIdAsync(int playerId, CancellationToken ct)
     {
-        if (_playerToAccount.TryGetValue(playerId, out var cached))
+        if (_playerToAccount.TryGetValue(playerId, out int cached))
+        {
             return cached;
+        }
 
-        var db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {
-            var accountId = await db
+            int? accountId = await db
                 .Players.AsNoTracking()
                 .Where(p => p.Id == playerId)
                 .Select(p => p.PlayerAccountEntityId)
@@ -89,7 +100,9 @@ public sealed class PermissionService(
                 .ConfigureAwait(false);
 
             if (accountId is > 0)
+            {
                 _playerToAccount[playerId] = accountId.Value;
+            }
 
             return accountId ?? 0;
         }
@@ -101,11 +114,11 @@ public sealed class PermissionService(
 
     private async Task<PermissionSet> LoadAccountAsync(int accountId, CancellationToken ct)
     {
-        var db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {
-            var roleIds = await db
+            List<int> roleIds = await db
                 .PlayerAccountRoles.AsNoTracking()
                 .Where(ar => ar.PlayerAccountEntityId == accountId)
                 .Select(ar => ar.RoleEntityId)
@@ -113,16 +126,18 @@ public sealed class PermissionService(
                 .ConfigureAwait(false);
 
             if (roleIds.Count == 0)
+            {
                 return PermissionSet.Empty;
+            }
 
-            var roles = await db
+            List<string> roles = await db
                 .Roles.AsNoTracking()
                 .Where(r => roleIds.Contains(r.Id))
                 .Select(r => r.Key)
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
-            var capabilities = await db
+            List<string> capabilities = await db
                 .RolePermissions.AsNoTracking()
                 .Where(rp => roleIds.Contains(rp.RoleEntityId))
                 .Select(rp => rp.CapabilityKey)

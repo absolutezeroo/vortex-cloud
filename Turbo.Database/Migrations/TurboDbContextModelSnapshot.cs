@@ -3862,6 +3862,10 @@ namespace Turbo.Database.Migrations
                         .HasColumnType("datetime(6)")
                         .HasColumnName("deleted_at");
 
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("expires_at");
+
                     b.Property<string>("IpAddress")
                         .IsRequired()
                         .HasMaxLength(512)

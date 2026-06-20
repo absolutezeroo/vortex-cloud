@@ -10,7 +10,7 @@ internal class FurnitureItemSerializer
 {
     public static void Serialize(IServerPacket packet, FurnitureItemSnapshot item)
     {
-        var type = item.Definition.ProductType;
+        ProductType type = item.Definition.ProductType;
 
         packet
             .WriteInteger(item.ItemId)
@@ -31,6 +31,8 @@ internal class FurnitureItemSerializer
             .WriteInteger(item.RoomId);
 
         if (type == ProductType.Floor)
+        {
             packet.WriteString(item.SlotId).WriteInteger(item.Extra);
+        }
     }
 }

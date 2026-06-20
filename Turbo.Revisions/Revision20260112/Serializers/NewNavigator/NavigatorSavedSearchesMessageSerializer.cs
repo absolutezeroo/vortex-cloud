@@ -1,4 +1,5 @@
 using Turbo.Primitives.Messages.Outgoing.NewNavigator;
+using Turbo.Primitives.Orleans.Snapshots.Navigator;
 using Turbo.Primitives.Packets;
 using Turbo.Revisions.Revision20260112.Serializers.NewNavigator.Data;
 
@@ -11,7 +12,7 @@ internal class NavigatorSavedSearchesMessageSerializer(int header)
     {
         packet.WriteInteger(message.SavedSearches.Count);
 
-        foreach (var savedSearch in message.SavedSearches)
+        foreach (NavigatorQuickLinkSnapshot savedSearch in message.SavedSearches)
         {
             NavigatorQuickLinkSnapshotSerializer.Serialize(packet, savedSearch);
         }

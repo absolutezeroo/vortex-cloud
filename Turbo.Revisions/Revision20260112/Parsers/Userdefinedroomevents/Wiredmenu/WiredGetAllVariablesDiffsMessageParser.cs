@@ -10,8 +10,8 @@ internal class WiredGetAllVariablesDiffsMessageParser : IParser
 {
     public IMessageEvent Parse(IClientPacket packet)
     {
-        var variables = new List<(WiredVariableId Id, WiredVariableHash Hash)>();
-        var count = packet.PopInt();
+        List<(WiredVariableId Id, WiredVariableHash Hash)> variables = new List<(WiredVariableId Id, WiredVariableHash Hash)>();
+        int count = packet.PopInt();
 
         while (count > 0)
         {

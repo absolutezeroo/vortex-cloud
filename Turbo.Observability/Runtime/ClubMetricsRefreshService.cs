@@ -29,13 +29,13 @@ public sealed class ClubMetricsRefreshService(
         {
             try
             {
-                await using var dbCtx = await dbContextFactory
+                await using TurboDbContext dbCtx = await dbContextFactory
                     .CreateDbContextAsync(stoppingToken)
                     .ConfigureAwait(false);
 
-                var now = DateTime.UtcNow;
+                DateTime now = DateTime.UtcNow;
 
-                var active = await dbCtx
+                int active = await dbCtx
                     .PlayerSubscriptions.CountAsync(
                         s => s.SubscriptionType == SubscriptionType.HabboClub && s.ExpiresAt > now,
                         stoppingToken

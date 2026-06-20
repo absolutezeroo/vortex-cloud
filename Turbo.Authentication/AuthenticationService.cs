@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Turbo.Authentication.Configuration;
 using Turbo.Database.Context;
+using Turbo.Database.Entities.Security;
 using Turbo.Primitives.Authentication;
 using Turbo.Primitives.Events;
 
@@ -30,16 +31,20 @@ public sealed class AuthenticationService(
     )
     {
         if (ticket is null || ticket.Length == 0)
+        {
             return 0;
+        }
 
-        var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {
             if (dbCtx.SecurityTickets is null)
+            {
                 return 0;
+            }
 
-            var entity = await dbCtx
+            SecurityTicketEntity? entity = await dbCtx
                 .SecurityTickets.AsNoTracking()
                 .FirstOrDefaultAsync(entity => entity.Ticket == ticket, ct)
                 .ConfigureAwait(false);
@@ -53,9 +58,14 @@ public sealed class AuthenticationService(
                 return 0;
             }
 
-            var now = DateTime.UtcNow;
-            var expiry = entity.ExpiresAt
-                ?? (_ticketTtlSeconds > 0 ? entity.CreatedAt.AddSeconds(_ticketTtlSeconds) : (DateTime?)null);
+            DateTime now = DateTime.UtcNow;
+            DateTime? expiry =
+                entity.ExpiresAt
+                ?? (
+                    _ticketTtlSeconds > 0
+                        ? entity.CreatedAt.AddSeconds(_ticketTtlSeconds)
+                        : (DateTime?)null
+                );
 
             if (expiry.HasValue && now > expiry.Value)
             {
@@ -75,8 +85,8 @@ public sealed class AuthenticationService(
 
             if (!entity.IsLocked)
             {
-                 dbCtx.SecurityTickets.Remove(entity);
-                 await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+                dbCtx.SecurityTickets.Remove(entity);
+                await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
             }
 
             await _events
@@ -94,16 +104,20 @@ public sealed class AuthenticationService(
     private string? HashIp(string? remoteIp)
     {
         if (string.IsNullOrWhiteSpace(remoteIp))
+        {
             return null;
+        }
 
-        var key = _ipHashSecret;
+        string key = _ipHashSecret;
         if (string.IsNullOrWhiteSpace(key))
+        {
             return null;
+        }
 
-        var keyBytes = Encoding.UTF8.GetBytes(key);
-        var ipBytes = Encoding.UTF8.GetBytes(remoteIp.Trim());
+        byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+        byte[] ipBytes = Encoding.UTF8.GetBytes(remoteIp.Trim());
 
-        var hash = HMACSHA256.HashData(keyBytes, ipBytes);
+        byte[] hash = HMACSHA256.HashData(keyBytes, ipBytes);
 
         return Convert.ToHexString(hash).ToLowerInvariant();
     }

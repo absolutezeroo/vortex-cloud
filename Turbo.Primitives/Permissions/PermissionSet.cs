@@ -36,12 +36,16 @@ public sealed class PermissionSet
     public bool HasAny(params string[] capabilities)
     {
         if (_wildcard)
+        {
             return true;
+        }
 
-        foreach (var capability in capabilities)
+        foreach (string capability in capabilities)
         {
             if (_capabilities.Contains(capability))
+            {
                 return true;
+            }
         }
 
         return false;

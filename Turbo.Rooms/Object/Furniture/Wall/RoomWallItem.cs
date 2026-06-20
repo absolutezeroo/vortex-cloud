@@ -17,7 +17,9 @@ public class RoomWallItem
     public void SetWallOffset(int wallOffset)
     {
         if (WallOffset == wallOffset)
+        {
             return;
+        }
 
         WallOffset = wallOffset;
 

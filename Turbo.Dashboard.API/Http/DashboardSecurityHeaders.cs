@@ -16,20 +16,22 @@ internal static class DashboardSecurityHeaders
     /// </summary>
     public static string BuildCsp(string? furniIconTemplate)
     {
-        var imgSrc = "img-src 'self' data:";
-        var origin = TryGetIconOrigin(furniIconTemplate);
+        string imgSrc = "img-src 'self' data:";
+        string? origin = TryGetIconOrigin(furniIconTemplate);
 
         if (origin is not null)
+        {
             imgSrc += " " + origin;
+        }
 
         return "default-src 'self'; script-src 'self'; style-src 'self'; "
-            + imgSrc
-            + "; connect-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'none';";
+               + imgSrc
+               + "; connect-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'none';";
     }
 
     public static void Apply(HttpResponse response, string csp)
     {
-        var headers = response.Headers;
+        IHeaderDictionary headers = response.Headers;
         headers["X-Content-Type-Options"] = "nosniff";
         headers["Referrer-Policy"] = "no-referrer";
         headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
@@ -46,12 +48,14 @@ internal static class DashboardSecurityHeaders
     private static string? TryGetIconOrigin(string? template)
     {
         if (string.IsNullOrWhiteSpace(template))
+        {
             return null;
+        }
 
-        var probe = template.Replace("{name}", "icon", StringComparison.Ordinal);
+        string probe = template.Replace("{name}", "icon", StringComparison.Ordinal);
 
         return
-            Uri.TryCreate(probe, UriKind.Absolute, out var uri)
+            Uri.TryCreate(probe, UriKind.Absolute, out Uri? uri)
             && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
             ? uri.GetLeftPart(UriPartial.Authority)
             : null;

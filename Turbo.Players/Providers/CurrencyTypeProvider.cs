@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Turbo.Database.Context;
+using Turbo.Database.Entities.Catalog;
 using Turbo.Primitives.Players.Providers;
 using Turbo.Primitives.Players.Snapshots;
 using Turbo.Primitives.Players.Wallet;
@@ -22,16 +23,20 @@ public sealed class CurrencyTypeProvider(
 
     public CurrencyTypeSnapshot? GetCurrencyType(int typeId)
     {
-        if (!_currenciesById.TryGetValue(typeId, out var snapshot))
+        if (!_currenciesById.TryGetValue(typeId, out CurrencyTypeSnapshot? snapshot))
+        {
             return null;
+        }
 
         return snapshot;
     }
 
     public CurrencyTypeSnapshot? GetCurrencyTypeByKind(CurrencyKind kind)
     {
-        if (!_currencyIdsByKind.TryGetValue(kind, out var id))
+        if (!_currencyIdsByKind.TryGetValue(kind, out int id))
+        {
             return null;
+        }
 
         return GetCurrencyType(id);
     }
@@ -41,18 +46,18 @@ public sealed class CurrencyTypeProvider(
         _currenciesById.Clear();
         _currencyIdsByKind.Clear();
 
-        var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {
-            var entities = await dbCtx
+            List<CurrencyTypeEntity> entities = await dbCtx
                 .CurrencyTypes.AsNoTracking()
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
-            foreach (var entity in entities)
+            foreach (CurrencyTypeEntity entity in entities)
             {
-                var snapshot = new CurrencyTypeSnapshot
+                CurrencyTypeSnapshot snapshot = new CurrencyTypeSnapshot
                 {
                     Id = entity.Id,
                     Name = entity.Name ?? string.Empty,
@@ -61,7 +66,7 @@ public sealed class CurrencyTypeProvider(
                     Enabled = entity.Enabled,
                 };
 
-                var kind = new CurrencyKind
+                CurrencyKind kind = new CurrencyKind
                 {
                     CurrencyType = snapshot.CurrencyType,
                     ActivityPointType = snapshot.ActivityPointType,

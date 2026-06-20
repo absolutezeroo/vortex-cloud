@@ -16,15 +16,15 @@ public sealed class ByteLoadingAlc(
 
     protected override Assembly? Load(AssemblyName assemblyName)
     {
-        var simple = assemblyName.Name!;
+        string simple = assemblyName.Name!;
 
-        if (_managed.TryGetValue(simple, out var blob))
+        if (_managed.TryGetValue(simple, out (byte[] asm, byte[]? pdb) blob))
         {
-            using var msAsm = new MemoryStream(blob.asm, writable: false);
+            using MemoryStream msAsm = new MemoryStream(blob.asm, writable: false);
 
             if (blob.pdb is { } pdb)
             {
-                using var msPdb = new MemoryStream(pdb, writable: false);
+                using MemoryStream msPdb = new MemoryStream(pdb, writable: false);
 
                 return LoadFromStream(msAsm, msPdb);
             }
@@ -32,21 +32,23 @@ public sealed class ByteLoadingAlc(
             return LoadFromStream(msAsm);
         }
 
-        var path = _resolver.ResolveAssemblyToPath(assemblyName);
+        string? path = _resolver.ResolveAssemblyToPath(assemblyName);
         if (path is null)
+        {
             return null;
+        }
 
         if (Path.GetExtension(path).Equals(".dll", StringComparison.OrdinalIgnoreCase))
         {
-            var pdbPath = Path.ChangeExtension(path, ".pdb");
-            var asmBytes = File.ReadAllBytes(path);
+            string pdbPath = Path.ChangeExtension(path, ".pdb");
+            byte[] asmBytes = File.ReadAllBytes(path);
             byte[]? pdbBytes = File.Exists(pdbPath) ? File.ReadAllBytes(pdbPath) : null;
 
-            using var msAsm = new MemoryStream(asmBytes, writable: false);
+            using MemoryStream msAsm = new MemoryStream(asmBytes, writable: false);
 
             if (pdbBytes is { })
             {
-                using var msPdb = new MemoryStream(pdbBytes, writable: false);
+                using MemoryStream msPdb = new MemoryStream(pdbBytes, writable: false);
                 return LoadFromStream(msAsm, msPdb);
             }
 
@@ -58,10 +60,12 @@ public sealed class ByteLoadingAlc(
 
     protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
     {
-        var path = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
+        string? path = _resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
 
         if (path is null)
+        {
             return IntPtr.Zero;
+        }
 
         return LoadUnmanagedDllFromPath(path);
     }

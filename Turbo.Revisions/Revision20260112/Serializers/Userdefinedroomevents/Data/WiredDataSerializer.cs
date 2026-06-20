@@ -3,6 +3,7 @@ using Turbo.Primitives.Packets;
 using Turbo.Primitives.Rooms.Enums.Wired;
 using Turbo.Primitives.Rooms.Snapshots.Wired;
 using Turbo.Primitives.Rooms.Snapshots.Wired.Variables;
+using Turbo.Primitives.Rooms.Wired.Variable;
 
 namespace Turbo.Revisions.Revision20260112.Serializers.Userdefinedroomevents.Data;
 
@@ -12,12 +13,12 @@ internal class WiredDataSerializer
     {
         packet.WriteInteger(snapshot.FurniLimit).WriteInteger(snapshot.StuffIds.Count);
 
-        foreach (var stuffId in snapshot.StuffIds)
+        foreach (int stuffId in snapshot.StuffIds)
             packet.WriteInteger(stuffId);
 
         packet.WriteInteger(snapshot.StuffIds2.Count);
 
-        foreach (var stuffId in snapshot.StuffIds2)
+        foreach (int stuffId in snapshot.StuffIds2)
             packet.WriteInteger(stuffId);
 
         packet
@@ -26,24 +27,24 @@ internal class WiredDataSerializer
             .WriteString(snapshot.StringParam)
             .WriteInteger(snapshot.IntParams.Count);
 
-        foreach (var intParam in snapshot.IntParams)
+        foreach (int intParam in snapshot.IntParams)
             packet.WriteInteger(intParam);
 
         packet.WriteInteger(snapshot.VariableIds.Count);
 
-        foreach (var variableId in snapshot.VariableIds)
+        foreach (WiredVariableId variableId in snapshot.VariableIds)
             packet.WriteString(variableId.ToString());
 
         packet.WriteInteger(snapshot.FurniSourceTypes.Count);
 
-        foreach (var furniSourceType in snapshot.FurniSourceTypes)
+        foreach (WiredFurniSourceType[] furniSourceType in snapshot.FurniSourceTypes)
             packet.WriteInteger(
                 (int)WiredFurniSourceTypeExtensions.GetProtocolId(furniSourceType[0])
             );
 
         packet.WriteInteger(snapshot.PlayerSourceTypes.Count);
 
-        foreach (var userSourceType in snapshot.PlayerSourceTypes)
+        foreach (WiredPlayerSourceType[] userSourceType in snapshot.PlayerSourceTypes)
             packet.WriteInteger(
                 (int)WiredPlayerSourceTypeExtensions.GetProtocolId(userSourceType[0])
             );
@@ -62,12 +63,12 @@ internal class WiredDataSerializer
 
         packet.WriteInteger(snapshot.ContextSnapshots.Count);
 
-        foreach (var context in snapshot.ContextSnapshots)
+        foreach (WiredVariableContextSnapshot context in snapshot.ContextSnapshots)
             SerializeWiredContext(packet, context);
 
         packet.WriteInteger(snapshot.DefaultIntParams.Count);
 
-        foreach (var intParam in snapshot.DefaultIntParams)
+        foreach (int intParam in snapshot.DefaultIntParams)
             packet.WriteInteger(intParam);
     }
 
@@ -76,7 +77,9 @@ internal class WiredDataSerializer
         foreach (var specific in specifics)
         {
             if (specific is null)
+            {
                 continue;
+            }
 
             switch (specific)
             {
@@ -102,11 +105,11 @@ internal class WiredDataSerializer
     {
         packet.WriteInteger(snapshot.AllowedFurniSources.Count);
 
-        foreach (var furniSourceList in snapshot.AllowedFurniSources)
+        foreach (WiredFurniSourceType[] furniSourceList in snapshot.AllowedFurniSources)
         {
             packet.WriteInteger(furniSourceList.Length);
 
-            foreach (var furniSourceId in furniSourceList)
+            foreach (WiredFurniSourceType furniSourceId in furniSourceList)
                 packet.WriteInteger(
                     (int)WiredFurniSourceTypeExtensions.GetProtocolId(furniSourceId)
                 );
@@ -114,11 +117,11 @@ internal class WiredDataSerializer
 
         packet.WriteInteger(snapshot.AllowedPlayerSources.Count);
 
-        foreach (var userSourceList in snapshot.AllowedPlayerSources)
+        foreach (WiredPlayerSourceType[] userSourceList in snapshot.AllowedPlayerSources)
         {
             packet.WriteInteger(userSourceList.Length);
 
-            foreach (var userSourceId in userSourceList)
+            foreach (WiredPlayerSourceType userSourceId in userSourceList)
                 packet.WriteInteger(
                     (int)WiredPlayerSourceTypeExtensions.GetProtocolId(userSourceId)
                 );
@@ -126,12 +129,12 @@ internal class WiredDataSerializer
 
         packet.WriteInteger(snapshot.DefaultFurniSources.Count);
 
-        foreach (var type in snapshot.DefaultFurniSources)
+        foreach (WiredFurniSourceType[] type in snapshot.DefaultFurniSources)
             packet.WriteInteger((int)WiredFurniSourceTypeExtensions.GetProtocolId(type[0]));
 
         packet.WriteInteger(snapshot.DefaultPlayerSources.Count);
 
-        foreach (var type in snapshot.DefaultPlayerSources)
+        foreach (WiredPlayerSourceType[] type in snapshot.DefaultPlayerSources)
             packet.WriteInteger((int)WiredPlayerSourceTypeExtensions.GetProtocolId(type[0]));
     }
 
@@ -151,7 +154,7 @@ internal class WiredDataSerializer
                 WiredVariableSerializer.Serialize(packet, infoAndHolders.Variable);
                 packet.WriteInteger(infoAndHolders.Holders.Count);
 
-                foreach (var (objectId, value) in infoAndHolders.Holders)
+                foreach ((int objectId, int value) in infoAndHolders.Holders)
                     packet.WriteInteger(objectId).WriteInteger(value);
                 break;
             case WiredVariableInfoAndValueSnapshot infoAndValue:

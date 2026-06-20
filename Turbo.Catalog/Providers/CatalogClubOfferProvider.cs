@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Turbo.Database.Context;
+using Turbo.Database.Entities.Catalog;
 using Turbo.Primitives.Catalog;
 using Turbo.Primitives.Catalog.Providers;
 
@@ -24,17 +25,20 @@ public sealed class CatalogClubOfferProvider(
 
     public ClubOffer? FindById(int offerId)
     {
-        foreach (var offer in _offers)
+        foreach (ClubOffer offer in _offers)
             if (offer.OfferId == offerId)
+            {
                 return offer;
+            }
+
         return null;
     }
 
     public async Task ReloadAsync(CancellationToken ct)
     {
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var entities = await dbCtx
+        List<CatalogClubOfferEntity> entities = await dbCtx
             .CatalogClubOffers.AsNoTracking()
             .OrderBy(x => x.SortOrder)
             .ThenBy(x => x.Id)

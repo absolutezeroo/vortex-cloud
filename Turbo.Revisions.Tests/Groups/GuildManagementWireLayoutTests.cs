@@ -21,7 +21,7 @@ public sealed class GuildManagementWireLayoutTests
 
     private static ClientPacket BuildClientPacket(int header, System.Action<ServerPacket> write)
     {
-        var sp = new ServerPacket(header);
+        ServerPacket sp = new ServerPacket(header);
         write(sp);
         return new ClientPacket(header, sp.ToArray());
     }
@@ -31,8 +31,8 @@ public sealed class GuildManagementWireLayoutTests
         Turbo.Primitives.Networking.IComposer composer
     )
     {
-        var bytes = Revision.Serializers[composerType].Serialize(composer).ToArray();
-        var body = new byte[bytes.Length - 6];
+        byte[] bytes = Revision.Serializers[composerType].Serialize(composer).ToArray();
+        byte[] body = new byte[bytes.Length - 6];
         System.Array.Copy(bytes, 6, body, 0, body.Length);
         return new ClientPacket(0, body);
     }
@@ -40,18 +40,18 @@ public sealed class GuildManagementWireLayoutTests
     [Fact]
     public void UpdateGuildBadgeParser_ReadsFlattenedParts()
     {
-        var packet = BuildClientPacket(
+        ClientPacket packet = BuildClientPacket(
             UpdateGuildBadgeEvent,
             sp =>
             {
                 sp.WriteInteger(5); // groupId
                 sp.WriteInteger(6); // flattened length
-                foreach (var v in new[] { 1, 2, 0, 3, 4, 1 })
+                foreach (int v in new[] { 1, 2, 0, 3, 4, 1 })
                     sp.WriteInteger(v);
             }
         );
 
-        var msg = Revision
+        UpdateGuildBadgeMessage? msg = Revision
             .Parsers[UpdateGuildBadgeEvent]
             .Parse(packet)
             .Should()
@@ -65,7 +65,7 @@ public sealed class GuildManagementWireLayoutTests
     [Fact]
     public void UpdateGuildSettingsParser_ReadsTypeAndRights()
     {
-        var packet = BuildClientPacket(
+        ClientPacket packet = BuildClientPacket(
             UpdateGuildSettingsEvent,
             sp =>
             {
@@ -75,7 +75,7 @@ public sealed class GuildManagementWireLayoutTests
             }
         );
 
-        var msg = Revision
+        UpdateGuildSettingsMessage? msg = Revision
             .Parsers[UpdateGuildSettingsEvent]
             .Parse(packet)
             .Should()
@@ -90,7 +90,7 @@ public sealed class GuildManagementWireLayoutTests
     [Fact]
     public void KickMemberParser_ReadsBlockFlag()
     {
-        var packet = BuildClientPacket(
+        ClientPacket packet = BuildClientPacket(
             KickMemberEvent,
             sp =>
             {
@@ -100,7 +100,7 @@ public sealed class GuildManagementWireLayoutTests
             }
         );
 
-        var msg = Revision
+        KickMemberMessage? msg = Revision
             .Parsers[KickMemberEvent]
             .Parse(packet)
             .Should()
@@ -115,7 +115,7 @@ public sealed class GuildManagementWireLayoutTests
     [Fact]
     public void GuildEditInfoSerializer_WritesClientLayout()
     {
-        var info = new GroupEditInfoSnapshot
+        GroupEditInfoSnapshot info = new GroupEditInfoSnapshot
         {
             OwnedRooms =
             [
@@ -142,7 +142,7 @@ public sealed class GuildManagementWireLayoutTests
             MembershipCount = 9,
         };
 
-        var body = SerializeAndReadBody(
+        ClientPacket body = SerializeAndReadBody(
             typeof(GuildEditInfoMessageComposer),
             new GuildEditInfoMessageComposer { Info = info }
         );
@@ -171,7 +171,7 @@ public sealed class GuildManagementWireLayoutTests
     [Fact]
     public void GuildMembershipUpdatedSerializer_WritesMember()
     {
-        var body = SerializeAndReadBody(
+        ClientPacket body = SerializeAndReadBody(
             typeof(GuildMembershipUpdatedMessageComposer),
             new GuildMembershipUpdatedMessageComposer
             {
@@ -199,7 +199,7 @@ public sealed class GuildManagementWireLayoutTests
     [Fact]
     public void HabboGroupDeactivatedSerializer_WritesGroupId()
     {
-        var body = SerializeAndReadBody(
+        ClientPacket body = SerializeAndReadBody(
             typeof(HabboGroupDeactivatedMessageComposer),
             new HabboGroupDeactivatedMessageComposer { GroupId = 5 }
         );

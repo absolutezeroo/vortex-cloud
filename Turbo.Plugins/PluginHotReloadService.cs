@@ -50,7 +50,7 @@ public sealed class PluginHotReloadService(
 
         WatchDirectory(_config.PluginFolderPath, includeSubdirectories: true);
 
-        foreach (var devPath in _config.DevPluginPaths)
+        foreach (string devPath in _config.DevPluginPaths)
             WatchDirectory(Path.GetFullPath(devPath), includeSubdirectories: false);
 
         _logger.LogInformation("Plugin hot reload is enabled.");
@@ -74,9 +74,11 @@ public sealed class PluginHotReloadService(
     private void WatchDirectory(string path, bool includeSubdirectories)
     {
         if (!Directory.Exists(path))
+        {
             return;
+        }
 
-        var watcher = new FileSystemWatcher(path)
+        FileSystemWatcher watcher = new FileSystemWatcher(path)
         {
             IncludeSubdirectories = includeSubdirectories,
             NotifyFilter =
@@ -102,10 +104,14 @@ public sealed class PluginHotReloadService(
     private void OnFsEvent(object sender, FileSystemEventArgs e)
     {
         if (Volatile.Read(ref _shutdownStarted) == 1)
+        {
             return;
+        }
 
         if (!ShouldReactToPath(e.FullPath))
+        {
             return;
+        }
 
         QueueDebouncedReload(e.FullPath, e.ChangeType.ToString());
     }
@@ -113,10 +119,14 @@ public sealed class PluginHotReloadService(
     private void OnFsRenamed(object sender, RenamedEventArgs e)
     {
         if (Volatile.Read(ref _shutdownStarted) == 1)
+        {
             return;
+        }
 
         if (!ShouldReactToPath(e.FullPath) && !ShouldReactToPath(e.OldFullPath))
+        {
             return;
+        }
 
         QueueDebouncedReload(e.FullPath, "Renamed");
     }
@@ -145,14 +155,18 @@ public sealed class PluginHotReloadService(
     private async Task ProcessReloadAsync()
     {
         if (_cts.IsCancellationRequested)
+        {
             return;
+        }
 
         string? changedPath;
 
         lock (_stateLock)
         {
             if (!_pendingReload)
+            {
                 return;
+            }
 
             _pendingReload = false;
             changedPath = _lastPath;
@@ -169,7 +183,7 @@ public sealed class PluginHotReloadService(
 
             const int maxAttempts = 3;
 
-            for (var attempt = 1; attempt <= maxAttempts; attempt++)
+            for (int attempt = 1; attempt <= maxAttempts; attempt++)
             {
                 try
                 {
@@ -207,7 +221,7 @@ public sealed class PluginHotReloadService(
 
     private static bool ShouldReactToPath(string path)
     {
-        var fileName = Path.GetFileName(path);
+        string fileName = Path.GetFileName(path);
 
         return !string.IsNullOrWhiteSpace(fileName)
             && WATCH_GLOBS.Any(glob =>
@@ -217,7 +231,7 @@ public sealed class PluginHotReloadService(
 
     private void DisposeWatchers()
     {
-        foreach (var w in _watchers)
+        foreach (FileSystemWatcher w in _watchers)
         {
             w.EnableRaisingEvents = false;
             w.Changed -= OnFsEvent;
@@ -234,7 +248,9 @@ public sealed class PluginHotReloadService(
     private void Shutdown()
     {
         if (Interlocked.Exchange(ref _shutdownStarted, 1) == 1)
+        {
             return;
+        }
 
         DisposeWatchers();
         _debounceTimer?.Dispose();

@@ -7,6 +7,7 @@ using Turbo.Primitives.Action;
 using Turbo.Primitives.Inventory.Snapshots;
 using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Object;
+using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Object.Furniture.Wall;
 using Turbo.Primitives.Rooms.Snapshots.Furniture;
 
@@ -28,7 +29,9 @@ public sealed partial class RoomGrain
         try
         {
             if (!await ActionModule.PlaceWallItemAsync(ctx, item, x, y, z, wallOffset, rot, ct))
+            {
                 return false;
+            }
 
             return true;
         }
@@ -70,7 +73,9 @@ public sealed partial class RoomGrain
                     ct
                 )
             )
+            {
                 return false;
+            }
 
             return true;
         }
@@ -92,7 +97,7 @@ public sealed partial class RoomGrain
         CancellationToken ct
     ) =>
         Task.FromResult(
-            _state.ItemsById.TryGetValue(itemId, out var item)
+            _state.ItemsById.TryGetValue(itemId, out IRoomItem? item)
                 ? item is IRoomWallItem wall
                     ? wall.GetSnapshot()
                     : null

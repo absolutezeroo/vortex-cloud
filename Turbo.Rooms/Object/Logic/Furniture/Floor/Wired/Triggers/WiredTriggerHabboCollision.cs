@@ -25,7 +25,9 @@ public class WiredTriggerHabboCollision(
     public override Task<bool> CanTriggerAsync(IWiredProcessingContext ctx, CancellationToken ct)
     {
         if (ctx.Event is not RoomItemCollisionEvent evt)
+        {
             return Task.FromResult(false);
+        }
 
         return Task.FromResult(true);
     }

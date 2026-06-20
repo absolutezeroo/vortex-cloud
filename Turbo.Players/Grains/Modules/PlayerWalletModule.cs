@@ -18,7 +18,9 @@ internal sealed class PlayerWalletModule(PlayerPresenceGrain presenceGrain)
     )
     {
         if (snapshot is null)
+        {
             return;
+        }
 
         switch (snapshot.CurrencyKind.CurrencyType)
         {

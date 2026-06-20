@@ -1,3 +1,4 @@
+using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Outgoing.Groupforums;
 using Turbo.Primitives.Packets;
 
@@ -11,7 +12,7 @@ internal class UpdateMessageMessageComposerSerializer(int header)
         packet.WriteInteger(message.GroupId);
         packet.WriteInteger(message.ThreadId);
 
-        var p = message.Post;
+        ForumPostSnapshot p = message.Post;
 
         packet.WriteInteger(p.MessageId);
         packet.WriteInteger(p.MessageIndex);

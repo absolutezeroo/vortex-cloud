@@ -11,10 +11,10 @@ internal abstract class UpdateWiredDataParser : IParser
 {
     public IMessageEvent Parse(IClientPacket packet)
     {
-        var id = packet.PopInt();
+        int id = packet.PopInt();
 
-        var intParams = new List<int>();
-        var intParamCount = packet.PopInt();
+        List<int> intParams = new List<int>();
+        int intParamCount = packet.PopInt();
 
         if (intParamCount > 0)
         {
@@ -26,10 +26,10 @@ internal abstract class UpdateWiredDataParser : IParser
             }
         }
 
-        var stringParam = packet.PopString();
+        string stringParam = packet.PopString();
 
-        var stuffIds = new List<int>();
-        var stuffIdCount = packet.PopInt();
+        List<int> stuffIds = new List<int>();
+        int stuffIdCount = packet.PopInt();
 
         if (stuffIdCount > 0)
         {
@@ -41,10 +41,10 @@ internal abstract class UpdateWiredDataParser : IParser
             }
         }
 
-        var definitionSpecifics = ParseSpecifics(packet, GetRequiredDefinitionSpecifics());
+        List<object> definitionSpecifics = ParseSpecifics(packet, GetRequiredDefinitionSpecifics());
 
-        var furniSources = new List<WiredFurniSourceType[]>();
-        var furniSourceCount = packet.PopInt();
+        List<WiredFurniSourceType[]> furniSources = new List<WiredFurniSourceType[]>();
+        int furniSourceCount = packet.PopInt();
 
         if (furniSourceCount > 0)
         {
@@ -58,8 +58,8 @@ internal abstract class UpdateWiredDataParser : IParser
             }
         }
 
-        var userSources = new List<WiredPlayerSourceType[]>();
-        var userSourceCount = packet.PopInt();
+        List<WiredPlayerSourceType[]> userSources = new List<WiredPlayerSourceType[]>();
+        int userSourceCount = packet.PopInt();
 
         if (userSourceCount > 0)
         {
@@ -75,8 +75,8 @@ internal abstract class UpdateWiredDataParser : IParser
             }
         }
 
-        var variableIds = new List<string>();
-        var variableIdCount = packet.PopInt();
+        List<string> variableIds = new List<string>();
+        int variableIdCount = packet.PopInt();
 
         if (variableIdCount > 0)
         {
@@ -88,10 +88,10 @@ internal abstract class UpdateWiredDataParser : IParser
             }
         }
 
-        var typeSpecifics = ParseSpecifics(packet, GetRequiredTypeSpecifics());
+        List<object> typeSpecifics = ParseSpecifics(packet, GetRequiredTypeSpecifics());
 
-        var stuffIds2 = new List<int>();
-        var stuffId2Count = packet.PopInt();
+        List<int> stuffIds2 = new List<int>();
+        int stuffId2Count = packet.PopInt();
 
         if (stuffId2Count > 0)
         {
@@ -103,7 +103,7 @@ internal abstract class UpdateWiredDataParser : IParser
             }
         }
 
-        var message = (UpdateWiredMessage)Activator.CreateInstance(UpdateMessageType)!;
+        UpdateWiredMessage message = (UpdateWiredMessage)Activator.CreateInstance(UpdateMessageType)!;
 
         return message with
         {
@@ -128,18 +128,26 @@ internal abstract class UpdateWiredDataParser : IParser
 
     private List<object> ParseSpecifics(IClientPacket packet, List<object> requiredSpecifics)
     {
-        var specifics = new List<object>();
+        List<object> specifics = new List<object>();
 
         foreach (var specific in requiredSpecifics)
         {
             if (specific is int)
+            {
                 specifics.Add(packet.PopInt());
+            }
             else if (specific is string)
+            {
                 specifics.Add(packet.PopString());
+            }
             else if (specific is bool)
+            {
                 specifics.Add(packet.PopBoolean());
+            }
             else if (specific is byte)
+            {
                 specifics.Add(packet.PopByte());
+            }
         }
 
         return specifics;

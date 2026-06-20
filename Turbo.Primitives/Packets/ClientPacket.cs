@@ -17,14 +17,14 @@ public class ClientPacket(int header, ReadOnlyMemory<byte> payload)
     public byte PopByte()
     {
         Ensure(1);
-        var b = _payload.Span[_pos++];
+        byte b = _payload.Span[_pos++];
         return b;
     }
 
     public byte[] PopBytes(int count)
     {
         Ensure(count);
-        var arr = _payload.Span.Slice(_pos, count).ToArray();
+        byte[] arr = _payload.Span.Slice(_pos, count).ToArray();
         _pos += count;
         return arr;
     }
@@ -68,7 +68,7 @@ public class ClientPacket(int header, ReadOnlyMemory<byte> payload)
 
     public string PopString(Encoding? encoding = null)
     {
-        var len = PopUShort();
+        ushort len = PopUShort();
         Ensure(len);
         encoding ??= Encoding.UTF8;
         string s = encoding.GetString(_payload.Span.Slice(_pos, len));
@@ -79,8 +79,10 @@ public class ClientPacket(int header, ReadOnlyMemory<byte> payload)
     private void Ensure(int count)
     {
         if (_pos + count > _payload.Length)
+        {
             throw new InvalidOperationException(
                 $"Not enough data: need {count}, remaining {Remaining}"
             );
+        }
     }
 }

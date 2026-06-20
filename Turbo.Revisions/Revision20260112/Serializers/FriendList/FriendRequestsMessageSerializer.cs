@@ -1,5 +1,6 @@
 using Turbo.Primitives.Messages.Outgoing.FriendList;
 using Turbo.Primitives.Packets;
+using Turbo.Primitives.Snapshots.FriendList;
 using Turbo.Revisions.Revision20260112.Serializers.FriendList.Snapshots;
 
 namespace Turbo.Revisions.Revision20260112.Serializers.FriendList;
@@ -14,7 +15,7 @@ internal class FriendRequestsMessageSerializer(int header)
         packet.WriteInteger(totalRequests);
         packet.WriteInteger(totalRequests);
 
-        foreach (var request in message.Requests)
+        foreach (FriendRequestSnapshot request in message.Requests)
         {
             FriendRequestSnapshotSerializer.Serialize(packet, request);
         }

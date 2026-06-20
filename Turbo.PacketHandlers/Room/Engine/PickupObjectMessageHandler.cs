@@ -17,7 +17,7 @@ public class PickupObjectMessageHandler(IRoomService roomService)
         CancellationToken ct
     )
     {
-        var categoryId = message.CategoryId;
+        int categoryId = message.CategoryId;
 
         if (categoryId == 1)
         {

@@ -3,13 +3,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Orleans.Runtime;
+using Orleans.Streams;
 using Turbo.Primitives.Action;
 using Turbo.Primitives.Events;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Players;
 using Turbo.Primitives.Orleans.Snapshots.Room;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Rooms;
+using Turbo.Primitives.Rooms.Grains;
 using Turbo.Primitives.Rooms.Snapshots;
 
 namespace Turbo.Players.Grains;
@@ -37,14 +40,18 @@ internal sealed partial class PlayerPresenceGrain
     public async Task SetActiveRoomAsync(RoomId roomId, CancellationToken ct)
     {
         if (roomId <= 0)
+        {
             return;
+        }
 
         if (_state.ActiveRoomId == roomId)
+        {
             return;
+        }
 
         await ClearActiveRoomAsync(ct);
 
-        var next = roomId;
+        RoomId next = roomId;
 
         _state.ActiveRoomId = next;
         _state.PendingRoomId = -1;
@@ -55,19 +62,19 @@ internal sealed partial class PlayerPresenceGrain
             .GetRoomDirectoryGrain()
             .AddPlayerToRoomAsync((int)this.GetPrimaryKeyLong(), next, ct);
 
-        var provider = this.GetStreamProvider(OrleansStreamProviders.ROOM_STREAM_PROVIDER);
-        var streamId = StreamId.Create(OrleansStreamNames.ROOM_STREAM, roomId.Value);
-        var stream = provider.GetStream<RoomOutbound>(streamId);
+        IStreamProvider? provider = this.GetStreamProvider(OrleansStreamProviders.ROOM_STREAM_PROVIDER);
+        StreamId streamId = StreamId.Create(OrleansStreamNames.ROOM_STREAM, roomId.Value);
+        IAsyncStream<RoomOutbound>? stream = provider.GetStream<RoomOutbound>(streamId);
 
         _roomOutboundSub = await stream.SubscribeAsync(this);
 
-        var room = _grainFactory.GetRoomGrain(roomId);
+        IRoomGrain room = _grainFactory.GetRoomGrain(roomId);
 
-        var playerSnapshot = await _grainFactory
+        PlayerSummarySnapshot playerSnapshot = await _grainFactory
             .GetPlayerGrain((PlayerId)this.GetPrimaryKeyLong())
             .GetSummaryAsync(ct);
 
-        var ctx = new ActionContext
+        ActionContext ctx = new ActionContext
         {
             Origin = ActionOrigin.Player,
             SessionKey = SessionKey.Invalid,
@@ -75,11 +82,11 @@ internal sealed partial class PlayerPresenceGrain
             RoomId = roomId,
         };
 
-        var entered = await room.CreateAvatarFromPlayerAsync(ctx, playerSnapshot, ct);
+        bool entered = await room.CreateAvatarFromPlayerAsync(ctx, playerSnapshot, ct);
 
         if (entered)
         {
-            var enteredAt = DateTime.UtcNow;
+            DateTime enteredAt = DateTime.UtcNow;
             _state.ActiveRoomSinceUtc = enteredAt;
             await _events.PublishAsync(
                 new PlayerEnteredRoomEvent(
@@ -95,14 +102,16 @@ internal sealed partial class PlayerPresenceGrain
     public async Task ClearActiveRoomAsync(CancellationToken ct)
     {
         if (_state.ActiveRoomId <= 0)
+        {
             return;
+        }
 
-        var prev = _state.ActiveRoomId;
-        var leftAt = DateTime.UtcNow;
-        var duration = leftAt - _state.ActiveRoomSinceUtc;
-        var durationSeconds = (long)duration.TotalSeconds;
+        RoomId prev = _state.ActiveRoomId;
+        DateTime leftAt = DateTime.UtcNow;
+        TimeSpan duration = leftAt - _state.ActiveRoomSinceUtc;
+        long durationSeconds = (long)duration.TotalSeconds;
 
-        var ctx = new ActionContext
+        ActionContext ctx = new ActionContext
         {
             Origin = ActionOrigin.Player,
             SessionKey = SessionKey.Invalid,
@@ -110,7 +119,7 @@ internal sealed partial class PlayerPresenceGrain
             RoomId = prev,
         };
 
-        var roomGrain = _grainFactory.GetRoomGrain(prev);
+        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(prev);
 
         await roomGrain.RemoveAvatarFromPlayerAsync(ctx, ctx.PlayerId, ct);
         await _events.PublishAsync(

@@ -3,9 +3,12 @@ using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.FriendList.Enums;
+using Turbo.Primitives.FriendList.Grains;
 using Turbo.Primitives.Messages.Incoming.FriendList;
 using Turbo.Primitives.Messages.Outgoing.FriendList;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Players;
+using Turbo.Primitives.Players.Grains;
 
 namespace Turbo.PacketHandlers.FriendList;
 
@@ -21,10 +24,12 @@ public class RequestFriendMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0 || string.IsNullOrWhiteSpace(message.PlayerName))
+        {
             return;
+        }
 
-        var directory = _grainFactory.GetPlayerDirectoryGrain();
-        var targetId = await directory
+        IPlayerDirectoryGrain directory = _grainFactory.GetPlayerDirectoryGrain();
+        PlayerId? targetId = await directory
             .GetPlayerIdAsync(message.PlayerName, ct)
             .ConfigureAwait(false);
 
@@ -42,8 +47,8 @@ public class RequestFriendMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        var grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
-        var error = await grain
+        IMessengerGrain grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
+        FriendListErrorCodeType? error = await grain
             .SendFriendRequestAsync(targetId.Value, message.PlayerName, ct)
             .ConfigureAwait(false);
 

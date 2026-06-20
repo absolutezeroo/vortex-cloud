@@ -148,7 +148,6 @@ public class RoomEntity : TurboEntity
     [ForeignKey(nameof(NavigatorCategoryEntityId))]
     public NavigatorFlatCategoryEntity? NavigatorFlatCategoryEntity { get; set; }
 
-    [ForeignKey(nameof(GroupEntityId))]
     public GroupEntity? GroupEntity { get; set; }
 
     [InverseProperty("RoomEntity")]

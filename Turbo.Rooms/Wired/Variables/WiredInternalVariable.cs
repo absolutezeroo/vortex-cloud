@@ -28,7 +28,7 @@ public abstract class WiredInternalVariable(RoomGrain roomGrain) : IWiredInterna
 
     public virtual bool CanBind(in WiredVariableKey key)
     {
-        var snapshot = GetVarSnapshot();
+        WiredVariableSnapshot snapshot = GetVarSnapshot();
 
         return key.VariableId == snapshot.VariableId && key.TargetType == snapshot.TargetType;
     }
@@ -58,7 +58,7 @@ public abstract class WiredInternalVariable(RoomGrain roomGrain) : IWiredInterna
 
     private WiredVariableSnapshot BuildSnapshot()
     {
-        var variableHash = WiredVariableHashBuilder.HashValues(
+        WiredVariableHash variableHash = WiredVariableHashBuilder.HashValues(
             VariableName,
             AvailabilityType,
             TargetType,
@@ -66,7 +66,7 @@ public abstract class WiredInternalVariable(RoomGrain roomGrain) : IWiredInterna
             GetTextConnectors()
         );
 
-        var variableId = WiredVariableIdBuilder.CreateInternalOrdered(
+        WiredVariableId variableId = WiredVariableIdBuilder.CreateInternalOrdered(
             TargetType,
             VariableName,
             SubBandType,

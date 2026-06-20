@@ -9,14 +9,14 @@ public abstract class AbstractSerializer<T>(int header) : ISerializer
 
     public IServerPacket Serialize(IComposer message)
     {
-        var packet = new ServerPacket(Header);
+        ServerPacket packet = new ServerPacket(Header);
 
         packet.WriteInteger(0);
         packet.WriteShort((short)Header);
 
         Serialize(packet, (T)message);
 
-        var length = packet.Length;
+        int length = packet.Length;
 
         packet.SetWriterPosition(0);
         packet.WriteInteger(length - 4);

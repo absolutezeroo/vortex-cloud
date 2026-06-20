@@ -55,16 +55,12 @@ internal static class GuildBadgeLibrary
     ];
 
     /// <summary>Base shapes that form the bottom layer of a guild badge.</summary>
-    public static List<GroupBadgePartOptionSnapshot> BaseParts { get; } = BuildParts(
-        "base",
-        BaseShapeCount
-    );
+    public static List<GroupBadgePartOptionSnapshot> BaseParts { get; } =
+        BuildParts("base", BaseShapeCount);
 
     /// <summary>Overlay symbols layered on top of the base shape.</summary>
-    public static List<GroupBadgePartOptionSnapshot> LayerParts { get; } = BuildParts(
-        "symbol",
-        SymbolCount
-    );
+    public static List<GroupBadgePartOptionSnapshot> LayerParts { get; } =
+        BuildParts("symbol", SymbolCount);
 
     /// <summary>Colour swatches applied to individual badge parts.</summary>
     public static List<GroupColorOptionSnapshot> BadgeColors { get; } = BuildColors();
@@ -86,13 +82,38 @@ internal static class GuildBadgeLibrary
     /// </para>
     /// </summary>
     public static List<GroupBadgePartSnapshot> DefaultBadgeParts { get; } =
-        [
-            new GroupBadgePartSnapshot { PartId = 1, ColorId = 1, Position = 4 }, // base layer
-            new GroupBadgePartSnapshot { PartId = 0, ColorId = 0, Position = 0 }, // overlay 1 (empty)
-            new GroupBadgePartSnapshot { PartId = 0, ColorId = 0, Position = 0 }, // overlay 2 (empty)
-            new GroupBadgePartSnapshot { PartId = 0, ColorId = 0, Position = 0 }, // overlay 3 (empty)
-            new GroupBadgePartSnapshot { PartId = 0, ColorId = 0, Position = 0 }, // overlay 4 (empty)
-        ];
+    [
+        new GroupBadgePartSnapshot
+        {
+            PartId = 1,
+            ColorId = 1,
+            Position = 4,
+        }, // base layer
+        new GroupBadgePartSnapshot
+        {
+            PartId = 0,
+            ColorId = 0,
+            Position = 0,
+        }, // overlay 1 (empty)
+        new GroupBadgePartSnapshot
+        {
+            PartId = 0,
+            ColorId = 0,
+            Position = 0,
+        }, // overlay 2 (empty)
+        new GroupBadgePartSnapshot
+        {
+            PartId = 0,
+            ColorId = 0,
+            Position = 0,
+        }, // overlay 3 (empty)
+        new GroupBadgePartSnapshot
+        {
+            PartId = 0,
+            ColorId = 0,
+            Position = 0,
+        }, // overlay 4 (empty)
+    ];
 
     // Number of badge layers the client badge editor always has. This is a hard client constant
     // (5 BadgeLayerCtrl instances created unconditionally); the server must always send exactly
@@ -116,12 +137,12 @@ internal static class GuildBadgeLibrary
     /// </remarks>
     public static List<GroupBadgePartSnapshot> ParseBadgeCode(string? badgeCode)
     {
-        var result = new List<GroupBadgePartSnapshot>(LayerCount);
+        List<GroupBadgePartSnapshot> result = new List<GroupBadgePartSnapshot>(LayerCount);
 
         if (!string.IsNullOrEmpty(badgeCode))
         {
             // Each segment is 'b' + 2-digit partId + 2-digit colorId + 1-digit position = 6 chars.
-            var i = 0;
+            int i = 0;
             while (i + 5 < badgeCode.Length && result.Count < LayerCount)
             {
                 if (badgeCode[i] != 'b')
@@ -131,9 +152,9 @@ internal static class GuildBadgeLibrary
                 }
 
                 if (
-                    int.TryParse(badgeCode.AsSpan(i + 1, 2), out var partId)
-                    && int.TryParse(badgeCode.AsSpan(i + 3, 2), out var colorId)
-                    && int.TryParse(badgeCode.AsSpan(i + 5, 1), out var position)
+                    int.TryParse(badgeCode.AsSpan(i + 1, 2), out int partId)
+                    && int.TryParse(badgeCode.AsSpan(i + 3, 2), out int colorId)
+                    && int.TryParse(badgeCode.AsSpan(i + 5, 1), out int position)
                 )
                 {
                     result.Add(
@@ -163,8 +184,10 @@ internal static class GuildBadgeLibrary
     /// </summary>
     public static string ResolveColorHex(string? colorId)
     {
-        if (int.TryParse(colorId, out var id) && id >= 1 && id <= PaletteHex.Length)
+        if (int.TryParse(colorId, out int id) && id >= 1 && id <= PaletteHex.Length)
+        {
             return PaletteHex[id - 1];
+        }
 
         return PaletteHex[0];
     }

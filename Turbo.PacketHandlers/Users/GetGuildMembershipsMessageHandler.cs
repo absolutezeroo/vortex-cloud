@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Incoming.Users;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Orleans;
@@ -20,9 +22,11 @@ public class GetGuildMembershipsMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var memberships = await _grainFactory
+        List<GuildInfoSnapshot> memberships = await _grainFactory
             .GetGroupDirectoryGrain()
             .GetMembershipsAsync(ctx.PlayerId, ct)
             .ConfigureAwait(false);

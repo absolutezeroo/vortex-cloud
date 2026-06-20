@@ -19,7 +19,9 @@ public class NavigatorAddSavedSearchMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (string.IsNullOrWhiteSpace(message.SearchCode))
+        {
             return;
+        }
 
         await _grainFactory
             .GetPlayerNavigatorGrain(ctx.PlayerId)

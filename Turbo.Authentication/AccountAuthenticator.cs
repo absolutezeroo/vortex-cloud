@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Turbo.Database.Context;
+using Turbo.Database.Entities.Players;
 using Turbo.Primitives.Authentication;
 
 namespace Turbo.Authentication;
@@ -26,22 +27,24 @@ internal sealed class AccountAuthenticator(IDbContextFactory<TurboDbContext> dbC
     )
     {
         if (string.IsNullOrWhiteSpace(email) || string.IsNullOrEmpty(password))
+        {
             return null;
+        }
 
-        var normalizedEmail = email.Trim().ToLowerInvariant();
+        string normalizedEmail = email.Trim().ToLowerInvariant();
 
-        await using var dbCtx = await dbContextFactory
+        await using TurboDbContext dbCtx = await dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
-        var account = await dbCtx
+        PlayerAccountEntity? account = await dbCtx
             .PlayerAccounts.AsNoTracking()
             .FirstOrDefaultAsync(a => a.Email == normalizedEmail, ct)
             .ConfigureAwait(false);
 
-        var hash = account?.PasswordHash ?? DummyHash;
+        string hash = account?.PasswordHash ?? DummyHash;
 
-        var valid = await Task.Run(() => BCrypt.Net.BCrypt.Verify(password, hash), ct)
+        bool valid = await Task.Run(() => BCrypt.Net.BCrypt.Verify(password, hash), ct)
             .ConfigureAwait(false);
 
         return valid && account is not null ? account.Id : null;

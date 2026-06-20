@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Turbo.Database.Context;
+using Turbo.Database.Entities.Furniture;
 using Turbo.Furniture.Configuration;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Furniture.Snapshots;
@@ -28,20 +29,20 @@ public sealed class FurnitureDefinitionProvider(
         ImmutableDictionary<int, FurnitureDefinitionSnapshot>.Empty;
 
     public FurnitureDefinitionSnapshot? TryGetDefinition(int id) =>
-        _definitionsById.TryGetValue(id, out var definition) ? definition : null;
+        _definitionsById.TryGetValue(id, out FurnitureDefinitionSnapshot? definition) ? definition : null;
 
     public async Task ReloadAsync(CancellationToken ct = default)
     {
-        var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {
-            var entities = await dbCtx
+            List<FurnitureDefinitionEntity> entities = await dbCtx
                 .FurnitureDefinitions.AsNoTracking()
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
-            var defs = entities
+            List<FurnitureDefinitionSnapshot> defs = entities
                 .Select(x => new FurnitureDefinitionSnapshot
                 {
                     Id = x.Id,

@@ -20,7 +20,9 @@ public class UpdateTriggerMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx is null || ctx.PlayerId <= 0 || ctx.RoomId <= 0 || message.Id <= 0)
+        {
             return;
+        }
 
         if (
             !await _grainFactory

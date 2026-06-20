@@ -25,7 +25,9 @@ public class WiredTriggerClickTile(
     public override Task<bool> CanTriggerAsync(IWiredProcessingContext ctx, CancellationToken ct)
     {
         if (ctx.Event is not PlayerClickedTileEvent evt)
+        {
             return Task.FromResult(false);
+        }
 
         return Task.FromResult(true);
     }

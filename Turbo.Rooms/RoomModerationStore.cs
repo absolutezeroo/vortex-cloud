@@ -27,7 +27,9 @@ internal sealed class RoomModerationStore(
     public async Task<bool> IsBannedAsync(int roomId, int playerId, CancellationToken ct = default)
     {
         if (roomId <= 0 || playerId <= 0)
+        {
             return false;
+        }
 
         await using TurboDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
@@ -65,7 +67,9 @@ internal sealed class RoomModerationStore(
     public async Task UnbanAsync(int roomId, int playerId, CancellationToken ct = default)
     {
         if (roomId <= 0 || playerId <= 0)
+        {
             return;
+        }
 
         await using TurboDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
@@ -84,7 +88,9 @@ internal sealed class RoomModerationStore(
                 .ConfigureAwait(false);
 
             if (existing is null)
+            {
                 return;
+            }
 
             existing.DeletedAt = DateTime.UtcNow;
 
@@ -104,7 +110,9 @@ internal sealed class RoomModerationStore(
     public async Task UnmuteAsync(int roomId, int playerId, CancellationToken ct = default)
     {
         if (roomId <= 0 || playerId <= 0)
+        {
             return;
+        }
 
         await using TurboDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
@@ -123,7 +131,9 @@ internal sealed class RoomModerationStore(
                 .ConfigureAwait(false);
 
             if (existing is null)
+            {
                 return;
+            }
 
             existing.DeletedAt = DateTime.UtcNow;
 
@@ -146,7 +156,9 @@ internal sealed class RoomModerationStore(
     )
     {
         if (roomId <= 0)
+        {
             return [];
+        }
 
         await using TurboDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
@@ -156,9 +168,7 @@ internal sealed class RoomModerationStore(
 
         return await dbCtx
             .RoomMutes.AsNoTracking()
-            .Where(m =>
-                m.RoomEntityId == roomId && m.DeletedAt == null && m.DateExpires > now
-            )
+            .Where(m => m.RoomEntityId == roomId && m.DeletedAt == null && m.DateExpires > now)
             .Select(m => new RoomMuteRecord(m.PlayerEntityId, m.DateExpires))
             .ToListAsync(ct)
             .ConfigureAwait(false);
@@ -173,7 +183,9 @@ internal sealed class RoomModerationStore(
     )
     {
         if (roomId <= 0 || playerId <= 0)
+        {
             return;
+        }
 
         await using TurboDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Orleans;
+using Turbo.Database.Context;
 using Turbo.Database.Entities.Furniture;
 using Turbo.Database.Entities.Players;
 using Turbo.Furniture;
@@ -15,10 +16,12 @@ using Turbo.Primitives;
 using Turbo.Primitives.Catalog.Snapshots;
 using Turbo.Primitives.Events;
 using Turbo.Primitives.Furniture.Enums;
+using Turbo.Primitives.Furniture.Snapshots;
 using Turbo.Primitives.Furniture.StuffData;
 using Turbo.Primitives.Inventory.Furniture;
 using Turbo.Primitives.Inventory.Snapshots;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Players.Grains;
 using Turbo.Primitives.Rooms.Object;
 using Turbo.Primitives.Rooms.Snapshots.Furniture;
 
@@ -32,9 +35,11 @@ public sealed partial class InventoryGrain
     public async Task<bool> AddFurnitureAsync(IFurnitureItem item, CancellationToken ct)
     {
         if (!await _furniModule.AddFurnitureAsync(item, ct))
+        {
             return false;
+        }
 
-        var presence = _grainFactory.GetPlayerPresenceGrain(this.GetPrimaryKeyLong());
+        IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(this.GetPrimaryKeyLong());
 
         await presence.OnFurnitureAddedAsync(item.GetSnapshot(), ct);
 
@@ -46,12 +51,14 @@ public sealed partial class InventoryGrain
         CancellationToken ct
     )
     {
-        var item = _furnitureItemsLoader.CreateFromRoomItemSnapshot(snapshot);
+        IFurnitureItem item = _furnitureItemsLoader.CreateFromRoomItemSnapshot(snapshot);
 
         if (!await _furniModule.AddFurnitureAsync(item, ct))
+        {
             return false;
+        }
 
-        var presence = _grainFactory.GetPlayerPresenceGrain(this.GetPrimaryKeyLong());
+        IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(this.GetPrimaryKeyLong());
 
         await presence.OnFurnitureAddedAsync(item.GetSnapshot(), ct);
 
@@ -61,9 +68,11 @@ public sealed partial class InventoryGrain
     public async Task<bool> RemoveFurnitureAsync(RoomObjectId itemId, CancellationToken ct)
     {
         if (!await _furniModule.RemoveFurnitureAsync(itemId, ct))
+        {
             return false;
+        }
 
-        var presence = _grainFactory.GetPlayerPresenceGrain(this.GetPrimaryKeyLong());
+        IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(this.GetPrimaryKeyLong());
 
         await presence.OnFurnitureRemovedAsync(itemId, ct);
 
@@ -79,14 +88,14 @@ public sealed partial class InventoryGrain
     {
         quantity = Math.Max(1, quantity);
 
-        var furniEntities = new List<FurnitureEntity>();
-        var badgeCodes = new List<string>();
+        List<FurnitureEntity> furniEntities = new List<FurnitureEntity>();
+        List<string> badgeCodes = new List<string>();
 
-        foreach (var product in offer.Products)
+        foreach (CatalogProductSnapshot product in offer.Products)
         {
             if (product.ProductType is ProductType.Floor || product.ProductType is ProductType.Wall)
             {
-                var def =
+                FurnitureDefinitionSnapshot def =
                     _furnitureDefinitionProvider.TryGetDefinition(product.FurniDefinitionId)
                     ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
 
@@ -112,17 +121,17 @@ public sealed partial class InventoryGrain
             }
         }
 
-        var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {
             dbCtx.AddRange(furniEntities);
 
-            var grantedBadgeCodes = new List<string>();
+            List<string> grantedBadgeCodes = new List<string>();
 
-            foreach (var badgeCode in badgeCodes)
+            foreach (string badgeCode in badgeCodes)
             {
-                var alreadyOwned = await dbCtx
+                bool alreadyOwned = await dbCtx
                     .PlayerBadges.AnyAsync(
                         b =>
                             b.PlayerEntityId == (int)this.GetPrimaryKeyLong()
@@ -132,7 +141,9 @@ public sealed partial class InventoryGrain
                     .ConfigureAwait(false);
 
                 if (alreadyOwned)
+                {
                     continue;
+                }
 
                 dbCtx.PlayerBadges.Add(
                     new PlayerBadgeEntity
@@ -149,9 +160,9 @@ public sealed partial class InventoryGrain
 
             await dbCtx.SaveChangesAsync(ct);
 
-            foreach (var entity in furniEntities)
+            foreach (FurnitureEntity entity in furniEntities)
             {
-                var def =
+                FurnitureDefinitionSnapshot def =
                     _furnitureDefinitionProvider.TryGetDefinition(
                         entity.FurnitureDefinitionEntityId
                     ) ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
@@ -187,9 +198,9 @@ public sealed partial class InventoryGrain
                     .ConfigureAwait(false);
             }
 
-            var presence = _grainFactory.GetPlayerPresenceGrain(this.GetPrimaryKeyLong());
+            IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(this.GetPrimaryKeyLong());
 
-            foreach (var badgeCode in grantedBadgeCodes)
+            foreach (string badgeCode in grantedBadgeCodes)
                 await presence.OnBadgeGrantedAsync(badgeCode, ct);
         }
         finally
@@ -201,13 +212,15 @@ public sealed partial class InventoryGrain
     public async Task GrantBadgeAsync(string badgeCode, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(badgeCode))
+        {
             return;
+        }
 
-        var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {
-            var alreadyOwned = await dbCtx
+            bool alreadyOwned = await dbCtx
                 .PlayerBadges.AnyAsync(
                     b =>
                         b.PlayerEntityId == (int)this.GetPrimaryKeyLong()
@@ -217,7 +230,9 @@ public sealed partial class InventoryGrain
                 .ConfigureAwait(false);
 
             if (alreadyOwned)
+            {
                 return;
+            }
 
             dbCtx.PlayerBadges.Add(
                 new PlayerBadgeEntity
@@ -231,7 +246,7 @@ public sealed partial class InventoryGrain
 
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
 
-            var presence = _grainFactory.GetPlayerPresenceGrain(this.GetPrimaryKeyLong());
+            IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(this.GetPrimaryKeyLong());
 
             await presence.OnBadgeGrantedAsync(badgeCode, ct).ConfigureAwait(false);
         }
@@ -247,18 +262,18 @@ public sealed partial class InventoryGrain
         CancellationToken ct
     )
     {
-        var def =
+        FurnitureDefinitionSnapshot def =
             _furnitureDefinitionProvider.TryGetDefinition(definitionId)
             ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
 
-        var entity = new FurnitureEntity
+        FurnitureEntity entity = new FurnitureEntity
         {
             PlayerEntityId = (int)this.GetPrimaryKeyLong(),
             FurnitureDefinitionEntityId = def.Id,
             ExtraData = extraData,
         };
 
-        var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {
@@ -292,20 +307,20 @@ public sealed partial class InventoryGrain
         CancellationToken ct
     )
     {
-        var def =
+        FurnitureDefinitionSnapshot def =
             _furnitureDefinitionProvider.TryGetDefinition(furniDefinitionId)
             ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
 
-        var extraData = $"{{\"serial\":{serialNumber},\"seriesSize\":{seriesSize}}}";
+        string extraData = $"{{\"serial\":{serialNumber},\"seriesSize\":{seriesSize}}}";
 
-        var entity = new FurnitureEntity
+        FurnitureEntity entity = new FurnitureEntity
         {
             PlayerEntityId = (int)this.GetPrimaryKeyLong(),
             FurnitureDefinitionEntityId = def.Id,
             ExtraData = extraData,
         };
 
-        var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {

@@ -34,7 +34,7 @@ public sealed class RsaService : IRsaService
 
     public byte[] Encrypt(byte[] data)
     {
-        var cipher = new Pkcs1Encoding(new RsaEngine());
+        Pkcs1Encoding cipher = new Pkcs1Encoding(new RsaEngine());
 
         cipher.Init(true, _publicKey);
 
@@ -43,7 +43,7 @@ public sealed class RsaService : IRsaService
 
     public byte[] Decrypt(byte[] data)
     {
-        var cipher = new Pkcs1Encoding(new RsaEngine());
+        Pkcs1Encoding cipher = new Pkcs1Encoding(new RsaEngine());
 
         cipher.Init(false, _privateKey);
 
@@ -52,7 +52,7 @@ public sealed class RsaService : IRsaService
 
     public byte[] Sign(byte[] data)
     {
-        var cipher = new Pkcs1Encoding(new RsaEngine());
+        Pkcs1Encoding cipher = new Pkcs1Encoding(new RsaEngine());
 
         cipher.Init(true, _privateKey);
 
@@ -61,7 +61,7 @@ public sealed class RsaService : IRsaService
 
     public bool Verify(byte[] data, byte[] signature)
     {
-        var verifier = new PssSigner(new RsaEngine(), new Sha256Digest(), 20);
+        PssSigner verifier = new PssSigner(new RsaEngine(), new Sha256Digest(), 20);
 
         verifier.Init(false, _publicKey);
         verifier.BlockUpdate(data, 0, data.Length);
@@ -71,13 +71,13 @@ public sealed class RsaService : IRsaService
 
     private static byte[] ProcessData(IAsymmetricBlockCipher cipher, byte[] data)
     {
-        var outputStream = new MemoryStream();
-        var chunkSize = cipher.GetInputBlockSize();
+        MemoryStream outputStream = new MemoryStream();
+        int chunkSize = cipher.GetInputBlockSize();
 
-        for (var chunkPosition = 0; chunkPosition < data.Length; chunkPosition += chunkSize)
+        for (int chunkPosition = 0; chunkPosition < data.Length; chunkPosition += chunkSize)
         {
-            var chunkLength = Math.Min(chunkSize, data.Length - chunkPosition);
-            var chunkResult = cipher.ProcessBlock(data, chunkPosition, chunkLength);
+            int chunkLength = Math.Min(chunkSize, data.Length - chunkPosition);
+            byte[]? chunkResult = cipher.ProcessBlock(data, chunkPosition, chunkLength);
 
             outputStream.Write(chunkResult, 0, chunkResult.Length);
         }

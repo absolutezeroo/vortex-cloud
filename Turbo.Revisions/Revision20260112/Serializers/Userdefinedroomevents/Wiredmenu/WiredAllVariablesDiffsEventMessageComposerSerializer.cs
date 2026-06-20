@@ -1,5 +1,7 @@
 using Turbo.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 using Turbo.Primitives.Packets;
+using Turbo.Primitives.Rooms.Snapshots.Wired.Variables;
+using Turbo.Primitives.Rooms.Wired.Variable;
 using Turbo.Revisions.Revision20260112.Serializers.Userdefinedroomevents.Data;
 
 namespace Turbo.Revisions.Revision20260112.Serializers.Userdefinedroomevents.Wiredmenu;
@@ -17,12 +19,12 @@ internal class WiredAllVariablesDiffsEventMessageComposerSerializer(int header)
             .WriteBoolean(message.IsLastChunk)
             .WriteInteger(message.RemovedVariableIds.Count);
 
-        foreach (var removedVariable in message.RemovedVariableIds)
+        foreach (WiredVariableId removedVariable in message.RemovedVariableIds)
             packet.WriteString(removedVariable.ToString());
 
         packet.WriteInteger(message.AddedOrUpdated.Count);
 
-        foreach (var snapshot in message.AddedOrUpdated)
+        foreach (WiredVariableSnapshot snapshot in message.AddedOrUpdated)
         {
             packet.WriteInteger(snapshot.VariableHash.Value);
 

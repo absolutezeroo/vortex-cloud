@@ -18,7 +18,7 @@ public class PerformanceLogMessageHandler(IPerformanceLogSink performanceLogSink
         CancellationToken ct
     )
     {
-        var eventEntry = new PerformanceLogEvent
+        PerformanceLogEvent eventEntry = new PerformanceLogEvent
         {
             ElapsedTime = message.ElapsedTime,
             UserAgent = message.UserAgent ?? "unknown",

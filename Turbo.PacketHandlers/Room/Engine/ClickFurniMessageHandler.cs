@@ -16,8 +16,8 @@ public class ClickFurniMessageHandler(IRoomService roomService) : IMessageHandle
         CancellationToken ct
     )
     {
-        var isFloorItemClicked = message.ObjectId > 0;
-        var isWallItemClicked = message.ObjectId < 0;
+        bool isFloorItemClicked = message.ObjectId > 0;
+        bool isWallItemClicked = message.ObjectId < 0;
 
         if (isFloorItemClicked)
         {

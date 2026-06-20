@@ -86,7 +86,7 @@ internal sealed partial class PlayerPresenceGrain
     {
         if (composers.Length > 0)
         {
-            foreach (var composer in composers)
+            foreach (IComposer composer in composers)
                 _outgoingQueue.Enqueue(composer);
 
             _ = ProcessOutgoingQueueAsync();
@@ -102,7 +102,9 @@ internal sealed partial class PlayerPresenceGrain
             || item.ExcludedPlayerIds is not null
                 && item.ExcludedPlayerIds.Contains((int)this.GetPrimaryKeyLong())
         )
+        {
             return Task.CompletedTask;
+        }
 
         return SendComposerAsync(item.Composer);
     }
@@ -114,7 +116,9 @@ internal sealed partial class PlayerPresenceGrain
     private async Task ProcessOutgoingQueueAsync()
     {
         if (_isProcessingQueue)
+        {
             return;
+        }
 
         _isProcessingQueue = true;
 
@@ -124,7 +128,7 @@ internal sealed partial class PlayerPresenceGrain
         {
             while (_outgoingQueue.Count > 0)
             {
-                var payload = _outgoingQueue.Dequeue();
+                IComposer payload = _outgoingQueue.Dequeue();
 
                 await _sessionObserver.SendComposerAsync(payload);
             }

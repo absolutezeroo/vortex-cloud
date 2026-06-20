@@ -13,7 +13,7 @@ internal class AuthenticationOKMessageSerializer(int header)
 
         if (message.SuggestedLoginActions != null)
         {
-            foreach (var action in message.SuggestedLoginActions)
+            foreach (short action in message.SuggestedLoginActions)
             {
                 packet.WriteShort(action);
             }

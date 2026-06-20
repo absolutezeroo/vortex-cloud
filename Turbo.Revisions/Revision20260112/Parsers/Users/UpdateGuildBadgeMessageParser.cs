@@ -9,11 +9,11 @@ internal class UpdateGuildBadgeMessageParser : IParser
 {
     public IMessageEvent Parse(IClientPacket packet)
     {
-        var groupId = packet.PopInt();
+        int groupId = packet.PopInt();
 
-        var badgeCount = packet.PopInt();
-        var badgeParts = new List<int>(badgeCount);
-        for (var i = 0; i < badgeCount; i++)
+        int badgeCount = packet.PopInt();
+        List<int> badgeParts = new List<int>(badgeCount);
+        for (int i = 0; i < badgeCount; i++)
             badgeParts.Add(packet.PopInt());
 
         return new UpdateGuildBadgeMessage { GroupId = groupId, BadgeParts = badgeParts };

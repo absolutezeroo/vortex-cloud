@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Incoming.Groupforums;
 using Turbo.Primitives.Messages.Outgoing.Groupforums;
 using Turbo.Primitives.Orleans;
@@ -20,9 +21,11 @@ public class GetMessagesMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0 || message.GroupId <= 0)
+        {
             return;
+        }
 
-        var page = await _grainFactory
+        ThreadMessagesPageSnapshot? page = await _grainFactory
             .GetGroupForumGrain(message.GroupId)
             .GetMessagesAsync(
                 ctx.PlayerId,
@@ -34,7 +37,9 @@ public class GetMessagesMessageHandler(IGrainFactory grainFactory)
             .ConfigureAwait(false);
 
         if (page is null)
+        {
             return;
+        }
 
         await ctx.SendComposerAsync(new ThreadMessagesMessageComposer { Page = page }, ct)
             .ConfigureAwait(false);

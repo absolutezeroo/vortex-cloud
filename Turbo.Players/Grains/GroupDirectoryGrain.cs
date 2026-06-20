@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Groups;
+using Turbo.Database.Entities.Players;
+using Turbo.Database.Entities.Room;
 using Turbo.Primitives.Events;
 using Turbo.Primitives.Groups.Enums;
 using Turbo.Primitives.Groups.Grains;
@@ -44,11 +46,11 @@ internal sealed class GroupDirectoryGrain(
         CancellationToken ct
     )
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var playerId = player.Value;
+        int playerId = player.Value;
 
-        var rooms = await dbCtx
+        List<GroupRoomSnapshot> rooms = await dbCtx
             .Rooms.AsNoTracking()
             .Where(r => r.PlayerEntityId == playerId && r.DeletedAt == null)
             .OrderBy(r => r.Id)
@@ -81,27 +83,31 @@ internal sealed class GroupDirectoryGrain(
         CancellationToken ct
     )
     {
-        var ownerId = owner.Value;
+        int ownerId = owner.Value;
 
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var room = await dbCtx.Rooms.FirstOrDefaultAsync(
+        RoomEntity? room = await dbCtx.Rooms.FirstOrDefaultAsync(
             r => r.Id == baseRoomId && r.DeletedAt == null,
             ct
         );
 
         // Must own the room, and the room must not already be a guild base.
         if (room is null || room.PlayerEntityId != ownerId || room.GroupEntityId != null)
+        {
             return null;
+        }
 
-        var ownerEntity = await dbCtx.Players.FindAsync([ownerId], ct);
+        PlayerEntity? ownerEntity = await dbCtx.Players.FindAsync([ownerId], ct);
         if (ownerEntity is null)
+        {
             return null;
+        }
 
         // Charge the creation cost through the wallet — this is the "purchase". The wallet writes
         // the economy ledger entry, emits CurrencyChangedEvent and pushes the new balance to the
         // client; we only proceed if the debit succeeds (insufficient funds → abort, no group).
-        var debit = await grainFactory
+        WalletDebitResult debit = await grainFactory
             .GetPlayerWalletGrain(ownerId)
             .TryDebitAsync(
                 [
@@ -125,7 +131,7 @@ internal sealed class GroupDirectoryGrain(
             return null;
         }
 
-        var group = GroupFactory.Create(
+        GroupEntity group = GroupFactory.Create(
             name: name,
             badge: BuildBadgeCode(badgeParts),
             roomEntityId: baseRoomId,
@@ -205,27 +211,29 @@ internal sealed class GroupDirectoryGrain(
         CancellationToken ct
     )
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var playerId = player.Value;
+        int playerId = player.Value;
 
-        var favouriteGroupId = await dbCtx
+        int? favouriteGroupId = await dbCtx
             .Players.AsNoTracking()
             .Where(p => p.Id == playerId)
             .Select(p => p.FavouriteGroupId)
             .FirstOrDefaultAsync(ct);
 
         // Groups the player belongs to (membership table already includes the owner).
-        var groupIds = await dbCtx
+        List<int> groupIds = await dbCtx
             .GroupMembers.AsNoTracking()
             .Where(m => m.PlayerEntityId == playerId && m.DeletedAt == null)
             .Select(m => m.GroupEntityId)
             .ToListAsync(ct);
 
         if (groupIds.Count == 0)
+        {
             return [];
+        }
 
-        var groups = await dbCtx
+        List<GroupEntity> groups = await dbCtx
             .Groups.AsNoTracking()
             .Include(g => g.ForumSettings)
             .Where(g => groupIds.Contains(g.Id) && g.DeletedAt == null)
@@ -254,14 +262,14 @@ internal sealed class GroupDirectoryGrain(
         CancellationToken ct
     )
     {
-        var playerId = player.Value;
+        int playerId = player.Value;
 
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         // Only a member may favourite a group; clearing is unconditional.
         if (favourite)
         {
-            var isMember = await dbCtx.GroupMembers.AnyAsync(
+            bool isMember = await dbCtx.GroupMembers.AnyAsync(
                 m =>
                     m.GroupEntityId == groupId
                     && m.PlayerEntityId == playerId
@@ -269,10 +277,12 @@ internal sealed class GroupDirectoryGrain(
                 ct
             );
             if (!isMember)
+            {
                 return;
+            }
         }
 
-        var newValue = favourite ? groupId : (int?)null;
+        int? newValue = favourite ? groupId : (int?)null;
 
         await dbCtx
             .Players.Where(p => p.Id == playerId)
@@ -304,18 +314,20 @@ internal sealed class GroupDirectoryGrain(
         CancellationToken ct
     )
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var playerId = player.Value;
+        int playerId = player.Value;
 
-        var groupIds = await dbCtx
+        List<int> groupIds = await dbCtx
             .GroupMembers.AsNoTracking()
             .Where(m => m.PlayerEntityId == playerId && m.DeletedAt == null)
             .Select(m => m.GroupEntityId)
             .ToListAsync(ct);
 
         if (groupIds.Count == 0)
+        {
             return [];
+        }
 
         return await dbCtx
             .Groups.AsNoTracking()
@@ -332,16 +344,16 @@ internal sealed class GroupDirectoryGrain(
         CancellationToken ct
     )
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var take = amount is <= 0 or > 50 ? 20 : amount;
-        var skip = Math.Max(startIndex, 0);
+        int take = amount is <= 0 or > 50 ? 20 : amount;
+        int skip = Math.Max(startIndex, 0);
 
-        var enabledForums = dbCtx
+        IQueryable<GroupEntity> enabledForums = dbCtx
             .Groups.AsNoTracking()
             .Where(g => g.DeletedAt == null && g.ForumSettings!.Enabled);
 
-        var totalAmount = await enabledForums.CountAsync(ct);
+        int totalAmount = await enabledForums.CountAsync(ct);
 
         var groups = await enabledForums
             .OrderByDescending(g => g.Id)
@@ -357,6 +369,7 @@ internal sealed class GroupDirectoryGrain(
             .ToListAsync(ct);
 
         if (groups.Count == 0)
+        {
             return new ForumsListPageSnapshot
             {
                 ListCode = listCode,
@@ -364,10 +377,11 @@ internal sealed class GroupDirectoryGrain(
                 StartIndex = startIndex,
                 Forums = [],
             };
+        }
 
-        var groupIds = groups.Select(g => g.Id).ToList();
+        List<int> groupIds = groups.Select(g => g.Id).ToList();
 
-        var threadCounts = await dbCtx
+        Dictionary<int, int> threadCounts = await dbCtx
             .GroupForumThreads.AsNoTracking()
             .Where(t =>
                 groupIds.Contains(t.GroupEntityId)
@@ -378,7 +392,7 @@ internal sealed class GroupDirectoryGrain(
             .Select(g => new { GroupId = g.Key, Count = g.Count() })
             .ToDictionaryAsync(x => x.GroupId, x => x.Count, ct);
 
-        var messageCounts = await dbCtx
+        Dictionary<int, int> messageCounts = await dbCtx
             .GroupForumPosts.AsNoTracking()
             .Where(p =>
                 groupIds.Contains(p.GroupEntityId)
@@ -389,7 +403,7 @@ internal sealed class GroupDirectoryGrain(
             .Select(g => new { GroupId = g.Key, Count = g.Count() })
             .ToDictionaryAsync(x => x.GroupId, x => x.Count, ct);
 
-        var forums = groups
+        List<ForumSnapshot> forums = groups
             .Select(g => new ForumSnapshot
             {
                 GroupId = g.Id,
@@ -441,10 +455,12 @@ internal sealed class GroupDirectoryGrain(
     internal static string BuildBadgeCode(IReadOnlyList<int> parts)
     {
         if (parts.Count == 0)
+        {
             return "b00000";
+        }
 
-        var code = string.Empty;
-        for (var i = 0; i + 2 < parts.Count; i += 3)
+        string code = string.Empty;
+        for (int i = 0; i + 2 < parts.Count; i += 3)
             code += $"b{parts[i]:D2}{parts[i + 1]:D2}{parts[i + 2]}";
 
         return code.Length == 0 ? "b00000" : code;

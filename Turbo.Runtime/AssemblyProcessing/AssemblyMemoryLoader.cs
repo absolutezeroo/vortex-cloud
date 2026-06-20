@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -12,21 +13,25 @@ public static class AssemblyMemoryLoader
     public static LoadedAssembly LoadFromBytes(string mainDllPath)
     {
         if (!File.Exists(mainDllPath))
+        {
             throw new FileNotFoundException("Plugin entry DLL not found.", mainDllPath);
+        }
 
-        var baseDir = Path.GetDirectoryName(mainDllPath)!;
-        var managed = new Dictionary<string, (byte[] asm, byte[]? pdb)>(
+        string baseDir = Path.GetDirectoryName(mainDllPath)!;
+        Dictionary<string, (byte[] asm, byte[]? pdb)> managed = new Dictionary<string, (byte[] asm, byte[]? pdb)>(
             StringComparer.OrdinalIgnoreCase
         );
 
         static byte[] ReadAll(string path) => File.ReadAllBytes(path);
 
-        foreach (var dll in Directory.EnumerateFiles(baseDir, "*.dll"))
+        foreach (string dll in Directory.EnumerateFiles(baseDir, "*.dll"))
         {
-            var name = Path.GetFileNameWithoutExtension(dll);
+            string name = Path.GetFileNameWithoutExtension(dll);
 
             if (managed.ContainsKey(name))
+            {
                 continue;
+            }
 
             byte[] asmBytes = ReadAll(dll);
             string pdbPath = Path.ChangeExtension(dll, ".pdb");
@@ -35,9 +40,9 @@ public static class AssemblyMemoryLoader
             managed[name] = (asmBytes, pdbBytes);
         }
 
-        var alc = new ByteLoadingAlc(baseDir, managed);
-        var entryName = Path.GetFileNameWithoutExtension(mainDllPath);
-        var asm = alc.LoadFromAssemblyName(new AssemblyName(entryName));
+        ByteLoadingAlc alc = new ByteLoadingAlc(baseDir, managed);
+        string entryName = Path.GetFileNameWithoutExtension(mainDllPath);
+        Assembly asm = alc.LoadFromAssemblyName(new AssemblyName(entryName));
 
         return new LoadedAssembly(asm, alc, baseDir);
     }
@@ -48,11 +53,11 @@ public static class AssemblyMemoryLoader
         CancellationToken ct = default
     )
     {
-        var wr = new WeakReference(alc);
+        WeakReference wr = new WeakReference(alc);
 
         alc.Unload();
 
-        var sw = System.Diagnostics.Stopwatch.StartNew();
+        Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
 
         while (sw.ElapsedMilliseconds < maxMs && !ct.IsCancellationRequested)
         {
@@ -61,7 +66,9 @@ public static class AssemblyMemoryLoader
             GC.Collect();
 
             if (!wr.IsAlive)
+            {
                 return true;
+            }
 
             try
             {

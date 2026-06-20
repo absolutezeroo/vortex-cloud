@@ -8,7 +8,9 @@ using Turbo.Messages.Registry;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Observability;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Room;
 using Turbo.Primitives.Players;
+using Turbo.Primitives.Players.Grains;
 
 namespace Turbo.Messages;
 
@@ -37,15 +39,17 @@ public sealed class MessageSystem(
     public async Task PublishAsync(IMessageEvent env, ISessionContext meta, CancellationToken ct)
     {
         if (_registry is null)
+        {
             return;
+        }
 
-        var operation = env.GetType().Name;
-        var actorId = meta?.SessionKey is null
+        string operation = env.GetType().Name;
+        long? actorId = meta?.SessionKey is null
             ? (long?)null
             : ToPlayerId(_sessionGateway.GetPlayerId(meta.SessionKey));
-        var roomId = await ResolveRoomIdAsync(actorId).ConfigureAwait(false);
+        int? roomId = await ResolveRoomIdAsync(actorId).ConfigureAwait(false);
 
-        using var scope = _contextAccessor.BeginScope(
+        using ITurboTraceScope scope = _contextAccessor.BeginScope(
             operation,
             meta?.SessionKey.ToString(),
             playerId: actorId,
@@ -53,7 +57,7 @@ public sealed class MessageSystem(
         );
 
         _metrics.PacketReceived(operation, actorId, roomId);
-        var startedAt = Stopwatch.GetTimestamp();
+        long startedAt = Stopwatch.GetTimestamp();
 
         try
         {
@@ -81,15 +85,19 @@ public sealed class MessageSystem(
     private async Task<int?> ResolveRoomIdAsync(long? actorId)
     {
         if (!actorId.HasValue)
+        {
             return null;
+        }
 
         if (actorId > int.MaxValue)
+        {
             return null;
+        }
 
         try
         {
-            var playerPresence = _grainFactory.GetPlayerPresenceGrain((int)actorId.Value);
-            var room = await playerPresence.GetActiveRoomAsync().ConfigureAwait(false);
+            IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain((int)actorId.Value);
+            RoomPointerSnapshot room = await playerPresence.GetActiveRoomAsync().ConfigureAwait(false);
 
             return room.RoomId > 0 ? room.RoomId.Value : null;
         }

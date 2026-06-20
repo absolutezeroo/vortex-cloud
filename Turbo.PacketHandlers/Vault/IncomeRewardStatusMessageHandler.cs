@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
@@ -5,6 +6,7 @@ using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Vault;
 using Turbo.Primitives.Messages.Outgoing.Vault;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Vault;
 
 namespace Turbo.PacketHandlers.Vault;
 
@@ -20,9 +22,11 @@ public class IncomeRewardStatusMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var rewards = await _grainFactory
+        List<IncomeRewardSnapshot> rewards = await _grainFactory
             .GetPlayerVaultGrain(ctx.PlayerId)
             .GetIncomeRewardsAsync(ct)
             .ConfigureAwait(false);

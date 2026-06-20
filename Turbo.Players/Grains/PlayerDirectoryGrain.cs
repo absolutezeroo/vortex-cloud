@@ -25,19 +25,23 @@ internal class PlayerDirectoryGrain(IDbContextFactory<TurboDbContext> dbCtxFacto
 
     public async Task<string> GetPlayerNameAsync(PlayerId playerId, CancellationToken ct)
     {
-        if (_idToName.TryGetValue(playerId, out var x))
+        if (_idToName.TryGetValue(playerId, out string? x))
+        {
             return x;
+        }
 
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
-        var dbName = await dbCtx
+        string dbName = await dbCtx
             .Players.AsNoTracking()
             .Where(x => x.Id == (int)playerId)
             .Select(x => x.Name)
             .FirstAsync(ct);
 
         if (string.IsNullOrWhiteSpace(dbName))
+        {
             return string.Empty;
+        }
 
         SetNameCache(playerId, dbName);
 
@@ -49,23 +53,23 @@ internal class PlayerDirectoryGrain(IDbContextFactory<TurboDbContext> dbCtxFacto
         CancellationToken ct
     )
     {
-        var names = new Dictionary<PlayerId, string>();
+        Dictionary<PlayerId, string> names = new Dictionary<PlayerId, string>();
 
         if (playerIds.Count == 1)
         {
-            var singleId = playerIds[0];
-            var singleName = await GetPlayerNameAsync(singleId, ct);
+            PlayerId singleId = playerIds[0];
+            string singleName = await GetPlayerNameAsync(singleId, ct);
 
             names.TryAdd(singleId, singleName);
         }
         else
         {
-            var ids = playerIds.Distinct().ToList();
-            var notFound = new List<PlayerId>();
+            List<PlayerId> ids = playerIds.Distinct().ToList();
+            List<PlayerId> notFound = new List<PlayerId>();
 
-            foreach (var playerId in ids)
+            foreach (PlayerId playerId in ids)
             {
-                if (_idToName.TryGetValue(playerId, out var name))
+                if (_idToName.TryGetValue(playerId, out string? name))
                 {
                     names.TryAdd(playerId, name);
                 }
@@ -77,15 +81,15 @@ internal class PlayerDirectoryGrain(IDbContextFactory<TurboDbContext> dbCtxFacto
 
             if (notFound.Count > 0)
             {
-                await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+                await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
-                var players = await dbCtx
+                Dictionary<int, string> players = await dbCtx
                     .Players.AsNoTracking()
                     .Where(x => notFound.Select(x => (int)x).Contains(x.Id))
                     .Select(x => new { x.Id, x.Name })
                     .ToDictionaryAsync(x => x.Id, x => x.Name, ct);
 
-                foreach (var player in players)
+                foreach (KeyValuePair<int, string> player in players)
                 {
                     SetNameCache(player.Key, player.Value);
 
@@ -109,12 +113,16 @@ internal class PlayerDirectoryGrain(IDbContextFactory<TurboDbContext> dbCtxFacto
         name = name.Trim();
 
         if (string.IsNullOrWhiteSpace(name))
+        {
             return null;
+        }
 
-        if (_nameToId.TryGetValue(name, out var playerId))
+        if (_nameToId.TryGetValue(name, out PlayerId playerId))
+        {
             return playerId;
+        }
 
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         var player = await dbCtx
             .Players.AsNoTracking()
@@ -123,7 +131,9 @@ internal class PlayerDirectoryGrain(IDbContextFactory<TurboDbContext> dbCtxFacto
             .FirstOrDefaultAsync(ct);
 
         if (player is null)
+        {
             return null;
+        }
 
         playerId = PlayerId.Parse(player.Id);
 
@@ -139,11 +149,13 @@ internal class PlayerDirectoryGrain(IDbContextFactory<TurboDbContext> dbCtxFacto
     )
     {
         if (string.IsNullOrWhiteSpace(query))
+        {
             return [];
+        }
 
         query = query.Trim();
 
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         var players = await dbCtx
             .Players.AsNoTracking()
@@ -178,8 +190,10 @@ internal class PlayerDirectoryGrain(IDbContextFactory<TurboDbContext> dbCtxFacto
 
     private void SetNameCache(PlayerId playerId, string name)
     {
-        if (_idToName.TryGetValue(playerId, out var existingName))
+        if (_idToName.TryGetValue(playerId, out string? existingName))
+        {
             _nameToId.Remove(existingName);
+        }
 
         _idToName[playerId] = name;
         _nameToId[name] = playerId;

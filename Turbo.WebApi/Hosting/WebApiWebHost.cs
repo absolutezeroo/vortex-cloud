@@ -34,7 +34,9 @@ internal sealed class WebApiWebHost(
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         if (!_config.Enabled)
+        {
             return;
+        }
 
         string httpPrefix = $"http://{_config.Host}:{_config.Port}";
         string prefixes = _config.HttpsEnabled
@@ -112,13 +114,17 @@ internal sealed class WebApiWebHost(
     private void ConfigureKestrel(WebApplicationBuilder builder)
     {
         if (!_config.HttpsEnabled)
+        {
             return;
+        }
 
         if (
             string.IsNullOrWhiteSpace(_config.CertificatePath)
             || string.IsNullOrWhiteSpace(_config.CertificatePassword)
         )
+        {
             return;
+        }
 
         builder.WebHost.ConfigureKestrel(kestrel =>
             kestrel.ConfigureHttpsDefaults(https =>

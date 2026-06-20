@@ -14,7 +14,9 @@ internal class WallItemSerializer
             .WriteString(item.WallPosition);
 
         if (item.StuffData is LegacyStuffSnapshot legacy)
+        {
             packet.WriteString(legacy.Data);
+        }
 
         packet
             .WriteInteger(-1) // expiration

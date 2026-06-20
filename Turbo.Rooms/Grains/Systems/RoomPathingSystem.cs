@@ -42,27 +42,31 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
     {
         try
         {
-            var (startX, startY) = start;
-            var (goalX, goalY) = goal;
-            var currentTileId = _roomGrain.MapModule.ToIdx(start.X, start.Y);
-            var goalTileId = _roomGrain.MapModule.ToIdx(goal.X, goal.Y);
+            (int startX, int startY) = start;
+            (int goalX, int goalY) = goal;
+            int currentTileId = _roomGrain.MapModule.ToIdx(start.X, start.Y);
+            int goalTileId = _roomGrain.MapModule.ToIdx(goal.X, goal.Y);
 
             if (
                 currentTileId == goalTileId
                 || !_roomGrain.MapModule.CanAvatarWalk(avatar, currentTileId)
                 || !_roomGrain.MapModule.CanAvatarWalk(avatar, goalTileId)
             )
+            {
                 return [];
+            }
 
-            var open = new PriorityQueue<Node, int>();
-            var allNodes = new Dictionary<(int, int), Node>(capacity: 256);
+            PriorityQueue<Node, int> open = new PriorityQueue<Node, int>();
+            Dictionary<(int, int), Node> allNodes = new Dictionary<(int, int), Node>(capacity: 256);
 
             Node GetOrCreateNode(int x, int y)
             {
-                var key = (x, y);
+                (int x, int y) key = (x, y);
 
-                if (allNodes.TryGetValue(key, out var n))
+                if (allNodes.TryGetValue(key, out Node? n))
+                {
                     return n;
+                }
 
                 n = new Node { X = x, Y = y };
                 allNodes[key] = n;
@@ -70,7 +74,7 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
                 return n;
             }
 
-            var startNode = GetOrCreateNode(startX, startY);
+            Node startNode = GetOrCreateNode(startX, startY);
 
             startNode.G = 0;
             startNode.H = Heuristic(startX, startY, goalX, goalY);
@@ -78,29 +82,33 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
 
             open.Enqueue(startNode, startNode.F);
 
-            var closed = new HashSet<(int, int)>();
+            HashSet<(int, int)> closed = new HashSet<(int, int)>();
 
             while (open.Count > 0 && allNodes.Count <= _roomGrain._roomConfig.MaxPathNodes)
             {
                 try
                 {
-                    var current = open.Dequeue();
-                    var cKey = (current.X, current.Y);
-                    var cTileId = _roomGrain.MapModule.ToIdx(current.X, current.Y);
+                    Node current = open.Dequeue();
+                    (int X, int Y) cKey = (current.X, current.Y);
+                    int cTileId = _roomGrain.MapModule.ToIdx(current.X, current.Y);
 
                     if (!closed.Add(cKey))
+                    {
                         continue;
+                    }
 
                     if (current.X == goalX && current.Y == goalY)
+                    {
                         return ReconstructPath(current);
+                    }
 
-                    for (var i = 0; i < DIRECTIONS.Length; i++)
+                    for (int i = 0; i < DIRECTIONS.Length; i++)
                     {
                         try
                         {
-                            var (dx, dy, moveCost) = DIRECTIONS[i];
-                            var nx = current.X + dx;
-                            var ny = current.Y + dy;
+                            (int dx, int dy, int moveCost) = DIRECTIONS[i];
+                            int nx = current.X + dx;
+                            int ny = current.Y + dy;
 
                             if (
                                 nx < 0
@@ -108,12 +116,16 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
                                 || nx >= _roomGrain.MapModule.Width
                                 || ny >= _roomGrain.MapModule.Height
                             )
+                            {
                                 continue;
+                            }
 
                             if (closed.Contains((nx, ny)))
+                            {
                                 continue;
+                            }
 
-                            var nTileId = _roomGrain.MapModule.ToIdx(nx, ny);
+                            int nTileId = _roomGrain.MapModule.ToIdx(nx, ny);
 
                             if (
                                 !_roomGrain.MapModule.CanAvatarWalkBetween(
@@ -123,10 +135,12 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
                                     nx == goalX && ny == goalY
                                 )
                             )
+                            {
                                 continue;
+                            }
 
-                            var tentativeG = current.G + moveCost;
-                            var neighbor = GetOrCreateNode(nx, ny);
+                            int tentativeG = current.G + moveCost;
+                            Node neighbor = GetOrCreateNode(nx, ny);
 
                             if (neighbor.Parent == null && !(nx == startX && ny == startY))
                             {
@@ -162,8 +176,8 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int Heuristic(int x, int y, int goalX, int goalY)
     {
-        var dx = Math.Abs(x - goalX);
-        var dy = Math.Abs(y - goalY);
+        int dx = Math.Abs(x - goalX);
+        int dy = Math.Abs(y - goalY);
 
         return (dx < dy)
             ? DIAGONAL_COST * dx + CARDINAL_COST * (dy - dx)
@@ -172,8 +186,8 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
 
     private static List<(int X, int Y)> ReconstructPath(Node goalNode)
     {
-        var list = new List<(int, int)>();
-        var current = goalNode;
+        List<(int, int)> list = new List<(int, int)>();
+        Node? current = goalNode;
 
         while (current != null)
         {

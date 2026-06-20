@@ -49,7 +49,6 @@ public class GroupEntity : TurboEntity
     [DefaultValue(false)]
     public required bool AdminOnlyDecoration { get; set; }
 
-    [ForeignKey(nameof(RoomEntityId))]
     public required RoomEntity RoomEntity { get; set; }
 
     [ForeignKey(nameof(OwnerPlayerEntityId))]

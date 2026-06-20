@@ -17,7 +17,7 @@ public class CreateFlatMessageHandler(IRoomService roomService) : IMessageHandle
         CancellationToken ct
     )
     {
-        var (roomId, name) = await _roomService
+        (RoomId roomId, string name) = await _roomService
             .CreateRoomAsync(
                 message.FlatName,
                 message.FlatDescription,

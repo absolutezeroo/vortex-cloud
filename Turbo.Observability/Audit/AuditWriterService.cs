@@ -53,7 +53,7 @@ public sealed class AuditWriterService : BackgroundService
         _retryAttempts = Math.Max(0, options.Value.AuditWriteRetryAttempts);
         _retryDelayMs = Math.Max(0, options.Value.AuditWriteRetryDelayMs);
 
-        var configuredPath = options.Value.AuditDeadLetterPath;
+        string configuredPath = options.Value.AuditDeadLetterPath;
         _deadLetterPath =
             string.IsNullOrWhiteSpace(configuredPath) ? string.Empty
             : Path.IsPathRooted(configuredPath) ? configuredPath
@@ -63,14 +63,14 @@ public sealed class AuditWriterService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var reader = _channel.Reader;
-        var batch = new List<DurableRecord>(_batchSize);
+        ChannelReader<DurableRecord> reader = _channel.Reader;
+        List<DurableRecord> batch = new List<DurableRecord>(_batchSize);
 
         try
         {
             while (await reader.WaitToReadAsync(stoppingToken).ConfigureAwait(false))
             {
-                while (batch.Count < _batchSize && reader.TryRead(out var record))
+                while (batch.Count < _batchSize && reader.TryRead(out DurableRecord? record))
                     batch.Add(record);
 
                 if (batch.Count > 0)
@@ -91,11 +91,15 @@ public sealed class AuditWriterService : BackgroundService
     private async Task FlushAsync(List<DurableRecord> batch, CancellationToken ct)
     {
         if (batch.Count == 0)
+        {
             return;
+        }
 
-        var persisted = await TryPersistBatchWithRetryAsync(batch, ct).ConfigureAwait(false);
+        bool persisted = await TryPersistBatchWithRetryAsync(batch, ct).ConfigureAwait(false);
         if (persisted)
+        {
             return;
+        }
 
         await WriteDeadLetterAsync(batch).ConfigureAwait(false);
     }
@@ -107,16 +111,20 @@ public sealed class AuditWriterService : BackgroundService
     {
         batch.Clear();
 
-        while (reader.TryRead(out var record))
+        while (reader.TryRead(out DurableRecord? record))
             batch.Add(record);
 
         if (batch.Count == 0)
+        {
             return;
+        }
 
-        var persisted = await TryPersistBatchWithRetryAsync(batch, CancellationToken.None)
+        bool persisted = await TryPersistBatchWithRetryAsync(batch, CancellationToken.None)
             .ConfigureAwait(false);
         if (persisted)
+        {
             return;
+        }
 
         await WriteDeadLetterAsync(batch).ConfigureAwait(false);
     }
@@ -126,15 +134,15 @@ public sealed class AuditWriterService : BackgroundService
         CancellationToken ct
     )
     {
-        for (var attempt = 0; attempt <= _retryAttempts; attempt++)
+        for (int attempt = 0; attempt <= _retryAttempts; attempt++)
         {
             try
             {
-                var db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+                TurboDbContext db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
                 try
                 {
-                    foreach (var record in batch)
+                    foreach (DurableRecord record in batch)
                         db.Add(MapEntity(record));
 
                     await db.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -162,7 +170,9 @@ public sealed class AuditWriterService : BackgroundService
                 );
 
                 if (_retryDelayMs > 0)
+                {
                     await Task.Delay(_retryDelayMs, ct).ConfigureAwait(false);
+                }
             }
             catch (Exception ex)
             {
@@ -183,13 +193,15 @@ public sealed class AuditWriterService : BackgroundService
     private async Task WriteDeadLetterAsync(List<DurableRecord> batch)
     {
         if (string.IsNullOrWhiteSpace(_deadLetterPath))
+        {
             return;
+        }
 
         try
         {
             EnsureDirectory(_deadLetterPath);
 
-            var payload = JsonSerializer.Serialize(
+            string payload = JsonSerializer.Serialize(
                 new
                 {
                     happenedAtUtc = DateTime.UtcNow,
@@ -260,9 +272,11 @@ public sealed class AuditWriterService : BackgroundService
 
     private void EnsureDirectory(string path)
     {
-        var dir = Path.GetDirectoryName(path);
+        string? dir = Path.GetDirectoryName(path);
         if (!string.IsNullOrWhiteSpace(dir))
+        {
             Directory.CreateDirectory(dir);
+        }
     }
 
     private static object MapEntity(DurableRecord record) =>

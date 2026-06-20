@@ -9,6 +9,7 @@ using Turbo.Primitives.Catalog.Providers;
 using Turbo.Primitives.Messages.Incoming.Catalog;
 using Turbo.Primitives.Messages.Outgoing.Catalog;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Players;
 
 namespace Turbo.PacketHandlers.Catalog;
 
@@ -27,20 +28,22 @@ public class GetClubOffersMessageHandler(
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var sub = await _grainFactory
+        ClubSubscriptionSnapshot sub = await _grainFactory
             .GetPlayerGrain(ctx.PlayerId)
             .GetClubSubscriptionAsync(ct)
             .ConfigureAwait(false);
 
-        var now = DateTime.UtcNow;
-        var baseDate = sub.IsActive && sub.ExpiresAt > now ? sub.ExpiresAt : now;
+        DateTime now = DateTime.UtcNow;
+        DateTime baseDate = sub.IsActive && sub.ExpiresAt > now ? sub.ExpiresAt : now;
 
-        var personalizedOffers = new List<ClubOffer>();
-        foreach (var offer in _clubOfferProvider.GetAll())
+        List<ClubOffer> personalizedOffers = new List<ClubOffer>();
+        foreach (ClubOffer offer in _clubOfferProvider.GetAll())
         {
-            var expiry = baseDate.AddMonths(offer.Months).AddDays(offer.ExtraDays);
+            DateTime expiry = baseDate.AddMonths(offer.Months).AddDays(offer.ExtraDays);
             personalizedOffers.Add(
                 offer with
                 {

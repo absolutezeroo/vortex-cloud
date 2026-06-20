@@ -26,9 +26,9 @@ public sealed class WebApiPlayerService(
         CancellationToken ct
     )
     {
-        await using var db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var players = await db
+        List<PlayerEntity> players = await db
             .Players.AsNoTracking()
             .Where(p => p.PlayerAccountEntityId == accountId && p.DeletedAt == null)
             .ToListAsync(ct)
@@ -45,27 +45,31 @@ public sealed class WebApiPlayerService(
         CancellationToken ct
     )
     {
-        await using var db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var count = await db
+        int count = await db
             .Players.AsNoTracking()
             .CountAsync(p => p.PlayerAccountEntityId == accountId && p.DeletedAt == null, ct)
             .ConfigureAwait(false);
 
         if (count >= _config.MaxAvatarsPerAccount)
+        {
             return (false, 0, "pocket.auth.max_avatars_reached");
+        }
 
-        var taken = await db
+        bool taken = await db
             .Players.AsNoTracking()
             .AnyAsync(p => p.Name == name, ct)
             .ConfigureAwait(false);
 
         if (taken)
+        {
             return (false, 0, "pocket.auth.name_taken");
+        }
 
-        var genderType = AvatarGenderTypeExtensions.FromLegacyString(gender);
+        AvatarGenderType genderType = AvatarGenderTypeExtensions.FromLegacyString(gender);
 
-        var player = new PlayerEntity
+        PlayerEntity player = new PlayerEntity
         {
             PlayerAccountEntityId = accountId,
             Name = name,
@@ -83,28 +87,32 @@ public sealed class WebApiPlayerService(
 
     public async Task<bool> NameAvailableAsync(string name, CancellationToken ct)
     {
-        await using var db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
         return !await db.Players.AnyAsync(p => p.Name == name, ct).ConfigureAwait(false);
     }
 
     public async Task<bool> SetNameAsync(int playerId, string name, CancellationToken ct)
     {
-        await using var db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var taken = await db
+        bool taken = await db
             .Players.AsNoTracking()
             .AnyAsync(p => p.Name == name && p.Id != playerId, ct)
             .ConfigureAwait(false);
 
         if (taken)
+        {
             return false;
+        }
 
-        var player = await db
+        PlayerEntity? player = await db
             .Players.FirstOrDefaultAsync(p => p.Id == playerId, ct)
             .ConfigureAwait(false);
 
         if (player is null)
+        {
             return false;
+        }
 
         player.Name = name;
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -118,14 +126,16 @@ public sealed class WebApiPlayerService(
         CancellationToken ct
     )
     {
-        await using var db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var player = await db
+        PlayerEntity? player = await db
             .Players.FirstOrDefaultAsync(p => p.Id == playerId, ct)
             .ConfigureAwait(false);
 
         if (player is null)
+        {
             return false;
+        }
 
         player.Figure = figureString;
         player.Gender = AvatarGenderTypeExtensions.FromLegacyString(gender);
@@ -135,9 +145,9 @@ public sealed class WebApiPlayerService(
 
     public async Task<AvatarInfo?> GetAvatarAsync(int playerId, CancellationToken ct)
     {
-        await using var db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var player = await db
+        PlayerEntity? player = await db
             .Players.AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == playerId, ct)
             .ConfigureAwait(false);

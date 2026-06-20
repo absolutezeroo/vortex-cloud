@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.Grains.Players;
 using Turbo.Primitives.Messages.Incoming.Register;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Rooms.Enums;
@@ -20,9 +21,11 @@ public class UpdateFigureDataMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId < 0)
+        {
             return;
+        }
 
-        var player = _grainFactory.GetPlayerGrain(ctx.PlayerId);
+        IPlayerGrain player = _grainFactory.GetPlayerGrain(ctx.PlayerId);
 
         await player
             .SetFigureAsync(

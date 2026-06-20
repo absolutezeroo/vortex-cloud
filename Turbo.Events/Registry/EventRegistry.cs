@@ -80,7 +80,7 @@ public sealed class EventRegistry(
         ILogger logger
     )
     {
-        var context = contextAccessor.Current;
+        ITurboContext? context = contextAccessor.Current;
 
         try
         {

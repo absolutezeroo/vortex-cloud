@@ -33,16 +33,16 @@ internal sealed record ErrorGroupingRecord(
         string? remoteIp = null
     )
     {
-        var root = GetRootException(exception);
-        var exceptionType = root.GetType().FullName ?? root.GetType().Name;
-        var message = Normalize(root.Message);
-        var messageSignature = message.Length <= 120 ? message : message[..120];
-        var stackTrace = Normalize(root.StackTrace);
-        var topStackLine = stackTrace
+        Exception root = GetRootException(exception);
+        string exceptionType = root.GetType().FullName ?? root.GetType().Name;
+        string message = Normalize(root.Message);
+        string messageSignature = message.Length <= 120 ? message : message[..120];
+        string stackTrace = Normalize(root.StackTrace);
+        string? topStackLine = stackTrace
             .Split('\n', StringSplitOptions.RemoveEmptyEntries)
             .FirstOrDefault();
 
-        var fingerprint = ComputeFingerprint(
+        string fingerprint = ComputeFingerprint(
             source,
             operation,
             exceptionType,
@@ -69,7 +69,7 @@ internal sealed record ErrorGroupingRecord(
 
     private static Exception GetRootException(Exception ex)
     {
-        var current = ex;
+        Exception? current = ex;
 
         while (current.InnerException is not null)
             current = current.InnerException;
@@ -80,7 +80,9 @@ internal sealed record ErrorGroupingRecord(
     private static string Normalize(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
+        {
             return string.Empty;
+        }
 
         return string.Join(
             ' ',
@@ -96,7 +98,7 @@ internal sealed record ErrorGroupingRecord(
         string? topStackLine
     )
     {
-        var builder = new StringBuilder(capacity: 256);
+        StringBuilder builder = new StringBuilder(capacity: 256);
         builder.Append(source);
         builder.Append('|');
         builder.Append(operation);
@@ -107,8 +109,8 @@ internal sealed record ErrorGroupingRecord(
         builder.Append('|');
         builder.Append(topStackLine);
 
-        var bytes = Encoding.UTF8.GetBytes(builder.ToString());
-        var hash = SHA256.HashData(bytes);
+        byte[] bytes = Encoding.UTF8.GetBytes(builder.ToString());
+        byte[] hash = SHA256.HashData(bytes);
         return Convert.ToHexString(hash);
     }
 }

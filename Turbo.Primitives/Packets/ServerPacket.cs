@@ -71,7 +71,7 @@ public class ServerPacket(int header) : TurboPacket(header), IServerPacket
 
     public IServerPacket WriteString(string s)
     {
-        var data = Encoding.UTF8.GetBytes(s ?? string.Empty);
+        byte[] data = Encoding.UTF8.GetBytes(s ?? string.Empty);
 
         WriteShort((short)data.Length);
         Writer.Write(data);

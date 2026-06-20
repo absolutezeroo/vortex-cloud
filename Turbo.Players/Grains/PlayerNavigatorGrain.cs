@@ -51,11 +51,11 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
             ResultsMode = resultsMode,
         };
 
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var playerId = (int)this.GetPrimaryKeyLong();
+        int playerId = (int)this.GetPrimaryKeyLong();
 
-        var existing = await dbCtx
+        PlayerNavigatorPreferencesEntity? existing = await dbCtx
             .PlayerNavigatorPreferences.FirstOrDefaultAsync(e => e.PlayerEntityId == playerId, ct)
             .ConfigureAwait(false);
 
@@ -92,12 +92,12 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
 
     public async Task AddSavedSearchAsync(string searchCode, string filter, CancellationToken ct)
     {
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var playerId = (int)this.GetPrimaryKeyLong();
-        var orderNum = _savedSearches.Count;
+        int playerId = (int)this.GetPrimaryKeyLong();
+        int orderNum = _savedSearches.Count;
 
-        var entity = new PlayerNavigatorSavedSearchEntity
+        PlayerNavigatorSavedSearchEntity entity = new PlayerNavigatorSavedSearchEntity
         {
             PlayerEntityId = playerId,
             SearchCode = searchCode,
@@ -121,9 +121,9 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
 
     public async Task DeleteSavedSearchAsync(int searchId, CancellationToken ct)
     {
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var playerId = (int)this.GetPrimaryKeyLong();
+        int playerId = (int)this.GetPrimaryKeyLong();
 
         await dbCtx
             .PlayerNavigatorSavedSearches.Where(e =>
@@ -141,9 +141,11 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
     public async Task AddCollapsedCategoryAsync(string categoryName, CancellationToken ct)
     {
         if (_collapsedCategories.Contains(categoryName))
+        {
             return;
+        }
 
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         dbCtx.PlayerNavigatorCollapsedCategories.Add(
             new PlayerNavigatorCollapsedCategoryEntity
@@ -161,11 +163,13 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
     public async Task RemoveCollapsedCategoryAsync(string categoryName, CancellationToken ct)
     {
         if (!_collapsedCategories.Contains(categoryName))
+        {
             return;
+        }
 
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var playerId = (int)this.GetPrimaryKeyLong();
+        int playerId = (int)this.GetPrimaryKeyLong();
 
         await dbCtx
             .PlayerNavigatorCollapsedCategories.Where(e =>
@@ -178,17 +182,17 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
     }
 
     public Task<int> GetViewModeAsync(string searchCode, CancellationToken ct) =>
-        Task.FromResult(_viewModes.TryGetValue(searchCode, out var mode) ? mode : 0);
+        Task.FromResult(_viewModes.TryGetValue(searchCode, out int mode) ? mode : 0);
 
     public async Task SetViewModeAsync(string searchCode, int viewMode, CancellationToken ct)
     {
         _viewModes[searchCode] = viewMode;
 
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var playerId = (int)this.GetPrimaryKeyLong();
+        int playerId = (int)this.GetPrimaryKeyLong();
 
-        var existing = await dbCtx
+        PlayerNavigatorViewModeEntity? existing = await dbCtx
             .PlayerNavigatorViewModes.FirstOrDefaultAsync(
                 e => e.PlayerEntityId == playerId && e.SearchCode == searchCode,
                 ct
@@ -216,11 +220,11 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
 
     private async Task HydrateAsync(CancellationToken ct)
     {
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var playerId = (int)this.GetPrimaryKeyLong();
+        int playerId = (int)this.GetPrimaryKeyLong();
 
-        var prefsEntity = await dbCtx
+        PlayerNavigatorPreferencesEntity? prefsEntity = await dbCtx
             .PlayerNavigatorPreferences.AsNoTracking()
             .FirstOrDefaultAsync(e => e.PlayerEntityId == playerId, ct)
             .ConfigureAwait(false);
@@ -237,7 +241,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
                 ResultsMode = prefsEntity.ResultsMode,
             };
 
-        var savedSearchEntities = await dbCtx
+        List<PlayerNavigatorSavedSearchEntity> savedSearchEntities = await dbCtx
             .PlayerNavigatorSavedSearches.AsNoTracking()
             .Where(e => e.PlayerEntityId == playerId)
             .OrderBy(e => e.OrderNum)
@@ -255,7 +259,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
             }),
         ];
 
-        var collapsedEntities = await dbCtx
+        List<PlayerNavigatorCollapsedCategoryEntity> collapsedEntities = await dbCtx
             .PlayerNavigatorCollapsedCategories.AsNoTracking()
             .Where(e => e.PlayerEntityId == playerId)
             .ToListAsync(ct)
@@ -263,7 +267,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
 
         _collapsedCategories = [.. collapsedEntities.Select(e => e.CategoryName)];
 
-        var viewModeEntities = await dbCtx
+        List<PlayerNavigatorViewModeEntity> viewModeEntities = await dbCtx
             .PlayerNavigatorViewModes.AsNoTracking()
             .Where(e => e.PlayerEntityId == playerId)
             .ToListAsync(ct)

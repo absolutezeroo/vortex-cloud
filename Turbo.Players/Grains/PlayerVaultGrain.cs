@@ -31,7 +31,7 @@ internal sealed class PlayerVaultGrain(
 
     public Task<List<IncomeRewardSnapshot>> GetIncomeRewardsAsync(CancellationToken ct)
     {
-        var snapshots = _pendingRewards
+        List<IncomeRewardSnapshot> snapshots = _pendingRewards
             .Select(r => new IncomeRewardSnapshot
             {
                 RewardCategory = (VaultRewardCategoryType)r.RewardCategory,
@@ -49,16 +49,18 @@ internal sealed class PlayerVaultGrain(
         CancellationToken ct
     )
     {
-        var toGrant = _pendingRewards
+        List<PlayerVaultIncomeRewardEntity> toGrant = _pendingRewards
             .Where(r => (VaultRewardCategoryType)r.RewardCategory == category)
             .ToList();
 
         if (toGrant.Count == 0)
+        {
             return false;
+        }
 
-        var walletGrain = _grainFactory.GetPlayerWalletGrain(this.GetPrimaryKeyLong());
+        IPlayerWalletGrain walletGrain = _grainFactory.GetPlayerWalletGrain(this.GetPrimaryKeyLong());
 
-        foreach (var reward in toGrant)
+        foreach (PlayerVaultIncomeRewardEntity reward in toGrant)
         {
             switch ((VaultRewardType)reward.RewardType)
             {
@@ -74,9 +76,9 @@ internal sealed class PlayerVaultGrain(
             }
         }
 
-        var ids = toGrant.Select(r => r.Id).ToList();
+        List<int> ids = toGrant.Select(r => r.Id).ToList();
 
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         await dbCtx
             .PlayerVaultIncomeRewards.Where(r => ids.Contains(r.Id))
@@ -97,13 +99,15 @@ internal sealed class PlayerVaultGrain(
     )
     {
         if (amount <= 0 && string.IsNullOrEmpty(productCode))
+        {
             return;
+        }
 
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         if (string.IsNullOrEmpty(productCode))
         {
-            var existing = _pendingRewards.FirstOrDefault(r =>
+            PlayerVaultIncomeRewardEntity? existing = _pendingRewards.FirstOrDefault(r =>
                 (VaultRewardCategoryType)r.RewardCategory == category
                 && (VaultRewardType)r.RewardType == type
                 && string.IsNullOrEmpty(r.ProductCode)
@@ -120,7 +124,7 @@ internal sealed class PlayerVaultGrain(
             }
         }
 
-        var entity = new PlayerVaultIncomeRewardEntity
+        PlayerVaultIncomeRewardEntity entity = new PlayerVaultIncomeRewardEntity
         {
             PlayerEntityId = (int)this.GetPrimaryKeyLong(),
             RewardCategory = (int)category,
@@ -139,9 +143,9 @@ internal sealed class PlayerVaultGrain(
     {
         _pendingRewards.Clear();
 
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var rows = await dbCtx
+        List<PlayerVaultIncomeRewardEntity> rows = await dbCtx
             .PlayerVaultIncomeRewards.AsNoTracking()
             .Where(r => r.PlayerEntityId == (int)this.GetPrimaryKeyLong())
             .ToListAsync(ct)

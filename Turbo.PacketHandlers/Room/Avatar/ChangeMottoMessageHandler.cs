@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.Grains.Players;
 using Turbo.Primitives.Messages.Incoming.Room.Avatar;
 using Turbo.Primitives.Orleans;
 
@@ -19,9 +20,11 @@ public class ChangeMottoMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId < 0)
+        {
             return;
+        }
 
-        var player = _grainFactory.GetPlayerGrain(ctx.PlayerId);
+        IPlayerGrain player = _grainFactory.GetPlayerGrain(ctx.PlayerId);
 
         await player.SetMottoAsync(message.Text, ct).ConfigureAwait(false);
     }

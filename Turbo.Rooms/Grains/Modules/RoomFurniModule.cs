@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,6 +9,9 @@ using Turbo.Primitives.Action;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Rooms;
 using Turbo.Primitives.Rooms.Object;
+using Turbo.Primitives.Rooms.Object.Furniture;
+using Turbo.Primitives.Rooms.Object.Furniture.Floor;
+using Turbo.Primitives.Rooms.Object.Furniture.Wall;
 using Turbo.Primitives.Rooms.Snapshots.Furniture;
 
 namespace Turbo.Rooms.Grains.Modules;
@@ -22,19 +26,21 @@ public sealed partial class RoomFurniModule(RoomGrain roomGrain)
     internal async Task EnsureFurniLoadedAsync(CancellationToken ct)
     {
         if (_roomGrain._state.IsFurniLoaded)
+        {
             return;
+        }
 
-        var (floorItems, wallItems, ownerNames) = await _roomGrain._itemsLoader.LoadByRoomIdAsync(
+        (IReadOnlyList<IRoomFloorItem> floorItems, IReadOnlyList<IRoomWallItem> wallItems, IReadOnlyDictionary<PlayerId, string> ownerNames) = await _roomGrain._itemsLoader.LoadByRoomIdAsync(
             (RoomId)_roomGrain.GetPrimaryKeyLong(),
             ct
         );
 
-        foreach (var (id, name) in ownerNames)
+        foreach ((PlayerId id, string name) in ownerNames)
             _roomGrain._state.OwnerNamesById.TryAdd(id, name);
 
         _roomGrain._state.IsTileComputationPaused = true;
 
-        foreach (var item in floorItems)
+        foreach (IRoomFloorItem item in floorItems)
             await _roomGrain.ObjectModule.AttatchObjectAsync(item, ct);
 
         _roomGrain._state.IsTileComputationPaused = false;
@@ -42,7 +48,7 @@ public sealed partial class RoomFurniModule(RoomGrain roomGrain)
         _roomGrain.MapModule.ComputeAllTiles();
         _roomGrain._state.DirtyHeightTileIds.Clear();
 
-        foreach (var item in wallItems)
+        foreach (IRoomWallItem item in wallItems)
             await _roomGrain.ObjectModule.AttatchObjectAsync(item, ct);
 
         _roomGrain._state.IsFurniLoaded = true;
@@ -55,8 +61,10 @@ public sealed partial class RoomFurniModule(RoomGrain roomGrain)
         int param = -1
     )
     {
-        if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out var item))
+        if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item))
+        {
             throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+        }
 
         await item.Logic.OnUseAsync(ctx, param, ct);
 
@@ -70,8 +78,10 @@ public sealed partial class RoomFurniModule(RoomGrain roomGrain)
         int param = -1
     )
     {
-        if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out var item))
+        if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item))
+        {
             throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+        }
 
         await item.Logic.OnClickAsync(ctx, param, ct);
 
@@ -83,7 +93,7 @@ public sealed partial class RoomFurniModule(RoomGrain roomGrain)
         CancellationToken ct
     ) =>
         Task.FromResult(
-            _roomGrain._state.ItemsById.TryGetValue(objectId, out var item)
+            _roomGrain._state.ItemsById.TryGetValue(objectId, out IRoomItem? item)
                 ? item.GetSnapshot()
                 : null
         );

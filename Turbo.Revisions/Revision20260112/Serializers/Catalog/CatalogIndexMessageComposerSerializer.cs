@@ -12,8 +12,10 @@ internal class CatalogIndexMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, CatalogIndexMessageComposer message)
     {
-        if (!message.Catalog.PagesById.TryGetValue(message.Catalog.RootPageId, out var rootPage))
+        if (!message.Catalog.PagesById.TryGetValue(message.Catalog.RootPageId, out CatalogPageSnapshot? rootPage))
+        {
             return;
+        }
 
         SerializePage(packet, message.Catalog, rootPage);
 
@@ -32,20 +34,22 @@ internal class CatalogIndexMessageComposerSerializer(int header)
 
         packet.WriteInteger(page.OfferIds.Length);
 
-        foreach (var offerId in page.OfferIds)
+        foreach (int offerId in page.OfferIds)
             packet.WriteInteger(offerId);
 
         List<CatalogPageSnapshot> children = [];
 
-        foreach (var childId in page.ChildIds)
+        foreach (int childId in page.ChildIds)
         {
-            if (snapshot.PagesById.TryGetValue(childId, out var childPage))
+            if (snapshot.PagesById.TryGetValue(childId, out CatalogPageSnapshot? childPage))
+            {
                 children.Add(childPage);
+            }
         }
 
         packet.WriteInteger(children.Count);
 
-        foreach (var child in children)
+        foreach (CatalogPageSnapshot child in children)
             SerializePage(packet, snapshot, child);
     }
 }

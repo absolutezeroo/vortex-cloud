@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Orleans;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Rooms.Enums.Wired;
+using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Object.Logic;
 using Turbo.Primitives.Rooms.Wired;
@@ -37,16 +38,18 @@ public class WiredSelectorEntitiesWithVariable(
         CancellationToken ct
     )
     {
-        var input = await ctx.GetWiredSelectionSetAsync(this, ct);
-        var allowedDefinitionIds = new List<int>();
-        var output = new WiredSelectionSet();
+        IWiredSelectionSet input = await ctx.GetWiredSelectionSetAsync(this, ct);
+        List<int> allowedDefinitionIds = new List<int>();
+        WiredSelectionSet output = new WiredSelectionSet();
 
-        foreach (var id in input.SelectedFurniIds)
+        foreach (int id in input.SelectedFurniIds)
         {
             try
             {
-                if (!_roomGrain._state.ItemsById.TryGetValue(id, out var item))
+                if (!_roomGrain._state.ItemsById.TryGetValue(id, out IRoomItem? item))
+                {
                     continue;
+                }
 
                 allowedDefinitionIds.Add(item.Definition.Id);
             }
@@ -56,10 +59,12 @@ public class WiredSelectorEntitiesWithVariable(
             }
         }
 
-        foreach (var item in _roomGrain._state.ItemsById.Values)
+        foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
         {
             if (allowedDefinitionIds.Contains(item.Definition.Id))
+            {
                 output.SelectedFurniIds.Add((int)item.ObjectId);
+            }
         }
 
         return output;

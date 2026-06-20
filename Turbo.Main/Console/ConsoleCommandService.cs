@@ -21,7 +21,9 @@ public class ConsoleCommandService(IServiceProvider services)
         System.Console.WriteLine("Console command service started. Type 'help' for commands.");
 
         if (IsRunning)
+        {
             throw new InvalidOperationException("Already running.");
+        }
 
         _loopTask = Task.Run(() => LoopAsync(_cts.Token));
     }
@@ -29,13 +31,17 @@ public class ConsoleCommandService(IServiceProvider services)
     public async Task DisableAsync()
     {
         if (!IsRunning)
+        {
             return;
+        }
 
         await _cts.CancelAsync().ConfigureAwait(false);
 
         if (_loopTask is not null)
 #pragma warning disable VSTHRD003
+        {
             await _loopTask.ConfigureAwait(false);
+        }
 #pragma warning restore VSTHRD003
 
         _cts.Dispose();
@@ -45,10 +51,12 @@ public class ConsoleCommandService(IServiceProvider services)
     {
         while (!ct.IsCancellationRequested)
         {
-            var input = await Task.Run(System.Console.ReadLine, ct).ConfigureAwait(false);
+            string? input = await Task.Run(System.Console.ReadLine, ct).ConfigureAwait(false);
 
             if (string.IsNullOrWhiteSpace(input))
+            {
                 continue;
+            }
 
             await HandleCommandAsync(input, ct).ConfigureAwait(false);
         }
@@ -56,9 +64,9 @@ public class ConsoleCommandService(IServiceProvider services)
 
     private async Task HandleCommandAsync(string input, CancellationToken ct)
     {
-        var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        var cmd = parts[0].ToLowerInvariant();
-        var args = parts.Skip(1).ToArray();
+        string[] parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        string cmd = parts[0].ToLowerInvariant();
+        string[] args = parts.Skip(1).ToArray();
 
         switch (cmd)
         {
@@ -77,7 +85,7 @@ public class ConsoleCommandService(IServiceProvider services)
             case "reload-plugins":
                 try
                 {
-                    var pluginMgr = _services.GetRequiredService<PluginManager>();
+                    PluginManager pluginMgr = _services.GetRequiredService<PluginManager>();
                     await pluginMgr.LoadAllAsync(true, ct).ConfigureAwait(false);
                     System.Console.WriteLine("Plugins reloaded.");
                 }
@@ -97,7 +105,7 @@ public class ConsoleCommandService(IServiceProvider services)
 
                 try
                 {
-                    var pluginMgr = _services.GetRequiredService<PluginManager>();
+                    PluginManager pluginMgr = _services.GetRequiredService<PluginManager>();
                     await pluginMgr.ReloadAsync(args[0], ct).ConfigureAwait(false);
                     System.Console.WriteLine($"Plugin '{args[0]}' reloaded.");
                 }

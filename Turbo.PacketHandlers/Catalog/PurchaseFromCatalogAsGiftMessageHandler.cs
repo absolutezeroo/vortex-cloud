@@ -9,6 +9,7 @@ using Turbo.Primitives.Catalog.Snapshots;
 using Turbo.Primitives.Messages.Incoming.Catalog;
 using Turbo.Primitives.Messages.Outgoing.Catalog;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Players;
 using Turbo.Primitives.Players.Enums.Wallet;
 using Turbo.Primitives.Players.Wallet;
 
@@ -29,9 +30,11 @@ public class PurchaseFromCatalogAsGiftMessageHandler(
     )
     {
         if (ctx.PlayerId <= 0 || string.IsNullOrWhiteSpace(message.RecieverName))
+        {
             return;
+        }
 
-        var receiverId = await _grainFactory
+        PlayerId? receiverId = await _grainFactory
             .GetPlayerDirectoryGrain()
             .GetPlayerIdAsync(message.RecieverName, ct)
             .ConfigureAwait(false);
@@ -43,9 +46,9 @@ public class PurchaseFromCatalogAsGiftMessageHandler(
             return;
         }
 
-        var snapshot = _catalogService.GetCatalogSnapshot(CatalogType.Normal);
+        CatalogSnapshot snapshot = _catalogService.GetCatalogSnapshot(CatalogType.Normal);
 
-        if (!snapshot.OffersById.TryGetValue(message.OfferCode, out var offer))
+        if (!snapshot.OffersById.TryGetValue(message.OfferCode, out CatalogOfferSnapshot? offer))
         {
             await ctx.SendComposerAsync(
                     new PurchaseNotAllowedMessageComposer
@@ -71,18 +74,18 @@ public class PurchaseFromCatalogAsGiftMessageHandler(
             return;
         }
 
-        var debits = BuildDebitRequests(offer);
+        List<WalletDebitRequest> debits = BuildDebitRequests(offer);
 
         if (debits.Count > 0)
         {
-            var result = await _grainFactory
+            WalletDebitResult result = await _grainFactory
                 .GetPlayerWalletGrain(ctx.PlayerId)
                 .TryDebitAsync(debits, ct)
                 .ConfigureAwait(false);
 
             if (!result.Succeeded)
             {
-                var failure = result.Failure;
+                WalletDebitFailure? failure = result.Failure;
                 await ctx.SendComposerAsync(
                         new NotEnoughBalanceMessageComposer
                         {
@@ -110,9 +113,10 @@ public class PurchaseFromCatalogAsGiftMessageHandler(
 
     private static List<WalletDebitRequest> BuildDebitRequests(CatalogOfferSnapshot offer)
     {
-        var list = new List<WalletDebitRequest>();
+        List<WalletDebitRequest> list = new List<WalletDebitRequest>();
 
         if (offer.CostCredits > 0)
+        {
             list.Add(
                 new WalletDebitRequest
                 {
@@ -120,8 +124,10 @@ public class PurchaseFromCatalogAsGiftMessageHandler(
                     Amount = offer.CostCredits,
                 }
             );
+        }
 
         if (offer.CostSilver > 0)
+        {
             list.Add(
                 new WalletDebitRequest
                 {
@@ -129,8 +135,10 @@ public class PurchaseFromCatalogAsGiftMessageHandler(
                     Amount = offer.CostSilver,
                 }
             );
+        }
 
         if (offer.CostCurrency > 0)
+        {
             list.Add(
                 new WalletDebitRequest
                 {
@@ -142,6 +150,7 @@ public class PurchaseFromCatalogAsGiftMessageHandler(
                     Amount = offer.CostCurrency,
                 }
             );
+        }
 
         return list;
     }

@@ -1,3 +1,4 @@
+using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Outgoing.Groupforums;
 using Turbo.Primitives.Packets;
 
@@ -8,7 +9,7 @@ internal class ForumDataMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, ForumDataMessageComposer message)
     {
-        var f = message.Forum;
+        ForumSnapshot f = message.Forum;
 
         packet.WriteInteger(f.GroupId);
         packet.WriteString(f.Name);

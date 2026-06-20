@@ -13,9 +13,9 @@ public static class MigrationHelper
     public static async Task MigrateAsync<TContext>(IServiceProvider sp, CancellationToken ct)
         where TContext : DbContext
     {
-        using var db = sp.GetRequiredService<TContext>();
+        using TContext db = sp.GetRequiredService<TContext>();
 
-        var alc = AssemblyLoadContext.GetLoadContext(db.GetType().Assembly);
+        AssemblyLoadContext? alc = AssemblyLoadContext.GetLoadContext(db.GetType().Assembly);
 
         if (alc is not null)
         {
@@ -31,12 +31,12 @@ public static class MigrationHelper
     public static async Task UninstallAsync<TContext>(IServiceProvider sp, CancellationToken ct)
         where TContext : DbContext
     {
-        using var db = sp.GetRequiredService<TContext>();
+        using TContext db = sp.GetRequiredService<TContext>();
 
-        var prefix = sp.GetRequiredService<TablePrefixProvider>();
-        var tablePrefix = prefix().Replace("`", "``");
+        TablePrefixProvider prefix = sp.GetRequiredService<TablePrefixProvider>();
+        string tablePrefix = prefix().Replace("`", "``");
 
-        var sql =
+        string sql =
             $@"
 SET @sql = (
   SELECT GROUP_CONCAT(CONCAT('DROP TABLE IF EXISTS `', TABLE_SCHEMA, '`.`', TABLE_NAME, '`') SEPARATOR ';')

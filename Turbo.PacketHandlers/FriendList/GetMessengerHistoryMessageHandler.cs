@@ -1,11 +1,14 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.FriendList.Grains;
 using Turbo.Primitives.Messages.Incoming.FriendList;
 using Turbo.Primitives.Messages.Outgoing.FriendList;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players;
+using Turbo.Primitives.Snapshots.FriendList;
 
 namespace Turbo.PacketHandlers.FriendList;
 
@@ -21,12 +24,14 @@ public class GetMessengerHistoryMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
-        var friendId = PlayerId.Parse(message.ChatId);
+        IMessengerGrain grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
+        PlayerId friendId = PlayerId.Parse(message.ChatId);
 
-        var history = await grain.GetMessageHistoryAsync(friendId, ct).ConfigureAwait(false);
+        List<MessageHistoryEntrySnapshot> history = await grain.GetMessageHistoryAsync(friendId, ct).ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
                 new ConsoleMessageHistoryMessageComposer

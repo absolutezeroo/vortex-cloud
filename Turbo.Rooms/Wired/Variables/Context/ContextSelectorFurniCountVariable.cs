@@ -19,7 +19,9 @@ public sealed class ContextSelectorFurniCountVariable(RoomGrain roomGrain)
         value = WiredVariableValue.Default;
 
         if (!CanBind(key))
+        {
             return false;
+        }
 
         //value = GetValueForRoom(_roomGrain);
 

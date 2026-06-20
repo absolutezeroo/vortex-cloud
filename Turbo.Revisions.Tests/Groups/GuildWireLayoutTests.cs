@@ -3,6 +3,7 @@ using FluentAssertions;
 using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Incoming.Users;
 using Turbo.Primitives.Messages.Outgoing.Users;
+using Turbo.Primitives.Networking;
 using Turbo.Primitives.Packets;
 using Xunit;
 using Rev = Turbo.Revisions.Revision20260112.Revision20260112;
@@ -23,7 +24,7 @@ public sealed class GuildWireLayoutTests
     /// <summary>Writes packet fields the same way the client composer does, for parser input.</summary>
     private static ClientPacket BuildClientPacket(int header, System.Action<ServerPacket> write)
     {
-        var sp = new ServerPacket(header);
+        ServerPacket sp = new ServerPacket(header);
         write(sp);
         return new ClientPacket(header, sp.ToArray());
     }
@@ -34,9 +35,9 @@ public sealed class GuildWireLayoutTests
         Turbo.Primitives.Networking.IComposer composer
     )
     {
-        var bytes = Revision.Serializers[composerType].Serialize(composer).ToArray();
+        byte[] bytes = Revision.Serializers[composerType].Serialize(composer).ToArray();
         // AbstractSerializer prepends int length (4) + short header (2).
-        var body = new byte[bytes.Length - 6];
+        byte[] body = new byte[bytes.Length - 6];
         System.Array.Copy(bytes, 6, body, 0, body.Length);
         return new ClientPacket(0, body);
     }
@@ -46,7 +47,7 @@ public sealed class GuildWireLayoutTests
     {
         // Wire order from CreateGuildMessageComposer.as: name, desc, baseRoomId, primaryColorId,
         // secondaryColorId, badge[] — roomId is 3rd, not the colors.
-        var packet = BuildClientPacket(
+        ClientPacket packet = BuildClientPacket(
             CreateGuildEvent,
             sp =>
             {
@@ -56,14 +57,14 @@ public sealed class GuildWireLayoutTests
                 sp.WriteInteger(3); // primary color id
                 sp.WriteInteger(7); // secondary color id
                 sp.WriteInteger(6); // flattened badge length
-                foreach (var v in new[] { 1, 2, 0, 3, 4, 1 })
+                foreach (int v in new[] { 1, 2, 0, 3, 4, 1 })
                     sp.WriteInteger(v);
             }
         );
 
-        var parsed = Revision.Parsers[CreateGuildEvent].Parse(packet);
+        IMessageEvent parsed = Revision.Parsers[CreateGuildEvent].Parse(packet);
 
-        var message = parsed.Should().BeOfType<CreateGuildMessage>().Subject;
+        CreateGuildMessage? message = parsed.Should().BeOfType<CreateGuildMessage>().Subject;
         message.Name.Should().Be("Pixel Painters");
         message.Description.Should().Be("We paint pixels");
         message.PrimaryColorId.Should().Be(3);
@@ -75,7 +76,7 @@ public sealed class GuildWireLayoutTests
     [Fact]
     public void HabboGroupDetailsSerializer_WritesClientLayout()
     {
-        var details = new GroupDetailsSnapshot
+        GroupDetailsSnapshot details = new GroupDetailsSnapshot
         {
             GroupId = 5,
             IsGuild = true,
@@ -98,7 +99,7 @@ public sealed class GuildWireLayoutTests
             HasForum = false,
         };
 
-        var body = SerializeAndReadBody(
+        ClientPacket body = SerializeAndReadBody(
             typeof(HabboGroupDetailsMessageComposer),
             new HabboGroupDetailsMessageComposer { Details = details }
         );
@@ -128,7 +129,7 @@ public sealed class GuildWireLayoutTests
     [Fact]
     public void GuildMembersSerializer_WritesPagedMemberList()
     {
-        var page = new GroupMembersPageSnapshot
+        GroupMembersPageSnapshot page = new GroupMembersPageSnapshot
         {
             GroupId = 5,
             GroupName = "Pixel Painters",
@@ -153,7 +154,7 @@ public sealed class GuildWireLayoutTests
             UserNameFilter = "",
         };
 
-        var body = SerializeAndReadBody(
+        ClientPacket body = SerializeAndReadBody(
             typeof(GuildMembersMessageComposer),
             new GuildMembersMessageComposer { Page = page }
         );
@@ -180,7 +181,7 @@ public sealed class GuildWireLayoutTests
     [Fact]
     public void GuildCreatedSerializer_WritesRoomAndGroupId()
     {
-        var body = SerializeAndReadBody(
+        ClientPacket body = SerializeAndReadBody(
             typeof(GuildCreatedMessageComposer),
             new GuildCreatedMessageComposer { BaseRoomId = 42, GroupId = 5 }
         );
@@ -193,7 +194,7 @@ public sealed class GuildWireLayoutTests
     [Fact]
     public void GuildMembershipsSerializer_WritesGuildList()
     {
-        var composer = new GuildMembershipsMessageComposer
+        GuildMembershipsMessageComposer composer = new GuildMembershipsMessageComposer
         {
             Memberships =
             [
@@ -211,7 +212,7 @@ public sealed class GuildWireLayoutTests
             ],
         };
 
-        var body = SerializeAndReadBody(typeof(GuildMembershipsMessageComposer), composer);
+        ClientPacket body = SerializeAndReadBody(typeof(GuildMembershipsMessageComposer), composer);
 
         body.PopInt().Should().Be(1); // count
         body.PopInt().Should().Be(5);

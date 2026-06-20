@@ -15,8 +15,10 @@ public abstract class FurnitureVariable<TItem>(RoomGrain roomGrain)
     {
         value = WiredVariableValue.Default;
 
-        if (!CanBind(key) || !TryGetItemForKey(key, out var item) || item is null)
+        if (!CanBind(key) || !TryGetItemForKey(key, out TItem? item) || item is null)
+        {
             return false;
+        }
 
         return TryGetValueForItem(item, out value);
     }
@@ -28,10 +30,12 @@ public abstract class FurnitureVariable<TItem>(RoomGrain roomGrain)
         item = default;
 
         if (
-            !_roomGrain._state.ItemsById.TryGetValue(key.TargetId, out var found)
+            !_roomGrain._state.ItemsById.TryGetValue(key.TargetId, out IRoomItem? found)
             || found is not TItem typed
         )
+        {
             return false;
+        }
 
         item = typed;
 

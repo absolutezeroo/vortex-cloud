@@ -12,6 +12,8 @@ using Turbo.Primitives.Rooms.Object.Avatars;
 using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Object.Furniture.Wall;
+using Turbo.Primitives.Rooms.Object.Logic;
+using Turbo.Primitives.Rooms.Snapshots.Furniture;
 using Turbo.Rooms.Object.Avatars.Player;
 using Turbo.Rooms.Object.Furniture.Floor;
 using Turbo.Rooms.Object.Furniture.Wall;
@@ -32,11 +34,13 @@ public sealed partial class RoomObjectModule(RoomGrain roomGrain)
             case IRoomItem item:
             {
                 if (!_roomGrain._state.ItemsById.TryAdd(item.ObjectId, item))
+                {
                     throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+                }
 
                 if (!_roomGrain._state.OwnerNamesById.TryGetValue(item.OwnerId, out string? value))
                 {
-                    var ownerName = await _roomGrain
+                    string ownerName = await _roomGrain
                         ._grainFactory.GetPlayerDirectoryGrain()
                         .GetPlayerNameAsync(item.OwnerId, ct);
 
@@ -48,13 +52,18 @@ public sealed partial class RoomObjectModule(RoomGrain roomGrain)
                 item.SetAction(objectId => _roomGrain._state.DirtyItemIds.Add(objectId));
 
                 if (!await AttatchLogicAsync(roomObject, ct) || !_roomGrain.MapModule.AddItem(item))
+                {
                     return false;
+                }
+
                 break;
             }
             case IRoomAvatar avatar:
             {
                 if (!_roomGrain._state.AvatarsByObjectId.TryAdd(avatar.ObjectId, avatar))
+                {
                     throw new TurboException(TurboErrorCodeEnum.AvatarNotFound);
+                }
 
                 await AttatchLogicAsync(avatar, ct);
                 await _roomGrain.AvatarModule.ProcessNextAvatarStepAsync(avatar, ct);
@@ -83,7 +92,9 @@ public sealed partial class RoomObjectModule(RoomGrain roomGrain)
             case IRoomItem item:
             {
                 if (!_roomGrain.MapModule.RemoveItem(item))
+                {
                     return false;
+                }
 
                 await _roomGrain.SendComposerToRoomAsync(item.GetRemoveComposer(pickerId));
 
@@ -94,7 +105,7 @@ public sealed partial class RoomObjectModule(RoomGrain roomGrain)
 
                 _roomGrain._state.ItemsById.Remove(item.ObjectId);
 
-                var snapshot = item.GetSnapshot();
+                RoomItemSnapshot snapshot = item.GetSnapshot();
 
                 await _roomGrain
                     ._grainFactory.GetRoomPersistenceGrain(_roomGrain.RoomId)
@@ -124,9 +135,11 @@ public sealed partial class RoomObjectModule(RoomGrain roomGrain)
     private async Task<bool> AttatchLogicAsync(IRoomObject roomObject, CancellationToken ct)
     {
         if (roomObject.Logic is not null)
+        {
             return false;
+        }
 
-        var logicType = string.Empty;
+        string logicType = string.Empty;
         IRoomObjectContext? ctx = null;
 
         switch (roomObject)
@@ -146,9 +159,11 @@ public sealed partial class RoomObjectModule(RoomGrain roomGrain)
         }
 
         if (string.IsNullOrWhiteSpace(logicType) || ctx is null)
+        {
             return false;
+        }
 
-        var logic = _roomGrain._logicProvider.CreateLogicInstance(logicType, ctx);
+        IRoomObjectLogic logic = _roomGrain._logicProvider.CreateLogicInstance(logicType, ctx);
 
         roomObject.SetLogic(logic);
 

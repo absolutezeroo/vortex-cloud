@@ -21,7 +21,9 @@ public sealed partial class RoomGrain
         try
         {
             if (!await ActionModule.AddItemAsync(item, ct))
+            {
                 return false;
+            }
 
             return true;
         }
@@ -47,7 +49,9 @@ public sealed partial class RoomGrain
         try
         {
             if (!await ActionModule.RemoveItemByIdAsync(ctx, itemId, ct))
+            {
                 return false;
+            }
 
             return true;
         }
@@ -74,7 +78,9 @@ public sealed partial class RoomGrain
         try
         {
             if (!await ActionModule.UseItemByIdAsync(ctx, itemId, ct, param))
+            {
                 return false;
+            }
 
             return true;
         }
@@ -101,7 +107,9 @@ public sealed partial class RoomGrain
         try
         {
             if (!await ActionModule.ClickItemByIdAsync(ctx, itemId, ct, param))
+            {
                 return false;
+            }
 
             return true;
         }
@@ -126,20 +134,22 @@ public sealed partial class RoomGrain
         CancellationToken ct
     ) =>
         Task.FromResult(
-            _state.ItemsById.TryGetValue(itemId, out var item) ? item.GetSnapshot() : null
+            _state.ItemsById.TryGetValue(itemId, out IRoomItem? item) ? item.GetSnapshot() : null
         );
 
     private async Task FlushDirtyItemsAsync(CancellationToken ct)
     {
         if (_state.DirtyItemIds.Count == 0)
+        {
             return;
+        }
 
-        var batch = new List<RoomItemSnapshot>();
+        List<RoomItemSnapshot> batch = new List<RoomItemSnapshot>();
 
         batch.AddRange(
             _state
                 .DirtyItemIds.Select(x =>
-                    _state.ItemsById.TryGetValue(x, out var item) ? item.GetSnapshot() : null
+                    _state.ItemsById.TryGetValue(x, out IRoomItem? item) ? item.GetSnapshot() : null
                 )
                 .Where(x => x is not null)!
         );

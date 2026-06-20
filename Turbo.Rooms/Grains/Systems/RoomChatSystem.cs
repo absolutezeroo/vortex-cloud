@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Turbo.Database.Context;
 using Turbo.Database.Entities.Room;
 using Turbo.Primitives.Messages.Outgoing.Room.Chat;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Object;
+using Turbo.Primitives.Rooms.Object.Avatars;
 
 namespace Turbo.Rooms.Grains.Systems;
 
@@ -35,14 +37,14 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
         }
 
         if (
-            !_roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out var objectId)
-            || !_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out var avatar)
+            !_roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId)
+            || !_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar)
         )
         {
             return;
         }
 
-        if (IsUserMuted(playerId, out var secondsRemaining))
+        if (IsUserMuted(playerId, out int secondsRemaining))
         {
             await _roomGrain
                 ._grainFactory.GetPlayerPresenceGrain(playerId)
@@ -79,7 +81,9 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
     )
     {
         if (string.IsNullOrWhiteSpace(text))
+        {
             return;
+        }
 
         if (targetPlayerId is null)
         {
@@ -99,7 +103,7 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
         }
         else
         {
-            var whisperComposer = new WhisperMessageComposer
+            WhisperMessageComposer whisperComposer = new WhisperMessageComposer
             {
                 ObjectId = objectId,
                 Text = text,
@@ -127,7 +131,7 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
     {
         try
         {
-            await using var dbCtx = await _roomGrain
+            await using TurboDbContext dbCtx = await _roomGrain
                 ._dbCtxFactory.CreateDbContextAsync()
                 .ConfigureAwait(false);
 
@@ -157,7 +161,7 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
     private bool IsUserMuted(PlayerId playerId, out int secondsRemaining)
     {
         if (
-            _roomGrain._state.MuteExpiresUtc.TryGetValue(playerId, out var mutedUntil)
+            _roomGrain._state.MuteExpiresUtc.TryGetValue(playerId, out DateTime mutedUntil)
             && mutedUntil > DateTime.UtcNow
         )
         {

@@ -12,7 +12,7 @@ public sealed class RevisionManager(ILogger<RevisionManager> logger) : IRevision
     public string DefaultRevisionId { get; private set; } = string.Empty;
 
     public IRevision? GetRevision(string revisionId) =>
-        Revisions.TryGetValue(revisionId, out var revision) ? revision : null;
+        Revisions.TryGetValue(revisionId, out IRevision? revision) ? revision : null;
 
     public void RegisterRevision(IRevision revision)
     {

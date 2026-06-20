@@ -33,12 +33,16 @@ public class WiredTriggerClickFurni(
     )
     {
         if (ctx.Event is not RoomItemClickedEvent evt)
+        {
             return false;
+        }
 
-        var selection = await ctx.GetEffectiveSelectionAsync(this, ct);
+        IWiredSelectionSet selection = await ctx.GetEffectiveSelectionAsync(this, ct);
 
         if (!selection.SelectedFurniIds.Contains((int)evt.ObjectId))
+        {
             return false;
+        }
 
         return true;
     }

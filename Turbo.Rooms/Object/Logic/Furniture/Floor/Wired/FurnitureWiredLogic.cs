@@ -13,6 +13,7 @@ using Turbo.Primitives.Messages.Outgoing.Userdefinedroomevents;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Rooms.Enums.Wired;
 using Turbo.Primitives.Rooms.Events;
+using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Snapshots.Wired;
 using Turbo.Primitives.Rooms.Snapshots.Wired.Variables;
@@ -56,7 +57,7 @@ public abstract class FurnitureWiredLogic(
 
     public virtual List<int> GetStuffIds()
     {
-        if (GetValidStuffIds(_wiredData.StuffIds, out var stuffIds))
+        if (GetValidStuffIds(_wiredData.StuffIds, out List<int>? stuffIds))
         {
             if (!_wiredData.StuffIds.SequenceEqual(stuffIds))
             {
@@ -71,7 +72,7 @@ public abstract class FurnitureWiredLogic(
 
     public virtual List<int> GetStuffIds2()
     {
-        if (GetValidStuffIds(_wiredData.StuffIds2, out var stuffIds))
+        if (GetValidStuffIds(_wiredData.StuffIds2, out List<int>? stuffIds))
         {
             if (!_wiredData.StuffIds2.SequenceEqual(stuffIds))
             {
@@ -104,10 +105,10 @@ public abstract class FurnitureWiredLogic(
 
     public List<WiredFurniSourceType[]> GetFurniSources()
     {
-        var sources = new List<WiredFurniSourceType[]>();
-        var index = 0;
+        List<WiredFurniSourceType[]> sources = new List<WiredFurniSourceType[]>();
+        int index = 0;
 
-        foreach (var source in GetDefaultFurniSources())
+        foreach (WiredFurniSourceType[] source in GetDefaultFurniSources())
         {
             WiredFurniSourceType[] sourceTypes = source;
 
@@ -129,10 +130,10 @@ public abstract class FurnitureWiredLogic(
 
     public List<WiredPlayerSourceType[]> GetPlayerSources()
     {
-        var sources = new List<WiredPlayerSourceType[]>();
-        var index = 0;
+        List<WiredPlayerSourceType[]> sources = new List<WiredPlayerSourceType[]>();
+        int index = 0;
 
-        foreach (var source in GetDefaultPlayerSources())
+        foreach (WiredPlayerSourceType[] source in GetDefaultPlayerSources())
         {
             WiredPlayerSourceType[] sourceTypes = source;
 
@@ -160,10 +161,10 @@ public abstract class FurnitureWiredLogic(
 
     public List<object> GetDefinitionSpecifics()
     {
-        var specifics = new List<object>();
-        var index = 0;
+        List<object> specifics = new List<object>();
+        int index = 0;
 
-        foreach (var specType in GetDefinitionSpecificTypes())
+        foreach (Type specType in GetDefinitionSpecificTypes())
         {
             object specific = null!;
 
@@ -190,10 +191,10 @@ public abstract class FurnitureWiredLogic(
 
     public List<object> GetTypeSpecifics()
     {
-        var specifics = new List<object>();
-        var index = 0;
+        List<object> specifics = new List<object>();
+        int index = 0;
 
-        foreach (var specType in GetTypeSpecificTypes())
+        foreach (Type specType in GetTypeSpecificTypes())
         {
             object specific = null!;
 
@@ -220,9 +221,9 @@ public abstract class FurnitureWiredLogic(
 
     public List<int> GetDefaultIntParams()
     {
-        var ints = new List<int>();
+        List<int> ints = new List<int>();
 
-        foreach (var rule in GetIntParamRules())
+        foreach (IWiredParamRule rule in GetIntParamRules())
             ints.Add(rule.DefaultValue);
 
         return ints;
@@ -246,20 +247,22 @@ public abstract class FurnitureWiredLogic(
                 await FillInternalDataAsync(ct);
 
                 if (_wiredData is null)
+                {
                     return false;
+                }
             }
 
-            var intParams = new List<int>();
-            var stringParam = update.StringParam;
-            var stuffIds = new List<int>();
-            var stuffIds2 = new List<int>();
-            var variableIds = new List<string>();
-            var furniSources = new List<WiredFurniSourceType[]>();
-            var playerSources = new List<WiredPlayerSourceType[]>();
-            var definitionSpecifics = new List<object>();
-            var typeSpecifics = new List<object>();
+            List<int> intParams = new List<int>();
+            string stringParam = update.StringParam;
+            List<int> stuffIds = new List<int>();
+            List<int> stuffIds2 = new List<int>();
+            List<string> variableIds = new List<string>();
+            List<WiredFurniSourceType[]> furniSources = new List<WiredFurniSourceType[]>();
+            List<WiredPlayerSourceType[]> playerSources = new List<WiredPlayerSourceType[]>();
+            List<object> definitionSpecifics = new List<object>();
+            List<object> typeSpecifics = new List<object>();
 
-            if (TryNormalizeIntParams(update.IntParams, out var normalizedIntParams))
+            if (TryNormalizeIntParams(update.IntParams, out List<int> normalizedIntParams))
             {
                 intParams = normalizedIntParams;
             }
@@ -268,19 +271,25 @@ public abstract class FurnitureWiredLogic(
                 return false;
             }
 
-            if (GetValidStuffIds(update.StuffIds, out var validStuffIds))
+            if (GetValidStuffIds(update.StuffIds, out List<int> validStuffIds))
+            {
                 stuffIds = validStuffIds;
+            }
 
-            if (GetValidStuffIds(update.StuffIds2, out var validStuffIds2))
+            if (GetValidStuffIds(update.StuffIds2, out List<int> validStuffIds2))
+            {
                 stuffIds2 = validStuffIds2;
+            }
 
-            if (GetValidVariableIds(update.VariableIds, out var validVariableIds))
+            if (GetValidVariableIds(update.VariableIds, out List<WiredVariableId> validVariableIds))
+            {
                 variableIds = [.. validVariableIds.Select(x => x.ToString())];
+            }
 
-            var index = 0;
-            var validFurniSources = GetAllowedFurniSources();
+            int index = 0;
+            List<WiredFurniSourceType[]> validFurniSources = GetAllowedFurniSources();
 
-            foreach (var source in GetDefaultFurniSources())
+            foreach (WiredFurniSourceType[] source in GetDefaultFurniSources())
             {
                 WiredFurniSourceType[]? sourceTypes = source;
 
@@ -304,9 +313,9 @@ public abstract class FurnitureWiredLogic(
             }
 
             index = 0;
-            var validPlayerSources = GetAllowedPlayerSources();
+            List<WiredPlayerSourceType[]> validPlayerSources = GetAllowedPlayerSources();
 
-            foreach (var source in GetDefaultPlayerSources())
+            foreach (WiredPlayerSourceType[] source in GetDefaultPlayerSources())
             {
                 WiredPlayerSourceType[]? sourceTypes = source;
 
@@ -331,7 +340,7 @@ public abstract class FurnitureWiredLogic(
 
             index = 0;
 
-            foreach (var specType in GetDefinitionSpecificTypes())
+            foreach (Type specType in GetDefinitionSpecificTypes())
             {
                 object specific = default!;
 
@@ -357,7 +366,7 @@ public abstract class FurnitureWiredLogic(
 
             index = 0;
 
-            foreach (var specType in GetTypeSpecificTypes())
+            foreach (Type specType in GetTypeSpecificTypes())
             {
                 object specific = default!;
 
@@ -408,29 +417,35 @@ public abstract class FurnitureWiredLogic(
     {
         normalized = [];
 
-        var fixedRules = GetIntParamRules();
-        var tailRule = GetIntParamTailRule();
-        var min = fixedRules.Count;
-        var max = Math.Max(min, _roomGrain._roomConfig.WiredMaxIntParams);
+        List<IWiredParamRule> fixedRules = GetIntParamRules();
+        IWiredParamRule? tailRule = GetIntParamTailRule();
+        int min = fixedRules.Count;
+        int max = Math.Max(min, _roomGrain._roomConfig.WiredMaxIntParams);
 
         if (proposed.Count > max)
+        {
             return false;
+        }
 
         if (tailRule is null)
         {
             if (proposed.Count != fixedRules.Count)
-                return false;
-
-            for (var i = 0; i < fixedRules.Count; i++)
             {
-                var rule = fixedRules[i];
+                return false;
+            }
+
+            for (int i = 0; i < fixedRules.Count; i++)
+            {
+                IWiredParamRule rule = fixedRules[i];
 
                 try
                 {
-                    var v = proposed[i];
+                    int v = proposed[i];
 
                     if (!rule.IsValid(v))
+                    {
                         return false;
+                    }
 
                     normalized.Add(rule.Sanitize(v));
                 }
@@ -444,25 +459,31 @@ public abstract class FurnitureWiredLogic(
         }
 
         if (proposed.Count < min)
+        {
             return false;
+        }
 
         for (int i = 0; i < fixedRules.Count; i++)
         {
-            var rule = fixedRules[i];
-            var v = i < proposed.Count ? proposed[i] : rule.DefaultValue;
+            IWiredParamRule rule = fixedRules[i];
+            int v = i < proposed.Count ? proposed[i] : rule.DefaultValue;
 
             if (i < proposed.Count && !rule.IsValid(v))
+            {
                 return false;
+            }
 
             normalized.Add(rule.Sanitize(v));
         }
 
         for (int i = fixedRules.Count; i < proposed.Count; i++)
         {
-            var v = proposed[i];
+            int v = proposed[i];
 
             if (!tailRule.IsValid(v))
+            {
                 return false;
+            }
 
             normalized.Add(tailRule.Sanitize(v));
         }
@@ -474,19 +495,23 @@ public abstract class FurnitureWiredLogic(
     {
         stuffIds = [];
 
-        var count = 0;
+        int count = 0;
 
-        foreach (var id in proposed)
+        foreach (int id in proposed)
         {
-            if (!_roomGrain._state.ItemsById.TryGetValue(id, out var item))
+            if (!_roomGrain._state.ItemsById.TryGetValue(id, out IRoomItem? item))
+            {
                 continue;
+            }
 
             stuffIds.Add(id);
 
             count++;
 
             if (count >= _roomGrain._roomConfig.WiredSelectedItemsLimit)
+            {
                 break;
+            }
         }
 
         return true;
@@ -499,25 +524,29 @@ public abstract class FurnitureWiredLogic(
     {
         variableIds = [];
 
-        var count = 0;
-        var max = GetMaxVariableIds();
+        int count = 0;
+        int max = GetMaxVariableIds();
 
-        foreach (var id in proposed)
+        foreach (string id in proposed)
         {
             try
             {
-                var variableId = WiredVariableId.Parse(id);
-                var variable = _roomGrain.WiredSystem.GetVariableById(variableId);
+                WiredVariableId variableId = WiredVariableId.Parse(id);
+                IWiredVariable? variable = _roomGrain.WiredSystem.GetVariableById(variableId);
 
                 if (variable is null)
+                {
                     continue;
+                }
 
                 variableIds.Add(variableId);
 
                 count++;
 
                 if (count >= max)
+                {
                     break;
+                }
             }
             catch
             {
@@ -537,7 +566,7 @@ public abstract class FurnitureWiredLogic(
             if (
                 _ctx.RoomObject.ExtraData.TryGetSection(
                     ExtraDataSectionType.WIRED,
-                    out var wiredDataElement
+                    out JsonElement wiredDataElement
                 )
             )
             {
@@ -551,7 +580,7 @@ public abstract class FurnitureWiredLogic(
             _wiredData.AttatchRules(GetIntParamRules());
         }
 
-        if (TryNormalizeIntParams(_wiredData.IntParams, out var normalizedIntParams))
+        if (TryNormalizeIntParams(_wiredData.IntParams, out List<int> normalizedIntParams))
         {
             if (!_wiredData.IntParams.SequenceEqual(normalizedIntParams))
             {
@@ -560,7 +589,7 @@ public abstract class FurnitureWiredLogic(
             }
         }
 
-        if (GetValidStuffIds(_wiredData.StuffIds, out var stuffIds))
+        if (GetValidStuffIds(_wiredData.StuffIds, out List<int> stuffIds))
         {
             if (!_wiredData.StuffIds.SequenceEqual(stuffIds))
             {
@@ -570,7 +599,7 @@ public abstract class FurnitureWiredLogic(
             }
         }
 
-        if (GetValidStuffIds(_wiredData.StuffIds2, out var stuffIds2))
+        if (GetValidStuffIds(_wiredData.StuffIds2, out List<int> stuffIds2))
         {
             if (!_wiredData.StuffIds2.SequenceEqual(stuffIds2))
             {
@@ -580,9 +609,9 @@ public abstract class FurnitureWiredLogic(
             }
         }
 
-        if (GetValidVariableIds(_wiredData.VariableIds, out var variableIds))
+        if (GetValidVariableIds(_wiredData.VariableIds, out List<WiredVariableId> variableIds))
         {
-            var variableIdStrings = variableIds.Select(x => x.ToString()).ToList();
+            List<string> variableIdStrings = variableIds.Select(x => x.ToString()).ToList();
 
             if (!_wiredData.VariableIds.SequenceEqual(variableIdStrings))
             {
@@ -612,17 +641,17 @@ public abstract class FurnitureWiredLogic(
         {
             WiredType = WiredType,
             FurniLimit = _roomGrain._roomConfig.WiredSelectedItemsLimit,
-            StuffIds = GetValidStuffIds(_wiredData.StuffIds, out var validStuffIds)
+            StuffIds = GetValidStuffIds(_wiredData.StuffIds, out List<int> validStuffIds)
                 ? validStuffIds
                 : [],
-            StuffIds2 = GetValidStuffIds(_wiredData.StuffIds2, out var validStuffIds2)
+            StuffIds2 = GetValidStuffIds(_wiredData.StuffIds2, out List<int> validStuffIds2)
                 ? validStuffIds2
                 : [],
             StuffTypeId = _ctx.Definition.SpriteId,
             Id = _ctx.ObjectId,
             StringParam = _wiredData.StringParam,
             IntParams = _wiredData.IntParams,
-            VariableIds = GetValidVariableIds(_wiredData.VariableIds, out var validVariableIds)
+            VariableIds = GetValidVariableIds(_wiredData.VariableIds, out List<WiredVariableId> validVariableIds)
                 ? validVariableIds
                 : [],
             FurniSourceTypes = GetFurniSources(),

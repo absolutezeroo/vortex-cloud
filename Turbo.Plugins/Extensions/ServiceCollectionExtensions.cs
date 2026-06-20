@@ -13,7 +13,7 @@ public static class ServiceCollectionExtensions
         HostApplicationBuilder builder
     )
     {
-        var pluginSection = builder.Configuration.GetSection(PluginConfig.SECTION_NAME);
+        IConfigurationSection pluginSection = builder.Configuration.GetSection(PluginConfig.SECTION_NAME);
 
         services.Configure<PluginConfig>(pluginSection);
 
@@ -21,7 +21,9 @@ public static class ServiceCollectionExtensions
         services.AddHostedService<PluginBootstrapper>();
 
         if (builder.Environment.IsDevelopment() && pluginSection.GetValue<bool>("HotReloadEnabled"))
+        {
             services.AddHostedService<PluginHotReloadService>();
+        }
 
         return services;
     }
@@ -32,7 +34,7 @@ public static class ServiceCollectionExtensions
     )
         where TModule : class, IHostPluginModule, new()
     {
-        var module = new TModule();
+        TModule module = new TModule();
 
         module.ConfigureServices(services, builder);
 

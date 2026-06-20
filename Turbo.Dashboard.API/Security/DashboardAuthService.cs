@@ -34,22 +34,26 @@ internal sealed class DashboardAuthService(
         CancellationToken ct
     )
     {
-        var accountId = await authenticator
+        int? accountId = await authenticator
             .VerifyCredentialsAsync(email, password, ct)
             .ConfigureAwait(false);
 
         if (accountId is null)
+        {
             return DashboardLoginResult.InvalidCredentials;
+        }
 
-        var perms = await permissions
+        PermissionSet perms = await permissions
             .ResolveForAccountAsync(accountId.Value, ct)
             .ConfigureAwait(false);
 
         if (!HasDashboardAccess(perms))
+        {
             return DashboardLoginResult.Forbidden;
+        }
 
-        var normalizedEmail = email.Trim().ToLowerInvariant();
-        var sessionId = sessions.Create(accountId.Value, normalizedEmail);
+        string normalizedEmail = email.Trim().ToLowerInvariant();
+        string sessionId = sessions.Create(accountId.Value, normalizedEmail);
 
         return DashboardLoginResult.Authenticated(
             sessionId,
@@ -59,18 +63,22 @@ internal sealed class DashboardAuthService(
 
     public async Task<DashboardPrincipal?> ResolveAsync(string? sessionId, CancellationToken ct)
     {
-        var session = sessions.Resolve(sessionId);
+        (int AccountId, string Email)? session = sessions.Resolve(sessionId);
 
         if (session is null)
+        {
             return null;
+        }
 
-        var perms = await permissions
+        PermissionSet perms = await permissions
             .ResolveForAccountAsync(session.Value.AccountId, ct)
             .ConfigureAwait(false);
 
         // Capabilities are re-checked every request: revoking a role takes effect immediately.
         if (!HasDashboardAccess(perms))
+        {
             return null;
+        }
 
         return new DashboardPrincipal(session.Value.AccountId, session.Value.Email, perms);
     }

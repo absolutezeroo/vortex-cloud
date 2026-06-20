@@ -13,20 +13,27 @@ public sealed class CompositeDisposable(IEnumerable<IDisposable>? items = null) 
     public void Add(IDisposable d)
     {
         if (d != null)
+        {
             _items.Add(d);
+        }
     }
 
     public void Add(IEnumerable<IDisposable> ds)
     {
         if (ds != null)
+        {
             _items.AddRange(ds.Where(d => d != null));
+        }
     }
 
     public void Dispose()
     {
         if (Interlocked.Exchange(ref _disposed, 1) == 1)
+        {
             return;
-        for (var i = _items.Count - 1; i >= 0; i--)
+        }
+
+        for (int i = _items.Count - 1; i >= 0; i--)
             try
             {
                 _items[i].Dispose();

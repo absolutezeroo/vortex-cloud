@@ -5,6 +5,7 @@ using Orleans;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Rooms.Enums.Wired;
 using Turbo.Primitives.Rooms.Object;
+using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Object.Logic;
 using Turbo.Primitives.Rooms.Wired;
@@ -38,27 +39,38 @@ public class WiredSelectorItemsWithAltitude(
         CancellationToken ct
     )
     {
-        var altitude = Altitude.FromInt(_wiredData.GetIntParam<int>(0));
-        var output = new WiredSelectionSet();
+        Altitude altitude = Altitude.FromInt(_wiredData.GetIntParam<int>(0));
+        WiredSelectionSet output = new WiredSelectionSet();
 
-        foreach (var item in _roomGrain._state.ItemsById.Values)
+        foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
         {
             if (item is not IRoomFloorItem floorItem)
+            {
                 continue;
+            }
 
             switch (_wiredData.GetIntParam<WiredComparisonType>(1))
             {
                 case WiredComparisonType.LessThan:
                     if (floorItem.Z < altitude)
+                    {
                         output.SelectedFurniIds.Add(item.ObjectId.Value);
+                    }
+
                     continue;
                 case WiredComparisonType.GreaterThan:
                     if (floorItem.Z > altitude)
+                    {
                         output.SelectedFurniIds.Add(item.ObjectId.Value);
+                    }
+
                     continue;
                 case WiredComparisonType.Equals:
                     if (floorItem.Z == altitude)
+                    {
                         output.SelectedFurniIds.Add(item.ObjectId.Value);
+                    }
+
                     continue;
             }
         }

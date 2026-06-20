@@ -13,7 +13,9 @@ public abstract class ContextVariable(RoomGrain roomGrain) : WiredInternalVariab
         value = WiredVariableValue.Default;
 
         if (!CanBind(key))
+        {
             return false;
+        }
 
         //value = GetValueForRoom(_roomGrain);
 

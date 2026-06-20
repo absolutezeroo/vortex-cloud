@@ -20,9 +20,11 @@ public class UpdateGuildSettingsMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0 || message.GroupId <= 0)
+        {
             return;
+        }
 
-        var ok = await _grainFactory
+        bool ok = await _grainFactory
             .GetGroupGrain(message.GroupId)
             .UpdateSettingsAsync(ctx.PlayerId, message.GuildType, message.RightsLevel, ct)
             .ConfigureAwait(false);

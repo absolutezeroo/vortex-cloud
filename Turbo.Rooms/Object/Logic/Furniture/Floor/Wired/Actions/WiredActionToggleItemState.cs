@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Orleans;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Rooms.Enums.Wired;
+using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Object.Logic;
 using Turbo.Primitives.Rooms.Wired;
@@ -37,16 +38,18 @@ public class WiredActionToggleItemState(
 
     public override async Task<bool> ExecuteAsync(IWiredExecutionContext ctx, CancellationToken ct)
     {
-        var selection = await ctx.GetEffectiveSelectionAsync(this, ct);
+        IWiredSelectionSet selection = await ctx.GetEffectiveSelectionAsync(this, ct);
 
-        foreach (var furniId in selection.SelectedFurniIds)
+        foreach (int furniId in selection.SelectedFurniIds)
         {
             try
             {
-                if (!_roomGrain._state.ItemsById.TryGetValue(furniId, out var item))
+                if (!_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item))
+                {
                     continue;
+                }
 
-                var state = _wiredData.GetIntParam<bool>(0) switch
+                int state = _wiredData.GetIntParam<bool>(0) switch
                 {
                     false => item.Logic.GetNextToggleableState(),
                     true => item.Logic.GetPrevToggleableState(),

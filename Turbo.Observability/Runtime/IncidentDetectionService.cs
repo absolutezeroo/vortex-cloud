@@ -51,26 +51,26 @@ public sealed class IncidentDetectionService(
 
     public async Task<IncidentDetectionSnapshot> DetectAsync(CancellationToken ct)
     {
-        var incidents = new List<IncidentSignal>();
-        var health = await _healthService.GetStatusAsync(ct).ConfigureAwait(false);
+        List<IncidentSignal> incidents = new List<IncidentSignal>();
+        InfrastructureHealthSnapshot health = await _healthService.GetStatusAsync(ct).ConfigureAwait(false);
 
         EvaluateHealthSignals(health, incidents);
 
         try
         {
-            await using var db = await _dbContextFactory
+            await using TurboDbContext db = await _dbContextFactory
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(false);
 
-            var now = DateTime.UtcNow;
-            var since = now.AddMinutes(-_lookbackMinutes);
-            var windowMinutes = Math.Max(1.0, (now - since).TotalMinutes);
-            var errorCount = await db
+            DateTime now = DateTime.UtcNow;
+            DateTime since = now.AddMinutes(-_lookbackMinutes);
+            double windowMinutes = Math.Max(1.0, (now - since).TotalMinutes);
+            int errorCount = await db
                 .ErrorOccurrences.AsNoTracking()
                 .CountAsync(o => o.OccurredAt >= since, ct)
                 .ConfigureAwait(false);
 
-            var loginFailedCount = await db
+            int loginFailedCount = await db
                 .AuditEvents.AsNoTracking()
                 .CountAsync(
                     e =>
@@ -81,7 +81,7 @@ public sealed class IncidentDetectionService(
                 )
                 .ConfigureAwait(false);
 
-            var topGroups = await db
+            List<TopErrorGroupSnapshot> topGroups = await db
                 .ErrorGroups.AsNoTracking()
                 .Where(g => g.LastSeenAt >= since)
                 .OrderByDescending(g => g.TotalOccurrences)
@@ -103,8 +103,8 @@ public sealed class IncidentDetectionService(
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
-            var errorSpikes = errorCount / windowMinutes;
-            var loginFailedSpikes = loginFailedCount / windowMinutes;
+            double errorSpikes = errorCount / windowMinutes;
+            double loginFailedSpikes = loginFailedCount / windowMinutes;
 
             EvaluateErrorSpikes(errorSpikes, incidents);
             EvaluateLoginFailedSpikes(loginFailedSpikes, incidents);
@@ -129,8 +129,8 @@ public sealed class IncidentDetectionService(
         double loginFailedSpikesPerMinute
     )
     {
-        var overall = ComputeOverallSeverity(incidents);
-        var ordered = incidents
+        string overall = ComputeOverallSeverity(incidents);
+        IncidentSignal[] ordered = incidents
             .OrderBy(i => GetSeverityRank(i.Severity))
             .ThenByDescending(i => i.DetectedAt)
             .ToArray();
@@ -141,10 +141,14 @@ public sealed class IncidentDetectionService(
     private static string ComputeOverallSeverity(IReadOnlyCollection<IncidentSignal> incidents)
     {
         if (incidents.Any(i => i.Severity == "critical"))
+        {
             return "Critical";
+        }
 
         if (incidents.Any(i => i.Severity == "degraded"))
+        {
             return "Degraded";
+        }
 
         return "Healthy";
     }

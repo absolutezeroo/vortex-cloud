@@ -20,15 +20,17 @@ public class BuyMarketplaceOfferMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var result = await _grainFactory
+        int result = await _grainFactory
             .GetMarketplacePurchaseGrain(ctx.PlayerId)
             .BuyOfferAsync(message.OfferId, ct)
             .ConfigureAwait(false);
 
         // grain: 0=ok, 1=not found, 2=no credits → AS3: 0=ok, 2=not available, 4=no credits
-        var as3Result = result switch
+        int as3Result = result switch
         {
             0 => 0,
             2 => 4,

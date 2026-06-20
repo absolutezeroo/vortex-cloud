@@ -1,3 +1,4 @@
+using Turbo.Primitives.Inventory.Snapshots;
 using Turbo.Primitives.Messages.Outgoing.Inventory.Avatareffect;
 using Turbo.Primitives.Packets;
 using Turbo.Revisions.Revision20260112.Serializers.Inventory.Avatareffect.Data;
@@ -11,7 +12,7 @@ internal class AvatarEffectsMessageComposerSerializer(int header)
     {
         packet.WriteInteger(message.Effects.Length);
 
-        foreach (var effect in message.Effects)
+        foreach (AvatarEffectSnapshot effect in message.Effects)
             AvatarEffectSerializer.Serialize(packet, effect);
     }
 }

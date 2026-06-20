@@ -16,7 +16,9 @@ internal sealed class LegacyStuffData : StuffDataBase, ILegacyStuffData
     public override void SetState(string state)
     {
         if (string.IsNullOrEmpty(state))
+        {
             state = DEFAULT_STATE;
+        }
 
         Data = state;
 

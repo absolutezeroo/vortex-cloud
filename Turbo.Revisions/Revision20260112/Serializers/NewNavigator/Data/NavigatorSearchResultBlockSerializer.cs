@@ -16,7 +16,7 @@ internal class NavigatorSearchResultBlockSerializer
             .WriteInteger((int)message.ViewMode)
             .WriteInteger(message.Results.Length);
 
-        foreach (var result in message.Results)
+        foreach (NavigatorSearchResultSnapshot result in message.Results)
         {
             RoomSettingsSerializer.Serialize(packet, result);
         }

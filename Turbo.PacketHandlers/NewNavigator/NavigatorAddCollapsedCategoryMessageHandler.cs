@@ -19,7 +19,9 @@ public class NavigatorAddCollapsedCategoryMessageHandler(IGrainFactory grainFact
     )
     {
         if (string.IsNullOrWhiteSpace(message.CategoryName))
+        {
             return;
+        }
 
         await _grainFactory
             .GetPlayerNavigatorGrain(ctx.PlayerId)

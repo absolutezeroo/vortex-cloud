@@ -30,13 +30,13 @@ internal sealed class ChannelErrorGroupingSink(
         string? remoteIp = null
     )
     {
-        var current = _contextAccessor.Current;
-        var resolvedActorId = actorId ?? current?.PlayerId;
-        var resolvedRoomId = roomId ?? current?.RoomId;
-        var resolvedCorrelationId = correlationId ?? current?.CorrelationId.Value;
-        var resolvedSessionKey = sessionKey ?? current?.SessionKey;
-        var occurredAt = DateTime.UtcNow;
-        var record = ErrorGroupingRecord.FromException(
+        ITurboContext? current = _contextAccessor.Current;
+        long? resolvedActorId = actorId ?? current?.PlayerId;
+        int? resolvedRoomId = roomId ?? current?.RoomId;
+        string? resolvedCorrelationId = correlationId ?? current?.CorrelationId.Value;
+        string? resolvedSessionKey = sessionKey ?? current?.SessionKey;
+        DateTime occurredAt = DateTime.UtcNow;
+        ErrorGroupingRecord record = ErrorGroupingRecord.FromException(
             exception,
             source,
             operation,

@@ -67,18 +67,20 @@ public class WiredActionGiveVariable(
 
     public override async Task<bool> ExecuteAsync(IWiredExecutionContext ctx, CancellationToken ct)
     {
-        var selection = await ctx.GetEffectiveSelectionAsync(this, ct);
-        var variableIds = _wiredData.VariableIds;
+        IWiredSelectionSet selection = await ctx.GetEffectiveSelectionAsync(this, ct);
+        List<string> variableIds = _wiredData.VariableIds;
 
-        foreach (var variableId in variableIds)
+        foreach (string variableId in variableIds)
         {
             try
             {
-                var id = WiredVariableId.Parse(variableId);
-                var variable = _roomGrain.WiredSystem.GetVariableById(id);
+                WiredVariableId id = WiredVariableId.Parse(variableId);
+                IWiredVariable? variable = _roomGrain.WiredSystem.GetVariableById(id);
 
                 if (variable is null)
+                {
                     continue;
+                }
 
                 int value = _wiredData.GetIntParam<int>(2);
                 bool replace = _wiredData.GetIntParam<bool>(3);
@@ -87,9 +89,9 @@ public class WiredActionGiveVariable(
                 {
                     case WiredVariableTargetType.Furni:
                     {
-                        foreach (var furniId in selection.SelectedFurniIds)
+                        foreach (int furniId in selection.SelectedFurniIds)
                         {
-                            var key = new WiredVariableKey(
+                            WiredVariableKey key = new WiredVariableKey(
                                 id,
                                 WiredVariableTargetType.Furni,
                                 furniId
@@ -102,9 +104,9 @@ public class WiredActionGiveVariable(
                     }
                     case WiredVariableTargetType.User:
                     {
-                        foreach (var playerId in selection.SelectedPlayerIds)
+                        foreach (int playerId in selection.SelectedPlayerIds)
                         {
-                            var key = new WiredVariableKey(
+                            WiredVariableKey key = new WiredVariableKey(
                                 id,
                                 WiredVariableTargetType.User,
                                 playerId

@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Turbo.Database.Context;
+using Turbo.Database.Entities.Players;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Inventory.Badges;
 using Turbo.Primitives.Messages.Outgoing.Inventory.Badges;
@@ -23,17 +25,19 @@ public class GetBadgesMessageHandler(IDbContextFactory<TurboDbContext> dbCtxFact
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var entities = await dbCtx
+        List<PlayerBadgeEntity> entities = await dbCtx
             .PlayerBadges.AsNoTracking()
-            .Where(b => b.PlayerEntityId == ctx.PlayerId)
+            .Where(b => b.PlayerEntityId == (int)ctx.PlayerId)
             .ToListAsync(ct)
             .ConfigureAwait(false);
 
-        var badges = entities
+        ImmutableArray<PlayerBadgeSnapshot> badges = entities
             .Select(b => new PlayerBadgeSnapshot
             {
                 SlotId = b.SlotId ?? 0,

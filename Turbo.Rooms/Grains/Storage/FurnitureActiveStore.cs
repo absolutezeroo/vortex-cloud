@@ -16,11 +16,13 @@ public sealed class FurnitureActiveStore : ActiveStore
         store = null;
 
         if (key.TargetType != WiredVariableTargetType.Furni)
+        {
             return false;
+        }
 
-        var targetId = RoomObjectId.Parse(key.TargetId);
+        RoomObjectId targetId = RoomObjectId.Parse(key.TargetId);
 
-        if (!_byItemId.TryGetValue(targetId, out var found))
+        if (!_byItemId.TryGetValue(targetId, out KeyValueStore? found))
         {
             found = new KeyValueStore();
 

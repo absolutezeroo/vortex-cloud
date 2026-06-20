@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orleans;
@@ -58,7 +59,9 @@ public sealed class RoomPersistenceGrain(
         _dirtyItems[snapshot.ObjectId] = snapshot;
 
         if (remove)
+        {
             _removedItemIds.Add(snapshot.ObjectId);
+        }
 
         return Task.CompletedTask;
     }
@@ -69,7 +72,7 @@ public sealed class RoomPersistenceGrain(
         CancellationToken ct
     )
     {
-        foreach (var snapshot in snapshots)
+        foreach (RoomItemSnapshot snapshot in snapshots)
             _dirtyItems[snapshot.ObjectId] = snapshot;
 
         return Task.CompletedTask;
@@ -78,23 +81,25 @@ public sealed class RoomPersistenceGrain(
     private async Task FlushDirtyItemsAsync(CancellationToken ct)
     {
         if (_dirtyItems.Count == 0)
+        {
             return;
+        }
 
-        var batch = _dirtyItems
+        RoomItemSnapshot[] batch = _dirtyItems
             .Take(_roomConfig.MaxDirtyItemsPerFlush)
             .Select(x => x.Value)
             .ToArray();
 
-        foreach (var item in batch)
+        foreach (RoomItemSnapshot item in batch)
             _dirtyItems.Remove(item.ObjectId);
 
         try
         {
-            using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+            using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
-            foreach (var item in batch)
+            foreach (RoomItemSnapshot item in batch)
             {
-                var dbEntity = new FurnitureEntity
+                FurnitureEntity dbEntity = new FurnitureEntity
                 {
                     Id = item.ObjectId.Value,
                     PlayerEntityId = item.OwnerId.Value,
@@ -107,7 +112,7 @@ public sealed class RoomPersistenceGrain(
 
                 dbCtx.Attach(dbEntity);
 
-                var e = dbCtx.Entry(dbEntity);
+                EntityEntry<FurnitureEntity> e = dbCtx.Entry(dbEntity);
 
                 e.Property(x => x.PlayerEntityId).IsModified = true;
                 e.Property(x => x.RoomEntityId).IsModified = true;

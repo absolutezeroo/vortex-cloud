@@ -16,7 +16,7 @@ internal class RoomInviteErrorMessageSerializer(int header)
 
             if (message.FailedRecipients is not null)
             {
-                foreach (var recipient in message.FailedRecipients)
+                foreach (int recipient in message.FailedRecipients)
                 {
                     packet.WriteInteger(recipient);
                 }

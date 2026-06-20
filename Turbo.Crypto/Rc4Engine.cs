@@ -18,7 +18,9 @@ public sealed class Rc4Engine : IRc4Engine
         ArgumentOutOfRangeException.ThrowIfNegative(dropN);
 
         if (key.Length == 0 || key.Length > 256)
+        {
             throw new ArgumentException("Key length must be 1..256 bytes for RC4.", nameof(key));
+        }
 
         _workingKey = new byte[key.Length];
         _dropN = dropN;
@@ -46,11 +48,19 @@ public sealed class Rc4Engine : IRc4Engine
         ArgumentOutOfRangeException.ThrowIfNegative(length);
 
         if (inputOffset < 0 || outputOffset < 0)
+        {
             throw new ArgumentOutOfRangeException("Offsets must be non-negative.");
+        }
+
         if (inputData.Length - inputOffset < length)
+        {
             throw new ArgumentException("Input buffer too short.");
+        }
+
         if (outputData.Length - outputOffset < length)
+        {
             throw new ArgumentException("Output buffer too short.");
+        }
 
         lock (_sync)
         {
@@ -70,11 +80,16 @@ public sealed class Rc4Engine : IRc4Engine
         ArgumentNullException.ThrowIfNull(inputData);
         int len = length ?? (inputData.Length - inputOffset);
         if (inputOffset < 0 || len < 0)
+        {
             throw new ArgumentOutOfRangeException();
-        if (inputData.Length - inputOffset < len)
-            throw new ArgumentException("Input buffer too short.");
+        }
 
-        var output = new byte[len];
+        if (inputData.Length - inputOffset < len)
+        {
+            throw new ArgumentException("Input buffer too short.");
+        }
+
+        byte[] output = new byte[len];
         Peek(inputData, inputOffset, output, 0, len);
         return output;
     }
@@ -90,11 +105,19 @@ public sealed class Rc4Engine : IRc4Engine
         ArgumentNullException.ThrowIfNull(inputData);
         ArgumentNullException.ThrowIfNull(outputData);
         if (inputOffset < 0 || outputOffset < 0 || length < 0)
+        {
             throw new ArgumentOutOfRangeException();
+        }
+
         if (inputData.Length - inputOffset < length)
+        {
             throw new ArgumentException("Input buffer too short.");
+        }
+
         if (outputData.Length - outputOffset < length)
+        {
             throw new ArgumentException("Output buffer too short.");
+        }
 
         byte[] sClone = new byte[256];
         int ic,

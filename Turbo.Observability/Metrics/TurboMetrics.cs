@@ -54,7 +54,9 @@ public sealed class TurboMetrics : ITurboMetrics, IDisposable
     public void PacketReceived(string operation, long? actorId = null, int? roomId = null)
     {
         if (_enabled)
+        {
             _packetReceived.Add(1, Tag(operation));
+        }
 
         _liveStats.RecordPacketReceived(operation, actorId, roomId);
     }
@@ -67,7 +69,9 @@ public sealed class TurboMetrics : ITurboMetrics, IDisposable
     )
     {
         if (_enabled)
+        {
             _packetDuration.Record(elapsedMilliseconds, Tag(operation));
+        }
 
         _liveStats.RecordPacketCompleted(actorId, roomId, elapsedMilliseconds);
     }
@@ -75,7 +79,9 @@ public sealed class TurboMetrics : ITurboMetrics, IDisposable
     public void PacketFailed(string operation, long? actorId = null, int? roomId = null)
     {
         if (_enabled)
+        {
             _packetFailed.Add(1, Tag(operation));
+        }
 
         _liveStats.RecordPacketFailed(operation, actorId, roomId);
     }

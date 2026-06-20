@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Turbo.Database.Context;
+using Turbo.Database.Entities.Room;
 using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Object;
 using Turbo.Primitives.Rooms.Providers;
@@ -27,17 +28,17 @@ public sealed class RoomModelProvider(
     >.Empty;
 
     public RoomModelSnapshot GetModelById(int modelId) =>
-        _modelsById.TryGetValue(modelId, out var model)
+        _modelsById.TryGetValue(modelId, out RoomModelSnapshot? model)
             ? model
             : throw new KeyNotFoundException($"Room model not found: ModelId={modelId}");
 
     public async Task ReloadAsync(CancellationToken ct = default)
     {
-        var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {
-            var entities = await dbCtx
+            List<RoomModelEntity> entities = await dbCtx
                 .RoomModels.AsNoTracking()
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
@@ -45,8 +46,8 @@ public sealed class RoomModelProvider(
             _modelsById = entities
                 .Select(x =>
                 {
-                    var modelData = CleanModelString(x.Model);
-                    var compiledModel = CompileModelFromString(modelData);
+                    string modelData = CleanModelString(x.Model);
+                    CompiledRoomModelSnapshot compiledModel = CompileModelFromString(modelData);
 
                     return new RoomModelSnapshot
                     {
@@ -81,22 +82,24 @@ public sealed class RoomModelProvider(
 
     private static CompiledRoomModelSnapshot CompileModelFromString(string model)
     {
-        var rows = SplitLines(model);
+        List<string> rows = SplitLines(model);
 
         if (rows.Count == 0)
-            throw new InvalidDataException("Room model data is empty.");
-
-        var height = rows.Count;
-        var width = rows.Max(x => x.Length);
-        var size = width * height;
-        var heights = new Altitude[size];
-        var flags = new RoomTileFlags[size];
-
-        for (var y = 0; y < height; y++)
         {
-            var row = rows[y];
+            throw new InvalidDataException("Room model data is empty.");
+        }
 
-            for (var x = 0; x < width; x++)
+        int height = rows.Count;
+        int width = rows.Max(x => x.Length);
+        int size = width * height;
+        Altitude[] heights = new Altitude[size];
+        RoomTileFlags[] flags = new RoomTileFlags[size];
+
+        for (int y = 0; y < height; y++)
+        {
+            string row = rows[y];
+
+            for (int x = 0; x < width; x++)
             {
                 int idx = y * width + x;
                 char ch = (x < row.Length) ? row[x] : 'x';
@@ -108,10 +111,10 @@ public sealed class RoomModelProvider(
                 }
                 else
                 {
-                    var heightIndex = "abcdefghijklmnopqrstuvwxyz".IndexOf(ch);
-                    var tileHeight =
+                    int heightIndex = "abcdefghijklmnopqrstuvwxyz".IndexOf(ch);
+                    Altitude tileHeight =
                         heightIndex == -1
-                            ? Altitude.FromInt(int.TryParse(ch.ToString(), out var h) ? h : 0)
+                            ? Altitude.FromInt(int.TryParse(ch.ToString(), out int h) ? h : 0)
                             : Altitude.FromInt(heightIndex + 10);
 
                     heights[idx] = tileHeight;
@@ -131,9 +134,9 @@ public sealed class RoomModelProvider(
 
     private static List<string> SplitLines(string s)
     {
-        var lines = new List<string>();
+        List<string> lines = new List<string>();
 
-        using var sr = new StringReader(s);
+        using StringReader sr = new StringReader(s);
 
         string? line;
 

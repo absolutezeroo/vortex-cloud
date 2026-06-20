@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,13 +27,15 @@ public class WiredSelectorEntitiesByName(
         CancellationToken ct
     )
     {
-        var output = new WiredSelectionSet();
-        var names = _wiredData.StringParam.Split('/').Select(n => n.Trim().ToLower()).ToHashSet();
+        WiredSelectionSet output = new WiredSelectionSet();
+        HashSet<string> names = _wiredData.StringParam.Split('/').Select(n => n.Trim().ToLower()).ToHashSet();
 
-        foreach (var avatar in _roomGrain._state.AvatarsByObjectId.Values)
+        foreach (IRoomAvatar avatar in _roomGrain._state.AvatarsByObjectId.Values)
         {
             if (avatar is not IRoomPlayer roomPlayer || !names.Contains(roomPlayer.Name.ToLower()))
+            {
                 continue;
+            }
 
             output.SelectedPlayerIds.Add((int)roomPlayer.PlayerId);
         }

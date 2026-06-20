@@ -14,15 +14,14 @@ namespace Turbo.Database.Migrations
                 name: "favourite_group_id",
                 table: "players",
                 type: "int",
-                nullable: true);
+                nullable: true
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "favourite_group_id",
-                table: "players");
+            migrationBuilder.DropColumn(name: "favourite_group_id", table: "players");
         }
     }
 }

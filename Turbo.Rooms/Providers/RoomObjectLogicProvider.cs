@@ -22,7 +22,7 @@ public sealed class RoomObjectLogicProvider(IServiceProvider host) : IRoomObject
         Func<IServiceProvider, IRoomObjectContext, IRoomObjectLogic> factory
     )
     {
-        var reg = new RoomObjectLogicReg(sp, factory);
+        RoomObjectLogicReg reg = new RoomObjectLogicReg(sp, factory);
 
         _logics[logicType] = reg;
 
@@ -34,23 +34,27 @@ public sealed class RoomObjectLogicProvider(IServiceProvider host) : IRoomObject
 
     public IRoomObjectLogic CreateLogicInstance(string logicType, IRoomObjectContext ctx)
     {
-        if (!_logics.TryGetValue(logicType, out var reg))
+        if (!_logics.TryGetValue(logicType, out RoomObjectLogicReg? reg))
         {
             Console.WriteLine(
                 $"[RoomObjectLogicProvider] Logic type '{logicType}' not found, falling back to default_floor"
             );
-            reg = _logics.TryGetValue("default_floor", out var defaultReg) ? defaultReg : null;
+            reg = _logics.TryGetValue("default_floor", out RoomObjectLogicReg? defaultReg) ? defaultReg : null;
         }
 
         if (reg is null)
+        {
             throw new TurboException(TurboErrorCodeEnum.InvalidLogic);
+        }
 
         // TODO we need to fall back if not found
 
-        var sp = reg.ServiceProvider;
+        IServiceProvider sp = reg.ServiceProvider;
 
         if (sp != _host)
+        {
             sp = new CompositeServiceProvider(sp, _host);
+        }
 
         return reg.Factory(sp, ctx);
     }

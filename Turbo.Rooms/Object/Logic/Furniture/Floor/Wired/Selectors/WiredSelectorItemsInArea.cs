@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Orleans;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Rooms.Enums.Wired;
+using Turbo.Primitives.Rooms.Object;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Object.Logic;
 using Turbo.Primitives.Rooms.Wired;
@@ -37,15 +38,15 @@ public class WiredSelectorItemsInArea(
         CancellationToken ct
     )
     {
-        var output = new WiredSelectionSet();
+        WiredSelectionSet output = new WiredSelectionSet();
 
-        foreach (var tileId in _tileIds)
+        foreach (int tileId in _tileIds)
         {
             try
             {
-                var itemIds = _roomGrain._state.TileFloorStacks[tileId];
+                HashSet<RoomObjectId> itemIds = _roomGrain._state.TileFloorStacks[tileId];
 
-                foreach (var itemId in itemIds)
+                foreach (RoomObjectId itemId in itemIds)
                     output.SelectedFurniIds.Add((int)itemId);
             }
             catch
@@ -63,18 +64,18 @@ public class WiredSelectorItemsInArea(
 
         await base.FillInternalDataAsync(ct);
 
-        var rootX = _wiredData.GetIntParam<int>(0);
-        var rootY = _wiredData.GetIntParam<int>(1);
-        var areaW = _wiredData.GetIntParam<int>(2);
-        var areaH = _wiredData.GetIntParam<int>(3);
-        var mapW = _roomGrain.MapModule.Width;
-        var mapH = _roomGrain.MapModule.Height;
-        var size = 0;
-        var filled = false;
+        int rootX = _wiredData.GetIntParam<int>(0);
+        int rootY = _wiredData.GetIntParam<int>(1);
+        int areaW = _wiredData.GetIntParam<int>(2);
+        int areaH = _wiredData.GetIntParam<int>(3);
+        int mapW = _roomGrain.MapModule.Width;
+        int mapH = _roomGrain.MapModule.Height;
+        int size = 0;
+        bool filled = false;
 
-        for (var dy = 0; dy < areaH; dy++)
+        for (int dy = 0; dy < areaH; dy++)
         {
-            for (var dx = 0; dx < areaW; dx++)
+            for (int dx = 0; dx < areaW; dx++)
             {
                 if (size >= _roomGrain._roomConfig.WiredSelectorMaxAreaSize)
                 {
@@ -83,20 +84,24 @@ public class WiredSelectorItemsInArea(
                     break;
                 }
 
-                var x = rootX + dx;
-                var y = rootY + dy;
+                int x = rootX + dx;
+                int y = rootY + dy;
 
                 if (x >= mapW || y >= mapH)
+                {
                     continue;
+                }
 
-                var tileId = (y * mapW) + x;
+                int tileId = (y * mapW) + x;
 
                 _tileIds.Add(tileId);
                 size++;
             }
 
             if (filled)
+            {
                 break;
+            }
         }
 
         size = 0;
@@ -104,13 +109,13 @@ public class WiredSelectorItemsInArea(
 
         if (GetIsInvert())
         {
-            var selectedTiles = _tileIds.ToHashSet();
+            HashSet<int> selectedTiles = _tileIds.ToHashSet();
 
             _tileIds.Clear();
 
-            for (var y = 0; y < mapH; y++)
+            for (int y = 0; y < mapH; y++)
             {
-                for (var x = 0; x < mapW; x++)
+                for (int x = 0; x < mapW; x++)
                 {
                     if (size >= _roomGrain._roomConfig.WiredSelectorMaxAreaSize)
                     {
@@ -119,17 +124,21 @@ public class WiredSelectorItemsInArea(
                         break;
                     }
 
-                    var tileId = (y * mapW) + x;
+                    int tileId = (y * mapW) + x;
 
                     if (selectedTiles.Contains(tileId))
+                    {
                         continue;
+                    }
 
                     _tileIds.Add(tileId);
                     size++;
                 }
 
                 if (filled)
+                {
                     break;
+                }
             }
         }
     }

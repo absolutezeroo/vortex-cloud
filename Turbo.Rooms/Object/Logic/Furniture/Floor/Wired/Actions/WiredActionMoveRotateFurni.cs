@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
+using Turbo.Primitives.Action;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Enums.Wired;
+using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Object.Logic;
 using Turbo.Primitives.Rooms.Wired;
@@ -43,32 +45,36 @@ public class WiredActionMoveRotateFurni(
 
     public override async Task<bool> ExecuteAsync(IWiredExecutionContext ctx, CancellationToken ct)
     {
-        var selection = await ctx.GetEffectiveSelectionAsync(this, ct);
-        var actionCtx = ctx.AsActionContext();
+        IWiredSelectionSet selection = await ctx.GetEffectiveSelectionAsync(this, ct);
+        ActionContext actionCtx = ctx.AsActionContext();
 
-        foreach (var furniId in selection.SelectedFurniIds)
+        foreach (int furniId in selection.SelectedFurniIds)
         {
             try
             {
                 if (
-                    !_roomGrain._state.ItemsById.TryGetValue(furniId, out var item)
+                    !_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
                     || item is not IRoomFloorItem floorItem
                 )
+                {
                     continue;
+                }
 
-                var moveDirection = GetMoveDirection(_movementType);
-                var moveRotation = GetMoveRotation(floorItem.Rotation, _rotationType);
+                Rotation moveDirection = GetMoveDirection(_movementType);
+                Rotation moveRotation = GetMoveRotation(floorItem.Rotation, _rotationType);
 
                 if (
                     !_roomGrain.MapModule.TryGetTileInFront(
                         _roomGrain.MapModule.ToIdx(floorItem.X, floorItem.Y),
                         moveDirection,
-                        out var nextIdx
+                        out int nextIdx
                     )
                 )
+                {
                     continue;
+                }
 
-                var (targetX, targetY) = _roomGrain.MapModule.GetTileXY(nextIdx);
+                (int targetX, int targetY) = _roomGrain.MapModule.GetTileXY(nextIdx);
 
                 if (
                     !await _roomGrain.FurniModule.ValidateFloorItemPlacementAsync(
@@ -79,7 +85,9 @@ public class WiredActionMoveRotateFurni(
                         moveRotation
                     )
                 )
+                {
                     continue;
+                }
 
                 await ctx.ProcessFloorItemMovementAsync(floorItem, nextIdx, null, moveRotation);
             }

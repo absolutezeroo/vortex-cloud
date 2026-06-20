@@ -9,13 +9,13 @@ public class AcceptFriendMessageParser : IParser
 {
     public IMessageEvent Parse(IClientPacket packet)
     {
-        var friendsCount = packet.PopInt();
+        int friendsCount = packet.PopInt();
 
-        var friends = new List<int>(friendsCount);
+        List<int> friends = new List<int>(friendsCount);
 
-        for (var i = 0; i < friendsCount; i++)
+        for (int i = 0; i < friendsCount; i++)
         {
-            var userId = packet.PopInt();
+            int userId = packet.PopInt();
 
             friends.Add(userId);
         }

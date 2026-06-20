@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Incoming.Users;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Orleans;
@@ -20,9 +21,11 @@ public class ApproveMembershipRequestMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0 || message.GroupId <= 0)
+        {
             return;
+        }
 
-        var member = await _grainFactory
+        GroupMemberSnapshot? member = await _grainFactory
             .GetGroupGrain(message.GroupId)
             .ApproveMembershipAsync(ctx.PlayerId, message.UserId, ct)
             .ConfigureAwait(false);

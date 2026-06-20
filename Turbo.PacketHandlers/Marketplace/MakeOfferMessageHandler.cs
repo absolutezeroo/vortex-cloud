@@ -19,15 +19,17 @@ public class MakeOfferMessageHandler(IGrainFactory grainFactory) : IMessageHandl
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var (result, _) = await _grainFactory
+        (int result, _) = await _grainFactory
             .GetMarketplacePurchaseGrain(ctx.PlayerId)
             .MakeOfferAsync(message.FurnitureItemId, message.Price, ct)
             .ConfigureAwait(false);
 
         // result: 0=success(1 in AS3), 1=error(5 in AS3)
-        var as3Result = result == 0 ? 1 : 5;
+        int as3Result = result == 0 ? 1 : 5;
 
         await ctx.SendComposerAsync(
                 new MarketplaceMakeOfferResultMessageComposer { Result = as3Result },

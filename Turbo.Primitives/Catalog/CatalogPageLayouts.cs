@@ -85,13 +85,13 @@ public static class CatalogPageLayoutExtensions
     static CatalogPageLayoutExtensions()
     {
         _fromWire = new Dictionary<string, CatalogPageLayout>(_toWire.Count);
-        foreach (var kv in _toWire)
+        foreach (KeyValuePair<CatalogPageLayout, string> kv in _toWire)
             _fromWire[kv.Value] = kv.Key;
     }
 
     public static string ToLayoutString(this CatalogPageLayout layout) =>
-        _toWire.TryGetValue(layout, out var s) ? s : "default_3x3";
+        _toWire.TryGetValue(layout, out string? s) ? s : "default_3x3";
 
     public static CatalogPageLayout FromLayoutString(string value) =>
-        _fromWire.TryGetValue(value, out var layout) ? layout : CatalogPageLayout.Default3x3;
+        _fromWire.TryGetValue(value, out CatalogPageLayout layout) ? layout : CatalogPageLayout.Default3x3;
 }

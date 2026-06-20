@@ -4,7 +4,9 @@ using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Room.Chat;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Players;
 using Turbo.Primitives.Rooms.Enums;
+using Turbo.Primitives.Rooms.Grains;
 
 namespace Turbo.PacketHandlers.Room.Chat;
 
@@ -27,17 +29,21 @@ public class WhisperMessageHandler : IMessageHandler<WhisperMessage>
             || string.IsNullOrWhiteSpace(message.Text)
             || string.IsNullOrWhiteSpace(message.RecipientName)
         )
+        {
             return;
+        }
 
-        var targetPlayerId = await _grainFactory
+        PlayerId? targetPlayerId = await _grainFactory
             .GetPlayerDirectoryGrain()
             .GetPlayerIdAsync(message.RecipientName, ct)
             .ConfigureAwait(false);
 
         if (targetPlayerId is null || targetPlayerId == ctx.PlayerId)
+        {
             return;
+        }
 
-        var roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
 
         await roomGrain
             .SendChatFromPlayerAsync(

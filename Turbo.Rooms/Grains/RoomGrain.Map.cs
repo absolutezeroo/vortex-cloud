@@ -31,15 +31,18 @@ public sealed partial class RoomGrain
     private Task FlushDirtyTilesAsync(CancellationToken ct)
     {
         if (_state.DirtyHeightTileIds.Count == 0)
+        {
             return Task.CompletedTask;
-        var dirtyHeightTileIds = _state.DirtyHeightTileIds;
+        }
+
+        HashSet<int> dirtyHeightTileIds = _state.DirtyHeightTileIds;
         _state.DirtyHeightTileIds = [];
 
-        var heights = new List<(int X, int Y, short Height)>(
+        List<(int X, int Y, short Height)> heights = new List<(int X, int Y, short Height)>(
             Math.Min(dirtyHeightTileIds.Count, _roomConfig.MaxTileHeightsPerFlush)
         );
 
-        foreach (var x in dirtyHeightTileIds)
+        foreach (int x in dirtyHeightTileIds)
         {
             heights.Add((MapModule.GetX(x), MapModule.GetY(x), _state.TileEncodedHeights[x]));
 

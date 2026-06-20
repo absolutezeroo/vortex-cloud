@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Orleans;
 using SuperSocket.ProtoBase;
 using SuperSocket.Server.Abstractions;
+using SuperSocket.Server.Abstractions.Host;
 using SuperSocket.Server.Host;
 using SuperSocket.WebSocket;
 using SuperSocket.WebSocket.Server;
@@ -70,10 +71,14 @@ public sealed class NetworkManager(
         }
 
         if (needTcpStart && _tcpHost is not null)
+        {
             await _tcpHost.StartAsync(ct).ConfigureAwait(false);
+        }
 
         if (needsWsStart && _wsHost is not null)
+        {
             await _wsHost.StartAsync(ct).ConfigureAwait(false);
+        }
     }
 
     public async Task StopAsync()
@@ -83,7 +88,9 @@ public sealed class NetworkManager(
         lock (_tcpGate)
         {
             if (_tcpHost is null)
+            {
                 return;
+            }
 
             hostToStop = _tcpHost;
             _tcpHost = null;
@@ -97,7 +104,7 @@ public sealed class NetworkManager(
 
     private void CreateTcpSocket()
     {
-        var builder = SuperSocketHostBuilder.Create<IClientPacket>();
+        ISuperSocketHostBuilder<IClientPacket>? builder = SuperSocketHostBuilder.Create<IClientPacket>();
 
         builder.ConfigureServerOptions((ctx, config) => config.GetSection("TcpServer"));
         builder.ConfigureLogging((ctx, logging) => logging.ClearProviders());
@@ -112,7 +119,7 @@ public sealed class NetworkManager(
 
     private void CreateWsSocket()
     {
-        var builder = WebSocketHostBuilder.Create();
+        WebSocketHostBuilder? builder = WebSocketHostBuilder.Create();
 
         builder.ConfigureServerOptions((ctx, config) => config.GetSection("WebSocketServer"));
         builder.ConfigureLogging((ctx, logging) => logging.ClearProviders());

@@ -3,6 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Turbo.Database.Context;
+using Turbo.Database.Entities.Players;
 using Turbo.Database.Entities.Room;
 using Turbo.Primitives.Navigator.Enums;
 using Turbo.Primitives.Players;
@@ -24,11 +26,11 @@ internal sealed partial class RoomService
         CancellationToken ct
     )
     {
-        await using var dbCtx = await _dbContextFactory
+        await using TurboDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
-        var model =
+        RoomModelEntity model =
             await dbCtx
                 .RoomModels.FirstOrDefaultAsync(x => x.Name == modelName && x.DeletedAt == null, ct)
                 .ConfigureAwait(false)
@@ -37,15 +39,15 @@ internal sealed partial class RoomService
                 .ConfigureAwait(false)
             ?? throw new InvalidOperationException("No room models available.");
 
-        var player =
+        PlayerEntity player =
             await dbCtx
                 .Players.FirstOrDefaultAsync(x => x.Id == playerId.Value && x.DeletedAt == null, ct)
                 .ConfigureAwait(false)
             ?? throw new InvalidOperationException($"Player {playerId} not found.");
 
-        var trimmedName = name.Trim();
+        string trimmedName = name.Trim();
 
-        var room = new RoomEntity
+        RoomEntity room = new RoomEntity
         {
             Name = trimmedName,
             Description = description.Trim(),

@@ -35,29 +35,33 @@ internal sealed class DashboardAuthenticationHandler(
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var sessionId = Request.Cookies[SessionCookieName];
+        string? sessionId = Request.Cookies[SessionCookieName];
 
         if (string.IsNullOrEmpty(sessionId))
+        {
             return AuthenticateResult.NoResult();
+        }
 
-        var principal = await _auth
+        DashboardPrincipal? principal = await _auth
             .ResolveAsync(sessionId, Context.RequestAborted)
             .ConfigureAwait(false);
 
         if (principal is null)
+        {
             return AuthenticateResult.NoResult();
+        }
 
-        var claims = new List<Claim>
+        List<Claim> claims = new List<Claim>
         {
             new(ClaimTypes.Name, principal.Email),
             new(ClaimTypes.NameIdentifier, principal.AccountId.ToString()),
         };
 
-        foreach (var capability in principal.Permissions.Capabilities)
+        foreach (string capability in principal.Permissions.Capabilities)
             claims.Add(new Claim(CapabilityClaimType, capability));
 
-        var identity = new ClaimsIdentity(claims, SchemeName);
-        var ticket = new AuthenticationTicket(new ClaimsPrincipal(identity), SchemeName);
+        ClaimsIdentity identity = new ClaimsIdentity(claims, SchemeName);
+        AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsPrincipal(identity), SchemeName);
 
         // Endpoints read the rich principal (capability checks + actor email) from here.
         Context.Items[PrincipalItemKey] = principal;

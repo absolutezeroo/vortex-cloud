@@ -15,6 +15,7 @@ using Turbo.Primitives.FriendList.Grains;
 using Turbo.Primitives.Messages.Outgoing.FriendList;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players;
+using Turbo.Primitives.Players.Grains;
 using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Snapshots.FriendList;
 
@@ -57,46 +58,48 @@ internal sealed class MessengerGrain(
     public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken ct)
     {
         if (_pendingDeliveredIds.Count > 0)
+        {
             await FlushDeliveredMessagesAsync(ct);
+        }
     }
 
     // ── Hydration ────────────────────────────────────────────────────────────
 
     private async Task HydrateAsync(CancellationToken ct)
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var playerId = (int)SelfId;
+        int playerId = (int)SelfId;
 
-        var categories = await dbCtx
+        List<MessengerCategoryEntity> categories = await dbCtx
             .MessengerCategories.AsNoTracking()
             .Where(c => c.PlayerEntityId == playerId && c.DeletedAt == null)
             .ToListAsync(ct);
 
-        foreach (var cat in categories)
+        foreach (MessengerCategoryEntity cat in categories)
         {
             _categories.Add(new FriendCategorySnapshot { Id = cat.Id, Name = cat.Name });
         }
 
-        var friends = await dbCtx
+        List<MessengerFriendEntity> friends = await dbCtx
             .MessengerFriends.AsNoTracking()
             .Include(f => f.FriendPlayerEntity)
             .Where(f => f.PlayerEntityId == playerId && f.DeletedAt == null)
             .ToListAsync(ct);
 
-        foreach (var f in friends)
+        foreach (MessengerFriendEntity f in friends)
         {
-            var snapshot = BuildFriendSnapshot(f, online: false);
+            MessengerFriendSnapshot snapshot = BuildFriendSnapshot(f, online: false);
             _friends[snapshot.PlayerId] = snapshot;
         }
 
-        var requests = await dbCtx
+        List<MessengerRequestEntity> requests = await dbCtx
             .MessengerRequests.AsNoTracking()
             .Include(r => r.PlayerEntity)
             .Where(r => r.RequestedPlayerEntityId == playerId && r.DeletedAt == null)
             .ToListAsync(ct);
 
-        foreach (var r in requests)
+        foreach (MessengerRequestEntity r in requests)
         {
             _incomingRequests[r.PlayerEntityId] = new FriendRequestSnapshot
             {
@@ -107,22 +110,22 @@ internal sealed class MessengerGrain(
             };
         }
 
-        var blocked = await dbCtx
+        List<int> blocked = await dbCtx
             .MessengerBlocked.AsNoTracking()
             .Where(b => b.PlayerEntityId == playerId && b.DeletedAt == null)
             .Select(b => b.BlockedPlayerEntityId)
             .ToListAsync(ct);
 
-        foreach (var id in blocked)
+        foreach (int id in blocked)
             _blockedIds.Add(id);
 
-        var ignored = await dbCtx
+        List<int> ignored = await dbCtx
             .MessengerIgnored.AsNoTracking()
             .Where(i => i.PlayerEntityId == playerId && i.DeletedAt == null)
             .Select(i => i.IgnoredPlayerEntityId)
             .ToListAsync(ct);
 
-        foreach (var id in ignored)
+        foreach (int id in ignored)
             _ignoredIds.Add(id);
     }
 
@@ -153,14 +156,16 @@ internal sealed class MessengerGrain(
     private async Task FlushDeliveredMessagesAsync(CancellationToken ct)
     {
         if (_pendingDeliveredIds.Count == 0)
+        {
             return;
+        }
 
-        var ids = _pendingDeliveredIds.ToList();
+        List<int> ids = _pendingDeliveredIds.ToList();
         _pendingDeliveredIds.Clear();
 
         try
         {
-            await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+            await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
             await dbCtx
                 .MessengerMessages.Where(m => ids.Contains(m.Id))
@@ -215,12 +220,12 @@ internal sealed class MessengerGrain(
         CancellationToken ct
     )
     {
-        var grouped = _friends
+        List<RelationshipStatusEntrySnapshot> grouped = _friends
             .Values.Where(f => f.RelationshipStatus != 0)
             .GroupBy(f => f.RelationshipStatus)
             .Select(g =>
             {
-                var first = g.First();
+                MessengerFriendSnapshot first = g.First();
                 return new RelationshipStatusEntrySnapshot
                 {
                     RelationType = g.Key,
@@ -252,25 +257,31 @@ internal sealed class MessengerGrain(
     )
     {
         if (_friends.Count >= MaxFriends)
+        {
             return FriendListErrorCodeType.YouHitFriendLimit;
+        }
 
         if (_friends.ContainsKey(targetId))
+        {
             return null; // already friends, not an error per se
+        }
 
-        var playerId = (int)SelfId;
-        var targetIdInt = (int)targetId;
+        int playerId = (int)SelfId;
+        int targetIdInt = (int)targetId;
 
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var targetCountFriends = await dbCtx.MessengerFriends.CountAsync(
+        int targetCountFriends = await dbCtx.MessengerFriends.CountAsync(
             f => f.PlayerEntityId == targetIdInt && f.DeletedAt == null,
             ct
         );
 
         if (targetCountFriends >= MaxFriends)
+        {
             return FriendListErrorCodeType.TheyHitFriendLimit;
+        }
 
-        var alreadyExists = await dbCtx.MessengerRequests.AnyAsync(
+        bool alreadyExists = await dbCtx.MessengerRequests.AnyAsync(
             r =>
                 r.PlayerEntityId == playerId
                 && r.RequestedPlayerEntityId == targetIdInt
@@ -279,9 +290,11 @@ internal sealed class MessengerGrain(
         );
 
         if (alreadyExists)
+        {
             return null;
+        }
 
-        var selfEntity =
+        PlayerEntity selfEntity =
             await dbCtx.Players.FindAsync([playerId], ct)
             ?? throw new InvalidOperationException($"Player {playerId} not found");
 
@@ -297,7 +310,7 @@ internal sealed class MessengerGrain(
 
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
 
-        var targetGrain = grainFactory.GetMessengerGrain(targetId);
+        IMessengerGrain targetGrain = grainFactory.GetMessengerGrain(targetId);
         LogAndForget(
             targetGrain.ReceiveFriendRequestAsync(
                 SelfId,
@@ -325,7 +338,7 @@ internal sealed class MessengerGrain(
             FigureString = requesterFigure,
         };
 
-        var presence = grainFactory.GetPlayerPresenceGrain(SelfId);
+        IPlayerPresenceGrain presence = grainFactory.GetPlayerPresenceGrain(SelfId);
         LogAndForget(
             presence.SendComposerAsync(
                 new NewFriendRequestMessageComposer
@@ -343,13 +356,13 @@ internal sealed class MessengerGrain(
         CancellationToken ct
     )
     {
-        var failures = new List<AcceptFriendFailureSnapshot>();
+        List<AcceptFriendFailureSnapshot> failures = new List<AcceptFriendFailureSnapshot>();
 
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        foreach (var requesterId in requesterIds)
+        foreach (int requesterId in requesterIds)
         {
-            if (!_incomingRequests.TryGetValue(requesterId, out var requestSnapshot))
+            if (!_incomingRequests.TryGetValue(requesterId, out FriendRequestSnapshot? requestSnapshot))
             {
                 failures.Add(
                     new AcceptFriendFailureSnapshot
@@ -373,11 +386,13 @@ internal sealed class MessengerGrain(
                 continue;
             }
 
-            var selfEntity = await dbCtx.Players.FindAsync([(int)SelfId], ct);
-            var friendEntity = await dbCtx.Players.FindAsync([requesterId], ct);
+            PlayerEntity? selfEntity = await dbCtx.Players.FindAsync([(int)SelfId], ct);
+            PlayerEntity? friendEntity = await dbCtx.Players.FindAsync([requesterId], ct);
 
             if (selfEntity is null || friendEntity is null)
+            {
                 continue;
+            }
 
             // Remove pending request
             await dbCtx
@@ -438,7 +453,7 @@ internal sealed class MessengerGrain(
             };
 
             // Notify friend's grain — fire-and-forget
-            var friendGrain = grainFactory.GetMessengerGrain(PlayerId.Parse(requesterId));
+            IMessengerGrain friendGrain = grainFactory.GetMessengerGrain(PlayerId.Parse(requesterId));
             LogAndForget(
                 friendGrain.NotifyFriendPresenceChangedAsync(
                     SelfId,
@@ -463,7 +478,7 @@ internal sealed class MessengerGrain(
         {
             _incomingRequests.Clear();
 
-            await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+            await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
             await dbCtx
                 .MessengerRequests.Where(r =>
                     r.RequestedPlayerEntityId == (int)SelfId && r.DeletedAt == null
@@ -472,12 +487,14 @@ internal sealed class MessengerGrain(
             return;
         }
 
-        await using var dbCtxScoped = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtxScoped = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        foreach (var requesterId in requesterIds)
+        foreach (int requesterId in requesterIds)
         {
             if (!_incomingRequests.Remove(requesterId))
+            {
                 continue;
+            }
 
             await dbCtxScoped
                 .MessengerRequests.Where(r =>
@@ -493,15 +510,17 @@ internal sealed class MessengerGrain(
 
     public async Task<List<int>> RemoveFriendsAsync(List<int> friendIds, CancellationToken ct)
     {
-        var removed = new List<int>();
+        List<int> removed = new List<int>();
 
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        foreach (var friendId in friendIds)
+        foreach (int friendId in friendIds)
         {
-            var friendKey = PlayerId.Parse(friendId);
+            PlayerId friendKey = PlayerId.Parse(friendId);
             if (!_friends.Remove(friendKey))
+            {
                 continue;
+            }
 
             // Remove both directions
             await dbCtx
@@ -518,7 +537,7 @@ internal sealed class MessengerGrain(
                 .ConfigureAwait(false);
 
             // Notify friend's grain — fire-and-forget
-            var friendGrain = grainFactory.GetMessengerGrain(friendKey);
+            IMessengerGrain friendGrain = grainFactory.GetMessengerGrain(friendKey);
             LogAndForget(friendGrain.NotifyFriendRemovedAsync(SelfId, CancellationToken.None));
         }
 
@@ -529,7 +548,7 @@ internal sealed class MessengerGrain(
     {
         _friends.Remove(removedBy);
 
-        var presence = grainFactory.GetPlayerPresenceGrain(SelfId);
+        IPlayerPresenceGrain presence = grainFactory.GetPlayerPresenceGrain(SelfId);
         LogAndForget(
             presence.SendComposerAsync(
                 new FriendListUpdateMessageComposer
@@ -557,13 +576,15 @@ internal sealed class MessengerGrain(
         CancellationToken ct
     )
     {
-        var friendKey = PlayerId.Parse(friendId);
-        if (!_friends.TryGetValue(friendKey, out var existing))
+        PlayerId friendKey = PlayerId.Parse(friendId);
+        if (!_friends.TryGetValue(friendKey, out MessengerFriendSnapshot? existing))
+        {
             return;
+        }
 
         _friends[friendKey] = existing with { RelationshipStatus = (short)relationType };
 
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
         await dbCtx
             .MessengerFriends.Where(f =>
                 f.PlayerEntityId == (int)SelfId
@@ -579,17 +600,21 @@ internal sealed class MessengerGrain(
     public async Task BlockUserAsync(PlayerId targetId, CancellationToken ct)
     {
         if (_blockedIds.Contains(targetId.Value))
+        {
             return;
+        }
 
         _blockedIds.Add(targetId.Value);
 
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var selfEntity = await dbCtx.Players.FindAsync([(int)SelfId], ct);
-        var targetEntity = await dbCtx.Players.FindAsync([targetId.Value], ct);
+        PlayerEntity? selfEntity = await dbCtx.Players.FindAsync([(int)SelfId], ct);
+        PlayerEntity? targetEntity = await dbCtx.Players.FindAsync([targetId.Value], ct);
 
         if (selfEntity is null || targetEntity is null)
+        {
             return;
+        }
 
         dbCtx.MessengerBlocked.Add(
             new MessengerBlockedEntity
@@ -611,9 +636,11 @@ internal sealed class MessengerGrain(
     public async Task UnblockUserAsync(PlayerId targetId, CancellationToken ct)
     {
         if (!_blockedIds.Remove(targetId.Value))
+        {
             return;
+        }
 
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         await dbCtx
             .MessengerBlocked.Where(b =>
@@ -631,17 +658,21 @@ internal sealed class MessengerGrain(
     public async Task IgnoreUserAsync(PlayerId targetId, CancellationToken ct)
     {
         if (_ignoredIds.Contains(targetId.Value))
+        {
             return;
+        }
 
         _ignoredIds.Add(targetId.Value);
 
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var selfEntity = await dbCtx.Players.FindAsync([(int)SelfId], ct);
-        var targetEntity = await dbCtx.Players.FindAsync([targetId.Value], ct);
+        PlayerEntity? selfEntity = await dbCtx.Players.FindAsync([(int)SelfId], ct);
+        PlayerEntity? targetEntity = await dbCtx.Players.FindAsync([targetId.Value], ct);
 
         if (selfEntity is null || targetEntity is null)
+        {
             return;
+        }
 
         dbCtx.MessengerIgnored.Add(
             new MessengerIgnoredEntity
@@ -659,9 +690,11 @@ internal sealed class MessengerGrain(
     public async Task UnignoreUserAsync(PlayerId targetId, CancellationToken ct)
     {
         if (!_ignoredIds.Remove(targetId.Value))
+        {
             return;
+        }
 
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         await dbCtx
             .MessengerIgnored.Where(i =>
@@ -683,22 +716,28 @@ internal sealed class MessengerGrain(
     )
     {
         if (!_friends.ContainsKey(receiverId))
+        {
             return InstantMessageErrorCodeType.NotFriend;
+        }
 
         if (_blockedIds.Contains(receiverId.Value))
+        {
             return InstantMessageErrorCodeType.ReceiverMuted;
+        }
 
-        var now = DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow;
 
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var selfEntity = await dbCtx.Players.FindAsync([(int)SelfId], ct);
-        var receiverEntity = await dbCtx.Players.FindAsync([receiverId.Value], ct);
+        PlayerEntity? selfEntity = await dbCtx.Players.FindAsync([(int)SelfId], ct);
+        PlayerEntity? receiverEntity = await dbCtx.Players.FindAsync([receiverId.Value], ct);
 
         if (selfEntity is null || receiverEntity is null)
+        {
             return InstantMessageErrorCodeType.Offline;
+        }
 
-        var msgEntity = new MessengerMessageEntity
+        MessengerMessageEntity msgEntity = new MessengerMessageEntity
         {
             SenderEntityId = (int)SelfId,
             ReceiverEntityId = receiverId.Value,
@@ -713,7 +752,7 @@ internal sealed class MessengerGrain(
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
 
         // Deliver to receiver — fire-and-forget; receiver handles if online or not
-        var receiverGrain = grainFactory.GetMessengerGrain(receiverId);
+        IMessengerGrain receiverGrain = grainFactory.GetMessengerGrain(receiverId);
         LogAndForget(
             receiverGrain.ReceiveMessageAsync(
                 SelfId,
@@ -740,11 +779,13 @@ internal sealed class MessengerGrain(
     )
     {
         if (_ignoredIds.Contains(senderId.Value))
+        {
             return Task.CompletedTask;
+        }
 
-        var secondsSinceSent = (int)(DateTime.UtcNow - timestamp).TotalSeconds;
+        int secondsSinceSent = (int)(DateTime.UtcNow - timestamp).TotalSeconds;
 
-        var presence = grainFactory.GetPlayerPresenceGrain(SelfId);
+        IPlayerPresenceGrain presence = grainFactory.GetPlayerPresenceGrain(SelfId);
         LogAndForget(
             presence.SendComposerAsync(
                 new NewConsoleMessageMessageComposer
@@ -771,13 +812,13 @@ internal sealed class MessengerGrain(
         CancellationToken ct
     )
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var selfIdInt = (int)SelfId;
-        var friendIdInt = friendId.Value;
-        var now = DateTime.UtcNow;
+        int selfIdInt = (int)SelfId;
+        int friendIdInt = friendId.Value;
+        DateTime now = DateTime.UtcNow;
 
-        var messages = await dbCtx
+        List<MessengerMessageEntity> messages = await dbCtx
             .MessengerMessages.AsNoTracking()
             .Include(m => m.SenderEntity)
             .Where(m =>
@@ -809,19 +850,21 @@ internal sealed class MessengerGrain(
     public async Task NotifyOnlineAsync(CancellationToken ct)
     {
         // Fan out to all friends (fire-and-forget) so they update their snapshot for us
-        var selfIdInt = (int)SelfId;
+        int selfIdInt = (int)SelfId;
 
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
-        var selfEntity = await dbCtx
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        PlayerEntity? selfEntity = await dbCtx
             .Players.AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == selfIdInt, ct);
 
         if (selfEntity is null)
-            return;
-
-        foreach (var (friendId, _) in _friends)
         {
-            var friendGrain = grainFactory.GetMessengerGrain(friendId);
+            return;
+        }
+
+        foreach ((PlayerId friendId, MessengerFriendSnapshot _) in _friends)
+        {
+            IMessengerGrain friendGrain = grainFactory.GetMessengerGrain(friendId);
             LogAndForget(
                 friendGrain.NotifyFriendPresenceChangedAsync(
                     SelfId,
@@ -839,17 +882,19 @@ internal sealed class MessengerGrain(
 
     public async Task NotifyOfflineAsync(CancellationToken ct)
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
-        var selfEntity = await dbCtx
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        PlayerEntity? selfEntity = await dbCtx
             .Players.AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == (int)SelfId, ct);
 
         if (selfEntity is null)
-            return;
-
-        foreach (var (friendId, _) in _friends)
         {
-            var friendGrain = grainFactory.GetMessengerGrain(friendId);
+            return;
+        }
+
+        foreach ((PlayerId friendId, MessengerFriendSnapshot _) in _friends)
+        {
+            IMessengerGrain friendGrain = grainFactory.GetMessengerGrain(friendId);
             LogAndForget(
                 friendGrain.NotifyFriendPresenceChangedAsync(
                     SelfId,
@@ -870,7 +915,7 @@ internal sealed class MessengerGrain(
         CancellationToken ct
     )
     {
-        if (!_friends.TryGetValue(friendId, out var existing))
+        if (!_friends.TryGetValue(friendId, out MessengerFriendSnapshot? existing))
         {
             // New friend added while we were offline — add to in-memory cache
             _friends[friendId] = new MessengerFriendSnapshot
@@ -896,8 +941,8 @@ internal sealed class MessengerGrain(
             _friends[friendId] = existing with { Online = online, Figure = figure, Motto = motto };
         }
 
-        var updated = _friends[friendId];
-        var presence = grainFactory.GetPlayerPresenceGrain(SelfId);
+        MessengerFriendSnapshot updated = _friends[friendId];
+        IPlayerPresenceGrain presence = grainFactory.GetPlayerPresenceGrain(SelfId);
         LogAndForget(
             presence.SendComposerAsync(
                 new FriendListUpdateMessageComposer
@@ -921,9 +966,9 @@ internal sealed class MessengerGrain(
 
     private async Task DeliverOfflinePendingMessagesAsync(CancellationToken ct)
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var pending = await dbCtx
+        List<MessengerMessageEntity> pending = await dbCtx
             .MessengerMessages.AsNoTracking()
             .Include(m => m.SenderEntity)
             .Where(m => m.ReceiverEntityId == (int)SelfId && !m.Delivered && m.DeletedAt == null)
@@ -932,15 +977,19 @@ internal sealed class MessengerGrain(
             .ToListAsync(ct);
 
         if (pending.Count == 0)
+        {
             return;
+        }
 
-        var presence = grainFactory.GetPlayerPresenceGrain(SelfId);
-        var now = DateTime.UtcNow;
+        IPlayerPresenceGrain presence = grainFactory.GetPlayerPresenceGrain(SelfId);
+        DateTime now = DateTime.UtcNow;
 
-        foreach (var msg in pending)
+        foreach (MessengerMessageEntity msg in pending)
         {
             if (_ignoredIds.Contains(msg.SenderEntityId))
+            {
                 continue;
+            }
 
             await presence.SendComposerAsync(
                 new NewConsoleMessageMessageComposer
@@ -965,9 +1014,11 @@ internal sealed class MessengerGrain(
     public Task ReceiveRoomInviteAsync(PlayerId senderId, string message, CancellationToken ct)
     {
         if (_ignoredIds.Contains(senderId.Value))
+        {
             return Task.CompletedTask;
+        }
 
-        var presence = grainFactory.GetPlayerPresenceGrain(SelfId);
+        IPlayerPresenceGrain presence = grainFactory.GetPlayerPresenceGrain(SelfId);
         LogAndForget(
             presence.SendComposerAsync(
                 new RoomInviteMessageComposer { SenderId = senderId.Value, Message = message }
@@ -984,9 +1035,9 @@ internal sealed class MessengerGrain(
         CancellationToken ct
     )
     {
-        var lower = query.ToLowerInvariant();
+        string lower = query.ToLowerInvariant();
 
-        var results = _friends
+        List<MessengerSearchResultSnapshot> results = _friends
             .Values.Where(f => f.Name.Contains(lower, StringComparison.OrdinalIgnoreCase))
             .Select(f => new MessengerSearchResultSnapshot
             {

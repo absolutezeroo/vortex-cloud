@@ -9,16 +9,16 @@ public class SendRoomInviteMessageParser : IParser
 {
     public IMessageEvent Parse(IClientPacket packet)
     {
-        var friendIds = new List<int>();
+        List<int> friendIds = new List<int>();
 
-        var totalInvites = packet.PopInt();
+        int totalInvites = packet.PopInt();
 
-        for (var i = 0; i < totalInvites; i++)
+        for (int i = 0; i < totalInvites; i++)
         {
             friendIds.Add(packet.PopInt());
         }
 
-        var message = packet.PopString();
+        string message = packet.PopString();
 
         return new SendRoomInviteMessage { FriendIds = friendIds, Message = message };
     }

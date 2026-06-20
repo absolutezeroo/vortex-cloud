@@ -14,7 +14,7 @@ internal class BundleDiscountRulesetSnapshotSerializer
             .WriteInteger(message.BonusThreshold)
             .WriteInteger(message.AdditionalBonusDiscountThresholdQuantities.Length);
 
-        foreach (var quantity in message.AdditionalBonusDiscountThresholdQuantities)
+        foreach (int quantity in message.AdditionalBonusDiscountThresholdQuantities)
         {
             packet.WriteInteger(quantity);
         }

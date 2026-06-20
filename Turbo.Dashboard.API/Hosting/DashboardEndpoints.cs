@@ -62,9 +62,11 @@ internal static class DashboardEndpoints
                         || string.IsNullOrWhiteSpace(body.Email)
                         || string.IsNullOrEmpty(body.Password)
                     )
+                    {
                         return Results.BadRequest(new { error = "invalid_request" });
+                    }
 
-                    var result = await auth.LoginAsync(
+                    DashboardLoginResult result = await auth.LoginAsync(
                             body.Email,
                             body.Password,
                             ctx.RequestAborted
@@ -113,7 +115,7 @@ internal static class DashboardEndpoints
                 "/api/me",
                 (HttpContext ctx) =>
                 {
-                    var principal = ctx.GetDashboardPrincipal();
+                    DashboardPrincipal? principal = ctx.GetDashboardPrincipal();
                     return principal is null
                         ? Results.Json(
                             new { error = "unauthenticated" },
@@ -279,7 +281,9 @@ internal static class DashboardEndpoints
                     || body.Amount <= 0
                     || !HasReason(body.Reason)
                 )
+                {
                     return Results.BadRequest(new { error = "invalid_request" });
+                }
 
                 return Results.Ok(
                     await ops.GiveCreditsAsync(body, ctx.ActorEmail(), ct).ConfigureAwait(false)
@@ -307,7 +311,9 @@ internal static class DashboardEndpoints
                     || body.Amount <= 0
                     || !HasReason(body.Reason)
                 )
+                {
                     return Results.BadRequest(new { error = "invalid_request" });
+                }
 
                 return Results.Ok(
                     await ops.GiveActivityPointsAsync(body, ctx.ActorEmail(), ct)
@@ -335,7 +341,9 @@ internal static class DashboardEndpoints
                     || body.DefinitionId <= 0
                     || !HasReason(body.Reason)
                 )
+                {
                     return Results.BadRequest(new { error = "invalid_request" });
+                }
 
                 return Results.Ok(
                     await ops.GiveFurnitureAsync(body, ctx.ActorEmail(), ct).ConfigureAwait(false)
@@ -357,7 +365,9 @@ internal static class DashboardEndpoints
             ) =>
             {
                 if (body is null || body.PlayerId <= 0 || !HasReason(body.Reason))
+                {
                     return Results.BadRequest(new { error = "invalid_request" });
+                }
 
                 return Results.Ok(
                     await ops.KickPlayerAsync(body, ctx.ActorEmail(), ct).ConfigureAwait(false)
@@ -374,18 +384,20 @@ internal static class DashboardEndpoints
                 ApiMeta + "/endpoints",
                 (IEnumerable<EndpointDataSource> dataSources) =>
                 {
-                    var routes = dataSources
+                    ApiRouteDescriptor?[] routes = dataSources
                         .SelectMany(source => source.Endpoints.OfType<RouteEndpoint>())
                         .Select(endpoint =>
                         {
-                            var route = endpoint.RoutePattern.RawText;
+                            string? route = endpoint.RoutePattern.RawText;
 
                             if (string.IsNullOrWhiteSpace(route) || !route.StartsWith("/api/"))
+                            {
                                 return (ApiRouteDescriptor?)null;
+                            }
 
-                            var domain = ResolveApiDomain(route);
+                            string domain = ResolveApiDomain(route);
 
-                            var methods = endpoint
+                            string[] methods = endpoint
                                 .Metadata.OfType<IHttpMethodMetadata>()
                                 .SelectMany(m => m.HttpMethods)
                                 .Distinct()
@@ -397,7 +409,7 @@ internal static class DashboardEndpoints
                                 methods = ["GET"];
                             }
 
-                            var capabilities = endpoint
+                            string?[] capabilities = endpoint
                                 .Metadata.OfType<IAuthorizeData>()
                                 .Select(auth => auth.Policy)
                                 .Where(policy => !string.IsNullOrWhiteSpace(policy))
@@ -405,7 +417,7 @@ internal static class DashboardEndpoints
                                 .OrderBy(policy => policy)
                                 .ToArray();
 
-                            var tags = endpoint
+                            string[] tags = endpoint
                                 .Metadata.OfType<ITagsMetadata>()
                                 .SelectMany(tag => tag.Tags)
                                 .Distinct()
@@ -474,7 +486,7 @@ internal static class DashboardEndpoints
         app.MapGet(
                 "/assets/{file}",
                 (string file, DashboardAssetStore store) =>
-                    store.TryGetAsset(file, out var bytes, out var contentType)
+                    store.TryGetAsset(file, out byte[] bytes, out string contentType)
                         ? Results.Bytes(bytes, contentType)
                         : Results.NotFound()
             )
@@ -501,7 +513,7 @@ internal static class DashboardEndpoints
 
     private static IResult IssueSession(HttpContext ctx, DashboardLoginResult result)
     {
-        var sessions = ctx.RequestServices.GetRequiredService<DashboardSessionStore>();
+        DashboardSessionStore sessions = ctx.RequestServices.GetRequiredService<DashboardSessionStore>();
         ctx.Response.Cookies.Append(
             DashboardAuthenticationHandler.SessionCookieName,
             result.SessionId!,
@@ -531,7 +543,7 @@ internal static class DashboardEndpoints
 
     private static async Task<IResult> OkNullable(Task<object?> task)
     {
-        var payload = await task.ConfigureAwait(false);
+        object? payload = await task.ConfigureAwait(false);
         return payload is null
             ? Results.Json(new { error = "not_found" }, statusCode: StatusCodes.Status404NotFound)
             : Results.Ok(payload);
@@ -569,15 +581,19 @@ internal static class DashboardEndpoints
     private static string ResolveApiDomain(string route)
     {
         if (string.IsNullOrWhiteSpace(route))
+        {
             return "misc";
+        }
 
-        var normalized = route.Trim('/');
-        var parts = normalized.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        string normalized = route.Trim('/');
+        string[] parts = normalized.Split('/', StringSplitOptions.RemoveEmptyEntries);
 
         if (parts.Length >= 3 && parts[0].Equals("api", StringComparison.OrdinalIgnoreCase))
         {
             if (parts[1].Equals("v1", StringComparison.OrdinalIgnoreCase))
+            {
                 return parts.Length >= 3 ? parts[2] : "v1";
+            }
 
             return "legacy";
         }

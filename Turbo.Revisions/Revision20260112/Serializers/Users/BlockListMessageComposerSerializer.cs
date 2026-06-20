@@ -10,7 +10,7 @@ internal class BlockListMessageComposerSerializer(int header)
     {
         packet.WriteInteger(message.BlockedPlayerIds.Count);
 
-        foreach (var playerId in message.BlockedPlayerIds)
+        foreach (int playerId in message.BlockedPlayerIds)
             packet.WriteInteger(playerId);
     }
 }

@@ -7,14 +7,19 @@ using Turbo.Catalog.Exceptions;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Catalog;
 using Turbo.Primitives.Catalog.Enums;
+using Turbo.Primitives.Catalog.Grains;
 using Turbo.Primitives.Catalog.Providers;
+using Turbo.Primitives.Catalog.Snapshots;
+using Turbo.Primitives.Grains.Players;
 using Turbo.Primitives.Messages.Incoming.Catalog;
 using Turbo.Primitives.Messages.Outgoing.Catalog;
 using Turbo.Primitives.Messages.Outgoing.Handshake;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Players;
 using Turbo.Primitives.Players.Enums;
 using Turbo.Primitives.Players.Enums.Wallet;
+using Turbo.Primitives.Players.Grains;
 using Turbo.Primitives.Players.Wallet;
 
 namespace Turbo.PacketHandlers.Catalog;
@@ -36,12 +41,14 @@ public class PurchaseFromCatalogMessageHandler(
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var snapshot = _catalogService.GetCatalogSnapshot(CatalogType.Normal);
+        CatalogSnapshot snapshot = _catalogService.GetCatalogSnapshot(CatalogType.Normal);
 
         if (
-            snapshot.PagesById.TryGetValue(message.PageId, out var page)
+            snapshot.PagesById.TryGetValue(message.PageId, out CatalogPageSnapshot? page)
             && page.Layout == CatalogPageLayout.ClubBuy
         )
         {
@@ -58,7 +65,7 @@ public class PurchaseFromCatalogMessageHandler(
         CancellationToken ct
     )
     {
-        var clubOffer = _clubOfferProvider.FindById(message.OfferId);
+        ClubOffer? clubOffer = _clubOfferProvider.FindById(message.OfferId);
 
         if (clubOffer is null)
         {
@@ -75,8 +82,8 @@ public class PurchaseFromCatalogMessageHandler(
 
         if (clubOffer.PriceCredits > 0)
         {
-            var wallet = _grainFactory.GetPlayerWalletGrain(ctx.PlayerId);
-            var credits = await wallet
+            IPlayerWalletGrain wallet = _grainFactory.GetPlayerWalletGrain(ctx.PlayerId);
+            int credits = await wallet
                 .GetAmountForCurrencyAsync(
                     new CurrencyKind { CurrencyType = CurrencyType.Credits },
                     ct
@@ -99,8 +106,8 @@ public class PurchaseFromCatalogMessageHandler(
             }
         }
 
-        var playerGrain = _grainFactory.GetPlayerGrain(ctx.PlayerId);
-        var purchaseResult = await playerGrain
+        IPlayerGrain playerGrain = _grainFactory.GetPlayerGrain(ctx.PlayerId);
+        ClubPurchaseResult purchaseResult = await playerGrain
             .PurchaseClubAsync(clubOffer.Months, clubOffer.IsVip, clubOffer.PriceCredits, ct)
             .ConfigureAwait(false);
 
@@ -126,19 +133,19 @@ public class PurchaseFromCatalogMessageHandler(
             return;
         }
 
-        var sub = await playerGrain.GetClubSubscriptionAsync(ct).ConfigureAwait(false);
+        ClubSubscriptionSnapshot sub = await playerGrain.GetClubSubscriptionAsync(ct).ConfigureAwait(false);
 
-        var clubLevel = sub.IsActive
+        ClubLevelType clubLevel = sub.IsActive
             ? (sub.IsVip ? ClubLevelType.Vip : ClubLevelType.Club)
             : ClubLevelType.None;
 
-        var now = DateTime.UtcNow;
-        var baseDate = sub.ExpiresAt > now ? sub.ExpiresAt : now;
+        DateTime now = DateTime.UtcNow;
+        DateTime baseDate = sub.ExpiresAt > now ? sub.ExpiresAt : now;
 
-        var refreshedOffers = new List<ClubOffer>();
-        foreach (var offer in _clubOfferProvider.GetAll())
+        List<ClubOffer> refreshedOffers = new List<ClubOffer>();
+        foreach (ClubOffer offer in _clubOfferProvider.GetAll())
         {
-            var expiry = baseDate.AddMonths(offer.Months).AddDays(offer.ExtraDays);
+            DateTime expiry = baseDate.AddMonths(offer.Months).AddDays(offer.ExtraDays);
             refreshedOffers.Add(
                 offer with
                 {
@@ -163,8 +170,8 @@ public class PurchaseFromCatalogMessageHandler(
 
         if (sub.IsActive)
         {
-            var daysLeft = sub.DaysLeft;
-            var rem = daysLeft % 31;
+            int daysLeft = sub.DaysLeft;
+            int rem = daysLeft % 31;
             await ctx.SendComposerAsync(
                     new ScrSendUserInfoMessageComposer
                     {
@@ -205,8 +212,8 @@ public class PurchaseFromCatalogMessageHandler(
     {
         try
         {
-            var purchaseGrain = _grainFactory.GetCatalogPurchaseGrain(ctx.PlayerId);
-            var offer = await purchaseGrain
+            ICatalogPurchaseGrain purchaseGrain = _grainFactory.GetCatalogPurchaseGrain(ctx.PlayerId);
+            CatalogOfferSnapshot offer = await purchaseGrain
                 .PurchaseOfferFromCatalogAsync(
                     CatalogType.Normal,
                     message.OfferId,

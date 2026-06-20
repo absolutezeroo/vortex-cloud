@@ -1,5 +1,6 @@
 using Turbo.Primitives.Messages.Outgoing.Room.Engine;
 using Turbo.Primitives.Packets;
+using Turbo.Primitives.Rooms.Snapshots.Avatars;
 using Turbo.Revisions.Revision20260112.Serializers.Room.Engine.Data;
 
 namespace Turbo.Revisions.Revision20260112.Serializers.Room.Engine;
@@ -11,7 +12,7 @@ internal class UsersMessageComposerSerializer(int header)
     {
         packet.WriteInteger(message.Avatars.Length);
 
-        foreach (var avatar in message.Avatars)
+        foreach (RoomAvatarSnapshot avatar in message.Avatars)
         {
             RoomAvatarSerializer.Serialize(packet, avatar);
         }

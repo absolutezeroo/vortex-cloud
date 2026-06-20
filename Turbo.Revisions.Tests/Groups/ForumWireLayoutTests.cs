@@ -20,7 +20,7 @@ public sealed class ForumWireLayoutTests
 
     private static ClientPacket BuildClientPacket(int header, System.Action<ServerPacket> write)
     {
-        var sp = new ServerPacket(header);
+        ServerPacket sp = new ServerPacket(header);
         write(sp);
         return new ClientPacket(header, sp.ToArray());
     }
@@ -30,8 +30,8 @@ public sealed class ForumWireLayoutTests
         Turbo.Primitives.Networking.IComposer composer
     )
     {
-        var bytes = Revision.Serializers[composerType].Serialize(composer).ToArray();
-        var body = new byte[bytes.Length - 6];
+        byte[] bytes = Revision.Serializers[composerType].Serialize(composer).ToArray();
+        byte[] body = new byte[bytes.Length - 6];
         System.Array.Copy(bytes, 6, body, 0, body.Length);
         return new ClientPacket(0, body);
     }
@@ -39,7 +39,7 @@ public sealed class ForumWireLayoutTests
     [Fact]
     public void GetMessagesParser_ReadsPaging()
     {
-        var packet = BuildClientPacket(
+        ClientPacket packet = BuildClientPacket(
             GetMessagesEvent,
             sp =>
             {
@@ -50,7 +50,7 @@ public sealed class ForumWireLayoutTests
             }
         );
 
-        var msg = Revision
+        GetMessagesMessage? msg = Revision
             .Parsers[GetMessagesEvent]
             .Parse(packet)
             .Should()
@@ -65,7 +65,7 @@ public sealed class ForumWireLayoutTests
     [Fact]
     public void PostMessageParser_ReadsTitleAndBody()
     {
-        var packet = BuildClientPacket(
+        ClientPacket packet = BuildClientPacket(
             PostMessageEvent,
             sp =>
             {
@@ -76,7 +76,7 @@ public sealed class ForumWireLayoutTests
             }
         );
 
-        var msg = Revision
+        PostMessageMessage? msg = Revision
             .Parsers[PostMessageEvent]
             .Parse(packet)
             .Should()
@@ -91,7 +91,7 @@ public sealed class ForumWireLayoutTests
     [Fact]
     public void UpdateThreadParser_ReadsLockAndSticky()
     {
-        var packet = BuildClientPacket(
+        ClientPacket packet = BuildClientPacket(
             UpdateThreadEvent,
             sp =>
             {
@@ -102,7 +102,7 @@ public sealed class ForumWireLayoutTests
             }
         );
 
-        var msg = Revision
+        UpdateThreadMessage? msg = Revision
             .Parsers[UpdateThreadEvent]
             .Parse(packet)
             .Should()
@@ -145,7 +145,7 @@ public sealed class ForumWireLayoutTests
     [Fact]
     public void ForumDataSerializer_WritesBaseThenExtended()
     {
-        var body = SerializeAndReadBody(
+        ClientPacket body = SerializeAndReadBody(
             typeof(ForumDataMessageComposer),
             new ForumDataMessageComposer { Forum = SampleForum() }
         );
@@ -181,7 +181,7 @@ public sealed class ForumWireLayoutTests
     [Fact]
     public void ForumThreadsSerializer_WritesThreadStateAsByte()
     {
-        var page = new ForumThreadsPageSnapshot
+        ForumThreadsPageSnapshot page = new ForumThreadsPageSnapshot
         {
             GroupId = 5,
             StartIndex = 0,
@@ -210,7 +210,7 @@ public sealed class ForumWireLayoutTests
             ],
         };
 
-        var body = SerializeAndReadBody(
+        ClientPacket body = SerializeAndReadBody(
             typeof(ForumThreadsMessageComposer),
             new ForumThreadsMessageComposer { Page = page }
         );
@@ -241,7 +241,7 @@ public sealed class ForumWireLayoutTests
     [Fact]
     public void ThreadMessagesSerializer_WritesPostStateAsByte()
     {
-        var page = new ThreadMessagesPageSnapshot
+        ThreadMessagesPageSnapshot page = new ThreadMessagesPageSnapshot
         {
             GroupId = 5,
             ThreadId = 11,
@@ -266,7 +266,7 @@ public sealed class ForumWireLayoutTests
             ],
         };
 
-        var body = SerializeAndReadBody(
+        ClientPacket body = SerializeAndReadBody(
             typeof(ThreadMessagesMessageComposer),
             new ThreadMessagesMessageComposer { Page = page }
         );

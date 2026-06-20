@@ -9,6 +9,7 @@ using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Enums.Wired;
 using Turbo.Primitives.Rooms.Events.RoomItem;
 using Turbo.Primitives.Rooms.Object.Avatars;
+using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Object.Logic;
 using Turbo.Primitives.Rooms.Wired;
@@ -36,31 +37,35 @@ public class WiredActionChaseHabbo(
 
     public override async Task<bool> ExecuteAsync(IWiredExecutionContext ctx, CancellationToken ct)
     {
-        var selection = await ctx.GetEffectiveSelectionAsync(this, ct);
+        IWiredSelectionSet selection = await ctx.GetEffectiveSelectionAsync(this, ct);
 
-        foreach (var furniId in selection.SelectedFurniIds)
+        foreach (int furniId in selection.SelectedFurniIds)
         {
             try
             {
                 if (
-                    !_roomGrain._state.ItemsById.TryGetValue(furniId, out var item)
+                    !_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
                     || item is not IRoomFloorItem floorItem
                 )
+                {
                     continue;
+                }
 
-                var didCollide = false;
-                var bestTileIdx = -1;
-                var bestDistance = int.MaxValue;
-                var targetIdx = -1;
-                var floorIdx = _roomGrain.MapModule.ToIdx(floorItem.X, floorItem.Y);
+                bool didCollide = false;
+                int bestTileIdx = -1;
+                int bestDistance = int.MaxValue;
+                int targetIdx = -1;
+                int floorIdx = _roomGrain.MapModule.ToIdx(floorItem.X, floorItem.Y);
 
-                foreach (var avatar in _roomGrain._state.AvatarsByObjectId.Values)
+                foreach (IRoomAvatar avatar in _roomGrain._state.AvatarsByObjectId.Values)
                 {
                     if (avatar is not IRoomPlayer player)
+                    {
                         continue;
+                    }
 
-                    var playerIdx = _roomGrain.MapModule.ToIdx(player.X, player.Y);
-                    var distance = _roomGrain.MapModule.GetDistanceBetween(floorIdx, playerIdx);
+                    int playerIdx = _roomGrain.MapModule.ToIdx(player.X, player.Y);
+                    int distance = _roomGrain.MapModule.GetDistanceBetween(floorIdx, playerIdx);
 
                     if (distance <= 1)
                     {
@@ -83,7 +88,9 @@ public class WiredActionChaseHabbo(
                     }
 
                     if (distance > 3)
+                    {
                         continue;
+                    }
 
                     if (distance < bestDistance)
                     {
@@ -93,7 +100,9 @@ public class WiredActionChaseHabbo(
                 }
 
                 if (didCollide)
+                {
                     continue;
+                }
 
                 if (bestTileIdx > -1)
                 {
@@ -101,13 +110,13 @@ public class WiredActionChaseHabbo(
                 }
                 else
                 {
-                    var direction = RotationExtensions.CARDINAL[Random.Shared.Next(0, 4)];
+                    Rotation direction = RotationExtensions.CARDINAL[Random.Shared.Next(0, 4)];
 
                     if (
                         _roomGrain.MapModule.TryGetTileInFront(
                             _roomGrain.MapModule.ToIdx(floorItem.X, floorItem.Y),
                             direction,
-                            out var nextIdx
+                            out int nextIdx
                         )
                     )
                     {
@@ -116,9 +125,11 @@ public class WiredActionChaseHabbo(
                 }
 
                 if (targetIdx == -1)
+                {
                     continue;
+                }
 
-                var (targetX, targetY) = _roomGrain.MapModule.GetTileXY(targetIdx);
+                (int targetX, int targetY) = _roomGrain.MapModule.GetTileXY(targetIdx);
 
                 if (
                     await _roomGrain.FurniModule.ValidateFloorItemPlacementAsync(
@@ -129,12 +140,14 @@ public class WiredActionChaseHabbo(
                         floorItem.Rotation
                     )
                 )
+                {
                     await ctx.ProcessFloorItemMovementAsync(
                         floorItem,
                         targetIdx,
                         floorItem.Z,
                         floorItem.Rotation
                     );
+                }
             }
             catch
             {
@@ -147,27 +160,37 @@ public class WiredActionChaseHabbo(
 
     private int GetTargetTileIdx(int fromIdx, int toIdx)
     {
-        var fx = fromIdx % _roomGrain.MapModule.Width;
-        var fy = fromIdx / _roomGrain.MapModule.Width;
+        int fx = fromIdx % _roomGrain.MapModule.Width;
+        int fy = fromIdx / _roomGrain.MapModule.Width;
 
-        var tx = toIdx % _roomGrain.MapModule.Width;
-        var ty = toIdx / _roomGrain.MapModule.Width;
+        int tx = toIdx % _roomGrain.MapModule.Width;
+        int ty = toIdx / _roomGrain.MapModule.Width;
 
-        var dx = tx - fx;
-        var dy = ty - fy;
+        int dx = tx - fx;
+        int dy = ty - fy;
 
         if (Math.Abs(dx) >= Math.Abs(dy))
         {
             if (dx > 0)
+            {
                 return fromIdx + 1;
+            }
+
             if (dx < 0)
+            {
                 return fromIdx - 1;
+            }
         }
 
         if (dy > 0)
+        {
             return fromIdx + _roomGrain.MapModule.Width;
+        }
+
         if (dy < 0)
+        {
             return fromIdx - _roomGrain.MapModule.Width;
+        }
 
         return fromIdx;
     }

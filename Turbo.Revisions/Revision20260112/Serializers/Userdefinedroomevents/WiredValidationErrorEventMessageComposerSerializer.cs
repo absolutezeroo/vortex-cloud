@@ -13,7 +13,7 @@ internal class WiredValidationErrorEventMessageComposerSerializer(int header)
     {
         packet.WriteString(message.LocalizationKey).WriteInteger(message.Parameters.Count);
 
-        foreach (var (key, value) in message.Parameters)
+        foreach ((string key, string value) in message.Parameters)
             packet.WriteString(key).WriteString(value);
     }
 }

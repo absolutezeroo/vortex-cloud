@@ -1,3 +1,4 @@
+using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Outgoing.Groupforums;
 using Turbo.Primitives.Packets;
 
@@ -8,13 +9,13 @@ internal class ForumThreadsMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, ForumThreadsMessageComposer message)
     {
-        var page = message.Page;
+        ForumThreadsPageSnapshot page = message.Page;
 
         packet.WriteInteger(page.GroupId);
         packet.WriteInteger(page.StartIndex);
 
         packet.WriteInteger(page.Threads.Count);
-        foreach (var t in page.Threads)
+        foreach (ForumThreadSnapshot t in page.Threads)
         {
             packet.WriteInteger(t.ThreadId);
             packet.WriteInteger(t.AuthorId);

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,14 +10,15 @@ using Orleans;
 using Orleans.Runtime;
 using Orleans.Streams;
 using Turbo.Database.Context;
+using Turbo.Database.Entities.Room;
 using Turbo.Logging;
 using Turbo.Primitives;
 using Turbo.Primitives.Events;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Orleans;
-using Turbo.Primitives.Permissions;
 using Turbo.Primitives.Orleans.Snapshots.Room;
 using Turbo.Primitives.Orleans.Snapshots.Room.Settings;
+using Turbo.Primitives.Permissions;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Rooms;
 using Turbo.Primitives.Rooms.Events;
@@ -115,7 +117,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     {
         if (_state.EpochMs == 0)
         {
-            var now = NowMs();
+            long now = NowMs();
 
             _state.EpochMs = now;
             _state.NextAvatarBoundaryMs = AlignToNextBoundary(now, _roomConfig.AvatarTickMs);
@@ -128,16 +130,16 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
         await _grainFactory.GetRoomDirectoryGrain().UpsertActiveRoomAsync(_state.RoomSnapshot);
 
-        var provider = this.GetStreamProvider(OrleansStreamProviders.ROOM_STREAM_PROVIDER);
+        IStreamProvider? provider = this.GetStreamProvider(OrleansStreamProviders.ROOM_STREAM_PROVIDER);
 
-        var streamId = StreamId.Create(OrleansStreamNames.ROOM_STREAM, this.GetPrimaryKeyLong());
+        StreamId streamId = StreamId.Create(OrleansStreamNames.ROOM_STREAM, this.GetPrimaryKeyLong());
 
         _roomOutbound = provider.GetStream<RoomOutbound>(streamId);
 
         this.RegisterGrainTimer<object?>(
             async (state, ct) =>
             {
-                var now = NowMs();
+                long now = NowMs();
 
                 await AvatarTickSystem.ProcessAvatarsAsync(now, ct);
                 await WiredSystem.ProcessWiredAsync(now, ct);
@@ -182,7 +184,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
     public async Task<RoomSummarySnapshot> GetSummaryAsync()
     {
-        var population = await GetRoomPopulationAsync();
+        int population = await GetRoomPopulationAsync();
 
         return new RoomSummarySnapshot
         {
@@ -207,11 +209,11 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
     private async Task HydrateRoomStateAsync(CancellationToken ct)
     {
-        var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         try
         {
-            var entity =
+            RoomEntity entity =
                 await dbCtx
                     .Rooms.AsNoTracking()
                     .SingleOrDefaultAsync(e => e.Id == (int)_state.RoomId.Value, ct)
@@ -270,19 +272,19 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
     internal long AlignToNextBoundary(long now, int offset)
     {
-        var delta = now - _state.EpochMs;
-        var mod = delta % offset;
+        long delta = now - _state.EpochMs;
+        long mod = delta % offset;
 
         return mod == 0 ? now : now + (offset - mod);
     }
 
     private async Task HydrateModerationStateAsync(CancellationToken ct)
     {
-        var activeMutes = await _moderationStore.GetActiveMutesAsync(_state.RoomId.Value, ct);
+        IReadOnlyList<RoomMuteRecord> activeMutes = await _moderationStore.GetActiveMutesAsync(_state.RoomId.Value, ct);
 
         _state.MuteExpiresUtc.Clear();
 
-        foreach (var mute in activeMutes)
+        foreach (RoomMuteRecord mute in activeMutes)
             _state.MuteExpiresUtc[(PlayerId)mute.PlayerId] = mute.ExpiresUtc;
     }
 }

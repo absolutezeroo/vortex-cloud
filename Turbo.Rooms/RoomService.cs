@@ -13,10 +13,14 @@ using Turbo.Primitives.Messages.Outgoing.Room.Layout;
 using Turbo.Primitives.Messages.Outgoing.Room.Session;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Room;
 using Turbo.Primitives.Players;
+using Turbo.Primitives.Players.Grains;
 using Turbo.Primitives.Rooms;
 using Turbo.Primitives.Rooms.Enums;
+using Turbo.Primitives.Rooms.Grains;
 using Turbo.Primitives.Rooms.Object;
+using Turbo.Primitives.Rooms.Snapshots.Mapping;
 using Turbo.Rooms.Configuration;
 
 namespace Turbo.Rooms;
@@ -46,8 +50,8 @@ internal sealed partial class RoomService(
     {
         try
         {
-            var playerPresence = _grainFactory.GetPlayerPresenceGrain(playerId);
-            var pendingRoom = await playerPresence.GetPendingRoomAsync().ConfigureAwait(false);
+            IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(playerId);
+            RoomPendingSnapshot pendingRoom = await playerPresence.GetPendingRoomAsync().ConfigureAwait(false);
 
             if (
                 await _roomModerationStore
@@ -57,14 +61,19 @@ internal sealed partial class RoomService(
             {
                 await playerPresence
                     .SendComposerAsync(
-                        new CantConnectMessageComposer { ErrorType = RoomConnectionErrorType.Banned }
+                        new CantConnectMessageComposer
+                        {
+                            ErrorType = RoomConnectionErrorType.Banned,
+                        }
                     )
                     .ConfigureAwait(false);
                 return;
             }
 
             if (pendingRoom.RoomId == roomId)
+            {
                 return;
+            }
 
             await playerPresence.ClearActiveRoomAsync(ct).ConfigureAwait(false);
             await playerPresence.SetPendingRoomAsync(roomId, true).ConfigureAwait(false);
@@ -75,7 +84,7 @@ internal sealed partial class RoomService(
             // if passworded => reject (for now)
             // if locked => reject (for now)
 
-            var room = _grainFactory.GetRoomGrain(roomId);
+            IRoomGrain room = _grainFactory.GetRoomGrain(roomId);
 
             await playerPresence
                 .SendComposerAsync(new OpenConnectionMessageComposer { RoomId = roomId })
@@ -83,8 +92,8 @@ internal sealed partial class RoomService(
 
             await room.EnsureRoomActiveAsync(ct).ConfigureAwait(false);
 
-            var snapshot = await room.GetSnapshotAsync().ConfigureAwait(false);
-            var mapSnapshot = await room.GetMapSnapshotAsync(ct).ConfigureAwait(false);
+            RoomSnapshot snapshot = await room.GetSnapshotAsync().ConfigureAwait(false);
+            RoomMapSnapshot mapSnapshot = await room.GetMapSnapshotAsync(ct).ConfigureAwait(false);
 
             await playerPresence
                 .SendComposerAsync(
@@ -125,9 +134,11 @@ internal sealed partial class RoomService(
     public async Task CloseRoomForPlayerAsync(PlayerId playerId, CancellationToken ct)
     {
         if (playerId <= 0)
+        {
             return;
+        }
 
-        var playerPresence = _grainFactory.GetPlayerPresenceGrain(playerId);
+        IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(playerId);
 
         await playerPresence.ClearActiveRoomAsync(ct).ConfigureAwait(false);
 
@@ -144,9 +155,11 @@ internal sealed partial class RoomService(
     )
     {
         if (ctx.PlayerId <= 0 || ctx.RoomId <= 0)
+        {
             return;
+        }
 
-        var roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
 
         await roomGrain.ClickTileAsync(ctx, targetX, targetY, ct).ConfigureAwait(false);
         await roomGrain.WalkAvatarToAsync(ctx, targetX, targetY, ct).ConfigureAwait(false);
@@ -160,9 +173,11 @@ internal sealed partial class RoomService(
     )
     {
         if (ctx.PlayerId <= 0 || ctx.RoomId <= 0 || itemId <= 0)
+        {
             return;
+        }
 
-        var roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
 
         await roomGrain.RemoveItemByIdAsync(ctx, itemId, ct).ConfigureAwait(false);
     }
@@ -175,9 +190,11 @@ internal sealed partial class RoomService(
     )
     {
         if (ctx.PlayerId <= 0 || ctx.RoomId <= 0 || itemId <= 0)
+        {
             return;
+        }
 
-        var roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
 
         await roomGrain.UseItemByIdAsync(ctx, itemId, ct, param).ConfigureAwait(false);
     }
@@ -190,9 +207,11 @@ internal sealed partial class RoomService(
     )
     {
         if (ctx.PlayerId <= 0 || ctx.RoomId <= 0 || itemId <= 0)
+        {
             return;
+        }
 
-        var roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
 
         await roomGrain.ClickItemByIdAsync(ctx, itemId, ct, param).ConfigureAwait(false);
     }

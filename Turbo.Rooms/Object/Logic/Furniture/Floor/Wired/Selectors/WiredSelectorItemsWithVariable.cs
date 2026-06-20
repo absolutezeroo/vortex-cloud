@@ -59,9 +59,9 @@ public class WiredSelectorItemsWithVariable(
         CancellationToken ct
     )
     {
-        var input = await ctx.GetWiredSelectionSetAsync(this, ct);
-        var allowedDefinitionIds = new List<int>();
-        var output = new WiredSelectionSet();
+        IWiredSelectionSet input = await ctx.GetWiredSelectionSetAsync(this, ct);
+        List<int> allowedDefinitionIds = new List<int>();
+        WiredSelectionSet output = new WiredSelectionSet();
 
         /* try
         {

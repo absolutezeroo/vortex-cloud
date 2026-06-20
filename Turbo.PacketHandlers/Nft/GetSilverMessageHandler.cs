@@ -6,6 +6,7 @@ using Turbo.Primitives.Messages.Incoming.Nft;
 using Turbo.Primitives.Messages.Outgoing.Collectibles;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players.Enums.Wallet;
+using Turbo.Primitives.Players.Grains;
 using Turbo.Primitives.Players.Wallet;
 
 namespace Turbo.PacketHandlers.Nft;
@@ -21,10 +22,12 @@ public class GetSilverMessageHandler(IGrainFactory grainFactory) : IMessageHandl
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var wallet = _grainFactory.GetPlayerWalletGrain(ctx.PlayerId);
-        var silver = await wallet
+        IPlayerWalletGrain wallet = _grainFactory.GetPlayerWalletGrain(ctx.PlayerId);
+        int silver = await wallet
             .GetAmountForCurrencyAsync(new CurrencyKind { CurrencyType = CurrencyType.Silver }, ct)
             .ConfigureAwait(false);
 

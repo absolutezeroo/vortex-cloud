@@ -1,4 +1,5 @@
 using Turbo.Primitives.Messages.Outgoing.NewNavigator;
+using Turbo.Primitives.Orleans.Snapshots.Navigator;
 using Turbo.Primitives.Packets;
 using Turbo.Revisions.Revision20260112.Serializers.NewNavigator.Data;
 
@@ -11,12 +12,12 @@ internal class NavigatorMetaDataMessageSerializer(int header)
     {
         packet.WriteInteger(message.TopLevelContexts.Length);
 
-        foreach (var context in message.TopLevelContexts)
+        foreach (NavigatorTopLevelContextSnapshot context in message.TopLevelContexts)
         {
             packet.WriteString(context.SearchCode);
             packet.WriteInteger(context.QuickLinks.Length);
 
-            foreach (var quickLink in context.QuickLinks)
+            foreach (NavigatorQuickLinkSnapshot quickLink in context.QuickLinks)
             {
                 NavigatorQuickLinkSnapshotSerializer.Serialize(packet, quickLink);
             }

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Turbo.Primitives.Rooms.Enums.Wired;
 using Turbo.Primitives.Rooms.Grains;
+using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Snapshots.Wired;
 using Turbo.Primitives.Rooms.Wired;
 using Turbo.Rooms.Grains;
@@ -23,7 +24,7 @@ public abstract class WiredContext(RoomGrain roomGrain) : IWiredContext
 
     public bool TryGetContextVariable(string key, out int value)
     {
-        if (Variables.TryGetValue(key, out var intValue))
+        if (Variables.TryGetValue(key, out int intValue))
         {
             value = intValue;
 
@@ -44,11 +45,11 @@ public abstract class WiredContext(RoomGrain roomGrain) : IWiredContext
 
     public Task<IWiredSelectionSet> GetWiredSelectionSetAsync(IWiredBox wired, CancellationToken ct)
     {
-        var set = new WiredSelectionSet();
+        WiredSelectionSet set = new WiredSelectionSet();
 
-        foreach (var source in wired.GetFurniSources())
+        foreach (WiredFurniSourceType[] source in wired.GetFurniSources())
         {
-            foreach (var sourceType in source)
+            foreach (WiredFurniSourceType sourceType in source)
             {
                 switch (sourceType)
                 {
@@ -57,27 +58,31 @@ public abstract class WiredContext(RoomGrain roomGrain) : IWiredContext
                         break;
                     case WiredFurniSourceType.SelectedItems:
                         {
-                            var stuffIds = wired.GetStuffIds();
+                            List<int>? stuffIds = wired.GetStuffIds();
 
                             if (stuffIds is not null && stuffIds.Count > 0)
                             {
-                                foreach (var id in stuffIds)
+                                foreach (int id in stuffIds)
                                 {
                                     if (!_roomGrain._state.ItemsById.ContainsKey(id))
+                                    {
                                         continue;
+                                    }
 
                                     set.SelectedFurniIds.Add(id);
                                 }
                             }
 
-                            var stuffIds2 = wired.GetStuffIds2();
+                            List<int>? stuffIds2 = wired.GetStuffIds2();
 
                             if (stuffIds2 is not null && stuffIds2.Count > 0)
                             {
-                                foreach (var id in stuffIds2)
+                                foreach (int id in stuffIds2)
                                 {
                                     if (!_roomGrain._state.ItemsById.ContainsKey(id))
+                                    {
                                         continue;
+                                    }
 
                                     set.SelectedFurniIds.Add(id);
                                 }
@@ -86,7 +91,7 @@ public abstract class WiredContext(RoomGrain roomGrain) : IWiredContext
                         break;
                     case WiredFurniSourceType.AllRoomItems:
                         {
-                            foreach (var item in _roomGrain._state.ItemsById.Values)
+                            foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
                             {
                                 set.SelectedFurniIds.Add((int)item.ObjectId);
                             }
@@ -96,9 +101,9 @@ public abstract class WiredContext(RoomGrain roomGrain) : IWiredContext
             }
         }
 
-        foreach (var source in wired.GetPlayerSources())
+        foreach (WiredPlayerSourceType[] source in wired.GetPlayerSources())
         {
-            foreach (var sourceType in source)
+            foreach (WiredPlayerSourceType sourceType in source)
             {
                 switch (sourceType)
                 {
@@ -117,12 +122,12 @@ public abstract class WiredContext(RoomGrain roomGrain) : IWiredContext
         CancellationToken ct
     )
     {
-        var result = new WiredSelectionSet();
-        var set = await GetWiredSelectionSetAsync(wired, ct);
+        WiredSelectionSet result = new WiredSelectionSet();
+        IWiredSelectionSet set = await GetWiredSelectionSetAsync(wired, ct);
 
-        foreach (var source in wired.GetFurniSources())
+        foreach (WiredFurniSourceType[] source in wired.GetFurniSources())
         {
-            foreach (var sourceType in source)
+            foreach (WiredFurniSourceType sourceType in source)
             {
                 switch (sourceType)
                 {
@@ -139,9 +144,9 @@ public abstract class WiredContext(RoomGrain roomGrain) : IWiredContext
             }
         }
 
-        foreach (var source in wired.GetPlayerSources())
+        foreach (WiredPlayerSourceType[] source in wired.GetPlayerSources())
         {
-            foreach (var sourceType in source)
+            foreach (WiredPlayerSourceType sourceType in source)
             {
                 switch (sourceType)
                 {

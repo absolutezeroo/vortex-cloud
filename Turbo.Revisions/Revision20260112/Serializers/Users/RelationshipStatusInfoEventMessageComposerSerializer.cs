@@ -1,5 +1,6 @@
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Packets;
+using Turbo.Primitives.Snapshots.FriendList;
 
 namespace Turbo.Revisions.Revision20260112.Serializers.Users;
 
@@ -14,7 +15,7 @@ internal class RelationshipStatusInfoEventMessageComposerSerializer(int header)
         packet.WriteInteger(message.UserId);
         packet.WriteInteger(message.Relations.Count);
 
-        foreach (var rel in message.Relations)
+        foreach (RelationshipStatusEntrySnapshot rel in message.Relations)
         {
             packet.WriteShort(rel.RelationType);
             packet.WriteInteger(rel.Count);

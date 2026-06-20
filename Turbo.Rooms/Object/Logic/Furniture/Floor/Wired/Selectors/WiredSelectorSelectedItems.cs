@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Orleans;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Rooms.Enums.Wired;
+using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Object.Logic;
 using Turbo.Primitives.Rooms.Wired;
@@ -32,15 +33,17 @@ public class WiredSelectorSelectedItems(
         CancellationToken ct
     )
     {
-        var input = await ctx.GetWiredSelectionSetAsync(this, ct);
-        var output = new WiredSelectionSet();
+        IWiredSelectionSet input = await ctx.GetWiredSelectionSetAsync(this, ct);
+        WiredSelectionSet output = new WiredSelectionSet();
 
-        foreach (var id in input.SelectedFurniIds)
+        foreach (int id in input.SelectedFurniIds)
         {
             try
             {
-                if (!_roomGrain._state.ItemsById.TryGetValue(id, out var item))
+                if (!_roomGrain._state.ItemsById.TryGetValue(id, out IRoomItem? item))
+                {
                     continue;
+                }
 
                 output.SelectedFurniIds.Add((int)item.ObjectId);
             }

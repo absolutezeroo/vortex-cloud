@@ -46,7 +46,9 @@ public abstract class RoomItem<TSelf, TLogic, TContext>
     public void SetOwnerId(PlayerId ownerId)
     {
         if (ownerId == PlayerId.Invalid)
+        {
             return;
+        }
 
         OwnerId = ownerId;
 

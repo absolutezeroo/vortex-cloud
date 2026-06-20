@@ -6,6 +6,7 @@ using Turbo.Primitives.Messages.Incoming.Nft;
 using Turbo.Primitives.Messages.Outgoing.Collectibles;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players.Enums.Wallet;
+using Turbo.Primitives.Players.Grains;
 using Turbo.Primitives.Players.Wallet;
 
 namespace Turbo.PacketHandlers.Nft;
@@ -22,10 +23,12 @@ public class GetNftCreditsMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var wallet = _grainFactory.GetPlayerWalletGrain(ctx.PlayerId);
-        var emeralds = await wallet
+        IPlayerWalletGrain wallet = _grainFactory.GetPlayerWalletGrain(ctx.PlayerId);
+        int emeralds = await wallet
             .GetAmountForCurrencyAsync(
                 new CurrencyKind { CurrencyType = CurrencyType.Emeralds },
                 ct

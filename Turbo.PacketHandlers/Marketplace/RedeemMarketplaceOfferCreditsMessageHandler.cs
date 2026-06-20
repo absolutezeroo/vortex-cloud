@@ -19,7 +19,9 @@ public class RedeemMarketplaceOfferCreditsMessageHandler(IGrainFactory grainFact
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
         await _grainFactory
             .GetMarketplacePurchaseGrain(ctx.PlayerId)

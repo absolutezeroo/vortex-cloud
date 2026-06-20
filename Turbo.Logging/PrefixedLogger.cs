@@ -10,7 +10,7 @@ public sealed class PrefixedLogger<T> : ILogger<T>
 
     public PrefixedLogger(IPrefixedLoggerFactory factory)
     {
-        var categoryName = typeof(T).FullName ?? typeof(T).Name;
+        string categoryName = typeof(T).FullName ?? typeof(T).Name;
 
         _inner = factory.CreateLogger(categoryName);
     }

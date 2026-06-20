@@ -10,7 +10,7 @@ internal class FavouritesMessageSerializer(int header)
     {
         packet.WriteInteger(message.Limit).WriteInteger(message.FavoriteRoomIds.Length);
 
-        foreach (var roomId in message.FavoriteRoomIds)
+        foreach (int roomId in message.FavoriteRoomIds)
             packet.WriteInteger(roomId);
     }
 }

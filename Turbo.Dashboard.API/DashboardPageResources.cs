@@ -77,21 +77,21 @@ internal static class DashboardPageResources
 
     private static string LoadText(string fileName)
     {
-        var resourceName = GetResourceName(fileName);
+        string resourceName = GetResourceName(fileName);
 
-        using var stream =
+        using Stream stream =
             AssetAssembly.GetManifestResourceStream(resourceName)
             ?? throw new InvalidOperationException(
                 $"Embedded resource '{resourceName}' was not found in '{AssetAssembly.FullName}'."
             );
-        using var reader = new StreamReader(stream, Utf8NoBom);
+        using StreamReader reader = new StreamReader(stream, Utf8NoBom);
         return reader.ReadToEnd();
     }
 
     private static string GetResourceName(string fileName)
     {
-        var suffix = $".{fileName}";
-        var resourceName = FindResourceName(fileName);
+        string suffix = $".{fileName}";
+        string? resourceName = FindResourceName(fileName);
 
         return resourceName
             ?? throw new InvalidOperationException(
@@ -101,7 +101,7 @@ internal static class DashboardPageResources
 
     private static string? FindResourceName(string fileName)
     {
-        var suffix = $".{fileName}";
+        string suffix = $".{fileName}";
 
         return AssetAssembly
             .GetManifestResourceNames()

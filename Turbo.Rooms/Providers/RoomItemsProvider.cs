@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using Turbo.Logging;
 using Turbo.Primitives;
 using Turbo.Primitives.Furniture.Enums;
 using Turbo.Primitives.Furniture.Providers;
+using Turbo.Primitives.Furniture.Snapshots;
 using Turbo.Primitives.Inventory.Snapshots;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players;
@@ -44,33 +46,33 @@ internal sealed class RoomItemsProvider(
         IReadOnlyDictionary<PlayerId, string>
     )> LoadByRoomIdAsync(RoomId roomId, CancellationToken ct)
     {
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var entities = await dbCtx
+        List<FurnitureEntity> entities = await dbCtx
             .Furnitures.AsNoTracking()
             .Where(x => x.RoomEntityId == (int)roomId)
             .ToListAsync(ct)
             .ConfigureAwait(false);
 
-        var floorItems = new List<IRoomFloorItem>();
-        var wallItems = new List<IRoomWallItem>();
+        List<IRoomFloorItem> floorItems = new List<IRoomFloorItem>();
+        List<IRoomWallItem> wallItems = new List<IRoomWallItem>();
 
-        var ownerIdsUnique = entities.Select(x => (PlayerId)x.PlayerEntityId).Distinct().ToList();
-        var ownerNames = await _grainFactory
+        List<PlayerId> ownerIdsUnique = entities.Select(x => (PlayerId)x.PlayerEntityId).Distinct().ToList();
+        ImmutableDictionary<PlayerId, string> ownerNames = await _grainFactory
             .GetPlayerDirectoryGrain()
             .GetPlayerNamesAsync(ownerIdsUnique, ct)
             .ConfigureAwait(false);
 
-        foreach (var entity in entities)
+        foreach (FurnitureEntity entity in entities)
         {
             try
             {
-                var item = CreateFromEntity(entity);
+                IRoomItem item = CreateFromEntity(entity);
 
                 item.SetExtraData(entity.ExtraData);
 
                 item.SetOwnerName(
-                    ownerNames.TryGetValue(entity.PlayerEntityId, out var name)
+                    ownerNames.TryGetValue(entity.PlayerEntityId, out string? name)
                         ? name ?? string.Empty
                         : string.Empty
                 );
@@ -101,7 +103,7 @@ internal sealed class RoomItemsProvider(
 
     public IRoomItem CreateFromEntity(FurnitureEntity entity)
     {
-        var definition =
+        FurnitureDefinitionSnapshot definition =
             _defsProvider.TryGetDefinition(entity.FurnitureDefinitionEntityId)
             ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
 
@@ -129,7 +131,7 @@ internal sealed class RoomItemsProvider(
 
     public IRoomItem CreateFromFurnitureItemSnapshot(FurnitureItemSnapshot snapshot)
     {
-        var definition = snapshot.Definition;
+        FurnitureDefinitionSnapshot definition = snapshot.Definition;
 
         IRoomItem? item = null;
 
@@ -156,7 +158,9 @@ internal sealed class RoomItemsProvider(
         }
 
         if (item is null)
+        {
             throw new TurboException(TurboErrorCodeEnum.InvalidFurnitureProductType);
+        }
 
         item.SetExtraData(snapshot.ExtraData);
 

@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Turbo.Pipeline.Delegates;
@@ -12,18 +13,18 @@ public class EnvelopeInvokerFactory<TContext>
 {
     public HandlerInvoker<TContext> CreateHandlerInvoker(Type handlerType, Type envType)
     {
-        var impl = AssemblyExplorer.ResolveImplementation(
+        MethodInfo impl = AssemblyExplorer.ResolveImplementation(
             handlerType,
             typeof(IHandler<,>).MakeGenericType(envType, typeof(TContext)),
             "HandleAsync"
         );
 
-        var inst = Expression.Parameter(typeof(object), "inst");
-        var env = Expression.Parameter(typeof(object), "env");
-        var ctx = Expression.Parameter(typeof(TContext), "ctx");
-        var ct = Expression.Parameter(typeof(CancellationToken), "ct");
+        ParameterExpression inst = Expression.Parameter(typeof(object), "inst");
+        ParameterExpression env = Expression.Parameter(typeof(object), "env");
+        ParameterExpression ctx = Expression.Parameter(typeof(TContext), "ctx");
+        ParameterExpression ct = Expression.Parameter(typeof(CancellationToken), "ct");
 
-        var call = Expression.Call(
+        MethodCallExpression call = Expression.Call(
             Expression.Convert(inst, handlerType),
             impl,
             Expression.Convert(env, envType),
@@ -36,19 +37,19 @@ public class EnvelopeInvokerFactory<TContext>
 
     public BehaviorInvoker<TContext> CreateBehaviorInvoker(Type behaviorType, Type envType)
     {
-        var impl = AssemblyExplorer.ResolveImplementation(
+        MethodInfo impl = AssemblyExplorer.ResolveImplementation(
             behaviorType,
             typeof(IBehavior<,>).MakeGenericType(envType, typeof(TContext)),
             "InvokeAsync"
         );
 
-        var inst = Expression.Parameter(typeof(object), "inst");
-        var env = Expression.Parameter(typeof(object), "env");
-        var ctx = Expression.Parameter(typeof(TContext), "ctx");
-        var next = Expression.Parameter(typeof(Func<ValueTask>), "next");
-        var ct = Expression.Parameter(typeof(CancellationToken), "ct");
+        ParameterExpression inst = Expression.Parameter(typeof(object), "inst");
+        ParameterExpression env = Expression.Parameter(typeof(object), "env");
+        ParameterExpression ctx = Expression.Parameter(typeof(TContext), "ctx");
+        ParameterExpression next = Expression.Parameter(typeof(Func<ValueTask>), "next");
+        ParameterExpression ct = Expression.Parameter(typeof(CancellationToken), "ct");
 
-        var call = Expression.Call(
+        MethodCallExpression call = Expression.Call(
             Expression.Convert(inst, behaviorType),
             impl,
             Expression.Convert(env, envType),

@@ -10,7 +10,7 @@ internal class ActivityPointsMessageComposerSerializer(int header)
     {
         packet.WriteInteger(message.PointsByCategoryId.Count);
 
-        foreach (var (categoryId, points) in message.PointsByCategoryId)
+        foreach ((int categoryId, int points) in message.PointsByCategoryId)
             packet.WriteInteger(categoryId).WriteInteger(points);
     }
 }

@@ -8,6 +8,9 @@ using Turbo.Primitives;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Observability;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Room;
+using Turbo.Primitives.Players;
+using Turbo.Primitives.Players.Grains;
 
 namespace Turbo.Messages.Registry;
 
@@ -38,17 +41,19 @@ public sealed class MessageRegistry(
             CreateContextAsync = async (env, data) =>
             {
                 if (data is null)
+                {
                     throw new TurboException(TurboErrorCodeEnum.InvalidSession);
+                }
 
-                var grainFactory = serviceProvider.GetRequiredService<IGrainFactory>();
-                var sessionGateway = serviceProvider.GetRequiredService<ISessionGateway>();
-                var playerId = sessionGateway.GetPlayerId(data.SessionKey);
-                var roomId = -1;
+                IGrainFactory grainFactory = serviceProvider.GetRequiredService<IGrainFactory>();
+                ISessionGateway sessionGateway = serviceProvider.GetRequiredService<ISessionGateway>();
+                PlayerId playerId = sessionGateway.GetPlayerId(data.SessionKey);
+                int roomId = -1;
 
                 if (playerId > 0)
                 {
-                    var playerPresence = grainFactory.GetPlayerPresenceGrain(playerId);
-                    var activeRoom = await playerPresence
+                    IPlayerPresenceGrain playerPresence = grainFactory.GetPlayerPresenceGrain(playerId);
+                    RoomPointerSnapshot activeRoom = await playerPresence
                         .GetActiveRoomAsync()
                         .ConfigureAwait(false);
 
@@ -108,7 +113,7 @@ public sealed class MessageRegistry(
         ILogger logger
     )
     {
-        var context = contextAccessor.Current;
+        ITurboContext? context = contextAccessor.Current;
 
         try
         {

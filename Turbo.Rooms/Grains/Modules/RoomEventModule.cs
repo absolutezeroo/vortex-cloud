@@ -15,14 +15,16 @@ public sealed class RoomEventModule(RoomGrain roomGrain)
     public void Register(IRoomEventListener listener)
     {
         if (!_listeners.Contains(listener))
+        {
             _listeners.Add(listener);
+        }
     }
 
     public void Unregister(IRoomEventListener listener) => _listeners.Remove(listener);
 
     public async Task PublishAsync(RoomEvent evt, CancellationToken ct)
     {
-        foreach (var listener in _listeners)
+        foreach (IRoomEventListener listener in _listeners)
             await listener.OnRoomEventAsync(evt, ct);
     }
 }

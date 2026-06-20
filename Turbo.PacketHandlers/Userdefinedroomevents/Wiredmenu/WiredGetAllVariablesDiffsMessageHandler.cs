@@ -24,26 +24,28 @@ public class WiredGetAllVariablesDiffsMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx is null || ctx.PlayerId <= 0 || ctx.RoomId <= 0)
+        {
             return;
+        }
 
-        var variables = await _grainFactory
+        WiredVariablesSnapshot variables = await _grainFactory
             .GetRoomGrain(ctx.RoomId)
             .GetWiredVariablesSnapshotAsync(ct)
             .ConfigureAwait(false);
 
-        var removedIds = new List<WiredVariableId>();
-        var checkedIds = new List<WiredVariableId>();
-        var diffs = new List<WiredVariableSnapshot>();
+        List<WiredVariableId> removedIds = new List<WiredVariableId>();
+        List<WiredVariableId> checkedIds = new List<WiredVariableId>();
+        List<WiredVariableSnapshot> diffs = new List<WiredVariableSnapshot>();
 
         if (message.VariableIdsWithHash.Count > 0)
         {
-            foreach (var (id, hash) in message.VariableIdsWithHash)
+            foreach ((WiredVariableId id, WiredVariableHash hash) in message.VariableIdsWithHash)
             {
                 checkedIds.Add(id);
 
                 try
                 {
-                    var existing = variables.Variables.First(x => x.VariableId == id);
+                    WiredVariableSnapshot existing = variables.Variables.First(x => x.VariableId == id);
 
                     diffs.Add(existing);
                 }
@@ -54,10 +56,12 @@ public class WiredGetAllVariablesDiffsMessageHandler(IGrainFactory grainFactory)
             }
         }
 
-        foreach (var variable in variables.Variables)
+        foreach (WiredVariableSnapshot variable in variables.Variables)
         {
             if (checkedIds.Contains(variable.VariableId))
+            {
                 continue;
+            }
 
             diffs.Add(variable);
         }

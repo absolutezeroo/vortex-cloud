@@ -34,10 +34,14 @@ public class FurnitureFloorLogic(IStuffDataFactory stuffDataFactory, IRoomFloorI
     public virtual Altitude GetPostureOffset()
     {
         if (CanSit())
+        {
             return GetStackHeight();
+        }
 
         if (CanLay())
+        {
             return GetStackHeight();
+        }
 
         return Altitude.Zero;
     }

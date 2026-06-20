@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Orleans;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Rooms.Enums.Wired;
+using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Object.Logic;
 using Turbo.Primitives.Rooms.Wired;
@@ -39,21 +40,23 @@ public class WiredSelectorItemsOnItem(
         CancellationToken ct
     )
     {
-        var input = await ctx.GetWiredSelectionSetAsync(this, ct);
-        var output = new WiredSelectionSet();
+        IWiredSelectionSet input = await ctx.GetWiredSelectionSetAsync(this, ct);
+        WiredSelectionSet output = new WiredSelectionSet();
 
-        foreach (var id in input.SelectedFurniIds)
+        foreach (int id in input.SelectedFurniIds)
         {
             try
             {
                 if (
-                    !_roomGrain._state.ItemsById.TryGetValue(id, out var item)
+                    !_roomGrain._state.ItemsById.TryGetValue(id, out IRoomItem? item)
                     || item is not IRoomFloorItem floorItem
                 )
+                {
                     continue;
+                }
 
-                var tileIdx = _roomGrain.MapModule.ToIdx(floorItem.X, floorItem.Y);
-                var floorStack = _roomGrain
+                int tileIdx = _roomGrain.MapModule.ToIdx(floorItem.X, floorItem.Y);
+                IEnumerable<IRoomItem> floorStack = _roomGrain
                     ._state.TileFloorStacks[tileIdx]
                     .Select(x => _roomGrain._state.ItemsById[(int)x]);
 
@@ -61,36 +64,36 @@ public class WiredSelectorItemsOnItem(
                 {
                     case WiredFurniSelectionType.FurniAboveFurni:
                     {
-                        var aboveItems = floorStack.Where(i => i.Z > floorItem.Z);
+                        IEnumerable<IRoomItem> aboveItems = floorStack.Where(i => i.Z > floorItem.Z);
 
-                        foreach (var aboveItem in aboveItems)
+                        foreach (IRoomItem aboveItem in aboveItems)
                             output.SelectedFurniIds.Add((int)aboveItem.ObjectId);
 
                         break;
                     }
                     case WiredFurniSelectionType.FurniUnderFurni:
                     {
-                        var belowItems = floorStack.Where(i => i.Z < floorItem.Z);
+                        IEnumerable<IRoomItem> belowItems = floorStack.Where(i => i.Z < floorItem.Z);
 
-                        foreach (var belowItem in belowItems)
+                        foreach (IRoomItem belowItem in belowItems)
                             output.SelectedFurniIds.Add((int)belowItem.ObjectId);
 
                         break;
                     }
                     case WiredFurniSelectionType.FurniHeightMatches:
                     {
-                        var sameHeightItems = floorStack.Where(i =>
+                        IEnumerable<IRoomItem> sameHeightItems = floorStack.Where(i =>
                             i.Z == floorItem.Z && i.ObjectId != floorItem.ObjectId
                         );
 
-                        foreach (var sameHeightItem in sameHeightItems)
+                        foreach (IRoomItem sameHeightItem in sameHeightItems)
                             output.SelectedFurniIds.Add((int)sameHeightItem.ObjectId);
 
                         break;
                     }
                     case WiredFurniSelectionType.AllFurniOnTile:
                     {
-                        foreach (var stackItem in floorStack)
+                        foreach (IRoomItem stackItem in floorStack)
                             output.SelectedFurniIds.Add((int)stackItem.ObjectId);
 
                         break;

@@ -27,27 +27,35 @@ internal sealed class WsPackageHandler(
         ArgumentNullException.ThrowIfNull(package);
 
         if (session is not ISessionContext ctx || package.OpCode != OpCode.Binary)
+        {
             return;
+        }
 
-        foreach (var segment in package.Data)
+        foreach (ReadOnlyMemory<byte> segment in package.Data)
             ctx.WsBuffer?.Write(segment.Span);
 
         while (true)
         {
             if (ctx.WsBuffer is null)
+            {
                 break;
+            }
 
-            var memory = ctx.WsBuffer.WrittenMemory;
+            ReadOnlyMemory<byte> memory = ctx.WsBuffer.WrittenMemory;
 
             if (memory.Length == 0)
+            {
                 break;
+            }
 
-            var reader = new SequenceReader<byte>(new ReadOnlySequence<byte>(memory));
+            SequenceReader<byte> reader = new SequenceReader<byte>(new ReadOnlySequence<byte>(memory));
 
-            var packet = _decoder.TryRead(ref reader, ctx);
+            IClientPacket? packet = _decoder.TryRead(ref reader, ctx);
 
             if (packet is null)
+            {
                 break;
+            }
 
             ctx.WsBuffer.Clear();
             ctx.WsBuffer.Write(ctx.WsBuffer.WrittenSpan[(int)reader.Consumed..]);

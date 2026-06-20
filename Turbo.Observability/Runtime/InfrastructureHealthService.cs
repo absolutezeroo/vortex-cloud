@@ -42,14 +42,14 @@ public sealed class InfrastructureHealthService(
 
     public async Task<InfrastructureHealthSnapshot> GetStatusAsync(CancellationToken ct)
     {
-        var databaseTask = CheckDatabaseAsync(ct);
-        var orleansTask = CheckOrleansAsync(ct);
-        var runtime = GetRuntimeSnapshot();
+        Task<HealthComponentSnapshot> databaseTask = CheckDatabaseAsync(ct);
+        Task<OrleansHealthProbe> orleansTask = CheckOrleansAsync(ct);
+        RuntimeHealthSnapshot runtime = GetRuntimeSnapshot();
 
         await Task.WhenAll(databaseTask, orleansTask).ConfigureAwait(false);
 
-        var database = await databaseTask.ConfigureAwait(false);
-        var orleans = await orleansTask.ConfigureAwait(false);
+        HealthComponentSnapshot database = await databaseTask.ConfigureAwait(false);
+        OrleansHealthProbe orleans = await orleansTask.ConfigureAwait(false);
 
         return new(
             Merge(database.Status, orleans.Component.Status),
@@ -62,20 +62,20 @@ public sealed class InfrastructureHealthService(
 
     private async Task<HealthComponentSnapshot> CheckDatabaseAsync(CancellationToken ct)
     {
-        var startedAt = Stopwatch.GetTimestamp();
+        long startedAt = Stopwatch.GetTimestamp();
 
         try
         {
-            await using var db = await _dbContextFactory
+            await using TurboDbContext db = await _dbContextFactory
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(false);
 
-            var canConnect = await db.Database.CanConnectAsync(ct).ConfigureAwait(false);
-            var latencyMs = GetElapsedMs(startedAt);
-            var status = canConnect
+            bool canConnect = await db.Database.CanConnectAsync(ct).ConfigureAwait(false);
+            double latencyMs = GetElapsedMs(startedAt);
+            HealthStatus status = canConnect
                 ? EvaluateStatus(latencyMs, _dbDegradedLatencyMs, _dbCriticalLatencyMs)
                 : HealthStatus.Degraded;
-            var detail = canConnect
+            string detail = canConnect
                 ? $"connected in {latencyMs:F0}ms."
                 : "CanConnectAsync returned false.";
 
@@ -91,23 +91,23 @@ public sealed class InfrastructureHealthService(
 
     private async Task<OrleansHealthProbe> CheckOrleansAsync(CancellationToken ct)
     {
-        var startedAt = Stopwatch.GetTimestamp();
+        long startedAt = Stopwatch.GetTimestamp();
 
         try
         {
-            var hosts = await _clusterClient
+            Dictionary<SiloAddress, SiloStatus>? hosts = await _clusterClient
                 .GetGrain<IManagementGrain>(0)
                 .GetHosts(false)
                 .ConfigureAwait(false);
 
-            var latencyMs = GetElapsedMs(startedAt);
-            var activeSiloCount = hosts.Count(host => host.Value == SiloStatus.Active);
-            var hasInactiveSilo = hosts.Any(host => host.Value != SiloStatus.Active);
-            var status =
+            double latencyMs = GetElapsedMs(startedAt);
+            int activeSiloCount = hosts.Count(host => host.Value == SiloStatus.Active);
+            bool hasInactiveSilo = hosts.Any(host => host.Value != SiloStatus.Active);
+            HealthStatus status =
                 activeSiloCount == 0 ? HealthStatus.Critical
                 : hasInactiveSilo ? HealthStatus.Degraded
                 : EvaluateStatus(latencyMs, _orleansDegradedLatencyMs, _orleansCriticalLatencyMs);
-            var detail =
+            string detail =
                 activeSiloCount > 0
                     ? $"management grain reachable in {latencyMs:F0}ms; {activeSiloCount}/{hosts.Count} active silos."
                     : "management grain reachable, but no active silo was reported.";
@@ -148,10 +148,10 @@ public sealed class InfrastructureHealthService(
 
     private static RuntimeHealthSnapshot GetRuntimeSnapshot()
     {
-        using var process = Process.GetCurrentProcess();
-        var startedAtUtc = process.StartTime.ToUniversalTime();
-        var uptimeSeconds = Math.Max(0, (long)(DateTime.UtcNow - startedAtUtc).TotalSeconds);
-        var environmentName =
+        using Process process = Process.GetCurrentProcess();
+        DateTime startedAtUtc = process.StartTime.ToUniversalTime();
+        long uptimeSeconds = Math.Max(0, (long)(DateTime.UtcNow - startedAtUtc).TotalSeconds);
+        string environmentName =
             Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
             ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
             ?? "Production";
@@ -215,10 +215,14 @@ public sealed class InfrastructureHealthService(
     )
     {
         if (latencyMs >= criticalThresholdMs)
+        {
             return HealthStatus.Critical;
+        }
 
         if (latencyMs >= degradedThresholdMs)
+        {
             return HealthStatus.Degraded;
+        }
 
         return HealthStatus.Healthy;
     }

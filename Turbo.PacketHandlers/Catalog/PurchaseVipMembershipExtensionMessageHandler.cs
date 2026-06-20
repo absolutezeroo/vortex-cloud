@@ -3,12 +3,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.Catalog;
 using Turbo.Primitives.Catalog.Providers;
+using Turbo.Primitives.Grains.Players;
 using Turbo.Primitives.Messages.Incoming.Catalog;
 using Turbo.Primitives.Messages.Outgoing.Catalog;
 using Turbo.Primitives.Messages.Outgoing.Handshake;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Players;
 using Turbo.Primitives.Players.Enums;
 
 namespace Turbo.PacketHandlers.Catalog;
@@ -28,15 +31,19 @@ public class PurchaseVipMembershipExtensionMessageHandler(
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var offer = _clubOfferProvider.FindById(message.OfferId);
+        ClubOffer? offer = _clubOfferProvider.FindById(message.OfferId);
         if (offer is null || !offer.IsVip)
+        {
             return;
+        }
 
-        var playerGrain = _grainFactory.GetPlayerGrain(ctx.PlayerId);
+        IPlayerGrain playerGrain = _grainFactory.GetPlayerGrain(ctx.PlayerId);
 
-        var result = await playerGrain
+        ClubPurchaseResult result = await playerGrain
             .PurchaseClubAsync(offer.Months, true, offer.PriceCredits, ct)
             .ConfigureAwait(false);
 
@@ -47,7 +54,7 @@ public class PurchaseVipMembershipExtensionMessageHandler(
             return;
         }
 
-        var sub = await playerGrain.GetClubSubscriptionAsync(ct).ConfigureAwait(false);
+        ClubSubscriptionSnapshot sub = await playerGrain.GetClubSubscriptionAsync(ct).ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
                 new UserRightsMessage
@@ -62,8 +69,8 @@ public class PurchaseVipMembershipExtensionMessageHandler(
 
         if (sub.IsActive)
         {
-            var daysLeft = sub.DaysLeft;
-            var rem = daysLeft % 31;
+            int daysLeft = sub.DaysLeft;
+            int rem = daysLeft % 31;
             await ctx.SendComposerAsync(
                     new ScrSendUserInfoMessageComposer
                     {

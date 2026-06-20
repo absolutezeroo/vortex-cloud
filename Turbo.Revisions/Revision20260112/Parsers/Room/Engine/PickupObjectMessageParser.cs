@@ -8,9 +8,9 @@ internal class PickupObjectMessageParser : IParser
 {
     public IMessageEvent Parse(IClientPacket packet)
     {
-        var categoryId = packet.PopInt();
-        var objectId = packet.PopInt();
-        var confirm = !packet.End && packet.PopBoolean();
+        int categoryId = packet.PopInt();
+        int objectId = packet.PopInt();
+        bool confirm = !packet.End && packet.PopBoolean();
         return new PickupObjectMessage
         {
             CategoryId = categoryId,

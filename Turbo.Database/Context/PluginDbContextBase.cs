@@ -1,5 +1,6 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Turbo.Database.Delegates;
 using Turbo.Database.Extensions;
 
@@ -17,7 +18,7 @@ public class PluginDbContextBase<TContent>(
     {
         base.OnModelCreating(mb);
 
-        foreach (var fk in mb.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+        foreach (IMutableForeignKey fk in mb.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             fk.DeleteBehavior = DeleteBehavior.Restrict;
 
         mb.ApplyTablePrefix(_prefix());

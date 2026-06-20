@@ -1,3 +1,4 @@
+using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Packets;
 
@@ -8,7 +9,7 @@ internal class GuildMembersMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, GuildMembersMessageComposer message)
     {
-        var page = message.Page;
+        GroupMembersPageSnapshot page = message.Page;
 
         packet.WriteInteger(page.GroupId);
         packet.WriteString(page.GroupName);
@@ -17,7 +18,7 @@ internal class GuildMembersMessageComposerSerializer(int header)
         packet.WriteInteger(page.TotalEntries);
 
         packet.WriteInteger(page.Members.Count);
-        foreach (var member in page.Members)
+        foreach (GroupMemberSnapshot member in page.Members)
         {
             packet.WriteInteger(member.RoleType);
             packet.WriteInteger(member.UserId);

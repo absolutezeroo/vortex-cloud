@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Turbo.Database.Context;
+using Turbo.Database.Entities.Catalog;
 using Turbo.Primitives.Catalog.Providers;
 using Turbo.Primitives.Catalog.Snapshots;
 using Turbo.Primitives.Furniture.Enums;
@@ -32,9 +33,9 @@ public sealed class CatalogClubGiftProvider(
 
     public async Task ReloadAsync(CancellationToken ct)
     {
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var entities = await dbCtx
+        List<CatalogClubGiftEntity> entities = await dbCtx
             .CatalogClubGifts.AsNoTracking()
             .OrderBy(x => x.SortOrder)
             .ThenBy(x => x.Id)
@@ -51,14 +52,14 @@ public sealed class CatalogClubGiftProvider(
         int index
     )
     {
-        var productType = e.ProductType.FromLegacyString();
+        ProductType productType = e.ProductType.FromLegacyString();
 
-        var spriteId =
+        int spriteId =
             productType is not ProductType.Badge && e.FurniDefinitionId.HasValue
                 ? _furnitureProvider.TryGetDefinition(e.FurniDefinitionId.Value)?.SpriteId ?? -1
                 : -1;
 
-        var product = new CatalogProductSnapshot
+        CatalogProductSnapshot product = new CatalogProductSnapshot
         {
             Id = index,
             OfferId = e.Id,

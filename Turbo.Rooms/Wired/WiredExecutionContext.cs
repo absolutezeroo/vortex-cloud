@@ -29,7 +29,9 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
     public async Task ProcessItemStateUpdateAsync(IRoomItem item, int state)
     {
         if (item is null)
+        {
             return;
+        }
 
         try
         {
@@ -56,14 +58,16 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
     )
     {
         if (floorItem is null)
+        {
             return Task.CompletedTask;
+        }
 
         try
         {
-            var (sourceX, sourceY, sourceZ) = (floorItem.X, floorItem.Y, floorItem.Z);
+            (int sourceX, int sourceY, Altitude sourceZ) = (floorItem.X, floorItem.Y, floorItem.Z);
 
-            var finalZ = z ?? floorItem.Z;
-            var finalRot = rot ?? floorItem.Rotation;
+            Altitude finalZ = z ?? floorItem.Z;
+            Rotation finalRot = rot ?? floorItem.Rotation;
 
             if (_roomGrain.MapModule.MoveFloorItem(floorItem, tileIdx, z, rot))
             {
@@ -101,11 +105,13 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
     )
     {
         if (wallItem is null)
+        {
             return Task.CompletedTask;
+        }
 
         try
         {
-            var (sourceX, sourceY, sourceZ, sourceRot, sourceOffset) = (
+            (int sourceX, int sourceY, Altitude sourceZ, Rotation sourceRot, int sourceOffset) = (
                 wallItem.X,
                 wallItem.Y,
                 wallItem.Z,

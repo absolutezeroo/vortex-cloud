@@ -39,7 +39,9 @@ public abstract class RoomObject<TSelf, TLogic, TContext> : IRoomObject<TSelf, T
     public virtual void SetPosition(int x, int y)
     {
         if (X == x && Y == y)
+        {
             return;
+        }
 
         X = x;
         Y = y;
@@ -52,7 +54,9 @@ public abstract class RoomObject<TSelf, TLogic, TContext> : IRoomObject<TSelf, T
         z = Math.Round(z, 2);
 
         if (Z == z)
+        {
             return;
+        }
 
         Z = z;
 
@@ -62,7 +66,9 @@ public abstract class RoomObject<TSelf, TLogic, TContext> : IRoomObject<TSelf, T
     public void SetRotation(Rotation rot)
     {
         if (Rotation == rot)
+        {
             return;
+        }
 
         Rotation = rot;
 

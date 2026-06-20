@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -26,7 +27,9 @@ internal sealed class InventoryFurniModule(
     public async Task EnsureFurnitureReadyAsync(CancellationToken ct)
     {
         if (_state.IsFurnitureReady)
+        {
             return;
+        }
 
         await LoadFurnitureAsync(ct);
 
@@ -36,15 +39,19 @@ internal sealed class InventoryFurniModule(
     public Task<bool> AddFurnitureAsync(IFurnitureItem item, CancellationToken ct)
     {
         if (!_state.FurnitureById.TryAdd(item.ItemId, item))
+        {
             throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+        }
 
         return Task.FromResult(true);
     }
 
     public Task<bool> RemoveFurnitureAsync(RoomObjectId itemId, CancellationToken ct)
     {
-        if (!_state.FurnitureById.Remove(itemId, out var item))
+        if (!_state.FurnitureById.Remove(itemId, out IFurnitureItem? item))
+        {
             return Task.FromResult(false);
+        }
 
         return Task.FromResult(true);
     }
@@ -56,7 +63,7 @@ internal sealed class InventoryFurniModule(
     {
         await EnsureFurnitureReadyAsync(ct);
 
-        return _state.FurnitureById.TryGetValue(itemId, out var item) ? item.GetSnapshot() : null;
+        return _state.FurnitureById.TryGetValue(itemId, out IFurnitureItem? item) ? item.GetSnapshot() : null;
     }
 
     public async Task<ImmutableArray<FurnitureItemSnapshot>> GetAllItemSnapshotsAsync(
@@ -72,12 +79,12 @@ internal sealed class InventoryFurniModule(
     {
         _state.FurnitureById.Clear();
 
-        var items = await _furnitureItemsLoader.LoadByPlayerIdAsync(
+        IReadOnlyList<IFurnitureItem> items = await _furnitureItemsLoader.LoadByPlayerIdAsync(
             (PlayerId)_inventoryGrain.GetPrimaryKeyLong(),
             ct
         );
 
-        foreach (var item in items)
+        foreach (IFurnitureItem item in items)
             await AddFurnitureAsync(item, ct);
     }
 }

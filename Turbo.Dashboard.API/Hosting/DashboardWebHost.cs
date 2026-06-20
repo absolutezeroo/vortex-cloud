@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Turbo.Dashboard.API.Api;
 using Turbo.Dashboard.API.Http;
 using Turbo.Dashboard.API.Infrastructure;
@@ -25,14 +25,14 @@ using Turbo.Primitives.Permissions;
 namespace Turbo.Dashboard.API.Hosting;
 
 /// <summary>
-/// Hosts the admin dashboard API as a self-contained ASP.NET Core (Kestrel) application running inside
-/// the Orleans generic host. It is intentionally isolated — its own minimal web app, listening on the
-/// configured dashboard host/port — but reuses the singletons registered by <c>DashboardApiModule</c>
-/// in the parent container by forwarding them into the web app's DI. The HTTP surface is a set of
-/// minimal-API endpoints (see <see cref="DashboardEndpoints"/>) documented with Swagger/OpenAPI, which
-/// gives operators interactive docs and provides the foundation for a future public API. Disabled
-/// unless <see cref="ObservabilityConfig.DashboardEnabled"/> is set; the SPA front-end is served only
-/// when <see cref="ObservabilityConfig.DashboardFrontendEnabled"/> is also set.
+///     Hosts the admin dashboard API as a self-contained ASP.NET Core (Kestrel) application running inside
+///     the Orleans generic host. It is intentionally isolated — its own minimal web app, listening on the
+///     configured dashboard host/port — but reuses the singletons registered by <c>DashboardApiModule</c>
+///     in the parent container by forwarding them into the web app's DI. The HTTP surface is a set of
+///     minimal-API endpoints (see <see cref="DashboardEndpoints" />) documented with Swagger/OpenAPI, which
+///     gives operators interactive docs and provides the foundation for a future public API. Disabled
+///     unless <see cref="ObservabilityConfig.DashboardEnabled" /> is set; the SPA front-end is served only
+///     when <see cref="ObservabilityConfig.DashboardFrontendEnabled" /> is also set.
 /// </summary>
 internal sealed class DashboardWebHost(
     IServiceProvider rootServices,
@@ -50,15 +50,14 @@ internal sealed class DashboardWebHost(
         Capabilities.Dashboard.FurnitureRead,
         Capabilities.Dashboard.OpsGrantCurrency,
         Capabilities.Dashboard.OpsGrantItem,
-        Capabilities.Dashboard.OpsKickPlayer,
+        Capabilities.Dashboard.OpsKickPlayer
     ];
 
     private readonly ObservabilityConfig _config = options.Value;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if (!_config.DashboardEnabled)
-            return;
+        if (!_config.DashboardEnabled) return;
 
         var startedAtUtc = DateTime.UtcNow;
         var prefix = $"http://{_config.DashboardHost}:{_config.DashboardPort}";
@@ -137,16 +136,15 @@ internal sealed class DashboardWebHost(
         DashboardEndpoints.MapOperations(app);
         DashboardEndpoints.MapMeta(app);
 
-        if (_config.DashboardFrontendEnabled)
-            DashboardEndpoints.MapFrontend(app);
+        if (_config.DashboardFrontendEnabled) DashboardEndpoints.MapFrontend(app);
 
         return app;
     }
 
     /// <summary>
-    /// Shares the dashboard singletons constructed in the parent container with the web app's DI, so
-    /// endpoints resolve the very same instances (which already have their Orleans/EF dependencies
-    /// satisfied) rather than rebuilding the object graph.
+    ///     Shares the dashboard singletons constructed in the parent container with the web app's DI, so
+    ///     endpoints resolve the very same instances (which already have their Orleans/EF dependencies
+    ///     satisfied) rather than rebuilding the object graph.
     /// </summary>
     private void ForwardSingletons(IServiceCollection services)
     {
@@ -174,7 +172,6 @@ internal sealed class DashboardWebHost(
         {
             // One policy per capability; a wildcard ("*") capability satisfies every policy.
             foreach (var capability in DashboardCapabilities)
-            {
                 authorization.AddPolicy(
                     capability,
                     policy =>
@@ -186,7 +183,6 @@ internal sealed class DashboardWebHost(
                                 Capabilities.Wildcard
                             )
                 );
-            }
         });
     }
 
@@ -210,7 +206,7 @@ internal sealed class DashboardWebHost(
                     Description =
                         "Operations and observability API for the Turbo emulator. Authenticate via "
                         + "POST /api/login (issues the dash_session cookie); endpoints are authorized "
-                        + "by dashboard.* capabilities.",
+                        + "by dashboard.* capabilities."
                 }
             );
 
@@ -223,24 +219,21 @@ internal sealed class DashboardWebHost(
                     Name = DashboardAuthenticationHandler.SessionCookieName,
                     Description =
                         "Session cookie issued by POST /api/login. Sent automatically by the browser "
-                        + "on same-origin requests.",
+                        + "on same-origin requests."
                 }
             );
 
-            swagger.AddSecurityRequirement(
+            swagger.AddSecurityRequirement(document =>
                 new OpenApiSecurityRequirement
                 {
                     {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = DashboardAuthenticationHandler.SchemeName,
-                            },
-                        },
-                        Array.Empty<string>()
-                    },
+                        new OpenApiSecuritySchemeReference(
+                            DashboardAuthenticationHandler.SchemeName,
+                            document,
+                            null!
+                        ),
+                        new List<string>()
+                    }
                 }
             );
         });
@@ -253,8 +246,7 @@ internal sealed class DashboardWebHost(
 
         // Hardened headers for the SPA + JSON API. Swagger UI ships an inline bootstrap script, so it
         // is exempt from the strict CSP (it is operator-only and same-origin).
-        app.Use(
-            async (ctx, next) =>
+        app.Use(async (ctx, next) =>
             {
                 if (
                     !(ctx.Request.Path.Value ?? "/").StartsWith(
@@ -281,33 +273,29 @@ internal sealed class DashboardWebHost(
         // HTTP access audit trail. Login/logout audit themselves; operation success is audited by
         // DashboardOperationsService (with correlation id), so for operation routes only failures are
         // logged here to avoid duplicate records.
-        app.Use(
-            async (ctx, next) =>
+        app.Use(async (ctx, next) =>
             {
                 await next().ConfigureAwait(false);
 
                 var path = ctx.Request.Path.Value ?? "/";
 
-                if (!path.StartsWith("/api/", StringComparison.Ordinal))
-                    return;
+                if (!path.StartsWith("/api/", StringComparison.Ordinal)) return;
 
-                if (path is "/api/login" or "/api/logout")
-                    return;
+                if (path is "/api/login" or "/api/logout") return;
 
                 var status = ctx.Response.StatusCode;
                 var isOperation =
                     path.StartsWith("/api/ops/", StringComparison.Ordinal)
                     || path.StartsWith("/api/v1/operations/", StringComparison.Ordinal);
 
-                if (isOperation && status == StatusCodes.Status200OK)
-                    return;
+                if (isOperation && status == StatusCodes.Status200OK) return;
 
                 var result = status switch
                 {
                     StatusCodes.Status200OK => AuditResult.Success,
                     StatusCodes.Status401Unauthorized or StatusCodes.Status403Forbidden =>
                         AuditResult.Denied,
-                    _ => AuditResult.Failed,
+                    _ => AuditResult.Failed
                 };
 
                 emitter.Emit(path, result, status, "HttpAccess", ctx.ActorEmail());

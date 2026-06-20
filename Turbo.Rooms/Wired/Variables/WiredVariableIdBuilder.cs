@@ -58,7 +58,7 @@ public static class WiredVariableIdBuilder
         string name
     )
     {
-        var hasher = new XxHash64();
+        XxHash64 hasher = new XxHash64();
 
         WriteInt32BE(ref hasher, (int)targetType);
         WriteByte(ref hasher, (byte)groupBand);
@@ -71,7 +71,7 @@ public static class WiredVariableIdBuilder
 
     private static ulong HashBoxId48(int boxId)
     {
-        var hasher = new XxHash64();
+        XxHash64 hasher = new XxHash64();
 
         Span<byte> buf = stackalloc byte[4];
 

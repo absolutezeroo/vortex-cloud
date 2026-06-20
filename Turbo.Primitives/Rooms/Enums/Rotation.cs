@@ -31,22 +31,44 @@ public static class RotationExtensions
         dy = Math.Clamp(dy, -1, 1);
 
         if (dx == 0 && dy == 0)
+        {
             throw new ArgumentException("Zero delta has no direction.");
+        }
 
         if (dx == 0 && dy < 0)
+        {
             return Rotation.North;
+        }
+
         if (dx > 0 && dy < 0)
+        {
             return Rotation.NorthEast;
+        }
+
         if (dx > 0 && dy == 0)
+        {
             return Rotation.East;
+        }
+
         if (dx > 0 && dy > 0)
+        {
             return Rotation.SouthEast;
+        }
+
         if (dx == 0 && dy > 0)
+        {
             return Rotation.South;
+        }
+
         if (dx < 0 && dy > 0)
+        {
             return Rotation.SouthWest;
+        }
+
         if (dx < 0 && dy == 0)
+        {
             return Rotation.West;
+        }
 
         return Rotation.NorthWest;
     }

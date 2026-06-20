@@ -1,3 +1,4 @@
+using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Packets;
 
@@ -11,7 +12,7 @@ internal class HabboGroupDetailsMessageComposerSerializer(int header)
         HabboGroupDetailsMessageComposer message
     )
     {
-        var details = message.Details;
+        GroupDetailsSnapshot details = message.Details;
 
         packet.WriteInteger(details.GroupId);
         packet.WriteBoolean(details.IsGuild);

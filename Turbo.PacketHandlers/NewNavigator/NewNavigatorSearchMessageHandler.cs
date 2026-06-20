@@ -26,15 +26,15 @@ public class NewNavigatorSearchMessageHandler(
         CancellationToken ct
     )
     {
-        var searchCode = message.SearchCodeOriginal ?? string.Empty;
-        var filterRaw = message.FilteringData ?? string.Empty;
+        string searchCode = message.SearchCodeOriginal ?? string.Empty;
+        string filterRaw = message.FilteringData ?? string.Empty;
 
         NavigatorSearchFilterType filterType = NavigatorSearchFilterType.Anything;
         string filterValue = string.Empty;
 
         if (!string.IsNullOrWhiteSpace(filterRaw))
         {
-            var splitIndex = filterRaw.IndexOf(':');
+            int splitIndex = filterRaw.IndexOf(':');
 
             if (splitIndex > 0)
             {
@@ -49,7 +49,7 @@ public class NewNavigatorSearchMessageHandler(
             }
         }
 
-        var filteringDataOut =
+        string filteringDataOut =
             filterType == NavigatorSearchFilterType.Anything
                 ? filterValue
                 : $"{filterType.ToLegacyString()}:{filterValue}";
@@ -62,11 +62,11 @@ public class NewNavigatorSearchMessageHandler(
         }
         else
         {
-            var searchResults = await _navigatorService
+            ImmutableArray<NavigatorSearchResultSnapshot> searchResults = await _navigatorService
                 .GetSearchResultsAsync(searchCode, filterType, filterValue, ctx.PlayerId, ct)
                 .ConfigureAwait(false);
 
-            var viewMode = await _grainFactory
+            int viewMode = await _grainFactory
                 .GetPlayerNavigatorGrain(ctx.PlayerId)
                 .GetViewModeAsync(searchCode, ct)
                 .ConfigureAwait(false);

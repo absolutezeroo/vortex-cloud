@@ -1,3 +1,4 @@
+using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Packets;
 
@@ -11,12 +12,12 @@ internal class GuildCreationInfoMessageComposerSerializer(int header)
         GuildCreationInfoMessageComposer message
     )
     {
-        var info = message.Info;
+        GroupCreationInfoSnapshot info = message.Info;
 
         packet.WriteInteger(info.CostInCredits);
 
         packet.WriteInteger(info.Rooms.Count);
-        foreach (var room in info.Rooms)
+        foreach (GroupRoomSnapshot room in info.Rooms)
         {
             packet.WriteInteger(room.RoomId);
             packet.WriteString(room.RoomName);
@@ -24,7 +25,7 @@ internal class GuildCreationInfoMessageComposerSerializer(int header)
         }
 
         packet.WriteInteger(info.BadgeParts.Count);
-        foreach (var part in info.BadgeParts)
+        foreach (GroupBadgePartSnapshot part in info.BadgeParts)
         {
             packet.WriteInteger(part.PartId);
             packet.WriteInteger(part.ColorId);

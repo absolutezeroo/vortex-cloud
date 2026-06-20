@@ -48,32 +48,39 @@ internal sealed class TurboConsoleFormatter(
         TextWriter textWriter
     )
     {
-        var options = _optionsMonitor.CurrentValue;
+        TurboConsoleFormatterOptions options = _optionsMonitor.CurrentValue;
 
-        var now = options.UseUtcTimestamp ? DateTimeOffset.UtcNow : DateTimeOffset.Now;
-        var ts = now.ToString(options.TimestampFormat ?? "yyyy-MM-dd HH:mm:ss.fff");
+        DateTimeOffset now = options.UseUtcTimestamp ? DateTimeOffset.UtcNow : DateTimeOffset.Now;
+        string ts = now.ToString(options.TimestampFormat ?? "yyyy-MM-dd HH:mm:ss.fff");
 
-        var level = logEntry.LogLevel;
-        var levelLabel = LOG_LEVEL_LABELS.TryGetValue(level, out var lbl)
+        LogLevel level = logEntry.LogLevel;
+        string levelLabel = LOG_LEVEL_LABELS.TryGetValue(level, out string? lbl)
             ? lbl
             : level.ToString().ToUpperInvariant();
 
         string? category = null;
         if (options.IncludeCategory && !string.IsNullOrEmpty(logEntry.Category))
+        {
             category = TrimCategory(logEntry.Category!, options.TrimCategoryDepth);
+        }
 
-        var (fg, bg) = LOG_LEVEL_COLORS[level];
+        (string fg, string bg) = LOG_LEVEL_COLORS[level];
 
         // Build header (timestamp + level + category)
-        var headerSb = new StringBuilder(128);
+        StringBuilder headerSb = new StringBuilder(128);
         if (options.UseAnsiColor)
         {
             headerSb.Append('[').Append(ts).Append("] ");
             if (bg.Length > 0)
+            {
                 headerSb.Append(bg);
+            }
+
             headerSb.Append(fg).Append(RESET);
             if (!string.IsNullOrEmpty(bg))
+            {
                 headerSb.Append(RESET);
+            }
         }
         else
         {
@@ -81,29 +88,35 @@ internal sealed class TurboConsoleFormatter(
         }
 
         if (!string.IsNullOrEmpty(category))
+        {
             headerSb.Append(category);
+        }
 
         if (logEntry.EventId.Id != 0)
+        {
             headerSb.Append(" [").Append(logEntry.EventId.Id).Append(']');
+        }
 
-        var header = headerSb.ToString();
+        string header = headerSb.ToString();
 
         // ===== Align after the category =====
         // Assume max width for the header column
         const int HEADER_WIDTH = 55;
-        var paddedHeader = header.PadRight(HEADER_WIDTH);
+        string paddedHeader = header.PadRight(HEADER_WIDTH);
 
-        var message = logEntry.Formatter?.Invoke(logEntry.State, logEntry.Exception);
+        string? message = logEntry.Formatter?.Invoke(logEntry.State, logEntry.Exception);
         if (!string.IsNullOrEmpty(message))
         {
             if (options.SingleLine)
+            {
                 message = message
                     .Replace(Environment.NewLine, " ")
                     .Replace('\n', ' ')
                     .Replace('\r', ' ');
+            }
         }
 
-        var sb = new StringBuilder(256);
+        StringBuilder sb = new StringBuilder(256);
         sb.Append(paddedHeader);
 
         if (!string.IsNullOrEmpty(message))
@@ -136,25 +149,33 @@ internal sealed class TurboConsoleFormatter(
         if (logEntry.Exception is not null)
         {
             if (options.UseAnsiColor)
+            {
                 textWriter.WriteLine(
                     $"{LOG_LEVEL_COLORS[LogLevel.Error].fg}{logEntry.Exception}{RESET}"
                 );
+            }
             else
+            {
                 textWriter.WriteLine($"{logEntry.Exception}");
+            }
         }
     }
 
     private static string TrimCategory(string category, int depth)
     {
         if (depth <= 0)
+        {
             return category;
+        }
 
         // Split by '.' and take last N segments
-        var parts = category.Split('.');
+        string[] parts = category.Split('.');
         if (parts.Length <= depth)
+        {
             return category;
+        }
 
-        var start = parts.Length - depth;
+        int start = parts.Length - depth;
         return string.Join('.', parts, start, depth);
     }
 }

@@ -8,12 +8,14 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Catalog;
+using Turbo.Database.Entities.Players;
 using Turbo.Primitives.Catalog.Grains;
 using Turbo.Primitives.Catalog.Snapshots;
 using Turbo.Primitives.Events;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Players.Enums.Wallet;
+using Turbo.Primitives.Players.Grains;
 using Turbo.Primitives.Players.Wallet;
 
 namespace Turbo.Catalog.Grains;
@@ -47,28 +49,38 @@ public sealed class LtdRaffleGrain(
     )
     {
         if (_series is null)
+        {
             return Fail("series_not_found");
+        }
 
         if (!_series.IsActive)
+        {
             return Fail("series_not_active");
+        }
 
         if (_series.HasRaffleFinished)
+        {
             return Fail("raffle_finished");
+        }
 
         if (_series.RemainingQuantity <= 0)
+        {
             return Fail("no_remaining");
+        }
 
-        var playerIdInt = playerId.Value;
+        int playerIdInt = playerId.Value;
 
         // One entry per player per series
         if (_currentBatch.Any(e => e.PlayerEntityId == playerIdInt))
+        {
             return Fail("already_entered");
+        }
 
         // Debit wallet
         if (_series.CostCredits > 0)
         {
-            var wallet = grainFactory.GetPlayerWalletGrain(playerId);
-            var debitResult = await wallet.TryDebitAsync(
+            IPlayerWalletGrain wallet = grainFactory.GetPlayerWalletGrain(playerId);
+            WalletDebitResult debitResult = await wallet.TryDebitAsync(
                 [
                     new WalletDebitRequest
                     {
@@ -80,7 +92,9 @@ public sealed class LtdRaffleGrain(
             );
 
             if (!debitResult.Succeeded)
+            {
                 return Fail("insufficient_credits");
+            }
         }
 
         // Start a new batch if needed
@@ -97,17 +111,21 @@ public sealed class LtdRaffleGrain(
             );
         }
 
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var playerEntity = await dbCtx.Players.FindAsync([playerIdInt], ct);
+        PlayerEntity? playerEntity = await dbCtx.Players.FindAsync([playerIdInt], ct);
         if (playerEntity is null)
+        {
             return Fail("player_not_found");
+        }
 
-        var seriesEntity = await dbCtx.LtdSeries.FindAsync([SeriesId], ct);
+        LtdSeriesEntity? seriesEntity = await dbCtx.LtdSeries.FindAsync([SeriesId], ct);
         if (seriesEntity is null)
+        {
             return Fail("series_not_found");
+        }
 
-        var entry = new LtdRaffleEntryEntity
+        LtdRaffleEntryEntity entry = new LtdRaffleEntryEntity
         {
             SeriesEntityId = SeriesId,
             PlayerEntityId = playerIdInt,
@@ -133,7 +151,9 @@ public sealed class LtdRaffleGrain(
     public Task<UpcomingLtdSnapshot?> GetUpcomingLtdAsync(CancellationToken ct)
     {
         if (_series is null || !_series.IsActive || _series.HasRaffleFinished)
+        {
             return Task.FromResult<UpcomingLtdSnapshot?>(null);
+        }
 
         return Task.FromResult<UpcomingLtdSnapshot?>(
             new UpcomingLtdSnapshot
@@ -151,7 +171,9 @@ public sealed class LtdRaffleGrain(
     public Task<LtdSeriesSnapshot?> GetSeriesSnapshotAsync(CancellationToken ct)
     {
         if (_series is null)
+        {
             return Task.FromResult<LtdSeriesSnapshot?>(null);
+        }
 
         return Task.FromResult<LtdSeriesSnapshot?>(
             new LtdSeriesSnapshot
@@ -182,7 +204,7 @@ public sealed class LtdRaffleGrain(
 
     private async Task LoadSeriesAsync(CancellationToken ct)
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         _series = await dbCtx
             .LtdSeries.Include(s => s.CatalogProductEntity)
@@ -196,9 +218,9 @@ public sealed class LtdRaffleGrain(
         }
 
         // Resolve furniture definition id from catalog product
-        await using var dbCtx2 = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx2 = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var product = await dbCtx2
+        CatalogProductEntity? product = await dbCtx2
             .CatalogProducts.AsNoTracking()
             .FirstOrDefaultAsync(
                 p => p.Id == _series.CatalogProductEntityId && p.DeletedAt == null,
@@ -211,7 +233,7 @@ public sealed class LtdRaffleGrain(
         _currentBatch.Clear();
         _currentBatchId = null;
 
-        var entries = await dbCtx2
+        List<LtdRaffleEntryEntity> entries = await dbCtx2
             .LtdRaffleEntries.AsNoTracking()
             .Where(e =>
                 e.SeriesEntityId == SeriesId && e.Result == "pending" && e.DeletedAt == null
@@ -241,9 +263,9 @@ public sealed class LtdRaffleGrain(
         }
 
         // Select winner randomly
-        var winnerIndex = Random.Shared.Next(_currentBatch.Count);
-        var winner = _currentBatch[winnerIndex];
-        var serialNumber = _series.TotalQuantity - _series.RemainingQuantity + 1;
+        int winnerIndex = Random.Shared.Next(_currentBatch.Count);
+        LtdRaffleEntryEntity winner = _currentBatch[winnerIndex];
+        int serialNumber = _series.TotalQuantity - _series.RemainingQuantity + 1;
 
         try
         {
@@ -272,12 +294,14 @@ public sealed class LtdRaffleGrain(
             // Refund non-winners
             if (_series.CostCredits > 0)
             {
-                foreach (var entry in _currentBatch)
+                foreach (LtdRaffleEntryEntity entry in _currentBatch)
                 {
                     if (entry.PlayerEntityId == winner.PlayerEntityId)
+                    {
                         continue;
+                    }
 
-                    var wallet = grainFactory.GetPlayerWalletGrain(
+                    IPlayerWalletGrain wallet = grainFactory.GetPlayerWalletGrain(
                         PlayerId.Parse(entry.PlayerEntityId)
                     );
 
@@ -291,7 +315,7 @@ public sealed class LtdRaffleGrain(
             // Decrement remaining
             _series.RemainingQuantity--;
 
-            await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+            await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
             await dbCtx
                 .LtdSeries.Where(s => s.Id == SeriesId)
                 .ExecuteUpdateAsync(
@@ -325,12 +349,14 @@ public sealed class LtdRaffleGrain(
     )
     {
         if (_currentBatch.Count == 0)
+        {
             return;
+        }
 
-        var batchIds = _currentBatch.Select(e => e.Id).ToList();
-        var now = DateTime.UtcNow;
+        List<int> batchIds = _currentBatch.Select(e => e.Id).ToList();
+        DateTime now = DateTime.UtcNow;
 
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         await dbCtx
             .LtdRaffleEntries.Where(e =>

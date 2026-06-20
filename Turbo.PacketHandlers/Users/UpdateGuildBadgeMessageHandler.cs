@@ -20,9 +20,11 @@ public class UpdateGuildBadgeMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0 || message.GroupId <= 0)
+        {
             return;
+        }
 
-        var ok = await _grainFactory
+        bool ok = await _grainFactory
             .GetGroupGrain(message.GroupId)
             .UpdateBadgeAsync(ctx.PlayerId, message.BadgeParts, ct)
             .ConfigureAwait(false);

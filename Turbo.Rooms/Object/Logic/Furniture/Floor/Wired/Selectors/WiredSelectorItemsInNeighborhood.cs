@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using Orleans;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Rooms.Enums.Wired;
+using Turbo.Primitives.Rooms.Object;
+using Turbo.Primitives.Rooms.Object.Avatars;
+using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Object.Logic;
 using Turbo.Primitives.Rooms.Wired;
@@ -50,20 +53,22 @@ public class WiredSelectorItemsInNeighborhood(
         CancellationToken ct
     )
     {
-        var input = await ctx.GetWiredSelectionSetAsync(this, ct);
-        var output = new WiredSelectionSet();
+        IWiredSelectionSet input = await ctx.GetWiredSelectionSetAsync(this, ct);
+        WiredSelectionSet output = new WiredSelectionSet();
 
-        foreach (var id in input.SelectedFurniIds)
+        foreach (int id in input.SelectedFurniIds)
         {
             try
             {
                 if (
-                    !_roomGrain._state.ItemsById.TryGetValue(id, out var item)
+                    !_roomGrain._state.ItemsById.TryGetValue(id, out IRoomItem? item)
                     || item is not IRoomFloorItem floorItem
                 )
+                {
                     continue;
+                }
 
-                var tileIds = MaskToTiles(
+                List<int> tileIds = MaskToTiles(
                         floorItem.X,
                         floorItem.Y,
                         _wiredData.GetIntParam<int>(1),
@@ -75,13 +80,13 @@ public class WiredSelectorItemsInNeighborhood(
                     )
                     .ToList();
 
-                foreach (var tileId in tileIds)
+                foreach (int tileId in tileIds)
                 {
                     try
                     {
-                        var itemIds = _roomGrain._state.TileFloorStacks[tileId];
+                        HashSet<RoomObjectId> itemIds = _roomGrain._state.TileFloorStacks[tileId];
 
-                        foreach (var itemId in itemIds)
+                        foreach (RoomObjectId itemId in itemIds)
                             output.SelectedFurniIds.Add((int)itemId);
                     }
                     catch
@@ -96,17 +101,19 @@ public class WiredSelectorItemsInNeighborhood(
             }
         }
 
-        foreach (var id in input.SelectedPlayerIds)
+        foreach (int id in input.SelectedPlayerIds)
         {
             try
             {
                 if (
-                    !_roomGrain._state.AvatarsByPlayerId.TryGetValue(id, out var objectId)
-                    || !_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out var avatar)
+                    !_roomGrain._state.AvatarsByPlayerId.TryGetValue(id, out RoomObjectId objectId)
+                    || !_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar)
                 )
+                {
                     continue;
+                }
 
-                var tileIds = MaskToTiles(
+                List<int> tileIds = MaskToTiles(
                         avatar.X,
                         avatar.Y,
                         _wiredData.GetIntParam<int>(1),
@@ -118,13 +125,13 @@ public class WiredSelectorItemsInNeighborhood(
                     )
                     .ToList();
 
-                foreach (var tileId in tileIds)
+                foreach (int tileId in tileIds)
                 {
                     try
                     {
-                        var itemIds = _roomGrain._state.TileFloorStacks[tileId];
+                        HashSet<RoomObjectId> itemIds = _roomGrain._state.TileFloorStacks[tileId];
 
-                        foreach (var itemId in itemIds)
+                        foreach (RoomObjectId itemId in itemIds)
                             output.SelectedFurniIds.Add((int)itemId);
                     }
                     catch
@@ -153,21 +160,25 @@ public class WiredSelectorItemsInNeighborhood(
         int[] masks
     )
     {
-        var size = radius * 2 + 1;
-        var totalBits = size * size;
-        var mask = IntParamsToBoolMask(masks, totalBits);
-        var spiral = WalkSpiral(radius);
+        int size = radius * 2 + 1;
+        int totalBits = size * size;
+        bool[] mask = IntParamsToBoolMask(masks, totalBits);
+        List<SpiralEntry> spiral = WalkSpiral(radius);
 
-        foreach (var e in spiral)
+        foreach (SpiralEntry e in spiral)
         {
             if (!mask[e.Rank])
+            {
                 continue;
+            }
 
             int x = startX + e.Dx + -rootX;
             int y = startY + -e.Dy + -rootY;
 
             if ((uint)x >= (uint)width || (uint)y >= (uint)height)
+            {
                 continue;
+            }
 
             yield return (y * width) + x;
         }
@@ -180,7 +191,7 @@ public class WiredSelectorItemsInNeighborhood(
         int size = radius * 2 + 1;
         int total = size * size;
 
-        var result = new List<SpiralEntry>(total);
+        List<SpiralEntry> result = new List<SpiralEntry>(total);
 
         int x = 0;
         int y = 0;
@@ -229,7 +240,7 @@ public class WiredSelectorItemsInNeighborhood(
 
     private static bool[] IntParamsToBoolMask(int[] intParams, int totalBits)
     {
-        var mask = new bool[totalBits];
+        bool[] mask = new bool[totalBits];
         int bitIndex = 0;
 
         for (int i = 0; i < intParams.Length && bitIndex < totalBits; i++)

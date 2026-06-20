@@ -16,11 +16,13 @@ public sealed class PlayerActiveStore : ActiveStore
         store = null;
 
         if (key.TargetType != WiredVariableTargetType.User)
+        {
             return false;
+        }
 
-        var targetId = PlayerId.Parse(key.TargetId);
+        PlayerId targetId = PlayerId.Parse(key.TargetId);
 
-        if (!_byPlayerId.TryGetValue(targetId, out var found))
+        if (!_byPlayerId.TryGetValue(targetId, out KeyValueStore? found))
         {
             found = new KeyValueStore();
 

@@ -10,7 +10,7 @@ internal class FurnitureAliasesMessageComposerSerializer(int header)
     {
         packet.WriteInteger(message.Aliases.Count);
 
-        foreach (var (alias, original) in message.Aliases)
+        foreach ((string alias, string original) in message.Aliases)
         {
             packet.WriteString(alias).WriteString(original);
         }

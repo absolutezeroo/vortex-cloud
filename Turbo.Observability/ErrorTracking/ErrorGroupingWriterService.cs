@@ -56,14 +56,14 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var reader = _channel.Reader;
-        var batch = new List<ErrorGroupingRecord>(_batchSize);
+        ChannelReader<ErrorGroupingRecord> reader = _channel.Reader;
+        List<ErrorGroupingRecord> batch = new List<ErrorGroupingRecord>(_batchSize);
 
         try
         {
             while (await reader.WaitToReadAsync(stoppingToken).ConfigureAwait(false))
             {
-                while (batch.Count < _batchSize && reader.TryRead(out var record))
+                while (batch.Count < _batchSize && reader.TryRead(out ErrorGroupingRecord? record))
                     batch.Add(record);
 
                 if (batch.Count > 0)
@@ -84,10 +84,14 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
     private async Task FlushAsync(List<ErrorGroupingRecord> batch, CancellationToken ct)
     {
         if (batch.Count == 0)
+        {
             return;
+        }
 
         if (await TryPersistBatchWithRetryAsync(batch, ct).ConfigureAwait(false))
+        {
             return;
+        }
 
         await WriteDeadLetterAsync(batch).ConfigureAwait(false);
     }
@@ -99,17 +103,21 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
     {
         batch.Clear();
 
-        while (reader.TryRead(out var record))
+        while (reader.TryRead(out ErrorGroupingRecord? record))
             batch.Add(record);
 
         if (batch.Count == 0)
+        {
             return;
+        }
 
-        var persisted = await TryPersistBatchWithRetryAsync(batch, CancellationToken.None)
+        bool persisted = await TryPersistBatchWithRetryAsync(batch, CancellationToken.None)
             .ConfigureAwait(false);
 
         if (persisted)
+        {
             return;
+        }
 
         await WriteDeadLetterAsync(batch).ConfigureAwait(false);
     }
@@ -119,21 +127,23 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
         CancellationToken ct
     )
     {
-        for (var attempt = 0; attempt <= _retryAttempts; attempt++)
+        for (int attempt = 0; attempt <= _retryAttempts; attempt++)
         {
             try
             {
-                await using var db = await _dbContextFactory
+                await using TurboDbContext db = await _dbContextFactory
                     .CreateDbContextAsync(ct)
                     .ConfigureAwait(false);
 
-                var groupsByFingerprint = await LoadOrCreateGroupsAsync(db, batch, ct)
+                Dictionary<string, ErrorGroupEntity> groupsByFingerprint = await LoadOrCreateGroupsAsync(db, batch, ct)
                     .ConfigureAwait(false);
 
-                foreach (var record in batch)
+                foreach (ErrorGroupingRecord record in batch)
                 {
-                    if (!groupsByFingerprint.TryGetValue(record.Fingerprint, out var group))
+                    if (!groupsByFingerprint.TryGetValue(record.Fingerprint, out ErrorGroupEntity? group))
+                    {
                         continue;
+                    }
 
                     group.TotalOccurrences++;
                     group.LastSeenAt = record.OccurredAt;
@@ -141,11 +151,19 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
                     group.LastRoomId = record.RoomId;
                     group.LastCorrelationId = record.CorrelationId;
                     if (string.IsNullOrWhiteSpace(group.SampleMessage))
-                        group.SampleMessage = record.Message;
+                    {
+                        group.SampleMessage = Truncate(record.Message, 255);
+                    }
+
                     if (string.IsNullOrWhiteSpace(group.MessageSignature))
+                    {
                         group.MessageSignature = record.MessageSignature;
+                    }
+
                     if (group.FirstSeenAt == default)
+                    {
                         group.FirstSeenAt = record.OccurredAt;
+                    }
 
                     db.ErrorOccurrences.Add(
                         new ErrorOccurrenceEntity
@@ -186,7 +204,9 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
                 );
 
                 if (_retryDelayMs > 0)
+                {
                     await Task.Delay(_retryDelayMs, ct).ConfigureAwait(false);
+                }
             }
             catch (Exception ex)
             {
@@ -210,13 +230,13 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
         CancellationToken ct
     )
     {
-        var byFingerprint = batch
+        Dictionary<string, ErrorGroupEntity> byFingerprint = batch
             .GroupBy(item => item.Fingerprint)
             .ToDictionary(
                 group => group.Key,
                 group =>
                 {
-                    var first = group.First();
+                    ErrorGroupingRecord first = group.First();
 
                     return new ErrorGroupEntity
                     {
@@ -225,7 +245,7 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
                         Operation = first.Operation,
                         ExceptionType = first.ExceptionType,
                         MessageSignature = first.MessageSignature,
-                        SampleMessage = first.Message,
+                        SampleMessage = Truncate(first.Message, 255),
                         FirstSeenAt = first.OccurredAt,
                         LastSeenAt = first.OccurredAt,
                         TotalOccurrences = 0,
@@ -234,18 +254,20 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
                 StringComparer.Ordinal
             );
 
-        var existing = await db
+        Dictionary<string, ErrorGroupEntity> existing = await db
             .ErrorGroups.Where(group => byFingerprint.Keys.Contains(group.Fingerprint))
             .ToDictionaryAsync(group => group.Fingerprint, ct)
             .ConfigureAwait(false);
 
-        foreach (var existingPair in existing)
+        foreach (KeyValuePair<string, ErrorGroupEntity> existingPair in existing)
             byFingerprint[existingPair.Key] = existingPair.Value;
 
-        var toInsert = byFingerprint.Values.Where(group => group.Id == 0).ToList();
+        List<ErrorGroupEntity> toInsert = byFingerprint.Values.Where(group => group.Id == 0).ToList();
 
         if (toInsert.Count > 0)
+        {
             await db.ErrorGroups.AddRangeAsync(toInsert, ct).ConfigureAwait(false);
+        }
 
         return byFingerprint;
     }
@@ -253,20 +275,24 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
     private async Task WriteDeadLetterAsync(List<ErrorGroupingRecord> batch)
     {
         if (string.IsNullOrWhiteSpace(_deadLetterPath))
+        {
             return;
+        }
 
         try
         {
-            var path = Path.IsPathRooted(_deadLetterPath)
+            string path = Path.IsPathRooted(_deadLetterPath)
                 ? _deadLetterPath
                 : Path.Combine(AppContext.BaseDirectory, _deadLetterPath);
 
-            var directory = Path.GetDirectoryName(path);
+            string? directory = Path.GetDirectoryName(path);
 
             if (!string.IsNullOrWhiteSpace(directory))
+            {
                 Directory.CreateDirectory(directory);
+            }
 
-            var payload = JsonSerializer.Serialize(
+            string payload = JsonSerializer.Serialize(
                 new
                 {
                     happenedAtUtc = DateTime.UtcNow,
@@ -295,6 +321,11 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
             );
         }
     }
+
+    private static string Truncate(string? s, int maxLength) =>
+        string.IsNullOrEmpty(s) ? string.Empty
+        : s.Length <= maxLength ? s
+        : s[..maxLength];
 
     private static object MapDeadLetterPayload(ErrorGroupingRecord record) =>
         new

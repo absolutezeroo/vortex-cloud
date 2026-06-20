@@ -20,9 +20,11 @@ public class CreateGuildMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var groupId = await _grainFactory
+        int? groupId = await _grainFactory
             .GetGroupDirectoryGrain()
             .CreateGroupAsync(
                 ctx.PlayerId,
@@ -38,7 +40,9 @@ public class CreateGuildMessageHandler(IGrainFactory grainFactory)
 
         // Validation failed (room not owned / already a guild base) — nothing to confirm.
         if (groupId is null)
+        {
             return;
+        }
 
         await ctx.SendComposerAsync(
                 new GuildCreatedMessageComposer

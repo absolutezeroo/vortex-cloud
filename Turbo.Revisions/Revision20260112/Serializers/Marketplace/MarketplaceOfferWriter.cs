@@ -34,6 +34,8 @@ internal static class MarketplaceOfferWriter
         packet.WriteInteger(offer.AvgPrice);
 
         if (includeOfferCount)
+        {
             packet.WriteInteger(offer.OfferCount);
+        }
     }
 }

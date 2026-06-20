@@ -40,24 +40,28 @@ public class WiredData : IWiredData
 
     public T GetIntParam<T>(int index)
     {
-        var rule = _intRules[index];
+        IWiredParamRule rule = _intRules[index];
 
         if (rule.ValueType != typeof(T))
+        {
             throw new InvalidOperationException(
                 $"Param {index} is {rule.ValueType?.Name}, not {typeof(T).Name}"
             );
+        }
 
         return (T)rule.FromInt(IntParams[index]);
     }
 
     public void SetIntParam<T>(int index, T value)
     {
-        var rule = _intRules[index];
+        IWiredParamRule rule = _intRules[index];
 
         if (rule.ValueType != typeof(T))
+        {
             throw new InvalidOperationException(
                 $"Param {index} is {rule.ValueType?.Name}, not {typeof(T).Name}"
             );
+        }
 
         IntParams[index] = rule.Sanitize(rule.ToInt(value!));
 

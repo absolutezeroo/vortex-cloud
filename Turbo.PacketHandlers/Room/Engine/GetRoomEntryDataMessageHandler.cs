@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,8 +11,14 @@ using Turbo.Primitives.Messages.Outgoing.Room.Permissions;
 using Turbo.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Room;
+using Turbo.Primitives.Players;
+using Turbo.Primitives.Players.Grains;
+using Turbo.Primitives.Rooms;
 using Turbo.Primitives.Rooms.Enums;
+using Turbo.Primitives.Rooms.Grains;
 using Turbo.Primitives.Rooms.Snapshots.Avatars;
+using Turbo.Primitives.Rooms.Snapshots.Furniture;
 
 namespace Turbo.PacketHandlers.Room.Engine;
 
@@ -27,22 +34,26 @@ public class GetRoomEntryDataMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var playerPresence = _grainFactory.GetPlayerPresenceGrain(ctx.PlayerId);
-        var pendingRoom = await playerPresence.GetPendingRoomAsync().ConfigureAwait(false);
-        var roomId = pendingRoom.RoomId;
+        IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(ctx.PlayerId);
+        RoomPendingSnapshot pendingRoom = await playerPresence.GetPendingRoomAsync().ConfigureAwait(false);
+        RoomId roomId = pendingRoom.RoomId;
 
         if (roomId <= 0)
+        {
             return;
+        }
 
-        var room = _grainFactory.GetRoomGrain(roomId);
-        var ownersSnapshot = await room.GetAllOwnersAsync(ct).ConfigureAwait(false);
-        var floorSnapshot = await room.GetAllFloorItemSnapshotsAsync(ct).ConfigureAwait(false);
-        var wallSnapshot = await room.GetAllWallItemSnapshotsAsync(ct).ConfigureAwait(false);
-        var avatarSnapshots = await room.GetAllAvatarSnapshotsAsync(ct).ConfigureAwait(false);
+        IRoomGrain room = _grainFactory.GetRoomGrain(roomId);
+        ImmutableDictionary<PlayerId, string> ownersSnapshot = await room.GetAllOwnersAsync(ct).ConfigureAwait(false);
+        ImmutableArray<RoomFloorItemSnapshot> floorSnapshot = await room.GetAllFloorItemSnapshotsAsync(ct).ConfigureAwait(false);
+        ImmutableArray<RoomWallItemSnapshot> wallSnapshot = await room.GetAllWallItemSnapshotsAsync(ct).ConfigureAwait(false);
+        ImmutableArray<RoomAvatarSnapshot> avatarSnapshots = await room.GetAllAvatarSnapshotsAsync(ct).ConfigureAwait(false);
 
-        var danceComposers = avatarSnapshots
+        IComposer[] danceComposers = avatarSnapshots
             .OfType<RoomPlayerAvatarSnapshot>()
             .Where(x => x.DanceType != AvatarDanceType.None)
             .Select(x =>
@@ -72,7 +83,9 @@ public class GetRoomEntryDataMessageHandler(IGrainFactory grainFactory)
             .ConfigureAwait(false);
 
         if (danceComposers.Length > 0)
+        {
             await playerPresence.SendComposerAsync(danceComposers).ConfigureAwait(false);
+        }
 
         await playerPresence.SetActiveRoomAsync(roomId, ct).ConfigureAwait(false);
     }

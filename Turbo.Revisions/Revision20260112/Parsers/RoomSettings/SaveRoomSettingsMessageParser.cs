@@ -40,10 +40,10 @@ internal class SaveRoomSettingsMessageParser : IParser
 
     private static List<string> ParseTags(IClientPacket packet)
     {
-        var tagCount = packet.PopInt();
-        var tags = new List<string>();
+        int tagCount = packet.PopInt();
+        List<string> tags = new List<string>();
 
-        for (var i = 0; i < tagCount; i++)
+        for (int i = 0; i < tagCount; i++)
             tags.Add(packet.PopString());
 
         return tags;

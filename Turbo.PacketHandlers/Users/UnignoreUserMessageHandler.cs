@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.FriendList.Grains;
 using Turbo.Primitives.Messages.Incoming.Users;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players;
@@ -20,9 +21,11 @@ public class UnignoreUserMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
+        IMessengerGrain grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
         await grain.UnignoreUserAsync(PlayerId.Parse(message.UserId), ct).ConfigureAwait(false);
     }
 }

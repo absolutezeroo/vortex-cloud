@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.FriendList.Grains;
 using Turbo.Primitives.Messages.Incoming.Users;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Orleans;
@@ -20,10 +22,12 @@ public class BlockListInitMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
-        var blockedIds = await grain.GetBlockedUserIdsAsync(ct).ConfigureAwait(false);
+        IMessengerGrain grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
+        List<int> blockedIds = await grain.GetBlockedUserIdsAsync(ct).ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
                 new BlockListMessageComposer { BlockedPlayerIds = blockedIds },

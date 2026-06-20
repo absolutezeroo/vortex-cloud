@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Incoming.Users;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Orleans;
@@ -20,9 +21,11 @@ public class GetGuildCreationInfoMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var info = await _grainFactory
+        GroupCreationInfoSnapshot info = await _grainFactory
             .GetGroupDirectoryGrain()
             .GetCreationInfoAsync(ctx.PlayerId, ct)
             .ConfigureAwait(false);

@@ -4,9 +4,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.FriendList.Grains;
 using Turbo.Primitives.Messages.Incoming.FriendList;
 using Turbo.Primitives.Messages.Outgoing.FriendList;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Players.Grains;
+using Turbo.Primitives.Snapshots.FriendList;
 
 namespace Turbo.PacketHandlers.FriendList;
 
@@ -23,20 +26,22 @@ public class HabboSearchMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0 || string.IsNullOrWhiteSpace(message.SearchQuery))
+        {
             return;
+        }
 
-        var grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
-        var directory = _grainFactory.GetPlayerDirectoryGrain();
+        IMessengerGrain grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
+        IPlayerDirectoryGrain directory = _grainFactory.GetPlayerDirectoryGrain();
 
-        var friendResultsTask = grain.GetFriendSearchResultsAsync(message.SearchQuery, ct);
-        var globalResultsTask = directory.SearchPlayersAsync(message.SearchQuery, SearchLimit, ct);
+        Task<List<MessengerSearchResultSnapshot>> friendResultsTask = grain.GetFriendSearchResultsAsync(message.SearchQuery, ct);
+        Task<List<MessengerSearchResultSnapshot>> globalResultsTask = directory.SearchPlayersAsync(message.SearchQuery, SearchLimit, ct);
 
-        var friendResults = await friendResultsTask.ConfigureAwait(false);
-        var globalResults = await globalResultsTask.ConfigureAwait(false);
+        List<MessengerSearchResultSnapshot> friendResults = await friendResultsTask.ConfigureAwait(false);
+        List<MessengerSearchResultSnapshot> globalResults = await globalResultsTask.ConfigureAwait(false);
 
         // Friends who match go in the "friends" list, exclude them from "others"
-        var friendIds = new HashSet<int>(friendResults.Select(f => f.PlayerId.Value));
-        var otherResults = globalResults
+        HashSet<int> friendIds = new HashSet<int>(friendResults.Select(f => f.PlayerId.Value));
+        List<MessengerSearchResultSnapshot> otherResults = globalResults
             .Where(r =>
                 !friendIds.Contains(r.PlayerId.Value) && r.PlayerId.Value != ctx.PlayerId.Value
             )

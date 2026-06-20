@@ -9,23 +9,23 @@ namespace Turbo.Database.Context
     {
         public TurboDbContext CreateDbContext(string[] args)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<TurboDbContext>();
+            DbContextOptionsBuilder<TurboDbContext> optionsBuilder = new DbContextOptionsBuilder<TurboDbContext>();
 
-            var basePath = Path.Combine(Directory.GetCurrentDirectory(), "..");
-            var configuration = new ConfigurationBuilder()
+            string basePath = Path.Combine(Directory.GetCurrentDirectory(), "..");
+            IConfigurationRoot configuration = new ConfigurationBuilder()
                 .SetBasePath(basePath)
                 .AddJsonFile("appsettings.json", optional: false)
                 .AddJsonFile("appsettings.Development.json", optional: true)
                 .AddEnvironmentVariables()
                 .Build();
 
-            var connectionString = configuration["Turbo:Database:ConnectionString"];
+            string? connectionString = configuration["Turbo:Database:ConnectionString"];
 
             // AutoDetect requires a live MySQL connection, which is unavailable when authoring
             // migrations offline. Allow pinning the server version via configuration
             // (Turbo:Database:ServerVersion, e.g. "8.0.32-mysql") to bypass detection.
-            var versionConfig = configuration["Turbo:Database:ServerVersion"];
-            var serverVersion = string.IsNullOrWhiteSpace(versionConfig)
+            string? versionConfig = configuration["Turbo:Database:ServerVersion"];
+            ServerVersion? serverVersion = string.IsNullOrWhiteSpace(versionConfig)
                 ? ServerVersion.AutoDetect(connectionString)
                 : ServerVersion.Parse(versionConfig);
 

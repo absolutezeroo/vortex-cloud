@@ -13,6 +13,7 @@ using Turbo.Primitives.Catalog.Snapshots;
 using Turbo.Primitives.Events;
 using Turbo.Primitives.Grains.Players;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Players;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Players.Enums.Wallet;
 using Turbo.Primitives.Players.Wallet;
@@ -41,35 +42,39 @@ public sealed partial class CatalogPurchaseGrain(
     {
         quantity = Math.Max(1, quantity);
 
-        var snapshot = _catalogService.GetCatalogSnapshot(catalogType);
+        CatalogSnapshot snapshot = _catalogService.GetCatalogSnapshot(catalogType);
 
-        if (!snapshot.OffersById.TryGetValue(offerId, out var offer))
+        if (!snapshot.OffersById.TryGetValue(offerId, out CatalogOfferSnapshot? offer))
+        {
             throw new CatalogPurchaseException(CatalogPurchaseErrorType.OfferNotFound);
+        }
 
-        var isHabboClub = false;
+        bool isHabboClub = false;
 
         // Resolve membership once when the offer either gates on club level or carries an HC discount.
         if (offer.ClubLevel > 0 || offer.DiscountPercent > 0)
         {
-            var sub = await _grainFactory
+            ClubSubscriptionSnapshot sub = await _grainFactory
                 .GetPlayerGrain(PlayerId.Parse((int)this.GetPrimaryKeyLong()))
                 .GetClubSubscriptionAsync(ct)
                 .ConfigureAwait(false);
 
             isHabboClub = sub.IsActive;
 
-            var playerClubLevel = sub.IsActive ? (sub.IsVip ? 2 : 1) : 0;
+            int playerClubLevel = sub.IsActive ? (sub.IsVip ? 2 : 1) : 0;
 
             if (playerClubLevel < offer.ClubLevel)
+            {
                 throw new CatalogPurchaseException(CatalogPurchaseErrorType.RequiresHabboClub);
+            }
         }
 
         // HC members get the offer's configured discount off the credit cost (0 = no discount).
-        var discountPercent = isHabboClub ? Math.Clamp(offer.DiscountPercent, 0, 100) : 0;
+        int discountPercent = isHabboClub ? Math.Clamp(offer.DiscountPercent, 0, 100) : 0;
 
-        var creditCost = 0;
+        int creditCost = 0;
 
-        TryGetDebitRequests(offer, quantity, discountPercent, out var debitRequests);
+        TryGetDebitRequests(offer, quantity, discountPercent, out List<WalletDebitRequest> debitRequests);
 
         if (debitRequests.Count > 0)
         {
@@ -77,12 +82,14 @@ public sealed partial class CatalogPurchaseGrain(
                 .Where(r => r.CurrencyKind.CurrencyType == CurrencyType.Credits)
                 .Sum(r => r.Amount);
 
-            var result = await _grainFactory
+            WalletDebitResult result = await _grainFactory
                 .GetPlayerWalletGrain((int)this.GetPrimaryKeyLong())
                 .TryDebitAsync(debitRequests, ct);
 
             if (!result.Succeeded)
+            {
                 throw CreateInsufficientBalanceException(result);
+            }
         }
 
         await _grainFactory
@@ -125,12 +132,15 @@ public sealed partial class CatalogPurchaseGrain(
 
         if (offer.CostCredits > 0)
         {
-            var creditAmount = offer.CostCredits * quantity;
+            int creditAmount = offer.CostCredits * quantity;
 
             if (discountPercent > 0)
+            {
                 creditAmount -= (int)(creditAmount * (discountPercent / 100.0));
+            }
 
             if (creditAmount > 0)
+            {
                 requests.Add(
                     new WalletDebitRequest
                     {
@@ -138,9 +148,11 @@ public sealed partial class CatalogPurchaseGrain(
                         Amount = creditAmount,
                     }
                 );
+            }
         }
 
         if (offer.CostSilver > 0)
+        {
             requests.Add(
                 new WalletDebitRequest
                 {
@@ -148,8 +160,10 @@ public sealed partial class CatalogPurchaseGrain(
                     Amount = offer.CostSilver * quantity,
                 }
             );
+        }
 
         if (offer.CostCurrency > 0)
+        {
             requests.Add(
                 new WalletDebitRequest
                 {
@@ -161,6 +175,7 @@ public sealed partial class CatalogPurchaseGrain(
                     Amount = offer.CostCurrency * quantity,
                 }
             );
+        }
 
         return true;
     }
@@ -170,7 +185,9 @@ public sealed partial class CatalogPurchaseGrain(
     )
     {
         if (debitResult.Failure is null)
+        {
             return new CatalogPurchaseException(CatalogPurchaseErrorType.PurchaseFailed);
+        }
 
         if (debitResult.Failure.CurrencyKind.CurrencyType == CurrencyType.Credits)
         {

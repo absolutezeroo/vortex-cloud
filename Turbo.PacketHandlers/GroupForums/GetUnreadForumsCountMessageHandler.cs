@@ -20,9 +20,11 @@ public class GetUnreadForumsCountMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var count = await _grainFactory
+        int count = await _grainFactory
             .GetGroupDirectoryGrain()
             .GetUnreadForumsCountAsync(ctx.PlayerId, ct)
             .ConfigureAwait(false);

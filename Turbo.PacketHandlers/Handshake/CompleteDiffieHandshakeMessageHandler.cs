@@ -23,7 +23,7 @@ public class CompleteDiffieHandshakeMessageHandler(
         CancellationToken ct
     )
     {
-        var sharedKey = _diffieService.GetSharedKey(message.SharedKey);
+        byte[] sharedKey = _diffieService.GetSharedKey(message.SharedKey);
 
         await ctx.SendComposerAsync(
                 new CompleteDiffieHandshakeMessageComposer

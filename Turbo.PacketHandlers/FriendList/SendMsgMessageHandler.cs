@@ -2,6 +2,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.FriendList.Enums;
+using Turbo.Primitives.FriendList.Grains;
 using Turbo.Primitives.Messages.Incoming.FriendList;
 using Turbo.Primitives.Messages.Outgoing.FriendList;
 using Turbo.Primitives.Orleans;
@@ -20,12 +22,14 @@ public class SendMsgMessageHandler(IGrainFactory grainFactory) : IMessageHandler
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
-        var receiverId = PlayerId.Parse(message.ChatId);
+        IMessengerGrain grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
+        PlayerId receiverId = PlayerId.Parse(message.ChatId);
 
-        var error = await grain
+        InstantMessageErrorCodeType? error = await grain
             .SendMessageAsync(
                 receiverId,
                 message.Message,

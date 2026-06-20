@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -5,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Turbo.Database.Context;
+using Turbo.Database.Entities.Catalog;
 using Turbo.Primitives.Catalog;
 using Turbo.Primitives.Catalog.Enums;
 using Turbo.Primitives.Catalog.Providers;
@@ -32,36 +34,38 @@ public sealed class CatalogSnapshotProvider<TTag>(
     public async Task<CatalogSnapshot> GetSnapshotAsync(CancellationToken ct)
     {
         if (Current == CatalogSnapshot.Empty)
+        {
             await ReloadAsync(ct).ConfigureAwait(false);
+        }
 
         return Current;
     }
 
     public async Task ReloadAsync(CancellationToken ct)
     {
-        var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {
-            var pages = await dbCtx
+            List<CatalogPageEntity> pages = await dbCtx
                 .CatalogPages.AsNoTracking()
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
-            var offers = await dbCtx
+            List<CatalogOfferEntity> offers = await dbCtx
                 .CatalogOffers.AsNoTracking()
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
-            var products = await dbCtx
+            List<CatalogProductEntity> products = await dbCtx
                 .CatalogProducts.AsNoTracking()
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
-            var frontPageItems = await dbCtx
+            List<CatalogFrontPageItemEntity> frontPageItems = await dbCtx
                 .CatalogFrontPageItems.AsNoTracking()
                 .OrderBy(x => x.Position)
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
-            var pageChildrenIds = pages
+            ImmutableDictionary<int, ImmutableArray<int>> pageChildrenIds = pages
                 .GroupBy(p => p.ParentEntityId ?? -1)
                 .ToImmutableDictionary(
                     g => g.Key,
@@ -72,15 +76,15 @@ public sealed class CatalogSnapshotProvider<TTag>(
                             .ToImmutableArray()
                 );
 
-            var pageOfferIds = offers
+            ImmutableDictionary<int, ImmutableArray<int>> pageOfferIds = offers
                 .GroupBy(o => o.CatalogPageEntityId)
                 .ToImmutableDictionary(g => g.Key, g => g.Select(x => x.Id).ToImmutableArray());
 
-            var offerProductIds = products
+            ImmutableDictionary<int, ImmutableArray<int>> offerProductIds = products
                 .GroupBy(op => op.CatalogOfferEntityId)
                 .ToImmutableDictionary(g => g.Key, g => g.Select(x => x.Id).ToImmutableArray());
 
-            var productsById = products
+            ImmutableDictionary<int, CatalogProductSnapshot> productsById = products
                 .Select(x => new CatalogProductSnapshot
                 {
                     Id = x.Id,
@@ -101,13 +105,13 @@ public sealed class CatalogSnapshotProvider<TTag>(
                 })
                 .ToImmutableDictionary(x => x.Id);
 
-            var offersById = offers
+            ImmutableDictionary<int, CatalogOfferSnapshot> offersById = offers
                 .Select(x =>
                 {
-                    var ids = offerProductIds.TryGetValue(x.Id, out var productIds)
+                    ImmutableArray<int> ids = offerProductIds.TryGetValue(x.Id, out ImmutableArray<int> productIds)
                         ? productIds
                         : [];
-                    var products = ids.Select(x => productsById[x]).ToImmutableArray();
+                    ImmutableArray<CatalogProductSnapshot> products = ids.Select(x => productsById[x]).ToImmutableArray();
 
                     return new CatalogOfferSnapshot()
                     {
@@ -130,11 +134,11 @@ public sealed class CatalogSnapshotProvider<TTag>(
                 })
                 .ToImmutableDictionary(x => x.Id);
 
-            var rootChildIds = pageChildrenIds.TryGetValue(-1, out var rootChildren)
+            ImmutableArray<int> rootChildIds = pageChildrenIds.TryGetValue(-1, out ImmutableArray<int> rootChildren)
                 ? rootChildren
                 : ImmutableArray<int>.Empty;
 
-            var virtualRoot = new CatalogPageSnapshot
+            CatalogPageSnapshot virtualRoot = new CatalogPageSnapshot
             {
                 Id = -1,
                 ParentId = -1,
@@ -149,7 +153,7 @@ public sealed class CatalogSnapshotProvider<TTag>(
                 ChildIds = rootChildIds,
             };
 
-            var pagesById = pages
+            ImmutableDictionary<int, CatalogPageSnapshot> pagesById = pages
                 .Select(x => new CatalogPageSnapshot
                 {
                     Id = x.Id,
@@ -161,13 +165,13 @@ public sealed class CatalogSnapshotProvider<TTag>(
                     ImageData = x.ImageData ?? [],
                     TextData = x.TextData ?? [],
                     Visible = x.Visible,
-                    OfferIds = pageOfferIds.TryGetValue(x.Id, out var offerIds) ? offerIds : [],
-                    ChildIds = pageChildrenIds.TryGetValue(x.Id, out var childIds) ? childIds : [],
+                    OfferIds = pageOfferIds.TryGetValue(x.Id, out ImmutableArray<int> offerIds) ? offerIds : [],
+                    ChildIds = pageChildrenIds.TryGetValue(x.Id, out ImmutableArray<int> childIds) ? childIds : [],
                 })
                 .Prepend(virtualRoot)
                 .ToImmutableDictionary(x => x.Id);
 
-            var frontPageItemSnapshots = frontPageItems
+            ImmutableArray<CatalogFrontPageItemSnapshot> frontPageItemSnapshots = frontPageItems
                 .Select(x => new CatalogFrontPageItemSnapshot
                 {
                     Position = x.Position,
@@ -181,7 +185,7 @@ public sealed class CatalogSnapshotProvider<TTag>(
                 })
                 .ToImmutableArray();
 
-            var snapshot = new CatalogSnapshot
+            CatalogSnapshot snapshot = new CatalogSnapshot
             {
                 CatalogType = CatalogType,
                 RootPageId = -1,

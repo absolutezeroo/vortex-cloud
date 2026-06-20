@@ -1,5 +1,6 @@
 using Turbo.Primitives.Messages.Outgoing.FriendList;
 using Turbo.Primitives.Packets;
+using Turbo.Primitives.Snapshots.FriendList;
 
 namespace Turbo.Revisions.Revision20260112.Serializers.FriendList;
 
@@ -13,7 +14,7 @@ internal class AcceptFriendResultMessageSerializer(int header)
     {
         packet.WriteInteger(message.Failures.Count);
 
-        foreach (var failure in message.Failures)
+        foreach (AcceptFriendFailureSnapshot failure in message.Failures)
         {
             packet.WriteInteger(failure.SenderId);
             packet.WriteInteger((int)failure.ErrorCode);

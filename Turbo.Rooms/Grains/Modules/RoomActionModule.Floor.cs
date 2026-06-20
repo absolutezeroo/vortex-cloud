@@ -5,11 +5,13 @@ using Turbo.Logging;
 using Turbo.Primitives;
 using Turbo.Primitives.Action;
 using Turbo.Primitives.Events;
+using Turbo.Primitives.Inventory.Grains;
 using Turbo.Primitives.Inventory.Snapshots;
 using Turbo.Primitives.Messages.Incoming.Userdefinedroomevents;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Object;
+using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Rooms.Object.Logic.Furniture.Floor.Wired;
 
@@ -27,12 +29,16 @@ public sealed partial class RoomActionModule
     )
     {
         if (!await _roomGrain.SecurityModule.CanPlaceFurniAsync(ctx))
+        {
             throw new TurboException(TurboErrorCodeEnum.NoPermissionToPlaceFurni);
+        }
 
-        var item = _roomGrain._itemsLoader.CreateFromFurnitureItemSnapshot(snapshot);
+        IRoomItem item = _roomGrain._itemsLoader.CreateFromFurnitureItemSnapshot(snapshot);
 
         if (item is not IRoomFloorItem floorItem)
+        {
             throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+        }
 
         if (
             !await _roomGrain.FurniModule.ValidateNewFloorItemPlacementAsync(
@@ -43,12 +49,16 @@ public sealed partial class RoomActionModule
                 rot
             )
         )
+        {
             throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+        }
 
         if (!await _roomGrain.FurniModule.PlaceFloorItemAsync(ctx, floorItem, x, y, rot, ct))
+        {
             return false;
+        }
 
-        var inventory = _roomGrain._grainFactory.GetInventoryGrain(item.OwnerId);
+        IInventoryGrain inventory = _roomGrain._grainFactory.GetInventoryGrain(item.OwnerId);
 
         await inventory.RemoveFurnitureAsync(item.ObjectId, ct);
 
@@ -85,13 +95,19 @@ public sealed partial class RoomActionModule
     )
     {
         if (!await _roomGrain.SecurityModule.CanManipulateFurniAsync(ctx))
+        {
             throw new TurboException(TurboErrorCodeEnum.NoPermissionToManipulateFurni);
+        }
 
         if (!await _roomGrain.FurniModule.ValidateFloorItemPlacementAsync(ctx, itemId, x, y, rot))
+        {
             throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+        }
 
         if (!await _roomGrain.FurniModule.MoveFloorItemByIdAsync(ctx, itemId, x, y, null, rot, ct))
+        {
             return false;
+        }
 
         await _roomGrain
             ._events.PublishAsync(
@@ -122,14 +138,20 @@ public sealed partial class RoomActionModule
         CancellationToken ct
     )
     {
-        if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out var item))
+        if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item))
+        {
             throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+        }
 
         if (item.Logic is not FurnitureWiredLogic wiredLogic)
+        {
             throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+        }
 
         if (!await wiredLogic.ApplyWiredUpdateAsync(ctx, update, ct))
+        {
             return false;
+        }
 
         return true;
     }

@@ -13,7 +13,7 @@ internal class ObjectRemoveMultipleMessageComposerSerializer(int header)
     {
         packet.WriteInteger(message.ObjectIdsToRemove.Length);
 
-        foreach (var objectId in message.ObjectIdsToRemove)
+        foreach (long objectId in message.ObjectIdsToRemove)
             packet.WriteInteger((int)objectId);
 
         packet.WriteInteger(message.PickerId);

@@ -18,14 +18,16 @@ internal static partial class PluginHelpers
 
     public static PluginManifest ReadManifest(string dir)
     {
-        var path = Path.Combine(dir, "manifest.json");
+        string path = Path.Combine(dir, "manifest.json");
 
         if (!File.Exists(path))
+        {
             throw new FileNotFoundException($"Plugin manifest not found: {path}");
+        }
 
         try
         {
-            var manifest =
+            PluginManifest manifest =
                 (
                     JsonSerializer.Deserialize<PluginManifest>(
                         File.ReadAllText(path),
@@ -35,19 +37,25 @@ internal static partial class PluginHelpers
                 ?? throw new InvalidDataException($"manifest.json at {path} deserialized to null");
 
             if (string.IsNullOrWhiteSpace(manifest.Name))
+            {
                 throw new InvalidDataException(
                     $"Plugin manifest missing required 'Name' in {path}"
                 );
+            }
 
             if (string.IsNullOrWhiteSpace(manifest.Version))
+            {
                 throw new InvalidDataException(
                     $"Plugin manifest missing required 'Version' in {path}"
                 );
+            }
 
             if (string.IsNullOrWhiteSpace(manifest.AssemblyFile))
+            {
                 throw new InvalidDataException(
                     $"Plugin manifest missing required 'AssemblyFile' in {path}"
                 );
+            }
 
             return manifest;
         }
@@ -64,19 +72,19 @@ internal static partial class PluginHelpers
         IReadOnlyList<PluginManifest> manifests
     )
     {
-        var byKey = manifests.ToDictionary(m => m.Key, StringComparer.OrdinalIgnoreCase);
-        var indeg = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-        var graph = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, PluginManifest> byKey = manifests.ToDictionary(m => m.Key, StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, int> indeg = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, List<string>> graph = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var m in manifests)
+        foreach (PluginManifest m in manifests)
         {
             indeg[m.Key] = 0;
             graph[m.Key] = [];
         }
 
-        foreach (var m in manifests)
+        foreach (PluginManifest m in manifests)
         {
-            foreach (var d in m.Dependencies)
+            foreach (PluginDependency d in m.Dependencies)
             {
                 if (!byKey.ContainsKey(d.Key))
                 {
@@ -88,35 +96,39 @@ internal static partial class PluginHelpers
             }
         }
 
-        var q = new Queue<string>(indeg.Where(kv => kv.Value == 0).Select(kv => kv.Key));
-        var order = new List<string>();
+        Queue<string> q = new Queue<string>(indeg.Where(kv => kv.Value == 0).Select(kv => kv.Key));
+        List<string> order = new List<string>();
 
         while (q.Count > 0)
         {
-            var k = q.Dequeue();
+            string k = q.Dequeue();
             order.Add(k);
 
-            foreach (var n in graph[k])
+            foreach (string n in graph[k])
                 if (--indeg[n] == 0)
+                {
                     q.Enqueue(n);
+                }
         }
 
         if (order.Count != manifests.Count)
+        {
             throw new InvalidOperationException("Cyclic plugin dependencies.");
+        }
 
         return [.. order.Select(k => byKey[k])];
     }
 
     public static string GetAssemblyPath(string pluginDir, PluginManifest manifest)
     {
-        var asmPath = Path.Combine(
+        string asmPath = Path.Combine(
             pluginDir,
             Path.GetFileNameWithoutExtension(manifest.AssemblyFile) + ".dll"
         );
 
         if (!File.Exists(asmPath))
         {
-            var alt =
+            string alt =
                 Directory
                     .GetFiles(pluginDir, "*.dll")
                     .FirstOrDefault(f =>

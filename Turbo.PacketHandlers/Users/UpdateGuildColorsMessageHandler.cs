@@ -20,9 +20,11 @@ public class UpdateGuildColorsMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0 || message.GroupId <= 0)
+        {
             return;
+        }
 
-        var ok = await _grainFactory
+        bool ok = await _grainFactory
             .GetGroupGrain(message.GroupId)
             .UpdateColorsAsync(ctx.PlayerId, message.PrimaryColorId, message.SecondaryColorId, ct)
             .ConfigureAwait(false);

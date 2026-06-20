@@ -29,9 +29,11 @@ internal sealed class FakeAuthService(WebApiSessionStore sessions) : IWebApiAuth
     )
     {
         if (email != ValidEmail || password != ValidPassword)
+        {
             return Task.FromResult<(bool, string?, string?)>(
                 (false, null, "pocket.auth.login_failed")
             );
+        }
 
         string sessionId = sessions.CreateSession(AccountId);
 
@@ -45,9 +47,11 @@ internal sealed class FakeAuthService(WebApiSessionStore sessions) : IWebApiAuth
     )
     {
         if (!_registered.TryAdd(email, 0))
+        {
             return Task.FromResult<(bool, int, string?)>(
                 (false, 0, "pocket.auth.valid_email_required")
             );
+        }
 
         int accountId = Interlocked.Increment(ref _nextAccountId);
 
@@ -61,9 +65,11 @@ internal sealed class FakeAuthService(WebApiSessionStore sessions) : IWebApiAuth
     )
     {
         if (playerId <= 0)
+        {
             return Task.FromResult<(bool, string?, string?)>(
                 (false, null, "pocket.auth.login_failed")
             );
+        }
 
         return Task.FromResult<(bool, string?, string?)>((true, $"ticket-{playerId}", null));
     }

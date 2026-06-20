@@ -1,6 +1,7 @@
 using Turbo.Primitives.Packets;
 using Turbo.Primitives.Rooms.Enums.Wired;
 using Turbo.Primitives.Rooms.Snapshots.Wired.Variables;
+using Turbo.Primitives.Rooms.Wired.Variable;
 
 namespace Turbo.Revisions.Revision20260112.Serializers.Userdefinedroomevents.Data;
 
@@ -28,7 +29,7 @@ internal class WiredVariableSerializer
         {
             packet.WriteInteger(snapshot.TextConnectors.Count);
 
-            foreach (var (key, value) in snapshot.TextConnectors)
+            foreach ((WiredVariableValue key, string value) in snapshot.TextConnectors)
                 packet.WriteInteger(key).WriteString(value);
         }
     }

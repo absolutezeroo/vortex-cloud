@@ -22,8 +22,8 @@ public sealed class ChannelItemForensics(
 
     public void Record(in ItemForensicEvent itemEvent)
     {
-        var correlationId = _contextAccessor.Current?.CorrelationId.Value;
-        var record = new ItemRecord(itemEvent, DateTime.UtcNow, correlationId);
+        string? correlationId = _contextAccessor.Current?.CorrelationId.Value;
+        ItemRecord record = new ItemRecord(itemEvent, DateTime.UtcNow, correlationId);
 
         if (!_channel.TryWrite(record))
         {

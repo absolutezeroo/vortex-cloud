@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.Marketplace.Snapshots;
 using Turbo.Primitives.Messages.Incoming.Marketplace;
 using Turbo.Primitives.Messages.Outgoing.Marketplace;
 using Turbo.Primitives.Orleans;
@@ -20,9 +21,11 @@ public class GetMarketplaceItemStatsMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var stats = await _grainFactory
+        MarketplaceItemStatsSnapshot stats = await _grainFactory
             .GetMarketplaceSearchGrain()
             .GetItemStatsAsync(message.TypeId, ct)
             .ConfigureAwait(false);

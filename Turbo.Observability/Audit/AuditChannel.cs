@@ -17,7 +17,7 @@ public sealed class AuditChannel
 
     public AuditChannel(IOptions<ObservabilityConfig> options)
     {
-        var capacity =
+        int capacity =
             options.Value.AuditChannelCapacity > 0 ? options.Value.AuditChannelCapacity : 10_000;
 
         _channel = Channel.CreateBounded<DurableRecord>(

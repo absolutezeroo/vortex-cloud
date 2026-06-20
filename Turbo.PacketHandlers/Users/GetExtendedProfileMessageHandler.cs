@@ -5,6 +5,8 @@ using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Users;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Players;
+using Turbo.Primitives.Players;
 
 namespace Turbo.PacketHandlers.Users;
 
@@ -23,12 +25,14 @@ public class GetExtendedProfileMessageHandler : IMessageHandler<GetExtendedProfi
         CancellationToken ct
     )
     {
-        var targetUserId = message.UserId;
+        PlayerId targetUserId = message.UserId;
 
         if (targetUserId <= 0)
+        {
             return;
+        }
 
-        var snapshot = await _grainFactory
+        PlayerExtendedProfileSnapshot snapshot = await _grainFactory
             .GetPlayerGrain(targetUserId)
             .GetExtendedProfileSnapshotAsync(ct)
             .ConfigureAwait(false);

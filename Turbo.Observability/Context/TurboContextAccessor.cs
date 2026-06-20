@@ -48,11 +48,11 @@ public sealed class TurboContextAccessor : ITurboContextAccessor
         int? roomId = null
     )
     {
-        var previous = Ambient.Value;
-        var id = correlationId ?? CorrelationId.New();
-        var resolvedPlayerId = playerId ?? previous?.PlayerId;
-        var resolvedRoomId = roomId ?? previous?.RoomId;
-        var context = new TurboContext(
+        ITurboContext? previous = Ambient.Value;
+        CorrelationId id = correlationId ?? CorrelationId.New();
+        long? resolvedPlayerId = playerId ?? previous?.PlayerId;
+        int? resolvedRoomId = roomId ?? previous?.RoomId;
+        TurboContext context = new TurboContext(
             id,
             operation,
             sessionKey ?? previous?.SessionKey,
@@ -63,7 +63,7 @@ public sealed class TurboContextAccessor : ITurboContextAccessor
         Ambient.Value = context;
         RequestContext.Set(RequestContextKey, id.Value);
 
-        var logScope = _logger.BeginScope(
+        IDisposable? logScope = _logger.BeginScope(
             new Dictionary<string, object?>
             {
                 ["CorrelationId"] = id.Value,

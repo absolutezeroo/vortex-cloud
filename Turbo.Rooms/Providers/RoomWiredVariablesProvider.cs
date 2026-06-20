@@ -18,7 +18,7 @@ public sealed class RoomWiredVariablesProvider(IServiceProvider host) : IRoomWir
         Func<IServiceProvider, IRoomGrain, IWiredVariable> factory
     )
     {
-        var reg = new WiredVariableReg(sp, factory);
+        WiredVariableReg reg = new WiredVariableReg(sp, factory);
 
         _variables.Add(reg);
 
@@ -27,12 +27,14 @@ public sealed class RoomWiredVariablesProvider(IServiceProvider host) : IRoomWir
 
     public IEnumerable<IWiredVariable> BuildVariablesForRoom(IRoomGrain roomGrain)
     {
-        foreach (var reg in _variables)
+        foreach (WiredVariableReg reg in _variables)
         {
-            var sp = reg.ServiceProvider;
+            IServiceProvider sp = reg.ServiceProvider;
 
             if (sp != _host)
+            {
                 sp = new CompositeServiceProvider(sp, _host);
+            }
 
             yield return reg.Factory(sp, roomGrain);
         }

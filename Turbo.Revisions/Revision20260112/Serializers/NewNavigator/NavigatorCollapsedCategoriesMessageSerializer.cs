@@ -13,7 +13,7 @@ internal class NavigatorCollapsedCategoriesMessageSerializer(int header)
     {
         packet.WriteInteger(message.CollapsedCategoryIds.Count);
 
-        foreach (var categoryId in message.CollapsedCategoryIds)
+        foreach (string categoryId in message.CollapsedCategoryIds)
         {
             packet.WriteString(categoryId);
         }

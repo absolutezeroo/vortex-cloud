@@ -1,4 +1,5 @@
 using Turbo.Primitives.Messages.Outgoing.Vault;
+using Turbo.Primitives.Orleans.Snapshots.Vault;
 using Turbo.Primitives.Packets;
 
 namespace Turbo.Revisions.Revision20260112.Serializers.Vault;
@@ -13,7 +14,7 @@ internal class IncomeRewardStatusMessageComposerSerializer(int header)
     {
         packet.WriteInteger(message.IncomeRewards.Count);
 
-        foreach (var reward in message.IncomeRewards)
+        foreach (IncomeRewardSnapshot reward in message.IncomeRewards)
         {
             packet
                 .WriteByte((byte)reward.RewardCategory)

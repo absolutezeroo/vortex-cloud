@@ -3,9 +3,12 @@ using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Catalog.Providers;
+using Turbo.Primitives.Catalog.Snapshots;
+using Turbo.Primitives.Grains.Players;
 using Turbo.Primitives.Messages.Incoming.Catalog;
 using Turbo.Primitives.Messages.Outgoing.Catalog;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Players;
 
 namespace Turbo.PacketHandlers.Catalog;
 
@@ -24,27 +27,35 @@ public class SelectClubGiftMessageHandler(
     )
     {
         if (ctx.PlayerId <= 0 || string.IsNullOrEmpty(message.ProductCode))
+        {
             return;
+        }
 
-        var offer = _clubGiftProvider.FindByProductCode(message.ProductCode);
+        CatalogOfferSnapshot? offer = _clubGiftProvider.FindByProductCode(message.ProductCode);
 
         if (offer is null)
+        {
             return;
+        }
 
-        var playerGrain = _grainFactory.GetPlayerGrain(ctx.PlayerId);
+        IPlayerGrain playerGrain = _grainFactory.GetPlayerGrain(ctx.PlayerId);
 
-        var sub = await playerGrain.GetClubSubscriptionAsync(ct).ConfigureAwait(false);
+        ClubSubscriptionSnapshot sub = await playerGrain.GetClubSubscriptionAsync(ct).ConfigureAwait(false);
 
         // A VIP-only gift cannot be claimed without an active VIP membership.
         if (!sub.IsActive || (offer.ClubLevel > 1 && !sub.IsVip))
+        {
             return;
+        }
 
-        var consumed = await playerGrain
+        bool consumed = await playerGrain
             .TryConsumeClubGiftAsync(message.ProductCode, ct)
             .ConfigureAwait(false);
 
         if (!consumed)
+        {
             return;
+        }
 
         await _grainFactory
             .GetInventoryGrain(ctx.PlayerId)

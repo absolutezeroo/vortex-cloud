@@ -8,9 +8,9 @@ internal class WhisperMessageParser : IParser
 {
     public IMessageEvent Parse(IClientPacket packet)
     {
-        var parts = packet.PopString().Split(' ', 2);
-        var recipientName = parts[0];
-        var text = parts[1];
+        string[] parts = packet.PopString().Split(' ', 2);
+        string recipientName = parts[0];
+        string text = parts[1];
 
         return new WhisperMessage
         {

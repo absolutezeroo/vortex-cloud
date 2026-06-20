@@ -28,7 +28,7 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
 
     public void RecordPacketReceived(string operation, long? actorId = null, int? roomId = null)
     {
-        var now = DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow;
 
         lock (_sync)
         {
@@ -39,7 +39,7 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
 
             if (actorId is > 0 && actorId <= int.MaxValue)
             {
-                var actor = (int)actorId;
+                int actor = (int)actorId;
                 _abuserSamples.Enqueue(new(now, actor));
                 _abuserCounts[actor] = _abuserCounts.GetValueOrDefault(actor) + 1;
             }
@@ -58,7 +58,7 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
         double elapsedMilliseconds = 0
     )
     {
-        var now = DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow;
 
         lock (_sync)
         {
@@ -69,7 +69,7 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
 
     public void RecordPacketFailed(string operation, long? actorId = null, int? roomId = null)
     {
-        var now = DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow;
 
         lock (_sync)
         {
@@ -83,25 +83,25 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
 
     public Task<LiveStatsSnapshot> GetSnapshotAsync()
     {
-        var now = DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow;
 
         lock (_sync)
         {
             Prune(now);
 
-            var latencies = _latencySamples
+            double[] latencies = _latencySamples
                 .Select(sample => sample.DurationMs)
                 .OrderBy(value => value)
                 .ToArray();
 
-            var topAbusers = _abuserCounts
+            LiveAbuserSnapshot[] topAbusers = _abuserCounts
                 .OrderByDescending(item => item.Value)
                 .ThenBy(item => item.Key)
                 .Take(_topK)
                 .Select(item => new LiveAbuserSnapshot(item.Key, ToRatePerMinute(item.Value)))
                 .ToArray();
 
-            var topOperations = _operationCounts
+            LivePacketOperationSnapshot[] topOperations = _operationCounts
                 .OrderByDescending(item => item.Value)
                 .ThenBy(item => item.Key)
                 .Take(_topK)
@@ -111,7 +111,7 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
                 ))
                 .ToArray();
 
-            var topFailedOperations = _failedOperationCounts
+            LivePacketOperationSnapshot[] topFailedOperations = _failedOperationCounts
                 .OrderByDescending(item => item.Value)
                 .ThenBy(item => item.Key)
                 .Take(_topK)
@@ -143,7 +143,7 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
 
     private void Prune(DateTime now)
     {
-        var cutoff = now - _window;
+        DateTime cutoff = now - _window;
 
         while (_receivedTimestamps.Count > 0 && _receivedTimestamps.Peek() < cutoff)
             _receivedTimestamps.Dequeue();
@@ -156,14 +156,18 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
 
         while (_operationSamples.Count > 0 && _operationSamples.Peek().Timestamp < cutoff)
         {
-            var sample = _operationSamples.Dequeue();
+            OperationSample sample = _operationSamples.Dequeue();
 
-            if (_operationCounts.TryGetValue(sample.Operation, out var total))
+            if (_operationCounts.TryGetValue(sample.Operation, out int total))
             {
                 if (total <= 1)
+                {
                     _operationCounts.Remove(sample.Operation);
+                }
                 else
+                {
                     _operationCounts[sample.Operation] = total - 1;
+                }
             }
         }
 
@@ -171,40 +175,52 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
             _failedOperationSamples.Count > 0 && _failedOperationSamples.Peek().Timestamp < cutoff
         )
         {
-            var sample = _failedOperationSamples.Dequeue();
+            OperationSample sample = _failedOperationSamples.Dequeue();
 
-            if (_failedOperationCounts.TryGetValue(sample.Operation, out var total))
+            if (_failedOperationCounts.TryGetValue(sample.Operation, out int total))
             {
                 if (total <= 1)
+                {
                     _failedOperationCounts.Remove(sample.Operation);
+                }
                 else
+                {
                     _failedOperationCounts[sample.Operation] = total - 1;
+                }
             }
         }
 
         while (_abuserSamples.Count > 0 && _abuserSamples.Peek().Timestamp < cutoff)
         {
-            var sample = _abuserSamples.Dequeue();
+            AbuserSample sample = _abuserSamples.Dequeue();
 
-            if (_abuserCounts.TryGetValue(sample.ActorId, out var total))
+            if (_abuserCounts.TryGetValue(sample.ActorId, out int total))
             {
                 if (total <= 1)
+                {
                     _abuserCounts.Remove(sample.ActorId);
+                }
                 else
+                {
                     _abuserCounts[sample.ActorId] = total - 1;
+                }
             }
         }
 
         while (_roomSamples.Count > 0 && _roomSamples.Peek().Timestamp < cutoff)
         {
-            var sample = _roomSamples.Dequeue();
+            RoomSample sample = _roomSamples.Dequeue();
 
-            if (_roomCounts.TryGetValue(sample.RoomId, out var total))
+            if (_roomCounts.TryGetValue(sample.RoomId, out int total))
             {
                 if (total <= 1)
+                {
                     _roomCounts.Remove(sample.RoomId);
+                }
                 else
+                {
                     _roomCounts[sample.RoomId] = total - 1;
+                }
             }
         }
     }
@@ -212,9 +228,11 @@ public sealed class LiveStatsAggregator(IOptions<ObservabilityConfig> config) : 
     private static double Percentile(double[] values, double ratio)
     {
         if (values.Length == 0)
+        {
             return 0;
+        }
 
-        var index = (int)Math.Ceiling((values.Length - 1) * ratio);
+        int index = (int)Math.Ceiling((values.Length - 1) * ratio);
         return values[index];
     }
 

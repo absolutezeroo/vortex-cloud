@@ -18,8 +18,8 @@ public class InitDiffieHandshakeMessageHandler(IDiffieService diffieService)
         CancellationToken ct
     )
     {
-        var prime = _diffieService.GetSignedPrime();
-        var generator = _diffieService.GetSignedGenerator();
+        string prime = _diffieService.GetSignedPrime();
+        string generator = _diffieService.GetSignedGenerator();
 
         await ctx.SendComposerAsync(
                 new InitDiffieHandshakeMessageComposer { Prime = prime, Generator = generator },

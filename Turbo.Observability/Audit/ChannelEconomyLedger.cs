@@ -22,8 +22,8 @@ public sealed class ChannelEconomyLedger(
 
     public void Record(in EconomyLedgerEvent entry)
     {
-        var correlationId = _contextAccessor.Current?.CorrelationId.Value;
-        var record = new LedgerRecord(entry, DateTime.UtcNow, correlationId);
+        string? correlationId = _contextAccessor.Current?.CorrelationId.Value;
+        LedgerRecord record = new LedgerRecord(entry, DateTime.UtcNow, correlationId);
 
         if (!_channel.TryWrite(record))
         {

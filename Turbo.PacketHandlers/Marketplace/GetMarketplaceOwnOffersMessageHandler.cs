@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.Marketplace.Snapshots;
 using Turbo.Primitives.Messages.Incoming.Marketplace;
 using Turbo.Primitives.Messages.Outgoing.Marketplace;
 using Turbo.Primitives.Orleans;
@@ -20,9 +22,11 @@ public class GetMarketplaceOwnOffersMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var (creditsOwed, offers) = await _grainFactory
+        (int creditsOwed, List<MarketplaceOfferSnapshot> offers) = await _grainFactory
             .GetMarketplacePurchaseGrain(ctx.PlayerId)
             .GetOwnOffersAsync(ct)
             .ConfigureAwait(false);

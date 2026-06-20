@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Incoming.Users;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Orleans;
@@ -20,14 +22,16 @@ public class ApproveAllMembershipRequestsMessageHandler(IGrainFactory grainFacto
     )
     {
         if (ctx.PlayerId <= 0 || message.GroupId <= 0)
+        {
             return;
+        }
 
-        var added = await _grainFactory
+        List<GroupMemberSnapshot> added = await _grainFactory
             .GetGroupGrain(message.GroupId)
             .ApproveAllMembershipsAsync(ctx.PlayerId, ct)
             .ConfigureAwait(false);
 
-        foreach (var member in added)
+        foreach (GroupMemberSnapshot member in added)
         {
             await ctx.SendComposerAsync(
                     new GuildMembershipUpdatedMessageComposer

@@ -127,9 +127,9 @@ internal sealed class DashboardOperationsService(
         CancellationToken ct
     )
     {
-        var correlationId = CorrelationId.New();
+        CorrelationId correlationId = CorrelationId.New();
 
-        using var scope = _context.BeginScope(
+        using ITurboTraceScope scope = _context.BeginScope(
             action,
             correlationId: correlationId,
             playerId: targetPlayerId,

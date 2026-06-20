@@ -44,7 +44,7 @@ public class WiredVariableRoom(
 
     public override List<WiredVariableContextSnapshot> GetWiredContextSnapshots()
     {
-        var snapshot = GetVarSnapshot();
+        WiredVariableSnapshot snapshot = GetVarSnapshot();
 
         return
         [
@@ -54,7 +54,7 @@ public class WiredVariableRoom(
                 Variable = snapshot,
                 Value = TryGetValue(
                     new WiredVariableKey(snapshot.VariableId, snapshot.TargetType, 0),
-                    out var value
+                    out WiredVariableValue value
                 )
                     ? value
                     : WiredVariableValue.Default,

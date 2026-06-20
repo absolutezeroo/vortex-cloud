@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Turbo.Database.Context;
+using Turbo.Database.Entities.Navigator;
+using Turbo.Database.Entities.Room;
 using Turbo.Primitives.Navigator;
 using Turbo.Primitives.Navigator.Enums;
 using Turbo.Primitives.Orleans.Snapshots.Navigator;
@@ -32,7 +34,7 @@ public sealed class NavigatorProvider(
         Task.FromResult(_topLevelContexts);
 
     public NavigatorQueryType ResolveQueryType(string searchCode) =>
-        _queryTypeBySearchCode.TryGetValue(searchCode, out var qt)
+        _queryTypeBySearchCode.TryGetValue(searchCode, out NavigatorQueryType qt)
             ? qt
             : NavigatorQueryType.AllRooms;
 
@@ -40,7 +42,7 @@ public sealed class NavigatorProvider(
 
     public async Task<List<RoomInfoSnapshot>> GetAllRoomsAsync(CancellationToken ct = default)
     {
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         return await BuildRoomQuery(dbCtx)
             .OrderByDescending(x => x.UsersNow)
@@ -53,7 +55,7 @@ public sealed class NavigatorProvider(
         CancellationToken ct = default
     )
     {
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         return await BuildRoomQuery(dbCtx)
             .Where(x => x.PlayerEntityId == playerId.Value)
@@ -66,7 +68,7 @@ public sealed class NavigatorProvider(
         CancellationToken ct = default
     )
     {
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         return await BuildRoomQuery(dbCtx)
             .Where(x => x.NavigatorCategoryEntityId == categoryId)
@@ -79,9 +81,9 @@ public sealed class NavigatorProvider(
         CancellationToken ct = default
     )
     {
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var lower = name.ToLowerInvariant();
+        string lower = name.ToLowerInvariant();
 
         return await BuildRoomQuery(dbCtx)
             .Where(x => x.Name.ToLower().Contains(lower))
@@ -94,9 +96,9 @@ public sealed class NavigatorProvider(
         CancellationToken ct = default
     )
     {
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var lower = ownerName.ToLowerInvariant();
+        string lower = ownerName.ToLowerInvariant();
 
         return await BuildRoomQuery(dbCtx)
             .Where(x => x.PlayerEntity.Name.ToLower().Contains(lower))
@@ -126,9 +128,9 @@ public sealed class NavigatorProvider(
 
     public async Task ReloadAsync(CancellationToken ct = default)
     {
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        var topLevelEntities = await dbCtx
+        List<NavigatorTopLevelContextEntity> topLevelEntities = await dbCtx
             .NavigatorTopLevelContexts.AsNoTracking()
             .Include(x => x.QuickLinks)
             .Where(x => x.Visible && x.DeletedAt == null)
@@ -165,7 +167,7 @@ public sealed class NavigatorProvider(
             )
             .ToImmutableDictionary(x => x.SearchCode, x => x.QueryType);
 
-        var flatCatEntities = await dbCtx
+        List<NavigatorFlatCategoryEntity> flatCatEntities = await dbCtx
             .NavigatorFlatCategories.AsNoTracking()
             .Where(x => x.Visible && x.DeletedAt == null)
             .OrderBy(x => x.OrderNum)
@@ -206,7 +208,7 @@ file static class RoomQueryExtensions
         CancellationToken ct
     )
     {
-        var entities = await query.ToListAsync(ct).ConfigureAwait(false);
+        List<RoomEntity> entities = await query.ToListAsync(ct).ConfigureAwait(false);
 
         return
         [

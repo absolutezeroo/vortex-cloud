@@ -10,8 +10,10 @@ public abstract class ActiveStore : IWiredVariableStore
     {
         value = WiredVariableValue.Default;
 
-        if (!TryGetStore(key, out var store) || store is null)
+        if (!TryGetStore(key, out KeyValueStore? store) || store is null)
+        {
             return false;
+        }
 
         return store.TryGetValue(key, out value);
     }
@@ -23,11 +25,13 @@ public abstract class ActiveStore : IWiredVariableStore
     )
     {
         if (
-            !TryGetStore(key, out var store)
+            !TryGetStore(key, out KeyValueStore? store)
             || store is null
             || (store.ContainsKey(key) && !replace)
         )
+        {
             return Task.FromResult(false);
+        }
 
         return store.GiveValueAsync(key, value, replace);
     }
@@ -38,16 +42,20 @@ public abstract class ActiveStore : IWiredVariableStore
         WiredVariableValue value
     )
     {
-        if (!TryGetStore(key, out var store) || store is null || !store.ContainsKey(key))
+        if (!TryGetStore(key, out KeyValueStore? store) || store is null || !store.ContainsKey(key))
+        {
             return Task.FromResult(false);
+        }
 
         return store.SetValueAsync(ctx, key, value);
     }
 
     public virtual bool RemoveValue(WiredVariableKey key)
     {
-        if (!TryGetStore(key, out var store) || store is null)
+        if (!TryGetStore(key, out KeyValueStore? store) || store is null)
+        {
             return false;
+        }
 
         return store.RemoveValue(key);
     }

@@ -35,7 +35,9 @@ internal sealed class DashboardSessionStore
     public (int AccountId, string Email)? Resolve(string? sessionId)
     {
         if (string.IsNullOrEmpty(sessionId) || !_sessions.TryGetValue(sessionId, out var entry))
+        {
             return null;
+        }
 
         if (entry.ExpiresAt <= DateTime.UtcNow)
         {
@@ -49,7 +51,9 @@ internal sealed class DashboardSessionStore
     public void Remove(string? sessionId)
     {
         if (!string.IsNullOrEmpty(sessionId))
+        {
             _sessions.TryRemove(sessionId, out _);
+        }
     }
 
     private readonly record struct Entry(int AccountId, string Email, DateTime ExpiresAt);

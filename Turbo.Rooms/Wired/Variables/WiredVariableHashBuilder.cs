@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO.Hashing;
 using System.Text;
 using Turbo.Primitives.Rooms.Enums.Wired;
+using Turbo.Primitives.Rooms.Snapshots.Wired.Variables;
 using Turbo.Primitives.Rooms.Wired.Variable;
 
 namespace Turbo.Rooms.Wired.Variables;
@@ -15,7 +16,7 @@ public static class WiredVariableHashBuilder
         WiredVariableTargetType targetType
     )
     {
-        var hasher = new XxHash32();
+        XxHash32 hasher = new XxHash32();
 
         WriteString(ref hasher, variableName);
         WriteInt32(ref hasher, (int)targetType);
@@ -28,8 +29,8 @@ public static class WiredVariableHashBuilder
 
     public static WiredVariableHash HashVariable(IWiredVariable varDef)
     {
-        var snapshot = varDef.GetVarSnapshot();
-        var hasher = new XxHash32();
+        WiredVariableSnapshot snapshot = varDef.GetVarSnapshot();
+        XxHash32 hasher = new XxHash32();
 
         WriteString(ref hasher, snapshot.VariableName);
         WriteInt32(ref hasher, (int)snapshot.AvailabilityType);
@@ -37,7 +38,7 @@ public static class WiredVariableHashBuilder
         WriteInt32(ref hasher, (int)snapshot.Flags);
         WriteInt32(ref hasher, snapshot.TextConnectors.Count);
 
-        foreach (var s in snapshot.TextConnectors.Values)
+        foreach (string s in snapshot.TextConnectors.Values)
             WriteString(ref hasher, s);
 
         Span<byte> hashBytes = stackalloc byte[4];
@@ -54,7 +55,7 @@ public static class WiredVariableHashBuilder
         Dictionary<WiredVariableValue, string> textConnectors
     )
     {
-        var hasher = new XxHash32();
+        XxHash32 hasher = new XxHash32();
 
         WriteString(ref hasher, name);
         WriteInt32(ref hasher, (int)availabilityType);
@@ -62,7 +63,7 @@ public static class WiredVariableHashBuilder
         WriteInt32(ref hasher, (int)flags);
         WriteInt32(ref hasher, textConnectors.Count);
 
-        foreach (var s in textConnectors.Values)
+        foreach (string s in textConnectors.Values)
             WriteString(ref hasher, s);
 
         Span<byte> hashBytes = stackalloc byte[4];
@@ -73,7 +74,7 @@ public static class WiredVariableHashBuilder
 
     public static WiredVariableHash HashFromHashes(IReadOnlyList<WiredVariableHash> hashes)
     {
-        var hasher = new XxHash32();
+        XxHash32 hasher = new XxHash32();
 
         WriteInt32(ref hasher, hashes.Count);
 

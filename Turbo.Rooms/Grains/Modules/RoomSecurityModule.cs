@@ -12,39 +12,49 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
 
     public async Task<bool> CanManipulateFurniAsync(ActionContext ctx)
     {
-        var controllerLevel = await GetControllerLevelAsync(ctx);
+        RoomControllerType controllerLevel = await GetControllerLevelAsync(ctx);
 
         if (controllerLevel >= RoomControllerType.GroupAdmin)
+        {
             return true;
+        }
 
-        var isGroupRoom = false;
+        bool isGroupRoom = false;
 
         if (isGroupRoom)
         {
-            var canGroupDecorate = false;
+            bool canGroupDecorate = false;
 
             if (controllerLevel >= RoomControllerType.GroupRights && canGroupDecorate)
+            {
                 return true;
+            }
         }
         else
         {
             if (controllerLevel >= RoomControllerType.Rights)
+            {
                 return true;
+            }
         }
         return false;
     }
 
     public async Task<bool> CanUseFurniAsync(ActionContext ctx, FurnitureUsageType usageType)
     {
-        var controllerLevel = await GetControllerLevelAsync(ctx);
+        RoomControllerType controllerLevel = await GetControllerLevelAsync(ctx);
 
         if (usageType == FurnitureUsageType.Nobody)
+        {
             return false;
+        }
 
         if (usageType == FurnitureUsageType.Controller)
         {
             if (controllerLevel < RoomControllerType.Rights)
+            {
                 return false;
+            }
         }
 
         return true;
@@ -60,12 +70,16 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
     public async Task<FurniturePickupType> GetFurniPickupTypeAsync(ActionContext ctx)
     {
         if (ctx.Origin == ActionOrigin.System)
+        {
             return FurniturePickupType.SendToOwner;
+        }
 
         // if can steal furni, SendToRequester
 
         if (await GetControllerLevelAsync(ctx) >= RoomControllerType.GroupAdmin)
+        {
             return FurniturePickupType.SendToOwner;
+        }
 
         return FurniturePickupType.None;
     }
@@ -82,7 +96,9 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
     public async Task<RoomControllerType> GetControllerLevelAsync(ActionContext ctx)
     {
         if (ctx.Origin == ActionOrigin.System)
+        {
             return RoomControllerType.Moderator;
+        }
 
         PermissionSet permissions = await ResolvePermissionsAsync(ctx);
 
@@ -100,7 +116,9 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
     private Task<PermissionSet> ResolvePermissionsAsync(ActionContext ctx)
     {
         if (ctx.PlayerId == PlayerId.Invalid)
+        {
             return Task.FromResult(PermissionSet.Empty);
+        }
 
         return _roomGrain._permissionService.ResolveForPlayerAsync(ctx.PlayerId);
     }

@@ -1,5 +1,7 @@
 using Turbo.Primitives.Messages.Outgoing.Room.Engine;
 using Turbo.Primitives.Packets;
+using Turbo.Primitives.Players;
+using Turbo.Primitives.Rooms.Snapshots.Furniture;
 using Turbo.Revisions.Revision20260112.Serializers.Room.Engine.Data;
 
 namespace Turbo.Revisions.Revision20260112.Serializers.Room.Engine;
@@ -11,7 +13,7 @@ internal class ObjectsMessageComposerSerializer(int header)
     {
         packet.WriteInteger(message.OwnerNames.Count);
 
-        foreach (var (ownerId, ownerName) in message.OwnerNames)
+        foreach ((PlayerId ownerId, string ownerName) in message.OwnerNames)
         {
             packet.WriteInteger(ownerId);
             packet.WriteString(ownerName);
@@ -19,7 +21,7 @@ internal class ObjectsMessageComposerSerializer(int header)
 
         packet.WriteInteger(message.FloorItems.Length);
 
-        foreach (var item in message.FloorItems)
+        foreach (RoomFloorItemSnapshot item in message.FloorItems)
         {
             FloorItemSerializer.Serialize(packet, item);
         }

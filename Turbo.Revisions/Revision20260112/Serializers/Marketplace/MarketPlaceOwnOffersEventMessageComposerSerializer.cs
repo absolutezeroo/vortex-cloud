@@ -1,3 +1,4 @@
+using Turbo.Primitives.Marketplace.Snapshots;
 using Turbo.Primitives.Messages.Outgoing.Marketplace;
 using Turbo.Primitives.Packets;
 
@@ -13,7 +14,7 @@ internal class MarketPlaceOwnOffersEventMessageComposerSerializer(int header)
     {
         packet.WriteInteger(message.CreditsWaiting);
         packet.WriteInteger(message.Offers.Count);
-        foreach (var offer in message.Offers)
+        foreach (MarketplaceOfferSnapshot offer in message.Offers)
             MarketplaceOfferWriter.WriteOffer(packet, offer, includeOfferCount: false);
     }
 }

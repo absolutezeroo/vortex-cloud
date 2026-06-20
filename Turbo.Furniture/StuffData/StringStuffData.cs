@@ -15,7 +15,9 @@ internal sealed class StringStuffData : StuffDataBase, IStringStuffData
     public StringStuffData()
     {
         if (Data.Count == 0)
+        {
             Data.Add(DEFAULT_STATE);
+        }
     }
 
     public override string GetLegacyString() => GetValue(STATE_INDEX);
@@ -23,7 +25,9 @@ internal sealed class StringStuffData : StuffDataBase, IStringStuffData
     public override void SetState(string state)
     {
         if (string.IsNullOrEmpty(state))
+        {
             state = DEFAULT_STATE;
+        }
 
         Data[STATE_INDEX] = state;
 
@@ -33,7 +37,9 @@ internal sealed class StringStuffData : StuffDataBase, IStringStuffData
     public string GetValue(int index)
     {
         if (index < 0 || index >= Data.Count)
+        {
             return string.Empty;
+        }
 
         return Data[index];
     }

@@ -15,7 +15,7 @@ public sealed class WebApiSessionStore
 
     public string CreateSession(int accountId)
     {
-        var id = Guid.NewGuid().ToString("N");
+        string id = Guid.NewGuid().ToString("N");
         _sessions[id] = new SessionEntry(accountId, DateTime.UtcNow.Add(SessionLifetime));
         return id;
     }
@@ -23,10 +23,14 @@ public sealed class WebApiSessionStore
     public int? GetAccountId(string? sessionId)
     {
         if (string.IsNullOrWhiteSpace(sessionId))
+        {
             return null;
+        }
 
-        if (!_sessions.TryGetValue(sessionId, out var entry))
+        if (!_sessions.TryGetValue(sessionId, out SessionEntry? entry))
+        {
             return null;
+        }
 
         if (entry.Expires < DateTime.UtcNow)
         {
@@ -41,15 +45,20 @@ public sealed class WebApiSessionStore
 
     public void SetSelectedPlayer(string? sessionId, int playerId)
     {
-        if (!string.IsNullOrWhiteSpace(sessionId) && _sessions.TryGetValue(sessionId, out var e))
+        if (!string.IsNullOrWhiteSpace(sessionId) && _sessions.TryGetValue(sessionId, out SessionEntry? e))
+        {
             _sessions[sessionId] = e with { SelectedPlayerId = playerId };
+        }
     }
 
     public int? GetSelectedPlayer(string? sessionId)
     {
         if (string.IsNullOrWhiteSpace(sessionId))
+        {
             return null;
-        return _sessions.TryGetValue(sessionId, out var e) ? e.SelectedPlayerId : null;
+        }
+
+        return _sessions.TryGetValue(sessionId, out SessionEntry? e) ? e.SelectedPlayerId : null;
     }
 
     private record SessionEntry(int AccountId, DateTime Expires, int? SelectedPlayerId = null);

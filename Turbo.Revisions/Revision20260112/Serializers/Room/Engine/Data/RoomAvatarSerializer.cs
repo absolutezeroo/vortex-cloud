@@ -22,7 +22,9 @@ internal class RoomAvatarSerializer
             .WriteInteger((int)item.AvatarType);
 
         if (item is RoomPlayerAvatarSnapshot player)
+        {
             SerializePlayerAvatar(packet, player);
+        }
     }
 
     public static void SerializePlayerAvatar(

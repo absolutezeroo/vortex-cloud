@@ -20,7 +20,9 @@ public class SelectFavouriteHabboGroupMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0 || message.GroupId <= 0)
+        {
             return;
+        }
 
         await _grainFactory
             .GetGroupDirectoryGrain()

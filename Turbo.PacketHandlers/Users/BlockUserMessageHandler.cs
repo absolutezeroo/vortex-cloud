@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.FriendList.Grains;
 using Turbo.Primitives.Messages.Incoming.Users;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Orleans;
@@ -20,9 +21,11 @@ public class BlockUserMessageHandler(IGrainFactory grainFactory) : IMessageHandl
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
+        IMessengerGrain grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
         await grain.BlockUserAsync(PlayerId.Parse(message.PlayerId), ct).ConfigureAwait(false);
 
         await ctx.SendComposerAsync(

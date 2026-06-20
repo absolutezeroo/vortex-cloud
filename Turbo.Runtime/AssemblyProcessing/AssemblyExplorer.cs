@@ -13,14 +13,16 @@ public static class AssemblyExplorer
 
     public static Type? FindType(Assembly asm, Type type)
     {
-        using var _ = EnterContextual(asm);
+        using AssemblyLoadContext.ContextualReflectionScope? _ = EnterContextual(asm);
 
         Type? candidate = null;
 
-        foreach (var ti in asm.DefinedTypes)
+        foreach (TypeInfo ti in asm.DefinedTypes)
         {
             if (ti.IsAbstract || ti.IsInterface || ti.IsGenericTypeDefinition)
+            {
                 continue;
+            }
 
             Type? asType = null;
 
@@ -67,17 +69,21 @@ public static class AssemblyExplorer
         ArgumentNullException.ThrowIfNull(openGenericInterface);
 
         if (!openGenericInterface.IsGenericTypeDefinition)
+        {
             throw new ArgumentException(
                 "Must be an open generic, e.g. typeof(IFoo<>).",
                 nameof(openGenericInterface)
             );
+        }
 
-        using var _ = EnterContextual(asm);
+        using AssemblyLoadContext.ContextualReflectionScope? _ = EnterContextual(asm);
 
-        foreach (var ti in asm.DefinedTypes)
+        foreach (TypeInfo ti in asm.DefinedTypes)
         {
             if (ti.IsAbstract || ti.IsInterface || ti.IsGenericTypeDefinition || !ti.IsPublic)
+            {
                 continue;
+            }
 
             Type concrete;
 
@@ -101,7 +107,7 @@ public static class AssemblyExplorer
                 continue;
             }
 
-            foreach (var iface in ifaces)
+            foreach (Type iface in ifaces)
             {
                 bool match = false;
                 Type[]? args = null;
@@ -123,7 +129,9 @@ public static class AssemblyExplorer
                 }
 
                 if (match && args is not null)
+                {
                     yield return (concrete, iface, args);
+                }
             }
         }
     }
@@ -132,9 +140,9 @@ public static class AssemblyExplorer
     {
         ArgumentNullException.ThrowIfNull(targetType);
 
-        using var _ = EnterContextual(asm);
+        using AssemblyLoadContext.ContextualReflectionScope? _ = EnterContextual(asm);
 
-        foreach (var ti in asm.DefinedTypes)
+        foreach (TypeInfo ti in asm.DefinedTypes)
         {
             if (
                 ti.IsAbstract
@@ -143,7 +151,9 @@ public static class AssemblyExplorer
                 || !ti.IsPublic
                 || !ti.IsClass
             )
+            {
                 continue;
+            }
 
             Type concrete;
 
@@ -157,7 +167,9 @@ public static class AssemblyExplorer
             }
 
             if (!targetType.IsAssignableFrom(concrete))
+            {
                 continue;
+            }
 
             yield return concrete;
         }
@@ -169,19 +181,21 @@ public static class AssemblyExplorer
         string ifaceMethodName
     )
     {
-        var ifaceMethod =
+        MethodInfo ifaceMethod =
             closedIface.GetMethod(ifaceMethodName)
             ?? throw new MissingMethodException(closedIface.FullName, ifaceMethodName);
 
-        var map = concrete.GetInterfaceMap(closedIface);
+        InterfaceMapping map = concrete.GetInterfaceMap(closedIface);
 
         for (int i = 0; i < map.InterfaceMethods.Length; i++)
         {
             if (map.InterfaceMethods[i] == ifaceMethod)
+            {
                 return map.TargetMethods[i];
+            }
         }
 
-        var m =
+        MethodInfo m =
             concrete.GetMethod(
                 ifaceMethodName,
                 ifaceMethod.GetParameters().Select(p => p.ParameterType).ToArray()
@@ -192,7 +206,7 @@ public static class AssemblyExplorer
 
     private static AssemblyLoadContext.ContextualReflectionScope? EnterContextual(Assembly asm)
     {
-        var alc = AssemblyLoadContext.GetLoadContext(asm);
+        AssemblyLoadContext? alc = AssemblyLoadContext.GetLoadContext(asm);
 
         return alc?.EnterContextualReflection();
     }

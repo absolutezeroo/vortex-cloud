@@ -1,3 +1,4 @@
+using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Packets;
 using Turbo.Revisions.Revision20260112.Serializers.Users.Data;
@@ -22,7 +23,7 @@ internal class ExtendedProfileMessageComposerSerializer(int header)
             .WriteBoolean(message.IsOnline)
             .WriteInteger(message.Guilds.Count);
 
-        foreach (var guild in message.Guilds)
+        foreach (GuildInfoSnapshot guild in message.Guilds)
             GuildInfoSerializer.Serialize(packet, guild);
 
         packet

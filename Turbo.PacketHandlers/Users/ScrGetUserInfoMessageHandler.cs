@@ -24,9 +24,11 @@ public class ScrGetUserInfoMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var sub = await _grainFactory
+        ClubSubscriptionSnapshot sub = await _grainFactory
             .GetPlayerGrain(ctx.PlayerId)
             .GetClubSubscriptionAsync(ct)
             .ConfigureAwait(false);
@@ -60,8 +62,8 @@ public class ScrGetUserInfoMessageHandler(IGrainFactory grainFactory)
         ClubSubscriptionSnapshot sub
     )
     {
-        var daysLeft = sub.DaysLeft;
-        var rem = daysLeft % 31;
+        int daysLeft = sub.DaysLeft;
+        int rem = daysLeft % 31;
         return new ScrSendUserInfoMessageComposer
         {
             ProductName = productName,

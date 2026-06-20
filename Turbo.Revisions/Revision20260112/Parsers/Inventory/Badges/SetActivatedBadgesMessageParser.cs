@@ -11,12 +11,12 @@ internal class SetActivatedBadgesMessageParser : IParser
 
     public IMessageEvent Parse(IClientPacket packet)
     {
-        var slots = new List<(int SlotId, string BadgeCode)>(SlotCount);
+        List<(int SlotId, string BadgeCode)> slots = new List<(int SlotId, string BadgeCode)>(SlotCount);
 
         for (int i = 0; i < SlotCount; i++)
         {
-            var slotId = packet.PopInt();
-            var badgeCode = packet.PopString();
+            int slotId = packet.PopInt();
+            string badgeCode = packet.PopString();
 
             slots.Add((slotId, badgeCode));
         }

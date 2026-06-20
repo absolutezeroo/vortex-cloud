@@ -22,11 +22,11 @@ public sealed class ChannelAuditSink(
 
     public void Emit(in AuditEvent auditEvent)
     {
-        var correlationId = auditEvent.CorrelationId.HasValue
+        string? correlationId = auditEvent.CorrelationId.HasValue
             ? auditEvent.CorrelationId.Value
             : _contextAccessor.Current?.CorrelationId.Value;
 
-        var record = new AuditRecord(auditEvent, DateTime.UtcNow, correlationId);
+        AuditRecord record = new AuditRecord(auditEvent, DateTime.UtcNow, correlationId);
 
         if (!_channel.TryWrite(record))
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text.Json;
@@ -9,12 +10,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Orleans;
 using Turbo.Database.Context;
+using Turbo.Database.Entities.Audit;
+using Turbo.Database.Entities.Furniture;
+using Turbo.Database.Entities.Players;
+using Turbo.Database.Entities.Room;
 using Turbo.Observability.Configuration;
 using Turbo.Observability.Metrics;
 using Turbo.Observability.Runtime;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Observability;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Room;
 using Turbo.Primitives.Players.Enums;
 using Turbo.Primitives.Rooms.Grains;
 
@@ -45,7 +51,7 @@ internal sealed class DashboardApiService(
 
     public async Task<object> PacketStatsAsync(CancellationToken ct)
     {
-        var live = await _liveStats.GetSnapshotAsync().ConfigureAwait(false);
+        LiveStatsSnapshot live = await _liveStats.GetSnapshotAsync().ConfigureAwait(false);
 
         return new
         {
@@ -71,18 +77,18 @@ internal sealed class DashboardApiService(
 
     public async Task<object> OverviewAsync(DateTime startedAtUtc, CancellationToken ct)
     {
-        var db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {
-            var health = await _infrastructureHealth.GetStatusAsync(ct).ConfigureAwait(false);
-            var incidents = await _incidentDetection.DetectAsync(ct).ConfigureAwait(false);
-            var live = await _liveStats.GetSnapshotAsync().ConfigureAwait(false);
-            var activeRooms = await _grainFactory
+            InfrastructureHealthSnapshot health = await _infrastructureHealth.GetStatusAsync(ct).ConfigureAwait(false);
+            IncidentDetectionSnapshot incidents = await _incidentDetection.DetectAsync(ct).ConfigureAwait(false);
+            LiveStatsSnapshot live = await _liveStats.GetSnapshotAsync().ConfigureAwait(false);
+            ImmutableArray<RoomSummarySnapshot> activeRooms = await _grainFactory
                 .GetRoomDirectoryGrain()
                 .GetActiveRoomsAsync()
                 .ConfigureAwait(false);
-            var since = DateTime.UtcNow.AddHours(-1);
+            DateTime since = DateTime.UtcNow.AddHours(-1);
 
             var byCategory = await db
                 .AuditEvents.AsNoTracking()
@@ -92,7 +98,7 @@ internal sealed class DashboardApiService(
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
-            var totals = await GetTotalsAsync(db, ct).ConfigureAwait(false);
+            CachedTotals totals = await GetTotalsAsync(db, ct).ConfigureAwait(false);
 
             return new
             {
@@ -145,35 +151,47 @@ internal sealed class DashboardApiService(
         QueryAsync<object>(
             async db =>
             {
-                var limit = ParseLimit(query["limit"], 50, 500);
-                var page = ParsePage(query["page"]);
-                var offset = Math.Max(0, (page - 1) * limit);
+                int limit = ParseLimit(query["limit"], 50, 500);
+                int page = ParsePage(query["page"]);
+                int offset = Math.Max(0, (page - 1) * limit);
 
-                var q = db.AuditEvents.AsNoTracking();
+                IQueryable<AuditEventEntity> q = db.AuditEvents.AsNoTracking();
 
-                var since = ParseDateTime(query["since"]);
-                var until = ParseDateTime(query["until"]);
+                DateTime? since = ParseDateTime(query["since"]);
+                DateTime? until = ParseDateTime(query["until"]);
 
                 if (since is not null)
+                {
                     q = q.Where(a => a.OccurredAt >= since.Value);
+                }
 
                 if (until is not null)
+                {
                     q = q.Where(a => a.OccurredAt <= until.Value);
+                }
 
-                if (int.TryParse(query["actor"], out var actor))
+                if (int.TryParse(query["actor"], out int actor))
+                {
                     q = q.Where(a => a.ActorPlayerId == actor);
+                }
 
-                if (int.TryParse(query["target"], out var target))
+                if (int.TryParse(query["target"], out int target))
+                {
                     q = q.Where(a => a.TargetPlayerId == target);
+                }
 
-                if (Enum.TryParse<AuditCategory>(query["category"], ignoreCase: true, out var cat))
+                if (Enum.TryParse<AuditCategory>(query["category"], ignoreCase: true, out AuditCategory cat))
+                {
                     q = q.Where(a => a.Category == cat);
+                }
 
-                var action = query["action"];
+                string? action = query["action"];
                 if (!string.IsNullOrWhiteSpace(action))
+                {
                     q = q.Where(a => a.Action == action);
+                }
 
-                var total = await q.CountAsync(ct).ConfigureAwait(false);
+                int total = await q.CountAsync(ct).ConfigureAwait(false);
 
                 var rows = await q.OrderByDescending(a => a.OccurredAt)
                     .Skip(offset)
@@ -197,11 +215,11 @@ internal sealed class DashboardApiService(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var playerIds = NormalizeIds(
+                List<int> playerIds = NormalizeIds(
                     rows.SelectMany(a => new[] { a.ActorPlayerId, a.TargetPlayerId })
                 );
 
-                var playerNames = await LoadPlayerNamesAsync(db, playerIds, ct)
+                Dictionary<int, string> playerNames = await LoadPlayerNamesAsync(db, playerIds, ct)
                     .ConfigureAwait(false);
 
                 var rowsWithNames = rows.Select(a => new
@@ -241,42 +259,57 @@ internal sealed class DashboardApiService(
         QueryAsync<object>(
             async db =>
             {
-                var nowUtc = DateTime.UtcNow;
-                var since = ParseDateTime(query["since"]) ?? nowUtc.AddHours(-24);
-                var until = ParseDateTime(query["until"]) ?? nowUtc;
+                DateTime nowUtc = DateTime.UtcNow;
+                DateTime since = ParseDateTime(query["since"]) ?? nowUtc.AddHours(-24);
+                DateTime until = ParseDateTime(query["until"]) ?? nowUtc;
 
                 if (since > until)
+                {
                     (since, until) = (until, since);
+                }
 
                 if (until - since > TimeSpan.FromDays(60))
+                {
                     since = until.AddDays(-60);
+                }
 
-                var limit = ParseLimit(query["limit"], 80, 500);
-                var page = ParsePage(query["page"]);
-                var offset = Math.Max(0, (page - 1) * limit);
+                int limit = ParseLimit(query["limit"], 80, 500);
+                int page = ParsePage(query["page"]);
+                int offset = Math.Max(0, (page - 1) * limit);
 
-                var q = db.AuditEvents.AsNoTracking().Where(a => a.Category == AuditCategory.Moderation);
+                IQueryable<AuditEventEntity> q = db
+                    .AuditEvents.AsNoTracking()
+                    .Where(a => a.Category == AuditCategory.Moderation);
 
                 q = q.Where(a => a.OccurredAt >= since && a.OccurredAt <= until);
 
-                if (int.TryParse(query["actor"], out var actor))
+                if (int.TryParse(query["actor"], out int actor))
+                {
                     q = q.Where(a => a.ActorPlayerId == actor);
+                }
 
-                if (int.TryParse(query["target"], out var target))
+                if (int.TryParse(query["target"], out int target))
+                {
                     q = q.Where(a => a.TargetPlayerId == target);
+                }
 
-                if (int.TryParse(query["room"], out var room))
+                if (int.TryParse(query["room"], out int room))
+                {
                     q = q.Where(a => a.RoomId == room);
+                }
 
-                var action = query["action"]?.Trim();
+                string? action = query["action"]?.Trim();
                 if (!string.IsNullOrWhiteSpace(action))
+                {
                     q = q.Where(a => a.Action == action);
+                }
 
-                if (Enum.TryParse<AuditResult>(query["result"], true, out var resultFilter))
+                if (Enum.TryParse<AuditResult>(query["result"], true, out AuditResult resultFilter))
+                {
                     q = q.Where(a => a.Result == resultFilter);
+                }
 
-                var events = await q
-                    .OrderByDescending(a => a.OccurredAt)
+                List<ModerationEventRow> events = await q.OrderByDescending(a => a.OccurredAt)
                     .Select(a => new ModerationEventRow(
                         a.Id,
                         a.OccurredAt,
@@ -291,7 +324,7 @@ internal sealed class DashboardApiService(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var total = events.Count;
+                int total = events.Count;
                 var rows = events
                     .Skip(offset)
                     .Take(limit)
@@ -309,24 +342,26 @@ internal sealed class DashboardApiService(
                     })
                     .ToList();
 
-                var playerIds = NormalizeIds(
+                List<int> playerIds = NormalizeIds(
                     events.SelectMany(e => new[] { e.ActorPlayerId, e.TargetPlayerId })
                 );
-                var roomIds = NormalizeIds(events.Select(e => e.RoomId));
+                List<int> roomIds = NormalizeIds(events.Select(e => e.RoomId));
 
-                var playerNames = await LoadPlayerNamesAsync(db, playerIds, ct)
+                Dictionary<int, string> playerNames = await LoadPlayerNamesAsync(db, playerIds, ct)
                     .ConfigureAwait(false);
 
-                var roomNames = await LoadRoomNamesAsync(db, roomIds, ct)
-                    .ConfigureAwait(false);
+                Dictionary<int, string> roomNames = await LoadRoomNamesAsync(db, roomIds, ct).ConfigureAwait(false);
 
-                var renewedBanEventIds = DetectRenewedBanEventIds(events);
+                HashSet<long> renewedBanEventIds = DetectRenewedBanEventIds(events);
 
-                var rowsWithNames = rows
-                    .Select(r =>
+                var rowsWithNames = rows.Select(r =>
                     {
-                        var raw = events.FirstOrDefault(e => e.Id == r.Id && e.OccurredAt == r.OccurredAt);
-                        var durationSeconds = raw is null ? null : ParseModerationDurationSeconds(raw.Data);
+                        ModerationEventRow? raw = events.FirstOrDefault(e =>
+                            e.Id == r.Id && e.OccurredAt == r.OccurredAt
+                        );
+                        int? durationSeconds = raw is null
+                            ? null
+                            : ParseModerationDurationSeconds(raw.Data);
 
                         return new
                         {
@@ -340,12 +375,14 @@ internal sealed class DashboardApiService(
                             targetName = ResolvePlayerName(playerNames, r.TargetPlayerId),
                             r.RoomId,
                             roomName = r.RoomId != null
-                                && roomNames.TryGetValue(r.RoomId.Value, out var roomName)
-                                    ? roomName
-                                    : null,
+                            && roomNames.TryGetValue(r.RoomId.Value, out string? roomName)
+                                ? roomName
+                                : null,
                             durationSeconds,
                             duration = FormatModerationDuration(durationSeconds),
-                            reason = raw is null ? null : SummarizeModerationReason(r.Action, raw.Data),
+                            reason = raw is null
+                                ? null
+                                : SummarizeModerationReason(r.Action, raw.Data),
                             isRenewal = r.Id != 0 && renewedBanEventIds.Contains(r.Id),
                             r.CorrelationId,
                         };
@@ -354,22 +391,14 @@ internal sealed class DashboardApiService(
 
                 var byAction = events
                     .GroupBy(e => e.Action)
-                    .Select(g => new
-                    {
-                        action = g.Key,
-                        count = g.Count(),
-                    })
+                    .Select(g => new { action = g.Key, count = g.Count() })
                     .OrderByDescending(g => g.count)
                     .ThenBy(g => g.action)
                     .ToList();
 
                 var byResult = events
                     .GroupBy(e => e.Result)
-                    .Select(g => new
-                    {
-                        result = g.Key,
-                        count = g.Count(),
-                    })
+                    .Select(g => new { result = g.Key, count = g.Count() })
                     .OrderByDescending(g => g.count)
                     .ThenBy(g => g.result)
                     .ToList();
@@ -411,29 +440,30 @@ internal sealed class DashboardApiService(
                     .Select(g => new
                     {
                         roomId = g.Key,
-                        roomName = roomNames.TryGetValue(g.Key, out var roomName)
-                            ? roomName
-                            : null,
+                        roomName = roomNames.TryGetValue(g.Key, out string? roomName) ? roomName : null,
                         count = g.Count(),
                     })
                     .ToList();
 
-                var durations = events
+                List<int> durations = events
                     .Select(e => ParseModerationDurationSeconds(e.Data))
                     .Where(seconds => seconds.HasValue && seconds.Value > 0)
                     .Select(seconds => seconds!.Value)
                     .ToList();
 
-                var totalBans = await db.RoomBans.AsNoTracking().CountAsync(ct).ConfigureAwait(false);
-                var activeBans = await db
+                int totalBans = await db
+                    .RoomBans.AsNoTracking()
+                    .CountAsync(ct)
+                    .ConfigureAwait(false);
+                int activeBans = await db
                     .RoomBans.AsNoTracking()
                     .Where(b => b.DateExpires > nowUtc)
                     .CountAsync(ct)
                     .ConfigureAwait(false);
-                var inactiveBans = totalBans - activeBans;
+                int inactiveBans = totalBans - activeBans;
 
-                var bucketSize = ResolveBucketSize(since, until);
-                var timeline = BuildModerationTimeline(events, since, until, bucketSize);
+                TimeSpan bucketSize = ResolveBucketSize(since, until);
+                List<ModerationTimelinePoint> timeline = BuildModerationTimeline(events, since, until, bucketSize);
 
                 return new
                 {
@@ -444,12 +474,18 @@ internal sealed class DashboardApiService(
                         limit,
                         page,
                         offset,
-                        success = byResult.FirstOrDefault(r => r.result == AuditResult.Success.ToString())
-                            ?.count ?? 0,
-                        denied = byResult.FirstOrDefault(r => r.result == AuditResult.Denied.ToString())
-                            ?.count ?? 0,
-                        failed = byResult.FirstOrDefault(r => r.result == AuditResult.Failed.ToString())
-                            ?.count ?? 0,
+                        success = byResult
+                            .FirstOrDefault(r => r.result == AuditResult.Success.ToString())
+                            ?.count
+                            ?? 0,
+                        denied = byResult
+                            .FirstOrDefault(r => r.result == AuditResult.Denied.ToString())
+                            ?.count
+                            ?? 0,
+                        failed = byResult
+                            .FirstOrDefault(r => r.result == AuditResult.Failed.ToString())
+                            ?.count
+                            ?? 0,
                         retentionRate = totalBans > 0
                             ? Math.Round((double)activeBans / totalBans, 4)
                             : 0d,
@@ -461,11 +497,7 @@ internal sealed class DashboardApiService(
                             ? Math.Round(durations.Average(), 2)
                             : 0d,
                     },
-                    distribution = new
-                    {
-                        byAction,
-                        byResult,
-                    },
+                    distribution = new { byAction, byResult },
                     timeline,
                     topActors,
                     topTargets,
@@ -480,24 +512,30 @@ internal sealed class DashboardApiService(
         QueryAsync<object>(
             async db =>
             {
-                var limit = ParseLimit(query["limit"], 50, 500);
-                var page = ParsePage(query["page"]);
-                var offset = Math.Max(0, (page - 1) * limit);
-                var q = db.EconomyLedger.AsNoTracking();
+                int limit = ParseLimit(query["limit"], 50, 500);
+                int page = ParsePage(query["page"]);
+                int offset = Math.Max(0, (page - 1) * limit);
+                IQueryable<EconomyLedgerEntity> q = db.EconomyLedger.AsNoTracking();
 
-                var since = ParseDateTime(query["since"]);
-                var until = ParseDateTime(query["until"]);
+                DateTime? since = ParseDateTime(query["since"]);
+                DateTime? until = ParseDateTime(query["until"]);
 
                 if (since is not null)
+                {
                     q = q.Where(l => l.OccurredAt >= since.Value);
+                }
 
                 if (until is not null)
+                {
                     q = q.Where(l => l.OccurredAt <= until.Value);
+                }
 
-                if (int.TryParse(query["player"], out var player))
+                if (int.TryParse(query["player"], out int player))
+                {
                     q = q.Where(l => l.PlayerId == player);
+                }
 
-                var total = await q.CountAsync(ct).ConfigureAwait(false);
+                int total = await q.CountAsync(ct).ConfigureAwait(false);
 
                 var rows = await q.OrderByDescending(l => l.OccurredAt)
                     .Skip(offset)
@@ -518,9 +556,9 @@ internal sealed class DashboardApiService(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var playerIds = NormalizeIds(rows.Select(l => (long?)l.PlayerId));
+                List<int> playerIds = NormalizeIds(rows.Select(l => (long?)l.PlayerId));
 
-                var playerNames = await LoadPlayerNamesAsync(db, playerIds, ct)
+                Dictionary<int, string> playerNames = await LoadPlayerNamesAsync(db, playerIds, ct)
                     .ConfigureAwait(false);
 
                 var rowsWithNames = rows.Select(l => new
@@ -556,15 +594,19 @@ internal sealed class DashboardApiService(
         QueryAsync<object>(
             async db =>
             {
-                var nowUtc = DateTime.UtcNow;
-                var until = ParseDateTime(query["until"]) ?? nowUtc;
-                var since = ParseDateTime(query["since"]) ?? nowUtc.AddDays(-30);
+                DateTime nowUtc = DateTime.UtcNow;
+                DateTime until = ParseDateTime(query["until"]) ?? nowUtc;
+                DateTime since = ParseDateTime(query["since"]) ?? nowUtc.AddDays(-30);
 
                 if (since > until)
+                {
                     (since, until) = (until, since);
+                }
 
                 if (until - since > TimeSpan.FromDays(365))
+                {
                     since = until.AddDays(-365);
+                }
 
                 var subscriptions = await db
                     .PlayerSubscriptions.AsNoTracking()
@@ -579,33 +621,43 @@ internal sealed class DashboardApiService(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var playerIds = NormalizeIds(subscriptions.Select(s => (long?)s.playerId));
-                var playerNames = await LoadPlayerNamesAsync(db, playerIds, ct).ConfigureAwait(false);
+                List<int> playerIds = NormalizeIds(subscriptions.Select(s => (long?)s.playerId));
+                Dictionary<int, string> playerNames = await LoadPlayerNamesAsync(db, playerIds, ct)
+                    .ConfigureAwait(false);
 
                 var activeSubscriptions = subscriptions.Where(s => s.ExpiresAt > nowUtc).ToList();
-                var totalSubscriptions = subscriptions.Count;
-                var inactiveCount = totalSubscriptions - activeSubscriptions.Count;
-                var expiringIn7Days = activeSubscriptions.Count(s => s.ExpiresAt <= nowUtc.AddDays(7));
-                var expiringIn30Days = activeSubscriptions.Count(s => s.ExpiresAt <= nowUtc.AddDays(30));
-                var activeRate = totalSubscriptions > 0
-                    ? Math.Round((double)activeSubscriptions.Count / totalSubscriptions, 4)
-                    : 0d;
+                int totalSubscriptions = subscriptions.Count;
+                int inactiveCount = totalSubscriptions - activeSubscriptions.Count;
+                int expiringIn7Days = activeSubscriptions.Count(s =>
+                    s.ExpiresAt <= nowUtc.AddDays(7)
+                );
+                int expiringIn30Days = activeSubscriptions.Count(s =>
+                    s.ExpiresAt <= nowUtc.AddDays(30)
+                );
+                double activeRate =
+                    totalSubscriptions > 0
+                        ? Math.Round((double)activeSubscriptions.Count / totalSubscriptions, 4)
+                        : 0d;
 
                 var byType = subscriptions
                     .GroupBy(s => s.type)
                     .Select(g =>
                     {
                         var activeByType = g.Where(s => s.ExpiresAt > nowUtc).ToList();
-                        var averageRemainingDays = activeByType.Count > 0
-                            ? Math.Round(
-                                activeByType
-                                    .Select(s => (s.ExpiresAt - nowUtc).TotalDays)
-                                    .Average(),
-                                2
-                            )
-                            : 0d;
+                        double averageRemainingDays =
+                            activeByType.Count > 0
+                                ? Math.Round(
+                                    activeByType
+                                        .Select(s => (s.ExpiresAt - nowUtc).TotalDays)
+                                        .Average(),
+                                    2
+                                )
+                                : 0d;
 
-                        var averageTotalMonths = Math.Round(g.Select(s => s.TotalMonths).DefaultIfEmpty(0).Average(), 2);
+                        double averageTotalMonths = Math.Round(
+                            g.Select(s => s.TotalMonths).DefaultIfEmpty(0).Average(),
+                            2
+                        );
 
                         return new
                         {
@@ -643,7 +695,7 @@ internal sealed class DashboardApiService(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var clubEvents = events
+                List<ClubSubscriptionEvent> clubEvents = events
                     .Select(e => new ClubSubscriptionEvent(
                         e.OccurredAt,
                         e.Action,
@@ -652,20 +704,23 @@ internal sealed class DashboardApiService(
                     ))
                     .ToList();
 
-                var actorIds = NormalizeIds(clubEvents.Select(e => e.ActorPlayerId));
-                var actorNames = await LoadPlayerNamesAsync(db, actorIds, ct).ConfigureAwait(false);
+                List<int> actorIds = NormalizeIds(clubEvents.Select(e => e.ActorPlayerId));
+                Dictionary<int, string> actorNames = await LoadPlayerNamesAsync(db, actorIds, ct).ConfigureAwait(false);
 
                 var enrichedEvents = clubEvents
                     .Select(e =>
                     {
-                        var payload = ParseClubSubscriptionPayload(e.Data);
+                        ClubSubscriptionPayload? payload = ParseClubSubscriptionPayload(e.Data);
 
                         return new
                         {
                             e.OccurredAt,
                             e.Action,
                             actorPlayerId = ToPlayerId(e.ActorPlayerId),
-                            actorPlayerName = ResolvePlayerName(actorNames, ToPlayerId(e.ActorPlayerId)),
+                            actorPlayerName = ResolvePlayerName(
+                                actorNames,
+                                ToPlayerId(e.ActorPlayerId)
+                            ),
                             payload?.Months,
                             payload?.TotalMonths,
                             payload?.CreditCost,
@@ -676,15 +731,16 @@ internal sealed class DashboardApiService(
                     .OrderByDescending(e => e.OccurredAt)
                     .ToList();
 
-                var purchases = clubEvents.Count(e => e.Action == "economy.hc.purchase");
-                var renewals = clubEvents.Count(e => e.Action == "economy.hc.renew");
-                var expired = clubEvents.Count(e => e.Action == "economy.hc.expired");
-                var renewalShare = purchases + renewals > 0
-                    ? Math.Round((double)renewals / (purchases + renewals), 4)
-                    : 0d;
+                int purchases = clubEvents.Count(e => e.Action == "economy.hc.purchase");
+                int renewals = clubEvents.Count(e => e.Action == "economy.hc.renew");
+                int expired = clubEvents.Count(e => e.Action == "economy.hc.expired");
+                double renewalShare =
+                    purchases + renewals > 0
+                        ? Math.Round((double)renewals / (purchases + renewals), 4)
+                        : 0d;
 
-                var bucketSize = ResolveBucketSize(since, until);
-                var lifecycle = BuildSubscriptionTimeline(
+                TimeSpan bucketSize = ResolveBucketSize(since, until);
+                List<SubscriptionTimelinePoint> lifecycle = BuildSubscriptionTimeline(
                     clubEvents.Select(e => (e.OccurredAt, e.Action)).ToList(),
                     since,
                     until,
@@ -774,27 +830,33 @@ internal sealed class DashboardApiService(
 
     public Task<object?> ItemAsync(string idText, NameValueCollection query, CancellationToken ct)
     {
-        if (!long.TryParse(idText, out var itemId))
+        if (!long.TryParse(idText, out long itemId))
+        {
             return Task.FromResult<object?>(null);
+        }
 
         return QueryAsync<object?>(
             async db =>
             {
-                var limit = ParseLimit(query["limit"], 50, 500);
-                var page = ParsePage(query["page"]);
-                var offset = Math.Max(0, (page - 1) * limit);
-                var q = db.ItemEvents.AsNoTracking().Where(i => i.ItemId == itemId);
+                int limit = ParseLimit(query["limit"], 50, 500);
+                int page = ParsePage(query["page"]);
+                int offset = Math.Max(0, (page - 1) * limit);
+                IQueryable<ItemEventEntity> q = db.ItemEvents.AsNoTracking().Where(i => i.ItemId == itemId);
 
-                var since = ParseDateTime(query["since"]);
-                var until = ParseDateTime(query["until"]);
+                DateTime? since = ParseDateTime(query["since"]);
+                DateTime? until = ParseDateTime(query["until"]);
 
                 if (since is not null)
+                {
                     q = q.Where(i => i.OccurredAt >= since.Value);
+                }
 
                 if (until is not null)
+                {
                     q = q.Where(i => i.OccurredAt <= until.Value);
+                }
 
-                var total = await q.CountAsync(ct).ConfigureAwait(false);
+                int total = await q.CountAsync(ct).ConfigureAwait(false);
 
                 var itemSnapshot = await db
                     .Furnitures.AsNoTracking()
@@ -837,16 +899,16 @@ internal sealed class DashboardApiService(
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var rowPlayerIds = NormalizeIds(
+                List<int> rowPlayerIds = NormalizeIds(
                     rows.SelectMany(r => new[] { r.ActorPlayerId, r.FromOwnerId, r.ToOwnerId })
                 );
 
-                var rowPlayerNames = await LoadPlayerNamesAsync(db, rowPlayerIds, ct)
+                Dictionary<int, string> rowPlayerNames = await LoadPlayerNamesAsync(db, rowPlayerIds, ct)
                     .ConfigureAwait(false);
 
-                var rowRoomIds = NormalizeIds(rows.Select(r => r.RoomId));
+                List<int> rowRoomIds = NormalizeIds(rows.Select(r => r.RoomId));
 
-                var rowRoomNames = await LoadRoomNamesAsync(db, rowRoomIds, ct)
+                Dictionary<int, string> rowRoomNames = await LoadRoomNamesAsync(db, rowRoomIds, ct)
                     .ConfigureAwait(false);
 
                 var rowsWithNames = rows.Select(r => new
@@ -862,7 +924,7 @@ internal sealed class DashboardApiService(
                         toOwnerName = ResolvePlayerName(rowPlayerNames, r.ToOwnerId),
                         r.RoomId,
                         roomName = r.RoomId != null
-                        && rowRoomNames.TryGetValue(r.RoomId.Value, out var roomName)
+                        && rowRoomNames.TryGetValue(r.RoomId.Value, out string? roomName)
                             ? roomName
                             : null,
                         r.CorrelationId,
@@ -890,42 +952,54 @@ internal sealed class DashboardApiService(
         QueryAsync<object>(
             async db =>
             {
-                var term = (query["q"] ?? string.Empty).Trim();
-                var limit = ParseLimit(query["limit"], 50, 500);
-                var page = ParsePage(query["page"]);
-                var offset = Math.Max(0, (page - 1) * limit);
+                string term = (query["q"] ?? string.Empty).Trim();
+                int limit = ParseLimit(query["limit"], 50, 500);
+                int page = ParsePage(query["page"]);
+                int offset = Math.Max(0, (page - 1) * limit);
 
-                var since = ParseDateTime(query["since"]);
-                var until = ParseDateTime(query["until"]);
+                DateTime? since = ParseDateTime(query["since"]);
+                DateTime? until = ParseDateTime(query["until"]);
 
                 // Correlation id: 32 hex chars (Guid "N").
                 if (term.Length == 32 && term.All(Uri.IsHexDigit))
                 {
-                    var audit = db.AuditEvents.AsNoTracking().Where(a => a.CorrelationId == term);
+                    IQueryable<AuditEventEntity> audit = db.AuditEvents.AsNoTracking().Where(a => a.CorrelationId == term);
 
                     if (since is not null)
+                    {
                         audit = audit.Where(a => a.OccurredAt >= since.Value);
+                    }
 
                     if (until is not null)
+                    {
                         audit = audit.Where(a => a.OccurredAt <= until.Value);
+                    }
 
-                    var ledger = db
+                    IQueryable<EconomyLedgerEntity> ledger = db
                         .EconomyLedger.AsNoTracking()
                         .Where(l => l.CorrelationId == term);
 
                     if (since is not null)
+                    {
                         ledger = ledger.Where(l => l.OccurredAt >= since.Value);
+                    }
 
                     if (until is not null)
+                    {
                         ledger = ledger.Where(l => l.OccurredAt <= until.Value);
+                    }
 
-                    var items = db.ItemEvents.AsNoTracking().Where(i => i.CorrelationId == term);
+                    IQueryable<ItemEventEntity> items = db.ItemEvents.AsNoTracking().Where(i => i.CorrelationId == term);
 
                     if (since is not null)
+                    {
                         items = items.Where(i => i.OccurredAt >= since.Value);
+                    }
 
                     if (until is not null)
+                    {
                         items = items.Where(i => i.OccurredAt <= until.Value);
+                    }
 
                     var auditRows = await audit
                         .OrderBy(a => a.OccurredAt)
@@ -941,9 +1015,9 @@ internal sealed class DashboardApiService(
                         .ToListAsync(ct)
                         .ConfigureAwait(false);
 
-                    var auditActorIds = NormalizeIds(auditRows.Select(a => a.ActorPlayerId));
+                    List<int> auditActorIds = NormalizeIds(auditRows.Select(a => a.ActorPlayerId));
 
-                    var auditActorNames = await LoadPlayerNamesAsync(db, auditActorIds, ct)
+                    Dictionary<int, string> auditActorNames = await LoadPlayerNamesAsync(db, auditActorIds, ct)
                         .ConfigureAwait(false);
 
                     var auditRowsWithNames = auditRows
@@ -1000,11 +1074,11 @@ internal sealed class DashboardApiService(
                     };
                 }
 
-                if (int.TryParse(term, out var id))
+                if (int.TryParse(term, out int id))
                 {
-                    var playerIdLong = (long)id;
-                    var profileWindowSince = since ?? DateTime.UtcNow.AddHours(-24);
-                    var profileWindowUntil = until ?? DateTime.UtcNow;
+                    long playerIdLong = (long)id;
+                    DateTime profileWindowSince = since ?? DateTime.UtcNow.AddHours(-24);
+                    DateTime profileWindowUntil = until ?? DateTime.UtcNow;
 
                     var player = await db
                         .Players.AsNoTracking()
@@ -1138,18 +1212,18 @@ internal sealed class DashboardApiService(
                         .ToListAsync(ct)
                         .ConfigureAwait(false);
 
-                    var itemRoomIds = NormalizeIds(itemEvents.Select(i => i.RoomId));
+                    List<int> itemRoomIds = NormalizeIds(itemEvents.Select(i => i.RoomId));
 
-                    var itemRoomNames = await LoadRoomNamesAsync(db, itemRoomIds, ct)
+                    Dictionary<int, string> itemRoomNames = await LoadRoomNamesAsync(db, itemRoomIds, ct)
                         .ConfigureAwait(false);
 
-                    var itemPartyIds = NormalizeIds(
+                    List<int> itemPartyIds = NormalizeIds(
                         itemEvents.SelectMany(i =>
                             new[] { i.actorPlayerId, i.fromOwnerId, i.toOwnerId }
                         )
                     );
 
-                    var itemPartyNames = await LoadPlayerNamesAsync(db, itemPartyIds, ct)
+                    Dictionary<int, string> itemPartyNames = await LoadPlayerNamesAsync(db, itemPartyIds, ct)
                         .ConfigureAwait(false);
 
                     var itemEventsWithRooms = itemEvents
@@ -1160,7 +1234,7 @@ internal sealed class DashboardApiService(
                             i.itemId,
                             i.RoomId,
                             roomName = i.RoomId != null
-                            && itemRoomNames.TryGetValue(i.RoomId.Value, out var roomName)
+                            && itemRoomNames.TryGetValue(i.RoomId.Value, out string? roomName)
                                 ? roomName
                                 : null,
                             i.actorPlayerId,
@@ -1174,7 +1248,7 @@ internal sealed class DashboardApiService(
                         })
                         .ToList();
 
-                    var auditCount = await db
+                    int auditCount = await db
                         .AuditEvents.AsNoTracking()
                         .Where(a => a.ActorPlayerId == id || a.TargetPlayerId == id)
                         .Where(a =>
@@ -1183,7 +1257,7 @@ internal sealed class DashboardApiService(
                         .CountAsync(ct)
                         .ConfigureAwait(false);
 
-                    var ledgerCount = await db
+                    int ledgerCount = await db
                         .EconomyLedger.AsNoTracking()
                         .Where(l => l.PlayerId == id)
                         .Where(l =>
@@ -1192,7 +1266,7 @@ internal sealed class DashboardApiService(
                         .CountAsync(ct)
                         .ConfigureAwait(false);
 
-                    var itemEventCount = await db
+                    int itemEventCount = await db
                         .ItemEvents.AsNoTracking()
                         .Where(i =>
                             i.ActorPlayerId == playerIdLong
@@ -1205,13 +1279,13 @@ internal sealed class DashboardApiService(
                         .CountAsync(ct)
                         .ConfigureAwait(false);
 
-                    var ownedRoomCount = await db
+                    int ownedRoomCount = await db
                         .Rooms.AsNoTracking()
                         .Where(r => r.PlayerEntityId == id)
                         .CountAsync(ct)
                         .ConfigureAwait(false);
 
-                    var ownedItemCount = await db
+                    int ownedItemCount = await db
                         .Furnitures.AsNoTracking()
                         .Where(f => f.PlayerEntityId == id)
                         .CountAsync(ct)
@@ -1248,35 +1322,47 @@ internal sealed class DashboardApiService(
                             },
                         };
 
-                    var audit = db
+                    IQueryable<AuditEventEntity> audit = db
                         .AuditEvents.AsNoTracking()
                         .Where(a => a.ActorPlayerId == id || a.TargetPlayerId == id);
 
                     if (since is not null)
+                    {
                         audit = audit.Where(a => a.OccurredAt >= since.Value);
+                    }
 
                     if (until is not null)
+                    {
                         audit = audit.Where(a => a.OccurredAt <= until.Value);
+                    }
 
-                    var ledger = db.EconomyLedger.AsNoTracking().Where(l => l.PlayerId == id);
+                    IQueryable<EconomyLedgerEntity> ledger = db.EconomyLedger.AsNoTracking().Where(l => l.PlayerId == id);
 
                     if (since is not null)
+                    {
                         ledger = ledger.Where(l => l.OccurredAt >= since.Value);
+                    }
 
                     if (until is not null)
+                    {
                         ledger = ledger.Where(l => l.OccurredAt <= until.Value);
+                    }
 
-                    var itemHistory = db
+                    IQueryable<ItemEventEntity> itemHistory = db
                         .ItemEvents.AsNoTracking()
                         .Where(i =>
                             i.ActorPlayerId == id || i.FromOwnerId == id || i.ToOwnerId == id
                         );
 
                     if (since is not null)
+                    {
                         itemHistory = itemHistory.Where(i => i.OccurredAt >= since.Value);
+                    }
 
                     if (until is not null)
+                    {
                         itemHistory = itemHistory.Where(i => i.OccurredAt <= until.Value);
+                    }
 
                     var asActorRows = await audit
                         .OrderByDescending(a => a.OccurredAt)
@@ -1296,16 +1382,16 @@ internal sealed class DashboardApiService(
                         .ToListAsync(ct)
                         .ConfigureAwait(false);
 
-                    var actorAndTargetIds = NormalizeIds(
+                    List<int> actorAndTargetIds = NormalizeIds(
                         asActorRows.SelectMany(r => new[] { r.ActorPlayerId, r.TargetPlayerId })
                     );
 
-                    var actorAndTargetNames = await LoadPlayerNamesAsync(db, actorAndTargetIds, ct)
+                    Dictionary<int, string> actorAndTargetNames = await LoadPlayerNamesAsync(db, actorAndTargetIds, ct)
                         .ConfigureAwait(false);
 
-                    var auditRoomIds = NormalizeIds(asActorRows.Select(r => r.RoomId));
+                    List<int> auditRoomIds = NormalizeIds(asActorRows.Select(r => r.RoomId));
 
-                    var auditRoomNames = await LoadRoomNamesAsync(db, auditRoomIds, ct)
+                    Dictionary<int, string> auditRoomNames = await LoadRoomNamesAsync(db, auditRoomIds, ct)
                         .ConfigureAwait(false);
 
                     var asActor = asActorRows
@@ -1326,7 +1412,7 @@ internal sealed class DashboardApiService(
                             ),
                             r.RoomId,
                             roomName = r.RoomId != null
-                            && auditRoomNames.TryGetValue(r.RoomId.Value, out var roomName)
+                            && auditRoomNames.TryGetValue(r.RoomId.Value, out string? roomName)
                                 ? roomName
                                 : null,
                             r.Result,
@@ -1353,20 +1439,20 @@ internal sealed class DashboardApiService(
                         .ToListAsync(ct)
                         .ConfigureAwait(false);
 
-                    var itemHistoryRoomIds = NormalizeIds(
+                    List<int> itemHistoryRoomIds = NormalizeIds(
                         itemHistoryRows.Select(row => row.RoomId)
                     );
 
-                    var itemHistoryPartyIds = NormalizeIds(
+                    List<int> itemHistoryPartyIds = NormalizeIds(
                         itemHistoryRows.SelectMany(row =>
                             new[] { row.ActorPlayerId, row.FromOwnerId, row.ToOwnerId }
                         )
                     );
 
-                    var itemHistoryRoomNames = await LoadRoomNamesAsync(db, itemHistoryRoomIds, ct)
+                    Dictionary<int, string> itemHistoryRoomNames = await LoadRoomNamesAsync(db, itemHistoryRoomIds, ct)
                         .ConfigureAwait(false);
 
-                    var itemHistoryPartyNames = await LoadPlayerNamesAsync(
+                    Dictionary<int, string> itemHistoryPartyNames = await LoadPlayerNamesAsync(
                             db,
                             itemHistoryPartyIds,
                             ct
@@ -1381,7 +1467,7 @@ internal sealed class DashboardApiService(
                             row.ItemId,
                             row.RoomId,
                             roomName = row.RoomId != null
-                            && itemHistoryRoomNames.TryGetValue(row.RoomId.Value, out var roomName)
+                            && itemHistoryRoomNames.TryGetValue(row.RoomId.Value, out string? roomName)
                                 ? roomName
                                 : null,
                             row.ActorPlayerId,
@@ -1472,18 +1558,18 @@ internal sealed class DashboardApiService(
                     return null;
                 }
 
-                var limit = ParseLimit(query["limit"], 80, 500);
-                var page = ParsePage(query["page"]);
-                var offset = Math.Max(0, (page - 1) * limit);
-                var take = offset + limit;
-                var since = ParseDateTime(query["since"]);
-                var until = ParseDateTime(query["until"]);
+                int limit = ParseLimit(query["limit"], 80, 500);
+                int page = ParsePage(query["page"]);
+                int offset = Math.Max(0, (page - 1) * limit);
+                int take = offset + limit;
+                DateTime? since = ParseDateTime(query["since"]);
+                DateTime? until = ParseDateTime(query["until"]);
 
-                var entriesQuery = db
+                IQueryable<RoomEntryLogEntity> entriesQuery = db
                     .RoomEntryLogs.AsNoTracking()
                     .Where(e => e.RoomEntityId == roomId);
-                var chatQuery = db.Chatlogs.AsNoTracking().Where(c => c.RoomEntityId == roomId);
-                var itemQuery = db.ItemEvents.AsNoTracking().Where(i => i.RoomId == roomId);
+                IQueryable<RoomChatlogEntity> chatQuery = db.Chatlogs.AsNoTracking().Where(c => c.RoomEntityId == roomId);
+                IQueryable<ItemEventEntity> itemQuery = db.ItemEvents.AsNoTracking().Where(i => i.RoomId == roomId);
 
                 if (since is not null)
                 {
@@ -1499,9 +1585,9 @@ internal sealed class DashboardApiService(
                     itemQuery = itemQuery.Where(i => i.OccurredAt <= until.Value);
                 }
 
-                var entryCount = await entriesQuery.CountAsync(ct).ConfigureAwait(false);
-                var chatCount = await chatQuery.CountAsync(ct).ConfigureAwait(false);
-                var itemCount = await itemQuery.CountAsync(ct).ConfigureAwait(false);
+                int entryCount = await entriesQuery.CountAsync(ct).ConfigureAwait(false);
+                int chatCount = await chatQuery.CountAsync(ct).ConfigureAwait(false);
+                int itemCount = await itemQuery.CountAsync(ct).ConfigureAwait(false);
 
                 var entryTimeline = await entriesQuery
                     .OrderByDescending(e => e.CreatedAt)
@@ -1568,11 +1654,11 @@ internal sealed class DashboardApiService(
                     })
                     .ToList();
 
-                var itemPlayerIds = NormalizeIds(
+                List<int> itemPlayerIds = NormalizeIds(
                     itemTimeline.SelectMany(e => new[] { e.PlayerId, e.TargetPlayerId })
                 );
 
-                var itemPlayerNames = await LoadPlayerNamesAsync(db, itemPlayerIds, ct)
+                Dictionary<int, string> itemPlayerNames = await LoadPlayerNamesAsync(db, itemPlayerIds, ct)
                     .ConfigureAwait(false);
 
                 var itemTimelineEnriched = itemTimeline
@@ -1633,22 +1719,22 @@ internal sealed class DashboardApiService(
 
     public Task<object> PlayersAsync(NameValueCollection query, CancellationToken ct)
     {
-        var online = _sessionGateway.GetOnlinePlayerIds().Select(p => p.Value).ToHashSet();
+        HashSet<int> online = _sessionGateway.GetOnlinePlayerIds().Select(p => p.Value).ToHashSet();
 
         return QueryAsync<object>(
             async db =>
             {
-                var term = (query["q"] ?? string.Empty).Trim();
-                var limit = ParseLimit(query["limit"], 50, 200);
+                string term = (query["q"] ?? string.Empty).Trim();
+                int limit = ParseLimit(query["limit"], 50, 200);
 
                 List<PlayerRow> rows;
 
                 if (term.Length == 0)
                 {
                     // Browsing: surface online players first, then the most recent accounts.
-                    var onlineIds = online.ToList();
+                    List<int> onlineIds = online.ToList();
 
-                    var onlineRows =
+                    List<PlayerRow> onlineRows =
                         onlineIds.Count > 0
                             ? await db
                                 .Players.AsNoTracking()
@@ -1660,9 +1746,9 @@ internal sealed class DashboardApiService(
                                 .ConfigureAwait(false)
                             : new List<PlayerRow>();
 
-                    var remaining = limit - onlineRows.Count;
+                    int remaining = limit - onlineRows.Count;
 
-                    var fillRows =
+                    List<PlayerRow> fillRows =
                         remaining > 0
                             ? await db
                                 .Players.AsNoTracking()
@@ -1678,12 +1764,16 @@ internal sealed class DashboardApiService(
                 }
                 else
                 {
-                    var players = db.Players.AsNoTracking();
+                    IQueryable<PlayerEntity> players = db.Players.AsNoTracking();
 
-                    if (int.TryParse(term, out var id))
+                    if (int.TryParse(term, out int id))
+                    {
                         players = players.Where(p => p.Name.Contains(term) || p.Id == id);
+                    }
                     else
+                    {
                         players = players.Where(p => p.Name.Contains(term));
+                    }
 
                     rows = await players
                         .OrderBy(p => p.Name)
@@ -1721,19 +1811,23 @@ internal sealed class DashboardApiService(
         QueryAsync<object>(
             async db =>
             {
-                var term = (query["q"] ?? string.Empty).Trim();
-                var limit = ParseLimit(query["limit"], 50, 200);
+                string term = (query["q"] ?? string.Empty).Trim();
+                int limit = ParseLimit(query["limit"], 50, 200);
 
-                var definitions = db.FurnitureDefinitions.AsNoTracking();
+                IQueryable<FurnitureDefinitionEntity> definitions = db.FurnitureDefinitions.AsNoTracking();
 
                 if (term.Length > 0)
                 {
-                    if (int.TryParse(term, out var id))
+                    if (int.TryParse(term, out int id))
+                    {
                         definitions = definitions.Where(f =>
                             f.Name.Contains(term) || f.Id == id || f.SpriteId == id
                         );
+                    }
                     else
+                    {
                         definitions = definitions.Where(f => f.Name.Contains(term));
+                    }
                 }
 
                 var rows = await definitions
@@ -1776,17 +1870,19 @@ internal sealed class DashboardApiService(
 
     private string? BuildFurniIconUrl(string name)
     {
-        var template = _config.FurniIconUrlTemplate;
+        string template = _config.FurniIconUrlTemplate;
 
         if (string.IsNullOrWhiteSpace(template) || string.IsNullOrEmpty(name))
+        {
             return null;
+        }
 
         return template.Replace("{name}", Uri.EscapeDataString(name), StringComparison.Ordinal);
     }
 
     private async Task<T> QueryAsync<T>(Func<TurboDbContext, Task<T>> work, CancellationToken ct)
     {
-        var db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {
@@ -1805,12 +1901,14 @@ internal sealed class DashboardApiService(
     /// </summary>
     private async Task<CachedTotals> GetTotalsAsync(TurboDbContext db, CancellationToken ct)
     {
-        var cached = _cachedTotals;
+        CachedTotals? cached = _cachedTotals;
 
         if (cached is not null && DateTime.UtcNow - cached.AtUtc < TotalsCacheTtl)
+        {
             return cached;
+        }
 
-        var fresh = new CachedTotals(
+        CachedTotals fresh = new CachedTotals(
             DateTime.UtcNow,
             await db.AuditEvents.CountAsync(ct).ConfigureAwait(false),
             await db.EconomyLedger.CountAsync(ct).ConfigureAwait(false),
@@ -1850,11 +1948,7 @@ internal sealed class DashboardApiService(
         string? CorrelationId
     );
 
-    private sealed record ModerationTimelinePoint(
-        string Bucket,
-        string Label,
-        int Count
-    );
+    private sealed record ModerationTimelinePoint(string Bucket, string Label, int Count);
 
     private sealed record SubscriptionTimelinePoint(
         string Bucket,
@@ -1872,25 +1966,31 @@ internal sealed class DashboardApiService(
         bool? IsRenewal
     );
 
-    private static HashSet<long> DetectRenewedBanEventIds(
-        IReadOnlyList<ModerationEventRow> events
-    )
+    private static HashSet<long> DetectRenewedBanEventIds(IReadOnlyList<ModerationEventRow> events)
     {
         if (events.Count == 0)
+        {
             return [];
+        }
 
-        var lastBanByKey = new Dictionary<(long Actor, long Target, int Room), DateTime>();
-        var renewed = new HashSet<long>();
+        Dictionary<(long Actor, long Target, int Room), DateTime> lastBanByKey = new Dictionary<(long Actor, long Target, int Room), DateTime>();
+        HashSet<long> renewed = new HashSet<long>();
 
-        foreach (var evt in events.Where(e => e.Action == "moderation.ban").OrderBy(e => e.OccurredAt))
+        foreach (
+            ModerationEventRow evt in events.Where(e => e.Action == "moderation.ban").OrderBy(e => e.OccurredAt)
+        )
         {
             if (evt.ActorPlayerId is null || evt.TargetPlayerId is null || evt.RoomId is null)
+            {
                 continue;
+            }
 
-            var key = (evt.ActorPlayerId.Value, evt.TargetPlayerId.Value, evt.RoomId.Value);
+            (long, long, int) key = (evt.ActorPlayerId.Value, evt.TargetPlayerId.Value, evt.RoomId.Value);
 
             if (lastBanByKey.TryGetValue(key, out _))
+            {
                 renewed.Add(evt.Id);
+            }
 
             lastBanByKey[key] = evt.OccurredAt;
         }
@@ -1906,11 +2006,13 @@ internal sealed class DashboardApiService(
     )
     {
         if (events.Count == 0)
+        {
             return [];
+        }
 
-        var bucketMap = new Dictionary<DateTime, int>();
-        var cursor = ResolveTimelineBucket(since, bucketSize);
-        var end = ResolveTimelineBucket(until, bucketSize);
+        Dictionary<DateTime, int> bucketMap = new Dictionary<DateTime, int>();
+        DateTime cursor = ResolveTimelineBucket(since, bucketSize);
+        DateTime end = ResolveTimelineBucket(until, bucketSize);
 
         while (cursor <= end)
         {
@@ -1918,10 +2020,10 @@ internal sealed class DashboardApiService(
             cursor = cursor.Add(bucketSize);
         }
 
-        foreach (var evt in events)
+        foreach (ModerationEventRow evt in events)
         {
-            var bucket = ResolveTimelineBucket(evt.OccurredAt, bucketSize);
-            bucketMap.TryGetValue(bucket, out var count);
+            DateTime bucket = ResolveTimelineBucket(evt.OccurredAt, bucketSize);
+            bucketMap.TryGetValue(bucket, out int count);
             bucketMap[bucket] = count + 1;
         }
 
@@ -1943,12 +2045,14 @@ internal sealed class DashboardApiService(
     )
     {
         if (events.Count == 0)
+        {
             return [];
+        }
 
-        var bucketMap = new Dictionary<DateTime, (int purchases, int renewals, int expired)>();
+        Dictionary<DateTime, (int purchases, int renewals, int expired)> bucketMap = new Dictionary<DateTime, (int purchases, int renewals, int expired)>();
 
-        var cursor = ResolveTimelineBucket(since, bucketSize);
-        var end = ResolveTimelineBucket(until, bucketSize);
+        DateTime cursor = ResolveTimelineBucket(since, bucketSize);
+        DateTime end = ResolveTimelineBucket(until, bucketSize);
 
         while (cursor <= end)
         {
@@ -1956,10 +2060,10 @@ internal sealed class DashboardApiService(
             cursor = cursor.Add(bucketSize);
         }
 
-        foreach (var evt in events)
+        foreach ((DateTime OccurredAt, string Action) evt in events)
         {
-            var bucket = ResolveTimelineBucket(evt.OccurredAt, bucketSize);
-            var counts = bucketMap.TryGetValue(bucket, out var current)
+            DateTime bucket = ResolveTimelineBucket(evt.OccurredAt, bucketSize);
+            (int purchases, int renewals, int expired) counts = bucketMap.TryGetValue(bucket, out (int purchases, int renewals, int expired) current)
                 ? current
                 : (purchases: 0, renewals: 0, expired: 0);
 
@@ -1988,13 +2092,17 @@ internal sealed class DashboardApiService(
 
     private static TimeSpan ResolveBucketSize(DateTime since, DateTime until)
     {
-        var span = until - since;
+        TimeSpan span = until - since;
 
         if (span <= TimeSpan.FromHours(48))
+        {
             return TimeSpan.FromHours(1);
+        }
 
         if (span <= TimeSpan.FromDays(14))
+        {
             return TimeSpan.FromDays(1);
+        }
 
         return TimeSpan.FromDays(7);
     }
@@ -2002,19 +2110,25 @@ internal sealed class DashboardApiService(
     private static DateTime ResolveTimelineBucket(DateTime value, TimeSpan bucketSize)
     {
         if (bucketSize.Ticks <= 0)
+        {
             return value;
+        }
 
-        var ticks = value.Ticks - (value.Ticks % bucketSize.Ticks);
+        long ticks = value.Ticks - (value.Ticks % bucketSize.Ticks);
         return new DateTime(ticks, value.Kind);
     }
 
     private static string FormatTimelineLabel(DateTime bucket, TimeSpan bucketSize)
     {
         if (bucketSize < TimeSpan.FromDays(1))
+        {
             return bucket.ToString("MM/dd HH:mm");
+        }
 
         if (bucketSize < TimeSpan.FromDays(14))
+        {
             return bucket.ToString("MM/dd");
+        }
 
         return bucket.ToString("yyyy/MM/dd");
     }
@@ -2022,22 +2136,33 @@ internal sealed class DashboardApiService(
     private static int? ParseModerationDurationSeconds(string? data)
     {
         if (string.IsNullOrWhiteSpace(data))
+        {
             return null;
+        }
 
         try
         {
-            using var doc = JsonDocument.Parse(data);
-            if (!doc.RootElement.TryGetProperty("durationSeconds", out var durationSeconds))
+            using JsonDocument doc = JsonDocument.Parse(data);
+            if (!doc.RootElement.TryGetProperty("durationSeconds", out JsonElement durationSeconds))
+            {
                 return null;
+            }
 
-            if (durationSeconds.ValueKind == JsonValueKind.Number && durationSeconds.TryGetInt32(out var parsed))
+            if (
+                durationSeconds.ValueKind == JsonValueKind.Number
+                && durationSeconds.TryGetInt32(out int parsed)
+            )
+            {
                 return parsed;
+            }
 
             if (
                 durationSeconds.ValueKind == JsonValueKind.String
                 && int.TryParse(durationSeconds.GetString(), out parsed)
             )
+            {
                 return parsed;
+            }
         }
         catch
         {
@@ -2050,16 +2175,19 @@ internal sealed class DashboardApiService(
     private static string? SummarizeModerationReason(string action, string? data)
     {
         if (string.IsNullOrWhiteSpace(data))
+        {
             return null;
+        }
 
         try
         {
-            using var doc = JsonDocument.Parse(data);
+            using JsonDocument doc = JsonDocument.Parse(data);
 
             return action switch
             {
-                "moderation.denied" when doc.RootElement.TryGetProperty("action", out var deniedAction)
-                    => deniedAction.GetString(),
+                "moderation.denied"
+                    when doc.RootElement.TryGetProperty("action", out JsonElement deniedAction) =>
+                    deniedAction.GetString(),
                 _ => null,
             };
         }
@@ -2072,12 +2200,14 @@ internal sealed class DashboardApiService(
     private static ClubSubscriptionPayload? ParseClubSubscriptionPayload(string? data)
     {
         if (string.IsNullOrWhiteSpace(data))
+        {
             return null;
+        }
 
         try
         {
-            using var doc = JsonDocument.Parse(data);
-            var root = doc.RootElement;
+            using JsonDocument doc = JsonDocument.Parse(data);
+            JsonElement root = doc.RootElement;
 
             return new ClubSubscriptionPayload(
                 TryParseInt(root, "months"),
@@ -2096,31 +2226,46 @@ internal sealed class DashboardApiService(
 
     private static int? TryParseInt(JsonElement root, string propertyName)
     {
-        if (!root.TryGetProperty(propertyName, out var property))
+        if (!root.TryGetProperty(propertyName, out JsonElement property))
+        {
             return null;
+        }
 
-        if (property.ValueKind == JsonValueKind.Number && property.TryGetInt32(out var parsed))
+        if (property.ValueKind == JsonValueKind.Number && property.TryGetInt32(out int parsed))
+        {
             return parsed;
+        }
 
-        if (property.ValueKind == JsonValueKind.String && int.TryParse(property.GetString(), out parsed))
+        if (
+            property.ValueKind == JsonValueKind.String
+            && int.TryParse(property.GetString(), out parsed)
+        )
+        {
             return parsed;
+        }
 
         return null;
     }
 
     private static bool? TryParseBool(JsonElement root, string propertyName)
     {
-        if (!root.TryGetProperty(propertyName, out var property))
+        if (!root.TryGetProperty(propertyName, out JsonElement property))
+        {
             return null;
+        }
 
         if (property.ValueKind == JsonValueKind.True || property.ValueKind == JsonValueKind.False)
+        {
             return property.GetBoolean();
+        }
 
         if (
             property.ValueKind == JsonValueKind.String
-            && bool.TryParse(property.GetString(), out var parsed)
+            && bool.TryParse(property.GetString(), out bool parsed)
         )
+        {
             return parsed;
+        }
 
         return null;
     }
@@ -2128,18 +2273,24 @@ internal sealed class DashboardApiService(
     private static string? FormatModerationDuration(int? seconds)
     {
         if (seconds is null or <= 0)
+        {
             return null;
+        }
 
-        var total = Math.Max(0, seconds.Value);
-        var minutes = total / 60;
-        var hours = minutes / 60;
-        var days = hours / 24;
+        int total = Math.Max(0, seconds.Value);
+        int minutes = total / 60;
+        int hours = minutes / 60;
+        int days = hours / 24;
 
         if (days > 0)
+        {
             return $"{days}d {hours % 24}h";
+        }
 
         if (hours > 0)
+        {
             return $"{hours}h {minutes % 60}m";
+        }
 
         return $"{minutes}m";
     }
@@ -2183,12 +2334,14 @@ internal sealed class DashboardApiService(
                 .ConfigureAwait(false);
 
     private static int ParseLimit(string? value, int fallback, int max) =>
-        int.TryParse(value, out var n) ? Math.Clamp(n, 1, max) : fallback;
+        int.TryParse(value, out int n) ? Math.Clamp(n, 1, max) : fallback;
 
     private static int ParsePage(string? value)
     {
-        if (!int.TryParse(value, out var page))
+        if (!int.TryParse(value, out int page))
+        {
             return 1;
+        }
 
         return Math.Max(1, page);
     }
@@ -2196,7 +2349,9 @@ internal sealed class DashboardApiService(
     private static int? ToPlayerId(long? playerId)
     {
         if (playerId is null or < int.MinValue or > int.MaxValue)
+        {
             return null;
+        }
 
         return (int)playerId.Value;
     }
@@ -2206,11 +2361,11 @@ internal sealed class DashboardApiService(
         long? playerId
     )
     {
-        var normalizedPlayerId = ToPlayerId(playerId);
+        int? normalizedPlayerId = ToPlayerId(playerId);
 
         return
             normalizedPlayerId.HasValue
-            && playerNames.TryGetValue(normalizedPlayerId.Value, out var playerName)
+            && playerNames.TryGetValue(normalizedPlayerId.Value, out string? playerName)
             ? playerName
             : null;
     }
@@ -2219,20 +2374,26 @@ internal sealed class DashboardApiService(
         IReadOnlyDictionary<int, string> playerNames,
         int? playerId
     ) =>
-        playerId.HasValue && playerNames.TryGetValue(playerId.Value, out var playerName)
+        playerId.HasValue && playerNames.TryGetValue(playerId.Value, out string? playerName)
             ? playerName
             : null;
 
     private static DateTime? ParseDateTime(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
+        {
             return null;
+        }
 
-        if (DateTimeOffset.TryParse(value, out var parsedOffset))
+        if (DateTimeOffset.TryParse(value, out DateTimeOffset parsedOffset))
+        {
             return parsedOffset.UtcDateTime;
+        }
 
-        if (DateTime.TryParse(value, out var parsedDate))
+        if (DateTime.TryParse(value, out DateTime parsedDate))
+        {
             return parsedDate;
+        }
 
         return null;
     }

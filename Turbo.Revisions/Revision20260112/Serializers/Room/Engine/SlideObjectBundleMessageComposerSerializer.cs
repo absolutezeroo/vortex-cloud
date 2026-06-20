@@ -1,5 +1,7 @@
 using Turbo.Primitives.Messages.Outgoing.Room.Engine;
 using Turbo.Primitives.Packets;
+using Turbo.Primitives.Rooms.Enums;
+using Turbo.Primitives.Rooms.Object;
 
 namespace Turbo.Revisions.Revision20260112.Serializers.Room.Engine;
 
@@ -18,7 +20,7 @@ internal class SlideObjectBundleMessageComposerSerializer(int header)
             .WriteInteger(message.ToY)
             .WriteInteger(message.FloorItemHeights.Length);
 
-        foreach (var (objectId, prev, next) in message.FloorItemHeights)
+        foreach ((int objectId, Altitude prev, Altitude next) in message.FloorItemHeights)
         {
             packet.WriteInteger(objectId).WriteString(prev.ToString()).WriteString(next.ToString());
         }
@@ -27,7 +29,7 @@ internal class SlideObjectBundleMessageComposerSerializer(int header)
 
         if (message.Avatar is not null)
         {
-            var (moveType, objectId, prev, next) = message.Avatar.Value;
+            (SlideAvatarMoveType moveType, int objectId, Altitude prev, Altitude next) = message.Avatar.Value;
 
             packet
                 .WriteInteger((int)moveType)

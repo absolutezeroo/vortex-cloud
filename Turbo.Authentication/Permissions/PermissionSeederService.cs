@@ -29,27 +29,29 @@ internal sealed class PermissionSeederService(
     {
         try
         {
-            var db = await dbContextFactory
+            TurboDbContext db = await dbContextFactory
                 .CreateDbContextAsync(cancellationToken)
                 .ConfigureAwait(false);
 
             try
             {
-                foreach (var seed in DefaultRoles.All)
+                foreach (DefaultRoles.RoleSeed seed in DefaultRoles.All)
                 {
-                    var exists = await db
+                    bool exists = await db
                         .Roles.AsNoTracking()
                         .AnyAsync(r => r.Key == seed.Key, cancellationToken)
                         .ConfigureAwait(false);
 
                     if (exists)
+                    {
                         continue;
+                    }
 
-                    var role = new RoleEntity { Key = seed.Key, Name = seed.Name };
+                    RoleEntity role = new RoleEntity { Key = seed.Key, Name = seed.Name };
                     db.Roles.Add(role);
                     await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-                    foreach (var capability in seed.Capabilities)
+                    foreach (string capability in seed.Capabilities)
                     {
                         db.RolePermissions.Add(
                             new RolePermissionEntity
@@ -61,7 +63,9 @@ internal sealed class PermissionSeederService(
                     }
 
                     if (seed.Capabilities.Count > 0)
+                    {
                         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                    }
 
                     logger.LogInformation(
                         "Seeded default role '{RoleKey}' with {CapabilityCount} capabilities",
@@ -93,12 +97,14 @@ internal sealed class PermissionSeederService(
     /// </summary>
     private async Task EnsureBootstrapOwnerAsync(TurboDbContext db, CancellationToken ct)
     {
-        var email = _config.BootstrapOwnerEmail?.Trim().ToLowerInvariant();
+        string? email = _config.BootstrapOwnerEmail?.Trim().ToLowerInvariant();
 
         if (string.IsNullOrWhiteSpace(email))
+        {
             return;
+        }
 
-        var accountId = await db
+        int? accountId = await db
             .PlayerAccounts.AsNoTracking()
             .Where(a => a.Email == email)
             .Select(a => (int?)a.Id)
@@ -114,7 +120,7 @@ internal sealed class PermissionSeederService(
             return;
         }
 
-        var ownerRoleId = await db
+        int? ownerRoleId = await db
             .Roles.AsNoTracking()
             .Where(r => r.Key == DefaultRoles.OwnerKey)
             .Select(r => (int?)r.Id)
@@ -122,9 +128,11 @@ internal sealed class PermissionSeederService(
             .ConfigureAwait(false);
 
         if (ownerRoleId is null)
+        {
             return;
+        }
 
-        var alreadyAssigned = await db
+        bool alreadyAssigned = await db
             .PlayerAccountRoles.AsNoTracking()
             .AnyAsync(
                 x => x.PlayerAccountEntityId == accountId && x.RoleEntityId == ownerRoleId,
@@ -133,7 +141,9 @@ internal sealed class PermissionSeederService(
             .ConfigureAwait(false);
 
         if (alreadyAssigned)
+        {
             return;
+        }
 
         db.PlayerAccountRoles.Add(
             new PlayerAccountRoleEntity

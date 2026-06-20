@@ -14,7 +14,9 @@ public class UpdateForumReadMarkerMessageHandler : IMessageHandler<UpdateForumRe
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
         // TODO: per-user forum read markers not persisted yet.
         await ValueTask.CompletedTask.ConfigureAwait(false);

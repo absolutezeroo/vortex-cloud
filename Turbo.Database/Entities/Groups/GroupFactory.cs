@@ -34,7 +34,7 @@ public static class GroupFactory
         bool adminOnlyDecoration = false
     )
     {
-        var group = new GroupEntity
+        GroupEntity group = new GroupEntity
         {
             Name = name,
             Description = description,

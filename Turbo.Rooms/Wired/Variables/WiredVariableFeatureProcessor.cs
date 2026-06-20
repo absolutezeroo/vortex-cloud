@@ -21,14 +21,16 @@ internal class WiredVariableFeatureProcessor(IRoomWiredVariablesProvider wiredVa
         CancellationToken ct = default
     )
     {
-        var batch = new CompositeDisposable();
+        CompositeDisposable batch = new CompositeDisposable();
 
         foreach (
-            var concrete in AssemblyExplorer.FindAssignees(asm, typeof(IWiredInternalVariable))
+            Type? concrete in AssemblyExplorer.FindAssignees(asm, typeof(IWiredInternalVariable))
         )
         {
             if (concrete is null)
+            {
                 continue;
+            }
 
             batch.Add(
                 _wiredVariablesProvider.RegisterVariable(

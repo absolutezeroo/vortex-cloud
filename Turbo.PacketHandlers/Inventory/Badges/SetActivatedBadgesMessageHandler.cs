@@ -20,19 +20,23 @@ public class SetActivatedBadgesMessageHandler(IDbContextFactory<TurboDbContext> 
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        await using var dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         await dbCtx
             .PlayerBadges.Where(b => b.PlayerEntityId == ctx.PlayerId && b.SlotId > 0)
             .ExecuteUpdateAsync(up => up.SetProperty(b => b.SlotId, 0), ct)
             .ConfigureAwait(false);
 
-        foreach (var (slotId, badgeCode) in message.Slots)
+        foreach ((int slotId, string badgeCode) in message.Slots)
         {
             if (slotId <= 0 || string.IsNullOrWhiteSpace(badgeCode))
+            {
                 continue;
+            }
 
             await dbCtx
                 .PlayerBadges.Where(b =>

@@ -13,7 +13,9 @@ public sealed class WiredBoolParamRule(bool defaultValue) : WiredParamRule(defau
     public override int ToInt(object value)
     {
         if (value is bool b)
+        {
             return b ? 1 : 0;
+        }
 
         throw new InvalidCastException("Expected bool.");
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
@@ -24,6 +25,7 @@ using Turbo.Primitives.Permissions;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Players.Enums;
 using Turbo.Primitives.Players.Enums.Wallet;
+using Turbo.Primitives.Players.Grains;
 using Turbo.Primitives.Players.Wallet;
 
 namespace Turbo.PacketHandlers.Handshake;
@@ -48,8 +50,8 @@ public class SSOTicketMessageHandler(
     {
         try
         {
-            var ticket = message.SSO;
-            var playerId = await _authService
+            string ticket = message.SSO;
+            int playerId = await _authService
                 .GetPlayerIdFromTicketAsync(ticket, ctx.RemoteIpAddress, ct)
                 .ConfigureAwait(false);
 
@@ -64,20 +66,20 @@ public class SSOTicketMessageHandler(
                 .AddSessionToPlayerAsync(ctx.SessionKey, playerId)
                 .ConfigureAwait(false);
 
-            var sub = await _grainFactory
+            ClubSubscriptionSnapshot sub = await _grainFactory
                 .GetPlayerGrain(PlayerId.Parse(playerId))
                 .GetClubSubscriptionAsync(ct)
                 .ConfigureAwait(false);
 
-            var clubLevel = sub.IsActive
+            ClubLevelType clubLevel = sub.IsActive
                 ? (sub.IsVip ? ClubLevelType.Vip : ClubLevelType.Club)
                 : ClubLevelType.None;
 
-            var permissions = await _permissionService
+            PermissionSet permissions = await _permissionService
                 .ResolveForPlayerAsync(playerId, ct)
                 .ConfigureAwait(false);
 
-            var securityLevel = SecurityLevelPolicy.Resolve(permissions);
+            SecurityLevelType securityLevel = SecurityLevelPolicy.Resolve(permissions);
 
             await ctx.SendComposerAsync(
                     new AuthenticationOKMessage
@@ -143,14 +145,14 @@ public class SSOTicketMessageHandler(
                     .ConfigureAwait(false);
             }
 
-            var wallet = _grainFactory.GetPlayerWalletGrain(playerId);
-            var credits = await wallet
+            IPlayerWalletGrain wallet = _grainFactory.GetPlayerWalletGrain(playerId);
+            int credits = await wallet
                 .GetAmountForCurrencyAsync(
                     new CurrencyKind { CurrencyType = CurrencyType.Credits },
                     ct
                 )
                 .ConfigureAwait(false);
-            var activityPoints = await wallet.GetActivityPointsAsync(ct).ConfigureAwait(false);
+            Dictionary<int, int> activityPoints = await wallet.GetActivityPointsAsync(ct).ConfigureAwait(false);
 
             await ctx.SendComposerAsync(
                     new CreditBalanceEventMessageComposer { Balance = $"{credits}.0" },
@@ -290,8 +292,8 @@ public class SSOTicketMessageHandler(
 
     private static ScrSendUserInfoMessageComposer BuildScrSendUserInfo(ClubSubscriptionSnapshot sub)
     {
-        var daysLeft = sub.DaysLeft;
-        var rem = daysLeft % 31;
+        int daysLeft = sub.DaysLeft;
+        int rem = daysLeft % 31;
         return new ScrSendUserInfoMessageComposer
         {
             ProductName = "habbo_club",

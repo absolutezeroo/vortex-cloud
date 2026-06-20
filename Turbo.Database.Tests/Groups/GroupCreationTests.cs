@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Groups;
 using Turbo.Database.Entities.Room;
@@ -27,10 +29,10 @@ public sealed class GroupCreationTests
     [Fact]
     public void CreatingGroup_PersistsExactlyOneDefaultForumSettingsRow()
     {
-        using var context = NewContext();
+        using TurboDbContext context = NewContext();
 
         // Act — create a group through the single creation path (the §2.4 invariant lives here).
-        var group = GroupFactory.Create(
+        GroupEntity group = GroupFactory.Create(
             name: "Pixel Painters",
             badge: "b12345s09112",
             roomEntityId: 42,
@@ -44,11 +46,11 @@ public sealed class GroupCreationTests
         context.SaveChanges();
 
         // Assert — exactly one settings row, linked to the group, carrying the defaults.
-        var settings = context.GroupForumSettings.Where(s => s.GroupEntityId == group.Id).ToList();
+        List<GroupForumSettingsEntity> settings = context.GroupForumSettings.Where(s => s.GroupEntityId == group.Id).ToList();
 
         settings.Should().HaveCount(1, "the §2.4 invariant is one forum-settings row per group");
 
-        var row = settings.Single();
+        GroupForumSettingsEntity row = settings.Single();
         row.GroupEntityId.Should().Be(group.Id);
         row.Enabled.Should().Be(GroupFactory.DefaultForumEnabled);
         row.ReadPermission.Should().Be(GroupFactory.DefaultReadPermission);
@@ -60,14 +62,14 @@ public sealed class GroupCreationTests
     [Fact]
     public void CircularRoomGroupLink_IsConfiguredNonCascade()
     {
-        using var context = NewContext();
+        using TurboDbContext context = NewContext();
 
-        var groupToRoom = context
+        IForeignKey groupToRoom = context
             .Model.FindEntityType(typeof(GroupEntity))!
             .GetForeignKeys()
             .Single(fk => fk.Properties.Any(p => p.Name == nameof(GroupEntity.RoomEntityId)));
 
-        var roomToGroup = context
+        IForeignKey roomToGroup = context
             .Model.FindEntityType(typeof(RoomEntity))!
             .GetForeignKeys()
             .Single(fk => fk.Properties.Any(p => p.Name == nameof(RoomEntity.GroupEntityId)));

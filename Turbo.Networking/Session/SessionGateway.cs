@@ -11,6 +11,7 @@ using Turbo.Primitives.Networking;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Orleans.Observers;
 using Turbo.Primitives.Players;
+using Turbo.Primitives.Players.Grains;
 
 namespace Turbo.Networking.Session;
 
@@ -33,13 +34,13 @@ public sealed class SessionGateway(
     private sealed record ObserverEntry(SessionContextObserver Impl, ISessionContextObserver Ref);
 
     public ISessionContext? GetSession(SessionKey key) =>
-        _sessions.TryGetValue(key, out var ctx) ? ctx : null;
+        _sessions.TryGetValue(key, out ISessionContext? ctx) ? ctx : null;
 
     public ISessionContextObserver? GetSessionObserver(SessionKey key) =>
-        _sessionObservers.TryGetValue(key, out var observer) ? observer.Ref : null;
+        _sessionObservers.TryGetValue(key, out ObserverEntry? observer) ? observer.Ref : null;
 
     public PlayerId GetPlayerId(SessionKey key) =>
-        _sessionToPlayer.TryGetValue(key, out var playerId) ? playerId : -1;
+        _sessionToPlayer.TryGetValue(key, out PlayerId playerId) ? playerId : -1;
 
     public int GetActiveSessionCount() => _sessions.Count;
 
@@ -53,8 +54,8 @@ public sealed class SessionGateway(
             key,
             _ =>
             {
-                var impl = new SessionContextObserver(key, this);
-                var objRef = _grainFactory.CreateObjectReference<ISessionContextObserver>(impl);
+                SessionContextObserver impl = new SessionContextObserver(key, this);
+                ISessionContextObserver objRef = _grainFactory.CreateObjectReference<ISessionContextObserver>(impl);
 
                 return new ObserverEntry(impl, objRef);
             },
@@ -66,12 +67,14 @@ public sealed class SessionGateway(
 
     public async Task RemoveSessionAsync(SessionKey key, CancellationToken ct)
     {
-        var playerId = GetPlayerId(key);
+        PlayerId playerId = GetPlayerId(key);
 
         if (playerId > 0)
+        {
             await RemoveSessionFromPlayerAsync(playerId, ct).ConfigureAwait(false);
+        }
 
-        if (_sessionObservers.TryRemove(key, out var observer))
+        if (_sessionObservers.TryRemove(key, out ObserverEntry? observer))
         {
             try
             {
@@ -85,16 +88,18 @@ public sealed class SessionGateway(
 
     public async Task AddSessionToPlayerAsync(SessionKey key, PlayerId playerId)
     {
-        var observer = GetSessionObserver(key);
+        ISessionContextObserver? observer = GetSessionObserver(key);
 
         if (observer is null)
+        {
             return;
+        }
 
-        var playerPresence = _grainFactory.GetPlayerPresenceGrain(playerId);
+        IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(playerId);
 
         _sessionToPlayer[key] = playerId;
         _playerToSession[playerId] = key;
-        var connectedAt = DateTime.UtcNow;
+        DateTime connectedAt = DateTime.UtcNow;
         _playerConnectedAt[playerId] = connectedAt;
 
         await playerPresence.RegisterSessionObserverAsync(observer).ConfigureAwait(false);
@@ -121,16 +126,18 @@ public sealed class SessionGateway(
 
     public async Task RemoveSessionFromPlayerAsync(PlayerId playerId, CancellationToken ct)
     {
-        if (!_playerToSession.TryRemove(playerId, out var sessionKey))
+        if (!_playerToSession.TryRemove(playerId, out SessionKey sessionKey))
+        {
             return;
+        }
 
         _sessionToPlayer.TryRemove(sessionKey, out _);
 
-        var playerPresence = _grainFactory.GetPlayerPresenceGrain(playerId);
+        IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(playerId);
 
         await playerPresence.UnregisterSessionObserverAsync(ct).ConfigureAwait(false);
 
-        if (_playerConnectedAt.TryRemove(playerId, out var connectedAt))
+        if (_playerConnectedAt.TryRemove(playerId, out DateTime connectedAt))
         {
             await PublishDisconnectedEventSafelyAsync(playerId, connectedAt).ConfigureAwait(false);
             return;
@@ -144,8 +151,8 @@ public sealed class SessionGateway(
 
     private async Task PublishDisconnectedEventSafelyAsync(PlayerId playerId, DateTime connectedAt)
     {
-        var disconnectedAt = DateTime.UtcNow;
-        var duration = disconnectedAt - connectedAt;
+        DateTime disconnectedAt = DateTime.UtcNow;
+        TimeSpan duration = disconnectedAt - connectedAt;
 
         try
         {

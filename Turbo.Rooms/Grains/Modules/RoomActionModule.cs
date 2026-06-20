@@ -4,11 +4,13 @@ using Turbo.Logging;
 using Turbo.Primitives;
 using Turbo.Primitives.Action;
 using Turbo.Primitives.Events;
+using Turbo.Primitives.Inventory.Grains;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Object;
 using Turbo.Primitives.Rooms.Object.Furniture;
+using Turbo.Primitives.Rooms.Snapshots.Furniture;
 
 namespace Turbo.Rooms.Grains.Modules;
 
@@ -25,27 +27,33 @@ public sealed partial class RoomActionModule(RoomGrain roomGrain)
         CancellationToken ct
     )
     {
-        if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out var item))
+        if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item))
+        {
             throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+        }
 
-        var pickupType = await _roomGrain.SecurityModule.GetFurniPickupTypeAsync(ctx);
+        FurniturePickupType pickupType = await _roomGrain.SecurityModule.GetFurniPickupTypeAsync(ctx);
 
         if (pickupType == FurniturePickupType.None)
+        {
             throw new TurboException(TurboErrorCodeEnum.NoPermissionToManipulateFurni);
+        }
 
-        var previousOwnerId = item.OwnerId;
+        PlayerId previousOwnerId = item.OwnerId;
         PlayerId pickerId = item.OwnerId;
 
         if (pickupType is FurniturePickupType.SendToCtx)
+        {
             pickerId = ctx.PlayerId;
+        }
 
         item.SetOwnerId(pickerId);
 
         await _roomGrain.ObjectModule.RemoveObjectAsync(ctx, item, ct, pickerId);
 
-        var snapshot = item.GetSnapshot();
+        RoomItemSnapshot snapshot = item.GetSnapshot();
 
-        var inventory = _roomGrain._grainFactory.GetInventoryGrain(snapshot.OwnerId);
+        IInventoryGrain inventory = _roomGrain._grainFactory.GetInventoryGrain(snapshot.OwnerId);
 
         await inventory.AddFurnitureFromRoomItemSnapshotAsync(snapshot, ct);
 
@@ -72,16 +80,20 @@ public sealed partial class RoomActionModule(RoomGrain roomGrain)
         int param = -1
     )
     {
-        if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out var item))
+        if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item))
+        {
             throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+        }
 
-        var usagePolicy = item.Logic.GetUsagePolicy();
+        FurnitureUsageType usagePolicy = item.Logic.GetUsagePolicy();
 
         if (
             !await _roomGrain.SecurityModule.CanUseFurniAsync(ctx, usagePolicy)
             || !await _roomGrain.FurniModule.UseItemByIdAsync(ctx, itemId, ct, param)
         )
+        {
             return false;
+        }
 
         return true;
     }

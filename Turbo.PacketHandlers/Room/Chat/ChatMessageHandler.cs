@@ -4,6 +4,7 @@ using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Room.Chat;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Rooms.Grains;
 
 namespace Turbo.PacketHandlers.Room.Chat;
 
@@ -18,9 +19,11 @@ public class ChatMessageHandler(IGrainFactory grainFactory) : IMessageHandler<Ch
     )
     {
         if (ctx is null || ctx.PlayerId <= 0 || ctx.RoomId <= 0)
+        {
             return;
+        }
 
-        var roomChatGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomGrain roomChatGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
 
         await roomChatGrain
             .SendChatFromPlayerAsync(

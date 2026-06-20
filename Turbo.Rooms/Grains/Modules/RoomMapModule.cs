@@ -9,6 +9,7 @@ using Turbo.Primitives.Action;
 using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Events.Player;
 using Turbo.Primitives.Rooms.Object;
+using Turbo.Primitives.Rooms.Object.Avatars;
 using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Object.Furniture.Wall;
@@ -50,13 +51,15 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsDiagonal(int idxA, int idxB)
     {
-        var delta = idxB - idxA;
+        int delta = idxB - idxA;
 
         if (delta != Width + 1 && delta != Width - 1 && delta != -Width + 1 && delta != -Width - 1)
+        {
             return false;
+        }
 
-        var ax = idxA % Width;
-        var bx = idxB % Width;
+        int ax = idxA % Width;
+        int bx = idxB % Width;
 
         return Math.Abs(ax - bx) == 1;
     }
@@ -81,13 +84,13 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TryGetTileInFront(int index, Rotation direction, out int nextIndex)
     {
-        var x = GetX(index);
-        var y = GetY(index);
+        int x = GetX(index);
+        int y = GetY(index);
 
-        var (dx, dy) = GetDirectionOffset(direction);
+        (int dx, int dy) = GetDirectionOffset(direction);
 
-        var nx = x + dx;
-        var ny = y + dy;
+        int nx = x + dx;
+        int ny = y + dy;
 
         if (!InBounds(nx, ny))
         {
@@ -104,7 +107,9 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
     public (int x, int y) GetTileXY(int idx)
     {
         if (!InBounds(idx))
+        {
             throw new TurboException(TurboErrorCodeEnum.TileOutOfBounds);
+        }
 
         return (GetX(idx), GetY(idx));
     }
@@ -123,17 +128,21 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
         if (width > 0 && length > 0)
         {
             if (rot == Rotation.East || rot == Rotation.West)
+            {
                 (width, length) = (length, width);
+            }
         }
 
-        for (var minX = x; minX < x + width; minX++)
+        for (int minX = x; minX < x + width; minX++)
         {
-            for (var minY = y; minY < y + length; minY++)
+            for (int minY = y; minY < y + length; minY++)
             {
-                var idx = ToIdx(minX, minY);
+                int idx = ToIdx(minX, minY);
 
                 if (!InBounds(idx))
+                {
                     throw new TurboException(TurboErrorCodeEnum.TileOutOfBounds);
+                }
 
                 tileIds.Add(idx);
             }
@@ -164,11 +173,13 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
 
     public Task ClickTileAsync(ActionContext ctx, int x, int y, CancellationToken ct)
     {
-        var idx = ToIdx(x, y);
-        var tile = _roomGrain._state.TileFlags[idx];
+        int idx = ToIdx(x, y);
+        RoomTileFlags tile = _roomGrain._state.TileFlags[idx];
 
         if (!tile.Has(RoomTileFlags.TileClickListener))
+        {
             return Task.CompletedTask;
+        }
 
         return _roomGrain.PublishRoomEventAsync(
             new PlayerClickedTileEvent()
@@ -194,14 +205,16 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
     public void ComputeTile(int id)
     {
         if (_roomGrain._state.IsTileComputationPaused)
+        {
             return;
+        }
 
-        var nextHeight = _roomGrain._state.Model?.BaseHeights[id] ?? 0.0;
-        var nextFlags =
+        Altitude nextHeight = _roomGrain._state.Model?.BaseHeights[id] ?? 0.0;
+        RoomTileFlags nextFlags =
             _roomGrain._state.Model?.BaseFlags[id]
             ?? (RoomTileFlags.Disabled | RoomTileFlags.Closed);
-        var floorStack = _roomGrain._state.TileFloorStacks[id];
-        var avatarStack = _roomGrain._state.TileAvatarStacks[id];
+        HashSet<RoomObjectId> floorStack = _roomGrain._state.TileFloorStacks[id];
+        HashSet<RoomObjectId> avatarStack = _roomGrain._state.TileAvatarStacks[id];
 
         IRoomFloorItem? nextHighestItem = null;
 
@@ -209,10 +222,12 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
         {
             nextFlags = nextFlags.Add(RoomTileFlags.AvatarOccupied);
 
-            foreach (var objectId in avatarStack)
+            foreach (RoomObjectId objectId in avatarStack)
             {
-                if (!_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out var avatar))
+                if (!_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar))
+                {
                     continue;
+                }
 
                 avatar.NeedsInvoke = true;
             }
@@ -222,12 +237,14 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
         {
             nextFlags = nextFlags.Add(RoomTileFlags.FurnitureOccupied);
 
-            foreach (var itemId in floorStack)
+            foreach (RoomObjectId itemId in floorStack)
             {
-                if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out var item))
+                if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item))
+                {
                     continue;
+                }
 
-                var height = item.Height;
+                Altitude height = item.Height;
 
                 if (item.Logic is FurnitureInvisibleClickTileLogic invisLogic)
                 {
@@ -237,7 +254,9 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
                 // special logic if stack helper
 
                 if (height < nextHeight)
+                {
                     continue;
+                }
 
                 nextHeight = height;
                 nextHighestItem = (IRoomFloorItem)item;
@@ -247,24 +266,32 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
         if (nextHighestItem is not null)
         {
             if (!nextHighestItem.Logic.CanStack())
+            {
                 nextFlags = nextFlags.Add(RoomTileFlags.StackBlocked);
+            }
 
             if (nextHighestItem.Logic.CanWalk())
+            {
                 nextFlags = nextFlags.Add(RoomTileFlags.Walkable);
+            }
 
             if (nextHighestItem.Logic.CanSit())
+            {
                 nextFlags = nextFlags.Add(RoomTileFlags.Sittable);
+            }
 
             if (nextHighestItem.Logic.CanLay())
+            {
                 nextFlags = nextFlags.Add(RoomTileFlags.Layable);
+            }
         }
 
         _roomGrain._state.TileHeights[id] = nextHeight;
         _roomGrain._state.TileFlags[id] = nextFlags;
         _roomGrain._state.TileHighestFloorItems[id] = nextHighestItem?.ObjectId ?? -1;
 
-        var prevEncoded = _roomGrain._state.TileEncodedHeights[id];
-        var nextEncoded = EncodeHeight(nextHeight, nextFlags.Has(RoomTileFlags.StackBlocked));
+        short prevEncoded = _roomGrain._state.TileEncodedHeights[id];
+        short nextEncoded = EncodeHeight(nextHeight, nextFlags.Has(RoomTileFlags.StackBlocked));
 
         if (prevEncoded != nextEncoded)
         {
@@ -323,17 +350,23 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
     private static short EncodeHeight(Altitude height, bool stackingBlocked)
     {
         if (height < Altitude.Zero || stackingBlocked)
+        {
             return -1;
+        }
 
         int stackingMask = 1 << 14;
         int heightMask = stackingMask - 1;
         int raw = (int)Math.Round(height.Value * 256.0);
 
         if (raw < 0)
+        {
             raw = 0;
+        }
 
         if (raw > heightMask)
+        {
             raw = heightMask;
+        }
 
         int value = raw;
 
@@ -346,19 +379,19 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
     {
         if (!_roomGrain._state.IsMapReady)
         {
-            var size = _roomGrain._state.Model?.Size ?? 0;
+            int size = _roomGrain._state.Model?.Size ?? 0;
 
-            var tileHeights = new Altitude[size];
-            var tileEncodedHeights = new short[size];
-            var tileFlags = new RoomTileFlags[size];
-            var tileHighestFloorItems = new RoomObjectId[size];
-            var tileFloorStacks = new HashSet<RoomObjectId>[size];
-            var tileAvatarStacks = new HashSet<RoomObjectId>[size];
+            Altitude[] tileHeights = new Altitude[size];
+            short[] tileEncodedHeights = new short[size];
+            RoomTileFlags[] tileFlags = new RoomTileFlags[size];
+            RoomObjectId[] tileHighestFloorItems = new RoomObjectId[size];
+            HashSet<RoomObjectId>[] tileFloorStacks = new HashSet<RoomObjectId>[size];
+            HashSet<RoomObjectId>[] tileAvatarStacks = new HashSet<RoomObjectId>[size];
 
             for (int id = 0; id < size; id++)
             {
-                var height = _roomGrain._state.Model?.BaseHeights[id] ?? Altitude.Zero;
-                var flags =
+                Altitude height = _roomGrain._state.Model?.BaseHeights[id] ?? Altitude.Zero;
+                RoomTileFlags flags =
                     _roomGrain._state.Model?.BaseFlags[id]
                     ?? (RoomTileFlags.Disabled | RoomTileFlags.Closed | RoomTileFlags.StackBlocked);
 

@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Turbo.Pipeline.Attributes;
+using Turbo.Pipeline.Delegates;
 using Turbo.Runtime;
 using Turbo.Runtime.AssemblyProcessing;
 
@@ -26,33 +27,33 @@ public class EnvelopeFeatureProcessor<TEnvelope, TMeta, TContext>(
         CancellationToken ct = default
     )
     {
-        var batch = new CompositeDisposable();
+        CompositeDisposable batch = new CompositeDisposable();
 
         foreach (
-            var (concrete, closedIface, args) in AssemblyExplorer.FindClosedImplementations(
+            (Type concrete, Type closedIface, Type[] args) in AssemblyExplorer.FindClosedImplementations(
                 asm,
                 _openHandlerInterface
             )
         )
         {
-            var envType = args[0];
-            var invoker = _invokerFactory.CreateHandlerInvoker(concrete, envType);
-            var activator = ActivatorHelpers.BuildActivator(concrete);
+            Type envType = args[0];
+            HandlerInvoker<TContext> invoker = _invokerFactory.CreateHandlerInvoker(concrete, envType);
+            Func<IServiceProvider, object> activator = ActivatorHelpers.BuildActivator(concrete);
 
             batch.Add(_registry.RegisterHandler(envType, sp, activator, invoker));
         }
 
         foreach (
-            var (concrete, closedIface, args) in AssemblyExplorer.FindClosedImplementations(
+            (Type concrete, Type closedIface, Type[] args) in AssemblyExplorer.FindClosedImplementations(
                 asm,
                 _openBehaviorInterface
             )
         )
         {
-            var envType = args[0];
-            var invoker = _invokerFactory.CreateBehaviorInvoker(concrete, envType);
-            var order = concrete.GetCustomAttribute<OrderAttribute>()?.Value ?? 0;
-            var activator = ActivatorHelpers.BuildActivator(concrete);
+            Type envType = args[0];
+            BehaviorInvoker<TContext> invoker = _invokerFactory.CreateBehaviorInvoker(concrete, envType);
+            int order = concrete.GetCustomAttribute<OrderAttribute>()?.Value ?? 0;
+            Func<IServiceProvider, object> activator = ActivatorHelpers.BuildActivator(concrete);
 
             batch.Add(_registry.RegisterBehavior(envType, sp, activator, invoker, order));
         }

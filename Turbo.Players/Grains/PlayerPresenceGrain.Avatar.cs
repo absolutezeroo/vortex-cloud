@@ -4,6 +4,7 @@ using Turbo.Primitives.Messages.Outgoing.Avatar;
 using Turbo.Primitives.Messages.Outgoing.Room.Engine;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Orleans.Snapshots.Players;
+using Turbo.Primitives.Rooms.Grains;
 
 namespace Turbo.Players.Grains;
 
@@ -24,7 +25,7 @@ internal sealed partial class PlayerPresenceGrain
                 }
             );
 
-            var room = _grainFactory.GetRoomGrain(_state.ActiveRoomId);
+            IRoomGrain room = _grainFactory.GetRoomGrain(_state.ActiveRoomId);
 
             await room.UpdateAvatarWithPlayerAsync(snapshot, ct);
         }

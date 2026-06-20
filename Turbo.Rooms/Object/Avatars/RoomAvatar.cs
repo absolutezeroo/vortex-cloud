@@ -63,7 +63,9 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
         }
 
         if (_goalTries == 3)
+        {
             return false;
+        }
 
         return true;
     }
@@ -73,7 +75,9 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
         z = Math.Round(z, 2);
 
         if (Z == z)
+        {
             return;
+        }
 
         Z = z;
 
@@ -89,7 +93,9 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
     public void SetBodyRotation(Rotation rot)
     {
         if (Rotation == rot)
+        {
             return;
+        }
 
         Rotation = rot;
 
@@ -99,7 +105,9 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
     public void SetHeadRotation(Rotation rot)
     {
         if (HeadRotation == rot)
+        {
             return;
+        }
 
         HeadRotation = rot;
 
@@ -108,7 +116,7 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
 
     public void Sit(bool flag = true, Altitude? height = null, Rotation? rot = null)
     {
-        var finalHeight = height ?? Altitude.FromValue(0.5);
+        Altitude finalHeight = height ?? Altitude.FromValue(0.5);
 
         if (flag)
         {
@@ -123,7 +131,9 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
         else
         {
             if (!HasStatus(AvatarStatusType.Sit))
+            {
                 return;
+            }
 
             RemoveStatus(AvatarStatusType.Sit);
         }
@@ -131,7 +141,7 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
 
     public void Lay(bool flag = true, Altitude? height = null, Rotation? rot = null)
     {
-        var finalHeight = height ?? Altitude.FromValue(0.5);
+        Altitude finalHeight = height ?? Altitude.FromValue(0.5);
 
         if (flag)
         {
@@ -146,7 +156,9 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
         else
         {
             if (!HasStatus(AvatarStatusType.Lay))
+            {
                 return;
+            }
 
             RemoveStatus(AvatarStatusType.Lay);
         }
@@ -165,18 +177,24 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
     public void RemoveStatus(params AvatarStatusType[] types)
     {
         if (types.Length == 0)
+        {
             return;
+        }
 
-        var updated = false;
+        bool updated = false;
 
-        foreach (var type in types)
+        foreach (AvatarStatusType type in types)
         {
             if (Statuses.Remove(type))
+            {
                 updated = true;
+            }
         }
 
         if (updated)
+        {
             MarkDirty();
+        }
     }
 
     public RoomAvatarSnapshot GetSnapshot()

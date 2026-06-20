@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Turbo.Primitives.Rooms.Enums.Wired;
+using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Snapshots.Wired.Variables;
 using Turbo.Primitives.Rooms.Wired.Variable;
 using Turbo.Rooms.Grains.Storage;
@@ -25,8 +26,10 @@ public sealed partial class RoomWiredSystem
 
     public IWiredVariable? GetVariableById(WiredVariableId id)
     {
-        if (_variableById.TryGetValue(id, out var variable))
+        if (_variableById.TryGetValue(id, out IWiredVariable? variable))
+        {
             return variable;
+        }
 
         return null;
     }
@@ -52,14 +55,16 @@ public sealed partial class RoomWiredSystem
         List<(WiredVariableId id, WiredVariableValue value)>
     > GetAllVariablesForBindingAsync(WiredVariableBinding binding, CancellationToken ct)
     {
-        var variableValues = new List<(WiredVariableId id, WiredVariableValue value)>();
+        List<(WiredVariableId id, WiredVariableValue value)> variableValues = new List<(WiredVariableId id, WiredVariableValue value)>();
 
-        foreach (var (id, variable) in _variableById)
+        foreach ((WiredVariableId id, IWiredVariable variable) in _variableById)
         {
-            var key = new WiredVariableKey(id, binding.TargetType, binding.TargetId);
+            WiredVariableKey key = new WiredVariableKey(id, binding.TargetType, binding.TargetId);
 
-            if (!variable.TryGetValue(key, out var value))
+            if (!variable.TryGetValue(key, out WiredVariableValue value))
+            {
                 continue;
+            }
 
             variableValues.Add((id, value));
         }
@@ -69,9 +74,9 @@ public sealed partial class RoomWiredSystem
 
     private Task ProcessInternalVariablesAsync(long now, CancellationToken ct)
     {
-        var variables = _roomGrain._wiredVariablesProvider.BuildVariablesForRoom(_roomGrain);
+        IEnumerable<IWiredVariable> variables = _roomGrain._wiredVariablesProvider.BuildVariablesForRoom(_roomGrain);
 
-        foreach (var variable in variables)
+        foreach (IWiredVariable variable in variables)
             ProcessVariable(variable);
 
         return Task.CompletedTask;
@@ -80,12 +85,14 @@ public sealed partial class RoomWiredSystem
     private async Task ProcessVariableBoxesAsync(long now, CancellationToken ct)
     {
         if (_dirtyVariableBoxIds.Count == 0)
+        {
             return;
+        }
 
-        var dirtyVariableBoxIds = _dirtyVariableBoxIds.ToList();
+        List<int> dirtyVariableBoxIds = _dirtyVariableBoxIds.ToList();
         _dirtyVariableBoxIds.Clear();
 
-        foreach (var boxId in dirtyVariableBoxIds)
+        foreach (int boxId in dirtyVariableBoxIds)
             await ProcessVariableBoxAsync(boxId, ct);
 
         _variablesSnapshot = null;
@@ -96,27 +103,33 @@ public sealed partial class RoomWiredSystem
         RemoveVariableBox(boxId);
 
         if (
-            !_roomGrain._state.ItemsById.TryGetValue(boxId, out var item)
+            !_roomGrain._state.ItemsById.TryGetValue(boxId, out IRoomItem? item)
             || item.Logic is not FurnitureWiredVariableLogic variable
         )
+        {
             return;
+        }
 
         await variable.LoadWiredAsync(ct);
 
         if (!ProcessVariable(variable))
+        {
             return;
+        }
 
-        var snapshot = variable.GetVarSnapshot();
+        WiredVariableSnapshot snapshot = variable.GetVarSnapshot();
 
         _variableIdBoxId[boxId] = snapshot.VariableId;
     }
 
     private bool ProcessVariable(IWiredVariable variable)
     {
-        var snapshot = variable.GetVarSnapshot();
+        WiredVariableSnapshot snapshot = variable.GetVarSnapshot();
 
         if (string.IsNullOrWhiteSpace(snapshot.VariableName))
+        {
             return false;
+        }
 
         _variableById[snapshot.VariableId] = variable;
 
@@ -125,8 +138,10 @@ public sealed partial class RoomWiredSystem
 
     private void RemoveVariableBox(int boxId)
     {
-        if (!_variableIdBoxId.TryGetValue(boxId, out var variableId))
+        if (!_variableIdBoxId.TryGetValue(boxId, out WiredVariableId variableId))
+        {
             return;
+        }
 
         _variableIdBoxId.Remove(boxId);
         _variableById.Remove(variableId);
@@ -134,18 +149,18 @@ public sealed partial class RoomWiredSystem
 
     private WiredVariablesSnapshot BuildVariablesSnapshot()
     {
-        var hashes = new List<WiredVariableHash>();
-        var snapshots = new List<WiredVariableSnapshot>(_variableById.Count);
+        List<WiredVariableHash> hashes = new List<WiredVariableHash>();
+        List<WiredVariableSnapshot> snapshots = new List<WiredVariableSnapshot>(_variableById.Count);
 
-        foreach (var variable in _variableById.Values)
+        foreach (IWiredVariable variable in _variableById.Values)
         {
-            var snapshot = variable.GetVarSnapshot();
+            WiredVariableSnapshot snapshot = variable.GetVarSnapshot();
 
             hashes.Add(snapshot.VariableHash);
             snapshots.Add(snapshot);
         }
 
-        var allVariablesSnapshot = new WiredVariablesSnapshot()
+        WiredVariablesSnapshot allVariablesSnapshot = new WiredVariablesSnapshot()
         {
             AllVariablesHash = WiredVariableHashBuilder.HashFromHashes(hashes),
             Variables = snapshots,

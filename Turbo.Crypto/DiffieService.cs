@@ -17,7 +17,7 @@ public sealed class DiffieService : IDiffieService
 
     public DiffieService(IRsaService rsaService)
     {
-        var random = new SecureRandom();
+        SecureRandom random = new SecureRandom();
         _rsaService = rsaService;
 
         // Generate probable primes for DH parameters
@@ -38,17 +38,17 @@ public sealed class DiffieService : IDiffieService
 
     public byte[] GenerateSharedKey(string publicKey)
     {
-        var pubKey = DecryptBigInteger(publicKey);
-        var sharedKey = pubKey.ModPow(_dhPrivate, _dhPrime);
+        BigInteger pubKey = DecryptBigInteger(publicKey);
+        BigInteger? sharedKey = pubKey.ModPow(_dhPrivate, _dhPrime);
 
         return sharedKey.ToByteArrayUnsigned();
     }
 
     public BigInteger DecryptBigInteger(string str)
     {
-        var bytes = Hex.Decode(str);
-        var decrypted = _rsaService.Decrypt(bytes);
-        var intStr = Encoding.UTF8.GetString(decrypted);
+        byte[]? bytes = Hex.Decode(str);
+        byte[] decrypted = _rsaService.Decrypt(bytes);
+        string intStr = Encoding.UTF8.GetString(decrypted);
 
         return new BigInteger(intStr);
     }
@@ -65,19 +65,19 @@ public sealed class DiffieService : IDiffieService
 
     public string EncryptBigInteger(BigInteger integer)
     {
-        var str = integer.ToString(10);
-        var bytes = Encoding.UTF8.GetBytes(str);
+        string? str = integer.ToString(10);
+        byte[] bytes = Encoding.UTF8.GetBytes(str);
 
         // Use RSA to sign the byte array
-        var encrypted = _rsaService.Sign(bytes);
+        byte[] encrypted = _rsaService.Sign(bytes);
 
         return Hex.ToHexString(encrypted).ToLower();
     }
 
     public byte[] GetSharedKey(string publicKeyStr)
     {
-        var publicKey = DecryptBigInteger(publicKeyStr);
-        var sharedKey = publicKey.ModPow(_dhPrivate, _dhPrime);
+        BigInteger publicKey = DecryptBigInteger(publicKeyStr);
+        BigInteger? sharedKey = publicKey.ModPow(_dhPrivate, _dhPrime);
 
         return sharedKey.ToByteArrayUnsigned();
     }

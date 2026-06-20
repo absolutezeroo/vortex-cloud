@@ -1,5 +1,6 @@
 using Turbo.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 using Turbo.Primitives.Packets;
+using Turbo.Primitives.Rooms.Object;
 using Turbo.Revisions.Revision20260112.Serializers.Userdefinedroomevents.Data;
 
 namespace Turbo.Revisions.Revision20260112.Serializers.Userdefinedroomevents.Wiredmenu;
@@ -18,7 +19,7 @@ internal class WiredAllVariableHoldersEventMessageComposerSerializer(int header)
 
         packet.WriteInteger(message.ObjectValues.Count);
 
-        foreach (var (objectId, value) in message.ObjectValues)
+        foreach ((RoomObjectId objectId, int value) in message.ObjectValues)
             packet.WriteInteger(objectId).WriteInteger(value);
     }
 }

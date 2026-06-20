@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
@@ -6,6 +8,8 @@ using Turbo.Primitives.Messages.Incoming.NewNavigator;
 using Turbo.Primitives.Messages.Outgoing.NewNavigator;
 using Turbo.Primitives.Navigator;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Navigator;
+using Turbo.Primitives.Players.Grains;
 
 namespace Turbo.PacketHandlers.NewNavigator;
 
@@ -23,19 +27,19 @@ public class NewNavigatorInitMessageHandler(
         CancellationToken ct
     )
     {
-        var navigatorGrain = _grainFactory.GetPlayerNavigatorGrain(ctx.PlayerId);
+        IPlayerNavigatorGrain navigatorGrain = _grainFactory.GetPlayerNavigatorGrain(ctx.PlayerId);
 
-        var topLevelContexts = await _navigatorService
+        ImmutableArray<NavigatorTopLevelContextSnapshot> topLevelContexts = await _navigatorService
             .GetTopLevelContextAsync()
             .ConfigureAwait(false);
 
-        var savedSearches = await navigatorGrain.GetSavedSearchesAsync(ct).ConfigureAwait(false);
+        List<NavigatorQuickLinkSnapshot> savedSearches = await navigatorGrain.GetSavedSearchesAsync(ct).ConfigureAwait(false);
 
-        var collapsedCategories = await navigatorGrain
+        List<string> collapsedCategories = await navigatorGrain
             .GetCollapsedCategoriesAsync(ct)
             .ConfigureAwait(false);
 
-        var prefs = await navigatorGrain.GetWindowPreferencesAsync(ct).ConfigureAwait(false);
+        NavigatorWindowPreferencesSnapshot prefs = await navigatorGrain.GetWindowPreferencesAsync(ct).ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
                 new NavigatorMetaDataMessage { TopLevelContexts = topLevelContexts },

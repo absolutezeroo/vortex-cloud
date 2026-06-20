@@ -1,3 +1,4 @@
+using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Packets;
 
@@ -8,10 +9,10 @@ internal class GuildEditorDataMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, GuildEditorDataMessageComposer message)
     {
-        var data = message.Data;
+        GroupEditorDataSnapshot data = message.Data;
 
         packet.WriteInteger(data.BaseParts.Count);
-        foreach (var part in data.BaseParts)
+        foreach (GroupBadgePartOptionSnapshot part in data.BaseParts)
         {
             packet.WriteInteger(part.Id);
             packet.WriteString(part.FileName);
@@ -19,7 +20,7 @@ internal class GuildEditorDataMessageComposerSerializer(int header)
         }
 
         packet.WriteInteger(data.LayerParts.Count);
-        foreach (var part in data.LayerParts)
+        foreach (GroupBadgePartOptionSnapshot part in data.LayerParts)
         {
             packet.WriteInteger(part.Id);
             packet.WriteString(part.FileName);
@@ -27,21 +28,21 @@ internal class GuildEditorDataMessageComposerSerializer(int header)
         }
 
         packet.WriteInteger(data.BadgeColors.Count);
-        foreach (var color in data.BadgeColors)
+        foreach (GroupColorOptionSnapshot color in data.BadgeColors)
         {
             packet.WriteInteger(color.Id);
             packet.WriteString(color.ColorHex);
         }
 
         packet.WriteInteger(data.PrimaryColors.Count);
-        foreach (var color in data.PrimaryColors)
+        foreach (GroupColorOptionSnapshot color in data.PrimaryColors)
         {
             packet.WriteInteger(color.Id);
             packet.WriteString(color.ColorHex);
         }
 
         packet.WriteInteger(data.SecondaryColors.Count);
-        foreach (var color in data.SecondaryColors)
+        foreach (GroupColorOptionSnapshot color in data.SecondaryColors)
         {
             packet.WriteInteger(color.Id);
             packet.WriteString(color.ColorHex);

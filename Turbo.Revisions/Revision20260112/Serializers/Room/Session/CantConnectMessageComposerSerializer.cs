@@ -12,6 +12,8 @@ internal class CantConnectMessageComposerSerializer(int header)
         packet.WriteInteger((int)message.ErrorType);
 
         if (message.ErrorType == RoomConnectionErrorType.Banned)
+        {
             packet.WriteString(message.AdditionalInfo ?? string.Empty);
+        }
     }
 }

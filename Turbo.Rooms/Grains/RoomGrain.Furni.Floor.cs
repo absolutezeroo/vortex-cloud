@@ -9,6 +9,7 @@ using Turbo.Primitives.Inventory.Snapshots;
 using Turbo.Primitives.Messages.Incoming.Userdefinedroomevents;
 using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Object;
+using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Snapshots.Furniture;
 using Turbo.Primitives.Rooms.Snapshots.Wired;
@@ -32,7 +33,9 @@ public sealed partial class RoomGrain
         try
         {
             if (!await ActionModule.PlaceFloorItemAsync(ctx, item, x, y, rot, ct))
+            {
                 return false;
+            }
 
             return true;
         }
@@ -63,7 +66,9 @@ public sealed partial class RoomGrain
         try
         {
             if (!await ActionModule.MoveFloorItemByIdAsync(ctx, itemId, x, y, rot, ct))
+            {
                 return false;
+            }
 
             return true;
         }
@@ -92,7 +97,9 @@ public sealed partial class RoomGrain
         try
         {
             if (!await ActionModule.ApplyWiredUpdateAsync(ctx, itemId, update, ct))
+            {
                 return false;
+            }
 
             return true;
         }
@@ -114,7 +121,7 @@ public sealed partial class RoomGrain
         CancellationToken ct
     ) =>
         Task.FromResult(
-            _state.ItemsById.TryGetValue(itemId, out var item) && item is IRoomFloorItem floorItem
+            _state.ItemsById.TryGetValue(itemId, out IRoomItem? item) && item is IRoomFloorItem floorItem
                 ? floorItem.GetSnapshot()
                 : null
         );
@@ -128,7 +135,7 @@ public sealed partial class RoomGrain
         CancellationToken ct
     ) =>
         Task.FromResult(
-            _state.ItemsById.TryGetValue(itemId, out var item)
+            _state.ItemsById.TryGetValue(itemId, out IRoomItem? item)
                 ? item.Logic is FurnitureWiredLogic wiredLogic
                     ? wiredLogic.GetSnapshot()
                     : null

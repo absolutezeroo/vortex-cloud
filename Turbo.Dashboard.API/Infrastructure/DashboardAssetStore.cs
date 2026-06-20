@@ -15,7 +15,9 @@ internal sealed class DashboardAssetStore
         contentType = "application/octet-stream";
 
         if (!IsSafeAsset(assetName))
+        {
             return false;
+        }
 
         bytes = DashboardPageResources.GetBytes(assetName);
         contentType = GetAssetContentType(assetName);
@@ -30,7 +32,7 @@ internal sealed class DashboardAssetStore
 
     private static string GetAssetContentType(string assetName)
     {
-        var extension = Path.GetExtension(assetName).ToLowerInvariant();
+        string extension = Path.GetExtension(assetName).ToLowerInvariant();
 
         return extension switch
         {
@@ -44,16 +46,24 @@ internal sealed class DashboardAssetStore
     private static bool IsSafeAsset(string assetName)
     {
         if (string.IsNullOrWhiteSpace(assetName))
+        {
             return false;
+        }
 
         if (assetName.Contains('/', StringComparison.Ordinal))
+        {
             return false;
+        }
 
         if (assetName.Contains('\\', StringComparison.Ordinal))
+        {
             return false;
+        }
 
         if (assetName.Contains("..", StringComparison.Ordinal))
+        {
             return false;
+        }
 
         return DashboardPageResources.TryGetResourceName(assetName, out _);
     }

@@ -8,6 +8,7 @@ using Turbo.Players.Configuration;
 using Turbo.Primitives.Messages.Incoming.Users;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Players;
 
 namespace Turbo.PacketHandlers.Users;
 
@@ -26,19 +27,21 @@ public class ScrGetKickbackInfoMessageHandler(
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var sub = await _grainFactory
+        ClubSubscriptionSnapshot sub = await _grainFactory
             .GetPlayerGrain(ctx.PlayerId)
             .GetClubSubscriptionAsync(ct)
             .ConfigureAwait(false);
 
-        var now = DateTime.UtcNow;
-        var streakBonus = Math.Min(sub.TotalMonths, 31);
-        var monthlyReward = (int)(
+        DateTime now = DateTime.UtcNow;
+        int streakBonus = Math.Min(sub.TotalMonths, 31);
+        int monthlyReward = (int)(
             sub.CreditsSpentThisPeriod * (_clubConfig.KickbackPercent / 100.0)
         );
-        var minutesUntilPayday =
+        int minutesUntilPayday =
             sub.IsActive && sub.PaydayAt.HasValue && sub.PaydayAt.Value > now
                 ? (int)(sub.PaydayAt.Value - now).TotalMinutes
                 : 0;

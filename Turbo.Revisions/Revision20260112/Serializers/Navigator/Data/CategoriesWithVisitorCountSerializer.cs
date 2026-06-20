@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Turbo.Primitives.Packets;
 using Turbo.Primitives.Snapshots.Navigator;
 
@@ -9,7 +10,7 @@ internal class CategoriesWithVisitorCountSerializer
     {
         packet.WriteInteger(message.CategoriesWithVisitorCount.Count);
 
-        foreach (var category in message.CategoriesWithVisitorCount)
+        foreach (KeyValuePair<int, List<int>> category in message.CategoriesWithVisitorCount)
         {
             packet
                 .WriteInteger(category.Key)

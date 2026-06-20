@@ -55,20 +55,24 @@ public abstract class FurnitureLogic<TObject, TSelf, TContext>
 
     public virtual int GetNextToggleableState()
     {
-        var totalStates = _ctx.RoomObject.Definition.TotalStates;
+        int totalStates = _ctx.RoomObject.Definition.TotalStates;
 
         if (totalStates == 0 || StuffData is null)
+        {
             return 0;
+        }
 
         return (StuffData.GetState() + 1) % totalStates;
     }
 
     public virtual int GetPrevToggleableState()
     {
-        var totalStates = _ctx.RoomObject.Definition.TotalStates;
+        int totalStates = _ctx.RoomObject.Definition.TotalStates;
 
         if (totalStates == 0 || StuffData is null)
+        {
             return 0;
+        }
 
         return (StuffData.GetState() - 1 + totalStates) % totalStates;
     }
@@ -78,13 +82,17 @@ public abstract class FurnitureLogic<TObject, TSelf, TContext>
         StuffData.SetState(state.ToString());
 
         if (_stuffPersistanceType == StuffPersistanceType.Persistent)
+        {
             _ctx.RoomObject.ExtraData.UpdateSection(
                 ExtraDataSectionType.STUFF,
                 JsonSerializer.SerializeToNode(StuffData, StuffData.GetType())
             );
+        }
 
         if (refresh)
+        {
             _ = _ctx.RefreshStuffDataAsync();
+        }
 
         await OnStateChangedAsync(CancellationToken.None);
     }

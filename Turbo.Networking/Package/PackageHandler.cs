@@ -30,17 +30,17 @@ public sealed class PackageHandler(
     {
         ArgumentNullException.ThrowIfNull(packet);
 
-        var ctx = (ISessionContext)session;
+        ISessionContext ctx = (ISessionContext)session;
 
         try
         {
-            var revision =
+            IRevision revision =
                 _revisionManager.GetRevision(ctx.RevisionId)
                 ?? throw new ArgumentNullException("No revision set");
 
-            if (revision.Parsers.TryGetValue(packet.Header, out var parser))
+            if (revision.Parsers.TryGetValue(packet.Header, out IParser? parser))
             {
-                var message = parser.Parse(packet);
+                IMessageEvent message = parser.Parse(packet);
 
                 _logger.LogDebug("Incoming {Message}", message);
 
@@ -64,7 +64,7 @@ public sealed class PackageHandler(
                 ctx.SessionKey
             );
 
-            var context = _contextAccessor?.Current;
+            ITurboContext? context = _contextAccessor?.Current;
 
             if (_errorSink is not null)
             {

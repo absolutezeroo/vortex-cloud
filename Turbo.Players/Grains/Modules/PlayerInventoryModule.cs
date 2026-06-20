@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
+using Turbo.Primitives.Inventory.Grains;
 using Turbo.Primitives.Inventory.Snapshots;
 using Turbo.Primitives.Messages.Outgoing.Inventory.Badges;
 using Turbo.Primitives.Messages.Outgoing.Inventory.Furni;
@@ -17,19 +19,19 @@ internal sealed class PlayerInventoryModule(PlayerPresenceGrain presenceGrain)
 
     public async Task OpenFurnitureInventoryAsync(CancellationToken ct)
     {
-        var inventoryGrain = _presenceGrain._grainFactory.GetInventoryGrain(
+        IInventoryGrain inventoryGrain = _presenceGrain._grainFactory.GetInventoryGrain(
             _presenceGrain.GetPrimaryKeyLong()
         );
-        var items = await inventoryGrain.GetAllItemSnapshotsAsync(ct);
-        var furniPerFragment = 100;
+        ImmutableArray<FurnitureItemSnapshot> items = await inventoryGrain.GetAllItemSnapshotsAsync(ct);
+        int furniPerFragment = 100;
 
-        var totalFragments = (int)
+        int totalFragments = (int)
             Math.Max(1, Math.Ceiling((double)items.Length / furniPerFragment));
-        var currentFragment = 0;
-        var count = 0;
+        int currentFragment = 0;
+        int count = 0;
         List<FurnitureItemSnapshot> fragmentItems = [];
 
-        foreach (var item in items)
+        foreach (FurnitureItemSnapshot item in items)
         {
             fragmentItems.Add(item);
 

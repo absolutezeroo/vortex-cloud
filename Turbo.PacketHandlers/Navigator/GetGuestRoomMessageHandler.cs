@@ -5,7 +5,9 @@ using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Navigator;
 using Turbo.Primitives.Messages.Outgoing.Navigator;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Room;
 using Turbo.Primitives.Rooms;
+using Turbo.Primitives.Rooms.Grains;
 
 namespace Turbo.PacketHandlers.Navigator;
 
@@ -21,13 +23,13 @@ public class GetGuestRoomMessageHandler(IRoomService roomService, IGrainFactory 
         CancellationToken ct
     )
     {
-        var roomGrain = _grainFactory.GetRoomGrain(message.RoomId);
-        var snapshot = await roomGrain.GetSnapshotAsync().ConfigureAwait(false);
+        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(message.RoomId);
+        RoomSnapshot snapshot = await roomGrain.GetSnapshotAsync().ConfigureAwait(false);
 
-        var staffPick = false;
-        var groupMember = false;
-        var allInRoomMuted = false;
-        var canMute = false;
+        bool staffPick = false;
+        bool groupMember = false;
+        bool allInRoomMuted = false;
+        bool canMute = false;
 
         await ctx.SendComposerAsync(
                 new GetGuestRoomResultMessageComposer

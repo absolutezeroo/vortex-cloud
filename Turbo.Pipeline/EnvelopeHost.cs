@@ -29,7 +29,7 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
     {
         ArgumentNullException.ThrowIfNull(envType);
 
-        var b = _byEvent.GetOrAdd(envType, _ => new Bucket<TContext>());
+        Bucket<TContext> b = _byEvent.GetOrAdd(envType, _ => new Bucket<TContext>());
 
         lock (b.Gate)
         {
@@ -61,7 +61,7 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
     {
         ArgumentNullException.ThrowIfNull(envType);
 
-        var b = _byEvent.GetOrAdd(envType, _ => new Bucket<TContext>());
+        Bucket<TContext> b = _byEvent.GetOrAdd(envType, _ => new Bucket<TContext>());
 
         lock (b.Gate)
         {
@@ -86,19 +86,25 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
     public async Task PublishAsync(TEnvelope env, TMeta? meta, CancellationToken ct)
     {
         if (env is null)
+        {
             return;
+        }
 
-        var t = env.GetType();
+        Type t = env.GetType();
 
-        if (!_byEvent.TryGetValue(t, out var bucket) && !_opt.EnableInheritanceDispatch)
+        if (!_byEvent.TryGetValue(t, out Bucket<TContext>? bucket) && !_opt.EnableInheritanceDispatch)
+        {
             return;
+        }
 
-        var pipeline = GetOrBuildPipeline(t, bucket);
+        Func<object, TContext, CancellationToken, ValueTask>? pipeline = GetOrBuildPipeline(t, bucket);
 
         if (pipeline is null)
+        {
             return;
+        }
 
-        var ctx = await _opt.CreateContextAsync(env, meta).ConfigureAwait(false);
+        TContext ctx = await _opt.CreateContextAsync(env, meta).ConfigureAwait(false);
 
         await pipeline(env, ctx, ct).ConfigureAwait(false);
     }
@@ -111,16 +117,20 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
         if (!_opt.EnableInheritanceDispatch)
         {
             if (primaryBucket is null)
+            {
                 return null;
+            }
 
-            var cached = Volatile.Read(ref primaryBucket.CachedPipeline);
+            Func<object, TContext, CancellationToken, ValueTask>? cached = Volatile.Read(ref primaryBucket.CachedPipeline);
 
             if (
                 cached is not null
                 && primaryBucket.CachedVersion == primaryBucket.Version
                 && primaryBucket.CachedForEnvType == envType
             )
+            {
                 return cached;
+            }
 
             lock (primaryBucket.Gate)
             {
@@ -129,9 +139,11 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
                     && primaryBucket.CachedVersion == primaryBucket.Version
                     && primaryBucket.CachedForEnvType == envType
                 )
+                {
                     return primaryBucket.CachedPipeline;
+                }
 
-                var pipeline = BuildPipeline(primaryBucket.Handlers, primaryBucket.Behaviors);
+                Func<object, TContext, CancellationToken, ValueTask> pipeline = BuildPipeline(primaryBucket.Handlers, primaryBucket.Behaviors);
 
                 primaryBucket.CachedPipeline = pipeline;
                 primaryBucket.CachedVersion = primaryBucket.Version;
@@ -141,18 +153,20 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
             }
         }
 
-        var (handlers, behaviors, globalVersion) = ResolveForType(envType);
+        (ImmutableArray<HandlerReg<TContext>> handlers, ImmutableArray<BehaviorReg<TContext>> behaviors, int globalVersion) = ResolveForType(envType);
 
         primaryBucket ??= _byEvent.GetOrAdd(envType, _ => new Bucket<TContext>());
 
-        var cached2 = Volatile.Read(ref primaryBucket.CachedPipeline);
+        Func<object, TContext, CancellationToken, ValueTask>? cached2 = Volatile.Read(ref primaryBucket.CachedPipeline);
 
         if (
             cached2 is not null
             && primaryBucket.CachedVersion == globalVersion
             && primaryBucket.CachedForEnvType == envType
         )
+        {
             return cached2;
+        }
 
         lock (primaryBucket.Gate)
         {
@@ -161,9 +175,11 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
                 && primaryBucket.CachedVersion == globalVersion
                 && primaryBucket.CachedForEnvType == envType
             )
+            {
                 return primaryBucket.CachedPipeline;
+            }
 
-            var pipeline = BuildPipeline(handlers, behaviors);
+            Func<object, TContext, CancellationToken, ValueTask> pipeline = BuildPipeline(handlers, behaviors);
 
             primaryBucket.CachedPipeline = pipeline;
             primaryBucket.CachedVersion = globalVersion;
@@ -178,14 +194,14 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
             int
         ) ResolveForType(Type t)
         {
-            var types = EnumerateTypeGraph(t);
-            var handlerBuilder = ImmutableArray.CreateBuilder<HandlerReg<TContext>>();
-            var behaviorBuilder = ImmutableArray.CreateBuilder<BehaviorReg<TContext>>();
-            var versionSum = 0;
+            IEnumerable<Type> types = EnumerateTypeGraph(t);
+            ImmutableArray<HandlerReg<TContext>>.Builder handlerBuilder = ImmutableArray.CreateBuilder<HandlerReg<TContext>>();
+            ImmutableArray<BehaviorReg<TContext>>.Builder behaviorBuilder = ImmutableArray.CreateBuilder<BehaviorReg<TContext>>();
+            int versionSum = 0;
 
-            foreach (var tp in types)
+            foreach (Type tp in types)
             {
-                if (_byEvent.TryGetValue(tp, out var b))
+                if (_byEvent.TryGetValue(tp, out Bucket<TContext>? b))
                 {
                     versionSum = unchecked(versionSum + b.Version);
                     handlerBuilder.AddRange(b.Handlers);
@@ -193,12 +209,12 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
                 }
             }
 
-            var behaviors = behaviorBuilder
+            ImmutableArray<BehaviorReg<TContext>> behaviors = behaviorBuilder
                 .ToImmutable()
                 .Sort(
                     static (a, b) =>
                     {
-                        var cmp = a.Order.CompareTo(b.Order);
+                        int cmp = a.Order.CompareTo(b.Order);
                         return cmp != 0 ? cmp : 0;
                     }
                 );
@@ -210,10 +226,10 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
         {
             yield return t;
 
-            for (var cur = t.BaseType; cur is not null; cur = cur.BaseType)
+            for (Type? cur = t.BaseType; cur is not null; cur = cur.BaseType)
                 yield return cur;
 
-            foreach (var iface in t.GetInterfaces())
+            foreach (Type iface in t.GetInterfaces())
                 yield return iface;
         }
     }
@@ -225,19 +241,19 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
     {
         return async (env, ctx, ct) =>
         {
-            var bag = new CompositeServiceProviderBag(_host);
+            CompositeServiceProviderBag bag = new CompositeServiceProviderBag(_host);
 
             Func<object, TContext, CancellationToken, ValueTask> terminal = async (env, ctx, ct) =>
                 await InvokeHandlersAsync(handlers, env, ctx, ct).ConfigureAwait(false);
 
             for (int i = behaviors.Length - 1; i >= 0; i--)
             {
-                var beh = behaviors[i];
-                var next = terminal;
+                BehaviorReg<TContext> beh = behaviors[i];
+                Func<object, TContext, CancellationToken, ValueTask> next = terminal;
 
                 terminal = async (env, ctx, ct) =>
                 {
-                    var sp = bag.Get(beh.ServiceProvider);
+                    IServiceProvider sp = bag.Get(beh.ServiceProvider);
 
                     object? inst = null;
 
@@ -272,9 +288,13 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
                     finally
                     {
                         if (inst is IAsyncDisposable iad)
+                        {
                             await iad.DisposeAsync().ConfigureAwait(false);
+                        }
                         else if (inst is IDisposable d)
+                        {
                             d.Dispose();
+                        }
                     }
                 };
             }
@@ -291,7 +311,9 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
     )
     {
         if (regs.IsDefaultOrEmpty)
+        {
             return;
+        }
 
         if (_opt.HandlerMode == HandlerExecutionMode.Sequential)
         {
@@ -310,11 +332,11 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
 
         if (_opt.MaxHandlerDegreeOfParallelism is int dop && dop > 0 && dop < regs.Length)
         {
-            var work = new List<Func<CancellationToken, ValueTask>>(regs.Length);
+            List<Func<CancellationToken, ValueTask>> work = new List<Func<CancellationToken, ValueTask>>(regs.Length);
 
             for (int i = 0; i < regs.Length; i++)
             {
-                var r = regs[i];
+                HandlerReg<TContext> r = regs[i];
                 work.Add(token => InvokeOneAsync(r, env, ctx, token));
             }
 
@@ -322,7 +344,7 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
         }
         else
         {
-            var tasks = new Task[regs.Length];
+            Task[] tasks = new Task[regs.Length];
 
             for (int i = 0; i < regs.Length; i++)
                 tasks[i] = InvokeOneAsync(regs[i], env, ctx, ct).AsTask();
@@ -338,10 +360,12 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
         CancellationToken ct
     )
     {
-        var sp = h.ServiceProvider;
+        IServiceProvider sp = h.ServiceProvider;
 
         if (sp != _host)
+        {
             sp = new CompositeServiceProvider(sp, _host);
+        }
 
         object? inst = null;
 
@@ -367,9 +391,13 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
         finally
         {
             if (inst is IAsyncDisposable iad)
+            {
                 await iad.DisposeAsync().ConfigureAwait(false);
+            }
             else if (inst is IDisposable d)
+            {
                 d.Dispose();
+            }
         }
     }
 

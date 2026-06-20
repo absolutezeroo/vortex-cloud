@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
@@ -23,9 +24,11 @@ public class WiredGetVariablesForObjectMessageHandler(IGrainFactory grainFactory
     )
     {
         if (ctx is null || ctx.PlayerId <= 0 || ctx.RoomId <= 0)
+        {
             return;
+        }
 
-        var variables = await _grainFactory
+        List<(WiredVariableId id, WiredVariableValue value)> variables = await _grainFactory
             .GetRoomGrain(ctx.RoomId)
             .GetAllVariablesForBindingAsync(
                 new WiredVariableBinding()

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
@@ -7,6 +8,7 @@ using Turbo.Primitives.Messages.Outgoing.Inventory.Purse;
 using Turbo.Primitives.Messages.Outgoing.Notifications;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players.Enums.Wallet;
+using Turbo.Primitives.Players.Grains;
 using Turbo.Primitives.Players.Wallet;
 
 namespace Turbo.PacketHandlers.Inventory.Purse;
@@ -23,13 +25,15 @@ public class GetCreditsInfoMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var wallet = _grainFactory.GetPlayerWalletGrain(ctx.PlayerId);
-        var credits = await wallet
+        IPlayerWalletGrain wallet = _grainFactory.GetPlayerWalletGrain(ctx.PlayerId);
+        int credits = await wallet
             .GetAmountForCurrencyAsync(new CurrencyKind { CurrencyType = CurrencyType.Credits }, ct)
             .ConfigureAwait(false);
-        var activityPoints = await wallet.GetActivityPointsAsync(ct).ConfigureAwait(false);
+        Dictionary<int, int> activityPoints = await wallet.GetActivityPointsAsync(ct).ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
                 new CreditBalanceEventMessageComposer { Balance = $"{credits}.0" },

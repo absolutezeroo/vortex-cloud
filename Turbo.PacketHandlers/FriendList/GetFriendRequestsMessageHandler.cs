@@ -1,10 +1,13 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.FriendList.Grains;
 using Turbo.Primitives.Messages.Incoming.FriendList;
 using Turbo.Primitives.Messages.Outgoing.FriendList;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Snapshots.FriendList;
 
 namespace Turbo.PacketHandlers.FriendList;
 
@@ -20,10 +23,12 @@ public class GetFriendRequestsMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0)
+        {
             return;
+        }
 
-        var grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
-        var requests = await grain.GetFriendRequestsAsync(ct).ConfigureAwait(false);
+        IMessengerGrain grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
+        List<FriendRequestSnapshot> requests = await grain.GetFriendRequestsAsync(ct).ConfigureAwait(false);
 
         await ctx.SendComposerAsync(new FriendRequestsMessageComposer { Requests = requests }, ct)
             .ConfigureAwait(false);

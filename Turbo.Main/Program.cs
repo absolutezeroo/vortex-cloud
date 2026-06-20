@@ -1,9 +1,11 @@
 using System;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Turbo.Authentication;
@@ -35,7 +37,7 @@ internal class Program
 {
     public static async Task Main(string[] args)
     {
-        var bootstrapLogger = LoggerFactory
+        ILogger bootstrapLogger = LoggerFactory
             .Create(builder =>
             {
                 builder.ClearProviders();
@@ -60,26 +62,26 @@ internal class Program
             GetProjectVersion()
         );
 
-        var builder = Host.CreateApplicationBuilder(args);
+        HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
         builder.Configuration.AddEnvironmentVariables(prefix: "TURBO__");
 
         if (builder.Environment.IsDevelopment())
         {
             bootstrapLogger.LogInformation("=== Configuration Providers ===");
-            foreach (var p in ((IConfigurationRoot)builder.Configuration).Providers)
+            foreach (IConfigurationProvider p in ((IConfigurationRoot)builder.Configuration).Providers)
             {
                 if (p is JsonConfigurationProvider jp)
                 {
-                    var src = (JsonConfigurationSource)jp.Source;
-                    var path = src.Path;
+                    JsonConfigurationSource src = (JsonConfigurationSource)jp.Source;
+                    string? path = src.Path;
 
                     if (path is not null)
                     {
-                        var fileProvider =
+                        IFileProvider? fileProvider =
                             src.FileProvider ?? builder.Environment.ContentRootFileProvider;
-                        var fi = fileProvider?.GetFileInfo(path);
-                        var physical = fi?.PhysicalPath ?? "<virtual or unresolved>";
+                        IFileInfo? fi = fileProvider?.GetFileInfo(path);
+                        string physical = fi?.PhysicalPath ?? "<virtual or unresolved>";
 
                         bootstrapLogger.LogInformation($"Json: '{path}' -> {physical}");
                     }
@@ -116,10 +118,10 @@ internal class Program
 
         builder.Services.AddHostedService<TurboEmulator>();
 
-        var host = builder.Build();
+        IHost host = builder.Build();
 
-        var lifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
-        var ct = lifetime.ApplicationStopping;
+        IHostApplicationLifetime lifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
+        CancellationToken ct = lifetime.ApplicationStopping;
 
         try
         {

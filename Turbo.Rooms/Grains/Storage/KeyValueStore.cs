@@ -26,7 +26,9 @@ public sealed class KeyValueStore : IWiredVariableStore
     )
     {
         if (Store.ContainsKey(key.ToStorageKey()) && !replace)
+        {
             return Task.FromResult(false);
+        }
 
         Store[key.ToStorageKey()] = value;
 
@@ -42,7 +44,9 @@ public sealed class KeyValueStore : IWiredVariableStore
     )
     {
         if (!Store.ContainsKey(key.ToStorageKey()))
+        {
             return Task.FromResult(false);
+        }
 
         Store[key.ToStorageKey()] = value;
 
@@ -54,7 +58,9 @@ public sealed class KeyValueStore : IWiredVariableStore
     public bool RemoveValue(WiredVariableKey key)
     {
         if (!Store.ContainsKey(key.ToStorageKey()) || !Store.Remove(key.ToStorageKey()))
+        {
             return false;
+        }
 
         MarkDirty();
 

@@ -1,4 +1,5 @@
 using Turbo.Primitives.Messages.Outgoing.NewNavigator;
+using Turbo.Primitives.Orleans.Snapshots.Navigator;
 using Turbo.Primitives.Packets;
 using Turbo.Revisions.Revision20260112.Serializers.NewNavigator.Data;
 
@@ -17,7 +18,7 @@ internal class NavigatorSearchResultBlocksMessageSerializer(int header)
             .WriteString(message.FilteringData)
             .WriteInteger(message.Blocks.Length);
 
-        foreach (var block in message.Blocks)
+        foreach (NavigatorSearchResultBlockSnapshot block in message.Blocks)
         {
             NavigatorSearchResultBlockSerializer.Serialize(packet, block);
         }

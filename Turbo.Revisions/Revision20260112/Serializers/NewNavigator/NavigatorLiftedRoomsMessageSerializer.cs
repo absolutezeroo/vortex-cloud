@@ -1,5 +1,6 @@
 using Turbo.Primitives.Messages.Outgoing.NewNavigator;
 using Turbo.Primitives.Packets;
+using Turbo.Primitives.Snapshots.NewNavigator;
 
 namespace Turbo.Revisions.Revision20260112.Serializers.NewNavigator;
 
@@ -10,7 +11,7 @@ internal class NavigatorLiftedRoomsMessageSerializer(int header)
     {
         packet.WriteInteger(message.LiftedRooms.Count);
 
-        foreach (var room in message.LiftedRooms)
+        foreach (NavigatorLiftedRoomSnapshot room in message.LiftedRooms)
         {
             packet.WriteInteger(room.FlatId);
             packet.WriteInteger(room.AreaId);

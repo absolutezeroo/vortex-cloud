@@ -19,29 +19,41 @@ public class MoveWallItemMessageHandler(IRoomService roomService)
     )
     {
         // :w=4,11 l=32,57 l
-        var position = message.WallPosition.Split(' ');
+        string[] position = message.WallPosition.Split(' ');
 
         if (position.Length != 3)
+        {
             return;
+        }
 
-        var coords = position[0][3..].Split(',');
-        var loc = position[1][2..].Split(',');
-        var rot = position[2].Equals("l") ? Rotation.South : Rotation.West;
+        string[] coords = position[0][3..].Split(',');
+        string[] loc = position[1][2..].Split(',');
+        Rotation rot = position[2].Equals("l") ? Rotation.South : Rotation.West;
 
         if (coords.Length != 2 || loc.Length != 2)
+        {
             return;
+        }
 
-        if (!int.TryParse(coords[0], out var x))
+        if (!int.TryParse(coords[0], out int x))
+        {
             return;
+        }
 
-        if (!int.TryParse(coords[1], out var y))
+        if (!int.TryParse(coords[1], out int y))
+        {
             return;
+        }
 
-        if (!int.TryParse(loc[0], out var wallOffset))
+        if (!int.TryParse(loc[0], out int wallOffset))
+        {
             return;
+        }
 
-        if (!double.TryParse(loc[1], out var z))
+        if (!double.TryParse(loc[1], out double z))
+        {
             return;
+        }
 
         await _roomService
             .MoveWallItemInRoomAsync(

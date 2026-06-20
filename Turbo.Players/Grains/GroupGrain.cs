@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Groups;
+using Turbo.Database.Entities.Players;
 using Turbo.Primitives.Events;
 using Turbo.Primitives.Groups.Enums;
 using Turbo.Primitives.Groups.Grains;
@@ -49,9 +50,9 @@ internal sealed class GroupGrain(
 
     public async Task<GroupDetailsSnapshot?> GetDetailsAsync(PlayerId viewer, CancellationToken ct)
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var group = await dbCtx
+        GroupEntity? group = await dbCtx
             .Groups.AsNoTracking()
             .Include(g => g.RoomEntity)
             .Include(g => g.OwnerPlayerEntity)
@@ -59,11 +60,13 @@ internal sealed class GroupGrain(
             .FirstOrDefaultAsync(g => g.Id == GroupId && g.DeletedAt == null, ct);
 
         if (group is null)
+        {
             return null;
+        }
 
-        var viewerId = viewer.Value;
+        int viewerId = viewer.Value;
 
-        var membership = await dbCtx
+        GroupMemberEntity? membership = await dbCtx
             .GroupMembers.AsNoTracking()
             .FirstOrDefaultAsync(
                 m =>
@@ -73,7 +76,7 @@ internal sealed class GroupGrain(
                 ct
             );
 
-        var hasPendingRequest =
+        bool hasPendingRequest =
             membership is null
             && await dbCtx
                 .GroupMembershipRequests.AsNoTracking()
@@ -85,26 +88,26 @@ internal sealed class GroupGrain(
                     ct
                 );
 
-        var totalMembers = await dbCtx.GroupMembers.CountAsync(
+        int totalMembers = await dbCtx.GroupMembers.CountAsync(
             m => m.GroupEntityId == GroupId && m.DeletedAt == null,
             ct
         );
 
-        var pendingCount = await dbCtx.GroupMembershipRequests.CountAsync(
+        int pendingCount = await dbCtx.GroupMembershipRequests.CountAsync(
             r => r.GroupEntityId == GroupId && r.DeletedAt == null,
             ct
         );
 
-        var favourite = await dbCtx
+        bool favourite = await dbCtx
             .Players.AsNoTracking()
             .Where(p => p.Id == viewerId)
             .Select(p => p.FavouriteGroupId == GroupId)
             .FirstOrDefaultAsync(ct);
 
-        var isOwner = group.OwnerPlayerEntityId == viewerId;
-        var isAdmin = isOwner || membership?.Rank == GroupMemberRank.Admin;
+        bool isOwner = group.OwnerPlayerEntityId == viewerId;
+        bool isAdmin = isOwner || membership?.Rank == GroupMemberRank.Admin;
 
-        var status =
+        int status =
             membership is not null ? StatusMember
             : hasPendingRequest ? StatusRequested
             : StatusNotMember;
@@ -141,17 +144,19 @@ internal sealed class GroupGrain(
         CancellationToken ct
     )
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var group = await dbCtx
+        GroupEntity? group = await dbCtx
             .Groups.AsNoTracking()
             .FirstOrDefaultAsync(g => g.Id == GroupId && g.DeletedAt == null, ct);
 
         if (group is null)
+        {
             return null;
+        }
 
-        var viewerId = viewer.Value;
-        var viewerMembership = await dbCtx
+        int viewerId = viewer.Value;
+        GroupMemberEntity? viewerMembership = await dbCtx
             .GroupMembers.AsNoTracking()
             .FirstOrDefaultAsync(
                 m =>
@@ -160,12 +165,12 @@ internal sealed class GroupGrain(
                     && m.DeletedAt == null,
                 ct
             );
-        var allowedToManage =
+        bool allowedToManage =
             group.OwnerPlayerEntityId == viewerId
             || viewerMembership?.Rank == GroupMemberRank.Admin;
 
-        var filter = userNameFilter?.Trim() ?? string.Empty;
-        var skip = Math.Max(pageIndex, 0) * MembersPerPage;
+        string filter = userNameFilter?.Trim() ?? string.Empty;
+        int skip = Math.Max(pageIndex, 0) * MembersPerPage;
 
         List<GroupMemberSnapshot> members;
         int totalEntries;
@@ -173,13 +178,15 @@ internal sealed class GroupGrain(
         // searchType 1 = pending join requests; otherwise current members.
         if (searchType == 1)
         {
-            var query = dbCtx
+            IQueryable<GroupMembershipRequestEntity> query = dbCtx
                 .GroupMembershipRequests.AsNoTracking()
                 .Include(r => r.PlayerEntity)
                 .Where(r => r.GroupEntityId == GroupId && r.DeletedAt == null);
 
             if (filter.Length > 0)
+            {
                 query = query.Where(r => r.PlayerEntity.Name.Contains(filter));
+            }
 
             totalEntries = await query.CountAsync(ct);
 
@@ -199,13 +206,15 @@ internal sealed class GroupGrain(
         }
         else
         {
-            var query = dbCtx
+            IQueryable<GroupMemberEntity> query = dbCtx
                 .GroupMembers.AsNoTracking()
                 .Include(m => m.PlayerEntity)
                 .Where(m => m.GroupEntityId == GroupId && m.DeletedAt == null);
 
             if (filter.Length > 0)
+            {
                 query = query.Where(m => m.PlayerEntity.Name.Contains(filter));
+            }
 
             totalEntries = await query.CountAsync(ct);
 
@@ -253,32 +262,38 @@ internal sealed class GroupGrain(
 
     public async Task<int?> JoinAsync(PlayerId player, CancellationToken ct)
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var group = await dbCtx
+        GroupEntity? group = await dbCtx
             .Groups.AsNoTracking()
             .FirstOrDefaultAsync(g => g.Id == GroupId && g.DeletedAt == null, ct);
 
         if (group is null || group.Type == GroupType.Private)
+        {
             return JoinFailedNotOpen;
+        }
 
-        var playerId = player.Value;
+        int playerId = player.Value;
 
-        var alreadyMember = await dbCtx.GroupMembers.AnyAsync(
+        bool alreadyMember = await dbCtx.GroupMembers.AnyAsync(
             m => m.GroupEntityId == GroupId && m.PlayerEntityId == playerId && m.DeletedAt == null,
             ct
         );
         if (alreadyMember)
+        {
             return null;
+        }
 
-        var playerEntity = await dbCtx.Players.FindAsync([playerId], ct);
-        var groupEntity = await dbCtx.Groups.FindAsync([GroupId], ct);
+        PlayerEntity? playerEntity = await dbCtx.Players.FindAsync([playerId], ct);
+        GroupEntity? groupEntity = await dbCtx.Groups.FindAsync([GroupId], ct);
         if (playerEntity is null || groupEntity is null)
+        {
             return JoinFailedNotOpen;
+        }
 
         if (group.Type == GroupType.Exclusive)
         {
-            var existing = await dbCtx.GroupMembershipRequests.AnyAsync(
+            bool existing = await dbCtx.GroupMembershipRequests.AnyAsync(
                 r =>
                     r.GroupEntityId == GroupId
                     && r.PlayerEntityId == playerId
@@ -330,17 +345,19 @@ internal sealed class GroupGrain(
 
     public async Task<GroupEditInfoSnapshot?> GetEditInfoAsync(PlayerId actor, CancellationToken ct)
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var group = await dbCtx
+        GroupEntity? group = await dbCtx
             .Groups.AsNoTracking()
             .FirstOrDefaultAsync(g => g.Id == GroupId && g.DeletedAt == null, ct);
         if (group is null)
+        {
             return null;
+        }
 
-        var actorId = actor.Value;
-        var isOwner = group.OwnerPlayerEntityId == actorId;
-        var isAdmin =
+        int actorId = actor.Value;
+        bool isOwner = group.OwnerPlayerEntityId == actorId;
+        bool isAdmin =
             isOwner
             || await dbCtx.GroupMembers.AnyAsync(
                 m =>
@@ -351,9 +368,11 @@ internal sealed class GroupGrain(
                 ct
             );
         if (!isAdmin)
+        {
             return null;
+        }
 
-        var ownedRooms = await dbCtx
+        List<GroupRoomSnapshot> ownedRooms = await dbCtx
             .Rooms.AsNoTracking()
             .Where(r => r.PlayerEntityId == group.OwnerPlayerEntityId && r.DeletedAt == null)
             .OrderBy(r => r.Id)
@@ -365,7 +384,7 @@ internal sealed class GroupGrain(
             })
             .ToListAsync(ct);
 
-        var membershipCount = await dbCtx.GroupMembers.CountAsync(
+        int membershipCount = await dbCtx.GroupMembers.CountAsync(
             m => m.GroupEntityId == GroupId && m.DeletedAt == null,
             ct
         );
@@ -448,7 +467,10 @@ internal sealed class GroupGrain(
             (group) =>
             {
                 if (guildType is >= 0 and <= 2)
+                {
                     group.Type = (GroupType)guildType;
+                }
+
                 group.AdminOnlyDecoration = rightsLevel != 0;
             },
             ct
@@ -456,16 +478,18 @@ internal sealed class GroupGrain(
 
     public async Task<bool> DeactivateAsync(PlayerId actor, CancellationToken ct)
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var group = await dbCtx.Groups.FirstOrDefaultAsync(
+        GroupEntity? group = await dbCtx.Groups.FirstOrDefaultAsync(
             g => g.Id == GroupId && g.DeletedAt == null,
             ct
         );
         if (group is null || group.OwnerPlayerEntityId != actor.Value)
+        {
             return false;
+        }
 
-        var now = DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow;
 
         // Detach the room (clears the circular link), then soft-delete the group graph.
         await dbCtx
@@ -504,13 +528,15 @@ internal sealed class GroupGrain(
         CancellationToken ct
     )
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var group = await LoadIfAdminAsync(dbCtx, actor, ct);
+        GroupEntity? group = await LoadIfAdminAsync(dbCtx, actor, ct);
         if (group is null)
+        {
             return null;
+        }
 
-        var request = await dbCtx
+        GroupMembershipRequestEntity? request = await dbCtx
             .GroupMembershipRequests.Include(r => r.PlayerEntity)
             .FirstOrDefaultAsync(
                 r =>
@@ -520,7 +546,9 @@ internal sealed class GroupGrain(
                 ct
             );
         if (request is null)
+        {
             return null;
+        }
 
         dbCtx.GroupMembershipRequests.Remove(request);
         dbCtx.GroupMembers.Add(
@@ -558,12 +586,14 @@ internal sealed class GroupGrain(
         CancellationToken ct
     )
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         if (await LoadIfAdminAsync(dbCtx, actor, ct) is null)
+        {
             return false;
+        }
 
-        var deleted = await dbCtx
+        int deleted = await dbCtx
             .GroupMembershipRequests.Where(r =>
                 r.GroupEntityId == GroupId
                 && r.PlayerEntityId == targetPlayerId
@@ -573,7 +603,9 @@ internal sealed class GroupGrain(
             .ConfigureAwait(false);
 
         if (deleted == 0)
+        {
             return false;
+        }
 
         await events
             .PublishAsync(
@@ -590,24 +622,28 @@ internal sealed class GroupGrain(
         CancellationToken ct
     )
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var group = await LoadIfAdminAsync(dbCtx, actor, ct);
+        GroupEntity? group = await LoadIfAdminAsync(dbCtx, actor, ct);
         if (group is null)
+        {
             return [];
+        }
 
-        var requests = await dbCtx
+        List<GroupMembershipRequestEntity> requests = await dbCtx
             .GroupMembershipRequests.Include(r => r.PlayerEntity)
             .Where(r => r.GroupEntityId == GroupId && r.DeletedAt == null)
             .ToListAsync(ct);
 
         if (requests.Count == 0)
+        {
             return [];
+        }
 
-        var now = DateTime.UtcNow;
-        var added = new List<GroupMemberSnapshot>(requests.Count);
+        DateTime now = DateTime.UtcNow;
+        List<GroupMemberSnapshot> added = new List<GroupMemberSnapshot>(requests.Count);
 
-        foreach (var request in requests)
+        foreach (GroupMembershipRequestEntity request in requests)
         {
             dbCtx.GroupMembers.Add(
                 new GroupMemberEntity
@@ -634,7 +670,7 @@ internal sealed class GroupGrain(
         dbCtx.GroupMembershipRequests.RemoveRange(requests);
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
 
-        foreach (var member in added)
+        foreach (GroupMemberSnapshot member in added)
             await events
                 .PublishAsync(
                     new GroupMembershipAcceptedEvent(actor.Value, GroupId, member.UserId),
@@ -652,14 +688,16 @@ internal sealed class GroupGrain(
         CancellationToken ct
     )
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var group = await LoadIfAdminAsync(dbCtx, actor, ct);
+        GroupEntity? group = await LoadIfAdminAsync(dbCtx, actor, ct);
         // The owner can never be removed.
         if (group is null || group.OwnerPlayerEntityId == targetPlayerId)
+        {
             return false;
+        }
 
-        var removed = await dbCtx
+        int removed = await dbCtx
             .GroupMembers.Where(m =>
                 m.GroupEntityId == GroupId
                 && m.PlayerEntityId == targetPlayerId
@@ -679,7 +717,9 @@ internal sealed class GroupGrain(
             .ConfigureAwait(false);
 
         if (removed == 0)
+        {
             return false;
+        }
 
         // NOTE: `block` (prevent rejoining) needs a per-group block list — not yet modelled; the
         // member is removed regardless. Tracked for a follow-up slice.
@@ -697,9 +737,9 @@ internal sealed class GroupGrain(
         CancellationToken ct
     )
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var group = await dbCtx.Groups.FirstOrDefaultAsync(
+        GroupEntity? group = await dbCtx.Groups.FirstOrDefaultAsync(
             g => g.Id == GroupId && g.DeletedAt == null,
             ct
         );
@@ -709,9 +749,11 @@ internal sealed class GroupGrain(
             || group.OwnerPlayerEntityId != actor.Value
             || targetPlayerId == actor.Value
         )
+        {
             return null;
+        }
 
-        var member = await dbCtx
+        GroupMemberEntity? member = await dbCtx
             .GroupMembers.Include(m => m.PlayerEntity)
             .FirstOrDefaultAsync(
                 m =>
@@ -721,7 +763,9 @@ internal sealed class GroupGrain(
                 ct
             );
         if (member is null)
+        {
             return null;
+        }
 
         member.Rank = isAdmin ? GroupMemberRank.Admin : GroupMemberRank.Member;
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
@@ -745,16 +789,18 @@ internal sealed class GroupGrain(
 
     public async Task<int> GetMemberFurniCountAsync(int targetPlayerId, CancellationToken ct)
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var baseRoomId = await dbCtx
+        int? baseRoomId = await dbCtx
             .Groups.AsNoTracking()
             .Where(g => g.Id == GroupId && g.DeletedAt == null)
             .Select(g => (int?)g.RoomEntityId)
             .FirstOrDefaultAsync(ct);
 
         if (baseRoomId is null)
+        {
             return 0;
+        }
 
         return await dbCtx.Furnitures.CountAsync(
             f =>
@@ -780,23 +826,27 @@ internal sealed class GroupGrain(
         CancellationToken ct
     )
     {
-        await using var dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        var group = await dbCtx.Groups.FirstOrDefaultAsync(
+        GroupEntity? group = await dbCtx.Groups.FirstOrDefaultAsync(
             g => g.Id == GroupId && g.DeletedAt == null,
             ct
         );
         if (group is null)
+        {
             return false;
+        }
 
-        var actorId = actor.Value;
-        var isOwner = group.OwnerPlayerEntityId == actorId;
+        int actorId = actor.Value;
+        bool isOwner = group.OwnerPlayerEntityId == actorId;
         if (ownerOnly && !isOwner)
+        {
             return false;
+        }
 
         if (!isOwner)
         {
-            var isAdmin = await dbCtx.GroupMembers.AnyAsync(
+            bool isAdmin = await dbCtx.GroupMembers.AnyAsync(
                 m =>
                     m.GroupEntityId == GroupId
                     && m.PlayerEntityId == actorId
@@ -805,7 +855,9 @@ internal sealed class GroupGrain(
                 ct
             );
             if (!isAdmin)
+            {
                 return false;
+            }
         }
 
         mutate(group);
@@ -825,18 +877,22 @@ internal sealed class GroupGrain(
         CancellationToken ct
     )
     {
-        var group = await dbCtx.Groups.FirstOrDefaultAsync(
+        GroupEntity? group = await dbCtx.Groups.FirstOrDefaultAsync(
             g => g.Id == GroupId && g.DeletedAt == null,
             ct
         );
         if (group is null)
+        {
             return null;
+        }
 
-        var actorId = actor.Value;
+        int actorId = actor.Value;
         if (group.OwnerPlayerEntityId == actorId)
+        {
             return group;
+        }
 
-        var isAdmin = await dbCtx.GroupMembers.AnyAsync(
+        bool isAdmin = await dbCtx.GroupMembers.AnyAsync(
             m =>
                 m.GroupEntityId == GroupId
                 && m.PlayerEntityId == actorId
@@ -848,5 +904,5 @@ internal sealed class GroupGrain(
         return isAdmin ? group : null;
     }
 
-    private static int ParseColorId(string value) => int.TryParse(value, out var id) ? id : 0;
+    private static int ParseColorId(string value) => int.TryParse(value, out int id) ? id : 0;
 }

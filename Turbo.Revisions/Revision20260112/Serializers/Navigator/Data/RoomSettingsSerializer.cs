@@ -23,10 +23,10 @@ internal class RoomSettingsSerializer
             .WriteInteger(message.CategoryId)
             .WriteInteger(message.Tags.Length);
 
-        foreach (var tag in message.Tags)
+        foreach (string tag in message.Tags)
             packet.WriteString(tag);
 
-        var bitmask = RoomBitmaskFlags.None;
+        RoomBitmaskFlags bitmask = RoomBitmaskFlags.None;
 
         bitmask |= RoomBitmaskFlags.ShowOwner;
 

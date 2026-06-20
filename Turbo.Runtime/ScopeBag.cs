@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +16,7 @@ public sealed class ScopeBag : IAsyncDisposable
 
     public IServiceProvider Get(IServiceProvider owner)
     {
-        var lazy = _byOwner.GetOrAdd(
+        Lazy<AsyncScopeHolder> lazy = _byOwner.GetOrAdd(
             owner,
             static o => new Lazy<AsyncScopeHolder>(
                 () => new AsyncScopeHolder { Scope = o.CreateAsyncScope() },
@@ -28,11 +29,13 @@ public sealed class ScopeBag : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        foreach (var kv in _byOwner)
+        foreach (KeyValuePair<IServiceProvider, Lazy<AsyncScopeHolder>> kv in _byOwner)
         {
-            var lazy = kv.Value;
+            Lazy<AsyncScopeHolder> lazy = kv.Value;
             if (!lazy.IsValueCreated)
+            {
                 continue;
+            }
 
             try
             {

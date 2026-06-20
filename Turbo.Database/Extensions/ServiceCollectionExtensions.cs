@@ -24,9 +24,9 @@ public static class ServiceCollectionExtensions
         services.AddDbContextFactory<TurboDbContext>(
             (sp, options) =>
             {
-                var dbConfig = sp.GetRequiredService<IOptions<DatabaseConfig>>().Value;
-                var connectionString = dbConfig.ConnectionString;
-                var loggingEnabled = dbConfig.LoggingEnabled;
+                DatabaseConfig dbConfig = sp.GetRequiredService<IOptions<DatabaseConfig>>().Value;
+                string connectionString = dbConfig.ConnectionString;
+                bool loggingEnabled = dbConfig.LoggingEnabled;
 
                 options.UseMySql(
                     connectionString,
@@ -49,12 +49,14 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<TablePrefixProvider>(sp =>
         {
-            var manifest = sp.GetRequiredService<PluginManifest>();
+            PluginManifest manifest = sp.GetRequiredService<PluginManifest>();
 
-            var tablePrefix = manifest.TablePrefix;
+            string? tablePrefix = manifest.TablePrefix;
 
             if (manifest.ExplicitlyNoTablePrefix ?? false)
+            {
                 tablePrefix = string.Empty;
+            }
             else
             {
                 if (string.IsNullOrWhiteSpace(tablePrefix))
@@ -87,11 +89,11 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<TContext>(
             (sp, options) =>
             {
-                var prefix = sp.GetRequiredService<TablePrefixProvider>();
-                var host = sp.GetRequiredService<IHostServices>();
-                var dbConfig = host.GetRequiredService<IOptions<DatabaseConfig>>().Value;
-                var connectionString = dbConfig.ConnectionString;
-                var loggingEnabled = dbConfig.LoggingEnabled;
+                TablePrefixProvider prefix = sp.GetRequiredService<TablePrefixProvider>();
+                IHostServices host = sp.GetRequiredService<IHostServices>();
+                DatabaseConfig dbConfig = host.GetRequiredService<IOptions<DatabaseConfig>>().Value;
+                string connectionString = dbConfig.ConnectionString;
+                bool loggingEnabled = dbConfig.LoggingEnabled;
 
                 options.UseMySql(
                     connectionString,

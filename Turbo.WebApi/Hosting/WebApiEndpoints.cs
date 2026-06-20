@@ -55,10 +55,12 @@ internal static class WebApiEndpoints
                 ) =>
                 {
                     if (body is null || !body.IsValid)
+                    {
                         return Error(
                             StatusCodes.Status400BadRequest,
                             "pocket.auth.missing_credentials"
                         );
+                    }
 
                     (bool success, string? sessionId, string? error) = await auth.LoginAsync(
                             body.Email!,
@@ -68,10 +70,12 @@ internal static class WebApiEndpoints
                         .ConfigureAwait(false);
 
                     if (!success)
+                    {
                         return Results.Json(
                             new { error },
                             statusCode: StatusCodes.Status401Unauthorized
                         );
+                    }
 
                     ctx.IssueSessionCookie(sessionId!);
 
@@ -90,7 +94,9 @@ internal static class WebApiEndpoints
                     string? sessionId = ctx.SessionId();
 
                     if (sessionId is not null)
+                    {
                         sessions.RemoveSession(sessionId);
+                    }
 
                     ctx.Response.Cookies.Delete(
                         WebApiHttpContextExtensions.SessionCookieName,
@@ -117,10 +123,12 @@ internal static class WebApiEndpoints
                 ) =>
                 {
                     if (body is null || !body.IsValid)
+                    {
                         return Error(
                             StatusCodes.Status400BadRequest,
                             "pocket.auth.missing_credentials"
                         );
+                    }
 
                     (bool success, int accountId, string? error) = await auth.RegisterAsync(
                             body.Email!,
@@ -130,10 +138,12 @@ internal static class WebApiEndpoints
                         .ConfigureAwait(false);
 
                     if (!success)
+                    {
                         return Results.Json(
                             new { error },
                             statusCode: StatusCodes.Status409Conflict
                         );
+                    }
 
                     (bool loginOk, string? sessionId, string? _) = await auth.LoginAsync(
                             body.Email!,
@@ -143,7 +153,9 @@ internal static class WebApiEndpoints
                         .ConfigureAwait(false);
 
                     if (loginOk && sessionId is not null)
+                    {
                         ctx.IssueSessionCookie(sessionId);
+                    }
 
                     return Results.Json(new { id = accountId });
                 }
@@ -165,7 +177,9 @@ internal static class WebApiEndpoints
                     int? accountId = ctx.AccountId(sessions);
 
                     if (accountId is null)
+                    {
                         return Unauthorized();
+                    }
 
                     return Results.Json(
                         await players
@@ -191,10 +205,14 @@ internal static class WebApiEndpoints
                     int? accountId = ctx.AccountId(sessions);
 
                     if (accountId is null)
+                    {
                         return Unauthorized();
+                    }
 
                     if (body is null || !body.IsValid)
+                    {
                         return Error(StatusCodes.Status400BadRequest, "invalid_request");
+                    }
 
                     (bool success, int _, string? error) = await players
                         .CreateAvatarAsync(
@@ -207,10 +225,12 @@ internal static class WebApiEndpoints
                         .ConfigureAwait(false);
 
                     if (!success)
+                    {
                         return Results.Json(
                             new { error },
                             statusCode: StatusCodes.Status409Conflict
                         );
+                    }
 
                     return Results.Json(
                         await players
@@ -236,20 +256,28 @@ internal static class WebApiEndpoints
                     int? accountId = ctx.AccountId(sessions);
 
                     if (accountId is null)
+                    {
                         return Unauthorized();
+                    }
 
                     if (body is null || !body.IsValid)
+                    {
                         return Error(StatusCodes.Status400BadRequest, "invalid_request");
+                    }
 
                     if (!int.TryParse(body.UniqueId, out int playerId))
+                    {
                         return Error(StatusCodes.Status400BadRequest, "invalid_unique_id");
+                    }
 
                     System.Collections.Generic.List<AvatarInfo> owned = await players
                         .GetAvatarsForAccountAsync(accountId.Value, ct)
                         .ConfigureAwait(false);
 
                     if (!owned.Exists(a => a.UniqueId == body.UniqueId))
+                    {
                         return Error(StatusCodes.Status403Forbidden, "avatar_not_owned");
+                    }
 
                     sessions.SetSelectedPlayer(ctx.SessionId(), playerId);
 
@@ -274,7 +302,9 @@ internal static class WebApiEndpoints
                     int? accountId = ctx.AccountId(sessions);
 
                     if (accountId is null)
+                    {
                         return Unauthorized();
+                    }
 
                     int? selectedFromSession = sessions.GetSelectedPlayer(ctx.SessionId());
                     int playerId;
@@ -296,10 +326,14 @@ internal static class WebApiEndpoints
                             .ConfigureAwait(false);
 
                         if (list.Count == 0)
+                        {
                             return Error(StatusCodes.Status404NotFound, "pocket.auth.no_avatars");
+                        }
 
                         if (!int.TryParse(list[0].UniqueId, out playerId))
+                        {
                             return Error(StatusCodes.Status500InternalServerError, "internal");
+                        }
                     }
 
                     (bool success, string? ticket, string? error) = await auth.GetSsoTokenAsync(
@@ -310,10 +344,12 @@ internal static class WebApiEndpoints
                         .ConfigureAwait(false);
 
                     if (!success)
+                    {
                         return Results.Json(
                             new { error },
                             statusCode: StatusCodes.Status403Forbidden
                         );
+                    }
 
                     return Results.Json(new { ssoToken = ticket });
                 }
@@ -336,10 +372,14 @@ internal static class WebApiEndpoints
                     int? accountId = ctx.AccountId(sessions);
 
                     if (accountId is null)
+                    {
                         return Unauthorized();
+                    }
 
                     if (body is null || !body.IsValid)
+                    {
                         return Error(StatusCodes.Status400BadRequest, "invalid_request");
+                    }
 
                     bool ok = await players
                         .SaveFigureAsync(body.PlayerId, body.FigureString!, body.Gender ?? "M", ct)
@@ -363,7 +403,9 @@ internal static class WebApiEndpoints
                 async (NameRequest body, IWebApiPlayerService players, CancellationToken ct) =>
                 {
                     if (body is null || !body.IsValid)
+                    {
                         return Error(StatusCodes.Status400BadRequest, "invalid_request");
+                    }
 
                     bool available = await players
                         .NameAvailableAsync(body.Name!, ct)
@@ -389,20 +431,26 @@ internal static class WebApiEndpoints
                     int? accountId = ctx.AccountId(sessions);
 
                     if (accountId is null)
+                    {
                         return Unauthorized();
+                    }
 
                     if (body is null || !body.IsValid)
+                    {
                         return Error(StatusCodes.Status400BadRequest, "invalid_request");
+                    }
 
                     bool ok = await players
                         .SetNameAsync(body.PlayerId, body.Name!, ct)
                         .ConfigureAwait(false);
 
                     if (!ok)
+                    {
                         return Results.Json(
                             new { error = "pocket.auth.name_taken" },
                             statusCode: StatusCodes.Status409Conflict
                         );
+                    }
 
                     return Results.Json(new { name = body.Name });
                 }

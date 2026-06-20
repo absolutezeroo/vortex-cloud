@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.FriendList.Enums;
+using Turbo.Primitives.FriendList.Grains;
 using Turbo.Primitives.Messages.Incoming.FriendList;
 using Turbo.Primitives.Messages.Outgoing.FriendList;
 using Turbo.Primitives.Orleans;
@@ -23,17 +24,21 @@ public class RemoveFriendMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0 || message.FriendIds.Count == 0)
+        {
             return;
+        }
 
-        var grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
+        IMessengerGrain grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
 
-        var removed = await grain.RemoveFriendsAsync(message.FriendIds, ct).ConfigureAwait(false);
+        List<int> removed = await grain.RemoveFriendsAsync(message.FriendIds, ct).ConfigureAwait(false);
 
         if (removed.Count == 0)
+        {
             return;
+        }
 
-        var updates = new List<FriendListUpdateSnapshot>();
-        foreach (var friendId in removed)
+        List<FriendListUpdateSnapshot> updates = new List<FriendListUpdateSnapshot>();
+        foreach (int friendId in removed)
         {
             updates.Add(
                 new FriendListUpdateSnapshot

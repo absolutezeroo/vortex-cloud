@@ -22,7 +22,9 @@ public sealed class WiredEnumParamRule<TEnum> : WiredParamRule
                 : [.. allowed.Select(e => Convert.ToInt32(e))];
 
         if (!_allowed.Contains(DefaultValue))
+        {
             throw new ArgumentException("Default enum value is not in allowed set.");
+        }
     }
 
     public override bool IsValid(int value) => _allowed.Contains(value);
@@ -34,7 +36,9 @@ public sealed class WiredEnumParamRule<TEnum> : WiredParamRule
     public override int ToInt(object value)
     {
         if (value is TEnum e)
+        {
             return Convert.ToInt32(e);
+        }
 
         throw new InvalidCastException($"Expected {typeof(TEnum).Name}.");
     }

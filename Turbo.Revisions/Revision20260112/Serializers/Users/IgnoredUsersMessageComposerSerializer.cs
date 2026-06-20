@@ -10,7 +10,7 @@ internal class IgnoredUsersMessageComposerSerializer(int header)
     {
         packet.WriteInteger(message.IgnoredUserIds.Count);
 
-        foreach (var userId in message.IgnoredUserIds)
+        foreach (int userId in message.IgnoredUserIds)
             packet.WriteInteger(userId);
     }
 }

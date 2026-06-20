@@ -20,7 +20,7 @@ public sealed class ExtraData(string? extraData) : IExtraData
 
     public void UpdateSection<TSection>(string name, TSection section)
     {
-        var updated = _writer.UpdateSection(name, section);
+        string updated = _writer.UpdateSection(name, section);
 
         _snapshot = updated;
         _reader = new ExtraDataReader(updated);
@@ -30,7 +30,7 @@ public sealed class ExtraData(string? extraData) : IExtraData
 
     public void DeleteSection(string name)
     {
-        var updated = _writer.DeleteSection(name);
+        string updated = _writer.DeleteSection(name);
 
         _snapshot = updated;
         _reader = new ExtraDataReader(updated);

@@ -33,12 +33,16 @@ public class WiredTriggerWalkOnFurni(
     )
     {
         if (ctx.Event is not AvatarWalkOnFurniEvent evt)
+        {
             return false;
+        }
 
-        var selection = await ctx.GetEffectiveSelectionAsync(this, ct);
+        IWiredSelectionSet selection = await ctx.GetEffectiveSelectionAsync(this, ct);
 
         if (!selection.SelectedFurniIds.Contains(evt.FurniId))
+        {
             return false;
+        }
 
         return true;
     }

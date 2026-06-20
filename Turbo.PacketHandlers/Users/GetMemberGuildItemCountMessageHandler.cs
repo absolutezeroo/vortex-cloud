@@ -20,9 +20,11 @@ public class GetMemberGuildItemCountMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0 || message.GroupId <= 0)
+        {
             return;
+        }
 
-        var count = await _grainFactory
+        int count = await _grainFactory
             .GetGroupGrain(message.GroupId)
             .GetMemberFurniCountAsync(message.UserId, ct)
             .ConfigureAwait(false);

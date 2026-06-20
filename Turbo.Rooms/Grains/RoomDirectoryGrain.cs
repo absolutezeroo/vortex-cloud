@@ -71,14 +71,16 @@ public class RoomDirectoryGrain(
 
     public async Task AddPlayerToRoomAsync(PlayerId playerId, RoomId roomId, CancellationToken ct)
     {
-        if (!_roomPlayers.TryGetValue(roomId, out var playerIds))
+        if (!_roomPlayers.TryGetValue(roomId, out List<PlayerId>? playerIds))
         {
             playerIds = [];
             _roomPlayers[roomId] = playerIds;
         }
 
         if (!playerIds.Contains(playerId))
+        {
             playerIds.Add(playerId);
+        }
 
         await UpdatePopulationAsync(roomId);
     }
@@ -89,11 +91,15 @@ public class RoomDirectoryGrain(
         CancellationToken ct
     )
     {
-        if (!_roomPlayers.TryGetValue(roomId, out var players))
+        if (!_roomPlayers.TryGetValue(roomId, out List<PlayerId>? players))
+        {
             return;
+        }
 
         if (!players.Remove(playerId))
+        {
             return;
+        }
 
         await UpdatePopulationAsync(roomId);
     }
@@ -103,7 +109,7 @@ public class RoomDirectoryGrain(
             _activeRooms
                 .Values.Select(x =>
                 {
-                    var population = _roomPopulations.TryGetValue(x.RoomId, out var pop) ? pop : 0;
+                    int population = _roomPopulations.TryGetValue(x.RoomId, out int pop) ? pop : 0;
 
                     return new RoomSummarySnapshot
                     {
@@ -120,11 +126,11 @@ public class RoomDirectoryGrain(
         );
 
     public Task<int> GetRoomPopulationAsync(RoomId roomId) =>
-        Task.FromResult(_roomPopulations.TryGetValue(roomId, out var pop) ? pop : 0);
+        Task.FromResult(_roomPopulations.TryGetValue(roomId, out int pop) ? pop : 0);
 
     private Task UpdatePopulationAsync(RoomId roomId)
     {
-        _roomPopulations[roomId] = _roomPlayers.TryGetValue(roomId, out var players)
+        _roomPopulations[roomId] = _roomPlayers.TryGetValue(roomId, out List<PlayerId>? players)
             ? players.Count
             : 0;
 
@@ -133,18 +139,22 @@ public class RoomDirectoryGrain(
 
     private Task CheckRoomsAsync(CancellationToken ct)
     {
-        var rooms = _activeRooms.Values.ToArray();
+        RoomActiveSnapshot[] rooms = _activeRooms.Values.ToArray();
 
-        foreach (var room in rooms)
+        foreach (RoomActiveSnapshot room in rooms)
         {
-            var population = _roomPopulations.TryGetValue(room.RoomId, out var pop) ? pop : 0;
-            var roomGrain = _grainFactory.GetRoomGrain(room.RoomId);
+            int population = _roomPopulations.TryGetValue(room.RoomId, out int pop) ? pop : 0;
+            IRoomGrain roomGrain = _grainFactory.GetRoomGrain(room.RoomId);
 
             if (population > 0)
+            {
                 roomGrain.DelayRoomDeactivation();
+            }
 
             if (population == 0)
+            {
                 roomGrain.DeactivateRoom();
+            }
         }
 
         return Task.CompletedTask;

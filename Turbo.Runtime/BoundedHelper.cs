@@ -18,12 +18,14 @@ public static class BoundedHelper
         ArgumentNullException.ThrowIfNull(work);
 
         if (degree <= 0)
+        {
             degree = 1;
+        }
 
-        using var gate = new SemaphoreSlim(degree);
-        var pool = ArrayPool<Task>.Shared;
-        var tasks = pool.Rent(work.Count);
-        var idx = 0;
+        using SemaphoreSlim gate = new SemaphoreSlim(degree);
+        ArrayPool<Task> pool = ArrayPool<Task>.Shared;
+        Task[] tasks = pool.Rent(work.Count);
+        int idx = 0;
 
         try
         {
@@ -31,7 +33,7 @@ public static class BoundedHelper
             {
                 await gate.WaitAsync(ct).ConfigureAwait(false);
 
-                var f = work[i];
+                Func<CancellationToken, ValueTask> f = work[i];
 
                 tasks[idx++] = RunOneAsync(f, gate, ct);
             }
@@ -52,7 +54,7 @@ public static class BoundedHelper
 
     public static Task RunAsync(IEnumerable<Func<Task>> work, int degree, CancellationToken ct)
     {
-        var list = work as IList<Func<Task>> ?? [.. work];
+        IList<Func<Task>> list = work as IList<Func<Task>> ?? [.. work];
 
         return RunAsync(
             list.Select<Func<Task>, Func<CancellationToken, ValueTask>>(fn =>

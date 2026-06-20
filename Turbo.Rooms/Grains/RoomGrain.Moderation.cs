@@ -19,17 +19,23 @@ public sealed partial class RoomGrain
         try
         {
             if (actorCtx.PlayerId <= 0 || targetPlayerId <= 0 || actorCtx.RoomId != _state.RoomId)
+            {
                 return false;
+            }
 
             if (actorCtx.PlayerId == targetPlayerId)
+            {
                 return false;
+            }
 
             if (!_state.AvatarsByPlayerId.ContainsKey(targetPlayerId))
+            {
                 return false;
+            }
 
-            await AvatarModule.RemoveAvatarFromPlayerAsync(actorCtx, targetPlayerId, ct).ConfigureAwait(
-                false
-            );
+            await AvatarModule
+                .RemoveAvatarFromPlayerAsync(actorCtx, targetPlayerId, ct)
+                .ConfigureAwait(false);
 
             await _events
                 .PublishAsync(
@@ -65,12 +71,16 @@ public sealed partial class RoomGrain
     )
     {
         if (actorCtx.PlayerId <= 0 || targetPlayerId <= 0 || actorCtx.RoomId != _state.RoomId)
+        {
             return false;
+        }
 
         if (durationSeconds <= 0 || actorCtx.PlayerId == targetPlayerId)
+        {
             return false;
+        }
 
-        var expiresUtc = DateTime.UtcNow.AddSeconds(durationSeconds);
+        DateTime expiresUtc = DateTime.UtcNow.AddSeconds(durationSeconds);
 
         try
         {
@@ -114,17 +124,21 @@ public sealed partial class RoomGrain
         try
         {
             if (actorCtx.PlayerId <= 0 || targetPlayerId <= 0 || actorCtx.RoomId != _state.RoomId)
+            {
                 return false;
+            }
 
             if (durationSeconds <= 0 || actorCtx.PlayerId == targetPlayerId)
+            {
                 return false;
+            }
 
-            var expiresUtc = DateTime.UtcNow.AddSeconds(durationSeconds);
+            DateTime expiresUtc = DateTime.UtcNow.AddSeconds(durationSeconds);
 
             await _moderationStore.BanAsync(_state.RoomId.Value, targetPlayerId, expiresUtc, ct);
-            await AvatarModule.RemoveAvatarFromPlayerAsync(actorCtx, targetPlayerId, ct).ConfigureAwait(
-                false
-            );
+            await AvatarModule
+                .RemoveAvatarFromPlayerAsync(actorCtx, targetPlayerId, ct)
+                .ConfigureAwait(false);
 
             await _events
                 .PublishAsync(
@@ -162,12 +176,14 @@ public sealed partial class RoomGrain
         try
         {
             if (actorCtx.PlayerId <= 0 || targetPlayerId <= 0 || actorCtx.RoomId != _state.RoomId)
+            {
                 return false;
+            }
 
             _state.MuteExpiresUtc.Remove(targetPlayerId);
-            await _moderationStore.UnmuteAsync(_state.RoomId.Value, targetPlayerId, ct).ConfigureAwait(
-                false
-            );
+            await _moderationStore
+                .UnmuteAsync(_state.RoomId.Value, targetPlayerId, ct)
+                .ConfigureAwait(false);
 
             return true;
         }
@@ -193,11 +209,13 @@ public sealed partial class RoomGrain
         try
         {
             if (actorCtx.PlayerId <= 0 || targetPlayerId <= 0 || actorCtx.RoomId != _state.RoomId)
+            {
                 return false;
+            }
 
-            await _moderationStore.UnbanAsync(_state.RoomId.Value, targetPlayerId, ct).ConfigureAwait(
-                false
-            );
+            await _moderationStore
+                .UnbanAsync(_state.RoomId.Value, targetPlayerId, ct)
+                .ConfigureAwait(false);
 
             return true;
         }

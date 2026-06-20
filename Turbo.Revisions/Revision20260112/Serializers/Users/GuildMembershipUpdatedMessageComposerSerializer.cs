@@ -1,3 +1,4 @@
+using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Packets;
 
@@ -13,7 +14,7 @@ internal class GuildMembershipUpdatedMessageComposerSerializer(int header)
     {
         packet.WriteInteger(message.GroupId);
 
-        var member = message.Member;
+        GroupMemberSnapshot member = message.Member;
         packet.WriteInteger(member.RoleType);
         packet.WriteInteger(member.UserId);
         packet.WriteString(member.UserName);

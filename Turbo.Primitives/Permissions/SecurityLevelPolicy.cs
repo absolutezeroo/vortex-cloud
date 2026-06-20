@@ -13,7 +13,9 @@ public static class SecurityLevelPolicy
     public static SecurityLevelType Resolve(PermissionSet permissions)
     {
         if (permissions.IsSuperUser)
+        {
             return SecurityLevelType.Administrator;
+        }
 
         if (
             permissions.HasAny(
@@ -24,7 +26,9 @@ public static class SecurityLevelPolicy
                 Capabilities.Moderation.Ban
             )
         )
+        {
             return SecurityLevelType.Moderator;
+        }
 
         return SecurityLevelType.None;
     }

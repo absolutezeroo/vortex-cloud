@@ -21,17 +21,21 @@ internal class RoomObjectLogicFeatureProcessor(IRoomObjectLogicProvider roomObje
         CancellationToken ct = default
     )
     {
-        var batch = new CompositeDisposable();
+        CompositeDisposable batch = new CompositeDisposable();
 
-        foreach (var concrete in AssemblyExplorer.FindAssignees(asm, typeof(IRoomObjectLogic)))
+        foreach (Type? concrete in AssemblyExplorer.FindAssignees(asm, typeof(IRoomObjectLogic)))
         {
             if (concrete is null)
+            {
                 continue;
+            }
 
-            var attribute = concrete.GetCustomAttribute<RoomObjectLogicAttribute>(false);
+            RoomObjectLogicAttribute? attribute = concrete.GetCustomAttribute<RoomObjectLogicAttribute>(false);
 
             if (attribute is null)
+            {
                 continue;
+            }
 
             batch.Add(
                 _roomObjectLogicFactory.RegisterLogic(

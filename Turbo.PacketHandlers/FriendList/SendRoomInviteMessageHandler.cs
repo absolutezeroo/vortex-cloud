@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.FriendList.Grains;
 using Turbo.Primitives.Messages.Incoming.FriendList;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players;
@@ -20,12 +21,14 @@ public class SendRoomInviteMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId <= 0 || message.FriendIds.Count == 0)
+        {
             return;
+        }
 
         // Fire-and-forget room invites to each friend's grain
-        foreach (var friendId in message.FriendIds)
+        foreach (int friendId in message.FriendIds)
         {
-            var friendGrain = _grainFactory.GetMessengerGrain(PlayerId.Parse(friendId));
+            IMessengerGrain friendGrain = _grainFactory.GetMessengerGrain(PlayerId.Parse(friendId));
             _ = friendGrain.ReceiveRoomInviteAsync(
                 ctx.PlayerId,
                 message.Message,

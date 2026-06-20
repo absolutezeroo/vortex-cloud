@@ -13,11 +13,11 @@ internal class BadgePointLimitsEventMessageComposerSerializer(int header)
     {
         packet.WriteInteger(message.LimitsByBadgeCodePrefix.Count);
 
-        foreach (var group in message.LimitsByBadgeCodePrefix)
+        foreach (BadgePointLimitGroup group in message.LimitsByBadgeCodePrefix)
         {
             packet.WriteString(group.BadgeCodePrefix).WriteInteger(group.Levels.Count);
 
-            foreach (var level in group.Levels)
+            foreach (BadgePointLimitLevel level in group.Levels)
                 packet.WriteInteger(level.Level).WriteInteger(level.Limit);
         }
     }
