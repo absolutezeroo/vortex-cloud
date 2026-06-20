@@ -16,4 +16,12 @@ public sealed class AuthenticationConfig
     /// assigned. Empty disables the bootstrap; the assignment is idempotent and additive-only.
     /// </summary>
     public string BootstrapOwnerEmail { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Fallback TTL (seconds) applied when a ticket has no <c>expires_at</c> column value.
+    /// Tickets older than this are rejected as expired. Set to 0 to disable the fallback and
+    /// accept null-expiry tickets unconditionally (legacy / external CMS compatibility).
+    /// Default: 30 seconds — tight enough to prevent replay, long enough for slow connections.
+    /// </summary>
+    public int TicketTtlSeconds { get; init; } = 30;
 }

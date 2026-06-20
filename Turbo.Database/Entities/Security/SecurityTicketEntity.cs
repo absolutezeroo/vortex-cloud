@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,13 @@ public class SecurityTicketEntity : TurboEntity
     [Column("is_locked")]
     [DefaultValue(false)]
     public bool IsLocked { get; set; }
+
+    /// <summary>
+    /// UTC timestamp after which this ticket is no longer valid. Null means no expiration
+    /// (e.g. tickets issued before this column existed, or locked/persistent tickets).
+    /// </summary>
+    [Column("expires_at")]
+    public DateTime? ExpiresAt { get; set; }
 
     [ForeignKey(nameof(PlayerEntityId))]
     public required PlayerEntity PlayerEntity { get; set; }

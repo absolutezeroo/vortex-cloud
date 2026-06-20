@@ -21,6 +21,7 @@ public sealed class AuthenticationService(
     private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IEventPublisher _events = events;
     private readonly string _ipHashSecret = options.Value.IpHashSecret;
+    private readonly int _ticketTtlSeconds = options.Value.TicketTtlSeconds;
 
     public async Task<int> GetPlayerIdFromTicketAsync(
         string ticket,
@@ -52,14 +53,31 @@ public sealed class AuthenticationService(
                 return 0;
             }
 
-            // check timestamp for expiration, if time now is greater than expiration, return 0;
+            var now = DateTime.UtcNow;
+            var expiry = entity.ExpiresAt
+                ?? (_ticketTtlSeconds > 0 ? entity.CreatedAt.AddSeconds(_ticketTtlSeconds) : (DateTime?)null);
 
-            // TODO(dev): ticket deletion disabled for local testing — re-enable for production
-            // if (!entity.IsLocked)
-            // {
-            //     dbCtx.SecurityTickets.Remove(entity);
-            //     await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
-            // }
+            if (expiry.HasValue && now > expiry.Value)
+            {
+                // Expired ticket: clean it up and reject (same as not-found for the caller).
+                if (!entity.IsLocked)
+                {
+                    dbCtx.SecurityTickets.Remove(entity);
+                    await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+                }
+
+                await _events
+                    .PublishAsync(new PlayerLoginFailedEvent(HashIp(remoteIp)), ct)
+                    .ConfigureAwait(false);
+
+                return 0;
+            }
+
+            if (!entity.IsLocked)
+            {
+                 dbCtx.SecurityTickets.Remove(entity);
+                 await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+            }
 
             await _events
                 .PublishAsync(new PlayerLoggedInEvent(entity.PlayerEntityId, HashIp(remoteIp)), ct)
