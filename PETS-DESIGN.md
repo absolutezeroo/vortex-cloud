@@ -1,159 +1,167 @@
-# Vortex Cloud — Design des Pets
+# Vortex Cloud — Pets Design
 
-Conception d'implémentation des pets, **correcte** là où les retros échouent. Complète le
-schéma (`DATA-MODEL.md` §4) côté comportement, persistance et architecture. À lire avec
-`docs/walkthroughs/request-lifecycle.md` (le modèle grain/système) et `ROADMAP.md`.
-
----
-
-## Le diagnostic : pourquoi les retros ratent les pets
-
-Les retros traitent un pet comme **un meuble qui bouge** ou **un faux avatar** : un objet qui
-se déplace au hasard et reste planté. Un pet correct est un **agent autonome** :
-
-1. il a des **besoins** qui décroissent dans le **temps réel** ;
-2. il **agit seul** pour les satisfaire (chercher à manger, dormir) ;
-3. il **apprend** (niveaux, commandes).
-
-C'est cette boucle autonome — besoins → décision → action → apprentissage — que personne
-n'implémente vraiment. Le reste (anim, figure) est cosmétique.
+This implementation design for pets is correct where current retrospectives fail. It complements
+`DATA-MODEL.md` (section 4) for behavior, persistence, and architecture. Read together with
+`docs/walkthroughs/request-lifecycle.md` (grain/system model) and `ROADMAP.md`.
 
 ---
 
-## Architecture dans le modèle Orleans
+## Why current retrospectives fail at pets
 
-### Où vit le pet
+Retros currently handle a pet as either **a moving piece of furniture** or **a fake avatar**:
+an object that moves randomly and remains stuck. A correct pet is an **autonomous agent**:
 
-- **Identité + stats persistantes** → `PetEntity` en DB (`DATA-MODEL.md` §4).
-- **Comportement** → un `RoomPetSystem` **dans le `RoomGrain`**, PAS un `PetGrain` séparé.
+1. it has **needs** that decrease over **real time**;
+2. it **acts on its own** to satisfy them (eat, sleep);
+3. it **learns** (levels, commands).
 
-> **Pourquoi pas un PetGrain.** Le pet a besoin en permanence de l'état de la room pour
-> naviguer (carte, meubles, autres avatars). Un grain séparé = un appel cross-grain à chaque
-> pas → latence et complexité inutiles. Le pet est intrinsèquement **room-scoped** tant qu'il
-> est posé. Il est donc un `RoomObject` du room grain, comme un avatar, piloté par un système
-> — exactement le pattern de `RoomChatSystem` / `RoomPathingSystem` / `RoomAvatarTickSystem`.
-
-### Intégration aux systèmes existants
-
-- **Déplacement** → réutilise ton **A\*** (`RoomPathingSystem`). Le pet demande un chemin
-  comme un avatar ; il contourne les meubles, il ne téléporte pas.
-- **Tick** → le `RoomPetSystem` est tické avec les avatars (`RoomAvatarTickSystem` ou un tick
-  dédié). Chaque tick fait avancer la machine à états et la décroissance des besoins.
-- **Diffusion** → les updates de pet (position, geste, statut, level-up) passent par
-  `SendComposerToRoomAsync` → stream → presence (le flux de `request-lifecycle.md`).
+This autonomous loop — needs -> decision -> action -> learning — is rarely implemented correctly.
+Everything else (animation, figure) is cosmetic.
 
 ---
 
-## Le cœur : machine à états pilotée par les besoins
+## Architecture in the Orleans model
+
+### Where the pet lives
+
+- **Persistent identity + stats** -> `PetEntity` in DB (`DATA-MODEL.md` section 4).
+- **Behavior** -> a `RoomPetSystem` **inside `RoomGrain`**, NOT a separate `PetGrain`.
+
+> **Why not a PetGrain.** The pet needs room state continuously to navigate (map, furniture,
+> other avatars). A separate grain would require a cross-grain call at each step -> unnecessary
+> latency and complexity. The pet is fundamentally **room-scoped** while placed, so it is a
+> `RoomObject` of `RoomGrain`, driven by a system — same pattern as
+> `RoomChatSystem` / `RoomPathingSystem` / `RoomAvatarTickSystem`.
+
+### Integration with existing systems
+
+- **Movement** -> reuse existing **A\*** (`RoomPathingSystem`). The pet requests a path like an
+  avatar; it navigates around furniture and does not teleport.
+- **Tick** -> `RoomPetSystem` ticks with avatars (`RoomAvatarTickSystem`) or a dedicated tick.
+  Each tick advances the state machine and need decay.
+- **Broadcast** -> pet updates (position, gesture, status, level-up) go through
+  `SendComposerToRoomAsync` -> stream -> presence (`request-lifecycle.md`).
+
+---
+
+## Heart of the system: need-driven state machine
+
+```text
+            Needs OK
+  +-------------------------------+
+  |              Idle             |
+  +-------------------------------+
+              | timer
+              v
+         [Wander] --(to random reachable tile)-->
+              |
+   nutrition < threshold                no food
+              v
+           [Hungry] --food found--> [Eat] --(nutrition+, XP+)-->
+              |                             |
+              | no food                     |
+              +--> whine/idle               v
+              |
+              v
+            [Sleep] --(energy regenerates)-->
+              |
+              |
+       owner orders
+              |
+              v
+          [Command] --skill known?--> gesture/anim + XP
+                         no --------------> ignore
+```
+
+States:
+
+- **Idle**: default; occasionally transitions to Wander.
+- **Wander**: moves to a random reachable tile using A\*.
+- **Hungry** (nutrition below threshold): finds the nearest `pet_food` matching
+  its `pet_type`, goes there, eats. No food -> whine/idle.
+- **Eat**: consumes food (decrement/remove item), `nutrition += pet_food.nutrition`,
+  small XP gain.
+- **Sleep** (low energy): pet bed/seat or stay in place; regenerates energy.
+- **Command** (owner): interrupts; executes **only if the skill is learned** (based on level),
+  performs gesture, gains XP, returns to Idle.
+
+**Needs drive transitions.** Hunger rises and energy drops -> Hungry/Sleep automatically. This is the
+autonomy retrospectives miss.
+
+---
+
+## Two engineering points that make it correct
+
+### 1. Decay based on ELAPSED TIME, not tick count
+
+If hunger is decremented **at every tick while the room is loaded**, a pet in an unloaded room never
+gets hungry -> inconsistent. Correct model:
 
 ```
-            besoins OK
-   ┌──────────────────────────┐
-   ▼                          │
-[Idle] ──timer──> [Wander] ───┘
-   │  ▲
-   │  └───────────────────────────────┐
-   │ nutrition < seuil                 │
-   ├──────────> [Hungry] ──food trouvée──> [Eat] ──> (nutrition+, XP+) ──┐
-   │               │ pas de food                                          │
-   │               └──> whine/idle                                        │
-   │ énergie < seuil                                                      │
-   ├──────────> [Sleep] ──(nid/lit ou sur place)──> (énergie régénère) ──┤
-   │ owner ordonne                                                        │
-   └──────────> [Command] ──skill apprise ?──> geste/anim + XP ──────────┘
-                              non → ignore
-```
-
-États :
-
-- **Idle** : par défaut ; bascule de temps en temps vers Wander.
-- **Wander** : tuile atteignable au hasard, path A\* dessus.
-- **Hungry** (nutrition sous seuil) : cherche la `pet_food` la plus proche matching son
-  `pet_type`, y va, mange. Pas de food → geint/idle.
-- **Eat** : consomme la food (item décrémenté/supprimé), `nutrition += pet_food.nutrition`,
-  petit gain d'XP.
-- **Sleep** (énergie basse) : nid/lit pet ou sur place ; régénère l'énergie.
-- **Command** (owner) : interrompt ; exécute **si la skill est apprise** (selon le niveau) ;
-  joue le geste ; gagne de l'XP ; revient à Idle.
-
-**Les besoins conduisent les transitions.** La faim monte, l'énergie baisse → ça déclenche
-Hungry/Sleep tout seul. C'est l'autonomie que les retros n'ont pas.
-
----
-
-## Les deux points d'ingénierie qui font le « correct »
-
-### 1. Décroissance basée sur le TEMPS ÉCOULÉ, pas sur le tick
-
-Si tu décrémentes la faim « à chaque tick tant que la room est chargée », un pet dans une room
-déchargée n'a jamais faim → incohérent. Bon modèle :
-
-```
-au chargement du pet (ou à chaque maj) :
+on pet load (or every update):
     elapsed = now - pet.updated_at
     pet.nutrition = clamp(pet.nutrition - hungerRate * elapsed)
     pet.energy    = clamp(pet.energy    - energyRate * elapsed)
 ```
 
-Le pet a faim en fonction du **temps réel**, observé ou non. Quasi personne ne le fait.
+The pet gets hungry according to **real time**, observed or not.
 
-### 2. Persistance des stats : en mémoire, flush THROTTLÉ — jamais par tick
+### 2. Persist stats in memory, flush THROTTLED — never per tick
 
-Les stats changent à chaque tick (décroissance). Tu ne les écris **pas** à chaque tick.
+Stats change on every tick (decay). Do not write them to DB every tick.
 
-- Stats en mémoire dans l'état de la room.
-- Flush en DB **périodique** (toutes les N s, ou sur changement significatif : level-up, repas)
-  **et** au déchargement de room / ramassage du pet.
+- Keep stats in room state memory.
+- Flush to DB **periodically** (every N seconds, or on significant changes: level-up, feeding)
+  **and** on room unload / pet pickup.
 
-> C'est **la leçon de ton bug wired** (`RoomActive` vs `Persistent`) : ne perds pas la donnée,
-> mais ne martèle pas la DB. Les retros tombent dans un extrême — soit ils perdent les stats au
-> reboot, soit ils écrivent à chaque frame et la DB fume.
-
----
-
-## Leveling & commandes (par-dessus la boucle)
-
-- **Sources d'XP** : manger, exécuter une commande, recevoir des scratches (respect).
-- **Seuils par niveau** : config `pet_levels` (`DATA-MODEL.md` §4.2). Monter de niveau augmente
-  les caps de stats et débloque des commandes.
-- **Commandes** : config `pet_commands` (`pet_type`, `command`, `level_required`). Le pet
-  n'exécute une commande que s'il l'a apprise (niveau atteint).
+> This is the lesson from your wired bug (`RoomActive` vs `Persistent`): do not lose data,
+> but do not hammer DB. Retros fail in two extremes — either stats are lost on reboot,
+> or DB is written every frame.
 
 ---
 
-## Détails que les retros oublient (et qui font le correct)
+## Leveling & commands (layered over the loop)
 
-- **Pathfinding réel** autour des meubles via l'A\* existant — pas un déplacement bidon.
-- **Limite quotidienne de scratches/respect** (comme le respect joueur : N/jour, pas infini).
-- **Breeding qui hérite des traits** (type/couleur des parents) avec une part d'aléa — pas un
-  pet random. Traçabilité via `parent_one_id`/`parent_two_id` (`DATA-MODEL.md` §4).
-- **Décroissance hors-ligne** : appliquée au rechargement (cf. point 1), pas ignorée.
-
----
-
-## Contrat du `RoomPetSystem` (ce qu'il expose au RoomGrain)
-
-- `LoadPetAsync(petId)` — charge la `PetEntity`, applique la décroissance temps-écoulé,
-  l'ajoute comme RoomObject.
-- `TickAsync()` — avance la machine à états + besoins de chaque pet ; marque dirty.
-- `IssueCommandAsync(petId, command, actorPlayerId)` — vérifie skill apprise + ownership,
-  exécute, accorde l'XP.
-- `FeedAsync(petId, foodFurniId)` — consomme la food, monte la nutrition, accorde l'XP.
-- `FlushDirtyAsync()` — persiste les stats des pets dirty (throttlé + au unload).
-
-Même forme que tes autres systèmes de room : un système plat tenant une référence au grain,
-appelé en in-process, qui délègue la persistance et la diffusion aux mécanismes existants.
+- **XP sources**: feeding, executing a command, receiving scratches (respect).
+- **Level thresholds**: `pet_levels` config (`DATA-MODEL.md` section 4.2). Leveling increases
+  stat caps and unlocks commands.
+- **Commands**: `pet_commands` config (`pet_type`, `command`, `level_required`).
+  A pet executes a command only if it has learned it (level reached).
 
 ---
 
-## Ordre d'implémentation conseillé
+## Details retros miss (and make it correct)
 
-1. `PetEntity` + placement/ramassage (le pet existe et apparaît dans la room).
-2. `RoomPetSystem` + machine à états Idle/Wander (le pet bouge intelligemment).
-3. Besoins + décroissance temps-écoulé + Hungry/Eat avec `pet_food` (l'autonomie).
-4. Persistance throttlée (la leçon wired).
-5. Sleep, puis niveaux (`pet_levels`), puis commandes (`pet_commands`).
-6. Breeding et scratches en dernier.
+- **True pathfinding** around furniture via existing A\* — not fake movement.
+- **Daily scratch/respect cap** (like player respect: N/day, not infinite).
+- **Breeding inherits traits** (type/color from parents) with some randomness — not a random pet.
+  Traceability via `parent_one_id` / `parent_two_id` (`DATA-MODEL.md` section 4).
+- **Offline decay**: applied on reload (see point 1), not skipped.
 
-> Chaque étape est jouable et testable seule. Ne saute pas l'étape 3-4 : c'est ce qui sépare
-> un vrai pet d'un meuble qui bouge.
+---
+
+## `RoomPetSystem` contract (what it exposes to `RoomGrain`)
+
+- `LoadPetAsync(petId)` — loads `PetEntity`, applies elapsed-time decay, adds as RoomObject.
+- `TickAsync()` — advances state machine and needs for each pet; marks dirty.
+- `IssueCommandAsync(petId, command, actorPlayerId)` — validates learned skill + ownership,
+  executes, grants XP.
+- `FeedAsync(petId, foodFurniId)` — consumes food, increases nutrition, grants XP.
+- `FlushDirtyAsync()` — persists dirty pet stats (throttled + on unload).
+
+Same shape as other room systems: a flat in-process system holding a grain reference, delegating
+persistence and broadcast to existing mechanisms.
+
+---
+
+## Suggested implementation order
+
+1. `PetEntity` + place/pickup (pet exists and appears in room).
+2. `RoomPetSystem` + Idle/Wander state machine (pet moves intelligently).
+3. Needs + elapsed-time decay + Hungry/Eat with `pet_food` (autonomy).
+4. Throttled persistence (the wired lesson).
+5. Sleep, then levels (`pet_levels`), then commands (`pet_commands`).
+6. Breeding and scratches last.
+
+> Each step is independently playable and testable. Do not skip steps 3-4: this is what separates
+> a real pet from a moving piece of furniture.

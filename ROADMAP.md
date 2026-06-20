@@ -1,315 +1,284 @@
-# Vortex Cloud — Roadmap (format BMAD, brownfield)
+# Vortex Cloud — Roadmap (BMAD format, brownfield)
 
-Roadmap d'achèvement structurée en **epics → stories → critères d'acceptation**, ordonnée
-par dépendances, avec une **Definition of Done** applicable à chaque story. Projet
-existant (brownfield) : on ne repart pas de zéro, on layer les epics manquants sur une
-base dont le moteur est solide mais dont la connexion client est majoritairement vide.
+Completion roadmap structured as **epics → stories → acceptance criteria**, ordered by dependencies,
+with a **Definition of Done** applied to each story. This is an existing project (brownfield): we do not
+rebuild from scratch; we layer missing epics on top of a solid core while the client-facing integration
+is still mostly stubbed.
 
 ---
 
-## 1. État actuel (constat brownfield)
+## 1. Current state (brownfield assessment)
 
-**Solide, à ne pas reconstruire :** moteur de room (A\* réel, ~105 fichiers wired,
-furniture logic, map module), système d'observability event-driven (corrélation Orleans,
-audit, ledger, OTel-ready), moteur de permissions (PermissionSet/IPermissionService/
-Capabilities, policies pures `RoomSecurityPolicy`/`ModerationPolicy`), architecture
-Orleans correcte (handlers fins, grains isolés, streams).
+**Solid, do not rebuild:** room engine (real A\*, ~105 wired files, furniture logic, map module),
+event-driven observability (Orleans correlation, audit, ledger, OTel-ready), permission engine
+(PermissionSet/IPermissionService/Capabilities, pure policies `RoomSecurityPolicy` / `ModerationPolicy`),
+correct Orleans architecture (thin handlers, isolated grains, streams).
 
-**Le déséquilibre central :** le moteur est profond, mais les **handlers** qui exposent
-ce moteur au client sont majoritairement des stubs. Taux de remplissage mesurés :
+**Central gap:** the engine is deep, but **handlers** exposing it to clients are mostly stubs. Measured
+coverage:
 
-| Domaine | Remplissage |
+| Domain | Coverage |
 |---|---|
-| Handshake | 44 % |
-| Catalog | 39 % |
-| Users | 26 % |
-| Room | 23 % |
-| Moderator (outil staff) | 21 % |
-| Inventory | 19 % |
-| Navigator | 8 % |
-| RoomSettings / Sound / Camera | 0 % |
+| Handshake | 44% |
+| Catalog | 39% |
+| Users | 26% |
+| Room | 23% |
+| Moderator (staff tool) | 21% |
+| Inventory | 19% |
+| Navigator | 8% |
+| RoomSettings / Sound / Camera | 0% |
 
-**Couverture de test :** surface WebApi testée (16 tests d'intégration sur la branche
-`feat/webapi-aspnetcore-migration`), cœur de jeu / économie / permissions **non testés**.
+**Test coverage:** WebApi surface tested (16 integration tests on branch
+`feat/webapi-aspnetcore-migration`), core gameplay/economy/permissions **not tested**.
 
-**En cours :** migration WebApi → ASP.NET Core (branche feature, à merger).
+**In progress:** WebApi migration to ASP.NET Core (feature branch, pending merge).
 
-**Dette identifiée :** gestion d'erreur de grain repoussée (`// TODO handle exceptions`),
-~118 fichiers hors format csharpier, rétention RGPD de l'audit absente, accès dashboard
-distant non sécurisé.
-
----
-
-## 2. Principes directeurs
-
-1. **Inside-out, pas outside-in.** Finir le cœur jouable avant d'élargir la périphérie.
-2. **Tranches verticales finies à 100 %**, pas de la largeur scaffoldée.
-3. **Tester le sensible en priorité** (économie, permissions) — étendre le harnais qui
-   existe déjà, ne pas le réinventer.
-4. **Un stub est une dette, pas un acquis.** Chaque handler vide est une promesse non
-   tenue.
-5. **Stratégies, pas des TODO par site** (erreur de grain, placement, etc.).
+**Known debt:** delayed grain error handling (`// TODO handle exceptions`), ~118 files not passing
+csharpier, no RGPD audit retention, unsecured remote dashboard access.
 
 ---
 
-## 3. Vue d'ensemble des epics
+## 2. Guiding principles
 
-| # | Epic | Objectif | Statut | Dépend de |
+1. **Inside-out, not outside-in.** Finish the playable core before expanding perimeter features.
+2. **Complete vertical slices at 100%**, not wide partial scaffolding.
+3. **Prioritize sensitive logic testing** (economy, permissions) using existing harness.
+4. **A stub is debt, not progress.** Every empty handler is an unmet promise.
+5. **Strategies over patching-by-need** (error handling, permission placement, etc.).
+
+---
+
+## 3. Epic overview
+
+| # | Epic | Objective | Status | Depends on |
 |---|---|---|---|---|
-| 0 | Socle de qualité | Harnais de test cœur, stratégie d'erreur, format vert | À lancer (transverse) | — |
-| 1 | Boucle de jeu jouable | login→room→walk→chat→furni→navigator→leave à 100 % | Partiel | 0 (en //) |
-| 2 | Permissions & modération | Compléter droits group + outil staff + tests policies | Quasi fait | 1 |
-| 3 | WebApi ASP.NET | Merger, finir, durcir, supprimer HttpListener | En cours | — |
-| 4 | Économie & inventaire | Achat/cadeau/revente bout-en-bout + ledger testé | Partiel | 1 |
-| 5 | Social | Amis, messagerie, groupes | Partiel | 1 |
-| 6 | Trading | Échange sécurisé bout-en-bout | Stub | 4 |
-| 7 | Ops & conformité | Rétention RGPD, dashboard distant, OTel export | Partiel | — |
+| 0 | Quality foundation | Core test harness, error strategy, formatting green | To start (cross-cutting) | — |
+| 1 | Playable core loop | login→room→walk→chat→furni→navigator→leave at 100% | Partial | 0 (in progress) |
+| 2 | Permissions & moderation | Complete group rights + staff tool + policy tests | Near complete | 1 |
+| 3 | WebApi ASP.NET | Merge, finish, harden, remove HttpListener | In progress | — |
+| 4 | Economy & inventory | Buy/gift/sell end-to-end + tested ledger | Partial | 1 |
+| 5 | Social | Friends, messaging, groups | Partial | 1 |
+| 6 | Trading | Secure end-to-end trade | Stub | 4 |
+| 7 | Operations & compliance | RGPD retention, remote dashboard, OTel export | Partial | — |
 
-**Ordre recommandé :** 0 (en parallèle de tout) → 3 (presque fini, fermer la boucle) →
-1 (la priorité absolue) → 2 → 4 → 5 → 6 → 7.
-
----
-
-## 4. Epics détaillés
-
-### EPIC 0 — Socle de qualité (transverse)
-
-**Objectif :** poser les multiplicateurs qui rendent tout le reste rapide et sûr. Se mène
-en parallèle des autres epics, pas avant eux.
-
-**Story 0.1 — Étendre le harnais de test au cœur du domaine**
-*En tant que* dev, *je veux* tester les policies pures et la logique de grain critique,
-*afin de* refactorer sans régression silencieuse sur l'économie et les droits.
-- [ ] Nouveau projet `Turbo.Permissions.Tests` (ou équivalent) calqué sur
-      `Turbo.WebApi.Tests` (xunit + FluentAssertions, déjà maîtrisé).
-- [ ] Tests unitaires de `RoomSecurityPolicy.ResolveControllerLevel` (tous les cas :
-      System, superuser, ModerateAny, BuildAny, owner explicite, rights, none).
-- [ ] Tests unitaires de `ModerationPolicy.IsAllowed` (chaque action × capability
-      spécifique × ModerateAny × wildcard × refus).
-- [ ] Mise en place Orleans TestKit pour au moins un grain (room) en preuve de concept.
-- [ ] Cible : ces tests tournent dans le quality gate.
-
-**Story 0.2 — Stratégie d'erreur et de résilience de grain**
-*En tant que* dev, *je veux* une politique unique de gestion d'échec dans les grains,
-*afin que* l'état d'un grain ne soit jamais laissé incohérent.
-- [ ] Définir le contrat : que se passe-t-il quand une opération de grain échoue
-      (rollback de l'état en mémoire ? log structuré ? event d'erreur observability ?).
-- [ ] Remplacer les `// TODO handle exceptions` de `RoomGrain.Furni.cs` (et autres) par
-      cette stratégie.
-- [ ] Auditer les 24 blocs catch existants : aucun ne doit avaler une erreur en silence.
-
-**Story 0.3 — Gate de format vert**
-- [ ] `csharpier check` passe sur l'intégralité (les ~118 fichiers non conformes
-      reformatés).
-- [ ] Hook pre-commit bloquant si format KO.
-
-**DoD Epic 0 :** le quality gate exécute des tests sur les policies et au moins un grain ;
-plus aucun `// TODO handle exceptions` ; format vert.
+**Recommended order:** 0 (in parallel) → 3 (almost done, close the loop) → 1 (highest priority)
+→ 2 → 4 → 5 → 6 → 7.
 
 ---
 
-### EPIC 1 — Boucle de jeu jouable (PRIORITÉ ABSOLUE)
+## 4. Detailed epics
 
-**Objectif :** un joueur se connecte, navigue, entre dans une room, marche, chatte,
-manipule du mobilier, règle sa room, repart — **sans jamais taper un packet mort**. C'est
-la tranche verticale qui transforme « moteur impressionnant » en « jeu jouable ».
+### EPIC 0 — Quality foundation (cross-cutting)
 
-**Story 1.1 — Navigator complet (8 % → 100 %)**
-*En tant que* joueur, *je veux* parcourir, rechercher et ouvrir des rooms, *afin de*
-pouvoir entrer dans le jeu — c'est la porte d'entrée, et c'est le domaine le plus vide.
-- [ ] Tous les handlers `Turbo.PacketHandlers/Navigator` (+ `NewNavigator`) implémentés.
-- [ ] Catégories, recherche, favoris, mes rooms, rooms populaires renvoient de vraies
-      données via les grains.
-- [ ] Création de room fonctionnelle de bout en bout.
+**Goal:** add multiplier work that makes everything else safe and fast. Run in parallel with other epics,
+not before them.
 
-**Story 1.2 — Entrée / sortie / état de room complets**
-- [ ] Handlers d'entrée, de sortie, de heightmap/état initial implémentés.
-- [ ] Le joueur reçoit l'état complet de la room à l'entrée (avatars, mobilier, droits).
+**Story 0.1 — Extend core test harness**
+*As a* developer, *I want* to test pure policies and critical grain logic,
+*so I can* refactor without silent regressions in economy and rights.
+- [ ] New project `Turbo.Permissions.Tests` (or equivalent) based on
+      `Turbo.WebApi.Tests` (xunit + FluentAssertions, already used).
+- [ ] Unit tests for `RoomSecurityPolicy.ResolveControllerLevel` (all cases:
+      System, superuser, ModerateAny, BuildAny, explicit owner, rights, none).
+- [ ] Unit tests for `ModerationPolicy.IsAllowed` (each action × specific capability × ModerateAny × wildcard × deny).
+- [ ] Orleans TestKit setup for at least one grain as proof of concept.
+- [ ] Target: these tests run in the quality gate.
 
-**Story 1.3 — Mobilier : poser / déplacer / ramasser / utiliser (Room 23 % → 100 %)**
-*En tant que* joueur avec les droits, *je veux* manipuler le mobilier, *afin de* décorer
-et interagir.
-- [ ] Handlers place/move/rotate/pickup/use branchés sur `RoomSecurityModule`.
-- [ ] Les checks passent par `CanManipulateFurniAsync`/`CanPlaceFurniAsync`/`CanUseFurniAsync`.
-- [ ] Stuff data mis à jour et diffusé aux clients de la room.
+**Story 0.2 — Grain error and resilience strategy**
+*As a* developer, *I want* a single grain failure contract,
+*so that* a grain state is never left inconsistent.
+- [ ] Define the contract for a failed grain operation (state rollback in memory? structured logs? observability error event?).
+- [ ] Replace `// TODO handle exceptions` in `RoomGrain.Furni.cs` (and others) using this strategy.
+- [ ] Audit the 24 existing catch blocks: none should swallow errors without logging.
 
-**Story 1.4 — Paramètres de room (RoomSettings 0 % → 100 %)**
-- [ ] Handlers de réglage (nom, description, droits, accès, max users, etc.) implémentés.
-- [ ] Gated par ownership/contrôleur via `GetControllerLevelAsync`.
+**Story 0.3 — Formatting gate**
+- [ ] `csharpier check` passes across the whole repo (all ~118 non-compliant files formatted).
+- [ ] Blocking pre-commit hook.
 
-**Story 1.5 — Finir `RoomSecurityModule`**
-- [ ] Remplacer `isGroupRoom = false` hardcodé par la vraie détection.
-- [ ] Implémenter `canGroupDecorate` et les branches GroupRights/GroupAdmin.
-- [ ] Lever le `// TODO placement rules?` de `CanPlaceFurniAsync`.
-
-**Story 1.6 — Audio de room (Sound 0 %)** *(basse priorité dans l'epic)*
-- [ ] Handlers traxx/jukebox si la feature est ciblée pour la v1, sinon descoper
-      explicitement.
-
-**DoD Epic 1 :** un compte de test peut faire login → navigator → entrer → marcher →
-chatter → poser/déplacer/ramasser un meuble → régler la room → repartir, intégralement,
-sans handler stub sur ce chemin. Les droits sont vérifiés à chaque étape.
+**Epic 0 DoD:** quality gate runs policy tests and at least one grain test; no `// TODO handle exceptions`;
+formatting green.
 
 ---
 
-### EPIC 2 — Permissions & modération (quasi fait, à compléter)
+### EPIC 1 — Fully playable core loop (**ABSOLUTE PRIORITY**)
 
-**Objectif :** fermer les derniers trous du système de droits déjà câblé.
+**Goal:** player can connect, navigate, enter a room, walk, chat, manipulate furniture, configure room,
+leave — without ever hitting a dead packet path. This is the slice that turns an impressive engine into a playable game.
 
-**Story 2.1 — Login lit/assigne les rôles depuis la DB**
-- [ ] Vérifier le chemin compte → `player_account_roles` (le seeder `DefaultRoles` existe).
-- [ ] Un nouveau compte reçoit le rôle par défaut adéquat (pas Administrator).
-- [ ] Le rang de session client est cohérent avec les capabilities, mais n'est qu'un
-      indice UI (la décision serveur reste `IPermissionService`).
+**Story 1.1 — Complete Navigator (8% → 100%)**
+*As a* player, *I want* to browse, search, and enter rooms, *so I can* enter the game.
+This is the entry point and the sparsest domain.
+- [ ] All handlers in `Turbo.PacketHandlers/Navigator` (+ `NewNavigator`) implemented.
+- [ ] Categories, search, favorites, my rooms, popular rooms return real data through grains.
+- [ ] End-to-end functional room creation.
 
-**Story 2.2 — Droits en group room**
-- [ ] `isGroupRoom` réel + `canGroupDecorate` + niveaux GroupMember/GroupRights/GroupAdmin
-      effectifs dans `RoomSecurityModule`.
+**Story 1.2 — Enter / exit / initial room state fully**
+- [ ] Entry, exit, heightmap/initial-state handlers implemented.
+- [ ] Player receives the full room state on entry (avatars, furniture, rights).
 
-**Story 2.3 — Outil de modération staff (Moderator 21 % → 100 %)**
-*En tant que* staff, *je veux* l'outil de modération (CFH/tickets, alertes, sanctions),
-*afin de* gérer l'hôtel.
-- [ ] Handlers `Turbo.PacketHandlers/Moderator` implémentés, gated par les capabilities
-      `Capabilities.Moderation.*`.
-- [ ] Chaque action émet son event d'audit (catégorie Moderation), réussites ET refus.
+**Story 1.3 — Furniture: place / move / pickup / use (Room 23% → 100%)**
+*As a* player with rights, *I want* to manipulate furniture, *so I can* decorate/interact.
+- [ ] Place/move/rotate/pickup/use handlers wired through `RoomSecurityModule`.
+- [ ] Checks flow through `CanManipulateFurniAsync` / `CanPlaceFurniAsync` / `CanUseFurniAsync`.
+- [ ] Stuff data updated and broadcast to room clients.
 
-**Story 2.4 — Tests des policies** *(recouvre Story 0.1, à ne pas dupliquer)*
-- [ ] Couverture complète de `RoomSecurityPolicy` et `ModerationPolicy`.
+**Story 1.4 — Room settings (RoomSettings 0% → 100%)**
+- [ ] Settings handlers (name, description, rights, access, max users, etc.) implemented.
+- [ ] Gated by ownership/controller via `GetControllerLevelAsync`.
 
-**DoD Epic 2 :** tout droit en jeu passe par une capability **testée** ; le staff opère
-partout ; les group rooms sont gérées ; l'outil de modération est fonctionnel et audité.
+**Story 1.5 — Finish `RoomSecurityModule`**
+- [ ] Replace hardcoded `isGroupRoom = false` with real detection.
+- [ ] Implement `canGroupDecorate` and GroupRights/GroupAdmin branches.
+- [ ] Remove `// TODO placement rules?` in `CanPlaceFurniAsync`.
 
----
+**Story 1.6 — Room audio (Sound 0%)** *(lowest priority in epic)*
+- [ ] Trax/jukebox handlers if V1 includes this feature, otherwise call out deprecation explicitly.
 
-### EPIC 3 — Migration WebApi ASP.NET Core (en cours)
-
-**Objectif :** une seule surface HTTP publique, sous ASP.NET, durcie et testée.
-
-**Story 3.1 — Merger la branche feature**
-- [ ] `feat/webapi-aspnetcore-migration` revue et mergée dans `main`.
-- [ ] Les 16 tests d'intégration tournent dans le gate.
-
-**Story 3.2 — Finir et vérifier le durcissement**
-- [ ] Tous les endpoints migrés (parité avec l'ancien HttpListener).
-- [ ] Rate limiting strict vérifié sur `/login`, `/registration/new`, `/ssotoken` (test
-      429 déjà présent).
-- [ ] CORS explicite + HTTPS/HSTS activables par config.
-
-**Story 3.3 — Supprimer le legacy**
-- [ ] `WebApiService.cs` (HttpListener) et `WebApiResponseWriter` retirés.
-
-**DoD Epic 3 :** plus aucun `HttpListener` dans le projet ; surface publique sous ASP.NET,
-testée et durcie.
+**Epic 1 DoD:** test account can do login → navigator → enter → walk → chat → place/move/pickup a
+furniture → set room options → leave, end-to-end, with no stub on this path. Rights are checked at every step.
 
 ---
 
-### EPIC 4 — Économie & inventaire (l'argent est sensible)
+### EPIC 2 — Permissions & moderation (near complete, needs finishing)
 
-**Objectif :** acheter, recevoir, revendre — chaque mouvement de monnaie passant par le
-ledger **audité et testé**.
+**Goal:** close remaining gaps in an already wired rights system.
 
-**Story 4.1 — Inventory complet (19 % → 100 %)**
-- [ ] Handlers `Turbo.PacketHandlers/Inventory` implémentés (consulter, déplacer vers la
-      room, etc.).
+**Story 2.1 — Login reads and assigns roles from DB**
+- [ ] Verify `account → player_account_roles` path (seeder `DefaultRoles` exists).
+- [ ] New account gets appropriate default role (not Administrator).
+- [ ] Client session rank is consistent with capabilities, but client rank remains UI hint only; server decision remains `IPermissionService`.
 
-**Story 4.2 — Achat catalogue bout-en-bout (Catalog 39 % → 100 %)**
-*En tant que* joueur, *je veux* acheter au catalogue, *afin de* obtenir du mobilier.
-- [ ] Flux d'achat complet : page → offre → débit (via ledger) → ajout inventaire.
-- [ ] Gestion du club (HC) et des prix membres.
+**Story 2.2 — Group room rights**
+- [ ] Real `isGroupRoom` + `canGroupDecorate` + GroupMember/GroupRights/GroupAdmin levels in `RoomSecurityModule`.
 
-**Story 4.3 — Tests du ledger économique (CRITIQUE)**
-*En tant que* dev, *je veux* tester chaque mouvement de monnaie, *afin d'*éviter
-duplication/perte de currency silencieuse.
-- [ ] Tests sur les opérations du ledger (débit, crédit, idempotence, refus solde
-      insuffisant).
-- [ ] Invariant testé : aucun chemin ne crédite/débite sans entrée de ledger.
+**Story 2.3 — Staff moderation tool (Moderator 21% → 100%)**
+*As staff, I want* moderation tooling (CFH/tickets, alerts, sanctions),
+*so I can* operate hotel moderation.
+- [ ] `Turbo.PacketHandlers/Moderator` handlers implemented, gated by capabilities
+  `Capabilities.Moderation.*`.
+- [ ] Every action emits moderation audit event (category Moderation), both success and denial.
 
-**Story 4.4 — Cadeaux (Gifts)**
-- [ ] Flux cadeau complet : achat cadeau → emballage → livraison → ouverture, audité.
+**Story 2.4 — Policy tests** *(overlaps Story 0.1, do not duplicate)*
+- [ ] Complete coverage of `RoomSecurityPolicy` and `ModerationPolicy`.
+
+**Epic 2 DoD:** no sensitive action reaches game logic without tested capability checks; staff can operate
+throughout; group rooms handled; moderation tool is functional and audited.
+
+---
+
+### EPIC 3 — WebApi ASP.NET Core migration
+
+**Goal:** one hardened HTTP public surface under ASP.NET, fully tested.
+
+**Story 3.1 — Merge feature branch**
+- [ ] `feat/webapi-aspnetcore-migration` reviewed and merged into `main`.
+- [ ] 16 integration tests run in gate.
+
+**Story 3.2 — Finish and harden**
+- [ ] All endpoints migrated (parity with old HttpListener).
+- [ ] Strict rate limiting verified on `/login`, `/registration/new`, `/ssotoken` (429 test already present).
+- [ ] Explicit CORS + HTTPS/HSTS toggled via config.
+
+**Story 3.3 — Remove legacy**
+- [ ] Remove `WebApiService.cs` (HttpListener) and `WebApiResponseWriter`.
+
+**Epic 3 DoD:** no `HttpListener` remains; public surface runs on ASP.NET, tested and hardened.
+
+---
+
+### EPIC 4 — Economy & inventory (currency is sensitive)
+
+**Goal:** buy, receive, sell/retrieve — every currency movement goes through tested ledger.
+
+**Story 4.1 — Complete Inventory (19% → 100%)**
+- [ ] Handlers `Turbo.PacketHandlers/Inventory` implemented (view, move to room, etc.).
+
+**Story 4.2 — End-to-end catalog purchase (Catalog 39% → 100%)**
+*As a* player, *I want* to buy from catalog, *so I can* get furniture.
+- [ ] Full purchase flow: page → offer → debit (via ledger) → inventory add.
+- [ ] Club (HC) and member pricing management.
+
+**Story 4.3 — Critical ledger tests**
+*As a* developer, *I want* to test every currency movement, *so I avoid* silent currency duplication/loss.
+- [ ] Tests for ledger operations (debit, credit, idempotence, insufficient balance rejection).
+- [ ] Invariant test: no path credits/debits currency without ledger entry.
+
+**Story 4.4 — Gifts**
+- [ ] Complete gift flow: purchase gift → wrapping → delivery → opening, audited.
 
 **Story 4.5 — Marketplace**
-- [ ] Flux complet : mise en vente → recherche → achat → payout, chaque étape au ledger.
+- [ ] Full flow: list → search → buy → payout, with ledger on each step.
 
-**DoD Epic 4 :** acheter / recevoir un cadeau / revendre fonctionne ; chaque transaction
-monétaire est dans le ledger ET couverte par un test.
+**Epic 4 DoD:** buying / receiving gifts / reselling works; every monetary movement is in ledger and covered by a test.
 
 ---
 
 ### EPIC 5 — Social
 
-**Objectif :** amis, messagerie, groupes fonctionnels.
+**Goal:** functional friends, messaging, and groups.
 
-**Story 5.1 — Amis & messagerie**
-- [ ] Handlers `FriendList` (+ messenger) : demandes, acceptation, messages, présence.
+**Story 5.1 — Friends & messaging**
+- [ ] `FriendList` (+ messenger) handlers: requests, accept/deny, messages, presence.
 
-**Story 5.2 — Groupes**
-- [ ] Création de groupe, gestion des membres, forums (`GroupForums`) — gated par les
-      droits de groupe (cf. Epic 2).
+**Story 5.2 — Groups**
+- [ ] Group creation, member management, forums (`GroupForums`) gated by group permissions (see Epic 2).
 
-**DoD Epic 5 :** un joueur peut ajouter un ami, échanger des messages, créer et gérer un
-groupe.
+**Epic 5 DoD:** player can add friend, message, create and manage a group.
 
 ---
 
 ### EPIC 6 — Trading
 
-**Objectif :** échange d'objets entre joueurs, sécurisé et atomique.
+**Goal:** secure and atomic player item exchange.
 
-**Story 6.1 — Flux d'échange complet**
-- [ ] Ouverture, ajout/retrait d'objets, lock des deux côtés, confirmation, commit
-      **atomique** (les deux inventaires changent ou aucun).
-- [ ] Anti-triche : validation serveur de la possession réelle des objets à chaque étape.
-- [ ] Event d'audit de l'échange (item_events).
-- [ ] Tests de l'atomicité et des cas d'échec (déconnexion en plein trade, objet retiré).
+**Story 6.1 — Full trade flow**
+- [ ] Open, add/remove items, lock both sides, confirm, atomic commit (both inventories change or none).
+- [ ] Anti-cheat: server-side possession validation at each step.
+- [ ] Exchange audit event (`item_events`).
+- [ ] Tests for atomicity and failure cases (disconnect mid-trade, removed item).
 
-**DoD Epic 6 :** deux joueurs échangent des objets de façon atomique et auditée ;
-impossible de dupliquer ou perdre un objet.
+**Epic 6 DoD:** two players exchange items atomically and audited; items can never be duplicated or lost.
 
 ---
 
-### EPIC 7 — Ops & conformité
+### EPIC 7 — Operations & compliance
 
-**Objectif :** finaliser la production-readiness de la périphérie déjà solide.
+**Goal:** harden the already stable operations perimeter.
 
-**Story 7.1 — Rétention / purge RGPD de l'audit**
-- [ ] Politique de rétention configurable + purge planifiée des tables d'audit.
+**Story 7.1 — RGPD audit retention / purge**
+- [ ] Configurable retention policy + scheduled purge for audit tables.
 
-**Story 7.2 — Accès dashboard distant sécurisé**
-- [ ] Reverse proxy / TLS devant le dashboard ASP.NET (aujourd'hui en localhost).
+**Story 7.2 — Secure remote dashboard access**
+- [ ] Reverse proxy / TLS in front of ASP.NET dashboard (currently localhost-only).
 
-**Story 7.3 — Export OTel** *(si désiré)*
-- [ ] Brancher l'ActivitySource/meter existant sur un exporter OpenTelemetry.
+**Story 7.3 — OTel export** *(if desired)*
+- [ ] Wire existing ActivitySource/meter to an OpenTelemetry exporter.
 
-**DoD Epic 7 :** audit conforme RGPD ; dashboard accessible à distance en sécurité ;
-métriques exportables.
-
----
-
-## 5. Definition of Done globale (par story)
-
-Une story n'est **Done** que si **tout** est vrai :
-
-1. **Code** : handler/feature implémenté, branché sur les grains via les interfaces, zéro
-   logique métier dans les handlers, aucun nouveau stub introduit.
-2. **Droits** : toute action sensible passe par une capability (`IPermissionService` /
-   policies), jamais par un flag client de confiance.
-3. **Audit** : les actions à enjeu (modération, monnaie, items) émettent leur event
-   observability, réussite ET refus.
-4. **Tests** : au minimum les fonctions pures et les invariants sensibles sont couverts ;
-   pour une surface HTTP, un test d'intégration de contrat par route.
-5. **Erreur** : les chemins d'échec sont gérés selon la stratégie de l'Epic 0, pas par des
-   TODO.
-6. **Format** : `csharpier check` vert.
-7. **Stubs** : le compteur de handlers stub du domaine concerné a baissé, jamais monté.
+**Epic 7 DoD:** RGPD-compliant audit retention; dashboard accessible remotely and securely; exportable metrics.
 
 ---
 
-## 6. Le piège à éviter (rappel stratégique)
+## 5. Global Definition of Done (per story)
 
-Le risque de ce projet n'est pas la compétence — le moteur et l'observability le prouvent.
-Le risque est **de mourir d'ampleur** : continuer à construire des systèmes gratifiants
-(plus de dashboard, OTel, nouveaux domaines) pendant que la boucle de jeu reste à ~20 %.
+A story is `Done` only if all are true:
 
-La règle d'or de cette roadmap : **ne pas démarrer un epic de périphérie tant que l'Epic 1
-(boucle jouable) n'est pas Done.** Un hôtel auquel on peut jouer à 100 % sur un périmètre
-réduit vaut infiniment mieux qu'un hôtel à 20 % avec une périphérie de classe mondiale.
+1. **Code**: feature/handler implemented, wired through grains via interfaces, zero business logic in handlers,
+   no new stubs introduced.
+2. **Rights**: every sensitive action passes through capabilities (`IPermissionService` / policies), never through trusted client flag.
+3. **Audit**: sensitive actions (moderation, currency, items) emit observability events on success and denial.
+4. **Tests**: at minimum pure functions and sensitive invariants are covered; for HTTP surface, one contract
+   integration test per route.
+5. **Errors**: failure paths follow Epic 0 strategy, never use TODO fallbacks.
+6. **Format**: `csharpier check` green.
+7. **Stubs**: stub count for the relevant domain is decreasing, never increasing.
+
+---
+
+## 6. The trap to avoid (strategic reminder)
+
+This project’s risk is not capability — the engine and observability prove that.
+The real risk is **scale failure**: continue shipping attractive peripherals while core gameplay remains ~20%.
+
+The golden rule: **do not start any perimeter epic until Epic 1**
+(playable loop) is done. A hotel that is truly playable on a reduced scope is far better than a
+20%-capable hotel with world-class peripheral systems.

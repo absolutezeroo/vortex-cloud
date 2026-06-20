@@ -1,23 +1,24 @@
-﻿# Delta complet WIN63 source-master vs stack Vortex (version exploitable / IA)
+﻿# Full delta between WIN63 source-master and Vortex stack (production-ready / AI version)
 Date: 2026-06-16 15:59:35
 Source: WIN63 source-master
 Client: vortex-client
 Emu: vortex-emulator
 
-## Objectif de cette version
-- Transformer la liste brute en doc exploitable directement par lot.
-- Ajouter une priorite: P0/P1/P2 pour ton planning.
+## Purpose of this version
+- Transform the raw list into an execution-ready document.
+- Add priority levels (P0/P1/P2) for your planning.
 
-## Priorite actionnable
+
+## Actionable priority
 ### P0 - WIREDS
-Contexte: userdefinedroomevents est partiel côté client AS3.
-Objectif: ajouter le transport + logique editeur + execution des actions/conditions.
-- [ ] Sortants userdefinedroomevents manquants (20 attendus): tous les items de la section suivante
-- [ ] Messages incoming et outgoing room prioritaires
-- [ ] Handlers et logique client associée
-- [ ] Mapping headers/parsers/serializers cote revision pour ces flux
+Context: userdefinedroomevents is partially implemented on the AS3 client.
+Goal: add transport + editor logic + action/condition execution.
+- [ ] Missing outgoing userdefinedroomevents messages (20 expected): all items in the following section
+- [ ] High-priority room incoming and outgoing messages
+- [ ] Associated client handlers and logic
+- [ ] Header/parser/serializer mapping on revision side for these flows
 
-## Resume global
+## Global summary
 - Source incoming: 349
 - Source outgoing: 519
 - Source parser AS3: 532
@@ -27,16 +28,16 @@ Objectif: ajouter le transport + logique editeur + execution des actions/conditi
 - Serializers C#: 543
 - Emu incoming: 501
 - Emu outgoing: 513
-- Manquants source->client incoming: 170
-- Manquants source->client outgoing: 96
-- Manquants source->emu incoming: 489
-- Manquants source->emu outgoing: 491
-- Headers manquants incoming: 336
-- Headers manquants outgoing: 497
-- Parsers C# manquants: 522
-- Serializers C# manquants: 498
+- Missing source->client incoming: 170
+- Missing source->client outgoing: 96
+- Missing source->emu incoming: 489
+- Missing source->emu outgoing: 491
+- Missing incoming headers: 336
+- Missing outgoing headers: 497
+- Missing C# parsers: 522
+- Missing C# serializers: 498
 
-## Diffs source -> client: incoming manquants
+## Diffs source -> client: missing incoming
 - Total: 170
 ### action (x5)
 - [ ] CarryObjectMessageEvent
@@ -284,7 +285,7 @@ Objectif: ajouter le transport + logique editeur + execution des actions/conditi
 - [ ] IncomeRewardNotificationMessageEvent
 - [ ] IncomeRewardStatusMessageEvent
 
-## Diffs source -> client: outgoing manquants
+## Diffs source -> client: missing outgoing
 - Total: 96
 ### avatar (x1)
 - [ ] ChangeUserNameInRoomMessageComposer
@@ -434,7 +435,7 @@ Objectif: ajouter le transport + logique editeur + execution des actions/conditi
 - [ ] WiredSetRoomSettingsMessageComposer
 - [ ] WiredUpdateRoomComposer
 
-## Diffs source -> emu: incoming manquants
+## Diffs source -> emu: missing incoming
 - Total: 489
 ### achievements (x1)
 - [ ] GetAchievementsMessage
@@ -1039,7 +1040,7 @@ Objectif: ajouter le transport + logique editeur + execution des actions/conditi
 - [ ] WiredSetPreferencesMessage
 - [ ] WiredSetRoomSettingsMessage
 
-## Diffs source -> emu: outgoing manquants
+## Diffs source -> emu: missing outgoing
 - Total: 491
 ### achievements (x3)
 - [ ] AchievementEventMessageComposer
@@ -3982,6 +3983,7 @@ Objectif: ajouter le transport + logique editeur + execution des actions/conditi
 - [ ] WiredUpdateRoomComposer
 
 ## Notes
-- Les noms sont compares avec normalisation suffixes: MessageEvent / MessageComposer / Parser / Serializer.
-- Les parser AS3 class_*.as ne sont pas traites.
-- Cette doc est faite pour l'execution; verifier ensuite manuellement les faux positifs.
+- Names are compared with suffix normalization: MessageEvent / MessageComposer / Parser / Serializer.
+- AS3 parser class_*.as files are not covered.
+- This doc is made for execution; manually verify false positives afterward.
+

@@ -1,60 +1,56 @@
-# Vortex Cloud — Modèle de données (final)
+# Vortex Cloud — Data Model (final)
 
-Spécification consolidée et définitive des tables manquantes + des règles de conception,
-calée sur les conventions **réelles** du repo et sur la source Habbo (WIN63) comme ground
-truth. Toutes les décisions sont verrouillées. Objectif : qu'aucun dev ni agent ne parte de
-travers, et viser le meilleur — pas juste le fonctionnel.
+Consolidated and final specification for missing tables and design rules, aligned with real
+repo conventions and the Habbo source (WIN63) as ground truth. All decisions are locked so no
+developer or agent starts from scratch and ships only “works” implementations.
 
-Sommaire : 0) conventions & nommage · 1) amis (existant) · 2) groupes · 3) rentable space ·
-4) pets · 5) bots · 6) wired (bug de persistance) · 7) trading · 8) metrics (tiering) ·
-9) checklist.
+Summary: 0) conventions and naming · 1) friends (existing) · 2) groups · 3) rentable space ·
+4) pets · 5) bots · 6) wired (persistence bug) · 7) trading · 8) metrics (tiering) · 9) checklist.
 
 ---
 
-## 0. Conventions & règle de nommage
+## 0. Conventions & naming rule
 
-### 0.1 Base d'entité (hérité de `TurboEntity`, NE JAMAIS redéclarer)
+### 0.1 Base entity (inherited from `TurboEntity`, DO NOT redeclare)
 
-| Colonne | Type | Rôle |
+| Column | Type | Role |
 |---|---|---|
-| `id` | int, PK identity | clé primaire |
-| `created_at` | datetime | création (auto) |
-| `updated_at` | datetime | modification (auto, computed) |
+| `id` | int, PK identity | primary key |
+| `created_at` | datetime | created (auto) |
+| `updated_at` | datetime | modified (auto, computed) |
 | `deleted_at` | datetime? | **soft delete** |
 
-### 0.2 Style (à reproduire)
+### 0.2 Style (to reproduce)
 
-- `[Table("snake_case_pluriel")]`, `[Column("snake_case")]`.
-- FK : `[Column("x_id")] public required int XEntityId;` + `[ForeignKey(nameof(XEntityId))]
-  public required XEntity XEntity;` (nav nullable si FK nullable).
-- Unicité composite : `[Index(nameof(A), nameof(B), IsUnique = true)]`.
-- Obligatoire `required` ; optionnel nullable. Enums : type direct, `[DefaultValue]` +
-  `DatabaseGeneratedOption.None`, dans `Turbo.Primitives.<Domaine>.Enums`.
-- Soft delete partout ; jamais de hard delete.
+- `[Table("snake_case_plural")]`, `[Column("snake_case")]`.
+- FK: `[Column("x_id")] public required int XEntityId;` + `[ForeignKey(nameof(XEntityId))]
+  public required XEntity XEntity;` (nullable nav if FK nullable).
+- Composite uniqueness: `[Index(nameof(A), nameof(B), IsUnique = true)]`.
+- Required fields: `required`; optional nullable where appropriate. Enums: direct type, `[DefaultValue]` +
+  `DatabaseGeneratedOption.None`, located in `Turbo.Primitives.<Domain>.Enums`.
+- Soft delete everywhere; never hard delete.
 
-### 0.3 Règle de préfixe (résout l'incohérence `ltd_`)
+### 0.3 Prefix rule (resolves `ltd_` inconsistency)
 
-**Le préfixe = le bounded context propriétaire. Les tables de référence partagées restent
-neutres (sans préfixe).**
+**Prefix = owning bounded context. Shared reference tables stay neutral (no prefix).**
 
-État vérifié : `catalog_offers/pages/products/club_offers/club_gifts` sont cohérents, mais
-`ltd_series` / `ltd_raffle_entries` ne le sont pas — le LTD est un concept **catalogue**.
+State verified: `catalog_offers/pages/products/club_offers/club_gifts` are aligned, but
+`ltd_series` / `ltd_raffle_entries` are not — LTD is a catalog concept.
 
-- À corriger : `ltd_series` → **`catalog_ltd_series`**, `ltd_raffle_entries` →
+- To fix: `ltd_series` -> **`catalog_ltd_series`**, `ltd_raffle_entries` ->
   **`catalog_ltd_raffle_entries`**.
-- À **garder neutre** : `currency_types`. La monnaie n'appartient pas au catalogue — elle
-  est référencée par `economy_ledger`, `marketplace_offers` et le catalogue. C'est
-  transversal → pas de préfixe. (Ne pas forcer `catalog_currency_types`.)
+- Keep neutral: `currency_types`. Currency does not belong to catalog; it is referenced by
+  `economy_ledger`, `marketplace_offers`, and catalog. It is transversal → no catalog prefix
+  (do not force `catalog_currency_types`).
 
-> Pragmatique : verrouiller la règle maintenant, l'appliquer à **toutes les nouvelles**
-> tables, et renommer `ltd_*` dans une **migration dédiée** quand c'est commode — pas en
-> big-bang au milieu du dev.
+> Practical rule: lock this now, apply to **all new** tables, and rename `ltd_*` in a
+> dedicated migration when convenient — do not do a big-bang refactor mid-development.
 
 ---
 
-## 1. Amis & messagerie — EXISTANT (ne pas recréer)
+## 1. Friends & messaging — EXISTING (do not recreate)
 
-| Table | Entité |
+| Table | Entity |
 |---|---|
 | `messenger_friends` | `MessengerFriendEntity` (`player_id`, `requested_id`, `category_id?`, `relation`) |
 | `messenger_requests` | `MessengerRequestEntity` |
@@ -63,27 +59,27 @@ neutres (sans préfixe).**
 | `messenger_categories` | `MessengerCategoryEntity` |
 | `messenger_messages` | `MessengerMessageEntity` |
 
-L'Epic 5 côté amis = câblage de handlers, 0 schéma.
+Epic 5 for friends = handler wiring only, zero schema.
 
 ---
 
-## 2. Groupes / Guildes — À CRÉER
+## 2. Groups / Guilds — TO CREATE
 
-Modèle guildes Habbo. **Décision** : la config du forum est séparée de l'identité (table
-1:1), pas en colonnes sur `groups`.
+Habbo-style group model. **Decision**: forum config is separated from identity (1:1 table), not columns on
+`groups`.
 
-### 2.1 `groups` — `GroupEntity` (identité, table chaude)
+### 2.1 `groups` — `GroupEntity` (identity, hot table)
 
-| Colonne | Type | Null | Index |
+| Column | Type | Null | Index |
 |---|---|---|---|
-| `name` | string(50) | non | — |
-| `description` | string(255) | oui | — |
-| `badge` | string(100) | non | — |
-| `room_id` | int FK rooms | non | unique |
-| `player_id` | int FK players | non | index |
-| `type` | `GroupType` | non | — |
-| `color_one` / `color_two` | string(12) | non | — |
-| `admin_only_decoration` | bool | non | — |
+| `name` | string(50) | no | — |
+| `description` | string(255) | yes | — |
+| `badge` | string(100) | no | — |
+| `room_id` | int FK rooms | no | unique |
+| `player_id` | int FK players | no | index |
+| `type` | `GroupType` | no | — |
+| `color_one` / `color_two` | string(12) | no | — |
+| `admin_only_decoration` | bool | no | — |
 
 ```csharp
 [Table("groups")]
@@ -110,42 +106,42 @@ public class GroupEntity : TurboEntity
 
 ### 2.2 `group_members` — `GroupMemberEntity`
 
-| Colonne | Type | Null | Index |
+| Column | Type | Null | Index |
 |---|---|---|---|
-| `group_id` | int FK groups | non | unique(group_id, player_id) |
-| `player_id` | int FK players | non | ↑ + index |
-| `rank` | `GroupMemberRank` | non | — |
+| `group_id` | int FK groups | no | unique(group_id, player_id) |
+| `player_id` | int FK players | no | ↑ + index |
+| `rank` | `GroupMemberRank` | no | — |
 
 ### 2.3 `group_membership_requests` — `GroupMembershipRequestEntity`
 
-`group_id`, `player_id` — unique(group_id, player_id). Pour les groupes `Exclusive`.
+`group_id`, `player_id` — unique(group_id, player_id). For `Exclusive` groups.
 
-### 2.4 `group_forum_settings` — `GroupForumSettingsEntity` (config 1:1)
+### 2.4 `group_forum_settings` — `GroupForumSettingsEntity` (1:1 config)
 
-Créée avec defaults à la création du groupe (invariant : 1 ligne par groupe).
+Created with defaults at group creation (invariant: one row per group).
 
-| Colonne | Type | Null | Index |
+| Column | Type | Null | Index |
 |---|---|---|---|
-| `group_id` | int FK groups | non | unique |
-| `enabled` | bool | non | — |
-| `read_permission` / `post_permission` / `thread_permission` / `mod_permission` | `GroupForumPermission` | non | — |
+| `group_id` | int FK groups | no | unique |
+| `enabled` | bool | no | — |
+| `read_permission` / `post_permission` / `thread_permission` / `mod_permission` | `GroupForumPermission` | no | — |
 
-### 2.5 / 2.6 Forum : `group_forum_threads` / `group_forum_posts`
+### 2.5 / 2.6 Forum: `group_forum_threads` / `group_forum_posts`
 
-- **threads** : `group_id`(idx), `player_id`, `subject`, `state` (`GroupForumThreadState`),
+- **threads**: `group_id`(idx), `player_id`, `subject`, `state` (`GroupForumThreadState`),
   `is_pinned`, `post_count`, `last_post_at`(idx), `last_post_player_id?`.
-- **posts** : `thread_id`(idx), `group_id`(idx), `player_id`, `message`(text), `state`
-  (`GroupForumPostState`). Modération = bascule `state`, jamais hard-delete.
+- **posts**: `thread_id`(idx), `group_id`(idx), `player_id`, `message`(text), `state`
+  (`GroupForumPostState`). Moderation is done through state changes only, never hard-delete.
 
-### 2.7 Lien room → groupe (modif `RoomEntity`)
+### 2.7 Room → group link (mod `RoomEntity`)
 
 ```csharp
 [Column("group_id")] public int? GroupEntityId { get; set; }
 [ForeignKey(nameof(GroupEntityId))] public GroupEntity? GroupEntity { get; set; }
 ```
 
-> **Relation circulaire** `groups.room_id` ↔ `rooms.group_id` : `OnDelete` non-cascade
-> (Fluent API). Dissoudre = détacher `rooms.group_id` puis soft-delete.
+> **Circular relation** `groups.room_id` ↔ `rooms.group_id` must use non-cascade `OnDelete`
+> (Fluent API). Deleting/detaching a group: set `rooms.group_id` to null first, then soft-delete.
 
 ### 2.8 Enums (`Turbo.Primitives.Groups.Enums`)
 
@@ -159,33 +155,33 @@ public enum GroupForumPermission { Members = 0, Admins = 1, Owner = 2, Everyone 
 
 ---
 
-## 3. Rentable Space — À CRÉER (feature Habbo officielle, vérifiée WIN63)
+## 3. Rentable Space — TO CREATE (official WIN63 feature, verified)
 
-Type de furni `furniture_rentable_space`. L'espace **est une furniture**. Packet de statut :
-`rented, canRent, canRentErrorCode, renterId, renterName, timeRemaining, price`. Packets :
-`rentSpace/cancelRent/getRentableSpaceStatus(furniId)`.
+Furniture type `furniture_rentable_space`. The space **is a furniture item**. Status packet:
+`rented, canRent, canRentErrorCode, renterId, renterName, timeRemaining, price`.
+Packets: `rentSpace/cancelRent/getRentableSpaceStatus(furniId)`.
 
-**Décisions verrouillées :** termes (prix/durée/monnaie/HC) sur le **type** (table dédiée,
-pas sur `FurnitureDefinitionEntity`) · état = **1 ligne/instance, MAJ en place** (MySQL n'a
-pas d'unique filtré) · historique = **gratuit via `economy_ledger`** (louer = entrée ledger).
+**Locked decisions:** terms (price/duration/currency/HC) live on the **type** (`RentableSpaceTermsEntity`,
+not `FurnitureDefinitionEntity`) · state = **one row per instance, in-place updates** (MySQL does not
+support filtered uniqueness) · history is **free via `economy_ledger`** (rental itself is a ledger entry).
 
-### 3.1 `rentable_space_terms` — `RentableSpaceTermsEntity` (1:1 avec la définition)
+### 3.1 `rentable_space_terms` — `RentableSpaceTermsEntity` (1:1 with definition)
 
-| Colonne | Type | Null | Index |
+| Column | Type | Null | Index |
 |---|---|---|---|
-| `furniture_definition_id` | int FK definitions | non | unique |
-| `price` | int | non | — |
-| `currency_type_id` | int FK currency_types | non | — |
-| `rent_duration_seconds` | int | non | — |
-| `requires_hc` | bool | non | — |
+| `furniture_definition_id` | int FK definitions | no | unique |
+| `price` | int | no | — |
+| `currency_type_id` | int FK currency_types | no | — |
+| `rent_duration_seconds` | int | no | — |
+| `requires_hc` | bool | no | — |
 
-### 3.2 `room_rentable_spaces` — `RoomRentableSpaceEntity` (état, 1/instance)
+### 3.2 `room_rentable_spaces` — `RoomRentableSpaceEntity` (state, one per instance)
 
-| Colonne | Type | Null | Index |
+| Column | Type | Null | Index |
 |---|---|---|---|
-| `furniture_id` | int FK furniture | non | unique |
-| `renter_player_id` | int? FK players | oui | index |
-| `rented_until` | datetime? | oui | — |
+| `furniture_id` | int FK furniture | no | unique |
+| `renter_player_id` | int? FK players | yes | index |
+| `rented_until` | datetime? | yes | — |
 
 ```csharp
 [Table("room_rentable_spaces")]
@@ -201,43 +197,42 @@ public class RoomRentableSpaceEntity : TurboEntity
 }
 ```
 
-### 3.3 Tag des meubles posés (modif `FurnitureEntity`) — nettoyage atomique à l'expiration
+### 3.3 Placed furniture tag (modify `FurnitureEntity`) — atomic cleanup on expiry
 
 ```csharp
 [Column("rentable_space_furniture_id")] public int? RentableSpaceFurnitureEntityId { get; set; }
 [ForeignKey(nameof(RentableSpaceFurnitureEntityId))] public FurnitureEntity? RentableSpaceFurnitureEntity { get; set; }
 ```
 
-> Expiration : rendre tous les meubles où `rentable_space_furniture_id = X` à l'inventaire,
-> puis null `renter`/`rented_until`. Bornes vérifiées dans le grain au placement.
+> Expiry: return all furniture where `rentable_space_furniture_id = X` to inventory, then clear
+> `renter` / `rented_until`. Bounds are validated in grain at placement.
 
-### 3.4 Règles (source) : 1 locataire/espace · **1 espace loué/joueur** (`can_rent_only_one_space`,
-via l'index `renter_player_id`) · annulation par owner de la furni **ou** staff (`hasSecurity(5)`).
+### 3.4 Rules (source): one renter per space · **one space per player** (`can_rent_only_one_space`,
+via `renter_player_id` index) · cancellation by furniture owner **or** staff (`hasSecurity(5)`).
 
 ---
 
-## 4. Pets — À CRÉER (feature confirmée WIN63 : `PetInfoData`, breeding, stats)
+## 4. Pets — TO CREATE (confirmed WIN63 feature: `PetInfoData`, breeding, stats)
 
-Modèle pet Habbo standard. Un pet appartient à un joueur, vit dans une room ou en inventaire,
-porte ses stats.
+Standard Habbo pet model. A pet belongs to a player, lives in a room or in inventory, carries stats.
 
-| Colonne | Type | Null | Index | Sens |
+| Column | Type | Null | Index | Meaning |
 |---|---|---|---|---|
-| `player_id` | int FK players | non | index | propriétaire |
-| `room_id` | int? FK rooms | oui | index | room courante, `null` = inventaire |
-| `name` | string(40) | non | — | nom |
-| `type` | int | non | — | espèce (chien/chat/…) |
-| `race` | int | non | — | variante/breed |
-| `color` | string(12) | non | — | couleur |
-| `gender` | `AvatarGenderType` | non | — | sexe |
-| `level` | int | non | — | niveau |
-| `experience` | int | non | — | xp |
-| `energy` | int | non | — | énergie |
-| `nutrition` | int | non | — | faim |
-| `respect` | int | non | — | « scratches »/respect reçu |
-| `x` / `y` | int | non | — | position en room |
-| `z` | double(10,3) | non | — | hauteur |
-| `direction` | int | non | — | orientation |
+| `player_id` | int FK players | no | index | owner |
+| `room_id` | int? FK rooms | yes | index | current room, `null` = inventory |
+| `name` | string(40) | no | — | name |
+| `type` | int | no | — | species (dog/cat/…) |
+| `race` | int | no | — | variant/breed |
+| `color` | string(12) | no | — | color |
+| `gender` | `AvatarGenderType` | no | — | sex |
+| `level` | int | no | — | level |
+| `experience` | int | no | — | xp |
+| `energy` | int | no | — | energy |
+| `nutrition` | int | no | — | hunger |
+| `respect` | int | no | — | "scratches"/received respect |
+| `x` / `y` | int | no | — | room position |
+| `z` | double(10,3) | no | — | height |
+| `direction` | int | no | — | facing |
 
 ```csharp
 [Table("pets")]
@@ -267,23 +262,22 @@ public class PetEntity : TurboEntity
 }
 ```
 
-> Le breeding (croisement) est confirmé dans la source (`ConfirmPetBreedingPetData`). Pas
-> de table en plus : un pet né d'un croisement est un nouveau `PetEntity` ; la traçabilité
-> parents, si voulue, passe par deux colonnes nullables `parent_one_id`/`parent_two_id`.
+> Breeding is confirmed in source (`ConfirmPetBreedingPetData`). No extra table required:
+> a bred pet is a new `PetEntity`; traceability (if desired) is via nullable columns
+> `parent_one_id` / `parent_two_id`.
 
-### 4.1 `pet_food` — `PetFoodEntity` (config food/produits)
+### 4.1 `pet_food` — `PetFoodEntity` (food item config)
 
-Vérifié WIN63 : les food/boissons/jouets sont des **furnitures** avec `FurniturePetProductLogic`
-(`useObject()` → le pet s'en sert). Le mapping item → type de pet → effet est de la config
-**domaine pet** (donc préfixe `pet_`, pas `catalog_`, même si l'item est vendu au catalogue).
-Les valeurs d'effet sont serveur (le client obfusqué ne les expose pas — comme le prix de la
-rentable space).
+Verified on WIN63: food/drinks/toys are **furnitures** with `FurniturePetProductLogic`
+(`useObject()` is how the pet uses them). Item → pet-type → effect mapping is
+**pet domain config** (therefore `pet_` prefix, not `catalog_`, even if sold in catalog).
+Effect values are server-owned (obfuscated client does not expose them, same as rental price).
 
-| Colonne | Type | Null | Index | Sens |
+| Column | Type | Null | Index | Meaning |
 |---|---|---|---|---|
-| `furniture_definition_id` | int FK definitions | non | unique | l'item de nourriture |
-| `pet_type` | int | non | index | espèce qui peut la manger |
-| `nutrition` | int | non | — | nutrition restaurée à la consommation |
+| `furniture_definition_id` | int FK definitions | no | unique | food item |
+| `pet_type` | int | no | index | species that can consume |
+| `nutrition` | int | no | — | nutrition restored on consume |
 
 ```csharp
 [Table("pet_food")]
@@ -295,66 +289,65 @@ public class PetFoodEntity : TurboEntity
     [Column("pet_type")] public required int PetType { get; set; }
     [Column("nutrition")] public required int Nutrition { get; set; }
 
-    [ForeignKey(nameof(FurnitureDefinitionEntityId))] public required FurnitureDefinitionEntity FurnitureDefinitionEntity { get; set; }
+    [ForeignKey(nameof(FurnitureDefinitionEntityId))] public required FurnitureDefinitionEntity FurnitureDefinition { get; set; }
 }
 ```
 
-> Nourrissage (grain) : le pet va vers la food, mange, `pet.nutrition += pet_food.nutrition`,
-> et l'item-food est **consommé** (décrément dans `extra_data` ou suppression de la furni).
+> Feeding flow (grain): pet moves to food, eats, `pet.nutrition += pet_food.nutrition`, and
+> food item is **consumed** (decrement `extra_data` or remove furni).
 
-### 4.2 Niveaux & commandes (implique par `PETS-DESIGN.md`)
+### 4.2 Levels & commands (implemented via `PETS-DESIGN.md`)
 
-Le design des pets (boucle d'apprentissage) implique deux tables de config. Voir
-`PETS-DESIGN.md` pour le comportement runtime qui les consomme.
+Pet design (learning loop) implies two config tables. See `PETS-DESIGN.md` for runtime behavior.
 
-**`pet_levels` — `PetLevelEntity`** (config des seuils de niveau) :
+**`pet_levels` — `PetLevelEntity`** (level threshold config):
 
-| Colonne | Type | Null | Index | Sens |
+| Column | Type | Null | Index | Meaning |
 |---|---|---|---|---|
-| `pet_type` | int | non | unique(pet_type, level) | espèce |
-| `level` | int | non | ↑ | niveau |
-| `experience_required` | int | non | — | XP cumulée pour atteindre ce niveau |
-| `energy_cap` | int | non | — | cap d'énergie à ce niveau |
-| `nutrition_cap` | int | non | — | cap de nutrition à ce niveau |
+| `pet_type` | int | no | unique(pet_type, level) | species |
+| `level` | int | no | ↑ | level |
+| `experience_required` | int | no | — | cumulative XP required for this level |
+| `energy_cap` | int | no | — | max energy at this level |
+| `nutrition_cap` | int | no | — | max nutrition at this level |
 
-**`pet_commands` — `PetCommandEntity`** (config des commandes apprenables) :
+**`pet_commands` — `PetCommandEntity`** (learnable command config):
 
-| Colonne | Type | Null | Index | Sens |
+| Column | Type | Null | Index | Meaning |
 |---|---|---|---|---|
-| `pet_type` | int | non | index | espèce |
-| `command` | int | non | — | identifiant de commande (geste/trick) |
-| `level_required` | int | non | — | niveau minimum pour l'exécuter |
+| `pet_type` | int | no | index | species |
+| `command` | int | no | — | command identifier (gesture/trick) |
+| `level_required` | int | no | — | minimum level to execute |
 
-> Le pet n'exécute une commande que si `pet.level >= level_required`. Mêmes conventions que le
-> reste (TurboEntity, enums dans `Turbo.Primitives.Pets.Enums`).
+> A pet executes a command only if `pet.level >= level_required`. Same conventions as rest of
+> model (`TurboEntity`, enums in `Turbo.Primitives.Pets.Enums`).
 
-**À garder pour plus tard, hors scope immédiat :**
-- **Palettes de couleurs** (`SellablePetPalettesEvent`) → `pet_palettes` (`pet_type`, palette,
-  couleurs) — quand tu feras la vente de pets au catalogue.
+**Out of immediate scope:**
+- **Color palettes** (`SellablePetPalettesEvent`) → `pet_palettes` (`pet_type`, palette, colors) —
+  when catalog pet sales are implemented.
 
-> Ordre : food → niveaux → commandes (cf. `PETS-DESIGN.md`). Chaque sous-système = une config +
-> un effet runtime, même esprit que food.
+> Suggested order: food → levels → commands (see `PETS-DESIGN.md`). Each subsystem is one config table
+> plus one runtime effect, same pattern as food.
 
 ---
 
-## 5. Bots — À CRÉER (bots serveurs / « rentable bot », confirmé WIN63)
+## 5. Bots — TO CREATE (server bots / “rentable bot”, WIN63 confirmed)
 
-Un bot est un PNJ posable : identité d'avatar + position + un set de messages (parole
-aléatoire, réponses à mots-clés). Deux tables.
+A bot is a placeable NPC: avatar identity + position + a set of messages (speech, keyword
+responses). Two tables.
 
 ### 5.1 `bots` — `BotEntity`
 
-| Colonne | Type | Null | Index | Sens |
+| Column | Type | Null | Index | Meaning |
 |---|---|---|---|---|
-| `player_id` | int FK players | non | index | propriétaire |
-| `room_id` | int? FK rooms | oui | index | room, `null` = inventaire |
-| `name` | string(40) | non | — | nom |
-| `motto` | string(255) | oui | — | mission |
-| `figure` | string(100) | non | — | apparence |
-| `gender` | `AvatarGenderType` | non | — | sexe |
-| `x` / `y` | int | non | — | position |
-| `z` | double(10,3) | non | — | hauteur |
-| `direction` | int | non | — | orientation |
+| `player_id` | int FK players | no | index | owner |
+| `room_id` | int? FK rooms | yes | index | room, `null` = inventory |
+| `name` | string(40) | no | — | name |
+| `motto` | string(255) | yes | — | mission |
+| `figure` | string(100) | no | — | appearance |
+| `gender` | `AvatarGenderType` | no | — | sex |
+| `x` / `y` | int | no | — | position |
+| `z` | double(10,3) | no | — | height |
+| `direction` | int | no | — | orientation |
 
 ```csharp
 [Table("bots")]
@@ -381,93 +374,84 @@ public class BotEntity : TurboEntity
 
 ### 5.2 `bot_messages` — `BotMessageEntity`
 
-| Colonne | Type | Null | Index | Sens |
+| Column | Type | Null | Index | Meaning |
 |---|---|---|---|---|
-| `bot_id` | int FK bots | non | index | bot |
-| `mode` | `BotMessageMode` | non | — | RandomSpeech / KeywordResponse |
-| `keyword` | string(100) | oui | — | déclencheur (mode keyword) |
-| `text` | string(255) | non | — | ce que le bot dit |
+| `bot_id` | int FK bots | no | index | bot |
+| `mode` | `BotMessageMode` | no | — | RandomSpeech / KeywordResponse |
+| `keyword` | string(100) | yes | — | trigger for keyword mode |
+| `text` | string(255) | no | — | bot text |
 
 ```csharp
 public enum BotMessageMode { RandomSpeech = 0, KeywordResponse = 1 }
 ```
 
-> Le « servir des boissons/items » est une action de bot configurable : si tu la vises, une
-> table `bot_serve_items` (`bot_id`, `item_definition_id`) la modélise — mais commence par
-> identité + messages, c'est le cœur.
+> “Serve beverages/items” is a configurable bot action. If in scope, model it with `bot_serve_items`
+> (`bot_id`, `item_definition_id`), but start with identity + messages first; that is the core.
 
 ---
 
-## 6. Wired — PAS un trou de schéma, un BUG de persistance (priorité n°1)
+## 6. Wired — not a schema gap, a persistence bug (priority #1)
 
-**Constat vérifié dans le code.** `StuffPersistanceType` n'a que deux valeurs : `RoomActive
-= 0` et `Persistent = 1`. `FurnitureWiredLogic` déclare `_stuffPersistanceType =>
-StuffPersistanceType.RoomActive`. La furni persiste son état via la colonne `extra_data`
-(`ExtraData.GetJsonString()`), et `WiredData` **est** sérialisable JSON.
+**Observed in code.** `StuffPersistanceType` currently has two values:
+`RoomActive = 0` and `Persistent = 1`. `FurnitureWiredLogic` sets `_stuffPersistanceType =>
+StuffPersistanceType.RoomActive`. Wired furniture already persists state via `extra_data`
+(`ExtraData.GetJsonString()`), and `WiredData` is JSON-serializable.
 
-**Conclusion.** En `RoomActive`, la donnée vit tant que la room est active mais n'est **pas**
-écrite en DB → la **config wired d'un joueur (items sélectionnés, délais, conditions) ne
-survit pas à un déchargement de room / reboot**. C'est une perte de données silencieuse, pas
-un manque de table.
+**Conclusion.** With `RoomActive`, data lives while room is active but is **not** written to DB:
+wired config (selected items, delays, conditions) does not survive room unload/reboot. This is
+silent data loss, not missing schema.
 
-**Le fix (pas une migration de schéma) :**
-- La furni wired doit utiliser `StuffPersistanceType.Persistent` et sérialiser son
-  `WiredData` (déjà JSON-isable) dans `extra_data`, qui existe déjà.
-- Distinguer **config** (à persister : `IntParams`, `StuffIds`, `StringParam`, sources) de
-  l'**état runtime éphémère** (compteurs « a déjà déclenché », à laisser en mémoire).
-- À couvrir par un test : poser un wired, configurer, décharger la room, recharger →
-  la config est identique.
+**Fix (no schema migration):**
+- Wired furniture must use `StuffPersistanceType.Persistent` and serialize `WiredData` (already JSON-serializable)
+  into `extra_data`, which already exists.
+- Separate **config** (persisted fields: `IntParams`, `StuffIds`, `StringParam`, sources) from
+  ephemeral runtime state (e.g., “already triggered” counters), which remain in memory.
+- Add round-trip coverage: place wired item, configure, unload room, reload → same config preserved.
 
-> C'est le seul point de cette liste qui peut faire perdre du contenu joueur **aujourd'hui**.
-> À traiter avant pets/bots/groupes.
+> This is the only item on this list that can still cause immediate player data loss today. Finish it
+> before pets/bots/groups.
 
 ---
 
-## 7. Trading — log via le ledger (pas d'état persistant)
+## 7. Trading — ledger-backed logging (no persistent state)
 
-Échange éphémère (grain : offre, lock, confirmation). Pas de table d'état. Trace
-anti-duplication via `item_events` / `economy_ledger` existants. Vrai sujet : **atomicité**
-du commit + **validation serveur** de possession (Epic 6).
-
----
-
-## 8. Metrics / observability — ne pas réduire les tables, tiérer le stockage
-
-**Verdict : le nombre de tables est justifié, fusionner serait une régression.** Les formes
-sont réellement différentes : `economy_ledger` (financier typé, `delta`/`balance_after`, pas
-de blob) ≠ `performance_logs` (télémétrie client : `flash_version`, `frame_rate`, `gc`) ≠
-`error_groups`+`error_occurrences` (pattern Sentry, fingerprint/dédup) ≠ `audit_events` /
-`item_events` (payload `data` text). Les fusionner = God-table/EAV : colonnes creuses, perte
-des colonnes typées et des index, rétention par type impossible.
-
-**Le vrai « mieux » = tiérer par pattern d'accès, pas réduire :**
-- **Garder en MySQL (vérité transactionnelle)** : `economy_ledger`, `item_events`,
-  `audit_events`.
-- **Sortir vers un store time-series/analytique** (ClickHouse, ou Prometheus/Grafana via le
-  meter `System.Diagnostics.Metrics` déjà en place) : la télémétrie haut volume — `performance_logs`
-  et, à terme, les métriques de perf serveur.
-- **À questionner/supprimer** : `performance_logs` porte `flash_version` → c'est du logging
-  client legacy ; avec ta vraie observability en 2026, c'est une table candidate à la
-  **suppression**, pas à la fusion.
+Transient exchange flow (offer grain, lock, confirmation). No dedicated state table. Anti-duplication
+is handled with existing `item_events` / `economy_ledger`. The real topic is **atomic commit** and
+server-side possession validation (Epic 6).
 
 ---
 
-## 9. Checklist anti-erreur (relire avant de coder une table)
+## 8. Metrics / observability — keep tables; tier storage by access pattern
 
-- [ ] Hérite de `TurboEntity` ; ne pas redéclarer id/created_at/updated_at/deleted_at.
-- [ ] « Supprimer » = `deleted_at`, jamais hard delete.
-- [ ] FK = paire `[Column("x_id")] int` + `[ForeignKey] nav`, nullable accordé.
-- [ ] Paires relationnelles → `[Index(..., IsUnique = true)]` composite.
-- [ ] Enums dans `Turbo.Primitives.<Domaine>.Enums`, `[DefaultValue]` + `DatabaseGeneratedOption.None`.
-- [ ] **Nommage** : préfixe = bounded context propriétaire ; référence partagée = neutre
-      (`catalog_ltd_*`, mais `currency_types` nu).
-- [ ] Relations circulaires → `OnDelete` non-cascade (Fluent API).
-- [ ] Config froide/optionnelle/évolutive → table 1:1 (forum, termes de location) ; mais 1
-      seul champ → on ne sort pas.
-- [ ] État (instance) ≠ config (type) : termes de location vs état de location.
-- [ ] Pas de table d'historique quand le ledger le donne gratuitement.
-- [ ] Donnée joueur à conserver → mode de persistance `Persistent`, pas `RoomActive` (cf.
-      wired).
-- [ ] Ne pas recréer une table qui existe (amis/messagerie).
-```
+**Verdict:** table count is justified; merging would be a regression. The forms are truly different:
+`economy_ledger` (typed financial data, `delta`/`balance_after`, no blobs) ≠
+`performance_logs` (legacy client telemetry: `flash_version`, `frame_rate`, `gc`) ≠
+`error_groups` + `error_occurrences` (Sentry-like pattern/fingerprint) ≠ `audit_events` /
+`item_events` (`data` text payload). Merging creates God-tables/EAV-like structures with sparse columns,
+loss of typed columns/indexes, and impossible retention by type.
 
+**Better approach = tiering by access pattern, not table reduction:**
+- **Keep in MySQL (transactional truth):** `economy_ledger`, `item_events`, `audit_events`.
+- **Move to time-series/analytics store** (ClickHouse or Prometheus/Grafana via existing
+  `System.Diagnostics.Metrics`): high-volume telemetry — `performance_logs`, and later server performance metrics.
+- **Evaluate/remove:** `performance_logs` contains `flash_version` and is legacy client logging; with
+  2026 observability, this is a table candidate for removal, not for merging.
+
+---
+
+## 9. Anti-error checklist (review before adding a table)
+
+- [ ] Inherits `TurboEntity`; do not redeclare id/created_at/updated_at/deleted_at.
+- [ ] “Delete” means `deleted_at`, never hard delete.
+- [ ] FK uses `[Column("x_id")] int` + `[ForeignKey]` nav pair, nullable configured correctly.
+- [ ] Relational pairs use `[Index(..., IsUnique = true)]` composite constraints.
+- [ ] Enums in `Turbo.Primitives.<Domain>.Enums`, `[DefaultValue]` + `DatabaseGeneratedOption.None`.
+- [ ] **Naming:** prefix = owning bounded context; shared reference = neutral (e.g.
+  `catalog_ltd_*`, but `currency_types` stays neutral).
+- [ ] Circular relations use non-cascade `OnDelete` (Fluent API).
+- [ ] Separate cold/optional/evolving config → one 1:1 table (forum, rent terms), but one-field config should
+  not be over-expanded.
+- [ ] Instance state ≠ config (type): rent terms are config, room rent state is runtime.
+- [ ] No extra history table when `ledger` already provides history.
+- [ ] Player-stored durable data must use `Persistent`, not `RoomActive` (see wired section).
+- [ ] Do not recreate existing tables (friends/messaging already implemented).

@@ -1,9 +1,9 @@
-# Request Lifecycle: From Socket to Client
+﻿# Request Lifecycle: From Socket to Client
 
-This document traces **one real incoming packet** — a chat message — through every
+This document traces **one real incoming packet** â€” a chat message â€” through every
 layer of Turbo Cloud, using the actual code that ships in the repository today. If
 you understand this one flow, you understand how the whole emulator is wired:
-networking → decode → handler → grain → system → Orleans stream → presence → session.
+networking â†’ decode â†’ handler â†’ grain â†’ system â†’ Orleans stream â†’ presence â†’ session.
 
 Read `docs/orleans.md` first for the mental model of grains and streams. This
 document is the concrete counterpart to that one.
@@ -14,27 +14,27 @@ document is the concrete counterpart to that one.
 
 ```
 client socket
-   │  raw bytes
-   ▼
+   â”‚  raw bytes
+   â–¼
 ClientPacketDecoder            (Turbo.Networking/Package)
-   │  ChatMessage (typed incoming message)
-   ▼
+   â”‚  ChatMessage (typed incoming message)
+   â–¼
 ChatMessageHandler             (Turbo.PacketHandlers/Room/Chat)
-   │  delegates, never touches DB or sockets
-   ▼
+   â”‚  delegates, never touches DB or sockets
+   â–¼
 RoomGrain.SendChatFromPlayerAsync   (Turbo.Rooms/Grains/RoomGrain.Avatar.cs)
-   │  thin partial entry point
-   ▼
+   â”‚  thin partial entry point
+   â–¼
 RoomChatSystem.SendChatFromPlayerAsync   (Turbo.Rooms/Grains/Systems)
-   │  resolves player → avatar, builds outgoing composer
-   ▼
+   â”‚  resolves player â†’ avatar, builds outgoing composer
+   â–¼
 RoomGrain.SendComposerToRoomAsync   (Turbo.Rooms/Grains/RoomGrain.cs)
-   │  publishes to an Orleans stream (RoomOutbound) — NOT a direct socket write
-   ▼
+   â”‚  publishes to an Orleans stream (RoomOutbound) â€” NOT a direct socket write
+   â–¼
 PlayerPresenceGrain  (subscribed to that room's stream)
-   │  one presence grain per player in the room receives RoomOutbound
-   ▼
-SessionObserver.SendComposerAsync   →   client socket
+   â”‚  one presence grain per player in the room receives RoomOutbound
+   â–¼
+SessionObserver.SendComposerAsync   â†’   client socket
 ```
 
 The single most important architectural fact: **a room never writes to a socket.**
@@ -45,7 +45,7 @@ about connections.
 
 ---
 
-## Step 1 — Decode: bytes become a typed message
+## Step 1 â€” Decode: bytes become a typed message
 
 The client sends a framed packet. `ClientPacketDecoder` and the revision layer turn
 the wire bytes into a strongly-typed incoming message. For chat, that type is:
@@ -62,13 +62,13 @@ public sealed class ChatMessage
 
 You do not write decoding by hand per packet in `turbo-cloud`. Parser/serializer
 trees for a given client revision live in the **plugin repo**
-(`../turbo-sample-plugin/TurboSamplePlugin/Revision/**`) — see `CONTEXT.md`. The core
+(`../turbo-sample-plugin/TurboSamplePlugin/Revision/**`) â€” see `CONTEXT.md`. The core
 only ever sees the typed message.
 
-## Step 2 — Dispatch: the handler
+## Step 2 â€” Dispatch: the handler
 
 The pipeline routes the decoded message to the one handler registered for its type.
-Here is the **real, complete** handler — note how little it does:
+Here is the **real, complete** handler â€” note how little it does:
 
 ```csharp
 // Turbo.PacketHandlers/Room/Chat/ChatMessageHandler.cs
@@ -113,10 +113,10 @@ What to take from this:
   helper `AsActionContext()` used by handlers that drive room actions (movement,
   furniture) rather than chat.
 
-## Step 3 — The grain entry point (thin partial)
+## Step 3 â€” The grain entry point (thin partial)
 
 `RoomGrain` is a `sealed partial class` split across many files by concern
-(`RoomGrain.Avatar.cs`, `RoomGrain.Furni.cs`, `RoomGrain.Map.cs`, …). The chat entry
+(`RoomGrain.Avatar.cs`, `RoomGrain.Furni.cs`, `RoomGrain.Map.cs`, â€¦). The chat entry
 point is a one-line forward into a *system*:
 
 ```csharp
@@ -143,17 +143,17 @@ SecurityModule = new(this);
 MapModule     = new(this);
 ObjectModule  = new(this);
 AvatarModule  = new(this);
-// … ChatSystem, WiredSystem, RollerSystem, AvatarTickSystem, etc.
+// â€¦ ChatSystem, WiredSystem, RollerSystem, AvatarTickSystem, etc.
 ```
 
 > **Module vs System (convention observed in the code):** *Modules* own a slice of
 > grain state and the operations on it (avatars, furniture, map, security). *Systems*
 > are behavioral engines that run logic over that state (pathing, chat, roller, wired,
 > per-tick avatar updates). Both are plain classes holding a back-reference to the
-> grain — they are **not** separate grains, so calling them is an in-process method
+> grain â€” they are **not** separate grains, so calling them is an in-process method
 > call with no Orleans round-trip.
 
-## Step 4 — The system does the work
+## Step 4 â€” The system does the work
 
 ```csharp
 // Turbo.Rooms/Grains/Systems/RoomChatSystem.cs
@@ -200,16 +200,16 @@ public async Task SendChatAsync(
 
 Two things happen here:
 
-1. **Player → room object resolution.** The room tracks avatars by player id and by
+1. **Player â†’ room object resolution.** The room tracks avatars by player id and by
    room-object id. Chat is addressed to the *room object* (the avatar in the room),
    not the player, because that is what other clients render. If the player has no
    avatar in this room, the message is silently dropped.
 2. **An outgoing composer is built** (`ChatMessageComposer`). A *composer* is the
-   outgoing counterpart to an incoming message — it knows how to serialize itself to
+   outgoing counterpart to an incoming message â€” it knows how to serialize itself to
    the client. Composers live under
    `Turbo.Primitives/Messages/Outgoing/**`.
 
-## Step 5 — Publish to the stream (the pivot)
+## Step 5 â€” Publish to the stream (the pivot)
 
 ```csharp
 // Turbo.Rooms/Grains/RoomGrain.cs
@@ -217,12 +217,12 @@ public Task SendComposerToRoomAsync(IComposer composer) =>
     _roomOutbound.OnNextAsync(new RoomOutbound { RoomId = _state.RoomId, Composer = composer });
 ```
 
-`_roomOutbound` is an `IAsyncStream<RoomOutbound>` — an Orleans stream, set up when
+`_roomOutbound` is an `IAsyncStream<RoomOutbound>` â€” an Orleans stream, set up when
 the grain activates. The room's job ends here. It has announced "this composer should
 go to everyone in room X" and moved on. It does not know who is connected, how many
 sessions they have, or which silo they live on.
 
-## Step 6 — Presence grains receive and fan out
+## Step 6 â€” Presence grains receive and fan out
 
 When a player enters a room, their `PlayerPresenceGrain` **subscribes** to that room's
 outbound stream. This is the real subscription code:
@@ -243,12 +243,12 @@ receives is handed to its own delivery method, which calls down to the session l
 // Turbo.Players/Grains/PlayerPresenceGrain.cs  (shape)
 public Task SendComposerAsync(IComposer composer)
 {
-    // … resolves the player's live session(s) …
+    // â€¦ resolves the player's live session(s) â€¦
     return _sessionObserver.SendComposerAsync(payload);
 }
 ```
 
-## Step 7 — The session writes to the socket
+## Step 7 â€” The session writes to the socket
 
 `SessionObserver` / `SessionGateway` (in `Turbo.Networking/Session`) hold the live
 connection. `SendComposerAsync` serializes the composer for the player's client
@@ -258,7 +258,7 @@ revision and writes the framed bytes back to the socket. The chat bubble appears
 
 ## Why this indirection is worth it
 
-A naïve emulator (e.g. classic Arcturus) holds a list of connected users on the room
+A naÃ¯ve emulator (e.g. classic Arcturus) holds a list of connected users on the room
 object and loops over their sockets. That works on one process and falls apart the
 moment you want horizontal scale, because the room must know about every connection.
 
@@ -276,7 +276,7 @@ design, and this chat path is the clearest example of it in the codebase.
 
 ---
 
-## Quick reference — file map for this flow
+## Quick reference â€” file map for this flow
 
 | Step | File |
 |---|---|
@@ -288,3 +288,4 @@ design, and this chat path is the clearest example of it in the codebase.
 | Outgoing composer | `Turbo.Primitives/Messages/Outgoing/Room/Chat/ChatMessageComposer.cs` |
 | Stream subscribe + fan-out | `Turbo.Players/Grains/PlayerPresenceGrain.Room.cs`, `PlayerPresenceGrain.cs` |
 | Socket write | `Turbo.Networking/Session/SessionObserver.cs` |
+

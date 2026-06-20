@@ -1,239 +1,222 @@
-# Vortex Cloud — Prompts (couche d'exécution de la ROADMAP)
+# Vortex Cloud — Prompts (ROADMAP execution layer)
 
-Ce document est le **pont** entre la ROADMAP (le quoi/pourquoi) et le code. Chaque prompt
-est une *story* exécutable, façon BMAD : tu le donnes à Claude Code tel quel. Le principe de
-liaison :
+This document is the **bridge** between ROADMAP (what and why) and code. Each prompt is an
+executable *story* modeled after BMAD: you pass it directly to Claude Code. Design:
+- ROADMAP.md: what to do, in which order, and its Definition of Done
+- DATA-MODEL.md: exact tables/entities (source of record)
+- docs/walkthroughs: practical end-to-end wiring pattern in this repo
 
-```
-ROADMAP.md        →  quoi faire, dans quel ordre, et la Definition of Done
-DATA-MODEL.md     →  les tables/entités exactes (source autoritaire)
-docs/walkthroughs →  comment câbler une feature de bout en bout dans ce repo
-PROMPTS.md (ici)  →  l'instruction exécutable qui pointe vers les trois ci-dessus
-```
-
-> **Pourquoi les prompts sont courts.** Le DATA-MODEL et les walkthroughs portent déjà le
-> détail. Le job d'un prompt est de **pointer l'agent vers le doc autoritaire** et d'imposer
-> la **Definition of Done** de la roadmap — pas de tout réexpliquer. Un prompt qui recopie le
-> schéma est un prompt qui divergera du schéma.
+> **Why prompts are concise.** DATA-MODEL and walkthroughs already contain details. A prompt’s
+> job is to point the agent to authoritative documentation and enforce roadmap Definition of Done — not to
+> duplicate schema details. A prompt that restates the full schema is more likely to drift from schema.
 
 ---
 
-## Carte de liaison (Roadmap ↔ Prompt ↔ Docs ↔ Statut)
+## Mapping matrix (Roadmap ↔ Prompt ↔ Docs ↔ Status)
 
-| Epic / Story (ROADMAP) | Prompt | Lit en premier | Statut |
+| Epic / Story (ROADMAP) | Prompt | Read first | Status |
 |---|---|---|---|
-| 0 · stratégie d'erreur + 2.x wired | **P-WIRED** | DATA-MODEL §6 | ⬛ priorité n°1 |
-| 0.1 / 2.4 · harnais de test | **P-TEST** | DATA-MODEL, vertical-slice.md | ⬛ à faire |
-| 2 · permissions/modération | *(prompt déjà exécuté)* | — | ✅ sur `main` |
-| 3 · migration WebApi ASP.NET | *(prompt déjà fourni)* | — | 🟧 branche `feat/webapi-aspnetcore-migration` |
-| 5 · groupes | **P-GROUPS** | DATA-MODEL §2 | ⬛ à faire |
-| 4 · rentable space | **P-RENTABLE** | DATA-MODEL §3 | ⬛ à faire |
-| (gap) · pets | **P-PETS** | DATA-MODEL §4 | ⬛ à faire |
-| (gap) · bots | **P-BOTS** | DATA-MODEL §5 | ⬛ à faire |
-| 1 / 4 / 5 · remplissage handlers | **P-FILL** (template) | request-lifecycle.md, add-a-feature.md | ⬛ répétable |
-| 8 · metrics tiering | **P-METRICS** | DATA-MODEL §8 | ⬛ à faire |
+| 0 — error strategy + 2.x wired | **P-WIRED** | DATA-MODEL §6 | ⬛ highest priority |
+| 0.1 / 2.4 — test harness | **P-TEST** | DATA-MODEL, vertical-slice.md | ⬛ to do |
+| 2 — permissions/moderation | *(already executed prompt)* | — | ✅ in `main` |
+| 3 — WebApi ASP.NET migration | *(prompt already provided)* | — | 🟧 `feat/webapi-aspnetcore-migration` branch |
+| 5 — groups | **P-GROUPS** | DATA-MODEL §2 | ⬛ to do |
+| 4 — rentable space | **P-RENTABLE** | DATA-MODEL §3 | ⬛ to do |
+| (gap) — pets | **P-PETS** | DATA-MODEL §4 | ⬛ to do |
+| (gap) — bots | **P-BOTS** | DATA-MODEL §5 | ⬛ to do |
+| 1 / 4 / 5 — fill handlers | **P-FILL** (template) | request-lifecycle.md, add-a-feature.md | ⬛ repeatable |
+| 8 — metrics tiering | **P-METRICS** | DATA-MODEL §8 | ⬛ to do |
 
-**Ordre d'exécution conseillé :** P-WIRED → P-TEST → P-GROUPS → P-RENTABLE → P-PETS/P-BOTS →
-P-FILL (par domaine) → P-METRICS. (P-WIRED d'abord : c'est le seul qui corrige une perte de
-données actuelle.)
+**Execution order recommended:** P-WIRED → P-TEST → P-GROUPS → P-RENTABLE → P-PETS/P-BOTS →
+P-FILL (domain by domain) → P-METRICS. (P-WIRED first: it is the only task fixing currently persistent
+player data loss.)
 
-**Contrat « lire d'abord » commun à TOUS les prompts :** `CONTEXT.md` (frontières),
-`AGENTS.md` (definition of done du repo), et le walkthrough `docs/walkthroughs/request-lifecycle.md`
-(le flux handler→grain→stream). Les prompts ci-dessous l'ajoutent en une ligne, ne le répète pas.
-
----
-
-## P-WIRED — Corriger la persistance wired (PRIORITÉ N°1)
-
-```
-Implémente : ROADMAP Epic 0 (stratégie d'erreur) + le constat wired.
-Lis d'abord : DATA-MODEL.md §6, puis CONTEXT.md et docs/walkthroughs/request-lifecycle.md.
-
-Problème (déjà diagnostiqué, voir §6) : FurnitureWiredLogic utilise
-StuffPersistanceType.RoomActive, donc la config wired n'est PAS écrite en DB et se perd au
-déchargement de room / reboot. La colonne extra_data existe déjà et WiredData est déjà
-sérialisable JSON. Ce n'est pas un schéma à créer, c'est un mode de persistance à corriger.
-
-À faire :
-1. Faire persister la config wired : la furni wired sérialise son WiredData dans extra_data
-   et le recharge à l'activation de la room.
-2. Distinguer config (à persister : IntParams, StuffIds, StuffIds2, StringParam, VariableIds,
-   sources) de l'état runtime éphémère (compteurs « a déjà déclenché ») qui reste en mémoire.
-3. Choisir le bon mode : la donnée joueur durable doit être Persistent, pas RoomActive.
-
-Definition of Done : un test prouve le round-trip — poser un wired, le configurer, décharger
-la room, la recharger → la config est identique. Aucune autre furni n'est impactée.
-```
+**Common “read first” contract for all prompts:** `CONTEXT.md` (boundaries),
+`AGENTS.md` (repo DoD), and `docs/walkthroughs/request-lifecycle.md` (handler→grain→stream).
+The prompts below mention this once each and should not duplicate it.
 
 ---
 
-## P-TEST — Harnais de test sur les policies pures
+## P-WIRED — Fix wired persistence (PRIORITY #1)
 
 ```
-Implémente : ROADMAP Epic 0.1 / Story 2.4.
-Lis d'abord : docs/patterns/vertical-slice.md, le projet existant Turbo.WebApi.Tests (à
-calquer), puis CONTEXT.md.
+Implement: ROADMAP Epic 0 (error strategy) + wired diagnosis.
+Read first: DATA-MODEL.md §6, then CONTEXT.md and docs/walkthroughs/request-lifecycle.md.
 
-À faire :
-1. Nouveau projet Turbo.Permissions.Tests (xunit + FluentAssertions, comme Turbo.WebApi.Tests).
-2. Couvrir RoomSecurityPolicy.ResolveControllerLevel : System, superuser, ModerateAny,
-   BuildAny, owner explicite, rights, none.
-3. Couvrir ModerationPolicy.IsAllowed : chaque action × capability spécifique × ModerateAny ×
-   wildcard × refus.
-4. Ces tests tournent dans le quality gate.
+Problem (already diagnosed, see §6): FurnitureWiredLogic uses
+StuffPersistanceType.RoomActive, so wired config is NOT written to DB and is lost on room unload/reboot.
+extra_data exists and WiredData is already JSON-serializable. This is not a schema change; it is a persistence
+mode fix.
 
-Definition of Done : les branches de décision des deux policies sont couvertes, le gate
-exécute les tests. Échec d'un cas = build rouge.
+Actions:
+1. Persist wired config: wired furniture serializes its WiredData in extra_data and reloads it
+   when room activates.
+2. Separate persisted config (persist: IntParams, StuffIds, StuffIds2, StringParam, VariableIds,
+   sources) from ephemeral runtime state (counters like “already triggered”) that remains in memory.
+3. Choose correct persistence mode: durable player data must be Persistent, not RoomActive.
+
+Definition of Done: one test proves round-trip — place a wired item, configure it, unload the room,
+reload the room -> config is identical. No other wired furniture is impacted.
 ```
 
 ---
 
-## P-GROUPS — Entités groupes + migration
+## P-TEST — Test harness for pure policies
 
 ```
-Implémente : ROADMAP Epic 5 / Story 5.2.
-Lis d'abord : DATA-MODEL.md §2 (source autoritaire des tables), puis CONTEXT.md.
+Implement: ROADMAP Epic 0.1 / Story 2.4.
+Read first: docs/patterns/vertical-slice.md, existing Turbo.WebApi.Tests project (for pattern),
+then CONTEXT.md.
 
-À faire — générer EXACTEMENT les entités définies en §2, dans la convention du repo
-(TurboEntity, [Table]/[Column] snake_case, FK + required, enums dans
-Turbo.Primitives.Groups.Enums) :
+Actions:
+1. New project Turbo.Permissions.Tests (xunit + FluentAssertions, mirroring Turbo.WebApi.Tests).
+2. Cover RoomSecurityPolicy.ResolveControllerLevel: System, superuser, ModerateAny, BuildAny,
+   explicit owner, rights, none.
+3. Cover ModerationPolicy.IsAllowed: each action × specific capability × ModerateAny × wildcard × deny.
+4. Tests run in quality gate.
+
+Definition of Done: all decision branches of both policies covered; gate executes the tests.
+Any failing case must fail the build.
+```
+
+---
+
+## P-GROUPS — Group entities + migration
+
+```
+Implement: ROADMAP Epic 5 / Story 5.2.
+Read first: DATA-MODEL.md §2 (authoritative table source), then CONTEXT.md.
+
+Actions — generate EXACTLY the entities defined in §2, using repo conventions:
+TurboEntity, [Table]/[Column] snake_case, FK + required, enums in
+Turbo.Primitives.Groups.Enums:
 - GroupEntity, GroupMemberEntity, GroupMembershipRequestEntity, GroupForumSettingsEntity,
   GroupForumThreadEntity, GroupForumPostEntity.
-- Ajouter group_id (nullable) à RoomEntity.
-- Les enums du §2.8.
-- La migration EF correspondante.
-- Fluent API : OnDelete non-cascade sur la relation circulaire groups.room_id ↔ rooms.group_id
-  (voir l'avertissement §2.7).
-- À la création d'un groupe, créer la ligne group_forum_settings avec ses defaults
-  (invariant : 1 ligne par groupe).
+- Add nullable group_id to RoomEntity.
+- Enums in §2.8.
+- Corresponding EF migration.
+- Fluent API: non-cascade OnDelete for circular relation groups.room_id ↔ rooms.group_id
+  (see warning in §2.7).
+- On group creation, create one `group_forum_settings` row with defaults
+  (invariant: one row per group).
 
-Ne PAS recréer les tables messenger (amis existent déjà, §1). Ne PAS mettre les permissions
-de forum sur GroupEntity (elles vont dans GroupForumSettingsEntity, décision §2.4).
+Do not recreate messenger tables (friends already exist, §1). Do not place forum permissions
+on GroupEntity (they belong in GroupForumSettingsEntity, as decided in §2.4).
 
-Definition of Done : les entités compilent, la migration applique proprement, l'OnDelete
-non-cascade est en place, un test crée un groupe et vérifie sa ligne de settings.
+Definition of Done: entities compile, migration applies, non-cascade OnDelete configured, test creates
+a group and verifies its settings row.
 ```
 
 ---
 
-## P-RENTABLE — Rentable space (entités + logique)
+## P-RENTABLE — Rentable space (entities + behavior)
 
 ```
-Implémente : ROADMAP Epic 4 (économie).
-Lis d'abord : DATA-MODEL.md §3 (entités + mapping packet + règles source WIN63), puis
-CONTEXT.md et docs/walkthroughs/request-lifecycle.md.
+Implement: ROADMAP Epic 4 (economy).
+Read first: DATA-MODEL.md §3 (entities + packet mapping + WIN63 source behavior), then CONTEXT.md and
+docs/walkthroughs/request-lifecycle.md.
 
-À faire :
-- Entités §3 : RentableSpaceTermsEntity (termes sur le TYPE de furni), RoomRentableSpaceEntity
-  (état, 1 ligne/instance, MAJ en place), tag rentable_space_furniture_id sur FurnitureEntity.
-  Migration + FK.
-- Handlers rentSpace / cancelRent / getRentableSpaceStatus (furni id), câblés selon le flux
-  handler→grain. Le statut renvoie les champs du mapping §3.2.
-- Règles (source §3.4) : 1 locataire/espace ; 1 espace loué/joueur (vérifié via l'index
-  renter_player_id) ; annulation par owner de la furni OU staff niveau ≥ requis.
-- À la location : débiter via le ledger (economy_ledger) — c'est aussi l'historique, pas de
-  table dédiée (décision §3).
-- À l'expiration : rendre tous les meubles où rentable_space_furniture_id = X à l'inventaire
-  du locataire, puis null renter/rented_until. Bornes de placement vérifiées dans le grain.
+Actions:
+- Entities §3: RentableSpaceTermsEntity (terms on furniture type), RoomRentableSpaceEntity
+  (state, one row per instance, in-place updates), RentableSpaceFurnitureId tag on FurnitureEntity.
+  Create migration + FK.
+- Handlers rentSpace / cancelRent / getRentableSpaceStatus (furni id) wired through handler→grain flow.
+  Status returns fields from mapping §3.2.
+- Rules (source §3.4): one renter per space; one rentable space per player (enforced via index
+  renter_player_id); cancellation by furniture owner or staff with level ≥ threshold.
+- On rent: debit via ledger (`economy_ledger`) — this is also history; no dedicated table (decision §3).
+- On expiry: return all items where rentable_space_furniture_id = X to inventory for the renter,
+  then set renter / rented_until to null. Placement bounds validated in grain.
 
-Definition of Done : louer/annuler/expirer fonctionne, chaque location est une entrée de
-ledger, un joueur ne peut louer qu'un espace, les meubles reviennent à l'expiration. Tests sur
-ces invariants.
+Definition of Done: rent/cancel/expire works, each rent creates a ledger entry, one player cannot rent more
+than one space, furniture returns on expiry. Tests on these invariants.
 ```
 
 ---
 
-## P-PETS — Entités pets
+## P-PETS — Pets entities
 
 ```
-Implémente : ROADMAP (gap pets).
-Lis d'abord : DATA-MODEL.md §4 (pet + food + sous-systèmes), puis CONTEXT.md.
+Implement: ROADMAP (pets gap).
+Read first: DATA-MODEL.md §4 (pet + food + sub-systems), then CONTEXT.md.
 
-À faire :
-- PetEntity (§4) dans la convention du repo + migration. Stats avec defaults (level 1, xp 0,
-  respect 0). room_id nullable. Gender via AvatarGenderType.
-- PetFoodEntity (§4.1) : config food/produit (furniture_definition_id, pet_type, nutrition).
-- Logique de nourrissage (grain) : pet va vers la food → nutrition += pet_food.nutrition →
-  l'item-food est consommé.
-- Breeding optionnel : parent_one_id/parent_two_id si visé.
+Actions:
+- PetEntity (§4) in repo conventions + migration. Defaults: level 1, xp 0, respect 0.
+  Nullable room_id. Gender via AvatarGenderType.
+- PetFoodEntity (§4.1): food/product config (furniture_definition_id, pet_type, nutrition).
+- Feeding logic (grain): pet moves to food -> nutrition += pet_food.nutrition -> food item consumed.
+- Optional breeding: parent_one_id / parent_two_id if scoped.
 
-NE PAS modéliser commandes/niveaux/palettes maintenant (§4.2) — ce sont des chantiers
-séparés, food d'abord.
+Do not model commands/levels/palettes now (§4.2) — these are separate follow-up slices, food first.
 
-Definition of Done : un pet peut être créé, placé, remis en inventaire, et nourri (nutrition
-monte, food consommée). Test sur le nourrissage.
+Definition of Done: a pet can be created, placed, moved back to inventory, and fed (nutrition increases,
+food is consumed). Include feed test.
 ```
 
 ---
 
-## P-BOTS — Entités bots
+## P-BOTS — Bot entities
 
 ```
-Implémente : ROADMAP (gap bots).
-Lis d'abord : DATA-MODEL.md §5, puis CONTEXT.md.
+Implement: ROADMAP (bots gap).
+Read first: DATA-MODEL.md §5, then CONTEXT.md.
 
-À faire : générer BotEntity + BotMessageEntity (§5) + l'enum BotMessageMode, dans la convention
-du repo + migration. Commencer par identité + position + messages (random/keyword) ; ne PAS
-faire le serving d'items sauf si explicitement visé (table bot_serve_items optionnelle, §5.2).
+Actions: generate BotEntity + BotMessageEntity (§5) + BotMessageMode enum, with repo conventions + migration.
+Start with identity + position + messages (random/keyword); do NOT implement serving items unless explicitly
+in scope (optional table bot_serve_items, §5.2).
 
-Definition of Done : entités compilent, migration applique, un bot peut être posé avec des
-messages.
+Definition of Done: entities compile, migration applies, a bot can be placed with messages.
 ```
 
 ---
 
-## P-FILL — Remplir les handlers d'un domaine (TEMPLATE répétable)
+## P-FILL — Fill handlers in one domain (reusable template)
 
 ```
-Implémente : ROADMAP Epic 1 (cœur jouable) / 4 / 5, domaine = <DOMAINE>  (ex: Navigator, Room,
+Implement: ROADMAP Epic 1 (playable core) / 4 / 5, domain = <DOMAIN> (e.g. Navigator, Room,
 Inventory, RoomSettings…).
-Lis d'abord : docs/walkthroughs/request-lifecycle.md ET add-a-feature.md (le flux et le
-placement), docs/glossary.md au besoin, puis CONTEXT.md.
+Read first: docs/walkthroughs/request-lifecycle.md AND add-a-feature.md (flow and placement), docs/glossary.md as needed,
+then CONTEXT.md.
 
-À faire pour le domaine <DOMAINE> :
-1. Lister tous les handlers stub de Turbo.PacketHandlers/<DOMAINE> (ceux en
+Actions for domain <DOMAIN>:
+1. List all stub handlers in Turbo.PacketHandlers/<DOMAIN> (those ending with
    `await ValueTask.CompletedTask`).
-2. Les implémenter un par un selon le flux du walkthrough : handler = orchestration only,
-   résout le grain, délègue ; logique dans le grain/module ; broadcast via
-   SendComposerToRoomAsync ; jamais de DB ni de socket dans le handler.
-3. Gater chaque action sensible sur une capability (IPermissionService / RoomSecurityModule),
-   jamais sur un flag client.
-4. Auditer les actions à enjeu (event observability).
+2. Implement one by one following walkthrough flow: handler = orchestration only, resolves grain, delegates;
+   business logic lives in grain/module; broadcast via SendComposerToRoomAsync; never DB or socket work in handler.
+3. Gate every sensitive action by capability (IPermissionService / RoomSecurityModule), never by trusted client flag.
+4. Audit sensitive actions with observability events.
 
-Definition of Done (ROADMAP §5) : aucun nouveau stub ; le compteur de stubs du domaine a
-baissé ; les actions sensibles sont gatées et auditées ; le chemin jouable du domaine marche
-de bout en bout.
+Definition of Done (ROADMAP §5): no new stubs; stub count in domain decreased; sensitive actions are gated
+and audited; full end-to-end playable path for that domain.
 
-⚠ Lancer ce prompt UN domaine à la fois. Commencer par Navigator (8% — la porte d'entrée),
-puis Room, puis RoomSettings, puis Inventory.
+⚠ Execute this prompt for ONE domain at a time. Start with Navigator (8% — entry point),
+then Room, then RoomSettings, then Inventory.
 ```
 
 ---
 
-## P-METRICS — Tiering du stockage observability
+## P-METRICS — Observability storage tiering
 
 ```
-Implémente : ROADMAP Epic 8.
-Lis d'abord : DATA-MODEL.md §8, puis l'archi observability existante (Turbo.Observability).
+Implement: ROADMAP Epic 8.
+Read first: DATA-MODEL.md §8, then existing observability architecture (Turbo.Observability).
 
-À faire (décision §8 : NE PAS fusionner les tables, tiérer) :
-1. Garder en MySQL : economy_ledger, item_events, audit_events (vérité transactionnelle).
-2. Router la télémétrie haut volume (perf, métriques serveur) vers le meter
-   System.Diagnostics.Metrics déjà en place → exporter OTel/Prometheus.
-3. Évaluer la suppression de performance_logs (logging client legacy, flash_version) au profit
-   de la vraie observability.
-4. Appliquer la rétention/purge RGPD sur audit_events (Epic 7 / Story 7.1).
+Actions (decision §8: DO NOT merge tables, tier by pattern):
+1. Keep in MySQL: economy_ledger, item_events, audit_events (transactional truth).
+2. Route high-volume telemetry (perf + server metrics) to `System.Diagnostics.Metrics` meter and export
+   to OTel/Prometheus.
+3. Evaluate whether `performance_logs` should be removed (legacy client logging, flash_version) and switch to
+   real observability.
+4. Apply RGPD retention/purge for audit_events (Epic 7 / Story 7.1).
 
-Definition of Done : la télémétrie haut volume ne tape plus la DB transactionnelle, la
-rétention d'audit est en place, performance_logs est tranchée (gardée justifiée ou supprimée).
+Definition of Done: high-volume telemetry no longer hits transactional DB, audit retention is implemented,
+performance_logs is resolved (kept with justification or removed).
 ```
 
 ---
 
-## Note de maintenance
+## Maintenance note
 
-Quand une table change dans DATA-MODEL.md ou une story dans ROADMAP.md, **le prompt n'a pas à
-changer** — il pointe vers le doc. C'est l'intérêt de la liaison : une seule source de vérité
-par sujet. Mettre à jour la carte de liaison ci-dessus (colonne Statut) au fil de l'avancement.
-```
-
+When a table changes in DATA-MODEL.md or a story changes in ROADMAP.md, **the prompt itself must not change** —
+it points to authoritative documentation. This is the point: one source of truth per topic.
+Update the mapping matrix above (Status column) as work progresses.
