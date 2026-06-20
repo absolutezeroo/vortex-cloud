@@ -13,6 +13,11 @@ public sealed class CurrencyChangedLedgerHandler(IEconomyLedger ledger)
 {
     public ValueTask HandleAsync(CurrencyChangedEvent e, EventContext ctx, CancellationToken ct)
     {
+        if (e.Delta == 0)
+        {
+            return ValueTask.CompletedTask;
+        }
+
         ledger.Record(
             new EconomyLedgerEvent
             {

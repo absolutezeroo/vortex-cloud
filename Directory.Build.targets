@@ -6,6 +6,10 @@
       Command="dotnet build Turbo.Main/Turbo.Main.csproj --no-restore"
       WorkingDirectory="$(MSBuildThisFileDirectory)"
     />
+    <Exec
+      Command="dotnet test Turbo.Cloud.sln --no-restore"
+      WorkingDirectory="$(MSBuildThisFileDirectory)"
+    />
   </Target>
 
   <Target Name="TurboCloudAiGovernanceCheck" Condition="'$(MSBuildProjectName)' == 'Turbo.Main'">

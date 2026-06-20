@@ -13,7 +13,10 @@
     <PackageReference Include="FluentAssertions" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Turbo.Events\Turbo.Events.csproj" />
     <ProjectReference Include="..\Turbo.Furniture\Turbo.Furniture.csproj" />
+    <ProjectReference Include="..\Turbo.Observability\Turbo.Observability.csproj" />
+    <ProjectReference Include="..\Turbo.Primitives\Turbo.Primitives.csproj" />
     <ProjectReference Include="..\Turbo.Rooms\Turbo.Rooms.csproj" />
   </ItemGroup>
 </Project>
