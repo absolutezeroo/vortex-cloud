@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -229,8 +230,7 @@ internal sealed class DashboardWebHost(
                     {
                         new OpenApiSecuritySchemeReference(
                             DashboardAuthenticationHandler.SchemeName,
-                            document,
-                            null!
+                            document
                         ),
                         new List<string>()
                     }
