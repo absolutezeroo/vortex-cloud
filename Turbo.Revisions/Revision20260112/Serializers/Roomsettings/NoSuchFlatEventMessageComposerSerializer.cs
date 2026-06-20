@@ -1,7 +1,7 @@
 using Turbo.Primitives.Messages.Outgoing.Roomsettings;
 using Turbo.Primitives.Packets;
 
-namespace Turbo.Revisions.Revision20260112.Serializers.Roomsettings;
+namespace Turbo.Revisions.Revision20260112.Serializers.RoomSettings;
 
 internal class NoSuchFlatEventMessageComposerSerializer(int header)
     : AbstractSerializer<NoSuchFlatEventMessageComposer>(header)

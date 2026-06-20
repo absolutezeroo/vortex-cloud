@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Friendfurni;
 
-namespace Turbo.PacketHandlers.Friendfurni;
+namespace Turbo.PacketHandlers.FriendFurni;
 
 public class FriendFurniConfirmLockMessageHandler : IMessageHandler<FriendFurniConfirmLockMessage>
 {

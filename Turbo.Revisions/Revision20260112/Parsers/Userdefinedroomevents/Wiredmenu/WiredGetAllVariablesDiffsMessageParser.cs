@@ -4,7 +4,7 @@ using Turbo.Primitives.Networking;
 using Turbo.Primitives.Packets;
 using Turbo.Primitives.Rooms.Wired.Variable;
 
-namespace Turbo.Revisions.Revision20260112.Parsers.Userdefinedroomevents.Wiredmenu;
+namespace Turbo.Revisions.Revision20260112.Parsers.UserDefinedRoomEvents.Wiredmenu;
 
 internal class WiredGetAllVariablesDiffsMessageParser : IParser
 {

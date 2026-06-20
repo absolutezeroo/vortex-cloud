@@ -9,7 +9,7 @@ using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Rooms.Enums.Wired;
 using Turbo.Primitives.Rooms.Snapshots.Wired;
 
-namespace Turbo.PacketHandlers.Userdefinedroomevents;
+namespace Turbo.PacketHandlers.UserDefinedRoomEvents;
 
 public class OpenMessageHandler(IGrainFactory grainFactory) : IMessageHandler<OpenMessage>
 {

@@ -1,7 +1,7 @@
 using Turbo.Primitives.Messages.Outgoing.Landingview;
 using Turbo.Primitives.Packets;
 
-namespace Turbo.Revisions.Revision20260112.Serializers.Landingview;
+namespace Turbo.Revisions.Revision20260112.Serializers.LandingView;
 
 internal class PromoArticlesMessageComposerSerializer(int header)
     : AbstractSerializer<PromoArticlesMessageComposer>(header)

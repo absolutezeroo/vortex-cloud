@@ -1,8 +1,8 @@
 using Turbo.Primitives.Messages.Outgoing.Userdefinedroomevents;
 using Turbo.Primitives.Packets;
-using Turbo.Revisions.Revision20260112.Serializers.Userdefinedroomevents.Data;
+using Turbo.Revisions.Revision20260112.Serializers.UserDefinedRoomEvents.Data;
 
-namespace Turbo.Revisions.Revision20260112.Serializers.Userdefinedroomevents;
+namespace Turbo.Revisions.Revision20260112.Serializers.UserDefinedRoomEvents;
 
 internal class WiredFurniActionEventMessageComposerSerializer(int header)
     : AbstractSerializer<WiredFurniActionEventMessageComposer>(header)

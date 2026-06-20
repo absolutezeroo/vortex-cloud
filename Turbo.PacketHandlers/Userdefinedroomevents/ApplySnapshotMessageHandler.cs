@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Userdefinedroomevents;
 
-namespace Turbo.PacketHandlers.Userdefinedroomevents;
+namespace Turbo.PacketHandlers.UserDefinedRoomEvents;
 
 public class ApplySnapshotMessageHandler : IMessageHandler<ApplySnapshotMessage>
 {

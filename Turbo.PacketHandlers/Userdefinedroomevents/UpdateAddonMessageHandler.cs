@@ -6,7 +6,7 @@ using Turbo.Primitives.Messages.Incoming.Userdefinedroomevents;
 using Turbo.Primitives.Messages.Outgoing.Userdefinedroomevents;
 using Turbo.Primitives.Orleans;
 
-namespace Turbo.PacketHandlers.Userdefinedroomevents;
+namespace Turbo.PacketHandlers.UserDefinedRoomEvents;
 
 public class UpdateAddonMessageHandler(IGrainFactory grainFactory)
     : IMessageHandler<UpdateAddonMessage>

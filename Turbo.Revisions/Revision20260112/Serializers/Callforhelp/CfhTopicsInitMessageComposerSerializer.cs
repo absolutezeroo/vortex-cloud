@@ -1,7 +1,7 @@
 using Turbo.Primitives.Messages.Outgoing.Callforhelp;
 using Turbo.Primitives.Packets;
 
-namespace Turbo.Revisions.Revision20260112.Serializers.Callforhelp;
+namespace Turbo.Revisions.Revision20260112.Serializers.CallForHelp;
 
 internal class CfhTopicsInitMessageComposerSerializer(int header)
     : AbstractSerializer<CfhTopicsInitMessageComposer>(header)

@@ -7,7 +7,7 @@ using Turbo.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Rooms.Snapshots.Wired.Variables;
 
-namespace Turbo.PacketHandlers.Userdefinedroomevents.Wiredmenu;
+namespace Turbo.PacketHandlers.UserDefinedRoomEvents.Wiredmenu;
 
 public class WiredGetAllVariablesHashMessageHandler(IGrainFactory grainFactory)
     : IMessageHandler<WiredGetAllVariablesHashMessage>

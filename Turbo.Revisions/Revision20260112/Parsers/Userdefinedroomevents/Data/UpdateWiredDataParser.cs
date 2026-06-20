@@ -5,7 +5,7 @@ using Turbo.Primitives.Networking;
 using Turbo.Primitives.Packets;
 using Turbo.Primitives.Rooms.Enums.Wired;
 
-namespace Turbo.Revisions.Revision20260112.Parsers.Userdefinedroomevents.Data;
+namespace Turbo.Revisions.Revision20260112.Parsers.UserDefinedRoomEvents.Data;
 
 internal abstract class UpdateWiredDataParser : IParser
 {

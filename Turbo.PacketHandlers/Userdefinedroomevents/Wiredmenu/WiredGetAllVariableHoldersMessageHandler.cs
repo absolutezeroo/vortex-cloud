@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredmenu;
 
-namespace Turbo.PacketHandlers.Userdefinedroomevents.Wiredmenu;
+namespace Turbo.PacketHandlers.UserDefinedRoomEvents.Wiredmenu;
 
 public class WiredGetAllVariableHoldersMessageHandler
     : IMessageHandler<WiredGetAllVariableHoldersMessage>

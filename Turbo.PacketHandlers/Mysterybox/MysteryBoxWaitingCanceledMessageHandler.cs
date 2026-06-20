@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Mysterybox;
 
-namespace Turbo.PacketHandlers.Mysterybox;
+namespace Turbo.PacketHandlers.MysteryBox;
 
 public class MysteryBoxWaitingCanceledMessageHandler
     : IMessageHandler<MysteryBoxWaitingCanceledMessage>

@@ -10,7 +10,7 @@ using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Rooms.Snapshots.Wired.Variables;
 using Turbo.Primitives.Rooms.Wired.Variable;
 
-namespace Turbo.PacketHandlers.Userdefinedroomevents.Wiredmenu;
+namespace Turbo.PacketHandlers.UserDefinedRoomEvents.Wiredmenu;
 
 public class WiredGetAllVariablesDiffsMessageHandler(IGrainFactory grainFactory)
     : IMessageHandler<WiredGetAllVariablesDiffsMessage>

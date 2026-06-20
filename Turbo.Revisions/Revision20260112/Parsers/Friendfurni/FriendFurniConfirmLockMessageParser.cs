@@ -2,7 +2,7 @@ using Turbo.Primitives.Messages.Incoming.Friendfurni;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Packets;
 
-namespace Turbo.Revisions.Revision20260112.Parsers.Friendfurni;
+namespace Turbo.Revisions.Revision20260112.Parsers.FriendFurni;
 
 internal class FriendFurniConfirmLockMessageParser : IParser
 {

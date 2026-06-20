@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Userclassification;
 
-namespace Turbo.PacketHandlers.Userclassification;
+namespace Turbo.PacketHandlers.UserClassification;
 
 public class PeerUsersClassificationMessageHandler : IMessageHandler<PeerUsersClassificationMessage>
 {

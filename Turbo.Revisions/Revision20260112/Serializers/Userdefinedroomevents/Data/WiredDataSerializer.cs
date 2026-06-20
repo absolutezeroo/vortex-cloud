@@ -5,7 +5,7 @@ using Turbo.Primitives.Rooms.Snapshots.Wired;
 using Turbo.Primitives.Rooms.Snapshots.Wired.Variables;
 using Turbo.Primitives.Rooms.Wired.Variable;
 
-namespace Turbo.Revisions.Revision20260112.Serializers.Userdefinedroomevents.Data;
+namespace Turbo.Revisions.Revision20260112.Serializers.UserDefinedRoomEvents.Data;
 
 internal class WiredDataSerializer
 {

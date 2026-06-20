@@ -1,7 +1,7 @@
 using Turbo.Primitives.Messages.Outgoing.Friendfurni;
 using Turbo.Primitives.Packets;
 
-namespace Turbo.Revisions.Revision20260112.Serializers.Friendfurni;
+namespace Turbo.Revisions.Revision20260112.Serializers.FriendFurni;
 
 internal class FriendFurniCancelLockMessageComposerSerializer(int header)
     : AbstractSerializer<FriendFurniCancelLockMessageComposer>(header)

@@ -2,7 +2,7 @@ using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Outgoing.Groupforums;
 using Turbo.Primitives.Packets;
 
-namespace Turbo.Revisions.Revision20260112.Serializers.Groupforums;
+namespace Turbo.Revisions.Revision20260112.Serializers.GroupForums;
 
 internal class UpdateThreadMessageComposerSerializer(int header)
     : AbstractSerializer<UpdateThreadMessageComposer>(header)

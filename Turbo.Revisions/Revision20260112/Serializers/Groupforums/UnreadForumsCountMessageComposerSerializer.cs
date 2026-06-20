@@ -1,7 +1,7 @@
 using Turbo.Primitives.Messages.Outgoing.Groupforums;
 using Turbo.Primitives.Packets;
 
-namespace Turbo.Revisions.Revision20260112.Serializers.Groupforums;
+namespace Turbo.Revisions.Revision20260112.Serializers.GroupForums;
 
 internal class UnreadForumsCountMessageComposerSerializer(int header)
     : AbstractSerializer<UnreadForumsCountMessageComposer>(header)

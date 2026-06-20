@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Roomdirectory;
 
-namespace Turbo.PacketHandlers.Roomdirectory;
+namespace Turbo.PacketHandlers.RoomDirectory;
 
 public class RoomNetworkOpenConnectionMessageHandler
     : IMessageHandler<RoomNetworkOpenConnectionMessage>

@@ -1,7 +1,7 @@
 using Turbo.Primitives.Messages.Outgoing.Userdefinedroomevents;
 using Turbo.Primitives.Packets;
 
-namespace Turbo.Revisions.Revision20260112.Serializers.Userdefinedroomevents;
+namespace Turbo.Revisions.Revision20260112.Serializers.UserDefinedRoomEvents;
 
 internal class OpenEventMessageComposerSerializer(int header)
     : AbstractSerializer<OpenEventMessageComposer>(header)

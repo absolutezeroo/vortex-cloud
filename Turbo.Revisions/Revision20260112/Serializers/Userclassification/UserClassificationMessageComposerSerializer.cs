@@ -1,7 +1,7 @@
 using Turbo.Primitives.Messages.Outgoing.Userclassification;
 using Turbo.Primitives.Packets;
 
-namespace Turbo.Revisions.Revision20260112.Serializers.Userclassification;
+namespace Turbo.Revisions.Revision20260112.Serializers.UserClassification;
 
 internal class UserClassificationMessageComposerSerializer(int header)
     : AbstractSerializer<UserClassificationMessageComposer>(header)

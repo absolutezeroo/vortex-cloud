@@ -3,7 +3,7 @@ using Turbo.Primitives.Packets;
 using Turbo.Primitives.Rooms.Enums.Wired;
 using Turbo.Primitives.Rooms.Wired.Variable;
 
-namespace Turbo.Revisions.Revision20260112.Serializers.Userdefinedroomevents.Wiredmenu;
+namespace Turbo.Revisions.Revision20260112.Serializers.UserDefinedRoomEvents.Wiredmenu;
 
 internal class WiredVariablesForObjectEventMessageComposerSerializer(int header)
     : AbstractSerializer<WiredVariablesForObjectEventMessageComposer>(header)

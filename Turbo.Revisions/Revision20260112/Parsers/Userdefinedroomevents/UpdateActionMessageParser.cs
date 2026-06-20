@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using Turbo.Primitives.Messages.Incoming.Userdefinedroomevents;
 using Turbo.Primitives.Packets;
-using Turbo.Revisions.Revision20260112.Parsers.Userdefinedroomevents.Data;
+using Turbo.Revisions.Revision20260112.Parsers.UserDefinedRoomEvents.Data;
 
-namespace Turbo.Revisions.Revision20260112.Parsers.Userdefinedroomevents;
+namespace Turbo.Revisions.Revision20260112.Parsers.UserDefinedRoomEvents;
 
 internal class UpdateActionMessageParser : UpdateWiredDataParser, IParser
 {

@@ -1,7 +1,7 @@
 using Turbo.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 using Turbo.Primitives.Packets;
 
-namespace Turbo.Revisions.Revision20260112.Serializers.Userdefinedroomevents.Wiredmenu;
+namespace Turbo.Revisions.Revision20260112.Serializers.UserDefinedRoomEvents.Wiredmenu;
 
 internal class WiredRoomSettingsEventMessageComposerSerializer(int header)
     : AbstractSerializer<WiredRoomSettingsEventMessageComposer>(header)
