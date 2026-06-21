@@ -137,6 +137,16 @@ public sealed partial class RoomGrain
             _state.ItemsById.TryGetValue(itemId, out IRoomItem? item) ? item.GetSnapshot() : null
         );
 
+    public async Task SetFloorItemStateAsync(RoomObjectId itemId, int state, CancellationToken ct)
+    {
+        if (!_state.ItemsById.TryGetValue(itemId, out IRoomItem? item))
+        {
+            return;
+        }
+
+        await item.Logic.SetStateAsync(state);
+    }
+
     private async Task FlushDirtyItemsAsync(CancellationToken ct)
     {
         if (_state.DirtyItemIds.Count == 0)

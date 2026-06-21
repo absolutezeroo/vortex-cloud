@@ -13,7 +13,9 @@ using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players.Enums;
 using Turbo.Primitives.Players.Enums.Wallet;
 using Turbo.Primitives.Players.Wallet;
+using Turbo.Primitives.Rooms;
 using Turbo.Primitives.Rooms.Enums;
+using Turbo.Primitives.Rooms.Object;
 using Turbo.Primitives.Rooms.Grains;
 using Turbo.Primitives.Rooms.Snapshots;
 
@@ -37,6 +39,7 @@ internal sealed class RentableSpaceGrain(
 
     // Cold config (loaded once, never mutated at runtime).
     private RentableSpaceTermsEntity? _terms;
+    private RoomId? _roomId;
     private int FurnitureId => (int)this.GetPrimaryKeyLong();
 
     public Task<RentableSpaceStatusSnapshot> GetStatusAsync(
@@ -200,6 +203,7 @@ internal sealed class RentableSpaceGrain(
 
         _renterName = renterName;
         ScheduleExpiryTimer(rentedUntil);
+        await SetVisualStateAsync(3, ct);
 
         return null; // success
     }
@@ -263,10 +267,13 @@ internal sealed class RentableSpaceGrain(
                 ct
             );
 
-        int? definitionId = await db
+        var furniRow = await db
             .Furnitures.Where(f => f.Id == FurnitureId)
-            .Select(f => (int?)f.FurnitureDefinitionEntityId)
+            .Select(f => new { f.FurnitureDefinitionEntityId, f.RoomEntityId })
             .FirstOrDefaultAsync(ct);
+
+        int? definitionId = furniRow?.FurnitureDefinitionEntityId;
+        _roomId = furniRow?.RoomEntityId;
 
         if (definitionId.HasValue)
         {
@@ -343,6 +350,7 @@ internal sealed class RentableSpaceGrain(
         }
 
         _renterName = string.Empty;
+        await SetVisualStateAsync(0, CancellationToken.None);
 
         // Push an updated (free) status composer to the renter so the client UI refreshes.
         try
@@ -391,5 +399,29 @@ internal sealed class RentableSpaceGrain(
             delay,
             Timeout.InfiniteTimeSpan
         );
+    }
+
+    private async Task SetVisualStateAsync(int state, CancellationToken ct)
+    {
+        if (_roomId is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await grainFactory
+                .GetRoomGrain(new RoomId(_roomId.Value))
+                .SetFloorItemStateAsync(new RoomObjectId(FurnitureId), state, ct);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(
+                ex,
+                "Failed to set visual state {State} for rentable space furni {FurniId}",
+                state,
+                FurnitureId
+            );
+        }
     }
 }

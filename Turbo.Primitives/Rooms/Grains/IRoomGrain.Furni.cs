@@ -34,4 +34,10 @@ public partial interface IRoomGrain
         RoomObjectId itemId,
         CancellationToken ct
     );
+
+    /// <summary>
+    /// Sets the logical state of a floor item and broadcasts the visual update to all
+    /// room occupants. No-op if the item is not found or not in this room.
+    /// </summary>
+    public Task SetFloorItemStateAsync(RoomObjectId itemId, int state, CancellationToken ct);
 }
