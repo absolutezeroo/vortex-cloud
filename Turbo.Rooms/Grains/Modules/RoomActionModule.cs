@@ -94,11 +94,8 @@ public sealed partial class RoomActionModule(RoomGrain roomGrain)
         if (!canUse)
         {
             canUse =
-                await _roomGrain.SecurityModule.FindRentedSpaceForOwnedItemAsync(
-                    ctx,
-                    itemId,
-                    ct
-                ) is not null;
+                await _roomGrain.SecurityModule.FindRentedSpaceForOwnedItemAsync(ctx, itemId, ct)
+                    is not null;
         }
 
         if (!canUse || !await _roomGrain.FurniModule.UseItemByIdAsync(ctx, itemId, ct, param))

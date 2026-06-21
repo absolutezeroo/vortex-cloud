@@ -97,11 +97,11 @@ public sealed partial class RoomActionModule
         {
             try
             {
-                await using TurboDbContext db = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct);
+                await using TurboDbContext db = await _roomGrain._dbCtxFactory.CreateDbContextAsync(
+                    ct
+                );
                 await db
-                    .Furnitures.Where(f =>
-                        f.Id == floorItem.ObjectId.Value && f.DeletedAt == null
-                    )
+                    .Furnitures.Where(f => f.Id == floorItem.ObjectId.Value && f.DeletedAt == null)
                     .ExecuteUpdateAsync(
                         s =>
                             s.SetProperty(
@@ -156,7 +156,15 @@ public sealed partial class RoomActionModule
     {
         if (await _roomGrain.SecurityModule.CanManipulateFurniAsync(ctx))
         {
-            if (!await _roomGrain.FurniModule.ValidateFloorItemPlacementAsync(ctx, itemId, x, y, rot))
+            if (
+                !await _roomGrain.FurniModule.ValidateFloorItemPlacementAsync(
+                    ctx,
+                    itemId,
+                    x,
+                    y,
+                    rot
+                )
+            )
             {
                 throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
             }

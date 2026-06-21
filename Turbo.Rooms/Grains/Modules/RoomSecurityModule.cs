@@ -123,7 +123,8 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
         int furnitureId = await (
             from rrs in db.RoomRentableSpaces.AsNoTracking()
             join f in db.Furnitures.AsNoTracking() on rrs.FurnitureEntityId equals f.Id
-            where rrs.RenterPlayerEntityId == playerId
+            where
+                rrs.RenterPlayerEntityId == playerId
                 && rrs.DeletedAt == null
                 && rrs.RentedUntil > now
                 && f.RoomEntityId == roomId
