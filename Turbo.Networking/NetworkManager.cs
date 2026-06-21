@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +11,6 @@ using SuperSocket.ProtoBase;
 using SuperSocket.Server.Abstractions;
 using SuperSocket.Server.Abstractions.Host;
 using SuperSocket.Server.Host;
-using SuperSocket.WebSocket;
 using SuperSocket.WebSocket.Server;
 using Turbo.Messages;
 using Turbo.Networking.Configuration;
@@ -35,14 +35,21 @@ public sealed class NetworkManager(
 ) : INetworkManager
 {
     private readonly NetworkingConfig _config = config.Value;
-    private readonly ISessionGateway _sessionGateway = sessionGateway;
-    private readonly IRevisionManager _revisionManager = revisionManager;
-    private readonly MessageSystem _messageSystem = messageSystem;
-    private readonly ILoggerFactory _loggerFactory = loggerFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly ILogger<NetworkManager> _logger = loggerFactory.CreateLogger<NetworkManager>();
+    private readonly ILoggerFactory _loggerFactory = loggerFactory;
+    private readonly MessageSystem _messageSystem = messageSystem;
+    private readonly IPackageEncoder<OutgoingPackage> _packageEncoder = new PackageEncoder(
+        revisionManager,
+        loggerFactory.CreateLogger<PackageEncoder>()
+    );
+    private readonly IRevisionManager _revisionManager = revisionManager;
+    private readonly ISessionGateway _sessionGateway = sessionGateway;
 
-    private readonly object _tcpGate = new();
-    private readonly object _wsGate = new();
+    private readonly Lock _tcpGate = new();
+    private readonly Lock _wsGate = new();
+
+    private readonly ConcurrentDictionary<string, WebSocketSessionContext> _wsSessions = new();
 
     private IHost? _tcpHost;
     private IHost? _wsHost;
@@ -126,19 +133,73 @@ public sealed class NetworkManager(
 
         builder.ConfigureServerOptions((ctx, config) => config.GetSection("WebSocketServer"));
         builder.ConfigureLogging((ctx, logging) => logging.ClearProviders());
+        builder.ConfigureServices((ctx, services) => ConfigureCommonServices(services));
 
-        builder.ConfigureServices(
-            (ctx, services) =>
+        ClientPacketDecoder decoder = new();
+        PackageHandler packageHandler = new(
+            _revisionManager,
+            _messageSystem,
+            _loggerFactory.CreateLogger<PackageHandler>()
+        );
+        WsPackageHandler wsPackageHandler = new(decoder, packageHandler);
+
+        builder.UseSessionHandler(
+            async session =>
             {
-                ConfigureCommonServices(services);
+                WebSocketSession wsSession = (WebSocketSession)session;
+                WebSocketSessionContext context = new(
+                    wsSession,
+                    _packageEncoder,
+                    _loggerFactory.CreateLogger<WebSocketSessionContext>()
+                );
 
-                services.AddSingleton<IPackageHandler<WebSocketPackage>, WsPackageHandler>();
+                context.SetRevisionId(_revisionManager.DefaultRevisionId);
+                _wsSessions[session.SessionID] = context;
+
+                await _sessionGateway
+                    .AddSessionAsync(context.SessionKey, context)
+                    .ConfigureAwait(false);
+
+                _logger.LogInformation(
+                    "WebSocket session connected: {SessionId}",
+                    session.SessionID
+                );
+            },
+            async (session, e) =>
+            {
+                if (_wsSessions.TryRemove(session.SessionID, out WebSocketSessionContext? context))
+                {
+                    await _sessionGateway
+                        .RemoveSessionAsync(context.SessionKey, CancellationToken.None)
+                        .ConfigureAwait(false);
+                    context.Dispose();
+                }
+
+                _logger.LogInformation(
+                    "WebSocket session disconnected: {SessionId}",
+                    session.SessionID
+                );
             }
         );
 
-        builder.UseSession<SessionContext>();
-        builder.UseSessionGateway();
-        //builder.UsePingPong();
+        builder.UseWebSocketMessageHandler(
+            async (session, message) =>
+            {
+                if (
+                    !_wsSessions.TryGetValue(
+                        session.SessionID,
+                        out WebSocketSessionContext? context
+                    )
+                )
+                {
+                    return;
+                }
+
+                await wsPackageHandler
+                    .HandleManualAsync(context, message, CancellationToken.None)
+                    .ConfigureAwait(false);
+            }
+        );
 
         _wsHost = builder.Build();
     }

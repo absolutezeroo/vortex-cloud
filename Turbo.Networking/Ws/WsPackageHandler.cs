@@ -5,19 +5,21 @@ using System.Threading.Tasks;
 using SuperSocket.Server.Abstractions;
 using SuperSocket.Server.Abstractions.Session;
 using SuperSocket.WebSocket;
+using Turbo.Networking.Package;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Packets;
 
 namespace Turbo.Networking.Ws;
 
-internal sealed class WsPackageHandler(
-    IClientPacketDecoder decoder,
-    IPackageHandler<IClientPacket> inner
-) : IPackageHandler<WebSocketPackage>
+internal sealed class WsPackageHandler(IClientPacketDecoder decoder, PackageHandler inner)
+    : IPackageHandler<WebSocketPackage>
 {
     private readonly IClientPacketDecoder _decoder = decoder;
-    private readonly IPackageHandler<IClientPacket> _inner = inner;
+    private readonly PackageHandler _inner = inner;
 
+    /// <summary>
+    ///     Standard handler for DI-based sessions.
+    /// </summary>
     public async ValueTask Handle(
         IAppSession session,
         WebSocketPackage package,
@@ -31,6 +33,35 @@ internal sealed class WsPackageHandler(
             return;
         }
 
+        await ProcessPackageAsync(ctx, package, ct).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    ///     Handler for WebSocket transports that keep the Turbo session context separate
+    ///     from the SuperSocket session object.
+    /// </summary>
+    public async ValueTask HandleManualAsync(
+        ISessionContext ctx,
+        WebSocketPackage package,
+        CancellationToken ct
+    )
+    {
+        ArgumentNullException.ThrowIfNull(package);
+
+        if (package.OpCode != OpCode.Binary)
+        {
+            return;
+        }
+
+        await ProcessPackageAsync(ctx, package, ct).ConfigureAwait(false);
+    }
+
+    private async ValueTask ProcessPackageAsync(
+        ISessionContext ctx,
+        WebSocketPackage package,
+        CancellationToken ct
+    )
+    {
         foreach (ReadOnlyMemory<byte> segment in package.Data)
         {
             ctx.WsBuffer?.Write(segment.Span);
@@ -59,10 +90,16 @@ internal sealed class WsPackageHandler(
                 break;
             }
 
-            ctx.WsBuffer.Clear();
-            ctx.WsBuffer.Write(ctx.WsBuffer.WrittenSpan[(int)reader.Consumed..]);
+            byte[] remaining = ctx.WsBuffer.WrittenSpan[(int)reader.Consumed..].ToArray();
 
-            await _inner.Handle(session, packet, ct).ConfigureAwait(false);
+            ctx.WsBuffer.Clear();
+
+            if (remaining.Length > 0)
+            {
+                ctx.WsBuffer.Write(remaining);
+            }
+
+            await _inner.HandleAsync(ctx, packet, ct).ConfigureAwait(false);
         }
     }
 }

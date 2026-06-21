@@ -8,8 +8,7 @@ using Turbo.Primitives.Observability;
 namespace Turbo.Observability.Events;
 
 /// <summary>Records the start of a rental in the audit log.</summary>
-public sealed class RentalStartedAuditHandler(IAuditSink audit)
-    : IEventHandler<RentalStartedEvent>
+public sealed class RentalStartedAuditHandler(IAuditSink audit) : IEventHandler<RentalStartedEvent>
 {
     public ValueTask HandleAsync(RentalStartedEvent e, EventContext ctx, CancellationToken ct)
     {
@@ -39,8 +38,7 @@ public sealed class RentalStartedAuditHandler(IAuditSink audit)
 }
 
 /// <summary>Records a natural rental expiry in the audit log.</summary>
-public sealed class RentalExpiredAuditHandler(IAuditSink audit)
-    : IEventHandler<RentalExpiredEvent>
+public sealed class RentalExpiredAuditHandler(IAuditSink audit) : IEventHandler<RentalExpiredEvent>
 {
     public ValueTask HandleAsync(RentalExpiredEvent e, EventContext ctx, CancellationToken ct)
     {

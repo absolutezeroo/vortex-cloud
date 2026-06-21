@@ -860,9 +860,7 @@ internal sealed class DashboardApiService(
 
                 IQueryable<AuditEventEntity> q = db
                     .AuditEvents.AsNoTracking()
-                    .Where(a =>
-                        a.Category == AuditCategory.RentableSpace && a.DeletedAt == null
-                    );
+                    .Where(a => a.Category == AuditCategory.RentableSpace && a.DeletedAt == null);
 
                 if (since is not null)
                 {
@@ -888,8 +886,7 @@ internal sealed class DashboardApiService(
 
                 int total = await q.CountAsync(ct).ConfigureAwait(false);
 
-                var rows = await q
-                    .OrderByDescending(a => a.OccurredAt)
+                var rows = await q.OrderByDescending(a => a.OccurredAt)
                     .Skip(offset)
                     .Take(limit)
                     .Select(a => new
@@ -924,15 +921,10 @@ internal sealed class DashboardApiService(
                     rows.SelectMany(r => new[] { r.ActorPlayerId, r.TargetPlayerId })
                 );
 
-                Dictionary<int, string> playerNames = await LoadPlayerNamesAsync(
-                        db,
-                        playerIds,
-                        ct
-                    )
+                Dictionary<int, string> playerNames = await LoadPlayerNamesAsync(db, playerIds, ct)
                     .ConfigureAwait(false);
 
-                var rowsWithNames = rows
-                    .Select(r => new
+                var rowsWithNames = rows.Select(r => new
                     {
                         r.Id,
                         r.OccurredAt,

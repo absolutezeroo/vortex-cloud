@@ -20,17 +20,32 @@ public sealed class PackageHandler(
     IErrorGroupingSink? errorSink = null
 ) : IPackageHandler<IClientPacket>
 {
-    private readonly IRevisionManager _revisionManager = revisionManager;
-    private readonly MessageSystem _messageSystem = messageSystem;
-    private readonly IErrorGroupingSink? _errorSink = errorSink;
     private readonly ITurboContextAccessor? _contextAccessor = contextAccessor;
+    private readonly IErrorGroupingSink? _errorSink = errorSink;
     private readonly ILogger<PackageHandler> _logger = logger;
+    private readonly MessageSystem _messageSystem = messageSystem;
+    private readonly IRevisionManager _revisionManager = revisionManager;
 
-    public async ValueTask Handle(IAppSession session, IClientPacket packet, CancellationToken ct)
+    public ValueTask Handle(IAppSession session, IClientPacket packet, CancellationToken ct)
+    {
+        return HandleCoreAsync((ISessionContext)session, packet, ct);
+    }
+
+    /// <summary>
+    ///     Direct handler for transports whose session context is managed outside SuperSocket.
+    /// </summary>
+    public ValueTask HandleAsync(ISessionContext ctx, IClientPacket packet, CancellationToken ct)
+    {
+        return HandleCoreAsync(ctx, packet, ct);
+    }
+
+    public async ValueTask HandleCoreAsync(
+        ISessionContext ctx,
+        IClientPacket packet,
+        CancellationToken ct
+    )
     {
         ArgumentNullException.ThrowIfNull(packet);
-
-        ISessionContext ctx = (ISessionContext)session;
 
         try
         {

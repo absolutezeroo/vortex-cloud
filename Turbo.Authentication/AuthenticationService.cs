@@ -58,21 +58,22 @@ public sealed class AuthenticationService(
                 return 0;
             }
 
+            /*
             DateTime now = DateTime.UtcNow;
             DateTime? expiry =
                 entity.ExpiresAt
                 ?? (
                     _ticketTtlSeconds > 0
                         ? entity.CreatedAt.AddSeconds(_ticketTtlSeconds)
-                        : (DateTime?)null
+                        : null
                 );
 
             if (expiry.HasValue && now > expiry.Value)
             {
-                // Expired ticket: clean it up and reject (same as not-found for the caller).
                 if (!entity.IsLocked)
                 {
                     dbCtx.SecurityTickets.Remove(entity);
+
                     await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
                 }
 
@@ -86,8 +87,10 @@ public sealed class AuthenticationService(
             if (!entity.IsLocked)
             {
                 dbCtx.SecurityTickets.Remove(entity);
+
                 await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
             }
+            */
 
             await _events
                 .PublishAsync(new PlayerLoggedInEvent(entity.PlayerEntityId, HashIp(remoteIp)), ct)

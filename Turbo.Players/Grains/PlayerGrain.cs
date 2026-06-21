@@ -26,11 +26,11 @@ namespace Turbo.Players.Grains;
 
 internal sealed class PlayerGrain : Grain, IPlayerGrain
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory;
-    private readonly IGrainFactory _grainFactory;
-    private readonly IEventPublisher _events;
-    private readonly ILogger<PlayerGrain> _logger;
     private readonly ClubConfig _clubConfig;
+    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory;
+    private readonly IEventPublisher _events;
+    private readonly IGrainFactory _grainFactory;
+    private readonly ILogger<PlayerGrain> _logger;
 
     private readonly PlayerLiveState _state;
 
@@ -48,68 +48,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
         _logger = logger;
         _clubConfig = clubConfig.Value;
 
-        _state = new() { PlayerId = PlayerId.Parse((int)this.GetPrimaryKeyLong()) };
-    }
-
-    public override async Task OnActivateAsync(CancellationToken ct)
-    {
-        await HydrateAsync(ct);
-
-        this.RegisterGrainTimer<object?>(
-            async (_, ct) => await RunMaintenanceAsync(ct),
-            null,
-            TimeSpan.FromHours(1),
-            TimeSpan.FromHours(1)
-        );
-    }
-
-    /// <summary>
-    /// Hourly club maintenance: detect expiry, grant due gift tokens, and pay out kickback.
-    /// Each step is isolated so one failing step never blocks the others, and failures are logged
-    /// rather than silently swallowed by the timer runtime.
-    /// </summary>
-    private async Task RunMaintenanceAsync(CancellationToken ct)
-    {
-        try
-        {
-            await CheckExpirationAsync(ct);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(
-                ex,
-                "Club expiry check failed for player {PlayerId}",
-                (int)_state.PlayerId
-            );
-        }
-
-        try
-        {
-            await CheckAndGrantGiftTokensAsync(ct);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(
-                ex,
-                "Club gift grant failed for player {PlayerId}",
-                (int)_state.PlayerId
-            );
-        }
-
-        try
-        {
-            await CheckAndGrantPaydayAsync(ct);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Club payday failed for player {PlayerId}", (int)_state.PlayerId);
-        }
-    }
-
-    public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken ct)
-    {
-        await WriteToDatabaseAsync(ct);
-        await UpsertKickbackAsync(ct);
+        _state = new PlayerLiveState { PlayerId = PlayerId.Parse((int)this.GetPrimaryKeyLong()) };
     }
 
     public async Task SetFigureAsync(string figure, AvatarGenderType gender, CancellationToken ct)
@@ -143,153 +82,9 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
         await WriteToDatabaseAsync(ct);
     }
 
-    private async Task CheckAndGrantGiftTokensAsync(CancellationToken ct)
+    public Task<PlayerSummarySnapshot> GetSummaryAsync(CancellationToken ct)
     {
-        if (_state.ClubLevel == 0 || _state.ClubExpiresAt <= DateTime.UtcNow)
-        {
-            return;
-        }
-
-        if (_state.ClubNextGiftAt is null || _state.ClubNextGiftAt > DateTime.UtcNow)
-        {
-            return;
-        }
-
-        int tokensToGrant = 0;
-        DateTime nextGift = _state.ClubNextGiftAt.Value;
-        DateTime now = DateTime.UtcNow;
-
-        while (nextGift <= now)
-        {
-            tokensToGrant++;
-            nextGift = nextGift.AddDays(_clubConfig.GiftCycleDays);
-        }
-
-        _state.ClubGiftsAvailable += tokensToGrant;
-        _state.ClubNextGiftAt = nextGift;
-
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
-
-        await dbCtx
-            .PlayerSubscriptions.Where(x =>
-                x.PlayerEntityId == (int)_state.PlayerId
-                && x.SubscriptionType == SubscriptionType.HabboClub
-            )
-            .ExecuteUpdateAsync(
-                up =>
-                    up.SetProperty(p => p.GiftsAvailable, _state.ClubGiftsAvailable)
-                        .SetProperty(p => p.NextGiftAt, _state.ClubNextGiftAt),
-                ct
-            )
-            .ConfigureAwait(false);
-
-        await _events
-            .PublishAsync(
-                new ClubGiftTokenGrantedEvent(
-                    (int)_state.PlayerId,
-                    tokensToGrant,
-                    _state.ClubGiftsAvailable
-                ),
-                ct
-            )
-            .ConfigureAwait(false);
-    }
-
-    private async Task HydrateAsync(CancellationToken ct)
-    {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
-
-        PlayerEntity entity =
-            await dbCtx
-                .Players.AsNoTracking()
-                .SingleOrDefaultAsync(x => x.Id == (int)_state.PlayerId, ct)
-            ?? throw new TurboException(TurboErrorCodeEnum.PlayerNotFound);
-
-        _state.Name = entity.Name;
-        _state.Motto = entity.Motto ?? string.Empty;
-        _state.Figure = entity.Figure;
-        _state.Gender = entity.Gender;
-        _state.AchievementScore = 0;
-        _state.CreatedAt = entity.CreatedAt;
-        _state.LastUpdated = entity.UpdatedAt;
-
-        PlayerSubscriptionEntity? sub = await dbCtx
-            .PlayerSubscriptions.AsNoTracking()
-            .FirstOrDefaultAsync(
-                x =>
-                    x.PlayerEntityId == (int)_state.PlayerId
-                    && x.SubscriptionType == SubscriptionType.HabboClub,
-                ct
-            );
-
-        if (sub is not null)
-        {
-            // Lifetime / streak bookkeeping is loaded regardless of active state.
-            _state.ClubTotalMonths = sub.TotalMonths;
-            _state.ClubPastClubDays = sub.PastClubDays;
-            _state.ClubPastVipDays = sub.PastVipDays;
-            _state.ClubFirstSubscribedAt = sub.FirstSubscribedAt;
-            _state.ClubLastExpiredAt = sub.LastExpiredAt;
-            _state.ClubBadgeGranted = sub.HcBadgeGranted;
-            _state.ClubExpiresAt = sub.ExpiresAt;
-
-            if (sub.ExpiresAt > DateTime.UtcNow)
-            {
-                _state.ClubLevel = sub.Level;
-                _state.ClubGiftsAvailable = sub.GiftsAvailable;
-                _state.ClubNextGiftAt = sub.NextGiftAt;
-
-                await CheckAndGrantGiftTokensAsync(ct);
-            }
-            else if (sub.Level > 0)
-            {
-                // Membership lapsed while offline — surface the expiry once.
-                _state.ClubLevel = sub.Level;
-                await CheckExpirationAsync(ct);
-            }
-        }
-
-        PlayerKickbackEntity? kickback = await dbCtx
-            .PlayerKickbacks.AsNoTracking()
-            .FirstOrDefaultAsync(x => x.PlayerEntityId == (int)_state.PlayerId, ct);
-
-        if (kickback is not null)
-        {
-            _state.KickbackPaydayAt = kickback.PaydayAt;
-            _state.KickbackCreditsSpent = kickback.CreditsSpent;
-            _state.KickbackTotalRewarded = kickback.TotalRewarded;
-            _state.KickbackTotalSpent = kickback.TotalSpent;
-
-            await CheckAndGrantPaydayAsync(ct);
-        }
-
-        await _grainFactory
-            .GetPlayerDirectoryGrain()
-            .SetPlayerNameAsync(PlayerId.Parse((int)this.GetPrimaryKeyLong()), _state.Name, ct);
-    }
-
-    private async Task WriteToDatabaseAsync(CancellationToken ct)
-    {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
-
-        PlayerSummarySnapshot snapshot = await GetSummaryAsync(ct);
-
-        await dbCtx
-            .Players.Where(x => x.Id == (int)_state.PlayerId)
-            .ExecuteUpdateAsync(
-                up =>
-                    up.SetProperty(p => p.Name, snapshot.Name)
-                        .SetProperty(p => p.Motto, snapshot.Motto)
-                        .SetProperty(p => p.Figure, snapshot.Figure)
-                        .SetProperty(p => p.Gender, snapshot.Gender),
-                ct
-            );
-
-        _state.LastUpdated = DateTime.Now;
-    }
-
-    public Task<PlayerSummarySnapshot> GetSummaryAsync(CancellationToken ct) =>
-        Task.FromResult(
+        return Task.FromResult(
             new PlayerSummarySnapshot
             {
                 PlayerId = _state.PlayerId,
@@ -301,6 +96,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
                 CreatedAt = _state.CreatedAt,
             }
         );
+    }
 
     public Task<PlayerExtendedProfileSnapshot> GetExtendedProfileSnapshotAsync(CancellationToken ct)
     {
@@ -334,14 +130,6 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
     {
         bool isActive = _state.ClubLevel > 0 && _state.ClubExpiresAt > DateTime.UtcNow;
         int daysLeft = isActive ? (int)(_state.ClubExpiresAt - DateTime.UtcNow).TotalDays : 0;
-
-        _logger.LogDebug(
-            "GetClubSubscription player={PlayerId} level={Level} expiresAt={ExpiresAt:O} isActive={IsActive}",
-            (int)_state.PlayerId,
-            _state.ClubLevel,
-            _state.ClubExpiresAt,
-            isActive
-        );
 
         return Task.FromResult(
             new ClubSubscriptionSnapshot
@@ -482,7 +270,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
             dbCtx.PlayerSubscriptions.Add(
                 new PlayerSubscriptionEntity
                 {
-                    PlayerEntityId = (int)_state.PlayerId,
+                    PlayerEntityId = _state.PlayerId,
                     SubscriptionType = SubscriptionType.HabboClub,
                     Level = newLevel,
                     ExpiresAt = newExpiry,
@@ -505,7 +293,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
         await _events
             .PublishAsync(
                 new ClubPurchasedEvent(
-                    (int)_state.PlayerId,
+                    _state.PlayerId,
                     months,
                     isVip,
                     isRenewal,
@@ -517,6 +305,254 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
             .ConfigureAwait(false);
 
         return ClubPurchaseResult.Success;
+    }
+
+    public async Task<bool> TryConsumeClubGiftAsync(string productCode, CancellationToken ct)
+    {
+        if (_state.ClubGiftsAvailable <= 0)
+        {
+            return false;
+        }
+
+        _state.ClubGiftsAvailable--;
+
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+
+        await dbCtx
+            .PlayerSubscriptions.Where(x =>
+                x.PlayerEntityId == (int)_state.PlayerId
+                && x.SubscriptionType == SubscriptionType.HabboClub
+            )
+            .ExecuteUpdateAsync(
+                up => up.SetProperty(p => p.GiftsAvailable, _state.ClubGiftsAvailable),
+                ct
+            )
+            .ConfigureAwait(false);
+
+        await _events
+            .PublishAsync(new ClubGiftClaimedEvent(_state.PlayerId, productCode), ct)
+            .ConfigureAwait(false);
+
+        return true;
+    }
+
+    public async Task TrackCreditSpendAsync(int credits, CancellationToken ct)
+    {
+        if (credits <= 0 || _state.ClubLevel == 0)
+        {
+            return;
+        }
+
+        _state.KickbackCreditsSpent += credits;
+        _state.KickbackTotalSpent += credits;
+
+        await UpsertKickbackAsync(ct).ConfigureAwait(false);
+    }
+
+    public override async Task OnActivateAsync(CancellationToken ct)
+    {
+        await HydrateAsync(ct);
+
+        this.RegisterGrainTimer<object?>(
+            async (_, ct) => await RunMaintenanceAsync(ct),
+            null,
+            TimeSpan.FromHours(1),
+            TimeSpan.FromHours(1)
+        );
+    }
+
+    /// <summary>
+    ///     Hourly club maintenance: detect expiry, grant due gift tokens, and pay out kickback.
+    ///     Each step is isolated so one failing step never blocks the others, and failures are logged
+    ///     rather than silently swallowed by the timer runtime.
+    /// </summary>
+    private async Task RunMaintenanceAsync(CancellationToken ct)
+    {
+        try
+        {
+            await CheckExpirationAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Club expiry check failed for player {PlayerId}",
+                (int)_state.PlayerId
+            );
+        }
+
+        try
+        {
+            await CheckAndGrantGiftTokensAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Club gift grant failed for player {PlayerId}",
+                (int)_state.PlayerId
+            );
+        }
+
+        try
+        {
+            await CheckAndGrantPaydayAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Club payday failed for player {PlayerId}", (int)_state.PlayerId);
+        }
+    }
+
+    public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken ct)
+    {
+        await WriteToDatabaseAsync(ct);
+        await UpsertKickbackAsync(ct);
+    }
+
+    private async Task CheckAndGrantGiftTokensAsync(CancellationToken ct)
+    {
+        if (_state.ClubLevel == 0 || _state.ClubExpiresAt <= DateTime.UtcNow)
+        {
+            return;
+        }
+
+        if (_state.ClubNextGiftAt is null || _state.ClubNextGiftAt > DateTime.UtcNow)
+        {
+            return;
+        }
+
+        int tokensToGrant = 0;
+        DateTime nextGift = _state.ClubNextGiftAt.Value;
+        DateTime now = DateTime.UtcNow;
+
+        while (nextGift <= now)
+        {
+            tokensToGrant++;
+            nextGift = nextGift.AddDays(_clubConfig.GiftCycleDays);
+        }
+
+        _state.ClubGiftsAvailable += tokensToGrant;
+        _state.ClubNextGiftAt = nextGift;
+
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+
+        await dbCtx
+            .PlayerSubscriptions.Where(x =>
+                x.PlayerEntityId == (int)_state.PlayerId
+                && x.SubscriptionType == SubscriptionType.HabboClub
+            )
+            .ExecuteUpdateAsync(
+                up =>
+                    up.SetProperty(p => p.GiftsAvailable, _state.ClubGiftsAvailable)
+                        .SetProperty(p => p.NextGiftAt, _state.ClubNextGiftAt),
+                ct
+            )
+            .ConfigureAwait(false);
+
+        await _events
+            .PublishAsync(
+                new ClubGiftTokenGrantedEvent(
+                    _state.PlayerId,
+                    tokensToGrant,
+                    _state.ClubGiftsAvailable
+                ),
+                ct
+            )
+            .ConfigureAwait(false);
+    }
+
+    private async Task HydrateAsync(CancellationToken ct)
+    {
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+
+        PlayerEntity entity =
+            await dbCtx
+                .Players.AsNoTracking()
+                .SingleOrDefaultAsync(x => x.Id == (int)_state.PlayerId, ct)
+            ?? throw new TurboException(TurboErrorCodeEnum.PlayerNotFound);
+
+        _state.Name = entity.Name;
+        _state.Motto = entity.Motto ?? string.Empty;
+        _state.Figure = entity.Figure;
+        _state.Gender = entity.Gender;
+        _state.AchievementScore = 0;
+        _state.CreatedAt = entity.CreatedAt;
+        _state.LastUpdated = entity.UpdatedAt;
+
+        PlayerSubscriptionEntity? sub = await dbCtx
+            .PlayerSubscriptions.AsNoTracking()
+            .FirstOrDefaultAsync(
+                x =>
+                    x.PlayerEntityId == (int)_state.PlayerId
+                    && x.SubscriptionType == SubscriptionType.HabboClub,
+                ct
+            );
+
+        if (sub is not null)
+        {
+            // Lifetime / streak bookkeeping is loaded regardless of active state.
+            _state.ClubTotalMonths = sub.TotalMonths;
+            _state.ClubPastClubDays = sub.PastClubDays;
+            _state.ClubPastVipDays = sub.PastVipDays;
+            _state.ClubFirstSubscribedAt = sub.FirstSubscribedAt;
+            _state.ClubLastExpiredAt = sub.LastExpiredAt;
+            _state.ClubBadgeGranted = sub.HcBadgeGranted;
+            _state.ClubExpiresAt = sub.ExpiresAt;
+
+            if (sub.ExpiresAt > DateTime.UtcNow)
+            {
+                _state.ClubLevel = sub.Level;
+                _state.ClubGiftsAvailable = sub.GiftsAvailable;
+                _state.ClubNextGiftAt = sub.NextGiftAt;
+
+                await CheckAndGrantGiftTokensAsync(ct);
+            }
+            else if (sub.Level > 0)
+            {
+                // Membership lapsed while offline — surface the expiry once.
+                _state.ClubLevel = sub.Level;
+                await CheckExpirationAsync(ct);
+            }
+        }
+
+        PlayerKickbackEntity? kickback = await dbCtx
+            .PlayerKickbacks.AsNoTracking()
+            .FirstOrDefaultAsync(x => x.PlayerEntityId == (int)_state.PlayerId, ct);
+
+        if (kickback is not null)
+        {
+            _state.KickbackPaydayAt = kickback.PaydayAt;
+            _state.KickbackCreditsSpent = kickback.CreditsSpent;
+            _state.KickbackTotalRewarded = kickback.TotalRewarded;
+            _state.KickbackTotalSpent = kickback.TotalSpent;
+
+            await CheckAndGrantPaydayAsync(ct);
+        }
+
+        await _grainFactory
+            .GetPlayerDirectoryGrain()
+            .SetPlayerNameAsync(PlayerId.Parse((int)this.GetPrimaryKeyLong()), _state.Name, ct);
+    }
+
+    private async Task WriteToDatabaseAsync(CancellationToken ct)
+    {
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+
+        PlayerSummarySnapshot snapshot = await GetSummaryAsync(ct);
+
+        await dbCtx
+            .Players.Where(x => x.Id == (int)_state.PlayerId)
+            .ExecuteUpdateAsync(
+                up =>
+                    up.SetProperty(p => p.Name, snapshot.Name)
+                        .SetProperty(p => p.Motto, snapshot.Motto)
+                        .SetProperty(p => p.Figure, snapshot.Figure)
+                        .SetProperty(p => p.Gender, snapshot.Gender),
+                ct
+            );
+
+        _state.LastUpdated = DateTime.Now;
     }
 
     private async Task GrantClubBadgesAsync(bool isVip, CancellationToken ct)
@@ -586,7 +622,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
             .ConfigureAwait(false);
 
         await _events
-            .PublishAsync(new ClubExpiredEvent((int)_state.PlayerId, wasVip), ct)
+            .PublishAsync(new ClubExpiredEvent(_state.PlayerId, wasVip), ct)
             .ConfigureAwait(false);
 
         _logger.LogInformation(
@@ -594,48 +630,6 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
             (int)_state.PlayerId,
             wasVip
         );
-    }
-
-    public async Task<bool> TryConsumeClubGiftAsync(string productCode, CancellationToken ct)
-    {
-        if (_state.ClubGiftsAvailable <= 0)
-        {
-            return false;
-        }
-
-        _state.ClubGiftsAvailable--;
-
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
-
-        await dbCtx
-            .PlayerSubscriptions.Where(x =>
-                x.PlayerEntityId == (int)_state.PlayerId
-                && x.SubscriptionType == SubscriptionType.HabboClub
-            )
-            .ExecuteUpdateAsync(
-                up => up.SetProperty(p => p.GiftsAvailable, _state.ClubGiftsAvailable),
-                ct
-            )
-            .ConfigureAwait(false);
-
-        await _events
-            .PublishAsync(new ClubGiftClaimedEvent((int)_state.PlayerId, productCode), ct)
-            .ConfigureAwait(false);
-
-        return true;
-    }
-
-    public async Task TrackCreditSpendAsync(int credits, CancellationToken ct)
-    {
-        if (credits <= 0 || _state.ClubLevel == 0)
-        {
-            return;
-        }
-
-        _state.KickbackCreditsSpent += credits;
-        _state.KickbackTotalSpent += credits;
-
-        await UpsertKickbackAsync(ct).ConfigureAwait(false);
     }
 
     private async Task CheckAndGrantPaydayAsync(CancellationToken ct)
@@ -670,7 +664,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
                 _state.KickbackTotalRewarded += totalReward;
 
                 await _events
-                    .PublishAsync(new ClubPaydayEvent((int)_state.PlayerId, totalReward), ct)
+                    .PublishAsync(new ClubPaydayEvent(_state.PlayerId, totalReward), ct)
                     .ConfigureAwait(false);
             }
 
@@ -713,7 +707,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
             dbCtx.PlayerKickbacks.Add(
                 new PlayerKickbackEntity
                 {
-                    PlayerEntityId = (int)_state.PlayerId,
+                    PlayerEntityId = _state.PlayerId,
                     PaydayAt = _state.KickbackPaydayAt,
                     CreditsSpent = _state.KickbackCreditsSpent,
                     TotalRewarded = _state.KickbackTotalRewarded,
