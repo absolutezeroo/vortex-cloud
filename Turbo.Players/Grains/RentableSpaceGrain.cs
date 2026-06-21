@@ -9,16 +9,17 @@ using Orleans;
 using Orleans.Runtime;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Furniture;
+using Turbo.Primitives.Action;
+using Turbo.Primitives.Events;
 using Turbo.Primitives.Messages.Outgoing.Room.Furniture;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players.Enums;
 using Turbo.Primitives.Players.Enums.Wallet;
 using Turbo.Primitives.Players.Wallet;
-using Turbo.Primitives.Action;
 using Turbo.Primitives.Rooms;
 using Turbo.Primitives.Rooms.Enums;
-using Turbo.Primitives.Rooms.Object;
 using Turbo.Primitives.Rooms.Grains;
+using Turbo.Primitives.Rooms.Object;
 using Turbo.Primitives.Rooms.Snapshots;
 
 namespace Turbo.Players.Grains;
@@ -30,6 +31,7 @@ namespace Turbo.Players.Grains;
 internal sealed class RentableSpaceGrain(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
+    IEventPublisher events,
     ILogger<RentableSpaceGrain> logger
 ) : Grain, IRentableSpaceGrain
 {
@@ -207,6 +209,20 @@ internal sealed class RentableSpaceGrain(
         ScheduleExpiryTimer(rentedUntil);
         await SetVisualStateAsync(3, ct);
 
+        await events
+            .PublishAsync(
+                new RentalStartedEvent(
+                    FurnitureId,
+                    renterPlayerId,
+                    _roomId ?? 0,
+                    _terms.Price,
+                    _terms.CurrencyTypeEntity.CurrencyType.ToString(),
+                    new DateTimeOffset(rentedUntil, TimeSpan.Zero)
+                ),
+                ct
+            )
+            .ConfigureAwait(false);
+
         return null; // success
     }
 
@@ -256,6 +272,10 @@ internal sealed class RentableSpaceGrain(
 
         int renterId = _space.RenterPlayerEntityId.Value;
         await ClearRentalAsync(renterId, ct);
+
+        await events
+            .PublishAsync(new RentalExpiredEvent(FurnitureId, renterId, _roomId ?? 0), ct)
+            .ConfigureAwait(false);
     }
 
     public override async Task OnActivateAsync(CancellationToken ct)
@@ -336,9 +356,7 @@ internal sealed class RentableSpaceGrain(
                 // RoomEntityId zeroed via the grain's dirty-flush pipeline.
                 if (_roomId.HasValue)
                 {
-                    IRoomGrain roomGrain = grainFactory.GetRoomGrain(
-                        new RoomId(_roomId.Value)
-                    );
+                    IRoomGrain roomGrain = grainFactory.GetRoomGrain(new RoomId(_roomId.Value));
 
                     await Task.WhenAll(
                         taggedIds.Select(id =>
