@@ -17,6 +17,7 @@
   import { NAV, hasRouteAccess } from '../lib/routes.js';
 
   export let logout;
+  export let logoutBusy = false;
 
   const routeIcons = {
     '/overview': Activity,
@@ -94,9 +95,16 @@
       </div>
       <div class="session-area">
         <div class="status-pill ok">{email}</div>
-        <button type="button" class="logout-btn" title="Sign out" on:click={() => logout()}>
+        <button
+          type="button"
+          class="logout-btn"
+          title="Sign out"
+          disabled={logoutBusy}
+          aria-busy={logoutBusy}
+          on:click={() => logout()}
+        >
           <LogOut size={16} strokeWidth={1.9} />
-          <span>Sign out</span>
+          <span>{logoutBusy ? 'Signing out...' : 'Sign out'}</span>
         </button>
       </div>
     </header>
@@ -127,6 +135,11 @@
 
   .logout-btn:hover {
     background: rgba(255, 255, 255, 0.08);
+  }
+
+  .logout-btn:disabled {
+    opacity: 0.62;
+    cursor: default;
   }
 
   .disabled {

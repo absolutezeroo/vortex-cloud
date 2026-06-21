@@ -68,11 +68,10 @@ public sealed class SessionGateway(
 
     public async Task RemoveSessionAsync(SessionKey key, CancellationToken ct)
     {
-        PlayerId playerId = GetPlayerId(key);
-
-        if (playerId > 0)
+        if (_sessionToPlayer.TryGetValue(key, out PlayerId playerId) && playerId > 0)
         {
-            await RemoveSessionFromPlayerAsync(playerId, ct).ConfigureAwait(false);
+            await RemovePlayerSessionAsync(playerId, key, closeTransport: false, ct)
+                .ConfigureAwait(false);
         }
 
         if (_sessionObservers.TryRemove(key, out ObserverEntry? observer))
@@ -81,10 +80,17 @@ public sealed class SessionGateway(
             {
                 _grainFactory.DeleteObjectReference<ISessionContextObserver>(observer.Ref);
             }
-            catch (Exception) { }
+            catch (Exception ex)
+            {
+                _logger.LogDebug(
+                    ex,
+                    "Failed to delete session observer for session {SessionKey}",
+                    key
+                );
+            }
         }
 
-        if (_sessions.TryRemove(key, out _)) { }
+        _sessions.TryRemove(key, out _);
     }
 
     public async Task AddSessionToPlayerAsync(SessionKey key, PlayerId playerId)
@@ -97,6 +103,35 @@ public sealed class SessionGateway(
         }
 
         IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(playerId);
+
+        if (
+            _sessionToPlayer.TryGetValue(key, out PlayerId currentPlayerId)
+            && currentPlayerId > 0
+            && currentPlayerId != playerId
+        )
+        {
+            await RemovePlayerSessionAsync(
+                    currentPlayerId,
+                    key,
+                    closeTransport: false,
+                    CancellationToken.None
+                )
+                .ConfigureAwait(false);
+        }
+
+        if (
+            _playerToSession.TryGetValue(playerId, out SessionKey existingSessionKey)
+            && existingSessionKey != key
+        )
+        {
+            await RemovePlayerSessionAsync(
+                    playerId,
+                    existingSessionKey,
+                    closeTransport: true,
+                    CancellationToken.None
+                )
+                .ConfigureAwait(false);
+        }
 
         _sessionToPlayer[key] = playerId;
         _playerToSession[playerId] = key;
@@ -127,27 +162,76 @@ public sealed class SessionGateway(
 
     public async Task RemoveSessionFromPlayerAsync(PlayerId playerId, CancellationToken ct)
     {
-        if (!_playerToSession.TryRemove(playerId, out SessionKey sessionKey))
+        if (!_playerToSession.TryGetValue(playerId, out SessionKey sessionKey))
         {
             return;
         }
 
-        _sessionToPlayer.TryRemove(sessionKey, out _);
+        await RemovePlayerSessionAsync(playerId, sessionKey, closeTransport: true, ct)
+            .ConfigureAwait(false);
+    }
+
+    private async Task RemovePlayerSessionAsync(
+        PlayerId playerId,
+        SessionKey sessionKey,
+        bool closeTransport,
+        CancellationToken ct
+    )
+    {
+        bool removedActiveMapping = TryRemovePair(_playerToSession, playerId, sessionKey);
+        TryRemovePair(_sessionToPlayer, sessionKey, playerId);
+
+        if (!removedActiveMapping)
+        {
+            return;
+        }
 
         IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(playerId);
 
-        await playerPresence.UnregisterSessionObserverAsync(ct).ConfigureAwait(false);
+        try
+        {
+            await playerPresence.UnregisterSessionObserverAsync(ct).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "Failed to unregister session observer for player {PlayerId}",
+                playerId
+            );
+        }
 
         if (_playerConnectedAt.TryRemove(playerId, out DateTime connectedAt))
         {
             await PublishDisconnectedEventSafelyAsync(playerId, connectedAt).ConfigureAwait(false);
-            return;
+        }
+        else
+        {
+            _logger.LogWarning(
+                "Player {PlayerId} disconnected without a recorded connect timestamp; skipping disconnect duration.",
+                playerId
+            );
         }
 
-        _logger.LogWarning(
-            "Player {PlayerId} disconnected without a recorded connect timestamp; skipping disconnect duration.",
-            playerId
-        );
+        if (closeTransport && _sessions.TryGetValue(sessionKey, out ISessionContext? session))
+        {
+            await CloseSessionTransportSafelyAsync(sessionKey, session).ConfigureAwait(false);
+        }
+    }
+
+    private async Task CloseSessionTransportSafelyAsync(
+        SessionKey sessionKey,
+        ISessionContext session
+    )
+    {
+        try
+        {
+            await session.CloseSessionAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(ex, "Failed to close session transport for {SessionKey}", sessionKey);
+        }
     }
 
     private async Task PublishDisconnectedEventSafelyAsync(PlayerId playerId, DateTime connectedAt)
@@ -177,4 +261,14 @@ public sealed class SessionGateway(
             );
         }
     }
+
+    private static bool TryRemovePair<TKey, TValue>(
+        ConcurrentDictionary<TKey, TValue> dictionary,
+        TKey key,
+        TValue value
+    )
+        where TKey : notnull =>
+        ((ICollection<KeyValuePair<TKey, TValue>>)dictionary).Remove(
+            new KeyValuePair<TKey, TValue>(key, value)
+        );
 }

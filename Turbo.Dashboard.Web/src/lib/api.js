@@ -1,65 +1,198 @@
 // All dashboard requests are same-origin and authenticated by the HttpOnly session cookie issued by
 // POST /api/login. There is no token to carry; the browser attaches the cookie automatically.
 
-async function request(path, options) {
-  const response = await fetch(path, { credentials: 'same-origin', ...options });
+import { connectionIssue } from './session.js';
 
-  const wantsJson = response.status !== 204 && response.status !== 205;
-  let data = null;
+const DEFAULT_TIMEOUT_MS = 8000;
+const LOGIN_TIMEOUT_MS = 10000;
+const LOGOUT_TIMEOUT_MS = 3000;
 
-  if (wantsJson) {
-    const contentType = response.headers.get('content-type') || '';
-    const isJson = contentType.includes('application/json');
+export class ApiError extends Error {
+  constructor(message, options = {}) {
+    super(message);
+    this.name = 'ApiError';
+    this.code = options.code || message;
+    this.status = options.status || 0;
+    this.path = options.path || '';
+    this.connection = options.connection === true;
 
-    if (!isJson) {
-      const raw = await response.text();
-      const sample = raw.replace(/\s+/g, ' ').trim().slice(0, 80);
-
-      const bodyError = sample.length > 0 ? `non_json:${sample}` : 'non_json';
-      const error = new Error(bodyError);
-      error.code = bodyError;
-      error.status = response.status;
-      throw error;
-    }
-
-    try {
-      data = await response.json();
-    } catch {
-      data = null;
+    if (options.cause) {
+      this.cause = options.cause;
     }
   }
+}
 
-  if (!response.ok) {
-    const code = data && data.error ? data.error : `HTTP ${response.status}`;
-    const error = new Error(code);
-    error.code = code;
-    error.status = response.status;
+export function isConnectionError(error) {
+  return (
+    error?.connection === true ||
+    error?.code === 'request_timeout' ||
+    error?.code === 'network_unavailable' ||
+    error?.code === 'invalid_api_response'
+  );
+}
+
+export function isTimeoutError(error) {
+  return error?.code === 'request_timeout';
+}
+
+export function isAuthError(error) {
+  return (
+    error?.status === 401 ||
+    error?.code === 'unauthenticated' ||
+    error?.code === 'unauthorized'
+  );
+}
+
+export function describeApiError(error) {
+  if (error?.code === 'request_timeout') {
+    return 'The emulator did not answer in time.';
+  }
+
+  if (error?.code === 'network_unavailable') {
+    return 'The emulator is offline or unreachable.';
+  }
+
+  if (error?.code === 'invalid_api_response') {
+    return 'The emulator API did not return a dashboard response.';
+  }
+
+  if (error?.status === 429) {
+    return 'Too many requests. Wait a moment, then try again.';
+  }
+
+  return error?.message || 'Request failed.';
+}
+
+async function request(path, options, requestOptions = {}) {
+  const timeoutMs = requestOptions.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(path, {
+      credentials: 'same-origin',
+      ...options,
+      signal: controller.signal,
+    });
+
+    connectionIssue.set(null);
+
+    const wantsJson = response.status !== 204 && response.status !== 205;
+    let data = null;
+
+    if (wantsJson) {
+      const contentType = response.headers.get('content-type') || '';
+      const isJson = contentType.includes('application/json');
+
+      if (!isJson) {
+        const raw = await response.text();
+        const sample = raw.replace(/\s+/g, ' ').trim().slice(0, 80);
+        const message = sample.length > 0 ? `invalid_api_response:${sample}` : 'invalid_api_response';
+
+        throw new ApiError(message, {
+          code: 'invalid_api_response',
+          status: response.status,
+          path,
+          connection: path.startsWith('/api/'),
+        });
+      }
+
+      try {
+        data = await response.json();
+      } catch (e) {
+        throw new ApiError('invalid_json', {
+          code: 'invalid_json',
+          status: response.status,
+          path,
+          cause: e,
+        });
+      }
+    }
+
+    if (!response.ok) {
+      const code = data && data.error ? data.error : `HTTP ${response.status}`;
+
+      throw new ApiError(code, { code, status: response.status, path });
+    }
+
+    return data;
+  } catch (e) {
+    const error = normalizeRequestError(e, path);
+
+    if (isConnectionError(error)) {
+      connectionIssue.set({
+        code: error.code,
+        message: describeApiError(error),
+        path: error.path || path,
+        occurredAt: new Date().toISOString(),
+      });
+    }
+
     throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+function normalizeRequestError(error, path) {
+  if (error instanceof ApiError) {
+    return error;
   }
 
-  return data;
+  if (error?.name === 'AbortError') {
+    return new ApiError('request_timeout', {
+      code: 'request_timeout',
+      path,
+      connection: true,
+      cause: error,
+    });
+  }
+
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+    return new ApiError('network_unavailable', {
+      code: 'network_unavailable',
+      path,
+      connection: true,
+      cause: error,
+    });
+  }
+
+  if (error instanceof TypeError) {
+    return new ApiError('network_unavailable', {
+      code: 'network_unavailable',
+      path,
+      connection: true,
+      cause: error,
+    });
+  }
+
+  return error;
 }
 
-export function apiGet(path) {
-  return request(path, { headers: { Accept: 'application/json' } });
+export function apiGet(path, options = {}) {
+  return request(path, { headers: { Accept: 'application/json' } }, options);
 }
 
-export function apiPost(path, body) {
-  return request(path, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body ?? {}),
-  });
+export function apiPost(path, body, options = {}) {
+  return request(
+    path,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body ?? {}),
+    },
+    options
+  );
 }
 
-export function getIdentity() {
-  return apiGet('/api/me');
+export function getIdentity(options = {}) {
+  return apiGet('/api/me', options);
 }
 
 export function login(email, password) {
-  return apiPost('/api/login', { email, password });
+  return apiPost('/api/login', { email, password }, { timeoutMs: LOGIN_TIMEOUT_MS });
 }
 
 export function logout() {
-  return apiPost('/api/logout', {});
+  return apiPost('/api/logout', {}, { timeoutMs: LOGOUT_TIMEOUT_MS });
 }

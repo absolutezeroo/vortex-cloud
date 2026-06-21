@@ -83,23 +83,25 @@ public sealed class NetworkManager(
 
     public async Task StopAsync()
     {
-        IHost? hostToStop = null;
+        IHost? tcpHostToStop = null;
+        IHost? wsHostToStop = null;
 
         lock (_tcpGate)
         {
-            if (_tcpHost is null)
-            {
-                return;
-            }
-
-            hostToStop = _tcpHost;
+            tcpHostToStop = _tcpHost;
             _tcpHost = null;
         }
 
-        if (hostToStop is not null)
+        lock (_wsGate)
         {
-            await hostToStop.StopAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            wsHostToStop = _wsHost;
+            _wsHost = null;
         }
+
+        Task stopTcp = tcpHostToStop?.StopAsync(TimeSpan.FromSeconds(5)) ?? Task.CompletedTask;
+        Task stopWs = wsHostToStop?.StopAsync(TimeSpan.FromSeconds(5)) ?? Task.CompletedTask;
+
+        await Task.WhenAll(stopTcp, stopWs).ConfigureAwait(false);
     }
 
     private void CreateTcpSocket()

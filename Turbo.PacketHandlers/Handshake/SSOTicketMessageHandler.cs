@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Authentication;
@@ -34,13 +35,15 @@ public class SSOTicketMessageHandler(
     IAuthenticationService authService,
     ISessionGateway sessionGateway,
     IGrainFactory grainFactory,
-    IPermissionService permissionService
+    IPermissionService permissionService,
+    ILogger<SSOTicketMessageHandler> logger
 ) : IMessageHandler<SSOTicketMessage>
 {
     private readonly IAuthenticationService _authService = authService;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IPermissionService _permissionService = permissionService;
+    private readonly ILogger<SSOTicketMessageHandler> _logger = logger;
 
     public async ValueTask HandleAsync(
         SSOTicketMessage message,
@@ -289,7 +292,36 @@ public class SSOTicketMessageHandler(
                 )
                 .ConfigureAwait(false);
         }
-        catch (Exception) { }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            await CloseSessionSafelyAsync(ctx).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "Failed to complete SSO handshake for session {SessionKey}",
+                ctx.SessionKey
+            );
+
+            await CloseSessionSafelyAsync(ctx).ConfigureAwait(false);
+        }
+    }
+
+    private async Task CloseSessionSafelyAsync(MessageContext ctx)
+    {
+        try
+        {
+            await ctx.CloseSessionAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(
+                ex,
+                "Failed to close session {SessionKey} after SSO handshake failure",
+                ctx.SessionKey
+            );
+        }
     }
 
     private static ScrSendUserInfoMessageComposer BuildScrSendUserInfo(ClubSubscriptionSnapshot sub)

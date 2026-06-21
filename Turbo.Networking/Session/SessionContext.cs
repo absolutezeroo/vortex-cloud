@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using SuperSocket.Connection;
 using SuperSocket.ProtoBase;
 using SuperSocket.Server;
@@ -13,11 +14,13 @@ using Turbo.Runtime;
 
 namespace Turbo.Networking.Session;
 
-public class SessionContext(IPackageEncoder<OutgoingPackage> packageEncoder)
-    : AppSession(),
-        ISessionContext
+public class SessionContext(
+    IPackageEncoder<OutgoingPackage> packageEncoder,
+    ILogger<SessionContext> logger
+) : AppSession(), ISessionContext
 {
     private readonly IPackageEncoder<OutgoingPackage> _packageEncoder = packageEncoder;
+    private readonly ILogger<SessionContext> _logger = logger;
 
     public SessionKey SessionKey { get; private set; } = string.Empty;
     public bool PolicyDone { get; set; } = true;
@@ -74,9 +77,14 @@ public class SessionContext(IPackageEncoder<OutgoingPackage> packageEncoder)
                 .SendAsync(_packageEncoder, new OutgoingPackage(this, composer), ct)
                 .ConfigureAwait(false);
         }
-        catch
+        catch (Exception ex)
         {
-            return;
+            _logger.LogDebug(
+                ex,
+                "Failed to send composer {ComposerType} to session {SessionKey}",
+                composer?.GetType().Name ?? "<null>",
+                SessionKey
+            );
         }
     }
 }

@@ -1,5 +1,5 @@
 <script>
-  import { login } from '../lib/api.js';
+  import { describeApiError, isConnectionError, login } from '../lib/api.js';
 
   export let onAuthenticated;
 
@@ -16,10 +16,15 @@
       await login(email, password);
       await onAuthenticated();
     } catch (e) {
-      error =
-        e.status === 403
-          ? 'This account has no dashboard access.'
-          : 'Invalid email or password.';
+      if (isConnectionError(e)) {
+        error = describeApiError(e);
+      } else if (e.status === 403) {
+        error = 'This account has no dashboard access.';
+      } else if (e.status === 429) {
+        error = describeApiError(e);
+      } else {
+        error = 'Invalid email or password.';
+      }
     } finally {
       busy = false;
     }
@@ -50,7 +55,7 @@
       <p class="login-error">{error}</p>
     {/if}
 
-    <button type="submit" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
+    <button type="submit" disabled={busy}>{busy ? 'Signing in...' : 'Sign in'}</button>
   </form>
 </div>
 

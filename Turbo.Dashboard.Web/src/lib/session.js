@@ -7,6 +7,9 @@ import { writable } from 'svelte/store';
 /** The authenticated principal from /api/me ({ email, superuser, capabilities }) or null. */
 export const identity = writable(null);
 
+/** Current emulator/API reachability issue, or null when the backend is reachable. */
+export const connectionIssue = writable(null);
+
 /** The currently open entity inspector ({ type, id, label }) or null when closed. */
 export const modal = writable(null);
 

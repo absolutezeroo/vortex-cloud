@@ -13,6 +13,6 @@ public class DisconnectMessageHandler : IMessageHandler<DisconnectMessage>
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        await ctx.CloseSessionAsync().ConfigureAwait(false);
     }
 }
