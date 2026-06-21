@@ -12,6 +12,7 @@ public enum AuditCategory
     Security,
     Social,
     System,
+    RentableSpace,
 }
 
 /// <summary>Severity of an audit record, used for incident triage and retention policy.</summary>

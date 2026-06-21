@@ -211,6 +211,14 @@ internal static class DashboardEndpoints
             TagEconomy
         );
 
+        app.MapGet(
+                ApiV1 + "/rentable-spaces/activity",
+                (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                    Ok(api.RentableSpacesAsync(ctx.QueryAsNameValues(), ct))
+            )
+            .RequireAuthorization(Capabilities.Dashboard.EconomyRead)
+            .WithTags(TagEconomy);
+
         MapReadGet(
             app,
             ApiDirectory + "/search",
