@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players.Enums;
 using Turbo.Primitives.Players.Enums.Wallet;
 using Turbo.Primitives.Players.Wallet;
+using Turbo.Primitives.Action;
 using Turbo.Primitives.Rooms;
 using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Object;
@@ -311,17 +313,44 @@ internal sealed class RentableSpaceGrain(
         {
             await using TurboDbContext db = await dbCtxFactory.CreateDbContextAsync(ct);
 
-            // Bulk-return all tagged furniture to renter inventory (DATA-MODEL §3.3).
-            await db
+            // Collect IDs of all furniture tagged to this space.
+            List<int> taggedIds = await db
                 .Furnitures.Where(f =>
                     f.RentableSpaceFurnitureEntityId == FurnitureId && f.DeletedAt == null
                 )
-                .ExecuteUpdateAsync(
-                    s =>
-                        s.SetProperty(f => f.RoomEntityId, (int?)null)
-                            .SetProperty(f => f.RentableSpaceFurnitureEntityId, (int?)null),
-                    ct
-                );
+                .Select(f => f.Id)
+                .ToListAsync(ct);
+
+            if (taggedIds.Count > 0)
+            {
+                // Clear the rentable-space tag so items are no longer associated.
+                await db
+                    .Furnitures.Where(f => taggedIds.Contains(f.Id))
+                    .ExecuteUpdateAsync(
+                        s => s.SetProperty(f => f.RentableSpaceFurnitureEntityId, (int?)null),
+                        ct
+                    );
+
+                // Remove each item from the live room grain so it disappears from the
+                // map immediately, gets returned to its owner's inventory, and has its
+                // RoomEntityId zeroed via the grain's dirty-flush pipeline.
+                if (_roomId.HasValue)
+                {
+                    IRoomGrain roomGrain = grainFactory.GetRoomGrain(
+                        new RoomId(_roomId.Value)
+                    );
+
+                    await Task.WhenAll(
+                        taggedIds.Select(id =>
+                            roomGrain.RemoveItemByIdAsync(
+                                ActionContext.System,
+                                new RoomObjectId(id),
+                                ct
+                            )
+                        )
+                    );
+                }
+            }
 
             // Clear the state row in-place.
             RoomRentableSpaceEntity? entity = await db.RoomRentableSpaces.FirstOrDefaultAsync(
