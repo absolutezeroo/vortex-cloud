@@ -144,6 +144,8 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
 
     public DbSet<PetFoodEntity> PetFood { get; init; }
 
+    public DbSet<PetPaletteEntity> PetPalettes { get; init; }
+
     protected override void OnModelCreating(ModelBuilder mb)
     {
         base.OnModelCreating(mb);

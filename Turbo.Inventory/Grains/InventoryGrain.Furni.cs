@@ -21,7 +21,10 @@ using Turbo.Primitives.Furniture.StuffData;
 using Turbo.Primitives.Inventory.Furniture;
 using Turbo.Primitives.Inventory.Snapshots;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Pets;
+using Turbo.Primitives.Pets.Snapshots;
 using Turbo.Primitives.Players.Grains;
+using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Object;
 using Turbo.Primitives.Rooms.Snapshots.Furniture;
 
@@ -93,6 +96,7 @@ public sealed partial class InventoryGrain
 
         List<FurnitureEntity> furniEntities = new();
         List<string> badgeCodes = new();
+        List<PetCreateRequest> petRequests = new();
 
         foreach (CatalogProductSnapshot product in offer.Products)
         {
@@ -122,6 +126,35 @@ public sealed partial class InventoryGrain
             )
             {
                 badgeCodes.Add(product.ExtraParam);
+                continue;
+            }
+
+            if (product.ProductType is ProductType.Pet)
+            {
+                _ = int.TryParse(product.ExtraParam, out int petType);
+
+                string[] parts = extraParam.Split('\n');
+                string petName = parts.Length > 0 ? parts[0].Trim() : "Pet";
+                int race = parts.Length > 1 && int.TryParse(parts[1], out int r) ? r : 0;
+                string color = parts.Length > 2 ? parts[2].Trim() : "ffffff";
+
+                if (string.IsNullOrWhiteSpace(petName))
+                {
+                    petName = "Pet";
+                }
+
+                petRequests.Add(
+                    new PetCreateRequest
+                    {
+                        Name = petName,
+                        Type = petType,
+                        Race = race,
+                        Color = color,
+                        Gender = AvatarGenderType.Male,
+                        Energy = 100,
+                        Nutrition = 100,
+                    }
+                );
             }
         }
 
@@ -214,6 +247,16 @@ public sealed partial class InventoryGrain
         finally
         {
             await dbCtx.DisposeAsync().ConfigureAwait(false);
+        }
+
+        foreach (PetCreateRequest req in petRequests)
+        {
+            PetSnapshot pet = await CreatePetAsync(req, ct).ConfigureAwait(false);
+
+            IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(
+                this.GetPrimaryKeyLong()
+            );
+            await presence.OnPetAddedToInventoryAsync(pet, ct).ConfigureAwait(false);
         }
     }
 

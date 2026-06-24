@@ -1,18 +1,38 @@
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.Inventory.Grains;
 using Turbo.Primitives.Messages.Incoming.Inventory.Pets;
+using Turbo.Primitives.Messages.Outgoing.Inventory.Pets;
+using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Pets.Snapshots;
 
 namespace Turbo.PacketHandlers.Inventory.Pets;
 
-public class GetPetInventoryMessageHandler : IMessageHandler<GetPetInventoryMessage>
+public class GetPetInventoryMessageHandler(IGrainFactory grainFactory)
+    : IMessageHandler<GetPetInventoryMessage>
 {
+    private readonly IGrainFactory _grainFactory = grainFactory;
+
     public async ValueTask HandleAsync(
         GetPetInventoryMessage message,
         MessageContext ctx,
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        if (ctx.PlayerId <= 0)
+        {
+            return;
+        }
+
+        IInventoryGrain inventoryGrain = _grainFactory.GetInventoryGrain(ctx.PlayerId);
+        ImmutableArray<PetSnapshot> pets = await inventoryGrain
+            .GetAllPetSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+
+        await ctx.SendComposerAsync(new PetInventoryEventMessageComposer { Pets = pets }, ct)
+            .ConfigureAwait(false);
     }
 }

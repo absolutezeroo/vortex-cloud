@@ -1,5 +1,6 @@
 using Turbo.Primitives.Messages.Outgoing.Catalog;
 using Turbo.Primitives.Packets;
+using Turbo.Primitives.Pets.Snapshots;
 
 namespace Turbo.Revisions.Revision20260112.Serializers.Catalog;
 
@@ -11,6 +12,16 @@ internal class SellablePetPalettesMessageComposerSerializer(int header)
         SellablePetPalettesMessageComposer message
     )
     {
-        //
+        packet.WriteString(message.ProductCode).WriteInteger(message.Palettes.Length);
+
+        foreach (PetPaletteEntry entry in message.Palettes)
+        {
+            packet
+                .WriteInteger(entry.PetType)
+                .WriteInteger(entry.BreedIndex)
+                .WriteInteger(entry.Color)
+                .WriteBoolean(entry.Sellable)
+                .WriteBoolean(entry.Rare);
+        }
     }
 }

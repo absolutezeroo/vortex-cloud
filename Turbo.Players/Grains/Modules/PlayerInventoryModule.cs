@@ -8,7 +8,9 @@ using Turbo.Primitives.Inventory.Grains;
 using Turbo.Primitives.Inventory.Snapshots;
 using Turbo.Primitives.Messages.Outgoing.Inventory.Badges;
 using Turbo.Primitives.Messages.Outgoing.Inventory.Furni;
+using Turbo.Primitives.Messages.Outgoing.Inventory.Pets;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Pets.Snapshots;
 using Turbo.Primitives.Rooms.Object;
 
 namespace Turbo.Players.Grains.Modules;
@@ -80,4 +82,7 @@ internal sealed class PlayerInventoryModule(PlayerPresenceGrain presenceGrain)
         _presenceGrain.SendComposerAsync(
             new BadgeReceivedEventMessageComposer { SlotId = 0, BadgeCode = badgeCode }
         );
+
+    public Task OnPetAddedToInventoryAsync(PetSnapshot pet, CancellationToken ct) =>
+        _presenceGrain.SendComposerAsync(new PetAddedToInventoryEventMessageComposer { Pet = pet });
 }
