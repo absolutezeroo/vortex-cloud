@@ -58,15 +58,10 @@ public sealed class AuthenticationService(
                 return 0;
             }
 
-            /*
             DateTime now = DateTime.UtcNow;
             DateTime? expiry =
                 entity.ExpiresAt
-                ?? (
-                    _ticketTtlSeconds > 0
-                        ? entity.CreatedAt.AddSeconds(_ticketTtlSeconds)
-                        : null
-                );
+                ?? (_ticketTtlSeconds > 0 ? entity.CreatedAt.AddSeconds(_ticketTtlSeconds) : null);
 
             if (expiry.HasValue && now > expiry.Value)
             {
@@ -90,7 +85,6 @@ public sealed class AuthenticationService(
 
                 await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
             }
-            */
 
             await _events
                 .PublishAsync(new PlayerLoggedInEvent(entity.PlayerEntityId, HashIp(remoteIp)), ct)
