@@ -5,7 +5,7 @@ namespace Turbo.WebApi.Services;
 
 public interface IWebApiAuthService
 {
-    Task<(bool Success, string? SessionId, string? Error)> LoginAsync(
+    Task<(bool Success, string? SessionId, int AccountId, string? Error)> LoginAsync(
         string email,
         string password,
         CancellationToken ct

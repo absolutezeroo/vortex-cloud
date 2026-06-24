@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BCrypt.Net;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Players;
@@ -15,14 +16,20 @@ namespace Turbo.WebApi.Services;
 public sealed class WebApiAuthService(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
     WebApiSessionStore sessions,
-    IOptions<WebApiConfig> options
+    IOptions<WebApiConfig> options,
+    ILogger<WebApiAuthService> logger
 ) : IWebApiAuthService
 {
     private readonly IDbContextFactory<TurboDbContext> _db = dbCtxFactory;
     private readonly WebApiSessionStore _sessions = sessions;
     private readonly WebApiConfig _config = options.Value;
+    private readonly ILogger<WebApiAuthService> _logger = logger;
 
-    public async Task<(bool Success, string? SessionId, string? Error)> LoginAsync(
+    // Pre-computed hash used when no account matches — keeps response time constant
+    // regardless of whether the email exists, preventing user enumeration via timing.
+    private const string DummyHash = "$2a$12$C6UzMDM.H6dfI/f/IKcEeO3qj8b1l1u8j0Y9o6m4w8h2tY6q0Q1Qe";
+
+    public async Task<(bool Success, string? SessionId, int AccountId, string? Error)> LoginAsync(
         string email,
         string password,
         CancellationToken ct
@@ -35,25 +42,25 @@ public sealed class WebApiAuthService(
             .FirstOrDefaultAsync(a => a.Email == email.ToLowerInvariant(), ct)
             .ConfigureAwait(false);
 
-        if (account is null)
-        {
-            return (false, null, "pocket.auth.login_failed");
-        }
+        string hash = account?.PasswordHash ?? DummyHash;
 
         // BCrypt.Verify is CPU-bound; run off the thread pool to avoid blocking the listener loop.
-        bool valid = await Task.Run(
-                () => BCrypt.Net.BCrypt.Verify(password, account.PasswordHash),
-                ct
-            )
+        bool valid = await Task.Run(() => BCrypt.Net.BCrypt.Verify(password, hash), ct)
             .ConfigureAwait(false);
 
-        if (!valid)
+        if (!valid || account is null)
         {
-            return (false, null, "pocket.auth.login_failed");
+            _logger.LogWarning("Login failed for {Email}", email.ToLowerInvariant());
+            return (false, null, 0, "pocket.auth.login_failed");
         }
 
         string sessionId = _sessions.CreateSession(account.Id);
-        return (true, sessionId, null);
+        _logger.LogInformation(
+            "Account {AccountId} authenticated ({Email})",
+            account.Id,
+            account.Email
+        );
+        return (true, sessionId, account.Id, null);
     }
 
     public async Task<(bool Success, int AccountId, string? Error)> RegisterAsync(
@@ -73,7 +80,11 @@ public sealed class WebApiAuthService(
 
         if (exists)
         {
-            return (false, 0, "pocket.auth.valid_email_required");
+            _logger.LogWarning(
+                "Registration refused: email already taken ({Email})",
+                normalizedEmail
+            );
+            return (false, 0, "pocket.auth.email_already_taken");
         }
 
         // Work factor 12 is strong enough for production; run off the thread pool.
@@ -92,6 +103,11 @@ public sealed class WebApiAuthService(
         db.PlayerAccounts.Add(account);
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
 
+        _logger.LogInformation(
+            "Account {AccountId} registered ({Email})",
+            account.Id,
+            normalizedEmail
+        );
         return (true, account.Id, null);
     }
 
@@ -109,6 +125,7 @@ public sealed class WebApiAuthService(
 
         if (player is null)
         {
+            _logger.LogWarning("SSO token requested for unknown player {PlayerId}", playerId);
             return (false, null, "pocket.auth.login_failed");
         }
 
@@ -136,6 +153,7 @@ public sealed class WebApiAuthService(
 
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
 
+        _logger.LogInformation("SSO token issued for player {PlayerId}", playerId);
         return (true, ticket, null);
     }
 }

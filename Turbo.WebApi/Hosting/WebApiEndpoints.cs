@@ -51,6 +51,7 @@ internal static class WebApiEndpoints
                     HttpContext ctx,
                     LoginRequest body,
                     IWebApiAuthService auth,
+                    IWebApiPlayerService players,
                     CancellationToken ct
                 ) =>
                 {
@@ -62,12 +63,9 @@ internal static class WebApiEndpoints
                         );
                     }
 
-                    (bool success, string? sessionId, string? error) = await auth.LoginAsync(
-                            body.Email!,
-                            body.Password!,
-                            ct
-                        )
-                        .ConfigureAwait(false);
+                    (bool success, string? sessionId, int accountId, string? error) =
+                        await auth.LoginAsync(body.Email!, body.Password!, ct)
+                            .ConfigureAwait(false);
 
                     if (!success)
                     {
@@ -79,7 +77,11 @@ internal static class WebApiEndpoints
 
                     ctx.IssueSessionCookie(sessionId!);
 
-                    return Results.Json(new { });
+                    System.Collections.Generic.List<AvatarInfo> avatars = await players
+                        .GetAvatarsForAccountAsync(accountId, ct)
+                        .ConfigureAwait(false);
+
+                    return Results.Json(new { requiresOnboarding = avatars.Count == 0 });
                 }
             )
             .RequireRateLimiting(LoginRateLimitPolicy)
@@ -145,7 +147,7 @@ internal static class WebApiEndpoints
                         );
                     }
 
-                    (bool loginOk, string? sessionId, string? _) = await auth.LoginAsync(
+                    (bool loginOk, string? sessionId, _, _) = await auth.LoginAsync(
                             body.Email!,
                             body.Password!,
                             ct
@@ -317,6 +319,15 @@ internal static class WebApiEndpoints
                         !string.IsNullOrWhiteSpace(uniqueId) && int.TryParse(uniqueId, out int pid)
                     )
                     {
+                        System.Collections.Generic.List<AvatarInfo> ownedForSso = await players
+                            .GetAvatarsForAccountAsync(accountId.Value, ct)
+                            .ConfigureAwait(false);
+
+                        if (!ownedForSso.Exists(a => a.UniqueId == uniqueId))
+                        {
+                            return Error(StatusCodes.Status403Forbidden, "avatar_not_owned");
+                        }
+
                         playerId = pid;
                     }
                     else
@@ -381,6 +392,15 @@ internal static class WebApiEndpoints
                         return Error(StatusCodes.Status400BadRequest, "invalid_request");
                     }
 
+                    System.Collections.Generic.List<AvatarInfo> ownedForFigure = await players
+                        .GetAvatarsForAccountAsync(accountId.Value, ct)
+                        .ConfigureAwait(false);
+
+                    if (!ownedForFigure.Exists(a => a.UniqueId == body.PlayerId.ToString()))
+                    {
+                        return Error(StatusCodes.Status403Forbidden, "avatar_not_owned");
+                    }
+
                     bool ok = await players
                         .SaveFigureAsync(body.PlayerId, body.FigureString!, body.Gender ?? "M", ct)
                         .ConfigureAwait(false);
@@ -438,6 +458,15 @@ internal static class WebApiEndpoints
                     if (body is null || !body.IsValid)
                     {
                         return Error(StatusCodes.Status400BadRequest, "invalid_request");
+                    }
+
+                    System.Collections.Generic.List<AvatarInfo> ownedForName = await players
+                        .GetAvatarsForAccountAsync(accountId.Value, ct)
+                        .ConfigureAwait(false);
+
+                    if (!ownedForName.Exists(a => a.UniqueId == body.PlayerId.ToString()))
+                    {
+                        return Error(StatusCodes.Status403Forbidden, "avatar_not_owned");
                     }
 
                     bool ok = await players

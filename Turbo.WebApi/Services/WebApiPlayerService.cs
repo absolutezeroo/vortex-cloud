@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Players;
@@ -15,11 +16,13 @@ namespace Turbo.WebApi.Services;
 
 public sealed class WebApiPlayerService(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
-    IOptions<WebApiConfig> options
+    IOptions<WebApiConfig> options,
+    ILogger<WebApiPlayerService> logger
 ) : IWebApiPlayerService
 {
     private readonly IDbContextFactory<TurboDbContext> _db = dbCtxFactory;
     private readonly WebApiConfig _config = options.Value;
+    private readonly ILogger<WebApiPlayerService> _logger = logger;
 
     public async Task<List<AvatarInfo>> GetAvatarsForAccountAsync(
         int accountId,
@@ -54,6 +57,11 @@ public sealed class WebApiPlayerService(
 
         if (count >= _config.MaxAvatarsPerAccount)
         {
+            _logger.LogWarning(
+                "Avatar creation refused: account {AccountId} reached max avatars ({Max})",
+                accountId,
+                _config.MaxAvatarsPerAccount
+            );
             return (false, 0, "pocket.auth.max_avatars_reached");
         }
 
@@ -64,6 +72,7 @@ public sealed class WebApiPlayerService(
 
         if (taken)
         {
+            _logger.LogWarning("Avatar creation refused: name '{Name}' already taken", name);
             return (false, 0, "pocket.auth.name_taken");
         }
 
@@ -82,6 +91,12 @@ public sealed class WebApiPlayerService(
         db.Players.Add(player);
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
 
+        _logger.LogInformation(
+            "Avatar '{Name}' created for account {AccountId} (playerId={PlayerId})",
+            name,
+            accountId,
+            player.Id
+        );
         return (true, player.Id, null);
     }
 
