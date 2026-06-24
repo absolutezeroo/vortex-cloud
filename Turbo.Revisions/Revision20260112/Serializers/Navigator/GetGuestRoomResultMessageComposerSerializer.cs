@@ -27,5 +27,7 @@ internal class GetGuestRoomResultMessageComposerSerializer(int header)
         packet.WriteBoolean(message.CanMute);
 
         RoomChatSettingsSerializer.Serialize(packet, message.RoomInfo.ChatSettings);
+
+        packet.WriteBoolean(message.OpeningConnection);
     }
 }
