@@ -7,7 +7,7 @@ using Turbo.Database.Entities.Players;
 
 namespace Turbo.Database.Entities.Catalog;
 
-[Table("ltd_raffle_entries")]
+[Table("catalog_ltd_raffle_entries")]
 [Index(nameof(SeriesEntityId))]
 [Index(nameof(PlayerEntityId))]
 public class LtdRaffleEntryEntity : TurboEntity

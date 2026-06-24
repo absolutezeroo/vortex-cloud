@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Turbo.Database.Context;
 
@@ -11,9 +12,11 @@ using Turbo.Database.Context;
 namespace Turbo.Database.Migrations
 {
     [DbContext(typeof(TurboDbContext))]
-    partial class TurboDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260624000000_RenameLtdTablesToCatalogPrefix")]
+    partial class RenameLtdTablesToCatalogPrefix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2813,65 +2816,6 @@ namespace Turbo.Database.Migrations
                     b.HasIndex("PetType");
 
                     b.ToTable("pet_food");
-                });
-
-            modelBuilder.Entity("Turbo.Database.Entities.Pets.PetPaletteEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BreedIndex")
-                        .HasColumnType("int")
-                        .HasColumnName("breed_index");
-
-                    b.Property<int>("Color")
-                        .HasColumnType("int")
-                        .HasColumnName("color");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("created_at");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<int>("PetType")
-                        .HasColumnType("int")
-                        .HasColumnName("pet_type");
-
-                    b.Property<bool>("Rare")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(false)
-                        .HasColumnName("rare");
-
-                    b.Property<bool>("Sellable")
-                        .HasColumnType("tinyint(1)")
-                        .HasColumnName("sellable");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("updated_at");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PetType");
-
-                    b.HasIndex("PetType", "BreedIndex", "Rare")
-                        .IsUnique();
-
-                    b.ToTable("pet_palettes");
                 });
 
             modelBuilder.Entity("Turbo.Database.Entities.Players.PlayerAccountEntity", b =>

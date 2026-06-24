@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Turbo.Database.Entities.Catalog;
 
-[Table("ltd_series")]
+[Table("catalog_ltd_series")]
 public class LtdSeriesEntity : TurboEntity
 {
     [Column("catalog_product_id")]
