@@ -17,7 +17,6 @@ internal sealed class TurboConsoleFormatter(
 
     private readonly IOptionsMonitor<TurboConsoleFormatterOptions> _optionsMonitor = optionsMonitor;
 
-    // Level label & color mappings
     private static readonly Dictionary<LogLevel, string> LOG_LEVEL_LABELS = new()
     {
         [LogLevel.Trace] = "TRC",
@@ -29,18 +28,22 @@ internal sealed class TurboConsoleFormatter(
         [LogLevel.None] = "NON",
     };
 
-    private static readonly Dictionary<LogLevel, (string fg, string bg)> LOG_LEVEL_COLORS = new()
-    {
-        [LogLevel.Trace] = ("\u001b[90m", ""), // Bright Black (Gray)
-        [LogLevel.Debug] = ("\u001b[36m", ""), // Cyan
-        [LogLevel.Information] = ("\u001b[37m", ""), // White
-        [LogLevel.Warning] = ("\u001b[33m", ""), // Yellow
-        [LogLevel.Error] = ("\u001b[31m", ""), // Red
-        [LogLevel.Critical] = ("\u001b[97m", "\u001b[41m"), // White on Red background
-        [LogLevel.None] = ("\u001b[37m", ""),
-    };
+    // (badge color, message color)
+    private static readonly Dictionary<LogLevel, (string Badge, string Message)> LOG_LEVEL_COLORS =
+        new()
+        {
+            [LogLevel.Trace] = ("[90m", "[90m"), // gray
+            [LogLevel.Debug] = ("[36m", "[36m"), // cyan
+            [LogLevel.Information] = ("[92m", "[0m"), // bright green badge, default message
+            [LogLevel.Warning] = ("[93m", "[33m"), // bright yellow badge, yellow message
+            [LogLevel.Error] = ("[91m", "[31m"), // bright red badge, red message
+            [LogLevel.Critical] = ("[97;41m", "[91m"), // white-on-red badge, bright red message
+            [LogLevel.None] = ("[37m", "[0m"),
+        };
 
-    private const string RESET = "\u001b[0m";
+    private const string RESET = "[0m";
+    private const string DIM = "[2m";
+    private const int CATEGORY_WIDTH = 22;
 
     public override void Write<TState>(
         in LogEntry<TState> logEntry,
@@ -51,12 +54,19 @@ internal sealed class TurboConsoleFormatter(
         TurboConsoleFormatterOptions options = _optionsMonitor.CurrentValue;
 
         DateTimeOffset now = options.UseUtcTimestamp ? DateTimeOffset.UtcNow : DateTimeOffset.Now;
-        string ts = now.ToString(options.TimestampFormat ?? "yyyy-MM-dd HH:mm:ss.fff");
+        string ts = now.ToString(options.TimestampFormat ?? "HH:mm:ss.fff");
 
         LogLevel level = logEntry.LogLevel;
         string levelLabel = LOG_LEVEL_LABELS.TryGetValue(level, out string? lbl)
             ? lbl
-            : level.ToString().ToUpperInvariant();
+            : level.ToString().ToUpperInvariant()[..3];
+
+        (string badge, string messageColor) = LOG_LEVEL_COLORS.TryGetValue(
+            level,
+            out (string Badge, string Message) c
+        )
+            ? c
+            : (string.Empty, string.Empty);
 
         string? category = null;
         if (options.IncludeCategory && !string.IsNullOrEmpty(logEntry.Category))
@@ -64,100 +74,64 @@ internal sealed class TurboConsoleFormatter(
             category = TrimCategory(logEntry.Category!, options.TrimCategoryDepth);
         }
 
-        (string fg, string bg) = LOG_LEVEL_COLORS[level];
+        string? message = logEntry.Formatter?.Invoke(logEntry.State, logEntry.Exception);
+        if (!string.IsNullOrEmpty(message) && options.SingleLine)
+        {
+            message = message
+                .Replace(Environment.NewLine, " ")
+                .Replace('\n', ' ')
+                .Replace('\r', ' ');
+        }
 
-        // Build header (timestamp + level + category)
-        StringBuilder headerSb = new StringBuilder(128);
+        // Pad or truncate category to a fixed visual width for column alignment.
+        string categorySlot =
+            category is null ? new string(' ', CATEGORY_WIDTH)
+            : category.Length > CATEGORY_WIDTH ? category[..(CATEGORY_WIDTH - 1)] + "…"
+            : category.PadRight(CATEGORY_WIDTH);
+
+        StringBuilder sb = new StringBuilder(256);
+
         if (options.UseAnsiColor)
         {
-            headerSb.Append('[').Append(ts).Append("] ");
-            if (bg.Length > 0)
+            // [timestamp]
+            sb.Append(DIM).Append('[').Append(ts).Append(']').Append(RESET).Append(' ');
+            // LVL badge
+            sb.Append(badge).Append(levelLabel).Append(RESET).Append(' ');
+            // Category (dim)
+            sb.Append(DIM).Append(categorySlot).Append(RESET);
+            // Separator
+            sb.Append(": ");
+            // Message
+            if (!string.IsNullOrEmpty(message))
             {
-                headerSb.Append(bg);
-            }
-
-            headerSb.Append(fg).Append(RESET);
-            if (!string.IsNullOrEmpty(bg))
-            {
-                headerSb.Append(RESET);
+                sb.Append(messageColor).Append(message).Append(RESET);
             }
         }
         else
         {
-            headerSb.Append('[').Append(ts).Append("] ");
-        }
-
-        if (!string.IsNullOrEmpty(category))
-        {
-            headerSb.Append(category);
-        }
-
-        if (logEntry.EventId.Id != 0)
-        {
-            headerSb.Append(" [").Append(logEntry.EventId.Id).Append(']');
-        }
-
-        string header = headerSb.ToString();
-
-        // ===== Align after the category =====
-        // Assume max width for the header column
-        const int HEADER_WIDTH = 55;
-        string paddedHeader = header.PadRight(HEADER_WIDTH);
-
-        string? message = logEntry.Formatter?.Invoke(logEntry.State, logEntry.Exception);
-        if (!string.IsNullOrEmpty(message))
-        {
-            if (options.SingleLine)
+            sb.Append('[').Append(ts).Append("] ");
+            sb.Append(levelLabel).Append(' ');
+            sb.Append(categorySlot);
+            sb.Append(": ");
+            if (!string.IsNullOrEmpty(message))
             {
-                message = message
-                    .Replace(Environment.NewLine, " ")
-                    .Replace('\n', ' ')
-                    .Replace('\r', ' ');
-            }
-        }
-
-        StringBuilder sb = new StringBuilder(256);
-        sb.Append(paddedHeader);
-
-        if (!string.IsNullOrEmpty(message))
-        {
-            if (options.UseAnsiColor)
-            {
-                sb.Append(": ").Append(fg).Append(message).Append(RESET);
-            }
-            else
-            {
-                sb.Append(": ").Append(message);
+                sb.Append(message);
             }
         }
 
         if (options.IncludeScopes && scopeProvider is not null)
         {
-            scopeProvider.ForEachScope(
-                (scope, s) =>
-                {
-                    s.Append(" => ").Append(scope);
-                },
-                sb
-            );
+            scopeProvider.ForEachScope((scope, s) => s.Append(" => ").Append(scope), sb);
         }
 
-        // Write the line
         textWriter.WriteLine(sb.ToString());
 
-        // Write the exception (on next line, aligned as well)
         if (logEntry.Exception is not null)
         {
-            if (options.UseAnsiColor)
-            {
-                textWriter.WriteLine(
-                    $"{LOG_LEVEL_COLORS[LogLevel.Error].fg}{logEntry.Exception}{RESET}"
-                );
-            }
-            else
-            {
-                textWriter.WriteLine($"{logEntry.Exception}");
-            }
+            string exLine = options.UseAnsiColor
+                ? $"{LOG_LEVEL_COLORS[LogLevel.Error].Badge}{logEntry.Exception}{RESET}"
+                : logEntry.Exception.ToString();
+            textWriter.WriteLine(exLine);
         }
     }
 
@@ -168,7 +142,6 @@ internal sealed class TurboConsoleFormatter(
             return category;
         }
 
-        // Split by '.' and take last N segments
         string[] parts = category.Split('.');
         if (parts.Length <= depth)
         {
