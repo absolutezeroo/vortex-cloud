@@ -36,4 +36,25 @@ public interface IRentableSpaceGrain : IGrainWithIntegerKey
     /// the renter's inventory (DATA-MODEL §3.3 expiry clause). No-op if not rented.
     /// </summary>
     Task ExpireAsync(CancellationToken ct);
+
+    /// <summary>
+    /// Returns the current owner-configurable terms for this space.
+    /// Fields are zeroed when no terms row exists yet.
+    /// </summary>
+    Task<RentableSpaceConfigSnapshot> GetConfigAsync(CancellationToken ct);
+
+    /// <summary>
+    /// Creates or replaces the <c>rentable_space_terms</c> row for this furniture instance.
+    /// Only the furniture owner (or staff when <paramref name="isStaff"/> is true) may call this.
+    /// Returns false when the actor is not authorized or <paramref name="currencyTypeId"/> is unknown.
+    /// </summary>
+    Task<bool> ConfigureAsync(
+        int actorPlayerId,
+        bool isStaff,
+        int price,
+        int currencyTypeId,
+        int rentDurationSeconds,
+        bool requiresHc,
+        CancellationToken ct
+    );
 }

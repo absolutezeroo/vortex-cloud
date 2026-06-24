@@ -325,6 +325,8 @@ internal static class MessageEvent
     public const int PlacePostItMessageEvent = 174;
     public const int PresentOpenMessageEvent = 2358;
     public const int RentableSpaceCancelRentMessageEvent = 3941;
+    public const int RentableSpaceConfigureMessageEvent = 4601;
+    public const int RentableSpaceGetConfigMessageEvent = 4600;
     public const int RentableSpaceRentMessageEvent = 1165;
     public const int RentableSpaceStatusMessageEvent = 2542;
     public const int RoomDimmerChangeStateMessageEvent = 3707;
@@ -649,6 +651,7 @@ internal static class MessageComposer
     public const int OpenPetPackageRequestedMessageComposer = 1428;
     public const int OpenPetPackageResultMessageComposer = 3835;
     public const int PresentOpenedMessageComposer = 3064;
+    public const int RentableSpaceConfigMessageComposer = 4600;
     public const int RentableSpaceRentFailedMessageComposer = 2954;
     public const int RentableSpaceRentOkMessageComposer = 2596;
     public const int RentableSpaceStatusMessageComposer = 1567;

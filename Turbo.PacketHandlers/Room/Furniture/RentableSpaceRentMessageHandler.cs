@@ -59,6 +59,7 @@ public class RentableSpaceRentMessageHandler(IGrainFactory grainFactory)
                     RenterName = snapshot.RenterName,
                     TimeRemaining = snapshot.TimeRemaining,
                     Price = snapshot.Price,
+                    CurrencyName = snapshot.CurrencyName,
                 },
                 ct
             )

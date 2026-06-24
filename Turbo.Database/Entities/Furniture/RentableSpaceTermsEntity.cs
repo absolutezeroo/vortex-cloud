@@ -5,16 +5,16 @@ using Turbo.Database.Entities.Catalog;
 namespace Turbo.Database.Entities.Furniture;
 
 /// <summary>
-/// Price/duration/currency terms for a rentable-space furniture type (DATA-MODEL §3.1).
-/// 1:1 with <see cref="FurnitureDefinitionEntity"/>; one row per definition that is a
-/// rentable space. Cold config — never updated at runtime.
+/// Owner-configurable price/duration/currency terms for one placed rentable-space furniture
+/// instance. 1:1 with <see cref="FurnitureEntity"/>; one row per placed item.
+/// Updated at runtime when the room owner reconfigures the space.
 /// </summary>
-[Table("rentable_space_terms")]
-[Index(nameof(FurnitureDefinitionEntityId), IsUnique = true)]
+[Table("room_rentable_space_terms")]
+[Index(nameof(FurnitureEntityId), IsUnique = true)]
 public class RentableSpaceTermsEntity : TurboEntity
 {
-    [Column("furniture_definition_id")]
-    public required int FurnitureDefinitionEntityId { get; set; }
+    [Column("furniture_id")]
+    public required int FurnitureEntityId { get; set; }
 
     [Column("price")]
     public required int Price { get; set; }
@@ -28,8 +28,8 @@ public class RentableSpaceTermsEntity : TurboEntity
     [Column("requires_hc")]
     public required bool RequiresHc { get; set; }
 
-    [ForeignKey(nameof(FurnitureDefinitionEntityId))]
-    public required FurnitureDefinitionEntity FurnitureDefinitionEntity { get; set; }
+    [ForeignKey(nameof(FurnitureEntityId))]
+    public required FurnitureEntity FurnitureEntity { get; set; }
 
     [ForeignKey(nameof(CurrencyTypeEntityId))]
     public required CurrencyTypeEntity CurrencyTypeEntity { get; set; }

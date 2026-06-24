@@ -70,6 +70,7 @@ public class RentableSpaceCancelRentMessageHandler(
                     RenterName = snapshot.RenterName,
                     TimeRemaining = snapshot.TimeRemaining,
                     Price = snapshot.Price,
+                    CurrencyName = snapshot.CurrencyName,
                 },
                 ct
             )

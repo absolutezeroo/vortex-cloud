@@ -22,10 +22,12 @@ public sealed record RentableSpaceStatusSnapshot
     [Id(3)]
     public required string RenterName { get; init; }
 
-    /// <summary>Seconds remaining in the current rental; 0 when unrented.</summary>
     [Id(4)]
     public required int TimeRemaining { get; init; }
 
     [Id(5)]
     public required int Price { get; init; }
+
+    [Id(6)]
+    public required string CurrencyName { get; init; }
 }

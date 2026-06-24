@@ -17,6 +17,7 @@ internal class RentableSpaceStatusMessageComposerSerializer(int header)
             .WriteInteger(message.RenterId)
             .WriteString(message.RenterName)
             .WriteInteger(message.TimeRemaining)
-            .WriteInteger(message.Price);
+            .WriteInteger(message.Price)
+            .WriteString(message.CurrencyName);
     }
 }

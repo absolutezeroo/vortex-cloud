@@ -9,13 +9,13 @@ using Turbo.Primitives.Rooms.Snapshots;
 
 namespace Turbo.PacketHandlers.Room.Furniture;
 
-public class RentableSpaceStatusMessageHandler(IGrainFactory grainFactory)
-    : IMessageHandler<RentableSpaceStatusMessage>
+public class GetRentableSpaceConfigMessageHandler(IGrainFactory grainFactory)
+    : IMessageHandler<GetRentableSpaceConfigMessage>
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
 
     public async ValueTask HandleAsync(
-        RentableSpaceStatusMessage message,
+        GetRentableSpaceConfigMessage message,
         MessageContext ctx,
         CancellationToken ct
     )
@@ -25,21 +25,21 @@ public class RentableSpaceStatusMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        RentableSpaceStatusSnapshot snapshot = await _grainFactory
+        RentableSpaceConfigSnapshot snapshot = await _grainFactory
             .GetRentableSpaceGrain(message.FurnitureId)
-            .GetStatusAsync(ctx.PlayerId, ct)
+            .GetConfigAsync(ct)
             .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
-                new RentableSpaceStatusMessageComposer
+                new RentableSpaceConfigMessageComposer
                 {
-                    Rented = snapshot.Rented,
-                    CanRentErrorCode = snapshot.CanRentErrorCode,
-                    RenterId = snapshot.RenterId,
-                    RenterName = snapshot.RenterName,
-                    TimeRemaining = snapshot.TimeRemaining,
+                    FurnitureId = snapshot.FurnitureId,
+                    IsConfigured = snapshot.IsConfigured,
                     Price = snapshot.Price,
-                    CurrencyName = snapshot.CurrencyName,
+                    CurrencyTypeId = snapshot.CurrencyTypeId,
+                    RentDurationSeconds = snapshot.RentDurationSeconds,
+                    RequiresHc = snapshot.RequiresHc,
+                    AvailableCurrencies = snapshot.AvailableCurrencies,
                 },
                 ct
             )

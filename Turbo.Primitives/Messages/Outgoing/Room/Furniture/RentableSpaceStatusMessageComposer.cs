@@ -24,4 +24,7 @@ public sealed record RentableSpaceStatusMessageComposer : IComposer
 
     [Id(5)]
     public required int Price { get; init; }
+
+    [Id(6)]
+    public required string CurrencyName { get; init; }
 }

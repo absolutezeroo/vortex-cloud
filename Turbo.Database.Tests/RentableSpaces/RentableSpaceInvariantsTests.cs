@@ -91,12 +91,12 @@ public sealed class RentableSpaceInvariantsTests
 
         RentableSpaceTermsEntity terms = new()
         {
-            FurnitureDefinitionEntityId = definition.Id,
+            FurnitureEntityId = furniture.Id,
             Price = 10,
             CurrencyTypeEntityId = currency.Id,
             RentDurationSeconds = 3600,
             RequiresHc = false,
-            FurnitureDefinitionEntity = definition,
+            FurnitureEntity = furniture,
             CurrencyTypeEntity = currency,
         };
         ctx.RentableSpaceTerms.Add(terms);

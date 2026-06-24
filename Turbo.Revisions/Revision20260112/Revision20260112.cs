@@ -1118,6 +1118,14 @@ public class Revision20260112 : IRevision
                 MessageEvent.RentableSpaceCancelRentMessageEvent,
                 new RentableSpaceCancelRentMessageParser()
             },
+            {
+                MessageEvent.RentableSpaceConfigureMessageEvent,
+                new ConfigureRentableSpaceMessageParser()
+            },
+            {
+                MessageEvent.RentableSpaceGetConfigMessageEvent,
+                new GetRentableSpaceConfigMessageParser()
+            },
             { MessageEvent.RentableSpaceRentMessageEvent, new RentableSpaceRentMessageParser() },
             {
                 MessageEvent.RentableSpaceStatusMessageEvent,
@@ -2914,6 +2922,12 @@ public class Revision20260112 : IRevision
                 typeof(PresentOpenedMessageComposer),
                 new PresentOpenedMessageComposerSerializer(
                     MessageComposer.PresentOpenedMessageComposer
+                )
+            },
+            {
+                typeof(RentableSpaceConfigMessageComposer),
+                new RentableSpaceConfigMessageComposerSerializer(
+                    MessageComposer.RentableSpaceConfigMessageComposer
                 )
             },
             {

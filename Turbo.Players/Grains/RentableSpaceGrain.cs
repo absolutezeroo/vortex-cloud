@@ -15,6 +15,7 @@ using Turbo.Primitives.Messages.Outgoing.Room.Furniture;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players.Enums;
 using Turbo.Primitives.Players.Enums.Wallet;
+using Turbo.Primitives.Players.Grains;
 using Turbo.Primitives.Players.Wallet;
 using Turbo.Primitives.Rooms;
 using Turbo.Primitives.Rooms.Enums;
@@ -73,6 +74,7 @@ internal sealed class RentableSpaceGrain(
                 RenterName = _renterName,
                 TimeRemaining = remaining,
                 Price = _terms?.Price ?? 0,
+                CurrencyName = _terms?.CurrencyTypeEntity?.Name ?? string.Empty,
             }
         );
     }
@@ -157,19 +159,20 @@ internal sealed class RentableSpaceGrain(
 
         DateTime rentedUntil = now.AddSeconds(_terms.RentDurationSeconds);
 
+        // Load furniture entity (needed for both upsert navigation and owner credit).
+        FurnitureEntity? furniEntity = await db.Furnitures.FirstOrDefaultAsync(
+            f => f.Id == FurnitureId,
+            ct
+        );
+
+        if (furniEntity is null)
+        {
+            return (int)RentableSpaceRentFailedType.Generic;
+        }
+
         // Upsert state row (insert first time, update in-place thereafter).
         if (_space is null)
         {
-            FurnitureEntity? furniEntity = await db.Furnitures.FirstOrDefaultAsync(
-                f => f.Id == FurnitureId,
-                ct
-            );
-
-            if (furniEntity is null)
-            {
-                return (int)RentableSpaceRentFailedType.Generic;
-            }
-
             RoomRentableSpaceEntity newSpace = new()
             {
                 FurnitureEntityId = FurnitureId,
@@ -195,6 +198,25 @@ internal sealed class RentableSpaceGrain(
                 await db.SaveChangesAsync(ct);
                 _space.RenterPlayerEntityId = renterPlayerId;
                 _space.RentedUntil = rentedUntil;
+            }
+        }
+
+        // Credit the furniture owner (skip if renter == owner to avoid self-transfer).
+        if (furniEntity.PlayerEntityId != renterPlayerId)
+        {
+            IPlayerWalletGrain ownerWallet = grainFactory.GetPlayerWalletGrain(
+                (long)furniEntity.PlayerEntityId
+            );
+
+            if (kind.CurrencyType == CurrencyType.Credits)
+            {
+                await ownerWallet.GrantCreditsAsync(_terms.Price, ct).ConfigureAwait(false);
+            }
+            else if (kind.ActivityPointType.HasValue)
+            {
+                await ownerWallet
+                    .GrantActivityPointsAsync(kind.ActivityPointType.Value, _terms.Price, ct)
+                    .ConfigureAwait(false);
             }
         }
 
@@ -278,6 +300,103 @@ internal sealed class RentableSpaceGrain(
             .ConfigureAwait(false);
     }
 
+    public async Task<RentableSpaceConfigSnapshot> GetConfigAsync(CancellationToken ct)
+    {
+        await using TurboDbContext db = await dbCtxFactory.CreateDbContextAsync(ct);
+
+        List<AvailableCurrencySnapshot> currencies = await db
+            .CurrencyTypes.Where(c => c.Enabled && c.DeletedAt == null)
+            .OrderBy(c => c.Id)
+            .Select(c => new AvailableCurrencySnapshot { Id = c.Id, Name = c.Name })
+            .ToListAsync(ct);
+
+        return new RentableSpaceConfigSnapshot
+        {
+            FurnitureId = FurnitureId,
+            IsConfigured = _terms is not null,
+            Price = _terms?.Price ?? 0,
+            CurrencyTypeId = _terms?.CurrencyTypeEntityId ?? 0,
+            RentDurationSeconds = _terms?.RentDurationSeconds ?? 0,
+            RequiresHc = _terms?.RequiresHc ?? false,
+            AvailableCurrencies = currencies,
+        };
+    }
+
+    public async Task<bool> ConfigureAsync(
+        int actorPlayerId,
+        bool isStaff,
+        int price,
+        int currencyTypeId,
+        int rentDurationSeconds,
+        bool requiresHc,
+        CancellationToken ct
+    )
+    {
+        await using TurboDbContext db = await dbCtxFactory.CreateDbContextAsync(ct);
+
+        // Verify actor is the furniture owner (staff bypass allowed).
+        int? furniOwnerId = await db
+            .Furnitures.Where(f => f.Id == FurnitureId)
+            .Select(f => (int?)f.PlayerEntityId)
+            .FirstOrDefaultAsync(ct);
+
+        if (!isStaff && furniOwnerId != actorPlayerId)
+        {
+            return false;
+        }
+
+        // Validate currency type exists.
+        bool currencyExists = await db.CurrencyTypes.AnyAsync(
+            c => c.Id == currencyTypeId && c.DeletedAt == null,
+            ct
+        );
+
+        if (!currencyExists)
+        {
+            return false;
+        }
+
+        RentableSpaceTermsEntity? existing = await db.RentableSpaceTerms.FirstOrDefaultAsync(
+            t => t.FurnitureEntityId == FurnitureId && t.DeletedAt == null,
+            ct
+        );
+
+        if (existing is null)
+        {
+            db.RentableSpaceTerms.Add(
+                new RentableSpaceTermsEntity
+                {
+                    FurnitureEntityId = FurnitureId,
+                    Price = price,
+                    CurrencyTypeEntityId = currencyTypeId,
+                    RentDurationSeconds = rentDurationSeconds,
+                    RequiresHc = requiresHc,
+                    FurnitureEntity = null!,
+                    CurrencyTypeEntity = null!,
+                }
+            );
+        }
+        else
+        {
+            existing.Price = price;
+            existing.CurrencyTypeEntityId = currencyTypeId;
+            existing.RentDurationSeconds = rentDurationSeconds;
+            existing.RequiresHc = requiresHc;
+        }
+
+        await db.SaveChangesAsync(ct);
+
+        // Reload _terms so subsequent GetStatusAsync reflects the new config.
+        _terms = await db
+            .RentableSpaceTerms.Include(t => t.CurrencyTypeEntity)
+            .FirstOrDefaultAsync(
+                t => t.FurnitureEntityId == FurnitureId && t.DeletedAt == null,
+                ct
+            );
+
+        return true;
+    }
+
     public override async Task OnActivateAsync(CancellationToken ct)
     {
         await using TurboDbContext db = await dbCtxFactory.CreateDbContextAsync(ct);
@@ -289,23 +408,17 @@ internal sealed class RentableSpaceGrain(
                 ct
             );
 
-        var furniRow = await db
+        _roomId = await db
             .Furnitures.Where(f => f.Id == FurnitureId)
-            .Select(f => new { f.FurnitureDefinitionEntityId, f.RoomEntityId })
+            .Select(f => f.RoomEntityId)
             .FirstOrDefaultAsync(ct);
 
-        int? definitionId = furniRow?.FurnitureDefinitionEntityId;
-        _roomId = furniRow?.RoomEntityId;
-
-        if (definitionId.HasValue)
-        {
-            _terms = await db
-                .RentableSpaceTerms.Include(t => t.CurrencyTypeEntity)
-                .FirstOrDefaultAsync(
-                    t => t.FurnitureDefinitionEntityId == definitionId.Value && t.DeletedAt == null,
-                    ct
-                );
-        }
+        _terms = await db
+            .RentableSpaceTerms.Include(t => t.CurrencyTypeEntity)
+            .FirstOrDefaultAsync(
+                t => t.FurnitureEntityId == FurnitureId && t.DeletedAt == null,
+                ct
+            );
 
         if (_space?.RenterPlayerEntityId is not null && _space.RentedUntil is not null)
         {
@@ -415,6 +528,7 @@ internal sealed class RentableSpaceGrain(
                         RenterName = string.Empty,
                         TimeRemaining = 0,
                         Price = _terms?.Price ?? 0,
+                        CurrencyName = _terms?.CurrencyTypeEntity?.Name ?? string.Empty,
                     }
                 )
                 .ConfigureAwait(false);
