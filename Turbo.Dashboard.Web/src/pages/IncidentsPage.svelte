@@ -84,7 +84,7 @@
   <div class="incident-banner">
     <div>
       <span class="muted">Overall severity</span>
-      <strong class={severityClass(data?.overall)}>{data?.overall || '-'}</strong>
+      <strong class={severityClass(data?.overallSeverity)}>{data?.overallSeverity || '-'}</strong>
     </div>
     <span>{formatDate(data?.generatedAt)}</span>
   </div>

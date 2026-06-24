@@ -32,6 +32,10 @@ public sealed class IncidentDetectionService(
     private readonly ILogger<IncidentDetectionService> _logger = logger;
     private readonly int _lookbackMinutes = Math.Max(1, options.Value.IncidentLookbackMinutes);
     private readonly int _topErrorGroups = Math.Max(1, options.Value.IncidentTopErrorGroups);
+    private readonly int _errorGroupWindowDays = Math.Max(
+        1,
+        options.Value.IncidentErrorGroupWindowDays
+    );
     private readonly int _errorSpikesCritical = Math.Max(
         0,
         options.Value.ErrorSpikesCriticalPerMinute
@@ -83,9 +87,10 @@ public sealed class IncidentDetectionService(
                 )
                 .ConfigureAwait(false);
 
+            DateTime groupSince = now.AddDays(-_errorGroupWindowDays);
             List<TopErrorGroupSnapshot> topGroups = await db
                 .ErrorGroups.AsNoTracking()
-                .Where(g => g.LastSeenAt >= since)
+                .Where(g => g.LastSeenAt >= groupSince)
                 .OrderByDescending(g => g.TotalOccurrences)
                 .Take(_topErrorGroups)
                 .Select(g => new TopErrorGroupSnapshot(
@@ -111,7 +116,7 @@ public sealed class IncidentDetectionService(
             EvaluateErrorSpikes(errorSpikes, incidents);
             EvaluateLoginFailedSpikes(loginFailedSpikes, incidents);
 
-            return BuildSnapshot(incidents, topGroups, errorSpikes, loginFailedSpikes);
+            return BuildSnapshot(incidents, topGroups, errorSpikes, loginFailedSpikes, now);
         }
         catch (Exception ex) when (!ct.IsCancellationRequested)
         {
@@ -121,14 +126,21 @@ public sealed class IncidentDetectionService(
             );
         }
 
-        return BuildSnapshot(incidents, Array.Empty<TopErrorGroupSnapshot>(), 0, 0);
+        return BuildSnapshot(
+            incidents,
+            Array.Empty<TopErrorGroupSnapshot>(),
+            0,
+            0,
+            DateTime.UtcNow
+        );
     }
 
     private IncidentDetectionSnapshot BuildSnapshot(
         List<IncidentSignal> incidents,
         IReadOnlyList<TopErrorGroupSnapshot> topGroups,
         double errorSpikesPerMinute,
-        double loginFailedSpikesPerMinute
+        double loginFailedSpikesPerMinute,
+        DateTime generatedAt
     )
     {
         string overall = ComputeOverallSeverity(incidents);
@@ -137,7 +149,14 @@ public sealed class IncidentDetectionService(
             .ThenByDescending(i => i.DetectedAt)
             .ToArray();
 
-        return new(overall, ordered, topGroups, errorSpikesPerMinute, loginFailedSpikesPerMinute);
+        return new(
+            overall,
+            ordered,
+            topGroups,
+            errorSpikesPerMinute,
+            loginFailedSpikesPerMinute,
+            generatedAt
+        );
     }
 
     private static string ComputeOverallSeverity(IReadOnlyCollection<IncidentSignal> incidents)
@@ -304,7 +323,8 @@ public sealed record IncidentDetectionSnapshot(
     IReadOnlyList<IncidentSignal> Signals,
     IReadOnlyList<TopErrorGroupSnapshot> TopErrorGroups,
     double ErrorSpikesPerMinute,
-    double LoginFailedSpikesPerMinute
+    double LoginFailedSpikesPerMinute,
+    DateTime GeneratedAt
 );
 
 public sealed record IncidentSignal(

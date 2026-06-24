@@ -112,4 +112,7 @@ public sealed class ObservabilityConfig
 
     /// <summary>Number of top error groups returned in an incident snapshot.</summary>
     public int IncidentTopErrorGroups { get; init; } = 5;
+
+    /// <summary>Rolling window in days for the top error groups query in an incident snapshot.</summary>
+    public int IncidentErrorGroupWindowDays { get; init; } = 7;
 }
