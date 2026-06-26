@@ -40,3 +40,13 @@ msbuild.wrn
 plugins/*
 plugins-shadow/*
 node_modules/
+
+# VSCode
+.vscode/
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Catalog converter raw data
+tools/catalog_converter/input/
+tools/catalog_converter/output/
