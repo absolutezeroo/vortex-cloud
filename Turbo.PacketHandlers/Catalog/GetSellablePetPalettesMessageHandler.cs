@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,19 +21,43 @@ public class GetSellablePetPalettesMessageHandler(IPetPaletteProvider petPalette
         CancellationToken ct
     )
     {
-        string productCode = message.LocalizationId.ToString();
-        ImmutableArray<PetPaletteEntry> palettes = _petPaletteProvider
-            .GetPalettesForType(message.LocalizationId)
-            .ToImmutableArray();
+        int petType = ExtractPetTypeFromLocalizationId(message.LocalizationId);
+
+        ImmutableArray<PetPaletteEntry> palettes =
+            petType >= 0 ? _petPaletteProvider.GetPalettesForType(petType).ToImmutableArray() : [];
 
         await ctx.SendComposerAsync(
                 new SellablePetPalettesMessageComposer
                 {
-                    ProductCode = productCode,
+                    ProductCode = message.LocalizationId,
                     Palettes = palettes,
                 },
                 ct
             )
             .ConfigureAwait(false);
+    }
+
+    // Mirror of Flash client getPetTypeIndexFromProduct: scan from the end for trailing digits,
+    // then return the integer formed by those digits if they are preceded by a non-digit char.
+    private static int ExtractPetTypeFromLocalizationId(string localizationId)
+    {
+        if (string.IsNullOrEmpty(localizationId))
+        {
+            return -1;
+        }
+
+        int i = localizationId.Length - 1;
+
+        while (i >= 0 && char.IsDigit(localizationId[i]))
+        {
+            i--;
+        }
+
+        if (i > 0 && i < localizationId.Length - 1)
+        {
+            return int.Parse(localizationId.AsSpan(i + 1));
+        }
+
+        return -1;
     }
 }

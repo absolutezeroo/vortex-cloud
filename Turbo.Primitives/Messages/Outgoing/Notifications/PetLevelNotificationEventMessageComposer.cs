@@ -6,5 +6,12 @@ namespace Turbo.Primitives.Messages.Outgoing.Notifications;
 [GenerateSerializer, Immutable]
 public sealed record PetLevelNotificationEventMessageComposer : IComposer
 {
-    // TODO: add properties if/when identified
+    [Id(0)]
+    public required int PetId { get; init; }
+
+    [Id(1)]
+    public required int NewLevel { get; init; }
+
+    [Id(2)]
+    public required string PetName { get; init; }
 }

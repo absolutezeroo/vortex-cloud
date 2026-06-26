@@ -19,6 +19,7 @@ using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Orleans.Snapshots.Room;
 using Turbo.Primitives.Orleans.Snapshots.Room.Settings;
 using Turbo.Primitives.Permissions;
+using Turbo.Primitives.Pets.Providers;
 using Turbo.Primitives.Rooms;
 using Turbo.Primitives.Rooms.Events;
 using Turbo.Primitives.Rooms.Grains;
@@ -41,6 +42,8 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     internal readonly IRoomObjectLogicProvider _logicProvider;
     internal readonly IRoomModerationStore _moderationStore;
     internal readonly IPermissionService _permissionService;
+    internal readonly IPetLevelProvider _petLevelProvider;
+    internal readonly IPetCommandProvider _petCommandProvider;
     internal readonly RoomConfig _roomConfig;
     internal readonly IRoomModelProvider _roomModelProvider;
 
@@ -76,7 +79,9 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         IGrainFactory grainFactory,
         IEventPublisher events,
         IPermissionService permissionService,
-        IRoomModerationStore moderationStore
+        IRoomModerationStore moderationStore,
+        IPetLevelProvider petLevelProvider,
+        IPetCommandProvider petCommandProvider
     )
     {
         _dbCtxFactory = dbCtxFactory;
@@ -91,6 +96,8 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         _events = events;
         _permissionService = permissionService;
         _moderationStore = moderationStore;
+        _petLevelProvider = petLevelProvider;
+        _petCommandProvider = petCommandProvider;
 
         _state = new RoomLiveState { RoomId = (RoomId)this.GetPrimaryKeyLong() };
         PathingSystem = new RoomPathingSystem(this);
@@ -179,6 +186,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
             _state.EpochMs = now;
             _state.NextAvatarBoundaryMs = AlignToNextBoundary(now, _roomConfig.AvatarTickMs);
+            _state.NextPetBoundaryMs = AlignToNextBoundary(now, _roomConfig.PetTickMs);
             _state.NextRollerBoundaryMs = AlignToNextBoundary(now, _roomConfig.RollerTickMs);
             _state.NextWiredBoundaryMs = AlignToNextBoundary(now, _roomConfig.WiredTickMs);
         }
@@ -205,6 +213,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                 long now = NowMs();
 
                 await AvatarTickSystem.ProcessAvatarsAsync(now, ct);
+                await PetSystem.ProcessPetsAsync(now, ct);
                 await WiredSystem.ProcessWiredAsync(now, ct);
                 await RollerSystem.ProcessRollersAsync(now, ct);
                 await FlushDirtyTilesAsync(ct);

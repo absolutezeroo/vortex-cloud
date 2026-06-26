@@ -37,4 +37,39 @@ public partial interface IRoomGrain
     );
     public Task<PetSnapshot?> GetPlacedPetSnapshotAsync(int petId, CancellationToken ct);
     public Task<ImmutableArray<PetSnapshot>> GetPlacedPetSnapshotsAsync(CancellationToken ct);
+    public Task<PetSnapshot?> RespectPetAsync(ActionContext ctx, int petId, CancellationToken ct);
+    public Task<PetSnapshot?> GrantPetCommandXpAsync(
+        ActionContext ctx,
+        int petId,
+        CancellationToken ct
+    );
+    public Task<PetSnapshot?> GiveSupplementToPetAsync(
+        ActionContext ctx,
+        int petId,
+        CancellationToken ct
+    );
+
+    public Task TogglePetBreedingPermissionAsync(
+        ActionContext ctx,
+        int petId,
+        CancellationToken ct
+    );
+
+    public Task<bool> BreedPetsAsync(
+        ActionContext ctx,
+        int petOneId,
+        int petTwoId,
+        CancellationToken ct
+    );
+
+    public Task<bool> ConfirmPetBreedingAsync(ActionContext ctx, int petId, CancellationToken ct);
+
+    public Task CancelPetBreedingAsync(ActionContext ctx, int petId, CancellationToken ct);
+
+    public Task<PetSnapshot?> IssueCommandAsync(
+        ActionContext ctx,
+        int petId,
+        int commandId,
+        CancellationToken ct
+    );
 }

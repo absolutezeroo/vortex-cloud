@@ -6,5 +6,9 @@ namespace Turbo.Primitives.Messages.Outgoing.Users;
 [GenerateSerializer, Immutable]
 public sealed record ApproveNameMessageComposer : IComposer
 {
-    // TODO: add properties if/when identified
+    [Id(0)]
+    public int Result { get; init; }
+
+    [Id(1)]
+    public string ValidationInfo { get; init; } = string.Empty;
 }

@@ -6,5 +6,6 @@ namespace Turbo.Primitives.Messages.Outgoing.Room.Pets;
 [GenerateSerializer, Immutable]
 public sealed record PetPlacingErrorMessageComposer : IComposer
 {
-    // TODO: add properties if/when identified
+    [Id(0)]
+    public required int ErrorCode { get; init; }
 }

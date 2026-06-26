@@ -6,5 +6,6 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Inventory.Pets;
 
 internal class ConfirmPetBreedingMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new ConfirmPetBreedingMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new ConfirmPetBreedingMessage { PetId = packet.PopInt() };
 }

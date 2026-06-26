@@ -11,6 +11,13 @@ internal class ConfirmBreedingRequestEventMessageComposerSerializer(int header)
         ConfirmBreedingRequestEventMessageComposer message
     )
     {
-        //
+        packet
+            .WriteInteger(message.PetOneId)
+            .WriteInteger(message.PetTwoId)
+            .WriteInteger(message.OwnerOneId)
+            .WriteInteger(message.OwnerTwoId)
+            .WriteInteger(message.ProposedRace)
+            .WriteString(message.ProposedColor)
+            .WriteInteger(message.ProposedGender);
     }
 }

@@ -38,6 +38,8 @@ public sealed class PetFeedingTests
                 petId: 500,
                 foodItemId: new RoomObjectId(400),
                 allowPetsEat: true,
+                nutritionCap: 100,
+                energyCap: 100,
                 CancellationToken.None
             )
             .ConfigureAwait(true);
@@ -46,6 +48,8 @@ public sealed class PetFeedingTests
         result.NutritionAdded.Should().Be(7);
         result.NutritionBefore.Should().Be(3);
         result.NutritionAfter.Should().Be(10);
+        result.UsesRemaining.Should().Be(4, "MaxUses=5 minus one use");
+        result.FoodState.Should().Be(4, "descending: MaxUses=5, first use leaves 4 remaining");
         result.Pet.Should().NotBeNull();
         result.Pet!.X.Should().Be(5);
         result.Pet.Y.Should().Be(6);
@@ -62,8 +66,9 @@ public sealed class PetFeedingTests
         FurnitureEntity food = await db
             .Furnitures.SingleAsync(f => f.Id == 400)
             .ConfigureAwait(true);
-        food.RoomEntityId.Should().BeNull("consumed pet food must not rehydrate into the room");
-        food.DeletedAt.Should().NotBeNull("consumed pet food is soft-deleted, not hard-deleted");
+        food.RoomEntityId.Should().Be(10, "bowl stays in room while uses remain");
+        food.DeletedAt.Should().BeNull("bowl is not deleted until all uses are exhausted");
+        food.ExtraData.Should().Be("4", "descending: MaxUses=5, first use leaves 4 remaining");
     }
 
     private static DbContextOptions<TurboDbContext> NewOptions() =>
@@ -167,6 +172,8 @@ public sealed class PetFeedingTests
             FurnitureDefinitionEntityId = foodDefinition.Id,
             PetType = 0,
             Nutrition = 7,
+            Energy = 0,
+            MaxUses = 5,
             FurnitureDefinitionEntity = foodDefinition,
         };
 

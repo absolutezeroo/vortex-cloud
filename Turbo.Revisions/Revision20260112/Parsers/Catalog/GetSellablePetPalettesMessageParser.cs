@@ -7,5 +7,5 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Catalog;
 internal class GetSellablePetPalettesMessageParser : IParser
 {
     public IMessageEvent Parse(IClientPacket packet) =>
-        new GetSellablePetPalettesMessage { LocalizationId = packet.PopInt() };
+        new GetSellablePetPalettesMessage { LocalizationId = packet.PopString() };
 }

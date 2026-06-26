@@ -7,8 +7,6 @@ namespace Turbo.Rooms.Grains.Systems;
 
 public sealed class RoomPathingSystem(RoomGrain roomGrain)
 {
-    private readonly RoomGrain _roomGrain = roomGrain;
-
     private static readonly int CARDINAL_COST = 10;
     private static readonly int DIAGONAL_COST = 14;
 
@@ -24,20 +22,28 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
         (-1, -1, 14), // NW
     };
 
-    internal sealed class Node
-    {
-        public int X;
-        public int Y;
-        public int G; // Cost from start
-        public int H; // Heuristic cost to goal
-        public int F => G + H;
-        public Node? Parent;
-    }
+    private readonly RoomGrain _roomGrain = roomGrain;
 
     public IReadOnlyList<(int X, int Y)> FindPath(
         IRoomAvatar avatar,
         (int X, int Y) start,
         (int X, int Y) goal
+    )
+    {
+        return FindPath(
+            start,
+            goal,
+            tileIdx => _roomGrain.MapModule.CanAvatarWalk(avatar, tileIdx),
+            (currentTileId, nextTileId, isGoal) =>
+                _roomGrain.MapModule.CanAvatarWalkBetween(avatar, currentTileId, nextTileId, isGoal)
+        );
+    }
+
+    public IReadOnlyList<(int X, int Y)> FindPath(
+        (int X, int Y) start,
+        (int X, int Y) goal,
+        Func<int, bool> canOccupyTile,
+        Func<int, int, bool, bool> canMoveBetween
     )
     {
         try
@@ -49,15 +55,15 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
 
             if (
                 currentTileId == goalTileId
-                || !_roomGrain.MapModule.CanAvatarWalk(avatar, currentTileId)
-                || !_roomGrain.MapModule.CanAvatarWalk(avatar, goalTileId)
+                || !canOccupyTile(currentTileId)
+                || !canOccupyTile(goalTileId)
             )
             {
                 return [];
             }
 
-            PriorityQueue<Node, int> open = new PriorityQueue<Node, int>();
-            Dictionary<(int, int), Node> allNodes = new Dictionary<(int, int), Node>(capacity: 256);
+            PriorityQueue<Node, int> open = new();
+            Dictionary<(int, int), Node> allNodes = new(256);
 
             Node GetOrCreateNode(int x, int y)
             {
@@ -82,7 +88,7 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
 
             open.Enqueue(startNode, startNode.F);
 
-            HashSet<(int, int)> closed = new HashSet<(int, int)>();
+            HashSet<(int, int)> closed = new();
 
             while (open.Count > 0 && allNodes.Count <= _roomGrain._roomConfig.MaxPathNodes)
             {
@@ -127,14 +133,7 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
 
                             int nTileId = _roomGrain.MapModule.ToIdx(nx, ny);
 
-                            if (
-                                !_roomGrain.MapModule.CanAvatarWalkBetween(
-                                    avatar,
-                                    cTileId,
-                                    nTileId,
-                                    nx == goalX && ny == goalY
-                                )
-                            )
+                            if (!canMoveBetween(cTileId, nTileId, nx == goalX && ny == goalY))
                             {
                                 continue;
                             }
@@ -156,16 +155,10 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
                                 open.Enqueue(neighbor, neighbor.F);
                             }
                         }
-                        catch (Exception)
-                        {
-                            continue;
-                        }
+                        catch (Exception) { }
                     }
                 }
-                catch (Exception)
-                {
-                    continue;
-                }
+                catch (Exception) { }
             }
         }
         catch (Exception) { }
@@ -179,14 +172,14 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
         int dx = Math.Abs(x - goalX);
         int dy = Math.Abs(y - goalY);
 
-        return (dx < dy)
+        return dx < dy
             ? DIAGONAL_COST * dx + CARDINAL_COST * (dy - dx)
             : DIAGONAL_COST * dy + CARDINAL_COST * (dx - dy);
     }
 
     private static List<(int X, int Y)> ReconstructPath(Node goalNode)
     {
-        List<(int, int)> list = new List<(int, int)>();
+        List<(int, int)> list = new();
         Node? current = goalNode;
 
         while (current != null)
@@ -198,5 +191,15 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
         list.Reverse();
 
         return list;
+    }
+
+    internal sealed class Node
+    {
+        public int G; // Cost from start
+        public int H; // Heuristic cost to goal
+        public Node? Parent;
+        public int X;
+        public int Y;
+        public int F => G + H;
     }
 }

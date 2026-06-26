@@ -6,5 +6,6 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Inventory.Pets;
 
 internal class CancelPetBreedingMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new CancelPetBreedingMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new CancelPetBreedingMessage { PetId = packet.PopInt() };
 }

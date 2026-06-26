@@ -6,5 +6,9 @@ namespace Turbo.Primitives.Messages.Outgoing.Room.Pets;
 [GenerateSerializer, Immutable]
 public sealed record PetLevelUpdateMessageComposer : IComposer
 {
-    // TODO: add properties if/when identified
+    [Id(0)]
+    public required int PetId { get; init; }
+
+    [Id(1)]
+    public required int Level { get; init; }
 }

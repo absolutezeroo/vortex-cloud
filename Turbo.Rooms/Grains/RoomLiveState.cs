@@ -50,6 +50,7 @@ public sealed class RoomLiveState
 
     public long EpochMs { get; set; } = 0;
     public long NextAvatarBoundaryMs { get; set; } = 0;
+    public long NextPetBoundaryMs { get; set; } = 0;
     public long NextRollerBoundaryMs { get; set; } = 0;
     public long NextWiredBoundaryMs { get; set; } = 0;
 }

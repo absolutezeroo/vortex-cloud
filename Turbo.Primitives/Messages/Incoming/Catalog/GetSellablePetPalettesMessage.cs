@@ -4,5 +4,5 @@ namespace Turbo.Primitives.Messages.Incoming.Catalog;
 
 public record GetSellablePetPalettesMessage : IMessageEvent
 {
-    public int LocalizationId { get; init; }
+    public string LocalizationId { get; init; } = string.Empty;
 }

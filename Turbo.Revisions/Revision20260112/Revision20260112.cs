@@ -1047,6 +1047,7 @@ public class Revision20260112 : IRevision
                 MessageEvent.GiveSupplementToPetMessageEvent,
                 new GiveSupplementToPetMessageParser()
             },
+            { MessageEvent.IssuePetCommandMessageEvent, new IssuePetCommandMessageParser() },
             { MessageEvent.MountPetMessageEvent, new MountPetMessageParser() },
             { MessageEvent.MoveAvatarMessageEvent, new MoveAvatarMessageParser() },
             { MessageEvent.MoveObjectMessageEvent, new MoveObjectMessageParser() },
@@ -3066,6 +3067,10 @@ public class Revision20260112 : IRevision
                 new PetStatusUpdateMessageComposerSerializer(
                     MessageComposer.PetStatusUpdateComposer
                 )
+            },
+            {
+                typeof(PetVocalMessageComposer),
+                new PetVocalMessageComposerSerializer(MessageComposer.PetVocalComposer)
             },
             #endregion
 

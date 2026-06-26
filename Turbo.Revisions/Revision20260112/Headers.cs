@@ -220,6 +220,7 @@ internal static class MessageEvent
     public const int GetItemDataMessageEvent = 204;
     public const int GetPetCommandsMessageEvent = 2457;
     public const int GiveSupplementToPetMessageEvent = 957;
+    public const int IssuePetCommandMessageEvent = 3072;
     public const int HarvestPetMessageEvent = 2025;
     public const int MountPetMessageEvent = 1626;
     public const int MoveAvatarMessageEvent = 144;
@@ -904,6 +905,7 @@ internal static class MessageComposer
     public const int PetPlacingErrorComposer = 3240;
     public const int PetRespectFailedComposer = 3340;
     public const int PetStatusUpdateComposer = 249;
+    public const int PetVocalComposer = 3073;
     public const int AchievementResolutionCompletedMessageComposer = 3184;
     public const int AchievementResolutionProgressMessageComposer = 1949;
     public const int AchievementResolutionsMessageComposer = 2024;

@@ -72,7 +72,7 @@ public class ScrGetUserInfoMessageHandler(IGrainFactory grainFactory)
             PeriodsSubscribedAhead = sub.IsActive ? daysLeft / 31 - (rem == 0 ? 1 : 0) : 0,
             ResponseType = sub.IsActive ? 2 : 0,
             HasEverBeenMember = sub.TotalMonths > 0 || sub.IsActive,
-            IsVIP = sub.IsVip,
+            IsVIP = sub.IsActive,
             PastClubDays = sub.PastClubDays,
             PastVipDays = sub.PastVipDays,
             MinutesUntilExpiration = sub.IsActive

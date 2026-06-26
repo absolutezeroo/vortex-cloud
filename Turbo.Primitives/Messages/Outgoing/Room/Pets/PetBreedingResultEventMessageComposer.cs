@@ -6,5 +6,12 @@ namespace Turbo.Primitives.Messages.Outgoing.Room.Pets;
 [GenerateSerializer, Immutable]
 public sealed record PetBreedingResultEventMessageComposer : IComposer
 {
-    // TODO: add properties if/when identified
+    [Id(0)]
+    public required int PetOneId { get; init; }
+
+    [Id(1)]
+    public required int PetTwoId { get; init; }
+
+    [Id(2)]
+    public required int Result { get; init; }
 }

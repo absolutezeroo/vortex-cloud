@@ -1,4 +1,5 @@
-﻿using Orleans;
+﻿using System;
+using Orleans;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Rooms.Enums;
 
@@ -57,4 +58,19 @@ public sealed record PetSnapshot
 
     [Id(16)]
     public required Rotation Direction { get; init; }
+
+    [Id(17)]
+    public int RespectTodayCount { get; init; }
+
+    [Id(18)]
+    public DateOnly? RespectLastResetDate { get; init; }
+
+    [Id(19)]
+    public int? ParentOneId { get; init; }
+
+    [Id(20)]
+    public int? ParentTwoId { get; init; }
+
+    [Id(21)]
+    public bool CanBreed { get; init; } = true;
 }

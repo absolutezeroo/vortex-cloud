@@ -6,5 +6,6 @@ namespace Turbo.Primitives.Messages.Outgoing.Inventory.Pets;
 [GenerateSerializer, Immutable]
 public sealed record NestBreedingSuccessEventMessageComposer : IComposer
 {
-    // TODO: add properties if/when identified
+    [Id(0)]
+    public required int NewPetId { get; init; }
 }

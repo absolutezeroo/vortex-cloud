@@ -5,8 +5,7 @@ using Turbo.Database.Entities.Furniture;
 namespace Turbo.Database.Entities.Pets;
 
 [Table("pet_food")]
-[Index(nameof(FurnitureDefinitionEntityId), IsUnique = true)]
-[Index(nameof(PetType))]
+[Index(nameof(FurnitureDefinitionEntityId), nameof(PetType), IsUnique = true)]
 public class PetFoodEntity : TurboEntity
 {
     [Column("furniture_definition_id")]
@@ -17,6 +16,12 @@ public class PetFoodEntity : TurboEntity
 
     [Column("nutrition")]
     public required int Nutrition { get; set; }
+
+    [Column("energy")]
+    public required int Energy { get; set; }
+
+    [Column("max_uses")]
+    public required int MaxUses { get; set; }
 
     [ForeignKey(nameof(FurnitureDefinitionEntityId))]
     public required FurnitureDefinitionEntity FurnitureDefinitionEntity { get; set; }

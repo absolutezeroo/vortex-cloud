@@ -11,6 +11,9 @@ internal class PetBreedingResultEventMessageComposerSerializer(int header)
         PetBreedingResultEventMessageComposer message
     )
     {
-        //
+        packet
+            .WriteInteger(message.PetOneId)
+            .WriteInteger(message.PetTwoId)
+            .WriteInteger(message.Result);
     }
 }

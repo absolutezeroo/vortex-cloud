@@ -10,23 +10,13 @@ internal static class PetDataSerializer
         packet
             .WriteInteger(pet.PetId)
             .WriteString(pet.Name)
+            // PetFigureData
             .WriteInteger(pet.Type)
             .WriteInteger(pet.Race)
             .WriteString(pet.Color)
-            .WriteInteger(pet.Level)
-            .WriteInteger(pet.Experience)
-            .WriteInteger(pet.Energy)
-            .WriteInteger(pet.Nutrition)
-            .WriteInteger(pet.Respect)
-            .WriteBoolean(false) // hasSaddle
-            .WriteBoolean(false) // isRiding
-            .WriteBoolean(false) // canBreed
-            .WriteBoolean(false) // canHarvest
-            .WriteBoolean(false) // canRevive
-            .WriteBoolean(false) // hasRareColor
+            .WriteInteger(pet.Race)
             .WriteInteger(0)
-            .WriteInteger(0)
-            .WriteInteger(0)
-            .WriteInteger(0);
+            // end PetFigureData
+            .WriteInteger(pet.Level);
     }
 }

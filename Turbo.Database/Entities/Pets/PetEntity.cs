@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
@@ -55,6 +56,23 @@ public class PetEntity : TurboEntity
     [Column("respect")]
     [DefaultValue(0)]
     public required int Respect { get; set; }
+
+    [Column("respect_today_count")]
+    [DefaultValue(0)]
+    public int RespectTodayCount { get; set; }
+
+    [Column("respect_last_reset_date")]
+    public DateOnly? RespectLastResetDate { get; set; }
+
+    [Column("parent_one_id")]
+    public int? ParentOneId { get; set; }
+
+    [Column("parent_two_id")]
+    public int? ParentTwoId { get; set; }
+
+    [Column("can_breed")]
+    [DefaultValue(true)]
+    public bool CanBreed { get; set; } = true;
 
     [Column("x")]
     public required int X { get; set; }

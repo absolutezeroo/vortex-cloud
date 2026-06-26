@@ -25,6 +25,10 @@ internal class RoomAvatarSerializer
         {
             SerializePlayerAvatar(packet, player);
         }
+        else if (item is RoomPetAvatarSnapshot pet)
+        {
+            SerializePetAvatar(packet, pet);
+        }
     }
 
     public static void SerializePlayerAvatar(
@@ -40,5 +44,22 @@ internal class RoomAvatarSerializer
             .WriteString(snapshot.SwimFigure)
             .WriteInteger(snapshot.ActivityPoints)
             .WriteBoolean(snapshot.IsModerator);
+    }
+
+    public static void SerializePetAvatar(IServerPacket packet, RoomPetAvatarSnapshot snapshot)
+    {
+        packet
+            .WriteInteger(snapshot.SubType)
+            .WriteInteger(snapshot.OwnerId)
+            .WriteString(snapshot.OwnerName)
+            .WriteInteger(snapshot.RarityLevel)
+            .WriteBoolean(snapshot.HasSaddle)
+            .WriteBoolean(snapshot.IsRiding)
+            .WriteBoolean(snapshot.CanBreed)
+            .WriteBoolean(snapshot.CanHarvest)
+            .WriteBoolean(snapshot.CanRevive)
+            .WriteBoolean(snapshot.HasBreedingPermission)
+            .WriteInteger(snapshot.PetLevel)
+            .WriteString(snapshot.PetPosture);
     }
 }

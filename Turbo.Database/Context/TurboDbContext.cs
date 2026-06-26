@@ -142,6 +142,10 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
 
     public DbSet<PetEntity> Pets { get; init; }
 
+    public DbSet<PetCommandEntity> PetCommands { get; init; }
+
+    public DbSet<PetLevelEntity> PetLevels { get; init; }
+
     public DbSet<PetFoodEntity> PetFood { get; init; }
 
     public DbSet<PetPaletteEntity> PetPalettes { get; init; }

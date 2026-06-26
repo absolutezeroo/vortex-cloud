@@ -24,6 +24,12 @@ public sealed record PetFeedResult
     [Id(5)]
     public required int NutritionAfter { get; init; }
 
+    [Id(6)]
+    public required int UsesRemaining { get; init; }
+
+    [Id(7)]
+    public required int FoodState { get; init; }
+
     public static PetFeedResult Failed(RoomObjectId foodItemId) =>
         new()
         {
@@ -33,5 +39,7 @@ public sealed record PetFeedResult
             NutritionAdded = 0,
             NutritionBefore = 0,
             NutritionAfter = 0,
+            UsesRemaining = 0,
+            FoodState = 0,
         };
 }

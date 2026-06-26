@@ -8,6 +8,18 @@ internal class PetCommandsMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, PetCommandsMessageComposer message)
     {
-        //
+        packet.WriteInteger(message.PetId).WriteInteger(message.AllCommandIds.Length);
+
+        foreach (int id in message.AllCommandIds)
+        {
+            packet.WriteInteger(id);
+        }
+
+        packet.WriteInteger(message.EnabledCommandIds.Length);
+
+        foreach (int id in message.EnabledCommandIds)
+        {
+            packet.WriteInteger(id);
+        }
     }
 }

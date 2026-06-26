@@ -22,7 +22,7 @@ internal sealed class FakeAuthService(WebApiSessionStore sessions) : IWebApiAuth
 
     private int _nextAccountId = AccountId + 1;
 
-    public Task<(bool Success, string? SessionId, string? Error)> LoginAsync(
+    public Task<(bool Success, string? SessionId, int AccountId, string? Error)> LoginAsync(
         string email,
         string password,
         CancellationToken ct
@@ -30,14 +30,14 @@ internal sealed class FakeAuthService(WebApiSessionStore sessions) : IWebApiAuth
     {
         if (email != ValidEmail || password != ValidPassword)
         {
-            return Task.FromResult<(bool, string?, string?)>(
-                (false, null, "pocket.auth.login_failed")
+            return Task.FromResult<(bool, string?, int, string?)>(
+                (false, null, 0, "pocket.auth.login_failed")
             );
         }
 
         string sessionId = sessions.CreateSession(AccountId);
 
-        return Task.FromResult<(bool, string?, string?)>((true, sessionId, null));
+        return Task.FromResult<(bool, string?, int, string?)>((true, sessionId, AccountId, null));
     }
 
     public Task<(bool Success, int AccountId, string? Error)> RegisterAsync(

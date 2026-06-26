@@ -6,5 +6,10 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Room.Engine;
 
 internal class GiveSupplementToPetMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new GiveSupplementToPetMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new GiveSupplementToPetMessage
+        {
+            PetId = packet.PopInt(),
+            SupplementType = packet.PopInt(),
+        };
 }

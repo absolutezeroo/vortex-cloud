@@ -6,5 +6,6 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Room.Pets;
 
 internal class CustomizePetWithFurniMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new CustomizePetWithFurniMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new CustomizePetWithFurniMessage { FurniItemId = packet.PopInt(), PetId = packet.PopInt() };
 }

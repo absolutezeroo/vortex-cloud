@@ -6,5 +6,6 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Users;
 
 internal class ApproveNameMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new ApproveNameMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new ApproveNameMessage { Name = packet.PopString(), Mode = packet.PopInt() };
 }

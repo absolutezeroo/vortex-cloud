@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -202,7 +203,17 @@ public sealed partial class RoomGrain
             targetPlayerId
         );
 
-    public Task<ImmutableArray<RoomAvatarSnapshot>> GetAllAvatarSnapshotsAsync(
+    public async Task<ImmutableArray<RoomAvatarSnapshot>> GetAllAvatarSnapshotsAsync(
         CancellationToken ct
-    ) => AvatarModule.GetAllAvatarSnapshotsAsync(ct);
+    )
+    {
+        ImmutableArray<RoomAvatarSnapshot> avatars = await AvatarModule
+            .GetAllAvatarSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+        ImmutableArray<RoomAvatarSnapshot> pets = await PetSystem
+            .GetPlacedPetAvatarSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+
+        return avatars.Concat(pets).ToImmutableArray();
+    }
 }

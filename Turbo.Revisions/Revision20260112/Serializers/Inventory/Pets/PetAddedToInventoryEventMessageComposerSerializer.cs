@@ -13,5 +13,6 @@ internal class PetAddedToInventoryEventMessageComposerSerializer(int header)
     )
     {
         PetDataSerializer.Serialize(packet, message.Pet);
+        packet.WriteBoolean(true);
     }
 }

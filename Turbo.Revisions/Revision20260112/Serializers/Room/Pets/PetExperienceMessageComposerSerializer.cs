@@ -8,6 +8,11 @@ internal class PetExperienceMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, PetExperienceMessageComposer message)
     {
-        //
+        packet
+            .WriteInteger(message.PetId)
+            .WriteInteger(message.Experience)
+            .WriteInteger(message.ExperienceForNextLevel)
+            .WriteInteger(message.Level)
+            .WriteInteger(message.MaxLevel);
     }
 }

@@ -68,7 +68,7 @@ internal sealed partial class RoomService
             ThicknessWall = RoomThicknessType.Normal,
             ThicknessFloor = RoomThicknessType.Normal,
             AllowBlocking = false,
-            AllowPets = false,
+            AllowPets = true,
             AllowPetsEat = false,
             MuteType = ModSettingType.Owner,
             KickType = ModSettingType.Owner,

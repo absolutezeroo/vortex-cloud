@@ -11,6 +11,9 @@ internal class PetLevelNotificationEventMessageComposerSerializer(int header)
         PetLevelNotificationEventMessageComposer message
     )
     {
-        //
+        packet
+            .WriteInteger(message.PetId)
+            .WriteInteger(message.NewLevel)
+            .WriteString(message.PetName);
     }
 }

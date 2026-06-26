@@ -11,6 +11,6 @@ internal class ConfirmBreedingResultEventMessageComposerSerializer(int header)
         ConfirmBreedingResultEventMessageComposer message
     )
     {
-        //
+        packet.WriteBoolean(message.Success).WriteInteger(message.NewPetId);
     }
 }

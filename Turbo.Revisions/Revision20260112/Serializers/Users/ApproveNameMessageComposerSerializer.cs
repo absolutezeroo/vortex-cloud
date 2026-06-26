@@ -8,6 +8,6 @@ internal class ApproveNameMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, ApproveNameMessageComposer message)
     {
-        //
+        packet.WriteInteger(message.Result).WriteString(message.ValidationInfo);
     }
 }

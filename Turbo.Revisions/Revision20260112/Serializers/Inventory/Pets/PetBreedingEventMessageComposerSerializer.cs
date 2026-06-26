@@ -8,6 +8,13 @@ internal class PetBreedingEventMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, PetBreedingEventMessageComposer message)
     {
-        //
+        packet
+            .WriteInteger(message.PetOneId)
+            .WriteInteger(message.PetTwoId)
+            .WriteInteger(message.OwnerOneId)
+            .WriteInteger(message.OwnerTwoId)
+            .WriteInteger(message.ProposedRace)
+            .WriteString(message.ProposedColor)
+            .WriteInteger(message.ProposedGender);
     }
 }

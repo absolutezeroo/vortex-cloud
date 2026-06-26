@@ -11,6 +11,16 @@ internal class PetRespectNotificationEventMessageComposerSerializer(int header)
         PetRespectNotificationEventMessageComposer message
     )
     {
-        //
+        packet
+            .WriteInteger(message.PetRespect)
+            .WriteInteger(message.PetOwnerId)
+            .WriteInteger(message.PetId)
+            .WriteString(message.PetName)
+            .WriteInteger(message.PetType)
+            .WriteInteger(message.PetPaletteId)
+            .WriteString(message.PetColor)
+            .WriteInteger(message.PetRace)
+            .WriteInteger(0) // customPartCount
+            .WriteInteger(message.PetLevel);
     }
 }

@@ -13,7 +13,7 @@ internal class PetInventoryEventMessageComposerSerializer(int header)
         PetInventoryEventMessageComposer message
     )
     {
-        packet.WriteInteger(1).WriteInteger(message.Pets.Length);
+        packet.WriteInteger(1).WriteInteger(0).WriteInteger(message.Pets.Length);
 
         foreach (PetSnapshot pet in message.Pets)
         {
