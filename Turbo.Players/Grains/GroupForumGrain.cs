@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Groups;
@@ -16,14 +17,10 @@ using Turbo.Primitives.Players;
 
 namespace Turbo.Players.Grains;
 
-/// <summary>
-/// One grain per group forum (key = group id). Thread/post reads, posting and moderation, gated by
-/// the group's <c>group_forum_settings</c> permissions. Moderation only ever flips a state column —
-/// never a hard delete (DATA-MODEL §2.6).
-/// </summary>
 internal sealed class GroupForumGrain(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
-    IEventPublisher events
+    IEventPublisher events,
+    ILogger<GroupForumGrain> logger
 ) : Grain, IGroupForumGrain
 {
     private const string DeniedError = "You are not allowed to do that.";
