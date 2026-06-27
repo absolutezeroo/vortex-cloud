@@ -704,6 +704,76 @@ def convert_productdata_json(src: Path, dst: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
+# 6. FurnitureData.json → furnidata.json  (AS3 JSON client)
+# ---------------------------------------------------------------------------
+def convert_furnidata_to_json(src: Path, dst: Path) -> None:
+    with open(src, encoding="utf-8", errors="replace") as f:
+        data = json.load(f)
+
+    def clean_furnitype(ft: dict, is_wall: bool) -> dict:
+        entry: dict = {
+            "id":              ft.get("id"),
+            "classname":       str(ft.get("classname", "")),
+            "revision":        ft.get("revision", 0),
+            "category":        str(ft.get("category", "")),
+            "name":            str(ft.get("name", "")),
+            "description":     str(ft.get("description", "")),
+            "offerid":         ft.get("offerid", -1),
+            "buyout":          bool(ft.get("buyout", False)),
+            "rentofferid":     ft.get("rentofferid", -1),
+            "rentbuyout":      bool(ft.get("rentbuyout", False)),
+            "bc":              bool(ft.get("bc", False)),
+            "excludeddynamic": bool(ft.get("excludeddynamic", False)),
+            "customparams":    str(ft.get("customparams", "")),
+            "specialtype":     ft.get("specialtype", 1),
+            "furniline":       str(ft.get("furniline", "")),
+            "environment":     str(ft.get("environment", "")),
+            "rare":            bool(ft.get("rare", False)),
+        }
+        if not is_wall:
+            entry["defaultdir"] = int(ft.get("defaultdir", 0))
+            entry["xdim"]       = ft.get("xdim", 1)
+            entry["ydim"]       = ft.get("ydim", 1)
+            entry["canstandon"] = bool(ft.get("canstandon", False))
+            entry["cansiton"]   = bool(ft.get("cansiton", False))
+            entry["canlayon"]   = bool(ft.get("canlayon", False))
+        colors = ft.get("partcolors") or {}
+        entry["partcolors"] = colors.get("color", []) if isinstance(colors, dict) else []
+        return entry
+
+    output = {
+        "roomitemtypes": [
+            clean_furnitype(ft, is_wall=False)
+            for ft in data.get("roomitemtypes", {}).get("furnitype", [])
+        ],
+        "wallitemtypes": [
+            clean_furnitype(ft, is_wall=True)
+            for ft in data.get("wallitemtypes", {}).get("furnitype", [])
+        ],
+    }
+
+    dst.write_text(json.dumps(output, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    total = len(output["roomitemtypes"]) + len(output["wallitemtypes"])
+    print(f"  -> {dst.name}: {total} furnitype entries written")
+
+
+# ---------------------------------------------------------------------------
+# 7. ProductData.json → productdata.json  (AS3 JSON client)
+# ---------------------------------------------------------------------------
+def convert_productdata_to_json(src: Path, dst: Path) -> None:
+    with open(src, encoding="utf-8", errors="replace") as f:
+        data = json.load(f)
+
+    products = data.get("productdata", {}).get("product", [])
+    output = [
+        {"code": str(p.get("code", "")), "name": str(p.get("name", "")), "description": str(p.get("description", ""))}
+        for p in products
+    ]
+    dst.write_text(json.dumps(output, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    print(f"  -> {dst.name}: {len(output)} product entries written")
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 def main() -> None:
@@ -736,12 +806,16 @@ def main() -> None:
     if furnidata_json.exists():
         print("Converting FurnitureData.json -> furnidata.xml ...")
         convert_furnidata_json(furnidata_json, OUTPUT_DIR / "furnidata.xml")
+        print("Converting FurnitureData.json -> furnidata.json ...")
+        convert_furnidata_to_json(furnidata_json, OUTPUT_DIR / "furnidata.json")
     else:
         print(f"  [SKIP] {furnidata_json.name} not found in input/")
 
     if productdata_json.exists():
         print("Converting ProductData.json -> productdata.txt ...")
         convert_productdata_json(productdata_json, OUTPUT_DIR / "productdata.txt")
+        print("Converting ProductData.json -> productdata.json ...")
+        convert_productdata_to_json(productdata_json, OUTPUT_DIR / "productdata.json")
     else:
         print(f"  [SKIP] {productdata_json.name} not found in input/")
 
