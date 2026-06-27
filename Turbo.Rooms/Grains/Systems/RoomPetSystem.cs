@@ -1268,7 +1268,6 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
         // Max is the exclusive upper bound; Random.Next(0, max) → indices 0..max-1
         int max = (petType, vocalType) switch
         {
-            // Type 35 (cow) — counts from catalog
             (35, "nlDISOBEY") => 3,
             (35, "DRINKING") => 2,
             (35, "EATING") => 3,
@@ -1285,7 +1284,6 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
             (35, "THIRSTY") => 3,
             (35, "TIRED") => 3,
             (35, "UNKNOWN_COMMAND") => 2,
-            // Type 15 (dog) — assume same structure
             (15, "DISOBEY") => 3,
             (15, "DRINKING") => 2,
             (15, "EATING") => 3,

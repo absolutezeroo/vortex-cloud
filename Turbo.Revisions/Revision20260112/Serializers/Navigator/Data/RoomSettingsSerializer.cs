@@ -44,7 +44,7 @@ internal class RoomSettingsSerializer
 
         if (bitmask.HasFlag(RoomBitmaskFlags.Thumbnail))
         {
-            packet.WriteString(string.Empty); // officialRoomPicRef
+            packet.WriteString(string.Empty);
         }
 
         if (bitmask.HasFlag(RoomBitmaskFlags.GroupData))
@@ -57,10 +57,7 @@ internal class RoomSettingsSerializer
 
         if (bitmask.HasFlag(RoomBitmaskFlags.RoomAd))
         {
-            packet
-                .WriteString(string.Empty) // adName
-                .WriteString(string.Empty) // adDescription
-                .WriteInteger(0); // roomAdExpiresInMin
+            packet.WriteString(string.Empty).WriteString(string.Empty).WriteInteger(0);
         }
     }
 }
