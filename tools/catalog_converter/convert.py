@@ -7,13 +7,14 @@ Input  (./input/):
     catalog_pages.sql    → output/catalog_pages.sql
     catalog_items.sql    → output/catalog_offers.sql
                          → output/catalog_products.sql
+    FurnitureData.json   → output/furnidata.xml   (optional)
+    ProductData.json     → output/productdata.txt (optional)
 
 Run: python convert.py
 """
 
 import re
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -24,6 +25,8 @@ BASE_DIR = Path(__file__).parent
 INPUT_DIR = BASE_DIR / "input"
 OUTPUT_DIR = BASE_DIR / "output"
 OUTPUT_DIR.mkdir(exist_ok=True)
+
+BATCH_SIZE = 500
 
 # ---------------------------------------------------------------------------
 # Layout mapping  Arcturus string → Turbo wire string
@@ -100,10 +103,34 @@ def get_logic(interaction_type: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# XML helpers
+# ---------------------------------------------------------------------------
+def xml_escape(s: str) -> str:
+    return (
+        s.replace("&", "&amp;")
+         .replace("<", "&lt;")
+         .replace(">", "&gt;")
+         .replace('"', "&quot;")
+    )
+
+
+def xml_tag(name: str, val: str) -> str:
+    return f"<{name}/>" if not val else f"<{name}>{xml_escape(val)}</{name}>"
+
+
+def xml_bool(v) -> str:
+    if isinstance(v, bool):
+        return "1" if v else "0"
+    try:
+        return "1" if int(v) else "0"
+    except (ValueError, TypeError):
+        return "0"
+
+
+# ---------------------------------------------------------------------------
 # SQL helpers
 # ---------------------------------------------------------------------------
 def sql_str(value) -> str:
-    """Escape and quote a value for MySQL INSERT."""
     if value is None:
         return "NULL"
     if isinstance(value, bool):
@@ -124,21 +151,37 @@ def sql_bool(value) -> str:
 
 
 def json_array(items: list) -> str:
-    """Return a JSON array string, or NULL if the list is empty."""
     cleaned = [str(x) for x in items if x is not None and str(x).strip() != ""]
     if not cleaned:
         return "NULL"
     return sql_str(json.dumps(cleaned, ensure_ascii=False))
 
 
+def write_bulk_inserts(
+    lines: list[str],
+    table: str,
+    columns: list[str],
+    value_rows: list[str],
+    ignore: bool = False,
+) -> None:
+    if not value_rows:
+        return
+    kw = " IGNORE" if ignore else ""
+    col_str = ", ".join(f"`{c}`" for c in columns)
+    header = f"INSERT{kw} INTO `{table}` ({col_str}) VALUES"
+    for i in range(0, len(value_rows), BATCH_SIZE):
+        batch = value_rows[i : i + BATCH_SIZE]
+        lines.append(header)
+        for j, row in enumerate(batch):
+            sep = "," if j < len(batch) - 1 else ";"
+            lines.append(f"  {row}{sep}")
+        lines.append("")
+
+
 # ---------------------------------------------------------------------------
 # MySQL INSERT parser
 # ---------------------------------------------------------------------------
 def parse_insert_values(line: str) -> list | None:
-    """
-    Extract the column values from one MySQL INSERT line.
-    Returns a list of Python values (str, int, float, None).
-    """
     m = re.search(r"VALUES\s*\((.+)\)\s*;?\s*$", line, re.IGNORECASE | re.DOTALL)
     if not m:
         return None
@@ -149,14 +192,12 @@ def parse_insert_values(line: str) -> list | None:
     n = len(raw)
 
     while i < n:
-        # skip whitespace and commas between tokens
         while i < n and (raw[i].isspace() or raw[i] == ","):
             i += 1
         if i >= n:
             break
 
         if raw[i] == "'":
-            # quoted string
             i += 1
             buf: list[str] = []
             while i < n:
@@ -210,7 +251,6 @@ def parse_insert_values(line: str) -> list | None:
 
 
 def iter_inserts(sql_file: Path) -> list[list]:
-    """Yield parsed value lists for every INSERT line in an SQL file."""
     rows: list[list] = []
     with open(sql_file, encoding="utf-8", errors="replace") as f:
         for line in f:
@@ -226,17 +266,17 @@ def iter_inserts(sql_file: Path) -> list[list]:
 # 1. items_base → furniture_definitions
 # ---------------------------------------------------------------------------
 def convert_items_base(src: Path, dst: Path) -> tuple[dict[int, dict], dict[int, int]]:
-    """
-    Returns:
-      lookup  – items_base.id -> metadata (product_type, allow_gift, ...)
-      id_remap – items_base.id → canonical id when (sprite_id, type, category)
-                 clashes with an already-emitted row.  Use remap[id] in
-                 catalog_products.definition_id.
-    """
     rows = iter_inserts(src)
-    lookup:   dict[int, dict] = {}
-    id_remap: dict[int, int]  = {}          # duplicate id → winning id
-    seen_key: dict[tuple, int] = {}         # (sprite_id, product_type, category) → first id
+    lookup:   dict[int, dict]  = {}
+    id_remap: dict[int, int]   = {}
+    seen_key: dict[tuple, int] = {}
+
+    COLS = [
+        "id", "sprite_id", "name", "type", "category", "logic", "total_states",
+        "width", "length", "stack_height", "can_stack", "can_walk", "can_sit", "can_lay",
+        "can_recycle", "can_trade", "can_group", "can_sell", "usage_policy",
+        "extra_data", "created_at", "updated_at", "deleted_at",
+    ]
 
     lines: list[str] = [
         "-- furniture_definitions converted from Arcturus items_base",
@@ -248,7 +288,7 @@ def convert_items_base(src: Path, dst: Path) -> tuple[dict[int, dict], dict[int,
         "SET FOREIGN_KEY_CHECKS = 0;",
         "",
     ]
-
+    value_rows: list[str] = []
     written = 0
     dupes   = 0
 
@@ -275,10 +315,9 @@ def convert_items_base(src: Path, dst: Path) -> tuple[dict[int, dict], dict[int,
         logic        = get_logic(interaction_type)
         extra_data   = str(customparams).strip() if customparams else None
 
-        ib_id_int   = int(ib_id)
-        sprite_int  = int(sprite_id) if sprite_id is not None else 0
+        ib_id_int  = int(ib_id)
+        sprite_int = int(sprite_id) if sprite_id is not None else 0
 
-        # Always populate lookup so catalog_products can resolve product_type
         lookup[ib_id_int] = {
             "sprite_id":    sprite_int,
             "item_name":    str(item_name or ""),
@@ -288,7 +327,6 @@ def convert_items_base(src: Path, dst: Path) -> tuple[dict[int, dict], dict[int,
             "allow_gift":   bool(int(allow_gift or 1)),
         }
 
-        # Deduplicate by Turbo's unique index (sprite_id, type, category)
         key = (sprite_int, product_type, category)
         if key in seen_key:
             id_remap[ib_id_int] = seen_key[key]
@@ -300,7 +338,7 @@ def convert_items_base(src: Path, dst: Path) -> tuple[dict[int, dict], dict[int,
         length_val = int(length) if length is not None else 1
         sh_val     = float(stack_height) if stack_height is not None else 0.0
 
-        cols = (
+        value_rows.append(
             f"({sql_str(ib_id_int)}, {sql_str(sprite_int)}, "
             f"{sql_str(str(item_name or ''))}, {sql_str(product_type)}, "
             f"{sql_str(category)}, {sql_str(logic)}, "
@@ -318,15 +356,9 @@ def convert_items_base(src: Path, dst: Path) -> tuple[dict[int, dict], dict[int,
             f"{sql_str(extra_data if extra_data else None)}, "
             f"NOW(), NOW(), NULL)"
         )
-        lines.append(
-            f"INSERT IGNORE INTO `furniture_definitions` "
-            f"(`id`,`sprite_id`,`name`,`type`,`category`,`logic`,`total_states`,"
-            f"`width`,`length`,`stack_height`,`can_stack`,`can_walk`,`can_sit`,`can_lay`,"
-            f"`can_recycle`,`can_trade`,`can_group`,`can_sell`,`usage_policy`,"
-            f"`extra_data`,`created_at`,`updated_at`,`deleted_at`) VALUES {cols};"
-        )
         written += 1
 
+    write_bulk_inserts(lines, "furniture_definitions", COLS, value_rows, ignore=True)
     dst.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"  -> {dst.name}: {written} definitions written, {dupes} duplicates remapped")
     return lookup, id_remap
@@ -338,6 +370,12 @@ def convert_items_base(src: Path, dst: Path) -> tuple[dict[int, dict], dict[int,
 def convert_catalog_pages(src: Path, dst: Path) -> None:
     rows = iter_inserts(src)
 
+    COLS = [
+        "id", "parent_id", "localization", "name", "icon", "layout",
+        "image_data", "text_data", "sort_order", "visible",
+        "created_at", "updated_at", "deleted_at",
+    ]
+
     lines: list[str] = [
         "-- catalog_pages converted from Arcturus",
         "-- Generated by tools/catalog_converter/convert.py",
@@ -346,17 +384,17 @@ def convert_catalog_pages(src: Path, dst: Path) -> None:
         "SET FOREIGN_KEY_CHECKS = 0;",
         "",
     ]
-
+    value_rows: list[str] = []
     skipped  = 0
     dupes    = 0
     seen_ids: set[int] = set()
+
     for row in rows:
         if len(row) < 22:
             skipped += 1
             continue
 
-        page_id_raw = row[0]
-        page_id_int = int(page_id_raw)
+        page_id_int = int(row[0])
         if page_id_int in seen_ids:
             dupes += 1
             continue
@@ -371,45 +409,29 @@ def convert_catalog_pages(src: Path, dst: Path) -> None:
             room_id, includes
         ) = row[:22]
 
-        # parent_id: -1 in Arcturus means root (no parent)
         parent_val = "NULL" if (parent_id is None or int(parent_id) < 0) else sql_str(int(parent_id))
 
-        # localization key: prefer caption_save if not empty, else derive from caption
         localization = str(caption_save or "").strip()
         if not localization:
             localization = str(caption or "").strip().lower().replace(" ", "_")[:50]
 
-        name_val = str(caption or "").strip()[:50]
-
-        # layout: map Arcturus → Turbo
+        name_val     = str(caption or "").strip()[:50]
         layout_str   = str(page_layout or "default_3x3").strip().lower()
         turbo_layout = LAYOUT_MAP.get(layout_str, "default_3x3")
+        icon_val     = int(icon_image) if icon_image is not None else 0
+        is_visible   = (str(visible or "0") == "1") and (str(enabled or "0") == "1")
+        image_data   = json_array([page_headline, page_teaser, page_special])
+        text_data    = json_array([page_text1, page_text2, page_text_details, page_text_teaser])
+        sort         = int(order_num) if order_num is not None else 0
 
-        # icon (use icon_image; icon_color is dropped)
-        icon_val = int(icon_image) if icon_image is not None else 0
-
-        # visible: true if both visible=1 AND enabled=1
-        is_visible = (str(visible or "0") == "1") and (str(enabled or "0") == "1")
-
-        # image_data  [headline, teaser, special]
-        image_data = json_array([page_headline, page_teaser, page_special])
-
-        # text_data   [text1, text2, text_details, text_teaser]
-        text_data = json_array([page_text1, page_text2, page_text_details, page_text_teaser])
-
-        sort = int(order_num) if order_num is not None else 0
-
-        lines.append(
-            f"INSERT IGNORE INTO `catalog_pages` "
-            f"(`id`,`parent_id`,`localization`,`name`,`icon`,`layout`,"
-            f"`image_data`,`text_data`,`sort_order`,`visible`,"
-            f"`created_at`,`updated_at`,`deleted_at`) VALUES "
+        value_rows.append(
             f"({sql_str(int(page_id))},{parent_val},{sql_str(localization[:50])},"
             f"{sql_str(name_val)},{sql_str(icon_val)},{sql_str(turbo_layout)},"
             f"{image_data},{text_data},{sql_str(sort)},{sql_bool(is_visible)},"
-            f"NOW(),NOW(),NULL);"
+            f"NOW(),NOW(),NULL)"
         )
 
+    write_bulk_inserts(lines, "catalog_pages", COLS, value_rows, ignore=True)
     dst.write_text("\n".join(lines) + "\n", encoding="utf-8")
     written = len(rows) - skipped - dupes
     print(f"  -> {dst.name}: {written} pages written, {dupes} duplicates skipped, {skipped} malformed skipped")
@@ -418,31 +440,33 @@ def convert_catalog_pages(src: Path, dst: Path) -> None:
 # ---------------------------------------------------------------------------
 # 3. catalog_items → catalog_offers + catalog_products
 # ---------------------------------------------------------------------------
-def convert_catalog_items(src: Path, offers_dst: Path, products_dst: Path, lookup: dict[int, dict], id_remap: dict[int, int]) -> None:
+def convert_catalog_items(
+    src: Path,
+    offers_dst: Path,
+    products_dst: Path,
+    lookup: dict[int, dict],
+    id_remap: dict[int, int],
+) -> None:
     rows = iter_inserts(src)
 
-    offer_lines: list[str] = [
-        "-- catalog_offers converted from Arcturus catalog_items",
-        "-- Generated by tools/catalog_converter/convert.py",
-        "",
-        "SET NAMES utf8mb4;",
-        "SET FOREIGN_KEY_CHECKS = 0;",
-        "",
+    OFFER_COLS = [
+        "id", "page_id", "localization_id", "cost_credits", "cost_currency",
+        "currency_type_id", "can_gift", "can_bundle", "club_level",
+        "discount_percent", "visible", "created_at", "updated_at", "deleted_at",
     ]
-    product_lines: list[str] = [
-        "-- catalog_products converted from Arcturus catalog_items",
-        "-- Generated by tools/catalog_converter/convert.py",
-        "-- NOTE: currency_type_id references currency_types.id.",
-        "--       Insert your currency_types rows first, then update",
-        "--       catalog_offers.currency_type_id to match.",
-        "",
-        "SET NAMES utf8mb4;",
-        "SET FOREIGN_KEY_CHECKS = 0;",
-        "",
+    PRODUCT_COLS = [
+        "id", "offer_id", "product_type", "definition_id", "extra_param",
+        "quantity", "unique_size", "unique_remaining",
+        "created_at", "updated_at", "deleted_at",
     ]
 
+    offer_rows: list[str]  = []
+    badge_rows: list[str]  = []
+    furni_rows: list[str]  = []
+    song_notes: list[str]  = []
+
     product_id = 1
-    skipped = 0
+    skipped    = 0
     warn_currency: set[int] = set()
 
     for row in rows:
@@ -472,7 +496,6 @@ def convert_catalog_items(src: Path, offers_dst: Path, products_dst: Path, looku
         club_level    = 1 if str(club_only or "0") == "1" else 0
         loc_id        = str(catalog_name or "").strip()
 
-        # currency_type_id: NULL when no secondary currency (points = 0)
         if currency_val == 0 or points_type_v == 0:
             currency_type_id = "NULL"
         else:
@@ -486,76 +509,152 @@ def convert_catalog_items(src: Path, offers_dst: Path, products_dst: Path, looku
                 )
             currency_type_id = sql_str(points_type_v)
 
-        # can_gift: use allow_gift from first item_id in the set
-        can_gift = True
-        raw_ids_str = str(item_ids_raw or "").strip()
+        can_gift    = True
         item_id_list: list[int] = []
-        for tid in raw_ids_str.split(","):
+        for tid in str(item_ids_raw or "").strip().split(","):
             tid = tid.strip()
             if tid.isdigit():
                 item_id_list.append(int(tid))
         if item_id_list and item_id_list[0] in lookup:
             can_gift = lookup[item_id_list[0]]["allow_gift"]
 
-        # --- catalog_offers row ---
-        offer_lines.append(
-            f"INSERT INTO `catalog_offers` "
-            f"(`id`,`page_id`,`localization_id`,`cost_credits`,`cost_currency`,"
-            f"`currency_type_id`,`can_gift`,`can_bundle`,`club_level`,"
-            f"`discount_percent`,`visible`,`created_at`,`updated_at`,`deleted_at`) VALUES "
+        offer_rows.append(
             f"({sql_str(item_id_val)},{sql_str(page_id_val)},{sql_str(loc_id)},"
             f"{sql_str(credits_val)},{sql_str(currency_val)},"
             f"{currency_type_id},{sql_bool(can_gift)},1,{sql_str(club_level)},"
-            f"0,{sql_bool(is_visible)},NOW(),NOW(),NULL);"
+            f"0,{sql_bool(is_visible)},NOW(),NOW(),NULL)"
         )
 
-        # --- catalog_products rows ---
-
-        # badge product (add before furni products if badge is present)
         badge_val = str(badge or "").strip() if badge is not None else ""
         if badge_val:
-            product_lines.append(
-                f"INSERT INTO `catalog_products` "
-                f"(`id`,`offer_id`,`product_type`,`definition_id`,`extra_param`,"
-                f"`quantity`,`unique_size`,`unique_remaining`,"
-                f"`created_at`,`updated_at`,`deleted_at`) VALUES "
+            badge_rows.append(
                 f"({sql_str(product_id)},{sql_str(item_id_val)},3,NULL,"
-                f"{sql_str(badge_val)},1,0,0,NOW(),NOW(),NULL);"
+                f"{sql_str(badge_val)},1,0,0,NOW(),NOW(),NULL)"
             )
             product_id += 1
 
-        # song_id product (SoundTrack – product_type kept as Floor; flag for review)
         song_id_v = int(song_id) if song_id is not None else 0
         if song_id_v:
-            product_lines.append(
+            song_notes.append(
                 f"-- [MANUAL REVIEW] song_id={song_id_v} for offer {item_id_val} — "
-                f"Turbo has no direct sound track product_type; "
-                f"adjust product_type manually if needed."
+                f"Turbo has no direct sound track product_type; adjust manually."
             )
 
-        # furni / effect / bot products from item_ids list
         for def_id in item_id_list:
-            # Remap to canonical definition_id if this one was deduplicated
             canonical_id = id_remap.get(def_id, def_id)
             furni_info   = lookup.get(def_id)
             prod_type    = furni_info["product_type"] if furni_info else 0
-            product_lines.append(
-                f"INSERT IGNORE INTO `catalog_products` "
-                f"(`id`,`offer_id`,`product_type`,`definition_id`,`extra_param`,"
-                f"`quantity`,`unique_size`,`unique_remaining`,"
-                f"`created_at`,`updated_at`,`deleted_at`) VALUES "
+            furni_rows.append(
                 f"({sql_str(product_id)},{sql_str(item_id_val)},{sql_str(prod_type)},"
                 f"{sql_str(canonical_id)},{sql_str(extra_param)},"
                 f"{sql_str(amount_val)},{sql_str(ltd_stack)},{sql_str(ltd_remaining)},"
-                f"NOW(),NOW(),NULL);"
+                f"NOW(),NOW(),NULL)"
             )
             product_id += 1
 
+    offer_lines: list[str] = [
+        "-- catalog_offers converted from Arcturus catalog_items",
+        "-- Generated by tools/catalog_converter/convert.py",
+        "",
+        "SET NAMES utf8mb4;",
+        "SET FOREIGN_KEY_CHECKS = 0;",
+        "",
+    ]
+    write_bulk_inserts(offer_lines, "catalog_offers", OFFER_COLS, offer_rows)
     offers_dst.write_text("\n".join(offer_lines) + "\n", encoding="utf-8")
+
+    product_lines: list[str] = [
+        "-- catalog_products converted from Arcturus catalog_items",
+        "-- Generated by tools/catalog_converter/convert.py",
+        "-- NOTE: currency_type_id references currency_types.id.",
+        "--       Insert your currency_types rows first, then update",
+        "--       catalog_offers.currency_type_id to match.",
+        "",
+        "SET NAMES utf8mb4;",
+        "SET FOREIGN_KEY_CHECKS = 0;",
+        "",
+    ]
+    write_bulk_inserts(product_lines, "catalog_products", PRODUCT_COLS, badge_rows)
+    write_bulk_inserts(product_lines, "catalog_products", PRODUCT_COLS, furni_rows, ignore=True)
+    if song_notes:
+        product_lines.append("-- Songs requiring manual review:")
+        product_lines.extend(song_notes)
     products_dst.write_text("\n".join(product_lines) + "\n", encoding="utf-8")
+
     valid = len(rows) - skipped
     print(f"  -> {offers_dst.name}: {valid} offers ({skipped} skipped)")
     print(f"  -> {products_dst.name}: {product_id - 1} products")
+
+
+# ---------------------------------------------------------------------------
+# 4. FurnitureData.json → furnidata.xml
+# ---------------------------------------------------------------------------
+def convert_furnidata_json(src: Path, dst: Path) -> None:
+    with open(src, encoding="utf-8", errors="replace") as f:
+        data = json.load(f)
+
+    out: list[str] = ['<?xml version="1.0" encoding="UTF-8"?>', "<furnidata>"]
+
+    for section, is_wall in (("roomitemtypes", False), ("wallitemtypes", True)):
+        items = data.get(section, {}).get("furnitype", [])
+        out.append(f"<{section}>")
+        for ft in items:
+            cname = xml_escape(str(ft.get("classname", "")))
+            out.append(f'<furnitype id="{ft["id"]}" classname="{cname}">')
+            out.append(f'<revision>{ft.get("revision", 0)}</revision>')
+            out.append(xml_tag("category", str(ft.get("category", ""))))
+            if not is_wall:
+                out.append(f'<defaultdir>{int(ft.get("defaultdir", 0))}</defaultdir>')
+                out.append(f'<xdim>{ft.get("xdim", 1)}</xdim>')
+                out.append(f'<ydim>{ft.get("ydim", 1)}</ydim>')
+            colors = ft.get("partcolors") or {}
+            color_list = colors.get("color", []) if isinstance(colors, dict) else []
+            if color_list:
+                out.append("<partcolors>")
+                for c in color_list:
+                    out.append(f"<color>{xml_escape(str(c))}</color>")
+                out.append("</partcolors>")
+            out.append(xml_tag("name", str(ft.get("name", ""))))
+            out.append(xml_tag("description", str(ft.get("description", ""))))
+            out.append(xml_tag("adurl", str(ft.get("adurl", ""))))
+            out.append(f'<offerid>{ft.get("offerid", -1)}</offerid>')
+            out.append(f'<buyout>{xml_bool(ft.get("buyout", False))}</buyout>')
+            out.append(f'<rentofferid>{ft.get("rentofferid", -1)}</rentofferid>')
+            out.append(f'<rentbuyout>{xml_bool(ft.get("rentbuyout", False))}</rentbuyout>')
+            out.append(f'<bc>{xml_bool(ft.get("bc", False))}</bc>')
+            out.append(f'<excludeddynamic>{xml_bool(ft.get("excludeddynamic", False))}</excludeddynamic>')
+            out.append(xml_tag("customparams", str(ft.get("customparams", ""))))
+            out.append(f'<specialtype>{ft.get("specialtype", 1)}</specialtype>')
+            if not is_wall:
+                out.append(f'<canstandon>{xml_bool(ft.get("canstandon", False))}</canstandon>')
+                out.append(f'<cansiton>{xml_bool(ft.get("cansiton", False))}</cansiton>')
+                out.append(f'<canlayon>{xml_bool(ft.get("canlayon", False))}</canlayon>')
+            out.append(xml_tag("furniline", str(ft.get("furniline", ""))))
+            out.append(xml_tag("environment", str(ft.get("environment", ""))))
+            out.append(f'<rare>{xml_bool(ft.get("rare", False))}</rare>')
+            out.append("</furnitype>")
+        out.append(f"</{section}>")
+
+    out.append("</furnidata>")
+    dst.write_text("\n".join(out), encoding="utf-8")
+    total = sum(len(data.get(s, {}).get("furnitype", [])) for s in ("roomitemtypes", "wallitemtypes"))
+    print(f"  -> {dst.name}: {total} furnitype entries written")
+
+
+# ---------------------------------------------------------------------------
+# 5. ProductData.json → productdata.txt
+# ---------------------------------------------------------------------------
+def convert_productdata_json(src: Path, dst: Path) -> None:
+    with open(src, encoding="utf-8", errors="replace") as f:
+        data = json.load(f)
+
+    products = data.get("productdata", {}).get("product", [])
+    rows = [
+        [str(p.get("code", "")), str(p.get("name", "")), str(p.get("description", ""))]
+        for p in products
+    ]
+    dst.write_text(json.dumps(rows, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    print(f"  -> {dst.name}: {len(rows)} product entries written")
 
 
 # ---------------------------------------------------------------------------
@@ -565,6 +664,8 @@ def main() -> None:
     items_base_sql    = INPUT_DIR / "items_base.sql"
     catalog_pages_sql = INPUT_DIR / "catalog_pages.sql"
     catalog_items_sql = INPUT_DIR / "catalog_items.sql"
+    furnidata_json    = INPUT_DIR / "FurnitureData.json"
+    productdata_json  = INPUT_DIR / "ProductData.json"
 
     missing = [p for p in (items_base_sql, catalog_pages_sql, catalog_items_sql) if not p.exists()]
     if missing:
@@ -586,6 +687,18 @@ def main() -> None:
         id_remap,
     )
 
+    if furnidata_json.exists():
+        print("Converting FurnitureData.json → furnidata.xml ...")
+        convert_furnidata_json(furnidata_json, OUTPUT_DIR / "furnidata.xml")
+    else:
+        print(f"  [SKIP] {furnidata_json.name} not found in input/")
+
+    if productdata_json.exists():
+        print("Converting ProductData.json → productdata.txt ...")
+        convert_productdata_json(productdata_json, OUTPUT_DIR / "productdata.txt")
+    else:
+        print(f"  [SKIP] {productdata_json.name} not found in input/")
+
     print("\nDone. Output files are in:", OUTPUT_DIR)
     print("Import order: furniture_definitions -> catalog_pages -> catalog_offers -> catalog_products")
     print()
@@ -593,7 +706,7 @@ def main() -> None:
     print("  • furniture_definitions: public_name, multiheight, vending_ids, effects dropped")
     print("  • catalog_pages: min_rank, club_only, vip_only, room_id, includes dropped")
     print("  • catalog_offers: order_number dropped (no column in Turbo)")
-    print("  • catalog_offers: song_id rows marked [MANUAL REVIEW] in catalog_products.sql")
+    print("  • catalog_products: song_id rows marked [MANUAL REVIEW] at end of file")
     print("  • currency_type_id: set to the points_type value as a placeholder;")
     print("    update it after inserting your currency_types rows")
 
