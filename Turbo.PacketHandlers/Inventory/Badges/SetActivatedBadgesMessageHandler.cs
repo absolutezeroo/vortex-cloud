@@ -1,17 +1,16 @@
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Turbo.Database.Context;
+using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Inventory.Badges;
+using Turbo.Primitives.Orleans;
 
 namespace Turbo.PacketHandlers.Inventory.Badges;
 
-public class SetActivatedBadgesMessageHandler(IDbContextFactory<TurboDbContext> dbCtxFactory)
+public class SetActivatedBadgesMessageHandler(IGrainFactory grainFactory)
     : IMessageHandler<SetActivatedBadgesMessage>
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IGrainFactory _grainFactory = grainFactory;
 
     public async ValueTask HandleAsync(
         SetActivatedBadgesMessage message,
@@ -24,28 +23,9 @@ public class SetActivatedBadgesMessageHandler(IDbContextFactory<TurboDbContext> 
             return;
         }
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory
-            .CreateDbContextAsync(ct)
+        await _grainFactory
+            .GetPlayerBadgeGrain(ctx.PlayerId)
+            .SetActivatedBadgesAsync(message.Slots, ct)
             .ConfigureAwait(false);
-
-        await dbCtx
-            .PlayerBadges.Where(b => b.PlayerEntityId == ctx.PlayerId && b.SlotId > 0)
-            .ExecuteUpdateAsync(up => up.SetProperty(b => b.SlotId, 0), ct)
-            .ConfigureAwait(false);
-
-        foreach ((int slotId, string badgeCode) in message.Slots)
-        {
-            if (slotId <= 0 || string.IsNullOrWhiteSpace(badgeCode))
-            {
-                continue;
-            }
-
-            await dbCtx
-                .PlayerBadges.Where(b =>
-                    b.PlayerEntityId == ctx.PlayerId && b.BadgeCode == badgeCode
-                )
-                .ExecuteUpdateAsync(up => up.SetProperty(b => b.SlotId, slotId), ct)
-                .ConfigureAwait(false);
-        }
     }
 }

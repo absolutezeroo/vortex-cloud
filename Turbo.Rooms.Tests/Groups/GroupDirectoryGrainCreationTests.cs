@@ -196,9 +196,11 @@ public sealed class GroupDirectoryGrainCreationTests
         return new GroupDirectoryGrain(
             new TestDbContextFactory(options),
             grainFactory,
+            new NullGroupBadgePartProvider(),
             harness.System,
             harness.System,
-            NullLogger<GroupDirectoryGrain>.Instance
+            NullLogger<GroupDirectoryGrain>.Instance,
+            Microsoft.Extensions.Options.Options.Create(new Players.Configuration.GroupConfig())
         );
     }
 

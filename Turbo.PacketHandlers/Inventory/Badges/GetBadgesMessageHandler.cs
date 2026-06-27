@@ -1,22 +1,18 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Turbo.Database.Context;
-using Turbo.Database.Entities.Players;
+using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Inventory.Badges;
 using Turbo.Primitives.Messages.Outgoing.Inventory.Badges;
+using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players.Snapshots;
 
 namespace Turbo.PacketHandlers.Inventory.Badges;
 
-public class GetBadgesMessageHandler(IDbContextFactory<TurboDbContext> dbCtxFactory)
-    : IMessageHandler<GetBadgesMessage>
+public class GetBadgesMessageHandler(IGrainFactory grainFactory) : IMessageHandler<GetBadgesMessage>
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IGrainFactory _grainFactory = grainFactory;
 
     public async ValueTask HandleAsync(
         GetBadgesMessage message,
@@ -29,23 +25,10 @@ public class GetBadgesMessageHandler(IDbContextFactory<TurboDbContext> dbCtxFact
             return;
         }
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory
-            .CreateDbContextAsync(ct)
+        ImmutableArray<PlayerBadgeSnapshot> badges = await _grainFactory
+            .GetPlayerBadgeGrain(ctx.PlayerId)
+            .GetBadgesAsync(ct)
             .ConfigureAwait(false);
-
-        List<PlayerBadgeEntity> entities = await dbCtx
-            .PlayerBadges.AsNoTracking()
-            .Where(b => b.PlayerEntityId == (int)ctx.PlayerId)
-            .ToListAsync(ct)
-            .ConfigureAwait(false);
-
-        ImmutableArray<PlayerBadgeSnapshot> badges = entities
-            .Select(b => new PlayerBadgeSnapshot
-            {
-                SlotId = b.SlotId ?? 0,
-                BadgeCode = b.BadgeCode,
-            })
-            .ToImmutableArray();
 
         await ctx.SendComposerAsync(new BadgesEventMessageComposer { Badges = badges }, ct)
             .ConfigureAwait(false);

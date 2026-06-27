@@ -125,4 +125,14 @@ public static class GrainFactoryExtensions
         this IGrainFactory factory,
         int furnitureId
     ) => factory.GetGrain<IRentableSpaceGrain>(furnitureId);
+
+    public static IPlayerBadgeGrain GetPlayerBadgeGrain(
+        this IGrainFactory factory,
+        PlayerId playerId
+    ) => factory.GetGrain<IPlayerBadgeGrain>(playerId.Value);
+
+    public static IPlayerBadgeGrain GetPlayerBadgeGrain(
+        this IGrainFactory factory,
+        long playerId
+    ) => factory.GetGrain<IPlayerBadgeGrain>(playerId);
 }
