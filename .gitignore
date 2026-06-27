@@ -50,3 +50,4 @@ node_modules/
 # Catalog converter raw data
 tools/catalog_converter/input/
 tools/catalog_converter/output/
+tools/catalog_converter/exemples/

@@ -12,21 +12,22 @@ namespace Turbo.Database.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_pet_food_furniture_definitions_furniture_definition_id",
-                table: "pet_food");
+                table: "pet_food"
+            );
 
             migrationBuilder.DropIndex(
                 name: "IX_pet_food_furniture_definition_id",
-                table: "pet_food");
+                table: "pet_food"
+            );
 
-            migrationBuilder.DropIndex(
-                name: "IX_pet_food_pet_type",
-                table: "pet_food");
+            migrationBuilder.DropIndex(name: "IX_pet_food_pet_type", table: "pet_food");
 
             migrationBuilder.CreateIndex(
                 name: "IX_pet_food_furniture_definition_id_pet_type",
                 table: "pet_food",
                 columns: new[] { "furniture_definition_id", "pet_type" },
-                unique: true);
+                unique: true
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_pet_food_furniture_definitions_furniture_definition_id",
@@ -34,7 +35,8 @@ namespace Turbo.Database.Migrations
                 column: "furniture_definition_id",
                 principalTable: "furniture_definitions",
                 principalColumn: "id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
         }
 
         /// <inheritdoc />
@@ -42,22 +44,26 @@ namespace Turbo.Database.Migrations
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_pet_food_furniture_definitions_furniture_definition_id",
-                table: "pet_food");
+                table: "pet_food"
+            );
 
             migrationBuilder.DropIndex(
                 name: "IX_pet_food_furniture_definition_id_pet_type",
-                table: "pet_food");
+                table: "pet_food"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_pet_food_furniture_definition_id",
                 table: "pet_food",
                 column: "furniture_definition_id",
-                unique: true);
+                unique: true
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_pet_food_pet_type",
                 table: "pet_food",
-                column: "pet_type");
+                column: "pet_type"
+            );
 
             migrationBuilder.AddForeignKey(
                 name: "FK_pet_food_furniture_definitions_furniture_definition_id",
@@ -65,7 +71,8 @@ namespace Turbo.Database.Migrations
                 column: "furniture_definition_id",
                 principalTable: "furniture_definitions",
                 principalColumn: "id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.Cascade
+            );
         }
     }
 }

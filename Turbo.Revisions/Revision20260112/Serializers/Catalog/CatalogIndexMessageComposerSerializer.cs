@@ -48,7 +48,7 @@ internal class CatalogIndexMessageComposerSerializer(int header)
 
         foreach (int childId in page.ChildIds)
         {
-            if (snapshot.PagesById.TryGetValue(childId, out CatalogPageSnapshot? childPage))
+            if (snapshot.PagesById.TryGetValue(childId, out CatalogPageSnapshot? childPage) && childPage.Visible)
             {
                 children.Add(childPage);
             }

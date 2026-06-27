@@ -16,7 +16,7 @@ internal sealed class ExtraDataWriter
             return;
         }
 
-        _root = (JsonObject)JsonNode.Parse(extraData)!;
+        _root = JsonNode.Parse(extraData) as JsonObject ?? [];
     }
 
     public string UpdateSection<TSection>(string name, TSection section)
