@@ -30,6 +30,11 @@ internal class RoomSettingsSerializer
 
         RoomBitmaskFlags bitmask = RoomBitmaskFlags.ShowOwner;
 
+        if (message.AllowPets)
+        {
+            bitmask |= RoomBitmaskFlags.AllowPets;
+        }
+
         if (message.GroupId.HasValue && message.GroupName != null && message.GroupBadge != null)
         {
             bitmask |= RoomBitmaskFlags.GroupData;
