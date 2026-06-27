@@ -301,4 +301,27 @@ public sealed partial class RoomGrain
             return null;
         }
     }
+
+    public async Task<PetSnapshot?> PlantMonsterplantSeedAsync(
+        ActionContext ctx,
+        RoomObjectId seedItemId,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            return await PetSystem.PlantMonsterplantSeedAsync(ctx, seedItemId, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to plant monsterplant seed {SeedItemId} in room {RoomId}",
+                seedItemId,
+                _state.RoomId
+            );
+
+            return null;
+        }
+    }
 }

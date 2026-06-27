@@ -16,6 +16,8 @@ namespace Turbo.Rooms.Grains.Systems;
 internal static class RoomPetRuntime
 {
     private const int PetRoomObjectIdOffset = 1_000_000;
+    private const int MonsterplantPetType = 16;
+    private const int MonsterplantMaxLevel = 7;
 
     public static PetSnapshot ToSnapshot(PetEntity entity) =>
         new()
@@ -38,6 +40,8 @@ internal static class RoomPetRuntime
             ParentOneId = entity.ParentOneId,
             ParentTwoId = entity.ParentTwoId,
             CanBreed = entity.CanBreed,
+            RarityLevel = entity.RarityLevel,
+            LastWateredAt = entity.LastWateredAt,
             X = entity.X,
             Y = entity.Y,
             Z = entity.Z,
@@ -69,18 +73,21 @@ internal static class RoomPetRuntime
             SubType = pet.Type,
             OwnerId = pet.OwnerId.Value,
             OwnerName = ownerName,
-            RarityLevel = -1,
+            RarityLevel = pet.RarityLevel,
             HasSaddle = false,
             IsRiding = false,
-            CanBreed = pet.CanBreed,
-            CanHarvest = false,
-            CanRevive = false,
-            HasBreedingPermission = pet.CanBreed,
+            CanBreed = pet.Type != MonsterplantPetType && pet.CanBreed,
+            CanHarvest = pet.Type == MonsterplantPetType && pet.Level >= MonsterplantMaxLevel,
+            CanRevive = pet.Type == MonsterplantPetType && pet.Energy == 0,
+            HasBreedingPermission = pet.Type != MonsterplantPetType && pet.CanBreed,
             PetLevel = pet.Level,
             PetPosture = posture,
         };
 
-    private static string ToFigureString(PetSnapshot pet) => $"{pet.Type} {pet.Race} {pet.Color} 0";
+    private static string ToFigureString(PetSnapshot pet) =>
+        pet.Type == MonsterplantPetType
+            ? $"{pet.Type} {pet.Level} {pet.Color} 0"
+            : $"{pet.Type} {pet.Race} {pet.Color} 0";
 
     public static async Task<PetFeedResult> FeedAsync(
         TurboDbContext dbCtx,

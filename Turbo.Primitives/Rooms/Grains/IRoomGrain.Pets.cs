@@ -72,4 +72,10 @@ public partial interface IRoomGrain
         int commandId,
         CancellationToken ct
     );
+
+    public Task<PetSnapshot?> PlantMonsterplantSeedAsync(
+        ActionContext ctx,
+        RoomObjectId seedItemId,
+        CancellationToken ct
+    );
 }

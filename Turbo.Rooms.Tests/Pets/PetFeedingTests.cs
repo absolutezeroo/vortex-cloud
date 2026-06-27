@@ -141,7 +141,7 @@ public sealed class PetFeedingTests
             Name = "pet_food_bowl",
             ProductType = ProductType.Floor,
             FurniCategory = FurnitureCategory.Default,
-            Logic = "furniture_pet_product",
+            Logic = "pet_food",
             Width = 1,
             Length = 1,
             StackHeight = 0.1,

@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
@@ -41,6 +42,23 @@ public class GetPetInfoMessageHandler(IGrainFactory grainFactory)
             .GetPlayerNameAsync(pet.OwnerId, ct)
             .ConfigureAwait(false);
 
+        const int monsterplantPetType = 16;
+        const int monsterplantMaxWellBeingSeconds = 86_400;
+
+        bool isPlant = pet.Type == monsterplantPetType;
+
+        int remainingWellBeingSeconds = 0;
+        if (isPlant && pet.LastWateredAt.HasValue)
+        {
+            remainingWellBeingSeconds = Math.Max(
+                0,
+                (int)(
+                    monsterplantMaxWellBeingSeconds
+                    - (DateTime.UtcNow - pet.LastWateredAt.Value).TotalSeconds
+                )
+            );
+        }
+
         IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(ctx.PlayerId);
         await presence
             .SendComposerAsync(
@@ -48,8 +66,14 @@ public class GetPetInfoMessageHandler(IGrainFactory grainFactory)
                 {
                     Pet = pet,
                     OwnerName = ownerName,
-                    CanBreed = pet.CanBreed,
-                    HasBreedingPermission = pet.CanBreed,
+                    CanBreed = !isPlant && pet.CanBreed,
+                    CanHarvest = isPlant && pet.Level >= 7,
+                    CanRevive = isPlant && pet.Energy == 0,
+                    HasBreedingPermission = !isPlant && pet.CanBreed,
+                    RarityLevel = pet.RarityLevel,
+                    MaxWellBeingSeconds = isPlant ? monsterplantMaxWellBeingSeconds : 0,
+                    RemainingWellBeingSeconds = remainingWellBeingSeconds,
+                    RemainingGrowingSeconds = 0,
                 }
             )
             .ConfigureAwait(false);

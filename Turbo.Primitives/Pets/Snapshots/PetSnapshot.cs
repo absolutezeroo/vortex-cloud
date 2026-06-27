@@ -73,4 +73,10 @@ public sealed record PetSnapshot
 
     [Id(21)]
     public bool CanBreed { get; init; } = true;
+
+    [Id(22)]
+    public int RarityLevel { get; init; } = 1;
+
+    [Id(23)]
+    public DateTime? LastWateredAt { get; init; }
 }

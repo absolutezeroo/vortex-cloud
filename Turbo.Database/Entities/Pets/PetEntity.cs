@@ -64,6 +64,13 @@ public class PetEntity : TurboEntity
     [Column("respect_last_reset_date")]
     public DateOnly? RespectLastResetDate { get; set; }
 
+    [Column("rarity_level")]
+    [DefaultValue(1)]
+    public int RarityLevel { get; set; } = 1;
+
+    [Column("last_watered_at")]
+    public DateTime? LastWateredAt { get; set; }
+
     [Column("parent_one_id")]
     public int? ParentOneId { get; set; }
 

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Turbo.Database.Context;
+using Turbo.Database.Entities.Furniture;
 using Turbo.Database.Entities.Pets;
 using Turbo.Logging;
 using Turbo.Primitives;
@@ -19,7 +20,6 @@ using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Pets.Snapshots;
 using Turbo.Primitives.Players;
-using Turbo.Primitives.Players.Grains;
 using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Object;
 using Turbo.Primitives.Rooms.Object.Furniture;
@@ -31,40 +31,12 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
 {
     private const int PetPlacementForbiddenInFlatError = 1;
     private const int PetPlacementSelectedTileNotFreeError = 4;
+    private const int MonsterplantPetType = 16;
+    private readonly Dictionary<int, PendingBreedingSession> _breedingByPetOneId = [];
+    private readonly Dictionary<int, PetMotionState> _motionByPetId = [];
 
     private readonly RoomGrain _roomGrain = roomGrain;
-    private readonly Dictionary<int, PetMotionState> _motionByPetId = [];
-    private readonly Dictionary<int, PendingBreedingSession> _breedingByPetOneId = [];
     private long _nextPetFlushAtMs = -1;
-
-    private sealed record PendingBreedingSession(
-        int PetOneId,
-        int PetTwoId,
-        PlayerId OwnerOneId,
-        PlayerId OwnerTwoId,
-        int ProposedRace,
-        string ProposedColor,
-        int ProposedGender
-    );
-
-    private sealed class PetMotionState
-    {
-        public List<int> TilePath { get; } = [];
-        public int NextTileId { get; set; } = -1;
-        public long PendingStopAtMs { get; set; }
-        public long NextWanderAtMs { get; set; }
-        public long LastStatDecayAtMs { get; set; } = -1;
-        public bool IsStatsDirty { get; set; }
-        public bool IsSleeping { get; set; }
-        public bool SleepPostureSent { get; set; }
-
-        public void ClearMovement()
-        {
-            TilePath.Clear();
-            NextTileId = -1;
-            PendingStopAtMs = 0;
-        }
-    }
 
     public async Task EnsurePetsLoadedAsync(CancellationToken ct)
     {
@@ -105,7 +77,7 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
 
         while (now >= _roomGrain._state.NextPetBoundaryMs)
         {
-            _roomGrain._state.NextPetBoundaryMs += _roomGrain._roomConfig.PetTickMs;
+            _roomGrain._state.NextPetBoundaryMs += _roomGrain._roomConfig.Pet.TickMs;
         }
 
         await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
@@ -127,15 +99,43 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
             {
                 PetMotionState motion = GetMotionState(pet, now);
                 PetSnapshot current = ApplyPendingPetStep(pet, motion);
+
+                if (pet.Type == MonsterplantPetType)
+                {
+                    continue;
+                }
+
                 current = ApplyNeedDecay(current, motion, now);
+
+                if (motion.PendingSleepVocal)
+                {
+                    motion.PendingSleepVocal = false;
+                    motion.NextVocalAtMs = ScheduleNextVocalAt(now);
+                    await BroadcastPetVocalAsync(current, "SLEEPING").ConfigureAwait(false);
+                }
+                else if (motion.PendingWakeVocal)
+                {
+                    motion.PendingWakeVocal = false;
+                    motion.NextVocalAtMs = ScheduleNextVocalAt(now);
+                    await BroadcastPetVocalAsync(current, "GENERIC_HAPPY").ConfigureAwait(false);
+                }
+                else if (motion.NextVocalAtMs < 0)
+                {
+                    motion.NextVocalAtMs = ScheduleNextVocalAt(now);
+                }
+                else if (now >= motion.NextVocalAtMs)
+                {
+                    motion.NextVocalAtMs = ScheduleNextVocalAt(now);
+                    await BroadcastPetVocalAsync(current, SelectVocalForState(current, motion))
+                        .ConfigureAwait(false);
+                }
 
                 if (motion.IsSleeping && !motion.SleepPostureSent)
                 {
                     motion.SleepPostureSent = true;
                     RoomPetAvatarSnapshot sleepSnapshot = await ToAvatarSnapshotAsync(
                             current,
-                            string.Empty,
-                            "lay",
+                            "/lay/",
                             ct
                         )
                         .ConfigureAwait(false);
@@ -179,11 +179,11 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
 
         if (_nextPetFlushAtMs < 0)
         {
-            _nextPetFlushAtMs = now + _roomGrain._roomConfig.PetStatFlushIntervalMs;
+            _nextPetFlushAtMs = now + _roomGrain._roomConfig.Pet.StatFlushIntervalMs;
         }
         else if (now >= _nextPetFlushAtMs)
         {
-            _nextPetFlushAtMs = now + _roomGrain._roomConfig.PetStatFlushIntervalMs;
+            _nextPetFlushAtMs = now + _roomGrain._roomConfig.Pet.StatFlushIntervalMs;
 
             try
             {
@@ -426,8 +426,8 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
                 petId,
                 foodItemId,
                 _roomGrain._state.RoomSnapshot.AllowPetsEat,
-                _roomGrain._roomConfig.PetNutritionCap,
-                _roomGrain._roomConfig.PetEnergyCap,
+                _roomGrain._roomConfig.Pet.NutritionCap,
+                _roomGrain._roomConfig.Pet.EnergyCap,
                 ct
             )
             .ConfigureAwait(false);
@@ -506,12 +506,36 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
             motion.PendingStopAtMs = 0;
             motion.NextWanderAtMs = ScheduleNextWanderAt(now);
 
+            if (motion.FeedTargetId is RoomObjectId feedId)
+            {
+                motion.FeedTargetId = null;
+                string eatPosture = await AutoFeedPetAtBowlAsync(pet, feedId, ct)
+                    .ConfigureAwait(false);
+                PetSnapshot petAfterFeed = _roomGrain._state.PetsById.TryGetValue(
+                    pet.PetId,
+                    out PetSnapshot? fed
+                )
+                    ? fed
+                    : pet;
+
+                if (!string.IsNullOrEmpty(eatPosture))
+                {
+                    return await ToAvatarSnapshotAsync(petAfterFeed, $"/{eatPosture}/", ct)
+                        .ConfigureAwait(false);
+                }
+
+                return await ToAvatarSnapshotAsync(petAfterFeed, ct).ConfigureAwait(false);
+            }
+
             return await ToAvatarSnapshotAsync(pet, ct).ConfigureAwait(false);
         }
 
         if (motion.TilePath.Count == 0 && now >= motion.NextWanderAtMs)
         {
-            TryStartWander(pet, motion, now);
+            if (!TryDirectPetToFood(pet, motion, now))
+            {
+                TryStartWander(pet, motion, now);
+            }
         }
 
         if (motion.TilePath.Count == 0)
@@ -526,7 +550,7 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
         {
             motion.PendingStopAtMs = _roomGrain.AlignToNextBoundary(
                 now,
-                _roomGrain._roomConfig.PetTickMs
+                _roomGrain._roomConfig.Pet.TickMs
             );
         }
 
@@ -625,6 +649,11 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
 
     private bool TryStartWander(PetSnapshot pet, PetMotionState motion, long now)
     {
+        if (pet.Type == MonsterplantPetType)
+        {
+            return false;
+        }
+
         motion.NextWanderAtMs = ScheduleNextWanderAt(now);
 
         if (!_roomGrain.MapModule.InBounds(pet.X, pet.Y))
@@ -632,8 +661,8 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
             return false;
         }
 
-        int radius = Math.Max(1, _roomGrain._roomConfig.PetWanderRadius);
-        int attempts = Math.Max(1, _roomGrain._roomConfig.PetWanderCandidateAttempts);
+        int radius = Math.Max(1, _roomGrain._roomConfig.Pet.WanderRadius);
+        int attempts = Math.Max(1, _roomGrain._roomConfig.Pet.WanderCandidateAttempts);
 
         for (int attempt = 0; attempt < attempts; attempt++)
         {
@@ -775,7 +804,7 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
         int newEnergy = pet.Energy;
 
         int nutritionLoss = (int)(
-            elapsedMinutes * _roomGrain._roomConfig.PetNutritionDecayPerMinute
+            elapsedMinutes * _roomGrain._roomConfig.Pet.NutritionDecayPerMinute
         );
 
         if (nutritionLoss > 0)
@@ -786,10 +815,13 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
         if (motion.IsSleeping)
         {
             double nestMultiplier = IsOnNestTile(pet)
-                ? _roomGrain._roomConfig.PetNestEnergyMultiplier
+                ? _roomGrain._roomConfig.Pet.NestEnergyMultiplier
                 : 1.0;
             int energyGain = (int)(
-                elapsedMinutes * _roomGrain._roomConfig.PetEnergyDecayPerMinute * 2 * nestMultiplier
+                elapsedMinutes
+                * _roomGrain._roomConfig.Pet.EnergyDecayPerMinute
+                * 2
+                * nestMultiplier
             );
 
             if (energyGain > 0)
@@ -797,15 +829,18 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
                 newEnergy = Math.Clamp(pet.Energy + energyGain, 0, energyCap);
             }
 
-            if (newEnergy >= _roomGrain._roomConfig.PetSleepWakeEnergyThreshold)
+            if (newEnergy >= _roomGrain._roomConfig.Pet.SleepWakeEnergyThreshold)
             {
                 motion.IsSleeping = false;
                 motion.SleepPostureSent = false;
+                motion.PendingWakeVocal = true;
             }
         }
         else
         {
-            int energyLoss = (int)(elapsedMinutes * _roomGrain._roomConfig.PetEnergyDecayPerMinute);
+            int energyLoss = (int)(
+                elapsedMinutes * _roomGrain._roomConfig.Pet.EnergyDecayPerMinute
+            );
 
             if (energyLoss > 0)
             {
@@ -816,6 +851,7 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
             {
                 motion.IsSleeping = true;
                 motion.SleepPostureSent = false;
+                motion.PendingSleepVocal = true;
                 motion.ClearMovement();
             }
         }
@@ -857,11 +893,11 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
         entity.Nutrition = Math.Max(
             0,
             entity.Nutrition
-                - (int)(elapsedMinutes * _roomGrain._roomConfig.PetNutritionDecayPerMinute)
+                - (int)(elapsedMinutes * _roomGrain._roomConfig.Pet.NutritionDecayPerMinute)
         );
         entity.Energy = Math.Max(
             0,
-            entity.Energy - (int)(elapsedMinutes * _roomGrain._roomConfig.PetEnergyDecayPerMinute)
+            entity.Energy - (int)(elapsedMinutes * _roomGrain._roomConfig.Pet.EnergyDecayPerMinute)
         );
     }
 
@@ -967,10 +1003,19 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
     private long ScheduleNextWanderAt(long now)
     {
         int minMs = Math.Max(
-            _roomGrain._roomConfig.PetTickMs,
-            _roomGrain._roomConfig.PetWanderIdleMinMs
+            _roomGrain._roomConfig.Pet.TickMs,
+            _roomGrain._roomConfig.Pet.WanderIdleMinMs
         );
-        int maxMs = Math.Max(minMs, _roomGrain._roomConfig.PetWanderIdleMaxMs);
+        int maxMs = Math.Max(minMs, _roomGrain._roomConfig.Pet.WanderIdleMaxMs);
+
+        return now + Random.Shared.Next(minMs, maxMs + 1);
+    }
+
+    private long ScheduleNextVocalAt(long now)
+    {
+        int intervalMs = _roomGrain._roomConfig.Pet.VocalIntervalMs;
+        int minMs = intervalMs * 3 / 4;
+        int maxMs = intervalMs * 5 / 4;
 
         return now + Random.Shared.Next(minMs, maxMs + 1);
     }
@@ -1112,7 +1157,7 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
             motion.IsStatsDirty = true;
             if (
                 motion.IsSleeping
-                && updated.Energy >= _roomGrain._roomConfig.PetSleepWakeEnergyThreshold
+                && updated.Energy >= _roomGrain._roomConfig.Pet.SleepWakeEnergyThreshold
             )
             {
                 motion.IsSleeping = false;
@@ -1131,8 +1176,9 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
         return updated;
     }
 
-    private Task BroadcastPetVocalAsync(PetSnapshot pet, string vocalType) =>
-        _roomGrain.SendComposerToRoomAsync(
+    private Task BroadcastPetVocalAsync(PetSnapshot pet, string vocalType)
+    {
+        return _roomGrain.SendComposerToRoomAsync(
             new PetVocalMessageComposer
             {
                 PetObjectId = RoomPetRuntime.ToRoomObjectId(pet.PetId),
@@ -1141,13 +1187,15 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
                 VocalIndex = GetVocalIndex(pet.Type, vocalType),
             }
         );
+    }
 
-    private Task BroadcastPetRespectNotificationAsync(PetSnapshot pet) =>
-        _roomGrain.SendComposerToRoomAsync(
+    private Task BroadcastPetRespectNotificationAsync(PetSnapshot pet)
+    {
+        return _roomGrain.SendComposerToRoomAsync(
             new PetRespectNotificationEventMessageComposer
             {
                 PetRespect = pet.Respect,
-                PetOwnerId = (int)pet.OwnerId.Value,
+                PetOwnerId = pet.OwnerId.Value,
                 PetId = pet.PetId,
                 PetName = pet.Name,
                 PetType = pet.Type,
@@ -1156,6 +1204,7 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
                 PetLevel = pet.Level,
             }
         );
+    }
 
     private bool IsOnNestTile(PetSnapshot pet)
     {
@@ -1164,7 +1213,7 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
             if (
                 item.X == pet.X
                 && item.Y == pet.Y
-                && item.Definition.LogicName == _roomGrain._roomConfig.PetNestLogicName
+                && item.Definition.LogicName == _roomGrain._roomConfig.Pet.NestLogicName
             )
             {
                 return true;
@@ -1174,25 +1223,83 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
         return false;
     }
 
+    private string SelectVocalForState(PetSnapshot pet, PetMotionState motion)
+    {
+        if (motion.IsSleeping)
+        {
+            return "SLEEPING";
+        }
+
+        bool isHungry = pet.Nutrition < _roomGrain._roomConfig.Pet.HungerThreshold;
+        bool isThirsty =
+            pet.Energy < _roomGrain._roomConfig.Pet.ThirstThreshold
+            && pet.Energy > _roomGrain._roomConfig.Pet.SleepWakeEnergyThreshold;
+        bool isTired =
+            pet.Energy > 0 && pet.Energy <= _roomGrain._roomConfig.Pet.SleepWakeEnergyThreshold;
+
+        if (isHungry)
+        {
+            return "HUNGRY";
+        }
+
+        if (isThirsty)
+        {
+            return "THIRSTY";
+        }
+
+        if (isTired)
+        {
+            return "TIRED";
+        }
+
+        return Random.Shared.Next(0, 3) switch
+        {
+            0 => "GENERIC_NEUTRAL",
+            1 => "GENERIC_HAPPY",
+            _ => "PLAYFUL",
+        };
+    }
+
     private static int GetVocalIndex(int petType, string vocalType)
     {
+        // Max is the exclusive upper bound; Random.Next(0, max) → indices 0..max-1
         int max = (petType, vocalType) switch
         {
-            (15, "DISOBEY") => 3,
-            (15, "UNKNOWN_COMMAND") => 2,
-            (15, "SLEEPING") => 3,
-            (15, "TIRED") => 1,
-            (15, "GENERIC_HAPPY") => 3,
-            (15, "GENERIC_NEUTRAL") => 3,
-            (15, "PLAYFUL") => 2,
-            (35, "DISOBEY") => 3,
-            (35, "UNKNOWN_COMMAND") => 2,
-            (35, "SLEEPING") => 3,
-            (35, "TIRED") => 3,
+            // Type 35 (cow) — counts from catalog
+            (35, "nlDISOBEY") => 3,
+            (35, "DRINKING") => 2,
+            (35, "EATING") => 3,
             (35, "GENERIC_HAPPY") => 3,
             (35, "GENERIC_NEUTRAL") => 3,
+            (35, "GENERIC_SAD") => 2,
+            (35, "GREET_OWNER") => 3,
+            (35, "HUNGRY") => 4,
+            (35, "LEVEL_UP") => 4,
+            (35, "MUTED") => 1,
             (35, "PLAYFUL") => 2,
-            _ => 1,
+            (35, "PLAYING") => 2,
+            (35, "SLEEPING") => 3,
+            (35, "THIRSTY") => 3,
+            (35, "TIRED") => 3,
+            (35, "UNKNOWN_COMMAND") => 2,
+            // Type 15 (dog) — assume same structure
+            (15, "DISOBEY") => 3,
+            (15, "DRINKING") => 2,
+            (15, "EATING") => 3,
+            (15, "GENERIC_HAPPY") => 3,
+            (15, "GENERIC_NEUTRAL") => 3,
+            (15, "GENERIC_SAD") => 2,
+            (15, "GREET_OWNER") => 3,
+            (15, "HUNGRY") => 4,
+            (15, "LEVEL_UP") => 4,
+            (15, "MUTED") => 1,
+            (15, "PLAYFUL") => 2,
+            (15, "PLAYING") => 2,
+            (15, "SLEEPING") => 3,
+            (15, "THIRSTY") => 3,
+            (15, "TIRED") => 3,
+            (15, "UNKNOWN_COMMAND") => 2,
+            _ => 3,
         };
         return max > 1 ? Random.Shared.Next(0, max) : 0;
     }
@@ -1264,8 +1371,7 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
         {
             RoomPetAvatarSnapshot postureSnapshot = await ToAvatarSnapshotAsync(
                     updated,
-                    string.Empty,
-                    cmd.Posture,
+                    $"/{cmd.Posture}/",
                     ct
                 )
                 .ConfigureAwait(false);
@@ -1576,6 +1682,8 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
                 )
                 .ConfigureAwait(false);
 
+            await BroadcastPetVocalAsync(updated, "LEVEL_UP").ConfigureAwait(false);
+
             try
             {
                 await _roomGrain
@@ -1686,13 +1794,20 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
     private async Task<RoomPetAvatarSnapshot> ToAvatarSnapshotAsync(
         PetSnapshot pet,
         CancellationToken ct
-    ) => await ToAvatarSnapshotAsync(pet, string.Empty, string.Empty, ct).ConfigureAwait(false);
+    )
+    {
+        return await ToAvatarSnapshotAsync(pet, string.Empty, string.Empty, ct)
+            .ConfigureAwait(false);
+    }
 
     private async Task<RoomPetAvatarSnapshot> ToAvatarSnapshotAsync(
         PetSnapshot pet,
         string status,
         CancellationToken ct
-    ) => await ToAvatarSnapshotAsync(pet, status, string.Empty, ct).ConfigureAwait(false);
+    )
+    {
+        return await ToAvatarSnapshotAsync(pet, status, string.Empty, ct).ConfigureAwait(false);
+    }
 
     private async Task<RoomPetAvatarSnapshot> ToAvatarSnapshotAsync(
         PetSnapshot pet,
@@ -1727,8 +1842,9 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
         TurboDbContext dbCtx,
         int petId,
         CancellationToken ct
-    ) =>
-        await dbCtx
+    )
+    {
+        return await dbCtx
             .Pets.SingleOrDefaultAsync(
                 p =>
                     p.Id == petId
@@ -1737,6 +1853,7 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
                 ct
             )
             .ConfigureAwait(false);
+    }
 
     private static void EnsurePetOwner(ActionContext ctx, PetEntity pet)
     {
@@ -1744,6 +1861,113 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
         {
             throw new TurboException(TurboErrorCodeEnum.NoPermissionToManipulatePet);
         }
+    }
+
+    private bool TryDirectPetToFood(PetSnapshot pet, PetMotionState motion, long now)
+    {
+        if (pet.Type == MonsterplantPetType || !_roomGrain._state.RoomSnapshot.AllowPetsEat)
+        {
+            return false;
+        }
+
+        bool needsFood = pet.Nutrition < _roomGrain._roomConfig.Pet.HungerThreshold;
+        bool needsDrink = pet.Energy < _roomGrain._roomConfig.Pet.ThirstThreshold;
+
+        if (!needsFood && !needsDrink)
+        {
+            return false;
+        }
+
+        IRoomItem? target = null;
+        int bestDist = int.MaxValue;
+
+        foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
+        {
+            string logicName = item.Definition.LogicName;
+            bool isFood = needsFood && logicName == _roomGrain._roomConfig.Pet.FoodLogicName;
+            bool isDrink = needsDrink && logicName == _roomGrain._roomConfig.Pet.DrinkLogicName;
+
+            if (!isFood && !isDrink)
+            {
+                continue;
+            }
+
+            if (item.Logic.GetState() <= 0)
+            {
+                continue;
+            }
+
+            int dist = Math.Abs(pet.X - item.X) + Math.Abs(pet.Y - item.Y);
+
+            if (dist < bestDist)
+            {
+                bestDist = dist;
+                target = item;
+            }
+        }
+
+        if (target is null)
+        {
+            return false;
+        }
+
+        IReadOnlyList<(int X, int Y)> path = _roomGrain.PathingSystem.FindPath(
+            (pet.X, pet.Y),
+            (target.X, target.Y),
+            tileId => CanPetOccupyTile(pet.PetId, tileId),
+            (currentTileId, nextTileId, isGoal) =>
+                CanPetWalkBetween(pet.PetId, currentTileId, nextTileId, isGoal)
+        );
+
+        if (path.Count < 2)
+        {
+            return false;
+        }
+
+        motion.TilePath.Clear();
+        motion.TilePath.AddRange(
+            path.Skip(1).Select(pos => _roomGrain.MapModule.ToIdx(pos.X, pos.Y))
+        );
+        motion.FeedTargetId = target.ObjectId;
+        motion.NextWanderAtMs = ScheduleNextWanderAt(now);
+
+        return true;
+    }
+
+    private async Task<string> AutoFeedPetAtBowlAsync(
+        PetSnapshot pet,
+        RoomObjectId feedItemId,
+        CancellationToken ct
+    )
+    {
+        if (!_roomGrain._state.ItemsById.TryGetValue(feedItemId, out IRoomItem? item))
+        {
+            return string.Empty;
+        }
+
+        if (item.X != pet.X || item.Y != pet.Y)
+        {
+            return string.Empty;
+        }
+
+        bool isDrink = item.Definition.LogicName == _roomGrain._roomConfig.Pet.DrinkLogicName;
+
+        ActionContext ctx = ActionContext.CreateForPlayer(pet.OwnerId, _roomGrain.RoomId);
+        PetFeedResult result = await FeedPetAsync(ctx, pet.PetId, feedItemId, ct)
+            .ConfigureAwait(false);
+
+        if (!result.Success)
+        {
+            return string.Empty;
+        }
+
+        if (_roomGrain._state.PetsById.TryGetValue(pet.PetId, out PetSnapshot? updated))
+        {
+            string eatVocal = isDrink ? "DRINKING" : "EATING";
+            await BroadcastPetVocalAsync(updated, eatVocal).ConfigureAwait(false);
+        }
+
+        return isDrink ? "drk" : "eat";
     }
 
     private async Task UpdateFoodItemInLiveStateAsync(
@@ -1761,6 +1985,7 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
 
         if (usesRemaining > 0)
         {
+            item.Logic.StuffData.SetState(foodState.ToString());
             item.SetExtraData(foodState.ToString());
             await _roomGrain
                 .SendComposerToRoomAsync(item.GetRefreshStuffDataComposer())
@@ -1774,11 +1999,111 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
         }
 
         await _roomGrain
-            .SendComposerToRoomAsync(item.GetRemoveComposer(ctx.PlayerId, isExpired: true))
+            .SendComposerToRoomAsync(item.GetRemoveComposer(ctx.PlayerId, true))
             .ConfigureAwait(false);
 
         await item.Logic.OnDetachAsync(ct).ConfigureAwait(false);
         item.SetAction(null);
         _roomGrain._state.ItemsById.Remove(foodItemId);
+    }
+
+    public async Task<PetSnapshot?> PlantMonsterplantSeedAsync(
+        ActionContext ctx,
+        RoomObjectId seedItemId,
+        CancellationToken ct
+    )
+    {
+        await EnsureRoomReadyForPetPlacementAsync(ct).ConfigureAwait(false);
+
+        if (!_roomGrain._state.ItemsById.TryGetValue(seedItemId, out IRoomItem? seedItem))
+        {
+            return null;
+        }
+
+        int x = seedItem.X;
+        int y = seedItem.Y;
+        double z = seedItem.Z;
+        PlayerId ownerId = seedItem.OwnerId;
+
+        await using TurboDbContext dbCtx = await _roomGrain
+            ._dbCtxFactory.CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        PetEntity plant = new()
+        {
+            OwnerPlayerEntityId = ownerId.Value,
+            OwnerPlayerEntity = null!,
+            RoomEntityId = _roomGrain.RoomId.Value,
+            Name = "Monsterplant",
+            Type = MonsterplantPetType,
+            Race = 0,
+            Color = "ffffff",
+            Gender = AvatarGenderType.Male,
+            Level = 1,
+            Experience = 0,
+            Energy = _roomGrain._roomConfig.Pet.EnergyCap,
+            Nutrition = _roomGrain._roomConfig.Pet.NutritionCap,
+            Respect = 0,
+            RarityLevel = Random.Shared.Next(1, 8),
+            LastWateredAt = DateTime.UtcNow,
+            X = x,
+            Y = y,
+            Z = z,
+            Direction = (int)Rotation.South,
+        };
+
+        dbCtx.Pets.Add(plant);
+
+        FurnitureEntity seedEntity = new() { Id = seedItemId.Value };
+        dbCtx.Attach(seedEntity);
+        seedEntity.DeletedAt = DateTime.UtcNow;
+        dbCtx.Entry(seedEntity).Property(f => f.DeletedAt).IsModified = true;
+
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        PetSnapshot snapshot = RoomPetRuntime.ToSnapshot(plant);
+        _roomGrain._state.PetsById[plant.Id] = snapshot;
+
+        await SendPetAddedAsync(snapshot, ct).ConfigureAwait(false);
+
+        await _roomGrain
+            .ObjectModule.RemoveObjectAsync(ctx, seedItem, ct, ownerId)
+            .ConfigureAwait(false);
+
+        return snapshot;
+    }
+
+    private sealed record PendingBreedingSession(
+        int PetOneId,
+        int PetTwoId,
+        PlayerId OwnerOneId,
+        PlayerId OwnerTwoId,
+        int ProposedRace,
+        string ProposedColor,
+        int ProposedGender
+    );
+
+    private sealed class PetMotionState
+    {
+        public List<int> TilePath { get; } = [];
+        public int NextTileId { get; set; } = -1;
+        public long PendingStopAtMs { get; set; }
+        public long NextWanderAtMs { get; set; }
+        public long LastStatDecayAtMs { get; set; } = -1;
+        public bool IsStatsDirty { get; set; }
+        public bool IsSleeping { get; set; }
+        public bool SleepPostureSent { get; set; }
+        public RoomObjectId? FeedTargetId { get; set; }
+        public long NextVocalAtMs { get; set; } = -1;
+        public bool PendingSleepVocal { get; set; }
+        public bool PendingWakeVocal { get; set; }
+
+        public void ClearMovement()
+        {
+            TilePath.Clear();
+            NextTileId = -1;
+            PendingStopAtMs = 0;
+            FeedTargetId = null;
+        }
     }
 }

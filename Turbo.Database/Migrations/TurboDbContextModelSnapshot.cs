@@ -2879,6 +2879,10 @@ namespace Turbo.Database.Migrations
                         .HasDefaultValue(0)
                         .HasColumnName("gender");
 
+                    b.Property<DateTime?>("LastWateredAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("last_watered_at");
+
                     b.Property<int>("Level")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
@@ -2910,6 +2914,12 @@ namespace Turbo.Database.Migrations
                     b.Property<int>("Race")
                         .HasColumnType("int")
                         .HasColumnName("race");
+
+                    b.Property<int>("RarityLevel")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1)
+                        .HasColumnName("rarity_level");
 
                     b.Property<int>("Respect")
                         .ValueGeneratedOnAdd()

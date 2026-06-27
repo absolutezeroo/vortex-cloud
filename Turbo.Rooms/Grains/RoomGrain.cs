@@ -186,7 +186,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
             _state.EpochMs = now;
             _state.NextAvatarBoundaryMs = AlignToNextBoundary(now, _roomConfig.AvatarTickMs);
-            _state.NextPetBoundaryMs = AlignToNextBoundary(now, _roomConfig.PetTickMs);
+            _state.NextPetBoundaryMs = AlignToNextBoundary(now, _roomConfig.Pet.TickMs);
             _state.NextRollerBoundaryMs = AlignToNextBoundary(now, _roomConfig.RollerTickMs);
             _state.NextWiredBoundaryMs = AlignToNextBoundary(now, _roomConfig.WiredTickMs);
         }
@@ -245,6 +245,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
             RoomEntity entity =
                 await dbCtx
                     .Rooms.AsNoTracking()
+                    .Include(e => e.GroupEntity)
                     .SingleOrDefaultAsync(e => e.Id == _state.RoomId.Value, ct)
                 ?? throw new TurboException(TurboErrorCodeEnum.RoomNotFound);
 
@@ -269,6 +270,8 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                 AllowPets = entity.AllowPets,
                 AllowPetsEat = entity.AllowPetsEat,
                 GroupId = entity.GroupEntityId,
+                GroupName = entity.GroupEntity?.Name,
+                GroupBadge = entity.GroupEntity?.Badge,
                 Password = entity.Password ?? string.Empty,
                 ModSettings = new ModSettingsSnapshot
                 {
