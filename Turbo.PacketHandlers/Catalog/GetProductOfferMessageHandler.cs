@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Catalog;
 using Turbo.Primitives.Catalog.Enums;
@@ -10,10 +11,13 @@ using Turbo.Primitives.Messages.Outgoing.Catalog;
 
 namespace Turbo.PacketHandlers.Catalog;
 
-public class GetProductOfferMessageHandler(ICatalogService catalogService)
-    : IMessageHandler<GetProductOfferMessage>
+public class GetProductOfferMessageHandler(
+    ICatalogService catalogService,
+    ILogger<GetProductOfferMessageHandler> logger
+) : IMessageHandler<GetProductOfferMessage>
 {
     private readonly ICatalogService _catalogService = catalogService;
+    private readonly ILogger<GetProductOfferMessageHandler> _logger = logger;
 
     public async ValueTask HandleAsync(
         GetProductOfferMessage message,
@@ -33,6 +37,9 @@ public class GetProductOfferMessageHandler(ICatalogService catalogService)
             await ctx.SendComposerAsync(new ProductOfferEventMessageComposer { Offer = offer }, ct)
                 .ConfigureAwait(false);
         }
-        catch (Exception) { }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to serve product offer {OfferId}", message.OfferId);
+        }
     }
 }

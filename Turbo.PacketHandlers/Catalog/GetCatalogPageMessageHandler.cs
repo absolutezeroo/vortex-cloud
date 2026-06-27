@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Catalog;
 using Turbo.Primitives.Catalog.Snapshots;
@@ -11,10 +12,13 @@ using Turbo.Primitives.Messages.Outgoing.Catalog;
 
 namespace Turbo.PacketHandlers.Catalog;
 
-public class GetCatalogPageMessageHandler(ICatalogService catalogService)
-    : IMessageHandler<GetCatalogPageMessage>
+public class GetCatalogPageMessageHandler(
+    ICatalogService catalogService,
+    ILogger<GetCatalogPageMessageHandler> logger
+) : IMessageHandler<GetCatalogPageMessage>
 {
     private readonly ICatalogService _catalogService = catalogService;
+    private readonly ILogger<GetCatalogPageMessageHandler> _logger = logger;
 
     public async ValueTask HandleAsync(
         GetCatalogPageMessage message,
@@ -88,6 +92,14 @@ public class GetCatalogPageMessageHandler(ICatalogService catalogService)
                 )
                 .ConfigureAwait(false);
         }
-        catch (Exception) { }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to serve catalog page {PageId} for type {CatalogType}",
+                message.PageId,
+                message.CatalogType
+            );
+        }
     }
 }
