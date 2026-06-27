@@ -150,6 +150,20 @@ def sql_bool(value) -> str:
     return "1" if value else "0"
 
 
+def to_int(value, default: int = 0) -> int:
+    try:
+        return int(value) if value is not None else default
+    except (ValueError, TypeError):
+        return default
+
+
+def to_float(value, default: float = 0.0) -> float:
+    try:
+        return float(value) if value is not None else default
+    except (ValueError, TypeError):
+        return default
+
+
 def json_array(items: list) -> str:
     cleaned = [str(x) for x in items if x is not None and str(x).strip() != ""]
     if not cleaned:
@@ -334,15 +348,15 @@ def convert_items_base(src: Path, dst: Path) -> tuple[dict[int, dict], dict[int,
             continue
         seen_key[key] = ib_id_int
 
-        width_val  = int(width)  if width  is not None else 1
-        length_val = int(length) if length is not None else 1
-        sh_val     = float(stack_height) if stack_height is not None else 0.0
+        width_val  = to_int(width, 1)
+        length_val = to_int(length, 1)
+        sh_val     = to_float(stack_height, 0.0)
 
         value_rows.append(
             f"({sql_str(ib_id_int)}, {sql_str(sprite_int)}, "
             f"{sql_str(str(item_name or ''))}, {sql_str(product_type)}, "
             f"{sql_str(category)}, {sql_str(logic)}, "
-            f"{sql_str(int(interaction_modes_count) if interaction_modes_count is not None else 1)}, "
+            f"{sql_str(to_int(interaction_modes_count, 1))}, "
             f"{sql_str(width_val)}, {sql_str(length_val)}, {sql_str(sh_val)}, "
             f"{sql_bool(int(allow_stack or 1))}, "
             f"{sql_bool(int(allow_walk  or 0))}, "
@@ -514,14 +528,14 @@ def convert_catalog_items(
             have_offer, club_only, rate
         ) = row[:18]
 
-        item_id_val   = int(item_id)
-        page_id_val   = int(page_id)
-        credits_val   = int(cost_credits) if cost_credits is not None else 0
-        currency_val  = int(cost_points)  if cost_points  is not None else 0
-        points_type_v = int(points_type)  if points_type  is not None else 0
-        amount_val    = int(amount)        if amount        is not None else 1
-        ltd_stack     = int(limited_stack) if limited_stack is not None else 0
-        ltd_sells     = int(limited_sells) if limited_sells is not None else 0
+        item_id_val   = to_int(item_id)
+        page_id_val   = to_int(page_id)
+        credits_val   = to_int(cost_credits)
+        currency_val  = to_int(cost_points)
+        points_type_v = to_int(points_type)
+        amount_val    = to_int(amount, 1)
+        ltd_stack     = to_int(limited_stack)
+        ltd_sells     = to_int(limited_sells)
         ltd_remaining = max(0, ltd_stack - ltd_sells)
         extra_param   = str(extradata or "").strip() or None
         is_visible    = str(have_offer or "1") == "1"
@@ -565,7 +579,7 @@ def convert_catalog_items(
             )
             product_id += 1
 
-        song_id_v = int(song_id) if song_id is not None else 0
+        song_id_v = to_int(song_id)
         if song_id_v:
             song_notes.append(
                 f"-- [MANUAL REVIEW] song_id={song_id_v} for offer {item_id_val} — "
