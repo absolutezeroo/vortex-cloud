@@ -83,6 +83,19 @@ public sealed class AuthenticationService(
             {
                 dbCtx.SecurityTickets.Remove(entity);
 
+                // Re-insert so the client can reconnect after a disconnect without a new ticket
+                dbCtx.SecurityTickets.Add(
+                    new SecurityTicketEntity
+                    {
+                        PlayerEntityId = entity.PlayerEntityId,
+                        Ticket = entity.Ticket,
+                        IpAddress = entity.IpAddress,
+                        IsLocked = false,
+                        ExpiresAt = null,
+                        PlayerEntity = entity.PlayerEntity,
+                    }
+                );
+
                 await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
             }
 
