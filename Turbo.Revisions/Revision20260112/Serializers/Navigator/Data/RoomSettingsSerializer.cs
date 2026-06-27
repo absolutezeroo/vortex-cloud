@@ -28,9 +28,12 @@ internal class RoomSettingsSerializer
             packet.WriteString(tag);
         }
 
-        RoomBitmaskFlags bitmask = RoomBitmaskFlags.None;
+        RoomBitmaskFlags bitmask = RoomBitmaskFlags.ShowOwner;
 
-        bitmask |= RoomBitmaskFlags.ShowOwner;
+        if (message.GroupId.HasValue && message.GroupName != null && message.GroupBadge != null)
+        {
+            bitmask |= RoomBitmaskFlags.GroupData;
+        }
 
         packet.WriteInteger((int)bitmask);
 
@@ -42,9 +45,9 @@ internal class RoomSettingsSerializer
         if (bitmask.HasFlag(RoomBitmaskFlags.GroupData))
         {
             packet
-                .WriteInteger(0) // groupId
-                .WriteString(string.Empty) // groupName
-                .WriteString(string.Empty); // groupBadgeCode
+                .WriteInteger(message.GroupId!.Value)
+                .WriteString(message.GroupName!)
+                .WriteString(message.GroupBadge!);
         }
 
         if (bitmask.HasFlag(RoomBitmaskFlags.RoomAd))

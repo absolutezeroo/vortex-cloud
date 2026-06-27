@@ -210,7 +210,12 @@ public sealed class NavigatorProvider(
 
     private static IQueryable<Database.Entities.Room.RoomEntity> BuildRoomQuery(
         TurboDbContext dbCtx
-    ) => dbCtx.Rooms.AsNoTracking().Where(x => x.DeletedAt == null).Include(x => x.PlayerEntity);
+    ) =>
+        dbCtx
+            .Rooms.AsNoTracking()
+            .Where(x => x.DeletedAt == null)
+            .Include(x => x.PlayerEntity)
+            .Include(x => x.GroupEntity);
 }
 
 file static class RoomQueryExtensions
@@ -242,6 +247,9 @@ file static class RoomQueryExtensions
                 AllowBlocking = x.AllowBlocking,
                 AllowPets = x.AllowPets,
                 AllowPetsEat = x.AllowPetsEat,
+                GroupId = x.GroupEntityId,
+                GroupName = x.GroupEntity?.Name,
+                GroupBadge = x.GroupEntity?.Badge,
                 LastUpdatedUtc = DateTime.UtcNow,
             }),
         ];

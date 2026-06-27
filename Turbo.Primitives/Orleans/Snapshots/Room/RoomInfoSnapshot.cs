@@ -39,4 +39,10 @@ public record RoomInfoSnapshot : RoomSummarySnapshot
 
     [Id(10)]
     public int? GroupId { get; init; }
+
+    [Id(11)]
+    public string? GroupName { get; init; }
+
+    [Id(12)]
+    public string? GroupBadge { get; init; }
 }
