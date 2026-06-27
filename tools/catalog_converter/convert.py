@@ -688,13 +688,13 @@ def main() -> None:
     )
 
     if furnidata_json.exists():
-        print("Converting FurnitureData.json → furnidata.xml ...")
+        print("Converting FurnitureData.json -> furnidata.xml ...")
         convert_furnidata_json(furnidata_json, OUTPUT_DIR / "furnidata.xml")
     else:
         print(f"  [SKIP] {furnidata_json.name} not found in input/")
 
     if productdata_json.exists():
-        print("Converting ProductData.json → productdata.txt ...")
+        print("Converting ProductData.json -> productdata.txt ...")
         convert_productdata_json(productdata_json, OUTPUT_DIR / "productdata.txt")
     else:
         print(f"  [SKIP] {productdata_json.name} not found in input/")
