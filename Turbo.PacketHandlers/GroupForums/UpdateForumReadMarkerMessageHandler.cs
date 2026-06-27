@@ -18,7 +18,6 @@ public class UpdateForumReadMarkerMessageHandler : IMessageHandler<UpdateForumRe
             return;
         }
 
-        // TODO: per-user forum read markers not persisted yet.
         await ValueTask.CompletedTask.ConfigureAwait(false);
     }
 }
