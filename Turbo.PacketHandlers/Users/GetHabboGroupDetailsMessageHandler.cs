@@ -35,6 +35,16 @@ public class GetHabboGroupDetailsMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
+        GroupEditorDataSnapshot editorData = await _grainFactory
+            .GetGroupDirectoryGrain()
+            .GetEditorDataAsync(ct)
+            .ConfigureAwait(false);
+
+        await ctx.SendComposerAsync(new GuildEditorDataMessageComposer { Data = editorData }, ct)
+            .ConfigureAwait(false);
+
+        details = details with { OpenDetails = message.RequestDetails };
+
         await ctx.SendComposerAsync(new HabboGroupDetailsMessageComposer { Details = details }, ct)
             .ConfigureAwait(false);
     }

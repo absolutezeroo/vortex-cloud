@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Turbo.Database.Context;
 
@@ -11,9 +12,11 @@ using Turbo.Database.Context;
 namespace Turbo.Database.Migrations
 {
     [DbContext(typeof(TurboDbContext))]
-    partial class TurboDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260626222423_AddGroupBadgeParts")]
+    partial class AddGroupBadgeParts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1551,10 +1554,6 @@ namespace Turbo.Database.Migrations
                         .HasDefaultValue("")
                         .HasColumnName("mask_file_name");
 
-                    b.Property<int>("PartId")
-                        .HasColumnType("int")
-                        .HasColumnName("part_id");
-
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(512)
@@ -1570,8 +1569,7 @@ namespace Turbo.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PartId", "Type")
-                        .IsUnique();
+                    b.HasIndex("Type");
 
                     b.ToTable("group_badge_parts");
                 });
@@ -1590,10 +1588,6 @@ namespace Turbo.Database.Migrations
                         .HasMaxLength(512)
                         .HasColumnType("varchar(512)")
                         .HasColumnName("color_hex");
-
-                    b.Property<int>("ColorId")
-                        .HasColumnType("int")
-                        .HasColumnName("color_id");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -1614,9 +1608,6 @@ namespace Turbo.Database.Migrations
                     MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ColorId")
-                        .IsUnique();
 
                     b.ToTable("group_colors");
                 });

@@ -55,9 +55,9 @@ public sealed record GroupDetailsSnapshot
     [Id(14)]
     public required string OwnerName { get; init; }
 
-    /// <summary>Whether anyone can join without approval (Open groups).</summary>
+    /// <summary>Tells the client to open the group details popup. Set from the request flag, not group state.</summary>
     [Id(15)]
-    public required bool OpenToJoin { get; init; }
+    public required bool OpenDetails { get; init; }
 
     [Id(16)]
     public required bool MembersCanDecorate { get; init; }

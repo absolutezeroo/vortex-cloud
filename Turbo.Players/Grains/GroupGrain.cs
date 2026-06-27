@@ -129,7 +129,7 @@ internal sealed class GroupGrain(
             IsOwner = isOwner,
             IsAdmin = isAdmin,
             OwnerName = group.OwnerPlayerEntity.Name,
-            OpenToJoin = group.Type == GroupType.Open,
+            OpenDetails = false,
             MembersCanDecorate = !group.AdminOnlyDecoration,
             PendingMemberCount = pendingCount,
             HasForum = group.ForumSettings?.Enabled ?? false,

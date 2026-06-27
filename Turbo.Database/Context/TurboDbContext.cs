@@ -126,6 +126,10 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
 
     public DbSet<GroupEntity> Groups { get; init; }
 
+    public DbSet<GroupBadgePartEntity> GroupBadgeParts { get; init; }
+
+    public DbSet<GroupColorEntity> GroupColors { get; init; }
+
     public DbSet<GroupMemberEntity> GroupMembers { get; init; }
 
     public DbSet<GroupMembershipRequestEntity> GroupMembershipRequests { get; init; }

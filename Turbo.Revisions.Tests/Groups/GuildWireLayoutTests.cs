@@ -92,7 +92,7 @@ public sealed class GuildWireLayoutTests
             IsOwner = true,
             IsAdmin = true,
             OwnerName = "absolutezeroo",
-            OpenToJoin = true,
+            OpenDetails = true,
             MembersCanDecorate = true,
             PendingMemberCount = 2,
             HasForum = false,

@@ -35,6 +35,14 @@ public class GetGuildEditInfoMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
+        GroupEditorDataSnapshot editorData = await _grainFactory
+            .GetGroupDirectoryGrain()
+            .GetEditorDataAsync(ct)
+            .ConfigureAwait(false);
+
+        await ctx.SendComposerAsync(new GuildEditorDataMessageComposer { Data = editorData }, ct)
+            .ConfigureAwait(false);
+
         await ctx.SendComposerAsync(new GuildEditInfoMessageComposer { Info = info }, ct)
             .ConfigureAwait(false);
     }

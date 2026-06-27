@@ -14,6 +14,7 @@ using Turbo.Events.Registry;
 using Turbo.Primitives.Events;
 using Turbo.Primitives.Groups.Enums;
 using Turbo.Primitives.Groups.Grains;
+using Turbo.Primitives.Groups.Providers;
 using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players;
@@ -31,6 +32,7 @@ namespace Turbo.Players.Grains;
 internal sealed class GroupDirectoryGrain(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
+    IGroupBadgePartProvider badgePartProvider,
     IEventPublisher events,
     ICancellableEventPublisher cancellableEvents,
     ILogger<GroupDirectoryGrain> logger
@@ -267,8 +269,8 @@ internal sealed class GroupDirectoryGrain(
                 GroupName = g.Name,
                 BadgeCode = g.Badge,
                 // ColorOne/ColorTwo store the palette colour id; resolve to hex for the client.
-                PrimaryColor = GuildBadgeLibrary.ResolveColorHex(g.ColorOne),
-                SecondaryColor = GuildBadgeLibrary.ResolveColorHex(g.ColorTwo),
+                PrimaryColor = badgePartProvider.ResolveColorHex(g.ColorOne),
+                SecondaryColor = badgePartProvider.ResolveColorHex(g.ColorTwo),
                 Favourite = favouriteGroupId == g.Id,
                 OwnerId = g.OwnerPlayerEntityId,
                 HasForum = g.ForumSettings?.Enabled ?? false,
@@ -323,11 +325,11 @@ internal sealed class GroupDirectoryGrain(
         return Task.FromResult(
             new GroupEditorDataSnapshot
             {
-                BaseParts = GuildBadgeLibrary.BaseParts,
-                LayerParts = GuildBadgeLibrary.LayerParts,
-                BadgeColors = GuildBadgeLibrary.BadgeColors,
-                PrimaryColors = GuildBadgeLibrary.PrimaryColors,
-                SecondaryColors = GuildBadgeLibrary.SecondaryColors,
+                BaseParts = badgePartProvider.BaseParts.ToList(),
+                LayerParts = badgePartProvider.LayerParts.ToList(),
+                BadgeColors = badgePartProvider.Colors.ToList(),
+                PrimaryColors = badgePartProvider.Colors.ToList(),
+                SecondaryColors = badgePartProvider.Colors.ToList(),
             }
         );
     }

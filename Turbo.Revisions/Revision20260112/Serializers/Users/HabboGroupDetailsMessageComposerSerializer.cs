@@ -29,7 +29,7 @@ internal class HabboGroupDetailsMessageComposerSerializer(int header)
         packet.WriteBoolean(details.IsOwner);
         packet.WriteBoolean(details.IsAdmin);
         packet.WriteString(details.OwnerName);
-        packet.WriteBoolean(details.OpenToJoin);
+        packet.WriteBoolean(details.OpenDetails);
         packet.WriteBoolean(details.MembersCanDecorate);
         packet.WriteInteger(details.PendingMemberCount);
         packet.WriteBoolean(details.HasForum);
