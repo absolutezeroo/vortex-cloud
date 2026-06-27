@@ -1069,14 +1069,14 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
             _roomGrain._state.PetsById[petId] = pet;
         }
 
-        const int dailyCap = 3;
+        int dailyCap = _roomGrain._roomConfig.Pet.RespectDailyCapPerPet;
 
         if (pet.RespectTodayCount >= dailyCap)
         {
             return pet;
         }
 
-        const int respectXp = 5;
+        int respectXp = _roomGrain._roomConfig.Pet.RespectXpReward;
         PetSnapshot updated = await GrantXpAndLevelUpAsync(pet, respectXp, ct)
             .ConfigureAwait(false);
         updated = updated with
@@ -1111,7 +1111,7 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
             return null;
         }
 
-        const int commandXp = 3;
+        int commandXp = _roomGrain._roomConfig.Pet.CommandXpReward;
         PetSnapshot updated = await GrantXpAndLevelUpAsync(pet, commandXp, ct)
             .ConfigureAwait(false);
         _roomGrain._state.PetsById[petId] = updated;
@@ -1140,9 +1140,12 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
         }
 
         int energyCap = _roomGrain._petLevelProvider.GetEnergyCapForLevel(pet.Type, pet.Level);
-        int newEnergy = Math.Min(pet.Energy + 30, energyCap);
+        int newEnergy = Math.Min(
+            pet.Energy + _roomGrain._roomConfig.Pet.SupplementEnergyBoost,
+            energyCap
+        );
 
-        const int supplementXp = 5;
+        int supplementXp = _roomGrain._roomConfig.Pet.SupplementXpReward;
         PetSnapshot withEnergy = pet with { Energy = newEnergy };
         _roomGrain._state.PetsById[petId] = withEnergy;
 
@@ -1532,8 +1535,8 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
             Gender = session.ProposedGender == 0 ? AvatarGenderType.Male : AvatarGenderType.Female,
             Level = 1,
             Experience = 0,
-            Energy = 100,
-            Nutrition = 100,
+            Energy = _roomGrain._roomConfig.Pet.EnergyCap,
+            Nutrition = _roomGrain._roomConfig.Pet.NutritionCap,
             Respect = 0,
             X = 0,
             Y = 0,

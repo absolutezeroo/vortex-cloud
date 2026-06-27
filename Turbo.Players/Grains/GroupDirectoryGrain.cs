@@ -5,12 +5,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Orleans;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Groups;
 using Turbo.Database.Entities.Players;
 using Turbo.Database.Entities.Room;
 using Turbo.Events.Registry;
+using Turbo.Players.Configuration;
 using Turbo.Primitives.Events;
 using Turbo.Primitives.Groups.Enums;
 using Turbo.Primitives.Groups.Grains;
@@ -23,26 +25,18 @@ using Turbo.Primitives.Players.Wallet;
 
 namespace Turbo.Players.Grains;
 
-/// <summary>
-///     Singleton grain handling group operations not bound to one existing group: the creation wizard,
-///     creating a group (charged via the wallet, with its 1:1 forum-settings row through
-///     <see cref="GroupFactory" />), the player's memberships/favourite, and badge-editor data.
-///     Per-group reads/mutations live on <see cref="GroupGrain" />.
-/// </summary>
 internal sealed class GroupDirectoryGrain(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
     IGroupBadgePartProvider badgePartProvider,
     IEventPublisher events,
     ICancellableEventPublisher cancellableEvents,
-    ILogger<GroupDirectoryGrain> logger
+    ILogger<GroupDirectoryGrain> logger,
+    IOptions<GroupConfig> groupConfig
 ) : Grain, IGroupDirectoryGrain
 {
-    // Habbo's classic guild price. Kept here (not a hardcoded grain limit) as the single creation
-    // cost constant; promote to IConfiguration if it needs to vary per hotel.
-    private const int CreationCostInCredits = 10;
+    private readonly GroupConfig _groupConfig = groupConfig.Value;
 
-    // Catalog purchase-type label for guild creation (groups the spend in catalog metrics/audit).
     private const string CatalogPurchaseTypeGuild = "Guild";
 
     public async Task<GroupCreationInfoSnapshot> GetCreationInfoAsync(
@@ -69,7 +63,7 @@ internal sealed class GroupDirectoryGrain(
 
         return new GroupCreationInfoSnapshot
         {
-            CostInCredits = CreationCostInCredits,
+            CostInCredits = _groupConfig.CreationCostInCredits,
             Rooms = rooms,
             // Default starting badge the wizard pre-fills; the player edits it before confirming.
             BadgeParts = GuildBadgeLibrary.DefaultBadgeParts,
@@ -110,7 +104,12 @@ internal sealed class GroupDirectoryGrain(
 
         EventContext creatingContext = await cancellableEvents
             .PublishCancellableAsync(
-                new GroupCreatingEvent(ownerId, name, baseRoomId, CreationCostInCredits),
+                new GroupCreatingEvent(
+                    ownerId,
+                    name,
+                    baseRoomId,
+                    _groupConfig.CreationCostInCredits
+                ),
                 ct
             )
             .ConfigureAwait(false);
@@ -137,7 +136,7 @@ internal sealed class GroupDirectoryGrain(
                     new WalletDebitRequest
                     {
                         CurrencyKind = new CurrencyKind { CurrencyType = CurrencyType.Credits },
-                        Amount = CreationCostInCredits,
+                        Amount = _groupConfig.CreationCostInCredits,
                     },
                 ],
                 ct
@@ -149,7 +148,7 @@ internal sealed class GroupDirectoryGrain(
             logger.LogInformation(
                 "Player {OwnerId} could not afford guild creation ({Cost} credits)",
                 ownerId,
-                CreationCostInCredits
+                _groupConfig.CreationCostInCredits
             );
             return null;
         }
@@ -190,7 +189,7 @@ internal sealed class GroupDirectoryGrain(
         // in catalog purchase metrics/audit alongside every other purchase.
         await grainFactory
             .GetPlayerGrain(owner)
-            .TrackCreditSpendAsync(CreationCostInCredits, ct)
+            .TrackCreditSpendAsync(_groupConfig.CreationCostInCredits, ct)
             .ConfigureAwait(false);
 
         await events
@@ -200,7 +199,7 @@ internal sealed class GroupDirectoryGrain(
                     CatalogPurchaseTypeGuild,
                     0,
                     1,
-                    CreationCostInCredits
+                    _groupConfig.CreationCostInCredits
                 ),
                 ct
             )
@@ -213,7 +212,7 @@ internal sealed class GroupDirectoryGrain(
                     group.Id,
                     group.Name,
                     baseRoomId,
-                    CreationCostInCredits
+                    _groupConfig.CreationCostInCredits
                 ),
                 ct
             )

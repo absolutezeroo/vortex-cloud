@@ -5,10 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Orleans;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Messenger;
 using Turbo.Database.Entities.Players;
+using Turbo.Players.Configuration;
 using Turbo.Primitives.Events;
 using Turbo.Primitives.FriendList.Enums;
 using Turbo.Primitives.FriendList.Grains;
@@ -25,11 +27,11 @@ internal sealed class MessengerGrain(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
     IEventPublisher events,
-    ILogger<MessengerGrain> logger
+    ILogger<MessengerGrain> logger,
+    IOptions<MessengerConfig> messengerConfig
 ) : Grain, IMessengerGrain
 {
-    private const int MaxFriends = 300;
-    private const int MessageHistoryLimit = 50;
+    private readonly MessengerConfig _messengerConfig = messengerConfig.Value;
     private readonly HashSet<int> _blockedIds = new();
     private readonly List<FriendCategorySnapshot> _categories = new();
 
@@ -114,7 +116,7 @@ internal sealed class MessengerGrain(
         CancellationToken ct
     )
     {
-        if (_friends.Count >= MaxFriends)
+        if (_friends.Count >= _messengerConfig.MaxFriends)
         {
             return FriendListErrorCodeType.YouHitFriendLimit;
         }
@@ -134,7 +136,7 @@ internal sealed class MessengerGrain(
             ct
         );
 
-        if (targetCountFriends >= MaxFriends)
+        if (targetCountFriends >= _messengerConfig.MaxFriends)
         {
             return FriendListErrorCodeType.TheyHitFriendLimit;
         }
@@ -237,7 +239,7 @@ internal sealed class MessengerGrain(
                 continue;
             }
 
-            if (_friends.Count >= MaxFriends)
+            if (_friends.Count >= _messengerConfig.MaxFriends)
             {
                 failures.Add(
                     new AcceptFriendFailureSnapshot
@@ -694,7 +696,7 @@ internal sealed class MessengerGrain(
                 )
             )
             .OrderByDescending(m => m.Timestamp)
-            .Take(MessageHistoryLimit)
+            .Take(_messengerConfig.MessageHistoryLimit)
             .ToListAsync(ct);
 
         return messages
@@ -1049,7 +1051,7 @@ internal sealed class MessengerGrain(
             .Include(m => m.SenderEntity)
             .Where(m => m.ReceiverEntityId == (int)SelfId && !m.Delivered && m.DeletedAt == null)
             .OrderBy(m => m.Timestamp)
-            .Take(50)
+            .Take(_messengerConfig.MessageHistoryLimit)
             .ToListAsync(ct);
 
         if (pending.Count == 0)

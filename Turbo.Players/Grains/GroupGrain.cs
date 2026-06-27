@@ -5,10 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Orleans;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Groups;
 using Turbo.Database.Entities.Players;
+using Turbo.Players.Configuration;
 using Turbo.Primitives.Events;
 using Turbo.Primitives.Groups.Enums;
 using Turbo.Primitives.Groups.Grains;
@@ -17,17 +19,15 @@ using Turbo.Primitives.Players;
 
 namespace Turbo.Players.Grains;
 
-/// <summary>
-///     One grain per group (key = group id). Reads detail/member views, applies membership joins and
-///     owner/admin management. All DB access goes through <see cref="IDbContextFactory{TurboDbContext}" />;
-///     callers are handlers that only orchestrate. State changes raise domain events for metrics/plugins.
-/// </summary>
 internal sealed class GroupGrain(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
     IEventPublisher events,
-    ILogger<GroupGrain> logger
+    ILogger<GroupGrain> logger,
+    IOptions<GroupConfig> groupConfig
 ) : Grain, IGroupGrain
 {
+    private readonly GroupConfig _groupConfig = groupConfig.Value;
+
     // RoleType values mirror the client member enum.
     private const int RoleOwner = 0;
     private const int RoleAdmin = 1;
@@ -41,8 +41,6 @@ internal sealed class GroupGrain(
 
     // Join failure reason code (client HabboGroupJoinFailedMessageEvent).
     private const int JoinFailedNotOpen = 2;
-
-    private const int MembersPerPage = 14;
 
     private int GroupId => (int)this.GetPrimaryKeyLong();
 
@@ -170,7 +168,7 @@ internal sealed class GroupGrain(
             || viewerMembership?.Rank == GroupMemberRank.Admin;
 
         string filter = userNameFilter?.Trim() ?? string.Empty;
-        int skip = Math.Max(pageIndex, 0) * MembersPerPage;
+        int skip = Math.Max(pageIndex, 0) * _groupConfig.MembersPerPage;
 
         List<GroupMemberSnapshot> members;
         int totalEntries;
@@ -193,7 +191,11 @@ internal sealed class GroupGrain(
             members =
             [
                 .. (
-                    await query.OrderBy(r => r.Id).Skip(skip).Take(MembersPerPage).ToListAsync(ct)
+                    await query
+                        .OrderBy(r => r.Id)
+                        .Skip(skip)
+                        .Take(_groupConfig.MembersPerPage)
+                        .ToListAsync(ct)
                 ).Select(r => new GroupMemberSnapshot
                 {
                     RoleType = RoleRequested,
@@ -226,7 +228,7 @@ internal sealed class GroupGrain(
                         .OrderByDescending(m => m.Rank)
                         .ThenBy(m => m.Id)
                         .Skip(skip)
-                        .Take(MembersPerPage)
+                        .Take(_groupConfig.MembersPerPage)
                         .ToListAsync(ct)
                 ).Select(m => new GroupMemberSnapshot
                 {
@@ -251,7 +253,7 @@ internal sealed class GroupGrain(
             TotalEntries = totalEntries,
             Members = members,
             AllowedToManage = allowedToManage,
-            PageSize = MembersPerPage,
+            PageSize = _groupConfig.MembersPerPage,
             PageIndex = pageIndex,
             SearchType = searchType,
             UserNameFilter = filter,

@@ -21,4 +21,9 @@ public class PetConfig
     public int ThirstThreshold { get; init; } = 50;
     public int VocalIntervalMs { get; init; } = 20_000;
     public int MaxWellBeingSeconds { get; init; } = 86_400;
+    public int RespectDailyCapPerPet { get; init; } = 3;
+    public int RespectXpReward { get; init; } = 5;
+    public int CommandXpReward { get; init; } = 3;
+    public int SupplementEnergyBoost { get; init; } = 30;
+    public int SupplementXpReward { get; init; } = 5;
 }

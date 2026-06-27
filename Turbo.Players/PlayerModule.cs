@@ -17,6 +17,10 @@ public sealed class PlayerModule : IHostPluginModule
     public void ConfigureServices(IServiceCollection services, HostApplicationBuilder builder)
     {
         services.Configure<ClubConfig>(builder.Configuration.GetSection(ClubConfig.SECTION_NAME));
+        services.Configure<MessengerConfig>(
+            builder.Configuration.GetSection(MessengerConfig.SECTION_NAME)
+        );
+        services.Configure<GroupConfig>(builder.Configuration.GetSection(GroupConfig.SECTION_NAME));
 
         services.AddSingleton<ICurrencyTypeProvider, CurrencyTypeProvider>();
         services.AddSingleton<IGroupBadgePartProvider, GroupBadgePartProvider>();
