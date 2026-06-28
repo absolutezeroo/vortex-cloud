@@ -23,6 +23,8 @@ internal sealed class GroupForumGrain(
     ILogger<GroupForumGrain> logger
 ) : Grain, IGroupForumGrain
 {
+    private readonly ILogger<GroupForumGrain> _logger = logger;
+
     private const string DeniedError = "You are not allowed to do that.";
     private const string DisabledError = "This forum is disabled.";
 
