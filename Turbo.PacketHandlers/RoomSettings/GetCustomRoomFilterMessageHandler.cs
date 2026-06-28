@@ -7,12 +7,9 @@ namespace Turbo.PacketHandlers.RoomSettings;
 
 public class GetCustomRoomFilterMessageHandler : IMessageHandler<GetCustomRoomFilterMessage>
 {
-    public async ValueTask HandleAsync(
+    public ValueTask HandleAsync(
         GetCustomRoomFilterMessage message,
         MessageContext ctx,
         CancellationToken ct
-    )
-    {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
-    }
+    ) => ValueTask.CompletedTask;
 }

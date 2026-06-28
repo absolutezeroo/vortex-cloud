@@ -288,6 +288,9 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                     FloodSensitivity = entity.ChatFloodType,
                 },
                 WorldType = _state.Model.Name,
+                HideWalls = entity.HideWalls,
+                WallThickness = entity.ThicknessWall,
+                FloorThickness = entity.ThicknessFloor,
                 LastUpdatedUtc = DateTime.UtcNow,
             };
         }

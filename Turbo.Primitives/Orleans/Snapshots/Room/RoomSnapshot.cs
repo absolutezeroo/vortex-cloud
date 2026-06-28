@@ -1,5 +1,6 @@
 using Orleans;
 using Turbo.Primitives.Orleans.Snapshots.Room.Settings;
+using Turbo.Primitives.Rooms.Enums;
 
 namespace Turbo.Primitives.Orleans.Snapshots.Room;
 
@@ -17,4 +18,13 @@ public sealed record RoomSnapshot : RoomInfoSnapshot
 
     [Id(3)]
     public required string WorldType { get; init; } = string.Empty;
+
+    [Id(4)]
+    public required bool HideWalls { get; init; }
+
+    [Id(5)]
+    public required RoomThicknessType WallThickness { get; init; }
+
+    [Id(6)]
+    public required RoomThicknessType FloorThickness { get; init; }
 }

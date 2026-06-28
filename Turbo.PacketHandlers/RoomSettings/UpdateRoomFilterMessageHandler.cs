@@ -7,12 +7,9 @@ namespace Turbo.PacketHandlers.RoomSettings;
 
 public class UpdateRoomFilterMessageHandler : IMessageHandler<UpdateRoomFilterMessage>
 {
-    public async ValueTask HandleAsync(
+    public ValueTask HandleAsync(
         UpdateRoomFilterMessage message,
         MessageContext ctx,
         CancellationToken ct
-    )
-    {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
-    }
+    ) => ValueTask.CompletedTask;
 }

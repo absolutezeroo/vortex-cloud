@@ -34,4 +34,6 @@ public class RoomConfig
     public bool WiredAllowWallFurni { get; init; } = true;
     public int WiredMaxIntParams { get; init; } = 16;
     public int WiredNeighborhoodRadius { get; init; } = 5;
+
+    public int MaxVisitorsLimit { get; init; } = 50;
 }

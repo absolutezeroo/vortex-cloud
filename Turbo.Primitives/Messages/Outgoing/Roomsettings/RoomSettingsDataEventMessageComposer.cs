@@ -1,10 +1,12 @@
 using Orleans;
 using Turbo.Primitives.Networking;
+using Turbo.Primitives.Orleans.Snapshots.Room;
 
 namespace Turbo.Primitives.Messages.Outgoing.Roomsettings;
 
 [GenerateSerializer, Immutable]
 public sealed record RoomSettingsDataEventMessageComposer : IComposer
 {
-    // TODO: add properties if/when identified
+    [Id(0)]
+    public required RoomSnapshot Settings { get; init; }
 }

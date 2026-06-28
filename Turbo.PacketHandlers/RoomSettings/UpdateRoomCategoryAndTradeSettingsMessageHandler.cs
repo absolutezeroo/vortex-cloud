@@ -1,11 +1,14 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.RoomSettings;
+using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Rooms.Grains;
 
 namespace Turbo.PacketHandlers.RoomSettings;
 
-public class UpdateRoomCategoryAndTradeSettingsMessageHandler
+public class UpdateRoomCategoryAndTradeSettingsMessageHandler(IGrainFactory grainFactory)
     : IMessageHandler<UpdateRoomCategoryAndTradeSettingsMessage>
 {
     public async ValueTask HandleAsync(
@@ -14,6 +17,15 @@ public class UpdateRoomCategoryAndTradeSettingsMessageHandler
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        if (ctx.PlayerId <= 0 || message.RoomId <= 0)
+        {
+            return;
+        }
+
+        IRoomGrain roomGrain = grainFactory.GetRoomGrain(message.RoomId);
+
+        await roomGrain
+            .UpdateCategoryAndTradeAsync(ctx.PlayerId, message.CategoryId, message.TradeType, ct)
+            .ConfigureAwait(false);
     }
 }
