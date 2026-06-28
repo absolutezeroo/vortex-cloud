@@ -8,6 +8,7 @@ using Turbo.Logging;
 using Turbo.Primitives;
 using Turbo.Primitives.Action;
 using Turbo.Primitives.Messages.Outgoing.Room.Action;
+using Turbo.Primitives.Messages.Outgoing.Room.Chat;
 using Turbo.Primitives.Messages.Outgoing.Room.Engine;
 using Turbo.Primitives.Orleans.Snapshots.Players;
 using Turbo.Primitives.Players;
@@ -343,5 +344,111 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
         );
 
         return Task.FromResult(true);
+    }
+
+    public Task<bool> SetAvatarPostureAsync(RoomObjectId objectId, CancellationToken ct)
+    {
+        if (
+            objectId <= 0
+            || !_roomGrain._state.AvatarsByObjectId.TryGetValue(
+                objectId.Value,
+                out IRoomAvatar? avatar
+            )
+        )
+        {
+            return Task.FromResult(false);
+        }
+
+        bool isSitting = avatar.HasStatus(AvatarStatusType.Sit);
+        avatar.Sit(!isSitting);
+
+        _ = _roomGrain.SendComposerToRoomAsync(
+            new UserUpdateMessageComposer { Avatars = [avatar.GetSnapshot()] }
+        );
+
+        return Task.FromResult(true);
+    }
+
+    public Task<bool> SetAvatarSignAsync(RoomObjectId objectId, int signId, CancellationToken ct)
+    {
+        if (
+            objectId <= 0
+            || !_roomGrain._state.AvatarsByObjectId.TryGetValue(
+                objectId.Value,
+                out IRoomAvatar? avatar
+            )
+        )
+        {
+            return Task.FromResult(false);
+        }
+
+        avatar.AddStatus(AvatarStatusType.Sign, signId.ToString());
+
+        _ = _roomGrain.SendComposerToRoomAsync(
+            new UserUpdateMessageComposer { Avatars = [avatar.GetSnapshot()] }
+        );
+
+        return Task.FromResult(true);
+    }
+
+    public Task<bool> LookToAvatarAsync(
+        RoomObjectId objectId,
+        int targetX,
+        int targetY,
+        CancellationToken ct
+    )
+    {
+        if (
+            objectId <= 0
+            || !_roomGrain._state.AvatarsByObjectId.TryGetValue(
+                objectId.Value,
+                out IRoomAvatar? avatar
+            )
+        )
+        {
+            return Task.FromResult(false);
+        }
+
+        int dx = targetX - avatar.X;
+        int dy = targetY - avatar.Y;
+
+        if (dx == 0 && dy == 0)
+        {
+            return Task.FromResult(false);
+        }
+
+        Rotation rotation = RotationExtensions.FromDelta(dx, dy);
+        avatar.SetHeadRotation(rotation);
+
+        if (!avatar.HasStatus(AvatarStatusType.Sit, AvatarStatusType.Lay))
+        {
+            avatar.SetBodyRotation(rotation);
+        }
+
+        _ = _roomGrain.SendComposerToRoomAsync(
+            new UserUpdateMessageComposer { Avatars = [avatar.GetSnapshot()] }
+        );
+
+        return Task.FromResult(true);
+    }
+
+    public Task SetAvatarTypingAsync(RoomObjectId objectId, bool isTyping, CancellationToken ct)
+    {
+        if (
+            objectId <= 0
+            || !_roomGrain._state.AvatarsByObjectId.TryGetValue(
+                objectId.Value,
+                out IRoomAvatar? avatar
+            )
+        )
+        {
+            return Task.CompletedTask;
+        }
+
+        _ = _roomGrain.SendComposerToRoomAsync(
+            new UserTypingMessageComposer { UserId = avatar.ObjectId.Value, IsTyping = isTyping }
+        );
+
+        return Task.CompletedTask;
     }
 }

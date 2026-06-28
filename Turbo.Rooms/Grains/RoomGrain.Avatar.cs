@@ -184,6 +184,106 @@ public sealed partial class RoomGrain
         }
     }
 
+    public async Task<bool> SetAvatarPostureAsync(ActionContext ctx, CancellationToken ct)
+    {
+        try
+        {
+            if (
+                !_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out RoomObjectId objectId)
+                || !await AvatarModule.SetAvatarPostureAsync(objectId, ct)
+            )
+            {
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                $"Failed to set posture for player {ctx.PlayerId} in room {_state.RoomId}."
+            );
+
+            return false;
+        }
+    }
+
+    public async Task<bool> SetAvatarSignAsync(ActionContext ctx, int signId, CancellationToken ct)
+    {
+        try
+        {
+            if (
+                !_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out RoomObjectId objectId)
+                || !await AvatarModule.SetAvatarSignAsync(objectId, signId, ct)
+            )
+            {
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                $"Failed to set sign:{signId} for player {ctx.PlayerId} in room {_state.RoomId}."
+            );
+
+            return false;
+        }
+    }
+
+    public async Task<bool> LookToAvatarAsync(
+        ActionContext ctx,
+        int targetX,
+        int targetY,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            if (
+                !_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out RoomObjectId objectId)
+                || !await AvatarModule.LookToAvatarAsync(objectId, targetX, targetY, ct)
+            )
+            {
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                $"Failed to look-to ({targetX},{targetY}) for player {ctx.PlayerId} in room {_state.RoomId}."
+            );
+
+            return false;
+        }
+    }
+
+    public async Task SetAvatarTypingAsync(ActionContext ctx, bool isTyping, CancellationToken ct)
+    {
+        try
+        {
+            if (!_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out RoomObjectId objectId))
+            {
+                return;
+            }
+
+            await AvatarModule.SetAvatarTypingAsync(objectId, isTyping, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                $"Failed to set typing:{isTyping} for player {ctx.PlayerId} in room {_state.RoomId}."
+            );
+        }
+    }
+
     public Task SendChatFromPlayerAsync(
         PlayerId playerId,
         string text,

@@ -55,4 +55,17 @@ public partial interface IRoomGrain
     public Task<ImmutableArray<RoomAvatarSnapshot>> GetAllAvatarSnapshotsAsync(
         CancellationToken ct
     );
+
+    public Task<bool> SetAvatarPostureAsync(ActionContext ctx, CancellationToken ct);
+
+    public Task<bool> SetAvatarSignAsync(ActionContext ctx, int signId, CancellationToken ct);
+
+    public Task<bool> LookToAvatarAsync(
+        ActionContext ctx,
+        int targetX,
+        int targetY,
+        CancellationToken ct
+    );
+
+    public Task SetAvatarTypingAsync(ActionContext ctx, bool isTyping, CancellationToken ct);
 }
