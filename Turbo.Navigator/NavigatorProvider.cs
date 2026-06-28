@@ -116,24 +116,28 @@ public sealed class NavigatorProvider(
             .ConfigureAwait(false);
     }
 
-    public async Task<List<RoomInfoSnapshot>> GetRoomsByTagAsync(
+    public Task<List<RoomInfoSnapshot>> GetRoomsByTagAsync(
         string tag,
         CancellationToken ct = default
-    )
-    {
-        // Tags not stored in DB yet
-        await Task.CompletedTask.ConfigureAwait(false);
-        return [];
-    }
+    ) => Task.FromResult<List<RoomInfoSnapshot>>([]);
 
     public async Task<List<RoomInfoSnapshot>> GetFavoriteRoomsAsync(
         PlayerId playerId,
         CancellationToken ct = default
     )
     {
-        // Favorites table not implemented yet
-        await Task.CompletedTask.ConfigureAwait(false);
-        return [];
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        return await BuildRoomQuery(dbCtx)
+            .Where(x =>
+                dbCtx.PlayerFavouriteRooms.Any(f =>
+                    f.PlayerEntityId == playerId.Value && f.RoomEntityId == x.Id
+                )
+            )
+            .ToRoomInfoSnapshots(ct)
+            .ConfigureAwait(false);
     }
 
     public async Task ReloadAsync(CancellationToken ct = default)
