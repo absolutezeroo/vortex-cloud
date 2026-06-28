@@ -230,6 +230,55 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
     }
 
+    public async Task AddFavouriteRoomAsync(int roomId, CancellationToken ct)
+    {
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        int playerId = (int)this.GetPrimaryKeyLong();
+
+        bool alreadyFavourited = await dbCtx
+            .PlayerFavouriteRooms.AnyAsync(
+                f => f.PlayerEntityId == playerId && f.RoomEntityId == roomId,
+                ct
+            )
+            .ConfigureAwait(false);
+
+        if (alreadyFavourited)
+        {
+            return;
+        }
+
+        dbCtx.PlayerFavouriteRooms.Add(
+            new PlayerFavoriteRoomsEntity
+            {
+                PlayerEntityId = playerId,
+                RoomEntityId = roomId,
+                PlayerEntity = null!,
+                RoomEntity = null!,
+            }
+        );
+
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+    }
+
+    public async Task RemoveFavouriteRoomAsync(int roomId, CancellationToken ct)
+    {
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        int playerId = (int)this.GetPrimaryKeyLong();
+
+        await dbCtx
+            .PlayerFavouriteRooms.Where(f =>
+                f.PlayerEntityId == playerId && f.RoomEntityId == roomId
+            )
+            .ExecuteDeleteAsync(ct)
+            .ConfigureAwait(false);
+    }
+
     private async Task HydrateAsync(CancellationToken ct)
     {
         await using TurboDbContext dbCtx = await _dbCtxFactory

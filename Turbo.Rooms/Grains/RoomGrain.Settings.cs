@@ -470,4 +470,60 @@ public sealed partial class RoomGrain
             _logger.LogError(ex, "Failed to remove all rights in room {RoomId}.", _state.RoomId);
         }
     }
+
+    public async Task RemoveOwnRightsAsync(PlayerId actor, CancellationToken ct)
+    {
+        if (actor <= 0 || _state.RoomSnapshot.OwnerId == actor)
+        {
+            return;
+        }
+
+        try
+        {
+            await using TurboDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(false);
+
+            RoomRightEntity? row = await dbCtx
+                .RoomRights.FirstOrDefaultAsync(
+                    r =>
+                        r.RoomEntityId == _state.RoomId.Value
+                        && r.PlayerEntityId == actor.Value
+                        && r.DeletedAt == null,
+                    ct
+                )
+                .ConfigureAwait(false);
+
+            if (row is null)
+            {
+                return;
+            }
+
+            dbCtx.RoomRights.Remove(row);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+
+            ImmutableArray<RoomControllerSnapshot> controllers = await GetControllersAsync(ct)
+                .ConfigureAwait(false);
+
+            await _grainFactory
+                .GetPlayerPresenceGrain(actor)
+                .SendComposerAsync(
+                    new FlatControllersEventMessageComposer
+                    {
+                        RoomId = _state.RoomId,
+                        Controllers = controllers,
+                    }
+                )
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to remove own rights for player {Actor} in room {RoomId}.",
+                actor,
+                _state.RoomId
+            );
+        }
+    }
 }

@@ -29,4 +29,7 @@ public interface IPlayerNavigatorGrain : IGrainWithIntegerKey
 
     Task<int> GetViewModeAsync(string searchCode, CancellationToken ct);
     Task SetViewModeAsync(string searchCode, int viewMode, CancellationToken ct);
+
+    Task AddFavouriteRoomAsync(int roomId, CancellationToken ct);
+    Task RemoveFavouriteRoomAsync(int roomId, CancellationToken ct);
 }

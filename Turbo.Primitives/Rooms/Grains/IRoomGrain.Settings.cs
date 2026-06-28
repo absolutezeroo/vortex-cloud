@@ -36,4 +36,6 @@ public partial interface IRoomGrain
     Task RemoveRightsAsync(PlayerId actor, ImmutableArray<PlayerId> targets, CancellationToken ct);
 
     Task RemoveAllRightsAsync(PlayerId actor, CancellationToken ct);
+
+    Task RemoveOwnRightsAsync(PlayerId actor, CancellationToken ct);
 }
