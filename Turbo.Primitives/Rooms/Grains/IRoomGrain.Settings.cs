@@ -30,4 +30,10 @@ public partial interface IRoomGrain
         RoomTradeModeType tradeType,
         CancellationToken ct
     );
+
+    Task AssignRightsAsync(PlayerId actor, PlayerId target, CancellationToken ct);
+
+    Task RemoveRightsAsync(PlayerId actor, ImmutableArray<PlayerId> targets, CancellationToken ct);
+
+    Task RemoveAllRightsAsync(PlayerId actor, CancellationToken ct);
 }

@@ -10,7 +10,6 @@ using Turbo.Database.Context;
 using Turbo.Database.Entities.Room;
 using Turbo.Primitives.Action;
 using Turbo.Primitives.Messages.Outgoing.Roomsettings;
-using Turbo.Primitives.Navigator.Enums;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Orleans.Snapshots.Room;
 using Turbo.Primitives.Orleans.Snapshots.Room.Settings;
@@ -307,6 +306,168 @@ public sealed partial class RoomGrain
                 _state.RoomId
             );
             return false;
+        }
+    }
+
+    public async Task AssignRightsAsync(PlayerId actor, PlayerId target, CancellationToken ct)
+    {
+        if (_state.RoomSnapshot.OwnerId != actor || target <= 0 || actor == target)
+        {
+            return;
+        }
+
+        try
+        {
+            await using TurboDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(false);
+
+            bool alreadyHasRights = await dbCtx
+                .RoomRights.AnyAsync(
+                    r =>
+                        r.RoomEntityId == _state.RoomId.Value
+                        && r.PlayerEntityId == target.Value
+                        && r.DeletedAt == null,
+                    ct
+                )
+                .ConfigureAwait(false);
+
+            if (alreadyHasRights)
+            {
+                return;
+            }
+
+            dbCtx.RoomRights.Add(
+                new RoomRightEntity
+                {
+                    RoomEntityId = _state.RoomId.Value,
+                    PlayerEntityId = target.Value,
+                    RoomEntity = null!,
+                    PlayerEntity = null!,
+                }
+            );
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+
+            ImmutableArray<RoomControllerSnapshot> controllers = await GetControllersAsync(ct)
+                .ConfigureAwait(false);
+
+            await _grainFactory
+                .GetPlayerPresenceGrain(actor)
+                .SendComposerAsync(
+                    new FlatControllersEventMessageComposer
+                    {
+                        RoomId = _state.RoomId,
+                        Controllers = controllers,
+                    }
+                )
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to assign rights to player {Target} in room {RoomId}.",
+                target,
+                _state.RoomId
+            );
+        }
+    }
+
+    public async Task RemoveRightsAsync(
+        PlayerId actor,
+        ImmutableArray<PlayerId> targets,
+        CancellationToken ct
+    )
+    {
+        if (_state.RoomSnapshot.OwnerId != actor || targets.IsEmpty)
+        {
+            return;
+        }
+
+        try
+        {
+            await using TurboDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(false);
+
+            int[] targetValues = [.. targets.Select(t => t.Value)];
+
+            List<RoomRightEntity> rows = await dbCtx
+                .RoomRights.Where(r =>
+                    r.RoomEntityId == _state.RoomId.Value
+                    && targetValues.Contains(r.PlayerEntityId)
+                    && r.DeletedAt == null
+                )
+                .ToListAsync(ct)
+                .ConfigureAwait(false);
+
+            foreach (RoomRightEntity row in rows)
+            {
+                dbCtx.RoomRights.Remove(row);
+            }
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+
+            ImmutableArray<RoomControllerSnapshot> controllers = await GetControllersAsync(ct)
+                .ConfigureAwait(false);
+
+            await _grainFactory
+                .GetPlayerPresenceGrain(actor)
+                .SendComposerAsync(
+                    new FlatControllersEventMessageComposer
+                    {
+                        RoomId = _state.RoomId,
+                        Controllers = controllers,
+                    }
+                )
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to remove rights in room {RoomId}.", _state.RoomId);
+        }
+    }
+
+    public async Task RemoveAllRightsAsync(PlayerId actor, CancellationToken ct)
+    {
+        if (_state.RoomSnapshot.OwnerId != actor)
+        {
+            return;
+        }
+
+        try
+        {
+            await using TurboDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(false);
+
+            List<RoomRightEntity> rows = await dbCtx
+                .RoomRights.Where(r => r.RoomEntityId == _state.RoomId.Value && r.DeletedAt == null)
+                .ToListAsync(ct)
+                .ConfigureAwait(false);
+
+            foreach (RoomRightEntity row in rows)
+            {
+                dbCtx.RoomRights.Remove(row);
+            }
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+
+            await _grainFactory
+                .GetPlayerPresenceGrain(actor)
+                .SendComposerAsync(
+                    new FlatControllersEventMessageComposer
+                    {
+                        RoomId = _state.RoomId,
+                        Controllers = [],
+                    }
+                )
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to remove all rights in room {RoomId}.", _state.RoomId);
         }
     }
 }
