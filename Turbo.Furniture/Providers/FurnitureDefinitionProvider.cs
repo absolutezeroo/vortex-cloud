@@ -67,6 +67,7 @@ public sealed class FurnitureDefinitionProvider(
                     CanSell = x.CanSell,
                     UsagePolicy = x.UsagePolicy,
                     ExtraData = x.ExtraData,
+                    StuffDataType = x.StuffDataType,
                 })
                 .ToList();
 

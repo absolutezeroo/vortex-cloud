@@ -90,8 +90,6 @@ internal sealed class InventoryFurnitureLoader(
             _defsProvider.TryGetDefinition(entity.FurnitureDefinitionEntityId)
             ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
 
-        // TODO we need to get the correct stuff data key
-
         ExtraData extraData = new ExtraData(entity.ExtraData);
         string jsonData = extraData.TryGetSection(
             ExtraDataSectionType.STUFF,
@@ -108,7 +106,7 @@ internal sealed class InventoryFurnitureLoader(
             Definition = definition,
             ExtraData = extraData,
             StuffData = _stuffDataFactory.CreateStuffDataFromJson(
-                StuffDataType.LegacyKey,
+                definition.StuffDataType,
                 jsonData
             ),
         };

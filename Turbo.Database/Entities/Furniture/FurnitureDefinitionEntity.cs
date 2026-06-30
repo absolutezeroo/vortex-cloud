@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Turbo.Primitives.Furniture.Enums;
+using Turbo.Primitives.Furniture.StuffData;
 using Turbo.Primitives.Rooms.Enums;
 
 namespace Turbo.Database.Entities.Furniture;
@@ -88,6 +89,11 @@ public class FurnitureDefinitionEntity : TurboEntity
 
     [Column("extra_data")]
     public string? ExtraData { get; set; }
+
+    [Column("stuff_data_type")]
+    [DefaultValue(StuffDataType.LegacyKey)]
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
+    public StuffDataType StuffDataType { get; set; }
 
     public List<FurnitureEntity>? Furnitures { get; set; }
 }

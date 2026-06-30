@@ -1,5 +1,6 @@
 using Orleans;
 using Turbo.Primitives.Furniture.Enums;
+using Turbo.Primitives.Furniture.StuffData;
 using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Object;
 
@@ -67,4 +68,7 @@ public sealed record FurnitureDefinitionSnapshot
 
     [Id(19)]
     public required string? ExtraData { get; init; }
+
+    [Id(20)]
+    public required StuffDataType StuffDataType { get; init; }
 }

@@ -1250,6 +1250,12 @@ namespace Turbo.Database.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
 
+                    b.Property<int>("StuffDataType")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("stuff_data_type");
+
                     b.Property<int>("UsagePolicy")
                         .HasColumnType("int")
                         .HasDefaultValue(1)

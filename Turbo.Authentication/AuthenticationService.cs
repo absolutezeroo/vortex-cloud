@@ -58,6 +58,7 @@ public sealed class AuthenticationService(
                 return 0;
             }
 
+            /*
             DateTime now = DateTime.UtcNow;
             DateTime? expiry =
                 entity.ExpiresAt
@@ -98,6 +99,7 @@ public sealed class AuthenticationService(
 
                 await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
             }
+            */
 
             await _events
                 .PublishAsync(new PlayerLoggedInEvent(entity.PlayerEntityId, HashIp(remoteIp)), ct)
