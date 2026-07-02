@@ -233,7 +233,10 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
             await _grainFactory.GetRoomDirectoryGrain().RemoveActiveRoomAsync(_state.RoomId);
         }
-        catch (Exception) { }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to cleanly deactivate room {RoomId}.", _state.RoomId);
+        }
     }
 
     private async Task HydrateRoomStateAsync(CancellationToken ct)

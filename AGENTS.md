@@ -28,8 +28,11 @@ Activate the relevant skill checklist before editing code in that domain:
   - Trigger: editing `Turbo.Primitives/Messages/Incoming/**` or outgoing composer payload mappings.
   - Enforce: explicit mandatory fields, no placeholder payloads when source data exists.
 - `revision-protocol` (cross-repo)
-  - Trigger: changes referencing `Revision<id>` packet mappings.
+  - Trigger: changes referencing `Revision<id>` packet mappings for a revision other than the
+    embedded default `Revision20260112`.
   - Enforce: edit plugin revision tree in `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`.
+  - Note: `Revision20260112` itself is embedded in core and is edited directly under
+    `Turbo.Revisions/Revision20260112/**` in `turbo-cloud` — this rule does not apply to it.
 
 ## Priority order
 1. Build and quality checks in repo files (`Directory.Build.props`, `Directory.Build.targets`, `.editorconfig`)
@@ -68,9 +71,14 @@ Default output format:
 - Avoid dead code, unused allocations, and broad catch blocks that hide errors (see **Orleans grain development rules** for specifics).
 - For revision compatibility work, prefer restoring/adding missing incoming message contracts in `Turbo.Primitives/Messages/Incoming/**` before mutating serializer/composer payload behavior.
 - Do not alter serializer/composer behavior by replacing real payload writes with placeholder constants (for example, unconditional `WriteInteger(0)`) unless explicitly requested.
-- If work references `Revision<id>` parsers/serializers, edit the plugin repo path:
+- `Turbo.Revisions/Revision20260112/**` (including its `Parsers/` and `Serializers/` trees) is the
+  **default revision embedded in core** so the emulator can run standalone without a plugin. Editing
+  it in `turbo-cloud` is expected and correct — see the "Packet addition checklist" below.
+- Any **additional/custom** protocol revision (a different client version added via the plugin
+  system) belongs in the plugin repo instead:
   - `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`
-  - Do not hallucinate those trees into `turbo-cloud`.
+  - Do not hallucinate new `Revision<id>/Parsers` or `Revision<id>/Serializers` trees into
+    `turbo-cloud` for revisions other than the embedded `Revision20260112` default.
 
 ## Orleans grain development rules
 These rules exist because every one of these mistakes has shipped and caused real issues.

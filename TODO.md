@@ -63,9 +63,11 @@ observability subscribes via `IEventHandler<T>` in `Turbo.Observability/Events`;
       Tempo / Seq. Keep it optional (no hard dependency).
 
 ## Repo hygiene
-- [ ] ~118 pre-existing files fail `dotnet csharpier check .` (exposed when the folder was
-      un-gitignored). Run `dotnet csharpier format .` in a dedicated formatting-only commit to green
-      the `TurboCloudFastCheck` gate.
+- [x] `dotnet csharpier check .` is green repo-wide (3656 files, 0 failures) — the formatting gate
+      is no longer the problem.
+- [ ] `TurboCloudQualityGate`'s `dotnet format style|analyzers --verify-no-changes` only targets
+      `Turbo.Main.csproj`, not the solution — analyzer/style violations in domain projects
+      (`Turbo.Rooms`, `Turbo.PacketHandlers`, etc.) are never gated. Point it at `Turbo.Cloud.sln`.
 
 ## Tests
 - [ ] Unit tests for the observability components (context accessor, sinks, event handlers, dashboard

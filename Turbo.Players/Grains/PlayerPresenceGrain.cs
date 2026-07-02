@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Streams;
 using Turbo.Players.Grains.Modules;
@@ -20,6 +21,7 @@ internal sealed partial class PlayerPresenceGrain
 {
     internal readonly IEventPublisher _events;
     internal readonly IGrainFactory _grainFactory;
+    private readonly ILogger<PlayerPresenceGrain> _logger;
 
     private readonly PlayerInventoryModule _inventoryModule;
 
@@ -31,10 +33,15 @@ internal sealed partial class PlayerPresenceGrain
 
     private ISessionContextObserver? _sessionObserver;
 
-    public PlayerPresenceGrain(IGrainFactory grainFactory, IEventPublisher events)
+    public PlayerPresenceGrain(
+        IGrainFactory grainFactory,
+        IEventPublisher events,
+        ILogger<PlayerPresenceGrain> logger
+    )
     {
         _grainFactory = grainFactory;
         _events = events;
+        _logger = logger;
 
         _state = new PlayerPresenceLiveState();
         _inventoryModule = new PlayerInventoryModule(this);
@@ -92,7 +99,7 @@ internal sealed partial class PlayerPresenceGrain
         {
             _outgoingQueue.Enqueue(composer);
 
-            _ = ProcessOutgoingQueueAsync();
+            LogAndForget(ProcessOutgoingQueueAsync());
         }
 
         return Task.CompletedTask;
@@ -107,7 +114,7 @@ internal sealed partial class PlayerPresenceGrain
                 _outgoingQueue.Enqueue(composer);
             }
 
-            _ = ProcessOutgoingQueueAsync();
+            LogAndForget(ProcessOutgoingQueueAsync());
         }
 
         return Task.CompletedTask;
@@ -147,5 +154,20 @@ internal sealed partial class PlayerPresenceGrain
         }
 
         _isProcessingQueue = false;
+    }
+
+    private void LogAndForget(Task task)
+    {
+        task.ContinueWith(
+            t =>
+                _logger.LogError(
+                    t.Exception,
+                    "Unhandled error while processing outgoing composer queue for player {PlayerId}",
+                    this.GetPrimaryKeyLong()
+                ),
+            CancellationToken.None,
+            TaskContinuationOptions.OnlyOnFaulted,
+            TaskScheduler.Current
+        );
     }
 }

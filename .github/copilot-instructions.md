@@ -26,9 +26,12 @@ Include in every request:
 - Keep plugin lifecycle logic centralized in `Turbo.Plugins`.
 - Keep packet handlers in `Turbo.PacketHandlers` and domain logic in domain modules.
 - Respect Orleans grain boundaries and avoid bypassing grain orchestration.
-- For protocol revision parser/serializer work, target the plugin repo path:
+- `Turbo.Revisions/Revision20260112/**` is the embedded default revision and stays in `turbo-cloud`
+  (`Parsers/`/`Serializers/` there are expected, not a violation).
+- For any other/additional protocol revision, target the plugin repo path instead:
   - `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`
-  - Do not generate `Revision<id>/Parsers` or `Revision<id>/Serializers` in `turbo-cloud`.
+  - Do not generate new `Revision<id>/Parsers` or `Revision<id>/Serializers` in `turbo-cloud` for
+    revisions other than the embedded `Revision20260112` default.
 - For extended profile flow:
   - keep handlers orchestration-only
   - do not query database contexts/repositories from handlers

@@ -24,9 +24,14 @@
 - Keep database querying and persistence access out of packet handlers.
 - Keep grain lifecycle/state logic within grain modules; do not bypass grain boundaries with direct cross-layer shortcuts.
 - Keep plugin lifecycle operations inside `Turbo.Plugins`; do not duplicate plugin loading logic in unrelated modules.
-- Protocol revision parser/serializer trees are owned by the plugin repo at:
+- `Turbo.Revisions/Revision20260112/**` is the default revision embedded in core (so the emulator
+  runs standalone without a plugin) — its `Parsers/` and `Serializers/` trees legitimately live in
+  `turbo-cloud` and are edited there.
+- Protocol revision parser/serializer trees for any **other/additional** revision (added via the
+  plugin system) are owned by the plugin repo at:
   - `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`
-  - Do not create `Revision<id>/Parsers` or `Revision<id>/Serializers` trees in `turbo-cloud`.
+  - Do not create new `Revision<id>/Parsers` or `Revision<id>/Serializers` trees in `turbo-cloud`
+    for revisions other than the embedded `Revision20260112` default.
 - Extended profile flow boundary:
   - `Turbo.PacketHandlers/Users/*ExtendedProfile*Handler.cs` orchestrates lookup + response mapping only.
   - `Turbo.Players/Grains/PlayerDirectoryGrain.cs` owns username/id lookup semantics and cache coherence.
