@@ -11,42 +11,36 @@ existing system**. Goal: close the gap between architectural ambition and implem
 | Metric | Value | Interpretation |
 |---|---|---|
 | Projects | 29 | some too small (over-modularization); `Turbo.Contracts` already merged away |
-| Test projects | 2 (`WebApi.Tests`, `Rooms.Tests`) | in progress, but sensitive paths not covered |
-| Test cases | 21 | WebApi (16) + wired round-trip; **policies + ledger missing** |
+| Test projects | 4 (`WebApi.Tests`, `Rooms.Tests`, `Database.Tests`, `Revisions.Tests`) | `Rooms.Tests` now covers policies, ledger, and the purchase-refund invariant |
+| Test cases | 40 in `Rooms.Tests` alone (was 21 total incl. WebApi) | policies (all branches), ledger mapping, purchase refund-on-failure, wired round-trip, group creation grain test all covered |
 | Handlers | 501 | including **~300 empty stubs (~60%)** — down from 78%, still majority |
 | TODO/FIXME/HACK | 276 | scattered technical debt, down from 327 |
 | `TODO handle exceptions` | **0** | ✅ error strategy now applied |
-| Catch blocks | 164 | 13 confirmed silent (`catch (Exception) { }` with no logging), all in `Turbo.Rooms` — see below |
+| Catch blocks | 167 | repo-wide re-audit found 0 silent swallows outside `Turbo.Rooms`; last 3 in `Turbo.Rooms`/`Turbo.Inventory` fixed; one tracked gap remains in `FurnitureWiredLogic.cs` (needs a wider DI change) — see below |
 | `EventContext` | no longer empty (`Cancel`, `CancelReason`, `CorrelationId`, `Items`); `PublishCancellableAsync` is wired and used in prod by `GroupDirectoryGrain` | interception plumbing works, but **zero production `IEventBehavior<T>` implementations** exist (only test doubles) — seam is functional, just unused |
 | Hardcoded `= false` (Rooms) | not re-audited since this snapshot | verify before relying on this line |
 
 **Already done (your credit):** grain error strategy (0 TODO exceptions), wired round-trip test,
-WebApi migration + integration tests.
+WebApi migration + integration tests, policy/ledger/purchase-refund test coverage (P1), repo-wide
+catch-block re-audit (P5).
 
 ---
 
 ## Prioritized backlog
 
-### P1 — Test sensitive paths (highest leverage)
-**Evidence:** 21 cases, but `RoomSecurityPolicy`, `ModerationPolicy` (pure functions) and
-`economy_ledger` are not covered. Those are places where silent regressions are expensive
-(privilege escalation, duplicated currency).
-**Fixed:** the "no path moves currency without ledger entry" gap used to be a real bug, not just
-an untested one — `CatalogPurchaseGrain`, `MarketplacePurchaseGrain`, and `LtdRaffleGrain` all
-debited the wallet then did DB/grant work with no compensation, so a failure after a successful
-debit permanently lost the player's credits (confirmed reproducible via `FurnitureDefinitionNotFound`
-on a catalog offer with a stale `FurniDefinitionId`). Extracted a shared
-`IPlayerWalletGrain.ExecutePurchaseAsync` (`Turbo.Primitives/Players/Wallet/WalletPurchaseExtensions.cs`)
-that debits once, runs the grant step, and credits back automatically (with a logged error) if the
-grant throws. All three grains now use it; `IPlayerWalletGrain` gained `CreditBackAsync` (generic
-refund, also closes a pre-existing gap where Silver couldn't be refunded at all, only
-Credits/ActivityPoints).
-**Still missing test coverage:** no automated test exercises this path yet — the fix was verified by
-build + existing `Turbo.Rooms.Tests` (36/36 green) + manual trace, not a new regression test.
-**Work:** expand `Turbo.Rooms.Tests` (or a `Turbo.Permissions.Tests`) to cover both policies
-(all branches) + invariants on the ledger (debit/credit, idempotence, insufficient balance
-rejection, refund-on-grant-failure for `ExecutePurchaseAsync`).
-**Done when:** policies and ledger are covered; the gate executes these tests.
+### P1 — Test sensitive paths (highest leverage) — done
+**Evidence:** `RoomSecurityPolicyTests.cs` and `ModerationPolicyTests.cs`
+(`Turbo.Rooms.Tests/Permissions/`) now cover every branch of both policies. Ledger mapping is
+covered by `EconomyLedgerTests.cs`, and the specific bug this section used to flag — a failure
+after a successful wallet debit permanently losing the player's credits — now has a regression
+test: `WalletPurchaseExtensionsTests.cs` (`Turbo.Rooms.Tests/Observability/`) exercises
+`IPlayerWalletGrain.ExecutePurchaseAsync` directly against a recording fake wallet: insufficient
+balance never invokes the grant step, a successful grant never refunds, a throwing grant triggers
+exactly one `CreditBackAsync` call with the original debit requests before the exception rethrows,
+and an empty debit list (nothing to refund) is not refunded on grant failure. `Turbo.Rooms.Tests` is
+now 40/40 green (was 36) and runs in the gate via `dotnet test Turbo.Cloud.sln` in
+`TurboCloudFastCheck`.
+**Done when:** policies and ledger are covered; the gate executes these tests. ✅
 
 ### P2 — Fill the empty shells (partially done)
 **Evidence:** `EventContext` is no longer empty — `Cancel`, `CancelReason`, `CorrelationId`, `Items`
@@ -79,21 +73,31 @@ lives — are never gated.
 `Turbo.Main.csproj`, then make `pre-push` blocking on the full gate.
 **Done when:** gate covers the whole solution and is enforced in pre-push.
 
-### P5 — Audit catch block uniformity (in progress)
-**Evidence:** 0 `TODO exception` (good). Of 164 catch blocks, 13 confirmed silent
-(`catch (Exception) { }`, no logging) — all concentrated in `Turbo.Rooms`. The rest of the repo
-(Catalog, Inventory, Observability, and `Turbo.Rooms/Grains/RoomGrain.Moderation.cs` itself) already
-logs correctly via `ILogger<T>`.
-**Fixed so far:** `RoomGrain.cs` `OnDeactivateAsync` (silently ate `FlushDirtyItemsAsync` /
-`RemoveActiveRoomAsync` failures — real risk of item loss + stale `RoomDirectoryGrain` state) now
-logs via `_logger.LogWarning`. `PlayerPresenceGrain.SendComposerAsync` fire-and-forget (functionally
-equivalent to the forbidden `.Ignore()`) now routes through a `LogAndForget` helper matching the
-existing `MessengerGrain` pattern.
-**Remaining:** `RoomService.Floor.cs:64`, `RoomService.Wall.cs:61`, `RoomWiredSystem.cs`,
-`RoomRollerSystem.cs`, `RoomPathingSystem.cs`, `RoomAvatarTickSystem.cs`,
-`RoomMapModule.Avatar.cs`, `RoomAvatarModule.cs`.
-**Work:** review remaining catches and ensure none swallow without logging (using the shared error strategy).
-**Done when:** no silent swallowing.
+### P5 — Audit catch block uniformity (re-audited repo-wide; one known gap left)
+**Evidence:** repo now has 167 `catch` blocks (up from 164 as new logging/tests were added); 0
+`TODO exception`. A full repo-wide sweep (not just `Turbo.Rooms`) found the previously-listed
+`Turbo.Rooms` files (`RoomService.Floor.cs`, `RoomService.Wall.cs`, `RoomWiredSystem.cs`,
+`RoomRollerSystem.cs`, `RoomPathingSystem.cs`, `RoomMapModule.Avatar.cs`, `RoomAvatarModule.cs`)
+already fixed by an earlier pass (each now logs via `_roomGrain._logger.LogWarning`). Three more
+silent swallows were found and fixed this round: `RoomAvatarTickSystem.cs` (walk-step failure
+recovery ran with no log line), `RoomItemsProvider.cs` and `InventoryFurnitureLoader.cs` (both
+silently dropped a furniture item on load failure with `catch (Exception) { continue; }` — real
+risk of furniture/inventory items vanishing with zero diagnostic trail; both now log a warning with
+the item id and owning room/player before skipping). `InventoryFurnitureLoader` gained a
+constructor-injected `ILogger<InventoryFurnitureLoader>` (was DI-constructed with no logger before).
+**Known remaining gap (out of scope for this pass):** `FurnitureWiredLogic.cs` (`Turbo.Rooms/Object/
+Logic/Furniture/Floor/Wired/`) has two fully-silent `catch { }` (lines ~314, ~340, swallowing
+`Activator.CreateInstance` failures when rehydrating wired definition/type specifics) and one
+`catch (Exception ex) { Console.WriteLine(ex); return false; }` (line ~362, bypassing structured
+logging entirely). Fixing this properly requires threading an `ILogger` through the base
+`FurnitureWiredLogic` constructor, which cascades through all 6 intermediate abstract wired-kind
+classes (Action/Addon/Condition/Selector/Trigger/Variable) and all 83 concrete wired-leaf classes
+constructed via `ActivatorUtilities.CreateInstance(sp, concrete, ctx)` in
+`RoomObjectLogicFeatureProcessor.cs` — none of them currently declare a logger parameter, so it
+can't be added at the base without touching every leaf constructor. Given wireds are already a
+tracked P0 area (see WIN63 protocol audit), this should be its own follow-up, not folded into
+general catch-block hardening.
+**Done when:** no silent swallowing outside the tracked `FurnitureWiredLogic.cs` gap above.
 
 ### P6 — Metrics hygiene
 **Evidence:** `performance_logs` still carries legacy client data (`flash_version`).
@@ -121,6 +125,7 @@ from reactive into deterministic.
 
 ## Recommended order
 
-**P1 (tests) → P2 (shells) → P3 (projects) → P4 (gate)**, then P5/P6/P7 continuously.
+**P1 (tests, done) → P2 (shells) → P3 (projects) → P4 (gate)**, then P5 (done, bar the tracked
+`FurnitureWiredLogic.cs` gap) /P6/P7 continuously.
 Less exciting than feature work, but this is exactly what separates a beautiful architecture from a
 production-ready hotel.

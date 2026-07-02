@@ -179,8 +179,15 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
 
             avatar.NextTileId = nextTileId;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to advance avatar {ObjectId} to next tile in room {RoomId}; stopping walk.",
+                avatar.ObjectId,
+                _roomGrain.RoomId
+            );
+
             await _roomGrain.AvatarModule.StopWalkingAsync(avatar, ct);
         }
     }

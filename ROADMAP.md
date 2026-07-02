@@ -52,16 +52,16 @@ csharpier, no RGPD audit retention, unsecured remote dashboard access.
 
 | # | Epic | Objective | Status | Depends on |
 |---|---|---|---|---|
-| 0 | Quality foundation | Core test harness, error strategy, formatting green | To start (cross-cutting) | — |
+| 0 | Quality foundation | Core test harness, error strategy, formatting green | Done (cross-cutting) | — |
 | 1 | Playable core loop | login→room→walk→chat→furni→navigator→leave at 100% | Partial | 0 (in progress) |
 | 2 | Permissions & moderation | Complete group rights + staff tool + policy tests | Near complete | 1 |
-| 3 | WebApi ASP.NET | Merge, finish, harden, remove HttpListener | In progress | — |
+| 3 | WebApi ASP.NET | Merge, finish, harden, remove HttpListener | Done | — |
 | 4 | Economy & inventory | Buy/gift/sell end-to-end + tested ledger | Partial | 1 |
 | 5 | Social | Friends, messaging, groups | Partial | 1 |
 | 6 | Trading | Secure end-to-end trade | Stub | 4 |
 | 7 | Operations & compliance | RGPD retention, remote dashboard, OTel export | Partial | — |
 
-**Recommended order:** 0 (in parallel) → 3 (almost done, close the loop) → 1 (highest priority)
+**Recommended order:** 0 (done) → 3 (done) → 1 (highest priority, next up)
 → 2 → 4 → 5 → 6 → 7.
 
 ---
@@ -76,27 +76,50 @@ not before them.
 **Story 0.1 — Extend core test harness**
 *As a* developer, *I want* to test pure policies and critical grain logic,
 *so I can* refactor without silent regressions in economy and rights.
-- [ ] New project `Turbo.Permissions.Tests` (or equivalent) based on
-      `Turbo.WebApi.Tests` (xunit + FluentAssertions, already used).
-- [ ] Unit tests for `RoomSecurityPolicy.ResolveControllerLevel` (all cases:
+- [x] New project `Turbo.Permissions.Tests` (or equivalent) based on
+      `Turbo.WebApi.Tests` (xunit + FluentAssertions, already used). — done as
+      `Turbo.Rooms.Tests/Permissions/` (equivalent, not a separate project).
+- [x] Unit tests for `RoomSecurityPolicy.ResolveControllerLevel` (all cases:
       System, superuser, ModerateAny, BuildAny, explicit owner, rights, none).
-- [ ] Unit tests for `ModerationPolicy.IsAllowed` (each action × specific capability × ModerateAny × wildcard × deny).
-- [ ] Orleans TestKit setup for at least one grain as proof of concept.
-- [ ] Target: these tests run in the quality gate.
+- [x] Unit tests for `ModerationPolicy.IsAllowed` (each action × specific capability × ModerateAny × wildcard × deny).
+- [x] Orleans TestKit setup for at least one grain as proof of concept. — `Microsoft.Orleans.TestingHost`
+      (matching the pinned 9.2.1 Orleans version) spins up a real in-process `TestCluster` and exercises
+      `RoomDirectoryGrain` end-to-end (activation + DI wiring + grain-reference calls), in
+      `Turbo.Rooms.Tests/Grains/RoomDirectoryGrainClusterTests.cs`. Complements (does not replace) the
+      hand-constructed grain test in `Turbo.Rooms.Tests/Groups/GroupDirectoryGrainCreationTests.cs`.
+- [x] Target: these tests run in the quality gate. — `dotnet test Turbo.Cloud.sln` runs as part of
+      `TurboCloudFastCheck`. `Turbo.Rooms.Tests` is 42/42 green.
 
 **Story 0.2 — Grain error and resilience strategy**
 *As a* developer, *I want* a single grain failure contract,
 *so that* a grain state is never left inconsistent.
-- [ ] Define the contract for a failed grain operation (state rollback in memory? structured logs? observability error event?).
-- [ ] Replace `// TODO handle exceptions` in `RoomGrain.Furni.cs` (and others) using this strategy.
-- [ ] Audit the 24 existing catch blocks: none should swallow errors without logging.
+- [x] Define the contract for a failed grain operation — established in practice and applied
+      consistently: catch narrowly where a recovery action exists (e.g. `TurboException` with a
+      specific `ErrorCode`), always log via injected `ILogger<T>` with the identifying ids (item/room/
+      player), never swallow with an empty `catch {}`, prefer `LogAndForget` over Orleans `.Ignore()`
+      for fire-and-forget cross-grain calls (see `AGENTS.md` "Replace .Ignore() with a LogAndForget
+      helper").
+- [x] Replace `// TODO handle exceptions` in `RoomGrain.Furni.cs` (and others) using this strategy. —
+      0 occurrences repo-wide.
+- [x] Audit the 24 existing catch blocks: none should swallow errors without logging. — repo now has
+      167 catch blocks (grew as coverage/logging expanded); re-audited all of them. One tracked
+      exception remains: `FurnitureWiredLogic.cs` has two silent `catch {}` and one
+      `Console.WriteLine`-only catch that need an `ILogger` threaded through the wired-logic DI chain
+      (6 abstract + 83 concrete leaf classes) — scoped as its own follow-up given the blast radius, see
+      `CONSOLIDATION.md` P5.
 
 **Story 0.3 — Formatting gate**
-- [ ] `csharpier check` passes across the whole repo (all ~118 non-compliant files formatted).
-- [ ] Blocking pre-commit hook.
+- [x] `csharpier check` passes across the whole repo (all ~118 non-compliant files formatted). —
+      verified clean across all 3659 files.
+- [x] Blocking pre-commit hook. — `.githooks/pre-commit` runs `TurboCloudFastCheck` (build + csharpier
+      check + `dotnet test`), `.githooks/pre-push` runs the full `TurboCloudQualityGate`;
+      `core.hooksPath` is configured to `.githooks` (see `scripts/bootstrap.ps1`/`.sh`).
 
 **Epic 0 DoD:** quality gate runs policy tests and at least one grain test; no `// TODO handle exceptions`;
-formatting green.
+formatting green. ✅ **Met.** Remaining hardening tracked in `CONSOLIDATION.md` (P4: quality gate's
+`dotnet format` step only scopes `Turbo.Main`, not the full solution — widening it today would
+immediately break the blocking gate on ~1200 pre-existing analyzer warnings elsewhere, so it's left as
+a separate follow-up rather than forced through; P5: the `FurnitureWiredLogic.cs` gap above).
 
 ---
 
@@ -166,23 +189,29 @@ throughout; group rooms handled; moderation tool is functional and audited.
 
 ---
 
-### EPIC 3 — WebApi ASP.NET Core migration
+### EPIC 3 — WebApi ASP.NET Core migration — done
 
 **Goal:** one hardened HTTP public surface under ASP.NET, fully tested.
 
 **Story 3.1 — Merge feature branch**
-- [ ] `feat/webapi-aspnetcore-migration` reviewed and merged into `main`.
-- [ ] 16 integration tests run in gate.
+- [x] `feat/webapi-aspnetcore-migration` reviewed and merged into `main` (tip `43a924e` is an
+      ancestor of `main`).
+- [x] 16 integration tests run in gate — `Turbo.WebApi.Tests`, 16/16 green.
 
 **Story 3.2 — Finish and harden**
-- [ ] All endpoints migrated (parity with old HttpListener).
-- [ ] Strict rate limiting verified on `/login`, `/registration/new`, `/ssotoken` (429 test already present).
-- [ ] Explicit CORS + HTTPS/HSTS toggled via config.
+- [x] All endpoints migrated (parity with old HttpListener) — `Turbo.WebApi/Hosting/WebApiEndpoints.cs`.
+- [x] Strict rate limiting verified on `/login`, `/registration/new`, `/ssotoken` — `WebApiAppConfigurator.cs`
+      wires per-route `FixedWindowLimiter` policies; `WebApiEndpointsTests.Login_ExceedingRateLimit_Returns429`
+      asserts the 429.
+- [x] Explicit CORS + HTTPS/HSTS toggled via config — `WebApiAppConfigurator.AddCors`/`AddHttpsRedirection`,
+      `config.HstsEnabled` gate.
 
 **Story 3.3 — Remove legacy**
-- [ ] Remove `WebApiService.cs` (HttpListener) and `WebApiResponseWriter`.
+- [x] Remove `WebApiService.cs` (HttpListener) and `WebApiResponseWriter` — neither exists in the repo;
+      only doc-comments in `Turbo.WebApi/Hosting/*.cs` reference the old `HttpListener` behavior for
+      migration-parity context.
 
-**Epic 3 DoD:** no `HttpListener` remains; public surface runs on ASP.NET, tested and hardened.
+**Epic 3 DoD:** no `HttpListener` remains; public surface runs on ASP.NET, tested and hardened. ✅ **Met.**
 
 ---
 

@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Furniture;
@@ -28,13 +29,15 @@ internal sealed class InventoryFurnitureLoader(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
     IFurnitureDefinitionProvider defsProvider,
     IStuffDataFactory stuffDataFactory,
-    IGrainFactory grainFactory
+    IGrainFactory grainFactory,
+    ILogger<InventoryFurnitureLoader> logger
 ) : IInventoryFurnitureLoader
 {
     private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IFurnitureDefinitionProvider _defsProvider = defsProvider;
     private readonly IStuffDataFactory _stuffDataFactory = stuffDataFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly ILogger<InventoryFurnitureLoader> _logger = logger;
 
     public async Task<IReadOnlyList<IFurnitureItem>> LoadByPlayerIdAsync(
         PlayerId playerId,
@@ -70,9 +73,14 @@ internal sealed class InventoryFurnitureLoader(
 
                     items.Add(item);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    continue;
+                    _logger.LogWarning(
+                        ex,
+                        "Failed to load inventory furniture {ItemId} for player {PlayerId}; skipping item.",
+                        entity.Id,
+                        playerId
+                    );
                 }
             }
 

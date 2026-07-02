@@ -97,9 +97,14 @@ internal sealed class RoomItemsProvider(
                     wallItems.Add(wallItem);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                continue;
+                _logger.LogWarning(
+                    ex,
+                    "Failed to load furniture {ItemId} in room {RoomId}; skipping item.",
+                    entity.Id,
+                    roomId
+                );
             }
         }
 
