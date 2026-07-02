@@ -680,15 +680,15 @@ internal sealed class GroupGrain(
         dbCtx.GroupMembershipRequests.RemoveRange(requests);
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
 
-        foreach (GroupMemberSnapshot member in added)
-        {
-            await events
-                .PublishAsync(
-                    new GroupMembershipAcceptedEvent(actor.Value, GroupId, member.UserId),
-                    ct
+        await Task.WhenAll(
+                added.Select(member =>
+                    events.PublishAsync(
+                        new GroupMembershipAcceptedEvent(actor.Value, GroupId, member.UserId),
+                        ct
+                    )
                 )
-                .ConfigureAwait(false);
-        }
+            )
+            .ConfigureAwait(false);
 
         return added;
     }
