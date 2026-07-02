@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Turbo.Primitives.Messages.Outgoing.Room.Engine;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Rooms;
@@ -187,7 +188,15 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
 
                     reservedTileIdxs.Add(toIdx);
                 }
-                catch (Exception) { }
+                catch (Exception ex)
+                {
+                    _roomGrain._logger.LogWarning(
+                        ex,
+                        "Failed to build roller move plan for roller {RollerId} in room {RoomId}.",
+                        rollerId,
+                        _roomGrain.RoomId
+                    );
+                }
             }
         }
 

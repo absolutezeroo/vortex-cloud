@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Turbo.Logging;
 using Turbo.Primitives;
 using Turbo.Primitives.Messages.Outgoing.Room.Engine;
@@ -64,7 +65,15 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
 
                 dirtySnapshots.Add(avatar.GetSnapshot());
             }
-            catch (Exception) { }
+            catch (Exception ex)
+            {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Failed to process avatar tick for avatar {ObjectId} in room {RoomId}.",
+                    avatar.ObjectId,
+                    _roomGrain.RoomId
+                );
+            }
         }
 
         if (dirtySnapshots.Count == 0)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Turbo.Primitives.Action;
 using Turbo.Primitives.Messages.Outgoing.Room.Engine;
 using Turbo.Primitives.Rooms;
@@ -494,7 +495,15 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
                         break;
                 }
             }
-            catch (Exception) { }
+            catch (Exception ex)
+            {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Failed to load wired logic for item {ItemId} in room {RoomId}.",
+                    item.ObjectId,
+                    _roomGrain.RoomId
+                );
+            }
         }
 
         _stacksById[stackId] = stack;

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
 using Turbo.Primitives.Rooms.Object.Avatars;
 
 namespace Turbo.Rooms.Grains.Systems;
@@ -155,13 +156,45 @@ public sealed class RoomPathingSystem(RoomGrain roomGrain)
                                 open.Enqueue(neighbor, neighbor.F);
                             }
                         }
-                        catch (Exception) { }
+                        catch (Exception ex)
+                        {
+                            _roomGrain._logger.LogWarning(
+                                ex,
+                                "Failed to evaluate pathfinding neighbor from ({X},{Y}) direction {DirectionIndex} in room {RoomId}.",
+                                current.X,
+                                current.Y,
+                                i,
+                                _roomGrain.RoomId
+                            );
+                        }
                     }
                 }
-                catch (Exception) { }
+                catch (Exception ex)
+                {
+                    _roomGrain._logger.LogWarning(
+                        ex,
+                        "Failed to expand pathfinding node while searching from ({StartX},{StartY}) to ({GoalX},{GoalY}) in room {RoomId}.",
+                        start.X,
+                        start.Y,
+                        goal.X,
+                        goal.Y,
+                        _roomGrain.RoomId
+                    );
+                }
             }
         }
-        catch (Exception) { }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to find path from ({StartX},{StartY}) to ({GoalX},{GoalY}) in room {RoomId}.",
+                start.X,
+                start.Y,
+                goal.X,
+                goal.Y,
+                _roomGrain.RoomId
+            );
+        }
 
         return [];
     }

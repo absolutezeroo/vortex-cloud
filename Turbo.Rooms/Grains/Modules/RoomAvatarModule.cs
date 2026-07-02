@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Turbo.Logging;
 using Turbo.Primitives;
 using Turbo.Primitives.Action;
@@ -91,7 +92,15 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
 
             _roomGrain._state.AvatarsByPlayerId.Remove(playerId);
         }
-        catch (Exception) { }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to remove avatar for player {PlayerId} in room {RoomId}.",
+                playerId,
+                _roomGrain.RoomId
+            );
+        }
     }
 
     public async Task<bool> WalkAvatarToAsync(
@@ -183,8 +192,17 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
 
             return true;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to walk avatar {ObjectId} to ({TargetX},{TargetY}) in room {RoomId}.",
+                avatar.ObjectId,
+                targetX,
+                targetY,
+                _roomGrain.RoomId
+            );
+
             await StopWalkingAsync(avatar, ct);
 
             return false;
@@ -222,7 +240,15 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
             avatar.RemoveStatus(AvatarStatusType.Move);
             avatar.NeedsInvoke = true;
         }
-        catch (Exception) { }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to stop walking for avatar {ObjectId} in room {RoomId}.",
+                avatar.ObjectId,
+                _roomGrain.RoomId
+            );
+        }
     }
 
     public async Task ProcessNextAvatarStepAsync(IRoomAvatar avatar, CancellationToken ct)
@@ -253,8 +279,15 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
             _roomGrain.MapModule.AddAvatar(avatar, false);
             _roomGrain.MapModule.UpdateHeightForAvatar(avatar);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to process next avatar step for avatar {ObjectId} in room {RoomId}.",
+                avatar.ObjectId,
+                _roomGrain.RoomId
+            );
+
             await StopWalkingAsync(avatar, ct);
         }
     }
