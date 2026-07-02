@@ -76,41 +76,8 @@ public sealed class LtdRaffleGrain(
             return Fail("already_entered");
         }
 
-        // Debit wallet
-        if (_series.CostCredits > 0)
-        {
-            IPlayerWalletGrain wallet = grainFactory.GetPlayerWalletGrain(playerId);
-            WalletDebitResult debitResult = await wallet.TryDebitAsync(
-                [
-                    new WalletDebitRequest
-                    {
-                        CurrencyKind = new CurrencyKind { CurrencyType = CurrencyType.Credits },
-                        Amount = _series.CostCredits,
-                    },
-                ],
-                ct
-            );
-
-            if (!debitResult.Succeeded)
-            {
-                return Fail("insufficient_credits");
-            }
-        }
-
-        // Start a new batch if needed
-        if (_currentBatchId is null)
-        {
-            _currentBatchId = Guid.NewGuid().ToString("N");
-
-            // Arm the raffle timer
-            this.RegisterGrainTimer<object?>(
-                async (_, ct) => await RunRaffleAsync(ct),
-                null,
-                TimeSpan.FromSeconds(_series.RaffleWindowSeconds),
-                TimeSpan.FromMilliseconds(-1) // one-shot
-            );
-        }
-
+        // Resolve the entities the entry needs *before* touching the wallet, so a missing
+        // player/series never leaves credits debited with nothing recorded to show for it.
         await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         PlayerEntity? playerEntity = await dbCtx.Players.FindAsync([playerIdInt], ct);
@@ -125,21 +92,68 @@ public sealed class LtdRaffleGrain(
             return Fail("series_not_found");
         }
 
-        LtdRaffleEntryEntity entry = new LtdRaffleEntryEntity
+        List<WalletDebitRequest> debitRequests =
+            _series.CostCredits > 0
+                ?
+                [
+                    new WalletDebitRequest
+                    {
+                        CurrencyKind = new CurrencyKind { CurrencyType = CurrencyType.Credits },
+                        Amount = _series.CostCredits,
+                    },
+                ]
+                : [];
+
+        IPlayerWalletGrain wallet = grainFactory.GetPlayerWalletGrain(playerId);
+        string batchId = _currentBatchId ?? Guid.NewGuid().ToString("N");
+
+        WalletPurchaseResult<LtdRaffleEntryEntity> result = await wallet
+            .ExecutePurchaseAsync(
+                debitRequests,
+                async innerCt =>
+                {
+                    LtdRaffleEntryEntity entry = new()
+                    {
+                        SeriesEntityId = SeriesId,
+                        PlayerEntityId = playerIdInt,
+                        BatchId = batchId,
+                        EnteredAt = DateTime.UtcNow,
+                        Result = "pending",
+                        SeriesEntity = seriesEntity,
+                        PlayerEntity = playerEntity,
+                    };
+
+                    dbCtx.LtdRaffleEntries.Add(entry);
+                    await dbCtx.SaveChangesAsync(innerCt);
+
+                    return entry;
+                },
+                logger,
+                ct
+            )
+            .ConfigureAwait(false);
+
+        if (!result.Succeeded)
         {
-            SeriesEntityId = SeriesId,
-            PlayerEntityId = playerIdInt,
-            BatchId = _currentBatchId,
-            EnteredAt = DateTime.UtcNow,
-            Result = "pending",
-            SeriesEntity = seriesEntity,
-            PlayerEntity = playerEntity,
-        };
+            return Fail("insufficient_credits");
+        }
 
-        dbCtx.LtdRaffleEntries.Add(entry);
-        await dbCtx.SaveChangesAsync(ct);
+        LtdRaffleEntryEntity savedEntry = result.Reward!;
 
-        _currentBatch.Add(entry);
+        // Arm the raffle timer for the first entrant in this batch.
+        if (_currentBatchId is null)
+        {
+            _currentBatchId = batchId;
+
+            this.RegisterGrainTimer<object?>(
+                async (_, ct) => await RunRaffleAsync(ct),
+                null,
+                TimeSpan.FromSeconds(_series.RaffleWindowSeconds),
+                TimeSpan.FromMilliseconds(-1) // one-shot
+            );
+        }
+
+        _currentBatch.Add(savedEntry);
 
         await events
             .PublishAsync(new LtdRaffleEnteredEvent(playerIdInt, SeriesId, _series.CostCredits), ct)
@@ -305,7 +319,10 @@ public sealed class LtdRaffleGrain(
                         PlayerId.Parse(entry.PlayerEntityId)
                     );
 
-                    _ = wallet.GrantCreditsAsync(_series.CostCredits, CancellationToken.None);
+                    LogAndForgetRefund(
+                        wallet.GrantCreditsAsync(_series.CostCredits, CancellationToken.None),
+                        entry.PlayerEntityId
+                    );
                 }
             }
 
@@ -387,4 +404,20 @@ public sealed class LtdRaffleGrain(
 
     private static LtdRaffleEntryResult Fail(string errorCode) =>
         new() { Success = false, ErrorCode = errorCode };
+
+    private void LogAndForgetRefund(Task task, int playerId)
+    {
+        task.ContinueWith(
+            t =>
+                logger.LogError(
+                    t.Exception,
+                    "Failed to refund raffle credits for player {PlayerId} in series {SeriesId}",
+                    playerId,
+                    SeriesId
+                ),
+            CancellationToken.None,
+            TaskContinuationOptions.OnlyOnFaulted,
+            TaskScheduler.Current
+        );
+    }
 }

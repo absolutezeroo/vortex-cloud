@@ -31,9 +31,21 @@ WebApi migration + integration tests.
 **Evidence:** 21 cases, but `RoomSecurityPolicy`, `ModerationPolicy` (pure functions) and
 `economy_ledger` are not covered. Those are places where silent regressions are expensive
 (privilege escalation, duplicated currency).
+**Fixed:** the "no path moves currency without ledger entry" gap used to be a real bug, not just
+an untested one — `CatalogPurchaseGrain`, `MarketplacePurchaseGrain`, and `LtdRaffleGrain` all
+debited the wallet then did DB/grant work with no compensation, so a failure after a successful
+debit permanently lost the player's credits (confirmed reproducible via `FurnitureDefinitionNotFound`
+on a catalog offer with a stale `FurniDefinitionId`). Extracted a shared
+`IPlayerWalletGrain.ExecutePurchaseAsync` (`Turbo.Primitives/Players/Wallet/WalletPurchaseExtensions.cs`)
+that debits once, runs the grant step, and credits back automatically (with a logged error) if the
+grant throws. All three grains now use it; `IPlayerWalletGrain` gained `CreditBackAsync` (generic
+refund, also closes a pre-existing gap where Silver couldn't be refunded at all, only
+Credits/ActivityPoints).
+**Still missing test coverage:** no automated test exercises this path yet — the fix was verified by
+build + existing `Turbo.Rooms.Tests` (36/36 green) + manual trace, not a new regression test.
 **Work:** expand `Turbo.Rooms.Tests` (or a `Turbo.Permissions.Tests`) to cover both policies
 (all branches) + invariants on the ledger (debit/credit, idempotence, insufficient balance
-rejection, no path moves currency without ledger entry).
+rejection, refund-on-grant-failure for `ExecutePurchaseAsync`).
 **Done when:** policies and ledger are covered; the gate executes these tests.
 
 ### P2 — Fill the empty shells (partially done)

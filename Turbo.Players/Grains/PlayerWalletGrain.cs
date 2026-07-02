@@ -279,85 +279,37 @@ internal sealed class PlayerWalletGrain(
         };
     }
 
-    public async Task GrantCreditsAsync(int amount, CancellationToken ct)
-    {
-        if (amount <= 0)
-        {
-            return;
-        }
+    public Task GrantCreditsAsync(int amount, CancellationToken ct) =>
+        GrantCurrencyAsync(new CurrencyKind { CurrencyType = CurrencyType.Credits }, amount, ct);
 
-        CurrencyKind creditsKind = new CurrencyKind { CurrencyType = CurrencyType.Credits };
-
-        if (!_currenciesByKind.TryGetValue(creditsKind, out WalletCurrencySnapshot? snapshot))
-        {
-            return;
-        }
-
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
-
-        PlayerCurrencyEntity? entity = await dbCtx
-            .PlayerCurrencies.Where(x =>
-                x.Id == snapshot.Id && x.PlayerEntityId == (int)this.GetPrimaryKeyLong()
-            )
-            .FirstOrDefaultAsync(ct);
-
-        if (entity is null)
-        {
-            return;
-        }
-
-        entity.Amount += amount;
-        await dbCtx.SaveChangesAsync(ct);
-
-        _currenciesByKind[creditsKind] = snapshot with { Amount = entity.Amount };
-
-        (string creditsCurrency, int? creditsActivityPointType) = DescribeCurrency(creditsKind);
-
-        await _events
-            .PublishAsync(
-                new CurrencyChangedEvent(
-                    (int)this.GetPrimaryKeyLong(),
-                    creditsCurrency,
-                    creditsActivityPointType,
-                    amount,
-                    entity.Amount
-                ),
-                ct
-            )
-            .ConfigureAwait(false);
-
-        IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(
-            (int)this.GetPrimaryKeyLong()
-        );
-        await playerPresence.OnCurrencyUpdateAsync(
-            new WalletCurrencyUpdateSnapshot
+    public Task GrantActivityPointsAsync(int activityPointType, int amount, CancellationToken ct) =>
+        GrantCurrencyAsync(
+            new CurrencyKind
             {
-                CurrencyKind = creditsKind,
-                ChangedBy = amount,
-                Amount = entity.Amount,
+                CurrencyType = CurrencyType.ActivityPoints,
+                ActivityPointType = activityPointType,
             },
+            amount,
             ct
         );
+
+    public async Task CreditBackAsync(List<WalletDebitRequest> requests, CancellationToken ct)
+    {
+        foreach (WalletDebitRequest request in requests)
+        {
+            await GrantCurrencyAsync(request.CurrencyKind, request.Amount, ct)
+                .ConfigureAwait(false);
+        }
     }
 
-    public async Task GrantActivityPointsAsync(
-        int activityPointType,
-        int amount,
-        CancellationToken ct
-    )
+    private async Task GrantCurrencyAsync(CurrencyKind kind, int amount, CancellationToken ct)
     {
         if (amount <= 0)
         {
             return;
         }
 
-        CurrencyKind activityKind = new CurrencyKind
-        {
-            CurrencyType = CurrencyType.ActivityPoints,
-            ActivityPointType = activityPointType,
-        };
-
-        if (!_currenciesByKind.TryGetValue(activityKind, out WalletCurrencySnapshot? snapshot))
+        if (!_currenciesByKind.TryGetValue(kind, out WalletCurrencySnapshot? snapshot))
         {
             return;
         }
@@ -378,15 +330,15 @@ internal sealed class PlayerWalletGrain(
         entity.Amount += amount;
         await dbCtx.SaveChangesAsync(ct);
 
-        _currenciesByKind[activityKind] = snapshot with { Amount = entity.Amount };
+        _currenciesByKind[kind] = snapshot with { Amount = entity.Amount };
 
-        (string activityCurrency, _) = DescribeCurrency(activityKind);
+        (string currencyName, int? activityPointType) = DescribeCurrency(kind);
 
         await _events
             .PublishAsync(
                 new CurrencyChangedEvent(
                     (int)this.GetPrimaryKeyLong(),
-                    activityCurrency,
+                    currencyName,
                     activityPointType,
                     amount,
                     entity.Amount
@@ -401,7 +353,7 @@ internal sealed class PlayerWalletGrain(
         await playerPresence.OnCurrencyUpdateAsync(
             new WalletCurrencyUpdateSnapshot
             {
-                CurrencyKind = activityKind,
+                CurrencyKind = kind,
                 ChangedBy = amount,
                 Amount = entity.Amount,
             },

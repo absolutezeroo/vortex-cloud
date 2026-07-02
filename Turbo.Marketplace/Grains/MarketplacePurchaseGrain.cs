@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Marketplace;
@@ -22,13 +23,15 @@ namespace Turbo.Marketplace.Grains;
 
 public sealed class MarketplacePurchaseGrain(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
-    IGrainFactory grainFactory
+    IGrainFactory grainFactory,
+    ILogger<MarketplacePurchaseGrain> logger
 ) : Grain, IMarketplacePurchaseGrain
 {
     private const int COMMISSION_PERCENT = 1;
     private static readonly TimeSpan OFFER_DURATION = TimeSpan.FromDays(3);
     private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly ILogger<MarketplacePurchaseGrain> _logger = logger;
 
     public async Task<(int Result, int OfferId)> MakeOfferAsync(
         int furnitureItemId,
@@ -152,35 +155,45 @@ public sealed class MarketplacePurchaseGrain(
         IPlayerWalletGrain walletGrain = _grainFactory.GetPlayerWalletGrain(
             this.GetPrimaryKeyLong()
         );
-        WalletDebitResult debitResult = await walletGrain
-            .TryDebitAsync(
-                [
-                    new WalletDebitRequest
-                    {
-                        CurrencyKind = new CurrencyKind { CurrencyType = CurrencyType.Credits },
-                        Amount = offer.Price,
-                    },
-                ],
+
+        List<WalletDebitRequest> debitRequests =
+        [
+            new WalletDebitRequest
+            {
+                CurrencyKind = new CurrencyKind { CurrencyType = CurrencyType.Credits },
+                Amount = offer.Price,
+            },
+        ];
+
+        WalletPurchaseResult<bool> result = await walletGrain
+            .ExecutePurchaseAsync(
+                debitRequests,
+                async innerCt =>
+                {
+                    int commission = Math.Max(1, offer.Price * COMMISSION_PERCENT / 100);
+                    offer.State = MarketplaceOfferState.Sold;
+                    offer.CreditsOwed = offer.Price - commission;
+                    await dbCtx.SaveChangesAsync(innerCt).ConfigureAwait(false);
+
+                    IInventoryGrain inventoryGrain = _grainFactory.GetInventoryGrain(
+                        this.GetPrimaryKeyLong()
+                    );
+                    await inventoryGrain
+                        .GrantFurnitureDefinitionAsync(
+                            offer.FurnitureDefinitionEntityId,
+                            offer.ExtraData,
+                            innerCt
+                        )
+                        .ConfigureAwait(false);
+
+                    return true;
+                },
+                _logger,
                 ct
             )
             .ConfigureAwait(false);
 
-        if (!debitResult.Succeeded)
-        {
-            return 2;
-        }
-
-        int commission = Math.Max(1, offer.Price * COMMISSION_PERCENT / 100);
-        offer.State = MarketplaceOfferState.Sold;
-        offer.CreditsOwed = offer.Price - commission;
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
-
-        IInventoryGrain inventoryGrain = _grainFactory.GetInventoryGrain(this.GetPrimaryKeyLong());
-        await inventoryGrain
-            .GrantFurnitureDefinitionAsync(offer.FurnitureDefinitionEntityId, offer.ExtraData, ct)
-            .ConfigureAwait(false);
-
-        return 0;
+        return result.Succeeded ? 0 : 2;
     }
 
     public async Task<int> RedeemCreditsAsync(CancellationToken ct)

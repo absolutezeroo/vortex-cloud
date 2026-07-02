@@ -267,6 +267,11 @@ public sealed class GroupDirectoryGrainCreationTests
             return Task.FromResult(WalletDebitResult.Success());
         }
 
+        public Task CreditBackAsync(List<WalletDebitRequest> requests, CancellationToken ct)
+        {
+            return Task.CompletedTask;
+        }
+
         public Task<int> GetAmountForCurrencyAsync(CurrencyKind kind, CancellationToken ct)
         {
             return Task.FromResult(0);

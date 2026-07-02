@@ -15,6 +15,7 @@ using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Orleans.Snapshots.Players;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Players.Enums.Wallet;
+using Turbo.Primitives.Players.Grains;
 using Turbo.Primitives.Players.Wallet;
 
 namespace Turbo.Catalog.Grains;
@@ -71,8 +72,6 @@ public sealed partial class CatalogPurchaseGrain(
         // HC members get the offer's configured discount off the credit cost (0 = no discount).
         int discountPercent = isHabboClub ? Math.Clamp(offer.DiscountPercent, 0, 100) : 0;
 
-        int creditCost = 0;
-
         TryGetDebitRequests(
             offer,
             quantity,
@@ -80,49 +79,58 @@ public sealed partial class CatalogPurchaseGrain(
             out List<WalletDebitRequest> debitRequests
         );
 
-        if (debitRequests.Count > 0)
-        {
-            creditCost = debitRequests
-                .Where(r => r.CurrencyKind.CurrencyType == CurrencyType.Credits)
-                .Sum(r => r.Amount);
+        int creditCost = debitRequests
+            .Where(r => r.CurrencyKind.CurrencyType == CurrencyType.Credits)
+            .Sum(r => r.Amount);
 
-            WalletDebitResult result = await _grainFactory
-                .GetPlayerWalletGrain((int)this.GetPrimaryKeyLong())
-                .TryDebitAsync(debitRequests, ct);
+        IPlayerWalletGrain wallet = _grainFactory.GetPlayerWalletGrain(
+            (int)this.GetPrimaryKeyLong()
+        );
 
-            if (!result.Succeeded)
-            {
-                throw CreateInsufficientBalanceException(result);
-            }
-        }
+        WalletPurchaseResult<CatalogOfferSnapshot> result = await wallet
+            .ExecutePurchaseAsync(
+                debitRequests,
+                async innerCt =>
+                {
+                    await _grainFactory
+                        .GetInventoryGrain((int)this.GetPrimaryKeyLong())
+                        .GrantCatalogOfferAsync(offer, extraParam, quantity, innerCt)
+                        .ConfigureAwait(false);
 
-        await _grainFactory
-            .GetInventoryGrain((int)this.GetPrimaryKeyLong())
-            .GrantCatalogOfferAsync(offer, extraParam, quantity, ct)
-            .ConfigureAwait(false);
+                    if (creditCost > 0)
+                    {
+                        await _grainFactory
+                            .GetPlayerGrain(PlayerId.Parse((int)this.GetPrimaryKeyLong()))
+                            .TrackCreditSpendAsync(creditCost, innerCt)
+                            .ConfigureAwait(false);
+                    }
 
-        if (creditCost > 0)
-        {
-            await _grainFactory
-                .GetPlayerGrain(PlayerId.Parse((int)this.GetPrimaryKeyLong()))
-                .TrackCreditSpendAsync(creditCost, ct)
-                .ConfigureAwait(false);
-        }
+                    await _events
+                        .PublishAsync(
+                            new CatalogPurchasedEvent(
+                                (int)this.GetPrimaryKeyLong(),
+                                catalogType.ToString(),
+                                offerId,
+                                quantity,
+                                creditCost
+                            ),
+                            innerCt
+                        )
+                        .ConfigureAwait(false);
 
-        await _events
-            .PublishAsync(
-                new CatalogPurchasedEvent(
-                    (int)this.GetPrimaryKeyLong(),
-                    catalogType.ToString(),
-                    offerId,
-                    quantity,
-                    creditCost
-                ),
+                    return offer;
+                },
+                _logger,
                 ct
             )
             .ConfigureAwait(false);
 
-        return offer;
+        if (!result.Succeeded)
+        {
+            throw CreateInsufficientBalanceException(result.Failure);
+        }
+
+        return result.Reward!;
     }
 
     private bool TryGetDebitRequests(
@@ -185,15 +193,15 @@ public sealed partial class CatalogPurchaseGrain(
     }
 
     private static CatalogPurchaseException CreateInsufficientBalanceException(
-        WalletDebitResult debitResult
+        WalletDebitFailure? failure
     )
     {
-        if (debitResult.Failure is null)
+        if (failure is null)
         {
             return new CatalogPurchaseException(CatalogPurchaseErrorType.PurchaseFailed);
         }
 
-        if (debitResult.Failure.CurrencyKind.CurrencyType == CurrencyType.Credits)
+        if (failure.CurrencyKind.CurrencyType == CurrencyType.Credits)
         {
             return new CatalogPurchaseException(
                 CatalogPurchaseErrorType.NotEnoughCredits,
@@ -206,7 +214,7 @@ public sealed partial class CatalogPurchaseGrain(
             );
         }
 
-        if (debitResult.Failure.CurrencyKind.CurrencyType == CurrencyType.ActivityPoints)
+        if (failure.CurrencyKind.CurrencyType == CurrencyType.ActivityPoints)
         {
             return new CatalogPurchaseException(
                 CatalogPurchaseErrorType.NotEnoughActivityPoints,
@@ -214,7 +222,7 @@ public sealed partial class CatalogPurchaseGrain(
                 {
                     NotEnoughCredits = false,
                     NotEnoughActivityPoints = true,
-                    ActivityPointType = debitResult.Failure.CurrencyKind.ActivityPointType ?? -1,
+                    ActivityPointType = failure.CurrencyKind.ActivityPointType ?? -1,
                 }
             );
         }
