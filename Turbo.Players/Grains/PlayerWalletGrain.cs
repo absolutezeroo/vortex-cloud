@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Players;
@@ -22,13 +23,15 @@ internal sealed class PlayerWalletGrain(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
     ICurrencyTypeProvider currencyTypeProvider,
     IGrainFactory grainFactory,
-    IEventPublisher events
+    IEventPublisher events,
+    ILogger<PlayerWalletGrain> logger
 ) : Grain, IPlayerWalletGrain
 {
     private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ICurrencyTypeProvider _currencyTypeProvider = currencyTypeProvider;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IEventPublisher _events = events;
+    private readonly ILogger<PlayerWalletGrain> _logger = logger;
 
     private (string Currency, int? ActivityPointType) DescribeCurrency(CurrencyKind kind)
     {
@@ -87,8 +90,16 @@ internal sealed class PlayerWalletGrain(
 
                     updates.Add(update);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    _logger.LogError(
+                        ex,
+                        "Wallet debit failed for player {PlayerId} ({Currency} x{Amount})",
+                        this.GetPrimaryKeyLong(),
+                        request.CurrencyKind.CurrencyType,
+                        request.Amount
+                    );
+
                     await tx.RollbackAsync(ct);
                     await RollbackUpdatesAsync(updates, ct);
 

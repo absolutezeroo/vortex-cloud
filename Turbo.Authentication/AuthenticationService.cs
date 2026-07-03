@@ -45,8 +45,7 @@ public sealed class AuthenticationService(
             }
 
             SecurityTicketEntity? entity = await dbCtx
-                .SecurityTickets.AsNoTracking()
-                .FirstOrDefaultAsync(entity => entity.Ticket == ticket, ct)
+                .SecurityTickets.FirstOrDefaultAsync(entity => entity.Ticket == ticket, ct)
                 .ConfigureAwait(false);
 
             if (entity is null)
@@ -58,7 +57,6 @@ public sealed class AuthenticationService(
                 return 0;
             }
 
-            /*
             DateTime now = DateTime.UtcNow;
             DateTime? expiry =
                 entity.ExpiresAt
@@ -82,24 +80,12 @@ public sealed class AuthenticationService(
 
             if (!entity.IsLocked)
             {
-                dbCtx.SecurityTickets.Remove(entity);
-
-                // Re-insert so the client can reconnect after a disconnect without a new ticket
-                dbCtx.SecurityTickets.Add(
-                    new SecurityTicketEntity
-                    {
-                        PlayerEntityId = entity.PlayerEntityId,
-                        Ticket = entity.Ticket,
-                        IpAddress = entity.IpAddress,
-                        IsLocked = false,
-                        ExpiresAt = null,
-                        PlayerEntity = entity.PlayerEntity,
-                    }
-                );
+                // Refresh the expiry so the client can reconnect after a disconnect without a
+                // new ticket, while keeping the replay window bounded.
+                entity.ExpiresAt = _ticketTtlSeconds > 0 ? now.AddSeconds(_ticketTtlSeconds) : null;
 
                 await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
             }
-            */
 
             await _events
                 .PublishAsync(new PlayerLoggedInEvent(entity.PlayerEntityId, HashIp(remoteIp)), ct)

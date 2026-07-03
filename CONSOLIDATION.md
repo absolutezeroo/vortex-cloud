@@ -3,6 +3,9 @@
 Hardening backlog, audited on `main` (commit `fa1e6e8`). Real data, not estimates.
 This complements `ROADMAP.md` (which covers features): this covers the **quality of the
 existing system**. Goal: close the gap between architectural ambition and implementation depth.
+Dated audit snapshots are archived under `docs/audits/` (latest:
+`docs/audits/2026-07-02-full-technical-audit.md`; earlier same-day snapshot:
+`docs/audits/2026-07-02-technical-audit.md`).
 
 ---
 
@@ -23,6 +26,28 @@ existing system**. Goal: close the gap between architectural ambition and implem
 **Already done (your credit):** grain error strategy (0 TODO exceptions), wired round-trip test,
 WebApi migration + integration tests, policy/ledger/purchase-refund test coverage (P1), repo-wide
 catch-block re-audit (P5).
+
+**Fixed since the 2026-07-02 full audit** (findings from
+`docs/audits/2026-07-02-full-technical-audit.md`):
+- R5 — `MessengerGrain.AcceptFriendRequestsAsync` now uses tracked deletes so the request removal
+  and friendship inserts commit atomically in one `SaveChangesAsync`.
+- R6 — `MarketplacePurchaseGrain.BuyOfferAsync` claims the offer atomically (`ExecuteUpdate`
+  guarded on `State == Active`) and re-lists it if the inventory grant fails, so a refunded buyer
+  can never leave the offer stranded as Sold.
+- R7 — `LtdRaffleGrain` refunds are awaited (`Task.WhenAll` with per-failure logging) before the
+  batch is finalized; the `ContinueWith`-based fire-and-forget helper was removed.
+- R2/R3/R4 — plugin hosted-service start failures, `ReloadableExport` swap/subscriber failures,
+  and `PlayerWalletGrain` debit faults are all logged (no more bare `catch { }` in these paths).
+- R8 — SSO ticket TTL/expiry is re-enabled in `AuthenticationService`; successful logins refresh
+  a bounded expiry instead of re-inserting a never-expiring ticket.
+- R9 — WebApi registration rejects a `PasswordRepeated` that does not match `Password`.
+- S1 — `DiffieService` uses a fixed 384-bit safe-prime group (g = 2, p ≡ 7 mod 8) with client
+  public-key range validation, replacing random 128-bit probable primes. The size remains
+  protocol-capped by the single-RSA-block handshake encoding (documented residual risk).
+- S3 — `MigrationHelper.UninstallAsync` escapes quotes/LIKE wildcards in the table prefix and
+  refuses an empty prefix (which would have dropped the whole schema).
+- A2 — duplicate `PackageVersion` entries removed from `Directory.Packages.props`
+  (`FluentAssertions` pinned to the effective 8.10.0).
 
 ---
 

@@ -38,7 +38,7 @@ public sealed class PluginManager(
         StringComparer.OrdinalIgnoreCase
     );
 
-    private readonly ExportRegistry _exports = new();
+    private readonly ExportRegistry _exports = new(logger);
 
     private readonly ConcurrentDictionary<string, SemaphoreSlim> _keyLocks = new(
         StringComparer.OrdinalIgnoreCase
@@ -467,7 +467,7 @@ public sealed class PluginManager(
         return services.BuildServiceProvider(SP_OPTIONS);
     }
 
-    private static async Task StartPluginAsync(
+    private async Task StartPluginAsync(
         ITurboPlugin plugin,
         IServiceProvider sp,
         CancellationToken ct
@@ -481,9 +481,16 @@ public sealed class PluginManager(
             {
                 await svc.StartAsync(ct).ConfigureAwait(false);
             }
-            catch
+            catch (Exception ex)
             {
-                /* bubble via plugin Start */
+                _logger.LogError(
+                    ex,
+                    "Hosted service {Service} failed to start for plugin {Plugin}",
+                    svc.GetType().FullName,
+                    plugin.GetType().FullName
+                );
+
+                throw;
             }
         }
 
