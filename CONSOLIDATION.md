@@ -4,6 +4,7 @@ Hardening backlog, audited on `main` (commit `fa1e6e8`). Real data, not estimate
 This complements `ROADMAP.md` (which covers features): this covers the **quality of the
 existing system**. Goal: close the gap between architectural ambition and implementation depth.
 Dated audit snapshots are archived under `docs/audits/` (latest:
+`docs/audits/2026-07-02-full-technical-audit.md`; earlier same-day snapshot:
 `docs/audits/2026-07-02-technical-audit.md`).
 
 ---
