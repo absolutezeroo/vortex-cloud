@@ -259,14 +259,17 @@ internal sealed class MessengerGrain(
                 continue;
             }
 
-            // Remove pending request
-            await dbCtx
+            // Remove pending request through the change tracker so the delete and the
+            // friendship inserts below commit atomically in one SaveChangesAsync.
+            List<MessengerRequestEntity> pendingRequests = await dbCtx
                 .MessengerRequests.Where(r =>
                     r.PlayerEntityId == requesterId
                     && r.RequestedPlayerEntityId == (int)SelfId
                     && r.DeletedAt == null
                 )
-                .ExecuteDeleteAsync(ct);
+                .ToListAsync(ct);
+
+            dbCtx.MessengerRequests.RemoveRange(pendingRequests);
 
             // Create bidirectional friendship
             dbCtx.MessengerFriends.Add(

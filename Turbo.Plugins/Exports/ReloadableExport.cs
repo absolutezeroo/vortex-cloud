@@ -2,13 +2,16 @@ using System;
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Turbo.Primitives.Plugins.Exports;
 
 namespace Turbo.Plugins.Exports;
 
-public sealed class ReloadableExport<T> : IExport<T>
+public sealed class ReloadableExport<T>(ILogger? logger = null) : IExport<T>
     where T : class
 {
+    private readonly ILogger _logger = logger ?? NullLogger.Instance;
     private volatile T? _current;
     private ImmutableArray<Action<T>> _subs = [];
 
@@ -33,7 +36,14 @@ public sealed class ReloadableExport<T> : IExport<T>
                 d.Dispose();
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to dispose previous export instance for {ExportType}",
+                typeof(T).Name
+            );
+        }
 
         foreach (Action<T> s in subs)
         {
@@ -41,7 +51,14 @@ public sealed class ReloadableExport<T> : IExport<T>
             {
                 s(value);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Export swap subscriber failed for {ExportType}",
+                    typeof(T).Name
+                );
+            }
         }
     }
 
@@ -56,7 +73,14 @@ public sealed class ReloadableExport<T> : IExport<T>
             {
                 onSwap(current);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Export subscribe callback failed for {ExportType}",
+                    typeof(T).Name
+                );
+            }
         }
 
         return new Unsub(() => ImmutableInterlocked.Update(ref _subs, a => a.Remove(onSwap)));

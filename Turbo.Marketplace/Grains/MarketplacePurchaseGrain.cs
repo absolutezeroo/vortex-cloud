@@ -171,20 +171,70 @@ public sealed class MarketplacePurchaseGrain(
                 async innerCt =>
                 {
                     int commission = Math.Max(1, offer.Price * COMMISSION_PERCENT / 100);
-                    offer.State = MarketplaceOfferState.Sold;
-                    offer.CreditsOwed = offer.Price - commission;
-                    await dbCtx.SaveChangesAsync(innerCt).ConfigureAwait(false);
+                    int creditsOwed = offer.Price - commission;
+
+                    // Atomically claim the offer so a concurrent buyer cannot purchase it twice.
+                    int claimed = await dbCtx
+                        .MarketplaceOffers.Where(o =>
+                            o.Id == offer.Id && o.State == MarketplaceOfferState.Active
+                        )
+                        .ExecuteUpdateAsync(
+                            up =>
+                                up.SetProperty(p => p.State, MarketplaceOfferState.Sold)
+                                    .SetProperty(p => p.CreditsOwed, creditsOwed),
+                            innerCt
+                        )
+                        .ConfigureAwait(false);
+
+                    if (claimed == 0)
+                    {
+                        throw new InvalidOperationException(
+                            $"Marketplace offer {offer.Id} is no longer active."
+                        );
+                    }
 
                     IInventoryGrain inventoryGrain = _grainFactory.GetInventoryGrain(
                         this.GetPrimaryKeyLong()
                     );
-                    await inventoryGrain
-                        .GrantFurnitureDefinitionAsync(
-                            offer.FurnitureDefinitionEntityId,
-                            offer.ExtraData,
-                            innerCt
-                        )
-                        .ConfigureAwait(false);
+
+                    try
+                    {
+                        await inventoryGrain
+                            .GrantFurnitureDefinitionAsync(
+                                offer.FurnitureDefinitionEntityId,
+                                offer.ExtraData,
+                                innerCt
+                            )
+                            .ConfigureAwait(false);
+                    }
+                    catch (Exception)
+                    {
+                        // Compensate the claim so the offer is re-listed instead of staying
+                        // Sold with no item delivered; the shared purchase helper then refunds
+                        // the buyer when this exception bubbles up.
+                        try
+                        {
+                            await dbCtx
+                                .MarketplaceOffers.Where(o => o.Id == offer.Id)
+                                .ExecuteUpdateAsync(
+                                    up =>
+                                        up.SetProperty(p => p.State, MarketplaceOfferState.Active)
+                                            .SetProperty(p => p.CreditsOwed, 0),
+                                    CancellationToken.None
+                                )
+                                .ConfigureAwait(false);
+                        }
+                        catch (Exception compensateEx)
+                        {
+                            _logger.LogError(
+                                compensateEx,
+                                "Failed to re-list marketplace offer {OfferId} after grant failure",
+                                offer.Id
+                            );
+                        }
+
+                        throw;
+                    }
 
                     return true;
                 },

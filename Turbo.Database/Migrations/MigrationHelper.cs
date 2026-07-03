@@ -36,7 +36,24 @@ public static class MigrationHelper
         using TContext db = sp.GetRequiredService<TContext>();
 
         TablePrefixProvider prefix = sp.GetRequiredService<TablePrefixProvider>();
-        string tablePrefix = prefix().Replace("`", "``");
+        string rawPrefix = prefix();
+
+        // An empty prefix would match every table in the schema and drop the whole database.
+        if (string.IsNullOrWhiteSpace(rawPrefix))
+        {
+            throw new InvalidOperationException(
+                "Refusing to uninstall plugin tables: table prefix is empty."
+            );
+        }
+
+        // Sanitize the prefix for use inside a single-quoted LIKE pattern: escape backslashes
+        // and quotes, and neutralize LIKE wildcards so a hostile/malformed prefix cannot widen
+        // the destructive scope of the DROP statements.
+        string tablePrefix = rawPrefix
+            .Replace("\\", "\\\\")
+            .Replace("'", "''")
+            .Replace("%", "\\%")
+            .Replace("_", "\\_");
 
         string sql =
             $@"

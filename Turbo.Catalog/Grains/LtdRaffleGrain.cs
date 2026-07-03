@@ -305,9 +305,12 @@ public sealed class LtdRaffleGrain(
                 )
                 .ConfigureAwait(false);
 
-            // Refund non-winners
+            // Refund non-winners — await all refunds before finalizing the batch so a
+            // failed refund is never silently lost once the results are persisted.
             if (_series.CostCredits > 0)
             {
+                List<Task> refundTasks = [];
+
                 foreach (LtdRaffleEntryEntity entry in _currentBatch)
                 {
                     if (entry.PlayerEntityId == winner.PlayerEntityId)
@@ -315,15 +318,10 @@ public sealed class LtdRaffleGrain(
                         continue;
                     }
 
-                    IPlayerWalletGrain wallet = grainFactory.GetPlayerWalletGrain(
-                        PlayerId.Parse(entry.PlayerEntityId)
-                    );
-
-                    LogAndForgetRefund(
-                        wallet.GrantCreditsAsync(_series.CostCredits, CancellationToken.None),
-                        entry.PlayerEntityId
-                    );
+                    refundTasks.Add(RefundEntrantAsync(entry.PlayerEntityId, ct));
                 }
+
+                await Task.WhenAll(refundTasks);
             }
 
             // Persist results
@@ -405,19 +403,22 @@ public sealed class LtdRaffleGrain(
     private static LtdRaffleEntryResult Fail(string errorCode) =>
         new() { Success = false, ErrorCode = errorCode };
 
-    private void LogAndForgetRefund(Task task, int playerId)
+    private async Task RefundEntrantAsync(int playerId, CancellationToken ct)
     {
-        task.ContinueWith(
-            t =>
-                logger.LogError(
-                    t.Exception,
-                    "Failed to refund raffle credits for player {PlayerId} in series {SeriesId}",
-                    playerId,
-                    SeriesId
-                ),
-            CancellationToken.None,
-            TaskContinuationOptions.OnlyOnFaulted,
-            TaskScheduler.Current
-        );
+        try
+        {
+            IPlayerWalletGrain wallet = grainFactory.GetPlayerWalletGrain(PlayerId.Parse(playerId));
+
+            await wallet.GrantCreditsAsync(_series!.CostCredits, ct).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "Failed to refund raffle credits for player {PlayerId} in series {SeriesId}",
+                playerId,
+                SeriesId
+            );
+        }
     }
 }
