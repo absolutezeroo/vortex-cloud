@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Primitives.Action;
 using Turbo.Primitives.Furniture.Enums;
@@ -138,7 +139,15 @@ public abstract class FurnitureWiredLogic(
                     sourceTypes = _wiredData.FurniSources[index];
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Malformed persisted FurniSources[{Index}] for wired item {ItemId}; falling back to default source.",
+                    index,
+                    _ctx.ObjectId
+                );
+            }
 
             sources.Add(sourceTypes);
             index++;
@@ -163,7 +172,15 @@ public abstract class FurnitureWiredLogic(
                     sourceTypes = _wiredData.PlayerSources[index];
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Malformed persisted PlayerSources[{Index}] for wired item {ItemId}; falling back to default source.",
+                    index,
+                    _ctx.ObjectId
+                );
+            }
 
             sources.Add(sourceTypes);
             index++;
@@ -259,7 +276,15 @@ public abstract class FurnitureWiredLogic(
                         ];
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    _roomGrain._logger.LogWarning(
+                        ex,
+                        "Malformed FurniSources[{Index}] in wired update for item {ItemId}; keeping default source.",
+                        index,
+                        _ctx.ObjectId
+                    );
+                }
 
                 furniSources.Add(sourceTypes);
                 index++;
@@ -285,7 +310,15 @@ public abstract class FurnitureWiredLogic(
                         ];
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    _roomGrain._logger.LogWarning(
+                        ex,
+                        "Malformed PlayerSources[{Index}] in wired update for item {ItemId}; keeping default source.",
+                        index,
+                        _ctx.ObjectId
+                    );
+                }
 
                 playerSources.Add(sourceTypes);
                 index++;
@@ -311,7 +344,16 @@ public abstract class FurnitureWiredLogic(
                         specific = Activator.CreateInstance(specType)!;
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    _roomGrain._logger.LogWarning(
+                        ex,
+                        "Failed to rehydrate definition-specific {Type} at index {Index} from wired update for item {ItemId}.",
+                        specType,
+                        index,
+                        _ctx.ObjectId
+                    );
+                }
 
                 definitionSpecifics.Add(specific);
                 index++;
@@ -337,7 +379,16 @@ public abstract class FurnitureWiredLogic(
                         specific = Activator.CreateInstance(specType)!;
                     }
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    _roomGrain._logger.LogWarning(
+                        ex,
+                        "Failed to rehydrate type-specific {Type} at index {Index} from wired update for item {ItemId}.",
+                        specType,
+                        index,
+                        _ctx.ObjectId
+                    );
+                }
 
                 typeSpecifics.Add(specific);
                 index++;
@@ -361,7 +412,11 @@ public abstract class FurnitureWiredLogic(
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to apply wired update for item {ItemId}.",
+                _ctx.ObjectId
+            );
             return false;
         }
     }
@@ -400,7 +455,16 @@ public abstract class FurnitureWiredLogic(
                     specific = _wiredData.DefinitionSpecifics[index];
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Malformed persisted DefinitionSpecifics[{Index}] ({Type}) for wired item {ItemId}; falling back to a fresh instance.",
+                    index,
+                    specType,
+                    _ctx.ObjectId
+                );
+            }
 
             specific ??= Activator.CreateInstance(specType)!;
 
@@ -430,7 +494,16 @@ public abstract class FurnitureWiredLogic(
                     specific = _wiredData.TypeSpecifics[index];
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Malformed persisted TypeSpecifics[{Index}] ({Type}) for wired item {ItemId}; falling back to a fresh instance.",
+                    index,
+                    specType,
+                    _ctx.ObjectId
+                );
+            }
 
             specific ??= Activator.CreateInstance(specType)!;
 
@@ -588,7 +661,15 @@ public abstract class FurnitureWiredLogic(
                     break;
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Malformed variable id {VariableId} for wired item {ItemId}; skipping it.",
+                    id,
+                    _ctx.ObjectId
+                );
+            }
         }
 
         return true;

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Turbo.Primitives.Action;
 using Turbo.Primitives.Furniture.Snapshots.StuffData;
 using Turbo.Primitives.Networking;
@@ -47,7 +49,15 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
                     break;
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to process wired state update ({State}) for item {ItemId}.",
+                state,
+                item.ObjectId
+            );
+        }
     }
 
     public Task ProcessFloorItemMovementAsync(
@@ -90,7 +100,15 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
                 );
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to process wired floor-item movement for item {ItemId} to tile {TileIdx}.",
+                floorItem.ObjectId,
+                tileIdx
+            );
+        }
 
         return Task.CompletedTask;
     }
@@ -138,7 +156,16 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
                 );
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to process wired wall-item movement for item {ItemId} to ({X}, {Y}).",
+                wallItem.ObjectId,
+                x,
+                y
+            );
+        }
 
         return Task.CompletedTask;
     }

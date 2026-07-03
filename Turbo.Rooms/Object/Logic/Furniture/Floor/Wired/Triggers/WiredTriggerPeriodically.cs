@@ -43,10 +43,6 @@ public class WiredTriggerPeriodically(
     {
         await base.FillInternalDataAsync(ct);
 
-        try
-        {
-            //_delayValue = WiredData.GetIntParam<int>(0); WiredData.IntParams?[0] ?? 0;
-        }
-        catch { }
+        //_delayValue = WiredData.GetIntParam<int>(0); WiredData.IntParams?[0] ?? 0;
     }
 }

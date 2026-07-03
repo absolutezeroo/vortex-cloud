@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Rooms.Enums.Wired;
@@ -53,7 +55,15 @@ public class WiredSelectorItemsInArea(
                     output.SelectedFurniIds.Add(itemId);
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Failed to read tile {TileId} floor stack while selecting items-in-area for wired item {ItemId}.",
+                    tileId,
+                    _ctx.ObjectId
+                );
+            }
         }
 
         return Task.FromResult((IWiredSelectionSet)output);

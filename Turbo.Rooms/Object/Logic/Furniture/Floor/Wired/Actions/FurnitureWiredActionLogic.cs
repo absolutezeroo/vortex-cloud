@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Rooms.Enums.Wired;
@@ -36,6 +37,13 @@ public abstract class FurnitureWiredActionLogic(
         {
             _delayMs = Math.Clamp(_wiredData.GetDefinitionParam<int>(0), 0, 20) * 500;
         }
-        catch { }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Malformed action delay param for wired item {ItemId}; keeping current default.",
+                _ctx.ObjectId
+            );
+        }
     }
 }

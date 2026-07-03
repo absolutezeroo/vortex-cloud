@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Rooms.Enums.Wired;
@@ -43,6 +44,13 @@ public class WiredAddonAnimationTime(
         {
             _animationTimeMs = Math.Clamp(_wiredData.GetIntParam<int>(0), 50, 2000);
         }
-        catch { }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Malformed animation-time param for wired item {ItemId}; keeping current default.",
+                _ctx.ObjectId
+            );
+        }
     }
 }

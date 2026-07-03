@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Rooms.Enums.Wired;
@@ -34,7 +35,14 @@ public abstract class FurnitureWiredSelectorLogic(
             _isFilter = _wiredData.GetDefinitionParam<bool>(0);
             _isInvert = _wiredData.GetDefinitionParam<bool>(1);
         }
-        catch { }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Malformed selector params for wired item {ItemId}; keeping current defaults.",
+                _ctx.ObjectId
+            );
+        }
     }
 
     public bool GetIsFilter() => _isFilter;

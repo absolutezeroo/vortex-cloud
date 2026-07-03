@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Rooms.Enums.Wired;
@@ -103,10 +105,27 @@ public class WiredSelectorItemsInNeighborhood(
                             output.SelectedFurniIds.Add(itemId);
                         }
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        _roomGrain._logger.LogWarning(
+                            ex,
+                            "Failed to read tile {TileId} floor stack while selecting furni-neighborhood around furni {FurniId} for wired item {ItemId}.",
+                            tileId,
+                            id,
+                            _ctx.ObjectId
+                        );
+                    }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Failed to select furni-neighborhood around furni {FurniId} for wired item {ItemId}.",
+                    id,
+                    _ctx.ObjectId
+                );
+            }
         }
 
         foreach (int id in input.SelectedPlayerIds)
@@ -147,10 +166,27 @@ public class WiredSelectorItemsInNeighborhood(
                             output.SelectedFurniIds.Add(itemId);
                         }
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        _roomGrain._logger.LogWarning(
+                            ex,
+                            "Failed to read tile {TileId} floor stack while selecting player-neighborhood around player {PlayerId} for wired item {ItemId}.",
+                            tileId,
+                            id,
+                            _ctx.ObjectId
+                        );
+                    }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Failed to select player-neighborhood around player {PlayerId} for wired item {ItemId}.",
+                    id,
+                    _ctx.ObjectId
+                );
+            }
         }
 
         return output;

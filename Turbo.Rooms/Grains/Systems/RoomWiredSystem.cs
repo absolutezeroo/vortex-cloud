@@ -353,7 +353,16 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
 
                 _ = FlushWiredContextAsync(ctx);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Failed to execute pending wired action {ActionIndex} for stack {StackKey} in room {RoomId}.",
+                    i,
+                    key,
+                    _roomGrain.RoomId
+                );
+            }
 
             pending.NextActionIndex = i + 1;
         }

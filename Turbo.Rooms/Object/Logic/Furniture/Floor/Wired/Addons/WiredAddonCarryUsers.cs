@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Rooms.Enums.Wired;
@@ -38,6 +40,13 @@ public class WiredAddonCarryUsers(
         {
             _carryUserType = _wiredData.GetIntParam<WiredCarryUserType>(0);
         }
-        catch { }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Malformed carry-user-type param for wired item {ItemId}; keeping current default.",
+                _ctx.ObjectId
+            );
+        }
     }
 }

@@ -19,7 +19,7 @@ Dated audit snapshots are archived under `docs/audits/` (latest:
 | Handlers | 501 | including **~300 empty stubs (~60%)** — down from 78%, still majority |
 | TODO/FIXME/HACK | 276 | scattered technical debt, down from 327 |
 | `TODO handle exceptions` | **0** | ✅ error strategy now applied |
-| Catch blocks | 167 | repo-wide re-audit found 0 silent swallows outside `Turbo.Rooms`; last 3 in `Turbo.Rooms`/`Turbo.Inventory` fixed; one tracked gap remains in `FurnitureWiredLogic.cs` (needs a wider DI change) — see below |
+| Catch blocks | 167 | repo-wide re-audit found 0 silent swallows outside `Turbo.Rooms`; last 3 in `Turbo.Rooms`/`Turbo.Inventory` fixed; the wired-subsystem gap (26 sites in `FurnitureWiredLogic.cs` and friends) is now closed too — see P5 below |
 | `EventContext` | no longer empty (`Cancel`, `CancelReason`, `CorrelationId`, `Items`); `PublishCancellableAsync` is wired and used in prod by `GroupDirectoryGrain` | interception plumbing works, but **zero production `IEventBehavior<T>` implementations** exist (only test doubles) — seam is functional, just unused |
 | Hardcoded `= false` (Rooms) | not re-audited since this snapshot | verify before relying on this line |
 
@@ -48,6 +48,26 @@ catch-block re-audit (P5).
   refuses an empty prefix (which would have dropped the whole schema).
 - A2 — duplicate `PackageVersion` entries removed from `Directory.Packages.props`
   (`FluentAssertions` pinned to the effective 8.10.0).
+- S2 — `appsettings.json` (the file that applies outside `Development`, per `launchSettings.json`
+  setting `DOTNET_ENVIRONMENT=Development` only for local `dotnet run`) no longer carries working
+  secrets: `Database:ConnectionString` and `Crypto:PublicKey`/`PrivateKey` are `CHANGE_ME_*`
+  placeholders that must be supplied via `TURBO__Turbo__*` environment variables or user-secrets.
+  `Observability:DashboardToken` (dead config — the dashboard has used per-account
+  email/password + capability auth for a while, nothing ever bound this key) was deleted.
+  `AuthenticationModule` now fails fast outside `Development` if `IpHashSecret` is unset or still
+  one of the placeholder defaults. The real RSA keypair that was committed is rotated (a fresh
+  1024-bit e=3 keypair, round-trip verified against `RsaService.Encrypt`/`Decrypt`) and now lives
+  only in `appsettings.Development.json` as the local dev default — the old key should be treated
+  as compromised (it is still in git history) and never reused.
+- R1 — the 26 bare `catch { }` in the wired subsystem (`FurnitureWiredLogic.cs` and its
+  Action/Addon/Condition/Selector/Trigger base+leaf classes, `WiredExecutionContext.cs`,
+  `RoomWiredSystem.ProcessPendingActionAsync`) are now logged. The 83-leaf DI cascade the earlier
+  P5 pass worried about turned out to be unnecessary: every one of these classes already carries a
+  `_roomGrain` field (`FurnitureWiredLogic`/`WiredContext` constructor parameter), and `RoomGrain`
+  already exposes `internal readonly ILogger<IRoomGrain> _logger`, reachable from anywhere in
+  `Turbo.Rooms`. Every site now logs via `_roomGrain._logger.LogWarning(ex, …)` with the wired
+  item/tile/furni id for diagnosis — no constructor signatures changed, no behavior changed on
+  the success path.
 
 ---
 
@@ -98,7 +118,7 @@ lives — are never gated.
 `Turbo.Main.csproj`, then make `pre-push` blocking on the full gate.
 **Done when:** gate covers the whole solution and is enforced in pre-push.
 
-### P5 — Audit catch block uniformity (re-audited repo-wide; one known gap left)
+### P5 — Audit catch block uniformity — done
 **Evidence:** repo now has 167 `catch` blocks (up from 164 as new logging/tests were added); 0
 `TODO exception`. A full repo-wide sweep (not just `Turbo.Rooms`) found the previously-listed
 `Turbo.Rooms` files (`RoomService.Floor.cs`, `RoomService.Wall.cs`, `RoomWiredSystem.cs`,
@@ -110,19 +130,17 @@ silently dropped a furniture item on load failure with `catch (Exception) { cont
 risk of furniture/inventory items vanishing with zero diagnostic trail; both now log a warning with
 the item id and owning room/player before skipping). `InventoryFurnitureLoader` gained a
 constructor-injected `ILogger<InventoryFurnitureLoader>` (was DI-constructed with no logger before).
-**Known remaining gap (out of scope for this pass):** `FurnitureWiredLogic.cs` (`Turbo.Rooms/Object/
-Logic/Furniture/Floor/Wired/`) has two fully-silent `catch { }` (lines ~314, ~340, swallowing
-`Activator.CreateInstance` failures when rehydrating wired definition/type specifics) and one
-`catch (Exception ex) { Console.WriteLine(ex); return false; }` (line ~362, bypassing structured
-logging entirely). Fixing this properly requires threading an `ILogger` through the base
-`FurnitureWiredLogic` constructor, which cascades through all 6 intermediate abstract wired-kind
-classes (Action/Addon/Condition/Selector/Trigger/Variable) and all 83 concrete wired-leaf classes
-constructed via `ActivatorUtilities.CreateInstance(sp, concrete, ctx)` in
-`RoomObjectLogicFeatureProcessor.cs` — none of them currently declare a logger parameter, so it
-can't be added at the base without touching every leaf constructor. Given wireds are already a
-tracked P0 area (see WIN63 protocol audit), this should be its own follow-up, not folded into
-general catch-block hardening.
-**Done when:** no silent swallowing outside the tracked `FurnitureWiredLogic.cs` gap above.
+**Wired-subsystem gap (R1) closed:** `FurnitureWiredLogic.cs` and its Action/Addon/Condition/
+Selector/Trigger base+leaf classes, `WiredExecutionContext.cs`, and
+`RoomWiredSystem.ProcessPendingActionAsync` had 26 fully-silent `catch { }` blocks (rehydration
+`Activator.CreateInstance` failures, malformed wired-update params, tile/furni lookups during
+selection, pending-action execution). The previously-assumed DI cascade across all 6 abstract
+wired-kind classes and 83 concrete leaf classes was unnecessary: every one of these classes already
+holds a `_roomGrain` field, and `RoomGrain` already exposes `internal readonly
+ILogger<IRoomGrain> _logger` (accessible repo-wide within `Turbo.Rooms`). All 26 sites now log via
+`_roomGrain._logger.LogWarning(ex, …)` with contextual ids (wired item, tile, furni/player id) — no
+constructor signatures changed.
+**Done when:** no silent swallowing remains. ✅
 
 ### P6 — Metrics hygiene
 **Evidence:** `performance_logs` still carries legacy client data (`flash_version`).

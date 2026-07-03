@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Rooms.Enums.Wired;
@@ -122,7 +124,15 @@ public class WiredSelectorItemsOnItem(
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Failed to select items-on-item for furni {FurniId} on wired item {ItemId}.",
+                    id,
+                    _ctx.ObjectId
+                );
+            }
         }
 
         return output;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Primitives.Action;
 using Turbo.Primitives.Furniture.Providers;
@@ -91,8 +92,14 @@ public class WiredActionMoveRotateFurni(
 
                 await ctx.ProcessFloorItemMovementAsync(floorItem, nextIdx, null, moveRotation);
             }
-            catch
+            catch (Exception ex)
             {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Failed to move/rotate furni {FurniId} via wired action on item {ItemId}.",
+                    furniId,
+                    _ctx.ObjectId
+                );
                 continue;
             }
         }
@@ -109,7 +116,14 @@ public class WiredActionMoveRotateFurni(
             _movementType = _wiredData.GetIntParam<int>(0);
             _rotationType = _wiredData.GetIntParam<int>(1);
         }
-        catch { }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Malformed move/rotate params for wired item {ItemId}; keeping current defaults.",
+                _ctx.ObjectId
+            );
+        }
     }
 
     public static Rotation GetMoveDirection(int movementType) =>
