@@ -323,11 +323,26 @@ ILogger<IRoomGrain> _logger` (accessible repo-wide within `Turbo.Rooms`). All 26
 constructor signatures changed.
 **Done when:** no silent swallowing remains. ✅
 
-### P6 — Metrics hygiene
-**Evidence:** `performance_logs` still carries legacy client data (`flash_version`).
-**Work:** decide on `performance_logs` (delete or keep). Route high-volume telemetry to OTel meter
-rather than transactional DB (see `DATA-MODEL.md` §8).
-**Done when:** transactional DB no longer stores high-volume telemetry.
+### P6 — Metrics hygiene — done
+**Evidence:** `performance_logs` carried legacy client data (`flash_version`) and every connected
+client wrote a row periodically — unbounded transactional-DB growth for data nobody queried per-row,
+only ever summed as a total.
+**Closed (2026-07-05):** per user decision, routed to OTel and dropped the table.
+`PerformanceLogMessageHandler` → `IPerformanceLogSink` is now implemented by
+`Turbo.Observability.Metrics.ClientPerformanceMetrics` (registered in place of the old
+`ChannelPerformanceLogSink`): histograms for elapsed time/memory/frame rate, a counter for GC count,
+tagged only by OS/Browser (bounded cardinality, matching `TurboMetrics`'/`ClubMetrics`' documented
+convention — never tag by player id). An `ObservableCounter` plus a plain `TotalSamples` property
+(same dual-purpose pattern as `ClubMetrics.ActiveSubscribers`) replaces the old `performance_logs`
+row-count dashboard stat — it's in-memory since process start, not a durable lifetime total, which is
+the accepted tradeoff of moving from "one DB row per event" to "aggregated metric." Removed
+`PerformanceLogEntity`, its `DbSet`, `ChannelPerformanceLogSink`, `PerformanceLogRecord`, and
+`AuditWriterService`'s DB-mapping for it. Migration `20260704221850_RemovePerformanceLogs` drops the
+table — it also folds in one small piece of unrelated pre-existing drift the model diff surfaced
+(`FurnitureDefinitionEntity.StuffDataType`'s backing enum was already `byte` in code but the schema
+was still `int`; nothing else had migrated that gap), called out with an inline comment in the
+migration rather than silently bundled.
+**Done when:** transactional DB no longer stores high-volume telemetry. ✅
 
 ### P7 — Stub debt (state honesty)
 **Evidence:** 393/498 handlers are empty (78%) + 327 TODOs. The project looks more complete than it is.
