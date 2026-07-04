@@ -34,6 +34,7 @@ internal sealed class DashboardApiService(
     IIncidentDetectionService incidentDetection,
     IInfrastructureHealthService infrastructureHealth,
     ClubMetrics clubMetrics,
+    ClientPerformanceMetrics clientPerformanceMetrics,
     IOptions<ObservabilityConfig> options
 )
 {
@@ -44,6 +45,7 @@ internal sealed class DashboardApiService(
     private readonly IIncidentDetectionService _incidentDetection = incidentDetection;
     private readonly IInfrastructureHealthService _infrastructureHealth = infrastructureHealth;
     private readonly ClubMetrics _clubMetrics = clubMetrics;
+    private readonly ClientPerformanceMetrics _clientPerformanceMetrics = clientPerformanceMetrics;
     private readonly ObservabilityConfig _config = options.Value;
 
     private static readonly TimeSpan TotalsCacheTtl = TimeSpan.FromSeconds(30);
@@ -137,7 +139,9 @@ internal sealed class DashboardApiService(
                     audit = totals.Audit,
                     ledger = totals.Ledger,
                     items = totals.Items,
-                    performance = totals.Performance,
+                    // In-memory since process start (not a DB total) — client performance telemetry
+                    // moved to OTel metrics; see ClientPerformanceMetrics.
+                    performanceSamplesSinceStart = _clientPerformanceMetrics.TotalSamples,
                     asOf = totals.AtUtc,
                 },
             };
@@ -2086,8 +2090,7 @@ internal sealed class DashboardApiService(
             DateTime.UtcNow,
             await db.AuditEvents.CountAsync(ct).ConfigureAwait(false),
             await db.EconomyLedger.CountAsync(ct).ConfigureAwait(false),
-            await db.ItemEvents.CountAsync(ct).ConfigureAwait(false),
-            await db.PerformanceLogs.CountAsync(ct).ConfigureAwait(false)
+            await db.ItemEvents.CountAsync(ct).ConfigureAwait(false)
         );
 
         _cachedTotals = fresh;
@@ -2095,13 +2098,7 @@ internal sealed class DashboardApiService(
         return fresh;
     }
 
-    private sealed record CachedTotals(
-        DateTime AtUtc,
-        long Audit,
-        long Ledger,
-        long Items,
-        long Performance
-    );
+    private sealed record CachedTotals(DateTime AtUtc, long Audit, long Ledger, long Items);
 
     private sealed record ClubSubscriptionEvent(
         DateTime OccurredAt,

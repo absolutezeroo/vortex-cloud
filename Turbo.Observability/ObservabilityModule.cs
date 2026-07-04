@@ -36,6 +36,10 @@ public sealed class ObservabilityModule : IHostPluginModule
         services.TryAddSingleton<ITurboMetrics, TurboMetrics>();
         services.TryAddSingleton<ClubMetrics>();
         services.AddHostedService<ClubMetricsRefreshService>();
+        services.TryAddSingleton<ClientPerformanceMetrics>();
+        services.TryAddSingleton<IPerformanceLogSink>(sp =>
+            sp.GetRequiredService<ClientPerformanceMetrics>()
+        );
         services.TryAddSingleton<IInfrastructureHealthService, InfrastructureHealthService>();
         services.TryAddSingleton<IIncidentDetectionService, IncidentDetectionService>();
 
@@ -49,7 +53,6 @@ public sealed class ObservabilityModule : IHostPluginModule
         services.TryAddSingleton<IAuditSink, ChannelAuditSink>();
         services.TryAddSingleton<IEconomyLedger, ChannelEconomyLedger>();
         services.TryAddSingleton<IItemForensics, ChannelItemForensics>();
-        services.TryAddSingleton<IPerformanceLogSink, ChannelPerformanceLogSink>();
         services.AddHostedService<AuditWriterService>();
 
         // Orleans resolves all registered IIncomingGrainCallFilter instances from the container.

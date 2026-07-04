@@ -12,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Audit;
-using Turbo.Database.Entities.Tracking;
 using Turbo.Observability.Configuration;
 using Turbo.Observability.Diagnostics;
 
@@ -20,10 +19,11 @@ namespace Turbo.Observability.Audit;
 
 /// <summary>
 ///     Single background consumer of the durable-observability channel. It batches records of every family
-///     (audit, economy ledger, item forensics, performance logs), routes each to its table, and persists them with one
+///     (audit, economy ledger, item forensics), routes each to its table, and persists them with one
 ///     <c>SaveChanges</c> per batch — keeping all durable writes off the gameplay hot path. A failed
 ///     flush retries a bounded number of times and then writes to a dead-letter file to avoid losing audit
-///     history.
+///     history. Client performance telemetry does not go through this pipeline — see
+///     <see cref="Metrics.ClientPerformanceMetrics" />.
 /// </summary>
 public sealed class AuditWriterService : BackgroundService
 {
@@ -270,13 +270,6 @@ public sealed class AuditWriterService : BackgroundService
                 correlationId = item.CorrelationId,
                 item = item.Event,
             },
-            PerformanceLogRecord performanceLog => new
-            {
-                kind = nameof(PerformanceLogRecord),
-                occurredAt = performanceLog.OccurredAt,
-                correlationId = performanceLog.CorrelationId,
-                performanceLog = performanceLog.Event,
-            },
             _ => throw new ArgumentOutOfRangeException(nameof(record), record.GetType().Name, null),
         };
     }
@@ -297,7 +290,6 @@ public sealed class AuditWriterService : BackgroundService
             AuditRecord audit => MapAudit(audit),
             LedgerRecord ledger => MapLedger(ledger),
             ItemRecord item => MapItem(item),
-            PerformanceLogRecord performanceLog => MapPerformanceLog(performanceLog),
             _ => throw new ArgumentOutOfRangeException(
                 nameof(record),
                 record.GetType().Name,
@@ -354,23 +346,6 @@ public sealed class AuditWriterService : BackgroundService
             RoomId = record.Event.RoomId,
             CorrelationId = record.CorrelationId,
             Data = record.Event.Data,
-        };
-    }
-
-    private static PerformanceLogEntity MapPerformanceLog(PerformanceLogRecord record)
-    {
-        return new PerformanceLogEntity
-        {
-            ElapsedTime = record.Event.ElapsedTime,
-            UserAgent = record.Event.UserAgent,
-            FlashVersion = record.Event.FlashVersion,
-            OS = record.Event.OS,
-            Browser = record.Event.Browser,
-            IsDebugger = record.Event.IsDebugger,
-            MemoryUsage = record.Event.MemoryUsage,
-            GarbageCollections = record.Event.GarbageCollections,
-            AverageFrameRate = record.Event.AverageFrameRate,
-            IPAddress = record.Event.IPAddress,
         };
     }
 }

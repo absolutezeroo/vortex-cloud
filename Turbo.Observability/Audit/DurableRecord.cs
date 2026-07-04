@@ -24,9 +24,3 @@ internal sealed record ItemRecord(
     DateTime OccurredAt,
     string? CorrelationId
 ) : DurableRecord(OccurredAt, CorrelationId);
-
-internal sealed record PerformanceLogRecord(
-    PerformanceLogEvent Event,
-    DateTime OccurredAt,
-    string? CorrelationId
-) : DurableRecord(OccurredAt, CorrelationId);

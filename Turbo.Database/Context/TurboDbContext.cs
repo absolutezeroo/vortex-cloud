@@ -12,7 +12,6 @@ using Turbo.Database.Entities.Pets;
 using Turbo.Database.Entities.Players;
 using Turbo.Database.Entities.Room;
 using Turbo.Database.Entities.Security;
-using Turbo.Database.Entities.Tracking;
 using Turbo.Primitives.Catalog;
 
 namespace Turbo.Database.Context;
@@ -83,8 +82,6 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
 
     public DbSet<PlayerChatStyleEntity> PlayerChatStyles { get; init; } = null!;
     public DbSet<PlayerChatStyleOwnedEntity> PlayerOwnedChatStyles { get; init; } = null!;
-
-    public DbSet<PerformanceLogEntity> PerformanceLogs { get; init; } = null!;
 
     public DbSet<PlayerFavoriteRoomsEntity> PlayerFavouriteRooms { get; init; } = null!;
 
