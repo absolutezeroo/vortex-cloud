@@ -34,8 +34,9 @@ public class RoomDirectoryGrain(
     public override Task OnActivateAsync(CancellationToken ct)
     {
         this.RegisterGrainTimer<object?>(
-            async _ => await CheckRoomsAsync(ct),
-            null,
+            static async (self, tickCt) =>
+                await ((RoomDirectoryGrain)self!).CheckRoomsAsync(tickCt),
+            this,
             TimeSpan.FromMilliseconds(_roomConfig.RoomCheckMs),
             TimeSpan.FromMilliseconds(_roomConfig.RoomCheckMs)
         );

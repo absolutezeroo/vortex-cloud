@@ -33,7 +33,8 @@ public sealed class MarketplaceSearchGrain(IDbContextFactory<TurboDbContext> dbC
         DateTime now = DateTime.UtcNow;
 
         IQueryable<MarketplaceOfferEntity> query = dbCtx
-            .MarketplaceOffers.Include(o => o.FurnitureDefinitionEntity)
+            .MarketplaceOffers.AsNoTracking()
+            .Include(o => o.FurnitureDefinitionEntity)
             .Where(o =>
                 o.State == MarketplaceOfferState.Active
                 && o.ExpiresAt > now
@@ -96,16 +97,17 @@ public sealed class MarketplaceSearchGrain(IDbContextFactory<TurboDbContext> dbC
 
         DateTime now = DateTime.UtcNow;
 
-        List<MarketplaceOfferEntity> offers = await dbCtx
-            .MarketplaceOffers.Where(o =>
+        IQueryable<MarketplaceOfferEntity> matching = dbCtx
+            .MarketplaceOffers.AsNoTracking()
+            .Where(o =>
                 o.SpriteId == spriteId
                 && o.State == MarketplaceOfferState.Active
                 && o.ExpiresAt > now
-            )
-            .ToListAsync(ct)
-            .ConfigureAwait(false);
+            );
 
-        if (offers.Count == 0)
+        int offerCount = await matching.CountAsync(ct).ConfigureAwait(false);
+
+        if (offerCount == 0)
         {
             return new MarketplaceItemStatsSnapshot
             {
@@ -118,15 +120,15 @@ public sealed class MarketplaceSearchGrain(IDbContextFactory<TurboDbContext> dbC
             };
         }
 
-        int avgPrice = (int)offers.Average(o => o.Price);
-        int minPrice = offers.Min(o => o.Price);
-        int maxPrice = offers.Max(o => o.Price);
+        int avgPrice = (int)await matching.AverageAsync(o => o.Price, ct).ConfigureAwait(false);
+        int minPrice = await matching.MinAsync(o => o.Price, ct).ConfigureAwait(false);
+        int maxPrice = await matching.MaxAsync(o => o.Price, ct).ConfigureAwait(false);
 
         return new MarketplaceItemStatsSnapshot
         {
             SpriteId = spriteId,
             AvgPrice = avgPrice,
-            OfferCount = offers.Count,
+            OfferCount = offerCount,
             History = [],
             MinSellValue = minPrice,
             MaxSellValue = maxPrice,

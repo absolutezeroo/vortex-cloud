@@ -554,9 +554,9 @@ internal sealed class RentableSpaceGrain(
             delay = TimeSpan.FromMilliseconds(1);
         }
 
-        _expiryTimer = this.RegisterGrainTimer(
-            _ => ExpireAsync(CancellationToken.None),
-            (object?)null,
+        _expiryTimer = this.RegisterGrainTimer<object?>(
+            static (self, tickCt) => ((RentableSpaceGrain)self!).ExpireAsync(tickCt),
+            this,
             delay,
             Timeout.InfiniteTimeSpan
         );

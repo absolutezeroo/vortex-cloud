@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Turbo.Logging;
+using Turbo.Logging.Extensions;
 using Turbo.Primitives;
 using Turbo.Primitives.Messages.Outgoing.Room.Engine;
 using Turbo.Primitives.Rooms.Enums;
@@ -19,6 +20,11 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
 {
     private readonly RoomGrain _roomGrain = roomGrain;
 
+    // Reused across ticks — RoomAvatarTickSystem is one instance per room grain, which is
+    // single-threaded, so clearing and refilling this per tick is safe and avoids a per-tick
+    // allocation proportional to room count × tick rate.
+    private readonly List<RoomAvatarSnapshot> _dirtySnapshots = [];
+
     public async Task ProcessAvatarsAsync(long now, CancellationToken ct)
     {
         if (now < _roomGrain._state.NextAvatarBoundaryMs)
@@ -31,7 +37,7 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
             _roomGrain._state.NextAvatarBoundaryMs += _roomGrain._roomConfig.AvatarTickMs;
         }
 
-        List<RoomAvatarSnapshot> dirtySnapshots = new();
+        _dirtySnapshots.Clear();
 
         foreach (IRoomAvatar avatar in _roomGrain._state.AvatarsByObjectId.Values)
         {
@@ -63,7 +69,7 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
                     continue;
                 }
 
-                dirtySnapshots.Add(avatar.GetSnapshot());
+                _dirtySnapshots.Add(avatar.GetSnapshot());
             }
             catch (Exception ex)
             {
@@ -76,14 +82,20 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
             }
         }
 
-        if (dirtySnapshots.Count == 0)
+        if (_dirtySnapshots.Count == 0)
         {
             return;
         }
 
-        _ = _roomGrain.SendComposerToRoomAsync(
-            new UserUpdateMessageComposer { Avatars = [.. dirtySnapshots] }
-        );
+        _roomGrain
+            .SendComposerToRoomAsync(
+                new UserUpdateMessageComposer { Avatars = [.. _dirtySnapshots] }
+            )
+            .LogAndForget(
+                _roomGrain._logger,
+                "Failed to publish avatar tick update for room {RoomId}",
+                _roomGrain.RoomId
+            );
     }
 
     private async Task ProcessAvatarAsync(IRoomAvatar avatar, long now, CancellationToken ct)

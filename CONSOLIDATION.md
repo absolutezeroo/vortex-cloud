@@ -123,6 +123,44 @@ and `Turbo.Players.Configuration.PlayerPresenceConfig`.
   for concurrent invocation and batch sizes here are small, so parallelizing risked a correctness
   regression for negligible gain.
 
+**Priority 3 items closed (2026-07-04, session 2):**
+- D4 — `RoomAvatarTickSystem` reuses one instance-field `List<RoomAvatarSnapshot>` (cleared per
+  tick) instead of allocating a fresh list every tick per room; its room-composer send was also
+  routed through the shared `LogAndForget` (was a bare `_ =` discard, same O3 pattern fixed
+  elsewhere this session).
+- O7 — verified already fixed, no change needed: `InventoryFurniModule.LoadFurnitureAsync` calls
+  its own module-local `AddFurnitureAsync` (state-only, no notification), not
+  `InventoryGrain`'s public `AddFurnitureAsync` (which does call `presence.OnFurnitureAddedAsync`).
+  Confirmed `OnFurnitureAddedAsync` has no other call path from hydration.
+- O8 — `RoomDirectoryGrain.OnActivateAsync` and `RentableSpaceGrain.ScheduleExpiryTimer` now use
+  the `RegisterGrainTimer<TState>(Func<TState, CancellationToken, Task>, ...)` overload (mirroring
+  `RoomPersistenceGrain`'s existing correct usage) instead of the state-only overload that forced
+  them to capture the stale activation `ct` / pass `CancellationToken.None`. The timer now gets a
+  cancellation token tied to its own tick, not the grain's activation.
+- D1 — `MarketplaceSearchGrain`: added `AsNoTracking()` to both queries; `GetItemStatsAsync` no
+  longer materializes every matching offer row — `CountAsync`/`AverageAsync`/`MinAsync`/`MaxAsync`
+  run as four scalar SQL aggregates instead. `GetOffersAsync`'s per-`SpriteId` grouping (avg price,
+  cheapest full row) was deliberately left client-side: pushing "cheapest row per group" to SQL via
+  `GroupBy` needs a subquery/window-function shape that I could not validate against a live MySQL
+  instance in this session (the configured connection string is a placeholder) — shipping an
+  unverified query-translation rewrite for a player-facing search endpoint was judged not worth the
+  risk versus the `AsNoTracking()` win already taken.
+- D2 — `NavigatorProvider.BuildRoomQuery`/`ToRoomInfoSnapshots`: the `Select` into
+  `RoomInfoSnapshot` now happens *before* `ToListAsync` (translated by EF into a SQL projection
+  with joins only for the `PlayerEntity.Name`/`GroupEntity.Name`/`GroupEntity.Badge` fields
+  actually used), replacing the previous `Include(PlayerEntity).Include(GroupEntity)` + full-entity
+  `ToListAsync` + client-side `Select`. All six search methods' existing `.Where()` filters were
+  left untouched (still filter on raw entity columns, unchanged risk profile) — only the terminal
+  projection changed. No paging cap was added: the audit's suggested cap needs a policy decision
+  (what size, and whether the client protocol expects a specific page count) that wasn't mine to
+  make unilaterally.
+- H5 — evaluated, deferred. Removing per-packet allocations means changing `ISerializer`'s
+  contract (currently returns a buffer that gets `.ToArray()`'d), `IRc4Engine.Process` (currently
+  allocates a new array instead of transforming in place), and `WebSocketSessionContext`'s per-send
+  `ArrayBufferWriter` — a change to interfaces used by 284+ serializers, with no byte-level
+  round-trip test coverage and no live client to verify against. Judged too broad and unverifiable
+  to attempt safely in this session; left as pure follow-up work.
+
 ---
 
 ## Prioritized backlog

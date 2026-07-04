@@ -214,32 +214,23 @@ public sealed class NavigatorProvider(
 
     private static IQueryable<Database.Entities.Room.RoomEntity> BuildRoomQuery(
         TurboDbContext dbCtx
-    ) =>
-        dbCtx
-            .Rooms.AsNoTracking()
-            .Where(x => x.DeletedAt == null)
-            .Include(x => x.PlayerEntity)
-            .Include(x => x.GroupEntity);
+    ) => dbCtx.Rooms.AsNoTracking().Where(x => x.DeletedAt == null);
 }
 
 file static class RoomQueryExtensions
 {
-    public static async Task<List<RoomInfoSnapshot>> ToRoomInfoSnapshots(
+    public static Task<List<RoomInfoSnapshot>> ToRoomInfoSnapshots(
         this IQueryable<Database.Entities.Room.RoomEntity> query,
         CancellationToken ct
-    )
-    {
-        List<RoomEntity> entities = await query.ToListAsync(ct).ConfigureAwait(false);
-
-        return
-        [
-            .. entities.Select(x => new RoomInfoSnapshot
+    ) =>
+        query
+            .Select(x => new RoomInfoSnapshot
             {
                 RoomId = x.Id,
                 Name = x.Name ?? string.Empty,
                 Description = x.Description ?? string.Empty,
                 OwnerId = (PlayerId)x.PlayerEntityId,
-                OwnerName = x.PlayerEntity?.Name ?? string.Empty,
+                OwnerName = x.PlayerEntity != null ? x.PlayerEntity.Name : string.Empty,
                 Population = x.UsersNow,
                 DoorMode = x.DoorMode,
                 PlayersMax = x.PlayersMax,
@@ -247,15 +238,14 @@ file static class RoomQueryExtensions
                 Score = 0,
                 Ranking = 0,
                 CategoryId = x.NavigatorCategoryEntityId ?? -1,
-                Tags = [],
+                Tags = ImmutableArray<string>.Empty,
                 AllowBlocking = x.AllowBlocking,
                 AllowPets = x.AllowPets,
                 AllowPetsEat = x.AllowPetsEat,
                 GroupId = x.GroupEntityId,
-                GroupName = x.GroupEntity?.Name,
-                GroupBadge = x.GroupEntity?.Badge,
+                GroupName = x.GroupEntity != null ? x.GroupEntity.Name : null,
+                GroupBadge = x.GroupEntity != null ? x.GroupEntity.Badge : null,
                 LastUpdatedUtc = DateTime.UtcNow,
-            }),
-        ];
-    }
+            })
+            .ToListAsync(ct);
 }
