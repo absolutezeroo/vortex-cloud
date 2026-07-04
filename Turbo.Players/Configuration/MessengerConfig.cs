@@ -6,4 +6,5 @@ public sealed class MessengerConfig
 
     public int MaxFriends { get; init; } = 300;
     public int MessageHistoryLimit { get; init; } = 50;
+    public int DeliveredFlushIntervalMs { get; init; } = 10000;
 }

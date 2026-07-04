@@ -876,11 +876,15 @@ internal sealed class MessengerGrain(
     {
         await HydrateAsync(ct);
 
+        TimeSpan flushInterval = TimeSpan.FromMilliseconds(
+            _messengerConfig.DeliveredFlushIntervalMs
+        );
+
         this.RegisterGrainTimer<object?>(
             async (_, ct) => await FlushDeliveredMessagesAsync(ct),
             null,
-            TimeSpan.FromSeconds(10),
-            TimeSpan.FromSeconds(10)
+            flushInterval,
+            flushInterval
         );
     }
 

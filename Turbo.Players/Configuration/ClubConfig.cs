@@ -26,4 +26,7 @@ public sealed class ClubConfig
 
     /// <summary>Percentage of credits spent this period returned as the Club kickback (payday).</summary>
     public int KickbackPercent { get; init; } = 10;
+
+    /// <summary>Interval between hourly maintenance runs (expiry, gift tokens, kickback payout).</summary>
+    public int MaintenanceIntervalMs { get; init; } = 3_600_000;
 }

@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.PacketHandlers.Configuration;
 using Turbo.Primitives.FriendList.Grains;
 using Turbo.Primitives.Messages.Incoming.FriendList;
 using Turbo.Primitives.Messages.Outgoing.FriendList;
@@ -13,11 +15,13 @@ using Turbo.Primitives.Snapshots.FriendList;
 
 namespace Turbo.PacketHandlers.FriendList;
 
-public class HabboSearchMessageHandler(IGrainFactory grainFactory)
-    : IMessageHandler<HabboSearchMessage>
+public class HabboSearchMessageHandler(
+    IGrainFactory grainFactory,
+    IOptions<FriendListConfig> friendListConfig
+) : IMessageHandler<HabboSearchMessage>
 {
-    private const int SearchLimit = 30;
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly FriendListConfig _friendListConfig = friendListConfig.Value;
 
     public async ValueTask HandleAsync(
         HabboSearchMessage message,
@@ -37,7 +41,7 @@ public class HabboSearchMessageHandler(IGrainFactory grainFactory)
             grain.GetFriendSearchResultsAsync(message.SearchQuery, ct);
         Task<List<MessengerSearchResultSnapshot>> globalResultsTask = directory.SearchPlayersAsync(
             message.SearchQuery,
-            SearchLimit,
+            _friendListConfig.SearchLimit,
             ct
         );
 
@@ -54,7 +58,7 @@ public class HabboSearchMessageHandler(IGrainFactory grainFactory)
             .Where(r =>
                 !friendIds.Contains(r.PlayerId.Value) && r.PlayerId.Value != ctx.PlayerId.Value
             )
-            .Take(SearchLimit)
+            .Take(_friendListConfig.SearchLimit)
             .ToList();
 
         await ctx.SendComposerAsync(

@@ -63,7 +63,7 @@ Epic 5 for friends = handler wiring only, zero schema.
 
 ---
 
-## 2. Groups / Guilds — TO CREATE
+## 2. Groups / Guilds — IMPLEMENTED (see `Turbo.Database/Migrations/20260619035829_AddGroups.cs` onward)
 
 Habbo-style group model. **Decision**: forum config is separated from identity (1:1 table), not columns on
 `groups`.
@@ -155,21 +155,23 @@ public enum GroupForumPermission { Members = 0, Admins = 1, Owner = 2, Everyone 
 
 ---
 
-## 3. Rentable Space — TO CREATE (official WIN63 feature, verified)
+## 3. Rentable Space — IMPLEMENTED (migration `20260620191212`, Epic 4)
 
 Furniture type `furniture_rentable_space`. The space **is a furniture item**. Status packet:
 `rented, canRent, canRentErrorCode, renterId, renterName, timeRemaining, price`.
 Packets: `rentSpace/cancelRent/getRentableSpaceStatus(furniId)`.
 
-**Locked decisions:** terms (price/duration/currency/HC) live on the **type** (`RentableSpaceTermsEntity`,
-not `FurnitureDefinitionEntity`) · state = **one row per instance, in-place updates** (MySQL does not
+**Locked decisions:** terms (price/duration/currency/HC) live on the **placed instance**
+(`RentableSpaceTermsEntity`, 1:1 with `FurnitureEntity`, not `FurnitureDefinitionEntity`) — the room
+owner reconfigures price/duration per placed space, so terms cannot be shared across all instances
+of the same furniture type · state = **one row per instance, in-place updates** (MySQL does not
 support filtered uniqueness) · history is **free via `economy_ledger`** (rental itself is a ledger entry).
 
-### 3.1 `rentable_space_terms` — `RentableSpaceTermsEntity` (1:1 with definition)
+### 3.1 `room_rentable_space_terms` — `RentableSpaceTermsEntity` (1:1 with placed instance)
 
 | Column | Type | Null | Index |
 |---|---|---|---|
-| `furniture_definition_id` | int FK definitions | no | unique |
+| `furniture_id` | int FK furniture | no | unique |
 | `price` | int | no | — |
 | `currency_type_id` | int FK currency_types | no | — |
 | `rent_duration_seconds` | int | no | — |
@@ -212,7 +214,7 @@ via `renter_player_id` index) · cancellation by furniture owner **or** staff (`
 
 ---
 
-## 4. Pets — TO CREATE (confirmed WIN63 feature: `PetInfoData`, breeding, stats)
+## 4. Pets — IMPLEMENTED (see `Turbo.Database/Migrations/20260620231004_AddPets.cs` onward)
 
 Standard Habbo pet model. A pet belongs to a player, lives in a room or in inventory, carries stats.
 
@@ -275,26 +277,34 @@ Effect values are server-owned (obfuscated client does not expose them, same as 
 
 | Column | Type | Null | Index | Meaning |
 |---|---|---|---|---|
-| `furniture_definition_id` | int FK definitions | no | unique | food item |
-| `pet_type` | int | no | index | species that can consume |
+| `furniture_definition_id` | int FK definitions | no | unique with `pet_type` | food item |
+| `pet_type` | int | no | unique with `furniture_definition_id` | species that can consume |
 | `nutrition` | int | no | — | nutrition restored on consume |
+| `energy` | int | no | — | energy restored on consume |
+| `max_uses` | int | no | — | uses before the food item is spent |
 
 ```csharp
 [Table("pet_food")]
-[Index(nameof(FurnitureDefinitionEntityId), IsUnique = true)]
-[Index(nameof(PetType))]
+[Index(nameof(FurnitureDefinitionEntityId), nameof(PetType), IsUnique = true)]
 public class PetFoodEntity : TurboEntity
 {
     [Column("furniture_definition_id")] public required int FurnitureDefinitionEntityId { get; set; }
     [Column("pet_type")] public required int PetType { get; set; }
     [Column("nutrition")] public required int Nutrition { get; set; }
+    [Column("energy")] public required int Energy { get; set; }
+    [Column("max_uses")] public required int MaxUses { get; set; }
 
-    [ForeignKey(nameof(FurnitureDefinitionEntityId))] public required FurnitureDefinitionEntity FurnitureDefinition { get; set; }
+    [ForeignKey(nameof(FurnitureDefinitionEntityId))] public required FurnitureDefinitionEntity FurnitureDefinitionEntity { get; set; }
 }
 ```
 
-> Feeding flow (grain): pet moves to food, eats, `pet.nutrition += pet_food.nutrition`, and
-> food item is **consumed** (decrement `extra_data` or remove furni).
+> The unique index is on `(furniture_definition_id, pet_type)`, not on `furniture_definition_id`
+> alone: the same furniture item can be configured as valid food for more than one pet type, each
+> with its own nutrition/energy/max-uses tuning.
+>
+> Feeding flow (grain): pet moves to food, eats, `pet.nutrition += pet_food.nutrition`,
+> `pet.energy += pet_food.energy`, and the food item is **consumed** (decrement `max_uses` via
+> `extra_data` or remove the furni once exhausted).
 
 ### 4.2 Levels & commands (implemented via `PETS-DESIGN.md`)
 

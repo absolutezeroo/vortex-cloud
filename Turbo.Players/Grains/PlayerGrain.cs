@@ -353,11 +353,13 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
     {
         await HydrateAsync(ct);
 
+        TimeSpan maintenanceInterval = TimeSpan.FromMilliseconds(_clubConfig.MaintenanceIntervalMs);
+
         this.RegisterGrainTimer<object?>(
             async (_, ct) => await RunMaintenanceAsync(ct),
             null,
-            TimeSpan.FromHours(1),
-            TimeSpan.FromHours(1)
+            maintenanceInterval,
+            maintenanceInterval
         );
     }
 

@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Orleans;
 using Turbo.Logging.Extensions;
 using Turbo.Messages.Registry;
+using Turbo.PacketHandlers.Configuration;
 using Turbo.Primitives.FriendList.Grains;
 using Turbo.Primitives.Messages.Incoming.FriendList;
 using Turbo.Primitives.Messages.Outgoing.FriendList;
@@ -16,16 +18,13 @@ namespace Turbo.PacketHandlers.FriendList;
 
 public class MessengerInitMessageHandler(
     IGrainFactory grainFactory,
-    ILogger<MessengerInitMessageHandler> logger
+    ILogger<MessengerInitMessageHandler> logger,
+    IOptions<FriendListConfig> friendListConfig
 ) : IMessageHandler<MessengerInitMessage>
 {
-    private const int FragmentSize = 500;
-    private const int UserFriendLimit = 300;
-    private const int NormalFriendLimit = 300;
-    private const int ExtendedFriendLimit = 2000;
-
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ILogger<MessengerInitMessageHandler> _logger = logger;
+    private readonly FriendListConfig _friendListConfig = friendListConfig.Value;
 
     public async ValueTask HandleAsync(
         MessengerInitMessage message,
@@ -49,23 +48,23 @@ public class MessengerInitMessageHandler(
         await ctx.SendComposerAsync(
                 new MessengerInitMessageComposer
                 {
-                    UserFriendLimit = UserFriendLimit,
-                    NormalFriendLimit = NormalFriendLimit,
-                    ExtendedFriendLimit = ExtendedFriendLimit,
+                    UserFriendLimit = _friendListConfig.UserFriendLimit,
+                    NormalFriendLimit = _friendListConfig.NormalFriendLimit,
+                    ExtendedFriendLimit = _friendListConfig.ExtendedFriendLimit,
                     FriendCategories = categories,
                 },
                 ct
             )
             .ConfigureAwait(false);
 
-        // Fragment the friend list (max 500 per packet)
-        int totalFragments = Math.Max(1, (int)Math.Ceiling(friends.Count / (double)FragmentSize));
+        int fragmentSize = _friendListConfig.FragmentSize;
+        int totalFragments = Math.Max(1, (int)Math.Ceiling(friends.Count / (double)fragmentSize));
 
         for (int i = 0; i < totalFragments; i++)
         {
             List<MessengerFriendSnapshot> fragment = friends.GetRange(
-                i * FragmentSize,
-                Math.Min(FragmentSize, friends.Count - i * FragmentSize)
+                i * fragmentSize,
+                Math.Min(fragmentSize, friends.Count - i * fragmentSize)
             );
 
             await ctx.SendComposerAsync(

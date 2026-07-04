@@ -161,6 +161,40 @@ and `Turbo.Players.Configuration.PlayerPresenceConfig`.
   round-trip test coverage and no live client to verify against. Judged too broad and unverifiable
   to attempt safely in this session; left as pure follow-up work.
 
+**Priority 4 items closed (2026-07-04, session 3):**
+- O10/H3 — `GroupDirectoryGrain`'s `50`/`20` forum page-size cap and `GroupForumGrain`'s identical
+  `NormalizeAmount` cap now bind from `GroupConfig.MaxForumPageSize`/`DefaultForumPageSize`
+  (`GroupForumGrain` gained `IOptions<GroupConfig>`, matching `GroupDirectoryGrain`'s existing
+  pattern). `PlayerInventoryModule`'s 100-item fragment size, `MessengerGrain`'s 10s delivered-flush
+  interval, and `PlayerGrain`'s 1h club-maintenance interval now bind from
+  `PlayerPresenceConfig`/`MessengerConfig`/`ClubConfig` respectively (all already-injected config
+  objects, just unused for these specific constants). Handler side: `MessengerInitMessageHandler`'s
+  `FragmentSize`/`UserFriendLimit`/`NormalFriendLimit`/`ExtendedFriendLimit` and
+  `HabboSearchMessageHandler`'s `SearchLimit` now bind from a new `FriendListConfig`
+  (`Turbo:FriendList`, matching the section AGENTS.md already claimed existed per C3) instead of
+  being hardcoded — this is the first real implementation of that documented pattern.
+- A4 — Orleans silo endpoint (advertised IP, silo port, gateway port) now binds from
+  `Turbo:Orleans` via a new `OrleansHostConfig`, defaults unchanged. Clustering/storage/stream
+  *providers* were deliberately left as `UseLocalhostClustering()` + in-memory: picking a real
+  production provider (ADO.NET clustering, Redis/SQL storage, etc.) is a deployment-target decision
+  I can't make unilaterally without knowing the target infrastructure, and guessing wrong means
+  shipping untested provider wiring. Instead, a startup warning now prints to stderr outside
+  Development, making the single-node/in-memory limitation visible instead of a silent trap.
+- H8 — the five near-identical navigator search handlers (`GuildBaseSearchMessageHandler`,
+  `RoomAdSearchMessageHandler`, `GetOfficialRoomsMessageHandler`, `MyFriendsRoomsSearchMessageHandler`,
+  `MyRoomRightsSearchMessageHandler`) now delegate to one shared
+  `NavigatorSearchHandlerHelper.SendSimpleSearchResultsAsync`; each handler is now just its search
+  code constant plus a one-line `HandleAsync`.
+- Doc reconciliation — `AGENTS.md`'s "Foundational context" now says SDK `10.0`/`net10.0`/SuperSocket
+  `2.1.0` (was `9.0.310`/`net9.0`/`2.0.2`; Orleans/EF/Pomelo versions were already accurate).
+  `DATA-MODEL.md`: §2 (Groups), §3 (Rentable Space), §4 (Pets) were still headed "TO CREATE" despite
+  being fully implemented with migrations — relabeled "IMPLEMENTED" with a migration pointer each.
+  §3.1 now documents `room_rentable_space_terms` keyed on the *placed instance* (`furniture_id`),
+  matching `RentableSpaceTermsEntity.cs`, not the type-level key the doc previously claimed. §4.1
+  now documents `pet_food`'s actual composite unique index (`furniture_definition_id`, `pet_type`)
+  and its `energy`/`max_uses` columns, matching `PetFoodEntity.cs`. §5 (Bots) was already correctly
+  labeled "TO CREATE" — verified no `BotEntity`/migration exists, left as-is.
+
 ---
 
 ## Prioritized backlog

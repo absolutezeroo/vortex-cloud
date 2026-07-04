@@ -370,7 +370,10 @@ internal sealed class GroupDirectoryGrain(
     {
         await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        int take = amount is <= 0 or > 50 ? 20 : amount;
+        int take =
+            (amount <= 0 || amount > _groupConfig.MaxForumPageSize)
+                ? _groupConfig.DefaultForumPageSize
+                : amount;
         int skip = Math.Max(startIndex, 0);
 
         IQueryable<GroupEntity> enabledForums = dbCtx

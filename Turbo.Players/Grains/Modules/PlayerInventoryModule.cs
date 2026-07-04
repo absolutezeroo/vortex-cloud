@@ -27,7 +27,7 @@ internal sealed class PlayerInventoryModule(PlayerPresenceGrain presenceGrain)
         ImmutableArray<FurnitureItemSnapshot> items = await inventoryGrain.GetAllItemSnapshotsAsync(
             ct
         );
-        int furniPerFragment = 100;
+        int furniPerFragment = _presenceGrain._config.FurniInventoryFragmentSize;
 
         int totalFragments = (int)
             Math.Max(1, Math.Ceiling((double)items.Length / furniPerFragment));

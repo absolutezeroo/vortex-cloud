@@ -25,7 +25,7 @@ internal sealed partial class PlayerPresenceGrain
     internal readonly IEventPublisher _events;
     internal readonly IGrainFactory _grainFactory;
     private readonly ILogger<PlayerPresenceGrain> _logger;
-    private readonly PlayerPresenceConfig _config;
+    internal readonly PlayerPresenceConfig _config;
 
     private readonly PlayerInventoryModule _inventoryModule;
 

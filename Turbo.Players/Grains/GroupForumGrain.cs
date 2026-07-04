@@ -5,10 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Orleans;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Groups;
 using Turbo.Database.Entities.Players;
+using Turbo.Players.Configuration;
 using Turbo.Primitives.Events;
 using Turbo.Primitives.Groups.Enums;
 using Turbo.Primitives.Groups.Grains;
@@ -20,10 +22,12 @@ namespace Turbo.Players.Grains;
 internal sealed class GroupForumGrain(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
     IEventPublisher events,
-    ILogger<GroupForumGrain> logger
+    ILogger<GroupForumGrain> logger,
+    IOptions<GroupConfig> groupConfig
 ) : Grain, IGroupForumGrain
 {
     private readonly ILogger<GroupForumGrain> _logger = logger;
+    private readonly GroupConfig _groupConfig = groupConfig.Value;
 
     private const string DeniedError = "You are not allowed to do that.";
     private const string DisabledError = "This forum is disabled.";
@@ -719,7 +723,10 @@ internal sealed class GroupForumGrain(
     private static int SecondsAgo(DateTime then, DateTime now) =>
         (int)Math.Max(0, (now - then).TotalSeconds);
 
-    private static int NormalizeAmount(int amount) => amount is <= 0 or > 50 ? 20 : amount;
+    private int NormalizeAmount(int amount) =>
+        (amount <= 0 || amount > _groupConfig.MaxForumPageSize)
+            ? _groupConfig.DefaultForumPageSize
+            : amount;
 
     private static GroupForumPermission ClampPermission(int value) =>
         value is >= 0 and <= 3 ? (GroupForumPermission)value : GroupForumPermission.Members;

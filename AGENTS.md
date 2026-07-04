@@ -5,12 +5,12 @@ Tool-specific instruction files should reference this file instead of duplicatin
 
 ## Foundational context
 This repository targets the following core stack. When coding, prefer patterns compatible with these versions:
-- .NET SDK `9.0.310` (from `global.json`)
-- C# / BCL `net9.0`
+- .NET SDK `10.0` (from `global.json`, `rollForward: latestFeature`)
+- C# / BCL `net10.0`
 - Orleans `9.2.1`
 - EF Core `9.0.8`
 - Pomelo MySQL provider `9.0.0`
-- SuperSocket `2.0.2`
+- SuperSocket `2.1.0`
 
 ## Skills activation
 Activate the relevant skill checklist before editing code in that domain:
