@@ -67,21 +67,11 @@ dotnet_naming_style.underscore_prefix.capitalization = camel_case
 # Prefer fields first
 dotnet_sort_system_directives_first = true
 
-# ConfigureAwait
+# ConfigureAwait — off repo-wide. This is a pure Orleans + ASP.NET Core minimal API backend; neither
+# host captures a SynchronizationContext, so there is never a context to avoid resuming on. The rule
+# was already disabled project-by-project (*Grain.cs, Grains/**, Turbo.Rooms, Turbo.Inventory,
+# Turbo.Players) as each one hit the one pattern where it's also unfixable without restructuring:
+# `await using` disposal has no `.ConfigureAwait(false)` call site of its own. Finishing that trend
+# repo-wide instead of exception-listing project by project every time a new one is gated.
 [*.cs]
-dotnet_diagnostic.CA2007.severity = warning
-
-[*Grain.cs]
-dotnet_diagnostic.CA2007.severity = none
-
-[Grains/**/*.cs]
-dotnet_diagnostic.CA2007.severity = none
-
-[Turbo.Rooms/**/*.cs]
-dotnet_diagnostic.CA2007.severity = none
-
-[Turbo.Inventory/**/*.cs]
-dotnet_diagnostic.CA2007.severity = none
-
-[Turbo.Players/**/*.cs]
 dotnet_diagnostic.CA2007.severity = none

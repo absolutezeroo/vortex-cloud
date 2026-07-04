@@ -25,7 +25,7 @@ public sealed class WebApiEndpointsTests
         HttpResponseMessage response = await factory.Client.GetAsync("/api/public/info/hello");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        (await ReadJson(response)).GetProperty("status").GetString().Should().Be("ok");
+        (await ReadJsonAsync(response)).GetProperty("status").GetString().Should().Be("ok");
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public sealed class WebApiEndpointsTests
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        (await ReadJson(response)).GetProperty("error").GetString().Should().NotBeNull();
+        (await ReadJsonAsync(response)).GetProperty("error").GetString().Should().NotBeNull();
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public sealed class WebApiEndpointsTests
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        (await ReadJson(response))
+        (await ReadJsonAsync(response))
             .GetProperty("error")
             .GetString()
             .Should()
@@ -101,7 +101,7 @@ public sealed class WebApiEndpointsTests
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        (await ReadJson(response)).GetProperty("id").GetInt32().Should().BeGreaterThan(0);
+        (await ReadJsonAsync(response)).GetProperty("id").GetInt32().Should().BeGreaterThan(0);
     }
 
     [Fact]
@@ -123,7 +123,7 @@ public sealed class WebApiEndpointsTests
         HttpResponseMessage response = await client.GetAsync("/api/user/avatars");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        JsonElement payload = await ReadJson(response);
+        JsonElement payload = await ReadJsonAsync(response);
         payload.ValueKind.Should().Be(JsonValueKind.Array);
         payload
             .EnumerateArray()
@@ -151,7 +151,7 @@ public sealed class WebApiEndpointsTests
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        (await ReadJson(response)).ValueKind.Should().Be(JsonValueKind.Array);
+        (await ReadJsonAsync(response)).ValueKind.Should().Be(JsonValueKind.Array);
     }
 
     [Fact]
@@ -177,7 +177,11 @@ public sealed class WebApiEndpointsTests
         HttpResponseMessage response = await client.GetAsync("/api/ssotoken");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        (await ReadJson(response)).GetProperty("ssoToken").GetString().Should().NotBeNullOrEmpty();
+        (await ReadJsonAsync(response))
+            .GetProperty("ssoToken")
+            .GetString()
+            .Should()
+            .NotBeNullOrEmpty();
     }
 
     [Fact]
@@ -191,7 +195,7 @@ public sealed class WebApiEndpointsTests
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        JsonElement payload = await ReadJson(response);
+        JsonElement payload = await ReadJsonAsync(response);
         payload.GetProperty("name").GetString().Should().Be("Available");
         payload.GetProperty("valid").GetBoolean().Should().BeTrue();
     }
@@ -208,7 +212,7 @@ public sealed class WebApiEndpointsTests
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        (await ReadJson(response)).GetProperty("name").GetString().Should().Be("Chosen");
+        (await ReadJsonAsync(response)).GetProperty("name").GetString().Should().Be("Chosen");
     }
 
     [Fact]
@@ -263,7 +267,7 @@ public sealed class WebApiEndpointsTests
         statuses.Should().Contain(HttpStatusCode.TooManyRequests);
     }
 
-    private static async Task<JsonElement> ReadJson(HttpResponseMessage response)
+    private static async Task<JsonElement> ReadJsonAsync(HttpResponseMessage response)
     {
         string body = await response.Content.ReadAsStringAsync();
 

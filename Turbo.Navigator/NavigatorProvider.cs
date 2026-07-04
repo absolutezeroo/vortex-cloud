@@ -48,7 +48,7 @@ public sealed class NavigatorProvider(
 
         return await BuildRoomQuery(dbCtx)
             .OrderByDescending(x => x.UsersNow)
-            .ToRoomInfoSnapshots(ct)
+            .ToRoomInfoSnapshotsAsync(ct)
             .ConfigureAwait(false);
     }
 
@@ -63,7 +63,7 @@ public sealed class NavigatorProvider(
 
         return await BuildRoomQuery(dbCtx)
             .Where(x => x.PlayerEntityId == playerId.Value)
-            .ToRoomInfoSnapshots(ct)
+            .ToRoomInfoSnapshotsAsync(ct)
             .ConfigureAwait(false);
     }
 
@@ -78,7 +78,7 @@ public sealed class NavigatorProvider(
 
         return await BuildRoomQuery(dbCtx)
             .Where(x => x.NavigatorCategoryEntityId == categoryId)
-            .ToRoomInfoSnapshots(ct)
+            .ToRoomInfoSnapshotsAsync(ct)
             .ConfigureAwait(false);
     }
 
@@ -95,7 +95,7 @@ public sealed class NavigatorProvider(
 
         return await BuildRoomQuery(dbCtx)
             .Where(x => x.Name.ToLower().Contains(lower))
-            .ToRoomInfoSnapshots(ct)
+            .ToRoomInfoSnapshotsAsync(ct)
             .ConfigureAwait(false);
     }
 
@@ -112,7 +112,7 @@ public sealed class NavigatorProvider(
 
         return await BuildRoomQuery(dbCtx)
             .Where(x => x.PlayerEntity.Name.ToLower().Contains(lower))
-            .ToRoomInfoSnapshots(ct)
+            .ToRoomInfoSnapshotsAsync(ct)
             .ConfigureAwait(false);
     }
 
@@ -136,7 +136,7 @@ public sealed class NavigatorProvider(
                     f.PlayerEntityId == playerId.Value && f.RoomEntityId == x.Id
                 )
             )
-            .ToRoomInfoSnapshots(ct)
+            .ToRoomInfoSnapshotsAsync(ct)
             .ConfigureAwait(false);
     }
 
@@ -219,7 +219,7 @@ public sealed class NavigatorProvider(
 
 file static class RoomQueryExtensions
 {
-    public static Task<List<RoomInfoSnapshot>> ToRoomInfoSnapshots(
+    public static Task<List<RoomInfoSnapshot>> ToRoomInfoSnapshotsAsync(
         this IQueryable<Database.Entities.Room.RoomEntity> query,
         CancellationToken ct
     ) =>

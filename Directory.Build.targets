@@ -48,12 +48,19 @@
     Condition="'$(MSBuildProjectName)' == 'Turbo.Main'"
     DependsOnTargets="TurboCloudFastCheck;TurboCloudAiGovernanceCheck"
   >
+    <!--
+      Was scoped to Turbo.Main.csproj only (the composition root, near-zero domain logic) — every
+      analyzer/style violation in Turbo.Rooms, Turbo.PacketHandlers, Turbo.Players, etc., where the
+      actual logic lives, went ungated. Now covers the whole solution. IDE1006 (naming) is excluded
+      here: ~1220 pre-existing violations outside Turbo.Main, many touching public/Orleans-serialized
+      members — tracked as debt in CONSOLIDATION.md P4 rather than mass-renamed under gate pressure.
+    -->
     <Exec
-      Command="dotnet format Turbo.Main/Turbo.Main.csproj style --verify-no-changes --no-restore"
+      Command="dotnet format Turbo.Cloud.sln style --verify-no-changes --no-restore --exclude-diagnostics IDE1006"
       WorkingDirectory="$(MSBuildThisFileDirectory)"
     />
     <Exec
-      Command="dotnet format Turbo.Main/Turbo.Main.csproj analyzers --verify-no-changes --no-restore"
+      Command="dotnet format Turbo.Cloud.sln analyzers --verify-no-changes --no-restore --exclude-diagnostics IDE1006"
       WorkingDirectory="$(MSBuildThisFileDirectory)"
     />
   </Target>

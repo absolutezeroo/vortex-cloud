@@ -22,6 +22,9 @@ public static class TaskLoggingExtensions
         _ = AwaitAndLogAsync(task, logger, message, args);
     }
 
+    // VSTHRD003: the whole point of this helper is to observe a task that's already running,
+    // started elsewhere by the caller — that's the fire-and-forget contract, not a deadlock risk.
+#pragma warning disable VSTHRD003
     private static async Task AwaitAndLogAsync(
         Task task,
         ILogger logger,
@@ -38,4 +41,5 @@ public static class TaskLoggingExtensions
             logger.LogError(ex, message, args);
         }
     }
+#pragma warning restore VSTHRD003
 }

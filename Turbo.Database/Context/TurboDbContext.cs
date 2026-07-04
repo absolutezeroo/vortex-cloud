@@ -20,139 +20,142 @@ namespace Turbo.Database.Context;
 public class TurboDbContext(DbContextOptions<TurboDbContext> options)
     : DbContextBase<TurboDbContext>(options)
 {
-    public DbSet<AuditEventEntity> AuditEvents { get; init; }
+    public DbSet<AuditEventEntity> AuditEvents { get; init; } = null!;
 
-    public DbSet<EconomyLedgerEntity> EconomyLedger { get; init; }
+    public DbSet<EconomyLedgerEntity> EconomyLedger { get; init; } = null!;
 
-    public DbSet<ItemEventEntity> ItemEvents { get; init; }
+    public DbSet<ItemEventEntity> ItemEvents { get; init; } = null!;
 
-    public DbSet<CatalogClubOfferEntity> CatalogClubOffers { get; init; }
+    public DbSet<CatalogClubOfferEntity> CatalogClubOffers { get; init; } = null!;
 
-    public DbSet<CatalogClubGiftEntity> CatalogClubGifts { get; init; }
+    public DbSet<CatalogClubGiftEntity> CatalogClubGifts { get; init; } = null!;
 
-    public DbSet<CatalogFrontPageItemEntity> CatalogFrontPageItems { get; init; }
+    public DbSet<CatalogFrontPageItemEntity> CatalogFrontPageItems { get; init; } = null!;
 
-    public DbSet<CatalogOfferEntity> CatalogOffers { get; init; }
+    public DbSet<CatalogOfferEntity> CatalogOffers { get; init; } = null!;
 
-    public DbSet<CurrencyTypeEntity> CurrencyTypes { get; init; }
+    public DbSet<CurrencyTypeEntity> CurrencyTypes { get; init; } = null!;
 
-    public DbSet<CatalogPageEntity> CatalogPages { get; init; }
+    public DbSet<CatalogPageEntity> CatalogPages { get; init; } = null!;
 
-    public DbSet<CatalogProductEntity> CatalogProducts { get; init; }
-    public DbSet<FurnitureDefinitionEntity> FurnitureDefinitions { get; init; }
+    public DbSet<CatalogProductEntity> CatalogProducts { get; init; } = null!;
+    public DbSet<FurnitureDefinitionEntity> FurnitureDefinitions { get; init; } = null!;
 
-    public DbSet<FurnitureEntity> Furnitures { get; init; }
+    public DbSet<FurnitureEntity> Furnitures { get; init; } = null!;
 
-    public DbSet<FurnitureTeleportLinkEntity> FurnitureTeleportLinks { get; init; }
+    public DbSet<FurnitureTeleportLinkEntity> FurnitureTeleportLinks { get; init; } = null!;
 
-    public DbSet<PlayerBadgeEntity> PlayerBadges { get; init; }
+    public DbSet<PlayerBadgeEntity> PlayerBadges { get; init; } = null!;
 
-    public DbSet<PlayerCurrencyEntity> PlayerCurrencies { get; init; }
-    public DbSet<PlayerEntity> Players { get; init; }
+    public DbSet<PlayerCurrencyEntity> PlayerCurrencies { get; init; } = null!;
+    public DbSet<PlayerEntity> Players { get; init; } = null!;
 
-    public DbSet<RoomBanEntity> RoomBans { get; init; }
+    public DbSet<RoomBanEntity> RoomBans { get; init; } = null!;
 
-    public DbSet<RoomEntity> Rooms { get; init; }
+    public DbSet<RoomEntity> Rooms { get; init; } = null!;
 
-    public DbSet<RoomModelEntity> RoomModels { get; init; }
+    public DbSet<RoomModelEntity> RoomModels { get; init; } = null!;
 
-    public DbSet<RoomMuteEntity> RoomMutes { get; init; }
+    public DbSet<RoomMuteEntity> RoomMutes { get; init; } = null!;
 
-    public DbSet<RoomRightEntity> RoomRights { get; init; }
+    public DbSet<RoomRightEntity> RoomRights { get; init; } = null!;
 
-    public DbSet<RoomEntryLogEntity> RoomEntryLogs { get; init; }
+    public DbSet<RoomEntryLogEntity> RoomEntryLogs { get; init; } = null!;
 
-    public DbSet<RoomChatlogEntity> Chatlogs { get; init; }
-    public DbSet<SecurityTicketEntity> SecurityTickets { get; init; }
+    public DbSet<RoomChatlogEntity> Chatlogs { get; init; } = null!;
+    public DbSet<SecurityTicketEntity> SecurityTickets { get; init; } = null!;
 
-    public DbSet<PlayerAccountEntity> PlayerAccounts { get; init; }
+    public DbSet<PlayerAccountEntity> PlayerAccounts { get; init; } = null!;
 
-    public DbSet<RoleEntity> Roles { get; init; }
+    public DbSet<RoleEntity> Roles { get; init; } = null!;
 
-    public DbSet<RolePermissionEntity> RolePermissions { get; init; }
+    public DbSet<RolePermissionEntity> RolePermissions { get; init; } = null!;
 
-    public DbSet<PlayerAccountRoleEntity> PlayerAccountRoles { get; init; }
+    public DbSet<PlayerAccountRoleEntity> PlayerAccountRoles { get; init; } = null!;
 
-    public DbSet<NavigatorTopLevelContextEntity> NavigatorTopLevelContexts { get; init; }
+    public DbSet<NavigatorTopLevelContextEntity> NavigatorTopLevelContexts { get; init; } = null!;
 
-    public DbSet<NavigatorFlatCategoryEntity> NavigatorFlatCategories { get; init; }
+    public DbSet<NavigatorFlatCategoryEntity> NavigatorFlatCategories { get; init; } = null!;
 
-    public DbSet<NavigatorEventCategoryEntity> NavigatorEventCategories { get; init; }
+    public DbSet<NavigatorEventCategoryEntity> NavigatorEventCategories { get; init; } = null!;
 
-    public DbSet<NavigatorQuickLinkEntity> NavigatorQuickLinks { get; init; }
+    public DbSet<NavigatorQuickLinkEntity> NavigatorQuickLinks { get; init; } = null!;
 
-    public DbSet<PlayerChatStyleEntity> PlayerChatStyles { get; init; }
-    public DbSet<PlayerChatStyleOwnedEntity> PlayerOwnedChatStyles { get; init; }
+    public DbSet<PlayerChatStyleEntity> PlayerChatStyles { get; init; } = null!;
+    public DbSet<PlayerChatStyleOwnedEntity> PlayerOwnedChatStyles { get; init; } = null!;
 
-    public DbSet<PerformanceLogEntity> PerformanceLogs { get; init; }
+    public DbSet<PerformanceLogEntity> PerformanceLogs { get; init; } = null!;
 
-    public DbSet<PlayerFavoriteRoomsEntity> PlayerFavouriteRooms { get; init; }
+    public DbSet<PlayerFavoriteRoomsEntity> PlayerFavouriteRooms { get; init; } = null!;
 
-    public DbSet<PlayerNavigatorPreferencesEntity> PlayerNavigatorPreferences { get; init; }
+    public DbSet<PlayerNavigatorPreferencesEntity> PlayerNavigatorPreferences { get; init; } =
+        null!;
 
-    public DbSet<PlayerNavigatorSavedSearchEntity> PlayerNavigatorSavedSearches { get; init; }
+    public DbSet<PlayerNavigatorSavedSearchEntity> PlayerNavigatorSavedSearches { get; init; } =
+        null!;
 
-    public DbSet<PlayerNavigatorCollapsedCategoryEntity> PlayerNavigatorCollapsedCategories { get; init; }
+    public DbSet<PlayerNavigatorCollapsedCategoryEntity> PlayerNavigatorCollapsedCategories { get; init; } =
+        null!;
 
-    public DbSet<PlayerNavigatorViewModeEntity> PlayerNavigatorViewModes { get; init; }
+    public DbSet<PlayerNavigatorViewModeEntity> PlayerNavigatorViewModes { get; init; } = null!;
 
-    public DbSet<PlayerSubscriptionEntity> PlayerSubscriptions { get; init; }
+    public DbSet<PlayerSubscriptionEntity> PlayerSubscriptions { get; init; } = null!;
 
-    public DbSet<PlayerKickbackEntity> PlayerKickbacks { get; init; }
+    public DbSet<PlayerKickbackEntity> PlayerKickbacks { get; init; } = null!;
 
-    public DbSet<ErrorGroupEntity> ErrorGroups { get; init; }
+    public DbSet<ErrorGroupEntity> ErrorGroups { get; init; } = null!;
 
-    public DbSet<ErrorOccurrenceEntity> ErrorOccurrences { get; init; }
+    public DbSet<ErrorOccurrenceEntity> ErrorOccurrences { get; init; } = null!;
 
-    public DbSet<PlayerVaultIncomeRewardEntity> PlayerVaultIncomeRewards { get; init; }
+    public DbSet<PlayerVaultIncomeRewardEntity> PlayerVaultIncomeRewards { get; init; } = null!;
 
-    public DbSet<MarketplaceOfferEntity> MarketplaceOffers { get; init; }
+    public DbSet<MarketplaceOfferEntity> MarketplaceOffers { get; init; } = null!;
 
-    public DbSet<MessengerCategoryEntity> MessengerCategories { get; init; }
+    public DbSet<MessengerCategoryEntity> MessengerCategories { get; init; } = null!;
 
-    public DbSet<MessengerFriendEntity> MessengerFriends { get; init; }
+    public DbSet<MessengerFriendEntity> MessengerFriends { get; init; } = null!;
 
-    public DbSet<MessengerRequestEntity> MessengerRequests { get; init; }
+    public DbSet<MessengerRequestEntity> MessengerRequests { get; init; } = null!;
 
-    public DbSet<MessengerBlockedEntity> MessengerBlocked { get; init; }
+    public DbSet<MessengerBlockedEntity> MessengerBlocked { get; init; } = null!;
 
-    public DbSet<MessengerIgnoredEntity> MessengerIgnored { get; init; }
+    public DbSet<MessengerIgnoredEntity> MessengerIgnored { get; init; } = null!;
 
-    public DbSet<MessengerMessageEntity> MessengerMessages { get; init; }
+    public DbSet<MessengerMessageEntity> MessengerMessages { get; init; } = null!;
 
-    public DbSet<LtdSeriesEntity> LtdSeries { get; init; }
+    public DbSet<LtdSeriesEntity> LtdSeries { get; init; } = null!;
 
-    public DbSet<LtdRaffleEntryEntity> LtdRaffleEntries { get; init; }
+    public DbSet<LtdRaffleEntryEntity> LtdRaffleEntries { get; init; } = null!;
 
-    public DbSet<GroupEntity> Groups { get; init; }
+    public DbSet<GroupEntity> Groups { get; init; } = null!;
 
-    public DbSet<GroupBadgePartEntity> GroupBadgeParts { get; init; }
+    public DbSet<GroupBadgePartEntity> GroupBadgeParts { get; init; } = null!;
 
-    public DbSet<GroupColorEntity> GroupColors { get; init; }
+    public DbSet<GroupColorEntity> GroupColors { get; init; } = null!;
 
-    public DbSet<GroupMemberEntity> GroupMembers { get; init; }
+    public DbSet<GroupMemberEntity> GroupMembers { get; init; } = null!;
 
-    public DbSet<GroupMembershipRequestEntity> GroupMembershipRequests { get; init; }
+    public DbSet<GroupMembershipRequestEntity> GroupMembershipRequests { get; init; } = null!;
 
-    public DbSet<GroupForumSettingsEntity> GroupForumSettings { get; init; }
+    public DbSet<GroupForumSettingsEntity> GroupForumSettings { get; init; } = null!;
 
-    public DbSet<GroupForumThreadEntity> GroupForumThreads { get; init; }
+    public DbSet<GroupForumThreadEntity> GroupForumThreads { get; init; } = null!;
 
-    public DbSet<GroupForumPostEntity> GroupForumPosts { get; init; }
+    public DbSet<GroupForumPostEntity> GroupForumPosts { get; init; } = null!;
 
-    public DbSet<RentableSpaceTermsEntity> RentableSpaceTerms { get; init; }
+    public DbSet<RentableSpaceTermsEntity> RentableSpaceTerms { get; init; } = null!;
 
-    public DbSet<RoomRentableSpaceEntity> RoomRentableSpaces { get; init; }
+    public DbSet<RoomRentableSpaceEntity> RoomRentableSpaces { get; init; } = null!;
 
-    public DbSet<PetEntity> Pets { get; init; }
+    public DbSet<PetEntity> Pets { get; init; } = null!;
 
-    public DbSet<PetCommandEntity> PetCommands { get; init; }
+    public DbSet<PetCommandEntity> PetCommands { get; init; } = null!;
 
-    public DbSet<PetLevelEntity> PetLevels { get; init; }
+    public DbSet<PetLevelEntity> PetLevels { get; init; } = null!;
 
-    public DbSet<PetFoodEntity> PetFood { get; init; }
+    public DbSet<PetFoodEntity> PetFood { get; init; } = null!;
 
-    public DbSet<PetPaletteEntity> PetPalettes { get; init; }
+    public DbSet<PetPaletteEntity> PetPalettes { get; init; } = null!;
 
     protected override void OnModelCreating(ModelBuilder mb)
     {

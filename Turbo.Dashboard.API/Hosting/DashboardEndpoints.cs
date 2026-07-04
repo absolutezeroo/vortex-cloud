@@ -137,7 +137,7 @@ internal static class DashboardEndpoints
             ApiMonitoring + "/overview",
             "/api/overview",
             (DashboardApiService api, CancellationToken ct) =>
-                Ok(api.OverviewAsync(startedAtUtc(), ct)),
+                OkAsync(api.OverviewAsync(startedAtUtc(), ct)),
             Capabilities.Dashboard.OverviewRead,
             TagMonitoring
         );
@@ -166,7 +166,7 @@ internal static class DashboardEndpoints
             app,
             ApiMonitoring + "/packet-stats",
             "/api/packet-stats",
-            (DashboardApiService api, CancellationToken ct) => Ok(api.PacketStatsAsync(ct)),
+            (DashboardApiService api, CancellationToken ct) => OkAsync(api.PacketStatsAsync(ct)),
             Capabilities.Dashboard.OverviewRead,
             TagMonitoring
         );
@@ -176,7 +176,7 @@ internal static class DashboardEndpoints
             ApiForensics + "/audit",
             "/api/audit",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                Ok(api.AuditAsync(ctx.QueryAsNameValues(), ct)),
+                OkAsync(api.AuditAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.AuditRead,
             TagForensics
         );
@@ -186,7 +186,7 @@ internal static class DashboardEndpoints
             ApiForensics + "/moderation/stats",
             "/api/moderation-stats",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                Ok(api.ModerationStatsAsync(ctx.QueryAsNameValues(), ct)),
+                OkAsync(api.ModerationStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.AuditRead,
             TagForensics
         );
@@ -196,7 +196,7 @@ internal static class DashboardEndpoints
             ApiEconomy + "/ledger",
             "/api/economy",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                Ok(api.EconomyAsync(ctx.QueryAsNameValues(), ct)),
+                OkAsync(api.EconomyAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.EconomyRead,
             TagEconomy
         );
@@ -206,7 +206,7 @@ internal static class DashboardEndpoints
             ApiEconomy + "/subscriptions",
             "/api/economy/subscriptions",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                Ok(api.ClubSubscriptionsAsync(ctx.QueryAsNameValues(), ct)),
+                OkAsync(api.ClubSubscriptionsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.EconomyRead,
             TagEconomy
         );
@@ -214,7 +214,7 @@ internal static class DashboardEndpoints
         app.MapGet(
                 ApiV1 + "/rentable-spaces/activity",
                 (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                    Ok(api.RentableSpacesAsync(ctx.QueryAsNameValues(), ct))
+                    OkAsync(api.RentableSpacesAsync(ctx.QueryAsNameValues(), ct))
             )
             .RequireAuthorization(Capabilities.Dashboard.EconomyRead)
             .WithTags(TagEconomy);
@@ -224,7 +224,7 @@ internal static class DashboardEndpoints
             ApiDirectory + "/search",
             "/api/search",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                Ok(api.SearchAsync(ctx.QueryAsNameValues(), ct)),
+                OkAsync(api.SearchAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.AuditRead,
             TagForensics
         );
@@ -234,7 +234,7 @@ internal static class DashboardEndpoints
             ApiDirectory + "/players",
             "/api/players",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                Ok(api.PlayersAsync(ctx.QueryAsNameValues(), ct)),
+                OkAsync(api.PlayersAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.PlayersRead,
             TagDirectory
         );
@@ -244,7 +244,7 @@ internal static class DashboardEndpoints
             ApiDirectory + "/furniture",
             "/api/furniture",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                Ok(api.FurnitureDefinitionsAsync(ctx.QueryAsNameValues(), ct)),
+                OkAsync(api.FurnitureDefinitionsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.FurnitureRead,
             TagDirectory
         );
@@ -254,7 +254,7 @@ internal static class DashboardEndpoints
             ApiDirectory + "/entity/{id}",
             "/api/item/{id}",
             (string id, HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkNullable(api.ItemAsync(id, ctx.QueryAsNameValues(), ct)),
+                OkNullableAsync(api.ItemAsync(id, ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.AuditRead,
             TagForensics
         );
@@ -264,7 +264,7 @@ internal static class DashboardEndpoints
             ApiDirectory + "/rooms/{roomId:int}",
             "/api/room/{roomId:int}",
             (int roomId, HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkNullable(api.RoomTimelineAsync(roomId, ctx.QueryAsNameValues(), ct)),
+                OkNullableAsync(api.RoomTimelineAsync(roomId, ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.AuditRead,
             TagForensics
         );
@@ -547,16 +547,21 @@ internal static class DashboardEndpoints
             capabilities = principal.Permissions.Capabilities,
         };
 
-    private static async Task<IResult> Ok(Task<object> task) =>
+    // VSTHRD003: both helpers deliberately await a task handed in by the endpoint delegate (already
+    // started by the DashboardApiService call at the call site) purely to wrap its result/null-check
+    // in a Results.Ok/Json — there is no deadlock risk since nothing here owns or blocks on the task.
+#pragma warning disable VSTHRD003
+    private static async Task<IResult> OkAsync(Task<object> task) =>
         Results.Ok(await task.ConfigureAwait(false));
 
-    private static async Task<IResult> OkNullable(Task<object?> task)
+    private static async Task<IResult> OkNullableAsync(Task<object?> task)
     {
         object? payload = await task.ConfigureAwait(false);
         return payload is null
             ? Results.Json(new { error = "not_found" }, statusCode: StatusCodes.Status404NotFound)
             : Results.Ok(payload);
     }
+#pragma warning restore VSTHRD003
 
     private static bool HasReason(string? reason) =>
         !string.IsNullOrWhiteSpace(reason) && reason.Trim().Length >= 3;
