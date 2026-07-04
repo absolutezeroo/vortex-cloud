@@ -326,12 +326,13 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
 
         EnsurePetOwner(ctx, pet);
 
+        // Position is applied to the in-memory entity but not saved here — it rides the
+        // periodic dirty-pet flush (FlushDirtyPetsAsync) alongside stats, same as furniture
+        // position uses the timer-flush pattern. Nothing reads the DB row before that flush.
         pet.X = x;
         pet.Y = y;
         pet.Z = z;
         pet.Direction = (int)direction;
-
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
 
         PetSnapshot snapshot = RoomPetRuntime.ToSnapshot(pet);
 
@@ -349,6 +350,8 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
         }
 
         _roomGrain._state.PetsById[pet.Id] = snapshot;
+        GetMotionState(snapshot, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()).IsStatsDirty =
+            true;
 
         await SendPetUpdatedAsync(snapshot, ct).ConfigureAwait(false);
 
@@ -901,7 +904,7 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
         );
     }
 
-    private async Task FlushDirtyPetsAsync(CancellationToken ct)
+    public async Task FlushDirtyPetsAsync(CancellationToken ct)
     {
         List<int> dirtyIds = [];
 
@@ -942,6 +945,10 @@ public sealed class RoomPetSystem(RoomGrain roomGrain)
             entity.RespectTodayCount = snapshot.RespectTodayCount;
             entity.RespectLastResetDate = snapshot.RespectLastResetDate;
             entity.CanBreed = snapshot.CanBreed;
+            entity.X = snapshot.X;
+            entity.Y = snapshot.Y;
+            entity.Z = snapshot.Z;
+            entity.Direction = (int)snapshot.Direction;
 
             if (_motionByPetId.TryGetValue(entity.Id, out PetMotionState? motion))
             {

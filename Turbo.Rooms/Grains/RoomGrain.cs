@@ -234,6 +234,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         try
         {
             await FlushDirtyItemsAsync(ct);
+            await PetSystem.FlushDirtyPetsAsync(ct);
 
             await _grainFactory.GetRoomDirectoryGrain().RemoveActiveRoomAsync(_state.RoomId);
         }

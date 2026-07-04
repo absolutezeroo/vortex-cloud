@@ -249,14 +249,18 @@ public sealed partial class InventoryGrain
             await dbCtx.DisposeAsync().ConfigureAwait(false);
         }
 
-        foreach (PetCreateRequest req in petRequests)
+        if (petRequests.Count > 0)
         {
-            PetSnapshot pet = await CreatePetAsync(req, ct).ConfigureAwait(false);
-
-            IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(
+            IPlayerPresenceGrain petPresence = _grainFactory.GetPlayerPresenceGrain(
                 this.GetPrimaryKeyLong()
             );
-            await presence.OnPetAddedToInventoryAsync(pet, ct).ConfigureAwait(false);
+
+            foreach (PetCreateRequest req in petRequests)
+            {
+                PetSnapshot pet = await CreatePetAsync(req, ct).ConfigureAwait(false);
+
+                await petPresence.OnPetAddedToInventoryAsync(pet, ct).ConfigureAwait(false);
+            }
         }
     }
 

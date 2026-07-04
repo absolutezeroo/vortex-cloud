@@ -98,6 +98,31 @@ All new limits follow the existing `IOptions<T>` pattern (`RoomConfig`, `Messeng
 `NetworkingConfig`) rather than hardcoded constants — see `Turbo.Revisions.Configuration.ProtocolLimitsConfig`
 and `Turbo.Players.Configuration.PlayerPresenceConfig`.
 
+**Priority 3 items closed (2026-07-04):**
+- O2/O3/H4 — one shared `Turbo.Logging.Extensions.TaskLoggingExtensions.LogAndForget` (async local
+  function, no `async void`, no `ContinueWith(TaskScheduler.Current)`) replaces the three per-grain
+  copies (`PlayerPresenceGrain`, `MessengerGrain`; `LtdRaffleGrain`'s was already removed in R7).
+  Applied to the room-stream publishes that used to discard the task (`RoomGrain.Map.cs`,
+  `RoomAvatarModule.cs` ×7, `RoomRollerSystem.cs`) and to handler fire-and-forgets
+  (`MessengerInitMessageHandler.NotifyOnlineAsync`, `SendRoomInviteMessageHandler`'s invite fan-out,
+  which is now also parallelized with `Task.WhenAll` instead of discarding each call in the loop).
+- O5 — `RoomPetSystem.MovePetAsync` no longer opens a DB write on every pet move; position now
+  rides the existing periodic `FlushDirtyPetsAsync` timer-flush alongside stats (same pattern as
+  furniture). `RoomGrain.OnDeactivateAsync` now also flushes dirty pets, not just dirty items.
+  `PlacePetAsync`/`PickUpPetAsync`/`ConfirmPetBreedingAsync`/`PlantMonsterplantSeedAsync` were left
+  as immediate writes — each is a state transition (inventory↔room, new entity creation) a
+  subsequent read depends on, and this subsystem has zero test coverage today, so a broader rewrite
+  wasn't worth the regression risk in one pass.
+- O6 — `MessengerGrain.DeclineFriendRequestsAsync`/`RemoveFriendsAsync` batch their
+  `ExecuteDeleteAsync` with a single `Contains(...)`-based `WHERE ... IN` instead of one delete per
+  id in a loop; `RemoveFriendsAsync`'s per-friend event publish is now parallelized with
+  `Task.WhenAll`. `AcceptFriendRequestsAsync` hoists the self `PlayerEntity` lookup above the loop
+  instead of re-fetching it per request. `InventoryGrain.GrantCatalogOfferAsync` hoists the
+  presence-grain lookup above its pet-creation loop. The furniture-grant loop's sequential awaits
+  were left as-is: `_furniModule.AddFurnitureAsync` capacity-check semantics weren't verified safe
+  for concurrent invocation and batch sizes here are small, so parallelizing risked a correctness
+  regression for negligible gain.
+
 ---
 
 ## Prioritized backlog

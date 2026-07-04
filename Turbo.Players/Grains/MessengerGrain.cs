@@ -217,6 +217,9 @@ internal sealed class MessengerGrain(
 
         await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
+        // Hoisted: the calling player is the same on every iteration.
+        PlayerEntity? selfEntity = await dbCtx.Players.FindAsync([(int)SelfId], ct);
+
         foreach (int requesterId in requesterIds)
         {
             if (
@@ -248,7 +251,6 @@ internal sealed class MessengerGrain(
                 continue;
             }
 
-            PlayerEntity? selfEntity = await dbCtx.Players.FindAsync([(int)SelfId], ct);
             PlayerEntity? friendEntity = await dbCtx.Players.FindAsync([requesterId], ct);
 
             if (selfEntity is null || friendEntity is null)
@@ -354,57 +356,61 @@ internal sealed class MessengerGrain(
             return;
         }
 
+        List<int> removedRequesterIds = requesterIds
+            .Where(id => _incomingRequests.Remove(id))
+            .ToList();
+
+        if (removedRequesterIds.Count == 0)
+        {
+            return;
+        }
+
         await using TurboDbContext dbCtxScoped = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        foreach (int requesterId in requesterIds)
-        {
-            if (!_incomingRequests.Remove(requesterId))
-            {
-                continue;
-            }
-
-            await dbCtxScoped
-                .MessengerRequests.Where(r =>
-                    r.PlayerEntityId == requesterId
-                    && r.RequestedPlayerEntityId == (int)SelfId
-                    && r.DeletedAt == null
-                )
-                .ExecuteDeleteAsync(ct);
-        }
+        await dbCtxScoped
+            .MessengerRequests.Where(r =>
+                removedRequesterIds.Contains(r.PlayerEntityId)
+                && r.RequestedPlayerEntityId == (int)SelfId
+                && r.DeletedAt == null
+            )
+            .ExecuteDeleteAsync(ct);
     }
 
     public async Task<List<int>> RemoveFriendsAsync(List<int> friendIds, CancellationToken ct)
     {
-        List<int> removed = new();
+        List<int> removed = friendIds
+            .Where(friendId => _friends.Remove(PlayerId.Parse(friendId)))
+            .ToList();
+
+        if (removed.Count == 0)
+        {
+            return removed;
+        }
+
+        int selfId = SelfId;
 
         await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        foreach (int friendId in friendIds)
+        // Remove both directions for every removed friend in a single batched delete
+        await dbCtx
+            .MessengerFriends.Where(f =>
+                (f.PlayerEntityId == selfId && removed.Contains(f.FriendPlayerEntityId))
+                || (removed.Contains(f.PlayerEntityId) && f.FriendPlayerEntityId == selfId)
+            )
+            .ExecuteDeleteAsync(ct);
+
+        List<Task> notifications = new(removed.Count);
+
+        foreach (int friendId in removed)
         {
-            PlayerId friendKey = PlayerId.Parse(friendId);
-            if (!_friends.Remove(friendKey))
-            {
-                continue;
-            }
-
-            // Remove both directions
-            await dbCtx
-                .MessengerFriends.Where(f =>
-                    (f.PlayerEntityId == (int)SelfId && f.FriendPlayerEntityId == friendId)
-                    || (f.PlayerEntityId == friendId && f.FriendPlayerEntityId == (int)SelfId)
-                )
-                .ExecuteDeleteAsync(ct);
-
-            removed.Add(friendId);
-
-            await events
-                .PublishAsync(new FriendRemovedEvent(SelfId, friendId), ct)
-                .ConfigureAwait(false);
+            notifications.Add(events.PublishAsync(new FriendRemovedEvent(SelfId, friendId), ct));
 
             // Notify friend's grain — fire-and-forget
-            IMessengerGrain friendGrain = grainFactory.GetMessengerGrain(friendKey);
+            IMessengerGrain friendGrain = grainFactory.GetMessengerGrain(PlayerId.Parse(friendId));
             LogAndForget(friendGrain.NotifyFriendRemovedAsync(SelfId, CancellationToken.None));
         }
+
+        await Task.WhenAll(notifications).ConfigureAwait(false);
 
         return removed;
     }
