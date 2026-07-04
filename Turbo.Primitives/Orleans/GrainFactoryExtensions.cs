@@ -112,6 +112,9 @@ public static class GrainFactoryExtensions
     public static ILtdRaffleGrain GetLtdRaffleGrain(this IGrainFactory factory, int seriesId) =>
         factory.GetGrain<ILtdRaffleGrain>(seriesId);
 
+    public static IVoucherGrain GetVoucherGrain(this IGrainFactory factory, string code) =>
+        factory.GetGrain<IVoucherGrain>(code.Trim().ToUpperInvariant());
+
     public static IGroupGrain GetGroupGrain(this IGrainFactory factory, int groupId) =>
         factory.GetGrain<IGroupGrain>(groupId);
 

@@ -363,6 +363,71 @@ internal static class DashboardEndpoints
 
         MapPost(
             app,
+            ApiOperations + "/vouchers",
+            "/api/ops/vouchers",
+            async (
+                HttpContext ctx,
+                CreateVoucherRequest body,
+                DashboardOperationsService ops,
+                CancellationToken ct
+            ) =>
+            {
+                if (
+                    body is null
+                    || string.IsNullOrWhiteSpace(body.Code)
+                    || body.Amount <= 0
+                    || body.CurrencyType is < 1 or > 4
+                    || !HasReason(body.Reason)
+                )
+                {
+                    return Results.BadRequest(new { error = "invalid_request" });
+                }
+
+                return Results.Ok(
+                    await ops.CreateVoucherAsync(body, ctx.ActorEmail(), ct).ConfigureAwait(false)
+                );
+            },
+            Capabilities.Dashboard.OpsManageVouchers,
+            TagOperations
+        );
+
+        MapPost(
+            app,
+            ApiOperations + "/vouchers/deactivate",
+            "/api/ops/vouchers/deactivate",
+            async (
+                HttpContext ctx,
+                DeactivateVoucherRequest body,
+                DashboardOperationsService ops,
+                CancellationToken ct
+            ) =>
+            {
+                if (body is null || string.IsNullOrWhiteSpace(body.Code) || !HasReason(body.Reason))
+                {
+                    return Results.BadRequest(new { error = "invalid_request" });
+                }
+
+                return Results.Ok(
+                    await ops.DeactivateVoucherAsync(body, ctx.ActorEmail(), ct)
+                        .ConfigureAwait(false)
+                );
+            },
+            Capabilities.Dashboard.OpsManageVouchers,
+            TagOperations
+        );
+
+        MapReadGet(
+            app,
+            ApiOperations + "/vouchers/{code}",
+            "/api/ops/vouchers/{code}",
+            async (string code, DashboardOperationsService ops, CancellationToken ct) =>
+                Results.Ok(await ops.GetVoucherSnapshotAsync(code, ct).ConfigureAwait(false)),
+            Capabilities.Dashboard.OpsManageVouchers,
+            TagOperations
+        );
+
+        MapPost(
+            app,
             ApiOperations + "/players/kick",
             "/api/ops/player/kick",
             async (

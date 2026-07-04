@@ -49,6 +49,7 @@ public static class Capabilities
         public const string OpsGrantCurrency = "dashboard.ops.currency.grant";
         public const string OpsGrantItem = "dashboard.ops.item.grant";
         public const string OpsKickPlayer = "dashboard.ops.player.kick";
+        public const string OpsManageVouchers = "dashboard.ops.vouchers.manage";
     }
 
     /// <summary>Every declared capability, for validation and dashboard enumeration.</summary>
@@ -73,5 +74,6 @@ public static class Capabilities
             Dashboard.OpsGrantCurrency,
             Dashboard.OpsGrantItem,
             Dashboard.OpsKickPlayer,
+            Dashboard.OpsManageVouchers,
         };
 }

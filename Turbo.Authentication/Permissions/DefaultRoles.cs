@@ -44,6 +44,7 @@ internal static class DefaultRoles
                 Capabilities.Dashboard.FurnitureRead,
                 Capabilities.Dashboard.OpsGrantCurrency,
                 Capabilities.Dashboard.OpsGrantItem,
+                Capabilities.Dashboard.OpsManageVouchers,
             ]
         ),
         new RoleSeed(
@@ -67,6 +68,7 @@ internal static class DefaultRoles
                 Capabilities.Dashboard.OpsGrantCurrency,
                 Capabilities.Dashboard.OpsGrantItem,
                 Capabilities.Dashboard.OpsKickPlayer,
+                Capabilities.Dashboard.OpsManageVouchers,
             ]
         ),
         new RoleSeed("owner", "Owner", [Capabilities.Wildcard]),

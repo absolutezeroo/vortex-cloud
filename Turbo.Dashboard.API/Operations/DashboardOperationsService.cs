@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Observability.Diagnostics;
+using Turbo.Primitives.Catalog.Snapshots;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Observability;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players;
+using Turbo.Primitives.Players.Enums.Wallet;
 
 namespace Turbo.Dashboard.API.Operations;
 
@@ -94,6 +96,82 @@ internal sealed class DashboardOperationsService(
             ct
         );
 
+    public Task<OperationResult> CreateVoucherAsync(
+        CreateVoucherRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        ExecuteAsync(
+            "ops.vouchers.create",
+            actor,
+            request.Reason,
+            targetPlayerId: null,
+            roomId: null,
+            detail: new
+            {
+                request.Code,
+                request.CurrencyType,
+                request.ActivityPointType,
+                request.Amount,
+                request.MaxRedemptions,
+                request.ExpiresAt,
+            },
+            work: async c =>
+            {
+                VoucherCreateResult result = await _grainFactory
+                    .GetVoucherGrain(request.Code)
+                    .CreateAsync(
+                        new VoucherCreateSpec
+                        {
+                            CurrencyType = (CurrencyType)request.CurrencyType,
+                            ActivityPointType = request.ActivityPointType,
+                            Amount = request.Amount,
+                            MaxRedemptions = request.MaxRedemptions,
+                            ExpiresAt = request.ExpiresAt,
+                            CreatedBy = actor,
+                        },
+                        c
+                    )
+                    .ConfigureAwait(false);
+
+                if (!result.Success)
+                {
+                    throw new InvalidOperationException(result.ErrorCode);
+                }
+            },
+            ct
+        );
+
+    public Task<OperationResult> DeactivateVoucherAsync(
+        DeactivateVoucherRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        ExecuteAsync(
+            "ops.vouchers.deactivate",
+            actor,
+            request.Reason,
+            targetPlayerId: null,
+            roomId: null,
+            detail: new { request.Code },
+            work: async c =>
+            {
+                VoucherCreateResult result = await _grainFactory
+                    .GetVoucherGrain(request.Code)
+                    .DeactivateAsync(c)
+                    .ConfigureAwait(false);
+
+                if (!result.Success)
+                {
+                    throw new InvalidOperationException(result.ErrorCode);
+                }
+            },
+            ct
+        );
+
+    public Task<VoucherSnapshot> GetVoucherSnapshotAsync(string code, CancellationToken ct) =>
+        _grainFactory.GetVoucherGrain(code).GetSnapshotAsync(ct);
+
     public Task<OperationResult> KickPlayerAsync(
         KickPlayerRequest request,
         string actor,
@@ -153,6 +231,32 @@ internal sealed class DashboardOperationsService(
             );
 
             return OperationResult.Succeeded(correlationId.Value);
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Expected domain-validation rejection (e.g. duplicate voucher code) rather than an
+            // infrastructure fault — logged at a lower severity and the reason is surfaced to the
+            // operator instead of the generic "operation_failed".
+            _logger.LogInformation(
+                TurboEventIds.DashboardFault,
+                "Dashboard operation {Action} rejected: {Reason}",
+                action,
+                ex.Message
+            );
+
+            Emit(
+                action,
+                AuditResult.Failed,
+                AuditSeverity.Notice,
+                correlationId,
+                actor,
+                reason,
+                targetPlayerId,
+                roomId,
+                detail
+            );
+
+            return OperationResult.Failed(correlationId.Value, ex.Message);
         }
         catch (Exception ex)
         {

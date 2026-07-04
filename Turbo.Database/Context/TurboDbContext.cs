@@ -38,6 +38,10 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
     public DbSet<CatalogPageEntity> CatalogPages { get; init; } = null!;
 
     public DbSet<CatalogProductEntity> CatalogProducts { get; init; } = null!;
+
+    public DbSet<VoucherEntity> Vouchers { get; init; } = null!;
+
+    public DbSet<VoucherRedemptionEntity> VoucherRedemptions { get; init; } = null!;
     public DbSet<FurnitureDefinitionEntity> FurnitureDefinitions { get; init; } = null!;
 
     public DbSet<FurnitureEntity> Furnitures { get; init; } = null!;
