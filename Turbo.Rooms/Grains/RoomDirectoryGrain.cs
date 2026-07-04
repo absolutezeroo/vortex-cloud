@@ -137,26 +137,24 @@ public class RoomDirectoryGrain(
         return Task.CompletedTask;
     }
 
-    private Task CheckRoomsAsync(CancellationToken ct)
+    private async Task CheckRoomsAsync(CancellationToken ct)
     {
         RoomActiveSnapshot[] rooms = _activeRooms.Values.ToArray();
+
+        List<Task> pending = new(rooms.Length);
 
         foreach (RoomActiveSnapshot room in rooms)
         {
             int population = _roomPopulations.TryGetValue(room.RoomId, out int pop) ? pop : 0;
             IRoomGrain roomGrain = _grainFactory.GetRoomGrain(room.RoomId);
 
-            if (population > 0)
-            {
-                roomGrain.DelayRoomDeactivation();
-            }
-
-            if (population == 0)
-            {
-                roomGrain.DeactivateRoom();
-            }
+            pending.Add(
+                population > 0
+                    ? roomGrain.DelayRoomDeactivationAsync()
+                    : roomGrain.DeactivateRoomAsync()
+            );
         }
 
-        return Task.CompletedTask;
+        await Task.WhenAll(pending).ConfigureAwait(false);
     }
 }

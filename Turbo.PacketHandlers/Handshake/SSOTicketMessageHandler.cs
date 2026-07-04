@@ -66,7 +66,7 @@ public class SSOTicketMessageHandler(
             }
 
             await _sessionGateway
-                .AddSessionToPlayerAsync(ctx.SessionKey, playerId)
+                .AddSessionToPlayerAsync(ctx.SessionKey, playerId, ct)
                 .ConfigureAwait(false);
 
             ClubSubscriptionSnapshot sub = await _grainFactory
@@ -328,6 +328,7 @@ public class SSOTicketMessageHandler(
     {
         int daysLeft = sub.DaysLeft;
         int rem = daysLeft % 31;
+
         return new ScrSendUserInfoMessageComposer
         {
             ProductName = "habbo_club",

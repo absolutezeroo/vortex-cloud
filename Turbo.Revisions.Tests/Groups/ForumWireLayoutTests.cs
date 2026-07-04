@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using FluentAssertions;
+using Microsoft.Extensions.Options;
 using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Incoming.GroupForums;
 using Turbo.Primitives.Messages.Outgoing.Groupforums;
 using Turbo.Primitives.Packets;
+using Turbo.Revisions.Configuration;
 using Xunit;
 using Rev = Turbo.Revisions.Revision20260112.Revision20260112;
 
@@ -16,7 +18,7 @@ public sealed class ForumWireLayoutTests
     private const int PostMessageEvent = 2722;
     private const int UpdateThreadEvent = 3396;
 
-    private static readonly Rev Revision = new();
+    private static readonly Rev Revision = new(Options.Create(new ProtocolLimitsConfig()));
 
     private static ClientPacket BuildClientPacket(int header, System.Action<ServerPacket> write)
     {

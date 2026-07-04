@@ -15,6 +15,10 @@ public interface ISessionGateway
     public IReadOnlyCollection<PlayerId> GetOnlinePlayerIds();
     public Task AddSessionAsync(SessionKey key, ISessionContext ctx);
     public Task RemoveSessionAsync(SessionKey key, CancellationToken ct);
-    public Task AddSessionToPlayerAsync(SessionKey key, PlayerId playerId);
+    public Task AddSessionToPlayerAsync(
+        SessionKey key,
+        PlayerId playerId,
+        CancellationToken ct = default
+    );
     public Task RemoveSessionFromPlayerAsync(PlayerId playerId, CancellationToken ct);
 }

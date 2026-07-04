@@ -69,6 +69,35 @@ catch-block re-audit (P5).
   item/tile/furni id for diagnosis — no constructor signatures changed, no behavior changed on
   the success path.
 
+**Priority 2 items closed (2026-07-04):**
+- S4/S5 — `ClientPacketDecoder.TryRead` rejects a declared body length that is negative or exceeds
+  `Turbo:Networking:MaxPacketBodyBytes` (default 64 KiB) *before* the `length + 4` addition that used
+  to be overflow-prone. `RemoveFriendMessageParser`/`SaveRoomSettingsMessageParser.ParseTags` now
+  clamp their wire-declared counts (`Turbo:Protocol:MaxFriendRemovalIds` / `MaxRoomTags`, defaults
+  1000/100) before allocating.
+- S6 — `WsPackageHandler` catches the decoder's rejection, logs the session key/remote IP, clears
+  `WsBuffer`, and closes the session instead of buffering indefinitely.
+- O1 — `IRoomGrain.DeactivateRoom`/`DelayRoomDeactivation` are now `DeactivateRoomAsync`/
+  `DelayRoomDeactivationAsync` returning `Task`; `RoomDirectoryGrain.CheckRoomsAsync` awaits them
+  via `Task.WhenAll` instead of firing one-way void calls.
+- H6 — `SessionGateway`'s `_sessionToPlayer`/`_playerToSession` pair is now mutated under a single
+  `SemaphoreSlim` (`_mappingGate`), so interleaved connects/disconnects can no longer leave a
+  half-updated (ghost) mapping. `AddSessionToPlayerAsync` gained an optional `CancellationToken`
+  that threads through instead of hardcoded `CancellationToken.None`.
+- O4 — `PlayerPresenceGrain`'s outgoing composer queue is capped (drop-oldest + warning log) via
+  `Turbo:PlayerPresence:MaxOutgoingQueueSize` (default 500); `OnErrorAsync` logs stream faults
+  instead of swallowing them; `OnDeactivateAsync` unsubscribes the room-outbound stream handle.
+- D7 — `AddPluginTablePrefix` no longer ignores its own computed fallback: the `.Select(...).ToString()`
+  bug (which returned the enumerable's type name, not the joined prefix) is fixed with
+  `new string(...ToArray())`, and the returned delegate now honors `ExplicitlyNoTablePrefix` instead
+  of re-reading `manifest.TablePrefix` directly.
+- D8 — `pets.sql` (legacy MyISAM DDL, zero code references, partially superseded by
+  `PetFoodEntity`/`PetCommandEntity`) removed at the user's direction.
+
+All new limits follow the existing `IOptions<T>` pattern (`RoomConfig`, `MessengerConfig`,
+`NetworkingConfig`) rather than hardcoded constants — see `Turbo.Revisions.Configuration.ProtocolLimitsConfig`
+and `Turbo.Players.Configuration.PlayerPresenceConfig`.
+
 ---
 
 ## Prioritized backlog

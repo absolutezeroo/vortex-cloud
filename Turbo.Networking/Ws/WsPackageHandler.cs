@@ -1,7 +1,9 @@
 using System;
 using System.Buffers;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using SuperSocket.Server.Abstractions;
 using SuperSocket.Server.Abstractions.Session;
 using SuperSocket.WebSocket;
@@ -11,11 +13,15 @@ using Turbo.Primitives.Packets;
 
 namespace Turbo.Networking.Ws;
 
-internal sealed class WsPackageHandler(IClientPacketDecoder decoder, PackageHandler inner)
-    : IPackageHandler<WebSocketPackage>
+internal sealed class WsPackageHandler(
+    IClientPacketDecoder decoder,
+    PackageHandler inner,
+    ILogger<WsPackageHandler>? logger = null
+) : IPackageHandler<WebSocketPackage>
 {
     private readonly IClientPacketDecoder _decoder = decoder;
     private readonly PackageHandler _inner = inner;
+    private readonly ILogger<WsPackageHandler>? _logger = logger;
 
     /// <summary>
     ///     Standard handler for DI-based sessions.
@@ -83,7 +89,27 @@ internal sealed class WsPackageHandler(IClientPacketDecoder decoder, PackageHand
 
             SequenceReader<byte> reader = new(new ReadOnlySequence<byte>(memory));
 
-            IClientPacket? packet = _decoder.TryRead(ref reader, ctx);
+            IClientPacket? packet;
+
+            try
+            {
+                packet = _decoder.TryRead(ref reader, ctx);
+            }
+            catch (InvalidDataException ex)
+            {
+                _logger?.LogWarning(
+                    ex,
+                    "Closing websocket session {SessionKey} ({RemoteIpAddress}) after an invalid packet frame",
+                    ctx.SessionKey,
+                    ctx.RemoteIpAddress
+                );
+
+                ctx.WsBuffer.Clear();
+
+                await ctx.CloseSessionAsync().ConfigureAwait(false);
+
+                return;
+            }
 
             if (packet is null)
             {

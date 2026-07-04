@@ -27,6 +27,7 @@ using Turbo.Observability;
 using Turbo.PacketHandlers;
 using Turbo.Players;
 using Turbo.Plugins.Extensions;
+using Turbo.Revisions.Extensions;
 using Turbo.Rooms;
 using Turbo.Runtime.AssemblyProcessing;
 using Turbo.WebApi;
@@ -101,6 +102,7 @@ internal class Program
         builder.Services.AddTurboEventSystem();
         builder.Services.AddTurboMessageSystem();
         builder.Services.AddTurboCrypto(builder);
+        builder.Services.AddTurboRevisions(builder);
 
         builder.Services.AddHostPlugin<ObservabilityModule>(builder);
         builder.Services.AddHostPlugin<AuthenticationModule>(builder);

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Orleans;
 using Orleans.Streams;
+using Turbo.Players.Configuration;
 using Turbo.Players.Grains.Modules;
 using Turbo.Primitives.Events;
 using Turbo.Primitives.Networking;
@@ -22,6 +24,7 @@ internal sealed partial class PlayerPresenceGrain
     internal readonly IEventPublisher _events;
     internal readonly IGrainFactory _grainFactory;
     private readonly ILogger<PlayerPresenceGrain> _logger;
+    private readonly PlayerPresenceConfig _config;
 
     private readonly PlayerInventoryModule _inventoryModule;
 
@@ -36,12 +39,14 @@ internal sealed partial class PlayerPresenceGrain
     public PlayerPresenceGrain(
         IGrainFactory grainFactory,
         IEventPublisher events,
-        ILogger<PlayerPresenceGrain> logger
+        ILogger<PlayerPresenceGrain> logger,
+        IOptions<PlayerPresenceConfig> config
     )
     {
         _grainFactory = grainFactory;
         _events = events;
         _logger = logger;
+        _config = config.Value;
 
         _state = new PlayerPresenceLiveState();
         _inventoryModule = new PlayerInventoryModule(this);
@@ -71,6 +76,12 @@ internal sealed partial class PlayerPresenceGrain
 
     public Task OnErrorAsync(Exception ex)
     {
+        _logger.LogWarning(
+            ex,
+            "Room outbound stream error for player {PlayerId}",
+            this.GetPrimaryKeyLong()
+        );
+
         return Task.CompletedTask;
     }
 
@@ -97,7 +108,7 @@ internal sealed partial class PlayerPresenceGrain
     {
         if (composer is not null)
         {
-            _outgoingQueue.Enqueue(composer);
+            EnqueueOutgoing(composer);
 
             LogAndForget(ProcessOutgoingQueueAsync());
         }
@@ -111,7 +122,7 @@ internal sealed partial class PlayerPresenceGrain
         {
             foreach (IComposer composer in composers)
             {
-                _outgoingQueue.Enqueue(composer);
+                EnqueueOutgoing(composer);
             }
 
             LogAndForget(ProcessOutgoingQueueAsync());
@@ -120,16 +131,48 @@ internal sealed partial class PlayerPresenceGrain
         return Task.CompletedTask;
     }
 
+    private void EnqueueOutgoing(IComposer composer)
+    {
+        _outgoingQueue.Enqueue(composer);
+
+        while (_outgoingQueue.Count > _config.MaxOutgoingQueueSize)
+        {
+            _outgoingQueue.Dequeue();
+
+            _logger.LogWarning(
+                "Outgoing composer queue for player {PlayerId} exceeded {MaxOutgoingQueueSize}; dropping oldest composer",
+                this.GetPrimaryKeyLong(),
+                _config.MaxOutgoingQueueSize
+            );
+        }
+    }
+
     public override Task OnActivateAsync(CancellationToken ct)
     {
         return Task.CompletedTask;
     }
 
-    public override Task OnDeactivateAsync(DeactivationReason reason, CancellationToken ct)
+    public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken ct)
     {
         _outgoingQueue.Clear();
 
-        return Task.CompletedTask;
+        if (_roomOutboundSub is not null)
+        {
+            try
+            {
+                await _roomOutboundSub.UnsubscribeAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    ex,
+                    "Failed to unsubscribe room outbound stream for player {PlayerId} on deactivation",
+                    this.GetPrimaryKeyLong()
+                );
+            }
+
+            _roomOutboundSub = null;
+        }
     }
 
     private async Task ProcessOutgoingQueueAsync()

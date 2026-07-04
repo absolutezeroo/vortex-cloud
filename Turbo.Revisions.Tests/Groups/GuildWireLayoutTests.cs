@@ -1,10 +1,12 @@
 using System;
 using FluentAssertions;
+using Microsoft.Extensions.Options;
 using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Incoming.Users;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Packets;
+using Turbo.Revisions.Configuration;
 using Xunit;
 using Rev = Turbo.Revisions.Revision20260112.Revision20260112;
 
@@ -19,7 +21,7 @@ public sealed class GuildWireLayoutTests
     // Header ids from Revision20260112 Headers.cs (incoming MessageEvent ids).
     private const int CreateGuildEvent = 2792;
 
-    private static readonly Rev Revision = new();
+    private static readonly Rev Revision = new(Options.Create(new ProtocolLimitsConfig()));
 
     /// <summary>Writes packet fields the same way the client composer does, for parser input.</summary>
     private static ClientPacket BuildClientPacket(int header, Action<ServerPacket> write)

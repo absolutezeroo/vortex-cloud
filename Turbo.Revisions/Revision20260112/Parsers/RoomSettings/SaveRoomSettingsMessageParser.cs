@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using Turbo.Primitives.Messages.Incoming.RoomSettings;
 using Turbo.Primitives.Navigator.Enums;
 using Turbo.Primitives.Networking;
@@ -7,7 +8,7 @@ using Turbo.Primitives.Rooms.Enums;
 
 namespace Turbo.Revisions.Revision20260112.Parsers.RoomSettings;
 
-internal class SaveRoomSettingsMessageParser : IParser
+internal class SaveRoomSettingsMessageParser(int maxTags) : IParser
 {
     public IMessageEvent Parse(IClientPacket packet)
     {
@@ -40,10 +41,18 @@ internal class SaveRoomSettingsMessageParser : IParser
         };
     }
 
-    private static List<string> ParseTags(IClientPacket packet)
+    private List<string> ParseTags(IClientPacket packet)
     {
         int tagCount = packet.PopInt();
-        List<string> tags = new();
+
+        if (tagCount < 0 || tagCount > maxTags)
+        {
+            throw new InvalidDataException(
+                $"Client declared an invalid room tag count of {tagCount} (max {maxTags})."
+            );
+        }
+
+        List<string> tags = new(tagCount);
 
         for (int i = 0; i < tagCount; i++)
         {

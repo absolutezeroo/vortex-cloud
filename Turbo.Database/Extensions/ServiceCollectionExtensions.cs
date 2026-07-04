@@ -51,7 +51,7 @@ public static class ServiceCollectionExtensions
         {
             PluginManifest manifest = sp.GetRequiredService<PluginManifest>();
 
-            string? tablePrefix = manifest.TablePrefix;
+            string tablePrefix = manifest.TablePrefix ?? string.Empty;
 
             if (manifest.ExplicitlyNoTablePrefix ?? false)
             {
@@ -61,17 +61,19 @@ public static class ServiceCollectionExtensions
             {
                 if (string.IsNullOrWhiteSpace(tablePrefix))
                 {
-                    tablePrefix = manifest
-                        .Key.Split('-')
-                        .Where(part => !string.IsNullOrEmpty(part))
-                        .Select(part => char.ToLowerInvariant(part[0]))
-                        .ToString();
+                    tablePrefix = new string(
+                        manifest
+                            .Key.Split('-')
+                            .Where(part => !string.IsNullOrEmpty(part))
+                            .Select(part => char.ToLowerInvariant(part[0]))
+                            .ToArray()
+                    );
                 }
 
                 tablePrefix += "_";
             }
 
-            return () => manifest.TablePrefix ?? string.Empty;
+            return () => tablePrefix;
         });
 
         return services;

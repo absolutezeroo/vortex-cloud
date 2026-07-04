@@ -9,8 +9,8 @@ namespace Turbo.Primitives.Rooms.Grains;
 
 public partial interface IRoomGrain : IGrainWithIntegerKey
 {
-    public void DeactivateRoom();
-    public void DelayRoomDeactivation();
+    public Task DeactivateRoomAsync();
+    public Task DelayRoomDeactivationAsync();
     public Task EnsureRoomActiveAsync(CancellationToken ct);
     public Task<RoomSnapshot> GetSnapshotAsync();
     public Task<RoomSummarySnapshot> GetSummaryAsync();

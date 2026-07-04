@@ -135,13 +135,17 @@ public sealed class NetworkManager(
         builder.ConfigureLogging((ctx, logging) => logging.ClearProviders());
         builder.ConfigureServices((ctx, services) => ConfigureCommonServices(services));
 
-        ClientPacketDecoder decoder = new();
+        ClientPacketDecoder decoder = new(_config.MaxPacketBodyBytes);
         PackageHandler packageHandler = new(
             _revisionManager,
             _messageSystem,
             _loggerFactory.CreateLogger<PackageHandler>()
         );
-        WsPackageHandler wsPackageHandler = new(decoder, packageHandler);
+        WsPackageHandler wsPackageHandler = new(
+            decoder,
+            packageHandler,
+            _loggerFactory.CreateLogger<WsPackageHandler>()
+        );
 
         builder.UseSessionHandler(
             async session =>
@@ -213,6 +217,8 @@ public sealed class NetworkManager(
         services.AddSingleton(_grainFactory);
         services.AddSingleton<IPackageEncoder<OutgoingPackage>, PackageEncoder>();
         services.AddSingleton<IPackageHandler<IClientPacket>, PackageHandler>();
-        services.AddSingleton<IClientPacketDecoder, ClientPacketDecoder>();
+        services.AddSingleton<IClientPacketDecoder>(_ => new ClientPacketDecoder(
+            _config.MaxPacketBodyBytes
+        ));
     }
 }

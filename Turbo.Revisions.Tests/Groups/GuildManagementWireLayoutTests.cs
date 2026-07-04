@@ -1,10 +1,12 @@
 using System;
 using FluentAssertions;
+using Microsoft.Extensions.Options;
 using Turbo.Primitives.Groups.Snapshots;
 using Turbo.Primitives.Messages.Incoming.Users;
 using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Packets;
+using Turbo.Revisions.Configuration;
 using Xunit;
 using Rev = Turbo.Revisions.Revision20260112.Revision20260112;
 
@@ -18,7 +20,7 @@ public sealed class GuildManagementWireLayoutTests
     private const int UpdateGuildSettingsEvent = 3356;
     private const int KickMemberEvent = 380;
 
-    private static readonly Rev Revision = new();
+    private static readonly Rev Revision = new(Options.Create(new ProtocolLimitsConfig()));
 
     private static ClientPacket BuildClientPacket(int header, Action<ServerPacket> write)
     {

@@ -171,7 +171,7 @@ public sealed partial class RoomGrain
 
             await _grainFactory.GetRoomDirectoryGrain().RemoveActiveRoomAsync(_state.RoomId);
 
-            DeactivateRoom();
+            await DeactivateRoomAsync().ConfigureAwait(false);
 
             return true;
         }

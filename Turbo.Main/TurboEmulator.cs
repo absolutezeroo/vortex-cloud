@@ -32,7 +32,8 @@ public class TurboEmulator(
     INavigatorProvider topLevelContextProvider,
     IRoomModelProvider roomModelProvider,
     INetworkManager networkManager,
-    IRevisionManager revisionManager
+    IRevisionManager revisionManager,
+    Revision20260112 defaultRevision
 ) : IHostedService
 {
     private readonly ILogger<TurboEmulator> _logger = logger;
@@ -49,12 +50,13 @@ public class TurboEmulator(
     private readonly IRoomModelProvider _roomModelProvider = roomModelProvider;
     private readonly INetworkManager _networkManager = networkManager;
     private readonly IRevisionManager _revisionManager = revisionManager;
+    private readonly Revision20260112 _defaultRevision = defaultRevision;
 
     public async Task StartAsync(CancellationToken ct)
     {
         try
         {
-            _revisionManager.RegisterRevision(new Revision20260112());
+            _revisionManager.RegisterRevision(_defaultRevision);
             await _furnitureProvider.ReloadAsync(ct).ConfigureAwait(false);
             await _catalogProvider.ReloadAsync(ct).ConfigureAwait(false);
             await _clubOfferProvider.ReloadAsync(ct).ConfigureAwait(false);

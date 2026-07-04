@@ -121,19 +121,23 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
     public RoomId RoomId => _state.RoomId;
 
-    public void DeactivateRoom()
+    public Task DeactivateRoomAsync()
     {
         DeactivateOnIdle();
+
+        return Task.CompletedTask;
     }
 
-    public void DelayRoomDeactivation()
+    public Task DelayRoomDeactivationAsync()
     {
         DelayDeactivation(TimeSpan.FromMilliseconds(_roomConfig.RoomDeactivationDelayMs));
+
+        return Task.CompletedTask;
     }
 
     public async Task EnsureRoomActiveAsync(CancellationToken ct)
     {
-        DelayRoomDeactivation();
+        await DelayRoomDeactivationAsync().ConfigureAwait(false);
 
         await MapModule.EnsureMapBuiltAsync(ct);
         await FurniModule.EnsureFurniLoadedAsync(ct);

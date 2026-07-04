@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 using Turbo.Primitives.Messages.Outgoing.Advertisement;
 using Turbo.Primitives.Messages.Outgoing.Availability;
 using Turbo.Primitives.Messages.Outgoing.Avatar;
@@ -45,6 +46,7 @@ using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Messages.Outgoing.Vault;
 using Turbo.Primitives.Networking.Revisions;
 using Turbo.Primitives.Packets;
+using Turbo.Revisions.Configuration;
 using Turbo.Revisions.Revision20260112.Parsers.Advertisement;
 using Turbo.Revisions.Revision20260112.Parsers.Avatar;
 using Turbo.Revisions.Revision20260112.Parsers.Camera;
@@ -152,7 +154,7 @@ using Turbo.Revisions.Revision20260112.Serializers.Vault;
 
 namespace Turbo.Revisions.Revision20260112;
 
-public class Revision20260112 : IRevision
+public class Revision20260112(IOptions<ProtocolLimitsConfig> protocolLimits) : IRevision
 {
     public string Revision => "WIN63-202601121721-391685409";
 
@@ -382,7 +384,10 @@ public class Revision20260112 : IRevision
             { MessageEvent.GetMessengerHistoryEvent, new GetMessengerHistoryMessageParser() },
             { MessageEvent.HabboSearchMessageEvent, new HabboSearchMessageParser() },
             { MessageEvent.MessengerInitMessageEvent, new MessengerInitMessageParser() },
-            { MessageEvent.RemoveFriendMessageEvent, new RemoveFriendMessageParser() },
+            {
+                MessageEvent.RemoveFriendMessageEvent,
+                new RemoveFriendMessageParser(protocolLimits.Value.MaxFriendRemovalIds)
+            },
             { MessageEvent.RequestFriendMessageEvent, new RequestFriendMessageParser() },
             { MessageEvent.SendMsgMessageEvent, new SendMsgMessageParser() },
             { MessageEvent.SendRoomInviteMessageEvent, new SendRoomInviteMessageParser() },
@@ -1208,7 +1213,10 @@ public class Revision20260112 : IRevision
             },
             { MessageEvent.GetFlatControllersMessageEvent, new GetFlatControllersMessageParser() },
             { MessageEvent.GetRoomSettingsMessageEvent, new GetRoomSettingsMessageParser() },
-            { MessageEvent.SaveRoomSettingsMessageEvent, new SaveRoomSettingsMessageParser() },
+            {
+                MessageEvent.SaveRoomSettingsMessageEvent,
+                new SaveRoomSettingsMessageParser(protocolLimits.Value.MaxRoomTags)
+            },
             {
                 MessageEvent.UpdateRoomCategoryAndTradeSettingsEvent,
                 new UpdateRoomCategoryAndTradeSettingsMessageParser()
