@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orleans;
 using Orleans.Streams;
+using Turbo.Logging.Extensions;
 using Turbo.Players.Configuration;
 using Turbo.Players.Grains.Modules;
 using Turbo.Primitives.Events;
@@ -199,18 +200,10 @@ internal sealed partial class PlayerPresenceGrain
         _isProcessingQueue = false;
     }
 
-    private void LogAndForget(Task task)
-    {
-        task.ContinueWith(
-            t =>
-                _logger.LogError(
-                    t.Exception,
-                    "Unhandled error while processing outgoing composer queue for player {PlayerId}",
-                    this.GetPrimaryKeyLong()
-                ),
-            CancellationToken.None,
-            TaskContinuationOptions.OnlyOnFaulted,
-            TaskScheduler.Current
+    private void LogAndForget(Task task) =>
+        task.LogAndForget(
+            _logger,
+            "Unhandled error while processing outgoing composer queue for player {PlayerId}",
+            this.GetPrimaryKeyLong()
         );
-    }
 }

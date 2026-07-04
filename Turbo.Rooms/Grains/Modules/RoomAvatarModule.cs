@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Turbo.Logging;
+using Turbo.Logging.Extensions;
 using Turbo.Primitives;
 using Turbo.Primitives.Action;
 using Turbo.Primitives.Messages.Outgoing.Room.Action;
@@ -311,16 +312,22 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
             return Task.FromResult(false);
         }
 
-        _ = _roomGrain.SendComposerToRoomAsync(
-            new UserChangeMessageComposer
-            {
-                ObjectId = avatarPlayer.ObjectId,
-                Figure = avatarPlayer.Figure,
-                Gender = avatarPlayer.Gender,
-                CustomInfo = avatarPlayer.Motto,
-                AchievementScore = snapshot.AchievementScore,
-            }
-        );
+        _roomGrain
+            .SendComposerToRoomAsync(
+                new UserChangeMessageComposer
+                {
+                    ObjectId = avatarPlayer.ObjectId,
+                    Figure = avatarPlayer.Figure,
+                    Gender = avatarPlayer.Gender,
+                    CustomInfo = avatarPlayer.Motto,
+                    AchievementScore = snapshot.AchievementScore,
+                }
+            )
+            .LogAndForget(
+                _roomGrain._logger,
+                "Failed to publish avatar update for room {RoomId}",
+                _roomGrain._state.RoomId
+            );
 
         return Task.FromResult(true);
     }
@@ -344,9 +351,19 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
             return Task.FromResult(false);
         }
 
-        _ = _roomGrain.SendComposerToRoomAsync(
-            new DanceMessageComposer { ObjectId = avatar.ObjectId, DanceType = player.DanceType }
-        );
+        _roomGrain
+            .SendComposerToRoomAsync(
+                new DanceMessageComposer
+                {
+                    ObjectId = avatar.ObjectId,
+                    DanceType = player.DanceType,
+                }
+            )
+            .LogAndForget(
+                _roomGrain._logger,
+                "Failed to publish avatar update for room {RoomId}",
+                _roomGrain._state.RoomId
+            );
 
         return Task.FromResult(true);
     }
@@ -368,13 +385,19 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
             return Task.FromResult(false);
         }
 
-        _ = _roomGrain.SendComposerToRoomAsync(
-            new ExpressionMessageComposer
-            {
-                ObjectId = avatar.ObjectId,
-                ExpressionType = expressionType,
-            }
-        );
+        _roomGrain
+            .SendComposerToRoomAsync(
+                new ExpressionMessageComposer
+                {
+                    ObjectId = avatar.ObjectId,
+                    ExpressionType = expressionType,
+                }
+            )
+            .LogAndForget(
+                _roomGrain._logger,
+                "Failed to publish avatar update for room {RoomId}",
+                _roomGrain._state.RoomId
+            );
 
         return Task.FromResult(true);
     }
@@ -395,9 +418,15 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
         bool isSitting = avatar.HasStatus(AvatarStatusType.Sit);
         avatar.Sit(!isSitting);
 
-        _ = _roomGrain.SendComposerToRoomAsync(
-            new UserUpdateMessageComposer { Avatars = [avatar.GetSnapshot()] }
-        );
+        _roomGrain
+            .SendComposerToRoomAsync(
+                new UserUpdateMessageComposer { Avatars = [avatar.GetSnapshot()] }
+            )
+            .LogAndForget(
+                _roomGrain._logger,
+                "Failed to publish avatar update for room {RoomId}",
+                _roomGrain._state.RoomId
+            );
 
         return Task.FromResult(true);
     }
@@ -417,9 +446,15 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
 
         avatar.AddStatus(AvatarStatusType.Sign, signId.ToString());
 
-        _ = _roomGrain.SendComposerToRoomAsync(
-            new UserUpdateMessageComposer { Avatars = [avatar.GetSnapshot()] }
-        );
+        _roomGrain
+            .SendComposerToRoomAsync(
+                new UserUpdateMessageComposer { Avatars = [avatar.GetSnapshot()] }
+            )
+            .LogAndForget(
+                _roomGrain._logger,
+                "Failed to publish avatar update for room {RoomId}",
+                _roomGrain._state.RoomId
+            );
 
         return Task.FromResult(true);
     }
@@ -458,9 +493,15 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
             avatar.SetBodyRotation(rotation);
         }
 
-        _ = _roomGrain.SendComposerToRoomAsync(
-            new UserUpdateMessageComposer { Avatars = [avatar.GetSnapshot()] }
-        );
+        _roomGrain
+            .SendComposerToRoomAsync(
+                new UserUpdateMessageComposer { Avatars = [avatar.GetSnapshot()] }
+            )
+            .LogAndForget(
+                _roomGrain._logger,
+                "Failed to publish avatar update for room {RoomId}",
+                _roomGrain._state.RoomId
+            );
 
         return Task.FromResult(true);
     }
@@ -478,9 +519,19 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
             return Task.CompletedTask;
         }
 
-        _ = _roomGrain.SendComposerToRoomAsync(
-            new UserTypingMessageComposer { UserId = avatar.ObjectId.Value, IsTyping = isTyping }
-        );
+        _roomGrain
+            .SendComposerToRoomAsync(
+                new UserTypingMessageComposer
+                {
+                    UserId = avatar.ObjectId.Value,
+                    IsTyping = isTyping,
+                }
+            )
+            .LogAndForget(
+                _roomGrain._logger,
+                "Failed to publish avatar update for room {RoomId}",
+                _roomGrain._state.RoomId
+            );
 
         return Task.CompletedTask;
     }

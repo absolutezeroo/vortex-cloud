@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orleans;
+using Turbo.Logging.Extensions;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.FriendList.Grains;
 using Turbo.Primitives.Messages.Incoming.FriendList;
@@ -12,8 +14,10 @@ using Turbo.Primitives.Snapshots.FriendList;
 
 namespace Turbo.PacketHandlers.FriendList;
 
-public class MessengerInitMessageHandler(IGrainFactory grainFactory)
-    : IMessageHandler<MessengerInitMessage>
+public class MessengerInitMessageHandler(
+    IGrainFactory grainFactory,
+    ILogger<MessengerInitMessageHandler> logger
+) : IMessageHandler<MessengerInitMessage>
 {
     private const int FragmentSize = 500;
     private const int UserFriendLimit = 300;
@@ -21,6 +25,7 @@ public class MessengerInitMessageHandler(IGrainFactory grainFactory)
     private const int ExtendedFriendLimit = 2000;
 
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly ILogger<MessengerInitMessageHandler> _logger = logger;
 
     public async ValueTask HandleAsync(
         MessengerInitMessage message,
@@ -76,6 +81,8 @@ public class MessengerInitMessageHandler(IGrainFactory grainFactory)
         }
 
         // Notify online — delivers pending messages and notifies friends fire-and-forget
-        _ = grain.NotifyOnlineAsync(ct);
+        grain
+            .NotifyOnlineAsync(ct)
+            .LogAndForget(_logger, "Failed to notify online for player {PlayerId}", ctx.PlayerId);
     }
 }

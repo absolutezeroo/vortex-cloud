@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Turbo.Logging.Extensions;
 using Turbo.Primitives.Messages.Outgoing.Room.Engine;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Rooms;
@@ -311,7 +312,13 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
 
         foreach (IComposer composer in composers)
         {
-            _ = _roomGrain.SendComposerToRoomAsync(composer);
+            _roomGrain
+                .SendComposerToRoomAsync(composer)
+                .LogAndForget(
+                    _roomGrain._logger,
+                    "Failed to publish roller broadcast for room {RoomId}",
+                    _roomGrain._state.RoomId
+                );
         }
 
         return Task.CompletedTask;

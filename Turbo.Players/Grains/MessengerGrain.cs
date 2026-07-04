@@ -10,6 +10,7 @@ using Orleans;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Messenger;
 using Turbo.Database.Entities.Players;
+using Turbo.Logging.Extensions;
 using Turbo.Players.Configuration;
 using Turbo.Primitives.Events;
 using Turbo.Primitives.FriendList.Enums;
@@ -42,8 +43,6 @@ internal sealed class MessengerGrain(
     private readonly HashSet<int> _pendingDeliveredIds = new();
 
     private PlayerId SelfId => PlayerId.Parse((int)this.GetPrimaryKeyLong());
-
-    // ── Reads ────────────────────────────────────────────────────────────────
 
     public Task<List<MessengerFriendSnapshot>> GetFriendsAsync(CancellationToken ct)
     {
@@ -107,8 +106,6 @@ internal sealed class MessengerGrain(
     {
         return Task.FromResult(_ignoredIds.Contains(targetId.Value));
     }
-
-    // ── Friend requests ──────────────────────────────────────────────────────
 
     public async Task<FriendListErrorCodeType?> SendFriendRequestAsync(
         PlayerId targetId,
@@ -376,8 +373,6 @@ internal sealed class MessengerGrain(
         }
     }
 
-    // ── Friendship mutations ─────────────────────────────────────────────────
-
     public async Task<List<int>> RemoveFriendsAsync(List<int> friendIds, CancellationToken ct)
     {
         List<int> removed = new();
@@ -464,8 +459,6 @@ internal sealed class MessengerGrain(
             .ExecuteUpdateAsync(up => up.SetProperty(p => p.RelationType, relationType), ct)
             .ConfigureAwait(false);
     }
-
-    // ── Block / ignore ───────────────────────────────────────────────────────
 
     public async Task BlockUserAsync(PlayerId targetId, CancellationToken ct)
     {
@@ -574,8 +567,6 @@ internal sealed class MessengerGrain(
             )
             .ExecuteDeleteAsync(ct);
     }
-
-    // ── Messaging ────────────────────────────────────────────────────────────
 
     public async Task<InstantMessageErrorCodeType?> SendMessageAsync(
         PlayerId receiverId,
@@ -715,8 +706,6 @@ internal sealed class MessengerGrain(
             .ToList();
     }
 
-    // ── Presence notifications ───────────────────────────────────────────────
-
     public async Task NotifyOnlineAsync(CancellationToken ct)
     {
         // Fan out to all friends (fire-and-forget) so they update their snapshot for us
@@ -834,8 +823,6 @@ internal sealed class MessengerGrain(
         return Task.CompletedTask;
     }
 
-    // ── Room actions ─────────────────────────────────────────────────────────
-
     public Task ReceiveRoomInviteAsync(PlayerId senderId, string message, CancellationToken ct)
     {
         if (_ignoredIds.Contains(senderId.Value))
@@ -852,8 +839,6 @@ internal sealed class MessengerGrain(
 
         return Task.CompletedTask;
     }
-
-    // ── Search ───────────────────────────────────────────────────────────────
 
     public Task<List<MessengerSearchResultSnapshot>> GetFriendSearchResultsAsync(
         string query,
@@ -880,8 +865,6 @@ internal sealed class MessengerGrain(
 
         return Task.FromResult(results);
     }
-
-    // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     public override async Task OnActivateAsync(CancellationToken ct)
     {
@@ -997,8 +980,6 @@ internal sealed class MessengerGrain(
         };
     }
 
-    // ── Timer ────────────────────────────────────────────────────────────────
-
     private async Task FlushDeliveredMessagesAsync(CancellationToken ct)
     {
         if (_pendingDeliveredIds.Count == 0)
@@ -1028,22 +1009,12 @@ internal sealed class MessengerGrain(
         }
     }
 
-    // ── Fire-and-forget ───────────────────────────────────────────────────────
-
-    private void LogAndForget(Task task)
-    {
-        task.ContinueWith(
-            t =>
-                logger.LogError(
-                    t.Exception,
-                    "Unhandled error in fire-and-forget messenger operation for player {PlayerId}",
-                    SelfId
-                ),
-            CancellationToken.None,
-            TaskContinuationOptions.OnlyOnFaulted,
-            TaskScheduler.Current
+    private void LogAndForget(Task task) =>
+        task.LogAndForget(
+            logger,
+            "Unhandled error in fire-and-forget messenger operation for player {PlayerId}",
+            SelfId
         );
-    }
 
     private async Task DeliverOfflinePendingMessagesAsync(CancellationToken ct)
     {

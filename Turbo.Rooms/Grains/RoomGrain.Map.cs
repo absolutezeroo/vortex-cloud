@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Turbo.Logging.Extensions;
 using Turbo.Primitives.Action;
 using Turbo.Primitives.Messages.Outgoing.Room.Engine;
 using Turbo.Primitives.Rooms.Snapshots.Mapping;
@@ -48,9 +49,14 @@ public sealed partial class RoomGrain
 
             if (heights.Count == heights.Capacity)
             {
-                _ = SendComposerToRoomAsync(
-                    new HeightMapUpdateMessageComposer { TileHeights = [.. heights] }
-                );
+                SendComposerToRoomAsync(
+                        new HeightMapUpdateMessageComposer { TileHeights = [.. heights] }
+                    )
+                    .LogAndForget(
+                        _logger,
+                        "Failed to publish height-map update for room {RoomId}",
+                        _state.RoomId
+                    );
 
                 heights.Clear();
             }
@@ -58,9 +64,14 @@ public sealed partial class RoomGrain
 
         if (heights.Count > 0)
         {
-            _ = SendComposerToRoomAsync(
-                new HeightMapUpdateMessageComposer { TileHeights = [.. heights] }
-            );
+            SendComposerToRoomAsync(
+                    new HeightMapUpdateMessageComposer { TileHeights = [.. heights] }
+                )
+                .LogAndForget(
+                    _logger,
+                    "Failed to publish height-map update for room {RoomId}",
+                    _state.RoomId
+                );
         }
 
         return Task.CompletedTask;
