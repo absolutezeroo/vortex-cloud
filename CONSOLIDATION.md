@@ -194,6 +194,19 @@ and `Turbo.Players.Configuration.PlayerPresenceConfig`.
   now documents `pet_food`'s actual composite unique index (`furniture_definition_id`, `pet_type`)
   and its `energy`/`max_uses` columns, matching `PetFoodEntity.cs`. §5 (Bots) was already correctly
   labeled "TO CREATE" — verified no `BotEntity`/migration exists, left as-is.
+- O9 — scoped before touching anything: `RoomGrain` (2262 l. total) turned out to already be
+  well-decomposed into 8 partial files (79–529 l. each) plus composed modules/systems (`MapModule`,
+  `AvatarModule`, `PetSystem`, …) — the audit's raw line count summed across partials, not a real
+  god-class. No change needed there. `MessengerGrain` (1071 l., one file) and `RoomPetSystem`
+  (2117 l., one file, zero test coverage) were the real candidates. Both split into partial files
+  by concern — pure reorganization, no logic touched:
+  - `MessengerGrain.cs` (lifecycle/hydration/shared helpers) + `.Friends.cs` (friend list/requests/
+    blocking/search) + `.Messaging.cs` (instant messages) + `.Presence.cs` (online/offline fan-out).
+  - `RoomPetSystem.cs` (loading/tick loop/dirty-flush/shared helpers) + `.Placement.cs`
+    (place/move/pick-up) + `.Motion.cs` (wander/decay/feeding AI) + `.Care.cs` (respect/commands/XP)
+    + `.Breeding.cs` (breeding/monsterplant).
+  Verified line-for-line before/after each split (method/field declaration counts matched exactly)
+  and via `dotnet test` on the affected test projects — no regressions.
 
 ---
 
