@@ -270,10 +270,21 @@ throughout; group rooms handled; moderation tool is functional and audited.
 - Deliberately deferred (separate stories, not part of this pass): Achievements and Avatar Effects
   both need a full subsystem (DB entity + grain + progress logic) built from zero, not just wiring.
 
-**Story 4.2 — End-to-end catalog purchase (Catalog 39% → 100%)**
+**Story 4.2 — End-to-end catalog purchase — mostly done (2026-07-05)**
 *As a* player, *I want* to buy from catalog, *so I can* get furniture.
-- [ ] Full purchase flow: page → offer → debit (via ledger) → inventory add.
-- [ ] Club (HC) and member pricing management.
+- [x] Full purchase flow: page → offer → debit (via ledger) → inventory add — was already correct
+  (`PurchaseFromCatalogMessageHandler` → `CatalogPurchaseGrain` → `ExecutePurchaseAsync`).
+- [x] Club (HC) and member pricing management — already applied at purchase time
+  (`CatalogOfferEntity.ClubLevel`/`DiscountPercent`); still missing a dashboard UI to edit it.
+- [x] 6 landing-page/misc handlers wired (offer giftability, next/expiring limited offers, bonus
+  rare promo, room-ad room list, new-additions no-op).
+- [x] Builders Club: subscription tier (`BuildersClubTierEntity`, real furni-count reporting) —
+  direct-to-room placement (`BuildersClubPlaceRoomItem`/`PlaceWallItem`) deferred, needs new
+  room/furniture orchestration.
+- [x] Room ads: full purchase flow (`RoomAdvertisementEntity`, `ExecutePurchaseAsync`-based).
+- Deliberately deferred (own story, needs a real per-player campaign entity): Targeted offers
+  (`GetTargetedOffer`/`GetNextTargetedOffer`/`SetTargetedOfferState`/`ShopTargetedOfferViewed`/
+  `PurchaseTargetedOffer`) and the seasonal calendar daily offer.
 
 **Story 4.3 — Critical ledger tests**
 *As a* developer, *I want* to test every currency movement, *so I avoid* silent currency duplication/loss.

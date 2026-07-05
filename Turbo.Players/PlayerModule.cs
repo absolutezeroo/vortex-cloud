@@ -31,5 +31,7 @@ public sealed class PlayerModule : IHostPluginModule
         services.AddSingleton<IPetCommandProvider, PetCommandProvider>();
         services.AddSingleton<IPetLevelProvider, PetLevelProvider>();
         services.AddSingleton<IPlayerService, PlayerService>();
+        services.AddSingleton<IBuildersClubService, BuildersClubService>();
+        services.AddHostedService<BuildersClubTierSeederService>();
     }
 }

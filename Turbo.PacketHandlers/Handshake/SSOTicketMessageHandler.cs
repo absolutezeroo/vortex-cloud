@@ -41,6 +41,7 @@ public class SSOTicketMessageHandler(
     IGrainFactory grainFactory,
     IPermissionService permissionService,
     ICfhTicketService cfhTickets,
+    IBuildersClubService buildersClubService,
     ILogger<SSOTicketMessageHandler> logger
 ) : IMessageHandler<SSOTicketMessage>
 {
@@ -56,6 +57,7 @@ public class SSOTicketMessageHandler(
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IPermissionService _permissionService = permissionService;
     private readonly ICfhTicketService _cfhTickets = cfhTickets;
+    private readonly IBuildersClubService _buildersClubService = buildersClubService;
     private readonly ILogger<SSOTicketMessageHandler> _logger = logger;
 
     public async ValueTask HandleAsync(
@@ -248,13 +250,20 @@ public class SSOTicketMessageHandler(
                     ct
                 )
                 .ConfigureAwait(false);
+            BuildersClubSubscriptionSnapshot buildersClub = await _buildersClubService
+                .GetSubscriptionAsync(playerId, ct)
+                .ConfigureAwait(false);
+            int buildersClubSecondsLeft = buildersClub.IsActive
+                ? (int)Math.Max(0, (buildersClub.ExpiresAt!.Value - DateTime.UtcNow).TotalSeconds)
+                : 0;
+
             await ctx.SendComposerAsync(
                     new BuildersClubSubscriptionStatusMessageComposer
                     {
-                        SecondsLeft = 0,
-                        FurniLimit = 0,
-                        MaxFurniLimit = 0,
-                        SecondsLeftWithGrace = 0,
+                        SecondsLeft = buildersClubSecondsLeft,
+                        FurniLimit = buildersClub.FurniLimit,
+                        MaxFurniLimit = buildersClub.FurniLimit,
+                        SecondsLeftWithGrace = buildersClubSecondsLeft,
                     },
                     ct
                 )

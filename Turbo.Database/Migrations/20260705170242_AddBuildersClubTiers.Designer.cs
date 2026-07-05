@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Turbo.Database.Context;
 
@@ -11,9 +12,11 @@ using Turbo.Database.Context;
 namespace Turbo.Database.Migrations
 {
     [DbContext(typeof(TurboDbContext))]
-    partial class TurboDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260705170242_AddBuildersClubTiers")]
+    partial class AddBuildersClubTiers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4394,67 +4397,6 @@ namespace Turbo.Database.Migrations
                     b.ToTable("player_vault_income_rewards");
                 });
 
-            modelBuilder.Entity("Turbo.Database.Entities.Room.RoomAdvertisementEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int")
-                        .HasColumnName("category_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("created_at");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)")
-                        .HasColumnName("description");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("expires_at");
-
-                    b.Property<bool>("Extended")
-                        .HasColumnType("tinyint(1)")
-                        .HasColumnName("extended");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)")
-                        .HasColumnName("name");
-
-                    b.Property<int>("RoomEntityId")
-                        .HasColumnType("int")
-                        .HasColumnName("room_id");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("updated_at");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoomEntityId");
-
-                    b.ToTable("room_advertisements");
-                });
-
             modelBuilder.Entity("Turbo.Database.Entities.Room.RoomBanEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -5761,17 +5703,6 @@ namespace Turbo.Database.Migrations
                         .IsRequired();
 
                     b.Navigation("PlayerEntity");
-                });
-
-            modelBuilder.Entity("Turbo.Database.Entities.Room.RoomAdvertisementEntity", b =>
-                {
-                    b.HasOne("Turbo.Database.Entities.Room.RoomEntity", "RoomEntity")
-                        .WithMany()
-                        .HasForeignKey("RoomEntityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("RoomEntity");
                 });
 
             modelBuilder.Entity("Turbo.Database.Entities.Room.RoomBanEntity", b =>

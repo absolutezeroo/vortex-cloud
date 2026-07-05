@@ -66,6 +66,8 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
 
     public DbSet<RoomEntryLogEntity> RoomEntryLogs { get; init; } = null!;
 
+    public DbSet<RoomAdvertisementEntity> RoomAdvertisements { get; init; } = null!;
+
     public DbSet<RoomChatlogEntity> Chatlogs { get; init; } = null!;
     public DbSet<SecurityTicketEntity> SecurityTickets { get; init; } = null!;
 
@@ -112,6 +114,8 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
     public DbSet<PlayerNavigatorViewModeEntity> PlayerNavigatorViewModes { get; init; } = null!;
 
     public DbSet<PlayerSubscriptionEntity> PlayerSubscriptions { get; init; } = null!;
+
+    public DbSet<BuildersClubTierEntity> BuildersClubTiers { get; init; } = null!;
 
     public DbSet<PlayerKickbackEntity> PlayerKickbacks { get; init; } = null!;
 

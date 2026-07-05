@@ -17,6 +17,7 @@ using Turbo.Primitives.Players;
 using Turbo.Primitives.Players.Enums.Wallet;
 using Turbo.Primitives.Players.Grains;
 using Turbo.Primitives.Players.Wallet;
+using Turbo.Primitives.Rooms;
 
 namespace Turbo.Catalog.Grains;
 
@@ -24,12 +25,14 @@ public sealed partial class CatalogPurchaseGrain(
     IGrainFactory grainFactory,
     ICatalogService catalogService,
     IEventPublisher events,
+    IRoomAdvertisementService roomAdvertisements,
     ILogger<CatalogPurchaseGrain> logger
 ) : Grain, ICatalogPurchaseGrain
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ICatalogService _catalogService = catalogService;
     private readonly IEventPublisher _events = events;
+    private readonly IRoomAdvertisementService _roomAdvertisements = roomAdvertisements;
     private readonly ILogger<CatalogPurchaseGrain> _logger = logger;
 
     public async Task<CatalogOfferSnapshot> PurchaseOfferFromCatalogAsync(

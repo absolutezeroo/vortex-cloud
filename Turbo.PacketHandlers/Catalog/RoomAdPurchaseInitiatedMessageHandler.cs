@@ -5,6 +5,9 @@ using Turbo.Primitives.Messages.Incoming.Catalog;
 
 namespace Turbo.PacketHandlers.Catalog;
 
+/// <summary>Legitimate no-op: matches the client's own sendRoomAdPurchaseInitiatedEvent(), which is
+/// defined but never called anywhere in the WIN63 source -- purely a leftover analytics/tracking
+/// hook the server was never meant to act on.</summary>
 public class RoomAdPurchaseInitiatedMessageHandler : IMessageHandler<RoomAdPurchaseInitiatedMessage>
 {
     public async ValueTask HandleAsync(

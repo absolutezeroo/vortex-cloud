@@ -1582,6 +1582,12 @@ public class Revision20260112(IOptions<ProtocolLimitsConfig> protocolLimits) : I
                 )
             },
             {
+                typeof(BuildersClubFurniCountMessageComposer),
+                new BuildersClubFurniCountMessageComposerSerializer(
+                    MessageComposer.BuildersClubFurniCountMessageComposer
+                )
+            },
+            {
                 typeof(BuildersClubSubscriptionStatusMessageComposer),
                 new BuildersClubSubscriptionStatusMessageComposerSerializer(
                     MessageComposer.BuildersClubSubscriptionStatusMessageComposer

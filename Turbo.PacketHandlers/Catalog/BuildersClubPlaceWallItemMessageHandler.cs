@@ -5,6 +5,8 @@ using Turbo.Primitives.Messages.Incoming.Catalog;
 
 namespace Turbo.PacketHandlers.Catalog;
 
+/// <summary>See BuildersClubPlaceRoomItemMessageHandler -- same deferred direct-to-room placement
+/// orchestration gap, for wall items.</summary>
 public class BuildersClubPlaceWallItemMessageHandler
     : IMessageHandler<BuildersClubPlaceWallItemMessage>
 {
