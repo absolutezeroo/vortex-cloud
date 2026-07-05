@@ -1,3 +1,5 @@
+using System;
+
 namespace Turbo.Primitives.Events;
 
 /// <summary>A staff member kicked a player out of a room.</summary>
@@ -32,4 +34,19 @@ public sealed record ModerationActionDeniedEvent(
     int TargetPlayerId,
     int RoomId,
     string Action
+) : IEvent;
+
+/// <summary>A staff member suspended a player's account (null BannedUntil clears the ban).</summary>
+public sealed record PlayerAccountBannedEvent(
+    int ActorPlayerId,
+    int TargetPlayerId,
+    DateTime? BannedUntil,
+    string Reason
+) : IEvent;
+
+/// <summary>A staff member trading-locked a player's account (null LockedUntil clears the lock).</summary>
+public sealed record PlayerTradingLockedEvent(
+    int ActorPlayerId,
+    int TargetPlayerId,
+    DateTime? LockedUntil
 ) : IEvent;

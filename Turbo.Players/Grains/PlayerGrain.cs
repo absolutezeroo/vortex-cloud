@@ -349,6 +349,107 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
         await UpsertKickbackAsync(ct).ConfigureAwait(false);
     }
 
+    public async Task<bool> ApplyAccountBanAsync(
+        int actorPlayerId,
+        DateTime? bannedUntil,
+        string reason,
+        CancellationToken ct
+    )
+    {
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+
+        PlayerAccountEntity? account = await FindLinkedAccountAsync(dbCtx, ct)
+            .ConfigureAwait(false);
+
+        if (account is null)
+        {
+            return false;
+        }
+
+        account.BannedUntil = bannedUntil;
+        account.BanReason = bannedUntil is null ? null : reason;
+
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        await _events
+            .PublishAsync(
+                new PlayerAccountBannedEvent(
+                    actorPlayerId,
+                    (int)_state.PlayerId,
+                    bannedUntil,
+                    reason
+                ),
+                ct
+            )
+            .ConfigureAwait(false);
+
+        return true;
+    }
+
+    public async Task<bool> ApplyTradingLockAsync(
+        int actorPlayerId,
+        DateTime? lockedUntil,
+        CancellationToken ct
+    )
+    {
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+
+        PlayerAccountEntity? account = await FindLinkedAccountAsync(dbCtx, ct)
+            .ConfigureAwait(false);
+
+        if (account is null)
+        {
+            return false;
+        }
+
+        account.TradingLockedUntil = lockedUntil;
+
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        await _events
+            .PublishAsync(
+                new PlayerTradingLockedEvent(actorPlayerId, (int)_state.PlayerId, lockedUntil),
+                ct
+            )
+            .ConfigureAwait(false);
+
+        return true;
+    }
+
+    public async Task<DateTime?> GetActiveBanExpiryAsync(CancellationToken ct)
+    {
+        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+
+        PlayerAccountEntity? account = await FindLinkedAccountAsync(dbCtx, ct)
+            .ConfigureAwait(false);
+
+        if (account?.BannedUntil is null || account.BannedUntil <= DateTime.UtcNow)
+        {
+            return null;
+        }
+
+        return account.BannedUntil;
+    }
+
+    private async Task<PlayerAccountEntity?> FindLinkedAccountAsync(
+        TurboDbContext dbCtx,
+        CancellationToken ct
+    )
+    {
+        PlayerEntity? player = await dbCtx
+            .Players.FindAsync([_state.PlayerId.Value], ct)
+            .ConfigureAwait(false);
+
+        if (player?.PlayerAccountEntityId is null)
+        {
+            return null;
+        }
+
+        return await dbCtx
+            .PlayerAccounts.FindAsync([player.PlayerAccountEntityId.Value], ct)
+            .ConfigureAwait(false);
+    }
+
     public override async Task OnActivateAsync(CancellationToken ct)
     {
         await HydrateAsync(ct);

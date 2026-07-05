@@ -14,6 +14,7 @@ using Turbo.Primitives.Messages.Outgoing.Inventory.Achievements;
 using Turbo.Primitives.Messages.Outgoing.Inventory.Avatareffect;
 using Turbo.Primitives.Messages.Outgoing.Inventory.Clothing;
 using Turbo.Primitives.Messages.Outgoing.Inventory.Purse;
+using Turbo.Primitives.Messages.Outgoing.Moderation;
 using Turbo.Primitives.Messages.Outgoing.Mysterybox;
 using Turbo.Primitives.Messages.Outgoing.Navigator;
 using Turbo.Primitives.Messages.Outgoing.Notifications;
@@ -60,6 +61,27 @@ public class SSOTicketMessageHandler(
 
             if (playerId <= 0)
             {
+                await ctx.CloseSessionAsync().ConfigureAwait(false);
+
+                return;
+            }
+
+            DateTime? banExpiry = await _grainFactory
+                .GetPlayerGrain(PlayerId.Parse(playerId))
+                .GetActiveBanExpiryAsync(ct)
+                .ConfigureAwait(false);
+
+            if (banExpiry is not null)
+            {
+                string banMessage = AccountBan.IsPermanent(banExpiry.Value)
+                    ? "You have been permanently banned from this hotel."
+                    : $"You are banned until {banExpiry.Value:yyyy-MM-dd HH:mm} UTC.";
+
+                await ctx.SendComposerAsync(
+                        new UserBannedMessageComposer { Message = banMessage },
+                        ct
+                    )
+                    .ConfigureAwait(false);
                 await ctx.CloseSessionAsync().ConfigureAwait(false);
 
                 return;

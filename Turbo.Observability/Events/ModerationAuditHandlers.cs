@@ -127,3 +127,49 @@ public sealed class ModerationActionDeniedAuditHandler(IAuditSink audit)
         return ValueTask.CompletedTask;
     }
 }
+
+public sealed class PlayerAccountBannedAuditHandler(IAuditSink audit)
+    : IEventHandler<PlayerAccountBannedEvent>
+{
+    public ValueTask HandleAsync(PlayerAccountBannedEvent e, EventContext ctx, CancellationToken ct)
+    {
+        audit.Emit(
+            new AuditEvent
+            {
+                Category = AuditCategory.Moderation,
+                Action = "moderation.account_ban",
+                Severity = AuditSeverity.Warning,
+                Result = AuditResult.Success,
+                ActorPlayerId = e.ActorPlayerId,
+                TargetPlayerId = e.TargetPlayerId,
+                Data = JsonSerializer.Serialize(
+                    new { bannedUntil = e.BannedUntil, reason = e.Reason }
+                ),
+            }
+        );
+
+        return ValueTask.CompletedTask;
+    }
+}
+
+public sealed class PlayerTradingLockedAuditHandler(IAuditSink audit)
+    : IEventHandler<PlayerTradingLockedEvent>
+{
+    public ValueTask HandleAsync(PlayerTradingLockedEvent e, EventContext ctx, CancellationToken ct)
+    {
+        audit.Emit(
+            new AuditEvent
+            {
+                Category = AuditCategory.Moderation,
+                Action = "moderation.trading_lock",
+                Severity = AuditSeverity.Notice,
+                Result = AuditResult.Success,
+                ActorPlayerId = e.ActorPlayerId,
+                TargetPlayerId = e.TargetPlayerId,
+                Data = JsonSerializer.Serialize(new { lockedUntil = e.LockedUntil }),
+            }
+        );
+
+        return ValueTask.CompletedTask;
+    }
+}

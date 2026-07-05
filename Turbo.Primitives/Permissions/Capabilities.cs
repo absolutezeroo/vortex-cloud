@@ -29,6 +29,7 @@ public static class Capabilities
         public const string Mute = "moderation.mute";
         public const string Alert = "moderation.alert";
         public const string Ban = "moderation.ban";
+        public const string TradingLock = "moderation.trading_lock";
     }
 
     public static class Economy
@@ -63,6 +64,7 @@ public static class Capabilities
             Moderation.Mute,
             Moderation.Alert,
             Moderation.Ban,
+            Moderation.TradingLock,
             Economy.GrantCredits,
             Economy.GrantActivityPoints,
             Economy.GrantItem,

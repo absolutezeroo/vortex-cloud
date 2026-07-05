@@ -12,6 +12,7 @@ public sealed class ModerationPolicyTests
     [InlineData(ModerationAction.Mute, Capabilities.Moderation.Mute)]
     [InlineData(ModerationAction.Ban, Capabilities.Moderation.Ban)]
     [InlineData(ModerationAction.Alert, Capabilities.Moderation.Alert)]
+    [InlineData(ModerationAction.TradingLock, Capabilities.Moderation.TradingLock)]
     public void SpecificCapability_AllowsMatchingAction(ModerationAction action, string capability)
     {
         PermissionSet permissions = Permissions(capability);
@@ -26,6 +27,7 @@ public sealed class ModerationPolicyTests
     [InlineData(ModerationAction.Mute)]
     [InlineData(ModerationAction.Ban)]
     [InlineData(ModerationAction.Alert)]
+    [InlineData(ModerationAction.TradingLock)]
     public void ModerateAny_AllowsEveryAction(ModerationAction action)
     {
         PermissionSet permissions = Permissions(Capabilities.Room.ModerateAny);
@@ -40,6 +42,7 @@ public sealed class ModerationPolicyTests
     [InlineData(ModerationAction.Mute)]
     [InlineData(ModerationAction.Ban)]
     [InlineData(ModerationAction.Alert)]
+    [InlineData(ModerationAction.TradingLock)]
     public void Wildcard_AllowsEveryAction(ModerationAction action)
     {
         PermissionSet permissions = Permissions(Capabilities.Wildcard);
@@ -54,6 +57,7 @@ public sealed class ModerationPolicyTests
     [InlineData(ModerationAction.Mute)]
     [InlineData(ModerationAction.Ban)]
     [InlineData(ModerationAction.Alert)]
+    [InlineData(ModerationAction.TradingLock)]
     public void NoCapability_DeniesAction(ModerationAction action)
     {
         bool allowed = ModerationPolicy.IsAllowed(PermissionSet.Empty, action);

@@ -349,6 +349,30 @@ public sealed class GroupDirectoryGrainCreationTests
         {
             throw new NotSupportedException();
         }
+
+        public Task<bool> ApplyAccountBanAsync(
+            int actorPlayerId,
+            DateTime? bannedUntil,
+            string reason,
+            CancellationToken ct
+        )
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task<bool> ApplyTradingLockAsync(
+            int actorPlayerId,
+            DateTime? lockedUntil,
+            CancellationToken ct
+        )
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task<DateTime?> GetActiveBanExpiryAsync(CancellationToken ct)
+        {
+            throw new NotSupportedException();
+        }
     }
 
     private sealed class CancellingGroupCreatingBehavior : IEventBehavior<GroupCreatingEvent>

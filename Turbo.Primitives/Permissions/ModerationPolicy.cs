@@ -7,6 +7,7 @@ public enum ModerationAction
     Mute,
     Ban,
     Alert,
+    TradingLock,
 }
 
 /// <summary>
@@ -31,6 +32,7 @@ public static class ModerationPolicy
             ModerationAction.Mute => Capabilities.Moderation.Mute,
             ModerationAction.Ban => Capabilities.Moderation.Ban,
             ModerationAction.Alert => Capabilities.Moderation.Alert,
+            ModerationAction.TradingLock => Capabilities.Moderation.TradingLock,
             _ => Capabilities.Wildcard,
         };
 }
