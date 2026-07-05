@@ -11,6 +11,10 @@ internal class LimitedOfferAppearingNextMessageComposerSerializer(int header)
         LimitedOfferAppearingNextMessageComposer message
     )
     {
-        //
+        packet
+            .WriteInteger(message.AppearsInSeconds)
+            .WriteInteger(message.PageId)
+            .WriteInteger(message.OfferId)
+            .WriteString(message.ProductType);
     }
 }

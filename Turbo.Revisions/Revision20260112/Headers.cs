@@ -588,6 +588,7 @@ internal static class MessageComposer
     public const int GiftWrappingConfigurationComposer = 1080;
     public const int HabboClubExtendOfferMessageComposer = 3509;
     public const int HabboClubOffersMessageComposer = 2426;
+    public const int IsOfferGiftableEventMessageComposer = 1750;
     public const int LimitedEditionSoldOutComposer = 181;
     public const int LimitedOfferAppearingNextMessageComposer = 2178;
     public const int NotEnoughBalanceMessageComposer = 3883;

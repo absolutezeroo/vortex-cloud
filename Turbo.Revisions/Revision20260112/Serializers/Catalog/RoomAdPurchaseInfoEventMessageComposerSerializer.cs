@@ -11,6 +11,14 @@ internal class RoomAdPurchaseInfoEventMessageComposerSerializer(int header)
         RoomAdPurchaseInfoEventMessageComposer message
     )
     {
-        //
+        packet.WriteBoolean(message.IsVip).WriteInteger(message.Rooms.Length);
+
+        foreach (RoomAdRoomEntry room in message.Rooms)
+        {
+            packet
+                .WriteInteger(room.RoomId)
+                .WriteString(room.RoomName)
+                .WriteBoolean(room.IsEventRoom);
+        }
     }
 }

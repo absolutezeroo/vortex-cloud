@@ -1650,6 +1650,12 @@ public class Revision20260112(IOptions<ProtocolLimitsConfig> protocolLimits) : I
                 )
             },
             {
+                typeof(IsOfferGiftableEventMessageComposer),
+                new IsOfferGiftableEventMessageComposerSerializer(
+                    MessageComposer.IsOfferGiftableEventMessageComposer
+                )
+            },
+            {
                 typeof(LimitedEditionSoldOutEventMessageComposer),
                 new LimitedEditionSoldOutEventMessageComposerSerializer(
                     MessageComposer.LimitedEditionSoldOutComposer

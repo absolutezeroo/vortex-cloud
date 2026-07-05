@@ -25,6 +25,7 @@ public sealed class CatalogModule : IHostPluginModule
         );
 
         services.AddSingleton<ICatalogService, CatalogService>();
+        services.AddSingleton<ILtdScheduleService, LtdScheduleService>();
         services.AddSingleton<ICatalogClubOfferProvider, CatalogClubOfferProvider>();
         services.AddSingleton<ICatalogClubGiftProvider, CatalogClubGiftProvider>();
         services.AddSingleton<ICatalogSnapshotProvider<NormalCatalog>>(
