@@ -1,11 +1,27 @@
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Moderator;
+using Turbo.Primitives.Messages.Outgoing.Help;
+using Turbo.Primitives.Moderation;
+using Turbo.Primitives.Networking;
+using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Permissions;
 
 namespace Turbo.PacketHandlers.Moderator;
 
-public class CloseIssueDefaultActionMessageHandler : IMessageHandler<CloseIssueDefaultActionMessage>
+public class CloseIssueDefaultActionMessageHandler(
+    IGrainFactory grainFactory,
+    IPermissionService permissionService,
+    ISessionGateway sessionGateway,
+    ISanctionPresetService sanctionPresets,
+    ICfhTicketService tickets,
+    ILogger<CloseIssueDefaultActionMessageHandler> logger
+) : IMessageHandler<CloseIssueDefaultActionMessage>
 {
     public async ValueTask HandleAsync(
         CloseIssueDefaultActionMessage message,
@@ -13,6 +29,84 @@ public class CloseIssueDefaultActionMessageHandler : IMessageHandler<CloseIssueD
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        if (ctx.PlayerId <= 0 || message.PrimaryIssueId <= 0)
+        {
+            return;
+        }
+
+        CfhTicketSummary? ticket = await tickets
+            .GetTicketAsync(message.PrimaryIssueId, ct)
+            .ConfigureAwait(false);
+
+        if (ticket is null)
+        {
+            return;
+        }
+
+        PermissionSet actorPermissions = await permissionService
+            .ResolveForPlayerAsync(ctx.PlayerId, ct)
+            .ConfigureAwait(false);
+        PermissionSet targetPermissions = await permissionService
+            .ResolveForPlayerAsync(ticket.Value.ReportedPlayerId, ct)
+            .ConfigureAwait(false);
+
+        if (
+            !actorPermissions.HasAny(Capabilities.Moderation.Cfh)
+            || !ModerationPolicy.IsAllowed(
+                actorPermissions,
+                targetPermissions,
+                ModerationAction.Ban
+            )
+        )
+        {
+            return;
+        }
+
+        CfhTopicSnapshot? topic = await tickets
+            .GetTopicAsync(message.TopicId, ct)
+            .ConfigureAwait(false);
+
+        if (topic is null || topic.Value.DefaultSanctionPresetId is null)
+        {
+            logger.LogWarning(
+                "CloseIssueDefaultAction: topic {TopicId} has no default sanction preset configured; skipping.",
+                message.TopicId
+            );
+
+            return;
+        }
+
+        bool sanctioned = await CfhDefaultSanctionHelper
+            .ApplyAsync(
+                grainFactory,
+                sessionGateway,
+                sanctionPresets,
+                topic.Value.DefaultSanctionPresetId.Value,
+                ticket.Value.ReportedPlayerId,
+                ctx.PlayerId,
+                topic.Value.Consequence ?? topic.Value.Name,
+                ct
+            )
+            .ConfigureAwait(false);
+
+        List<int> allIssueIds = [message.PrimaryIssueId, .. message.OtherIssueIds];
+
+        ImmutableArray<CfhTicketCloseOutcome> outcomes = await tickets
+            .CloseTicketsAsync(allIssueIds, CfhTicketCloseReason.Sanctioned, sanctioned, ct)
+            .ConfigureAwait(false);
+
+        foreach (CfhTicketCloseOutcome outcome in outcomes)
+        {
+            await grainFactory
+                .GetPlayerPresenceGrain(outcome.ReporterPlayerId)
+                .SendComposerAsync(
+                    new IssueCloseNotificationMessageComposer
+                    {
+                        CloseReason = (int)CfhTicketCloseReason.Sanctioned,
+                        MessageText = string.Empty,
+                    }
+                )
+                .ConfigureAwait(false);
+        }
     }
 }

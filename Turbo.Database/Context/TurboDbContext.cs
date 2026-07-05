@@ -6,6 +6,7 @@ using Turbo.Database.Entities.Furniture;
 using Turbo.Database.Entities.Groups;
 using Turbo.Database.Entities.Marketplace;
 using Turbo.Database.Entities.Messenger;
+using Turbo.Database.Entities.Moderation;
 using Turbo.Database.Entities.Navigator;
 using Turbo.Database.Entities.Permissions;
 using Turbo.Database.Entities.Pets;
@@ -79,6 +80,12 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
     public DbSet<PlayerAccountRoleEntity> PlayerAccountRoles { get; init; } = null!;
 
     public DbSet<SanctionPresetEntity> SanctionPresets { get; init; } = null!;
+
+    public DbSet<CfhCategoryEntity> CfhCategories { get; init; } = null!;
+
+    public DbSet<CfhTopicEntity> CfhTopics { get; init; } = null!;
+
+    public DbSet<CfhTicketEntity> CfhTickets { get; init; } = null!;
 
     public DbSet<NavigatorTopLevelContextEntity> NavigatorTopLevelContexts { get; init; } = null!;
 
@@ -198,5 +205,26 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
             .WithMany()
             .HasForeignKey(f => f.RentableSpaceFurnitureEntityId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        // cfh_tickets has three FKs to players (reporter, reported, picker) — non-cascade on all of
+        // them so MySQL never has to pick a cascade path, and so a ticket record (audit-adjacent)
+        // outlives whichever side it references.
+        mb.Entity<CfhTicketEntity>()
+            .HasOne(t => t.ReporterPlayerEntity)
+            .WithMany()
+            .HasForeignKey(t => t.ReporterPlayerEntityId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        mb.Entity<CfhTicketEntity>()
+            .HasOne(t => t.ReportedPlayerEntity)
+            .WithMany()
+            .HasForeignKey(t => t.ReportedPlayerEntityId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        mb.Entity<CfhTicketEntity>()
+            .HasOne(t => t.PickerPlayerEntity)
+            .WithMany()
+            .HasForeignKey(t => t.PickerPlayerEntityId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

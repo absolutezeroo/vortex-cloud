@@ -6,5 +6,6 @@ namespace Turbo.Primitives.Messages.Outgoing.Help;
 [GenerateSerializer, Immutable]
 public sealed record CallForHelpReplyMessageComposer : IComposer
 {
-    // TODO: add properties if/when identified
+    [Id(0)]
+    public required string Message { get; init; }
 }

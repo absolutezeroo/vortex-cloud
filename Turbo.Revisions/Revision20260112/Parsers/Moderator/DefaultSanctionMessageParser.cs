@@ -6,5 +6,12 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Moderator;
 
 internal class DefaultSanctionMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new DefaultSanctionMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new DefaultSanctionMessage
+        {
+            UserId = packet.PopInt(),
+            TopicId = packet.PopInt(),
+            Message = packet.PopString(),
+            IssueId = packet.End ? -1 : packet.PopInt(),
+        };
 }

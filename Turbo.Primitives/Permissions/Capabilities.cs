@@ -34,6 +34,11 @@ public static class Capabilities
         /// <summary>Matches the WIN63 client's own distinct "chatlogsPermission" tool flag — reading
         /// a player's chat history is gated separately from being able to sanction them.</summary>
         public const string Chatlogs = "moderation.chatlogs";
+
+        /// <summary>Matches the WIN63 client's own distinct "cfhPermission" tool flag — handling CFH
+        /// tickets (pick/close/release/default-action) is gated separately from direct
+        /// kick/mute/ban/alert actions.</summary>
+        public const string Cfh = "moderation.cfh";
     }
 
     public static class Economy
@@ -70,6 +75,7 @@ public static class Capabilities
             Moderation.Ban,
             Moderation.TradingLock,
             Moderation.Chatlogs,
+            Moderation.Cfh,
             Economy.GrantCredits,
             Economy.GrantActivityPoints,
             Economy.GrantItem,

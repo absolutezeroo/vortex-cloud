@@ -39,4 +39,23 @@ public sealed class SanctionPresetService(IDbContextFactory<TurboDbContext> dbCo
             ? null
             : new SanctionPresetSnapshot(preset.Name, preset.DurationSeconds, preset.Message);
     }
+
+    public async Task<SanctionPresetSnapshot?> ResolveByIdAsync(
+        int presetId,
+        CancellationToken ct = default
+    )
+    {
+        await using TurboDbContext dbCtx = await _dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        SanctionPresetEntity? preset = await dbCtx
+            .SanctionPresets.AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == presetId && p.DeletedAt == null, ct)
+            .ConfigureAwait(false);
+
+        return preset is null
+            ? null
+            : new SanctionPresetSnapshot(preset.Name, preset.DurationSeconds, preset.Message);
+    }
 }

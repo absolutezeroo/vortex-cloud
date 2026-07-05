@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Turbo.Primitives.Messages.Incoming.Moderator;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Packets;
@@ -6,5 +7,22 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Moderator;
 
 internal class CloseIssueDefaultActionMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new CloseIssueDefaultActionMessage();
+    public IMessageEvent Parse(IClientPacket packet)
+    {
+        int primaryIssueId = packet.PopInt();
+        int count = packet.PopInt();
+        ImmutableArray<int>.Builder otherIssueIds = ImmutableArray.CreateBuilder<int>(count);
+
+        for (int i = 0; i < count; i++)
+        {
+            otherIssueIds.Add(packet.PopInt());
+        }
+
+        return new CloseIssueDefaultActionMessage
+        {
+            PrimaryIssueId = primaryIssueId,
+            OtherIssueIds = otherIssueIds.MoveToImmutable(),
+            TopicId = packet.PopInt(),
+        };
+    }
 }

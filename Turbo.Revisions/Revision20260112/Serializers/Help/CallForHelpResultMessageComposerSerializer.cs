@@ -11,6 +11,6 @@ internal class CallForHelpResultMessageComposerSerializer(int header)
         CallForHelpResultMessageComposer message
     )
     {
-        //
+        packet.WriteInteger(message.ResultType).WriteString(message.MessageText);
     }
 }

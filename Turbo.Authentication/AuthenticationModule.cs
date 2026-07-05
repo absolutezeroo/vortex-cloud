@@ -2,6 +2,7 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Turbo.Authentication.Configuration;
+using Turbo.Authentication.Moderation;
 using Turbo.Authentication.Permissions;
 using Turbo.Primitives.Authentication;
 using Turbo.Primitives.Permissions;
@@ -54,5 +55,9 @@ public sealed class AuthenticationModule : IHostPluginModule
         services.AddSingleton<ISanctionPresetService, SanctionPresetService>();
         services.AddHostedService<PermissionSeederService>();
         services.AddHostedService<SanctionPresetSeederService>();
+        // Must run after SanctionPresetSeederService: it links CFH topics to Ban presets by
+        // (Kind, PresetIndex), which only exist once that seeder has run. Hosted services start in
+        // registration order, so this ordering is load-bearing, not incidental.
+        services.AddHostedService<CfhCatalogSeederService>();
     }
 }

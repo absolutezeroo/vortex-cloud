@@ -12,4 +12,8 @@ public interface ISanctionPresetService
         int presetIndex,
         CancellationToken ct = default
     );
+
+    /// <summary>Null if no preset exists with this id — used when a preset is referenced by its raw
+    /// database id rather than (kind, presetIndex), e.g. CfhTopicEntity.DefaultSanctionPresetEntityId.</summary>
+    Task<SanctionPresetSnapshot?> ResolveByIdAsync(int presetId, CancellationToken ct = default);
 }
