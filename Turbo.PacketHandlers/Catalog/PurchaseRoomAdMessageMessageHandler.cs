@@ -1,20 +1,29 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Catalog.Exceptions;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.Action;
 using Turbo.Primitives.Catalog.Grains;
 using Turbo.Primitives.Catalog.Snapshots;
 using Turbo.Primitives.Messages.Incoming.Catalog;
 using Turbo.Primitives.Messages.Outgoing.Catalog;
+using Turbo.Primitives.Navigator;
 using Turbo.Primitives.Orleans;
-using Turbo.Primitives.Orleans.Snapshots.Room;
+using Turbo.Primitives.Rooms.Enums;
+using Turbo.Primitives.Rooms.Grains;
 
 namespace Turbo.PacketHandlers.Catalog;
 
-public class PurchaseRoomAdMessageMessageHandler(IGrainFactory grainFactory)
-    : IMessageHandler<PurchaseRoomAdMessageMessage>
+public class PurchaseRoomAdMessageMessageHandler(
+    IGrainFactory grainFactory,
+    INavigatorProvider navigatorProvider
+) : IMessageHandler<PurchaseRoomAdMessageMessage>
 {
+    /// <summary>Real Habbo badge granted on a player's first-ever room-ad purchase.</summary>
+    private const string RoomAdBadgeCode = "RADZZ";
+
     public async ValueTask HandleAsync(
         PurchaseRoomAdMessageMessage message,
         MessageContext ctx,
@@ -26,12 +35,20 @@ public class PurchaseRoomAdMessageMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        RoomSnapshot roomSnapshot = await grainFactory
-            .GetRoomGrain(message.FlatId)
-            .GetSnapshotAsync()
+        if (!navigatorProvider.GetFlatCategories().Any(c => c.Id == message.CategoryId))
+        {
+            await ctx.SendComposerAsync(new PurchaseErrorMessageComposer(), ct)
+                .ConfigureAwait(false);
+            return;
+        }
+
+        IRoomGrain roomGrain = grainFactory.GetRoomGrain(message.FlatId);
+        ActionContext actionCtx = ActionContext.CreateForPlayer(ctx.PlayerId, message.FlatId);
+        RoomControllerType controllerLevel = await roomGrain
+            .GetControllerLevelAsync(actionCtx, ct)
             .ConfigureAwait(false);
 
-        if (roomSnapshot.OwnerId != ctx.PlayerId)
+        if (controllerLevel < RoomControllerType.Rights)
         {
             await ctx.SendComposerAsync(new PurchaseErrorMessageComposer(), ct)
                 .ConfigureAwait(false);
@@ -54,6 +71,11 @@ public class PurchaseRoomAdMessageMessageHandler(IGrainFactory grainFactory)
                     message.CategoryId,
                     ct
                 )
+                .ConfigureAwait(false);
+
+            await grainFactory
+                .GetInventoryGrain(ctx.PlayerId)
+                .GrantBadgeAsync(RoomAdBadgeCode, ct)
                 .ConfigureAwait(false);
 
             await ctx.SendComposerAsync(new PurchaseOKMessageComposer { Offer = offer }, ct)

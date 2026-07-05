@@ -8,4 +8,5 @@ public record BuildersClubPlaceWallItemMessage : IMessageEvent
     public int OfferId { get; init; }
     public string? ExtraParam { get; init; }
     public string? Location { get; init; }
+    public bool ConfirmHideRoom { get; init; }
 }

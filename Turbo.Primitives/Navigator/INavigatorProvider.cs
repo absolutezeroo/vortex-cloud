@@ -43,5 +43,9 @@ public interface INavigatorProvider
         CancellationToken ct = default
     );
 
+    /// <summary>Rooms with a currently non-expired RoomAdvertisementEntity -- backs
+    /// NavigatorQueryType.RoomAds, the "sponsored rooms" navigator category.</summary>
+    Task<List<RoomInfoSnapshot>> GetAdvertisedRoomsAsync(CancellationToken ct = default);
+
     Task ReloadAsync(CancellationToken ct = default);
 }

@@ -10,4 +10,5 @@ public record BuildersClubPlaceRoomItemMessage : IMessageEvent
     public int X { get; init; }
     public int Y { get; init; }
     public int Direction { get; init; }
+    public bool ConfirmHideRoom { get; init; }
 }

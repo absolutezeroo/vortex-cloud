@@ -212,6 +212,9 @@ public sealed class NavigatorService(
             NavigatorQueryType.ByFlatCategory => await _navigatorProvider
                 .GetRoomsByCategoryAsync(0, ct)
                 .ConfigureAwait(false),
+            NavigatorQueryType.RoomAds => await _navigatorProvider
+                .GetAdvertisedRoomsAsync(ct)
+                .ConfigureAwait(false),
             _ => await _navigatorProvider.GetAllRoomsAsync(ct).ConfigureAwait(false),
         };
     }

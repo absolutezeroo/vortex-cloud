@@ -82,6 +82,24 @@ public sealed class NavigatorProvider(
             .ConfigureAwait(false);
     }
 
+    public async Task<List<RoomInfoSnapshot>> GetAdvertisedRoomsAsync(
+        CancellationToken ct = default
+    )
+    {
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        DateTime now = DateTime.UtcNow;
+
+        return await BuildRoomQuery(dbCtx)
+            .Where(x =>
+                dbCtx.RoomAdvertisements.Any(a => a.RoomEntityId == x.Id && a.ExpiresAt > now)
+            )
+            .ToRoomInfoSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+    }
+
     public async Task<List<RoomInfoSnapshot>> GetRoomsByNameAsync(
         string name,
         CancellationToken ct = default

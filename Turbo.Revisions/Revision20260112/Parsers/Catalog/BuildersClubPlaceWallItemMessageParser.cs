@@ -13,5 +13,6 @@ internal class BuildersClubPlaceWallItemMessageParser : IParser
             OfferId = packet.PopInt(),
             ExtraParam = packet.PopString(),
             Location = packet.PopString(),
+            ConfirmHideRoom = packet.PopBoolean(),
         };
 }
