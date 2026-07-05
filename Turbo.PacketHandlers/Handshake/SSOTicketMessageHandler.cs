@@ -73,7 +73,7 @@ public class SSOTicketMessageHandler(
 
             if (banExpiry is not null)
             {
-                string banMessage = AccountBan.IsPermanent(banExpiry.Value)
+                string banMessage = SanctionDuration.IsPermanent(banExpiry.Value)
                     ? "You have been permanently banned from this hotel."
                     : $"You are banned until {banExpiry.Value:yyyy-MM-dd HH:mm} UTC.";
 

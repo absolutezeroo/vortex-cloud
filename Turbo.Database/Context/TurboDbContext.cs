@@ -78,6 +78,8 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
 
     public DbSet<PlayerAccountRoleEntity> PlayerAccountRoles { get; init; } = null!;
 
+    public DbSet<SanctionPresetEntity> SanctionPresets { get; init; } = null!;
+
     public DbSet<NavigatorTopLevelContextEntity> NavigatorTopLevelContexts { get; init; } = null!;
 
     public DbSet<NavigatorFlatCategoryEntity> NavigatorFlatCategories { get; init; } = null!;

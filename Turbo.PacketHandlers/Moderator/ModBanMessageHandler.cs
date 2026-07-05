@@ -2,10 +2,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Orleans;
 using Turbo.Messages.Registry;
-using Turbo.PacketHandlers.Configuration;
 using Turbo.Primitives.Events;
 using Turbo.Primitives.Messages.Incoming.Moderator;
 using Turbo.Primitives.Messages.Outgoing.Moderation;
@@ -21,14 +19,12 @@ namespace Turbo.PacketHandlers.Moderator;
 public class ModBanMessageHandler(
     IGrainFactory grainFactory,
     IPermissionService permissionService,
+    ISanctionPresetService sanctionPresets,
     IEventPublisher events,
     ISessionGateway sessionGateway,
-    IOptions<ModerationConfig> moderationConfig,
     ILogger<ModBanMessageHandler> logger
 ) : IMessageHandler<ModBanMessage>
 {
-    private readonly ModerationConfig _moderationConfig = moderationConfig.Value;
-
     public async ValueTask HandleAsync(
         ModBanMessage message,
         MessageContext ctx,
@@ -60,47 +56,48 @@ public class ModBanMessageHandler(
                 .ConfigureAwait(false)
         )
         {
-            DateTime? bannedUntil = ResolveBanExpiry(message.SanctionTypeId);
-            IPlayerGrain targetGrain = grainFactory.GetPlayerGrain(message.UserId);
-
-            success = await targetGrain
-                .ApplyAccountBanAsync(ctx.PlayerId, bannedUntil, message.Message, ct)
+            SanctionPresetSnapshot? preset = await sanctionPresets
+                .ResolveAsync(SanctionPresetKind.Ban, message.SanctionTypeId, ct)
                 .ConfigureAwait(false);
 
-            if (success)
+            if (preset is null)
             {
-                await grainFactory
-                    .GetPlayerPresenceGrain(message.UserId)
-                    .SendComposerAsync(new UserBannedMessageComposer { Message = message.Message })
+                // Unrecognized preset index: fail loudly (success stays false) rather than either
+                // guessing a duration or silently no-op'ing under a "success" ack.
+                logger.LogWarning(
+                    "No SanctionPresetEntity configured for Ban preset index {SanctionTypeId}; ban rejected.",
+                    message.SanctionTypeId
+                );
+            }
+            else
+            {
+                DateTime bannedUntil = preset.Value.DurationSeconds is null
+                    ? SanctionDuration.Permanent
+                    : DateTime.UtcNow.AddSeconds(preset.Value.DurationSeconds.Value);
+
+                IPlayerGrain targetGrain = grainFactory.GetPlayerGrain(message.UserId);
+
+                success = await targetGrain
+                    .ApplyAccountBanAsync(ctx.PlayerId, bannedUntil, message.Message, ct)
                     .ConfigureAwait(false);
-                await sessionGateway
-                    .RemoveSessionFromPlayerAsync(message.UserId, ct)
-                    .ConfigureAwait(false);
+
+                if (success)
+                {
+                    await grainFactory
+                        .GetPlayerPresenceGrain(message.UserId)
+                        .SendComposerAsync(
+                            new UserBannedMessageComposer { Message = message.Message }
+                        )
+                        .ConfigureAwait(false);
+                    await sessionGateway
+                        .RemoveSessionFromPlayerAsync(message.UserId, ct)
+                        .ConfigureAwait(false);
+                }
             }
         }
 
         await ModToolActionHelper
             .SendResultAsync(grainFactory, ctx.PlayerId, message.UserId, success)
             .ConfigureAwait(false);
-    }
-
-    private DateTime? ResolveBanExpiry(int sanctionTypeId)
-    {
-        if (
-            !_moderationConfig.BanDurationHoursBySanctionType.TryGetValue(
-                sanctionTypeId,
-                out int? hours
-            )
-        )
-        {
-            logger.LogWarning(
-                "Unrecognized ModBan sanctionTypeId {SanctionTypeId}; falling back to {FallbackHours}h",
-                sanctionTypeId,
-                _moderationConfig.UnknownSanctionTypeFallbackHours
-            );
-            hours = _moderationConfig.UnknownSanctionTypeFallbackHours;
-        }
-
-        return hours is null ? AccountBan.Permanent : DateTime.UtcNow.AddHours(hours.Value);
     }
 }

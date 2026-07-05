@@ -2,10 +2,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Orleans;
 using Turbo.Messages.Registry;
-using Turbo.PacketHandlers.Configuration;
 using Turbo.Primitives.Events;
 using Turbo.Primitives.Messages.Incoming.Moderator;
 using Turbo.Primitives.Orleans;
@@ -19,13 +17,11 @@ namespace Turbo.PacketHandlers.Moderator;
 public class ModTradingLockMessageHandler(
     IGrainFactory grainFactory,
     IPermissionService permissionService,
+    ISanctionPresetService sanctionPresets,
     IEventPublisher events,
-    IOptions<ModerationConfig> moderationConfig,
     ILogger<ModTradingLockMessageHandler> logger
 ) : IMessageHandler<ModTradingLockMessage>
 {
-    private readonly ModerationConfig _moderationConfig = moderationConfig.Value;
-
     public async ValueTask HandleAsync(
         ModTradingLockMessage message,
         MessageContext ctx,
@@ -57,12 +53,29 @@ public class ModTradingLockMessageHandler(
                 .ConfigureAwait(false)
         )
         {
-            DateTime? lockedUntil = ResolveLockExpiry(message.LockDurationTypeId);
-            IPlayerGrain targetGrain = grainFactory.GetPlayerGrain(message.UserId);
-
-            success = await targetGrain
-                .ApplyTradingLockAsync(ctx.PlayerId, lockedUntil, ct)
+            SanctionPresetSnapshot? preset = await sanctionPresets
+                .ResolveAsync(SanctionPresetKind.TradingLock, message.LockDurationTypeId, ct)
                 .ConfigureAwait(false);
+
+            if (preset is null)
+            {
+                logger.LogWarning(
+                    "No SanctionPresetEntity configured for TradingLock preset index {LockDurationTypeId}; lock rejected.",
+                    message.LockDurationTypeId
+                );
+            }
+            else
+            {
+                DateTime lockedUntil = preset.Value.DurationSeconds is null
+                    ? SanctionDuration.Permanent
+                    : DateTime.UtcNow.AddSeconds(preset.Value.DurationSeconds.Value);
+
+                IPlayerGrain targetGrain = grainFactory.GetPlayerGrain(message.UserId);
+
+                success = await targetGrain
+                    .ApplyTradingLockAsync(ctx.PlayerId, lockedUntil, ct)
+                    .ConfigureAwait(false);
+            }
         }
 
         await ModToolActionHelper
@@ -71,25 +84,5 @@ public class ModTradingLockMessageHandler(
         await ModToolActionHelper
             .SendResultAsync(grainFactory, ctx.PlayerId, message.UserId, success)
             .ConfigureAwait(false);
-    }
-
-    private DateTime? ResolveLockExpiry(int lockDurationTypeId)
-    {
-        if (
-            !_moderationConfig.TradingLockDurationHoursByType.TryGetValue(
-                lockDurationTypeId,
-                out int? hours
-            )
-        )
-        {
-            logger.LogWarning(
-                "Unrecognized ModTradingLock lockDurationTypeId {LockDurationTypeId}; falling back to {FallbackHours}h",
-                lockDurationTypeId,
-                _moderationConfig.UnknownSanctionTypeFallbackHours
-            );
-            hours = _moderationConfig.UnknownSanctionTypeFallbackHours;
-        }
-
-        return hours is null ? AccountBan.Permanent : DateTime.UtcNow.AddHours(hours.Value);
     }
 }
