@@ -30,6 +30,10 @@ public static class Capabilities
         public const string Alert = "moderation.alert";
         public const string Ban = "moderation.ban";
         public const string TradingLock = "moderation.trading_lock";
+
+        /// <summary>Matches the WIN63 client's own distinct "chatlogsPermission" tool flag — reading
+        /// a player's chat history is gated separately from being able to sanction them.</summary>
+        public const string Chatlogs = "moderation.chatlogs";
     }
 
     public static class Economy
@@ -65,6 +69,7 @@ public static class Capabilities
             Moderation.Alert,
             Moderation.Ban,
             Moderation.TradingLock,
+            Moderation.Chatlogs,
             Economy.GrantCredits,
             Economy.GrantActivityPoints,
             Economy.GrantItem,

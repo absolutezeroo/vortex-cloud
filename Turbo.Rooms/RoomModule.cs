@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Turbo.Primitives.Moderation;
 using Turbo.Primitives.Plugins;
 using Turbo.Primitives.Rooms;
 using Turbo.Primitives.Rooms.Providers;
@@ -30,5 +31,6 @@ public sealed class RoomModule : IHostPluginModule
 
         services.AddSingleton<IRoomService, RoomService>();
         services.AddSingleton<IRoomModerationStore, RoomModerationStore>();
+        services.AddSingleton<IModeratorChatlogService, ModeratorChatlogService>();
     }
 }

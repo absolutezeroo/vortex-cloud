@@ -8,6 +8,6 @@ internal class RoomChatlogEventMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, RoomChatlogEventMessageComposer message)
     {
-        //
+        ChatlogSerialization.WriteBlock(packet, message.Block);
     }
 }
