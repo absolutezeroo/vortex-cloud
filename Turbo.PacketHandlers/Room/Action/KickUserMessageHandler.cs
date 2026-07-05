@@ -32,8 +32,11 @@ public class KickUserMessageHandler(
         PermissionSet permissions = await permissionService
             .ResolveForPlayerAsync(ctx.PlayerId, ct)
             .ConfigureAwait(false);
+        PermissionSet targetPermissions = await permissionService
+            .ResolveForPlayerAsync(message.UserId, ct)
+            .ConfigureAwait(false);
 
-        if (!ModerationPolicy.IsAllowed(permissions, ModerationAction.Kick))
+        if (!ModerationPolicy.IsAllowed(permissions, targetPermissions, ModerationAction.Kick))
         {
             await events
                 .PublishAsync(

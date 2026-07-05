@@ -39,8 +39,11 @@ public class BanUserWithDurationMessageHandler(
         PermissionSet permissions = await permissionService
             .ResolveForPlayerAsync(ctx.PlayerId, ct)
             .ConfigureAwait(false);
+        PermissionSet targetPermissions = await permissionService
+            .ResolveForPlayerAsync(message.UserId, ct)
+            .ConfigureAwait(false);
 
-        if (!ModerationPolicy.IsAllowed(permissions, ModerationAction.Ban))
+        if (!ModerationPolicy.IsAllowed(permissions, targetPermissions, ModerationAction.Ban))
         {
             await events
                 .PublishAsync(

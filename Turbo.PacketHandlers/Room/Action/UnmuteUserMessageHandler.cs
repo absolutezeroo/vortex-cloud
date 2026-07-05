@@ -32,8 +32,11 @@ public class UnmuteUserMessageHandler(
         PermissionSet permissions = await permissionService
             .ResolveForPlayerAsync(ctx.PlayerId, ct)
             .ConfigureAwait(false);
+        PermissionSet targetPermissions = await permissionService
+            .ResolveForPlayerAsync(message.UserId, ct)
+            .ConfigureAwait(false);
 
-        if (!ModerationPolicy.IsAllowed(permissions, ModerationAction.Mute))
+        if (!ModerationPolicy.IsAllowed(permissions, targetPermissions, ModerationAction.Mute))
         {
             await events
                 .PublishAsync(

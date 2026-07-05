@@ -42,11 +42,14 @@ internal static class ModToolActionHelper
         CancellationToken ct
     )
     {
-        PermissionSet permissions = await permissionService
+        PermissionSet actorPermissions = await permissionService
             .ResolveForPlayerAsync(actorPlayerId, ct)
             .ConfigureAwait(false);
+        PermissionSet targetPermissions = await permissionService
+            .ResolveForPlayerAsync(targetPlayerId, ct)
+            .ConfigureAwait(false);
 
-        if (ModerationPolicy.IsAllowed(permissions, action))
+        if (ModerationPolicy.IsAllowed(actorPermissions, targetPermissions, action))
         {
             return true;
         }

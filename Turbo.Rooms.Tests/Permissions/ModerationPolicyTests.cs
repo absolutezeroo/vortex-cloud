@@ -65,6 +65,66 @@ public sealed class ModerationPolicyTests
         allowed.Should().BeFalse();
     }
 
+    [Fact]
+    public void TargetAwareOverload_AllowsActingOnLowerRankedTarget()
+    {
+        PermissionSet moderator = Permissions(Capabilities.Moderation.Kick);
+        PermissionSet normalPlayer = PermissionSet.Empty;
+
+        bool allowed = ModerationPolicy.IsAllowed(moderator, normalPlayer, ModerationAction.Kick);
+
+        allowed.Should().BeTrue();
+    }
+
+    [Fact]
+    public void TargetAwareOverload_AllowsActingOnEqualRankedTarget()
+    {
+        PermissionSet moderator = Permissions(Capabilities.Moderation.Kick);
+        PermissionSet otherModerator = Permissions(Capabilities.Moderation.Kick);
+
+        bool allowed = ModerationPolicy.IsAllowed(moderator, otherModerator, ModerationAction.Kick);
+
+        allowed.Should().BeTrue();
+    }
+
+    [Fact]
+    public void TargetAwareOverload_DeniesActingOnHigherRankedTarget()
+    {
+        PermissionSet moderator = Permissions(Capabilities.Moderation.Kick);
+        PermissionSet administrator = Permissions(Capabilities.Wildcard);
+
+        bool allowed = ModerationPolicy.IsAllowed(moderator, administrator, ModerationAction.Kick);
+
+        allowed.Should().BeFalse();
+    }
+
+    [Fact]
+    public void TargetAwareOverload_SuperUserCanActOnAnyRank()
+    {
+        PermissionSet administrator = Permissions(Capabilities.Wildcard);
+        PermissionSet otherAdministrator = Permissions(Capabilities.Wildcard);
+
+        bool allowed = ModerationPolicy.IsAllowed(
+            administrator,
+            otherAdministrator,
+            ModerationAction.Ban
+        );
+
+        allowed.Should().BeTrue();
+    }
+
+    [Fact]
+    public void TargetAwareOverload_StillDeniesWithoutCapability()
+    {
+        bool allowed = ModerationPolicy.IsAllowed(
+            PermissionSet.Empty,
+            PermissionSet.Empty,
+            ModerationAction.Kick
+        );
+
+        allowed.Should().BeFalse();
+    }
+
     private static PermissionSet Permissions(params string[] capabilities)
     {
         return new PermissionSet(Array.Empty<string>(), capabilities);
