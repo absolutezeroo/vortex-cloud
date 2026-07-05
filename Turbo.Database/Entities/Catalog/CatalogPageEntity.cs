@@ -3,12 +3,20 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Turbo.Primitives.Catalog;
+using Turbo.Primitives.Catalog.Enums;
 
 namespace Turbo.Database.Entities.Catalog;
 
 [Table("catalog_pages")]
 public class CatalogPageEntity : TurboEntity
 {
+    /// <summary>Which catalog tree this page belongs to. BuildersClub pages are a real separate
+    /// section, not a filtered view of Normal -- only visible/browsable to active Builders Club
+    /// subscribers (see CatalogSnapshotProvider, which filters by this column).</summary>
+    [Column("catalog_type")]
+    [DefaultValue(CatalogType.Normal)]
+    public required CatalogType CatalogType { get; set; }
+
     [Column("parent_id")]
     public int? ParentEntityId { get; set; }
 

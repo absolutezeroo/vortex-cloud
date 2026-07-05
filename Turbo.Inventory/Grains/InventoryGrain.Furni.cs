@@ -357,6 +357,60 @@ public sealed partial class InventoryGrain
         }
     }
 
+    public async Task<FurnitureItemSnapshot?> GrantSingleFurnitureIfUnderLimitAsync(
+        int definitionId,
+        string? extraData,
+        int furniLimit,
+        CancellationToken ct
+    )
+    {
+        ImmutableArray<FurnitureItemSnapshot> owned = await _furniModule
+            .GetAllItemSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+
+        if (owned.Length >= furniLimit)
+        {
+            return null;
+        }
+
+        FurnitureDefinitionSnapshot def =
+            _furnitureDefinitionProvider.TryGetDefinition(definitionId)
+            ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
+
+        FurnitureEntity entity = new()
+        {
+            PlayerEntityId = (int)this.GetPrimaryKeyLong(),
+            FurnitureDefinitionEntityId = def.Id,
+            ExtraData = extraData,
+        };
+
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+
+        try
+        {
+            dbCtx.Add(entity);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        }
+        finally
+        {
+            await dbCtx.DisposeAsync().ConfigureAwait(false);
+        }
+
+        FurnitureItem item = new()
+        {
+            ItemId = entity.Id,
+            OwnerId = entity.PlayerEntityId,
+            OwnerName = string.Empty,
+            Definition = def,
+            ExtraData = new ExtraData(extraData ?? "{}"),
+            StuffData = _stuffDataFactory.CreateStuffData(StuffDataType.LegacyKey),
+        };
+
+        await AddFurnitureAsync(item, ct).ConfigureAwait(false);
+
+        return item.GetSnapshot();
+    }
+
     public async Task GrantLtdFurnitureAsync(
         int furniDefinitionId,
         int serialNumber,

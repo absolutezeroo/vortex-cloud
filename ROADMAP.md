@@ -278,9 +278,12 @@ throughout; group rooms handled; moderation tool is functional and audited.
   (`CatalogOfferEntity.ClubLevel`/`DiscountPercent`); still missing a dashboard UI to edit it.
 - [x] 6 landing-page/misc handlers wired (offer giftability, next/expiring limited offers, bonus
   rare promo, room-ad room list, new-additions no-op).
-- [x] Builders Club: subscription tier (`BuildersClubTierEntity`, real furni-count reporting) —
-  direct-to-room placement (`BuildersClubPlaceRoomItem`/`PlaceWallItem`) deferred, needs new
-  room/furniture orchestration.
+- [x] Builders Club — fully done (2026-07-05): subscription tier (`BuildersClubTierEntity`, real
+  furni-count reporting) **and** its own exclusive catalog tree (`CatalogPageEntity.CatalogType`,
+  shared tables with Normal, isolated by a provider-level filter + 2 invariant tests) **and** free
+  direct-to-room placement (`BuildersClubPlaceRoomItem`/`PlaceWallItem`, no debit, atomic
+  furni-limit check via `IInventoryGrain.GrantSingleFurnitureIfUnderLimitAsync`, reuses the normal
+  placement path's room-security checks).
 - [x] Room ads: full purchase flow (`RoomAdvertisementEntity`, `ExecutePurchaseAsync`-based).
 - Deliberately deferred (own story, needs a real per-player campaign entity): Targeted offers
   (`GetTargetedOffer`/`GetNextTargetedOffer`/`SetTargetedOfferState`/`ShopTargetedOfferViewed`/

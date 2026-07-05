@@ -22,6 +22,7 @@ public class TurboEmulator(
     ILogger<TurboEmulator> logger,
     IFurnitureDefinitionProvider furnitureProvider,
     ICatalogSnapshotProvider<NormalCatalog> catalogProvider,
+    ICatalogSnapshotProvider<BuildersClubCatalog> buildersClubCatalogProvider,
     ICatalogClubOfferProvider clubOfferProvider,
     ICatalogClubGiftProvider clubGiftProvider,
     ICurrencyTypeProvider currencyTypeProvider,
@@ -39,6 +40,8 @@ public class TurboEmulator(
     private readonly ILogger<TurboEmulator> _logger = logger;
     private readonly IFurnitureDefinitionProvider _furnitureProvider = furnitureProvider;
     private readonly ICatalogSnapshotProvider<NormalCatalog> _catalogProvider = catalogProvider;
+    private readonly ICatalogSnapshotProvider<BuildersClubCatalog> _buildersClubCatalogProvider =
+        buildersClubCatalogProvider;
     private readonly ICatalogClubOfferProvider _clubOfferProvider = clubOfferProvider;
     private readonly ICatalogClubGiftProvider _clubGiftProvider = clubGiftProvider;
     private readonly ICurrencyTypeProvider _currencyTypeProvider = currencyTypeProvider;
@@ -59,6 +62,7 @@ public class TurboEmulator(
             _revisionManager.RegisterRevision(_defaultRevision);
             await _furnitureProvider.ReloadAsync(ct).ConfigureAwait(false);
             await _catalogProvider.ReloadAsync(ct).ConfigureAwait(false);
+            await _buildersClubCatalogProvider.ReloadAsync(ct).ConfigureAwait(false);
             await _clubOfferProvider.ReloadAsync(ct).ConfigureAwait(false);
             await _clubGiftProvider.ReloadAsync(ct).ConfigureAwait(false);
             await _currencyTypeProvider.ReloadAsync(ct).ConfigureAwait(false);

@@ -47,16 +47,29 @@ public sealed class CatalogSnapshotProvider<TTag>(
 
         try
         {
+            // catalog_pages/catalog_offers/catalog_products are shared across every CatalogType --
+            // this filter is the ONLY place that boundary is enforced. Once a CatalogSnapshot is
+            // built for one type, it structurally cannot contain another type's rows: there is no
+            // unfiltered snapshot for a handler to accidentally read from.
             List<CatalogPageEntity> pages = await dbCtx
                 .CatalogPages.AsNoTracking()
+                .Where(p => p.CatalogType == catalogType)
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
+
+            HashSet<int> pageIds = pages.Select(p => p.Id).ToHashSet();
+
             List<CatalogOfferEntity> offers = await dbCtx
                 .CatalogOffers.AsNoTracking()
+                .Where(o => pageIds.Contains(o.CatalogPageEntityId))
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
+
+            HashSet<int> offerIds = offers.Select(o => o.Id).ToHashSet();
+
             List<CatalogProductEntity> products = await dbCtx
                 .CatalogProducts.AsNoTracking()
+                .Where(p => offerIds.Contains(p.CatalogOfferEntityId))
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
             List<CatalogFrontPageItemEntity> frontPageItems = await dbCtx
@@ -102,6 +115,7 @@ public sealed class CatalogSnapshotProvider<TTag>(
                     Quantity = x.Quantity,
                     UniqueSize = x.UniqueSize,
                     UniqueRemaining = x.UniqueRemaining,
+                    BuildersClubEligible = x.BuildersClubEligible,
                 })
                 .ToImmutableDictionary(x => x.Id);
 

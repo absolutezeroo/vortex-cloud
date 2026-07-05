@@ -32,4 +32,7 @@ public sealed record CatalogProductSnapshot
 
     [Id(8)]
     public required int UniqueRemaining { get; init; }
+
+    [Id(9)]
+    public required bool BuildersClubEligible { get; init; }
 }
