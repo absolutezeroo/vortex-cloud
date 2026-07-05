@@ -70,6 +70,8 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
 
     public DbSet<PlayerAccountEntity> PlayerAccounts { get; init; } = null!;
 
+    public DbSet<AccountBanEntity> AccountBans { get; init; } = null!;
+
     public DbSet<RoleEntity> Roles { get; init; } = null!;
 
     public DbSet<RolePermissionEntity> RolePermissions { get; init; } = null!;

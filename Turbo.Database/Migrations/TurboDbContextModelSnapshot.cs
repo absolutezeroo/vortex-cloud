@@ -3269,7 +3269,7 @@ namespace Turbo.Database.Migrations
                     b.ToTable("pet_palettes");
                 });
 
-            modelBuilder.Entity("Turbo.Database.Entities.Players.PlayerAccountEntity", b =>
+            modelBuilder.Entity("Turbo.Database.Entities.Players.AccountBanEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3278,14 +3278,53 @@ namespace Turbo.Database.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BanReason")
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime>("DateExpires")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("date_expires");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int>("PlayerAccountEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("account_id");
+
+                    b.Property<string>("Reason")
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)")
-                        .HasColumnName("ban_reason");
+                        .HasColumnName("reason");
 
-                    b.Property<DateTime?>("BannedUntil")
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime(6)")
-                        .HasColumnName("banned_until");
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerAccountEntityId")
+                        .IsUnique();
+
+                    b.ToTable("account_bans");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Players.PlayerAccountEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -3309,10 +3348,6 @@ namespace Turbo.Database.Migrations
                         .HasMaxLength(512)
                         .HasColumnType("varchar(512)")
                         .HasColumnName("password_hash");
-
-                    b.Property<DateTime?>("TradingLockedUntil")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("trading_locked_until");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()
@@ -3582,6 +3617,10 @@ namespace Turbo.Database.Migrations
                     b.Property<int?>("RoomChatStyleId")
                         .HasColumnType("int")
                         .HasColumnName("room_chat_style_id");
+
+                    b.Property<DateTime?>("TradingLockedUntil")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("trading_locked_until");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()
@@ -5142,6 +5181,17 @@ namespace Turbo.Database.Migrations
                         .IsRequired();
 
                     b.Navigation("FurnitureDefinitionEntity");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Players.AccountBanEntity", b =>
+                {
+                    b.HasOne("Turbo.Database.Entities.Players.PlayerAccountEntity", "PlayerAccountEntity")
+                        .WithMany()
+                        .HasForeignKey("PlayerAccountEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PlayerAccountEntity");
                 });
 
             modelBuilder.Entity("Turbo.Database.Entities.Players.PlayerBadgeEntity", b =>

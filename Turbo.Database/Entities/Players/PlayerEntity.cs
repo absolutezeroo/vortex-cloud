@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -55,6 +56,12 @@ public class PlayerEntity : TurboEntity
     // navigation) to avoid yet another circular relationship through groups/rooms.
     [Column("favourite_group_id")]
     public int? FavouriteGroupId { get; set; }
+
+    /// <summary>Null = not locked. Player-level (not account-level): trading is a gameplay
+    /// restriction on this profile, not a login/identity concern. Checked by the (not yet built)
+    /// trading system.</summary>
+    [Column("trading_locked_until")]
+    public DateTime? TradingLockedUntil { get; set; }
 
     [InverseProperty("PlayerEntity")]
     public List<PlayerBadgeEntity>? PlayerBadges { get; set; }
