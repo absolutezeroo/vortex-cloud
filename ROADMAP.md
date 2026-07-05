@@ -202,12 +202,23 @@ across all stories are peripheral extras, not on this path.
 **Story 2.2 — Group room rights**
 - [ ] Real `isGroupRoom` + `canGroupDecorate` + GroupMember/GroupRights/GroupAdmin levels in `RoomSecurityModule`.
 
-**Story 2.3 — Staff moderation tool (Moderator 21% → 100%)**
+**Story 2.3 — Staff moderation tool — Done (2026-07-05)**
 *As staff, I want* moderation tooling (CFH/tickets, alerts, sanctions),
 *so I can* operate hotel moderation.
-- [ ] `Turbo.PacketHandlers/Moderator` handlers implemented, gated by capabilities
-  `Capabilities.Moderation.*`.
-- [ ] Every action emits moderation audit event (category Moderation), both success and denial.
+- [x] `Turbo.PacketHandlers/Moderator` handlers implemented, gated by capabilities
+  `Capabilities.Moderation.*` (added `Chatlogs`/`Cfh`, matching the WIN63 client's own distinct
+  tool-permission flags rather than reusing Kick/Mute/Ban/Alert).
+- [x] Every action emits moderation audit event (category Moderation), both success and denial.
+- [x] Relative-rank check: a staff member can't sanction someone of equal-or-higher rank.
+- [x] Room-visit log (enter+exit) and room/user chatlog lookups.
+- [x] Full CFH ticket system: category/topic catalog (each topic optionally linked to a
+  `SanctionPresetEntity` default action), report submission, pick/close/release/default-sanction
+  lifecycle, reporter notification on close, `ModeratorInit`/`CfhTopicsInit` pushed at login.
+- [x] Sanction durations are a real, admin-manageable `SanctionPresetEntity` (seeded defaults,
+  never overwritten once an admin edits them) instead of hardcoded config.
+- Not done: `ModToolPreferencesMessageHandler` (per-staff window geometry), `ModeratorRoomInfo`/
+  `ModeratorUserInfo` lookups, `ModerateRoomMessageHandler`/`ModeratorActionMessageHandler`/
+  `ModMessageMessageHandler` (room-wide tools) — none block the core CFH+sanction loop.
 
 **Story 2.4 — Policy tests** *(overlaps Story 0.1, do not duplicate)*
 - [ ] Complete coverage of `RoomSecurityPolicy` and `ModerationPolicy`.

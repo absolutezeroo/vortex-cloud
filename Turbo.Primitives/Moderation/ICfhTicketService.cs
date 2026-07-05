@@ -36,7 +36,20 @@ public interface ICfhTicketService
 
     Task<CfhTicketSummary?> GetTicketAsync(int issueId, CancellationToken ct = default);
 
+    /// <summary>The reporter's selected evidence lines, frozen at report time — not a live
+    /// re-query of the room's chatlog.</summary>
+    Task<CfhTicketEvidenceSnapshot?> GetTicketEvidenceAsync(
+        int issueId,
+        CancellationToken ct = default
+    );
+
     Task<CfhTopicSnapshot?> GetTopicAsync(int topicId, CancellationToken ct = default);
 
     Task<ImmutableArray<CfhCategorySnapshot>> GetCatalogAsync(CancellationToken ct = default);
+
+    /// <summary>Open and Picked tickets (not Closed), most recent first — the staff mod tool's
+    /// issue queue, pushed at login.</summary>
+    Task<ImmutableArray<CfhIssueQueueEntrySnapshot>> GetOpenQueueAsync(
+        CancellationToken ct = default
+    );
 }

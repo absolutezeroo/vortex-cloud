@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -8,6 +9,7 @@ using Turbo.Messages.Registry;
 using Turbo.Primitives.Authentication;
 using Turbo.Primitives.Messages.Incoming.Handshake;
 using Turbo.Primitives.Messages.Outgoing.Availability;
+using Turbo.Primitives.Messages.Outgoing.Callforhelp;
 using Turbo.Primitives.Messages.Outgoing.Catalog;
 using Turbo.Primitives.Messages.Outgoing.Handshake;
 using Turbo.Primitives.Messages.Outgoing.Inventory.Achievements;
@@ -20,6 +22,7 @@ using Turbo.Primitives.Messages.Outgoing.Navigator;
 using Turbo.Primitives.Messages.Outgoing.Notifications;
 using Turbo.Primitives.Messages.Outgoing.Perk;
 using Turbo.Primitives.Messages.Outgoing.Users;
+using Turbo.Primitives.Moderation;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Orleans.Snapshots.Players;
@@ -37,13 +40,22 @@ public class SSOTicketMessageHandler(
     ISessionGateway sessionGateway,
     IGrainFactory grainFactory,
     IPermissionService permissionService,
+    ICfhTicketService cfhTickets,
     ILogger<SSOTicketMessageHandler> logger
 ) : IMessageHandler<SSOTicketMessage>
 {
+    private static readonly ImmutableArray<string> DefaultMessageTemplates =
+    [
+        "Please mind your language.",
+        "This behaviour is not tolerated on this hotel.",
+        "Please treat other users with respect.",
+    ];
+
     private readonly IAuthenticationService _authService = authService;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IPermissionService _permissionService = permissionService;
+    private readonly ICfhTicketService _cfhTickets = cfhTickets;
     private readonly ILogger<SSOTicketMessageHandler> _logger = logger;
 
     public async ValueTask HandleAsync(
@@ -153,6 +165,22 @@ public class SSOTicketMessageHandler(
                     ct
                 )
                 .ConfigureAwait(false);
+
+            if (
+                permissions.HasAny(
+                    Capabilities.Moderation.Cfh,
+                    Capabilities.Moderation.Chatlogs,
+                    Capabilities.Moderation.Kick,
+                    Capabilities.Moderation.Mute,
+                    Capabilities.Moderation.Alert,
+                    Capabilities.Moderation.Ban,
+                    Capabilities.Room.ModerateAny
+                )
+            )
+            {
+                await SendModeratorBootstrapAsync(ctx, permissions, ct).ConfigureAwait(false);
+            }
+
             if (sub.IsActive)
             {
                 await ctx.SendComposerAsync(BuildScrSendUserInfo(sub), ct).ConfigureAwait(false);
@@ -328,6 +356,46 @@ public class SSOTicketMessageHandler(
 
             await CloseSessionSafelyAsync(ctx).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>Pushes the staff mod tool's bootstrap payload proactively at login, matching the
+    /// real client: nothing in the WIN63 source ever requests ModeratorInit/CfhTopicsInit — the
+    /// server just sends them to whoever has moderation rights.</summary>
+    private async Task SendModeratorBootstrapAsync(
+        MessageContext ctx,
+        PermissionSet permissions,
+        CancellationToken ct
+    )
+    {
+        ImmutableArray<CfhIssueQueueEntrySnapshot> issues = await _cfhTickets
+            .GetOpenQueueAsync(ct)
+            .ConfigureAwait(false);
+        ImmutableArray<CfhCategorySnapshot> catalog = await _cfhTickets
+            .GetCatalogAsync(ct)
+            .ConfigureAwait(false);
+
+        bool alertPermission = permissions.HasAny(Capabilities.Moderation.Alert);
+        bool kickPermission = permissions.HasAny(Capabilities.Moderation.Kick);
+
+        await ctx.SendComposerAsync(
+                new ModeratorInitMessageComposer
+                {
+                    Issues = issues,
+                    MessageTemplates = DefaultMessageTemplates,
+                    CfhPermission = permissions.HasAny(Capabilities.Moderation.Cfh),
+                    ChatlogsPermission = permissions.HasAny(Capabilities.Moderation.Chatlogs),
+                    AlertPermission = alertPermission,
+                    KickPermission = kickPermission,
+                    BanPermission = permissions.HasAny(Capabilities.Moderation.Ban),
+                    RoomAlertPermission = alertPermission,
+                    RoomKickPermission = kickPermission,
+                    RoomMessageTemplates = DefaultMessageTemplates,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
+        await ctx.SendComposerAsync(new CfhTopicsInitMessageComposer { Categories = catalog }, ct)
+            .ConfigureAwait(false);
     }
 
     private async Task CloseSessionSafelyAsync(MessageContext ctx)

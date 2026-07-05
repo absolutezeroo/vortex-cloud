@@ -1,4 +1,5 @@
 using Orleans;
+using Turbo.Primitives.Moderation;
 using Turbo.Primitives.Networking;
 
 namespace Turbo.Primitives.Messages.Outgoing.Moderation;
@@ -6,5 +7,18 @@ namespace Turbo.Primitives.Messages.Outgoing.Moderation;
 [GenerateSerializer, Immutable]
 public sealed record CfhChatlogEventMessageComposer : IComposer
 {
-    // TODO: add properties if/when identified
+    [Id(0)]
+    public required int CallId { get; init; }
+
+    [Id(1)]
+    public required int CallerUserId { get; init; }
+
+    [Id(2)]
+    public required int ReportedUserId { get; init; }
+
+    [Id(3)]
+    public required int ChatRecordId { get; init; }
+
+    [Id(4)]
+    public required ChatlogBlockSnapshot ChatRecord { get; init; }
 }
