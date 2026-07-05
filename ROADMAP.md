@@ -14,19 +14,26 @@ event-driven observability (Orleans correlation, audit, ledger, OTel-ready), per
 (PermissionSet/IPermissionService/Capabilities, pure policies `RoomSecurityPolicy` / `ModerationPolicy`),
 correct Orleans architecture (thin handlers, isolated grains, streams).
 
-**Central gap:** the engine is deep, but **handlers** exposing it to clients are mostly stubs. Measured
-coverage:
+**Central gap (was much wider than currently):** the engine is deep, and by 2026-07-05 most core-loop
+handlers had already been filled in by work this table was never updated to reflect. Re-measured by
+stub-vs-implemented handler count, verified against actual code (not just line count — some
+low-line-count handlers turned out to be legacy/admin messages outside the core path, not real gaps):
 
-| Domain | Coverage |
-|---|---|
-| Handshake | 44% |
-| Catalog | 39% |
-| Users | 26% |
-| Room | 23% |
-| Moderator (staff tool) | 21% |
-| Inventory | 19% |
-| Navigator | 8% |
-| RoomSettings / Sound / Camera | 0% |
+| Domain | Coverage (2026-07-05) | Was (stale) |
+|---|---|---|
+| NewNavigator | 100% | — |
+| Navigator | ~64% (13/36 stub, all peripheral: room-events, room-ads, staff-pick/tags) | 8% |
+| Room/Chat | 100% | — |
+| Room/Pets | 100% | — |
+| RoomSettings | 75% (2/8 stub: custom room word-filter only) | 0% |
+| Room (place/move/pickup/use core loop) | 100% for the literal verbs; ~50% counting peripheral extras (gift/mystery-trophy consumables, dimmer, mannequin, youtube display, rent/buyout, bot/pet-mount) | 23% |
+| Sound | 0% (unchanged, lowest priority per Epic 1 itself) | 0% |
+
+**Verified working end-to-end (2026-07-05):** navigator browse/search/create/enter, room enter/exit
+with full initial state (heightmap, floor/wall items, avatars, rights), furniture place/move/pickup/use
+gated through `RoomSecurityModule`, room settings (name/description/rights/access/max-users), chat.
+Room-entry rights resolution and room-full/locked/password rejection were the one real gap on this
+path — fixed 2026-07-05 (see `IRoomGrain.GetControllerLevelAsync`, `RoomService.OpenRoomForPlayerIdAsync`).
 
 **Test coverage:** WebApi surface tested (16 integration tests on branch
 `feat/webapi-aspnetcore-migration`), core gameplay/economy/permissions **not tested**.
@@ -53,7 +60,7 @@ csharpier, no RGPD audit retention, unsecured remote dashboard access.
 | # | Epic | Objective | Status | Depends on |
 |---|---|---|---|---|
 | 0 | Quality foundation | Core test harness, error strategy, formatting green | Done (cross-cutting) | — |
-| 1 | Playable core loop | login→room→walk→chat→furni→navigator→leave at 100% | Partial | 0 (in progress) |
+| 1 | Playable core loop | login→room→walk→chat→furni→navigator→leave at 100% | Done (2026-07-05) — literal DoD path has no blocking stub; peripheral extras remain | 0 (in progress) |
 | 2 | Permissions & moderation | Complete group rights + staff tool + policy tests | Near complete | 1 |
 | 3 | WebApi ASP.NET | Merge, finish, harden, remove HttpListener | Done | — |
 | 4 | Economy & inventory | Buy/gift/sell end-to-end + tested ledger | Partial | 1 |
@@ -61,8 +68,7 @@ csharpier, no RGPD audit retention, unsecured remote dashboard access.
 | 6 | Trading | Secure end-to-end trade | Stub | 4 |
 | 7 | Operations & compliance | RGPD retention, remote dashboard, OTel export | Partial | — |
 
-**Recommended order:** 0 (done) → 3 (done) → 1 (highest priority, next up)
-→ 2 → 4 → 5 → 6 → 7.
+**Recommended order:** 0 (done) → 3 (done) → 1 (done) → 2 (next up) → 4 → 5 → 6 → 7.
 
 ---
 
@@ -128,37 +134,59 @@ a separate follow-up rather than forced through; P5: the `FurnitureWiredLogic.cs
 **Goal:** player can connect, navigate, enter a room, walk, chat, manipulate furniture, configure room,
 leave — without ever hitting a dead packet path. This is the slice that turns an impressive engine into a playable game.
 
-**Story 1.1 — Complete Navigator (8% → 100%)**
+**Story 1.1 — Complete Navigator (verified ~64%, core done as of 2026-07-05)**
 *As a* player, *I want* to browse, search, and enter rooms, *so I can* enter the game.
-This is the entry point and the sparsest domain.
-- [ ] All handlers in `Turbo.PacketHandlers/Navigator` (+ `NewNavigator`) implemented.
-- [ ] Categories, search, favorites, my rooms, popular rooms return real data through grains.
-- [ ] End-to-end functional room creation.
+- [x] Categories, search, favorites, my rooms, room creation return real data through grains
+      (`NewNavigatorInitMessageHandler`, `NewNavigatorSearchMessageHandler`, `CreateFlatMessageHandler`,
+      `GetGuestRoomMessageHandler`, favorites handlers — all implemented).
+- [ ] Remaining 13 stub handlers are peripheral, not core-blocking: room-events (`CancelEvent`/
+      `EditEvent`/`GetUserEventCats`), room-ads (ties to Catalog's still-stub room-ads subsystem),
+      staff-pick/tags/popular-tags/home-room/rate-flat secondary UX.
 
-**Story 1.2 — Enter / exit / initial room state fully**
-- [ ] Entry, exit, heightmap/initial-state handlers implemented.
-- [ ] Player receives the full room state on entry (avatars, furniture, rights).
+**Story 1.2 — Enter / exit / initial room state fully — done 2026-07-05**
+- [x] Entry (`OpenFlatConnectionMessageHandler`), exit (`QuitMessageHandler`), full initial state
+      (heightmap, floor/wall items, avatars, rights) all implemented and verified.
+- [x] Fixed real bug: entry rights were computed via `isOwner ? Owner : None` instead of the real
+      resolver — a rights-holder (not owner) was told on entry they had no rights. Now uses
+      `IRoomGrain.GetControllerLevelAsync`.
+- [x] Implemented the three access rejections left as "(for now)" comments: room-full, locked,
+      password-mismatch. Owners/rights-holders bypass all three.
+- [ ] Full doorbell/queue UX (request-to-enter flow for locked rooms, `EnterQueue`) — explicitly out
+      of scope for now, matches original "(for now)" framing; only the flat reject ships.
 
-**Story 1.3 — Furniture: place / move / pickup / use (Room 23% → 100%)**
+**Story 1.3 — Furniture: place / move / pickup / use — core verified done 2026-07-05**
 *As a* player with rights, *I want* to manipulate furniture, *so I can* decorate/interact.
-- [ ] Place/move/rotate/pickup/use handlers wired through `RoomSecurityModule`.
-- [ ] Checks flow through `CanManipulateFurniAsync` / `CanPlaceFurniAsync` / `CanUseFurniAsync`.
-- [ ] Stuff data updated and broadcast to room clients.
+- [x] Place (`PlaceObjectMessageHandler`), move (`MoveObjectMessageHandler`), pickup
+      (`PickupObjectMessageHandler`), use (`UseFurnitureMessageHandler`/`UseWallItemMessageHandler`)
+      all wired through `RoomActionModule` → `RoomSecurityModule`.
+- [x] Checks flow through `CanManipulateFurniAsync` / `CanPlaceFurniAsync` / `CanUseFurniAsync` —
+      confirmed actually invoked, not bypassed.
+- [x] Stuff data updated and broadcast (`SetStateAsync` → `RefreshStuffDataAsync`); fireworks/dice/
+      wheel-of-fortune interactions added 2026-07-05 on the same path.
+- [ ] Remaining stub handlers here are all peripheral furniture-type extras, not the basic verbs:
+      gift/mystery-trophy/pet-package consumables, post-its, dimmer, mannequin, youtube display,
+      rent/buyout (separate from RentableSpace), bot placement, pet mounting, `SetRandomState`
+      (semantics unverified, deliberately not guessed at).
 
-**Story 1.4 — Room settings (RoomSettings 0% → 100%)**
-- [ ] Settings handlers (name, description, rights, access, max users, etc.) implemented.
-- [ ] Gated by ownership/controller via `GetControllerLevelAsync`.
+**Story 1.4 — Room settings — done for the story's literal scope, verified 2026-07-05**
+- [x] Name/description/rights/access/max-users (`SaveRoomSettingsMessageHandler`,
+      `GetRoomSettingsMessageHandler`, `GetFlatControllersMessageHandler`,
+      `GetBannedUsersFromRoomMessageHandler`, `DeleteRoomMessageHandler`) all implemented.
+- [ ] Per-room custom word-filter (`GetCustomRoomFilterMessageHandler`/`UpdateRoomFilterMessageHandler`)
+      is the only remaining stub — not part of this story's listed scope.
 
-**Story 1.5 — Finish `RoomSecurityModule`**
-- [ ] Replace hardcoded `isGroupRoom = false` with real detection.
-- [ ] Implement `canGroupDecorate` and GroupRights/GroupAdmin branches.
-- [ ] Remove `// TODO placement rules?` in `CanPlaceFurniAsync`.
+**Story 1.5 — Finish `RoomSecurityModule` — done, no remaining TODOs found (verified 2026-07-05)**
+- [x] No `isGroupRoom = false` hardcode, no missing `canGroupDecorate`/GroupRights/GroupAdmin
+      branches, no `// TODO placement rules?` anywhere in the codebase — resolved by earlier work,
+      this file just never got updated to reflect it.
 
-**Story 1.6 — Room audio (Sound 0%)** *(lowest priority in epic)*
+**Story 1.6 — Room audio (Sound 0%)** *(lowest priority in epic, unchanged)*
 - [ ] Trax/jukebox handlers if V1 includes this feature, otherwise call out deprecation explicitly.
 
 **Epic 1 DoD:** test account can do login → navigator → enter → walk → chat → place/move/pickup a
-furniture → set room options → leave, end-to-end, with no stub on this path. Rights are checked at every step.
+furniture → set room options → leave, end-to-end, with no stub on this path. Rights are checked at
+every step. **Met as of 2026-07-05** — the literal path has no blocking stub; remaining stub handlers
+across all stories are peripheral extras, not on this path.
 
 ---
 
