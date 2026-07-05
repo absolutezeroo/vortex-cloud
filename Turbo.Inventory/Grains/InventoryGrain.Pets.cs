@@ -24,7 +24,7 @@ public sealed partial class InventoryGrain
             throw new ArgumentException("Pet name is required.", nameof(request));
         }
 
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {
@@ -50,7 +50,7 @@ public sealed partial class InventoryGrain
             };
 
             dbCtx.Pets.Add(entity);
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
             return ToSnapshot(entity);
         }
@@ -65,13 +65,13 @@ public sealed partial class InventoryGrain
         }
         finally
         {
-            await dbCtx.DisposeAsync().ConfigureAwait(false);
+            await dbCtx.DisposeAsync().ConfigureAwait(true);
         }
     }
 
     public async Task<PetSnapshot?> GetPetSnapshotAsync(int petId, CancellationToken ct)
     {
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {
@@ -83,7 +83,7 @@ public sealed partial class InventoryGrain
                     && p.DeletedAt == null
                 )
                 .SingleOrDefaultAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             return entity is null ? null : ToSnapshot(entity);
         }
@@ -99,13 +99,13 @@ public sealed partial class InventoryGrain
         }
         finally
         {
-            await dbCtx.DisposeAsync().ConfigureAwait(false);
+            await dbCtx.DisposeAsync().ConfigureAwait(true);
         }
     }
 
     public async Task<ImmutableArray<PetSnapshot>> GetAllPetSnapshotsAsync(CancellationToken ct)
     {
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {
@@ -118,7 +118,7 @@ public sealed partial class InventoryGrain
                 )
                 .OrderBy(p => p.Id)
                 .ToArrayAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             return entities.Select(ToSnapshot).ToImmutableArray();
         }
@@ -133,7 +133,7 @@ public sealed partial class InventoryGrain
         }
         finally
         {
-            await dbCtx.DisposeAsync().ConfigureAwait(false);
+            await dbCtx.DisposeAsync().ConfigureAwait(true);
         }
     }
 

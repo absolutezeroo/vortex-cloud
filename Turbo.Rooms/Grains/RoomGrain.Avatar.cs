@@ -309,10 +309,10 @@ public sealed partial class RoomGrain
     {
         ImmutableArray<RoomAvatarSnapshot> avatars = await AvatarModule
             .GetAllAvatarSnapshotsAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
         ImmutableArray<RoomAvatarSnapshot> pets = await PetSystem
             .GetPlacedPetAvatarSnapshotsAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return avatars.Concat(pets).ToImmutableArray();
     }

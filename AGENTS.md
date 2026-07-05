@@ -7,10 +7,17 @@ Tool-specific instruction files should reference this file instead of duplicatin
 This repository targets the following core stack. When coding, prefer patterns compatible with these versions:
 - .NET SDK `10.0` (from `global.json`, `rollForward: latestFeature`)
 - C# / BCL `net10.0`
-- Orleans `9.2.1`
-- EF Core `9.0.8`
-- Pomelo MySQL provider `9.0.0`
+- Orleans `10.2.1`
+- EF Core `9.0.8` (pinned — see note below)
+- Pomelo MySQL provider `9.0.0` (pinned — see note below)
 - SuperSocket `2.1.0`
+
+**EF Core/Pomelo are intentionally held on the .NET 9 line.**
+`Pomelo.EntityFrameworkCore.MySql` has no EF Core 10-compatible release yet (tracked upstream:
+`PomeloFoundation/Pomelo.EntityFrameworkCore.MySql#2007`). EF Core 9 packages run fine on the
+`net10.0` TFM/runtime — this is not a build error, just an external blocker. Bump
+`Microsoft.EntityFrameworkCore*` and `Pomelo.EntityFrameworkCore.MySql` together once Pomelo ships
+EF Core 10 support; do not bump one without the other.
 
 ## Skills activation
 Activate the relevant skill checklist before editing code in that domain:
@@ -57,7 +64,7 @@ Default output format:
 - exact validation command results
 
 ## Required standards
-- Target framework/tooling: `.NET 9` pinned via `global.json`.
+- Target framework/tooling: `.NET 10` pinned via `global.json`.
 - Keep C# formatting compatible with repo quality gates (`dotnet csharpier check`, `dotnet format`).
 - Follow `.editorconfig` naming/style preferences.
 - Keep diffs focused and minimal; avoid unrelated refactors.

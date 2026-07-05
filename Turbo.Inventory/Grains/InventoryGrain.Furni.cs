@@ -158,7 +158,7 @@ public sealed partial class InventoryGrain
             }
         }
 
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {
@@ -175,7 +175,7 @@ public sealed partial class InventoryGrain
                             && b.BadgeCode == badgeCode,
                         ct
                     )
-                    .ConfigureAwait(false);
+                    .ConfigureAwait(true);
 
                 if (alreadyOwned)
                 {
@@ -232,7 +232,7 @@ public sealed partial class InventoryGrain
                         ),
                         ct
                     )
-                    .ConfigureAwait(false);
+                    .ConfigureAwait(true);
             }
 
             IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(
@@ -246,7 +246,7 @@ public sealed partial class InventoryGrain
         }
         finally
         {
-            await dbCtx.DisposeAsync().ConfigureAwait(false);
+            await dbCtx.DisposeAsync().ConfigureAwait(true);
         }
 
         if (petRequests.Count > 0)
@@ -257,9 +257,9 @@ public sealed partial class InventoryGrain
 
             foreach (PetCreateRequest req in petRequests)
             {
-                PetSnapshot pet = await CreatePetAsync(req, ct).ConfigureAwait(false);
+                PetSnapshot pet = await CreatePetAsync(req, ct).ConfigureAwait(true);
 
-                await petPresence.OnPetAddedToInventoryAsync(pet, ct).ConfigureAwait(false);
+                await petPresence.OnPetAddedToInventoryAsync(pet, ct).ConfigureAwait(true);
             }
         }
     }
@@ -271,7 +271,7 @@ public sealed partial class InventoryGrain
             return;
         }
 
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {
@@ -282,7 +282,7 @@ public sealed partial class InventoryGrain
                         && b.BadgeCode == badgeCode,
                     ct
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             if (alreadyOwned)
             {
@@ -299,17 +299,17 @@ public sealed partial class InventoryGrain
                 }
             );
 
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
             IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain(
                 this.GetPrimaryKeyLong()
             );
 
-            await presence.OnBadgeGrantedAsync(badgeCode, ct).ConfigureAwait(false);
+            await presence.OnBadgeGrantedAsync(badgeCode, ct).ConfigureAwait(true);
         }
         finally
         {
-            await dbCtx.DisposeAsync().ConfigureAwait(false);
+            await dbCtx.DisposeAsync().ConfigureAwait(true);
         }
     }
 
@@ -330,12 +330,12 @@ public sealed partial class InventoryGrain
             ExtraData = extraData,
         };
 
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {
             dbCtx.Add(entity);
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
             await AddFurnitureAsync(
                     new FurnitureItem
@@ -349,11 +349,11 @@ public sealed partial class InventoryGrain
                     },
                     ct
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
         }
         finally
         {
-            await dbCtx.DisposeAsync().ConfigureAwait(false);
+            await dbCtx.DisposeAsync().ConfigureAwait(true);
         }
     }
 
@@ -366,7 +366,7 @@ public sealed partial class InventoryGrain
     {
         ImmutableArray<FurnitureItemSnapshot> owned = await _furniModule
             .GetAllItemSnapshotsAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         if (owned.Length >= furniLimit)
         {
@@ -384,16 +384,16 @@ public sealed partial class InventoryGrain
             ExtraData = extraData,
         };
 
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {
             dbCtx.Add(entity);
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
         }
         finally
         {
-            await dbCtx.DisposeAsync().ConfigureAwait(false);
+            await dbCtx.DisposeAsync().ConfigureAwait(true);
         }
 
         FurnitureItem item = new()
@@ -406,7 +406,7 @@ public sealed partial class InventoryGrain
             StuffData = _stuffDataFactory.CreateStuffData(StuffDataType.LegacyKey),
         };
 
-        await AddFurnitureAsync(item, ct).ConfigureAwait(false);
+        await AddFurnitureAsync(item, ct).ConfigureAwait(true);
 
         return item.GetSnapshot();
     }
@@ -431,12 +431,12 @@ public sealed partial class InventoryGrain
             ExtraData = extraData,
         };
 
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {
             dbCtx.Add(entity);
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
             await AddFurnitureAsync(
                     new FurnitureItem
@@ -450,7 +450,7 @@ public sealed partial class InventoryGrain
                     },
                     ct
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             await _events
                 .PublishAsync(
@@ -468,11 +468,11 @@ public sealed partial class InventoryGrain
                     ),
                     ct
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
         }
         finally
         {
-            await dbCtx.DisposeAsync().ConfigureAwait(false);
+            await dbCtx.DisposeAsync().ConfigureAwait(true);
         }
     }
 

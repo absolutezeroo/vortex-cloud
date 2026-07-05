@@ -142,7 +142,7 @@ internal sealed partial class MessengerGrain
             }
         );
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         IMessengerGrain targetGrain = grainFactory.GetMessengerGrain(targetId);
         LogAndForget(
@@ -270,11 +270,11 @@ internal sealed partial class MessengerGrain
                 }
             );
 
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
             await events
                 .PublishAsync(new FriendRequestAcceptedEvent(SelfId, requesterId), ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             // Update self in-memory
             _incomingRequests.Remove(requesterId);
@@ -387,7 +387,7 @@ internal sealed partial class MessengerGrain
             LogAndForget(friendGrain.NotifyFriendRemovedAsync(SelfId, CancellationToken.None));
         }
 
-        await Task.WhenAll(notifications).ConfigureAwait(false);
+        await Task.WhenAll(notifications).ConfigureAwait(true);
 
         return removed;
     }
@@ -440,7 +440,7 @@ internal sealed partial class MessengerGrain
                 && f.DeletedAt == null
             )
             .ExecuteUpdateAsync(up => up.SetProperty(p => p.RelationType, relationType), ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
     }
 
     public async Task BlockUserAsync(PlayerId targetId, CancellationToken ct)
@@ -472,11 +472,11 @@ internal sealed partial class MessengerGrain
             }
         );
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         await events
             .PublishAsync(new UserBlockedEvent(SelfId, targetId.Value), ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
     }
 
     public async Task UnblockUserAsync(PlayerId targetId, CancellationToken ct)
@@ -498,7 +498,7 @@ internal sealed partial class MessengerGrain
 
         await events
             .PublishAsync(new UserUnblockedEvent(SelfId, targetId.Value), ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
     }
 
     public async Task IgnoreUserAsync(PlayerId targetId, CancellationToken ct)
@@ -530,7 +530,7 @@ internal sealed partial class MessengerGrain
             }
         );
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
     }
 
     public async Task UnignoreUserAsync(PlayerId targetId, CancellationToken ct)

@@ -48,7 +48,7 @@ public sealed class MarketplacePurchaseGrain(
 
         FurnitureItemSnapshot? snapshot = await inventoryGrain
             .GetItemSnapshotAsync(new RoomObjectId(furnitureItemId), ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         if (snapshot is null)
         {
@@ -67,7 +67,7 @@ public sealed class MarketplacePurchaseGrain(
 
         bool removed = await inventoryGrain
             .RemoveFurnitureAsync(new RoomObjectId(furnitureItemId), ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         if (!removed)
         {
@@ -91,9 +91,9 @@ public sealed class MarketplacePurchaseGrain(
 
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
         dbCtx.MarketplaceOffers.Add(offer);
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         return (0, offer.Id);
     }
@@ -102,14 +102,14 @@ public sealed class MarketplacePurchaseGrain(
     {
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         MarketplaceOfferEntity? offer = await dbCtx
             .MarketplaceOffers.FirstOrDefaultAsync(
                 o => o.Id == offerId && o.SellerEntityId == (int)this.GetPrimaryKeyLong(),
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         if (offer is null)
         {
@@ -122,12 +122,12 @@ public sealed class MarketplacePurchaseGrain(
         }
 
         offer.State = MarketplaceOfferState.Cancelled;
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         IInventoryGrain inventoryGrain = _grainFactory.GetInventoryGrain(this.GetPrimaryKeyLong());
         await inventoryGrain
             .GrantFurnitureDefinitionAsync(offer.FurnitureDefinitionEntityId, offer.ExtraData, ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return true;
     }
@@ -136,7 +136,7 @@ public sealed class MarketplacePurchaseGrain(
     {
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         DateTime now = DateTime.UtcNow;
         MarketplaceOfferEntity? offer = await dbCtx
@@ -145,7 +145,7 @@ public sealed class MarketplacePurchaseGrain(
                     o.Id == offerId && o.State == MarketplaceOfferState.Active && o.ExpiresAt > now,
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         if (offer is null)
         {
@@ -184,7 +184,7 @@ public sealed class MarketplacePurchaseGrain(
                                     .SetProperty(p => p.CreditsOwed, creditsOwed),
                             innerCt
                         )
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(true);
 
                     if (claimed == 0)
                     {
@@ -205,7 +205,7 @@ public sealed class MarketplacePurchaseGrain(
                                 offer.ExtraData,
                                 innerCt
                             )
-                            .ConfigureAwait(false);
+                            .ConfigureAwait(true);
                     }
                     catch (Exception)
                     {
@@ -222,7 +222,7 @@ public sealed class MarketplacePurchaseGrain(
                                             .SetProperty(p => p.CreditsOwed, 0),
                                     CancellationToken.None
                                 )
-                                .ConfigureAwait(false);
+                                .ConfigureAwait(true);
                         }
                         catch (Exception compensateEx)
                         {
@@ -241,7 +241,7 @@ public sealed class MarketplacePurchaseGrain(
                 _logger,
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return result.Succeeded ? 0 : 2;
     }
@@ -250,7 +250,7 @@ public sealed class MarketplacePurchaseGrain(
     {
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         List<MarketplaceOfferEntity> soldOffers = await dbCtx
             .MarketplaceOffers.Where(o =>
@@ -259,7 +259,7 @@ public sealed class MarketplacePurchaseGrain(
                 && o.CreditsOwed > 0
             )
             .ToListAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         int totalCredits = soldOffers.Sum(o => o.CreditsOwed);
 
@@ -273,12 +273,12 @@ public sealed class MarketplacePurchaseGrain(
             o.CreditsOwed = 0;
         }
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         await _grainFactory
             .GetPlayerWalletGrain(this.GetPrimaryKeyLong())
             .GrantCreditsAsync(totalCredits, ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return totalCredits;
     }
@@ -289,7 +289,7 @@ public sealed class MarketplacePurchaseGrain(
     {
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         DateTime now = DateTime.UtcNow;
         List<MarketplaceOfferEntity> offers = await dbCtx
@@ -298,7 +298,7 @@ public sealed class MarketplacePurchaseGrain(
                 && o.State != MarketplaceOfferState.Cancelled
             )
             .ToListAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         int creditsOwed = offers.Sum(o => o.CreditsOwed);
 

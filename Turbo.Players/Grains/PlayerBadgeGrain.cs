@@ -30,13 +30,13 @@ internal sealed class PlayerBadgeGrain(
         {
             await using TurboDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             List<PlayerBadgeEntity> entities = await dbCtx
                 .PlayerBadges.AsNoTracking()
                 .Where(b => b.PlayerEntityId == PlayerId)
                 .ToListAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             return entities
                 .Select(b => new PlayerBadgeSnapshot
@@ -62,12 +62,12 @@ internal sealed class PlayerBadgeGrain(
         {
             await using TurboDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             await dbCtx
                 .PlayerBadges.Where(b => b.PlayerEntityId == PlayerId && b.SlotId > 0)
                 .ExecuteUpdateAsync(up => up.SetProperty(b => b.SlotId, 0), ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             foreach ((int slotId, string badgeCode) in slots)
             {
@@ -81,7 +81,7 @@ internal sealed class PlayerBadgeGrain(
                         b.PlayerEntityId == PlayerId && b.BadgeCode == badgeCode
                     )
                     .ExecuteUpdateAsync(up => up.SetProperty(b => b.SlotId, slotId), ct)
-                    .ConfigureAwait(false);
+                    .ConfigureAwait(true);
             }
         }
         catch (Exception ex)

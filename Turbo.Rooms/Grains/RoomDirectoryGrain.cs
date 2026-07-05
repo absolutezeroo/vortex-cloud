@@ -156,6 +156,6 @@ public class RoomDirectoryGrain(
             );
         }
 
-        await Task.WhenAll(pending).ConfigureAwait(false);
+        await Task.WhenAll(pending).ConfigureAwait(true);
     }
 }

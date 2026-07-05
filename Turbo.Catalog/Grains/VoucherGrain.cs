@@ -91,7 +91,7 @@ public sealed class VoucherGrain(
 
     public async Task<VoucherRedeemResult> RedeemAsync(PlayerId playerId, CancellationToken ct)
     {
-        VoucherRedeemResult result = await TryRedeemAsync(playerId, ct).ConfigureAwait(false);
+        VoucherRedeemResult result = await TryRedeemAsync(playerId, ct).ConfigureAwait(true);
 
         IPlayerPresenceGrain presence = grainFactory.GetPlayerPresenceGrain(playerId);
 
@@ -101,7 +101,7 @@ public sealed class VoucherGrain(
                     ? new VoucherRedeemOkMessageComposer()
                     : new VoucherRedeemErrorMessageComposer()
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return result;
     }
@@ -175,11 +175,11 @@ public sealed class VoucherGrain(
         {
             await wallet
                 .GrantActivityPointsAsync(_voucher.ActivityPointType!.Value, _voucher.Amount, ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
         }
         else
         {
-            await wallet.GrantCreditsAsync(_voucher.Amount, ct).ConfigureAwait(false);
+            await wallet.GrantCreditsAsync(_voucher.Amount, ct).ConfigureAwait(true);
         }
 
         logger.LogInformation("Voucher {Code} redeemed by player {PlayerId}", Code, playerIdInt);

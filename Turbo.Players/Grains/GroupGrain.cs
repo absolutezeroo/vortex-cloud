@@ -313,11 +313,11 @@ internal sealed class GroupGrain(
                         PlayerEntity = playerEntity,
                     }
                 );
-                await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+                await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
                 await events
                     .PublishAsync(new GroupMembershipRequestedEvent(playerId, GroupId), ct)
-                    .ConfigureAwait(false);
+                    .ConfigureAwait(true);
             }
 
             return null;
@@ -333,11 +333,11 @@ internal sealed class GroupGrain(
                 PlayerEntity = playerEntity,
             }
         );
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         await events
             .PublishAsync(new GroupMemberJoinedEvent(playerId, GroupId), ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         logger.LogInformation("Player {PlayerId} joined group {GroupId}", playerId, GroupId);
         return null;
@@ -505,24 +505,24 @@ internal sealed class GroupGrain(
         await dbCtx
             .Rooms.Where(r => r.GroupEntityId == GroupId)
             .ExecuteUpdateAsync(up => up.SetProperty(r => r.GroupEntityId, (int?)null), ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         await dbCtx
             .GroupMembers.Where(m => m.GroupEntityId == GroupId && m.DeletedAt == null)
             .ExecuteUpdateAsync(up => up.SetProperty(m => m.DeletedAt, now), ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         await dbCtx
             .GroupMembershipRequests.Where(r => r.GroupEntityId == GroupId && r.DeletedAt == null)
             .ExecuteUpdateAsync(up => up.SetProperty(r => r.DeletedAt, now), ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         group.DeletedAt = now;
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         await events
             .PublishAsync(new GroupDeactivatedEvent(actor.Value, GroupId), ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         logger.LogInformation(
             "Group {GroupId} deactivated by player {ActorId}",
@@ -571,14 +571,14 @@ internal sealed class GroupGrain(
                 PlayerEntity = request.PlayerEntity,
             }
         );
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         await events
             .PublishAsync(
                 new GroupMembershipAcceptedEvent(actor.Value, GroupId, targetPlayerId),
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return new GroupMemberSnapshot
         {
@@ -610,7 +610,7 @@ internal sealed class GroupGrain(
                 && r.DeletedAt == null
             )
             .ExecuteDeleteAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         if (deleted == 0)
         {
@@ -622,7 +622,7 @@ internal sealed class GroupGrain(
                 new GroupMembershipRejectedEvent(actor.Value, GroupId, targetPlayerId),
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return true;
     }
@@ -678,7 +678,7 @@ internal sealed class GroupGrain(
         }
 
         dbCtx.GroupMembershipRequests.RemoveRange(requests);
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         await Task.WhenAll(
                 added.Select(member =>
@@ -688,7 +688,7 @@ internal sealed class GroupGrain(
                     )
                 )
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return added;
     }
@@ -716,7 +716,7 @@ internal sealed class GroupGrain(
                 && m.DeletedAt == null
             )
             .ExecuteDeleteAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         // Also drop any pending request (covers kicking a requester / cleaning up).
         await dbCtx
@@ -726,7 +726,7 @@ internal sealed class GroupGrain(
                 && r.DeletedAt == null
             )
             .ExecuteDeleteAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         if (removed == 0)
         {
@@ -737,7 +737,7 @@ internal sealed class GroupGrain(
         // member is removed regardless. Tracked for a follow-up slice.
         await events
             .PublishAsync(new GroupMemberKickedEvent(actor.Value, GroupId, targetPlayerId), ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return true;
     }
@@ -780,14 +780,14 @@ internal sealed class GroupGrain(
         }
 
         member.Rank = isAdmin ? GroupMemberRank.Admin : GroupMemberRank.Member;
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         await events
             .PublishAsync(
                 new GroupMemberRankChangedEvent(actor.Value, GroupId, targetPlayerId, isAdmin),
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return new GroupMemberSnapshot
         {
@@ -876,11 +876,9 @@ internal sealed class GroupGrain(
         }
 
         mutate(group);
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
-        await events
-            .PublishAsync(new GroupUpdatedEvent(actorId, GroupId), ct)
-            .ConfigureAwait(false);
+        await events.PublishAsync(new GroupUpdatedEvent(actorId, GroupId), ct).ConfigureAwait(true);
 
         return true;
     }

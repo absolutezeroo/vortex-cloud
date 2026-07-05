@@ -28,7 +28,7 @@ public sealed class MarketplaceSearchGrain(IDbContextFactory<TurboDbContext> dbC
     {
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         DateTime now = DateTime.UtcNow;
 
@@ -50,7 +50,7 @@ public sealed class MarketplaceSearchGrain(IDbContextFactory<TurboDbContext> dbC
             );
         }
 
-        List<MarketplaceOfferEntity> raw = await query.ToListAsync(ct).ConfigureAwait(false);
+        List<MarketplaceOfferEntity> raw = await query.ToListAsync(ct).ConfigureAwait(true);
 
         int totalFound = raw.Count;
 
@@ -93,7 +93,7 @@ public sealed class MarketplaceSearchGrain(IDbContextFactory<TurboDbContext> dbC
     {
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         DateTime now = DateTime.UtcNow;
 
@@ -105,7 +105,7 @@ public sealed class MarketplaceSearchGrain(IDbContextFactory<TurboDbContext> dbC
                 && o.ExpiresAt > now
             );
 
-        int offerCount = await matching.CountAsync(ct).ConfigureAwait(false);
+        int offerCount = await matching.CountAsync(ct).ConfigureAwait(true);
 
         if (offerCount == 0)
         {
@@ -120,9 +120,9 @@ public sealed class MarketplaceSearchGrain(IDbContextFactory<TurboDbContext> dbC
             };
         }
 
-        int avgPrice = (int)await matching.AverageAsync(o => o.Price, ct).ConfigureAwait(false);
-        int minPrice = await matching.MinAsync(o => o.Price, ct).ConfigureAwait(false);
-        int maxPrice = await matching.MaxAsync(o => o.Price, ct).ConfigureAwait(false);
+        int avgPrice = (int)await matching.AverageAsync(o => o.Price, ct).ConfigureAwait(true);
+        int minPrice = await matching.MinAsync(o => o.Price, ct).ConfigureAwait(true);
+        int maxPrice = await matching.MaxAsync(o => o.Price, ct).ConfigureAwait(true);
 
         return new MarketplaceItemStatsSnapshot
         {

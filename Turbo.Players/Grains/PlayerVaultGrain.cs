@@ -67,13 +67,13 @@ internal sealed class PlayerVaultGrain(
             switch ((VaultRewardType)reward.RewardType)
             {
                 case VaultRewardType.Credits:
-                    await walletGrain.GrantCreditsAsync(reward.Amount, ct).ConfigureAwait(false);
+                    await walletGrain.GrantCreditsAsync(reward.Amount, ct).ConfigureAwait(true);
                     break;
 
                 case VaultRewardType.Duckets:
                     await walletGrain
                         .GrantActivityPointsAsync(0, reward.Amount, ct)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(true);
                     break;
             }
         }
@@ -82,12 +82,12 @@ internal sealed class PlayerVaultGrain(
 
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         await dbCtx
             .PlayerVaultIncomeRewards.Where(r => ids.Contains(r.Id))
             .ExecuteDeleteAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _pendingRewards.RemoveAll(r => (VaultRewardCategoryType)r.RewardCategory == category);
 
@@ -109,7 +109,7 @@ internal sealed class PlayerVaultGrain(
 
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         if (string.IsNullOrEmpty(productCode))
         {
@@ -125,7 +125,7 @@ internal sealed class PlayerVaultGrain(
                 await dbCtx
                     .PlayerVaultIncomeRewards.Where(r => r.Id == existing.Id)
                     .ExecuteUpdateAsync(up => up.SetProperty(p => p.Amount, existing.Amount), ct)
-                    .ConfigureAwait(false);
+                    .ConfigureAwait(true);
                 return;
             }
         }
@@ -140,7 +140,7 @@ internal sealed class PlayerVaultGrain(
         };
 
         dbCtx.PlayerVaultIncomeRewards.Add(entity);
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         _pendingRewards.Add(entity);
     }
@@ -151,13 +151,13 @@ internal sealed class PlayerVaultGrain(
 
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         List<PlayerVaultIncomeRewardEntity> rows = await dbCtx
             .PlayerVaultIncomeRewards.AsNoTracking()
             .Where(r => r.PlayerEntityId == (int)this.GetPrimaryKeyLong())
             .ToListAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _pendingRewards.AddRange(rows);
     }

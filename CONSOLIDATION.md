@@ -207,6 +207,22 @@ and `Turbo.Players.Configuration.PlayerPresenceConfig`.
     + `.Breeding.cs` (breeding/monsterplant).
   Verified line-for-line before/after each split (method/field declaration counts matched exactly)
   and via `dotnet test` on the affected test projects — no regressions.
+- .NET 10 migration finished (2026-07-05) — TFM/SDK were already `net10.0`/`10.0`, but Orleans was
+  still pinned to the .NET 9-era `9.2.1`. Bumped `Microsoft.Orleans.*` to `10.2.1` (unblocked, no
+  Pomelo dependency); this pulled in Roslyn `>= 5.0.0` transitively, conflicting with
+  `Microsoft.EntityFrameworkCore.Design` 9.0.8's Roslyn `4.8.0` pin under CPM transitive pinning —
+  resolved by adding explicit central `PackageVersion` pins for the five `Microsoft.CodeAnalysis.*`
+  packages at `5.6.0`. The Orleans 10 analyzer then flagged 172 `ConfigureAwait(false)` call sites
+  in grain code as `ORLEANS0014` (grain continuations must stay on the captured/grain context, not
+  escape it) — fixed via `dotnet format analyzers` + `dotnet csharpier format .`; all 99 tests and
+  the full `TurboCloudQualityGate` pass clean (0 warnings, 0 errors). `Microsoft.EntityFrameworkCore*`
+  and `Pomelo.EntityFrameworkCore.MySql` remain pinned to the 9.x line: Pomelo has no EF Core
+  10-compatible release yet (tracked upstream: `PomeloFoundation/Pomelo.EntityFrameworkCore.MySql#2007`).
+  EF Core 9 packages run fine on the `net10.0` TFM/runtime, so this is not a build defect — bump both
+  together once Pomelo ships. Also fixed remaining doc drift: `AGENTS.md` §Required standards still
+  said "Target framework/tooling: .NET 9" despite its own Foundational Context already saying SDK
+  `10.0`; `docs/client-server-architecture.md` said ".NET 9/10"; `README.md`'s example
+  `DevPluginPaths` pointed at a `net9.0` plugin build output.
 
 ---
 

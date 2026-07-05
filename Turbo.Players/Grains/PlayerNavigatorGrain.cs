@@ -53,13 +53,13 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
 
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         int playerId = (int)this.GetPrimaryKeyLong();
 
         PlayerNavigatorPreferencesEntity? existing = await dbCtx
             .PlayerNavigatorPreferences.FirstOrDefaultAsync(e => e.PlayerEntityId == playerId, ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         if (existing is null)
         {
@@ -86,7 +86,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
             existing.ResultsMode = resultsMode;
         }
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
     }
 
     public Task<List<NavigatorQuickLinkSnapshot>> GetSavedSearchesAsync(CancellationToken ct) =>
@@ -96,7 +96,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
     {
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         int playerId = (int)this.GetPrimaryKeyLong();
         int orderNum = _savedSearches.Count;
@@ -110,7 +110,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
         };
 
         dbCtx.PlayerNavigatorSavedSearches.Add(entity);
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         _savedSearches.Add(
             new NavigatorQuickLinkSnapshot
@@ -127,7 +127,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
     {
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         int playerId = (int)this.GetPrimaryKeyLong();
 
@@ -136,7 +136,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
                 e.Id == searchId && e.PlayerEntityId == playerId
             )
             .ExecuteDeleteAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _savedSearches.RemoveAll(s => s.Id == searchId);
     }
@@ -153,7 +153,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
 
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         dbCtx.PlayerNavigatorCollapsedCategories.Add(
             new PlayerNavigatorCollapsedCategoryEntity
@@ -163,7 +163,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
             }
         );
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         _collapsedCategories.Add(categoryName);
     }
@@ -177,7 +177,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
 
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         int playerId = (int)this.GetPrimaryKeyLong();
 
@@ -186,7 +186,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
                 e.PlayerEntityId == playerId && e.CategoryName == categoryName
             )
             .ExecuteDeleteAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _collapsedCategories.Remove(categoryName);
     }
@@ -200,7 +200,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
 
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         int playerId = (int)this.GetPrimaryKeyLong();
 
@@ -209,7 +209,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
                 e => e.PlayerEntityId == playerId && e.SearchCode == searchCode,
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         if (existing is null)
         {
@@ -227,14 +227,14 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
             existing.ViewMode = viewMode;
         }
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
     }
 
     public async Task AddFavouriteRoomAsync(int roomId, CancellationToken ct)
     {
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         int playerId = (int)this.GetPrimaryKeyLong();
 
@@ -243,7 +243,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
                 f => f.PlayerEntityId == playerId && f.RoomEntityId == roomId,
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         if (alreadyFavourited)
         {
@@ -260,14 +260,14 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
             }
         );
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
     }
 
     public async Task RemoveFavouriteRoomAsync(int roomId, CancellationToken ct)
     {
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         int playerId = (int)this.GetPrimaryKeyLong();
 
@@ -276,21 +276,21 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
                 f.PlayerEntityId == playerId && f.RoomEntityId == roomId
             )
             .ExecuteDeleteAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
     }
 
     private async Task HydrateAsync(CancellationToken ct)
     {
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         int playerId = (int)this.GetPrimaryKeyLong();
 
         PlayerNavigatorPreferencesEntity? prefsEntity = await dbCtx
             .PlayerNavigatorPreferences.AsNoTracking()
             .FirstOrDefaultAsync(e => e.PlayerEntityId == playerId, ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _preferences = prefsEntity is null
             ? new NavigatorWindowPreferencesSnapshot()
@@ -309,7 +309,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
             .Where(e => e.PlayerEntityId == playerId)
             .OrderBy(e => e.OrderNum)
             .ToListAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _savedSearches =
         [
@@ -326,7 +326,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
             .PlayerNavigatorCollapsedCategories.AsNoTracking()
             .Where(e => e.PlayerEntityId == playerId)
             .ToListAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _collapsedCategories = [.. collapsedEntities.Select(e => e.CategoryName)];
 
@@ -334,7 +334,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
             .PlayerNavigatorViewModes.AsNoTracking()
             .Where(e => e.PlayerEntityId == playerId)
             .ToListAsync(ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _viewModes = viewModeEntities.ToDictionary(e => e.SearchCode, e => e.ViewMode);
     }

@@ -60,7 +60,7 @@ public sealed partial class CatalogPurchaseGrain(
             ClubSubscriptionSnapshot sub = await _grainFactory
                 .GetPlayerGrain(PlayerId.Parse((int)this.GetPrimaryKeyLong()))
                 .GetClubSubscriptionAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             isHabboClub = sub.IsActive;
 
@@ -98,14 +98,14 @@ public sealed partial class CatalogPurchaseGrain(
                     await _grainFactory
                         .GetInventoryGrain((int)this.GetPrimaryKeyLong())
                         .GrantCatalogOfferAsync(offer, extraParam, quantity, innerCt)
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(true);
 
                     if (creditCost > 0)
                     {
                         await _grainFactory
                             .GetPlayerGrain(PlayerId.Parse((int)this.GetPrimaryKeyLong()))
                             .TrackCreditSpendAsync(creditCost, innerCt)
-                            .ConfigureAwait(false);
+                            .ConfigureAwait(true);
                     }
 
                     await _events
@@ -119,14 +119,14 @@ public sealed partial class CatalogPurchaseGrain(
                             ),
                             innerCt
                         )
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(true);
 
                     return offer;
                 },
                 _logger,
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         if (!result.Succeeded)
         {

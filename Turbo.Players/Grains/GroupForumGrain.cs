@@ -229,7 +229,7 @@ internal sealed class GroupForumGrain(
                 PlayerEntity = actorEntity,
             };
             dbCtx.GroupForumThreads.Add(thread);
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
             dbCtx.GroupForumPosts.Add(
                 new GroupForumPostEntity
@@ -244,11 +244,11 @@ internal sealed class GroupForumGrain(
                     PlayerEntity = actorEntity,
                 }
             );
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
             await events
                 .PublishAsync(new ForumThreadCreatedEvent(actorId, GroupId, thread.Id), ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             return new ForumPostResultSnapshot
             {
@@ -304,11 +304,11 @@ internal sealed class GroupForumGrain(
             thread.PostCount += 1;
             thread.LastPostAt = now;
             thread.LastPostPlayerEntityId = actorId;
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
             await events
                 .PublishAsync(new ForumPostCreatedEvent(actorId, GroupId, thread.Id, post.Id), ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             int authorPostCount = await dbCtx.GroupForumPosts.CountAsync(
                 p =>
@@ -370,14 +370,14 @@ internal sealed class GroupForumGrain(
             thread.State = isLocked ? GroupForumThreadState.Locked : GroupForumThreadState.Open;
         }
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         await events
             .PublishAsync(
                 new ForumThreadModeratedEvent(actor.Value, GroupId, thread.Id, (int)thread.State),
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return BuildThreadSnapshot(thread, DateTime.UtcNow);
     }
@@ -410,14 +410,14 @@ internal sealed class GroupForumGrain(
         }
 
         thread.State = MapThreadAction(action);
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         await events
             .PublishAsync(
                 new ForumThreadModeratedEvent(actor.Value, GroupId, thread.Id, (int)thread.State),
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return BuildThreadSnapshot(thread, DateTime.UtcNow);
     }
@@ -454,14 +454,14 @@ internal sealed class GroupForumGrain(
         }
 
         post.State = MapPostAction(action);
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         await events
             .PublishAsync(
                 new ForumPostModeratedEvent(actor.Value, GroupId, post.Id, (int)post.State),
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return BuildPostSnapshot(post, 0, 0, DateTime.UtcNow);
     }
@@ -498,11 +498,11 @@ internal sealed class GroupForumGrain(
         settings.ThreadPermission = ClampPermission(postThreadPermission);
         settings.ModPermission = ClampPermission(moderatePermission);
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         await events
             .PublishAsync(new ForumSettingsUpdatedEvent(actor.Value, GroupId), ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return await BuildForumSnapshotAsync(dbCtx, group, settings, ForumRole.Owner, ct);
     }

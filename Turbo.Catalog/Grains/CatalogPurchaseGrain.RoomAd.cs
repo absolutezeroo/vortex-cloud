@@ -65,14 +65,14 @@ public sealed partial class CatalogPurchaseGrain
                             DateTime.UtcNow.AddDays(durationDays),
                             innerCt
                         )
-                        .ConfigureAwait(false);
+                        .ConfigureAwait(true);
 
                     return offer;
                 },
                 _logger,
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         if (!result.Succeeded)
         {

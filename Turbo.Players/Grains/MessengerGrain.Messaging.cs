@@ -62,7 +62,7 @@ internal sealed partial class MessengerGrain
         };
 
         dbCtx.MessengerMessages.Add(msgEntity);
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         // Deliver to receiver — fire-and-forget; receiver handles if online or not
         IMessengerGrain receiverGrain = grainFactory.GetMessengerGrain(receiverId);

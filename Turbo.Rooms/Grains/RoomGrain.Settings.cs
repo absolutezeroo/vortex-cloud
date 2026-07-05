@@ -46,11 +46,11 @@ public sealed partial class RoomGrain
         {
             await using TurboDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             RoomEntity? entity = await dbCtx
                 .Rooms.FirstOrDefaultAsync(r => r.Id == _state.RoomId.Value, ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             if (entity is null)
             {
@@ -79,7 +79,7 @@ public sealed partial class RoomGrain
             entity.ChatDistance = update.ChatFullHearRange;
             entity.ChatFloodType = update.ChatFloodSensitivity;
 
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
             _state.RoomSnapshot = _state.RoomSnapshot with
             {
@@ -116,14 +116,14 @@ public sealed partial class RoomGrain
             await _grainFactory
                 .GetRoomDirectoryGrain()
                 .UpsertActiveRoomAsync(_state.RoomSnapshot)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             await _grainFactory
                 .GetPlayerPresenceGrain(actor)
                 .SendComposerAsync(
                     new RoomSettingsSavedEventMessageComposer { RoomId = _state.RoomId }
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             return true;
         }
@@ -145,11 +145,11 @@ public sealed partial class RoomGrain
         {
             await using TurboDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             RoomEntity? entity = await dbCtx
                 .Rooms.FirstOrDefaultAsync(r => r.Id == _state.RoomId.Value, ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             if (entity is null)
             {
@@ -157,7 +157,7 @@ public sealed partial class RoomGrain
             }
 
             entity.DeletedAt = DateTime.UtcNow;
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
             ActionContext actorCtx = ActionContext.CreateForPlayer(actor, _state.RoomId);
 
@@ -166,12 +166,12 @@ public sealed partial class RoomGrain
             {
                 await AvatarModule
                     .RemoveAvatarFromPlayerAsync(actorCtx, playerId, ct)
-                    .ConfigureAwait(false);
+                    .ConfigureAwait(true);
             }
 
             await _grainFactory.GetRoomDirectoryGrain().RemoveActiveRoomAsync(_state.RoomId);
 
-            await DeactivateRoomAsync().ConfigureAwait(false);
+            await DeactivateRoomAsync().ConfigureAwait(true);
 
             return true;
         }
@@ -190,7 +190,7 @@ public sealed partial class RoomGrain
         {
             await using TurboDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             List<RoomControllerSnapshot> result = await dbCtx
                 .RoomRights.AsNoTracking()
@@ -202,7 +202,7 @@ public sealed partial class RoomGrain
                     Name = r.PlayerEntity.Name,
                 })
                 .ToListAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             return [.. result];
         }
@@ -221,7 +221,7 @@ public sealed partial class RoomGrain
         {
             await using TurboDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             DateTime now = DateTime.UtcNow;
 
@@ -239,7 +239,7 @@ public sealed partial class RoomGrain
                     Name = b.PlayerEntity.Name,
                 })
                 .ToListAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             return [.. result];
         }
@@ -266,11 +266,11 @@ public sealed partial class RoomGrain
         {
             await using TurboDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             RoomEntity? entity = await dbCtx
                 .Rooms.FirstOrDefaultAsync(r => r.Id == _state.RoomId.Value, ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             if (entity is null)
             {
@@ -280,7 +280,7 @@ public sealed partial class RoomGrain
             entity.NavigatorCategoryEntityId = categoryId > 0 ? categoryId : null;
             entity.TradeType = tradeType;
 
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
             _state.RoomSnapshot = _state.RoomSnapshot with
             {
@@ -294,7 +294,7 @@ public sealed partial class RoomGrain
                 .SendComposerAsync(
                     new RoomSettingsSavedEventMessageComposer { RoomId = _state.RoomId }
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             return true;
         }
@@ -320,7 +320,7 @@ public sealed partial class RoomGrain
         {
             await using TurboDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             bool alreadyHasRights = await dbCtx
                 .RoomRights.AnyAsync(
@@ -330,7 +330,7 @@ public sealed partial class RoomGrain
                         && r.DeletedAt == null,
                     ct
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             if (alreadyHasRights)
             {
@@ -347,10 +347,10 @@ public sealed partial class RoomGrain
                 }
             );
 
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
             ImmutableArray<RoomControllerSnapshot> controllers = await GetControllersAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             await _grainFactory
                 .GetPlayerPresenceGrain(actor)
@@ -361,7 +361,7 @@ public sealed partial class RoomGrain
                         Controllers = controllers,
                     }
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
         }
         catch (Exception ex)
         {
@@ -389,7 +389,7 @@ public sealed partial class RoomGrain
         {
             await using TurboDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             int[] targetValues = [.. targets.Select(t => t.Value)];
 
@@ -400,17 +400,17 @@ public sealed partial class RoomGrain
                     && r.DeletedAt == null
                 )
                 .ToListAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             foreach (RoomRightEntity row in rows)
             {
                 dbCtx.RoomRights.Remove(row);
             }
 
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
             ImmutableArray<RoomControllerSnapshot> controllers = await GetControllersAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             await _grainFactory
                 .GetPlayerPresenceGrain(actor)
@@ -421,7 +421,7 @@ public sealed partial class RoomGrain
                         Controllers = controllers,
                     }
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
         }
         catch (Exception ex)
         {
@@ -440,19 +440,19 @@ public sealed partial class RoomGrain
         {
             await using TurboDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             List<RoomRightEntity> rows = await dbCtx
                 .RoomRights.Where(r => r.RoomEntityId == _state.RoomId.Value && r.DeletedAt == null)
                 .ToListAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             foreach (RoomRightEntity row in rows)
             {
                 dbCtx.RoomRights.Remove(row);
             }
 
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
             await _grainFactory
                 .GetPlayerPresenceGrain(actor)
@@ -463,7 +463,7 @@ public sealed partial class RoomGrain
                         Controllers = [],
                     }
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
         }
         catch (Exception ex)
         {
@@ -482,7 +482,7 @@ public sealed partial class RoomGrain
         {
             await using TurboDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             RoomRightEntity? row = await dbCtx
                 .RoomRights.FirstOrDefaultAsync(
@@ -492,7 +492,7 @@ public sealed partial class RoomGrain
                         && r.DeletedAt == null,
                     ct
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             if (row is null)
             {
@@ -500,10 +500,10 @@ public sealed partial class RoomGrain
             }
 
             dbCtx.RoomRights.Remove(row);
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
             ImmutableArray<RoomControllerSnapshot> controllers = await GetControllersAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             await _grainFactory
                 .GetPlayerPresenceGrain(actor)
@@ -514,7 +514,7 @@ public sealed partial class RoomGrain
                         Controllers = controllers,
                     }
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
         }
         catch (Exception ex)
         {

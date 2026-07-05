@@ -210,13 +210,13 @@ internal sealed class RentableSpaceGrain(
 
             if (kind.CurrencyType == CurrencyType.Credits)
             {
-                await ownerWallet.GrantCreditsAsync(_terms.Price, ct).ConfigureAwait(false);
+                await ownerWallet.GrantCreditsAsync(_terms.Price, ct).ConfigureAwait(true);
             }
             else if (kind.ActivityPointType.HasValue)
             {
                 await ownerWallet
                     .GrantActivityPointsAsync(kind.ActivityPointType.Value, _terms.Price, ct)
-                    .ConfigureAwait(false);
+                    .ConfigureAwait(true);
             }
         }
 
@@ -243,7 +243,7 @@ internal sealed class RentableSpaceGrain(
                 ),
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return null; // success
     }
@@ -297,7 +297,7 @@ internal sealed class RentableSpaceGrain(
 
         await events
             .PublishAsync(new RentalExpiredEvent(FurnitureId, renterId, _roomId ?? 0), ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
     }
 
     public async Task<RentableSpaceConfigSnapshot> GetConfigAsync(CancellationToken ct)
@@ -531,7 +531,7 @@ internal sealed class RentableSpaceGrain(
                         CurrencyName = _terms?.CurrencyTypeEntity?.Name ?? string.Empty,
                     }
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
         }
         catch (Exception ex)
         {

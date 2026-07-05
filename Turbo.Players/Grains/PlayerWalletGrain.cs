@@ -64,10 +64,10 @@ internal sealed class PlayerWalletGrain(
         {
             await using TurboDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
             await using IDbContextTransaction tx = await dbCtx
                 .Database.BeginTransactionAsync(ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             List<WalletCurrencyUpdateSnapshot> updates = new List<WalletCurrencyUpdateSnapshot>(
                 normalizedRequests.Count
@@ -137,7 +137,7 @@ internal sealed class PlayerWalletGrain(
                         ),
                         ct
                     )
-                    .ConfigureAwait(false);
+                    .ConfigureAwait(true);
             }
         }
 
@@ -308,8 +308,7 @@ internal sealed class PlayerWalletGrain(
     {
         foreach (WalletDebitRequest request in requests)
         {
-            await GrantCurrencyAsync(request.CurrencyKind, request.Amount, ct)
-                .ConfigureAwait(false);
+            await GrantCurrencyAsync(request.CurrencyKind, request.Amount, ct).ConfigureAwait(true);
         }
     }
 
@@ -356,7 +355,7 @@ internal sealed class PlayerWalletGrain(
                 ),
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(
             (int)this.GetPrimaryKeyLong()
@@ -429,7 +428,7 @@ internal sealed class PlayerWalletGrain(
 
                 writeCtx.PlayerCurrencies.Add(entity);
 
-                await writeCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+                await writeCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
                 _currenciesByKind[creditsKind] = new WalletCurrencySnapshot
                 {

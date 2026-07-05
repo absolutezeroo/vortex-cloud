@@ -2,7 +2,7 @@
 
 How **Turbo Cloud** (`vortex-emulator`, the server) and **vortex-client** (the client, package name `com.sulake.habbo` — "habbo-client-clean") work together.
 
-**Server:** Turbo Cloud — .NET 9/10, Microsoft Orleans (virtual actors), SuperSocket networking, EF Core (Pomelo MySQL)
+**Server:** Turbo Cloud — .NET 10, Microsoft Orleans (virtual actors), SuperSocket networking, EF Core (Pomelo MySQL)
 **Client:** vortex-client — ActionScript 3 / Flash Player, protocol revision `WIN63-202601121721-391685409`
 **Protocol:** Binary TCP **and** WebSocket with the classic length+header framing, optional RC4 encryption
 
@@ -74,7 +74,7 @@ The **client** (vortex-client) is a Flash-based rendering and input layer. It pr
               ══════════════╪══════════════  Network
                             │
 ┌───────────────────────────┼─────────────────────────────────┐
-│  Turbo Cloud (Turbo.Cloud.sln, .NET 9/10 + Orleans)         │
+│  Turbo Cloud (Turbo.Cloud.sln, .NET 10 + Orleans)             │
 │  ┌───────────────────────────────────────────────────────┐  │
 │  │  Turbo.Main               Host composition root        │  │
 │  │  ├─ Turbo.Networking       SuperSocket TCP + WS, session│  │

@@ -185,7 +185,7 @@ internal sealed partial class MessengerGrain(
             await dbCtx
                 .MessengerMessages.Where(m => ids.Contains(m.Id))
                 .ExecuteUpdateAsync(up => up.SetProperty(p => p.Delivered, true), ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
         }
         catch (Exception ex)
         {

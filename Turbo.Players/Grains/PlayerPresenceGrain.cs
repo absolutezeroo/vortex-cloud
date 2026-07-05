@@ -161,7 +161,7 @@ internal sealed partial class PlayerPresenceGrain
         {
             try
             {
-                await _roomOutboundSub.UnsubscribeAsync().ConfigureAwait(false);
+                await _roomOutboundSub.UnsubscribeAsync().ConfigureAwait(true);
             }
             catch (Exception ex)
             {

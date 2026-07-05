@@ -112,7 +112,7 @@ internal sealed class GroupDirectoryGrain(
                 ),
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         if (creatingContext.Cancel)
         {
@@ -141,7 +141,7 @@ internal sealed class GroupDirectoryGrain(
                 ],
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         if (!debit.Succeeded)
         {
@@ -167,7 +167,7 @@ internal sealed class GroupDirectoryGrain(
         group.OwnerPlayerEntity = ownerEntity;
 
         dbCtx.Groups.Add(group);
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         // Link the room back to the group and enrol the owner as an admin member.
         room.GroupEntityId = group.Id;
@@ -182,7 +182,7 @@ internal sealed class GroupDirectoryGrain(
             }
         );
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         // Hook the spend into the catalog purchase path, exactly like CatalogPurchaseGrain: track
         // the credit spend (Club payday) and raise CatalogPurchasedEvent so guild creation shows up
@@ -190,7 +190,7 @@ internal sealed class GroupDirectoryGrain(
         await grainFactory
             .GetPlayerGrain(owner)
             .TrackCreditSpendAsync(_groupConfig.CreationCostInCredits, ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         await events
             .PublishAsync(
@@ -203,7 +203,7 @@ internal sealed class GroupDirectoryGrain(
                 ),
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         await events
             .PublishAsync(
@@ -216,7 +216,7 @@ internal sealed class GroupDirectoryGrain(
                 ),
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         logger.LogInformation(
             "Player {OwnerId} created group {GroupId} on room {RoomId}",
@@ -309,11 +309,11 @@ internal sealed class GroupDirectoryGrain(
         await dbCtx
             .Players.Where(p => p.Id == playerId)
             .ExecuteUpdateAsync(up => up.SetProperty(p => p.FavouriteGroupId, newValue), ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         await events
             .PublishAsync(new GroupFavouriteChangedEvent(playerId, newValue), ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
     }
 
     public Task<GroupEditorDataSnapshot> GetEditorDataAsync(CancellationToken ct)

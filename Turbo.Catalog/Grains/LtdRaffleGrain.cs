@@ -131,7 +131,7 @@ public sealed class LtdRaffleGrain(
                 logger,
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         if (!result.Succeeded)
         {
@@ -157,7 +157,7 @@ public sealed class LtdRaffleGrain(
 
         await events
             .PublishAsync(new LtdRaffleEnteredEvent(playerIdInt, SeriesId, _series.CostCredits), ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return new LtdRaffleEntryResult { Success = true, ErrorCode = string.Empty };
     }
@@ -303,7 +303,7 @@ public sealed class LtdRaffleGrain(
                     ),
                     ct
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             // Refund non-winners — await all refunds before finalizing the batch so a
             // failed refund is never silently lost once the results are persisted.
@@ -409,7 +409,7 @@ public sealed class LtdRaffleGrain(
         {
             IPlayerWalletGrain wallet = grainFactory.GetPlayerWalletGrain(PlayerId.Parse(playerId));
 
-            await wallet.GrantCreditsAsync(_series!.CostCredits, ct).ConfigureAwait(false);
+            await wallet.GrantCreditsAsync(_series!.CostCredits, ct).ConfigureAwait(true);
         }
         catch (Exception ex)
         {

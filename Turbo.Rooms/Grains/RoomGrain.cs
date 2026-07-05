@@ -137,7 +137,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
     public async Task EnsureRoomActiveAsync(CancellationToken ct)
     {
-        await DelayRoomDeactivationAsync().ConfigureAwait(false);
+        await DelayRoomDeactivationAsync().ConfigureAwait(true);
 
         await MapModule.EnsureMapBuiltAsync(ct);
         await FurniModule.EnsureFurniLoadedAsync(ct);

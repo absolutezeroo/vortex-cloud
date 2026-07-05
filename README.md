@@ -101,7 +101,7 @@ Example:
   "Turbo": {
     "Plugin": {
       "DevPluginPaths": [
-        "C:/Users/you/RiderProjects/turbo-sample-plugin/TurboSamplePlugin/bin/Debug/net9.0"
+        "C:/Users/you/RiderProjects/turbo-sample-plugin/TurboSamplePlugin/bin/Debug/net10.0"
       ]
     }
   }

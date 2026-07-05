@@ -176,7 +176,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
                 ],
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         if (!debitResult.Succeeded)
         {
@@ -231,7 +231,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
         _state.ClubFirstSubscribedAt ??= now;
 
         // Grant the membership badge(s) once active. Idempotent at the inventory layer.
-        await GrantClubBadgesAsync(isVip, ct).ConfigureAwait(false);
+        await GrantClubBadgesAsync(isVip, ct).ConfigureAwait(true);
 
         // Init payday on first subscription; renewals keep the existing cycle
         if (_state.KickbackPaydayAt is null)
@@ -286,9 +286,9 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
             );
         }
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
-        await UpsertKickbackAsync(ct).ConfigureAwait(false);
+        await UpsertKickbackAsync(ct).ConfigureAwait(true);
 
         await _events
             .PublishAsync(
@@ -302,7 +302,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
                 ),
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return ClubPurchaseResult.Success;
     }
@@ -327,11 +327,11 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
                 up => up.SetProperty(p => p.GiftsAvailable, _state.ClubGiftsAvailable),
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         await _events
             .PublishAsync(new ClubGiftClaimedEvent(_state.PlayerId, productCode), ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return true;
     }
@@ -346,7 +346,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
         _state.KickbackCreditsSpent += credits;
         _state.KickbackTotalSpent += credits;
 
-        await UpsertKickbackAsync(ct).ConfigureAwait(false);
+        await UpsertKickbackAsync(ct).ConfigureAwait(true);
     }
 
     public async Task<bool> ApplyAccountBanAsync(
@@ -358,7 +358,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
     {
         await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
-        int? accountId = await FindLinkedAccountIdAsync(dbCtx, ct).ConfigureAwait(false);
+        int? accountId = await FindLinkedAccountIdAsync(dbCtx, ct).ConfigureAwait(true);
 
         if (accountId is null)
         {
@@ -367,14 +367,14 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
 
         AccountBanEntity? existing = await dbCtx
             .AccountBans.FirstOrDefaultAsync(b => b.PlayerAccountEntityId == accountId, ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         if (bannedUntil is null)
         {
             if (existing is not null)
             {
                 existing.DeletedAt = DateTime.UtcNow;
-                await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+                await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
             }
         }
         else if (existing is null)
@@ -388,14 +388,14 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
                     PlayerAccountEntity = null!,
                 }
             );
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
         }
         else
         {
             existing.DateExpires = bannedUntil.Value;
             existing.Reason = reason;
             existing.DeletedAt = null;
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
         }
 
         await _events
@@ -408,7 +408,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
                 ),
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return true;
     }
@@ -423,7 +423,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
 
         PlayerEntity? player = await dbCtx
             .Players.FindAsync([_state.PlayerId.Value], ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         if (player is null)
         {
@@ -432,14 +432,14 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
 
         player.TradingLockedUntil = lockedUntil;
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         await _events
             .PublishAsync(
                 new PlayerTradingLockedEvent(actorPlayerId, (int)_state.PlayerId, lockedUntil),
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return true;
     }
@@ -448,7 +448,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
     {
         await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
-        int? accountId = await FindLinkedAccountIdAsync(dbCtx, ct).ConfigureAwait(false);
+        int? accountId = await FindLinkedAccountIdAsync(dbCtx, ct).ConfigureAwait(true);
 
         if (accountId is null)
         {
@@ -466,7 +466,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
                     && b.DateExpires > now,
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return activeBan?.DateExpires;
     }
@@ -475,7 +475,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
     {
         PlayerEntity? player = await dbCtx
             .Players.FindAsync([_state.PlayerId.Value], ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         return player?.PlayerAccountEntityId;
     }
@@ -581,7 +581,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
                         .SetProperty(p => p.NextGiftAt, _state.ClubNextGiftAt),
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         await _events
             .PublishAsync(
@@ -592,7 +592,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
                 ),
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
     }
 
     private async Task HydrateAsync(CancellationToken ct)
@@ -698,15 +698,13 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
 
             if (!_state.ClubBadgeGranted)
             {
-                await inventory
-                    .GrantBadgeAsync(_clubConfig.ClubBadgeCode, ct)
-                    .ConfigureAwait(false);
+                await inventory.GrantBadgeAsync(_clubConfig.ClubBadgeCode, ct).ConfigureAwait(true);
                 _state.ClubBadgeGranted = true;
             }
 
             if (isVip)
             {
-                await inventory.GrantBadgeAsync(_clubConfig.VipBadgeCode, ct).ConfigureAwait(false);
+                await inventory.GrantBadgeAsync(_clubConfig.VipBadgeCode, ct).ConfigureAwait(true);
             }
         }
         catch (Exception ex)
@@ -752,11 +750,11 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
                 up => up.SetProperty(p => p.LastExpiredAt, _state.ClubLastExpiredAt),
                 ct
             )
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         await _events
             .PublishAsync(new ClubExpiredEvent(_state.PlayerId, wasVip), ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _logger.LogInformation(
             "Club membership expired for player {PlayerId} (wasVip={WasVip})",
@@ -793,12 +791,12 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
                 IPlayerWalletGrain wallet = _grainFactory.GetPlayerWalletGrain(
                     (int)this.GetPrimaryKeyLong()
                 );
-                await wallet.GrantCreditsAsync(totalReward, ct).ConfigureAwait(false);
+                await wallet.GrantCreditsAsync(totalReward, ct).ConfigureAwait(true);
                 _state.KickbackTotalRewarded += totalReward;
 
                 await _events
                     .PublishAsync(new ClubPaydayEvent(_state.PlayerId, totalReward), ct)
-                    .ConfigureAwait(false);
+                    .ConfigureAwait(true);
             }
 
             _state.KickbackCreditsSpent = 0;
@@ -807,7 +805,7 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
 
         _state.KickbackPaydayAt = payday;
 
-        await UpsertKickbackAsync(ct).ConfigureAwait(false);
+        await UpsertKickbackAsync(ct).ConfigureAwait(true);
     }
 
     private async Task UpsertKickbackAsync(CancellationToken ct)
@@ -850,6 +848,6 @@ internal sealed class PlayerGrain : Grain, IPlayerGrain
             );
         }
 
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
     }
 }

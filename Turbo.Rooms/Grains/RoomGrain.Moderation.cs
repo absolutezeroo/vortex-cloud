@@ -35,7 +35,7 @@ public sealed partial class RoomGrain
 
             await AvatarModule
                 .RemoveAvatarFromPlayerAsync(actorCtx, targetPlayerId, ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             await _events
                 .PublishAsync(
@@ -46,7 +46,7 @@ public sealed partial class RoomGrain
                     ),
                     ct
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             return true;
         }
@@ -97,7 +97,7 @@ public sealed partial class RoomGrain
                     ),
                     ct
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             return true;
         }
@@ -138,7 +138,7 @@ public sealed partial class RoomGrain
             await _moderationStore.BanAsync(_state.RoomId.Value, targetPlayerId, expiresUtc, ct);
             await AvatarModule
                 .RemoveAvatarFromPlayerAsync(actorCtx, targetPlayerId, ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             await _events
                 .PublishAsync(
@@ -150,7 +150,7 @@ public sealed partial class RoomGrain
                     ),
                     ct
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             return true;
         }
@@ -183,7 +183,7 @@ public sealed partial class RoomGrain
             _state.MuteExpiresUtc.Remove(targetPlayerId);
             await _moderationStore
                 .UnmuteAsync(_state.RoomId.Value, targetPlayerId, ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             return true;
         }
@@ -215,7 +215,7 @@ public sealed partial class RoomGrain
 
             await _moderationStore
                 .UnbanAsync(_state.RoomId.Value, targetPlayerId, ct)
-                .ConfigureAwait(false);
+                .ConfigureAwait(true);
 
             return true;
         }
