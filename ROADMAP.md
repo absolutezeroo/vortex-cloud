@@ -258,8 +258,17 @@ throughout; group rooms handled; moderation tool is functional and audited.
 
 **Goal:** buy, receive, sell/retrieve — every currency movement goes through tested ledger.
 
-**Story 4.1 — Complete Inventory (19% → 100%)**
-- [ ] Handlers `Turbo.PacketHandlers/Inventory` implemented (view, move to room, etc.).
+**Story 4.1 — Complete Inventory — Done (2026-07-05)**
+- [x] Furni/Badges(core)/Pets/Purse were already fully implemented (roadmap's "19%" was stale).
+- [x] `RequestRoomPropertySetMessageHandler` — real floor/wallpaper/landscape values from
+  `RoomEntity`, now exposed through `RoomInfoSnapshot`.
+- [x] `GetBotInventoryMessageHandler` — empty inventory (no Bot feature exists yet; a truthful
+  answer, not a stub).
+- [x] `GetBadgePointLimitsMessageHandler` — static per-category thresholds (`BadgeConfig`).
+- [x] `RequestABadgeMessageHandler` / `GetIsBadgeRequestFulfilledMessageHandler` — truthfully report
+  "not fulfilled" (no achievement/progress system exists to ever fulfill one).
+- Deliberately deferred (separate stories, not part of this pass): Achievements and Avatar Effects
+  both need a full subsystem (DB entity + grain + progress logic) built from zero, not just wiring.
 
 **Story 4.2 — End-to-end catalog purchase (Catalog 39% → 100%)**
 *As a* player, *I want* to buy from catalog, *so I can* get furniture.

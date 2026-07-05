@@ -6,5 +6,6 @@ namespace Turbo.Revisions.Revision20260112.Parsers.Inventory.Furni;
 
 internal class RequestRoomPropertySetMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new RequestRoomPropertySetMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new RequestRoomPropertySetMessage { RoomId = packet.PopInt() };
 }

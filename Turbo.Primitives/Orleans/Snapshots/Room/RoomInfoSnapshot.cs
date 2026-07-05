@@ -45,4 +45,13 @@ public record RoomInfoSnapshot : RoomSummarySnapshot
 
     [Id(12)]
     public string? GroupBadge { get; init; }
+
+    [Id(13)]
+    public required double PaintWall { get; init; }
+
+    [Id(14)]
+    public required double PaintFloor { get; init; }
+
+    [Id(15)]
+    public required double PaintLandscape { get; init; }
 }

@@ -280,6 +280,9 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                 GroupId = entity.GroupEntityId,
                 GroupName = entity.GroupEntity?.Name,
                 GroupBadge = entity.GroupEntity?.Badge,
+                PaintWall = entity.PaintWall,
+                PaintFloor = entity.PaintFloor,
+                PaintLandscape = entity.PaintLandscape,
                 Password = entity.Password ?? string.Empty,
                 ModSettings = new ModSettingsSnapshot
                 {

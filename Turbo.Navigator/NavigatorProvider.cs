@@ -245,6 +245,9 @@ file static class RoomQueryExtensions
                 GroupId = x.GroupEntityId,
                 GroupName = x.GroupEntity != null ? x.GroupEntity.Name : null,
                 GroupBadge = x.GroupEntity != null ? x.GroupEntity.Badge : null,
+                PaintWall = x.PaintWall,
+                PaintFloor = x.PaintFloor,
+                PaintLandscape = x.PaintLandscape,
                 LastUpdatedUtc = DateTime.UtcNow,
             })
             .ToListAsync(ct);

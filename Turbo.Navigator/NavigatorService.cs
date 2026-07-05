@@ -93,6 +93,9 @@ public sealed class NavigatorService(
                                 AllowBlocking = x.AllowBlocking,
                                 AllowPets = x.AllowPets,
                                 AllowPetsEat = x.AllowPetsEat,
+                                PaintWall = x.PaintWall,
+                                PaintFloor = x.PaintFloor,
+                                PaintLandscape = x.PaintLandscape,
                                 LastUpdatedUtc = x.LastUpdatedUtc,
                             };
                         }),
@@ -159,6 +162,9 @@ public sealed class NavigatorService(
                     AllowBlocking = x.AllowBlocking,
                     AllowPets = x.AllowPets,
                     AllowPetsEat = x.AllowPetsEat,
+                    PaintWall = x.PaintWall,
+                    PaintFloor = x.PaintFloor,
+                    PaintLandscape = x.PaintLandscape,
                     LastUpdatedUtc = x.LastUpdatedUtc,
                 };
             }),

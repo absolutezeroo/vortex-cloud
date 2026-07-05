@@ -67,6 +67,9 @@ public sealed class RoomDirectoryGrainClusterTests : IAsyncLifetime
             AllowBlocking = false,
             AllowPets = false,
             AllowPetsEat = false,
+            PaintWall = 0.0,
+            PaintFloor = 0.0,
+            PaintLandscape = 0.0,
         };
 
         await grain.UpsertActiveRoomAsync(snapshot).ConfigureAwait(true);
@@ -103,6 +106,9 @@ public sealed class RoomDirectoryGrainClusterTests : IAsyncLifetime
             AllowBlocking = false,
             AllowPets = false,
             AllowPetsEat = false,
+            PaintWall = 0.0,
+            PaintFloor = 0.0,
+            PaintLandscape = 0.0,
         };
 
         await grain.UpsertActiveRoomAsync(snapshot).ConfigureAwait(true);

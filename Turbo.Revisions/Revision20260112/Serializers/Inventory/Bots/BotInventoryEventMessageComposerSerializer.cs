@@ -11,6 +11,6 @@ internal class BotInventoryEventMessageComposerSerializer(int header)
         BotInventoryEventMessageComposer message
     )
     {
-        //
+        packet.WriteInteger(0);
     }
 }
