@@ -52,7 +52,7 @@ public sealed class RoomVisitLogLeftHandler(IDbContextFactory<TurboDbContext> db
         RoomEntryLogEntity? openVisit = await dbCtx
             .RoomEntryLogs.Where(v =>
                 v.PlayerEntityId == e.PlayerId.Value
-                && v.RoomEntityId == e.RoomId.Value
+                && v.RoomEntityId == e.RoomId
                 && v.ExitedAt == null
             )
             .OrderByDescending(v => v.CreatedAt)
