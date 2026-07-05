@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -51,7 +52,8 @@ internal sealed partial class RoomService(
         ActionContext ctx,
         PlayerId playerId,
         RoomId roomId,
-        CancellationToken ct
+        CancellationToken ct,
+        string password = ""
     )
     {
         IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(playerId);
@@ -81,12 +83,6 @@ internal sealed partial class RoomService(
         await playerPresence.ClearActiveRoomAsync(ct).ConfigureAwait(false);
         await playerPresence.SetPendingRoomAsync(roomId, true).ConfigureAwait(false);
 
-        // if owner => auto-approve
-        // if banned => reject
-        // if full => reject
-        // if passworded => reject (for now)
-        // if locked => reject (for now)
-
         IRoomGrain room = _grainFactory.GetRoomGrain(roomId);
 
         await playerPresence
@@ -96,6 +92,39 @@ internal sealed partial class RoomService(
         await room.EnsureRoomActiveAsync(ct).ConfigureAwait(false);
 
         RoomSnapshot snapshot = await room.GetSnapshotAsync().ConfigureAwait(false);
+        RoomControllerType controllerLevel = await room.GetControllerLevelAsync(ctx, ct)
+            .ConfigureAwait(false);
+        bool isOwner = controllerLevel == RoomControllerType.Owner;
+        ImmutableArray<RoomAvatarSnapshot> avatarSnapshots = await room.GetAllAvatarSnapshotsAsync(
+                ct
+            )
+            .ConfigureAwait(false);
+
+        if (controllerLevel < RoomControllerType.Rights)
+        {
+            RoomConnectionErrorType? rejection =
+                snapshot.PlayersMax > 0 && avatarSnapshots.Length >= snapshot.PlayersMax
+                    ? RoomConnectionErrorType.RoomFull
+                : snapshot.DoorMode == RoomDoorModeType.Locked ? RoomConnectionErrorType.NoEntry
+                : snapshot.DoorMode == RoomDoorModeType.Password
+                && !string.Equals(snapshot.Password, password, StringComparison.Ordinal)
+                    ? RoomConnectionErrorType.NoEntry
+                : null;
+
+            if (rejection is not null)
+            {
+                await playerPresence
+                    .SendComposerAsync(
+                        new CantConnectMessageComposer { ErrorType = rejection.Value }
+                    )
+                    .ConfigureAwait(false);
+                await playerPresence
+                    .SetPendingRoomAsync(RoomId.Invalid, false)
+                    .ConfigureAwait(false);
+                return;
+            }
+        }
+
         RoomMapSnapshot mapSnapshot = await room.GetMapSnapshotAsync(ct).ConfigureAwait(false);
 
         await playerPresence
@@ -132,14 +161,7 @@ internal sealed partial class RoomService(
                 ct
             )
             .ConfigureAwait(false);
-        ImmutableArray<RoomAvatarSnapshot> avatarSnapshots = await room.GetAllAvatarSnapshotsAsync(
-                ct
-            )
-            .ConfigureAwait(false);
-        bool isOwner = snapshot.OwnerId == playerId;
-        RoomControllerType controllerLevel = isOwner
-            ? RoomControllerType.Owner
-            : RoomControllerType.None;
+        bool hasRights = controllerLevel >= RoomControllerType.Rights;
         IComposer[] danceComposers = avatarSnapshots
             .OfType<RoomPlayerAvatarSnapshot>()
             .Where(x => x.DanceType != AvatarDanceType.None)
@@ -165,7 +187,11 @@ internal sealed partial class RoomService(
                     RoomId = roomId,
                     ControllerLevel = controllerLevel,
                 },
-                new WiredPermissionsEventMessageComposer { CanModify = isOwner, CanRead = isOwner }
+                new WiredPermissionsEventMessageComposer
+                {
+                    CanModify = hasRights,
+                    CanRead = hasRights,
+                }
             )
             .ConfigureAwait(false);
 
