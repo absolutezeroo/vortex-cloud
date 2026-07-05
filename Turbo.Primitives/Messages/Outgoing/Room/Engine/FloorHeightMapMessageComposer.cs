@@ -20,4 +20,13 @@ public sealed record FloorHeightMapMessageComposer : IComposer
 
     [Id(3)]
     public required List<AreaHideDataSnapshot> AreaHideData { get; init; }
+
+    [Id(4)]
+    public int CameraInitX { get; init; }
+
+    [Id(5)]
+    public int CameraInitY { get; init; }
+
+    [Id(6)]
+    public float CameraInitZ { get; init; }
 }
