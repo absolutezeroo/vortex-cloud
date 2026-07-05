@@ -2,4 +2,7 @@ using Turbo.Primitives.Networking;
 
 namespace Turbo.Primitives.Messages.Incoming.Room.Furniture;
 
-public record ThrowDiceMessage : IMessageEvent { }
+public record ThrowDiceMessage : IMessageEvent
+{
+    public required int ObjectId { get; init; }
+}
