@@ -1,5 +1,6 @@
 using Turbo.Primitives.Messages.Outgoing.Room.Furniture;
 using Turbo.Primitives.Packets;
+using Turbo.Primitives.Rooms.Snapshots;
 
 namespace Turbo.Revisions.Revision20260112.Serializers.Room.Furniture;
 
@@ -20,7 +21,7 @@ internal class RentableSpaceConfigMessageComposerSerializer(int header)
             .WriteBoolean(message.RequiresHc)
             .WriteInteger(message.AvailableCurrencies.Count);
 
-        foreach (var currency in message.AvailableCurrencies)
+        foreach (AvailableCurrencySnapshot currency in message.AvailableCurrencies)
         {
             packet.WriteInteger(currency.Id).WriteString(currency.Name);
         }

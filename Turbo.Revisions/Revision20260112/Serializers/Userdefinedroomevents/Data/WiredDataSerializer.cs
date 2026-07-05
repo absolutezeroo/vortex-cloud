@@ -90,7 +90,7 @@ internal class WiredDataSerializer
 
     private static void SerializeSpecifics(IServerPacket packet, List<object> specifics)
     {
-        foreach (var specific in specifics)
+        foreach (object specific in specifics)
         {
             if (specific is null)
             {

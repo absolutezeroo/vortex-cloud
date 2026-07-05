@@ -1,4 +1,5 @@
 using Turbo.Primitives.Messages.Outgoing.Roomsettings;
+using Turbo.Primitives.Orleans.Snapshots.Room;
 using Turbo.Primitives.Packets;
 
 namespace Turbo.Revisions.Revision20260112.Serializers.RoomSettings;
@@ -13,7 +14,7 @@ internal class FlatControllersEventMessageComposerSerializer(int header)
     {
         packet.WriteInteger(message.RoomId).WriteInteger(message.Controllers.Length);
 
-        foreach (var controller in message.Controllers)
+        foreach (RoomControllerSnapshot controller in message.Controllers)
         {
             packet.WriteInteger(controller.PlayerId).WriteString(controller.Name);
         }

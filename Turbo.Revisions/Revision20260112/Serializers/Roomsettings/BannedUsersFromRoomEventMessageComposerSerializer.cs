@@ -1,4 +1,5 @@
 using Turbo.Primitives.Messages.Outgoing.Roomsettings;
+using Turbo.Primitives.Orleans.Snapshots.Room;
 using Turbo.Primitives.Packets;
 
 namespace Turbo.Revisions.Revision20260112.Serializers.RoomSettings;
@@ -13,7 +14,7 @@ internal class BannedUsersFromRoomEventMessageComposerSerializer(int header)
     {
         packet.WriteInteger(message.RoomId).WriteInteger(message.BannedUsers.Length);
 
-        foreach (var banned in message.BannedUsers)
+        foreach (RoomControllerSnapshot banned in message.BannedUsers)
         {
             packet.WriteInteger(banned.PlayerId).WriteString(banned.Name);
         }
