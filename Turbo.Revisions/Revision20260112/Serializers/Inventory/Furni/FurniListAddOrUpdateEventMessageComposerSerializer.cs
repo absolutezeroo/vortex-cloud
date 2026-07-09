@@ -12,6 +12,8 @@ internal class FurniListAddOrUpdateEventMessageComposerSerializer(int header)
         FurniListAddOrUpdateEventMessageComposer message
     )
     {
+        packet.WriteInteger(1);
+
         FurnitureItemSerializer.Serialize(packet, message.Item);
     }
 }
