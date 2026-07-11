@@ -35,6 +35,9 @@ public class PlayerNavigatorPreferencesEntity : TurboEntity
     [DefaultValue(1)]
     public int ResultsMode { get; set; } = 1;
 
+    [Column("home_room_id")]
+    public int? HomeRoomId { get; set; }
+
     [ForeignKey(nameof(PlayerEntityId))]
     public PlayerEntity? PlayerEntity { get; set; }
 }

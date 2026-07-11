@@ -54,4 +54,7 @@ public record RoomInfoSnapshot : RoomSummarySnapshot
 
     [Id(15)]
     public required double PaintLandscape { get; init; }
+
+    [Id(16)]
+    public required bool StaffPick { get; init; } = false;
 }

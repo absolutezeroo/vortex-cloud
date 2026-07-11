@@ -8,6 +8,6 @@ internal class RoomEventCancelMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, RoomEventCancelMessageComposer message)
     {
-        //
+        packet.WriteInteger(message.RoomId);
     }
 }

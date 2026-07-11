@@ -22,7 +22,7 @@ low-line-count handlers turned out to be legacy/admin messages outside the core 
 | Domain | Coverage (2026-07-05) | Was (stale) |
 |---|---|---|
 | NewNavigator | 100% | — |
-| Navigator | ~64% (13/36 stub, all peripheral: room-events, room-ads, staff-pick/tags) | 8% |
+| Navigator | 100% (2026-07-11: remaining 13 stub handlers implemented) | 8% |
 | Room/Chat | 100% | — |
 | Room/Pets | 100% | — |
 | RoomSettings | 75% (2/8 stub: custom room word-filter only) | 0% |
@@ -139,9 +139,27 @@ leave — without ever hitting a dead packet path. This is the slice that turns 
 - [x] Categories, search, favorites, my rooms, room creation return real data through grains
       (`NewNavigatorInitMessageHandler`, `NewNavigatorSearchMessageHandler`, `CreateFlatMessageHandler`,
       `GetGuestRoomMessageHandler`, favorites handlers — all implemented).
-- [ ] Remaining 13 stub handlers are peripheral, not core-blocking: room-events (`CancelEvent`/
-      `EditEvent`/`GetUserEventCats`), room-ads (ties to Catalog's still-stub room-ads subsystem),
-      staff-pick/tags/popular-tags/home-room/rate-flat secondary UX.
+- [x] Remaining 13 stub handlers implemented 2026-07-11: `CancelEvent`/`EditEvent`/
+      `GetUserEventCats` turned out to operate on the same `RoomAdvertisementEntity` the
+      already-implemented `PurchaseRoomAdMessage` creates (not a separate subsystem — the "Event"
+      naming is the client's own legacy term for a room ad), so they're wired through a new
+      `IRoomAdvertisementService.EditAsync`/`CancelAsync`. `RoomAdEventTabAdClicked`/`Viewed` are
+      pure client analytics hooks, logged rather than acted on. `ToggleStaffPick`/`SetRoomSessionTags`/
+      `RateFlat` are new `IRoomGrain` settings mutators backed by real `RoomEntity` columns
+      (`tag_1`/`tag_2`/`score`/`staff_pick`, migration `20260711124904_AddNavigatorPeripheralFeatures`) —
+      `RoomInfoSnapshot.Score`/`Tags`/`StaffPick` were previously hardcoded to 0/empty/false
+      everywhere (navigator search results *and* the live room card) and are now real.
+      `UpdateHomeRoom` persists via `PlayerNavigatorPreferencesEntity.HomeRoomId`, fixing
+      `SSOTicketMessageHandler`'s hardcoded `HomeRoomId = 0` on login too. `ForwardToARandomPromotedRoom`/
+      `ForwardToSomeRoom`/`ConvertGlobalRoomId` reuse a new shared `RoomForwardHelper` (also now used
+      by `GetGuestRoomMessageHandler`, fixing its hardcoded `StaffPick = false`). **Caveat:**
+      `ForwardToSomeRoom`'s `ForwardData` string values reference a client-side enum
+      (`NavigatorRoomForwardType`) this codebase has no copy of — every value falls back to a random
+      active room rather than guessing per-string semantics; `RoomEventMessageComposer`/
+      `RoomEventCancelMessageComposer`/`UserEventCatsMessageComposer`/`PopularRoomTagsResultMessageComposer`
+      wire formats are best-effort (count+repeated-struct, matching the already-verified
+      `RoomSettingsSerializer` Tags convention) and not verified against a real client capture — same
+      caveat pattern as the fireworks logic-name guess.
 
 **Story 1.2 — Enter / exit / initial room state fully — done 2026-07-05**
 - [x] Entry (`OpenFlatConnectionMessageHandler`), exit (`QuitMessageHandler`), full initial state

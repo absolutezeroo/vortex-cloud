@@ -27,6 +27,7 @@ internal static class DefaultRoles
                 Capabilities.Moderation.Chatlogs,
                 Capabilities.Moderation.Cfh,
                 Capabilities.Room.ModerateAny,
+                Capabilities.Navigator.StaffPick,
                 Capabilities.Dashboard.OverviewRead,
                 Capabilities.Dashboard.AuditRead,
                 Capabilities.Dashboard.PlayersRead,
@@ -56,6 +57,7 @@ internal static class DefaultRoles
             [
                 Capabilities.Room.BuildAny,
                 Capabilities.Room.ModerateAny,
+                Capabilities.Navigator.StaffPick,
                 Capabilities.Moderation.Kick,
                 Capabilities.Moderation.Mute,
                 Capabilities.Moderation.Alert,

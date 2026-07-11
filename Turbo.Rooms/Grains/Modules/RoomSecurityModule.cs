@@ -205,8 +205,8 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
             new ActionContext { PlayerId = playerId, Origin = ActionOrigin.Player }
         );
 
-        await _roomGrain._grainFactory
-            .GetPlayerPresenceGrain(playerId)
+        await _roomGrain
+            ._grainFactory.GetPlayerPresenceGrain(playerId)
             .OnControllerLevelUpdatedAsync(_roomGrain.RoomId, controllerLevel, ct)
             .ConfigureAwait(true);
     }

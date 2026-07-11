@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Turbo.Database.Entities.Groups;
 using Turbo.Database.Entities.Navigator;
@@ -138,6 +139,22 @@ public class RoomEntity : TurboEntity
     [Column("last_active")]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public DateTime LastActive { get; set; }
+
+    [Column("tag_1")]
+    [MaxLength(25)]
+    public string? Tag1 { get; set; }
+
+    [Column("tag_2")]
+    [MaxLength(25)]
+    public string? Tag2 { get; set; }
+
+    [Column("score")]
+    [DefaultValue(0)]
+    public required int Score { get; set; }
+
+    [Column("staff_pick")]
+    [DefaultValue(false)]
+    public required bool IsStaffPick { get; set; }
 
     [ForeignKey(nameof(PlayerEntityId))]
     public required PlayerEntity PlayerEntity { get; set; }

@@ -174,6 +174,8 @@ public sealed class GroupDirectoryGrainCreationTests
             ChatSpeedType = ChatScrollSpeedType.Normal,
             ChatFloodType = ChatFloodSensitivityType.Minimal,
             ChatDistance = 50,
+            Score = 0,
+            IsStaffPick = false,
             PlayerEntity = owner,
             RoomModelEntity = model,
         };

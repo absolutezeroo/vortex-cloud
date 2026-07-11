@@ -134,10 +134,94 @@ public sealed class NavigatorProvider(
             .ConfigureAwait(false);
     }
 
-    public Task<List<RoomInfoSnapshot>> GetRoomsByTagAsync(
+    public async Task<List<RoomInfoSnapshot>> GetRoomsByTagAsync(
         string tag,
         CancellationToken ct = default
-    ) => Task.FromResult<List<RoomInfoSnapshot>>([]);
+    )
+    {
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        return await BuildRoomQuery(dbCtx)
+            .Where(x => x.Tag1 == tag || x.Tag2 == tag)
+            .ToRoomInfoSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<ImmutableArray<string>> GetPopularTagsAsync(
+        int limit,
+        CancellationToken ct = default
+    )
+    {
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        List<string> tags = await BuildRoomQuery(dbCtx)
+            .SelectMany(x => new[] { x.Tag1, x.Tag2 })
+            .Where(t => t != null)
+            .GroupBy(t => t!)
+            .OrderByDescending(g => g.Count())
+            .Take(limit)
+            .Select(g => g.Key)
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+
+        return [.. tags];
+    }
+
+    public async Task<List<RoomInfoSnapshot>> GetPromotedRoomsAsync(
+        string? categoryName,
+        CancellationToken ct = default
+    )
+    {
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        DateTime now = DateTime.UtcNow;
+
+        IQueryable<Database.Entities.Room.RoomEntity> query = BuildRoomQuery(dbCtx)
+            .Where(x =>
+                x.IsStaffPick
+                || dbCtx.RoomAdvertisements.Any(a => a.RoomEntityId == x.Id && a.ExpiresAt > now)
+            );
+
+        if (!string.IsNullOrWhiteSpace(categoryName))
+        {
+            int? categoryId = _flatCategories
+                .Where(c => string.Equals(c.Name, categoryName, StringComparison.OrdinalIgnoreCase))
+                .Select(c => (int?)c.Id)
+                .FirstOrDefault();
+
+            if (categoryId.HasValue)
+            {
+                query = query.Where(x => x.NavigatorCategoryEntityId == categoryId.Value);
+            }
+        }
+
+        return await query.ToRoomInfoSnapshotsAsync(ct).ConfigureAwait(false);
+    }
+
+    public async Task<ImmutableArray<NavigatorEventCategorySnapshot>> GetEventCategoriesAsync(
+        CancellationToken ct = default
+    )
+    {
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        List<NavigatorEventCategorySnapshot> categories = await dbCtx
+            .NavigatorEventCategories.AsNoTracking()
+            .Where(x => x.Visible && x.DeletedAt == null)
+            .OrderBy(x => x.Id)
+            .Select(x => new NavigatorEventCategorySnapshot { Id = x.Id, Name = x.Name })
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+
+        return [.. categories];
+    }
 
     public async Task<List<RoomInfoSnapshot>> GetFavoriteRoomsAsync(
         PlayerId playerId,
@@ -253,10 +337,11 @@ file static class RoomQueryExtensions
                 DoorMode = x.DoorMode,
                 PlayersMax = x.PlayersMax,
                 TradeType = x.TradeType,
-                Score = 0,
+                Score = x.Score,
                 Ranking = 0,
                 CategoryId = x.NavigatorCategoryEntityId ?? -1,
-                Tags = ImmutableArray<string>.Empty,
+                Tags = RoomTagMapper.ToTags(x.Tag1, x.Tag2),
+                StaffPick = x.IsStaffPick,
                 AllowBlocking = x.AllowBlocking,
                 AllowPets = x.AllowPets,
                 AllowPetsEat = x.AllowPetsEat,

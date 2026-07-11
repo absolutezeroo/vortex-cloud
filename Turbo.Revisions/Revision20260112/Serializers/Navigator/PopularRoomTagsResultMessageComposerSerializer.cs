@@ -11,6 +11,11 @@ internal class PopularRoomTagsResultMessageComposerSerializer(int header)
         PopularRoomTagsResultMessageComposer message
     )
     {
-        //
+        packet.WriteInteger(message.Tags.Length);
+
+        foreach (string tag in message.Tags)
+        {
+            packet.WriteString(tag);
+        }
     }
 }

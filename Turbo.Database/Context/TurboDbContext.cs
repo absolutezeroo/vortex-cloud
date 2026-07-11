@@ -68,6 +68,8 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
 
     public DbSet<RoomAdvertisementEntity> RoomAdvertisements { get; init; } = null!;
 
+    public DbSet<RoomRatingEntity> RoomRatings { get; init; } = null!;
+
     public DbSet<RoomChatlogEntity> Chatlogs { get; init; } = null!;
     public DbSet<SecurityTicketEntity> SecurityTickets { get; init; } = null!;
 

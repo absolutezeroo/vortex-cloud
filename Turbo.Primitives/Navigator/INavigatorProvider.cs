@@ -38,6 +38,22 @@ public interface INavigatorProvider
 
     Task<List<RoomInfoSnapshot>> GetRoomsByTagAsync(string tag, CancellationToken ct = default);
 
+    /// <summary>Most frequently used Tag1/Tag2 values across non-deleted rooms, most popular
+    /// first -- backs GetPopularRoomTagsMessage.</summary>
+    Task<ImmutableArray<string>> GetPopularTagsAsync(int limit, CancellationToken ct = default);
+
+    /// <summary>Rooms currently promoted (staff pick or an active room advertisement), optionally
+    /// narrowed to a flat category by name -- backs ForwardToARandomPromotedRoomMessage.</summary>
+    Task<List<RoomInfoSnapshot>> GetPromotedRoomsAsync(
+        string? categoryName,
+        CancellationToken ct = default
+    );
+
+    /// <summary>The navigator_eventcats reference list -- backs GetUserEventCatsMessage.</summary>
+    Task<ImmutableArray<NavigatorEventCategorySnapshot>> GetEventCategoriesAsync(
+        CancellationToken ct = default
+    );
+
     Task<List<RoomInfoSnapshot>> GetFavoriteRoomsAsync(
         PlayerId playerId,
         CancellationToken ct = default

@@ -365,7 +365,8 @@ public sealed partial class RoomGrain
                 )
                 .ConfigureAwait(true);
 
-            await SecurityModule.RefreshControllerLevelForPlayerAsync(target, ct)
+            await SecurityModule
+                .RefreshControllerLevelForPlayerAsync(target, ct)
                 .ConfigureAwait(true);
         }
         catch (Exception ex)
@@ -435,7 +436,8 @@ public sealed partial class RoomGrain
 
             foreach (PlayerId target in targets)
             {
-                await SecurityModule.RefreshControllerLevelForPlayerAsync(target, ct)
+                await SecurityModule
+                    .RefreshControllerLevelForPlayerAsync(target, ct)
                     .ConfigureAwait(true);
             }
         }
@@ -484,6 +486,162 @@ public sealed partial class RoomGrain
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to remove all rights in room {RoomId}.", _state.RoomId);
+        }
+    }
+
+    public async Task<bool> SetRoomTagsAsync(
+        PlayerId actor,
+        string? tag1,
+        string? tag2,
+        CancellationToken ct
+    )
+    {
+        if (_state.RoomSnapshot.OwnerId != actor)
+        {
+            return false;
+        }
+
+        try
+        {
+            await using TurboDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(true);
+
+            RoomEntity? entity = await dbCtx
+                .Rooms.FirstOrDefaultAsync(r => r.Id == _state.RoomId.Value, ct)
+                .ConfigureAwait(true);
+
+            if (entity is null)
+            {
+                return false;
+            }
+
+            static string? Normalize(string? tag)
+            {
+                if (string.IsNullOrWhiteSpace(tag))
+                {
+                    return null;
+                }
+
+                string trimmed = tag.Trim();
+                return trimmed.Length > 25 ? trimmed[..25] : trimmed;
+            }
+
+            entity.Tag1 = Normalize(tag1);
+            entity.Tag2 = Normalize(tag2);
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+            _state.RoomSnapshot = _state.RoomSnapshot with
+            {
+                Tags = RoomTagMapper.ToTags(entity.Tag1, entity.Tag2),
+                LastUpdatedUtc = DateTime.UtcNow,
+            };
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to set tags for room {RoomId}.", _state.RoomId);
+            return false;
+        }
+    }
+
+    public async Task<bool> RateRoomAsync(PlayerId actor, int points, CancellationToken ct)
+    {
+        int sign = Math.Sign(points);
+
+        if (sign == 0 || _state.RoomSnapshot.OwnerId == actor)
+        {
+            return false;
+        }
+
+        try
+        {
+            await using TurboDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(true);
+
+            bool alreadyRated = await dbCtx
+                .RoomRatings.AnyAsync(
+                    r => r.RoomEntityId == _state.RoomId.Value && r.PlayerEntityId == actor.Value,
+                    ct
+                )
+                .ConfigureAwait(true);
+
+            if (alreadyRated)
+            {
+                return false;
+            }
+
+            RoomEntity? entity = await dbCtx
+                .Rooms.FirstOrDefaultAsync(r => r.Id == _state.RoomId.Value, ct)
+                .ConfigureAwait(true);
+
+            if (entity is null)
+            {
+                return false;
+            }
+
+            dbCtx.RoomRatings.Add(
+                new RoomRatingEntity
+                {
+                    RoomEntityId = _state.RoomId.Value,
+                    PlayerEntityId = actor.Value,
+                    RoomEntity = null!,
+                    PlayerEntity = null!,
+                }
+            );
+
+            entity.Score += sign;
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+            _state.RoomSnapshot = _state.RoomSnapshot with
+            {
+                Score = entity.Score,
+                LastUpdatedUtc = DateTime.UtcNow,
+            };
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to rate room {RoomId}.", _state.RoomId);
+            return false;
+        }
+    }
+
+    public async Task SetStaffPickAsync(bool staffPick, CancellationToken ct)
+    {
+        try
+        {
+            await using TurboDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(true);
+
+            RoomEntity? entity = await dbCtx
+                .Rooms.FirstOrDefaultAsync(r => r.Id == _state.RoomId.Value, ct)
+                .ConfigureAwait(true);
+
+            if (entity is null)
+            {
+                return;
+            }
+
+            entity.IsStaffPick = staffPick;
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+            _state.RoomSnapshot = _state.RoomSnapshot with
+            {
+                StaffPick = staffPick,
+                LastUpdatedUtc = DateTime.UtcNow,
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to set staff pick for room {RoomId}.", _state.RoomId);
         }
     }
 

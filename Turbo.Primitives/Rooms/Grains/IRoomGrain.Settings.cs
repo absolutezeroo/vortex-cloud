@@ -38,4 +38,16 @@ public partial interface IRoomGrain
     Task RemoveAllRightsAsync(PlayerId actor, CancellationToken ct);
 
     Task RemoveOwnRightsAsync(PlayerId actor, CancellationToken ct);
+
+    /// <summary>Owner-only. Max two tags (SetRoomSessionTagsMessage never sends more); null/blank
+    /// clears a slot.</summary>
+    Task<bool> SetRoomTagsAsync(PlayerId actor, string? tag1, string? tag2, CancellationToken ct);
+
+    /// <summary>One vote per player per room, enforced by the caller via RoomRatingEntity. Owner
+    /// cannot rate their own room. Returns false if the vote was rejected.</summary>
+    Task<bool> RateRoomAsync(PlayerId actor, int points, CancellationToken ct);
+
+    /// <summary>Staff-only (Capabilities.Navigator.StaffPick) -- authorization is the caller's
+    /// responsibility, this just applies the flag.</summary>
+    Task SetStaffPickAsync(bool staffPick, CancellationToken ct);
 }

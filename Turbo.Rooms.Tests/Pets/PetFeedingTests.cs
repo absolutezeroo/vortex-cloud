@@ -130,6 +130,8 @@ public sealed class PetFeedingTests
             ChatSpeedType = ChatScrollSpeedType.Normal,
             ChatFloodType = ChatFloodSensitivityType.Minimal,
             ChatDistance = 50,
+            Score = 0,
+            IsStaffPick = false,
             PlayerEntity = player,
             RoomModelEntity = model,
         };

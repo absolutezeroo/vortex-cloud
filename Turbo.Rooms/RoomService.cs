@@ -160,19 +160,18 @@ internal sealed partial class RoomService(
             )
             .ConfigureAwait(false);
 
-        ImmutableArray<KeyValuePair<string, string>> roomProperties = await room.GetRoomPropertiesAsync()
-            .ConfigureAwait(false);
+        ImmutableArray<KeyValuePair<string, string>> roomProperties =
+            await room.GetRoomPropertiesAsync().ConfigureAwait(false);
 
         if (roomProperties.Length > 0)
         {
             await playerPresence
-                .SendComposerAsync(
-                    [.. roomProperties.Select(IComposer (x) => new RoomPropertyMessageComposer
-                    {
-                        Key = x.Key,
-                        Value = x.Value,
-                    })]
-                )
+                .SendComposerAsync([
+                    .. roomProperties.Select(
+                        IComposer (x) =>
+                            new RoomPropertyMessageComposer { Key = x.Key, Value = x.Value }
+                    ),
+                ])
                 .ConfigureAwait(false);
         }
 

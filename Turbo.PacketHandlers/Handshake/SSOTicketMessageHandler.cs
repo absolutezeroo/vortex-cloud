@@ -132,8 +132,17 @@ public class SSOTicketMessageHandler(
                 .ConfigureAwait(false);
             await ctx.SendComposerAsync(new AvatarEffectsMessageComposer { Effects = [] }, ct)
                 .ConfigureAwait(false);
+            int homeRoomId = await _grainFactory
+                .GetPlayerNavigatorGrain(playerId)
+                .GetHomeRoomIdAsync(ct)
+                .ConfigureAwait(false);
+
             await ctx.SendComposerAsync(
-                    new NavigatorSettingsMessageComposer { HomeRoomId = 0, RoomIdToEnter = 0 },
+                    new NavigatorSettingsMessageComposer
+                    {
+                        HomeRoomId = homeRoomId,
+                        RoomIdToEnter = 0,
+                    },
                     ct
                 )
                 .ConfigureAwait(false);

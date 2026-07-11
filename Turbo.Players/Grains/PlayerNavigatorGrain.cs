@@ -21,6 +21,7 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
     private List<NavigatorQuickLinkSnapshot> _savedSearches = [];
     private List<string> _collapsedCategories = [];
     private Dictionary<string, int> _viewModes = [];
+    private int _homeRoomId;
 
     public override async Task OnActivateAsync(CancellationToken ct)
     {
@@ -279,6 +280,40 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
             .ConfigureAwait(true);
     }
 
+    public Task<int> GetHomeRoomIdAsync(CancellationToken ct) => Task.FromResult(_homeRoomId);
+
+    public async Task SetHomeRoomIdAsync(int roomId, CancellationToken ct)
+    {
+        _homeRoomId = roomId;
+
+        await using TurboDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(true);
+
+        int playerId = (int)this.GetPrimaryKeyLong();
+
+        PlayerNavigatorPreferencesEntity? existing = await dbCtx
+            .PlayerNavigatorPreferences.FirstOrDefaultAsync(e => e.PlayerEntityId == playerId, ct)
+            .ConfigureAwait(true);
+
+        if (existing is null)
+        {
+            dbCtx.PlayerNavigatorPreferences.Add(
+                new PlayerNavigatorPreferencesEntity
+                {
+                    PlayerEntityId = playerId,
+                    HomeRoomId = roomId,
+                }
+            );
+        }
+        else
+        {
+            existing.HomeRoomId = roomId;
+        }
+
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+    }
+
     private async Task HydrateAsync(CancellationToken ct)
     {
         await using TurboDbContext dbCtx = await _dbCtxFactory
@@ -303,6 +338,8 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
                 LeftPaneHidden = prefsEntity.LeftPaneHidden,
                 ResultsMode = prefsEntity.ResultsMode,
             };
+
+        _homeRoomId = prefsEntity?.HomeRoomId ?? 0;
 
         List<PlayerNavigatorSavedSearchEntity> savedSearchEntities = await dbCtx
             .PlayerNavigatorSavedSearches.AsNoTracking()

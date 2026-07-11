@@ -32,4 +32,7 @@ public interface IPlayerNavigatorGrain : IGrainWithIntegerKey
 
     Task AddFavouriteRoomAsync(int roomId, CancellationToken ct);
     Task RemoveFavouriteRoomAsync(int roomId, CancellationToken ct);
+
+    Task<int> GetHomeRoomIdAsync(CancellationToken ct);
+    Task SetHomeRoomIdAsync(int roomId, CancellationToken ct);
 }
