@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Turbo.Revisions.Configuration;
-using RevisionType = Turbo.Revisions.Revision20260112.Revision20260112;
+using RevisionType = Turbo.Revisions.Revision20260701.Revision20260701;
 
 namespace Turbo.Revisions.Extensions;
 

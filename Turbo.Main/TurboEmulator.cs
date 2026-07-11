@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Turbo.Primitives.Catalog;
 using Turbo.Primitives.Catalog.Providers;
 using Turbo.Primitives.Catalog.Tags;
 using Turbo.Primitives.Furniture.Providers;
@@ -14,7 +13,7 @@ using Turbo.Primitives.Networking.Revisions;
 using Turbo.Primitives.Pets.Providers;
 using Turbo.Primitives.Players.Providers;
 using Turbo.Primitives.Rooms.Providers;
-using Turbo.Revisions.Revision20260112;
+using Turbo.Revisions.Revision20260701;
 
 namespace Turbo.Main;
 
@@ -34,26 +33,27 @@ public class TurboEmulator(
     IRoomModelProvider roomModelProvider,
     INetworkManager networkManager,
     IRevisionManager revisionManager,
-    Revision20260112 defaultRevision
+    Revision20260701 defaultRevision
 ) : IHostedService
 {
-    private readonly ILogger<TurboEmulator> _logger = logger;
-    private readonly IFurnitureDefinitionProvider _furnitureProvider = furnitureProvider;
-    private readonly ICatalogSnapshotProvider<NormalCatalog> _catalogProvider = catalogProvider;
     private readonly ICatalogSnapshotProvider<BuildersClubCatalog> _buildersClubCatalogProvider =
         buildersClubCatalogProvider;
-    private readonly ICatalogClubOfferProvider _clubOfferProvider = clubOfferProvider;
+
+    private readonly ICatalogSnapshotProvider<NormalCatalog> _catalogProvider = catalogProvider;
     private readonly ICatalogClubGiftProvider _clubGiftProvider = clubGiftProvider;
+    private readonly ICatalogClubOfferProvider _clubOfferProvider = clubOfferProvider;
     private readonly ICurrencyTypeProvider _currencyTypeProvider = currencyTypeProvider;
+    private readonly Revision20260701 _defaultRevision = defaultRevision;
+    private readonly IFurnitureDefinitionProvider _furnitureProvider = furnitureProvider;
     private readonly IGroupBadgePartProvider _guildBadgePartProvider = guildBadgePartProvider;
-    private readonly IPetPaletteProvider _petPaletteProvider = petPaletteProvider;
+    private readonly ILogger<TurboEmulator> _logger = logger;
+    private readonly INetworkManager _networkManager = networkManager;
     private readonly IPetCommandProvider _petCommandProvider = petCommandProvider;
     private readonly IPetLevelProvider _petLevelProvider = petLevelProvider;
-    private readonly INavigatorProvider _topLevelContextProvider = topLevelContextProvider;
-    private readonly IRoomModelProvider _roomModelProvider = roomModelProvider;
-    private readonly INetworkManager _networkManager = networkManager;
+    private readonly IPetPaletteProvider _petPaletteProvider = petPaletteProvider;
     private readonly IRevisionManager _revisionManager = revisionManager;
-    private readonly Revision20260112 _defaultRevision = defaultRevision;
+    private readonly IRoomModelProvider _roomModelProvider = roomModelProvider;
+    private readonly INavigatorProvider _topLevelContextProvider = topLevelContextProvider;
 
     public async Task StartAsync(CancellationToken ct)
     {

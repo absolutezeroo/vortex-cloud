@@ -1,0 +1,16 @@
+using Turbo.Primitives.Messages.Incoming.Moderator;
+using Turbo.Primitives.Networking;
+using Turbo.Primitives.Packets;
+
+namespace Turbo.Revisions.Revision20260701.Parsers.Moderator;
+
+internal class ModAlertMessageParser : IParser
+{
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new ModAlertMessage
+        {
+            UserId = packet.PopInt(),
+            Message = packet.PopString(),
+            Topic = packet.PopInt(),
+        };
+}

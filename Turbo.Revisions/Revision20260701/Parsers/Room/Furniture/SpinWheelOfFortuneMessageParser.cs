@@ -1,0 +1,11 @@
+using Turbo.Primitives.Messages.Incoming.Room.Furniture;
+using Turbo.Primitives.Networking;
+using Turbo.Primitives.Packets;
+
+namespace Turbo.Revisions.Revision20260701.Parsers.Room.Furniture;
+
+internal class SpinWheelOfFortuneMessageParser : IParser
+{
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new SpinWheelOfFortuneMessage { ObjectId = packet.PopInt() };
+}
