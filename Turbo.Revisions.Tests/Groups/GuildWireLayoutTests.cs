@@ -8,7 +8,7 @@ using Turbo.Primitives.Networking;
 using Turbo.Primitives.Packets;
 using Turbo.Revisions.Configuration;
 using Xunit;
-using Rev = Turbo.Revisions.Revision20260112.Revision20260112;
+using Rev = Turbo.Revisions.Revision20260701.Revision20260701;
 
 namespace Turbo.Revisions.Tests.Groups;
 
@@ -18,8 +18,8 @@ namespace Turbo.Revisions.Tests.Groups;
 /// </summary>
 public sealed class GuildWireLayoutTests
 {
-    // Header ids from Revision20260112 Headers.cs (incoming MessageEvent ids).
-    private const int CreateGuildEvent = 2792;
+    // Header ids from Revision20260701 Headers.cs (incoming MessageEvent ids).
+    private const int CreateGuildEvent = 207;
 
     private static readonly Rev Revision = new(Options.Create(new ProtocolLimitsConfig()));
 
