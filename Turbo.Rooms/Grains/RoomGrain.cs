@@ -227,6 +227,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                 await PetSystem.ProcessPetsAsync(now, ct);
                 await WiredSystem.ProcessWiredAsync(now, ct);
                 await RollerSystem.ProcessRollersAsync(now, ct);
+                await ProcessDoorbellTimeoutsAsync(now, ct);
                 await FlushDirtyTilesAsync(ct);
                 await FlushDirtyItemsAsync(ct);
             },

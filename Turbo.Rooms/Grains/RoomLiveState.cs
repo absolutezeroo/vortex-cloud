@@ -36,6 +36,10 @@ public sealed class RoomLiveState
 
     public Dictionary<PlayerId, DateTime> MuteExpiresUtc { get; } = [];
 
+    /// <summary>Players currently waiting on a doorbell ring for a locked door, keyed by the tick
+    /// timestamp (ms) the ring started — swept for timeout by <c>RoomGrain.Doorbell.cs</c>.</summary>
+    public Dictionary<PlayerId, long> PendingDoorbellRingersMs { get; } = [];
+
     public Dictionary<string, string> RoomProperties { get; } = [];
 
     public HashSet<int> DirtyHeightTileIds { get; set; } = [];

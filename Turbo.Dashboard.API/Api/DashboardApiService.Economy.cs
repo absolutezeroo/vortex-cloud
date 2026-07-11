@@ -171,7 +171,7 @@ internal sealed partial class DashboardApiService
                     }
                 );
 
-                var categories = await BuildSpendCategoriesAsync(db, since, until, ct)
+                List<object> categories = await BuildSpendCategoriesAsync(db, since, until, ct)
                     .ConfigureAwait(false);
 
                 return new

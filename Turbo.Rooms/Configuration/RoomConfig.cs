@@ -36,4 +36,6 @@ public class RoomConfig
     public int WiredNeighborhoodRadius { get; init; } = 5;
 
     public int MaxVisitorsLimit { get; init; } = 50;
+
+    public int DoorbellTimeoutMs { get; init; } = 20000;
 }

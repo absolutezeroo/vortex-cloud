@@ -169,8 +169,35 @@ leave — without ever hitting a dead packet path. This is the slice that turns 
       `IRoomGrain.GetControllerLevelAsync`.
 - [x] Implemented the three access rejections left as "(for now)" comments: room-full, locked,
       password-mismatch. Owners/rights-holders bypass all three.
-- [ ] Full doorbell/queue UX (request-to-enter flow for locked rooms, `EnterQueue`) — explicitly out
-      of scope for now, matches original "(for now)" framing; only the flat reject ships.
+- [x] Full doorbell UX for locked doors, implemented 2026-07-11: a `Locked`-door entry attempt no
+      longer flat-rejects — `RoomService.OpenRoomForPlayerIdAsync` calls the new
+      `IRoomGrain.RegisterDoorbellRingAsync`, which sends `DoorbellMessageComposer` to the ringer
+      (`Username=""`) and to every present owner/rights-holder (`Username=<ringer>`), tracked in a
+      new `RoomLiveState.PendingDoorbellRingersMs`. The owner answers via the (previously
+      empty-stub) `LetUserInMessage`/`LetUserInMessageHandler` → `IRoomService.AnswerDoorbellAsync`,
+      which authorizes through the existing `GetControllerLevelAsync >= Rights` check (the same
+      one entry itself uses — not the staff `ModerationPolicy`), then notifies via
+      `FlatAccessibleMessageComposer`/`FlatAccessDeniedMessageComposer` (both pre-existing,
+      registered on the wire, but never actually sent by any code path before this) and completes
+      entry through a new shared `CompleteRoomEntryAsync` helper extracted from the old inline
+      entry tail. A no-answer ring auto-denies via a timeout sweep
+      (`RoomGrain.Doorbell.cs.ProcessDoorbellTimeoutsAsync`, new `RoomConfig.DoorbellTimeoutMs`,
+      default 20s) hooked into the room's existing tick loop — kept strictly self-contained (no
+      `_grainFactory.GetRoomGrain(_state.RoomId)` self-call) since a grain timer calling back into
+      its own activation would deadlock a non-reentrant grain. Cancelling from the requester side
+      (the client's doorbell "Cancel" button reuses the ordinary Quit packet) now also clears the
+      pending ring via an updated `RoomService.CloseRoomForPlayerAsync`. **Caveat:** wire-format and
+      turn-based flow (who receives which of `Doorbell`/`FlatAccessible`/`FlatAccessDenied` with an
+      empty vs. populated `Username`, and that the client always re-sends the same entry packet for
+      both "first attempt" and "ring") were reconstructed from the actual AS3 client source
+      (`vortex-client/src/com/sulake/habbo/{session,ui,navigator}/**`, not a real packet capture —
+      same caveat class as the fireworks/room-ad logic-name guesses elsewhere in this file.
+      `ChangeQueueMessage`/`RoomQueueStatusMessageComposer` (the separate "room full → wait in
+      line with a position counter" widget) were deliberately left as the pre-existing no-op stubs:
+      client-side evidence (`onCantConnect` unconditionally shows an error alert and quits for
+      every `CantConnect` reason, including `RoomFull`/`EnterQueue`) suggests that queue-position
+      widget is unreachable in this client build, so implementing its wire format would be
+      speculation with no way to verify it — out of scope here, flagged instead of guessed.
 
 **Story 1.3 — Furniture: place / move / pickup / use — core verified done 2026-07-05**
 *As a* player with rights, *I want* to manipulate furniture, *so I can* decorate/interact.

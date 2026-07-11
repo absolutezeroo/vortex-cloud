@@ -95,28 +95,26 @@ internal sealed partial class RoomService(
         RoomSnapshot snapshot = await room.GetSnapshotAsync().ConfigureAwait(false);
         RoomControllerType controllerLevel = await room.GetControllerLevelAsync(ctx, ct)
             .ConfigureAwait(false);
-        bool isOwner = controllerLevel == RoomControllerType.Owner;
-        ImmutableArray<RoomAvatarSnapshot> avatarSnapshots = await room.GetAllAvatarSnapshotsAsync(
-                ct
-            )
-            .ConfigureAwait(false);
 
         if (controllerLevel < RoomControllerType.Rights)
         {
-            RoomConnectionErrorType? rejection =
-                snapshot.PlayersMax > 0 && avatarSnapshots.Length >= snapshot.PlayersMax
-                    ? RoomConnectionErrorType.RoomFull
-                : snapshot.DoorMode == RoomDoorModeType.Locked ? RoomConnectionErrorType.NoEntry
-                : snapshot.DoorMode == RoomDoorModeType.Password
-                && !string.Equals(snapshot.Password, password, StringComparison.Ordinal)
-                    ? RoomConnectionErrorType.NoEntry
-                : null;
+            ImmutableArray<RoomAvatarSnapshot> currentAvatars =
+                await room.GetAllAvatarSnapshotsAsync(ct).ConfigureAwait(false);
+            bool isFull = snapshot.PlayersMax > 0 && currentAvatars.Length >= snapshot.PlayersMax;
+            bool isPasswordMismatch =
+                snapshot.DoorMode == RoomDoorModeType.Password
+                && !string.Equals(snapshot.Password, password, StringComparison.Ordinal);
 
-            if (rejection is not null)
+            if (isFull || isPasswordMismatch)
             {
                 await playerPresence
                     .SendComposerAsync(
-                        new CantConnectMessageComposer { ErrorType = rejection.Value }
+                        new CantConnectMessageComposer
+                        {
+                            ErrorType = isFull
+                                ? RoomConnectionErrorType.RoomFull
+                                : RoomConnectionErrorType.NoEntry,
+                        }
                     )
                     .ConfigureAwait(false);
                 await playerPresence
@@ -124,7 +122,39 @@ internal sealed partial class RoomService(
                     .ConfigureAwait(false);
                 return;
             }
+
+            if (snapshot.DoorMode == RoomDoorModeType.Locked)
+            {
+                // Locked doors ring the doorbell instead of a flat reject: the requester waits
+                // (RoomPendingSnapshot stays set) while every present owner/rights-holder is
+                // notified. Resolution arrives via AnswerDoorbellAsync (LetUserInMessageHandler)
+                // or the room tick's timeout sweep (RoomGrain.Doorbell.cs) if nobody answers.
+                await room.RegisterDoorbellRingAsync(playerId, ct).ConfigureAwait(false);
+                return;
+            }
         }
+
+        await CompleteRoomEntryAsync(ctx, playerId, roomId, ct).ConfigureAwait(false);
+    }
+
+    private async Task CompleteRoomEntryAsync(
+        ActionContext ctx,
+        PlayerId playerId,
+        RoomId roomId,
+        CancellationToken ct
+    )
+    {
+        IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(playerId);
+        IRoomGrain room = _grainFactory.GetRoomGrain(roomId);
+
+        RoomSnapshot snapshot = await room.GetSnapshotAsync().ConfigureAwait(false);
+        RoomControllerType controllerLevel = await room.GetControllerLevelAsync(ctx, ct)
+            .ConfigureAwait(false);
+        bool isOwner = controllerLevel == RoomControllerType.Owner;
+        ImmutableArray<RoomAvatarSnapshot> avatarSnapshots = await room.GetAllAvatarSnapshotsAsync(
+                ct
+            )
+            .ConfigureAwait(false);
 
         RoomMapSnapshot mapSnapshot = await room.GetMapSnapshotAsync(ct).ConfigureAwait(false);
 
@@ -240,6 +270,20 @@ internal sealed partial class RoomService(
         }
 
         IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(playerId);
+        RoomPendingSnapshot pendingRoom = await playerPresence
+            .GetPendingRoomAsync()
+            .ConfigureAwait(false);
+
+        if (pendingRoom.RoomId > 0)
+        {
+            // Covers cancelling a doorbell ring: the requester never became Active while
+            // waiting, so ClearActiveRoomAsync below is a no-op for that case.
+            await _grainFactory
+                .GetRoomGrain(pendingRoom.RoomId)
+                .TryRemoveDoorbellRingAsync(playerId, ct)
+                .ConfigureAwait(false);
+            await playerPresence.SetPendingRoomAsync(RoomId.Invalid, false).ConfigureAwait(false);
+        }
 
         await playerPresence.ClearActiveRoomAsync(ct).ConfigureAwait(false);
 
