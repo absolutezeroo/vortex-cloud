@@ -157,6 +157,19 @@ internal sealed partial class PlayerPresenceGrain
     {
         _outgoingQueue.Clear();
 
+        try
+        {
+            await UnregisterSessionObserverAsync(ct).ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "Failed to unregister session observer for player {PlayerId} on deactivation",
+                this.GetPrimaryKeyLong()
+            );
+        }
+
         if (_roomOutboundSub is not null)
         {
             try

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -149,9 +150,31 @@ internal sealed partial class RoomService(
                     FixedWallsHeight = _roomConfig.DefaultWallHeight,
                     ModelData = mapSnapshot.ModelData,
                     AreaHideData = [],
+                },
+                new RoomVisualizationSettingsMessageComposer
+                {
+                    WallsHidden = snapshot.HideWalls,
+                    WallThickness = snapshot.WallThickness,
+                    FloorThickness = snapshot.FloorThickness,
                 }
             )
             .ConfigureAwait(false);
+
+        ImmutableArray<KeyValuePair<string, string>> roomProperties = await room.GetRoomPropertiesAsync()
+            .ConfigureAwait(false);
+
+        if (roomProperties.Length > 0)
+        {
+            await playerPresence
+                .SendComposerAsync(
+                    [.. roomProperties.Select(IComposer (x) => new RoomPropertyMessageComposer
+                    {
+                        Key = x.Key,
+                        Value = x.Value,
+                    })]
+                )
+                .ConfigureAwait(false);
+        }
 
         ImmutableDictionary<PlayerId, string> ownersSnapshot = await room.GetAllOwnersAsync(ct)
             .ConfigureAwait(false);

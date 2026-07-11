@@ -6,12 +6,15 @@ using Orleans.Runtime;
 using Orleans.Streams;
 using Turbo.Primitives.Action;
 using Turbo.Primitives.Events;
+using Turbo.Primitives.Messages.Outgoing.Room.Permissions;
+using Turbo.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Orleans.Snapshots.Players;
 using Turbo.Primitives.Orleans.Snapshots.Room;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Rooms;
+using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Grains;
 using Turbo.Primitives.Rooms.Snapshots;
 
@@ -150,5 +153,38 @@ internal sealed partial class PlayerPresenceGrain
         _state.PendingRoomApproved = approved;
 
         return Task.CompletedTask;
+    }
+
+    public async Task OnControllerLevelUpdatedAsync(
+        RoomId roomId,
+        RoomControllerType controllerType,
+        CancellationToken ct
+    )
+    {
+        if (_state.ActiveRoomId != roomId)
+        {
+            return;
+        }
+
+        if (controllerType >= RoomControllerType.Rights)
+        {
+            await SendComposerAsync(
+                new YouAreControllerMessageComposer
+                {
+                    RoomId = roomId,
+                    ControllerLevel = controllerType,
+                },
+                new WiredPermissionsEventMessageComposer { CanModify = true, CanRead = true }
+            );
+
+            if (controllerType >= RoomControllerType.Owner)
+            {
+                await SendComposerAsync(new YouAreOwnerMessageComposer { RoomId = roomId });
+            }
+
+            return;
+        }
+
+        await SendComposerAsync(new YouAreNotControllerMessageComposer());
     }
 }

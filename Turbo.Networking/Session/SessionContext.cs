@@ -21,6 +21,7 @@ public class SessionContext(
 {
     private readonly IPackageEncoder<OutgoingPackage> _packageEncoder = packageEncoder;
     private readonly ILogger<SessionContext> _logger = logger;
+    private readonly SemaphoreSlim _sendSemaphore = new(1, 1);
 
     public SessionKey SessionKey { get; private set; } = string.Empty;
     public bool PolicyDone { get; set; } = true;
@@ -71,8 +72,15 @@ public class SessionContext(
 
     public async Task SendComposerAsync(IComposer composer, CancellationToken ct)
     {
+        await _sendSemaphore.WaitAsync(ct).ConfigureAwait(false);
+
         try
         {
+            if (Connection.IsClosed)
+            {
+                return;
+            }
+
             await Connection
                 .SendAsync(_packageEncoder, new OutgoingPackage(this, composer), ct)
                 .ConfigureAwait(false);
@@ -85,6 +93,10 @@ public class SessionContext(
                 composer?.GetType().Name ?? "<null>",
                 SessionKey
             );
+        }
+        finally
+        {
+            _sendSemaphore.Release();
         }
     }
 }

@@ -349,6 +349,8 @@ public sealed partial class RoomGrain
 
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
+            _state.PlayerIdsWithRights.Add(target);
+
             ImmutableArray<RoomControllerSnapshot> controllers = await GetControllersAsync(ct)
                 .ConfigureAwait(true);
 
@@ -361,6 +363,9 @@ public sealed partial class RoomGrain
                         Controllers = controllers,
                     }
                 )
+                .ConfigureAwait(true);
+
+            await SecurityModule.RefreshControllerLevelForPlayerAsync(target, ct)
                 .ConfigureAwait(true);
         }
         catch (Exception ex)
@@ -409,6 +414,11 @@ public sealed partial class RoomGrain
 
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
+            foreach (PlayerId target in targets)
+            {
+                _state.PlayerIdsWithRights.Remove(target);
+            }
+
             ImmutableArray<RoomControllerSnapshot> controllers = await GetControllersAsync(ct)
                 .ConfigureAwait(true);
 
@@ -422,6 +432,12 @@ public sealed partial class RoomGrain
                     }
                 )
                 .ConfigureAwait(true);
+
+            foreach (PlayerId target in targets)
+            {
+                await SecurityModule.RefreshControllerLevelForPlayerAsync(target, ct)
+                    .ConfigureAwait(true);
+            }
         }
         catch (Exception ex)
         {

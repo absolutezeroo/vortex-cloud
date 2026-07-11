@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
@@ -15,6 +17,7 @@ public partial interface IRoomGrain : IGrainWithIntegerKey
     public Task<RoomSnapshot> GetSnapshotAsync();
     public Task<RoomSummarySnapshot> GetSummaryAsync();
     public Task<int> GetRoomPopulationAsync();
+    public Task<ImmutableArray<KeyValuePair<string, string>>> GetRoomPropertiesAsync();
     public Task PublishRoomEventAsync(RoomEvent evt, CancellationToken ct);
     public Task SendComposerToRoomAsync(IComposer composer);
 }

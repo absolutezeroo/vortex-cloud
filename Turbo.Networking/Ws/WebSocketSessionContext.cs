@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SuperSocket.ProtoBase;
+using SuperSocket.Server.Abstractions;
 using SuperSocket.WebSocket.Server;
 using Turbo.Crypto;
 using Turbo.Primitives.Crypto;
@@ -21,6 +22,8 @@ public sealed class WebSocketSessionContext(
     ILogger<WebSocketSessionContext> logger
 ) : ISessionContext, IDisposable
 {
+    private readonly SemaphoreSlim _sendSemaphore = new(1, 1);
+
     public SessionKey SessionKey { get; } = session.SessionID;
     public bool PolicyDone { get; set; } = true;
     public string RevisionId { get; private set; } = "Default";
@@ -66,8 +69,15 @@ public sealed class WebSocketSessionContext(
             return;
         }
 
+        await _sendSemaphore.WaitAsync(ct).ConfigureAwait(false);
+
         try
         {
+            if (session.State == SessionState.Closed)
+            {
+                return;
+            }
+
             ArrayBufferWriter<byte> writer = new(4096);
             int bytesWritten = packageEncoder.Encode(writer, new OutgoingPackage(this, composer));
 
@@ -98,10 +108,15 @@ public sealed class WebSocketSessionContext(
                 SessionKey
             );
         }
+        finally
+        {
+            _sendSemaphore.Release();
+        }
     }
 
     public void Dispose()
     {
         HeartbeatCts.Dispose();
+        _sendSemaphore.Dispose();
     }
 }

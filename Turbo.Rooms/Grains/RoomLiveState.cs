@@ -36,6 +36,8 @@ public sealed class RoomLiveState
 
     public Dictionary<PlayerId, DateTime> MuteExpiresUtc { get; } = [];
 
+    public Dictionary<string, string> RoomProperties { get; } = [];
+
     public HashSet<int> DirtyHeightTileIds { get; set; } = [];
     public HashSet<RoomObjectId> DirtyItemIds { get; set; } = [];
     public HashSet<RoomObjectId> DirtyFloorItemIds { get; set; } = [];

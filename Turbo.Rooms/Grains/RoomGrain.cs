@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +24,7 @@ using Turbo.Primitives.Orleans.Snapshots.Room.Settings;
 using Turbo.Primitives.Permissions;
 using Turbo.Primitives.Pets.Providers;
 using Turbo.Primitives.Rooms;
+using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Events;
 using Turbo.Primitives.Rooms.Grains;
 using Turbo.Primitives.Rooms.Providers;
@@ -170,6 +174,9 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         return await _grainFactory.GetRoomDirectoryGrain().GetRoomPopulationAsync(_state.RoomId);
     }
 
+    public Task<ImmutableArray<KeyValuePair<string, string>>> GetRoomPropertiesAsync() =>
+        Task.FromResult(_state.RoomProperties.ToImmutableArray());
+
     public Task PublishRoomEventAsync(RoomEvent evt, CancellationToken ct)
     {
         return EventModule.PublishAsync(evt, ct);
@@ -304,6 +311,31 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                 FloorThickness = entity.ThicknessFloor,
                 LastUpdatedUtc = DateTime.UtcNow,
             };
+
+            _state.RoomProperties[RoomPropertyType.WALLPAPER] = entity.PaintWall.ToString(
+                CultureInfo.InvariantCulture
+            );
+            _state.RoomProperties[RoomPropertyType.FLOOR] = entity.PaintFloor.ToString(
+                CultureInfo.InvariantCulture
+            );
+            _state.RoomProperties[RoomPropertyType.LANDSCAPE] = entity.PaintLandscape.ToString(
+                CultureInfo.InvariantCulture
+            );
+            _state.RoomProperties[RoomPropertyType.LANDSCAPEANIM] = "0";
+
+            List<int> rightsPlayerIds = await dbCtx
+                .RoomRights.AsNoTracking()
+                .Where(r => r.RoomEntityId == entity.Id && r.DeletedAt == null)
+                .Select(r => r.PlayerEntityId)
+                .ToListAsync(ct)
+                .ConfigureAwait(true);
+
+            _state.PlayerIdsWithRights.Clear();
+
+            foreach (int playerId in rightsPlayerIds)
+            {
+                _state.PlayerIdsWithRights.Add(playerId);
+            }
         }
         finally
         {
