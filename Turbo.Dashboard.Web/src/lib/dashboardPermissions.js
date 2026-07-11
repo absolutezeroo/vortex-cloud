@@ -7,6 +7,12 @@ export const CAPABILITIES = {
   opsGrantCurrency: 'dashboard.ops.currency.grant',
   opsGrantItem: 'dashboard.ops.item.grant',
   opsKickPlayer: 'dashboard.ops.player.kick',
+  opsBanAccount: 'dashboard.ops.player.ban',
+  opsMutePlayer: 'dashboard.ops.player.mute',
+  opsTradingLock: 'dashboard.ops.player.trading_lock',
+  opsCfhManage: 'dashboard.ops.cfh.manage',
+  opsRoomsManage: 'dashboard.ops.rooms.manage',
+  opsManageVouchers: 'dashboard.ops.vouchers.manage',
 };
 
 export const ROUTE_PERMISSIONS = {
@@ -19,6 +25,14 @@ export const ROUTE_PERMISSIONS = {
   rooms: [CAPABILITIES.auditRead],
   audit: [CAPABILITIES.auditRead],
   moderation: [CAPABILITIES.auditRead],
+  moderationActions: [
+    CAPABILITIES.opsBanAccount,
+    CAPABILITIES.opsMutePlayer,
+    CAPABILITIES.opsTradingLock,
+  ],
+  cfh: [CAPABILITIES.opsCfhManage],
+  roomControl: [CAPABILITIES.opsRoomsManage],
+  vouchers: [CAPABILITIES.opsManageVouchers],
   apiExplorer: [CAPABILITIES.overviewRead],
   operations: [
     CAPABILITIES.opsGrantCurrency,
@@ -32,4 +46,14 @@ export const OPERATION_CAPABILITIES = {
   activity: CAPABILITIES.opsGrantCurrency,
   item: CAPABILITIES.opsGrantItem,
   kick: CAPABILITIES.opsKickPlayer,
+};
+
+// Per-action capability map for the moderation action forms on ModerationPage — mirrors
+// OPERATION_CAPABILITIES' role for OperationsPage.
+export const MODERATION_OPERATION_CAPABILITIES = {
+  ban: CAPABILITIES.opsBanAccount,
+  unban: CAPABILITIES.opsBanAccount,
+  mute: CAPABILITIES.opsMutePlayer,
+  tradingLock: CAPABILITIES.opsTradingLock,
+  tradingUnlock: CAPABILITIES.opsTradingLock,
 };

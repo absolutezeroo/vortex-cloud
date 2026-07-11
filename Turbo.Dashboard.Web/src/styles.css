@@ -671,6 +671,129 @@ code {
   gap: 10px;
 }
 
+.op-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.op-field {
+  display: grid;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.op-field label,
+.op-field .op-label {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.op-field input {
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
+  background: #0f1724;
+  color: var(--ink);
+  padding: 9px 10px;
+  outline: none;
+}
+
+.op-field input:focus {
+  border-color: rgba(90, 167, 200, 0.58);
+  box-shadow: 0 0 0 3px rgba(90, 167, 200, 0.12);
+}
+
+.op-pick {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.op-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface-strong);
+  padding: 5px 11px;
+  min-width: 0;
+}
+
+.op-chip small {
+  color: var(--muted);
+}
+
+.op-dot {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--muted);
+}
+
+.op-dot.on {
+  background: var(--ok);
+  box-shadow: 0 0 0 3px rgba(86, 185, 145, 0.18);
+}
+
+.op-sprite {
+  display: grid;
+  place-items: center;
+  min-width: 26px;
+  height: 22px;
+  padding: 0 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: #0f1724;
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 700;
+  object-fit: contain;
+}
+
+.op-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.op-actions button {
+  border: 1px solid rgba(90, 167, 200, 0.34);
+  border-radius: 9px;
+  background: #22445a;
+  color: #f0f7fb;
+  padding: 8px 12px;
+  font-weight: 700;
+}
+
+.op-actions button.ghost-button {
+  background: var(--surface-strong);
+  color: var(--ink);
+}
+
+.op-actions button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.op-result {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  color: var(--ok);
+}
+
+.op-result.danger {
+  color: var(--danger);
+}
+
 @media (max-width: 900px) {
   .app-shell,
   .split-grid {
