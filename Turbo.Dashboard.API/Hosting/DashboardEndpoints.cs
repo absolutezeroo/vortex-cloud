@@ -24,7 +24,7 @@ namespace Turbo.Dashboard.API.Hosting;
 /// after the capability string), so each endpoint just declares the capability it needs via
 /// <c>RequireAuthorization</c>. Every endpoint is tagged for Swagger grouping.
 /// </summary>
-internal static class DashboardEndpoints
+internal static partial class DashboardEndpoints
 {
     private const string TagAuth = "Auth";
     private const string TagMonitoring = "Monitoring";
@@ -132,323 +132,19 @@ internal static class DashboardEndpoints
 
     public static void MapReadApi(WebApplication app, Func<DateTime> startedAtUtc)
     {
-        MapReadGet(
-            app,
-            ApiMonitoring + "/overview",
-            "/api/overview",
-            (DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.OverviewAsync(startedAtUtc(), ct)),
-            Capabilities.Dashboard.OverviewRead,
-            TagMonitoring
-        );
-
-        MapReadGet(
-            app,
-            ApiMonitoring + "/infrastructure",
-            "/api/infrastructure",
-            async (DashboardApiService api, CancellationToken ct) =>
-                Results.Ok(await api.InfrastructureAsync(ct).ConfigureAwait(false)),
-            Capabilities.Dashboard.OverviewRead,
-            TagMonitoring
-        );
-
-        MapReadGet(
-            app,
-            ApiMonitoring + "/incidents",
-            "/api/incidents",
-            async (DashboardApiService api, CancellationToken ct) =>
-                Results.Ok(await api.IncidentsAsync(ct).ConfigureAwait(false)),
-            Capabilities.Dashboard.OverviewRead,
-            TagMonitoring
-        );
-
-        MapReadGet(
-            app,
-            ApiMonitoring + "/packet-stats",
-            "/api/packet-stats",
-            (DashboardApiService api, CancellationToken ct) => OkAsync(api.PacketStatsAsync(ct)),
-            Capabilities.Dashboard.OverviewRead,
-            TagMonitoring
-        );
-
-        MapReadGet(
-            app,
-            ApiForensics + "/audit",
-            "/api/audit",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.AuditAsync(ctx.QueryAsNameValues(), ct)),
-            Capabilities.Dashboard.AuditRead,
-            TagForensics
-        );
-
-        MapReadGet(
-            app,
-            ApiForensics + "/moderation/stats",
-            "/api/moderation-stats",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.ModerationStatsAsync(ctx.QueryAsNameValues(), ct)),
-            Capabilities.Dashboard.AuditRead,
-            TagForensics
-        );
-
-        MapReadGet(
-            app,
-            ApiEconomy + "/ledger",
-            "/api/economy",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.EconomyAsync(ctx.QueryAsNameValues(), ct)),
-            Capabilities.Dashboard.EconomyRead,
-            TagEconomy
-        );
-
-        MapReadGet(
-            app,
-            ApiEconomy + "/subscriptions",
-            "/api/economy/subscriptions",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.ClubSubscriptionsAsync(ctx.QueryAsNameValues(), ct)),
-            Capabilities.Dashboard.EconomyRead,
-            TagEconomy
-        );
-
-        app.MapGet(
-                ApiV1 + "/rentable-spaces/activity",
-                (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                    OkAsync(api.RentableSpacesAsync(ctx.QueryAsNameValues(), ct))
-            )
-            .RequireAuthorization(Capabilities.Dashboard.EconomyRead)
-            .WithTags(TagEconomy);
-
-        MapReadGet(
-            app,
-            ApiDirectory + "/search",
-            "/api/search",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.SearchAsync(ctx.QueryAsNameValues(), ct)),
-            Capabilities.Dashboard.AuditRead,
-            TagForensics
-        );
-
-        MapReadGet(
-            app,
-            ApiDirectory + "/players",
-            "/api/players",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.PlayersAsync(ctx.QueryAsNameValues(), ct)),
-            Capabilities.Dashboard.PlayersRead,
-            TagDirectory
-        );
-
-        MapReadGet(
-            app,
-            ApiDirectory + "/furniture",
-            "/api/furniture",
-            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkAsync(api.FurnitureDefinitionsAsync(ctx.QueryAsNameValues(), ct)),
-            Capabilities.Dashboard.FurnitureRead,
-            TagDirectory
-        );
-
-        MapReadGet(
-            app,
-            ApiDirectory + "/entity/{id}",
-            "/api/item/{id}",
-            (string id, HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkNullableAsync(api.ItemAsync(id, ctx.QueryAsNameValues(), ct)),
-            Capabilities.Dashboard.AuditRead,
-            TagForensics
-        );
-
-        MapReadGet(
-            app,
-            ApiDirectory + "/rooms/{roomId:int}",
-            "/api/room/{roomId:int}",
-            (int roomId, HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
-                OkNullableAsync(api.RoomTimelineAsync(roomId, ctx.QueryAsNameValues(), ct)),
-            Capabilities.Dashboard.AuditRead,
-            TagForensics
-        );
+        MapMonitoringReads(app, startedAtUtc);
+        MapAuditReads(app);
+        MapEconomyReads(app);
+        MapDirectoryReads(app);
+        MapRoomReads(app);
     }
 
     public static void MapOperations(WebApplication app)
     {
-        MapPost(
-            app,
-            ApiOperations + "/currency/credits",
-            "/api/ops/currency/credits",
-            async (
-                HttpContext ctx,
-                GiveCreditsRequest body,
-                DashboardOperationsService ops,
-                CancellationToken ct
-            ) =>
-            {
-                if (
-                    body is null
-                    || body.PlayerId <= 0
-                    || body.Amount <= 0
-                    || !HasReason(body.Reason)
-                )
-                {
-                    return Results.BadRequest(new { error = "invalid_request" });
-                }
-
-                return Results.Ok(
-                    await ops.GiveCreditsAsync(body, ctx.ActorEmail(), ct).ConfigureAwait(false)
-                );
-            },
-            Capabilities.Dashboard.OpsGrantCurrency,
-            TagOperations
-        );
-
-        MapPost(
-            app,
-            ApiOperations + "/currency/activity-points",
-            "/api/ops/currency/activity-points",
-            async (
-                HttpContext ctx,
-                GiveActivityPointsRequest body,
-                DashboardOperationsService ops,
-                CancellationToken ct
-            ) =>
-            {
-                if (
-                    body is null
-                    || body.PlayerId <= 0
-                    || body.Type < 0
-                    || body.Amount <= 0
-                    || !HasReason(body.Reason)
-                )
-                {
-                    return Results.BadRequest(new { error = "invalid_request" });
-                }
-
-                return Results.Ok(
-                    await ops.GiveActivityPointsAsync(body, ctx.ActorEmail(), ct)
-                        .ConfigureAwait(false)
-                );
-            },
-            Capabilities.Dashboard.OpsGrantCurrency,
-            TagOperations
-        );
-
-        MapPost(
-            app,
-            ApiOperations + "/items/grant",
-            "/api/ops/item/grant",
-            async (
-                HttpContext ctx,
-                GiveFurnitureRequest body,
-                DashboardOperationsService ops,
-                CancellationToken ct
-            ) =>
-            {
-                if (
-                    body is null
-                    || body.PlayerId <= 0
-                    || body.DefinitionId <= 0
-                    || !HasReason(body.Reason)
-                )
-                {
-                    return Results.BadRequest(new { error = "invalid_request" });
-                }
-
-                return Results.Ok(
-                    await ops.GiveFurnitureAsync(body, ctx.ActorEmail(), ct).ConfigureAwait(false)
-                );
-            },
-            Capabilities.Dashboard.OpsGrantItem,
-            TagOperations
-        );
-
-        MapPost(
-            app,
-            ApiOperations + "/vouchers",
-            "/api/ops/vouchers",
-            async (
-                HttpContext ctx,
-                CreateVoucherRequest body,
-                DashboardOperationsService ops,
-                CancellationToken ct
-            ) =>
-            {
-                if (
-                    body is null
-                    || string.IsNullOrWhiteSpace(body.Code)
-                    || body.Amount <= 0
-                    || body.CurrencyType is < 1 or > 4
-                    || !HasReason(body.Reason)
-                )
-                {
-                    return Results.BadRequest(new { error = "invalid_request" });
-                }
-
-                return Results.Ok(
-                    await ops.CreateVoucherAsync(body, ctx.ActorEmail(), ct).ConfigureAwait(false)
-                );
-            },
-            Capabilities.Dashboard.OpsManageVouchers,
-            TagOperations
-        );
-
-        MapPost(
-            app,
-            ApiOperations + "/vouchers/deactivate",
-            "/api/ops/vouchers/deactivate",
-            async (
-                HttpContext ctx,
-                DeactivateVoucherRequest body,
-                DashboardOperationsService ops,
-                CancellationToken ct
-            ) =>
-            {
-                if (body is null || string.IsNullOrWhiteSpace(body.Code) || !HasReason(body.Reason))
-                {
-                    return Results.BadRequest(new { error = "invalid_request" });
-                }
-
-                return Results.Ok(
-                    await ops.DeactivateVoucherAsync(body, ctx.ActorEmail(), ct)
-                        .ConfigureAwait(false)
-                );
-            },
-            Capabilities.Dashboard.OpsManageVouchers,
-            TagOperations
-        );
-
-        MapReadGet(
-            app,
-            ApiOperations + "/vouchers/{code}",
-            "/api/ops/vouchers/{code}",
-            async (string code, DashboardOperationsService ops, CancellationToken ct) =>
-                Results.Ok(await ops.GetVoucherSnapshotAsync(code, ct).ConfigureAwait(false)),
-            Capabilities.Dashboard.OpsManageVouchers,
-            TagOperations
-        );
-
-        MapPost(
-            app,
-            ApiOperations + "/players/kick",
-            "/api/ops/player/kick",
-            async (
-                HttpContext ctx,
-                KickPlayerRequest body,
-                DashboardOperationsService ops,
-                CancellationToken ct
-            ) =>
-            {
-                if (body is null || body.PlayerId <= 0 || !HasReason(body.Reason))
-                {
-                    return Results.BadRequest(new { error = "invalid_request" });
-                }
-
-                return Results.Ok(
-                    await ops.KickPlayerAsync(body, ctx.ActorEmail(), ct).ConfigureAwait(false)
-                );
-            },
-            Capabilities.Dashboard.OpsKickPlayer,
-            TagOperations
-        );
+        MapCurrencyOperations(app);
+        MapVoucherOperations(app);
+        MapModerationOperations(app);
+        MapRoomOperations(app);
     }
 
     public static void MapMeta(WebApplication app)
@@ -630,6 +326,10 @@ internal static class DashboardEndpoints
 
     private static bool HasReason(string? reason) =>
         !string.IsNullOrWhiteSpace(reason) && reason.Trim().Length >= 3;
+
+    /// <summary>A permanent sanction needs no duration; a temporary one needs a positive duration.</summary>
+    private static bool HasValidDuration(bool permanent, int? durationSeconds) =>
+        permanent || durationSeconds is > 0;
 
     private static void MapReadGet(
         WebApplication app,

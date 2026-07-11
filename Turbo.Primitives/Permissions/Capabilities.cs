@@ -66,6 +66,11 @@ public static class Capabilities
         public const string OpsGrantItem = "dashboard.ops.item.grant";
         public const string OpsKickPlayer = "dashboard.ops.player.kick";
         public const string OpsManageVouchers = "dashboard.ops.vouchers.manage";
+        public const string OpsBanAccount = "dashboard.ops.player.ban";
+        public const string OpsMutePlayer = "dashboard.ops.player.mute";
+        public const string OpsTradingLock = "dashboard.ops.player.trading_lock";
+        public const string OpsCfhManage = "dashboard.ops.cfh.manage";
+        public const string OpsRoomsManage = "dashboard.ops.rooms.manage";
     }
 
     /// <summary>Every declared capability, for validation and dashboard enumeration.</summary>
@@ -95,5 +100,10 @@ public static class Capabilities
             Dashboard.OpsGrantItem,
             Dashboard.OpsKickPlayer,
             Dashboard.OpsManageVouchers,
+            Dashboard.OpsBanAccount,
+            Dashboard.OpsMutePlayer,
+            Dashboard.OpsTradingLock,
+            Dashboard.OpsCfhManage,
+            Dashboard.OpsRoomsManage,
         };
 }

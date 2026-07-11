@@ -1,16 +1,23 @@
-﻿using System;
+using System;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Observability.Diagnostics;
+using Turbo.Primitives.Action;
 using Turbo.Primitives.Catalog.Snapshots;
+using Turbo.Primitives.Moderation;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Observability;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Orleans.Snapshots.Room;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Players.Enums.Wallet;
+using Turbo.Primitives.Rooms;
+using Turbo.Primitives.Rooms.Snapshots.Avatars;
 
 namespace Turbo.Dashboard.API.Operations;
 
@@ -20,174 +27,68 @@ namespace Turbo.Dashboard.API.Operations;
 /// grains/domain services (never a direct DB write), carries a mandatory reason, runs under a fresh
 /// correlation id, and emits a durable <see cref="AuditEvent"/> regardless of outcome.
 /// </summary>
-internal sealed class DashboardOperationsService(
+internal sealed partial class DashboardOperationsService(
     IGrainFactory grainFactory,
     ISessionGateway sessionGateway,
+    ICfhTicketService cfhTickets,
     IAuditSink auditSink,
     ITurboContextAccessor context,
     ILogger<DashboardOperationsService> logger
 )
 {
+    /// <summary>
+    /// Name of the reserved, account-less player row seeded by the
+    /// <c>SeedDashboardStaffActor</c> migration. Room-scoped moderation grain methods
+    /// (<c>MuteUserAsync</c>/<c>KickUserAsync</c>) require a real <see cref="PlayerId"/> as the
+    /// acting player and reject <see cref="ActionContext.System"/> — this stands in for "the
+    /// dashboard operator" since a web session has no in-game player of its own.
+    /// </summary>
+    private const string StaffActorName = "__dashboard_staff__";
+
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
+    private readonly ICfhTicketService _cfhTickets = cfhTickets;
     private readonly IAuditSink _auditSink = auditSink;
     private readonly ITurboContextAccessor _context = context;
     private readonly ILogger<DashboardOperationsService> _logger = logger;
+    private readonly SemaphoreSlim _staffActorLock = new(1, 1);
+    private PlayerId? _staffActorPlayerId;
 
-    public Task<OperationResult> GiveCreditsAsync(
-        GiveCreditsRequest request,
-        string actor,
-        CancellationToken ct
-    ) =>
-        ExecuteAsync(
-            "ops.currency.credits.grant",
-            actor,
-            request.Reason,
-            targetPlayerId: request.PlayerId,
-            roomId: null,
-            detail: new { currency = "credits", request.Amount },
-            work: c =>
-                _grainFactory
-                    .GetPlayerWalletGrain(new PlayerId(request.PlayerId))
-                    .GrantCreditsAsync(request.Amount, c),
-            ct
-        );
+    private async Task<PlayerId> ResolveStaffActorPlayerIdAsync(CancellationToken ct)
+    {
+        if (_staffActorPlayerId is { } cached)
+        {
+            return cached;
+        }
 
-    public Task<OperationResult> GiveActivityPointsAsync(
-        GiveActivityPointsRequest request,
-        string actor,
-        CancellationToken ct
-    ) =>
-        ExecuteAsync(
-            "ops.currency.activitypoints.grant",
-            actor,
-            request.Reason,
-            targetPlayerId: request.PlayerId,
-            roomId: null,
-            detail: new
+        await _staffActorLock.WaitAsync(ct).ConfigureAwait(false);
+
+        try
+        {
+            if (_staffActorPlayerId is { } cachedAfterLock)
             {
-                currency = "activity_points",
-                request.Type,
-                request.Amount,
-            },
-            work: c =>
-                _grainFactory
-                    .GetPlayerWalletGrain(new PlayerId(request.PlayerId))
-                    .GrantActivityPointsAsync(request.Type, request.Amount, c),
-            ct
-        );
+                return cachedAfterLock;
+            }
 
-    public Task<OperationResult> GiveFurnitureAsync(
-        GiveFurnitureRequest request,
-        string actor,
-        CancellationToken ct
-    ) =>
-        ExecuteAsync(
-            "ops.item.grant",
-            actor,
-            request.Reason,
-            targetPlayerId: request.PlayerId,
-            roomId: null,
-            detail: new { request.DefinitionId, request.ExtraData },
-            work: c =>
-                _grainFactory
-                    .GetInventoryGrain(new PlayerId(request.PlayerId))
-                    .GrantFurnitureDefinitionAsync(request.DefinitionId, request.ExtraData, c),
-            ct
-        );
+            PlayerId? resolved = await _grainFactory
+                .GetPlayerDirectoryGrain()
+                .GetPlayerIdAsync(StaffActorName, ct)
+                .ConfigureAwait(false);
 
-    public Task<OperationResult> CreateVoucherAsync(
-        CreateVoucherRequest request,
-        string actor,
-        CancellationToken ct
-    ) =>
-        ExecuteAsync(
-            "ops.vouchers.create",
-            actor,
-            request.Reason,
-            targetPlayerId: null,
-            roomId: null,
-            detail: new
+            if (resolved is null)
             {
-                request.Code,
-                request.CurrencyType,
-                request.ActivityPointType,
-                request.Amount,
-                request.MaxRedemptions,
-                request.ExpiresAt,
-            },
-            work: async c =>
-            {
-                VoucherCreateResult result = await _grainFactory
-                    .GetVoucherGrain(request.Code)
-                    .CreateAsync(
-                        new VoucherCreateSpec
-                        {
-                            CurrencyType = (CurrencyType)request.CurrencyType,
-                            ActivityPointType = request.ActivityPointType,
-                            Amount = request.Amount,
-                            MaxRedemptions = request.MaxRedemptions,
-                            ExpiresAt = request.ExpiresAt,
-                            CreatedBy = actor,
-                        },
-                        c
-                    )
-                    .ConfigureAwait(false);
+                throw new InvalidOperationException("dashboard_staff_actor_missing");
+            }
 
-                if (!result.Success)
-                {
-                    throw new InvalidOperationException(result.ErrorCode);
-                }
-            },
-            ct
-        );
+            _staffActorPlayerId = resolved.Value;
 
-    public Task<OperationResult> DeactivateVoucherAsync(
-        DeactivateVoucherRequest request,
-        string actor,
-        CancellationToken ct
-    ) =>
-        ExecuteAsync(
-            "ops.vouchers.deactivate",
-            actor,
-            request.Reason,
-            targetPlayerId: null,
-            roomId: null,
-            detail: new { request.Code },
-            work: async c =>
-            {
-                VoucherCreateResult result = await _grainFactory
-                    .GetVoucherGrain(request.Code)
-                    .DeactivateAsync(c)
-                    .ConfigureAwait(false);
-
-                if (!result.Success)
-                {
-                    throw new InvalidOperationException(result.ErrorCode);
-                }
-            },
-            ct
-        );
-
-    public Task<VoucherSnapshot> GetVoucherSnapshotAsync(string code, CancellationToken ct) =>
-        _grainFactory.GetVoucherGrain(code).GetSnapshotAsync(ct);
-
-    public Task<OperationResult> KickPlayerAsync(
-        KickPlayerRequest request,
-        string actor,
-        CancellationToken ct
-    ) =>
-        ExecuteAsync(
-            "ops.player.kick",
-            actor,
-            request.Reason,
-            targetPlayerId: request.PlayerId,
-            roomId: null,
-            detail: new { },
-            work: c =>
-                _sessionGateway.RemoveSessionFromPlayerAsync(new PlayerId(request.PlayerId), c),
-            ct
-        );
+            return resolved.Value;
+        }
+        finally
+        {
+            _staffActorLock.Release();
+        }
+    }
 
     /// <summary>
     /// Cross-cutting envelope for every operation: fresh correlation id + propagated trace scope,
@@ -202,7 +103,8 @@ internal sealed class DashboardOperationsService(
         int? roomId,
         object detail,
         Func<CancellationToken, Task> work,
-        CancellationToken ct
+        CancellationToken ct,
+        AuditCategory category = AuditCategory.Staff
     )
     {
         CorrelationId correlationId = CorrelationId.New();
@@ -227,7 +129,8 @@ internal sealed class DashboardOperationsService(
                 reason,
                 targetPlayerId,
                 roomId,
-                detail
+                detail,
+                category
             );
 
             return OperationResult.Succeeded(correlationId.Value);
@@ -253,7 +156,8 @@ internal sealed class DashboardOperationsService(
                 reason,
                 targetPlayerId,
                 roomId,
-                detail
+                detail,
+                category
             );
 
             return OperationResult.Failed(correlationId.Value, ex.Message);
@@ -276,7 +180,8 @@ internal sealed class DashboardOperationsService(
                 reason,
                 targetPlayerId,
                 roomId,
-                detail
+                detail,
+                category
             );
 
             return OperationResult.Failed(correlationId.Value);
@@ -292,12 +197,13 @@ internal sealed class DashboardOperationsService(
         string reason,
         long? targetPlayerId,
         int? roomId,
-        object detail
+        object detail,
+        AuditCategory category = AuditCategory.Staff
     ) =>
         _auditSink.Emit(
             new AuditEvent
             {
-                Category = AuditCategory.Staff,
+                Category = category,
                 Action = action,
                 Severity = severity,
                 Result = result,

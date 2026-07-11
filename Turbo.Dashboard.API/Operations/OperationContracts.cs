@@ -52,3 +52,56 @@ public sealed record CreateVoucherRequest(
 
 /// <summary>Deactivate a voucher code so it can no longer be redeemed.</summary>
 public sealed record DeactivateVoucherRequest(string Code, string Reason);
+
+/// <summary>
+/// Suspend the player's linked account. Kept separate from <see cref="UnbanPlayerRequest"/> —
+/// folding "lift" into this same request via a nullable field would be a footgun since the domain
+/// method's <c>bannedUntil: null</c> means lift, not "no change". <paramref name="Permanent"/> true
+/// ignores <paramref name="DurationSeconds"/>.
+/// </summary>
+public sealed record BanPlayerRequest(
+    int PlayerId,
+    bool Permanent,
+    int? DurationSeconds,
+    string Reason
+);
+
+/// <summary>Lift an active account ban.</summary>
+public sealed record UnbanPlayerRequest(int PlayerId, string Reason);
+
+/// <summary>Room-scoped mute. Only works while the target is currently present in a room — there is
+/// no account-wide chat mute in this codebase.</summary>
+public sealed record MutePlayerRequest(int PlayerId, int DurationSeconds, string Reason);
+
+/// <summary>Lock the player's ability to trade. See <see cref="BanPlayerRequest"/> for the
+/// permanent/duration semantics and why lift is a separate request type.</summary>
+public sealed record TradingLockRequest(
+    int PlayerId,
+    bool Permanent,
+    int? DurationSeconds,
+    string Reason
+);
+
+/// <summary>Lift an active trading lock.</summary>
+public sealed record TradingUnlockRequest(int PlayerId, string Reason);
+
+/// <summary>Pick up one or more open CFH tickets for handling.</summary>
+public sealed record PickCfhTicketsRequest(int[] IssueIds);
+
+/// <summary>
+/// Close one or more CFH tickets. <paramref name="Reason"/> is 1=Useless, 2=Sanctioned,
+/// 3=Resolved (see <c>Turbo.Primitives.Moderation.CfhTicketCloseReason</c>). Closing does not itself
+/// apply a sanction — sanction the reported player as a separate ban action if warranted.
+/// </summary>
+public sealed record CloseCfhTicketsRequest(int[] IssueIds, int Reason, bool Sanctioned);
+
+/// <summary>Release one or more picked tickets back to the open queue.</summary>
+public sealed record ReleaseCfhTicketsRequest(int[] IssueIds);
+
+/// <summary>Force-deactivate an active room. Does not itself evict occupants — pair with
+/// <see cref="KickFromRoomRequest"/> per player if a hard clear is needed.</summary>
+public sealed record ForceCloseRoomRequest(int RoomId, string Reason);
+
+/// <summary>Remove one player from a room they are currently in. One-time removal, not a ban —
+/// use <see cref="BanPlayerRequest"/> for account-wide sanctions.</summary>
+public sealed record KickFromRoomRequest(int RoomId, int PlayerId, string Reason);

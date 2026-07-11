@@ -53,6 +53,11 @@ internal sealed class DashboardWebHost(
         Capabilities.Dashboard.OpsGrantItem,
         Capabilities.Dashboard.OpsKickPlayer,
         Capabilities.Dashboard.OpsManageVouchers,
+        Capabilities.Dashboard.OpsBanAccount,
+        Capabilities.Dashboard.OpsMutePlayer,
+        Capabilities.Dashboard.OpsTradingLock,
+        Capabilities.Dashboard.OpsCfhManage,
+        Capabilities.Dashboard.OpsRoomsManage,
     ];
 
     private readonly ObservabilityConfig _config = options.Value;
