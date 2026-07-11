@@ -16,7 +16,7 @@ namespace Turbo.Revisions.Tests.Groups;
 public sealed class GuildManagementWireLayoutTests
 {
     // Incoming MessageEvent ids (Headers.cs).
-    private const int UpdateGuildBadgeEvent = 3099;
+    private const int UpdateGuildBadgeEvent = 3882;
     private const int UpdateGuildSettingsEvent = 3716;
     private const int KickMemberEvent = 380;
 
