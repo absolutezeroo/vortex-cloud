@@ -152,6 +152,19 @@ Grains may hold cached or in-memory state that will not reflect direct DB change
 - If a grain uses `[PersistentState]`, state is hydrated from the configured store (not DB) on activation. Direct DB edits will be overwritten by stale store data.
 - Admin tools and external systems must call grain methods, not issue raw SQL/DB updates, for data that grains own.
 
+### Keep live authorization state synced with DB writes
+A DB write for a permission/moderation/subscription change is not the whole feature. If any in-memory grain
+state (a `HashSet`, cached flag, etc.) is read for authorization or gameplay decisions, that state must be
+updated in the *same* method that persists the change, and hydrated from DB on grain activation.
+- **Real bug**: `RoomLiveState.PlayerIdsWithRights` was checked by `GetControllerLevelAsync` but never
+  populated on room hydration nor updated by `AssignRightsAsync`/`RemoveRightsAsync`. Rights were persisted
+  and shown in the UI list, but never actually granted live permissions — build and tests stayed green.
+- Applies to: room rights, moderation flags/mutes/bans, club/subscription tiers, or any permission-like
+  state cached on a grain.
+- A DB write + a UI-notification composer is not proof the feature works. Verify the corresponding live
+  check (e.g. `GetControllerLevelAsync`) reflects the change within the same session, not just after a
+  grain reactivation.
+
 ## Profile and grain flow constraints
 - Keep packet handlers orchestration-only:
   - validate input
