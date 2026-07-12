@@ -58,6 +58,9 @@ internal sealed class DashboardWebHost(
         Capabilities.Dashboard.OpsTradingLock,
         Capabilities.Dashboard.OpsCfhManage,
         Capabilities.Dashboard.OpsRoomsManage,
+        Capabilities.Dashboard.CatalogRead,
+        Capabilities.Dashboard.OpsCatalogManage,
+        Capabilities.Dashboard.OpsFurnitureManage,
     ];
 
     private readonly ObservabilityConfig _config = options.Value;
@@ -253,7 +256,10 @@ internal sealed class DashboardWebHost(
 
     private void ConfigurePipeline(WebApplication app)
     {
-        string csp = DashboardSecurityHeaders.BuildCsp(_config.FurniIconUrlTemplate);
+        string csp = DashboardSecurityHeaders.BuildCsp(
+            _config.FurniIconUrlTemplate,
+            _config.CatalogIconUrlTemplate
+        );
         DashboardAuditEmitter emitter = app.Services.GetRequiredService<DashboardAuditEmitter>();
 
         // Hardened headers for the SPA + JSON API. Swagger UI ships an inline bootstrap script, so it

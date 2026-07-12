@@ -35,6 +35,7 @@
   let action = '';
   let result = '';
   let limit = '80';
+  let page = 1;
   let loading = false;
   let error = '';
   let forbidden = false;
@@ -122,6 +123,8 @@
       params.set('limit', limit);
     }
 
+    params.set('page', String(page));
+
     return params;
   }
 
@@ -156,6 +159,18 @@
     } finally {
       loading = false;
     }
+  }
+
+  function applyFilters() {
+    page = 1;
+    void refresh();
+  }
+
+  $: totalPages = Math.max(1, Math.ceil((data?.totals?.total || 0) / Number(limit || 1)));
+
+  function goToPage(next) {
+    page = Math.min(totalPages, Math.max(1, next));
+    void refresh();
   }
 
   function exportCsv() {
@@ -260,7 +275,7 @@
     <button type="button" on:click={exportCsv}>Export CSV</button>
   </div>
 
-  <form class="toolbar-grid" on:submit|preventDefault={refresh}>
+  <form class="toolbar-grid" on:submit|preventDefault={applyFilters}>
     <label>
       Since
       <input type="datetime-local" bind:value={since} />
@@ -421,50 +436,73 @@
   <div class="panel" style="margin-top: 14px;">
     <div class="panel-head">
       <h3>Recent moderation events</h3>
-      <span class="muted">page {data?.totals?.page || 1} · page size {data?.totals?.limit || 0}</span>
+      <span class="muted">{data?.totals?.total || 0} row(s) · page {data?.totals?.page || 1} / {totalPages}</span>
     </div>
-    <table>
-      <thead>
-        <tr>
-          <th>Time</th>
-          <th>Action</th>
-          <th>Actor</th>
-          <th>Target</th>
-          <th>Room</th>
-          <th>Duration</th>
-          <th>Result</th>
-          <th>Renewal</th>
-          <th>Reason</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each data?.rows || [] as row}
+    <div class="table-wrap">
+      <table>
+        <thead>
           <tr>
-            <td>{formatDate(row.occurredAt)}</td>
-            <td><code>{row.action}</code></td>
-            <td>
-              <EntityLink id={row.actorPlayerId} label={row.actorName || `player #${row.actorPlayerId || ''}`} {openPlayer} {openItem} />
-            </td>
-            <td>
-              <EntityLink id={row.targetPlayerId} label={row.targetName || `player #${row.targetPlayerId || ''}`} {openPlayer} {openItem} />
-            </td>
-            <td>{row.roomName ? `${row.roomName} (#${row.roomId})` : row.roomId ? `#${row.roomId}` : '-'}</td>
-            <td>{row.duration ? row.duration : (row.durationSeconds ? `${row.durationSeconds}s` : '-')}</td>
-            <td>{row.result}</td>
-            <td>
-              {#if row.isRenewal}
-                <span class="positive">Yes</span>
-              {:else}
-                No
-              {/if}
-            </td>
-            <td class="truncate">{row.reason || '-'}</td>
+            <th>Time</th>
+            <th>Action</th>
+            <th>Actor</th>
+            <th>Target</th>
+            <th>Room</th>
+            <th>Duration</th>
+            <th>Result</th>
+            <th>Renewal</th>
+            <th>Reason</th>
           </tr>
-        {:else}
-          <tr><td colspan="9" class="muted">No moderation events for this filter.</td></tr>
-        {/each}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {#each data?.rows || [] as row}
+            <tr>
+              <td>{formatDate(row.occurredAt)}</td>
+              <td><code>{row.action}</code></td>
+              <td>
+                <EntityLink id={row.actorPlayerId} label={row.actorName || `player #${row.actorPlayerId || ''}`} {openPlayer} {openItem} />
+              </td>
+              <td>
+                <EntityLink id={row.targetPlayerId} label={row.targetName || `player #${row.targetPlayerId || ''}`} {openPlayer} {openItem} />
+              </td>
+              <td>{row.roomName ? `${row.roomName} (#${row.roomId})` : row.roomId ? `#${row.roomId}` : '-'}</td>
+              <td>{row.duration ? row.duration : (row.durationSeconds ? `${row.durationSeconds}s` : '-')}</td>
+              <td>{row.result}</td>
+              <td>
+                {#if row.isRenewal}
+                  <span class="positive">Yes</span>
+                {:else}
+                  No
+                {/if}
+              </td>
+              <td class="truncate">{row.reason || '-'}</td>
+            </tr>
+          {:else}
+            <tr><td colspan="9" class="muted">No moderation events for this filter.</td></tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
+
+    {#if (data?.totals?.total || 0) > 0}
+      <div class="pagination">
+        <button type="button" class="ghost-button" on:click={() => goToPage(page - 1)} disabled={page <= 1 || loading}>
+          ← Prev
+        </button>
+        <span class="muted">page {page} / {totalPages}</span>
+        <button type="button" class="ghost-button" on:click={() => goToPage(page + 1)} disabled={page >= totalPages || loading}>
+          Next →
+        </button>
+      </div>
+    {/if}
   </div>
 </section>
+
+<style>
+  .pagination {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+  }
+</style>
 

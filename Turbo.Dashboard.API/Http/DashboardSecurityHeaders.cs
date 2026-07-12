@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 
 namespace Turbo.Dashboard.API.Http;
@@ -11,15 +12,23 @@ namespace Turbo.Dashboard.API.Http;
 internal static class DashboardSecurityHeaders
 {
     /// <summary>
-    /// Builds the Content-Security-Policy. When a furniture icon host is configured, its origin is
-    /// added to <c>img-src</c> so operator tools can render furni icons.
+    /// Builds the Content-Security-Policy. When a furniture and/or catalog icon host is configured,
+    /// its origin is added to <c>img-src</c> so operator tools can render those icons.
     /// </summary>
-    public static string BuildCsp(string? furniIconTemplate)
+    public static string BuildCsp(string? furniIconTemplate, string? catalogIconTemplate = null)
     {
         string imgSrc = "img-src 'self' data:";
-        string? origin = TryGetIconOrigin(furniIconTemplate);
 
-        if (origin is not null)
+        string[] origins = new[]
+        {
+            TryGetIconOrigin(furniIconTemplate, "{name}"),
+            TryGetIconOrigin(catalogIconTemplate, "{id}"),
+        }
+            .Where(origin => origin is not null)
+            .Distinct()
+            .ToArray()!;
+
+        foreach (string origin in origins)
         {
             imgSrc += " " + origin;
         }
@@ -45,14 +54,14 @@ internal static class DashboardSecurityHeaders
         headers["Expires"] = "0";
     }
 
-    private static string? TryGetIconOrigin(string? template)
+    private static string? TryGetIconOrigin(string? template, string placeholder)
     {
         if (string.IsNullOrWhiteSpace(template))
         {
             return null;
         }
 
-        string probe = template.Replace("{name}", "icon", StringComparison.Ordinal);
+        string probe = template.Replace(placeholder, "icon", StringComparison.Ordinal);
 
         return
             Uri.TryCreate(probe, UriKind.Absolute, out Uri? uri)

@@ -14,16 +14,31 @@
   --shadow-dashboard-panel: 0 12px 30px rgba(0, 0, 0, 0.24);
 }
 
-:root {
+/* Three themes, switched by setting data-theme on <html> (see lib/theme.js). "blue" is the
+   original/default look and must stay pixel-identical to what shipped before theming existed --
+   :root with no attribute falls back to it too, so an unthemed load (JS not yet run, or a stored
+   preference that's since become invalid) never renders unstyled/wrong colors. "dark" is a true
+   neutral dark mode (near-black, no blue tint). "white" is a light theme. Every color a component
+   needs must be one of these tokens -- a literal hex/rgba in a component only themes correctly by
+   accident, and generally won't. */
+:root,
+:root[data-theme='blue'] {
   color-scheme: dark;
   --page: #0c111b;
   --page-soft: #101827;
   --surface: #121a28;
   --surface-strong: #172132;
   --surface-raised: #1b2638;
+  --surface-hover: #1a2738;
+  --sidebar-bg: #0e1522;
+  --input-bg: #0f1724;
+  --nav-icon-bg: #111a28;
+  --button-bg: #22445a;
+  --button-ink: #f0f7fb;
   --ink: #e7edf5;
   --muted: #8b9aad;
   --muted-strong: #b3bfce;
+  --muted-rgb: 139, 154, 173;
   --success-bg: rgba(86, 185, 145, 0.16);
   --success-border: rgba(86, 185, 145, 0.45);
   --warning-bg: rgba(212, 168, 78, 0.16);
@@ -35,11 +50,96 @@
   --accent: #5aa7c8;
   --accent-strong: #7dbad3;
   --accent-soft: rgba(90, 167, 200, 0.1);
+  --accent-rgb: 90, 167, 200;
+  --ok-rgb: 86, 185, 145;
+  --warning-rgb: 212, 168, 78;
+  --danger-rgb: 223, 111, 123;
   --danger: #df6f7b;
   --warning: #d4a84e;
   --ok: #56b991;
+  --overlay-bg: rgba(4, 8, 14, 0.74);
   --shadow: 0 12px 30px rgba(0, 0, 0, 0.24);
   --panel-shadow: 0 1px 0 rgba(255, 255, 255, 0.03), 0 12px 28px rgba(0, 0, 0, 0.22);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --page: #08090b;
+  --page-soft: #0d0e11;
+  --surface: #131417;
+  --surface-strong: #1a1b1f;
+  --surface-raised: #202126;
+  --surface-hover: #24252b;
+  --sidebar-bg: #0a0b0d;
+  --input-bg: #0e0f12;
+  --nav-icon-bg: #17181c;
+  --button-bg: #2b3a44;
+  --button-ink: #f2f5f7;
+  --ink: #f0f1f3;
+  --muted: #8d9096;
+  --muted-strong: #b8bac0;
+  --muted-rgb: 141, 144, 150;
+  --success-bg: rgba(99, 195, 157, 0.14);
+  --success-border: rgba(99, 195, 157, 0.4);
+  --warning-bg: rgba(219, 177, 94, 0.14);
+  --warning-border: rgba(219, 177, 94, 0.4);
+  --danger-bg: rgba(227, 124, 136, 0.14);
+  --danger-border: rgba(227, 124, 136, 0.4);
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.14);
+  --accent: #6cb2d1;
+  --accent-strong: #8fc6de;
+  --accent-soft: rgba(108, 178, 209, 0.1);
+  --accent-rgb: 108, 178, 209;
+  --ok-rgb: 99, 195, 157;
+  --warning-rgb: 219, 177, 94;
+  --danger-rgb: 227, 124, 136;
+  --danger: #e37c88;
+  --warning: #dbb15e;
+  --ok: #63c39d;
+  --overlay-bg: rgba(0, 0, 0, 0.78);
+  --shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  --panel-shadow: 0 1px 0 rgba(255, 255, 255, 0.02), 0 12px 28px rgba(0, 0, 0, 0.36);
+}
+
+:root[data-theme='white'] {
+  color-scheme: light;
+  --page: #eef1f5;
+  --page-soft: #e5e9ef;
+  --surface: #ffffff;
+  --surface-strong: #f3f5f8;
+  --surface-raised: #ffffff;
+  --surface-hover: #e9edf2;
+  --sidebar-bg: #ffffff;
+  --input-bg: #f6f8fa;
+  --nav-icon-bg: #eef1f5;
+  --button-bg: #2b6f96;
+  --button-ink: #ffffff;
+  --ink: #161b22;
+  --muted: #5b6472;
+  --muted-strong: #333a45;
+  --muted-rgb: 91, 100, 114;
+  --success-bg: rgba(31, 143, 95, 0.12);
+  --success-border: rgba(31, 143, 95, 0.35);
+  --warning-bg: rgba(160, 109, 10, 0.12);
+  --warning-border: rgba(160, 109, 10, 0.35);
+  --danger-bg: rgba(192, 49, 63, 0.1);
+  --danger-border: rgba(192, 49, 63, 0.32);
+  --line: rgba(15, 23, 42, 0.1);
+  --line-strong: rgba(15, 23, 42, 0.18);
+  --accent: #2b6f96;
+  --accent-strong: #1f5878;
+  --accent-soft: rgba(43, 111, 150, 0.08);
+  --accent-rgb: 43, 111, 150;
+  --ok-rgb: 31, 143, 95;
+  --warning-rgb: 160, 109, 10;
+  --danger-rgb: 192, 49, 63;
+  --danger: #c0313f;
+  --warning: #a06d0a;
+  --ok: #1f8f5f;
+  --overlay-bg: rgba(15, 23, 42, 0.45);
+  --shadow: 0 12px 30px rgba(15, 23, 42, 0.1);
+  --panel-shadow: 0 1px 0 rgba(255, 255, 255, 0.7), 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
 *,
@@ -62,6 +162,7 @@ body {
   color: var(--ink);
   font-family: "Bahnschrift", "Aptos Display", "Segoe UI", sans-serif;
   letter-spacing: 0;
+  transition: background-color 160ms ease, color 160ms ease;
 }
 
 button,
@@ -85,7 +186,7 @@ button {
   height: 100vh;
   padding: 18px;
   border-right: 1px solid var(--line);
-  background: #0e1522;
+  background: var(--sidebar-bg);
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -124,7 +225,36 @@ button {
 
 .sidebar nav {
   display: grid;
+  align-content: start;
   gap: 6px;
+  /* .sidebar is a fixed-height (100vh) flex column; without this the nav list (now several
+     groups deep, e.g. Live/Investigate/Act/Dev) silently overflows the sidebar box with no way
+     to reach the items below the fold. flex: 1 1 auto lets it claim the remaining height below
+     the brand/search rows, and min-height: 0 is required for a flex child to actually shrink
+     enough for its own overflow-y to kick in instead of pushing past its container. */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+.sidebar nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar nav::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 999px;
+}
+
+.sidebar nav::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
 }
 
 .sidebar a {
@@ -145,12 +275,12 @@ button {
 .sidebar a:hover,
 .sidebar a.active {
   border-color: var(--line-strong);
-  background: #172132;
+  background: var(--surface-strong);
   transform: translateX(2px);
 }
 
 .sidebar a.active {
-  border-color: rgba(90, 167, 200, 0.38);
+  border-color: rgba(var(--accent-rgb), 0.38);
   box-shadow: inset 3px 0 0 var(--accent);
 }
 
@@ -166,14 +296,14 @@ button {
   place-items: center;
   border: 1px solid var(--line);
   border-radius: 9px;
-  background: #111a28;
+  background: var(--nav-icon-bg);
   color: var(--accent);
 }
 
 .sidebar a.active .nav-icon,
 .sidebar a:hover .nav-icon {
-  border-color: rgba(90, 167, 200, 0.34);
-  background: #1a2738;
+  border-color: rgba(var(--accent-rgb), 0.34);
+  background: var(--surface-hover);
   color: var(--accent-strong);
 }
 
@@ -276,8 +406,8 @@ button {
 
 .status-badge--unknown {
   color: var(--muted-strong);
-  background: rgba(148, 163, 184, 0.14);
-  border-color: rgba(148, 163, 184, 0.34);
+  background: rgba(var(--muted-rgb), 0.14);
+  border-color: rgba(var(--muted-rgb), 0.34);
 }
 
 .panel {
@@ -304,17 +434,25 @@ button {
 }
 
 .panel h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-size: 1rem;
   letter-spacing: -0.01em;
+}
+
+.panel h2 svg {
+  flex: 0 0 auto;
+  color: var(--muted);
 }
 
 .panel button,
 .toolbar button,
 .ghost-button {
-  border: 1px solid rgba(90, 167, 200, 0.34);
+  border: 1px solid rgba(var(--accent-rgb), 0.34);
   border-radius: 9px;
-  background: #22445a;
-  color: #f0f7fb;
+  background: var(--button-bg);
+  color: var(--button-ink);
   padding: 8px 12px;
   font-weight: 700;
   box-shadow: none;
@@ -337,15 +475,15 @@ button {
   min-width: 180px;
   border: 1px solid var(--line-strong);
   border-radius: 9px;
-  background: #0f1724;
+  background: var(--input-bg);
   color: var(--ink);
   padding: 9px 10px;
   outline: none;
 }
 
 .toolbar input:focus {
-  border-color: rgba(90, 167, 200, 0.58);
-  box-shadow: 0 0 0 3px rgba(90, 167, 200, 0.12);
+  border-color: rgba(var(--accent-rgb), 0.58);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.12);
 }
 
 .toolbar-grid {
@@ -427,7 +565,7 @@ button {
 .bar-fill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, rgba(90, 167, 200, 0.95), rgba(90, 167, 200, 0.55));
+  background: linear-gradient(90deg, rgba(var(--accent-rgb), 0.95), rgba(var(--accent-rgb), 0.55));
   transition: width 180ms ease;
   min-width: 2px;
 }
@@ -493,6 +631,14 @@ table {
   font-size: 0.88rem;
 }
 
+/* Wrap any table that can realistically overflow its panel (many columns, long free-text cells)
+   in this so only the table scrolls horizontally, not the whole page. The bare `table` selector
+   can't do this itself: `overflow` on a `display:table` box scrolls fine, but the safe cross-browser
+   pattern is a dedicated block-level wrapper. */
+.table-wrap {
+  overflow-x: auto;
+}
+
 th,
 td {
   border-bottom: 1px solid var(--line);
@@ -505,11 +651,11 @@ th {
   color: var(--muted);
   text-transform: uppercase;
   font-size: 0.72rem;
-  background: rgba(15, 23, 42, 0.82);
+  background: var(--surface-strong);
 }
 
 tr:hover td {
-  background: rgba(148, 163, 184, 0.06);
+  background: rgba(var(--muted-rgb), 0.06);
 }
 
 code {
@@ -596,13 +742,13 @@ code {
 }
 
 .incident-banner.degraded {
-  border-color: rgba(212, 168, 78, 0.34);
-  background: rgba(212, 168, 78, 0.1);
+  border-color: rgba(var(--warning-rgb), 0.34);
+  background: rgba(var(--warning-rgb), 0.1);
 }
 
 .incident-banner.critical {
-  border-color: rgba(223, 111, 123, 0.38);
-  background: rgba(223, 111, 123, 0.1);
+  border-color: rgba(var(--danger-rgb), 0.38);
+  background: rgba(var(--danger-rgb), 0.1);
 }
 
 .incident-list {
@@ -636,7 +782,7 @@ code {
   position: absolute;
   inset: 0;
   border: 0;
-  background: rgba(4, 8, 14, 0.74);
+  background: var(--overlay-bg);
 }
 
 .modal-panel {
@@ -673,14 +819,22 @@ code {
 
 .op-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.op-panel {
+  border-left-width: 3px;
 }
 
 .op-field {
   display: grid;
   gap: 5px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+.op-field:last-of-type {
+  margin-bottom: 0;
 }
 
 .op-field label,
@@ -691,18 +845,76 @@ code {
   color: var(--muted);
 }
 
+/* Checkbox rows (e.g. "Permanent") standing bare next to styled .op-field inputs looked like an
+   afterthought -- wrap them in the same card language so a form reads as one coherent unit. */
+.op-checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface-strong);
+}
+
+.op-checkbox-field input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+}
+
+.op-checkbox-field label {
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-transform: none;
+  cursor: pointer;
+}
+
 .op-field input {
   border: 1px solid var(--line-strong);
   border-radius: 9px;
-  background: #0f1724;
+  background: var(--input-bg);
   color: var(--ink);
   padding: 9px 10px;
   outline: none;
 }
 
 .op-field input:focus {
-  border-color: rgba(90, 167, 200, 0.58);
-  box-shadow: 0 0 0 3px rgba(90, 167, 200, 0.12);
+  border-color: rgba(var(--accent-rgb), 0.58);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.12);
+}
+
+/* Bare element selectors so every <select>/<textarea> in the app is themed, not just the ones
+   inside .op-field -- native selects otherwise render with the browser's light-mode UA styling
+   (white background, black text) regardless of the dark surrounding page. */
+select,
+textarea {
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
+  background: var(--input-bg);
+  color: var(--ink);
+  padding: 9px 10px;
+  outline: none;
+  font: inherit;
+}
+
+select:focus,
+textarea:focus {
+  border-color: rgba(var(--accent-rgb), 0.58);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.12);
+}
+
+select option {
+  background: var(--input-bg);
+  color: var(--ink);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
 }
 
 .op-pick {
@@ -737,7 +949,7 @@ code {
 
 .op-dot.on {
   background: var(--ok);
-  box-shadow: 0 0 0 3px rgba(86, 185, 145, 0.18);
+  box-shadow: 0 0 0 3px rgba(var(--ok-rgb), 0.18);
 }
 
 .op-sprite {
@@ -748,25 +960,31 @@ code {
   padding: 0 6px;
   border: 1px solid var(--line-strong);
   border-radius: 6px;
-  background: #0f1724;
+  background: var(--input-bg);
   color: var(--accent);
   font-size: 0.68rem;
   font-weight: 700;
   object-fit: contain;
+  /* Furni/catalog icons are small pixel-art sprites -- the browser's default bilinear scaling
+     blurs them badly when stretched to fit a bigger box. Nearest-neighbor keeps edges crisp. */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
 .op-actions {
   display: flex;
   gap: 8px;
   align-items: center;
-  margin-top: 4px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
 }
 
 .op-actions button {
-  border: 1px solid rgba(90, 167, 200, 0.34);
+  border: 1px solid rgba(var(--accent-rgb), 0.34);
   border-radius: 9px;
-  background: #22445a;
-  color: #f0f7fb;
+  background: var(--button-bg);
+  color: var(--button-ink);
   padding: 8px 12px;
   font-weight: 700;
 }
@@ -782,21 +1000,28 @@ code {
 }
 
 .op-result {
-  margin-top: 10px;
+  margin-top: 12px;
   display: flex;
   gap: 8px;
   align-items: center;
   flex-wrap: wrap;
+  padding: 9px 11px;
+  border-radius: 9px;
   color: var(--ok);
+  background: var(--success-bg);
+  border: 1px solid var(--success-border);
 }
 
 .op-result.danger {
   color: var(--danger);
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
 }
 
 @media (max-width: 900px) {
   .app-shell,
-  .split-grid {
+  .split-grid,
+  .op-grid {
     grid-template-columns: 1fr;
   }
 

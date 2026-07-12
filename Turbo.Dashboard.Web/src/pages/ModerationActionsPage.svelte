@@ -1,4 +1,5 @@
 <script>
+  import { Ban, ShieldCheck, VolumeX, Lock, LockOpen } from '@lucide/svelte';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { apiPost } from '../lib/api.js';
   import { compactCorrelation } from '../lib/format.js';
@@ -213,8 +214,8 @@
 </section>
 
 <div class="op-grid">
-  <section class="panel">
-    <div class="panel-head"><h2>Ban account</h2></div>
+  <section class="panel op-panel" style="border-left-color: var(--danger);">
+    <div class="panel-head"><h2><Ban size={17} strokeWidth={2} /> Ban account</h2></div>
     {#if !canBan}
       <AccessDeniedNotice title="Droits insuffisants" message="Vous n'avez pas la permission de bannir un compte." />
     {:else}
@@ -241,10 +242,9 @@
           {/if}
         </div>
       </div>
-      <div class="op-field">
-        <label>
-          <input type="checkbox" bind:checked={ban.permanent} /> Permanent
-        </label>
+      <div class="op-checkbox-field">
+        <input id="ban-permanent" type="checkbox" bind:checked={ban.permanent} />
+        <label for="ban-permanent">Permanent</label>
       </div>
       {#if !ban.permanent}
         <div class="op-field">
@@ -270,8 +270,8 @@
     {/if}
   </section>
 
-  <section class="panel">
-    <div class="panel-head"><h2>Lift account ban</h2></div>
+  <section class="panel op-panel" style="border-left-color: var(--ok);">
+    <div class="panel-head"><h2><ShieldCheck size={17} strokeWidth={2} /> Lift account ban</h2></div>
     {#if !canUnban}
       <AccessDeniedNotice title="Droits insuffisants" message="Vous n'avez pas la permission de lever un ban." />
     {:else}
@@ -316,8 +316,8 @@
     {/if}
   </section>
 
-  <section class="panel">
-    <div class="panel-head"><h2>Mute player</h2></div>
+  <section class="panel op-panel" style="border-left-color: var(--warning);">
+    <div class="panel-head"><h2><VolumeX size={17} strokeWidth={2} /> Mute player</h2></div>
     {#if !canMute}
       <AccessDeniedNotice title="Droits insuffisants" message="Vous n'avez pas la permission de mute un joueur." />
     {:else}
@@ -367,8 +367,8 @@
     {/if}
   </section>
 
-  <section class="panel">
-    <div class="panel-head"><h2>Lock trading</h2></div>
+  <section class="panel op-panel" style="border-left-color: var(--warning);">
+    <div class="panel-head"><h2><Lock size={17} strokeWidth={2} /> Lock trading</h2></div>
     {#if !canTradingLock}
       <AccessDeniedNotice title="Droits insuffisants" message="Vous n'avez pas la permission de bloquer les échanges." />
     {:else}
@@ -401,10 +401,9 @@
           {/if}
         </div>
       </div>
-      <div class="op-field">
-        <label>
-          <input type="checkbox" bind:checked={tradingLock.permanent} /> Permanent
-        </label>
+      <div class="op-checkbox-field">
+        <input id="tradinglock-permanent" type="checkbox" bind:checked={tradingLock.permanent} />
+        <label for="tradinglock-permanent">Permanent</label>
       </div>
       {#if !tradingLock.permanent}
         <div class="op-field">
@@ -430,8 +429,8 @@
     {/if}
   </section>
 
-  <section class="panel">
-    <div class="panel-head"><h2>Lift trading lock</h2></div>
+  <section class="panel op-panel" style="border-left-color: var(--ok);">
+    <div class="panel-head"><h2><LockOpen size={17} strokeWidth={2} /> Lift trading lock</h2></div>
     {#if !canTradingUnlock}
       <AccessDeniedNotice title="Droits insuffisants" message="Vous n'avez pas la permission de débloquer les échanges." />
     {:else}

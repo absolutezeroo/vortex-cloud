@@ -20,6 +20,7 @@ public sealed class FurnitureModule : IHostPluginModule
 
         services.AddSingleton<IFurnitureService, FurnitureService>();
         services.AddSingleton<IFurnitureDefinitionProvider, FurnitureDefinitionProvider>();
+        services.AddSingleton<IFurnitureAdminService, FurnitureAdminService>();
         services.AddSingleton<IStuffDataFactory, StuffDataFactory>();
     }
 }

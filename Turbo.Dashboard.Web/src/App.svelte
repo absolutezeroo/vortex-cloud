@@ -260,10 +260,10 @@
     align-items: center;
     justify-content: center;
     gap: 7px;
-    border: 1px solid rgba(90, 167, 200, 0.34);
+    border: 1px solid rgba(var(--accent-rgb), 0.34);
     border-radius: 9px;
-    background: #22445a;
-    color: #f0f7fb;
+    background: var(--button-bg);
+    color: var(--button-ink);
     padding: 8px 12px;
     font-weight: 700;
   }
@@ -288,7 +288,7 @@
     padding: 10px 12px;
     border: 1px solid var(--warning-border);
     border-radius: 10px;
-    background: #211c11;
+    background: var(--warning-bg);
     color: var(--muted-strong);
     box-shadow: var(--panel-shadow);
   }

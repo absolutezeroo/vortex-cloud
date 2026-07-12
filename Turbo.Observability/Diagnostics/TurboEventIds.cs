@@ -12,6 +12,8 @@ namespace Turbo.Observability.Diagnostics;
 /// <item>1300-1399 dashboard</item>
 /// <item>2000-2099 authentication</item>
 /// <item>3000-3099 economy</item>
+/// <item>3100-3199 catalog</item>
+/// <item>3200-3299 furniture</item>
 /// </list>
 /// New ids are appended here rather than declared inline at the call site.
 /// </summary>
@@ -58,5 +60,15 @@ public static class TurboEventIds
     public static readonly EventId ErrorGroupingRecordFailed = new(
         1406,
         nameof(ErrorGroupingRecordFailed)
+    );
+
+    public static readonly EventId CatalogSnapshotReloadFailed = new(
+        3100,
+        nameof(CatalogSnapshotReloadFailed)
+    );
+
+    public static readonly EventId FurnitureDefinitionReloadFailed = new(
+        3200,
+        nameof(FurnitureDefinitionReloadFailed)
     );
 }

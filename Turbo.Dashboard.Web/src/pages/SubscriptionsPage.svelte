@@ -171,7 +171,7 @@
               <div class="bar-track">
                 <div
                   class="bar-fill"
-                  style={`background: linear-gradient(90deg, rgba(90, 167, 200, 0.95), rgba(90, 167, 200, 0.55)); width: ${lifecycleScale > 0 ? (point.purchases / lifecycleScale) * 100 : 0}%;`}
+                  style={`background: linear-gradient(90deg, rgba(var(--accent-rgb), 0.95), rgba(var(--accent-rgb), 0.55)); width: ${lifecycleScale > 0 ? (point.purchases / lifecycleScale) * 100 : 0}%;`}
                 ></div>
               </div>
               <span class="muted">{point.purchases}</span>
@@ -189,7 +189,7 @@
               <div class="bar-track">
                 <div
                   class="bar-fill"
-                  style={`background: linear-gradient(90deg, rgba(86, 185, 145, 0.95), rgba(86, 185, 145, 0.55)); width: ${lifecycleScale > 0 ? (point.renewals / lifecycleScale) * 100 : 0}%;`}
+                  style={`background: linear-gradient(90deg, rgba(var(--ok-rgb), 0.95), rgba(var(--ok-rgb), 0.55)); width: ${lifecycleScale > 0 ? (point.renewals / lifecycleScale) * 100 : 0}%;`}
                 ></div>
               </div>
               <span class="muted">{point.renewals}</span>
@@ -208,7 +208,7 @@
             <div class="bar-track">
               <div
                 class="bar-fill"
-                style={`background: linear-gradient(90deg, rgba(223, 111, 123, 0.95), rgba(223, 111, 123, 0.55)); width: ${lifecycleScale > 0 ? (point.expired / lifecycleScale) * 100 : 0}%;`}
+                style={`background: linear-gradient(90deg, rgba(var(--danger-rgb), 0.95), rgba(var(--danger-rgb), 0.55)); width: ${lifecycleScale > 0 ? (point.expired / lifecycleScale) * 100 : 0}%;`}
               ></div>
             </div>
             <span class="muted">{point.expired}</span>

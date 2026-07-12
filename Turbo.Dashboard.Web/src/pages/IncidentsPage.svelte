@@ -146,7 +146,7 @@
           <div class="bar-track">
             <div
               class="bar-fill"
-              style={`background: linear-gradient(90deg, rgba(223, 111, 123, 0.95), rgba(223, 111, 123, 0.55)); width: ${topErrorScale > 0 ? (entry.totalOccurrences / topErrorScale) * 100 : 0}%;`}
+              style={`background: linear-gradient(90deg, rgba(var(--danger-rgb), 0.95), rgba(var(--danger-rgb), 0.55)); width: ${topErrorScale > 0 ? (entry.totalOccurrences / topErrorScale) * 100 : 0}%;`}
             ></div>
           </div>
           <span class="muted">{formatNumber(entry.totalOccurrences)}</span>

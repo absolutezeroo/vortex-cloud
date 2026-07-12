@@ -50,7 +50,11 @@
     forbidden = false;
 
     const params = new URLSearchParams({ granularity });
-    if (since) params.set('since', new Date(since).toISOString());
+    // Both bounds are parsed as local time (no trailing "Z") so the picked calendar day maps to
+    // the operator's own midnight/end-of-day, not UTC midnight -- mixing a bare "YYYY-MM-DD" (parsed
+    // as UTC per spec) for `since` with a local "T23:59:59" for `until` skewed the window by the
+    // local UTC offset, silently clipping or including hours the date pickers didn't show.
+    if (since) params.set('since', new Date(`${since}T00:00:00`).toISOString());
     if (until) params.set('until', new Date(`${until}T23:59:59`).toISOString());
 
     try {
@@ -161,21 +165,23 @@
       caused it (catalog purchase, marketplace, LTD raffle, admin grant, ...). "Uncategorized" means
       no matching audit event was found for that debit.
     </p>
-    <table>
-      <thead><tr><th>Source</th><th>Currency</th><th>Spent</th><th>Transactions</th></tr></thead>
-      <tbody>
-        {#each categories as row}
-          <tr>
-            <td>{actionLabel(row.action)}</td>
-            <td>{row.currency}</td>
-            <td>{formatNumber(row.spend)}</td>
-            <td>{formatNumber(row.transactionCount)}</td>
-          </tr>
-        {:else}
-          <tr><td colspan="4" class="muted">No spend in this window.</td></tr>
-        {/each}
-      </tbody>
-    </table>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Source</th><th>Currency</th><th>Spent</th><th>Transactions</th></tr></thead>
+        <tbody>
+          {#each categories as row}
+            <tr>
+              <td>{actionLabel(row.action)}</td>
+              <td>{row.currency}</td>
+              <td>{formatNumber(row.spend)}</td>
+              <td>{formatNumber(row.transactionCount)}</td>
+            </tr>
+          {:else}
+            <tr><td colspan="4" class="muted">No spend in this window.</td></tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
   </div>
 {:else if !loading && !forbidden && !error}
   <p class="empty-state" style="margin-top: 12px;">No economy activity in this window.</p>

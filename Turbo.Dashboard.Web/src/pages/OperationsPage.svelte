@@ -1,4 +1,5 @@
 ﻿<script>
+  import { Coins, Zap, Package, UserX } from '@lucide/svelte';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { apiPost } from '../lib/api.js';
   import { compactCorrelation } from '../lib/format.js';
@@ -216,8 +217,8 @@
 </section>
 
 <div class="op-grid">
-  <section class="panel">
-    <div class="panel-head"><h2>Give credits</h2></div>
+  <section class="panel op-panel" style="border-left-color: var(--ok);">
+    <div class="panel-head"><h2><Coins size={17} strokeWidth={2} /> Give credits</h2></div>
     {#if !canCredits}
       <AccessDeniedNotice title="Droits insuffisants" message="Vous n'avez pas la permission de créditer des Habbo." />
     {:else}
@@ -272,8 +273,8 @@
     {/if}
   </section>
 
-  <section class="panel">
-    <div class="panel-head"><h2>Give activity points</h2></div>
+  <section class="panel op-panel" style="border-left-color: var(--ok);">
+    <div class="panel-head"><h2><Zap size={17} strokeWidth={2} /> Give activity points</h2></div>
     {#if !canActivity}
       <AccessDeniedNotice title="Droits insuffisants" message="Vous n'avez pas la permission d'accorder des activity points." />
     {:else}
@@ -332,8 +333,8 @@
     {/if}
   </section>
 
-  <section class="panel">
-    <div class="panel-head"><h2>Give furniture</h2></div>
+  <section class="panel op-panel" style="border-left-color: var(--ok);">
+    <div class="panel-head"><h2><Package size={17} strokeWidth={2} /> Give furniture</h2></div>
     {#if !canItem}
       <AccessDeniedNotice title="Droits insuffisants" message="Vous n'avez pas la permission de donner des objets." />
     {:else}
@@ -417,8 +418,8 @@
     {/if}
   </section>
 
-  <section class="panel">
-    <div class="panel-head"><h2>Kick player</h2></div>
+  <section class="panel op-panel" style="border-left-color: var(--danger);">
+    <div class="panel-head"><h2><UserX size={17} strokeWidth={2} /> Kick player</h2></div>
     {#if !canKick}
       <AccessDeniedNotice title="Droits insuffisants" message="Vous n'avez pas la permission d'expulser un joueur." />
     {:else}

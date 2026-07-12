@@ -3,6 +3,7 @@
   import {
     Activity,
     Ban,
+    Box,
     Coins,
     DoorOpen,
     Gavel,
@@ -17,6 +18,7 @@
     ShieldAlert,
     ShoppingCart,
     Sparkles,
+    Store,
     Terminal,
     Ticket,
     Wrench,
@@ -24,6 +26,8 @@
   } from '@lucide/svelte';
   import { identity } from '../lib/session.js';
   import { NAV, hasRouteAccess } from '../lib/routes.js';
+  import { reasonSuggestions } from '../lib/reasonHistory.js';
+  import { theme, setTheme, THEMES } from '../lib/theme.js';
 
   export let logout;
   export let logoutBusy = false;
@@ -47,6 +51,8 @@
     '/cfh': MessageCircleWarning,
     '/room-control': DoorOpen,
     '/vouchers': Ticket,
+    '/catalog': Store,
+    '/furniture-definitions': Box,
     '/economy-trends': LineChart,
     '/marketplace': ShoppingCart,
     '/subscriptions': Sparkles,
@@ -149,6 +155,19 @@
         <h1>{activeLabel}</h1>
       </div>
       <div class="session-area">
+        <div class="theme-switch" role="radiogroup" aria-label="Dashboard theme">
+          {#each THEMES as t}
+            <button
+              type="button"
+              role="radio"
+              aria-checked={$theme === t.value}
+              class:active={$theme === t.value}
+              on:click={() => setTheme(t.value)}
+            >
+              {t.label}
+            </button>
+          {/each}
+        </div>
         <div class="status-pill ok">{email}</div>
         <button
           type="button"
@@ -166,6 +185,12 @@
 
     <slot />
   </section>
+
+  <datalist id="reason-history">
+    {#each $reasonSuggestions as suggestion}
+      <option value={suggestion}></option>
+    {/each}
+  </datalist>
 </main>
 
 <style>
@@ -176,7 +201,7 @@
     padding: 8px 10px;
     border: 1px solid var(--line);
     border-radius: 10px;
-    background: #0f1724;
+    background: var(--input-bg);
     color: var(--muted);
   }
 
@@ -195,8 +220,8 @@
   }
 
   .nav-search:focus-within {
-    border-color: rgba(90, 167, 200, 0.58);
-    box-shadow: 0 0 0 3px rgba(90, 167, 200, 0.12);
+    border-color: rgba(var(--accent-rgb), 0.58);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.12);
   }
 
   .nav-group-label {
@@ -224,21 +249,51 @@
     gap: 10px;
   }
 
+  .theme-switch {
+    display: inline-flex;
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    background: var(--surface-strong);
+  }
+
+  .theme-switch button {
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--muted);
+    padding: 6px 11px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .theme-switch button:hover {
+    color: var(--ink);
+  }
+
+  .theme-switch button.active {
+    background: var(--surface-raised);
+    color: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--line-strong);
+  }
+
   .logout-btn {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     padding: 7px 12px;
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line-strong);
+    background: var(--surface-strong);
     color: inherit;
     cursor: pointer;
     font-size: 13px;
   }
 
   .logout-btn:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--surface-hover);
   }
 
   .logout-btn:disabled {

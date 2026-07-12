@@ -11,11 +11,11 @@
 
 <style>
   .access-denied-notice {
-    border: 1px solid rgba(223, 111, 123, 0.34);
+    border: 1px solid var(--danger-border);
     border-radius: 14px;
-    background: rgba(223, 111, 123, 0.08);
+    background: var(--danger-bg);
     padding: 16px;
-    color: #f6d2d6;
+    color: var(--danger);
     display: grid;
     gap: 6px;
   }
@@ -27,6 +27,6 @@
 
   .access-denied-notice p {
     margin: 0;
-    color: #f7d8dc;
+    color: var(--danger);
   }
 </style>

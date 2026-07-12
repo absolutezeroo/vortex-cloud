@@ -26,16 +26,25 @@
   $: normalizedDomain = String(domainFilter || 'all').toLowerCase();
   $: normalizedMethod = String(methodFilter || 'all').toLowerCase();
 
-  $: filtered = routes.filter((route) =>
-    matchesSearch(route) && matchesDomain(route) && matchesMethod(route)
+  // normalizedSearch/normalizedDomain/normalizedMethod must appear as literal identifiers in this
+  // statement -- Svelte's reactive dependency tracking for `$:` only scans the statement's own
+  // expression text, it doesn't trace into called functions' bodies. Reading them only inside
+  // matchesSearch/matchesDomain/matchesMethod (as this used to) makes `filtered` invisible to
+  // changes in the search box or the domain/method selects: it silently never re-ran after the
+  // first load, so every filter control on this page looked wired up but did nothing.
+  $: filtered = routes.filter(
+    (route) =>
+      matchesSearch(route, normalizedSearch) &&
+      matchesDomain(route, normalizedDomain) &&
+      matchesMethod(route, normalizedMethod)
   );
 
   $: groupedByDomain = groupBy(filtered, (route) => route.domain || 'misc');
   $: maxDomain = Math.max(1, ...groups.map((group) => group.routeCount || 0));
   $: maxMethod = Math.max(1, ...methodUsage.map((entry) => entry.count || 0));
 
-  function matchesSearch(route) {
-    if (!normalizedSearch) return true;
+  function matchesSearch(route, normalizedSearchValue) {
+    if (!normalizedSearchValue) return true;
 
     const payload = [
       route.domain || '',
@@ -47,18 +56,25 @@
       .join(' ')
       .toLowerCase();
 
-    return payload.includes(normalizedSearch);
+    return payload.includes(normalizedSearchValue);
   }
 
-  function matchesDomain(route) {
-    return normalizedDomain === 'all' || (route.domain || 'legacy') === normalizedDomain;
-  }
-
-  function matchesMethod(route) {
+  function matchesDomain(route, normalizedDomainValue) {
     return (
-      normalizedMethod === 'all' ||
-      route.methods.some((method) => (method || '').toLowerCase() === normalizedMethod)
+      normalizedDomainValue === 'all' ||
+      (route.domain || 'legacy').toLowerCase() === normalizedDomainValue
     );
+  }
+
+  function matchesMethod(route, normalizedMethodValue) {
+    return (
+      normalizedMethodValue === 'all' ||
+      route.methods.some((method) => (method || '').toLowerCase() === normalizedMethodValue)
+    );
+  }
+
+  function selectDomain(domain) {
+    domainFilter = domain;
   }
 
   function methodClass(method) {
@@ -182,7 +198,7 @@
             <div class="bar-track">
               <div
                 class="bar-fill"
-                style={`width: ${maxDomain > 0 ? (entry.routeCount / maxDomain) * 100 : 0}%; background: linear-gradient(90deg, rgba(90, 167, 200, 0.95), rgba(90, 167, 200, 0.55));`}
+                style={`width: ${maxDomain > 0 ? (entry.routeCount / maxDomain) * 100 : 0}%;`}
               ></div>
             </div>
             <span class="muted">{entry.routeCount}</span>
@@ -204,7 +220,7 @@
             <div class="bar-track">
               <div
                 class="bar-fill"
-                style={`width: ${maxMethod > 0 ? (entry.count / maxMethod) * 100 : 0}%; background: linear-gradient(90deg, rgba(86, 185, 145, 0.95), rgba(86, 185, 145, 0.55));`}
+                style={`width: ${maxMethod > 0 ? (entry.count / maxMethod) * 100 : 0}%; background: linear-gradient(90deg, rgba(var(--ok-rgb), 0.95), rgba(var(--ok-rgb), 0.55));`}
               ></div>
             </div>
             <span class="muted">{entry.count}</span>
@@ -218,64 +234,140 @@
 </section>
 
 <section class="panel" style="margin-top: 12px;">
-  <h3>Routes ({filtered.length})</h3>
+  <div class="panel-head">
+    <h3>Routes ({filtered.length})</h3>
+    {#if domainFilter !== 'all'}
+      <button type="button" class="ghost-button" on:click={() => selectDomain('all')}>
+        ✕ {domainFilter}
+      </button>
+    {/if}
+  </div>
   <p class="eyebrow" style="margin: 4px 0 10px;">
-    La première ligne d'une route est celle recommandée pour automatisation / client.
+    La première ligne d'une route est celle recommandée pour automatisation / client. Cliquer un
+    domaine ci-dessous filtre la liste sur ce domaine.
   </p>
 
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Domaine</th>
-          <th>Path</th>
-          <th>Méthodes</th>
-          <th>Auth</th>
-          <th>Capabilities</th>
-          <th>Tags</th>
-          <th>Legacy</th>
-          <th>Commande</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each filtered as route}
-          <tr>
-            <td>{route.domain}</td>
-            <td><code>{route.path}</code></td>
-            <td>
-              {#each route.methods as method}
-                <span class={methodClass(method)}>{method}</span>
-              {/each}
-            </td>
-            <td>{route.requiresAuth ? 'oui' : 'non'}</td>
-            <td class="truncate" title={route.capabilities?.join(', ')}>
-              {#if route.capabilities?.length}
-                {route.capabilities.join(', ')}
-              {:else}
-                -
-              {/if}
-            </td>
-            <td>{route.tags?.join(', ') || '-'}</td>
-            <td>{route.isLegacy ? 'legacy' : 'v1'}</td>
-            <td>
-              <button
-                type="button"
-                class="ghost-button"
-                on:click={() => copyCurl(route.path, route.methods[0] || 'GET')}
-              >
-                {copiedPath === route.path ? 'Copié' : 'Copier'}
-              </button>
-            </td>
-          </tr>
-        {:else}
-          <tr><td colspan="8" class="muted">Aucune route après filtrage.</td></tr>
-        {/each}
-      </tbody>
-    </table>
+  <div class="domain-quicknav">
+    {#each groups as g}
+      <button
+        type="button"
+        class="domain-pill"
+        class:active={normalizedDomain === g.domain.toLowerCase()}
+        on:click={() => selectDomain(g.domain)}
+      >
+        {g.domain} <small>{g.routeCount}</small>
+      </button>
+    {/each}
   </div>
+
+  {#each groupedByDomain as [domain, domainRoutes] (domain)}
+    <h4 class="domain-heading">{domain} <span class="muted">({domainRoutes.length})</span></h4>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Path</th>
+            <th>Méthodes</th>
+            <th>Auth</th>
+            <th>Capabilities</th>
+            <th>Tags</th>
+            <th>Legacy</th>
+            <th>Commande</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each domainRoutes as route}
+            <tr>
+              <td><code>{route.path}</code></td>
+              <td>
+                {#each route.methods as method}
+                  <span class={methodClass(method)}>{method}</span>
+                {/each}
+              </td>
+              <td>{route.requiresAuth ? 'oui' : 'non'}</td>
+              <td class="truncate" title={route.capabilities?.join(', ')}>
+                {#if route.capabilities?.length}
+                  {route.capabilities.join(', ')}
+                {:else}
+                  -
+                {/if}
+              </td>
+              <td>{route.tags?.join(', ') || '-'}</td>
+              <td>{route.isLegacy ? 'legacy' : 'v1'}</td>
+              <td>
+                <button
+                  type="button"
+                  class="ghost-button"
+                  on:click={() => copyCurl(route.path, route.methods[0] || 'GET')}
+                >
+                  {copiedPath === route.path ? 'Copié' : 'Copier'}
+                </button>
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
+  {:else}
+    <p class="empty-state">Aucune route après filtrage.</p>
+  {/each}
 </section>
 
 <style>
+  .domain-quicknav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0 16px;
+  }
+
+  .domain-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: var(--surface-strong);
+    color: var(--muted-strong);
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .domain-pill:hover {
+    border-color: rgba(var(--accent-rgb), 0.5);
+    color: var(--ink);
+  }
+
+  .domain-pill.active {
+    border-color: rgba(var(--accent-rgb), 0.58);
+    background: var(--accent-soft);
+    color: var(--ink);
+  }
+
+  .domain-pill small {
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .domain-pill.active small {
+    color: var(--accent-strong);
+  }
+
+  .domain-heading {
+    margin: 18px 0 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    color: var(--ink);
+    font-size: 0.92rem;
+  }
+
+  .domain-heading:first-of-type {
+    margin-top: 4px;
+    padding-top: 0;
+    border-top: 0;
+  }
+
   .method-badge {
     border: 1px solid var(--line-strong);
     border-radius: 999px;
@@ -287,30 +379,26 @@
   }
 
   .method-badge--get {
-    border-color: rgba(86, 185, 145, 0.5);
+    border-color: rgba(var(--ok-rgb), 0.5);
     color: var(--ok);
     background: var(--success-bg);
   }
 
   .method-badge--post {
-    border-color: rgba(90, 167, 200, 0.5);
+    border-color: rgba(var(--accent-rgb), 0.5);
     color: var(--accent);
     background: var(--accent-soft);
   }
 
   .method-badge--delete {
-    border-color: rgba(223, 111, 123, 0.5);
+    border-color: rgba(var(--danger-rgb), 0.5);
     color: var(--danger);
     background: var(--danger-bg);
   }
 
   .method-badge--put {
-    border-color: rgba(212, 168, 78, 0.5);
+    border-color: rgba(var(--warning-rgb), 0.5);
     color: var(--warning);
     background: var(--warning-bg);
-  }
-
-  .table-wrap {
-    overflow: auto;
   }
 </style>

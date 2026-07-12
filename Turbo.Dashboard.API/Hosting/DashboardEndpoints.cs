@@ -32,12 +32,16 @@ internal static partial class DashboardEndpoints
     private const string TagEconomy = "Economy";
     private const string TagDirectory = "Directory";
     private const string TagOperations = "Operations";
+    private const string TagCatalog = "Catalog";
+    private const string TagFurniture = "Furniture";
     private const string ApiV1 = "/api/v1";
     private const string ApiMonitoring = ApiV1 + "/monitoring";
     private const string ApiForensics = ApiV1 + "/forensics";
     private const string ApiEconomy = ApiV1 + "/economy";
     private const string ApiDirectory = ApiV1 + "/directory";
     private const string ApiOperations = ApiV1 + "/operations";
+    private const string ApiCatalog = ApiV1 + "/catalog";
+    private const string ApiFurniture = ApiV1 + "/furniture";
     private const string ApiMeta = ApiV1 + "/meta";
 
     private sealed record ApiRouteDescriptor(
@@ -137,6 +141,8 @@ internal static partial class DashboardEndpoints
         MapEconomyReads(app);
         MapDirectoryReads(app);
         MapRoomReads(app);
+        MapCatalogReads(app);
+        MapFurnitureReads(app);
     }
 
     public static void MapOperations(WebApplication app)
@@ -145,6 +151,8 @@ internal static partial class DashboardEndpoints
         MapVoucherOperations(app);
         MapModerationOperations(app);
         MapRoomOperations(app);
+        MapCatalogOperations(app);
+        MapFurnitureOperations(app);
     }
 
     public static void MapMeta(WebApplication app)

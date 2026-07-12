@@ -71,6 +71,9 @@ public static class Capabilities
         public const string OpsTradingLock = "dashboard.ops.player.trading_lock";
         public const string OpsCfhManage = "dashboard.ops.cfh.manage";
         public const string OpsRoomsManage = "dashboard.ops.rooms.manage";
+        public const string CatalogRead = "dashboard.catalog.read";
+        public const string OpsCatalogManage = "dashboard.ops.catalog.manage";
+        public const string OpsFurnitureManage = "dashboard.ops.furniture.manage";
     }
 
     /// <summary>Every declared capability, for validation and dashboard enumeration.</summary>
@@ -105,5 +108,8 @@ public static class Capabilities
             Dashboard.OpsTradingLock,
             Dashboard.OpsCfhManage,
             Dashboard.OpsRoomsManage,
+            Dashboard.CatalogRead,
+            Dashboard.OpsCatalogManage,
+            Dashboard.OpsFurnitureManage,
         };
 }

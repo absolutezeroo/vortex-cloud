@@ -23,8 +23,25 @@ namespace Turbo.Dashboard.API.Operations;
 
 internal sealed partial class DashboardOperationsService
 {
-    public Task<ImmutableArray<RoomSummarySnapshot>> GetActiveRoomsAsync() =>
-        _grainFactory.GetRoomDirectoryGrain().GetActiveRoomsAsync();
+    public async Task<ImmutableArray<RoomSummaryDto>> GetActiveRoomsAsync()
+    {
+        ImmutableArray<RoomSummarySnapshot> rooms = await _grainFactory
+            .GetRoomDirectoryGrain()
+            .GetActiveRoomsAsync()
+            .ConfigureAwait(false);
+
+        return
+        [
+            .. rooms.Select(r => new RoomSummaryDto(
+                r.RoomId.Value,
+                r.Name,
+                r.OwnerId.Value,
+                r.OwnerName,
+                r.Population,
+                r.LastUpdatedUtc
+            )),
+        ];
+    }
 
     public async Task<ImmutableArray<RoomOccupantSnapshot>> GetRoomOccupantsAsync(
         int roomId,
@@ -99,3 +116,19 @@ internal sealed partial class DashboardOperationsService
     /// <c>SeedDashboardStaffActor</c> migration has not run.
     /// </summary>
 }
+
+/// <summary>
+/// JSON-safe projection of <see cref="RoomSummarySnapshot"/> for the dashboard. RoomId/OwnerId are
+/// the strongly-typed <c>RoomId</c>/<c>PlayerId</c> record structs there, which System.Text.Json
+/// serializes as <c>{"value": n}</c> objects rather than plain numbers when returned directly --
+/// unwrapping to <see cref="int"/> here matches how every other dashboard read (audit, directory,
+/// moderation) already unwraps these ids via <c>.Value</c> before returning them as JSON.
+/// </summary>
+public sealed record RoomSummaryDto(
+    int RoomId,
+    string Name,
+    int OwnerId,
+    string OwnerName,
+    int Population,
+    DateTime LastUpdatedUtc
+);

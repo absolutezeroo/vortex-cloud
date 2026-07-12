@@ -14,6 +14,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Turbo.Catalog\Turbo.Catalog.csproj" />
     <ProjectReference Include="..\Turbo.Database\Turbo.Database.csproj" />
+    <ProjectReference Include="..\Turbo.Furniture\Turbo.Furniture.csproj" />
   </ItemGroup>
 </Project>

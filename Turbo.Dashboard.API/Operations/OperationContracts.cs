@@ -1,4 +1,9 @@
 using System;
+using System.Collections.Generic;
+using Turbo.Primitives.Catalog.Enums;
+using Turbo.Primitives.Furniture.Enums;
+using Turbo.Primitives.Furniture.StuffData;
+using Turbo.Primitives.Rooms.Enums;
 
 namespace Turbo.Dashboard.API.Operations;
 
@@ -105,3 +110,148 @@ public sealed record ForceCloseRoomRequest(int RoomId, string Reason);
 /// <summary>Remove one player from a room they are currently in. One-time removal, not a ban —
 /// use <see cref="BanPlayerRequest"/> for account-wide sanctions.</summary>
 public sealed record KickFromRoomRequest(int RoomId, int PlayerId, string Reason);
+
+/// <summary>Create a catalog page. <paramref name="CatalogType"/> is 0=Normal, 1=BuildersClub (see
+/// <c>Turbo.Primitives.Catalog.Enums.CatalogType</c>) and cannot be changed after creation — it
+/// decides which of the two structurally-separate catalog trees this page lives in.</summary>
+public sealed record CreateCatalogPageRequest(
+    CatalogType CatalogType,
+    int? ParentId,
+    string Localization,
+    string? Name,
+    int Icon,
+    string Layout,
+    List<string>? ImageData,
+    List<string>? TextData,
+    int SortOrder,
+    bool Visible,
+    string Reason
+);
+
+public sealed record UpdateCatalogPageRequest(
+    int PageId,
+    int? ParentId,
+    string Localization,
+    string? Name,
+    int Icon,
+    string Layout,
+    List<string>? ImageData,
+    List<string>? TextData,
+    int SortOrder,
+    bool Visible,
+    string Reason
+);
+
+/// <summary>Blocked server-side if the page still has child pages or offers under it — delete those
+/// first rather than cascading a silent mass-delete.</summary>
+public sealed record DeleteCatalogPageRequest(int PageId, string Reason);
+
+public sealed record CreateCatalogOfferRequest(
+    int PageId,
+    string LocalizationId,
+    int CostCredits,
+    int CostCurrency,
+    int? CurrencyTypeId,
+    bool CanGift,
+    bool CanBundle,
+    int ClubLevel,
+    int DiscountPercent,
+    bool Visible,
+    string Reason
+);
+
+public sealed record UpdateCatalogOfferRequest(
+    int OfferId,
+    string LocalizationId,
+    int CostCredits,
+    int CostCurrency,
+    int? CurrencyTypeId,
+    bool CanGift,
+    bool CanBundle,
+    int ClubLevel,
+    int DiscountPercent,
+    bool Visible,
+    string Reason
+);
+
+/// <summary>Blocked server-side if the offer still has products under it.</summary>
+public sealed record DeleteCatalogOfferRequest(int OfferId, string Reason);
+
+public sealed record CreateCatalogProductRequest(
+    int OfferId,
+    ProductType ProductType,
+    int? FurnitureDefinitionId,
+    string? ExtraParam,
+    int Quantity,
+    int UniqueSize,
+    int UniqueRemaining,
+    bool BuildersClubEligible,
+    string Reason
+);
+
+public sealed record UpdateCatalogProductRequest(
+    int ProductId,
+    ProductType ProductType,
+    int? FurnitureDefinitionId,
+    string? ExtraParam,
+    int Quantity,
+    int UniqueSize,
+    int UniqueRemaining,
+    bool BuildersClubEligible,
+    string Reason
+);
+
+public sealed record DeleteCatalogProductRequest(int ProductId, string Reason);
+
+public sealed record CreateFurnitureDefinitionRequest(
+    int SpriteId,
+    string Name,
+    ProductType ProductType,
+    FurnitureCategory FurniCategory,
+    string Logic,
+    int TotalStates,
+    int Width,
+    int Length,
+    double StackHeight,
+    bool CanStack,
+    bool CanWalk,
+    bool CanSit,
+    bool CanLay,
+    bool CanRecycle,
+    bool CanTrade,
+    bool CanGroup,
+    bool CanSell,
+    FurnitureUsageType UsagePolicy,
+    string? ExtraData,
+    StuffDataType StuffDataType,
+    string Reason
+);
+
+public sealed record UpdateFurnitureDefinitionRequest(
+    int DefinitionId,
+    int SpriteId,
+    string Name,
+    ProductType ProductType,
+    FurnitureCategory FurniCategory,
+    string Logic,
+    int TotalStates,
+    int Width,
+    int Length,
+    double StackHeight,
+    bool CanStack,
+    bool CanWalk,
+    bool CanSit,
+    bool CanLay,
+    bool CanRecycle,
+    bool CanTrade,
+    bool CanGroup,
+    bool CanSell,
+    FurnitureUsageType UsagePolicy,
+    string? ExtraData,
+    StuffDataType StuffDataType,
+    string Reason
+);
+
+/// <summary>Blocked server-side if the definition is still referenced by placed/owned furniture
+/// instances or by a catalog product.</summary>
+public sealed record DeleteFurnitureDefinitionRequest(int DefinitionId, string Reason);

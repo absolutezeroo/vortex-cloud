@@ -71,6 +71,15 @@ public sealed class ObservabilityConfig
     /// </summary>
     public string FurniIconUrlTemplate { get; init; } = string.Empty;
 
+    /// <summary>
+    /// Optional URL template for catalog page icons shown in the dashboard's catalog admin surface.
+    /// Use <c>{id}</c> as the <c>CatalogPageEntity.Icon</c> placeholder, for example
+    /// <c>http://vortex-assets.local/c_images/catalogue/icon_{id}.png</c>. Empty hides icons (a
+    /// generic folder icon is shown instead). When set, the icon host origin is added to the
+    /// dashboard CSP <c>img-src</c> so the images are allowed to load.
+    /// </summary>
+    public string CatalogIconUrlTemplate { get; init; } = string.Empty;
+
     /// <summary>Bounded capacity of the in-memory error-grouping queue.</summary>
     public int ErrorGroupingChannelCapacity { get; init; } = 10_000;
 

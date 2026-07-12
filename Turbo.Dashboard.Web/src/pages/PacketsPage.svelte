@@ -99,7 +99,7 @@
           <div class="bar-track">
             <div
               class="bar-fill"
-              style={`background: linear-gradient(90deg, rgba(223, 111, 123, 0.95), rgba(223, 111, 123, 0.55)); width:${topFailedScale > 0 ? (Number(row.packetsPerMinute || 0) / topFailedScale) * 100 : 0}%;`}
+              style={`background: linear-gradient(90deg, rgba(var(--danger-rgb), 0.95), rgba(var(--danger-rgb), 0.55)); width:${topFailedScale > 0 ? (Number(row.packetsPerMinute || 0) / topFailedScale) * 100 : 0}%;`}
             ></div>
           </div>
           <span class="muted">{formatNumber(row.packetsPerMinute, 2)}</span>

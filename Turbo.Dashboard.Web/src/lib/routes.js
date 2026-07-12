@@ -25,6 +25,8 @@ import ModerationActionsPage from '../pages/ModerationActionsPage.svelte';
 import CfhQueuePage from '../pages/CfhQueuePage.svelte';
 import RoomControlPage from '../pages/RoomControlPage.svelte';
 import VouchersPage from '../pages/VouchersPage.svelte';
+import CatalogPage from '../pages/CatalogPage.svelte';
+import FurnitureDefinitionsPage from '../pages/FurnitureDefinitionsPage.svelte';
 import OperationsPage from '../pages/OperationsPage.svelte';
 import AccessDeniedPage from '../pages/AccessDeniedPage.svelte';
 import ApiExplorerPage from '../pages/ApiExplorerPage.svelte';
@@ -51,6 +53,8 @@ export const NAV = [
   { path: '/cfh', label: 'CFH queue', short: 'Tickets', group: 'Act', caps: ROUTE_PERMISSIONS.cfh, component: CfhQueuePage },
   { path: '/room-control', label: 'Room control', short: 'Active rooms', group: 'Act', caps: ROUTE_PERMISSIONS.roomControl, component: RoomControlPage },
   { path: '/vouchers', label: 'Vouchers', short: 'Redeemable codes', group: 'Act', caps: ROUTE_PERMISSIONS.vouchers, component: VouchersPage },
+  { path: '/catalog', label: 'Catalog', short: 'Pages, offers, products', group: 'Act', caps: ROUTE_PERMISSIONS.catalog, component: CatalogPage },
+  { path: '/furniture-definitions', label: 'Furniture definitions', short: 'Sprites and physics', group: 'Act', caps: ROUTE_PERMISSIONS.furnitureDefinitions, component: FurnitureDefinitionsPage },
   { path: '/api-explorer', label: 'API explorer', short: 'Routes and contract', group: 'Dev', caps: ROUTE_PERMISSIONS.apiExplorer, component: ApiExplorerPage },
 ];
 

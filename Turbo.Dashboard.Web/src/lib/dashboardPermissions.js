@@ -13,6 +13,9 @@ export const CAPABILITIES = {
   opsCfhManage: 'dashboard.ops.cfh.manage',
   opsRoomsManage: 'dashboard.ops.rooms.manage',
   opsManageVouchers: 'dashboard.ops.vouchers.manage',
+  catalogRead: 'dashboard.catalog.read',
+  opsCatalogManage: 'dashboard.ops.catalog.manage',
+  opsFurnitureManage: 'dashboard.ops.furniture.manage',
 };
 
 export const ROUTE_PERMISSIONS = {
@@ -33,6 +36,8 @@ export const ROUTE_PERMISSIONS = {
   cfh: [CAPABILITIES.opsCfhManage],
   roomControl: [CAPABILITIES.opsRoomsManage],
   vouchers: [CAPABILITIES.opsManageVouchers],
+  catalog: [CAPABILITIES.catalogRead],
+  furnitureDefinitions: [CAPABILITIES.furnitureRead],
   apiExplorer: [CAPABILITIES.overviewRead],
   operations: [
     CAPABILITIES.opsGrantCurrency,

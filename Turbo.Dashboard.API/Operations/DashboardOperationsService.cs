@@ -8,7 +8,9 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Observability.Diagnostics;
 using Turbo.Primitives.Action;
+using Turbo.Primitives.Catalog;
 using Turbo.Primitives.Catalog.Snapshots;
+using Turbo.Primitives.Furniture;
 using Turbo.Primitives.Moderation;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Observability;
@@ -31,6 +33,8 @@ internal sealed partial class DashboardOperationsService(
     IGrainFactory grainFactory,
     ISessionGateway sessionGateway,
     ICfhTicketService cfhTickets,
+    ICatalogAdminService catalogAdmin,
+    IFurnitureAdminService furnitureAdmin,
     IAuditSink auditSink,
     ITurboContextAccessor context,
     ILogger<DashboardOperationsService> logger
@@ -48,6 +52,8 @@ internal sealed partial class DashboardOperationsService(
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
     private readonly ICfhTicketService _cfhTickets = cfhTickets;
+    private readonly ICatalogAdminService _catalogAdmin = catalogAdmin;
+    private readonly IFurnitureAdminService _furnitureAdmin = furnitureAdmin;
     private readonly IAuditSink _auditSink = auditSink;
     private readonly ITurboContextAccessor _context = context;
     private readonly ILogger<DashboardOperationsService> _logger = logger;

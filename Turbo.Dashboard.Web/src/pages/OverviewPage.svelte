@@ -136,7 +136,7 @@
             <div class="bar-track">
               <div
                 class="bar-fill"
-                style={`background: linear-gradient(90deg, rgba(212, 168, 78, 0.95), rgba(212, 168, 78, 0.55)); width: ${errorsScale > 0 ? (point.errorRate / errorsScale) * 100 : 0}%;`}
+                style={`background: linear-gradient(90deg, rgba(var(--warning-rgb), 0.95), rgba(var(--warning-rgb), 0.55)); width: ${errorsScale > 0 ? (point.errorRate / errorsScale) * 100 : 0}%;`}
               ></div>
             </div>
             <span class="muted">{formatNumber(point.errorRate, 2)} /m</span>
@@ -151,7 +151,7 @@
             <div class="bar-track">
               <div
                 class="bar-fill"
-                style={`background: linear-gradient(90deg, rgba(90, 167, 200, 0.95), rgba(90, 167, 200, 0.55)); width: ${latencyScale > 0 ? (point.latencyP50 / latencyScale) * 100 : 0}%;`}
+                style={`background: linear-gradient(90deg, rgba(var(--accent-rgb), 0.95), rgba(var(--accent-rgb), 0.55)); width: ${latencyScale > 0 ? (point.latencyP50 / latencyScale) * 100 : 0}%;`}
               ></div>
             </div>
             <span class="muted">{formatNumber(point.latencyP50, 2)} ms</span>

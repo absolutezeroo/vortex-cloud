@@ -154,7 +154,7 @@
 
   .pick-row:hover {
     border-color: var(--line-strong);
-    background: #1a2738;
+    background: var(--surface-hover);
   }
 
   .pick-main {
@@ -175,11 +175,13 @@
     place-items: center;
     border: 1px solid var(--line-strong);
     border-radius: 9px;
-    background: #0f1724;
+    background: var(--input-bg);
     color: var(--accent);
     font-size: 0.72rem;
     font-weight: 700;
     object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
   }
 
   .pick-dot {
@@ -188,11 +190,11 @@
     flex: 0 0 auto;
     border-radius: 999px;
     background: var(--muted);
-    box-shadow: 0 0 0 3px rgba(139, 154, 173, 0.12);
+    box-shadow: 0 0 0 3px rgba(var(--muted-rgb), 0.12);
   }
 
   .pick-dot.on {
     background: var(--ok);
-    box-shadow: 0 0 0 3px rgba(86, 185, 145, 0.18);
+    box-shadow: 0 0 0 3px rgba(var(--ok-rgb), 0.18);
   }
 </style>
