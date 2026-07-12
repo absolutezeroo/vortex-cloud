@@ -1,11 +1,13 @@
 <script>
+  import { t } from '../lib/i18n.js';
+
   export let type = 'player';
   export let id;
   export let label = '';
   export let openPlayer;
   export let openItem;
 
-  $: resolvedLabel = label || (type === 'item' ? `item #${id}` : `player #${id}`);
+  $: resolvedLabel = label || $t(type === 'item' ? 'common.itemHash' : 'common.playerHash', { id });
 
   function open() {
     if (type === 'item') {

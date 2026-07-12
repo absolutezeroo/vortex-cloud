@@ -6,10 +6,12 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer, openItem } from '../lib/session.js';
+  import { t, translate } from '../lib/i18n.js';
 
   let query = '';
   let rows = [];
-  let state = 'Enter a player id, item id or correlation id.';
+  let state = '';
+  $: if (!state) state = translate('investigation.hint');
   let error = '';
   let forbidden = false;
 
@@ -37,14 +39,14 @@
         (data.asActor || []).forEach((row) => push(nextRows, { kind: 'audit', ...row }));
         (data.ledger || []).forEach((row) => push(nextRows, { kind: 'ledger', playerId: term, ...row }));
         (data.itemHistory || []).forEach((row) => push(nextRows, { kind: 'item', ...row }));
-        state = `${nextRows.length} events for player ${term}`;
+        state = translate('investigation.eventsForPlayer', { count: nextRows.length, term });
       } else if (data.kind === 'correlationId') {
         (data.audit || []).forEach((row) => push(nextRows, { kind: 'audit', ...row }));
         (data.ledger || []).forEach((row) => push(nextRows, { kind: 'ledger', ...row }));
         (data.items || []).forEach((row) => push(nextRows, { kind: 'item', ...row }));
-        state = `${nextRows.length} linked events for ${term}`;
+        state = translate('investigation.linkedEventsFor', { count: nextRows.length, term });
       } else {
-        state = data.hint || 'No structured result.';
+        state = data.hint || translate('investigation.noStructuredResult');
       }
 
       rows = nextRows.sort((left, right) => right.sortTime - left.sortTime);
@@ -64,23 +66,23 @@
 
 <section class="panel">
   <div class="panel-head">
-    <h2>Timeline search</h2>
-    <button type="button" on:click={search}>Search</button>
+    <h2>{$t('investigation.title')}</h2>
+    <button type="button" on:click={search}>{$t('investigation.search')}</button>
   </div>
   <form class="toolbar" on:submit|preventDefault={search}>
-    <input bind:value={query} placeholder="player id / item id / correlation id" />
-    <button type="submit">Load</button>
+    <input bind:value={query} placeholder={$t('investigation.searchPlaceholder')} />
+    <button type="submit">{$t('investigation.load')}</button>
   </form>
   <p class="muted">{state}</p>
 
   {#if forbidden}
-    <AccessDeniedNotice message="Vous n'avez pas l'autorisation d'exécuter des recherches d'investigation." />
+    <AccessDeniedNotice message={$t('investigation.accessDenied')} />
   {:else if error}
     <p class="empty-state danger">{error}</p>
   {/if}
 
   <table>
-    <thead><tr><th>Time</th><th>Type</th><th>Actor</th><th>Details</th></tr></thead>
+    <thead><tr><th>{$t('investigation.colTime')}</th><th>{$t('investigation.colType')}</th><th>{$t('investigation.colActor')}</th><th>{$t('investigation.colDetails')}</th></tr></thead>
     <tbody>
       {#each rows as row}
         <tr>
@@ -94,7 +96,7 @@
             {/if}
           </td>
           <td>
-            {row.category || row.eventType || row.action || row.currency || 'event'}
+            {row.category || row.eventType || row.action || row.currency || $t('investigation.event')}
             {#if row.itemId}
               - <EntityLink type="item" id={row.itemId} label={`item #${row.itemId}`} {openPlayer} {openItem} />
             {/if}
@@ -102,7 +104,7 @@
           </td>
         </tr>
       {:else}
-        <tr><td colspan="4" class="muted">No timeline rows.</td></tr>
+        <tr><td colspan="4" class="muted">{$t('investigation.noRows')}</td></tr>
       {/each}
     </tbody>
   </table>

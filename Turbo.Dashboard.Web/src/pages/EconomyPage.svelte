@@ -6,6 +6,7 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer, openItem } from '../lib/session.js';
+  import { t } from '../lib/i18n.js';
 
   let player = '';
   let rows = [];
@@ -41,26 +42,25 @@
 
 <section class="panel">
   <div class="panel-head">
-    <h2>Economy ledger</h2>
-    <button type="button" on:click={refresh}>Refresh</button>
+    <h2>{$t('economy.title')}</h2>
+    <button type="button" on:click={refresh}>{$t('common.refresh')}</button>
   </div>
   <p class="muted">
-    Raw wallet movement log. For spend/earn trends by currency see Spend trends; for marketplace
-    activity see Marketplace; for HC/BC see Subscriptions.
+    {$t('economy.description')}
   </p>
   <form class="toolbar" on:submit|preventDefault={refresh}>
-    <input bind:value={player} placeholder="player id" />
-    <button type="submit">Load</button>
+    <input bind:value={player} placeholder={$t('audit.playerIdPlaceholder')} />
+    <button type="submit">{$t('economy.load')}</button>
   </form>
 
   {#if forbidden}
-    <AccessDeniedNotice message="Vous n'avez pas l'autorisation d'accéder au ledger économie." />
+    <AccessDeniedNotice message={$t('economy.accessDenied')} />
   {:else if error}
     <p class="empty-state danger">{error}</p>
   {/if}
 
   <table>
-    <thead><tr><th>Time</th><th>Player</th><th>Currency</th><th>Delta</th><th>After</th><th>Reason</th></tr></thead>
+    <thead><tr><th>{$t('economy.colTime')}</th><th>{$t('economy.colPlayer')}</th><th>{$t('economy.colCurrency')}</th><th>{$t('economy.colDelta')}</th><th>{$t('economy.colAfter')}</th><th>{$t('economy.colReason')}</th></tr></thead>
     <tbody>
       {#each rows as row}
         <tr>
@@ -72,7 +72,7 @@
           <td>{row.reason}</td>
         </tr>
       {:else}
-        <tr><td colspan="6" class="muted">No economy rows.</td></tr>
+        <tr><td colspan="6" class="muted">{$t('economy.noRows')}</td></tr>
       {/each}
     </tbody>
   </table>

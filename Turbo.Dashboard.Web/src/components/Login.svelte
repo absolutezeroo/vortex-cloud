@@ -1,5 +1,6 @@
 <script>
   import { describeApiError, isConnectionError, login } from '../lib/api.js';
+  import { t, translate } from '../lib/i18n.js';
 
   export let onAuthenticated;
 
@@ -19,11 +20,11 @@
       if (isConnectionError(e)) {
         error = describeApiError(e);
       } else if (e.status === 403) {
-        error = 'This account has no dashboard access.';
+        error = translate('login.noAccess');
       } else if (e.status === 429) {
         error = describeApiError(e);
       } else {
-        error = 'Invalid email or password.';
+        error = translate('login.invalidCredentials');
       }
     } finally {
       busy = false;
@@ -36,18 +37,18 @@
     <div class="login-brand">
       <span class="brand-mark">T</span>
       <div>
-        <strong>Turbo Ops</strong>
-        <small>Observability center</small>
+        <strong>{$t('nav.brandTitle')}</strong>
+        <small>{$t('nav.brandSubtitle')}</small>
       </div>
     </div>
 
     <label>
-      <span>Email</span>
+      <span>{$t('login.email')}</span>
       <input type="email" bind:value={email} autocomplete="username" required />
     </label>
 
     <label>
-      <span>Password</span>
+      <span>{$t('login.password')}</span>
       <input type="password" bind:value={password} autocomplete="current-password" required />
     </label>
 
@@ -55,7 +56,7 @@
       <p class="login-error">{error}</p>
     {/if}
 
-    <button type="submit" disabled={busy}>{busy ? 'Signing in...' : 'Sign in'}</button>
+    <button type="submit" disabled={busy}>{busy ? $t('login.signingIn') : $t('login.signIn')}</button>
   </form>
 </div>
 

@@ -35,27 +35,29 @@ import ApiExplorerPage from '../pages/ApiExplorerPage.svelte';
 // group. `group` buckets items in the sidebar (see AppShell.svelte) — Live: auto-refreshing health
 // signals; Investigate: lookup/forensics tools; Act: pages that can change server state; Dev: raw
 // API access. Keep this in sync with GROUP_ORDER in AppShell.svelte.
+// label/short are i18n keys (resolved via $t in AppShell.svelte), not display strings -- see
+// lib/locales/{en,fr}.js's `nav` namespace, which must have a matching entry for every key here.
 export const NAV = [
-  { path: '/overview', label: 'Overview', short: 'Live health', group: 'Live', caps: ROUTE_PERMISSIONS.overview, component: OverviewPage },
-  { path: '/infrastructure', label: 'Infrastructure', short: 'Runtime and Orleans', group: 'Live', caps: ROUTE_PERMISSIONS.infrastructure, component: InfrastructurePage },
-  { path: '/packets', label: 'Packet center', short: 'Traffic', group: 'Live', caps: ROUTE_PERMISSIONS.packets, component: PacketsPage },
-  { path: '/incidents', label: 'Incident center', short: 'Signals', group: 'Live', caps: ROUTE_PERMISSIONS.incidents, component: IncidentsPage },
-  { path: '/investigation', label: 'Investigation', short: 'Players and items', group: 'Investigate', caps: ROUTE_PERMISSIONS.investigation, component: InvestigationPage },
-  { path: '/rooms', label: 'Room inspector', short: 'Room timeline', group: 'Investigate', caps: ROUTE_PERMISSIONS.rooms, component: RoomsPage },
-  { path: '/audit', label: 'Audit feed', short: 'Security', group: 'Investigate', caps: ROUTE_PERMISSIONS.audit, component: AuditPage },
-  { path: '/moderation', label: 'Moderation stats', short: 'Stats and trends', group: 'Investigate', caps: ROUTE_PERMISSIONS.moderation, component: ModerationPage },
-  { path: '/economy', label: 'Economy ledger', short: 'Raw wallet log', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: EconomyPage },
-  { path: '/economy-trends', label: 'Spend trends', short: 'Per-currency, day/month/year', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: EconomyTrendsPage },
-  { path: '/marketplace', label: 'Marketplace', short: 'Player sales', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: MarketplacePage },
-  { path: '/subscriptions', label: 'Subscriptions', short: 'HC / Builders Club', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: SubscriptionsPage },
-  { path: '/operations', label: 'Operations', short: 'Admin actions', group: 'Act', caps: ROUTE_PERMISSIONS.operations, component: OperationsPage },
-  { path: '/moderation-actions', label: 'Moderation actions', short: 'Ban, mute, trading lock', group: 'Act', caps: ROUTE_PERMISSIONS.moderationActions, component: ModerationActionsPage },
-  { path: '/cfh', label: 'CFH queue', short: 'Tickets', group: 'Act', caps: ROUTE_PERMISSIONS.cfh, component: CfhQueuePage },
-  { path: '/room-control', label: 'Room control', short: 'Active rooms', group: 'Act', caps: ROUTE_PERMISSIONS.roomControl, component: RoomControlPage },
-  { path: '/vouchers', label: 'Vouchers', short: 'Redeemable codes', group: 'Act', caps: ROUTE_PERMISSIONS.vouchers, component: VouchersPage },
-  { path: '/catalog', label: 'Catalog', short: 'Pages, offers, products', group: 'Act', caps: ROUTE_PERMISSIONS.catalog, component: CatalogPage },
-  { path: '/furniture-definitions', label: 'Furniture definitions', short: 'Sprites and physics', group: 'Act', caps: ROUTE_PERMISSIONS.furnitureDefinitions, component: FurnitureDefinitionsPage },
-  { path: '/api-explorer', label: 'API explorer', short: 'Routes and contract', group: 'Dev', caps: ROUTE_PERMISSIONS.apiExplorer, component: ApiExplorerPage },
+  { path: '/overview', labelKey: 'nav.overview', shortKey: 'nav.overviewShort', group: 'Live', caps: ROUTE_PERMISSIONS.overview, component: OverviewPage },
+  { path: '/infrastructure', labelKey: 'nav.infrastructure', shortKey: 'nav.infrastructureShort', group: 'Live', caps: ROUTE_PERMISSIONS.infrastructure, component: InfrastructurePage },
+  { path: '/packets', labelKey: 'nav.packets', shortKey: 'nav.packetsShort', group: 'Live', caps: ROUTE_PERMISSIONS.packets, component: PacketsPage },
+  { path: '/incidents', labelKey: 'nav.incidents', shortKey: 'nav.incidentsShort', group: 'Live', caps: ROUTE_PERMISSIONS.incidents, component: IncidentsPage },
+  { path: '/investigation', labelKey: 'nav.investigation', shortKey: 'nav.investigationShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.investigation, component: InvestigationPage },
+  { path: '/rooms', labelKey: 'nav.rooms', shortKey: 'nav.roomsShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.rooms, component: RoomsPage },
+  { path: '/audit', labelKey: 'nav.audit', shortKey: 'nav.auditShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.audit, component: AuditPage },
+  { path: '/moderation', labelKey: 'nav.moderation', shortKey: 'nav.moderationShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.moderation, component: ModerationPage },
+  { path: '/economy', labelKey: 'nav.economy', shortKey: 'nav.economyShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: EconomyPage },
+  { path: '/economy-trends', labelKey: 'nav.economyTrends', shortKey: 'nav.economyTrendsShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: EconomyTrendsPage },
+  { path: '/marketplace', labelKey: 'nav.marketplace', shortKey: 'nav.marketplaceShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: MarketplacePage },
+  { path: '/subscriptions', labelKey: 'nav.subscriptions', shortKey: 'nav.subscriptionsShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: SubscriptionsPage },
+  { path: '/operations', labelKey: 'nav.operations', shortKey: 'nav.operationsShort', group: 'Act', caps: ROUTE_PERMISSIONS.operations, component: OperationsPage },
+  { path: '/moderation-actions', labelKey: 'nav.moderationActions', shortKey: 'nav.moderationActionsShort', group: 'Act', caps: ROUTE_PERMISSIONS.moderationActions, component: ModerationActionsPage },
+  { path: '/cfh', labelKey: 'nav.cfh', shortKey: 'nav.cfhShort', group: 'Act', caps: ROUTE_PERMISSIONS.cfh, component: CfhQueuePage },
+  { path: '/room-control', labelKey: 'nav.roomControl', shortKey: 'nav.roomControlShort', group: 'Act', caps: ROUTE_PERMISSIONS.roomControl, component: RoomControlPage },
+  { path: '/vouchers', labelKey: 'nav.vouchers', shortKey: 'nav.vouchersShort', group: 'Act', caps: ROUTE_PERMISSIONS.vouchers, component: VouchersPage },
+  { path: '/catalog', labelKey: 'nav.catalog', shortKey: 'nav.catalogShort', group: 'Act', caps: ROUTE_PERMISSIONS.catalog, component: CatalogPage },
+  { path: '/furniture-definitions', labelKey: 'nav.furnitureDefinitions', shortKey: 'nav.furnitureDefinitionsShort', group: 'Act', caps: ROUTE_PERMISSIONS.furnitureDefinitions, component: FurnitureDefinitionsPage },
+  { path: '/api-explorer', labelKey: 'nav.apiExplorer', shortKey: 'nav.apiExplorerShort', group: 'Dev', caps: ROUTE_PERMISSIONS.apiExplorer, component: ApiExplorerPage },
 ];
 
 const canSee = (caps) => () => hasDashboardCapability(get(identity), caps);

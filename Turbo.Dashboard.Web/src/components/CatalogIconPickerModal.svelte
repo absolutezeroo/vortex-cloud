@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api.js';
+  import { t, translate } from '../lib/i18n.js';
 
   // There is no manifest of which catalog icon ids actually have a file on the asset host --
   // the id -> filename pattern (icon_{id}.png) is fixed, but which ids are populated is not.
@@ -72,7 +73,7 @@
       const data = await apiGet('/api/v1/catalog/icon-template');
       template = data.template || '';
       if (!template) {
-        templateError = "Aucun template d'icônes configuré (CatalogIconUrlTemplate).";
+        templateError = translate('catalogIconPicker.noTemplate');
       } else {
         loadMore();
       }
@@ -89,19 +90,19 @@
   <section class="modal-panel icon-picker" role="dialog" aria-modal="true" style="width: min(720px, 100%)">
     <header class="modal-header">
       <div>
-        <p class="eyebrow">Catalog icons</p>
+        <p class="eyebrow">{$t('catalogIconPicker.eyebrow')}</p>
         <h2>{title}</h2>
       </div>
-      <button class="ghost-button" type="button" on:click={onClose}>Close</button>
+      <button class="ghost-button" type="button" on:click={onClose}>{$t('pickerModal.close')}</button>
     </header>
 
     {#if templateLoading}
-      <p class="empty-state">Loading...</p>
+      <p class="empty-state">{$t('pickerModal.loading')}</p>
     {:else if templateError}
       <p class="empty-state danger">{templateError}</p>
     {:else}
       <p class="muted">
-        {foundCount} icon(s) found so far ({probedCount} id(s) checked, {probedCount - settledCount} pending).
+        {$t('catalogIconPicker.foundSoFar', { found: foundCount, probed: probedCount, pending: probedCount - settledCount })}
       </p>
 
       <div class="icon-grid" bind:this={gridEl}>

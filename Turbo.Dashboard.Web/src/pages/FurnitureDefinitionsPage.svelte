@@ -16,6 +16,7 @@
   } from '../lib/furnitureEnums.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import { identity } from '../lib/session.js';
+  import { t, translate } from '../lib/i18n.js';
 
   function emptyForm() {
     return {
@@ -135,7 +136,7 @@
     errors = { ...errors, [id]: '' };
 
     if (!valid) {
-      errors = { ...errors, [id]: 'Fill the required fields (sprite id, name, reason >= 3 chars).' };
+      errors = { ...errors, [id]: translate('furnitureAdmin.fillFields') };
       return;
     }
 
@@ -167,7 +168,7 @@
     } catch (err) {
       errors = {
         ...errors,
-        [id]: isPermissionDeniedError(err) ? 'Droits insuffisants pour effectuer cette action.' : err.code || err.message,
+        [id]: isPermissionDeniedError(err) ? translate('common.insufficientRightsAction') : err.code || err.message,
       };
     } finally {
       busy = { ...busy, [id]: false };
@@ -176,17 +177,17 @@
 
   function stageCreate() {
     if (!canManage) {
-      errors = { ...errors, create: 'Droits insuffisants.' };
+      errors = { ...errors, create: translate('furnitureAdmin.createAccessDenied') };
       return;
     }
 
     stage(
       'create',
-      'Create furniture definition',
+      translate('furnitureAdmin.createTitle'),
       '/api/v1/operations/furniture/definitions',
       Number(newForm.spriteId) > 0 && Boolean(newForm.name.trim()) && reasonOk(newForm.reason),
       { ...specFrom(newForm), reason: newForm.reason.trim() },
-      `Create furniture definition "${newForm.name.trim()}" (sprite #${newForm.spriteId}).`,
+      translate('furnitureAdmin.createSummary', { name: newForm.name.trim(), sprite: newForm.spriteId }),
       async () => {
         newOpen = false;
         newForm = emptyForm();
@@ -227,11 +228,11 @@
 
     stage(
       'update',
-      'Update furniture definition',
+      translate('furnitureAdmin.updateTitle'),
       '/api/v1/operations/furniture/definitions/update',
       Number(editForm.spriteId) > 0 && Boolean(editForm.name.trim()) && reasonOk(editForm.reason),
       { definitionId: editingId, ...specFrom(editForm), reason: editForm.reason.trim() },
-      `Update furniture definition #${editingId}.`,
+      translate('furnitureAdmin.updateSummary', { id: editingId }),
       async () => {
         editingId = null;
         await refresh();
@@ -244,11 +245,11 @@
 
     stage(
       'delete',
-      'Delete furniture definition',
+      translate('furnitureAdmin.deleteTitle'),
       '/api/v1/operations/furniture/definitions/delete',
       reasonOk(deleteReason[item.id]),
       { definitionId: item.id, reason: (deleteReason[item.id] || '').trim() },
-      `Delete "${item.name}" (#${item.id}). Blocked if it's still placed/owned or used by a catalog product.`,
+      translate('furnitureAdmin.deleteSummary', { name: item.name, id: item.id }),
       async () => {
         deleteReason = { ...deleteReason, [item.id]: '' };
         await refresh();
@@ -263,48 +264,47 @@
 
 <section class="panel">
   <div class="panel-head">
-    <h2><Package size={18} strokeWidth={2} aria-hidden="true" /> Furniture definitions</h2>
+    <h2><Package size={18} strokeWidth={2} aria-hidden="true" /> {$t('furnitureAdmin.title')}</h2>
     {#if canManage}
       <button type="button" class="ghost-button" on:click={() => (newOpen = !newOpen)}>
-        <Plus size={14} strokeWidth={2} aria-hidden="true" /> {newOpen ? 'Cancel' : 'New definition'}
+        <Plus size={14} strokeWidth={2} aria-hidden="true" /> {newOpen ? $t('furnitureAdmin.cancel') : $t('furnitureAdmin.newDefinition')}
       </button>
     {/if}
   </div>
   <p class="muted">
-    The catalog and inventory both reference these by id. Changes go live immediately for connected
-    clients -- no restart needed.
+    {$t('furnitureAdmin.description')}
   </p>
 
   <form class="toolbar" on:submit|preventDefault={search}>
-    <input bind:value={query} placeholder="search by name, id or sprite id" />
-    <button type="submit" disabled={loading}>Search</button>
+    <input bind:value={query} placeholder={$t('furnitureAdmin.searchPlaceholder')} />
+    <button type="submit" disabled={loading}>{$t('furnitureAdmin.search')}</button>
   </form>
 
   {#if newOpen}
     <div class="furni-card-detail">
       <div class="form-grid">
         <div class="op-field">
-          <label for="new-furni-sprite">Sprite id *</label>
+          <label for="new-furni-sprite">{$t('furnitureAdmin.spriteIdRequired')}</label>
           <input id="new-furni-sprite" type="number" min="1" bind:value={newForm.spriteId} />
         </div>
         <div class="op-field">
-          <label for="new-furni-name">Name *</label>
-          <input id="new-furni-name" bind:value={newForm.name} placeholder="throne" />
+          <label for="new-furni-name">{$t('furnitureAdmin.nameRequired')}</label>
+          <input id="new-furni-name" bind:value={newForm.name} placeholder={$t('furnitureAdmin.namePlaceholder')} />
         </div>
         <div class="op-field">
-          <label for="new-furni-type">Product type</label>
+          <label for="new-furni-type">{$t('furnitureAdmin.productType')}</label>
           <select id="new-furni-type" bind:value={newForm.productType}>
             {#each PRODUCT_TYPES as t}<option value={t.value}>{t.label}</option>{/each}
           </select>
         </div>
         <div class="op-field">
-          <label for="new-furni-category">Category</label>
+          <label for="new-furni-category">{$t('furnitureAdmin.category')}</label>
           <select id="new-furni-category" bind:value={newForm.furniCategory}>
             {#each FURNITURE_CATEGORIES as c}<option value={c.value}>{c.label}</option>{/each}
           </select>
         </div>
         <div class="op-field">
-          <label for="new-furni-logic">Logic</label>
+          <label for="new-furni-logic">{$t('furnitureAdmin.logic')}</label>
           <select id="new-furni-logic" bind:value={newForm.logic}>
             {#each LOGIC_GROUPS as group}
               <optgroup label={group.label}>
@@ -314,54 +314,54 @@
           </select>
         </div>
         <div class="op-field">
-          <label for="new-furni-states">Total states</label>
+          <label for="new-furni-states">{$t('furnitureAdmin.totalStates')}</label>
           <input id="new-furni-states" type="number" min="0" bind:value={newForm.totalStates} />
         </div>
         <div class="op-field">
-          <label for="new-furni-width">Width</label>
+          <label for="new-furni-width">{$t('furnitureAdmin.width')}</label>
           <input id="new-furni-width" type="number" min="1" bind:value={newForm.width} />
         </div>
         <div class="op-field">
-          <label for="new-furni-length">Length</label>
+          <label for="new-furni-length">{$t('furnitureAdmin.length')}</label>
           <input id="new-furni-length" type="number" min="1" bind:value={newForm.length} />
         </div>
         <div class="op-field">
-          <label for="new-furni-height">Stack height</label>
+          <label for="new-furni-height">{$t('furnitureAdmin.stackHeight')}</label>
           <input id="new-furni-height" type="number" step="0.1" min="0" bind:value={newForm.stackHeight} />
         </div>
         <div class="op-field">
-          <label for="new-furni-usage">Usage policy</label>
+          <label for="new-furni-usage">{$t('furnitureAdmin.usagePolicy')}</label>
           <select id="new-furni-usage" bind:value={newForm.usagePolicy}>
             {#each USAGE_POLICIES as u}<option value={u.value}>{u.label}</option>{/each}
           </select>
         </div>
         <div class="op-field">
-          <label for="new-furni-stuffdata">Stuff data type</label>
+          <label for="new-furni-stuffdata">{$t('furnitureAdmin.stuffDataType')}</label>
           <select id="new-furni-stuffdata" bind:value={newForm.stuffDataType}>
             {#each STUFF_DATA_TYPES as s}<option value={s.value}>{s.label}</option>{/each}
           </select>
         </div>
         <div class="op-field">
-          <label for="new-furni-extra">Extra data (optional)</label>
+          <label for="new-furni-extra">{$t('furnitureAdmin.extraDataOptional')}</label>
           <input id="new-furni-extra" bind:value={newForm.extraData} />
         </div>
       </div>
       <div class="checkbox-grid">
-        <label><input type="checkbox" bind:checked={newForm.canStack} /> Can stack</label>
-        <label><input type="checkbox" bind:checked={newForm.canWalk} /> Can walk</label>
-        <label><input type="checkbox" bind:checked={newForm.canSit} /> Can sit</label>
-        <label><input type="checkbox" bind:checked={newForm.canLay} /> Can lay</label>
-        <label><input type="checkbox" bind:checked={newForm.canRecycle} /> Can recycle</label>
-        <label><input type="checkbox" bind:checked={newForm.canTrade} /> Can trade</label>
-        <label><input type="checkbox" bind:checked={newForm.canGroup} /> Can group</label>
-        <label><input type="checkbox" bind:checked={newForm.canSell} /> Can sell (marketplace)</label>
+        <label><input type="checkbox" bind:checked={newForm.canStack} /> {$t('furnitureAdmin.canStack')}</label>
+        <label><input type="checkbox" bind:checked={newForm.canWalk} /> {$t('furnitureAdmin.canWalk')}</label>
+        <label><input type="checkbox" bind:checked={newForm.canSit} /> {$t('furnitureAdmin.canSit')}</label>
+        <label><input type="checkbox" bind:checked={newForm.canLay} /> {$t('furnitureAdmin.canLay')}</label>
+        <label><input type="checkbox" bind:checked={newForm.canRecycle} /> {$t('furnitureAdmin.canRecycle')}</label>
+        <label><input type="checkbox" bind:checked={newForm.canTrade} /> {$t('furnitureAdmin.canTrade')}</label>
+        <label><input type="checkbox" bind:checked={newForm.canGroup} /> {$t('furnitureAdmin.canGroup')}</label>
+        <label><input type="checkbox" bind:checked={newForm.canSell} /> {$t('furnitureAdmin.canSell')}</label>
       </div>
       <div class="op-field">
-        <label for="new-furni-reason">Reason *</label>
-        <input id="new-furni-reason" bind:value={newForm.reason} placeholder="why this definition?" list="reason-history" />
+        <label for="new-furni-reason">{$t('furnitureAdmin.reasonRequired')}</label>
+        <input id="new-furni-reason" bind:value={newForm.reason} placeholder={$t('furnitureAdmin.reasonNewPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageCreate} disabled={busy.create}>Create</button>
+        <button type="button" on:click={stageCreate} disabled={busy.create}>{$t('furnitureAdmin.create')}</button>
       </div>
       {#if errors.create}<p class="empty-state danger">{errors.create}</p>{/if}
       {#if results.create}
@@ -374,13 +374,13 @@
   {/if}
 
   {#if forbidden}
-    <AccessDeniedNotice message="Vous n'avez pas la permission de consulter les définitions de mobilier." />
+    <AccessDeniedNotice message={$t('furnitureAdmin.accessDenied')} />
   {:else if loading}
-    <p class="muted">Loading...</p>
+    <p class="muted">{$t('furnitureAdmin.loading')}</p>
   {:else if error}
     <p class="empty-state danger">{error}</p>
   {:else if items.length === 0}
-    <p class="empty-state">No furniture definitions match.</p>
+    <p class="empty-state">{$t('furnitureAdmin.noMatch')}</p>
   {:else}
     <div class="furni-list">
       {#each items as item (item.id)}
@@ -401,12 +401,12 @@
               <span class="op-chip" title="Size">{item.width}x{item.length}</span>
               <span class="status-badge" class:status-badge--ok={item.canTrade} class:status-badge--bad={!item.canTrade}>
                 {#if item.canTrade}<Eye size={12} strokeWidth={2} aria-hidden="true" />{:else}<EyeOff size={12} strokeWidth={2} aria-hidden="true" />{/if}
-                Trade
+                {$t('furnitureAdmin.trade')}
               </span>
             </span>
             {#if canManage}
               <button type="button" class="ghost-button" on:click={() => startEdit(item)}>
-                <Pencil size={14} strokeWidth={2} aria-hidden="true" /> Edit
+                <Pencil size={14} strokeWidth={2} aria-hidden="true" /> {$t('furnitureAdmin.edit')}
               </button>
             {/if}
           </div>
@@ -415,27 +415,27 @@
             <div class="furni-card-detail">
               <div class="form-grid">
                 <div class="op-field">
-                  <label for={`edit-furni-sprite-${item.id}`}>Sprite id *</label>
+                  <label for={`edit-furni-sprite-${item.id}`}>{$t('furnitureAdmin.spriteIdRequired')}</label>
                   <input id={`edit-furni-sprite-${item.id}`} type="number" min="1" bind:value={editForm.spriteId} />
                 </div>
                 <div class="op-field">
-                  <label for={`edit-furni-name-${item.id}`}>Name *</label>
+                  <label for={`edit-furni-name-${item.id}`}>{$t('furnitureAdmin.nameRequired')}</label>
                   <input id={`edit-furni-name-${item.id}`} bind:value={editForm.name} />
                 </div>
                 <div class="op-field">
-                  <label for={`edit-furni-type-${item.id}`}>Product type</label>
+                  <label for={`edit-furni-type-${item.id}`}>{$t('furnitureAdmin.productType')}</label>
                   <select id={`edit-furni-type-${item.id}`} bind:value={editForm.productType}>
                     {#each PRODUCT_TYPES as t}<option value={t.value}>{t.label}</option>{/each}
                   </select>
                 </div>
                 <div class="op-field">
-                  <label for={`edit-furni-category-${item.id}`}>Category</label>
+                  <label for={`edit-furni-category-${item.id}`}>{$t('furnitureAdmin.category')}</label>
                   <select id={`edit-furni-category-${item.id}`} bind:value={editForm.furniCategory}>
                     {#each FURNITURE_CATEGORIES as c}<option value={c.value}>{c.label}</option>{/each}
                   </select>
                 </div>
                 <div class="op-field">
-                  <label for={`edit-furni-logic-${item.id}`}>Logic</label>
+                  <label for={`edit-furni-logic-${item.id}`}>{$t('furnitureAdmin.logic')}</label>
                   <select id={`edit-furni-logic-${item.id}`} bind:value={editForm.logic}>
                     {#each LOGIC_GROUPS as group}
                       <optgroup label={group.label}>
@@ -445,55 +445,55 @@
                   </select>
                 </div>
                 <div class="op-field">
-                  <label for={`edit-furni-states-${item.id}`}>Total states</label>
+                  <label for={`edit-furni-states-${item.id}`}>{$t('furnitureAdmin.totalStates')}</label>
                   <input id={`edit-furni-states-${item.id}`} type="number" min="0" bind:value={editForm.totalStates} />
                 </div>
                 <div class="op-field">
-                  <label for={`edit-furni-width-${item.id}`}>Width</label>
+                  <label for={`edit-furni-width-${item.id}`}>{$t('furnitureAdmin.width')}</label>
                   <input id={`edit-furni-width-${item.id}`} type="number" min="1" bind:value={editForm.width} />
                 </div>
                 <div class="op-field">
-                  <label for={`edit-furni-length-${item.id}`}>Length</label>
+                  <label for={`edit-furni-length-${item.id}`}>{$t('furnitureAdmin.length')}</label>
                   <input id={`edit-furni-length-${item.id}`} type="number" min="1" bind:value={editForm.length} />
                 </div>
                 <div class="op-field">
-                  <label for={`edit-furni-height-${item.id}`}>Stack height</label>
+                  <label for={`edit-furni-height-${item.id}`}>{$t('furnitureAdmin.stackHeight')}</label>
                   <input id={`edit-furni-height-${item.id}`} type="number" step="0.1" min="0" bind:value={editForm.stackHeight} />
                 </div>
                 <div class="op-field">
-                  <label for={`edit-furni-usage-${item.id}`}>Usage policy</label>
+                  <label for={`edit-furni-usage-${item.id}`}>{$t('furnitureAdmin.usagePolicy')}</label>
                   <select id={`edit-furni-usage-${item.id}`} bind:value={editForm.usagePolicy}>
                     {#each USAGE_POLICIES as u}<option value={u.value}>{u.label}</option>{/each}
                   </select>
                 </div>
                 <div class="op-field">
-                  <label for={`edit-furni-stuffdata-${item.id}`}>Stuff data type</label>
+                  <label for={`edit-furni-stuffdata-${item.id}`}>{$t('furnitureAdmin.stuffDataType')}</label>
                   <select id={`edit-furni-stuffdata-${item.id}`} bind:value={editForm.stuffDataType}>
                     {#each STUFF_DATA_TYPES as s}<option value={s.value}>{s.label}</option>{/each}
                   </select>
                 </div>
                 <div class="op-field">
-                  <label for={`edit-furni-extra-${item.id}`}>Extra data (optional)</label>
+                  <label for={`edit-furni-extra-${item.id}`}>{$t('furnitureAdmin.extraDataOptional')}</label>
                   <input id={`edit-furni-extra-${item.id}`} bind:value={editForm.extraData} />
                 </div>
               </div>
               <div class="checkbox-grid">
-                <label><input type="checkbox" bind:checked={editForm.canStack} /> Can stack</label>
-                <label><input type="checkbox" bind:checked={editForm.canWalk} /> Can walk</label>
-                <label><input type="checkbox" bind:checked={editForm.canSit} /> Can sit</label>
-                <label><input type="checkbox" bind:checked={editForm.canLay} /> Can lay</label>
-                <label><input type="checkbox" bind:checked={editForm.canRecycle} /> Can recycle</label>
-                <label><input type="checkbox" bind:checked={editForm.canTrade} /> Can trade</label>
-                <label><input type="checkbox" bind:checked={editForm.canGroup} /> Can group</label>
-                <label><input type="checkbox" bind:checked={editForm.canSell} /> Can sell (marketplace)</label>
+                <label><input type="checkbox" bind:checked={editForm.canStack} /> {$t('furnitureAdmin.canStack')}</label>
+                <label><input type="checkbox" bind:checked={editForm.canWalk} /> {$t('furnitureAdmin.canWalk')}</label>
+                <label><input type="checkbox" bind:checked={editForm.canSit} /> {$t('furnitureAdmin.canSit')}</label>
+                <label><input type="checkbox" bind:checked={editForm.canLay} /> {$t('furnitureAdmin.canLay')}</label>
+                <label><input type="checkbox" bind:checked={editForm.canRecycle} /> {$t('furnitureAdmin.canRecycle')}</label>
+                <label><input type="checkbox" bind:checked={editForm.canTrade} /> {$t('furnitureAdmin.canTrade')}</label>
+                <label><input type="checkbox" bind:checked={editForm.canGroup} /> {$t('furnitureAdmin.canGroup')}</label>
+                <label><input type="checkbox" bind:checked={editForm.canSell} /> {$t('furnitureAdmin.canSell')}</label>
               </div>
               <div class="op-field">
-                <label for={`edit-furni-reason-${item.id}`}>Reason *</label>
-                <input id={`edit-furni-reason-${item.id}`} bind:value={editForm.reason} placeholder="why this change?" list="reason-history" />
+                <label for={`edit-furni-reason-${item.id}`}>{$t('furnitureAdmin.reasonRequired')}</label>
+                <input id={`edit-furni-reason-${item.id}`} bind:value={editForm.reason} placeholder={$t('furnitureAdmin.reasonChangePlaceholder')} list="reason-history" />
               </div>
               <div class="op-actions">
-                <button type="button" on:click={stageUpdate} disabled={busy.update}>Save</button>
-                <button class="ghost-button" type="button" on:click={() => (editingId = null)}>Cancel</button>
+                <button type="button" on:click={stageUpdate} disabled={busy.update}>{$t('furnitureAdmin.save')}</button>
+                <button class="ghost-button" type="button" on:click={() => (editingId = null)}>{$t('furnitureAdmin.cancel')}</button>
               </div>
               {#if errors.update}<p class="empty-state danger">{errors.update}</p>{/if}
               {#if results.update}
@@ -507,9 +507,9 @@
 
           {#if canManage}
             <div class="furni-card-detail op-pick">
-              <input bind:value={deleteReason[item.id]} placeholder="reason to delete this definition" list="reason-history" style="flex: 1;" />
+              <input bind:value={deleteReason[item.id]} placeholder={$t('furnitureAdmin.deleteReasonPlaceholder')} list="reason-history" style="flex: 1;" />
               <button type="button" class="ghost-button danger" on:click={() => stageDelete(item)}>
-                <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> Delete
+                <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> {$t('furnitureAdmin.delete')}
               </button>
             </div>
           {/if}
@@ -525,9 +525,9 @@
     {/if}
 
     <div class="op-actions" style="margin-top: 10px;">
-      <button type="button" class="ghost-button" disabled={page <= 1} on:click={() => goToPage(page - 1)}>Previous</button>
-      <span class="muted">Page {page} / {totalPages} ({total} total)</span>
-      <button type="button" class="ghost-button" disabled={page >= totalPages} on:click={() => goToPage(page + 1)}>Next</button>
+      <button type="button" class="ghost-button" disabled={page <= 1} on:click={() => goToPage(page - 1)}>{$t('furnitureAdmin.previous')}</button>
+      <span class="muted">{$t('furnitureAdmin.pageOfTotal', { page, totalPages, total })}</span>
+      <button type="button" class="ghost-button" disabled={page >= totalPages} on:click={() => goToPage(page + 1)}>{$t('common.next')}</button>
     </div>
   {/if}
 </section>
@@ -538,15 +538,15 @@
     <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
       <header class="modal-header">
         <div>
-          <p class="eyebrow">Confirm furniture action</p>
+          <p class="eyebrow">{$t('furnitureAdmin.confirmEyebrow')}</p>
           <h2>{pending.title}</h2>
         </div>
       </header>
       <p>{pending.summary}</p>
-      <p class="muted">Reason: {pending.reason}</p>
+      <p class="muted">{$t('vouchers.reasonLabel', { reason: pending.reason })}</p>
       <div class="op-actions">
-        <button type="button" on:click={confirmPending}>Confirm</button>
-        <button class="ghost-button" type="button" on:click={cancelPending}>Cancel</button>
+        <button type="button" on:click={confirmPending}>{$t('common.confirm')}</button>
+        <button class="ghost-button" type="button" on:click={cancelPending}>{$t('furnitureAdmin.cancel')}</button>
       </div>
     </section>
   </div>

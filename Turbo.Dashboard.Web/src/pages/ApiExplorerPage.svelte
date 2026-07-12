@@ -4,6 +4,7 @@
   import { formatDate } from '../lib/format.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
+  import { t } from '../lib/i18n.js';
 
   let data = null;
   let error = '';
@@ -141,32 +142,31 @@
 
 <section class="panel">
   <div class="panel-head">
-    <h2>API explorer</h2>
+    <h2>{$t('apiExplorer.title')}</h2>
     <button type="button" on:click={refresh} disabled={loading}>
-      {loading ? 'Actualisation…' : 'Actualiser'}
+      {loading ? $t('apiExplorer.refreshing') : $t('common.refresh')}
     </button>
   </div>
 
   <p class="muted">
-    Endpoints discoverables depuis <strong>/api/v1/meta/endpoints</strong>, avec
-    domaines, méthodes, droits applicables et exposition legacy/v1.
+    {$t('apiExplorer.descriptionBefore')} <strong>/api/v1/meta/endpoints</strong>, {$t('apiExplorer.descriptionAfter')}
   </p>
 
   <div class="split-grid" style="margin-top: 12px;">
     <article>
-      <span>Génération</span>
+      <span>{$t('apiExplorer.generation')}</span>
       <strong>{formatDate(data?.generatedAt)}</strong>
-      <small class="muted">heure UTC de la collecte</small>
+      <small class="muted">{$t('apiExplorer.utcCollectTime')}</small>
     </article>
     <article>
-      <span>Total routes</span>
+      <span>{$t('apiExplorer.totalRoutes')}</span>
       <strong>{routes.length}</strong>
-      <small class="muted">points d'entrée opérationnels</small>
+      <small class="muted">{$t('apiExplorer.operationalEntryPoints')}</small>
     </article>
   </div>
 
   <div class="toolbar" style="margin-top: 12px;">
-    <input bind:value={search} placeholder="Filtrer par path, domaine, tag, capability..." />
+    <input bind:value={search} placeholder={$t('apiExplorer.searchPlaceholder')} />
     <select bind:value={domainFilter}>
       {#each domains as value}
         <option value={value}>{value}</option>
@@ -181,16 +181,16 @@
   </div>
 
   {#if forbidden}
-    <AccessDeniedNotice message="Vous n'avez pas l'autorisation d'accéder à l'explorateur d'API." />
+    <AccessDeniedNotice message={$t('apiExplorer.accessDenied')} />
   {:else if error}
     <p class="empty-state danger">{error}</p>
   {:else if filtered.length === 0}
-    <p class="empty-state">Aucun endpoint ne correspond aux filtres.</p>
+    <p class="empty-state">{$t('apiExplorer.noEndpointMatch')}</p>
   {/if}
 
   <div class="split-grid" style="margin-top: 12px; align-items: start;">
     <article class="panel">
-      <h3>Répartition par domaine</h3>
+      <h3>{$t('apiExplorer.byDomain')}</h3>
       <div class="bar-chart">
         {#each groups as entry}
           <div class="bar-row">
@@ -204,13 +204,13 @@
             <span class="muted">{entry.routeCount}</span>
           </div>
         {:else}
-          <p class="muted">Aucun domaine détecté.</p>
+          <p class="muted">{$t('apiExplorer.noDomainDetected')}</p>
         {/each}
       </div>
     </article>
 
     <article class="panel">
-      <h3>Répartition par méthode</h3>
+      <h3>{$t('apiExplorer.byMethod')}</h3>
       <div class="bar-chart">
         {#each methodUsage as entry}
           <div class="bar-row">
@@ -226,7 +226,7 @@
             <span class="muted">{entry.count}</span>
           </div>
         {:else}
-          <p class="muted">Aucune méthode détectée.</p>
+          <p class="muted">{$t('apiExplorer.noMethodDetected')}</p>
         {/each}
       </div>
     </article>
@@ -235,7 +235,7 @@
 
 <section class="panel" style="margin-top: 12px;">
   <div class="panel-head">
-    <h3>Routes ({filtered.length})</h3>
+    <h3>{$t('apiExplorer.routesCount', { count: filtered.length })}</h3>
     {#if domainFilter !== 'all'}
       <button type="button" class="ghost-button" on:click={() => selectDomain('all')}>
         ✕ {domainFilter}
@@ -243,8 +243,7 @@
     {/if}
   </div>
   <p class="eyebrow" style="margin: 4px 0 10px;">
-    La première ligne d'une route est celle recommandée pour automatisation / client. Cliquer un
-    domaine ci-dessous filtre la liste sur ce domaine.
+    {$t('apiExplorer.firstRowNote')}
   </p>
 
   <div class="domain-quicknav">
@@ -266,13 +265,13 @@
       <table>
         <thead>
           <tr>
-            <th>Path</th>
-            <th>Méthodes</th>
-            <th>Auth</th>
-            <th>Capabilities</th>
-            <th>Tags</th>
-            <th>Legacy</th>
-            <th>Commande</th>
+            <th>{$t('apiExplorer.colPath')}</th>
+            <th>{$t('apiExplorer.colMethods')}</th>
+            <th>{$t('apiExplorer.colAuth')}</th>
+            <th>{$t('apiExplorer.colCapabilities')}</th>
+            <th>{$t('apiExplorer.colTags')}</th>
+            <th>{$t('apiExplorer.colLegacy')}</th>
+            <th>{$t('apiExplorer.colCommand')}</th>
           </tr>
         </thead>
         <tbody>
@@ -284,7 +283,7 @@
                   <span class={methodClass(method)}>{method}</span>
                 {/each}
               </td>
-              <td>{route.requiresAuth ? 'oui' : 'non'}</td>
+              <td>{route.requiresAuth ? $t('apiExplorer.yes') : $t('apiExplorer.no')}</td>
               <td class="truncate" title={route.capabilities?.join(', ')}>
                 {#if route.capabilities?.length}
                   {route.capabilities.join(', ')}
@@ -300,7 +299,7 @@
                   class="ghost-button"
                   on:click={() => copyCurl(route.path, route.methods[0] || 'GET')}
                 >
-                  {copiedPath === route.path ? 'Copié' : 'Copier'}
+                  {copiedPath === route.path ? $t('apiExplorer.copied') : $t('apiExplorer.copy')}
                 </button>
               </td>
             </tr>
@@ -309,7 +308,7 @@
       </table>
     </div>
   {:else}
-    <p class="empty-state">Aucune route après filtrage.</p>
+    <p class="empty-state">{$t('apiExplorer.noRoutesAfterFilter')}</p>
   {/each}
 </section>
 

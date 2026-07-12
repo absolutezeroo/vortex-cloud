@@ -6,6 +6,8 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer, openItem } from '../lib/session.js';
+  import { t, locale } from '../lib/i18n.js';
+  import { get } from 'svelte/store';
 
   let data = null;
   let error = '';
@@ -17,7 +19,7 @@
     const packetRate = Number(snapshot?.live?.packetsPerSecond ?? 0);
     const errorRate = Number(snapshot?.live?.errorsPerMinute ?? 0);
     const p50 = Number(snapshot?.live?.latencyP50Ms ?? 0);
-    const label = new Date().toLocaleTimeString('fr-FR', {
+    const label = new Date().toLocaleTimeString(get(locale) === 'fr' ? 'fr-FR' : 'en-US', {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
@@ -68,47 +70,47 @@
 
 <section class="panel">
   <div class="panel-head">
-    <h2>Live operations</h2>
-    <button type="button" on:click={refresh}>Refresh</button>
+    <h2>{$t('overview.title')}</h2>
+    <button type="button" on:click={refresh}>{$t('common.refresh')}</button>
   </div>
 
   {#if forbidden}
     <AccessDeniedNotice
-      message="Vous n'avez pas l'autorisation d'accéder aux données de survol global."
+      message={$t('overview.accessDenied')}
     />
   {:else if error}
     <p class="empty-state danger">{error}</p>
   {/if}
 
   <div class="metric-grid">
-    <article><span>Status</span><strong>{data?.status || '-'}</strong><small>global state</small></article>
-    <article><span>Sessions</span><strong>{data?.activeSessions ?? '-'}</strong><small>connected clients</small></article>
-    <article><span>Rooms</span><strong>{data?.activeRooms ?? '-'}</strong><small>active rooms</small></article>
-    <article><span>Club</span><strong>{data?.activeClubSubscribers ?? '-'}</strong><small>active subscribers</small></article>
-    <article><span>Memory</span><strong>{data?.managedMemoryMb ?? '-'}</strong><small>managed MB</small></article>
-    <article><span>Packets/sec</span><strong>{formatNumber(data?.live?.packetsPerSecond, 2)}</strong><small>live traffic</small></article>
-    <article><span>Errors/min</span><strong>{formatNumber(data?.live?.errorsPerMinute, 2)}</strong><small>handler failures</small></article>
-    <article><span>Latency p50</span><strong>{formatNumber(data?.live?.latencyP50Ms, 2)} ms</strong><small>median</small></article>
-    <article><span>Latency p95</span><strong>{formatNumber(data?.live?.latencyP95Ms, 2)} ms</strong><small>tail</small></article>
+    <article><span>{$t('overview.status')}</span><strong>{data?.status || '-'}</strong><small>{$t('overview.globalState')}</small></article>
+    <article><span>{$t('overview.sessions')}</span><strong>{data?.activeSessions ?? '-'}</strong><small>{$t('overview.connectedClients')}</small></article>
+    <article><span>{$t('overview.rooms')}</span><strong>{data?.activeRooms ?? '-'}</strong><small>{$t('overview.activeRooms')}</small></article>
+    <article><span>{$t('overview.club')}</span><strong>{data?.activeClubSubscribers ?? '-'}</strong><small>{$t('overview.activeSubscribers')}</small></article>
+    <article><span>{$t('overview.memory')}</span><strong>{data?.managedMemoryMb ?? '-'}</strong><small>{$t('overview.managedMb')}</small></article>
+    <article><span>{$t('overview.packetsPerSec')}</span><strong>{formatNumber(data?.live?.packetsPerSecond, 2)}</strong><small>{$t('overview.liveTraffic')}</small></article>
+    <article><span>{$t('overview.errorsPerMin')}</span><strong>{formatNumber(data?.live?.errorsPerMinute, 2)}</strong><small>{$t('overview.handlerFailures')}</small></article>
+    <article><span>{$t('overview.latencyP50')}</span><strong>{formatNumber(data?.live?.latencyP50Ms, 2)} ms</strong><small>{$t('overview.median')}</small></article>
+    <article><span>{$t('overview.latencyP95')}</span><strong>{formatNumber(data?.live?.latencyP95Ms, 2)} ms</strong><small>{$t('overview.tail')}</small></article>
   </div>
 </section>
 
 <section class="panel">
   <div class="panel-head">
-    <h2>Live trend (client-side)</h2>
-    <small class="muted">Last {trend.length || 0} refresh ticks</small>
+    <h2>{$t('overview.liveTrend')}</h2>
+    <small class="muted">{$t('overview.lastTicks', { count: trend.length || 0 })}</small>
   </div>
 
   {#if trend.length === 0}
-    <p class="empty-state">En attente de données de tendance...</p>
+    <p class="empty-state">{$t('overview.waitingForTrend')}</p>
   {:else}
     <div class="split-grid">
       <article class="chart-wrap">
         <div class="donut" style="border-radius: 999px;" aria-label="Packets/sec trend"></div>
         <div>
-          <p class="muted">Packets/sec</p>
+          <p class="muted">{$t('overview.packetsPerSec')}</p>
           <strong>{formatNumber(data?.live?.packetsPerSecond, 2) || '-'}</strong>
-          <small class="muted">Current sample: {trend.at(-1)?.label ?? '-'}</small>
+          <small class="muted">{$t('overview.currentSample', { label: trend.at(-1)?.label ?? '-' })}</small>
         </div>
       </article>
 
@@ -164,9 +166,9 @@
 
 <section class="split-grid">
   <div class="panel">
-    <h2>Top abusers</h2>
+    <h2>{$t('overview.topAbusers')}</h2>
     <table>
-      <thead><tr><th>Player</th><th>Packets/min</th></tr></thead>
+      <thead><tr><th>{$t('overview.colPlayer')}</th><th>{$t('overview.colPacketsMin')}</th></tr></thead>
       <tbody>
         {#each data?.live?.topAbusers || [] as row}
           <tr>
@@ -174,21 +176,21 @@
             <td>{formatNumber(row.packetsPerMinute, 2)}</td>
           </tr>
         {:else}
-          <tr><td colspan="2" class="muted">No active abuse signal.</td></tr>
+          <tr><td colspan="2" class="muted">{$t('overview.noAbuseSignal')}</td></tr>
         {/each}
       </tbody>
     </table>
   </div>
 
   <div class="panel">
-    <h2>Top rooms</h2>
+    <h2>{$t('overview.topRooms')}</h2>
     <table>
-      <thead><tr><th>Room</th><th>Packets/min</th></tr></thead>
+      <thead><tr><th>{$t('overview.colRoom')}</th><th>{$t('overview.colPacketsMin')}</th></tr></thead>
       <tbody>
         {#each data?.live?.topRooms || [] as row}
           <tr><td>room #{row.roomId}</td><td>{formatNumber(row.packetsPerMinute, 2)}</td></tr>
         {:else}
-          <tr><td colspan="2" class="muted">No room traffic yet.</td></tr>
+          <tr><td colspan="2" class="muted">{$t('overview.noRoomTraffic')}</td></tr>
         {/each}
       </tbody>
     </table>

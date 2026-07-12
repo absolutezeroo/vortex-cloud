@@ -7,12 +7,15 @@
   import EntityLink from '../components/EntityLink.svelte';
   import LineChart from '../components/LineChart.svelte';
   import { openPlayer, openItem } from '../lib/session.js';
+  import { t } from '../lib/i18n.js';
 
-  const granularities = [
-    { value: 'day', label: 'Day' },
-    { value: 'month', label: 'Month' },
-    { value: 'year', label: 'Year' },
-  ];
+  const granularities = ['day', 'month', 'year'];
+
+  // See the AuditPage `categoryLabel` note: translator must be passed explicitly so template call
+  // sites stay reactive to locale changes.
+  function granularityLabel(value, translator) {
+    return translator(`common.granularity${value.charAt(0).toUpperCase()}${value.slice(1)}`);
+  }
 
   let since = '';
   let until = '';
@@ -62,7 +65,7 @@
   $: salesSeries = data
     ? [
         {
-          name: 'Sales volume (credits)',
+          name: $t('marketplace.salesVolume'),
           color: 'var(--accent)',
           points: (data.timeline || []).map((p) => ({ label: p.label, value: p.volume })),
         },
@@ -72,7 +75,7 @@
   $: countSeries = data
     ? [
         {
-          name: 'Sales count',
+          name: $t('marketplace.salesCount'),
           color: 'var(--ok)',
           points: (data.timeline || []).map((p) => ({ label: p.label, value: p.sales })),
         },
@@ -86,33 +89,33 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>Marketplace</h2></div>
-  <p class="muted">Player-to-player furniture sales activity.</p>
+  <div class="panel-head"><h2>{$t('marketplace.title')}</h2></div>
+  <p class="muted">{$t('marketplace.description')}</p>
 
   <form class="toolbar-grid" on:submit|preventDefault={refresh}>
     <label>
-      Since
+      {$t('common.since')}
       <input type="date" bind:value={since} />
     </label>
     <label>
-      Until
+      {$t('common.until')}
       <input type="date" bind:value={until} />
     </label>
     <label>
-      Granularity
+      {$t('common.granularity')}
       <select bind:value={granularity}>
         {#each granularities as g}
-          <option value={g.value}>{g.label}</option>
+          <option value={g}>{granularityLabel(g, $t)}</option>
         {/each}
       </select>
     </label>
-    <button type="submit" disabled={loading}>Refresh</button>
+    <button type="submit" disabled={loading}>{$t('common.refresh')}</button>
   </form>
 
   {#if loading}
-    <p class="muted">Loading marketplace data...</p>
+    <p class="muted">{$t('marketplace.loading')}</p>
   {:else if forbidden}
-    <AccessDeniedNotice message="Vous n'avez pas l'autorisation d'accéder au marketplace." />
+    <AccessDeniedNotice message={$t('marketplace.accessDenied')} />
   {:else if error}
     <p class="empty-state danger">{error}</p>
   {/if}
@@ -120,27 +123,27 @@
 
 {#if data}
   <div class="metric-grid" style="margin-top: 12px;">
-    <article><span>Active listings</span><strong>{formatNumber(data.totals.activeListings)}</strong></article>
-    <article><span>Sold (window)</span><strong>{formatNumber(data.totals.soldCount)}</strong></article>
-    <article><span>Volume (credits)</span><strong>{formatNumber(data.totals.totalVolume)}</strong></article>
-    <article><span>Average price</span><strong>{formatNumber(data.totals.averagePrice, 1)}</strong></article>
+    <article><span>{$t('marketplace.activeListings')}</span><strong>{formatNumber(data.totals.activeListings)}</strong></article>
+    <article><span>{$t('marketplace.soldWindow')}</span><strong>{formatNumber(data.totals.soldCount)}</strong></article>
+    <article><span>{$t('marketplace.volumeCredits')}</span><strong>{formatNumber(data.totals.totalVolume)}</strong></article>
+    <article><span>{$t('marketplace.averagePrice')}</span><strong>{formatNumber(data.totals.averagePrice, 1)}</strong></article>
   </div>
 
   <div class="split-grid" style="margin-top: 12px;">
     <div class="panel">
-      <div class="panel-head"><h2>Volume per {granularity}</h2></div>
+      <div class="panel-head"><h2>{$t('marketplace.volumePer', { granularity: granularityLabel(granularity, $t) })}</h2></div>
       <LineChart series={salesSeries} valueFormatter={(v) => formatNumber(v)} />
     </div>
     <div class="panel">
-      <div class="panel-head"><h2>Sales per {granularity}</h2></div>
+      <div class="panel-head"><h2>{$t('marketplace.salesPer', { granularity: granularityLabel(granularity, $t) })}</h2></div>
       <LineChart series={countSeries} valueFormatter={(v) => formatNumber(v)} />
     </div>
   </div>
 
   <div class="panel" style="margin-top: 12px;">
-    <h3>Top sellers</h3>
+    <h3>{$t('marketplace.topSellers')}</h3>
     <table>
-      <thead><tr><th>Seller</th><th>Sales</th><th>Volume</th></tr></thead>
+      <thead><tr><th>{$t('marketplace.colSeller')}</th><th>{$t('marketplace.colSales')}</th><th>{$t('marketplace.colVolume')}</th></tr></thead>
       <tbody>
         {#each data.topSellers || [] as row}
           <tr>
@@ -149,7 +152,7 @@
             <td>{formatNumber(row.volume)}</td>
           </tr>
         {:else}
-          <tr><td colspan="3" class="muted">No sales in this window.</td></tr>
+          <tr><td colspan="3" class="muted">{$t('marketplace.noSales')}</td></tr>
         {/each}
       </tbody>
     </table>

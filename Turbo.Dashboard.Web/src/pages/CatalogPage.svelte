@@ -25,10 +25,11 @@
   import PickerModal from '../components/PickerModal.svelte';
   import CatalogIconPickerModal from '../components/CatalogIconPickerModal.svelte';
   import { identity } from '../lib/session.js';
+  import { t, translate } from '../lib/i18n.js';
 
   const CATALOG_TYPES = [
-    { value: 0, label: 'Normal' },
-    { value: 1, label: 'Builders Club' },
+    { value: 0, key: 'catalogAdmin.typeNormal' },
+    { value: 1, key: 'catalogAdmin.typeBuildersClub' },
   ];
 
   const LAYOUT_OPTIONS = [
@@ -181,7 +182,7 @@
       currentPage = await apiGet(`/api/v1/catalog/pages/${parentId}`);
     } catch (err) {
       currentPage = null;
-      pagesError = isPermissionDeniedError(err) ? 'Droits insuffisants.' : err.code || err.message;
+      pagesError = isPermissionDeniedError(err) ? translate('common.insufficientRights') : err.code || err.message;
     } finally {
       currentPageLoading = false;
     }
@@ -198,7 +199,7 @@
     try {
       offerDetail = await apiGet(`/api/v1/catalog/offers/${offerId}`);
     } catch (err) {
-      offerDetailError = isPermissionDeniedError(err) ? 'Droits insuffisants.' : err.code || err.message;
+      offerDetailError = isPermissionDeniedError(err) ? translate('common.insufficientRights') : err.code || err.message;
     } finally {
       offerDetailLoading = false;
     }
@@ -211,18 +212,18 @@
   // outer `selectedOfferId` inside the function body) so this stays part of the template
   // expression Svelte's reactivity tracks -- a value only read inside a called function's body
   // wouldn't be seen as a dependency of the {expression} it's called from.
-  function offerActionLabel(offer, expandedOfferId) {
+  function offerActionLabel(offer, expandedOfferId, translator) {
     const expanded = expandedOfferId === offer.id;
 
     if (offer.productCount === 0) {
-      return expanded ? 'Hide' : 'Add item';
+      return expanded ? translator('catalogAdmin.hide') : translator('catalogAdmin.addItem');
     }
 
     if (offer.productCount === 1) {
-      return expanded ? 'Hide details' : 'Manage';
+      return expanded ? translator('catalogAdmin.hideDetails') : translator('catalogAdmin.manage');
     }
 
-    return expanded ? 'Hide items' : `Items (${offer.productCount})`;
+    return expanded ? translator('catalogAdmin.hideItems') : translator('catalogAdmin.itemsCount', { count: offer.productCount });
   }
 
   // Toggles the inline products panel under the clicked offer's own card -- clicking the same
@@ -286,7 +287,7 @@
     errors = { ...errors, [id]: '' };
 
     if (!valid) {
-      errors = { ...errors, [id]: 'Fill the required fields (reason needs at least 3 characters).' };
+      errors = { ...errors, [id]: translate('catalogAdmin.fillFields') };
       return;
     }
 
@@ -318,7 +319,7 @@
     } catch (err) {
       errors = {
         ...errors,
-        [id]: isPermissionDeniedError(err) ? 'Droits insuffisants pour effectuer cette action.' : err.code || err.message,
+        [id]: isPermissionDeniedError(err) ? translate('common.insufficientRightsAction') : err.code || err.message,
       };
     } finally {
       busy = { ...busy, [id]: false };
@@ -327,7 +328,7 @@
 
   function stageCreatePage() {
     if (!canManage) {
-      errors = { ...errors, createPage: 'Droits insuffisants.' };
+      errors = { ...errors, createPage: translate('common.insufficientRights') };
       return;
     }
 
@@ -335,7 +336,7 @@
 
     stage(
       'createPage',
-      'Create catalog page',
+      translate('catalogAdmin.newPage'),
       '/api/v1/operations/catalog/pages',
       Boolean(newPage.localization.trim()) && reasonOk(newPage.reason),
       {
@@ -351,7 +352,7 @@
         visible: newPage.visible,
         reason: newPage.reason.trim(),
       },
-      `Create page "${newPage.localization.trim()}" under ${parentId ? `#${parentId}` : 'root'}.`,
+      translate('catalogAdmin.createPageSummary', { name: newPage.localization.trim(), parent: parentId ? `#${parentId}` : translate('catalogAdmin.root').toLowerCase() }),
       async () => {
         newPageOpen = false;
         newPage = emptyPageForm();
@@ -381,7 +382,7 @@
 
     stage(
       'updatePage',
-      'Update catalog page',
+      translate('catalogAdmin.edit'),
       '/api/v1/operations/catalog/pages/update',
       Boolean(editPageForm.localization.trim()) && reasonOk(editPageForm.reason),
       {
@@ -397,7 +398,7 @@
         visible: editPageForm.visible,
         reason: editPageForm.reason.trim(),
       },
-      `Update page #${currentPage.id}.`,
+      translate('catalogAdmin.updatePageSummary', { id: currentPage.id }),
       async () => {
         editPageOpen = false;
         await loadCurrentPage();
@@ -416,11 +417,11 @@
 
     stage(
       'deletePage',
-      'Delete catalog page',
+      translate('catalogAdmin.deletePage'),
       '/api/v1/operations/catalog/pages/delete',
       reasonOk(deletePageReason),
       { pageId: currentPage.id, reason: deletePageReason.trim() },
-      `Delete page #${currentPage.id} ("${currentPage.localization}"). Blocked if it still has sub-pages or offers.`,
+      translate('catalogAdmin.deletePageSummary', { id: currentPage.id, name: currentPage.localization }),
       async () => {
         deletePageReason = '';
         goUp();
@@ -457,7 +458,7 @@
 
     stage(
       'createOffer',
-      'Create catalog offer',
+      translate('catalogAdmin.newOffer'),
       '/api/v1/operations/catalog/offers',
       Boolean(newOffer.localizationId.trim()) && nonNegative(newOffer.costCredits) && reasonOk(newOffer.reason),
       {
@@ -473,7 +474,7 @@
         visible: newOffer.visible,
         reason: newOffer.reason.trim(),
       },
-      `Create offer "${newOffer.localizationId.trim()}" on page #${currentPage.id}.`,
+      translate('catalogAdmin.createOfferSummary', { name: newOffer.localizationId.trim(), id: currentPage.id }),
       async () => {
         newOfferOpen = false;
         newOffer = emptyOfferForm();
@@ -505,7 +506,7 @@
 
     stage(
       'updateOffer',
-      'Update catalog offer',
+      translate('catalogAdmin.edit'),
       '/api/v1/operations/catalog/offers/update',
       Boolean(editOfferForm.localizationId.trim()) && nonNegative(editOfferForm.costCredits) && reasonOk(editOfferForm.reason),
       {
@@ -521,7 +522,7 @@
         visible: editOfferForm.visible,
         reason: editOfferForm.reason.trim(),
       },
-      `Update offer #${editOfferId}.`,
+      translate('catalogAdmin.updateOfferSummary', { id: editOfferId }),
       async () => {
         const id = editOfferId;
         editOfferId = null;
@@ -540,11 +541,11 @@
 
     stage(
       'deleteOffer',
-      'Delete catalog offer',
+      translate('catalogAdmin.deleteOffer'),
       '/api/v1/operations/catalog/offers/delete',
       reasonOk(deleteOfferReason[offer.id]),
       { offerId: offer.id, reason: (deleteOfferReason[offer.id] || '').trim() },
-      `Delete offer #${offer.id} ("${offer.localizationId}"). Blocked if it still has products.`,
+      translate('catalogAdmin.deleteOfferSummary', { id: offer.id, name: offer.localizationId }),
       async () => {
         deleteOfferReason = { ...deleteOfferReason, [offer.id]: '' };
         if (selectedOfferId === offer.id) {
@@ -557,7 +558,7 @@
   }
 
   function pickProductFurniture(apply) {
-    picker = { kind: 'furniture', title: 'Select furniture', onSelect: apply };
+    picker = { kind: 'furniture', title: translate('common.selectFurniture'), onSelect: apply };
   }
 
   function stageCreateProduct() {
@@ -565,7 +566,7 @@
 
     stage(
       'createProduct',
-      'Create catalog product',
+      translate('catalogAdmin.addItem'),
       '/api/v1/operations/catalog/products',
       reasonOk(newProduct.reason),
       {
@@ -579,7 +580,7 @@
         buildersClubEligible: newProduct.buildersClubEligible,
         reason: newProduct.reason.trim(),
       },
-      `Add product to offer #${selectedOfferId}.`,
+      translate('catalogAdmin.addProductSummary', { id: selectedOfferId }),
       async () => {
         newProductOpen = false;
         newProduct = emptyProductForm();
@@ -608,7 +609,7 @@
 
     stage(
       'updateProduct',
-      'Update catalog product',
+      translate('catalogAdmin.edit'),
       '/api/v1/operations/catalog/products/update',
       reasonOk(editProductForm.reason),
       {
@@ -622,7 +623,7 @@
         buildersClubEligible: editProductForm.buildersClubEligible,
         reason: editProductForm.reason.trim(),
       },
-      `Update product #${editProductId}.`,
+      translate('catalogAdmin.updateProductSummary', { id: editProductId }),
       async () => {
         editProductId = null;
         await loadOfferDetail(selectedOfferId);
@@ -637,11 +638,11 @@
 
     stage(
       'deleteProduct',
-      'Delete catalog product',
+      translate('catalogAdmin.deleteProduct'),
       '/api/v1/operations/catalog/products/delete',
       reasonOk(deleteProductReason[product.id]),
       { productId: product.id, reason: (deleteProductReason[product.id] || '').trim() },
-      `Delete product #${product.id}.`,
+      translate('catalogAdmin.deleteProductSummary', { id: product.id }),
       async () => {
         deleteProductReason = { ...deleteProductReason, [product.id]: '' };
         await loadOfferDetail(selectedOfferId);
@@ -668,26 +669,25 @@
 
 <section class="panel">
   <div class="panel-head">
-    <h2>Catalog</h2>
-    <button type="button" class="ghost-button" on:click={refreshAll} disabled={pagesLoading}>Refresh</button>
+    <h2>{$t('catalogAdmin.title')}</h2>
+    <button type="button" class="ghost-button" on:click={refreshAll} disabled={pagesLoading}>{$t('common.refresh')}</button>
   </div>
   <p class="muted">
-    Browse and edit catalog pages, offers and products. Normal and Builders Club are two structurally
-    separate trees. Changes go live immediately for connected clients — no restart needed.
+    {$t('catalogAdmin.description')}
   </p>
 
   <div class="catalog-tabs">
-    {#each CATALOG_TYPES as t}
-      <button type="button" class="catalog-tab" class:active={catalogType === t.value} on:click={() => switchCatalogType(t.value)}>
+    {#each CATALOG_TYPES as ct}
+      <button type="button" class="catalog-tab" class:active={catalogType === ct.value} on:click={() => switchCatalogType(ct.value)}>
         <Tag size={14} strokeWidth={2} aria-hidden="true" />
-        {t.label}
+        {$t(ct.key)}
       </button>
     {/each}
   </div>
 
   <nav class="breadcrumb" aria-label="Catalog page path">
     <button type="button" class="crumb-button" class:active={parentChain.length === 0} on:click={() => drillToBreadcrumb(-1)}>
-      <Folder size={14} strokeWidth={2} aria-hidden="true" /> Root
+      <Folder size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.root')}
     </button>
     {#each parentChain as crumb, i}
       <ChevronRight size={14} strokeWidth={2} class="muted" aria-hidden="true" />
@@ -699,7 +699,7 @@
 </section>
 
 {#if pagesForbidden}
-  <AccessDeniedNotice message="Vous n'avez pas la permission de consulter le catalogue." />
+  <AccessDeniedNotice message={$t('catalogAdmin.accessDenied')} />
 {:else}
   {#if currentPage}
     <section class="panel">
@@ -719,48 +719,48 @@
         </div>
         {#if canManage}
           <button type="button" class="ghost-button" on:click={startEditPage}>
-            <Pencil size={14} strokeWidth={2} aria-hidden="true" /> Edit
+            <Pencil size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.edit')}
           </button>
         {/if}
       </div>
       <div class="metric-grid compact">
-        <article><span>Layout</span><strong>{currentPage.layout}</strong></article>
+        <article><span>{$t('catalogAdmin.layout')}</span><strong>{currentPage.layout}</strong></article>
         <article>
-          <span>Icon</span>
+          <span>{$t('catalogAdmin.icon')}</span>
           <strong class="icon-preview">
             {#if currentPage.iconUrl}<img src={currentPage.iconUrl} alt="" />{/if}
             #{currentPage.icon}
           </strong>
         </article>
-        <article><span>Sort order</span><strong>{currentPage.sortOrder}</strong></article>
+        <article><span>{$t('catalogAdmin.sortOrder')}</span><strong>{currentPage.sortOrder}</strong></article>
         <article>
-          <span>Visible</span>
+          <span>{$t('catalogAdmin.visible')}</span>
           <strong>
             <span class="status-badge" class:status-badge--ok={currentPage.visible} class:status-badge--bad={!currentPage.visible}>
               {#if currentPage.visible}<Eye size={12} strokeWidth={2} aria-hidden="true" />{:else}<EyeOff size={12} strokeWidth={2} aria-hidden="true" />{/if}
-              {currentPage.visible ? 'Visible' : 'Hidden'}
+              {currentPage.visible ? $t('catalogAdmin.visible') : $t('catalogAdmin.hidden')}
             </span>
           </strong>
         </article>
-        <article><span>Image data</span><strong>{(currentPage.imageData || []).length} line(s)</strong></article>
-        <article><span>Text data</span><strong>{(currentPage.textData || []).length} line(s)</strong></article>
+        <article><span>{$t('catalogAdmin.imageData')}</span><strong>{$t('catalogAdmin.lineCount', { count: (currentPage.imageData || []).length })}</strong></article>
+        <article><span>{$t('catalogAdmin.textData')}</span><strong>{$t('catalogAdmin.lineCount', { count: (currentPage.textData || []).length })}</strong></article>
       </div>
 
       {#if editPageOpen && editPageForm}
         <div class="catalog-card-detail">
           <div class="op-field">
-            <label for="edit-page-localization">Localization key *</label>
+            <label for="edit-page-localization">{$t('catalogAdmin.localizationKeyRequired')}</label>
             <input id="edit-page-localization" bind:value={editPageForm.localization} />
           </div>
           <div class="op-field">
-            <label for="edit-page-name">Display name</label>
+            <label for="edit-page-name">{$t('catalogAdmin.displayName')}</label>
             <input id="edit-page-name" bind:value={editPageForm.name} />
           </div>
           <div class="op-field">
-            <span class="op-label">Icon</span>
+            <span class="op-label">{$t('catalogAdmin.icon')}</span>
             <div class="op-pick">
               <button class="ghost-button" type="button" on:click={() => (iconPickerTarget = 'edit')}>
-                <Image size={14} strokeWidth={2} aria-hidden="true" /> Select icon
+                <Image size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.selectIcon')}
               </button>
               <span class="op-chip">
                 {#if iconUrlFor(editPageForm.icon)}<img class="op-sprite" src={iconUrlFor(editPageForm.icon)} alt="" />{:else}<span class="op-sprite">{editPageForm.icon}</span>{/if}
@@ -769,33 +769,33 @@
             </div>
           </div>
           <div class="op-field">
-            <label for="edit-page-layout">Layout</label>
+            <label for="edit-page-layout">{$t('catalogAdmin.layout')}</label>
             <select id="edit-page-layout" bind:value={editPageForm.layout}>
               {#each LAYOUT_OPTIONS as l}<option value={l}>{formatLayoutLabel(l)}</option>{/each}
             </select>
           </div>
           <div class="op-field">
-            <label for="edit-page-sort">Sort order</label>
+            <label for="edit-page-sort">{$t('catalogAdmin.sortOrder')}</label>
             <input id="edit-page-sort" type="number" bind:value={editPageForm.sortOrder} />
           </div>
           <div class="op-field">
-            <label><input type="checkbox" bind:checked={editPageForm.visible} /> Visible</label>
+            <label><input type="checkbox" bind:checked={editPageForm.visible} /> {$t('catalogAdmin.visible')}</label>
           </div>
           <div class="op-field">
-            <label for="edit-page-image-data">Image data (one per line, optional)</label>
+            <label for="edit-page-image-data">{$t('catalogAdmin.imageDataOptional')}</label>
             <textarea id="edit-page-image-data" rows="3" bind:value={editPageForm.imageDataText} placeholder="promo_banner.png"></textarea>
           </div>
           <div class="op-field">
-            <label for="edit-page-text-data">Text data (one per line, optional)</label>
+            <label for="edit-page-text-data">{$t('catalogAdmin.textDataOptional')}</label>
             <textarea id="edit-page-text-data" rows="3" bind:value={editPageForm.textDataText} placeholder="Welcome to our shop!"></textarea>
           </div>
           <div class="op-field">
-            <label for="edit-page-reason">Reason *</label>
-            <input id="edit-page-reason" bind:value={editPageForm.reason} placeholder="why this change?" list="reason-history" />
+            <label for="edit-page-reason">{$t('common.reasonRequired')}</label>
+            <input id="edit-page-reason" bind:value={editPageForm.reason} placeholder={$t('common.reasonPlaceholderChange')} list="reason-history" />
           </div>
           <div class="op-actions">
-            <button type="button" on:click={stageUpdatePage} disabled={busy.updatePage}>Save</button>
-            <button class="ghost-button" type="button" on:click={() => (editPageOpen = false)}>Cancel</button>
+            <button type="button" on:click={stageUpdatePage} disabled={busy.updatePage}>{$t('catalogAdmin.save')}</button>
+            <button class="ghost-button" type="button" on:click={() => (editPageOpen = false)}>{$t('catalogAdmin.cancel')}</button>
           </div>
           {#if errors.updatePage}<p class="empty-state danger">{errors.updatePage}</p>{/if}
           {#if results.updatePage}
@@ -810,14 +810,14 @@
       {#if canManage}
         <div class="catalog-card-detail">
           <div class="op-field">
-            <label for="delete-page-reason">Delete this page - reason *</label>
+            <label for="delete-page-reason">{$t('catalogAdmin.deletePageReasonLabel')}</label>
             <div class="op-pick">
-              <input id="delete-page-reason" bind:value={deletePageReason} placeholder="why delete?" style="flex: 1;" />
+              <input id="delete-page-reason" bind:value={deletePageReason} placeholder={$t('catalogAdmin.deleteWhyPlaceholder')} style="flex: 1;" />
               <button type="button" class="ghost-button danger" on:click={stageDeletePage}>
-                <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> Delete page
+                <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.deletePage')}
               </button>
             </div>
-            <p class="muted">Blocked server-side if this page still has sub-pages or offers.</p>
+            <p class="muted">{$t('catalogAdmin.deletePageBlockedNote')}</p>
           </div>
           {#if errors.deletePage}<p class="empty-state danger">{errors.deletePage}</p>{/if}
           {#if results.deletePage}
@@ -833,10 +833,10 @@
 
   <section class="panel">
     <div class="panel-head">
-      <h2><Folder size={17} strokeWidth={2} aria-hidden="true" /> Sub-pages</h2>
+      <h2><Folder size={17} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.subPages')}</h2>
       {#if canManage}
         <button type="button" class="ghost-button" on:click={() => (newPageOpen = !newPageOpen)}>
-          <Plus size={14} strokeWidth={2} aria-hidden="true" /> {newPageOpen ? 'Cancel' : 'New page'}
+          <Plus size={14} strokeWidth={2} aria-hidden="true" /> {newPageOpen ? $t('catalogAdmin.cancel') : $t('catalogAdmin.newPage')}
         </button>
       {/if}
     </div>
@@ -844,18 +844,18 @@
     {#if newPageOpen}
       <div class="catalog-card-detail">
         <div class="op-field">
-          <label for="new-page-localization">Localization key *</label>
-          <input id="new-page-localization" bind:value={newPage.localization} placeholder="my_new_page" />
+          <label for="new-page-localization">{$t('catalogAdmin.localizationKeyRequired')}</label>
+          <input id="new-page-localization" bind:value={newPage.localization} placeholder={$t('catalogAdmin.localizationPlaceholder')} />
         </div>
         <div class="op-field">
-          <label for="new-page-name">Display name</label>
+          <label for="new-page-name">{$t('catalogAdmin.displayName')}</label>
           <input id="new-page-name" bind:value={newPage.name} />
         </div>
         <div class="op-field">
-          <span class="op-label">Icon</span>
+          <span class="op-label">{$t('catalogAdmin.icon')}</span>
           <div class="op-pick">
             <button class="ghost-button" type="button" on:click={() => (iconPickerTarget = 'new')}>
-              <Image size={14} strokeWidth={2} aria-hidden="true" /> Select icon
+              <Image size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.selectIcon')}
             </button>
             <span class="op-chip">
               {#if iconUrlFor(newPage.icon)}<img class="op-sprite" src={iconUrlFor(newPage.icon)} alt="" />{:else}<span class="op-sprite">{newPage.icon}</span>{/if}
@@ -864,32 +864,32 @@
           </div>
         </div>
         <div class="op-field">
-          <label for="new-page-layout">Layout</label>
+          <label for="new-page-layout">{$t('catalogAdmin.layout')}</label>
           <select id="new-page-layout" bind:value={newPage.layout}>
             {#each LAYOUT_OPTIONS as l}<option value={l}>{formatLayoutLabel(l)}</option>{/each}
           </select>
         </div>
         <div class="op-field">
-          <label for="new-page-sort">Sort order</label>
+          <label for="new-page-sort">{$t('catalogAdmin.sortOrder')}</label>
           <input id="new-page-sort" type="number" bind:value={newPage.sortOrder} />
         </div>
         <div class="op-field">
-          <label><input type="checkbox" bind:checked={newPage.visible} /> Visible</label>
+          <label><input type="checkbox" bind:checked={newPage.visible} /> {$t('catalogAdmin.visible')}</label>
         </div>
         <div class="op-field">
-          <label for="new-page-image-data">Image data (one per line, optional)</label>
+          <label for="new-page-image-data">{$t('catalogAdmin.imageDataOptional')}</label>
           <textarea id="new-page-image-data" rows="3" bind:value={newPage.imageDataText} placeholder="promo_banner.png"></textarea>
         </div>
         <div class="op-field">
-          <label for="new-page-text-data">Text data (one per line, optional)</label>
+          <label for="new-page-text-data">{$t('catalogAdmin.textDataOptional')}</label>
           <textarea id="new-page-text-data" rows="3" bind:value={newPage.textDataText} placeholder="Welcome to our shop!"></textarea>
         </div>
         <div class="op-field">
-          <label for="new-page-reason">Reason *</label>
-          <input id="new-page-reason" bind:value={newPage.reason} placeholder="why this page?" list="reason-history" />
+          <label for="new-page-reason">{$t('common.reasonRequired')}</label>
+          <input id="new-page-reason" bind:value={newPage.reason} placeholder={$t('catalogAdmin.reasonPagePlaceholder')} list="reason-history" />
         </div>
         <div class="op-actions">
-          <button type="button" on:click={stageCreatePage} disabled={busy.createPage}>Create</button>
+          <button type="button" on:click={stageCreatePage} disabled={busy.createPage}>{$t('catalogAdmin.create')}</button>
         </div>
         {#if errors.createPage}<p class="empty-state danger">{errors.createPage}</p>{/if}
         {#if results.createPage}
@@ -902,11 +902,11 @@
     {/if}
 
     {#if pagesLoading}
-      <p class="muted">Loading pages...</p>
+      <p class="muted">{$t('catalogAdmin.loadingPages')}</p>
     {:else if pagesError}
       <p class="empty-state danger">{pagesError}</p>
     {:else if pages.length === 0}
-      <p class="empty-state">No sub-pages at this level.</p>
+      <p class="empty-state">{$t('catalogAdmin.noSubPages')}</p>
     {:else}
       <div class="catalog-list">
         {#each pages as page (page.id)}
@@ -923,8 +923,8 @@
               <small class="muted">{page.localization} - #{page.id}</small>
             </span>
             <span class="catalog-row-meta">
-              <span class="op-chip" title="Sub-pages"><Folder size={12} strokeWidth={2} aria-hidden="true" /> {page.childCount}</span>
-              <span class="op-chip" title="Offers"><Tag size={12} strokeWidth={2} aria-hidden="true" /> {page.offerCount}</span>
+              <span class="op-chip" title={$t('catalogAdmin.subPagesTooltip')}><Folder size={12} strokeWidth={2} aria-hidden="true" /> {page.childCount}</span>
+              <span class="op-chip" title={$t('catalogAdmin.offersTooltip')}><Tag size={12} strokeWidth={2} aria-hidden="true" /> {page.offerCount}</span>
               <span class="status-badge" class:status-badge--ok={page.visible} class:status-badge--bad={!page.visible}>
                 {#if page.visible}<Eye size={12} strokeWidth={2} aria-hidden="true" />{:else}<EyeOff size={12} strokeWidth={2} aria-hidden="true" />{/if}
               </span>
@@ -939,10 +939,10 @@
   {#if currentPage}
     <section class="panel">
       <div class="panel-head">
-        <h2><Tag size={17} strokeWidth={2} aria-hidden="true" /> Offers on this page</h2>
+        <h2><Tag size={17} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.offersOnPage')}</h2>
         {#if canManage}
           <button type="button" class="ghost-button" on:click={openNewOffer}>
-            <Plus size={14} strokeWidth={2} aria-hidden="true" /> {newOfferOpen ? 'Cancel' : 'New offer'}
+            <Plus size={14} strokeWidth={2} aria-hidden="true" /> {newOfferOpen ? $t('catalogAdmin.cancel') : $t('catalogAdmin.newOffer')}
           </button>
         {/if}
       </div>
@@ -950,48 +950,48 @@
       {#if newOfferOpen}
         <div class="catalog-card-detail">
           <div class="op-field">
-            <label for="new-offer-localization">Localization id *</label>
+            <label for="new-offer-localization">{$t('catalogAdmin.localizationIdRequired')}</label>
             <input id="new-offer-localization" bind:value={newOffer.localizationId} />
-            <small class="muted">Internal label, pre-filled for you -- edit it if you want something more descriptive, no required format.</small>
+            <small class="muted">{$t('catalogAdmin.localizationIdHint')}</small>
           </div>
           <div class="op-field">
-            <label for="new-offer-credits">Cost (credits)</label>
+            <label for="new-offer-credits">{$t('catalogAdmin.costCredits')}</label>
             <input id="new-offer-credits" type="number" min="0" bind:value={newOffer.costCredits} />
           </div>
           <div class="op-field">
-            <label for="new-offer-currency-amount">Cost (secondary currency)</label>
+            <label for="new-offer-currency-amount">{$t('catalogAdmin.costSecondary')}</label>
             <input id="new-offer-currency-amount" type="number" min="0" bind:value={newOffer.costCurrency} />
           </div>
           <div class="op-field">
-            <label for="new-offer-currency-type">Currency type (optional)</label>
+            <label for="new-offer-currency-type">{$t('catalogAdmin.currencyTypeOptional')}</label>
             <select id="new-offer-currency-type" bind:value={newOffer.currencyTypeId}>
-              <option value="">none</option>
+              <option value="">{$t('catalogAdmin.none')}</option>
               {#each currencyTypes as c}<option value={c.id}>{c.name || c.type} (#{c.id})</option>{/each}
             </select>
           </div>
           <div class="op-field">
-            <label for="new-offer-club-level">Club level</label>
+            <label for="new-offer-club-level">{$t('catalogAdmin.clubLevel')}</label>
             <input id="new-offer-club-level" type="number" min="0" bind:value={newOffer.clubLevel} />
           </div>
           <div class="op-field">
-            <label for="new-offer-discount">Discount %</label>
+            <label for="new-offer-discount">{$t('catalogAdmin.discountPercent')}</label>
             <input id="new-offer-discount" type="number" min="0" max="100" bind:value={newOffer.discountPercent} />
           </div>
           <div class="op-field">
-            <label><input type="checkbox" bind:checked={newOffer.canGift} /> Can gift</label>
+            <label><input type="checkbox" bind:checked={newOffer.canGift} /> {$t('catalogAdmin.canGift')}</label>
           </div>
           <div class="op-field">
-            <label><input type="checkbox" bind:checked={newOffer.canBundle} /> Can bundle</label>
+            <label><input type="checkbox" bind:checked={newOffer.canBundle} /> {$t('catalogAdmin.canBundle')}</label>
           </div>
           <div class="op-field">
-            <label><input type="checkbox" bind:checked={newOffer.visible} /> Visible</label>
+            <label><input type="checkbox" bind:checked={newOffer.visible} /> {$t('catalogAdmin.visible')}</label>
           </div>
           <div class="op-field">
-            <label for="new-offer-reason">Reason *</label>
-            <input id="new-offer-reason" bind:value={newOffer.reason} placeholder="why this offer?" list="reason-history" />
+            <label for="new-offer-reason">{$t('common.reasonRequired')}</label>
+            <input id="new-offer-reason" bind:value={newOffer.reason} placeholder={$t('catalogAdmin.reasonOfferPlaceholder')} list="reason-history" />
           </div>
           <div class="op-actions">
-            <button type="button" on:click={stageCreateOffer} disabled={busy.createOffer}>Create</button>
+            <button type="button" on:click={stageCreateOffer} disabled={busy.createOffer}>{$t('catalogAdmin.create')}</button>
           </div>
           {#if errors.createOffer}<p class="empty-state danger">{errors.createOffer}</p>{/if}
           {#if results.createOffer}
@@ -1004,7 +1004,7 @@
       {/if}
 
       {#if currentPage.offers.length === 0}
-        <p class="empty-state">No offers on this page.</p>
+        <p class="empty-state">{$t('catalogAdmin.noOffers')}</p>
       {:else}
         <div class="catalog-list">
           {#each currentPage.offers as offer (offer.id)}
@@ -1023,11 +1023,11 @@
                 </span>
                 <div class="op-actions">
                   <button type="button" class="ghost-button" class:active={selectedOfferId === offer.id} on:click={() => toggleOfferDetail(offer.id)}>
-                    <Package size={14} strokeWidth={2} aria-hidden="true" /> {offerActionLabel(offer, selectedOfferId)}
+                    <Package size={14} strokeWidth={2} aria-hidden="true" /> {offerActionLabel(offer, selectedOfferId, $t)}
                   </button>
                   {#if canManage}
                     <button type="button" class="ghost-button" on:click={() => startEditOffer(offer)}>
-                      <Pencil size={14} strokeWidth={2} aria-hidden="true" /> Edit
+                      <Pencil size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.edit')}
                     </button>
                   {/if}
                 </div>
@@ -1056,42 +1056,42 @@
               {#if editOfferId === offer.id && editOfferForm}
                 <div class="catalog-card-detail">
                   <div class="op-field">
-                    <label for={`edit-offer-localization-${offer.id}`}>Localization id *</label>
+                    <label for={`edit-offer-localization-${offer.id}`}>{$t('catalogAdmin.localizationIdRequired')}</label>
                     <input id={`edit-offer-localization-${offer.id}`} bind:value={editOfferForm.localizationId} />
                   </div>
                   <div class="op-field">
-                    <label for={`edit-offer-credits-${offer.id}`}>Cost (credits)</label>
+                    <label for={`edit-offer-credits-${offer.id}`}>{$t('catalogAdmin.costCredits')}</label>
                     <input id={`edit-offer-credits-${offer.id}`} type="number" min="0" bind:value={editOfferForm.costCredits} />
                   </div>
                   <div class="op-field">
-                    <label for={`edit-offer-currency-amount-${offer.id}`}>Cost (secondary currency)</label>
+                    <label for={`edit-offer-currency-amount-${offer.id}`}>{$t('catalogAdmin.costSecondary')}</label>
                     <input id={`edit-offer-currency-amount-${offer.id}`} type="number" min="0" bind:value={editOfferForm.costCurrency} />
                   </div>
                   <div class="op-field">
-                    <label for={`edit-offer-currency-type-${offer.id}`}>Currency type (optional)</label>
+                    <label for={`edit-offer-currency-type-${offer.id}`}>{$t('catalogAdmin.currencyTypeOptional')}</label>
                     <select id={`edit-offer-currency-type-${offer.id}`} bind:value={editOfferForm.currencyTypeId}>
-                      <option value="">none</option>
+                      <option value="">{$t('catalogAdmin.none')}</option>
                       {#each currencyTypes as c}<option value={c.id}>{c.name || c.type} (#{c.id})</option>{/each}
                     </select>
                   </div>
                   <div class="op-field">
-                    <label for={`edit-offer-club-${offer.id}`}>Club level</label>
+                    <label for={`edit-offer-club-${offer.id}`}>{$t('catalogAdmin.clubLevel')}</label>
                     <input id={`edit-offer-club-${offer.id}`} type="number" min="0" bind:value={editOfferForm.clubLevel} />
                   </div>
                   <div class="op-field">
-                    <label for={`edit-offer-discount-${offer.id}`}>Discount %</label>
+                    <label for={`edit-offer-discount-${offer.id}`}>{$t('catalogAdmin.discountPercent')}</label>
                     <input id={`edit-offer-discount-${offer.id}`} type="number" min="0" max="100" bind:value={editOfferForm.discountPercent} />
                   </div>
-                  <div class="op-field"><label><input type="checkbox" bind:checked={editOfferForm.canGift} /> Can gift</label></div>
-                  <div class="op-field"><label><input type="checkbox" bind:checked={editOfferForm.canBundle} /> Can bundle</label></div>
-                  <div class="op-field"><label><input type="checkbox" bind:checked={editOfferForm.visible} /> Visible</label></div>
+                  <div class="op-field"><label><input type="checkbox" bind:checked={editOfferForm.canGift} /> {$t('catalogAdmin.canGift')}</label></div>
+                  <div class="op-field"><label><input type="checkbox" bind:checked={editOfferForm.canBundle} /> {$t('catalogAdmin.canBundle')}</label></div>
+                  <div class="op-field"><label><input type="checkbox" bind:checked={editOfferForm.visible} /> {$t('catalogAdmin.visible')}</label></div>
                   <div class="op-field">
-                    <label for={`edit-offer-reason-${offer.id}`}>Reason *</label>
-                    <input id={`edit-offer-reason-${offer.id}`} bind:value={editOfferForm.reason} placeholder="why this change?" list="reason-history" />
+                    <label for={`edit-offer-reason-${offer.id}`}>{$t('common.reasonRequired')}</label>
+                    <input id={`edit-offer-reason-${offer.id}`} bind:value={editOfferForm.reason} placeholder={$t('common.reasonPlaceholderChange')} list="reason-history" />
                   </div>
                   <div class="op-actions">
-                    <button type="button" on:click={stageUpdateOffer} disabled={busy.updateOffer}>Save</button>
-                    <button class="ghost-button" type="button" on:click={() => (editOfferId = null)}>Cancel</button>
+                    <button type="button" on:click={stageUpdateOffer} disabled={busy.updateOffer}>{$t('catalogAdmin.save')}</button>
+                    <button class="ghost-button" type="button" on:click={() => (editOfferId = null)}>{$t('catalogAdmin.cancel')}</button>
                   </div>
                   {#if errors.updateOffer}<p class="empty-state danger">{errors.updateOffer}</p>{/if}
                   {#if results.updateOffer}
@@ -1105,9 +1105,9 @@
 
               {#if canManage}
                 <div class="catalog-card-detail op-pick">
-                  <input bind:value={deleteOfferReason[offer.id]} placeholder="reason to delete this offer" list="reason-history" style="flex: 1;" />
+                  <input bind:value={deleteOfferReason[offer.id]} placeholder={$t('catalogAdmin.deleteOfferReasonPlaceholder')} list="reason-history" style="flex: 1;" />
                   <button type="button" class="ghost-button danger" on:click={() => stageDeleteOffer(offer)}>
-                    <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> Delete offer
+                    <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.deleteOffer')}
                   </button>
                 </div>
               {/if}
@@ -1115,73 +1115,73 @@
               {#if selectedOfferId === offer.id}
                 <div class="catalog-card-detail products-panel">
                   <div class="panel-head">
-                    <h3><Package size={15} strokeWidth={2} aria-hidden="true" /> Items delivered by this offer</h3>
+                    <h3><Package size={15} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.itemsDelivered')}</h3>
                     {#if canManage}
                       <button type="button" class="ghost-button" on:click={() => (newProductOpen = !newProductOpen)}>
-                        <Plus size={14} strokeWidth={2} aria-hidden="true" /> {newProductOpen ? 'Cancel' : 'Add item'}
+                        <Plus size={14} strokeWidth={2} aria-hidden="true" /> {newProductOpen ? $t('catalogAdmin.cancel') : $t('catalogAdmin.addItem')}
                       </button>
                     {/if}
                   </div>
 
                   {#if offerDetailLoading}
-                    <p class="muted">Loading products...</p>
+                    <p class="muted">{$t('catalogAdmin.loadingProducts')}</p>
                   {:else if offerDetailError}
                     <p class="empty-state danger">{offerDetailError}</p>
                   {:else if offerDetail}
                     {#if newProductOpen}
                       <div class="catalog-card-detail">
                         <div class="op-field">
-                          <label for="new-product-type">Product type</label>
+                          <label for="new-product-type">{$t('catalogAdmin.productType')}</label>
                           <select id="new-product-type" bind:value={newProduct.productType}>
-                            {#each PRODUCT_TYPES as t}<option value={t.value}>{t.label}</option>{/each}
+                            {#each PRODUCT_TYPES as pt}<option value={pt.value}>{pt.label}</option>{/each}
                           </select>
                         </div>
                         <div class="op-field">
-                          <span class="op-label">Furniture (optional)</span>
+                          <span class="op-label">{$t('catalogAdmin.furnitureOptional')}</span>
                           <div class="op-pick">
                             <button
                               class="ghost-button"
                               type="button"
                               on:click={() => pickProductFurniture((f) => (newProduct = { ...newProduct, furnitureDefinitionId: f.id, furnitureName: f.name, furnitureSprite: f.spriteId, furnitureIcon: f.iconUrl }))}
                             >
-                              <Image size={14} strokeWidth={2} aria-hidden="true" /> Select furniture
+                              <Image size={14} strokeWidth={2} aria-hidden="true" /> {$t('common.selectFurniture')}
                             </button>
                             {#if newProduct.furnitureDefinitionId}
                               <span class="op-chip">
                                 {#if newProduct.furnitureIcon}<img class="op-sprite" src={newProduct.furnitureIcon} alt="" />{:else}<span class="op-sprite">{newProduct.furnitureSprite}</span>{/if}
                                 {newProduct.furnitureName} <small>#{newProduct.furnitureDefinitionId}</small>
                               </span>
-                              <button class="ghost-button" type="button" on:click={() => (newProduct = { ...newProduct, furnitureDefinitionId: '', furnitureName: '', furnitureIcon: '', furnitureSprite: '' })}>Clear</button>
+                              <button class="ghost-button" type="button" on:click={() => (newProduct = { ...newProduct, furnitureDefinitionId: '', furnitureName: '', furnitureIcon: '', furnitureSprite: '' })}>{$t('catalogAdmin.clear')}</button>
                             {:else}
-                              <span class="muted">no furniture selected</span>
+                              <span class="muted">{$t('common.noFurnitureSelected')}</span>
                             {/if}
                           </div>
                         </div>
                         <div class="op-field">
-                          <label for="new-product-extra">Extra data (optional)</label>
-                          <input id="new-product-extra" bind:value={newProduct.extraParam} placeholder="state / wired data" />
+                          <label for="new-product-extra">{$t('catalogAdmin.extraData')}</label>
+                          <input id="new-product-extra" bind:value={newProduct.extraParam} placeholder={$t('operations.extraDataPlaceholder')} />
                         </div>
                         <div class="op-field">
-                          <label for="new-product-quantity">Quantity</label>
+                          <label for="new-product-quantity">{$t('catalogAdmin.quantity')}</label>
                           <input id="new-product-quantity" type="number" min="1" bind:value={newProduct.quantity} />
                         </div>
                         <div class="op-field">
-                          <label for="new-product-unique-size">Unique size (0 = not a unique/LTD item)</label>
+                          <label for="new-product-unique-size">{$t('catalogAdmin.uniqueSizeHint')}</label>
                           <input id="new-product-unique-size" type="number" min="0" bind:value={newProduct.uniqueSize} />
                         </div>
                         <div class="op-field">
-                          <label for="new-product-unique-remaining">Unique remaining</label>
+                          <label for="new-product-unique-remaining">{$t('catalogAdmin.uniqueRemaining')}</label>
                           <input id="new-product-unique-remaining" type="number" min="0" bind:value={newProduct.uniqueRemaining} />
                         </div>
                         <div class="op-field">
-                          <label><input type="checkbox" bind:checked={newProduct.buildersClubEligible} /> Builders Club direct-placement eligible</label>
+                          <label><input type="checkbox" bind:checked={newProduct.buildersClubEligible} /> {$t('catalogAdmin.bcEligible')}</label>
                         </div>
                         <div class="op-field">
-                          <label for="new-product-reason">Reason *</label>
-                          <input id="new-product-reason" bind:value={newProduct.reason} placeholder="why this product?" list="reason-history" />
+                          <label for="new-product-reason">{$t('common.reasonRequired')}</label>
+                          <input id="new-product-reason" bind:value={newProduct.reason} placeholder={$t('catalogAdmin.reasonProductPlaceholder')} list="reason-history" />
                         </div>
                         <div class="op-actions">
-                          <button type="button" on:click={stageCreateProduct} disabled={busy.createProduct}>Create</button>
+                          <button type="button" on:click={stageCreateProduct} disabled={busy.createProduct}>{$t('catalogAdmin.create')}</button>
                         </div>
                         {#if errors.createProduct}<p class="empty-state danger">{errors.createProduct}</p>{/if}
                         {#if results.createProduct}
@@ -1194,7 +1194,7 @@
                     {/if}
 
                     {#if offerDetail.products.length === 0}
-                      <p class="empty-state">No products on this offer.</p>
+                      <p class="empty-state">{$t('catalogAdmin.noProducts')}</p>
                     {:else}
                       <div class="catalog-list">
                         {#each offerDetail.products as product (product.id)}
@@ -1222,7 +1222,7 @@
                               </span>
                               {#if canManage}
                                 <button type="button" class="ghost-button" on:click={() => startEditProduct(product)}>
-                                  <Pencil size={14} strokeWidth={2} aria-hidden="true" /> Edit
+                                  <Pencil size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.edit')}
                                 </button>
                               {/if}
                             </div>
@@ -1230,39 +1230,39 @@
                             {#if editProductId === product.id && editProductForm}
                               <div class="catalog-card-detail">
                                 <div class="op-field">
-                                  <label for={`edit-product-type-${product.id}`}>Product type</label>
+                                  <label for={`edit-product-type-${product.id}`}>{$t('catalogAdmin.productType')}</label>
                                   <select id={`edit-product-type-${product.id}`} bind:value={editProductForm.productType}>
-                                    {#each PRODUCT_TYPES as t}<option value={t.value}>{t.label}</option>{/each}
+                                    {#each PRODUCT_TYPES as pt}<option value={pt.value}>{pt.label}</option>{/each}
                                   </select>
                                 </div>
                                 <div class="op-field">
-                                  <label for={`edit-product-def-${product.id}`}>Furniture definition id (optional)</label>
+                                  <label for={`edit-product-def-${product.id}`}>{$t('catalogAdmin.furnitureDefIdOptional')}</label>
                                   <input id={`edit-product-def-${product.id}`} type="number" min="0" bind:value={editProductForm.furnitureDefinitionId} />
                                 </div>
                                 <div class="op-field">
-                                  <label for={`edit-product-extra-${product.id}`}>Extra data</label>
+                                  <label for={`edit-product-extra-${product.id}`}>{$t('catalogAdmin.extraData')}</label>
                                   <input id={`edit-product-extra-${product.id}`} bind:value={editProductForm.extraParam} />
                                 </div>
                                 <div class="op-field">
-                                  <label for={`edit-product-qty-${product.id}`}>Quantity</label>
+                                  <label for={`edit-product-qty-${product.id}`}>{$t('catalogAdmin.quantity')}</label>
                                   <input id={`edit-product-qty-${product.id}`} type="number" min="1" bind:value={editProductForm.quantity} />
                                 </div>
                                 <div class="op-field">
-                                  <label for={`edit-product-usize-${product.id}`}>Unique size</label>
+                                  <label for={`edit-product-usize-${product.id}`}>{$t('catalogAdmin.uniqueSizeHint')}</label>
                                   <input id={`edit-product-usize-${product.id}`} type="number" min="0" bind:value={editProductForm.uniqueSize} />
                                 </div>
                                 <div class="op-field">
-                                  <label for={`edit-product-urem-${product.id}`}>Unique remaining</label>
+                                  <label for={`edit-product-urem-${product.id}`}>{$t('catalogAdmin.uniqueRemaining')}</label>
                                   <input id={`edit-product-urem-${product.id}`} type="number" min="0" bind:value={editProductForm.uniqueRemaining} />
                                 </div>
-                                <div class="op-field"><label><input type="checkbox" bind:checked={editProductForm.buildersClubEligible} /> Builders Club direct-placement eligible</label></div>
+                                <div class="op-field"><label><input type="checkbox" bind:checked={editProductForm.buildersClubEligible} /> {$t('catalogAdmin.bcEligible')}</label></div>
                                 <div class="op-field">
-                                  <label for={`edit-product-reason-${product.id}`}>Reason *</label>
-                                  <input id={`edit-product-reason-${product.id}`} bind:value={editProductForm.reason} placeholder="why this change?" list="reason-history" />
+                                  <label for={`edit-product-reason-${product.id}`}>{$t('common.reasonRequired')}</label>
+                                  <input id={`edit-product-reason-${product.id}`} bind:value={editProductForm.reason} placeholder={$t('common.reasonPlaceholderChange')} list="reason-history" />
                                 </div>
                                 <div class="op-actions">
-                                  <button type="button" on:click={stageUpdateProduct} disabled={busy.updateProduct}>Save</button>
-                                  <button class="ghost-button" type="button" on:click={() => (editProductId = null)}>Cancel</button>
+                                  <button type="button" on:click={stageUpdateProduct} disabled={busy.updateProduct}>{$t('catalogAdmin.save')}</button>
+                                  <button class="ghost-button" type="button" on:click={() => (editProductId = null)}>{$t('catalogAdmin.cancel')}</button>
                                 </div>
                                 {#if errors.updateProduct}<p class="empty-state danger">{errors.updateProduct}</p>{/if}
                                 {#if results.updateProduct}
@@ -1276,9 +1276,9 @@
 
                             {#if canManage}
                               <div class="catalog-card-detail op-pick">
-                                <input bind:value={deleteProductReason[product.id]} placeholder="reason to delete this product" list="reason-history" style="flex: 1;" />
+                                <input bind:value={deleteProductReason[product.id]} placeholder={$t('catalogAdmin.deleteProductReasonPlaceholder')} list="reason-history" style="flex: 1;" />
                                 <button type="button" class="ghost-button danger" on:click={() => stageDeleteProduct(product)}>
-                                  <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> Delete product
+                                  <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.deleteProduct')}
                                 </button>
                               </div>
                             {/if}
@@ -1323,7 +1323,7 @@
 
 {#if iconPickerTarget}
   <CatalogIconPickerModal
-    title="Select a catalog icon"
+    title={$t('catalogAdmin.selectCatalogIcon')}
     onSelect={(id) => {
       if (iconPickerTarget === 'new') {
         newPage = { ...newPage, icon: id };
@@ -1341,15 +1341,15 @@
     <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
       <header class="modal-header">
         <div>
-          <p class="eyebrow">Confirm catalog action</p>
+          <p class="eyebrow">{$t('catalogAdmin.confirmEyebrow')}</p>
           <h2>{pending.title}</h2>
         </div>
       </header>
       <p>{pending.summary}</p>
-      <p class="muted">Reason: {pending.reason}</p>
+      <p class="muted">{$t('vouchers.reasonLabel', { reason: pending.reason })}</p>
       <div class="op-actions">
-        <button type="button" on:click={confirmPending}>Confirm</button>
-        <button class="ghost-button" type="button" on:click={cancelPending}>Cancel</button>
+        <button type="button" on:click={confirmPending}>{$t('common.confirm')}</button>
+        <button class="ghost-button" type="button" on:click={cancelPending}>{$t('catalogAdmin.cancel')}</button>
       </div>
     </section>
   </div>

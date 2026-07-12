@@ -2,6 +2,7 @@
   import { apiGet } from '../lib/api.js';
   import AccessDeniedNotice from './AccessDeniedNotice.svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
+  import { t } from '../lib/i18n.js';
 
   // kind: 'user' | 'furniture'
   export let kind = 'user';
@@ -26,10 +27,7 @@
     forbidden = false;
   }
 
-  $: permissionMessage =
-    kind === 'furniture'
-      ? "Vous n'avez pas la permission de consulter le catalogue d'objets."
-      : "Vous n'avez pas la permission de consulter les joueurs.";
+  $: permissionMessage = $t(kind === 'furniture' ? 'pickerModal.furnitureAccessDenied' : 'pickerModal.playersAccessDenied');
 
   async function load() {
     if (!canSelect) {
@@ -74,21 +72,21 @@
   <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(620px, 100%)">
     <header class="modal-header">
       <div>
-        <p class="eyebrow">{kind === 'furniture' ? 'Catalog furniture' : 'Players'}</p>
+        <p class="eyebrow">{kind === 'furniture' ? $t('pickerModal.catalogFurniture') : $t('pickerModal.players')}</p>
         <h2>{title}</h2>
       </div>
-      <button class="ghost-button" type="button" on:click={onClose}>Close</button>
+      <button class="ghost-button" type="button" on:click={onClose}>{$t('pickerModal.close')}</button>
     </header>
 
     <form class="toolbar" on:submit|preventDefault={load}>
       <input
         bind:value={query}
         placeholder={kind === 'furniture'
-          ? 'search by name, id or sprite'
-          : 'search by name or id'}
+          ? $t('pickerModal.searchFurniturePlaceholder')
+          : $t('pickerModal.searchPlayerPlaceholder')}
         disabled={!canSelect}
       />
-      <button type="submit" disabled={!canSelect}>Search</button>
+      <button type="submit" disabled={!canSelect}>{$t('pickerModal.search')}</button>
     </form>
 
     {#if forbidden}
@@ -96,7 +94,7 @@
     {:else if error}
       <p class="empty-state danger">{error}</p>
     {:else if loading}
-      <p class="empty-state">Loading...</p>
+      <p class="empty-state">{$t('pickerModal.loading')}</p>
     {/if}
 
     <div class="pick-list">
@@ -111,7 +109,7 @@
             <span class="pick-main">
               <strong>{row.name}</strong>
               <small>
-                #{row.id} - sprite {row.spriteId} - {row.type}{row.canTrade ? '' : ' - no-trade'}
+                #{row.id} - sprite {row.spriteId} - {row.type}{row.canTrade ? '' : ` - ${$t('pickerModal.noTrade')}`}
               </small>
             </span>
           </button>
@@ -120,12 +118,12 @@
             <span class="pick-dot" class:on={row.online} aria-hidden="true"></span>
             <span class="pick-main">
               <strong>{row.name}</strong>
-              <small>#{row.id} - {row.online ? 'online' : 'offline'}</small>
+              <small>#{row.id} - {row.online ? $t('pickerModal.online') : $t('pickerModal.offline')}</small>
             </span>
           </button>
         {/if}
       {:else}
-        {#if !loading}<p class="empty-state">No results.</p>{/if}
+        {#if !loading}<p class="empty-state">{$t('pickerModal.noResults')}</p>{/if}
       {/each}
     </div>
   </section>

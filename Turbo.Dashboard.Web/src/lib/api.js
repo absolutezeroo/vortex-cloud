@@ -2,6 +2,7 @@
 // POST /api/login. There is no token to carry; the browser attaches the cookie automatically.
 
 import { connectionIssue } from './session.js';
+import { translate } from './i18n.js';
 
 const DEFAULT_TIMEOUT_MS = 8000;
 const LOGIN_TIMEOUT_MS = 10000;
@@ -45,22 +46,22 @@ export function isAuthError(error) {
 
 export function describeApiError(error) {
   if (error?.code === 'request_timeout') {
-    return 'The emulator did not answer in time.';
+    return translate('errors.requestTimeout');
   }
 
   if (error?.code === 'network_unavailable') {
-    return 'The emulator is offline or unreachable.';
+    return translate('errors.networkUnavailable');
   }
 
   if (error?.code === 'invalid_api_response') {
-    return 'The emulator API did not return a dashboard response.';
+    return translate('errors.invalidApiResponse');
   }
 
   if (error?.status === 429) {
-    return 'Too many requests. Wait a moment, then try again.';
+    return translate('errors.tooManyRequests');
   }
 
-  return error?.message || 'Request failed.';
+  return error?.message || translate('errors.requestFailed');
 }
 
 async function request(path, options, requestOptions = {}) {

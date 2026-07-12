@@ -28,6 +28,7 @@
   import { NAV, hasRouteAccess } from '../lib/routes.js';
   import { reasonSuggestions } from '../lib/reasonHistory.js';
   import { theme, setTheme, THEMES } from '../lib/theme.js';
+  import { t, locale, setLocale, LOCALES } from '../lib/i18n.js';
 
   export let logout;
   export let logoutBusy = false;
@@ -60,15 +61,29 @@
 
   let query = '';
 
-  // Re-evaluate access whenever the identity changes (login / logout / role swap).
-  $: items = NAV.map((item) => ({ ...item, allowed: hasRouteAccess(item, $identity) }));
+  // Re-evaluate access whenever the identity changes (login / logout / role swap). label/short are
+  // resolved here (not read directly off NAV) so they re-translate whenever $locale changes too --
+  // $t is referenced directly in this statement's own expression for that reason (see the Svelte
+  // reactivity note on ApiExplorerPage's `filtered` for why that matters).
+  $: items = NAV.map((item) => ({
+    ...item,
+    label: $t(item.labelKey),
+    short: $t(item.shortKey),
+    allowed: hasRouteAccess(item, $identity),
+  }));
+  $: groupLabels = {
+    Live: $t('nav.groupLive'),
+    Investigate: $t('nav.groupInvestigate'),
+    Act: $t('nav.groupAct'),
+    Dev: $t('nav.groupDev'),
+  };
   $: filteredItems = filterItems(items, query);
   $: groups = GROUP_ORDER.map((name) => ({
-    name,
+    name: groupLabels[name] || name,
     items: filteredItems.filter((item) => (item.group || 'Other') === name),
   })).filter((group) => group.items.length > 0);
   $: email = $identity?.email || '';
-  $: activeLabel = NAV.find((item) => item.path === $location)?.label || 'Dashboard';
+  $: activeLabel = items.find((item) => item.path === $location)?.label || $t('nav.dashboardFallback');
 
   function filterItems(list, q) {
     const needle = q.trim().toLowerCase();
@@ -99,8 +114,8 @@
     <div class="brand">
       <span class="brand-mark">T</span>
       <div>
-        <strong>Turbo Ops</strong>
-        <small>Observability center</small>
+        <strong>{$t('nav.brandTitle')}</strong>
+        <small>{$t('nav.brandSubtitle')}</small>
       </div>
     </div>
 
@@ -108,8 +123,8 @@
       <Search size={15} strokeWidth={1.9} aria-hidden="true" />
       <input
         type="search"
-        placeholder="Filter sections..."
-        aria-label="Filter dashboard sections"
+        placeholder={$t('nav.searchPlaceholder')}
+        aria-label={$t('nav.searchPlaceholder')}
         bind:value={query}
       />
     </div>
@@ -143,7 +158,7 @@
         {/each}
       {/each}
       {#if groups.length === 0}
-        <p class="nav-empty">No section matches "{query}".</p>
+        <p class="nav-empty">{$t('nav.noMatch', { query })}</p>
       {/if}
     </nav>
   </aside>
@@ -155,16 +170,29 @@
         <h1>{activeLabel}</h1>
       </div>
       <div class="session-area">
-        <div class="theme-switch" role="radiogroup" aria-label="Dashboard theme">
-          {#each THEMES as t}
+        <div class="locale-switch" role="radiogroup" aria-label="Dashboard language">
+          {#each LOCALES as loc}
             <button
               type="button"
               role="radio"
-              aria-checked={$theme === t.value}
-              class:active={$theme === t.value}
-              on:click={() => setTheme(t.value)}
+              aria-checked={$locale === loc.value}
+              class:active={$locale === loc.value}
+              on:click={() => setLocale(loc.value)}
             >
-              {t.label}
+              {loc.label}
+            </button>
+          {/each}
+        </div>
+        <div class="theme-switch" role="radiogroup" aria-label="Dashboard theme">
+          {#each THEMES as themeOption}
+            <button
+              type="button"
+              role="radio"
+              aria-checked={$theme === themeOption.value}
+              class:active={$theme === themeOption.value}
+              on:click={() => setTheme(themeOption.value)}
+            >
+              {themeOption.label}
             </button>
           {/each}
         </div>
@@ -172,13 +200,13 @@
         <button
           type="button"
           class="logout-btn"
-          title="Sign out"
+          title={$t('common.signOut')}
           disabled={logoutBusy}
           aria-busy={logoutBusy}
           on:click={() => logout()}
         >
           <LogOut size={16} strokeWidth={1.9} />
-          <span>{logoutBusy ? 'Signing out...' : 'Sign out'}</span>
+          <span>{logoutBusy ? $t('common.signingOut') : $t('common.signOut')}</span>
         </button>
       </div>
     </header>
@@ -249,7 +277,8 @@
     gap: 10px;
   }
 
-  .theme-switch {
+  .theme-switch,
+  .locale-switch {
     display: inline-flex;
     gap: 2px;
     padding: 3px;
@@ -258,7 +287,8 @@
     background: var(--surface-strong);
   }
 
-  .theme-switch button {
+  .theme-switch button,
+  .locale-switch button {
     border: 0;
     border-radius: 7px;
     background: transparent;
@@ -269,11 +299,13 @@
     cursor: pointer;
   }
 
-  .theme-switch button:hover {
+  .theme-switch button:hover,
+  .locale-switch button:hover {
     color: var(--ink);
   }
 
-  .theme-switch button.active {
+  .theme-switch button.active,
+  .locale-switch button.active {
     background: var(--surface-raised);
     color: var(--ink);
     box-shadow: inset 0 0 0 1px var(--line-strong);

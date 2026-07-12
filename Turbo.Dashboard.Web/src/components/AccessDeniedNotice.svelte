@@ -1,12 +1,13 @@
 <script>
-  export let title = 'Droits insuffisants';
-  export let message =
-    'Vous n\'avez pas les permissions requises pour afficher cette section.';
+  import { t } from '../lib/i18n.js';
+
+  export let title = '';
+  export let message = '';
 </script>
 
 <section class="access-denied-notice" role="status" aria-live="polite">
-  <p class="notice-title">{title}</p>
-  <p>{message}</p>
+  <p class="notice-title">{title || $t('common.accessDeniedTitle')}</p>
+  <p>{message || $t('common.accessDeniedDefaultMessage')}</p>
 </section>
 
 <style>

@@ -6,6 +6,7 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer, openItem } from '../lib/session.js';
+  import { t, translate } from '../lib/i18n.js';
 
   let clubStats = null;
   let clubError = '';
@@ -33,7 +34,7 @@
       clubStats = await apiGet('/api/v1/economy/subscriptions');
     } catch (err) {
       if (isPermissionDeniedError(err)) {
-        clubError = 'Vous n\'avez pas l\'autorisation d\'accéder aux métriques abonnements.';
+        clubError = translate('subscriptions.accessDenied');
       } else {
         clubError = err.message;
       }
@@ -47,10 +48,10 @@
 
 <section class="panel">
   <div class="panel-head">
-    <h2>Subscriptions</h2>
-    <button type="button" on:click={refresh}>Refresh</button>
+    <h2>{$t('subscriptions.title')}</h2>
+    <button type="button" on:click={refresh}>{$t('common.refresh')}</button>
   </div>
-  <p class="muted">HC/Builders Club subscription lifecycle: active rate, renewals, expirations.</p>
+  <p class="muted">{$t('subscriptions.description')}</p>
 
   {#if clubError}
     <p class="empty-state danger">{clubError}</p>
@@ -60,13 +61,13 @@
 <section class="split-grid" style="margin-top: 12px;">
   <section class="panel">
     <div class="panel-head">
-      <h2>Abonnements</h2>
+      <h2>{$t('subscriptions.subsTitle')}</h2>
     </div>
 
     {#if clubError}
       <p class="empty-state danger">{clubError}</p>
     {:else if !clubStats}
-      <p class="empty-state">Aucune donnée abonnement pour le moment.</p>
+      <p class="empty-state">{$t('subscriptions.noSubData')}</p>
     {:else}
       <div class="split-grid">
         <div class="chart-wrap">
@@ -75,41 +76,41 @@
             style={`background: conic-gradient(var(--ok) 0% ${Math.min(100, activeRate * 100)}%, var(--line) ${Math.min(100, activeRate * 100)}% 100%);`}
           ></div>
           <div>
-            <p class="muted">Taux d'abonnements actifs</p>
+            <p class="muted">{$t('subscriptions.activeRate')}</p>
             <strong>{formatNumber(activeRate * 100, 2)}%</strong>
             <small class="muted">
-              {clubStats?.totals?.activeSubscriptions || 0} actifs / {clubStats?.totals?.totalSubscriptions || 0} total
+              {$t('subscriptions.activeOfTotal', { active: clubStats?.totals?.activeSubscriptions || 0, total: clubStats?.totals?.totalSubscriptions || 0 })}
             </small>
           </div>
         </div>
 
         <div class="metric-grid compact">
           <article>
-            <span>Total abonnements</span>
+            <span>{$t('subscriptions.totalSubs')}</span>
             <strong>{clubStats?.totals?.totalSubscriptions || 0}</strong>
-            <small>en base</small>
+            <small>{$t('subscriptions.inDatabase')}</small>
           </article>
           <article>
-            <span>Expirent sous 7j</span>
+            <span>{$t('subscriptions.expiring7d')}</span>
             <strong>{clubStats?.totals?.expiringIn7Days || 0}</strong>
-            <small>renouvellement prioritaire</small>
+            <small>{$t('subscriptions.priorityRenewal')}</small>
           </article>
           <article>
-            <span>Expirent sous 30j</span>
+            <span>{$t('subscriptions.expiring30d')}</span>
             <strong>{clubStats?.totals?.expiringIn30Days || 0}</strong>
-            <small>fenêtre 30 jours</small>
+            <small>{$t('subscriptions.window30d')}</small>
           </article>
           <article>
-            <span>Taux de renouvellement</span>
+            <span>{$t('subscriptions.renewalRate')}</span>
             <strong>{formatNumber((clubStats?.lifecycle?.totals?.renewalShare || 0) * 100, 2)}%</strong>
             <small>
-              {clubStats?.lifecycle?.totals?.renewals || 0}/{clubStats?.lifecycle?.totals?.purchases || 0} actions
+              {$t('subscriptions.actionsCount', { renewals: clubStats?.lifecycle?.totals?.renewals || 0, purchases: clubStats?.lifecycle?.totals?.purchases || 0 })}
             </small>
           </article>
         </div>
       </div>
 
-      <p class="eyebrow" style="margin: 10px 0;">Répartition par type</p>
+      <p class="eyebrow" style="margin: 10px 0;">{$t('subscriptions.byType')}</p>
       <div class="bar-chart">
         {#each byType as row}
           <div class="bar-row">
@@ -121,10 +122,10 @@
               ></div>
             </div>
             <span class="muted"
-              >{row.active}/{row.total} actifs • {formatNumber(row.averageRemainingDays, 2)} j restants</span>
+              >{$t('subscriptions.activeOfTotalDays', { active: row.active, total: row.total, days: formatNumber(row.averageRemainingDays, 2) })}</span>
           </div>
         {:else}
-          <p class="muted">Aucune répartition par type pour l'instant.</p>
+          <p class="muted">{$t('subscriptions.noTypeBreakdown')}</p>
         {/each}
       </div>
     {/if}
@@ -132,39 +133,39 @@
 
   <section class="panel">
     <div class="panel-head">
-      <h2>Lifecycle HC / BC</h2>
+      <h2>{$t('subscriptions.lifecycleTitle')}</h2>
     </div>
 
     {#if clubError}
       <p class="empty-state danger">{clubError}</p>
     {:else if !clubStats}
-      <p class="empty-state">Aucune donnée lifecycle pour l'instant.</p>
+      <p class="empty-state">{$t('subscriptions.noLifecycleData')}</p>
     {:else}
       <div class="metric-grid compact">
         <article>
-          <span>Achats</span>
+          <span>{$t('subscriptions.purchases')}</span>
           <strong>{clubStats?.lifecycle?.totals?.purchases || 0}</strong>
-          <small>abonnements nouveaux</small>
+          <small>{$t('subscriptions.newSubs')}</small>
         </article>
         <article>
-          <span>Renouvellements</span>
+          <span>{$t('subscriptions.renewals')}</span>
           <strong>{clubStats?.lifecycle?.totals?.renewals || 0}</strong>
-          <small>recharges</small>
+          <small>{$t('subscriptions.topUps')}</small>
         </article>
         <article>
-          <span>Expirations</span>
+          <span>{$t('subscriptions.expirations')}</span>
           <strong>{clubStats?.lifecycle?.totals?.expired || 0}</strong>
-          <small>défections</small>
+          <small>{$t('subscriptions.churn')}</small>
         </article>
       </div>
 
       <p class="eyebrow" style="margin: 10px 0;">
-        Fenêtre : {clubStats?.window?.since || '-'} → {clubStats?.window?.until || '-'}
+        {$t('subscriptions.window', { since: clubStats?.window?.since || '-', until: clubStats?.window?.until || '-' })}
       </p>
 
       <div class="split-grid">
         <div class="bar-chart">
-          <h3>Achats</h3>
+          <h3>{$t('subscriptions.purchases')}</h3>
           {#each lifecycle as point}
             <div class="bar-row">
               <div class="bar-label">{point.label}</div>
@@ -177,12 +178,12 @@
               <span class="muted">{point.purchases}</span>
             </div>
           {:else}
-            <p class="muted">Pas de points.</p>
+            <p class="muted">{$t('subscriptions.noPoints')}</p>
           {/each}
         </div>
 
         <div class="bar-chart">
-          <h3>Renouvellements</h3>
+          <h3>{$t('subscriptions.renewals')}</h3>
           {#each lifecycle as point}
             <div class="bar-row">
               <div class="bar-label">{point.label}</div>
@@ -195,13 +196,13 @@
               <span class="muted">{point.renewals}</span>
             </div>
           {:else}
-            <p class="muted">Pas de points.</p>
+            <p class="muted">{$t('subscriptions.noPoints')}</p>
           {/each}
         </div>
       </div>
 
       <div class="bar-chart" style="margin-top: 10px;">
-        <h3>Expirations</h3>
+        <h3>{$t('subscriptions.expirations')}</h3>
         {#each lifecycle as point}
           <div class="bar-row">
             <div class="bar-label">{point.label}</div>
@@ -214,16 +215,16 @@
             <span class="muted">{point.expired}</span>
           </div>
           {:else}
-            <p class="muted">Pas de points.</p>
+            <p class="muted">{$t('subscriptions.noPoints')}</p>
           {/each}
       </div>
 
-      <p class="eyebrow" style="margin: 10px 0;">Durée d'abonnement (mois)</p>
+      <p class="eyebrow" style="margin: 10px 0;">{$t('subscriptions.subscriptionDuration')}</p>
       <div class="bar-chart">
         {#each byMonths as row}
           <div class="bar-row">
             <div class="bar-label">
-              {row.months ? `${row.months} mois` : 'Inconnu'}
+              {row.months ? `${row.months} ${$t('subscriptions.months')}` : $t('subscriptions.unknown')}
             </div>
             <div class="bar-track">
               <div
@@ -234,23 +235,23 @@
             <span class="muted">{row.total}</span>
           </div>
         {:else}
-          <p class="muted">Aucune répartition par mois.</p>
+          <p class="muted">{$t('subscriptions.noMonthBreakdown')}</p>
         {/each}
       </div>
 
       <div class="panel" style="margin-top: 14px;">
-        <h3>Récent: achats/renouvellements HC</h3>
+        <h3>{$t('subscriptions.recentEvents')}</h3>
         <table>
           <thead>
             <tr>
-              <th>Quand</th>
-              <th>Action</th>
-              <th>Acteur</th>
-              <th>Mois</th>
-              <th>Total mois</th>
-              <th>Renouvellement</th>
-              <th>VIP</th>
-              <th>Crédit</th>
+              <th>{$t('subscriptions.colWhen')}</th>
+              <th>{$t('subscriptions.colAction')}</th>
+              <th>{$t('subscriptions.colActor')}</th>
+              <th>{$t('subscriptions.colMonths')}</th>
+              <th>{$t('subscriptions.colTotalMonths')}</th>
+              <th>{$t('subscriptions.colRenewal')}</th>
+              <th>{$t('subscriptions.colVip')}</th>
+              <th>{$t('subscriptions.colCredit')}</th>
             </tr>
           </thead>
           <tbody>
@@ -258,16 +259,16 @@
               <tr>
                 <td>{formatDate(row.occurredAt)}</td>
                 <td>{row.action}</td>
-                <td>{row.actorPlayerName || `joueur #${row.actorPlayerId}`}</td>
+                <td>{row.actorPlayerName || `#${row.actorPlayerId}`}</td>
                 <td>{row.months || '-'}</td>
                 <td>{row.totalMonths || '-'}</td>
-                <td>{row.isRenewal === true ? 'oui' : row.isRenewal === false ? 'non' : '-'}</td>
-                <td>{row.isVip === true ? 'oui' : row.isVip === false ? 'non' : '-'}</td>
+                <td>{row.isRenewal === true ? $t('subscriptions.yes') : row.isRenewal === false ? $t('subscriptions.no') : '-'}</td>
+                <td>{row.isVip === true ? $t('subscriptions.yes') : row.isVip === false ? $t('subscriptions.no') : '-'}</td>
                 <td>{row.creditCost || '-'}</td>
               </tr>
             {:else}
               <tr>
-                <td colspan="8" class="muted">Pas de flux récent sur la fenêtre sélectionnée.</td>
+                <td colspan="8" class="muted">{$t('subscriptions.noRecentFlow')}</td>
               </tr>
             {/each}
           </tbody>
@@ -279,21 +280,21 @@
 
 <section class="panel" style="margin-top: 16px;">
   <div class="panel-head">
-    <h2>Prochains expirations (14 jours)</h2>
+    <h2>{$t('subscriptions.upcomingExpirations')}</h2>
   </div>
 
   {#if !clubStats || topExpiring.length === 0}
-    <p class="muted">Aucun abonnement à renouveler prochainement.</p>
+    <p class="muted">{$t('subscriptions.noUpcoming')}</p>
   {:else}
     <table>
       <thead>
         <tr>
-          <th>Joueur</th>
-          <th>Type</th>
-          <th>Niveau</th>
-          <th>Expire</th>
-          <th>Jours restants</th>
-          <th>Total mois</th>
+          <th>{$t('subscriptions.colPlayer')}</th>
+          <th>{$t('subscriptions.colType')}</th>
+          <th>{$t('subscriptions.colLevel')}</th>
+          <th>{$t('subscriptions.colExpires')}</th>
+          <th>{$t('subscriptions.colDaysRemaining')}</th>
+          <th>{$t('subscriptions.colTotalMonths')}</th>
         </tr>
       </thead>
       <tbody>
@@ -310,7 +311,7 @@
           </tr>
         {:else}
           <tr>
-            <td colspan="6" class="muted">No data to refresh.</td>
+            <td colspan="6" class="muted">{$t('subscriptions.noDataToRefresh')}</td>
           </tr>
         {/each}
       </tbody>

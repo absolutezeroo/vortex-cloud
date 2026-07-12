@@ -8,6 +8,7 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import PickerModal from '../components/PickerModal.svelte';
   import { identity } from '../lib/session.js';
+  import { t, translate } from '../lib/i18n.js';
 
   // One state bag per action, mirroring OperationsPage's pattern.
   let ban = {
@@ -51,7 +52,7 @@
   $: canTradingUnlock = hasDashboardCapability($identity, capabilityByAction.tradingUnlock);
 
   function pickUser(apply) {
-    picker = { kind: 'user', title: 'Select a player', onSelect: apply };
+    picker = { kind: 'user', title: translate('operations.selectPlayerTitle'), onSelect: apply };
   }
 
   function stage(id, title, endpoint, valid, body, summary) {
@@ -60,8 +61,7 @@
     if (!valid) {
       errors = {
         ...errors,
-        [id]:
-          'Select a target and fill the fields: durations must be positive (unless permanent) and the reason needs at least 3 characters.',
+        [id]: translate('moderationActions.fillFields'),
       };
       return;
     }
@@ -71,7 +71,7 @@
 
   function stageBan() {
     if (!canBan) {
-      errors = { ...errors, ban: 'Droits insuffisants pour bannir un compte.' };
+      errors = { ...errors, ban: translate('moderationActions.banAccessDenied') };
       return;
     }
 
@@ -79,7 +79,7 @@
 
     stage(
       'ban',
-      'Ban account',
+      translate('moderationActions.banAccount'),
       '/api/v1/operations/players/ban',
       positive(ban.playerId) && validDuration && reasonOk(ban.reason),
       {
@@ -88,35 +88,39 @@
         durationSeconds: ban.permanent ? null : Number(ban.durationSeconds),
         reason: ban.reason.trim(),
       },
-      `${ban.permanent ? 'Permanently ban' : `Ban for ${ban.durationSeconds}s`} ${ban.playerName || 'player'} (#${ban.playerId}).`,
+      translate('moderationActions.banSummary', {
+        action: ban.permanent ? translate('moderationActions.permanentlyBan') : translate('moderationActions.banFor', { seconds: ban.durationSeconds }),
+        name: ban.playerName || translate('moderationActions.player'),
+        id: ban.playerId,
+      }),
     );
   }
 
   function stageUnban() {
     if (!canUnban) {
-      errors = { ...errors, unban: 'Droits insuffisants pour lever un ban.' };
+      errors = { ...errors, unban: translate('moderationActions.unbanAccessDenied') };
       return;
     }
 
     stage(
       'unban',
-      'Lift account ban',
+      translate('moderationActions.liftAccountBan'),
       '/api/v1/operations/players/unban',
       positive(unban.playerId) && reasonOk(unban.reason),
       { playerId: Number(unban.playerId), reason: unban.reason.trim() },
-      `Lift the account ban on ${unban.playerName || 'player'} (#${unban.playerId}).`,
+      translate('moderationActions.liftBanSummary', { name: unban.playerName || translate('moderationActions.player'), id: unban.playerId }),
     );
   }
 
   function stageMute() {
     if (!canMute) {
-      errors = { ...errors, mute: 'Droits insuffisants pour mute un joueur.' };
+      errors = { ...errors, mute: translate('moderationActions.muteAccessDenied') };
       return;
     }
 
     stage(
       'mute',
-      'Mute player',
+      translate('moderationActions.mutePlayer'),
       '/api/v1/operations/players/mute',
       positive(mute.playerId) && positive(mute.durationSeconds) && reasonOk(mute.reason),
       {
@@ -124,13 +128,13 @@
         durationSeconds: Number(mute.durationSeconds),
         reason: mute.reason.trim(),
       },
-      `Mute ${mute.playerName || 'player'} (#${mute.playerId}) for ${mute.durationSeconds}s. Only works while the player is currently in a room.`,
+      translate('moderationActions.muteSummary', { name: mute.playerName || translate('moderationActions.player'), id: mute.playerId, seconds: mute.durationSeconds }),
     );
   }
 
   function stageTradingLock() {
     if (!canTradingLock) {
-      errors = { ...errors, tradingLock: "Droits insuffisants pour bloquer les échanges." };
+      errors = { ...errors, tradingLock: translate('moderationActions.lockAccessDenied') };
       return;
     }
 
@@ -138,7 +142,7 @@
 
     stage(
       'tradingLock',
-      'Lock trading',
+      translate('moderationActions.lockTrading'),
       '/api/v1/operations/players/trading-lock',
       positive(tradingLock.playerId) && validDuration && reasonOk(tradingLock.reason),
       {
@@ -147,23 +151,27 @@
         durationSeconds: tradingLock.permanent ? null : Number(tradingLock.durationSeconds),
         reason: tradingLock.reason.trim(),
       },
-      `${tradingLock.permanent ? 'Permanently lock' : `Lock for ${tradingLock.durationSeconds}s`} trading for ${tradingLock.playerName || 'player'} (#${tradingLock.playerId}).`,
+      translate('moderationActions.lockTradingSummary', {
+        action: tradingLock.permanent ? translate('moderationActions.permanentlyLock') : translate('moderationActions.lockFor', { seconds: tradingLock.durationSeconds }),
+        name: tradingLock.playerName || translate('moderationActions.player'),
+        id: tradingLock.playerId,
+      }),
     );
   }
 
   function stageTradingUnlock() {
     if (!canTradingUnlock) {
-      errors = { ...errors, tradingUnlock: "Droits insuffisants pour débloquer les échanges." };
+      errors = { ...errors, tradingUnlock: translate('moderationActions.unlockAccessDenied') };
       return;
     }
 
     stage(
       'tradingUnlock',
-      'Lift trading lock',
+      translate('moderationActions.liftTradingLock'),
       '/api/v1/operations/players/trading-unlock',
       positive(tradingUnlock.playerId) && reasonOk(tradingUnlock.reason),
       { playerId: Number(tradingUnlock.playerId), reason: tradingUnlock.reason.trim() },
-      `Lift the trading lock on ${tradingUnlock.playerName || 'player'} (#${tradingUnlock.playerId}).`,
+      translate('moderationActions.liftLockSummary', { name: tradingUnlock.playerName || translate('moderationActions.player'), id: tradingUnlock.playerId }),
     );
   }
 
@@ -188,7 +196,7 @@
     } catch (err) {
       errors = {
         ...errors,
-        [id]: isPermissionDeniedError(err) ? 'Droits insuffisants pour effectuer cette action.' : err.code || err.message,
+        [id]: isPermissionDeniedError(err) ? translate('common.insufficientRightsAction') : err.code || err.message,
       };
     } finally {
       busy = { ...busy, [id]: false };
@@ -205,22 +213,20 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>Moderation actions</h2></div>
+  <div class="panel-head"><h2>{$t('moderationActions.title')}</h2></div>
   <p class="muted">
-    Controlled sanction actions. Pick a target, give a mandatory reason, and confirm; every run is
-    audited with a correlation id and routed through the game grains. For trend/history data see
-    Moderation stats.
+    {$t('moderationActions.description')}
   </p>
 </section>
 
 <div class="op-grid">
   <section class="panel op-panel" style="border-left-color: var(--danger);">
-    <div class="panel-head"><h2><Ban size={17} strokeWidth={2} /> Ban account</h2></div>
+    <div class="panel-head"><h2><Ban size={17} strokeWidth={2} /> {$t('moderationActions.banAccount')}</h2></div>
     {#if !canBan}
-      <AccessDeniedNotice title="Droits insuffisants" message="Vous n'avez pas la permission de bannir un compte." />
+      <AccessDeniedNotice message={$t('moderationActions.banAccessDenied')} />
     {:else}
       <div class="op-field">
-        <span class="op-label">Player *</span>
+        <span class="op-label">{$t('common.playerRequired')}</span>
         <div class="op-pick">
           <button
             class="ghost-button"
@@ -230,7 +236,7 @@
                 (u) => (ban = { ...ban, playerId: u.id, playerName: u.name, playerOnline: u.online }),
               )}
           >
-            Select user
+            {$t('common.selectUser')}
           </button>
           {#if ban.playerId}
             <span class="op-chip">
@@ -238,45 +244,45 @@
               {ban.playerName} <small>#{ban.playerId}</small>
             </span>
           {:else}
-            <span class="muted">no user selected</span>
+            <span class="muted">{$t('common.noUserSelected')}</span>
           {/if}
         </div>
       </div>
       <div class="op-checkbox-field">
         <input id="ban-permanent" type="checkbox" bind:checked={ban.permanent} />
-        <label for="ban-permanent">Permanent</label>
+        <label for="ban-permanent">{$t('common.permanent')}</label>
       </div>
       {#if !ban.permanent}
         <div class="op-field">
-          <label for="ban-duration">Duration (seconds)</label>
+          <label for="ban-duration">{$t('moderationActions.durationSeconds')}</label>
           <input id="ban-duration" type="number" min="1" bind:value={ban.durationSeconds} placeholder="86400" />
         </div>
       {/if}
       <div class="op-field">
-        <label for="ban-reason">Reason *</label>
-        <input id="ban-reason" bind:value={ban.reason} placeholder="why this action?" />
+        <label for="ban-reason">{$t('common.reasonRequired')}</label>
+        <input id="ban-reason" bind:value={ban.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageBan} disabled={busy.ban}>Run</button>
+        <button type="button" on:click={stageBan} disabled={busy.ban}>{$t('common.run')}</button>
       </div>
       {#if errors.ban}<p class="empty-state danger">{errors.ban}</p>{/if}
       {#if results.ban}
         <p class="op-result" class:danger={!results.ban.ok}>
           {results.ban.ok ? '✅' : '❌'} {results.ban.message} - cid
           <code>{compactCorrelation(results.ban.correlationId)}</code>
-          <button class="ghost-button" type="button" on:click={() => copy(results.ban.correlationId)}>copy</button>
+          <button class="ghost-button" type="button" on:click={() => copy(results.ban.correlationId)}>{$t('common.copy')}</button>
         </p>
       {/if}
     {/if}
   </section>
 
   <section class="panel op-panel" style="border-left-color: var(--ok);">
-    <div class="panel-head"><h2><ShieldCheck size={17} strokeWidth={2} /> Lift account ban</h2></div>
+    <div class="panel-head"><h2><ShieldCheck size={17} strokeWidth={2} /> {$t('moderationActions.liftAccountBan')}</h2></div>
     {#if !canUnban}
-      <AccessDeniedNotice title="Droits insuffisants" message="Vous n'avez pas la permission de lever un ban." />
+      <AccessDeniedNotice message={$t('moderationActions.unbanAccessDenied')} />
     {:else}
       <div class="op-field">
-        <span class="op-label">Player *</span>
+        <span class="op-label">{$t('common.playerRequired')}</span>
         <div class="op-pick">
           <button
             class="ghost-button"
@@ -286,7 +292,7 @@
                 (u) => (unban = { ...unban, playerId: u.id, playerName: u.name, playerOnline: u.online }),
               )}
           >
-            Select user
+            {$t('common.selectUser')}
           </button>
           {#if unban.playerId}
             <span class="op-chip">
@@ -294,36 +300,36 @@
               {unban.playerName} <small>#{unban.playerId}</small>
             </span>
           {:else}
-            <span class="muted">no user selected</span>
+            <span class="muted">{$t('common.noUserSelected')}</span>
           {/if}
         </div>
       </div>
       <div class="op-field">
-        <label for="unban-reason">Reason *</label>
-        <input id="unban-reason" bind:value={unban.reason} placeholder="why this action?" />
+        <label for="unban-reason">{$t('common.reasonRequired')}</label>
+        <input id="unban-reason" bind:value={unban.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageUnban} disabled={busy.unban}>Run</button>
+        <button type="button" on:click={stageUnban} disabled={busy.unban}>{$t('common.run')}</button>
       </div>
       {#if errors.unban}<p class="empty-state danger">{errors.unban}</p>{/if}
       {#if results.unban}
         <p class="op-result" class:danger={!results.unban.ok}>
           {results.unban.ok ? '✅' : '❌'} {results.unban.message} - cid
           <code>{compactCorrelation(results.unban.correlationId)}</code>
-          <button class="ghost-button" type="button" on:click={() => copy(results.unban.correlationId)}>copy</button>
+          <button class="ghost-button" type="button" on:click={() => copy(results.unban.correlationId)}>{$t('common.copy')}</button>
         </p>
       {/if}
     {/if}
   </section>
 
   <section class="panel op-panel" style="border-left-color: var(--warning);">
-    <div class="panel-head"><h2><VolumeX size={17} strokeWidth={2} /> Mute player</h2></div>
+    <div class="panel-head"><h2><VolumeX size={17} strokeWidth={2} /> {$t('moderationActions.mutePlayer')}</h2></div>
     {#if !canMute}
-      <AccessDeniedNotice title="Droits insuffisants" message="Vous n'avez pas la permission de mute un joueur." />
+      <AccessDeniedNotice message={$t('moderationActions.muteAccessDenied')} />
     {:else}
-      <p class="muted">Room-scoped — only works while the player is currently in a room.</p>
+      <p class="muted">{$t('moderationActions.roomScopedNote')}</p>
       <div class="op-field">
-        <span class="op-label">Player *</span>
+        <span class="op-label">{$t('common.playerRequired')}</span>
         <div class="op-pick">
           <button
             class="ghost-button"
@@ -333,7 +339,7 @@
                 (u) => (mute = { ...mute, playerId: u.id, playerName: u.name, playerOnline: u.online }),
               )}
           >
-            Select user
+            {$t('common.selectUser')}
           </button>
           {#if mute.playerId}
             <span class="op-chip">
@@ -341,39 +347,39 @@
               {mute.playerName} <small>#{mute.playerId}</small>
             </span>
           {:else}
-            <span class="muted">no user selected</span>
+            <span class="muted">{$t('common.noUserSelected')}</span>
           {/if}
         </div>
       </div>
       <div class="op-field">
-        <label for="mute-duration">Duration (seconds) *</label>
+        <label for="mute-duration">{$t('moderationActions.durationSecondsRequired')}</label>
         <input id="mute-duration" type="number" min="1" bind:value={mute.durationSeconds} placeholder="600" />
       </div>
       <div class="op-field">
-        <label for="mute-reason">Reason *</label>
-        <input id="mute-reason" bind:value={mute.reason} placeholder="why this action?" />
+        <label for="mute-reason">{$t('common.reasonRequired')}</label>
+        <input id="mute-reason" bind:value={mute.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageMute} disabled={busy.mute}>Run</button>
+        <button type="button" on:click={stageMute} disabled={busy.mute}>{$t('common.run')}</button>
       </div>
       {#if errors.mute}<p class="empty-state danger">{errors.mute}</p>{/if}
       {#if results.mute}
         <p class="op-result" class:danger={!results.mute.ok}>
           {results.mute.ok ? '✅' : '❌'} {results.mute.message} - cid
           <code>{compactCorrelation(results.mute.correlationId)}</code>
-          <button class="ghost-button" type="button" on:click={() => copy(results.mute.correlationId)}>copy</button>
+          <button class="ghost-button" type="button" on:click={() => copy(results.mute.correlationId)}>{$t('common.copy')}</button>
         </p>
       {/if}
     {/if}
   </section>
 
   <section class="panel op-panel" style="border-left-color: var(--warning);">
-    <div class="panel-head"><h2><Lock size={17} strokeWidth={2} /> Lock trading</h2></div>
+    <div class="panel-head"><h2><Lock size={17} strokeWidth={2} /> {$t('moderationActions.lockTrading')}</h2></div>
     {#if !canTradingLock}
-      <AccessDeniedNotice title="Droits insuffisants" message="Vous n'avez pas la permission de bloquer les échanges." />
+      <AccessDeniedNotice message={$t('moderationActions.lockAccessDenied')} />
     {:else}
       <div class="op-field">
-        <span class="op-label">Player *</span>
+        <span class="op-label">{$t('common.playerRequired')}</span>
         <div class="op-pick">
           <button
             class="ghost-button"
@@ -389,7 +395,7 @@
                   }),
               )}
           >
-            Select user
+            {$t('common.selectUser')}
           </button>
           {#if tradingLock.playerId}
             <span class="op-chip">
@@ -397,45 +403,45 @@
               {tradingLock.playerName} <small>#{tradingLock.playerId}</small>
             </span>
           {:else}
-            <span class="muted">no user selected</span>
+            <span class="muted">{$t('common.noUserSelected')}</span>
           {/if}
         </div>
       </div>
       <div class="op-checkbox-field">
         <input id="tradinglock-permanent" type="checkbox" bind:checked={tradingLock.permanent} />
-        <label for="tradinglock-permanent">Permanent</label>
+        <label for="tradinglock-permanent">{$t('common.permanent')}</label>
       </div>
       {#if !tradingLock.permanent}
         <div class="op-field">
-          <label for="tradinglock-duration">Duration (seconds)</label>
+          <label for="tradinglock-duration">{$t('moderationActions.durationSeconds')}</label>
           <input id="tradinglock-duration" type="number" min="1" bind:value={tradingLock.durationSeconds} placeholder="86400" />
         </div>
       {/if}
       <div class="op-field">
-        <label for="tradinglock-reason">Reason *</label>
-        <input id="tradinglock-reason" bind:value={tradingLock.reason} placeholder="why this action?" />
+        <label for="tradinglock-reason">{$t('common.reasonRequired')}</label>
+        <input id="tradinglock-reason" bind:value={tradingLock.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageTradingLock} disabled={busy.tradingLock}>Run</button>
+        <button type="button" on:click={stageTradingLock} disabled={busy.tradingLock}>{$t('common.run')}</button>
       </div>
       {#if errors.tradingLock}<p class="empty-state danger">{errors.tradingLock}</p>{/if}
       {#if results.tradingLock}
         <p class="op-result" class:danger={!results.tradingLock.ok}>
           {results.tradingLock.ok ? '✅' : '❌'} {results.tradingLock.message} - cid
           <code>{compactCorrelation(results.tradingLock.correlationId)}</code>
-          <button class="ghost-button" type="button" on:click={() => copy(results.tradingLock.correlationId)}>copy</button>
+          <button class="ghost-button" type="button" on:click={() => copy(results.tradingLock.correlationId)}>{$t('common.copy')}</button>
         </p>
       {/if}
     {/if}
   </section>
 
   <section class="panel op-panel" style="border-left-color: var(--ok);">
-    <div class="panel-head"><h2><LockOpen size={17} strokeWidth={2} /> Lift trading lock</h2></div>
+    <div class="panel-head"><h2><LockOpen size={17} strokeWidth={2} /> {$t('moderationActions.liftTradingLock')}</h2></div>
     {#if !canTradingUnlock}
-      <AccessDeniedNotice title="Droits insuffisants" message="Vous n'avez pas la permission de débloquer les échanges." />
+      <AccessDeniedNotice message={$t('moderationActions.unlockAccessDenied')} />
     {:else}
       <div class="op-field">
-        <span class="op-label">Player *</span>
+        <span class="op-label">{$t('common.playerRequired')}</span>
         <div class="op-pick">
           <button
             class="ghost-button"
@@ -451,7 +457,7 @@
                   }),
               )}
           >
-            Select user
+            {$t('common.selectUser')}
           </button>
           {#if tradingUnlock.playerId}
             <span class="op-chip">
@@ -459,23 +465,23 @@
               {tradingUnlock.playerName} <small>#{tradingUnlock.playerId}</small>
             </span>
           {:else}
-            <span class="muted">no user selected</span>
+            <span class="muted">{$t('common.noUserSelected')}</span>
           {/if}
         </div>
       </div>
       <div class="op-field">
-        <label for="tradingunlock-reason">Reason *</label>
-        <input id="tradingunlock-reason" bind:value={tradingUnlock.reason} placeholder="why this action?" />
+        <label for="tradingunlock-reason">{$t('common.reasonRequired')}</label>
+        <input id="tradingunlock-reason" bind:value={tradingUnlock.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageTradingUnlock} disabled={busy.tradingUnlock}>Run</button>
+        <button type="button" on:click={stageTradingUnlock} disabled={busy.tradingUnlock}>{$t('common.run')}</button>
       </div>
       {#if errors.tradingUnlock}<p class="empty-state danger">{errors.tradingUnlock}</p>{/if}
       {#if results.tradingUnlock}
         <p class="op-result" class:danger={!results.tradingUnlock.ok}>
           {results.tradingUnlock.ok ? '✅' : '❌'} {results.tradingUnlock.message} - cid
           <code>{compactCorrelation(results.tradingUnlock.correlationId)}</code>
-          <button class="ghost-button" type="button" on:click={() => copy(results.tradingUnlock.correlationId)}>copy</button>
+          <button class="ghost-button" type="button" on:click={() => copy(results.tradingUnlock.correlationId)}>{$t('common.copy')}</button>
         </p>
       {/if}
     {/if}
@@ -498,15 +504,15 @@
     <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
       <header class="modal-header">
         <div>
-          <p class="eyebrow">Confirm sanction</p>
+          <p class="eyebrow">{$t('moderationActions.confirmSanction')}</p>
           <h2>{pending.title}</h2>
         </div>
       </header>
       <p>{pending.summary}</p>
-      <p class="muted">Reason: {pending.reason}</p>
+      <p class="muted">{$t('vouchers.reasonLabel', { reason: pending.reason })}</p>
       <div class="op-actions">
-        <button type="button" on:click={confirm}>Confirm</button>
-        <button class="ghost-button" type="button" on:click={cancel}>Cancel</button>
+        <button type="button" on:click={confirm}>{$t('common.confirm')}</button>
+        <button class="ghost-button" type="button" on:click={cancel}>{$t('common.cancel')}</button>
       </div>
     </section>
   </div>

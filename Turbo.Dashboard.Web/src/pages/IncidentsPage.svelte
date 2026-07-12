@@ -4,6 +4,7 @@
   import { formatDate, formatNumber } from '../lib/format.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
+  import { t } from '../lib/i18n.js';
 
   let data = null;
   let error = '';
@@ -22,9 +23,9 @@
   $: healthyCount = Math.max(0, signals.length - criticalCount - degradedCount);
 
   $: signalBuckets = [
-    { severity: 'critical', label: 'Critical', count: criticalCount, color: 'var(--danger)' },
-    { severity: 'degraded', label: 'Degraded', count: degradedCount, color: 'var(--warning)' },
-    { severity: 'healthy', label: 'Healthy', count: healthyCount, color: 'var(--ok)' },
+    { severity: 'critical', label: $t('incidents.critical'), count: criticalCount, color: 'var(--danger)' },
+    { severity: 'degraded', label: $t('incidents.degraded'), count: degradedCount, color: 'var(--warning)' },
+    { severity: 'healthy', label: $t('incidents.healthy'), count: healthyCount, color: 'var(--ok)' },
   ];
   $: severityScale = Math.max(1, ...signalBuckets.map((bucket) => bucket.count || 0));
   $: topErrorScale = Math.max(1, ...topGroups.map((entry) => entry.totalOccurrences || 0));
@@ -71,19 +72,19 @@
 
 <section class="panel">
   <div class="panel-head">
-    <h2>Incident signals</h2>
-    <button type="button" on:click={refresh}>Refresh</button>
+    <h2>{$t('incidents.title')}</h2>
+    <button type="button" on:click={refresh}>{$t('common.refresh')}</button>
   </div>
 
   {#if forbidden}
-    <AccessDeniedNotice message="Vous n'avez pas l'autorisation d'accéder aux incidents." />
+    <AccessDeniedNotice message={$t('incidents.accessDenied')} />
   {:else if error}
     <p class="empty-state danger">{error}</p>
   {/if}
 
   <div class="incident-banner">
     <div>
-      <span class="muted">Overall severity</span>
+      <span class="muted">{$t('incidents.overallSeverity')}</span>
       <strong class={severityClass(data?.overallSeverity)}>{data?.overallSeverity || '-'}</strong>
     </div>
     <span>{formatDate(data?.generatedAt)}</span>
@@ -91,31 +92,31 @@
 
   <div class="metric-grid compact" style="margin-top: 12px;">
     <article>
-      <span>Active signals</span>
+      <span>{$t('incidents.activeSignals')}</span>
       <strong>{formatNumber(signals.length)}</strong>
-      <small>in latest snapshot</small>
+      <small>{$t('incidents.latestSnapshot')}</small>
     </article>
     <article>
-      <span>Error spikes</span>
+      <span>{$t('incidents.errorSpikes')}</span>
       <strong>{formatRate(data?.errorSpikesPerMinute)}</strong>
-      <small>runtime errors / minute</small>
+      <small>{$t('incidents.runtimeErrorsPerMin')}</small>
     </article>
     <article>
-      <span>Login failed spikes</span>
+      <span>{$t('incidents.loginFailedSpikes')}</span>
       <strong>{formatRate(data?.loginFailedSpikesPerMinute)}</strong>
-      <small>auth failures / minute</small>
+      <small>{$t('incidents.authFailuresPerMin')}</small>
     </article>
     <article>
-      <span>Top error groups</span>
+      <span>{$t('incidents.topErrorGroups')}</span>
       <strong>{formatNumber(topErrorGroups.length)}</strong>
-      <small>window aggregation</small>
+      <small>{$t('incidents.windowAggregation')}</small>
     </article>
   </div>
 </section>
 
 <section class="split-grid">
   <article class="panel">
-    <h3>Severity distribution</h3>
+    <h3>{$t('incidents.severityDistribution')}</h3>
     <div class="bar-chart">
       {#each signalBuckets as entry}
         <div class="bar-row">
@@ -133,7 +134,7 @@
   </article>
 
   <article class="panel">
-    <h3>Top error groups</h3>
+    <h3>{$t('incidents.topErrorGroups')}</h3>
     <div class="bar-chart">
       {#each topGroups as entry}
         <div class="bar-row">
@@ -152,46 +153,46 @@
           <span class="muted">{formatNumber(entry.totalOccurrences)}</span>
         </div>
       {:else}
-        <p class="muted">No aggregated error groups in this window.</p>
+        <p class="muted">{$t('incidents.noErrorGroups')}</p>
       {/each}
     </div>
   </article>
 </section>
 
 <section class="panel" style="margin-top: 12px;">
-  <h3>Active incident signals</h3>
+  <h3>{$t('incidents.activeSignalsTitle')}</h3>
   <div class="incident-list">
     {#each signals as signal}
       <article>
         <div class="split-grid" style="grid-template-columns: 1fr auto; align-items: center; gap: 10px;">
           <strong>{signal.title || signal.code || signal.name}</strong>
-          <span class={severityClass(signal.severity)}>{signal.severity || 'healthy'}</span>
+          <span class={severityClass(signal.severity)}>{signal.severity || $t('incidents.healthy')}</span>
         </div>
         <p>{signal.summary}</p>
         <p class="muted">
-          observed {formatNumber(signal.observed, 2)} / threshold {formatNumber(signal.threshold, 2)}
-          • detected {formatDate(signal.detectedAt)}
+          {$t('incidents.observedThreshold', { observed: formatNumber(signal.observed, 2), threshold: formatNumber(signal.threshold, 2) })}
+          • {$t('incidents.detected', { date: formatDate(signal.detectedAt) })}
         </p>
       </article>
     {:else}
-      <p class="muted">No active incident signal.</p>
+      <p class="muted">{$t('incidents.noActiveSignal')}</p>
     {/each}
   </div>
 </section>
 
 <section class="panel" style="margin-top: 12px;">
-  <h3>Top error group details</h3>
+  <h3>{$t('incidents.errorGroupDetails')}</h3>
   <table>
     <thead>
       <tr>
-        <th>Fingerprint</th>
-        <th>Source</th>
-        <th>Operation</th>
-        <th>Exception</th>
-        <th>Occurrences</th>
-        <th>Actor</th>
-        <th>Room</th>
-        <th>Last seen</th>
+        <th>{$t('incidents.colFingerprint')}</th>
+        <th>{$t('incidents.colSource')}</th>
+        <th>{$t('incidents.colOperation')}</th>
+        <th>{$t('incidents.colException')}</th>
+        <th>{$t('incidents.colOccurrences')}</th>
+        <th>{$t('incidents.colActor')}</th>
+        <th>{$t('incidents.colRoom')}</th>
+        <th>{$t('incidents.colLastSeen')}</th>
       </tr>
     </thead>
     <tbody>
@@ -207,7 +208,7 @@
           <td>{formatDate(entry.lastSeenAt)}</td>
         </tr>
       {:else}
-        <tr><td colspan="8" class="muted">No grouped error data for this window.</td></tr>
+        <tr><td colspan="8" class="muted">{$t('incidents.noGroupedData')}</td></tr>
       {/each}
     </tbody>
   </table>

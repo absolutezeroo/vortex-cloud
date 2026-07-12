@@ -6,6 +6,7 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer, openItem } from '../lib/session.js';
+  import { t } from '../lib/i18n.js';
 
   const categoryOptions = [
     '',
@@ -62,6 +63,22 @@
     return categoryColors[value] || categoryColors.other;
   }
 
+  // Takes the translator function itself (not just a locale flag) so template call sites can pass
+  // $t explicitly and stay reactive -- see the ApiExplorerPage `filtered` reactivity note: a
+  // helper that reads $t only inside its body, with $t absent from the template expression's own
+  // text, is invisible to Svelte's per-expression dependency tracking and won't re-render on
+  // locale change.
+  function categoryLabel(value, translator) {
+    return value ? translator(`audit.categories.${value}`) : translator('audit.allCategories');
+  }
+
+  function resultLabel(value, translator) {
+    if (value === 'Success') return translator('common.resultSuccess');
+    if (value === 'Denied') return translator('common.resultDenied');
+    if (value === 'Failed') return translator('common.resultFailed');
+    return value;
+  }
+
   function buildParams() {
     const params = new URLSearchParams({ limit: String(limit), page: String(page) });
 
@@ -115,66 +132,66 @@
 
 <section class="panel">
   <div class="panel-head">
-    <h2>Recent audit events</h2>
-    <button type="button" on:click={refresh} disabled={loading}>Refresh</button>
+    <h2>{$t('audit.title')}</h2>
+    <button type="button" on:click={refresh} disabled={loading}>{$t('common.refresh')}</button>
   </div>
 
   <form class="toolbar-grid" on:submit|preventDefault={applyFilters}>
     <label>
-      Since
+      {$t('audit.since')}
       <input type="datetime-local" bind:value={since} />
     </label>
     <label>
-      Until
+      {$t('audit.until')}
       <input type="datetime-local" bind:value={until} />
     </label>
     <label>
-      Actor
-      <input type="text" bind:value={actor} placeholder="player id" />
+      {$t('audit.actor')}
+      <input type="text" bind:value={actor} placeholder={$t('audit.playerIdPlaceholder')} />
     </label>
     <label>
-      Target
-      <input type="text" bind:value={target} placeholder="player id" />
+      {$t('audit.target')}
+      <input type="text" bind:value={target} placeholder={$t('audit.playerIdPlaceholder')} />
     </label>
     <label>
-      Category
+      {$t('audit.category')}
       <select bind:value={category}>
         {#each categoryOptions as option}
-          <option value={option}>{option || 'all categories'}</option>
+          <option value={option}>{categoryLabel(option, $t)}</option>
         {/each}
       </select>
     </label>
     <label>
-      Action
-      <input type="text" bind:value={action} placeholder="e.g. moderation.kick" />
+      {$t('audit.action')}
+      <input type="text" bind:value={action} placeholder={$t('audit.actionPlaceholder')} />
     </label>
     <label>
-      Page size
+      {$t('audit.pageSize')}
       <input type="number" min="10" max="500" bind:value={limit} />
     </label>
-    <button type="submit">Filter</button>
+    <button type="submit">{$t('common.filter')}</button>
   </form>
 
   {#if forbidden}
-    <AccessDeniedNotice message="Vous n'avez pas l'autorisation d'accéder au journal d'audit." />
+    <AccessDeniedNotice message={$t('audit.accessDenied')} />
   {:else if error}
     <p class="empty-state danger">{error}</p>
   {:else if loading}
-    <p class="muted">Loading audit events...</p>
+    <p class="muted">{$t('audit.loadingEvents')}</p>
   {:else}
-    <p class="muted">{total} event(s) found.</p>
+    <p class="muted">{$t('audit.eventsFound', { count: total })}</p>
   {/if}
 
   <div class="table-wrap">
     <table>
-      <thead><tr><th>Time</th><th>Category</th><th>Action</th><th>Actor</th><th>Target</th><th>Result</th><th>Data</th><th>CID</th></tr></thead>
+      <thead><tr><th>{$t('audit.colTime')}</th><th>{$t('audit.colCategory')}</th><th>{$t('audit.colAction')}</th><th>{$t('audit.colActor')}</th><th>{$t('audit.colTarget')}</th><th>{$t('audit.colResult')}</th><th>{$t('audit.colData')}</th><th>{$t('audit.colCid')}</th></tr></thead>
       <tbody>
         {#each rows as row}
           <tr>
             <td>{formatDate(row.occurredAt)}</td>
             <td>
               <span class="category-badge" style={`border-left-color: ${categoryColor(row.category)};`}>
-                {row.category}
+                {categoryLabel(row.category, $t)}
               </span>
             </td>
             <td><code>{row.action}</code></td>
@@ -182,14 +199,14 @@
             <td><EntityLink id={row.targetPlayerId} label={row.targetName || ''} {openPlayer} {openItem} /></td>
             <td>
               <span class={`status-badge ${resultBadgeClass[row.result] || 'status-badge--unknown'}`}>
-                {row.result}
+                {resultLabel(row.result, $t)}
               </span>
             </td>
             <td class="truncate" title={summarizeData(row.data)}>{summarizeData(row.data)}</td>
             <td>{compactCorrelation(row.correlationId)}</td>
           </tr>
         {:else}
-          <tr><td colspan="8" class="muted">No audit rows.</td></tr>
+          <tr><td colspan="8" class="muted">{$t('audit.noRows')}</td></tr>
         {/each}
       </tbody>
     </table>
@@ -198,11 +215,11 @@
   {#if total > 0}
     <div class="pagination">
       <button type="button" class="ghost-button" on:click={() => goToPage(page - 1)} disabled={page <= 1 || loading}>
-        ← Prev
+        {$t('common.prev')}
       </button>
-      <span class="muted">page {page} / {totalPages}</span>
+      <span class="muted">{$t('common.page')} {page} / {totalPages}</span>
       <button type="button" class="ghost-button" on:click={() => goToPage(page + 1)} disabled={page >= totalPages || loading}>
-        Next →
+        {$t('common.next')}
       </button>
     </div>
   {/if}

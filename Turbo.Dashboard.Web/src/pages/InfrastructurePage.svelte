@@ -4,6 +4,7 @@
   import { formatDate, formatDuration, formatNumber } from '../lib/format.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
+  import { t } from '../lib/i18n.js';
 
   let data = null;
   let error = '';
@@ -85,48 +86,48 @@
 <section class="panel">
   <div class="panel-head">
     <div>
-      <p class="eyebrow">Runtime</p>
-      <h2>Emulator infrastructure</h2>
+      <p class="eyebrow">{$t('infrastructure.eyebrowRuntime')}</p>
+      <h2>{$t('infrastructure.title')}</h2>
     </div>
-    <button type="button" on:click={refresh}>Refresh</button>
+    <button type="button" on:click={refresh}>{$t('common.refresh')}</button>
   </div>
 
   {#if forbidden}
-    <AccessDeniedNotice message="Vous n'avez pas l'autorisation d'accéder aux métriques infrastructure." />
+    <AccessDeniedNotice message={$t('infrastructure.accessDenied')} />
   {:else if error}
     <p class="empty-state danger">{error}</p>
   {/if}
 
   <div class="metric-grid">
     <article>
-      <span>Emulator</span>
+      <span>{$t('infrastructure.emulator')}</span>
       <strong class={statusClass(data?.runtime?.status)}>{data?.runtime?.status || '-'}</strong>
-      <small>process #{data?.runtime?.processId || '-'}</small>
+      <small>{$t('infrastructure.process', { id: data?.runtime?.processId || '-' })}</small>
     </article>
     <article>
-      <span>Overall health</span>
+      <span>{$t('infrastructure.overallHealth')}</span>
       <strong class={statusClass(data?.overall)}>{data?.overall || '-'}</strong>
-      <small>DB + Orleans</small>
+      <small>{$t('infrastructure.dbAndOrleans')}</small>
     </article>
     <article>
-      <span>Uptime</span>
+      <span>{$t('infrastructure.uptime')}</span>
       <strong>{formatDuration(data?.runtime?.uptimeSeconds)}</strong>
-      <small>started {formatDate(data?.runtime?.startedAtUtc)}</small>
+      <small>{$t('infrastructure.started', { date: formatDate(data?.runtime?.startedAtUtc) })}</small>
     </article>
     <article>
-      <span>Environment</span>
+      <span>{$t('infrastructure.environment')}</span>
       <strong>{data?.runtime?.environmentName || '-'}</strong>
       <small>{data?.runtime?.machineName || '-'}</small>
     </article>
     <article>
-      <span>Memory</span>
+      <span>{$t('infrastructure.memory')}</span>
       <strong>{formatNumber(data?.runtime?.workingSetMb)} MB</strong>
-      <small>{formatNumber(data?.runtime?.managedMemoryMb)} MB managed</small>
+      <small>{$t('infrastructure.managed', { value: formatNumber(data?.runtime?.managedMemoryMb) })}</small>
     </article>
     <article>
-      <span>CPU</span>
+      <span>{$t('infrastructure.cpu')}</span>
       <strong>{data?.runtime?.processorCount ?? '-'}</strong>
-      <small>logical processors</small>
+      <small>{$t('infrastructure.logicalProcessors')}</small>
     </article>
   </div>
 </section>
@@ -135,21 +136,21 @@
   <div class="panel">
     <div class="panel-head">
       <div>
-        <p class="eyebrow">Database</p>
-        <h2>Persistence health</h2>
+        <p class="eyebrow">{$t('infrastructure.eyebrowDatabase')}</p>
+        <h2>{$t('infrastructure.persistenceHealth')}</h2>
       </div>
       <strong class={statusClass(data?.database?.status)}>{data?.database?.status || '-'}</strong>
     </div>
 
     <div class="metric-grid compact">
       <article>
-        <span>Latency</span>
+        <span>{$t('infrastructure.latency')}</span>
         <strong>{formatNumber(data?.database?.latencyMs, 2)} ms</strong>
-        <small>CanConnectAsync probe</small>
+        <small>{$t('infrastructure.canConnectProbe')}</small>
       </article>
       <article>
-        <span>Detail</span>
-        <strong>{data?.database?.name || 'database'}</strong>
+        <span>{$t('infrastructure.detail')}</span>
+        <strong>{data?.database?.name || $t('infrastructure.database')}</strong>
         <small>{data?.database?.detail || '-'}</small>
       </article>
     </div>
@@ -158,20 +159,20 @@
   <div class="panel">
     <div class="panel-head">
       <div>
-        <p class="eyebrow">Orleans</p>
-        <h2>Cluster health</h2>
+        <p class="eyebrow">{$t('infrastructure.eyebrowOrleans')}</p>
+        <h2>{$t('infrastructure.clusterHealth')}</h2>
       </div>
       <strong class={statusClass(data?.orleans?.status)}>{data?.orleans?.status || '-'}</strong>
     </div>
 
     <div class="metric-grid compact">
       <article>
-        <span>Probe latency</span>
+        <span>{$t('infrastructure.probeLatency')}</span>
         <strong>{formatNumber(data?.orleans?.latencyMs, 2)} ms</strong>
-        <small>management + presence grains</small>
+        <small>{$t('infrastructure.managementGrains')}</small>
       </article>
       <article>
-        <span>Active silos</span>
+        <span>{$t('infrastructure.activeSilos')}</span>
         <strong>{data?.orleansCluster?.activeSiloCount ?? '-'}/{data?.orleansCluster?.siloCount ?? '-'}</strong>
         <small>{data?.orleansCluster?.detail || data?.orleans?.detail || '-'}</small>
       </article>
@@ -182,15 +183,15 @@
   <section class="panel">
     <div class="panel-head">
       <div>
-        <p class="eyebrow">Orleans membership</p>
-      <h2>Silos</h2>
+        <p class="eyebrow">{$t('infrastructure.eyebrowMembership')}</p>
+      <h2>{$t('infrastructure.silos')}</h2>
     </div>
     <span class={statusClass(data?.orleansCluster?.status)}>{data?.orleansCluster?.status || '-'}</span>
   </div>
 
   <table>
     <thead>
-      <tr><th>Address</th><th>Status</th></tr>
+      <tr><th>{$t('infrastructure.colAddress')}</th><th>{$t('infrastructure.colStatus')}</th></tr>
     </thead>
     <tbody>
       {#each data?.orleansCluster?.silos || [] as silo}
@@ -199,7 +200,7 @@
           <td class={statusClass(silo.status)}>{silo.status}</td>
         </tr>
       {:else}
-        <tr><td colspan="2" class="muted">No silo membership data available.</td></tr>
+        <tr><td colspan="2" class="muted">{$t('infrastructure.noSiloData')}</td></tr>
       {/each}
     </tbody>
   </table>
@@ -207,7 +208,7 @@
 
 <section class="panel" style="margin-top: 12px;">
   <div class="panel-head">
-    <h2>Orleans silos distribution</h2>
+    <h2>{$t('infrastructure.siloDistribution')}</h2>
   </div>
 
   <div class="bar-chart">
@@ -223,7 +224,7 @@
         <span class="muted">{row.count}</span>
       </div>
     {:else}
-      <p class="muted">No silo status buckets.</p>
+      <p class="muted">{$t('infrastructure.noSiloBuckets')}</p>
     {/each}
   </div>
 </section>
@@ -231,17 +232,17 @@
 <section class="panel">
   <div class="panel-head">
     <div>
-      <p class="eyebrow">Host</p>
-      <h2>Runtime details</h2>
+      <p class="eyebrow">{$t('infrastructure.eyebrowHost')}</p>
+      <h2>{$t('infrastructure.runtimeDetails')}</h2>
     </div>
   </div>
 
   <table>
     <tbody>
-      <tr><th>Framework</th><td>{data?.runtime?.frameworkDescription || '-'}</td></tr>
-      <tr><th>OS</th><td>{data?.runtime?.osDescription || '-'}</td></tr>
-      <tr><th>Machine</th><td>{data?.runtime?.machineName || '-'}</td></tr>
-      <tr><th>Started UTC</th><td>{formatDate(data?.runtime?.startedAtUtc)}</td></tr>
+      <tr><th>{$t('infrastructure.framework')}</th><td>{data?.runtime?.frameworkDescription || '-'}</td></tr>
+      <tr><th>{$t('infrastructure.os')}</th><td>{data?.runtime?.osDescription || '-'}</td></tr>
+      <tr><th>{$t('infrastructure.machine')}</th><td>{data?.runtime?.machineName || '-'}</td></tr>
+      <tr><th>{$t('infrastructure.startedUtc')}</th><td>{formatDate(data?.runtime?.startedAtUtc)}</td></tr>
     </tbody>
   </table>
 </section>

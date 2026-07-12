@@ -10,10 +10,12 @@
   // viewBox's, which visibly distorts stroke widths/dots/text (looks oversized/blobby). Matching
   // the viewBox to the real pixel box 1:1 means there is nothing to stretch, and it also means
   // viewBox units below can be treated as CSS pixels for tooltip positioning.
+  import { t } from '../lib/i18n.js';
+
   export let series = []; // [{ name, color, points: [{ label, value }] }]
   export let height = 220;
   export let valueFormatter = (v) => String(v);
-  export let emptyMessage = 'No data for this window.';
+  export let emptyMessage = '';
 
   // Nonzero default so the chart renders at a sane size immediately, before the resize binding
   // below reports the real measured width (which lands a tick after first paint).
@@ -117,7 +119,7 @@
   aria-label="Trend chart"
 >
   {#if !hasData}
-    <p class="muted">{emptyMessage}</p>
+    <p class="muted">{emptyMessage || $t('lineChart.noData')}</p>
   {:else}
     <svg viewBox={`0 0 ${viewWidth} ${viewHeight}`} class="linechart-svg" aria-hidden="true">
       {#each gridLines as y}

@@ -8,6 +8,7 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import { identity, openPlayer, openItem } from '../lib/session.js';
+  import { t, translate } from '../lib/i18n.js';
 
   let loading = false;
   let forbidden = false;
@@ -87,7 +88,7 @@
     try {
       occupants = await apiGet(`/api/v1/directory/rooms/${id}/occupants`);
     } catch (err) {
-      occupantsError = isPermissionDeniedError(err) ? 'Droits insuffisants.' : err.code || err.message;
+      occupantsError = isPermissionDeniedError(err) ? translate('common.insufficientRights') : err.code || err.message;
     } finally {
       occupantsLoading = false;
     }
@@ -113,7 +114,7 @@
       reasonInput: '',
       busy: false,
       error: '',
-      summary: `Deactivate ${roomName(room)} (#${roomId(room)}). Does not evict occupants by itself.`,
+      summary: translate('roomControl.deactivateSummary', { room: roomName(room), id: roomId(room) }),
     };
   }
 
@@ -126,7 +127,7 @@
       reasonInput: '',
       busy: false,
       error: '',
-      summary: `Remove ${occupantName(occupant)} (#${occupantId(occupant)}) from room #${forRoomId}.`,
+      summary: translate('roomControl.removeSummary', { occupant: occupantName(occupant), id: occupantId(occupant), roomId: forRoomId }),
     };
   }
 
@@ -140,7 +141,7 @@
     }
 
     if (!reasonOk(pending.reasonInput)) {
-      pending = { ...pending, error: 'Reason needs at least 3 characters.' };
+      pending = { ...pending, error: translate('roomControl.reasonTooShort') };
       return;
     }
 
@@ -171,7 +172,7 @@
       pending = {
         ...pending,
         busy: false,
-        error: isPermissionDeniedError(err) ? 'Droits insuffisants.' : err.code || err.message,
+        error: isPermissionDeniedError(err) ? translate('common.insufficientRights') : err.code || err.message,
       };
     }
   }
@@ -183,18 +184,17 @@
 
 <section class="panel">
   <div class="panel-head">
-    <h2>Room control</h2>
-    <button type="button" class="ghost-button" on:click={refresh} disabled={loading}>Refresh</button>
+    <h2>{$t('roomControl.title')}</h2>
+    <button type="button" class="ghost-button" on:click={refresh} disabled={loading}>{$t('common.refresh')}</button>
   </div>
   <p class="muted">
-    Currently active rooms. For historical room activity/timeline lookups by id, see Room
-    inspector — this page is for live occupancy and moderation actions only.
+    {$t('roomControl.description')}
   </p>
 
   {#if loading}
-    <p class="muted">Loading active rooms...</p>
+    <p class="muted">{$t('roomControl.loadingRooms')}</p>
   {:else if forbidden}
-    <AccessDeniedNotice message="Vous n'avez pas l'autorisation de gérer les rooms." />
+    <AccessDeniedNotice message={$t('roomControl.accessDenied')} />
   {:else if error}
     <p class="empty-state danger">{error}</p>
   {/if}
@@ -209,11 +209,11 @@
   <table>
     <thead>
       <tr>
-        <th>Room</th>
-        <th>Owner</th>
-        <th>Population</th>
-        <th>Last updated</th>
-        <th>Actions</th>
+        <th>{$t('roomControl.colRoom')}</th>
+        <th>{$t('roomControl.colOwner')}</th>
+        <th>{$t('roomControl.colPopulation')}</th>
+        <th>{$t('roomControl.colLastUpdated')}</th>
+        <th>{$t('roomControl.colActions')}</th>
       </tr>
     </thead>
     <tbody>
@@ -229,9 +229,9 @@
           <td>{formatDate(roomUpdatedAt(room))}</td>
           <td>
             {#if canManage}
-              <button type="button" on:click={() => stageClose(room)}>Force-close</button>
+              <button type="button" on:click={() => stageClose(room)}>{$t('roomControl.forceClose')}</button>
             {:else}
-              <span class="muted">read-only</span>
+              <span class="muted">{$t('roomControl.readOnly')}</span>
             {/if}
           </td>
         </tr>
@@ -239,12 +239,12 @@
           <tr>
             <td colspan="5">
               {#if occupantsLoading}
-                <p class="muted">Loading occupants...</p>
+                <p class="muted">{$t('roomControl.loadingOccupants')}</p>
               {:else if occupantsError}
                 <p class="empty-state danger">{occupantsError}</p>
               {:else}
                 <table>
-                  <thead><tr><th>Player</th><th>Actions</th></tr></thead>
+                  <thead><tr><th>{$t('roomControl.colPlayer')}</th><th>{$t('roomControl.colActions')}</th></tr></thead>
                   <tbody>
                     {#each occupants as occupant (occupantId(occupant))}
                       <tr>
@@ -253,12 +253,12 @@
                         </td>
                         <td>
                           {#if canManage}
-                            <button type="button" class="ghost-button" on:click={() => stageKick(occupant, roomId(room))}>Kick</button>
+                            <button type="button" class="ghost-button" on:click={() => stageKick(occupant, roomId(room))}>{$t('roomControl.kick')}</button>
                           {/if}
                         </td>
                       </tr>
                     {:else}
-                      <tr><td colspan="2" class="muted">No occupants.</td></tr>
+                      <tr><td colspan="2" class="muted">{$t('roomControl.noOccupants')}</td></tr>
                     {/each}
                   </tbody>
                 </table>
@@ -267,7 +267,7 @@
           </tr>
         {/if}
       {:else}
-        <tr><td colspan="5" class="muted">No active rooms.</td></tr>
+        <tr><td colspan="5" class="muted">{$t('roomControl.noActiveRooms')}</td></tr>
       {/each}
     </tbody>
   </table>
@@ -279,19 +279,19 @@
     <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
       <header class="modal-header">
         <div>
-          <p class="eyebrow">Confirm room action</p>
-          <h2>{pending.kind === 'close' ? 'Force-close room' : 'Kick from room'}</h2>
+          <p class="eyebrow">{$t('roomControl.confirmEyebrow')}</p>
+          <h2>{pending.kind === 'close' ? $t('roomControl.forceCloseRoom') : $t('roomControl.kickFromRoom')}</h2>
         </div>
       </header>
       <p>{pending.summary}</p>
       <div class="op-field">
-        <label for="room-action-reason">Reason *</label>
-        <input id="room-action-reason" bind:value={pending.reasonInput} placeholder="why this action?" />
+        <label for="room-action-reason">{$t('common.reasonRequired')}</label>
+        <input id="room-action-reason" bind:value={pending.reasonInput} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       {#if pending.error}<p class="empty-state danger">{pending.error}</p>{/if}
       <div class="op-actions">
-        <button type="button" on:click={confirm} disabled={pending.busy}>Confirm</button>
-        <button class="ghost-button" type="button" on:click={cancel}>Cancel</button>
+        <button type="button" on:click={confirm} disabled={pending.busy}>{$t('common.confirm')}</button>
+        <button class="ghost-button" type="button" on:click={cancel}>{$t('common.cancel')}</button>
       </div>
     </section>
   </div>

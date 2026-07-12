@@ -6,6 +6,7 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import { openPlayer, openItem } from '../lib/session.js';
+  import { t, translate } from '../lib/i18n.js';
 
   const actionOptions = [
     '',
@@ -41,7 +42,8 @@
   let forbidden = false;
   let data = null;
 
-  let filterSummary = 'No data loaded.';
+  let filterSummary = '';
+  $: if (!filterSummary) filterSummary = translate('moderation.noDataLoaded');
 
   function toLocalInputValue(value) {
     if (!value) {
@@ -133,8 +135,9 @@
     const from = data?.window?.since || '';
     const to = data?.window?.until || '';
 
-    filterSummary =
-      `${total} moderation action(s) found${from ? ` between ${formatDate(from)} and ${formatDate(to)}.` : '.'}`;
+    filterSummary = from
+      ? translate('moderation.summaryWithWindow', { count: total, from: formatDate(from), to: formatDate(to) })
+      : translate('moderation.summaryNoWindow', { count: total });
   }
 
   async function refresh() {
@@ -271,86 +274,86 @@
 
 <section class="panel">
   <div class="panel-head">
-    <h2>Moderation statistics</h2>
-    <button type="button" on:click={exportCsv}>Export CSV</button>
+    <h2>{$t('moderation.title')}</h2>
+    <button type="button" on:click={exportCsv}>{$t('moderation.exportCsv')}</button>
   </div>
 
   <form class="toolbar-grid" on:submit|preventDefault={applyFilters}>
     <label>
-      Since
+      {$t('moderation.since')}
       <input type="datetime-local" bind:value={since} />
     </label>
     <label>
-      Until
+      {$t('moderation.until')}
       <input type="datetime-local" bind:value={until} />
     </label>
     <label>
-      Actor
-      <input type="text" bind:value={actor} placeholder="player id" />
+      {$t('moderation.actor')}
+      <input type="text" bind:value={actor} placeholder={$t('moderation.playerIdPlaceholder')} />
     </label>
     <label>
-      Target
-      <input type="text" bind:value={target} placeholder="player id" />
+      {$t('moderation.target')}
+      <input type="text" bind:value={target} placeholder={$t('moderation.playerIdPlaceholder')} />
     </label>
     <label>
-      Room
-      <input type="text" bind:value={room} placeholder="room id" />
+      {$t('moderation.room')}
+      <input type="text" bind:value={room} placeholder={$t('moderation.roomIdPlaceholder')} />
     </label>
     <label>
-      Action
+      {$t('moderation.action')}
       <select bind:value={action}>
         {#each actionOptions as option}
-          <option value={option}>{option || 'all actions'}</option>
+          <option value={option}>{option || $t('moderation.allActions')}</option>
         {/each}
       </select>
     </label>
     <label>
-      Result
+      {$t('moderation.result')}
       <select bind:value={result}>
         {#each resultOptions as option}
-          <option value={option}>{option || 'all results'}</option>
+          <option value={option}>{option || $t('moderation.allResults')}</option>
         {/each}
       </select>
     </label>
     <label>
-      Limit
+      {$t('moderation.limit')}
       <input type="number" min="10" max="500" bind:value={limit} />
     </label>
 
-    <button type="submit">Refresh</button>
+    <button type="submit">{$t('common.refresh')}</button>
   </form>
 
   <p class="muted">{filterSummary}</p>
 
   {#if loading}
-    <p class="muted">Loading moderation window...</p>
+    <p class="muted">{$t('moderation.loadingWindow')}</p>
   {:else if forbidden}
-    <AccessDeniedNotice message="Vous n'avez pas l'autorisation d'accéder aux statistiques de modération." />
+    <AccessDeniedNotice message={$t('moderation.accessDenied')} />
   {:else if error}
     <p class="empty-state danger">{error}</p>
   {/if}
 
   <div class="metric-grid compact">
-    <article><span>Total actions</span><strong>{formatNumber(data?.totals?.total || 0)}</strong></article>
-    <article><span>Successful</span><strong>{formatNumber(data?.totals?.success || 0)}</strong></article>
-    <article><span>Denied</span><strong>{formatNumber(data?.totals?.denied || 0)}</strong></article>
-    <article><span>Failed</span><strong>{formatNumber(data?.totals?.failed || 0)}</strong></article>
-    <article><span>Renewals</span><strong>{formatNumber(data?.totals?.renewalCount || 0)}</strong></article>
-    <article><span>Avg duration</span><strong>{formatDuration(data?.totals?.averageDurationSeconds || 0)}</strong></article>
-    <article><span>Active bans</span><strong>{formatNumber(data?.totals?.activeBans || 0)}</strong></article>
-    <article><span>Bans retention</span><strong>{((data?.totals?.retentionRate || 0) * 100).toFixed(2)}%</strong></article>
+    <article><span>{$t('moderation.totalActions')}</span><strong>{formatNumber(data?.totals?.total || 0)}</strong></article>
+    <article><span>{$t('moderation.successful')}</span><strong>{formatNumber(data?.totals?.success || 0)}</strong></article>
+    <article><span>{$t('moderation.denied')}</span><strong>{formatNumber(data?.totals?.denied || 0)}</strong></article>
+    <article><span>{$t('moderation.failed')}</span><strong>{formatNumber(data?.totals?.failed || 0)}</strong></article>
+    <article><span>{$t('moderation.renewals')}</span><strong>{formatNumber(data?.totals?.renewalCount || 0)}</strong></article>
+    <article><span>{$t('moderation.avgDuration')}</span><strong>{formatDuration(data?.totals?.averageDurationSeconds || 0)}</strong></article>
+    <article><span>{$t('moderation.activeBans')}</span><strong>{formatNumber(data?.totals?.activeBans || 0)}</strong></article>
+    <article><span>{$t('moderation.bansRetention')}</span><strong>{((data?.totals?.retentionRate || 0) * 100).toFixed(2)}%</strong></article>
   </div>
 
   <div class="split-grid" style="margin-top: 14px;">
     <article class="panel">
-      <h3>Actions distribution</h3>
+      <h3>{$t('moderation.actionsDistribution')}</h3>
       <div class="chart-wrap">
         <div class="donut" style={`background: ${pieStyle()};`}></div>
         <div class="donut-legend">
           {#each actionDistribution as entry}
             <div>
               <span class="legend-dot" style={`background: ${actionColors[entry.action] || actionColors.other};`}></span>
-              <span>{entry.action || 'unknown'} — {formatNumber(entry.count)}</span>
+              <span>{entry.action || $t('moderation.unknown')} — {formatNumber(entry.count)}</span>
             </div>
           {/each}
         </div>
@@ -358,7 +361,7 @@
     </article>
 
     <article class="panel">
-      <h3>Trend</h3>
+      <h3>{$t('moderation.trend')}</h3>
       <div class="bar-chart">
         {#each timelineRows as bucket}
           <div class="bar-row">
@@ -369,7 +372,7 @@
             <span class="muted">{bucket.count}</span>
           </div>
         {:else}
-          <p class="muted">No buckets in selected window.</p>
+          <p class="muted">{$t('moderation.noBuckets')}</p>
         {/each}
       </div>
     </article>
@@ -377,9 +380,9 @@
 
   <section class="split-grid" style="margin-top: 14px;">
     <div class="panel">
-      <h3>Top actors</h3>
+      <h3>{$t('moderation.topActors')}</h3>
       <table>
-        <thead><tr><th>Actor</th><th>Rows</th></tr></thead>
+        <thead><tr><th>{$t('moderation.colActor')}</th><th>{$t('moderation.colRows')}</th></tr></thead>
         <tbody>
           {#each data?.topActors || [] as row}
             <tr>
@@ -389,16 +392,16 @@
               <td>{formatNumber(row.count)}</td>
             </tr>
           {:else}
-            <tr><td colspan="2" class="muted">No actor activity.</td></tr>
+            <tr><td colspan="2" class="muted">{$t('moderation.noActorActivity')}</td></tr>
           {/each}
         </tbody>
       </table>
     </div>
 
     <div class="panel">
-      <h3>Top targets</h3>
+      <h3>{$t('moderation.topTargets')}</h3>
       <table>
-        <thead><tr><th>Target</th><th>Rows</th></tr></thead>
+        <thead><tr><th>{$t('moderation.colTarget')}</th><th>{$t('moderation.colRows')}</th></tr></thead>
         <tbody>
           {#each data?.topTargets || [] as row}
             <tr>
@@ -408,7 +411,7 @@
               <td>{formatNumber(row.count)}</td>
             </tr>
           {:else}
-            <tr><td colspan="2" class="muted">No target activity.</td></tr>
+            <tr><td colspan="2" class="muted">{$t('moderation.noTargetActivity')}</td></tr>
           {/each}
         </tbody>
       </table>
@@ -416,9 +419,9 @@
   </section>
 
   <div class="panel" style="margin-top: 14px;">
-    <h3>Top rooms</h3>
+    <h3>{$t('moderation.topRooms')}</h3>
     <table>
-      <thead><tr><th>Room</th><th>Name</th><th>Rows</th></tr></thead>
+      <thead><tr><th>{$t('moderation.colRoom')}</th><th>{$t('moderation.colName')}</th><th>{$t('moderation.colRows')}</th></tr></thead>
       <tbody>
         {#each data?.topRooms || [] as row}
           <tr>
@@ -427,7 +430,7 @@
             <td>{formatNumber(row.count)}</td>
           </tr>
         {:else}
-          <tr><td colspan="3" class="muted">No room activity.</td></tr>
+          <tr><td colspan="3" class="muted">{$t('moderation.noRoomActivity')}</td></tr>
         {/each}
       </tbody>
     </table>
@@ -435,22 +438,22 @@
 
   <div class="panel" style="margin-top: 14px;">
     <div class="panel-head">
-      <h3>Recent moderation events</h3>
-      <span class="muted">{data?.totals?.total || 0} row(s) · page {data?.totals?.page || 1} / {totalPages}</span>
+      <h3>{$t('moderation.recentEvents')}</h3>
+      <span class="muted">{$t('moderation.rowsPage', { count: data?.totals?.total || 0, page: data?.totals?.page || 1, totalPages })}</span>
     </div>
     <div class="table-wrap">
       <table>
         <thead>
           <tr>
-            <th>Time</th>
-            <th>Action</th>
-            <th>Actor</th>
-            <th>Target</th>
-            <th>Room</th>
-            <th>Duration</th>
-            <th>Result</th>
-            <th>Renewal</th>
-            <th>Reason</th>
+            <th>{$t('moderation.colTime')}</th>
+            <th>{$t('moderation.colAction')}</th>
+            <th>{$t('moderation.colActor')}</th>
+            <th>{$t('moderation.colTarget')}</th>
+            <th>{$t('moderation.colRoom')}</th>
+            <th>{$t('moderation.colDuration')}</th>
+            <th>{$t('moderation.colResult')}</th>
+            <th>{$t('moderation.colRenewal')}</th>
+            <th>{$t('moderation.colReason')}</th>
           </tr>
         </thead>
         <tbody>
@@ -469,15 +472,15 @@
               <td>{row.result}</td>
               <td>
                 {#if row.isRenewal}
-                  <span class="positive">Yes</span>
+                  <span class="positive">{$t('common.yes')}</span>
                 {:else}
-                  No
+                  {$t('common.no')}
                 {/if}
               </td>
               <td class="truncate">{row.reason || '-'}</td>
             </tr>
           {:else}
-            <tr><td colspan="9" class="muted">No moderation events for this filter.</td></tr>
+            <tr><td colspan="9" class="muted">{$t('moderation.noEvents')}</td></tr>
           {/each}
         </tbody>
       </table>
@@ -486,11 +489,11 @@
     {#if (data?.totals?.total || 0) > 0}
       <div class="pagination">
         <button type="button" class="ghost-button" on:click={() => goToPage(page - 1)} disabled={page <= 1 || loading}>
-          ← Prev
+          {$t('common.prev')}
         </button>
-        <span class="muted">page {page} / {totalPages}</span>
+        <span class="muted">{$t('common.page')} {page} / {totalPages}</span>
         <button type="button" class="ghost-button" on:click={() => goToPage(page + 1)} disabled={page >= totalPages || loading}>
-          Next →
+          {$t('common.next')}
         </button>
       </div>
     {/if}

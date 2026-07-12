@@ -5,12 +5,13 @@
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import LineChart from '../components/LineChart.svelte';
+  import { t, translate } from '../lib/i18n.js';
 
-  const granularities = [
-    { value: 'day', label: 'Day' },
-    { value: 'month', label: 'Month' },
-    { value: 'year', label: 'Year' },
-  ];
+  const granularities = ['day', 'month', 'year'];
+
+  function granularityLabel(value, translator) {
+    return translator(`common.granularity${value.charAt(0).toUpperCase()}${value.slice(1)}`);
+  }
 
   const currencyColors = [
     'var(--accent)',
@@ -90,7 +91,7 @@
     // Audit action keys are dotted machine names (e.g. "economy.catalog_purchase") — humanize them
     // rather than showing the raw key.
     return action === 'uncategorized'
-      ? 'Uncategorized (no matching audit event)'
+      ? translate('economyTrends.uncategorized')
       : action.replaceAll('.', ' ').replaceAll('_', ' ');
   }
 
@@ -101,37 +102,35 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>Spend trends</h2></div>
+  <div class="panel-head"><h2>{$t('economyTrends.title')}</h2></div>
   <p class="muted">
-    How much of each currency was spent vs earned, per day/month/year. Currency names come from
-    this hotel's own <code>currency_types</code> configuration (credits, and whatever your
-    secondary/activity currencies are named).
+    {$t('economyTrends.descriptionBefore')} <code>currency_types</code> {$t('economyTrends.descriptionAfter')}
   </p>
 
   <form class="toolbar-grid" on:submit|preventDefault={refresh}>
     <label>
-      Since
+      {$t('common.since')}
       <input type="date" bind:value={since} />
     </label>
     <label>
-      Until
+      {$t('common.until')}
       <input type="date" bind:value={until} />
     </label>
     <label>
-      Granularity
+      {$t('common.granularity')}
       <select bind:value={granularity}>
         {#each granularities as g}
-          <option value={g.value}>{g.label}</option>
+          <option value={g}>{granularityLabel(g, $t)}</option>
         {/each}
       </select>
     </label>
-    <button type="submit" disabled={loading}>Refresh</button>
+    <button type="submit" disabled={loading}>{$t('common.refresh')}</button>
   </form>
 
   {#if loading}
-    <p class="muted">Loading trends...</p>
+    <p class="muted">{$t('economyTrends.loading')}</p>
   {:else if forbidden}
-    <AccessDeniedNotice message="Vous n'avez pas l'autorisation d'accéder aux tendances économiques." />
+    <AccessDeniedNotice message={$t('economyTrends.accessDenied')} />
   {:else if error}
     <p class="empty-state danger">{error}</p>
   {/if}
@@ -143,31 +142,29 @@
       <article style={`border-left: 3px solid ${colorFor(i)};`}>
         <span>{currency}</span>
         <strong>{formatNumber(data.totals[currency]?.spend || 0)}</strong>
-        <small>spent · {formatNumber(data.totals[currency]?.earned || 0)} earned · {formatNumber(data.totals[currency]?.transactionCount || 0)} txns</small>
+        <small>{$t('economyTrends.spentSuffix')} · {formatNumber(data.totals[currency]?.earned || 0)} {$t('economyTrends.earnedSuffix')} · {formatNumber(data.totals[currency]?.transactionCount || 0)} {$t('economyTrends.txnsSuffix')}</small>
       </article>
     {/each}
   </div>
 
   <div class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>Spent per {granularity}</h2></div>
+    <div class="panel-head"><h2>{$t('economyTrends.spentPer', { granularity: granularityLabel(granularity, $t) })}</h2></div>
     <LineChart series={spendSeries} valueFormatter={(v) => formatNumber(v)} />
   </div>
 
   <div class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>Earned per {granularity}</h2></div>
+    <div class="panel-head"><h2>{$t('economyTrends.earnedPer', { granularity: granularityLabel(granularity, $t) })}</h2></div>
     <LineChart series={earnedSeries} valueFormatter={(v) => formatNumber(v)} />
   </div>
 
   <div class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>Spent on what</h2></div>
+    <div class="panel-head"><h2>{$t('economyTrends.spentOnWhat')}</h2></div>
     <p class="muted">
-      Attributed by matching each debit's correlation id to the audit event of the operation that
-      caused it (catalog purchase, marketplace, LTD raffle, admin grant, ...). "Uncategorized" means
-      no matching audit event was found for that debit.
+      {$t('economyTrends.attributionNote')}
     </p>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Source</th><th>Currency</th><th>Spent</th><th>Transactions</th></tr></thead>
+        <thead><tr><th>{$t('economyTrends.colSource')}</th><th>{$t('economyTrends.colCurrency')}</th><th>{$t('economyTrends.colSpent')}</th><th>{$t('economyTrends.colTransactions')}</th></tr></thead>
         <tbody>
           {#each categories as row}
             <tr>
@@ -177,12 +174,12 @@
               <td>{formatNumber(row.transactionCount)}</td>
             </tr>
           {:else}
-            <tr><td colspan="4" class="muted">No spend in this window.</td></tr>
+            <tr><td colspan="4" class="muted">{$t('economyTrends.noSpend')}</td></tr>
           {/each}
         </tbody>
       </table>
     </div>
   </div>
 {:else if !loading && !forbidden && !error}
-  <p class="empty-state" style="margin-top: 12px;">No economy activity in this window.</p>
+  <p class="empty-state" style="margin-top: 12px;">{$t('economyTrends.noActivity')}</p>
 {/if}

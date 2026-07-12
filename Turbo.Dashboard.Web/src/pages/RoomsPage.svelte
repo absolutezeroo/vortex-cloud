@@ -5,6 +5,7 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer, openItem } from '../lib/session.js';
+  import { t } from '../lib/i18n.js';
 
   let roomId = '';
   let data = null;
@@ -37,16 +38,16 @@
 
 <section class="panel">
   <div class="panel-head">
-    <h2>Room timeline</h2>
-    <button type="button" on:click={load}>Refresh</button>
+    <h2>{$t('roomsTimeline.title')}</h2>
+    <button type="button" on:click={load}>{$t('common.refresh')}</button>
   </div>
   <form class="toolbar" on:submit|preventDefault={load}>
-    <input bind:value={roomId} placeholder="room id" />
-    <button type="submit">Inspect</button>
+    <input bind:value={roomId} placeholder={$t('roomsTimeline.roomIdPlaceholder')} />
+    <button type="submit">{$t('roomsTimeline.inspect')}</button>
   </form>
 
   {#if forbidden}
-    <AccessDeniedNotice message="Vous n'avez pas l'autorisation d'accéder aux timelines de salle." />
+    <AccessDeniedNotice message={$t('roomsTimeline.accessDenied')} />
   {:else if error}
     <p class="empty-state danger">{error}</p>
   {/if}
@@ -54,14 +55,14 @@
   {#if data?.room}
     <div class="room-summary">
       <strong>{data.room.name || data.room.roomName} #{data.room.roomId || data.room.id}</strong>
-      <span>{data.room.usersNow ?? data.room.roomUsersNow}/{data.room.playersMax ?? data.room.roomPlayersMax} players</span>
+      <span>{data.room.usersNow ?? data.room.roomUsersNow}/{data.room.playersMax ?? data.room.roomPlayersMax} {$t('roomsTimeline.players')}</span>
       <span>{data.room.modelName || data.room.roomModelName}</span>
       <EntityLink id={data.room.roomOwnerId || data.room.ownerPlayerId} label={data.room.roomOwnerName || ''} {openPlayer} {openItem} />
     </div>
   {/if}
 
   <table>
-    <thead><tr><th>Time</th><th>Event</th><th>Actor</th><th>Target</th><th>Message</th></tr></thead>
+    <thead><tr><th>{$t('roomsTimeline.colTime')}</th><th>{$t('roomsTimeline.colEvent')}</th><th>{$t('roomsTimeline.colActor')}</th><th>{$t('roomsTimeline.colTarget')}</th><th>{$t('roomsTimeline.colMessage')}</th></tr></thead>
     <tbody>
       {#each data?.timeline || [] as row}
         <tr>
@@ -77,7 +78,7 @@
           </td>
         </tr>
       {:else}
-        <tr><td colspan="5" class="muted">No room timeline loaded.</td></tr>
+        <tr><td colspan="5" class="muted">{$t('roomsTimeline.noTimeline')}</td></tr>
       {/each}
     </tbody>
   </table>

@@ -11,6 +11,7 @@
   } from './lib/api.js';
   import { connectionIssue, identity, deniedRoute } from './lib/session.js';
   import { routes } from './lib/routes.js';
+  import { t } from './lib/i18n.js';
   import AppShell from './components/AppShell.svelte';
   import Login from './components/Login.svelte';
   import EntityModal from './components/EntityModal.svelte';
@@ -159,8 +160,8 @@
     <section class="boot-panel" aria-live="polite">
       <RefreshCw size={24} class="spin" />
       <div>
-        <p class="eyebrow">Turbo Ops</p>
-        <h1>Checking emulator...</h1>
+        <p class="eyebrow">{$t('nav.brandTitle')}</p>
+        <h1>{$t('boot.checkingEmulator')}</h1>
       </div>
     </section>
   </div>
@@ -169,15 +170,15 @@
     <section class="boot-panel boot-panel--wide" role="status" aria-live="polite">
       <WifiOff size={30} />
       <div>
-        <p class="eyebrow">Emulator unavailable</p>
-        <h1>Connection paused</h1>
-        <p>{bootMessage || $connectionIssue?.message || 'The emulator API is not reachable.'}</p>
+        <p class="eyebrow">{$t('boot.unavailableEyebrow')}</p>
+        <h1>{$t('boot.connectionPaused')}</h1>
+        <p>{bootMessage || $connectionIssue?.message || $t('boot.unreachable')}</p>
       </div>
       <button type="button" on:click={() => retryConnection(false)} disabled={retryBusy}>
         <RefreshCw size={16} class={retryBusy ? 'spin' : ''} />
-        <span>{retryBusy ? 'Retrying...' : 'Retry now'}</span>
+        <span>{retryBusy ? $t('boot.retrying') : $t('boot.retryNow')}</span>
       </button>
-      <small>Auto retry runs while this window is open.</small>
+      <small>{$t('boot.autoRetry')}</small>
     </section>
   </div>
 {:else if status === 'login'}
@@ -187,7 +188,7 @@
       <span>{$connectionIssue.message}</span>
       <button type="button" on:click={() => retryConnection(true)} disabled={retryBusy}>
         <RefreshCw size={14} class={retryBusy ? 'spin' : ''} />
-        <span>Retry</span>
+        <span>{$t('common.retry')}</span>
       </button>
     </div>
   {/if}
@@ -200,7 +201,7 @@
       <span>{$connectionIssue.message}</span>
       <button type="button" on:click={() => retryConnection(true)} disabled={retryBusy}>
         <RefreshCw size={14} class={retryBusy ? 'spin' : ''} />
-        <span>Retry</span>
+        <span>{$t('common.retry')}</span>
       </button>
     </div>
   {/if}

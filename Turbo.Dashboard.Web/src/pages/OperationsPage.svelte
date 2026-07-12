@@ -8,6 +8,7 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import PickerModal from '../components/PickerModal.svelte';
   import { identity, openPlayer, openItem } from '../lib/session.js';
+  import { t, translate } from '../lib/i18n.js';
 
   // One state bag per action.
   let credits = { playerId: '', playerName: '', playerOnline: false, amount: '', reason: '' };
@@ -56,11 +57,11 @@
   $: canKick = hasDashboardCapability($identity, capabilityByAction.kick);
 
   function pickUser(apply) {
-    picker = { kind: 'user', title: 'Select a player', onSelect: apply };
+    picker = { kind: 'user', title: translate('operations.selectPlayerTitle'), onSelect: apply };
   }
 
   function pickFurniture(apply) {
-    picker = { kind: 'furniture', title: 'Select furniture', onSelect: apply };
+    picker = { kind: 'furniture', title: translate('operations.selectFurnitureTitle'), onSelect: apply };
   }
 
   function stage(id, title, endpoint, valid, body, summary) {
@@ -69,8 +70,7 @@
     if (!valid) {
       errors = {
         ...errors,
-        [id]:
-          'Select a target and fill the fields: amounts must be positive and the reason needs at least 3 characters.',
+        [id]: translate('operations.fillFields'),
       };
       return;
     }
@@ -82,14 +82,14 @@
     if (!canCredits) {
       errors = {
         ...errors,
-        credits: 'Droits insuffisants pour accorder des crédits.',
+        credits: translate('operations.creditsAccessDenied'),
       };
       return;
     }
 
     stage(
       'credits',
-      'Give credits',
+      translate('operations.giveCredits'),
       '/api/v1/operations/currency/credits',
       positive(credits.playerId) && positive(credits.amount) && reasonOk(credits.reason),
       {
@@ -97,7 +97,7 @@
         amount: Number(credits.amount),
         reason: credits.reason.trim(),
       },
-      `Give ${credits.amount} credits to ${credits.playerName || 'player'} (#${credits.playerId}).`,
+      translate('operations.creditsSummary', { amount: credits.amount, name: credits.playerName || translate('operations.player'), id: credits.playerId }),
     );
   }
 
@@ -105,14 +105,14 @@
     if (!canActivity) {
       errors = {
         ...errors,
-        activity: 'Droits insuffisants pour accorder des activity points.',
+        activity: translate('operations.activityAccessDenied'),
       };
       return;
     }
 
     stage(
       'activity',
-      'Give activity points',
+      translate('operations.giveActivityPoints'),
       '/api/v1/operations/currency/activity-points',
       positive(activity.playerId) &&
         nonNegative(activity.type) &&
@@ -124,7 +124,7 @@
         amount: Number(activity.amount),
         reason: activity.reason.trim(),
       },
-      `Give ${activity.amount} activity points (type ${activity.type}) to ${activity.playerName || 'player'} (#${activity.playerId}).`,
+      translate('operations.activitySummary', { amount: activity.amount, type: activity.type, name: activity.playerName || translate('operations.player'), id: activity.playerId }),
     );
   }
 
@@ -132,14 +132,14 @@
     if (!canItem) {
       errors = {
         ...errors,
-        item: 'Droits insuffisants pour donner un objet.',
+        item: translate('operations.itemAccessDenied'),
       };
       return;
     }
 
     stage(
       'item',
-      'Give furniture',
+      translate('operations.giveFurniture'),
       '/api/v1/operations/items/grant',
       positive(item.playerId) && positive(item.definitionId) && reasonOk(item.reason),
       {
@@ -148,7 +148,7 @@
         extraData: item.extraData.trim() ? item.extraData.trim() : null,
         reason: item.reason.trim(),
       },
-      `Give ${item.defName || 'furniture'} (#${item.definitionId}) to ${item.playerName || 'player'} (#${item.playerId}).`,
+      translate('operations.furnitureSummary', { name: item.defName || translate('operations.furniture'), id: item.definitionId, playerName: item.playerName || translate('operations.player'), playerId: item.playerId }),
     );
   }
 
@@ -156,18 +156,18 @@
     if (!canKick) {
       errors = {
         ...errors,
-        kick: 'Droits insuffisants pour expulser un joueur.',
+        kick: translate('operations.kickAccessDenied'),
       };
       return;
     }
 
     stage(
       'kick',
-      'Kick player',
+      translate('operations.kickPlayer'),
       '/api/v1/operations/players/kick',
       positive(kick.playerId) && reasonOk(kick.reason),
       { playerId: Number(kick.playerId), reason: kick.reason.trim() },
-      `Force-disconnect ${kick.playerName || 'player'} (#${kick.playerId}).`,
+      translate('operations.kickSummary', { name: kick.playerName || translate('operations.player'), id: kick.playerId }),
     );
   }
 
@@ -192,7 +192,7 @@
     } catch (err) {
       errors = {
         ...errors,
-        [id]: isPermissionDeniedError(err) ? 'Droits insuffisants pour effectuer cette action.' : err.code || err.message,
+        [id]: isPermissionDeniedError(err) ? translate('common.insufficientRightsAction') : err.code || err.message,
       };
     } finally {
       busy = { ...busy, [id]: false };
@@ -209,21 +209,20 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>Operations</h2></div>
+  <div class="panel-head"><h2>{$t('operations.title')}</h2></div>
   <p class="muted">
-    Controlled admin actions. Pick a target, give a mandatory reason, and confirm; every run requires
-    the admin token, is audited with a correlation id, and is routed through the game grains.
+    {$t('operations.description')}
   </p>
 </section>
 
 <div class="op-grid">
   <section class="panel op-panel" style="border-left-color: var(--ok);">
-    <div class="panel-head"><h2><Coins size={17} strokeWidth={2} /> Give credits</h2></div>
+    <div class="panel-head"><h2><Coins size={17} strokeWidth={2} /> {$t('operations.giveCredits')}</h2></div>
     {#if !canCredits}
-      <AccessDeniedNotice title="Droits insuffisants" message="Vous n'avez pas la permission de créditer des Habbo." />
+      <AccessDeniedNotice message={$t('operations.creditsAccessDenied')} />
     {:else}
       <div class="op-field">
-        <span class="op-label">Player *</span>
+        <span class="op-label">{$t('common.playerRequired')}</span>
         <div class="op-pick">
           <button
             class="ghost-button"
@@ -239,7 +238,7 @@
                   }),
               )}
           >
-            Select user
+            {$t('common.selectUser')}
           </button>
           {#if credits.playerId}
             <span class="op-chip">
@@ -247,39 +246,39 @@
               {credits.playerName} <small>#{credits.playerId}</small>
             </span>
           {:else}
-            <span class="muted">no user selected</span>
+            <span class="muted">{$t('common.noUserSelected')}</span>
           {/if}
         </div>
       </div>
       <div class="op-field">
-        <label for="credits-amount">Amount</label>
+        <label for="credits-amount">{$t('operations.amount')}</label>
         <input id="credits-amount" type="number" min="1" bind:value={credits.amount} placeholder="100" />
       </div>
       <div class="op-field">
-        <label for="credits-reason">Reason *</label>
-        <input id="credits-reason" bind:value={credits.reason} placeholder="why this action?" />
+        <label for="credits-reason">{$t('common.reasonRequired')}</label>
+        <input id="credits-reason" bind:value={credits.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageCredits} disabled={busy.credits}>Run</button>
+        <button type="button" on:click={stageCredits} disabled={busy.credits}>{$t('common.run')}</button>
       </div>
       {#if errors.credits}<p class="empty-state danger">{errors.credits}</p>{/if}
       {#if results.credits}
         <p class="op-result" class:danger={!results.credits.ok}>
           {results.credits.ok ? '✅' : '❌'} {results.credits.message} - cid
           <code>{compactCorrelation(results.credits.correlationId)}</code>
-          <button class="ghost-button" type="button" on:click={() => copy(results.credits.correlationId)}>copy</button>
+          <button class="ghost-button" type="button" on:click={() => copy(results.credits.correlationId)}>{$t('common.copy')}</button>
         </p>
       {/if}
     {/if}
   </section>
 
   <section class="panel op-panel" style="border-left-color: var(--ok);">
-    <div class="panel-head"><h2><Zap size={17} strokeWidth={2} /> Give activity points</h2></div>
+    <div class="panel-head"><h2><Zap size={17} strokeWidth={2} /> {$t('operations.giveActivityPoints')}</h2></div>
     {#if !canActivity}
-      <AccessDeniedNotice title="Droits insuffisants" message="Vous n'avez pas la permission d'accorder des activity points." />
+      <AccessDeniedNotice message={$t('operations.activityAccessDenied')} />
     {:else}
       <div class="op-field">
-        <span class="op-label">Player *</span>
+        <span class="op-label">{$t('common.playerRequired')}</span>
         <div class="op-pick">
           <button
             class="ghost-button"
@@ -295,7 +294,7 @@
                   }),
               )}
           >
-            Select user
+            {$t('common.selectUser')}
           </button>
           {#if activity.playerId}
             <span class="op-chip">
@@ -303,43 +302,43 @@
               {activity.playerName} <small>#{activity.playerId}</small>
             </span>
           {:else}
-            <span class="muted">no user selected</span>
+            <span class="muted">{$t('common.noUserSelected')}</span>
           {/if}
         </div>
       </div>
       <div class="op-field">
-        <label for="activity-type">Activity point type</label>
+        <label for="activity-type">{$t('operations.activityPointType')}</label>
         <input id="activity-type" type="number" min="0" bind:value={activity.type} placeholder="0" />
       </div>
       <div class="op-field">
-        <label for="activity-amount">Amount</label>
+        <label for="activity-amount">{$t('operations.amount')}</label>
         <input id="activity-amount" type="number" min="1" bind:value={activity.amount} placeholder="50" />
       </div>
       <div class="op-field">
-        <label for="activity-reason">Reason *</label>
-        <input id="activity-reason" bind:value={activity.reason} placeholder="why this action?" />
+        <label for="activity-reason">{$t('common.reasonRequired')}</label>
+        <input id="activity-reason" bind:value={activity.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageActivity} disabled={busy.activity}>Run</button>
+        <button type="button" on:click={stageActivity} disabled={busy.activity}>{$t('common.run')}</button>
       </div>
       {#if errors.activity}<p class="empty-state danger">{errors.activity}</p>{/if}
       {#if results.activity}
         <p class="op-result" class:danger={!results.activity.ok}>
           {results.activity.ok ? '✅' : '❌'} {results.activity.message} - cid
           <code>{compactCorrelation(results.activity.correlationId)}</code>
-          <button class="ghost-button" type="button" on:click={() => copy(results.activity.correlationId)}>copy</button>
+          <button class="ghost-button" type="button" on:click={() => copy(results.activity.correlationId)}>{$t('common.copy')}</button>
         </p>
       {/if}
     {/if}
   </section>
 
   <section class="panel op-panel" style="border-left-color: var(--ok);">
-    <div class="panel-head"><h2><Package size={17} strokeWidth={2} /> Give furniture</h2></div>
+    <div class="panel-head"><h2><Package size={17} strokeWidth={2} /> {$t('operations.giveFurniture')}</h2></div>
     {#if !canItem}
-      <AccessDeniedNotice title="Droits insuffisants" message="Vous n'avez pas la permission de donner des objets." />
+      <AccessDeniedNotice message={$t('operations.itemAccessDenied')} />
     {:else}
       <div class="op-field">
-        <span class="op-label">Player *</span>
+        <span class="op-label">{$t('common.playerRequired')}</span>
         <div class="op-pick">
           <button
             class="ghost-button"
@@ -350,7 +349,7 @@
                   (item = { ...item, playerId: u.id, playerName: u.name, playerOnline: u.online }),
               )}
           >
-            Select user
+            {$t('common.selectUser')}
           </button>
           {#if item.playerId}
             <span class="op-chip">
@@ -358,12 +357,12 @@
               {item.playerName} <small>#{item.playerId}</small>
             </span>
           {:else}
-            <span class="muted">no furniture selected</span>
+            <span class="muted">{$t('common.noUserSelected')}</span>
           {/if}
         </div>
       </div>
       <div class="op-field">
-        <span class="op-label">Furniture *</span>
+        <span class="op-label">{$t('common.selectFurniture')} *</span>
         <div class="op-pick">
           <button
             class="ghost-button"
@@ -380,7 +379,7 @@
                   }),
               )}
           >
-            Select furniture
+            {$t('common.selectFurniture')}
           </button>
           {#if item.definitionId}
             <span class="op-chip">
@@ -392,39 +391,39 @@
               {item.defName} <small>#{item.definitionId}</small>
             </span>
           {:else}
-            <span class="muted">no furniture selected</span>
+            <span class="muted">{$t('common.noFurnitureSelected')}</span>
           {/if}
         </div>
       </div>
       <div class="op-field">
-        <label for="item-extra">Extra data (optional)</label>
-        <input id="item-extra" bind:value={item.extraData} placeholder="state / wired data" />
+        <label for="item-extra">{$t('operations.extraDataOptional')}</label>
+        <input id="item-extra" bind:value={item.extraData} placeholder={$t('operations.extraDataPlaceholder')} />
       </div>
       <div class="op-field">
-        <label for="item-reason">Reason *</label>
-        <input id="item-reason" bind:value={item.reason} placeholder="why this action?" />
+        <label for="item-reason">{$t('common.reasonRequired')}</label>
+        <input id="item-reason" bind:value={item.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageItem} disabled={busy.item}>Run</button>
+        <button type="button" on:click={stageItem} disabled={busy.item}>{$t('common.run')}</button>
       </div>
       {#if errors.item}<p class="empty-state danger">{errors.item}</p>{/if}
       {#if results.item}
         <p class="op-result" class:danger={!results.item.ok}>
           {results.item.ok ? '✅' : '❌'} {results.item.message} - cid
           <code>{compactCorrelation(results.item.correlationId)}</code>
-          <button class="ghost-button" type="button" on:click={() => copy(results.item.correlationId)}>copy</button>
+          <button class="ghost-button" type="button" on:click={() => copy(results.item.correlationId)}>{$t('common.copy')}</button>
         </p>
       {/if}
     {/if}
   </section>
 
   <section class="panel op-panel" style="border-left-color: var(--danger);">
-    <div class="panel-head"><h2><UserX size={17} strokeWidth={2} /> Kick player</h2></div>
+    <div class="panel-head"><h2><UserX size={17} strokeWidth={2} /> {$t('operations.kickPlayer')}</h2></div>
     {#if !canKick}
-      <AccessDeniedNotice title="Droits insuffisants" message="Vous n'avez pas la permission d'expulser un joueur." />
+      <AccessDeniedNotice message={$t('operations.kickAccessDenied')} />
     {:else}
       <div class="op-field">
-        <span class="op-label">Player *</span>
+        <span class="op-label">{$t('common.playerRequired')}</span>
         <div class="op-pick">
           <button
             class="ghost-button"
@@ -435,7 +434,7 @@
                   (kick = { ...kick, playerId: u.id, playerName: u.name, playerOnline: u.online }),
               )}
           >
-            Select user
+            {$t('common.selectUser')}
           </button>
           {#if kick.playerId}
             <span class="op-chip">
@@ -443,23 +442,23 @@
               {kick.playerName} <small>#{kick.playerId}</small>
             </span>
           {:else}
-            <span class="muted">no user selected</span>
+            <span class="muted">{$t('common.noUserSelected')}</span>
           {/if}
         </div>
       </div>
       <div class="op-field">
-        <label for="kick-reason">Reason *</label>
-        <input id="kick-reason" bind:value={kick.reason} placeholder="why this action?" />
+        <label for="kick-reason">{$t('common.reasonRequired')}</label>
+        <input id="kick-reason" bind:value={kick.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageKick} disabled={busy.kick}>Run</button>
+        <button type="button" on:click={stageKick} disabled={busy.kick}>{$t('common.run')}</button>
       </div>
       {#if errors.kick}<p class="empty-state danger">{errors.kick}</p>{/if}
       {#if results.kick}
         <p class="op-result" class:danger={!results.kick.ok}>
           {results.kick.ok ? '✅' : '❌'} {results.kick.message} - cid
           <code>{compactCorrelation(results.kick.correlationId)}</code>
-          <button class="ghost-button" type="button" on:click={() => copy(results.kick.correlationId)}>copy</button>
+          <button class="ghost-button" type="button" on:click={() => copy(results.kick.correlationId)}>{$t('common.copy')}</button>
         </p>
       {/if}
     {/if}
@@ -482,15 +481,15 @@
     <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
       <header class="modal-header">
         <div>
-          <p class="eyebrow">Confirm admin action</p>
+          <p class="eyebrow">{$t('operations.confirmEyebrow')}</p>
           <h2>{pending.title}</h2>
         </div>
       </header>
       <p>{pending.summary}</p>
-      <p class="muted">Reason: {pending.reason}</p>
+      <p class="muted">{$t('vouchers.reasonLabel', { reason: pending.reason })}</p>
       <div class="op-actions">
-        <button type="button" on:click={confirm}>Confirm</button>
-        <button class="ghost-button" type="button" on:click={cancel}>Cancel</button>
+        <button type="button" on:click={confirm}>{$t('common.confirm')}</button>
+        <button class="ghost-button" type="button" on:click={cancel}>{$t('common.cancel')}</button>
       </div>
     </section>
   </div>
