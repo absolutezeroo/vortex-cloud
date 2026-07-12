@@ -43,19 +43,15 @@ internal static class MessageEvent
     public const int RespectPetMessageEvent = 576;
     public const int ForwardToACompetitionRoomMessageEvent = 431; // AS3-verified (old-revision trace): _SafeCls_2507 -> extraLinkClicked() still exists in current revision at 431
 
-    public const int
-        ForwardToASubmittableRoomMessageEvent =
-            9001; // UNRESOLVED: collided with CommunityGoalVoteMessageEvent after the WIN63-202607011411 client header remap; ForwardToASubmittableRoomMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
+    public const int ForwardToASubmittableRoomMessageEvent = 9001; // UNRESOLVED: collided with CommunityGoalVoteMessageEvent after the WIN63-202607011411 client header remap; ForwardToASubmittableRoomMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
 
-    public const int
-        ForwardToRandomCompetitionRoomMessageEvent =
-            9002; // UNRESOLVED: collided with RoomsWhereMyFriendsAreSearchMessageEvent after the WIN63-202607011411 client header remap; ForwardToRandomCompetitionRoomMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
+    public const int ForwardToRandomCompetitionRoomMessageEvent = 9002; // UNRESOLVED: collided with RoomsWhereMyFriendsAreSearchMessageEvent after the WIN63-202607011411 client header remap; ForwardToRandomCompetitionRoomMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
 
     public const int GetCurrentTimingCodeMessageEvent = 1503;
-    public const int GetIsUserPartOfCompetitionMessageEvent = 2732;
+    public const int GetIsUserPartOfCompetitionMessageEvent = 2732; // UNRESOLVED: no distinct AS3 backing found - RoomCompetitionController::sendRoomCompetitionInit()/onRoomEnter() send the only composer for this check (_SafeCls_3605/_SafeCls_2954 @1477), already correctly held by RoomCompetitionInitMessageEvent; likely a duplicate Turbo constant with no separate real message
     public const int GetSecondsUntilMessageEvent = 1814; // AS3-verified (old-revision trace): _SafeCls_2528 -> NewFeatureNotification() still exists in current revision at 1814
     public const int RoomCompetitionInitMessageEvent = 1477; // AS3-verified (old-revision trace): _SafeCls_3605 -> onRoomEnter() still exists in current revision at 1477
-    public const int SubmitRoomToCompetitionMessageEvent = 9107; // UNRESOLVED: collided with the AS3-verified ModMessageMessageEvent (2579); own best AS3 candidate (confirmPhotoCompetitionSubmit @ 2707) is already claimed by PhotoCompetitionMessageEvent - flagged for a future retrace
+    public const int SubmitRoomToCompetitionMessageEvent = 2612; // AS3-verified (direct read, both revisions): RoomCompetitionController::onSubmit() -> connection.send(new _SafeCls_3367(goalCode,2)) @2612 (old _SafeCls_3390 mode=2 @2579; same unified composer also serves accept=1/confirm=3)
     public const int VoteForRoomMessageEvent = 2615; // AS3-verified (old-revision trace): _SafeCls_2478 -> onVote() still exists in current revision at 2615
     public const int ResetPhoneNumberStateMessageEvent = 2056; // AS3-verified (old-revision trace): _SafeCls_3313 -> requestPhoneNumberCollectionReset() still exists in current revision at 2056
     public const int SetPhoneNumberVerificationStatusMessageEvent = 1983; // AS3-verified (old-revision trace): _SafeCls_2967 -> onVerify() still exists in current revision at 1983
@@ -92,7 +88,7 @@ internal static class MessageEvent
     public const int GetPendingCallsForHelpMessageEvent = 92; // AS3-verified: HabboHelp::queryForPendingCallsForHelp()
 
     public const int GetQuizQuestionsEvent = 1982; // AS3-verified (old-revision trace): _SafeCls_3778 -> showHabboWayQuiz() still exists in current revision at 1982
-    public const int GuideSessionCreateMessageEvent = 3662;
+    public const int GuideSessionCreateMessageEvent = 2181; // AS3-verified (direct read, both revisions): GuideSessionController::createHelpRequest() -> _habboHelp.sendMessage(new _SafeCls_3461(...)) @2181 (old _SafeCls_3193@3662, stale - never updated for this revision)
     public const int GuideSessionFeedbackMessageEvent = 150; // AS3-verified (direct read, both revisions): GuideSessionController lines 812/969/982/1017/1022 -> _SafeCls_3165
     public const int GuideSessionGetRequesterRoomMessageEvent = 3914; // AS3-verified (direct read, both revisions): GuideSessionController::onGuideOngoingEvent() visit_button -> _SafeCls_3794 (earlier shape-match guess of the same header was actually right, just mislabeled)
     public const int GuideSessionGuideDecidesMessageEvent = 300; // AS3-verified (direct read, both revisions): GuideSessionController lines 710/715 -> _SafeCls_3277
@@ -112,26 +108,22 @@ internal static class MessageEvent
     public const int BuildersClubQueryFurniCountMessageEvent = 1739;
     public const int GetBonusRareInfoMessageEvent = 251;
     public const int GetBundleDiscountRulesetEvent = 317; // AS3-verified: HabboCatalog::sendGetBundleDiscountRuleset(). Note: GetBundleDiscountRulesetVortexEvent (1811) also resolves to this same AS3 message - likely a Vortex-specific duplicate/extension with no distinct AS3 backing, left untouched
-    public const int GetBundleDiscountRulesetVortexEvent = 1811;
+    public const int GetBundleDiscountRulesetVortexEvent = 1811; // UNRESOLVED: not found in either official AS3 revision or in vortex-client's registry - name suggests a Vortex-specific variant of GetBundleDiscountRulesetEvent (317), but no confirming source located
     public const int GetCatalogIndexEvent = 2232;
     public const int GetCatalogPageEvent = 2093;
     public const int GetCatalogPageWithEarliestExpiryEvent = 287;
     public const int GetClubGiftMessageEvent = 472;
-    public const int GetClubGiftInfoRequestMessageEvent = 1422;
+    public const int GetClubGiftInfoRequestMessageEvent = 1422; // UNRESOLVED: no distinct AS3 backing found - ClubGiftController::set widget() sends the only request composer for this feature (_SafeCls_3393/_SafeCls_2457 @472), already correctly held by GetClubGiftMessageEvent (client-verified); likely a duplicate Turbo constant with no separate real message
     public const int GetClubOffersMessageEvent = 667;
     public const int GetGiftWrappingConfigurationEvent = 940; // AS3-verified: HabboCatalog::getGiftWrappingConfiguration(). Note: GetGiftWrappingConfigurationVortexEvent also resolves to this same AS3 message - likely a Vortex-specific duplicate/extension with no distinct AS3 backing, left untouched
 
-    public const int
-        GetGiftWrappingConfigurationVortexEvent =
-            9008; // UNRESOLVED: collided with OpenCampaignCalendarDoorAsStaffEvent after the WIN63-202607011411 client header remap; GetGiftWrappingConfigurationVortexEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
+    public const int GetGiftWrappingConfigurationVortexEvent = 9008; // UNRESOLVED: collided with OpenCampaignCalendarDoorAsStaffEvent after the WIN63-202607011411 client header remap; GetGiftWrappingConfigurationVortexEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
 
     public const int GetHabboClubExtendOfferMessageEvent = 2931; // AS3-verified (direct read, both revisions): ClubDiscountPromoExtension::onClick() -> connection.send(new _SafeCls_2983()) registry@2931 (old _SafeCls_3628@1808 moved)
     public const int GetIsOfferGiftableEvent = 2564; // AS3-verified (old-revision trace): _SafeCls_2064 -> checkGiftable() still exists in current revision at 2564
     public const int GetLimitedOfferAppearingNextEvent = 3682;
 
-    public const int
-        GetNextTargetedOfferEvent =
-            9004; // reverted: false positive - 2497 legitimately belongs to PurchaseTargetedOfferEvent (shape+name confirmed, OfferController::purchaseTargetedOffer()). Real value for GetNextTargetedOfferEvent still unresolved
+    public const int GetNextTargetedOfferEvent = 9004; // reverted: false positive - 2497 legitimately belongs to PurchaseTargetedOfferEvent (shape+name confirmed, OfferController::purchaseTargetedOffer()). Real value for GetNextTargetedOfferEvent still unresolved
 
     public const int GetProductOfferEvent = 1692;
     public const int GetRoomAdPurchaseInfoEvent = 366; // AS3-verified (old-revision trace): _SafeCls_2000 -> getRoomAdsPurchaseInfo() still exists in current revision at 366
@@ -168,7 +160,7 @@ internal static class MessageEvent
     public const int InterstitialShownMessageEvent = 1408;
     public const int CommandBotEvent = 3813; // AS3-verified (old-revision trace): _SafeCls_3593 -> procedure() still exists in current revision at 3813
     public const int GetBotCommandConfigurationDataEvent = 2311; // AS3-verified (direct read, both revisions): BotSkillConfigurationViewBase::open() -> _SafeCls_3415
-    public const int GetBadgePointLimitsEvent = 981;
+    public const int GetBadgePointLimitsEvent = 981; // UNRESOLVED: not found - only the incoming response handler (onBadgePointLimits @ inventory handler, receiving _SafeCls_3204) was located; the client-side request trigger (if any) could not be found in either official AS3 revision
     public const int GetBadgesEvent = 770;
     public const int GetIsBadgeRequestFulfilledEvent = 9112; // UNRESOLVED: collided with the AS3-verified ChatReviewGuideDecidesOnOfferMessageEvent (2545); this constant's own best AS3 candidate is 3258 (HabboLandingView::requestBadge()) but that value is already occupied - flagged for a future retrace
     public const int RequestABadgeEvent = 3258;
@@ -191,14 +183,12 @@ internal static class MessageEvent
     public const int GetGuildEditorDataMessageEvent = 3398; // AS3-verified (ghost fix): HabboGroupsManager::requestGuildEditorData()
     public const int GetGuildMembershipsMessageEvent = 3918; // AS3-verified (old-revision trace): _SafeCls_3428 -> registerGuildSelectorWidget() still exists in current revision at 3918
 
-    public const int
-        GetGuildMembersMessageEvent =
-            9007; // UNRESOLVED: collided with OpenFlatConnectionMessageEvent after the WIN63-202607011411 client header remap; GetGuildMembersMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
+    public const int GetGuildMembersMessageEvent = 1337; // AS3-verified (direct read, both revisions): GuildMembersWindowCtrl::onMembersClick() -> connection.send(new _SafeCls_2908(groupId,page,search,filter)) @1337 (old _SafeCls_3861@3234)
 
     public const int GetHabboGroupBadgesMessageEvent = 3346; // AS3-verified (old-revision trace): _SafeCls_3130 -> onRoomReady() still exists in current revision at 3346
     public const int GetHabboGroupDetailsMessageEvent = 1683;
     public const int GetIgnoredUsersMessageEvent = 1026;
-    public const int GetMemberGuildItemCountMessageEvent = 781; // AS3-verified (old-revision trace): _SafeCls_2307 -> handleUserKick() still exists in current revision at 781
+    public const int GetMemberGuildItemCountMessageEvent = 9115; // UNRESOLVED: prior 'old-revision trace' fix wrongly attributed HabboGroupsManager::handleUserKick()'s composer here - that's KickMemberMessageEvent's real value, not this one's. This constant's true AS3 backing is still unknown - flagged for a future retrace
     public const int GetMOTDMessageEvent = 3163;
     public const int GetRelationshipStatusInfoMessageEvent = 3219; // reverted to client-verified value: GetRelationshipStatusInfoMessageComposer=3219 in HabboMessages.ts. 1773 legitimately belongs to SetRelationshipStatusMessageEvent (also client-verified: SetRelationshipStatusMessageComposer=1773)
     public const int GetSelectedBadgesMessageEvent = 3726;
@@ -207,9 +197,7 @@ internal static class MessageEvent
     public const int IgnoreUserMessageEvent = 2070;
     public const int JoinHabboGroupMessageEvent = 1469;
 
-    public const int
-        KickMemberMessageEvent =
-            9005; // UNRESOLVED: collided with CallForHelpFromForumThreadMessageEvent after the WIN63-202607011411 client header remap; KickMemberMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
+    public const int KickMemberMessageEvent = 781; // AS3-verified (direct read, both revisions): HabboGroupsManager::handleUserKick() -> connection.send(new _SafeCls_1795(groupId,userId)) @781 (old _SafeCls_2307@3677; slot freed by correcting GetMemberGuildItemCountMessageEvent above, which had been wrongly given this same value)
 
     public const int RejectMembershipRequestMessageEvent = 3200; // AS3-verified (old-revision trace): _SafeCls_3781 -> onRemoveMouseClick() still exists in current revision at 3200
     public const int RemoveAdminRightsFromMemberMessageEvent = 3999; // AS3-verified (direct read, both revisions): GuildMembersWindowCtrl::onActionLinkClick() admin-branch -> _SafeCls_3648
@@ -229,28 +217,24 @@ internal static class MessageEvent
     public const int GetCraftingRecipesAvailableEvent = 1302; // AS3-verified (name-only): CraftingWidgetHandler::getCraftingRecipesAvailable()
     public const int CloseIssueDefaultActionMessageEvent = 1631;
     public const int CloseIssuesMessageEvent = 3986;
-    public const int DefaultSanctionMessageEvent = 440;
-    public const int GetCfhChatlogMessageEvent = 757;
-    public const int GetModeratorRoomInfoMessageEvent = 3513;
+    public const int DefaultSanctionMessageEvent = 2375; // AS3-verified (direct read, both revisions): ModActionCtrl::onDefaultSanctionButton() -> connection.send(new _SafeCls_2494(...)) @2375 (slot freed by correcting MakeOfferMessageEvent above)
+    public const int GetCfhChatlogMessageEvent = 1580; // AS3-verified (direct read, both revisions): IssueHandler CFH ChatlogCtrl construction (type=3) -> connection.send(new _SafeCls_2471(issueId)) @1580 (old _SafeCls_3765@757)
+    public const int GetModeratorRoomInfoMessageEvent = 1504; // AS3-verified (direct read, both revisions): RoomToolCtrl::show() -> connection.send(new _SafeCls_2915(flatId)) @1504 (old _SafeCls_3268@3513)
     public const int GetModeratorUserInfoMessageEvent = 1948; // UNRESOLVED: no distinct AS3 backing found - UserInfoCtrl::load()/ModerationMessageHandler::onModeratorActionResult() both send the same _SafeCls_2825/_SafeCls_2387, already correctly claimed by ModeratorActionMessageEvent@3230; likely a duplicate Turbo constant with no separate real message
     public const int GetRoomChatlogMessageEvent = 1346; // AS3-verified (old-revision trace): _SafeCls_3359 -> onChatlog() still exists in current revision at 1346
-    public const int GetRoomVisitsMessageEvent = 101;
+    public const int GetRoomVisitsMessageEvent = 903; // AS3-verified (direct read, both revisions): RoomVisitsCtrl constructor -> connection.send(new _SafeCls_2383(roomId)) @903 (old _SafeCls_3716@101)
     public const int GetUserChatlogMessageEvent = 1686; // AS3-verified (old-revision trace): _SafeCls_3430 -> onChatlogButton() still exists in current revision at 1686
-    public const int ModAlertMessageEvent = 1861;
+    public const int ModAlertMessageEvent = 2183; // AS3-verified (direct read, both revisions): ModActionCtrl::onCustomSanctionButton() case 0 (trackAction('sendCaution'), alertPermission) -> connection.send(new _SafeCls_3481(...)) @2183
     public const int ModBanMessageEvent = 2507;
     public const int ModerateRoomMessageEvent = 2939;
     public const int ModeratorActionMessageEvent = 3230; // AS3-verified (ghost fix): ModerationMessageHandler::onModeratorActionResult()
 
-    public const int
-        ModKickMessageEvent =
-            9010; // UNRESOLVED: collided with AvatarEffectSelectedEvent after the WIN63-202607011411 client header remap; ModKickMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
+    public const int ModKickMessageEvent = 1401; // AS3-verified (direct read, both revisions): ModActionCtrl::onCustomSanctionButton() case 3 (trackAction('kick'), kickPermission) -> connection.send(new _SafeCls_3834(...)) @1401
 
     public const int ModMessageMessageEvent = 2579; // AS3-verified (old-revision trace): still exists in current revision at 2579
-    public const int ModMuteMessageEvent = 1788;
+    public const int ModMuteMessageEvent = 2862; // AS3-verified (direct read, both revisions): ModActionCtrl::onCustomSanctionButton() case 1 (trackAction('mute')) -> connection.send(new _SafeCls_2569(...)) @2862
 
-    public const int
-        ModToolPreferencesEvent =
-            9009; // UNRESOLVED: collided with GetExtendedProfileMessageEvent after the WIN63-202607011411 client header remap; ModToolPreferencesEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
+    public const int ModToolPreferencesEvent = 9009; // UNRESOLVED: collided with GetExtendedProfileMessageEvent after the WIN63-202607011411 client header remap; ModToolPreferencesEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
 
     public const int ModToolSanctionEvent = 2476; // AS3-verified (old-revision trace): _SafeCls_3432 -> requestSanctionDataForAccount() still exists in current revision at 2476
     public const int ModTradingLockMessageEvent = 3495;
@@ -279,24 +263,22 @@ internal static class MessageEvent
     public const int OpenQuestTrackerMessageEvent = 588; // AS3-verified (old-revision trace): _SafeCls_2973 -> onNextQuest() still exists in current revision at 588
     public const int RejectQuestMessageEvent = 20; // AS3-verified (direct read, both revisions): QuestDetails::onCancelQuest() -> _SafeCls_3635
 
-    public const int
-        StartCampaignMessageEvent =
-            9011; // UNRESOLVED: collided with MyFavouriteRoomsSearchMessageEvent after the WIN63-202607011411 client header remap; StartCampaignMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
+    public const int StartCampaignMessageEvent = 9011; // UNRESOLVED: collided with MyFavouriteRoomsSearchMessageEvent after the WIN63-202607011411 client header remap; StartCampaignMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
 
     public const int GetHotLooksMessageEvent = 3834; // AS3-verified (ghost fix): HotLooksModel::requestHotLooks()
     public const int ClickFurniMessageEvent = 443;
     public const int CompostPlantMessageEvent = 1989;
     public const int GetFurnitureAliasesMessageEvent = 1901;
-    public const int GetRoomEntryDataMessageEvent = 1250;
-    public const int GetItemDataMessageEvent = 204;
+    public const int GetRoomEntryDataMessageEvent = 1250; // UNRESOLVED: not found - the no-arg client request that would trigger a room-entry-data response could not be located in either official AS3 revision
+    public const int GetItemDataMessageEvent = 204; // UNRESOLVED: not found in either official AS3 revision (matches vortex-client's registry exactly, but not confirmed as Vortex-custom vs. a real AS3 message vortex-client happens to represent under an older numbering)
     public const int GetPetCommandsMessageEvent = 2425;
     public const int GiveSupplementToPetMessageEvent = 1694;
-    public const int IssuePetCommandMessageEvent = 3072;
+    public const int IssuePetCommandMessageEvent = 3072; // Vortex-custom (not in official AS3): vortex-client commit d6bc0d0 "feat(pets): add pet vocal message, IssuePetCommand compositor and command UI" registers this exact ID
     public const int HarvestPetMessageEvent = 1210;
     public const int MountPetMessageEvent = 1996;
     public const int MoveAvatarMessageEvent = 2364;
     public const int MoveObjectMessageEvent = 1482;
-    public const int MovePetMessageEvent = 2761;
+    public const int MovePetMessageEvent = 2761; // Vortex-custom (not in official AS3): vortex-client commit e8dc43d "chore(protocol): register rentable space (4600/4601) and pet (3072/3073) message IDs" registers this exact ID
     public const int MoveWallItemMessageEvent = 2999; // AS3-verified (direct read, both revisions): modifyRoomObject() param3==20 (wall item move) -> _SafeCls_2682
     public const int PickupObjectMessageEvent = 1919;
     public const int PlaceBotMessageEvent = 2102; // AS3-verified (old-revision trace): _SafeCls_3867 -> placeItemToRoom() still exists in current revision at 2102
@@ -312,7 +294,7 @@ internal static class MessageEvent
     public const int TogglePetBreedingPermissionMessageEvent = 144;
     public const int TogglePetRidingPermissionMessageEvent = 3713;
     public const int UseFurnitureMessageEvent = 3353;
-    public const int UseWallItemMessageEvent = 1540;
+    public const int UseWallItemMessageEvent = 1540; // UNRESOLVED: no distinct AS3 backing found - room engine modifyWallItemData() sends the only composer for this action (_SafeCls_2502/_SafeCls_2735 @3498), already held by SetItemDataMessageEvent; likely a duplicate Turbo constant with no separate real message
     public const int CreditVaultStatusMessageEvent = 1645;
     public const int IncomeRewardClaimMessageEvent = 809;
     public const int IncomeRewardStatusMessageEvent = 3417;
@@ -320,7 +302,7 @@ internal static class MessageEvent
     public const int OpenCampaignCalendarDoorAsStaffEvent = 3863;
     public const int OpenCampaignCalendarDoorEvent = 3643;
     public const int AcceptTradingEvent = 490;
-    public const int AddItemsToTradeEvent = 3211;
+    public const int AddItemsToTradeEvent = 3370; // AS3-verified (direct read, both revisions): TradingModel::requestAddItemsToTrading() bulk branch -> connection.send(new _SafeCls_3302(vector)) @3370 (distinct from the single-item branch already correctly at AddItemToTradeEvent=2177 via _SafeCls_3237)
     public const int AddItemToTradeEvent = 2177;
     public const int CloseTradingEvent = 3639;
     public const int ConfirmAcceptTradingEvent = 2662;
@@ -334,9 +316,7 @@ internal static class MessageEvent
     public const int ChangeMottoMessageEvent = 2659;
     public const int ChangePostureMessageEvent = 3181;
 
-    public const int
-        CustomizeAvatarWithFurniMessageEvent =
-            9012; // UNRESOLVED: collided with GetUserEventCatsMessageEvent after the WIN63-202607011411 client header remap; CustomizeAvatarWithFurniMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
+    public const int CustomizeAvatarWithFurniMessageEvent = 9012; // UNRESOLVED: collided with GetUserEventCatsMessageEvent after the WIN63-202607011411 client header remap; CustomizeAvatarWithFurniMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
 
     public const int DanceMessageEvent = 48;
     public const int DropCarryItemMessageEvent = 1545; // AS3-verified (direct read, both revisions): InfoStandWidgetHandler RWUAM_DROP_CARRY_ITEM -> _SafeCls_2423
@@ -346,19 +326,15 @@ internal static class MessageEvent
     public const int SignMessageEvent = 211;
     public const int Game2CheckGameDirectoryStatusMessageEvent = 1115;
 
-    public const int
-        Game2GetAccountGameStatusMessageEvent =
-            9013; // UNRESOLVED: collided with RespectUserMessageEvent after the WIN63-202607011411 client header remap; Game2GetAccountGameStatusMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
+    public const int Game2GetAccountGameStatusMessageEvent = 9013; // UNRESOLVED: collided with RespectUserMessageEvent after the WIN63-202607011411 client header remap; Game2GetAccountGameStatusMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
 
-    public const int Game2LeaveGameMessageEvent = 2698;
+    public const int Game2LeaveGameMessageEvent = 2698; // UNRESOLVED: not found - a dedicated "leave game" composer distinct from the room-exit/game-end flows already ported elsewhere could not be located in either official AS3 revision
     public const int Game2QuickJoinGameMessageEvent = 2000; // UNRESOLVED: no distinct AS3 backing found - HabboGameManager::startQuickSnowWarGame()/SnowWarEngine::startQuickServerGame() both send the same _SafeCls_2129, already correctly claimed by Game2StartSnowWarMessageEvent below; likely a duplicate Turbo constant with no separate real message
     public const int Game2StartSnowWarMessageEvent = 1506; // shape+AS3-verified: HabboGameManager::startQuickSnowWarGame() (_SafeCls_2129)
     public const int GetForumsListMessageEvent = 488; // AS3-verified (ghost fix): GroupForumController::openForumsList()
     public const int GetForumStatsMessageEvent = 3592; // AS3-verified (old-revision trace): GroupForumController::initForum() still exists in current revision at 3592
 
-    public const int
-        GetMessagesMessageEvent =
-            9014; // UNRESOLVED: collided with OpenPetPackageMessageEvent after the WIN63-202607011411 client header remap; GetMessagesMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
+    public const int GetMessagesMessageEvent = 9014; // UNRESOLVED: collided with OpenPetPackageMessageEvent after the WIN63-202607011411 client header remap; GetMessagesMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
 
     public const int GetThreadMessageEvent = 3218; // AS3-verified (direct read, both revisions): GroupForumController::linkReceived() -> _SafeCls_2586
     public const int GetThreadsMessageEvent = 3668; // AS3-verified (old-revision trace): _SafeCls_2466 -> requestThreadList() still exists in current revision at 3668
@@ -391,10 +367,10 @@ internal static class MessageEvent
     public const int GetMarketplaceItemStatsEvent = 1552;
     public const int GetMarketplaceOffersMessageEvent = 2731;
     public const int GetMarketplaceOwnOffersMessageEvent = 2086;
-    public const int MakeOfferMessageEvent = 2375;
+    public const int MakeOfferMessageEvent = 3695; // AS3-verified (direct read): MarketplaceModel::makeOffer() -> connection.send(new _SafeCls_2606(price,category,refs)) @3695; corrects a never-verified baseline value that actually belonged to DefaultSanctionMessageEvent
     public const int RedeemMarketplaceOfferCreditsMessageEvent = 3546;
     public const int GetAchievementsEvent = 9108; // UNRESOLVED: collided with the AS3-verified WiredSetRoomSettingsMessageEvent (2553); this constant's own value had zero backing (only weak event-side candidates found, wrong side for this incoming message) - flagged for a future retrace
-    public const int AddSpamWallPostItMessageEvent = 2816; // AS3-verified (direct search): onSpamWallPostItRequest @ SpamWallPostItWidgetHandler -> _SafeCls_3830
+    public const int AddSpamWallPostItMessageEvent = 2684; // AS3-verified (direct read, both revisions): SpamWallPostItWidgetHandler::processWidgetMessage() RWSWPFEE_SEND_POSTIT_DATA -> connection.send(new _SafeCls_3639(...)) @2684; corrects a self-inflicted regression - the prior fix mistook the incoming _SafeCls_3830 handler-param class for the outgoing composer
     public const int ControlYoutubeDisplayPlaybackMessageEvent = 1727; // AS3-verified (old-revision trace): _SafeCls_2950 -> switchToPreviousVideo() still exists in current revision at 1727
     public const int CreditFurniRedeemMessageEvent = 434;
     public const int DiceOffMessageEvent = 259; // AS3-verified (direct read, both revisions): useObject() ROFCAE_DICE_OFF -> _SafeCls_3356
@@ -402,19 +378,17 @@ internal static class MessageEvent
     public const int ExtendRentOrBuyoutFurniMessageEvent = 1427;
     public const int ExtendRentOrBuyoutStripItemMessageEvent = 1029; // AS3-verified (direct read, both revisions): RentConfirmationWindow::windowProcedure() ok_button/mode==2 (FurniModel strip-item call path) -> _SafeCls_3492 in registry@1029
 
-    public const int
-        GetGuildFurniContextMenuInfoMessageEvent =
-            3220; // AS3-verified: onGuildFurniContextMenuInfo @ FurnitureContextMenuWidgetHandler - exact name match, slot freed after AddSpamWallPostItMessageEvent moved away
+    public const int GetGuildFurniContextMenuInfoMessageEvent = 9114; // UNRESOLVED: prior 'AS3-verified' comment was wrong (no composer send found; onGuildFurniContextMenuInfo() in FurnitureContextMenuWidgetHandler only displays the menu, doesn't request it - value 3220 doesn't exist in the AS3 composer registry at all) - flagged for a future retrace
 
     public const int GetRentOrBuyoutOfferMessageEvent = 1583;
-    public const int GetYoutubeDisplayStatusMessageEvent = 3635;
+    public const int GetYoutubeDisplayStatusMessageEvent = 273; // AS3-verified (direct read, both revisions): YoutubeDisplayWidget handler::processEvent() RETWE_OPEN_WIDGET -> connection.send(new _SafeCls_2883(objectId)) @273 (old _SafeCls_3162@3635)
     public const int OpenMysteryTrophyMessageEvent = 2242; // AS3-verified (direct read, both revisions): MysteryTrophyOpenDialogView::onMouseClick() -> _SafeCls_3679
     public const int OpenPetPackageMessageEvent = 1884;
     public const int PlacePostItMessageEvent = 1122; // AS3-verified (direct read, both revisions): room engine placeObject() furniture_is_stickie branch -> _SafeCls_3815 @1122 (old _SafeCls_3355@174; slot freed by correcting PlaceObjectMessageEvent above)
     public const int PresentOpenMessageEvent = 2485;
     public const int RentableSpaceCancelRentMessageEvent = 61; // AS3-verified (old-revision trace): _SafeCls_2575 -> cancelRent() still exists in current revision at 61
-    public const int RentableSpaceConfigureMessageEvent = 4601;
-    public const int RentableSpaceGetConfigMessageEvent = 4600;
+    public const int RentableSpaceConfigureMessageEvent = 4601; // Vortex-custom (not in official AS3 dumps): confirmed via vortex-client's own registry (_composers[4601] = ConfigureRentableSpaceMessageComposer) and commit f3bba54 "feat(rentablespace): add config message, compositors and updated display widget"
+    public const int RentableSpaceGetConfigMessageEvent = 4600; // Vortex-custom (not in official AS3 dumps): confirmed via vortex-client's own registry (_composers[4600] = GetRentableSpaceConfigMessageComposer) and commit e8dc43d "chore(protocol): register rentable space (4600/4601) and pet (3072/3073) message IDs"
     public const int RentableSpaceRentMessageEvent = 3165; // AS3-verified (old-revision trace): _SafeCls_2674 -> rentSpace() still exists in current revision at 3165
     public const int RentableSpaceStatusMessageEvent = 2626; // AS3-verified: getRentableSpaceStatus() (exact name match). Note: RentableSpaceGetConfigMessageEvent (4600) also candidate-matched this same AS3 message but with a weaker name fit - left untouched, likely a distinct Vortex-specific config feature paired with RentableSpaceConfigureMessageEvent (4601)
     public const int RoomDimmerChangeStateMessageEvent = 3894;
@@ -424,8 +398,8 @@ internal static class MessageEvent
     public const int SetCustomStackingHeightEvent = 3045; // AS3-verified (old-revision trace): _SafeCls_3545 -> onMultiWalkChange() still exists in current revision at 3045
     public const int SetMannequinFigureEvent = 2301; // AS3-verified (old-revision trace): _SafeCls_3486 -> saveOutfit() still exists in current revision at 2301
     public const int SetMannequinNameEvent = 606; // AS3-verified (old-revision trace): MannequinWidget::saveOutfitName() still exists in current revision at 606
-    public const int SetRandomStateMessageEvent = 938;
-    public const int SetRoomBackgroundColorDataEvent = 2019;
+    public const int SetRandomStateMessageEvent = 1942; // AS3-verified (direct read, both revisions): room engine changeRoomObjectState() param5==true branch (floor item, param3==10) -> connection.send(new _SafeCls_3726(objectId,state)) @1942 (old _SafeCls_3310@938)
+    public const int SetRoomBackgroundColorDataEvent = 2019; // UNRESOLVED: not found - no matching "set background color" composer located near the room engine's other per-furni-type state composers in either official AS3 revision
     public const int SetYoutubeDisplayPlaylistMessageEvent = 1672; // AS3-verified (old-revision trace): _SafeCls_2471 -> selectPlaylist() still exists in current revision at 1672
     public const int SpinWheelOfFortuneMessageEvent = 3625; // AS3-verified (direct read, both revisions): useObject() ROFCAE_USE_HABBOWHEEL -> _SafeCls_3425
     public const int ThrowDiceMessageEvent = 1673; // AS3-verified (direct read, both revisions): useObject() ROFCAE_DICE_ACTIVATE -> _SafeCls_3154
@@ -497,7 +471,7 @@ internal static class MessageEvent
     public const int PurchaseMintTokenMessageEvent = 67; // AS3-verified (old-revision trace): _SafeCls_2316 -> purchaseMintTokens() still exists in current revision at 67
     public const int PeerUsersClassificationMessageEvent = 628; // AS3-verified (ghost fix): RoomSession::sendPeerUsersClassificationMessage()
     public const int RoomUsersClassificationMessageEvent = 157; // AS3-verified (ghost fix): RoomSession::sendRoomUsersClassificationMessage()
-    public const int MysteryBoxWaitingCanceledMessageEvent = 3661;
+    public const int MysteryBoxWaitingCanceledMessageEvent = 1063; // AS3-verified (direct read, both revisions): MysteryBoxOpenDialogView cancel_button -> connection.send(new _SafeCls_2598(ownerId)) @1063 (old _SafeCls_3318@3661)
     public const int AmbassadorAlertMessageEvent = 3361;
     public const int AssignRightsMessageEvent = 373;
     public const int BanUserWithDurationMessageEvent = 120;
@@ -521,8 +495,8 @@ internal static class MessageEvent
     public const int UpdateRoomCategoryAndTradeSettingsEvent = 3946;
     public const int UpdateRoomFilterMessageEvent = 1622; // AS3-verified (shape-only): RoomFilterCtrl::addBadWord()
     public const int RequestFurniInventoryEvent = 41;
-    public const int RequestFurniInventoryWhenNotInRoomEvent = 3674;
-    public const int RequestRoomPropertySet = 3300;
+    public const int RequestFurniInventoryWhenNotInRoomEvent = 3862; // AS3-verified (direct read, both revisions): FurniModel::requestInitialization() !_isInRoom branch -> connection.send(new _SafeCls_3731()) @3862 (old _SafeCls_3534@3674)
+    public const int RequestRoomPropertySet = 3300; // UNRESOLVED: not found - no matching "room property set" request (RoomId-only shape, per Turbo.Primitives) located in either official AS3 revision
     public const int Game2GetFriendsLeaderboardEvent = 3467;
     public const int Game2GetTotalGroupLeaderboardEvent = 1479;
     public const int Game2GetTotalLeaderboardEvent = 3383;
@@ -536,13 +510,13 @@ internal static class MessageEvent
     public const int WhisperMessageEvent = 1697;
     public const int WiredClearErrorLogsMessageEvent = 2386; // AS3-verified (old-revision trace): _SafeCls_2945 -> onClearButtonClicked() still exists in current revision at 2386
     public const int WiredGetAllVariableHoldersMessageEvent = 113; // AS3-verified (old-revision trace): _SafeCls_3771 -> selectedVariableId() still exists in current revision at 113
-    public const int WiredGetAllVariablesDiffsMessageEvent = 9104; // UNRESOLVED: collided with the AS3-verified WiredGetAllVariablesHashMessageEvent (797); this constant's own value was already a mismatch before this pass - flagged for a future retrace
-    public const int WiredGetAllVariablesHashMessageEvent = 797; // AS3-verified (name-only): WiredVariablesSynchronizer::onAllVariablesHash()
-    public const int WiredGetErrorLogsMessageEvent = 1825;
+    public const int WiredGetAllVariablesDiffsMessageEvent = 797; // AS3-verified (direct read, both revisions): WiredVariablesSynchronizer::onAllVariablesHash() hash-mismatch branch -> connection.send(new _SafeCls_2882(variableIdToHash)) @797 (old _SafeCls_3609@1509; slot freed by correcting WiredGetAllVariablesHashMessageEvent above)
+    public const int WiredGetAllVariablesHashMessageEvent = 984; // AS3-verified (direct read, both revisions): WiredVariablesSynchronizer::getAllVariables() no-hash-yet branch -> connection.send(new _SafeCls_3463()) @984 (old _SafeCls_3011@3882); corrects a 'name-only' mismatch that swapped this with the diffs request below
+    public const int WiredGetErrorLogsMessageEvent = 452; // AS3-verified (direct read, both revisions): WiredMenuMonitorTab::requestData() -> connection.send(new _SafeCls_2630()) @452 (old _SafeCls_2700@1825)
     public const int WiredGetRoomSettingsMessageEvent = 1862; // AS3-verified (direct read, both revisions): WiredMenuSettingsTab::requestData() -> _SafeCls_3420
-    public const int WiredGetRoomStatsMessageEvent = 3031;
+    public const int WiredGetRoomStatsMessageEvent = 427; // AS3-verified (direct read, both revisions): WiredMenuMonitorTab::requestData() -> connection.send(new _SafeCls_3423()) @427 (old _SafeCls_3425@3031)
     public const int WiredGetVariablesForObjectMessageEvent = 3466; // AS3-verified (ghost fix): WiredMenuInspectionTab::requestVariablesForObject()
-    public const int WiredSetObjectVariableValueMessageEvent = 3657;
+    public const int WiredSetObjectVariableValueMessageEvent = 625; // AS3-verified (direct read, both revisions): VariableManagementDetailView set/create/delete variable calls -> connection.send(new _SafeCls_2426(entityType,entityId,variableId,value,mode)) @625 (old _SafeCls_2572@2981)
     public const int WiredSetPreferencesMessageEvent = 3124; // AS3-verified (old-revision trace): _SafeCls_3307 -> sendPreferences() still exists in current revision at 3124
     public const int WiredSetRoomSettingsMessageEvent = 2553; // AS3-verified (old-revision trace): still exists in current revision at 2553
     public const int AcceptFriendMessageEvent = 1772;
@@ -561,11 +535,11 @@ internal static class MessageEvent
     public const int SetRelationshipStatusMessageEvent = 1773;
     public const int VisitUserMessageEvent = 1515;
     public const int SetChatPreferencesMessageEvent = 1149; // AS3-verified (ghost fix): HabboFreeFlowChat::sendChatPreferences()
-    public const int SetChatStylePreferenceEvent = 3964;
-    public const int SetIgnoreRoomInvitesMessageEvent = 3617;
+    public const int SetChatStylePreferenceEvent = 2634; // AS3-verified (direct read, both revisions): HabboFreeFlowChat::set preferedChatStyle() -> connection.send(new _SafeCls_2257(chatStyle,fontSizeMode)) @2634 (old _SafeCls_1812(chatStyle)@3964; new revision added a 2nd param for font size)
+    public const int SetIgnoreRoomInvitesMessageEvent = 1332; // AS3-verified (direct read, both revisions): OtherSettingsView ignore_room_invites_checkbox -> connection.send(new _SafeCls_2539(ignored)) @1332 (old _SafeCls_3525@3617)
     public const int SetNewNavigatorWindowPreferencesMessageEvent = 1276;
-    public const int SetRoomCameraPreferencesMessageEvent = 9110; // UNRESOLVED: collided with the AS3-verified GuideSessionGetRequesterRoomMessageEvent (3914); this constant's own value had zero backing - flagged for a future retrace
-    public const int SetSoundSettingsEvent = 2608;
+    public const int SetRoomCameraPreferencesMessageEvent = 3917; // AS3-verified (direct read, both revisions): OtherSettingsView disable_room_camera_follow_checkbox -> connection.send(new _SafeCls_3911(disabled)) @3917 (old _SafeCls_3094@3914)
+    public const int SetSoundSettingsEvent = 3662; // AS3-verified (direct read, both revisions): HabboSoundManagerFlash10::storeVolumeSetting() -> connection.send(new _SafeCls_2171(trax,furni,generic)) @3662 (old _SafeCls_2070@2608; slot freed by correcting GuideSessionCreateMessageEvent above)
     public const int SetUIFlagsMessageEvent = 3653;
     public const int Game2ExitGameMessageEvent = 3510;
     public const int Game2GameChatMessageEvent = 3083;
@@ -579,13 +553,12 @@ internal static class MessageEvent
     public const int GetPromoArticlesMessageEvent = 3152;
     public const int ApplySnapshotMessageEvent = 2790; // AS3-verified (ghost fix): UserDefinedRoomEventsCtrl::applySnapshot()
     public const int OpenMessageEvent = 1869; // AS3-verified (old-revision trace): _SafeCls_3500 -> onOpen() still exists in current revision at 1869
-    public const int UpdateActionMessageEvent = 148;
-    public const int UpdateAddonMessageEvent = 2797;
-    public const int UpdateConditionMessageEvent = 988;
+    public const int UpdateActionMessageEvent = 2197; // AS3-verified (direct read, both revisions): UserDefinedRoomEventsCtrl::update() ActionDefinition branch (getActionDelay) -> _SafeCls_2689 @2197 (old _SafeCls_2959@148)
+    public const int UpdateAddonMessageEvent = 1138; // AS3-verified (direct read, both revisions): UserDefinedRoomEventsCtrl::update() AddonDefinition branch -> _SafeCls_3344 @1138 (old _SafeCls_2832@2797)
+    public const int UpdateConditionMessageEvent = 767; // AS3-verified (direct read, both revisions): UserDefinedRoomEventsCtrl::update() ConditionDefinition branch (resolveQuantifier) -> _SafeCls_3197 @767 (old _SafeCls_3840@988)
     public const int UpdateSelectorMessageEvent = 510;
-    public const int UpdateTriggerMessageEvent = 2669;
-    public const int UpdateVariableMessageEvent = 1160;
-
+    public const int UpdateTriggerMessageEvent = 3953; // AS3-verified (direct read, both revisions): UserDefinedRoomEventsCtrl::update() TriggerDefinition branch -> _SafeCls_2484 @3953 (old _SafeCls_2594@2669)
+    public const int UpdateVariableMessageEvent = 2475; // AS3-verified (direct read, both revisions): UserDefinedRoomEventsCtrl::update() VariableDefinition branch -> _SafeCls_3053 @2475 (old _SafeCls_3715@1160)
     #endregion
 }
 
@@ -683,7 +656,7 @@ internal static class MessageComposer
     public const int GiftWrappingConfigurationComposer = 1369;
     public const int HabboClubExtendOfferMessageComposer = 3689;
     public const int HabboClubOffersMessageComposer = 419;
-    public const int IsOfferGiftableEventMessageComposer = 1750;
+    public const int IsOfferGiftableEventMessageComposer = 1750; // UNRESOLVED: not found - no matching (OfferId, IsGiftable) response near the targeted-offers or club-gift flows located in either official AS3 revision
     public const int LimitedEditionSoldOutComposer = 533; // AS3-verified (ghost fix): onLimitedEditionSoldOut @ HabboCatalog
     public const int LimitedOfferAppearingNextMessageComposer = 1084;
     public const int NotEnoughBalanceMessageComposer = 1038;
@@ -740,7 +713,7 @@ internal static class MessageComposer
     public const int OpenPetPackageRequestedMessageComposer = 3568;
     public const int OpenPetPackageResultMessageComposer = 716;
     public const int PresentOpenedMessageComposer = 914;
-    public const int RentableSpaceConfigMessageComposer = 4600;
+    public const int RentableSpaceConfigMessageComposer = 4600; // Vortex-custom (not in official AS3 dumps): confirmed via vortex-client's own registry (_events[4600] = RentableSpaceConfigMessageEvent) and commit f3bba54 "feat(rentablespace): add config message, compositors and updated display widget"
     public const int RentableSpaceRentFailedMessageComposer = 3117; // AS3-verified (name-only): onRentableSpaceRentFailedMessage
     public const int RentableSpaceRentOkMessageComposer = 2158; // AS3-verified (ghost fix): onRentableSpaceRentOkMessage
     public const int RentableSpaceStatusMessageComposer = 2800;
@@ -993,7 +966,7 @@ internal static class MessageComposer
     public const int PetPlacingErrorComposer = 3195; // AS3-verified (ghost fix): onPetPlacingError @ RoomUsersHandler
     public const int PetRespectFailedComposer = 31;
     public const int PetStatusUpdateComposer = 2753;
-    public const int PetVocalComposer = 3073;
+    public const int PetVocalComposer = 3073; // Vortex-custom (not in official AS3 dumps): confirmed via vortex-client's own registry (_events[3073] = PetVocalMessageEvent) and commit d6bc0d0 "feat(pets): add pet vocal message, IssuePetCommand compositor and command UI"
     public const int AchievementResolutionCompletedMessageComposer = 1166; // AS3-verified (ghost fix): onAchievementResolutionCompleted
     public const int AchievementResolutionProgressMessageComposer = 1844;
     public const int AchievementResolutionsMessageComposer = 3143; // AS3-verified (ghost fix): onAchievementResolutions
@@ -1006,7 +979,6 @@ internal static class MessageComposer
     public const int Game2FriendsLeaderboardComposer = 2272;
     public const int Game2TotalGroupLeaderboardComposer = 2417;
     public const int Game2TotalLeaderboardComposer = 733;
-
 
     public const int Game2WeeklyGroupLeaderboardComposer = 2876;
     public const int Game2WeeklyLeaderboardComposer = 273;
@@ -1077,9 +1049,7 @@ internal static class MessageComposer
     public const int ObjectRemoveConfirmMessageComposer = 3643; // AS3-verified (ghost fix): onObjectRemoveConfirm
     public const int ObjectRemoveMessageComposer = 1916;
 
-    public const int
-        ObjectRemoveMultipleMessageComposer =
-            9013; // UNRESOLVED: collided with DailyTasksTaskUpdateMessageComposer after the WIN63-202607011411 client header remap; ObjectRemoveMultipleMessageComposer has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
+    public const int ObjectRemoveMultipleMessageComposer = 2361; // AS3-verified (direct read, both revisions): room engine handler::onObjectRemoveMultiple() -> _SafeCls_3810 @2361 (old _SafeCls_3410@1065)
 
     public const int ObjectsDataUpdateMessageComposer = 632;
     public const int ObjectsMessageComposer = 2104;
@@ -1134,6 +1104,5 @@ internal static class MessageComposer
     public const int WiredRewardResultMessageComposer = 2997; // AS3-verified (old-revision trace): _SafeCls_3012 -> onReward() still exists in current revision at 2997
     public const int WiredSaveSuccessComposer = 1192; // AS3-verified (direct read, both revisions): roomevents handler::onSaveSuccess() -> _SafeCls_2958 @1192 (old _SafeCls_3773@1875)
     public const int WiredValidationErrorComposer = 3201; // AS3-verified (direct read, both revisions): roomevents handler::onValidationError() -> _SafeCls_2398 @3201 (old _SafeCls_3434@367)
-
     #endregion
 }
