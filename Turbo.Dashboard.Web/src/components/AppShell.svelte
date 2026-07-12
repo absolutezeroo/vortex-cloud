@@ -3,7 +3,11 @@
   import {
     Activity,
     Ban,
+    BarChart3,
     Box,
+    Cable,
+    ChevronDown,
+    ChevronRight,
     Coins,
     DoorOpen,
     Gavel,
@@ -12,15 +16,18 @@
     LogOut,
     MessageCircleWarning,
     Package,
+    PawPrint,
     ScrollText,
     Search,
     Server,
     ShieldAlert,
+    ShoppingBag,
     ShoppingCart,
     Sparkles,
     Store,
     Terminal,
     Ticket,
+    Users,
     Wrench,
     Lock,
   } from '@lucide/svelte';
@@ -34,7 +41,7 @@
   export let logoutBusy = false;
 
   // Keep in sync with the `group` field on NAV entries (routes.js).
-  const GROUP_ORDER = ['Live', 'Investigate', 'Act', 'Dev'];
+  const GROUP_ORDER = ['Live', 'Investigate', 'Stats', 'Act', 'Dev'];
 
   const routeIcons = {
     '/overview': Activity,
@@ -57,9 +64,54 @@
     '/economy-trends': LineChart,
     '/marketplace': ShoppingCart,
     '/subscriptions': Sparkles,
+    '/groups-stats': Users,
+    '/pets-stats': PawPrint,
+    '/cfh-stats': BarChart3,
+    '/catalog-purchases': ShoppingBag,
+    '/wired-stats': Cable,
   };
 
   let query = '';
+
+  // Which nav groups are collapsed, keyed by the stable GROUP_ORDER id (not the translated label,
+  // which changes with $locale and would silently reset saved state on a language switch).
+  // Persisted so a collapse choice survives reloads.
+  const COLLAPSE_STORAGE_KEY = 'turbo-dashboard-nav-collapsed';
+
+  function loadCollapsedGroups() {
+    try {
+      const raw = localStorage.getItem(COLLAPSE_STORAGE_KEY);
+      return raw ? new Set(JSON.parse(raw)) : new Set();
+    } catch {
+      return new Set();
+    }
+  }
+
+  let collapsedGroups = loadCollapsedGroups();
+
+  function toggleGroup(id) {
+    if (collapsedGroups.has(id)) {
+      collapsedGroups.delete(id);
+    } else {
+      collapsedGroups.add(id);
+    }
+    collapsedGroups = collapsedGroups;
+
+    try {
+      localStorage.setItem(COLLAPSE_STORAGE_KEY, JSON.stringify([...collapsedGroups]));
+    } catch {
+      // Ignore storage failures (private browsing, quota) -- collapse still works this session.
+    }
+  }
+
+  // Takes `groupsCollapsed` explicitly (not read from the outer `collapsedGroups` closure) so the
+  // `{@const}` call site below stays reactive -- see the ApiExplorerPage `filtered` reactivity note:
+  // a value read only inside a called function's body is invisible to Svelte's per-block dirty
+  // tracking, so a toggle would mutate state but never trigger a re-render without this.
+  // A collapsed group still expands while actively searching, so filter results stay visible.
+  function isCollapsed(group, q, groupsCollapsed) {
+    return groupsCollapsed.has(group.id) && !q.trim();
+  }
 
   // Re-evaluate access whenever the identity changes (login / logout / role swap). label/short are
   // resolved here (not read directly off NAV) so they re-translate whenever $locale changes too --
@@ -74,11 +126,13 @@
   $: groupLabels = {
     Live: $t('nav.groupLive'),
     Investigate: $t('nav.groupInvestigate'),
+    Stats: $t('nav.groupStats'),
     Act: $t('nav.groupAct'),
     Dev: $t('nav.groupDev'),
   };
   $: filteredItems = filterItems(items, query);
   $: groups = GROUP_ORDER.map((name) => ({
+    id: name,
     name: groupLabels[name] || name,
     items: filteredItems.filter((item) => (item.group || 'Other') === name),
   })).filter((group) => group.items.length > 0);
@@ -131,31 +185,42 @@
 
     <nav aria-label="Dashboard sections">
       {#each groups as group}
-        <p class="nav-group-label">{group.name}</p>
-        {#each group.items as item}
-          {@const Icon = iconFor(item)}
-          <a
-            href={`#${item.path}`}
-            class:active={$location === item.path}
-            class:disabled={!item.allowed}
-            aria-disabled={!item.allowed}
-            tabindex={item.allowed ? 0 : -1}
-            on:click|preventDefault={() => go(item)}
-          >
-            <span class="nav-icon" aria-hidden="true">
-              <Icon size={18} strokeWidth={1.9} />
-            </span>
-            <span class="nav-copy">
-              {#if !item.allowed}
-                <span class="nav-lock" aria-hidden="true">
-                  <Lock size={13} />
-                </span>
-              {/if}
-              <span>{item.label}</span>
-              <small>{item.short}</small>
-            </span>
-          </a>
-        {/each}
+        {@const collapsed = isCollapsed(group, query, collapsedGroups)}
+        <button
+          type="button"
+          class="nav-group-label"
+          on:click={() => toggleGroup(group.id)}
+          aria-expanded={!collapsed}
+        >
+          <svelte:component this={collapsed ? ChevronRight : ChevronDown} size={13} strokeWidth={2.2} aria-hidden="true" />
+          <span>{group.name}</span>
+        </button>
+        {#if !collapsed}
+          {#each group.items as item}
+            {@const Icon = iconFor(item)}
+            <a
+              href={`#${item.path}`}
+              class:active={$location === item.path}
+              class:disabled={!item.allowed}
+              aria-disabled={!item.allowed}
+              tabindex={item.allowed ? 0 : -1}
+              on:click|preventDefault={() => go(item)}
+            >
+              <span class="nav-icon" aria-hidden="true">
+                <Icon size={18} strokeWidth={1.9} />
+              </span>
+              <span class="nav-copy">
+                {#if !item.allowed}
+                  <span class="nav-lock" aria-hidden="true">
+                    <Lock size={13} />
+                  </span>
+                {/if}
+                <span>{item.label}</span>
+                <small>{item.short}</small>
+              </span>
+            </a>
+          {/each}
+        {/if}
       {/each}
       {#if groups.length === 0}
         <p class="nav-empty">{$t('nav.noMatch', { query })}</p>
@@ -253,12 +318,26 @@
   }
 
   .nav-group-label {
-    margin: 10px 4px 2px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    margin: 10px 0 2px;
+    padding: 4px;
+    background: none;
+    border: none;
     color: var(--muted);
     text-transform: uppercase;
     font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.04em;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+
+  .nav-group-label:hover {
+    color: var(--ink);
+    background: var(--surface-hover, var(--surface));
   }
 
   .sidebar nav > .nav-group-label:first-child {

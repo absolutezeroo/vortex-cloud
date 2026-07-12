@@ -143,6 +143,7 @@ internal static partial class DashboardEndpoints
         MapRoomReads(app);
         MapCatalogReads(app);
         MapFurnitureReads(app);
+        MapStatsReads(app);
     }
 
     public static void MapOperations(WebApplication app)

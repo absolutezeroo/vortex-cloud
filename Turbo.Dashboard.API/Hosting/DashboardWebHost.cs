@@ -61,6 +61,11 @@ internal sealed class DashboardWebHost(
         Capabilities.Dashboard.CatalogRead,
         Capabilities.Dashboard.OpsCatalogManage,
         Capabilities.Dashboard.OpsFurnitureManage,
+        Capabilities.Dashboard.GroupsRead,
+        Capabilities.Dashboard.PetsRead,
+        Capabilities.Dashboard.CfhRead,
+        Capabilities.Dashboard.CatalogPurchasesRead,
+        Capabilities.Dashboard.WiredRead,
     ];
 
     private readonly ObservabilityConfig _config = options.Value;

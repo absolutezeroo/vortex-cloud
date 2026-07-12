@@ -334,7 +334,7 @@ internal static class MessageEvent
     public const int GetForumsListMessageEvent = 488; // AS3-verified (ghost fix): GroupForumController::openForumsList()
     public const int GetForumStatsMessageEvent = 3592; // AS3-verified (old-revision trace): GroupForumController::initForum() still exists in current revision at 3592
 
-    public const int GetMessagesMessageEvent = 9014; // UNRESOLVED: collided with OpenPetPackageMessageEvent after the WIN63-202607011411 client header remap; GetMessagesMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
+    public const int GetMessagesMessageEvent = 225; // AS3-verified (direct read): GroupForumController::requestThreadMessageList(groupId,threadId,startIndex) -> connection.send(new _SafeCls_2438(...)) @225 (registry: _SafeCls_2046.as:787)
 
     public const int GetThreadMessageEvent = 3218; // AS3-verified (direct read, both revisions): GroupForumController::linkReceived() -> _SafeCls_2586
     public const int GetThreadsMessageEvent = 3668; // AS3-verified (old-revision trace): _SafeCls_2466 -> requestThreadList() still exists in current revision at 3668

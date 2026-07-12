@@ -16,6 +16,11 @@ export const CAPABILITIES = {
   catalogRead: 'dashboard.catalog.read',
   opsCatalogManage: 'dashboard.ops.catalog.manage',
   opsFurnitureManage: 'dashboard.ops.furniture.manage',
+  groupsRead: 'dashboard.groups.read',
+  petsRead: 'dashboard.pets.read',
+  cfhRead: 'dashboard.cfh.read',
+  catalogPurchasesRead: 'dashboard.catalog.purchases.read',
+  wiredRead: 'dashboard.wired.read',
 };
 
 export const ROUTE_PERMISSIONS = {
@@ -38,6 +43,11 @@ export const ROUTE_PERMISSIONS = {
   vouchers: [CAPABILITIES.opsManageVouchers],
   catalog: [CAPABILITIES.catalogRead],
   furnitureDefinitions: [CAPABILITIES.furnitureRead],
+  groupsStats: [CAPABILITIES.groupsRead],
+  petsStats: [CAPABILITIES.petsRead],
+  cfhStats: [CAPABILITIES.cfhRead],
+  catalogPurchases: [CAPABILITIES.catalogPurchasesRead],
+  wiredStats: [CAPABILITIES.wiredRead],
   apiExplorer: [CAPABILITIES.overviewRead],
   operations: [
     CAPABILITIES.opsGrantCurrency,

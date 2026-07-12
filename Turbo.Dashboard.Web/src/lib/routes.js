@@ -30,11 +30,17 @@ import FurnitureDefinitionsPage from '../pages/FurnitureDefinitionsPage.svelte';
 import OperationsPage from '../pages/OperationsPage.svelte';
 import AccessDeniedPage from '../pages/AccessDeniedPage.svelte';
 import ApiExplorerPage from '../pages/ApiExplorerPage.svelte';
+import GroupsStatsPage from '../pages/GroupsStatsPage.svelte';
+import PetsStatsPage from '../pages/PetsStatsPage.svelte';
+import CfhStatsPage from '../pages/CfhStatsPage.svelte';
+import CatalogPurchasesStatsPage from '../pages/CatalogPurchasesStatsPage.svelte';
+import WiredStatsPage from '../pages/WiredStatsPage.svelte';
 
 // Display + permission metadata for the navigation sidebar. Order is the nav order within each
 // group. `group` buckets items in the sidebar (see AppShell.svelte) — Live: auto-refreshing health
-// signals; Investigate: lookup/forensics tools; Act: pages that can change server state; Dev: raw
-// API access. Keep this in sync with GROUP_ORDER in AppShell.svelte.
+// signals; Investigate: lookup/forensics tools; Stats: read-only cross-domain analytics (no
+// per-record lookup, no mutation); Act: pages that can change server state; Dev: raw API access.
+// Keep this in sync with GROUP_ORDER in AppShell.svelte.
 // label/short are i18n keys (resolved via $t in AppShell.svelte), not display strings -- see
 // lib/locales/{en,fr}.js's `nav` namespace, which must have a matching entry for every key here.
 export const NAV = [
@@ -50,6 +56,11 @@ export const NAV = [
   { path: '/economy-trends', labelKey: 'nav.economyTrends', shortKey: 'nav.economyTrendsShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: EconomyTrendsPage },
   { path: '/marketplace', labelKey: 'nav.marketplace', shortKey: 'nav.marketplaceShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: MarketplacePage },
   { path: '/subscriptions', labelKey: 'nav.subscriptions', shortKey: 'nav.subscriptionsShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: SubscriptionsPage },
+  { path: '/groups-stats', labelKey: 'nav.groupsStats', shortKey: 'nav.groupsStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.groupsStats, component: GroupsStatsPage },
+  { path: '/pets-stats', labelKey: 'nav.petsStats', shortKey: 'nav.petsStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.petsStats, component: PetsStatsPage },
+  { path: '/cfh-stats', labelKey: 'nav.cfhStats', shortKey: 'nav.cfhStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.cfhStats, component: CfhStatsPage },
+  { path: '/catalog-purchases', labelKey: 'nav.catalogPurchases', shortKey: 'nav.catalogPurchasesShort', group: 'Stats', caps: ROUTE_PERMISSIONS.catalogPurchases, component: CatalogPurchasesStatsPage },
+  { path: '/wired-stats', labelKey: 'nav.wiredStats', shortKey: 'nav.wiredStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.wiredStats, component: WiredStatsPage },
   { path: '/operations', labelKey: 'nav.operations', shortKey: 'nav.operationsShort', group: 'Act', caps: ROUTE_PERMISSIONS.operations, component: OperationsPage },
   { path: '/moderation-actions', labelKey: 'nav.moderationActions', shortKey: 'nav.moderationActionsShort', group: 'Act', caps: ROUTE_PERMISSIONS.moderationActions, component: ModerationActionsPage },
   { path: '/cfh', labelKey: 'nav.cfh', shortKey: 'nav.cfhShort', group: 'Act', caps: ROUTE_PERMISSIONS.cfh, component: CfhQueuePage },

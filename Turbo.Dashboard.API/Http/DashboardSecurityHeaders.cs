@@ -33,7 +33,16 @@ internal static class DashboardSecurityHeaders
             imgSrc += " " + origin;
         }
 
-        return "default-src 'self'; script-src 'self'; style-src 'self'; "
+        // style-src allows 'unsafe-inline': the SPA is fully client-rendered (Svelte creates every
+        // element via JS, there is no server-rendered HTML), so even a static-looking `style="..."`
+        // in a component's markup compiles to a runtime `element.style` mutation -- CSP treats that
+        // identically to a dynamically computed one. Dozens of components across the dashboard rely
+        // on this (chart positioning, spacing utilities, severity-colored borders), so this is a
+        // blanket, deliberate relaxation, not a per-component patch. script-src stays locked to
+        // 'self' -- that is the directive that actually matters for XSS defense; inline *style*
+        // injection has a much smaller blast radius (CSS-only, no code execution) and this dashboard
+        // renders no user-generated content as literal HTML anywhere.
+        return "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
             + imgSrc
             + "; connect-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'none';";
     }

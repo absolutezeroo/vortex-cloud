@@ -14,7 +14,7 @@ namespace Turbo.Revisions.Tests.Groups;
 /// <summary>Wire-layout lock for the slice-3 group forum packets. State fields are bytes.</summary>
 public sealed class ForumWireLayoutTests
 {
-    private const int GetMessagesEvent = 1884;
+    private const int GetMessagesEvent = 225;
     private const int PostMessageEvent = 2811;
     private const int UpdateThreadEvent = 3206;
 
@@ -38,9 +38,7 @@ public sealed class ForumWireLayoutTests
         return new ClientPacket(0, body);
     }
 
-    [Fact(
-        Skip = "GetMessagesMessageEvent header collided with OpenPetPackageMessageEvent after the WIN63-202607011411 remap; real new header not yet resolved (see Revision20260701.cs UNRESOLVED comment)."
-    )]
+    [Fact]
     public void GetMessagesParser_ReadsPaging()
     {
         ClientPacket packet = BuildClientPacket(

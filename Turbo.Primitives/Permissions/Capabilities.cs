@@ -74,6 +74,11 @@ public static class Capabilities
         public const string CatalogRead = "dashboard.catalog.read";
         public const string OpsCatalogManage = "dashboard.ops.catalog.manage";
         public const string OpsFurnitureManage = "dashboard.ops.furniture.manage";
+        public const string GroupsRead = "dashboard.groups.read";
+        public const string PetsRead = "dashboard.pets.read";
+        public const string CfhRead = "dashboard.cfh.read";
+        public const string CatalogPurchasesRead = "dashboard.catalog.purchases.read";
+        public const string WiredRead = "dashboard.wired.read";
     }
 
     /// <summary>Every declared capability, for validation and dashboard enumeration.</summary>
@@ -111,5 +116,10 @@ public static class Capabilities
             Dashboard.CatalogRead,
             Dashboard.OpsCatalogManage,
             Dashboard.OpsFurnitureManage,
+            Dashboard.GroupsRead,
+            Dashboard.PetsRead,
+            Dashboard.CfhRead,
+            Dashboard.CatalogPurchasesRead,
+            Dashboard.WiredRead,
         };
 }

@@ -18,7 +18,7 @@ public sealed class GuildManagementWireLayoutTests
     // Incoming MessageEvent ids (Headers.cs).
     private const int UpdateGuildBadgeEvent = 3882;
     private const int UpdateGuildSettingsEvent = 3716;
-    private const int KickMemberEvent = 380;
+    private const int KickMemberEvent = 781;
 
     private static readonly Rev Revision = new(Options.Create(new ProtocolLimitsConfig()));
 
@@ -89,9 +89,7 @@ public sealed class GuildManagementWireLayoutTests
         msg.RightsLevel.Should().Be(1);
     }
 
-    [Fact(
-        Skip = "KickMemberMessageEvent header collided with CallForHelpFromForumThreadMessageEvent after the WIN63-202607011411 remap; real new header not yet resolved (see Revision20260701.cs UNRESOLVED comment)."
-    )]
+    [Fact]
     public void KickMemberParser_ReadsBlockFlag()
     {
         ClientPacket packet = BuildClientPacket(
