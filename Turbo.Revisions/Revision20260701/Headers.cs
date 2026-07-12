@@ -914,7 +914,7 @@ internal static class MessageComposer
     public const int WiredAllVariablesHashComposer = 3287; // AS3-verified (ghost fix): onAllVariablesHashEvent @ WiredVariablesSynchronizer
     public const int WiredErrorLogsComposer = 3419; // AS3-verified (direct read, both revisions): WiredMenuMonitorTab::onErrorLogsEvent() -> _SafeCls_2891 @3419 (old _SafeCls_3594@2032)
     public const int WiredMenuErrorComposer = 1230; // AS3-verified (name-only): onWiredMenuError @ WiredMenuInspectionTab
-    public const int WiredPermissionsComposer = 2913;
+    public const int WiredPermissionsComposer = 3483; // AS3-verified (ghost fix): onWiredPermissions @ WiredMenuInspectionTab
     public const int WiredRoomSettingsComposer = 491; // AS3-verified (direct read, both revisions): WiredMenuSettingsTab::onWiredSettings() -> _SafeCls_3408 @491 (old _SafeCls_2770@1376 moved; 1376 now Game2GameRejoin)
     public const int WiredRoomStatsComposer = 1964; // AS3-verified (ghost fix): onRoomStatsEvent @ WiredMenuMonitorTab
     public const int WiredVariablesForObjectComposer = 2179; // AS3-verified (ghost fix): onWiredVariablesForObject @ WiredMenuInspectionTab
