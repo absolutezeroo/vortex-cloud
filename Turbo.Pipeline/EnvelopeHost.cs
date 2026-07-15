@@ -379,6 +379,8 @@ public class EnvelopeHost<TEnvelope, TMeta, TContext>(
     {
         if (regs.IsDefaultOrEmpty)
         {
+            _opt.OnNoHandlerRegistered?.Invoke((TEnvelope)env);
+
             return;
         }
 

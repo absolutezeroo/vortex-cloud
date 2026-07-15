@@ -26,6 +26,8 @@ namespace Turbo.Dashboard.API.Hosting;
 /// </summary>
 internal static partial class DashboardEndpoints
 {
+    public const string LoginRateLimitPolicy = "dashboard-login";
+
     private const string TagAuth = "Auth";
     private const string TagMonitoring = "Monitoring";
     private const string TagForensics = "Forensics";
@@ -92,6 +94,7 @@ internal static partial class DashboardEndpoints
                 }
             )
             .AllowAnonymous()
+            .RequireRateLimiting(LoginRateLimitPolicy)
             .WithName("Login")
             .WithSummary("Authenticate a dashboard operator and start a session.")
             .WithTags(TagAuth);
@@ -299,6 +302,7 @@ internal static partial class DashboardEndpoints
             new CookieOptions
             {
                 HttpOnly = true,
+                Secure = ctx.Request.IsHttps,
                 SameSite = SameSiteMode.Strict,
                 Path = "/",
                 IsEssential = true,

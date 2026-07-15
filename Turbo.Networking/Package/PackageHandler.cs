@@ -57,7 +57,7 @@ public sealed class PackageHandler(
             {
                 IMessageEvent message = parser.Parse(packet);
 
-                _logger.LogDebug("Incoming {Message}", message);
+                _logger.LogDebug("Incoming {MessageType}", message.GetType().Name);
 
                 await _messageSystem.PublishAsync(message, ctx, ct).ConfigureAwait(false);
             }

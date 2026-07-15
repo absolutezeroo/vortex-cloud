@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
+using System.Threading.RateLimiting;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.Extensions.DependencyInjection;
@@ -78,13 +81,16 @@ internal sealed class DashboardWebHost(
         }
 
         DateTime startedAtUtc = DateTime.UtcNow;
-        string prefix = $"http://{_config.DashboardHost}:{_config.DashboardPort}";
+        string httpPrefix = $"http://{_config.DashboardHost}:{_config.DashboardPort}";
+        string prefixes = _config.DashboardHttpsEnabled
+            ? $"{httpPrefix}, https://{_config.DashboardHost}:{_config.DashboardHttpsPort}"
+            : httpPrefix;
 
         WebApplication app;
 
         try
         {
-            app = BuildApp(prefix, () => startedAtUtc);
+            app = BuildApp(httpPrefix, () => startedAtUtc);
         }
         catch (Exception ex)
         {
@@ -105,8 +111,8 @@ internal sealed class DashboardWebHost(
             logger.LogError(
                 TurboEventIds.DashboardFault,
                 ex,
-                "Failed to start Turbo dashboard API on {Prefix}",
-                prefix
+                "Failed to start Turbo dashboard API on {Prefixes}",
+                prefixes
             );
             await app.DisposeAsync().ConfigureAwait(false);
             return;
@@ -114,9 +120,9 @@ internal sealed class DashboardWebHost(
 
         logger.LogInformation(
             TurboEventIds.DashboardReady,
-            "Turbo dashboard API listening on {Prefix} (Swagger UI at {Prefix}/swagger)",
-            prefix,
-            prefix
+            "Turbo dashboard API listening on {Prefixes} (Swagger UI at {HttpPrefix}/swagger)",
+            prefixes,
+            httpPrefix
         );
 
         try
@@ -132,10 +138,16 @@ internal sealed class DashboardWebHost(
         await app.DisposeAsync().ConfigureAwait(false);
     }
 
-    private WebApplication BuildApp(string prefix, Func<DateTime> startedAtUtc)
+    private WebApplication BuildApp(string httpPrefix, Func<DateTime> startedAtUtc)
     {
         WebApplicationBuilder builder = WebApplication.CreateSlimBuilder();
-        builder.WebHost.UseUrls(prefix);
+        builder.WebHost.UseUrls(
+            _config.DashboardHttpsEnabled
+                ? [httpPrefix, $"https://{_config.DashboardHost}:{_config.DashboardHttpsPort}"]
+                : [httpPrefix]
+        );
+
+        ConfigureKestrel(builder);
 
         // The dashboard web app keeps its own logging quiet; lifecycle messages come from the parent
         // logger above so they sit alongside the rest of the emulator output.
@@ -143,6 +155,8 @@ internal sealed class DashboardWebHost(
 
         ForwardSingletons(builder.Services);
         ConfigureAuth(builder.Services);
+        ConfigureRateLimiting(builder.Services);
+        ConfigureHttpsRedirection(builder.Services);
         ConfigureSwagger(builder.Services);
 
         WebApplication app = builder.Build();
@@ -207,6 +221,67 @@ internal sealed class DashboardWebHost(
                 );
             }
         });
+    }
+
+    private void ConfigureKestrel(WebApplicationBuilder builder)
+    {
+        if (!_config.DashboardHttpsEnabled)
+        {
+            return;
+        }
+
+        if (
+            string.IsNullOrWhiteSpace(_config.DashboardCertificatePath)
+            || string.IsNullOrWhiteSpace(_config.DashboardCertificatePassword)
+        )
+        {
+            return;
+        }
+
+        builder.WebHost.ConfigureKestrel(kestrel =>
+            kestrel.ConfigureHttpsDefaults(https =>
+                https.ServerCertificate = X509CertificateLoader.LoadPkcs12FromFile(
+                    _config.DashboardCertificatePath,
+                    _config.DashboardCertificatePassword
+                )
+            )
+        );
+    }
+
+    private void ConfigureRateLimiting(IServiceCollection services)
+    {
+        ObservabilityConfig.DashboardRateLimitOptions limit = _config.DashboardLoginRateLimit;
+
+        services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+            options.AddPolicy(
+                DashboardEndpoints.LoginRateLimitPolicy,
+                httpContext =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                        _ => new FixedWindowRateLimiterOptions
+                        {
+                            PermitLimit = limit.PermitLimit,
+                            Window = TimeSpan.FromSeconds(limit.WindowSeconds),
+                            QueueLimit = limit.QueueLimit,
+                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                            AutoReplenishment = true,
+                        }
+                    )
+            );
+        });
+    }
+
+    private void ConfigureHttpsRedirection(IServiceCollection services)
+    {
+        if (!_config.DashboardHttpsEnabled)
+        {
+            return;
+        }
+
+        services.AddHttpsRedirection(https => https.HttpsPort = _config.DashboardHttpsPort);
     }
 
     private static void ConfigureSwagger(IServiceCollection services)
@@ -286,6 +361,16 @@ internal sealed class DashboardWebHost(
             }
         );
 
+        if (_config.DashboardHttpsEnabled)
+        {
+            if (_config.DashboardHstsEnabled)
+            {
+                app.UseHsts();
+            }
+
+            app.UseHttpsRedirection();
+        }
+
         app.UseSwagger();
         app.UseSwaggerUI(ui =>
         {
@@ -295,6 +380,7 @@ internal sealed class DashboardWebHost(
 
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseRateLimiter();
 
         // HTTP access audit trail. Login/logout audit themselves; operation success is audited by
         // DashboardOperationsService (with correlation id), so for operation routes only failures are

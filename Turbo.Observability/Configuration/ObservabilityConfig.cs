@@ -62,6 +62,38 @@ public sealed class ObservabilityConfig
     /// <summary>Lifetime of an authenticated dashboard session in minutes (minimum 5).</summary>
     public int DashboardSessionLifetimeMinutes { get; init; } = 480;
 
+    /// <summary>When set, the dashboard also listens on HTTPS and redirects HTTP traffic to it.</summary>
+    public bool DashboardHttpsEnabled { get; init; }
+
+    /// <summary>TCP port for the dashboard HTTPS listener.</summary>
+    public int DashboardHttpsPort { get; init; } = 9443;
+
+    /// <summary>Optional PFX certificate used for the dashboard HTTPS listener; falls back to the dev certificate.</summary>
+    public string? DashboardCertificatePath { get; init; }
+
+    public string? DashboardCertificatePassword { get; init; }
+
+    /// <summary>Emits HSTS headers for the dashboard (implies operators should only ever reach it over HTTPS).</summary>
+    public bool DashboardHstsEnabled { get; init; }
+
+    /// <summary>Fixed-window rate limit applied to dashboard <c>POST /api/login</c>.</summary>
+    public DashboardRateLimitOptions DashboardLoginRateLimit { get; init; } =
+        new DashboardRateLimitOptions
+        {
+            PermitLimit = 5,
+            WindowSeconds = 60,
+            QueueLimit = 0,
+        };
+
+    public sealed class DashboardRateLimitOptions
+    {
+        public int PermitLimit { get; init; } = 5;
+
+        public int WindowSeconds { get; init; } = 60;
+
+        public int QueueLimit { get; init; }
+    }
+
     /// <summary>
     /// Optional URL template for furniture icons shown in the operations picker. Use <c>{name}</c>
     /// as the definition-name placeholder, for example

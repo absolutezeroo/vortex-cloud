@@ -104,6 +104,11 @@ public sealed class MessageRegistry(
                     contextAccessor,
                     logger
                 ),
+            OnNoHandlerRegistered = env =>
+                logger.LogWarning(
+                    "No handler registered for incoming message {MessageType}",
+                    env.GetType().Name
+                ),
         };
     }
 

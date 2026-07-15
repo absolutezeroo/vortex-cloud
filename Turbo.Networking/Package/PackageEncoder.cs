@@ -33,7 +33,7 @@ public sealed class PackageEncoder(IRevisionManager revisionManager, ILogger<Pac
                         payload = pack.Session.CryptoOut.Process(payload);
                     }
 
-                    _logger.LogDebug("Outgoing {Composer}", pack.Composer);
+                    _logger.LogDebug("Outgoing {ComposerType}", composerType.Name);
 
                     writer.Write(payload);
 

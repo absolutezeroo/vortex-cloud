@@ -13,5 +13,5 @@ public class WiredConditionExecutorOnItem(
     IRoomFloorItemContext ctx
 ) : FurnitureWiredConditionLogic(grainFactory, stuffDataFactory, ctx)
 {
-    public override int WiredCode => (int)WiredConditionType.TRIGGERER_MATCHES;
+    public override int WiredCode => (int)WiredConditionType.TRIGGERER_IS_ON_FURNI;
 }
