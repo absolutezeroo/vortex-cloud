@@ -25,7 +25,6 @@ public sealed class WebSocketSessionContext(
     private readonly SemaphoreSlim _sendSemaphore = new(1, 1);
 
     public SessionKey SessionKey { get; } = session.SessionID;
-    public bool PolicyDone { get; set; } = true;
     public string RevisionId { get; private set; } = "Default";
     public DateTime LastActivityUtc { get; private set; } = DateTime.UtcNow;
     public CancellationTokenSource HeartbeatCts { get; } = new();

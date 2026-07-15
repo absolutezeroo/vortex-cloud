@@ -338,6 +338,8 @@ file static class RoomQueryExtensions
                 PlayersMax = x.PlayersMax,
                 TradeType = x.TradeType,
                 Score = x.Score,
+                // Fixed placeholder: no room-ranking/trending system exists yet (no column, no
+                // computation). Left 0 rather than fabricated so the client shows "unranked".
                 Ranking = 0,
                 CategoryId = x.NavigatorCategoryEntityId ?? -1,
                 Tags = RoomTagMapper.ToTags(x.Tag1, x.Tag2),

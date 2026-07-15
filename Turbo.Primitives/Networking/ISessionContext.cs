@@ -9,7 +9,6 @@ namespace Turbo.Primitives.Networking;
 public interface ISessionContext
 {
     public SessionKey SessionKey { get; }
-    public bool PolicyDone { get; set; }
     public string RevisionId { get; }
     public DateTime LastActivityUtc { get; }
     public CancellationTokenSource HeartbeatCts { get; }

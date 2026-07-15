@@ -24,7 +24,6 @@ public class SessionContext(
     private readonly SemaphoreSlim _sendSemaphore = new(1, 1);
 
     public SessionKey SessionKey { get; private set; } = string.Empty;
-    public bool PolicyDone { get; set; } = true;
     public string RevisionId { get; private set; } = "Default";
     public DateTime LastActivityUtc { get; private set; } = DateTime.UtcNow;
     public AsyncSignal PongWaiter { get; } = new();

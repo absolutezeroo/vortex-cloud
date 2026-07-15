@@ -2,11 +2,9 @@ using System;
 using System.IO;
 using Microsoft.Extensions.Options;
 using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Encodings;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Crypto.Signers;
 using Org.BouncyCastle.Math;
 using Turbo.Crypto.Configuration;
 using Turbo.Primitives.Crypto;
@@ -57,16 +55,6 @@ public sealed class RsaService : IRsaService
         cipher.Init(true, _privateKey);
 
         return ProcessData(cipher, data);
-    }
-
-    public bool Verify(byte[] data, byte[] signature)
-    {
-        PssSigner verifier = new PssSigner(new RsaEngine(), new Sha256Digest(), 20);
-
-        verifier.Init(false, _publicKey);
-        verifier.BlockUpdate(data, 0, data.Length);
-
-        return verifier.VerifySignature(signature);
     }
 
     private static byte[] ProcessData(IAsymmetricBlockCipher cipher, byte[] data)
