@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Turbo.Inventory.Configuration;
 using Turbo.Inventory.Factories;
-using Turbo.Primitives.Inventory;
 using Turbo.Primitives.Inventory.Factories;
 using Turbo.Primitives.Plugins;
 
@@ -19,6 +18,5 @@ public sealed class InventoryModule : IHostPluginModule
         );
 
         services.AddSingleton<IInventoryFurnitureLoader, InventoryFurnitureLoader>();
-        services.AddSingleton<IInventoryService, InventoryService>();
     }
 }

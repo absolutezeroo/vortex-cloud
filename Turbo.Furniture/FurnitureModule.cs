@@ -18,7 +18,6 @@ public sealed class FurnitureModule : IHostPluginModule
             builder.Configuration.GetSection(FurnitureConfig.SECTION_NAME)
         );
 
-        services.AddSingleton<IFurnitureService, FurnitureService>();
         services.AddSingleton<IFurnitureDefinitionProvider, FurnitureDefinitionProvider>();
         services.AddSingleton<IFurnitureAdminService, FurnitureAdminService>();
         services.AddSingleton<IStuffDataFactory, StuffDataFactory>();
