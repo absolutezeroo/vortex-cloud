@@ -7,6 +7,7 @@ using Turbo.Primitives.Catalog.Providers;
 using Turbo.Primitives.Catalog.Tags;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Groups.Providers;
+using Turbo.Primitives.Marketplace.Providers;
 using Turbo.Primitives.Navigator;
 using Turbo.Primitives.Networking;
 using Turbo.Primitives.Networking.Revisions;
@@ -26,6 +27,7 @@ public class TurboEmulator(
     ICatalogClubGiftProvider clubGiftProvider,
     ICurrencyTypeProvider currencyTypeProvider,
     IGroupBadgePartProvider guildBadgePartProvider,
+    IMarketplaceSettingsProvider marketplaceSettingsProvider,
     IPetPaletteProvider petPaletteProvider,
     IPetCommandProvider petCommandProvider,
     IPetLevelProvider petLevelProvider,
@@ -47,6 +49,8 @@ public class TurboEmulator(
     private readonly IFurnitureDefinitionProvider _furnitureProvider = furnitureProvider;
     private readonly IGroupBadgePartProvider _guildBadgePartProvider = guildBadgePartProvider;
     private readonly ILogger<TurboEmulator> _logger = logger;
+    private readonly IMarketplaceSettingsProvider _marketplaceSettingsProvider =
+        marketplaceSettingsProvider;
     private readonly INetworkManager _networkManager = networkManager;
     private readonly IPetCommandProvider _petCommandProvider = petCommandProvider;
     private readonly IPetLevelProvider _petLevelProvider = petLevelProvider;
@@ -66,6 +70,7 @@ public class TurboEmulator(
             await _clubOfferProvider.ReloadAsync(ct).ConfigureAwait(false);
             await _clubGiftProvider.ReloadAsync(ct).ConfigureAwait(false);
             await _currencyTypeProvider.ReloadAsync(ct).ConfigureAwait(false);
+            await _marketplaceSettingsProvider.ReloadAsync(ct).ConfigureAwait(false);
             await _guildBadgePartProvider.ReloadAsync(ct).ConfigureAwait(false);
             await _petPaletteProvider.ReloadAsync(ct).ConfigureAwait(false);
             await _petCommandProvider.ReloadAsync(ct).ConfigureAwait(false);

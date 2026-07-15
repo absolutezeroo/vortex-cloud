@@ -69,19 +69,27 @@ internal sealed class PlayerBadgeGrain(
                 .ExecuteUpdateAsync(up => up.SetProperty(b => b.SlotId, 0), ct)
                 .ConfigureAwait(true);
 
-            foreach ((int slotId, string badgeCode) in slots)
+            Dictionary<string, int> desiredSlotByCode = slots
+                .Where(s => s.SlotId > 0 && !string.IsNullOrWhiteSpace(s.BadgeCode))
+                .ToDictionary(s => s.BadgeCode, s => s.SlotId);
+
+            if (desiredSlotByCode.Count > 0)
             {
-                if (slotId <= 0 || string.IsNullOrWhiteSpace(badgeCode))
+                List<string> codes = [.. desiredSlotByCode.Keys];
+
+                List<PlayerBadgeEntity> toActivate = await dbCtx
+                    .PlayerBadges.Where(b =>
+                        b.PlayerEntityId == PlayerId && codes.Contains(b.BadgeCode)
+                    )
+                    .ToListAsync(ct)
+                    .ConfigureAwait(true);
+
+                foreach (PlayerBadgeEntity entity in toActivate)
                 {
-                    continue;
+                    entity.SlotId = desiredSlotByCode[entity.BadgeCode];
                 }
 
-                await dbCtx
-                    .PlayerBadges.Where(b =>
-                        b.PlayerEntityId == PlayerId && b.BadgeCode == badgeCode
-                    )
-                    .ExecuteUpdateAsync(up => up.SetProperty(b => b.SlotId, slotId), ct)
-                    .ConfigureAwait(true);
+                await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
             }
         }
         catch (Exception ex)

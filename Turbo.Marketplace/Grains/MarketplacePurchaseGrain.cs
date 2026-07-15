@@ -12,6 +12,7 @@ using Turbo.Primitives.Furniture.Enums;
 using Turbo.Primitives.Inventory.Grains;
 using Turbo.Primitives.Inventory.Snapshots;
 using Turbo.Primitives.Marketplace.Grains;
+using Turbo.Primitives.Marketplace.Providers;
 using Turbo.Primitives.Marketplace.Snapshots;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players.Enums.Wallet;
@@ -24,13 +25,13 @@ namespace Turbo.Marketplace.Grains;
 public sealed class MarketplacePurchaseGrain(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
+    IMarketplaceSettingsProvider settingsProvider,
     ILogger<MarketplacePurchaseGrain> logger
 ) : Grain, IMarketplacePurchaseGrain
 {
-    private const int COMMISSION_PERCENT = 1;
-    private static readonly TimeSpan OFFER_DURATION = TimeSpan.FromDays(3);
     private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly IMarketplaceSettingsProvider _settingsProvider = settingsProvider;
     private readonly ILogger<MarketplacePurchaseGrain> _logger = logger;
 
     public async Task<(int Result, int OfferId)> MakeOfferAsync(
@@ -86,7 +87,9 @@ public sealed class MarketplacePurchaseGrain(
             Price = price,
             State = MarketplaceOfferState.Active,
             CreditsOwed = 0,
-            ExpiresAt = DateTime.UtcNow.Add(OFFER_DURATION),
+            ExpiresAt = DateTime.UtcNow.AddSeconds(
+                _settingsProvider.GetSettings().OfferDurationSeconds
+            ),
         };
 
         await using TurboDbContext dbCtx = await _dbCtxFactory
@@ -170,7 +173,10 @@ public sealed class MarketplacePurchaseGrain(
                 debitRequests,
                 async innerCt =>
                 {
-                    int commission = Math.Max(1, offer.Price * COMMISSION_PERCENT / 100);
+                    int commission = Math.Max(
+                        1,
+                        offer.Price * _settingsProvider.GetSettings().CommissionPercent / 100
+                    );
                     int creditsOwed = offer.Price - commission;
 
                     // Atomically claim the offer so a concurrent buyer cannot purchase it twice.

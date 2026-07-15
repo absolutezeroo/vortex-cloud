@@ -20,4 +20,7 @@ public sealed record CurrencyTypeSnapshot
 
     [Id(4)]
     public required bool Enabled { get; init; }
+
+    [Id(5)]
+    public int StartingAmount { get; init; }
 }

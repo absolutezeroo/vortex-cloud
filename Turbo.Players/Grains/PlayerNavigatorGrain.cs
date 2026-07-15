@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Players;
@@ -11,11 +13,13 @@ using Turbo.Primitives.Players.Grains;
 
 namespace Turbo.Players.Grains;
 
-internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbCtxFactory)
-    : Grain,
-        IPlayerNavigatorGrain
+internal sealed class PlayerNavigatorGrain(
+    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    ILogger<PlayerNavigatorGrain> logger
+) : Grain, IPlayerNavigatorGrain
 {
     private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly ILogger<PlayerNavigatorGrain> _logger = logger;
 
     private NavigatorWindowPreferencesSnapshot _preferences = new();
     private List<NavigatorQuickLinkSnapshot> _savedSearches = [];
@@ -315,6 +319,24 @@ internal sealed class PlayerNavigatorGrain(IDbContextFactory<TurboDbContext> dbC
     }
 
     private async Task HydrateAsync(CancellationToken ct)
+    {
+        try
+        {
+            await HydrateCoreAsync(ct).ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to hydrate navigator preferences for player {PlayerId}.",
+                this.GetPrimaryKeyLong()
+            );
+
+            throw;
+        }
+    }
+
+    private async Task HydrateCoreAsync(CancellationToken ct)
     {
         await using TurboDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)

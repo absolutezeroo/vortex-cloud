@@ -434,12 +434,12 @@ public sealed partial class RoomGrain
                 )
                 .ConfigureAwait(true);
 
-            foreach (PlayerId target in targets)
-            {
-                await SecurityModule
-                    .RefreshControllerLevelForPlayerAsync(target, ct)
-                    .ConfigureAwait(true);
-            }
+            await Task.WhenAll(
+                    targets.Select(target =>
+                        SecurityModule.RefreshControllerLevelForPlayerAsync(target, ct)
+                    )
+                )
+                .ConfigureAwait(true);
         }
         catch (Exception ex)
         {

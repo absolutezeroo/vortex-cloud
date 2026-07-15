@@ -423,7 +423,7 @@ internal sealed class PlayerWalletGrain(
                 {
                     PlayerEntityId = (int)this.GetPrimaryKeyLong(),
                     CurrencyTypeEntityId = creditType.Id,
-                    Amount = 200,
+                    Amount = creditType.StartingAmount,
                 };
 
                 writeCtx.PlayerCurrencies.Add(entity);

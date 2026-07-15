@@ -130,6 +130,8 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
 
     public DbSet<MarketplaceOfferEntity> MarketplaceOffers { get; init; } = null!;
 
+    public DbSet<MarketplaceSettingsEntity> MarketplaceSettings { get; init; } = null!;
+
     public DbSet<MessengerCategoryEntity> MessengerCategories { get; init; } = null!;
 
     public DbSet<MessengerFriendEntity> MessengerFriends { get; init; } = null!;

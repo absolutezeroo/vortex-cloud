@@ -64,6 +64,7 @@ public sealed class CurrencyTypeProvider(
                     CurrencyType = entity.CurrencyType,
                     ActivityPointType = entity.ActivityPointType,
                     Enabled = entity.Enabled,
+                    StartingAmount = entity.StartingAmount,
                 };
 
                 CurrencyKind kind = new CurrencyKind

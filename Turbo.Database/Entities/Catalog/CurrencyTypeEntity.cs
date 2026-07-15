@@ -22,6 +22,14 @@ public class CurrencyTypeEntity : TurboEntity
     [DefaultValue(true)]
     public required bool Enabled { get; set; }
 
+    /// <summary>Balance granted to a player's first-ever <see cref="PlayerCurrencyEntity"/> row for
+    /// this currency (admin-editable here instead of hardcoded in the grain). Defaults to the value
+    /// previously hardcoded in <c>PlayerWalletGrain</c>, so existing rows keep the same behavior
+    /// until an operator changes them.</summary>
+    [Column("starting_amount")]
+    [DefaultValue(200)]
+    public int StartingAmount { get; set; } = 200;
+
     public List<CatalogOfferEntity>? CatalogOffers { get; set; }
 
     public List<PlayerCurrencyEntity>? PlayerCurrencies { get; set; }
