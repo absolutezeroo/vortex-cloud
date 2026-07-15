@@ -1,9 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using Turbo.Database.Entities.Players;
 
 namespace Turbo.Database.Entities.Room;
 
+[Index(nameof(RoomEntityId), nameof(CreatedAt))]
+[Index(nameof(PlayerEntityId), nameof(CreatedAt))]
 [Table("room_chatlogs")]
 public class RoomChatlogEntity : TurboEntity
 {

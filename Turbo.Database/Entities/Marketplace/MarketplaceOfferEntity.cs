@@ -1,11 +1,14 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using Turbo.Database.Entities.Furniture;
 using Turbo.Database.Entities.Players;
 
 namespace Turbo.Database.Entities.Marketplace;
 
+[Index(nameof(State), nameof(ExpiresAt))]
+[Index(nameof(SellerEntityId), nameof(State))]
 [Table("marketplace_offers")]
 public class MarketplaceOfferEntity : TurboEntity
 {

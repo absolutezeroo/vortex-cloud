@@ -55,6 +55,9 @@ public static class MigrationHelper
             .Replace("%", "\\%")
             .Replace("_", "\\_");
 
+        // COALESCE guard: GROUP_CONCAT returns NULL when no table matches the prefix, and
+        // `PREPARE stmt FROM NULL` errors — so a plugin with no installed tables would fail to
+        // uninstall. Fall back to a harmless no-op (`DO 0`) in that case.
         string sql =
             $@"
 SET @sql = (
@@ -62,6 +65,7 @@ SET @sql = (
   FROM INFORMATION_SCHEMA.TABLES
   WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME LIKE '{tablePrefix}%'
 );
+SET @sql = COALESCE(@sql, 'DO 0');
 SET FOREIGN_KEY_CHECKS = 0;
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 SET FOREIGN_KEY_CHECKS = 1;";
