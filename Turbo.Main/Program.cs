@@ -145,6 +145,11 @@ internal class Program
         catch (Exception ex)
         {
             bootstrapLogger.LogCritical(ex, "Host terminated unexpectedly");
+
+            // Fail loudly to the process supervisor (systemd/k8s/container runtime): without a
+            // non-zero exit code a fatal startup/runtime failure looks like a clean shutdown and
+            // won't trigger a restart or alert.
+            System.Environment.ExitCode = 1;
         }
     }
 

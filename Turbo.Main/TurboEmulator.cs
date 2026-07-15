@@ -93,10 +93,17 @@ public class TurboEmulator(
         }
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Turbo StopAsync called.");
 
-        return Task.CompletedTask;
+        try
+        {
+            await _networkManager.StopAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to stop the network manager during shutdown.");
+        }
     }
 }
