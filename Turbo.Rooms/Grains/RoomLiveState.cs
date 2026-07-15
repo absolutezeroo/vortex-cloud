@@ -49,6 +49,11 @@ public sealed class RoomLiveState
 
     public WiredVariableHash AllVariablesHash { get; internal set; } = new WiredVariableHash(0);
 
+    /// <summary>Aggregated wired-execution error counters for this room's Monitor tab, keyed by
+    /// error type name. In-memory only (cleared on demand or room unload) — the wire shape is a
+    /// count-per-error-type summary, not an event log; see <c>WiredGetErrorLogsMessageHandler</c>.</summary>
+    public Dictionary<string, WiredErrorLogCounter> WiredErrorLogCounters { get; } = [];
+
     public bool IsMapReady { get; internal set; } = false;
     public bool IsFurniLoaded { get; internal set; } = false;
     public bool IsPetsLoaded { get; internal set; } = false;

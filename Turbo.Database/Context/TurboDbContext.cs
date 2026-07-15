@@ -13,6 +13,7 @@ using Turbo.Database.Entities.Pets;
 using Turbo.Database.Entities.Players;
 using Turbo.Database.Entities.Room;
 using Turbo.Database.Entities.Security;
+using Turbo.Database.Entities.Wired;
 using Turbo.Primitives.Catalog;
 
 namespace Turbo.Database.Context;
@@ -174,6 +175,12 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
     public DbSet<PetFoodEntity> PetFood { get; init; } = null!;
 
     public DbSet<PetPaletteEntity> PetPalettes { get; init; } = null!;
+
+    public DbSet<WiredPermanentVariableEntity> WiredPermanentVariables { get; init; } = null!;
+
+    public DbSet<RoomWiredLogEntity> RoomWiredLogs { get; init; } = null!;
+
+    public DbSet<PlayerWiredPreferencesEntity> PlayerWiredPreferences { get; init; } = null!;
 
     protected override void OnModelCreating(ModelBuilder mb)
     {

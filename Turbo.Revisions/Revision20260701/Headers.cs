@@ -24,16 +24,13 @@ internal static class MessageEvent
     public const int AddNftToTradeEvent = 1543;
     public const int GetNftTradeInventoryEvent = 469;
     public const int RemoveNftFromTradeEvent = 1919;
-    public const int WiredGetUserPermanentVariablesEvent = 2127;
+    public const int WiredGetUserPermanentVariablesEvent = 3777; // AS3-verified (direct read): VariableManagementDetailView fetch call -> connection.send(new _SafeCls_2724(entityType,entityId)) @3777; corrects a wrong guess (was 2127, no AS3 backing)
     public const int WiredGetVariableOwnersPageEvent = 2221;
-    public const int WiredSetUserPermanentVariableEvent = 2981;
     public const int ClaimDailyTaskEvent = 4101;
     public const int GetDailyTasksEvent = 4100;
     public const int ProgressTreasureHuntMessageEvent = 762;
     public const int ClickCharacterEvent = 785;
-    public const int WiredClickUserMessageEvent = 3049;
-    public const int WiredUpdateRoomEvent = 3814;
-
+    public const int WiredUpdateRoomEvent = 3814; // NOT wired-domain: AS3 shape (type:int,duration:int,isPermanent:bool) matches a moderation mute/freeze payload, not a wired concept. Left unimplemented on purpose - do not build a wired handler for this without re-verifying its real purpose first.
     #region Incoming
 
     public const int BreedPetsMessageEvent = 1922; // AS3-verified (ghost fix): AvatarInfoWidget::cancelBreedPets()
@@ -571,9 +568,9 @@ internal static class MessageComposer
     public const int FurniListRemoveMultipleComposer = 149;
     public const int LtdRaffleEnteredMessageComposer = 1221;
     public const int LtdRaffleResultMessageComposer = 3526;
-    public const int WiredSetUserPermanentVariableResultComposer = 3354;
-    public const int WiredUserPermanentVariablesComposer = 2883;
-    public const int WiredUserVariablesListComposer = 3041;
+    public const int WiredSetUserPermanentVariableResultComposer = 1643; // AS3-verified (direct read): _SafeCls_2757 (parser _SafeCls_4203) -> success:Boolean; corrects a collision (was 3354, a Game2/Snowwar PlayerData broadcast)
+    public const int WiredUserPermanentVariablesComposer = 1557; // AS3-verified (direct read): _SafeCls_3146 (parser _SafeCls_4091) -> WiredUserPermanentVariablesList; corrects a collision (was 2883, an empty no-arg composer unrelated to variables)
+    public const int WiredUserVariablesListComposer = 749; // AS3-verified (direct read): _SafeCls_2492 -> WiredUserVariablesPage; corrects a collision (was 3041)
     public const int NftClaimResultMessageComposer = 1780;
     public const int NftClaimsMessageComposer = 2053;
     public const int NftStoreOffersMessageComposer = 3585;
@@ -592,16 +589,14 @@ internal static class MessageComposer
     public const int UserPurchasableChatStylesMessageComposer = 2255;
     public const int BanInfoMessageComposer = 2557;
     public const int MyCfhReportStatusMessageComposer = 2474;
-    public const int WiredRoomLogsComposer = 3761;
+    public const int WiredRoomLogsComposer = 1910; // AS3-verified (direct read): _SafeCls_3729 -> WiredLogPage; corrects a collision (was 3761)
     public const int TreasureHuntFailMessageComposer = 3822;
     public const int TreasureHuntFirstWinnerMessageComposer = 1232;
     public const int TreasureHuntUpdateMessageComposer = 377;
     public const int RecyclerFinishedMessageComposer = 281;
     public const int RecyclerPrizesMessageComposer = 3783;
     public const int RecyclerStatusMessageComposer = 1919;
-    public const int WiredClickUserResponseComposer = 2650;
-    public const int WiredEnvironmentMessageComposer = 1186;
-
+    public const int WiredEnvironmentMessageComposer = 2827; // AS3-verified (direct read): _SafeCls_3319 (parser _SafeCls_3496) -> hasClickUserWired:bool, enabledAchievements:Vector.<String>; room-wide push on entry/config-change, no request/response pair. Corrects a collision (was 1186). Not yet wired to a sender - flagged in the plan as a loose end, not built this pass.
     #region Outgoing
 
     public const int CantConnectMessageComposer = 2430;

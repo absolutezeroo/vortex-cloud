@@ -9,6 +9,7 @@ using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Orleans.Snapshots.Players;
 using Turbo.Primitives.Players.Enums;
+using Turbo.Primitives.Players.Grains;
 
 namespace Turbo.PacketHandlers.Users;
 
@@ -28,12 +29,17 @@ public class ScrGetUserInfoMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        ClubSubscriptionSnapshot sub = await _grainFactory
-            .GetPlayerGrain(ctx.PlayerId)
+        IPlayerGrain player = _grainFactory.GetPlayerGrain(ctx.PlayerId);
+
+        ClubSubscriptionSnapshot sub = await player
             .GetClubSubscriptionAsync(ct)
             .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(BuildScrSendUserInfo(message.ProductName, sub), ct)
+            .ConfigureAwait(false);
+
+        PlayerWiredPreferencesSnapshot wiredPrefs = await player
+            .GetWiredPreferencesAsync(ct)
             .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
@@ -47,10 +53,13 @@ public class ScrGetUserInfoMessageHandler(IGrainFactory grainFactory)
                     RoomCameraFollowDisabled = false,
                     UIFlags = UIFlags.FriendBarExpanded | UIFlags.RoomToolsExpanded,
                     PreferedChatStyle = 1,
-                    WiredMenuButton = false,
-                    WiredInspectButton = false,
-                    PlayTestMode = false,
+                    WiredMenuButton = wiredPrefs.WiredMenuButton,
+                    WiredInspectButton = wiredPrefs.WiredInspectButton,
+                    PlayTestMode = wiredPrefs.PlayTestMode,
                     VariableSyntaxMode = 1,
+                    WiredWhisperDisabled = wiredPrefs.WiredWhisperDisabled,
+                    ShowAllNotifications = wiredPrefs.ShowAllNotifications,
+                    UiStyle = wiredPrefs.UiStyle,
                 },
                 ct
             )

@@ -6,5 +6,6 @@ namespace Turbo.Revisions.Revision20260112.Parsers.UserDefinedRoomEvents.Wiredme
 
 internal class WiredGetAllVariableHoldersMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new WiredGetAllVariableHoldersMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new WiredGetAllVariableHoldersMessage() { VariableId = packet.PopString() };
 }

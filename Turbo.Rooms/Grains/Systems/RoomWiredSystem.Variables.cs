@@ -75,6 +75,49 @@ public sealed partial class RoomWiredSystem
         return Task.FromResult(variableValues);
     }
 
+    /// <summary>Finds a room-scoped runtime variable by its display name and enumerates the
+    /// current holders (players/furni in this room with a stored value), for the wired-menu
+    /// "highlight holders" panel. Distinct from the persisted permanent-variable store — this
+    /// reads live in-memory bindings only.</summary>
+    public Task<(
+        WiredVariableSnapshot Variable,
+        List<(int ObjectId, int Value)> Holders
+    )?> GetVariableHoldersByNameAsync(string variableName, CancellationToken ct)
+    {
+        IWiredVariable? variable = _variableById.Values.FirstOrDefault(v =>
+            v.GetVarSnapshot().VariableName == variableName
+        );
+
+        if (variable is null)
+        {
+            return Task.FromResult<(WiredVariableSnapshot, List<(int, int)>)?>(null);
+        }
+
+        WiredVariableSnapshot snapshot = variable.GetVarSnapshot();
+        List<(int ObjectId, int Value)> holders = new();
+
+        IEnumerable<int> candidateIds = snapshot.TargetType switch
+        {
+            WiredVariableTargetType.User => _roomGrain._state.AvatarsByPlayerId.Keys.Select(p =>
+                p.Value
+            ),
+            WiredVariableTargetType.Furni => _roomGrain._state.ItemsById.Keys.Select(i => i.Value),
+            _ => [0],
+        };
+
+        foreach (int targetId in candidateIds)
+        {
+            WiredVariableKey key = new(snapshot.VariableId, snapshot.TargetType, targetId);
+
+            if (variable.TryGetValue(key, out WiredVariableValue value))
+            {
+                holders.Add((targetId, value));
+            }
+        }
+
+        return Task.FromResult<(WiredVariableSnapshot, List<(int, int)>)?>((snapshot, holders));
+    }
+
     private Task ProcessInternalVariablesAsync(long now, CancellationToken ct)
     {
         IEnumerable<IWiredVariable> variables =

@@ -23,6 +23,9 @@ internal class AccountPreferencesEventMessageComposerSerializer(int header)
             .WriteBoolean(message.WiredMenuButton)
             .WriteBoolean(message.WiredInspectButton)
             .WriteBoolean(message.PlayTestMode)
-            .WriteInteger(message.VariableSyntaxMode);
+            .WriteInteger(message.VariableSyntaxMode)
+            .WriteBoolean(message.WiredWhisperDisabled)
+            .WriteBoolean(message.ShowAllNotifications)
+            .WriteString(message.UiStyle);
     }
 }

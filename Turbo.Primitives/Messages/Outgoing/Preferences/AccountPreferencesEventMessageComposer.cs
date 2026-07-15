@@ -42,4 +42,13 @@ public sealed record AccountPreferencesEventMessageComposer : IComposer
 
     [Id(11)]
     public required int VariableSyntaxMode { get; init; }
+
+    [Id(12)]
+    public required bool WiredWhisperDisabled { get; init; }
+
+    [Id(13)]
+    public required bool ShowAllNotifications { get; init; }
+
+    [Id(14)]
+    public required string UiStyle { get; init; }
 }

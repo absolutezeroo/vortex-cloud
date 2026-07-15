@@ -24,7 +24,7 @@ using Turbo.Primitives.Rooms.Enums;
 
 namespace Turbo.Players.Grains;
 
-internal sealed class PlayerGrain : Grain, IPlayerGrain
+internal sealed partial class PlayerGrain : Grain, IPlayerGrain
 {
     private readonly ClubConfig _clubConfig;
     private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory;

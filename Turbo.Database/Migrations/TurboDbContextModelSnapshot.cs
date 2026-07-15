@@ -4410,6 +4410,81 @@ namespace Turbo.Database.Migrations
                     b.ToTable("player_vault_income_rewards");
                 });
 
+            modelBuilder.Entity("Turbo.Database.Entities.Players.PlayerWiredPreferencesEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<bool>("PlayTestMode")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("play_test_mode");
+
+                    b.Property<int>("PlayerEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("player_id");
+
+                    b.Property<bool>("ShowAllNotifications")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("show_all_notifications");
+
+                    b.Property<string>("UiStyle")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)")
+                        .HasColumnName("ui_style");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.Property<bool>("WiredInspectButton")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("wired_inspect_button");
+
+                    b.Property<bool>("WiredMenuButton")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("wired_menu_button");
+
+                    b.Property<bool>("WiredWhisperDisabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("wired_whisper_disabled");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerEntityId")
+                        .IsUnique();
+
+                    b.ToTable("player_wired_preferences");
+                });
+
             modelBuilder.Entity("Turbo.Database.Entities.Room.RoomAdvertisementEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -4785,6 +4860,24 @@ namespace Turbo.Database.Migrations
                         .HasDefaultValue(-1)
                         .HasColumnName("wall_height");
 
+                    b.Property<int>("WiredModifyPermissionMask")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("wired_modify_permission_mask");
+
+                    b.Property<int>("WiredReadPermissionMask")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("wired_read_permission_mask");
+
+                    b.Property<string>("WiredTimezone")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)")
+                        .HasColumnName("wired_timezone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GroupEntityId");
@@ -5123,6 +5216,111 @@ namespace Turbo.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("security_tickets");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Wired.RoomWiredLogEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<byte>("LogLevel")
+                        .HasColumnType("tinyint unsigned")
+                        .HasColumnName("log_level");
+
+                    b.Property<byte>("LogSource")
+                        .HasColumnType("tinyint unsigned")
+                        .HasColumnName("log_source");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)")
+                        .HasColumnName("message");
+
+                    b.Property<int>("RoomEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("room_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoomEntityId", "CreatedAt");
+
+                    b.ToTable("room_wired_logs");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Wired.WiredPermanentVariableEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int>("TargetId")
+                        .HasColumnType("int")
+                        .HasColumnName("target_id");
+
+                    b.Property<int>("TargetType")
+                        .HasColumnType("int")
+                        .HasColumnName("target_type");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.Property<int>("Value")
+                        .HasColumnType("int")
+                        .HasColumnName("value");
+
+                    b.Property<string>("VariableId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)")
+                        .HasColumnName("variable_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TargetType", "TargetId", "VariableId")
+                        .IsUnique();
+
+                    b.ToTable("wired_permanent_variables");
                 });
 
             modelBuilder.Entity("Turbo.Database.Entities.Catalog.CatalogOfferEntity", b =>
@@ -5846,6 +6044,17 @@ namespace Turbo.Database.Migrations
                     b.Navigation("PlayerEntity");
                 });
 
+            modelBuilder.Entity("Turbo.Database.Entities.Players.PlayerWiredPreferencesEntity", b =>
+                {
+                    b.HasOne("Turbo.Database.Entities.Players.PlayerEntity", "PlayerEntity")
+                        .WithMany()
+                        .HasForeignKey("PlayerEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PlayerEntity");
+                });
+
             modelBuilder.Entity("Turbo.Database.Entities.Room.RoomAdvertisementEntity", b =>
                 {
                     b.HasOne("Turbo.Database.Entities.Room.RoomEntity", "RoomEntity")
@@ -6018,6 +6227,17 @@ namespace Turbo.Database.Migrations
                         .IsRequired();
 
                     b.Navigation("PlayerEntity");
+                });
+
+            modelBuilder.Entity("Turbo.Database.Entities.Wired.RoomWiredLogEntity", b =>
+                {
+                    b.HasOne("Turbo.Database.Entities.Room.RoomEntity", "RoomEntity")
+                        .WithMany()
+                        .HasForeignKey("RoomEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RoomEntity");
                 });
 
             modelBuilder.Entity("Turbo.Database.Entities.Catalog.CatalogOfferEntity", b =>

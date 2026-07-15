@@ -7,6 +7,7 @@ using Turbo.Primitives.Rooms.Providers;
 using Turbo.Rooms.Configuration;
 using Turbo.Rooms.Object.Logic;
 using Turbo.Rooms.Providers;
+using Turbo.Rooms.Wired.Logs;
 using Turbo.Rooms.Wired.Variables;
 using Turbo.Runtime.AssemblyProcessing;
 
@@ -34,5 +35,10 @@ public sealed class RoomModule : IHostPluginModule
         services.AddSingleton<IModeratorChatlogService, ModeratorChatlogService>();
         services.AddSingleton<ICfhTicketService, CfhTicketService>();
         services.AddSingleton<IRoomAdvertisementService, RoomAdvertisementService>();
+
+        // Wired room-logs pipeline: one bounded channel -> single background writer (no DB on
+        // the wired-execution hot path). Mirrors Turbo.Observability's audit pipeline.
+        services.AddSingleton<RoomWiredLogChannel>();
+        services.AddHostedService<RoomWiredLogWriterService>();
     }
 }

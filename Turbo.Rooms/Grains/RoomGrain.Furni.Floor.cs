@@ -150,4 +150,10 @@ public sealed partial class RoomGrain
         List<(WiredVariableId id, WiredVariableValue value)>
     > GetAllVariablesForBindingAsync(WiredVariableBinding binding, CancellationToken ct) =>
         WiredSystem.GetAllVariablesForBindingAsync(binding, ct);
+
+    public Task<(
+        WiredVariableSnapshot Variable,
+        List<(int ObjectId, int Value)> Holders
+    )?> GetVariableHoldersByNameAsync(string variableName, CancellationToken ct) =>
+        WiredSystem.GetVariableHoldersByNameAsync(variableName, ct);
 }

@@ -1298,11 +1298,20 @@ public class Revision20260701(IOptions<ProtocolLimitsConfig> protocolLimits) : I
                 new WiredGetAllVariablesHashMessageParser()
             },
             { MessageEvent.WiredGetErrorLogsMessageEvent, new WiredGetErrorLogsMessageParser() },
+            { MessageEvent.WiredGetRoomLogsEvent, new WiredGetRoomLogsMessageParser() },
             {
                 MessageEvent.WiredGetRoomSettingsMessageEvent,
                 new WiredGetRoomSettingsMessageParser()
             },
             { MessageEvent.WiredGetRoomStatsMessageEvent, new WiredGetRoomStatsMessageParser() },
+            {
+                MessageEvent.WiredGetUserPermanentVariablesEvent,
+                new WiredGetUserPermanentVariablesMessageParser()
+            },
+            {
+                MessageEvent.WiredGetVariableOwnersPageEvent,
+                new WiredGetVariableOwnersPageMessageParser()
+            },
             {
                 MessageEvent.WiredGetVariablesForObjectMessageEvent,
                 new WiredGetVariablesForObjectMessageParser()
@@ -3276,9 +3285,31 @@ public class Revision20260701(IOptions<ProtocolLimitsConfig> protocolLimits) : I
                 )
             },
             {
+                typeof(WiredRoomLogsComposer),
+                new WiredRoomLogsComposerSerializer(MessageComposer.WiredRoomLogsComposer)
+            },
+            {
                 typeof(WiredRoomStatsEventMessageComposer),
                 new WiredRoomStatsEventMessageComposerSerializer(
                     MessageComposer.WiredRoomStatsComposer
+                )
+            },
+            {
+                typeof(WiredSetUserPermanentVariableResultComposer),
+                new WiredSetUserPermanentVariableResultComposerSerializer(
+                    MessageComposer.WiredSetUserPermanentVariableResultComposer
+                )
+            },
+            {
+                typeof(WiredUserPermanentVariablesComposer),
+                new WiredUserPermanentVariablesComposerSerializer(
+                    MessageComposer.WiredUserPermanentVariablesComposer
+                )
+            },
+            {
+                typeof(WiredUserVariablesListComposer),
+                new WiredUserVariablesListComposerSerializer(
+                    MessageComposer.WiredUserVariablesListComposer
                 )
             },
             {

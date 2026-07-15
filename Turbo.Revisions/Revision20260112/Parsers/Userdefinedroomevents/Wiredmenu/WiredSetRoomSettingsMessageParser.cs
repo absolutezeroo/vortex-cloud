@@ -6,5 +6,11 @@ namespace Turbo.Revisions.Revision20260112.Parsers.UserDefinedRoomEvents.Wiredme
 
 internal class WiredSetRoomSettingsMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new WiredSetRoomSettingsMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new WiredSetRoomSettingsMessage()
+        {
+            ModifyPermissionMask = packet.PopInt(),
+            ReadPermissionMask = packet.PopInt(),
+            Timezone = packet.PopString(),
+        };
 }

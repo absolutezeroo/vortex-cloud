@@ -21,6 +21,7 @@ using Turbo.Rooms.Object.Logic.Furniture.Floor.Wired.Selectors;
 using Turbo.Rooms.Object.Logic.Furniture.Floor.Wired.Triggers;
 using Turbo.Rooms.Object.Logic.Furniture.Floor.Wired.Variables;
 using Turbo.Rooms.Wired;
+using Turbo.Rooms.Wired.Logs;
 
 namespace Turbo.Rooms.Grains.Systems;
 
@@ -352,6 +353,12 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
                 await action.ExecuteAsync(ctx, ct);
 
                 _ = FlushWiredContextAsync(ctx);
+
+                WriteWiredRoomLog(
+                    WiredLogLevel.Info,
+                    WiredLogSource.Action,
+                    $"Action {action.GetType().Name} executed for stack {key}."
+                );
             }
             catch (Exception ex)
             {
@@ -362,12 +369,57 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
                     key,
                     _roomGrain.RoomId
                 );
+
+                RecordWiredErrorLog(ex, action, now);
+
+                WriteWiredRoomLog(
+                    WiredLogLevel.Error,
+                    WiredLogSource.Action,
+                    $"Action {action.GetType().Name} failed for stack {key}: {ex.GetType().Name}."
+                );
             }
 
             pending.NextActionIndex = i + 1;
         }
 
         return true;
+    }
+
+    private void RecordWiredErrorLog(Exception ex, IWiredAction action, long now)
+    {
+        string errorName = ex.GetType().Name;
+
+        if (
+            !_roomGrain._state.WiredErrorLogCounters.TryGetValue(
+                errorName,
+                out WiredErrorLogCounter? counter
+            )
+        )
+        {
+            counter = new WiredErrorLogCounter
+            {
+                ErrorName = errorName,
+                Category = action.GetType().Name,
+            };
+
+            _roomGrain._state.WiredErrorLogCounters[errorName] = counter;
+        }
+
+        counter.ThrowCount++;
+        counter.LastOccurrenceMs = now;
+    }
+
+    private void WriteWiredRoomLog(WiredLogLevel level, WiredLogSource source, string message)
+    {
+        _roomGrain._wiredLogChannel.TryWrite(
+            new RoomWiredLogEntry
+            {
+                RoomId = _roomGrain.RoomId.Value,
+                LogLevel = level,
+                LogSource = source,
+                Message = message,
+            }
+        );
     }
 
     private void RescheduleStack(

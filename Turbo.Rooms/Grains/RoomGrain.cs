@@ -32,6 +32,7 @@ using Turbo.Primitives.Rooms.Snapshots;
 using Turbo.Rooms.Configuration;
 using Turbo.Rooms.Grains.Modules;
 using Turbo.Rooms.Grains.Systems;
+using Turbo.Rooms.Wired.Logs;
 
 namespace Turbo.Rooms.Grains;
 
@@ -52,6 +53,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     internal readonly IRoomModelProvider _roomModelProvider;
 
     internal readonly RoomLiveState _state;
+    internal readonly RoomWiredLogChannel _wiredLogChannel;
     internal readonly IRoomWiredVariablesProvider _wiredVariablesProvider;
     public readonly RoomActionModule ActionModule;
     public readonly RoomAvatarModule AvatarModule;
@@ -85,7 +87,8 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         IPermissionService permissionService,
         IRoomModerationStore moderationStore,
         IPetLevelProvider petLevelProvider,
-        IPetCommandProvider petCommandProvider
+        IPetCommandProvider petCommandProvider,
+        RoomWiredLogChannel wiredLogChannel
     )
     {
         _dbCtxFactory = dbCtxFactory;
@@ -102,6 +105,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         _moderationStore = moderationStore;
         _petLevelProvider = petLevelProvider;
         _petCommandProvider = petCommandProvider;
+        _wiredLogChannel = wiredLogChannel;
 
         _state = new RoomLiveState { RoomId = (RoomId)this.GetPrimaryKeyLong() };
         PathingSystem = new RoomPathingSystem(this);

@@ -51,4 +51,11 @@ public interface IPlayerGrain : IGrainWithIntegerKey
 
     /// <summary>Null if not currently banned, else the account's active ban expiry (far-future = permanent).</summary>
     public Task<DateTime?> GetActiveBanExpiryAsync(CancellationToken ct);
+
+    public Task<PlayerWiredPreferencesSnapshot> GetWiredPreferencesAsync(CancellationToken ct);
+
+    public Task SetWiredPreferencesAsync(
+        PlayerWiredPreferencesSnapshot preferences,
+        CancellationToken ct
+    );
 }
