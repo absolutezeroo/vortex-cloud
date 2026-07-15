@@ -104,6 +104,7 @@ internal sealed class RoomModerationStore(
                 playerId,
                 roomId
             );
+            throw;
         }
     }
 
@@ -147,6 +148,7 @@ internal sealed class RoomModerationStore(
                 playerId,
                 roomId
             );
+            throw;
         }
     }
 
@@ -261,6 +263,7 @@ internal sealed class RoomModerationStore(
                 playerId,
                 roomId
             );
+            throw;
         }
     }
 

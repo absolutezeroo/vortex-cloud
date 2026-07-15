@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Orleans;
 using Turbo.Database.Context;
 using Turbo.Database.Entities.Players;
+using Turbo.Primitives.Orleans;
 using Turbo.Primitives.Players.Enums;
 using Turbo.Primitives.Rooms.Enums;
 using Turbo.WebApi.Configuration;
@@ -16,11 +18,13 @@ namespace Turbo.WebApi.Services;
 
 public sealed class WebApiPlayerService(
     IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IGrainFactory grainFactory,
     IOptions<WebApiConfig> options,
     ILogger<WebApiPlayerService> logger
 ) : IWebApiPlayerService
 {
     private readonly IDbContextFactory<TurboDbContext> _db = dbCtxFactory;
+    private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly WebApiConfig _config = options.Value;
     private readonly ILogger<WebApiPlayerService> _logger = logger;
 
@@ -120,17 +124,17 @@ public sealed class WebApiPlayerService(
             return false;
         }
 
-        PlayerEntity? player = await db
-            .Players.FirstOrDefaultAsync(p => p.Id == playerId, ct)
+        bool exists = await db
+            .Players.AsNoTracking()
+            .AnyAsync(p => p.Id == playerId, ct)
             .ConfigureAwait(false);
 
-        if (player is null)
+        if (!exists)
         {
             return false;
         }
 
-        player.Name = name;
-        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        await _grainFactory.GetPlayerGrain(playerId).SetNameAsync(name, ct).ConfigureAwait(false);
         return true;
     }
 
@@ -143,18 +147,23 @@ public sealed class WebApiPlayerService(
     {
         await using TurboDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
-        PlayerEntity? player = await db
-            .Players.FirstOrDefaultAsync(p => p.Id == playerId, ct)
+        bool exists = await db
+            .Players.AsNoTracking()
+            .AnyAsync(p => p.Id == playerId, ct)
             .ConfigureAwait(false);
 
-        if (player is null)
+        if (!exists)
         {
             return false;
         }
 
-        player.Figure = figureString;
-        player.Gender = AvatarGenderTypeExtensions.FromLegacyString(gender);
-        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        AvatarGenderType genderType = AvatarGenderTypeExtensions.FromLegacyString(gender);
+
+        await _grainFactory
+            .GetPlayerGrain(playerId)
+            .SetFigureAsync(figureString, genderType, ct)
+            .ConfigureAwait(false);
+
         return true;
     }
 

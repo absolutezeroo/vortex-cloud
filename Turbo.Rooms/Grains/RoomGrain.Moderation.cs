@@ -84,8 +84,8 @@ public sealed partial class RoomGrain
 
         try
         {
-            _state.MuteExpiresUtc[targetPlayerId] = expiresUtc;
             await _moderationStore.MuteAsync(_state.RoomId.Value, targetPlayerId, expiresUtc, ct);
+            _state.MuteExpiresUtc[targetPlayerId] = expiresUtc;
 
             await _events
                 .PublishAsync(
@@ -180,10 +180,10 @@ public sealed partial class RoomGrain
                 return false;
             }
 
-            _state.MuteExpiresUtc.Remove(targetPlayerId);
             await _moderationStore
                 .UnmuteAsync(_state.RoomId.Value, targetPlayerId, ct)
                 .ConfigureAwait(true);
+            _state.MuteExpiresUtc.Remove(targetPlayerId);
 
             return true;
         }

@@ -174,7 +174,7 @@ public sealed class PluginManager(
                         await StopAndTearDownAsync(current, ct).ConfigureAwait(false);
                     }
 
-                    PluginEnvelope next = await BuildEnvelopeAsync(asm, m, folder, ct)
+                    PluginEnvelope next = await BuildEnvelopeOrUnloadAsync(asm, m, folder, ct)
                         .ConfigureAwait(false);
 
                     _live[m.Key] = next;
@@ -285,7 +285,7 @@ public sealed class PluginManager(
                     await StopAndTearDownAsync(current, ct).ConfigureAwait(false);
                 }
 
-                PluginEnvelope next = await BuildEnvelopeAsync(asm, manifest, folder, ct)
+                PluginEnvelope next = await BuildEnvelopeOrUnloadAsync(asm, manifest, folder, ct)
                     .ConfigureAwait(false);
                 _live[key] = next;
 
@@ -385,6 +385,42 @@ public sealed class PluginManager(
         string asmPath = PluginHelpers.GetAssemblyPath(folder, manifest);
 
         return AssemblyMemoryLoader.LoadFromBytes(asmPath);
+    }
+
+    /// <summary>
+    /// Wraps <see cref="BuildEnvelopeAsync"/> so a failed activation (bad manifest key, hosted
+    /// service/plugin start failure) unloads the ALC that <see cref="GetLoadedPluginAssembly"/>
+    /// already created instead of leaking it — <see cref="BuildEnvelopeAsync"/> only returns a
+    /// <see cref="PluginEnvelope"/> (which owns teardown) on success.
+    /// </summary>
+    private async Task<PluginEnvelope> BuildEnvelopeOrUnloadAsync(
+        LoadedAssembly asm,
+        PluginManifest m,
+        string folder,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            return await BuildEnvelopeAsync(asm, m, folder, ct).ConfigureAwait(false);
+        }
+        catch
+        {
+            bool unloaded = await AssemblyMemoryLoader
+                .UnloadAndWaitAsync(asm.Alc, 5000, ct)
+                .ConfigureAwait(false);
+
+            if (!unloaded)
+            {
+                _logger.LogWarning(
+                    "ALC for plugin {Key} did not unload within timeout after a failed activation. "
+                        + "Possible memory leak from retained type references.",
+                    m.Key
+                );
+            }
+
+            throw;
+        }
     }
 
     private async Task<PluginEnvelope> BuildEnvelopeAsync(

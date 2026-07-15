@@ -11,6 +11,7 @@ namespace Turbo.Primitives.Players.Grains;
 public interface IPlayerGrain : IGrainWithIntegerKey
 {
     public Task SetFigureAsync(string figure, AvatarGenderType gender, CancellationToken ct);
+    public Task SetNameAsync(string name, CancellationToken ct);
     public Task SetMottoAsync(string text, CancellationToken ct);
     public Task<PlayerSummarySnapshot> GetSummaryAsync(CancellationToken ct);
 

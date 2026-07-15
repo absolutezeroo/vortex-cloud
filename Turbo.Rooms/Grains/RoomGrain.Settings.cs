@@ -465,12 +465,19 @@ public sealed partial class RoomGrain
                 .ToListAsync(ct)
                 .ConfigureAwait(true);
 
+            List<PlayerId> targets = [.. rows.Select(r => (PlayerId)r.PlayerEntityId)];
+
             foreach (RoomRightEntity row in rows)
             {
                 dbCtx.RoomRights.Remove(row);
             }
 
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+            foreach (PlayerId target in targets)
+            {
+                _state.PlayerIdsWithRights.Remove(target);
+            }
 
             await _grainFactory
                 .GetPlayerPresenceGrain(actor)
@@ -480,6 +487,13 @@ public sealed partial class RoomGrain
                         RoomId = _state.RoomId,
                         Controllers = [],
                     }
+                )
+                .ConfigureAwait(true);
+
+            await Task.WhenAll(
+                    targets.Select(target =>
+                        SecurityModule.RefreshControllerLevelForPlayerAsync(target, ct)
+                    )
                 )
                 .ConfigureAwait(true);
         }
@@ -676,6 +690,8 @@ public sealed partial class RoomGrain
             dbCtx.RoomRights.Remove(row);
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
+            _state.PlayerIdsWithRights.Remove(actor);
+
             ImmutableArray<RoomControllerSnapshot> controllers = await GetControllersAsync(ct)
                 .ConfigureAwait(true);
 
@@ -688,6 +704,10 @@ public sealed partial class RoomGrain
                         Controllers = controllers,
                     }
                 )
+                .ConfigureAwait(true);
+
+            await SecurityModule
+                .RefreshControllerLevelForPlayerAsync(actor, ct)
                 .ConfigureAwait(true);
         }
         catch (Exception ex)

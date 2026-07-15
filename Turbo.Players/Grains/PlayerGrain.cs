@@ -67,6 +67,23 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         await WriteToDatabaseAsync(ct);
     }
 
+    public async Task SetNameAsync(string name, CancellationToken ct)
+    {
+        _state.Name = name;
+
+        await WriteToDatabaseAsync(ct);
+
+        await _grainFactory
+            .GetPlayerDirectoryGrain()
+            .SetPlayerNameAsync(PlayerId.Parse((int)this.GetPrimaryKeyLong()), name, ct);
+
+        IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(
+            (int)this.GetPrimaryKeyLong()
+        );
+
+        await playerPresence.OnPlayerUpdatedAsync(await GetSummaryAsync(ct), ct);
+    }
+
     public async Task SetMottoAsync(string text, CancellationToken ct)
     {
         _state.Motto = text;

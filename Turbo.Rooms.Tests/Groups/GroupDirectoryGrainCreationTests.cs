@@ -315,6 +315,11 @@ public sealed class GroupDirectoryGrainCreationTests
             throw new NotSupportedException();
         }
 
+        public Task SetNameAsync(string name, CancellationToken ct)
+        {
+            throw new NotSupportedException();
+        }
+
         public Task SetMottoAsync(string text, CancellationToken ct)
         {
             throw new NotSupportedException();

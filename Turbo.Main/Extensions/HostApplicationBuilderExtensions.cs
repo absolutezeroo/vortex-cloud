@@ -20,6 +20,18 @@ public static class HostApplicationBuilderExtensions
 
         if (!builder.Environment.IsDevelopment())
         {
+            if (!hostConfig.AllowUnclusteredOutsideDevelopment)
+            {
+                throw new InvalidOperationException(
+                    "Refusing to start: Orleans would run with single-node localhost clustering and "
+                        + "in-memory grain storage/streams outside Development. State does not survive "
+                        + "a restart and this cannot scale beyond one silo. Configure a persistent "
+                        + "clustering/storage provider, or set "
+                        + $"'{OrleansHostConfig.SECTION_NAME}:{nameof(OrleansHostConfig.AllowUnclusteredOutsideDevelopment)}' "
+                        + "to true to explicitly accept this for a single-node deployment."
+                );
+            }
+
             System.Console.Error.WriteLine(
                 "WARNING: Orleans is running with single-node localhost clustering and in-memory "
                     + "grain storage/streams outside Development. State does not survive a restart "

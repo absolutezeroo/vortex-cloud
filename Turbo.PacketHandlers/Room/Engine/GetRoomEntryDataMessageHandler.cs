@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.Action;
 using Turbo.Primitives.Messages.Incoming.Room.Engine;
 using Turbo.Primitives.Messages.Outgoing.Room.Action;
 using Turbo.Primitives.Messages.Outgoing.Room.Engine;
@@ -50,6 +51,12 @@ public class GetRoomEntryDataMessageHandler(IGrainFactory grainFactory)
         }
 
         IRoomGrain room = _grainFactory.GetRoomGrain(roomId);
+        ActionContext actionCtx = ActionContext.CreateForPlayer(ctx.PlayerId, roomId);
+        RoomControllerType controllerLevel = await room.GetControllerLevelAsync(actionCtx, ct)
+            .ConfigureAwait(false);
+        bool isOwner = controllerLevel == RoomControllerType.Owner;
+        bool hasRights = controllerLevel >= RoomControllerType.Rights;
+
         ImmutableDictionary<PlayerId, string> ownersSnapshot = await room.GetAllOwnersAsync(ct)
             .ConfigureAwait(false);
         ImmutableArray<RoomFloorItemSnapshot> floorSnapshot =
@@ -85,12 +92,22 @@ public class GetRoomEntryDataMessageHandler(IGrainFactory grainFactory)
                 new YouAreControllerMessageComposer
                 {
                     RoomId = roomId,
-                    ControllerLevel = RoomControllerType.Owner,
+                    ControllerLevel = controllerLevel,
                 },
-                new WiredPermissionsEventMessageComposer { CanModify = true, CanRead = true },
-                new YouAreOwnerMessageComposer { RoomId = roomId }
+                new WiredPermissionsEventMessageComposer
+                {
+                    CanModify = hasRights,
+                    CanRead = hasRights,
+                }
             )
             .ConfigureAwait(false);
+
+        if (isOwner)
+        {
+            await playerPresence
+                .SendComposerAsync(new YouAreOwnerMessageComposer { RoomId = roomId })
+                .ConfigureAwait(false);
+        }
 
         if (danceComposers.Length > 0)
         {
