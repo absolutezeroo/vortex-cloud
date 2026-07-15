@@ -56,6 +56,15 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
             return;
         }
 
+        if (styleId == -1)
+        {
+            styleId = avatar.LastChatStyleId;
+        }
+        else
+        {
+            avatar.LastChatStyleId = styleId;
+        }
+
         await SendChatAsync(
                 avatar.ObjectId,
                 playerId,

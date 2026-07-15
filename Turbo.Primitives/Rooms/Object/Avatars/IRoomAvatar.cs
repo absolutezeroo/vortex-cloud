@@ -35,6 +35,8 @@ public interface IRoomAvatar : IRoomObject
     public long NextMoveStepAtMs { get; set; }
     public long NextMoveUpdateAtMs { get; set; }
     public long PendingStopAtMs { get; set; }
+    
+    public int LastChatStyleId { get; set; }
 
     public bool SetGoalTileId(int tileId);
     public void SetHeight(Altitude z);
