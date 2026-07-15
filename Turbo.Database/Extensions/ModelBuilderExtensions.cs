@@ -1,17 +1,54 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Turbo.Database.Attributes;
+using Turbo.Database.Entities;
 
 namespace Turbo.Database.Extensions;
 
 public static class ModelBuilderExtensions
 {
+    /// <summary>
+    /// Applies a global <c>DeletedAt == null</c> query filter to every mapped <see cref="TurboEntity"/>,
+    /// so soft-deleted rows are excluded from every LINQ query by default instead of relying on each
+    /// call site remembering to add <c>.Where(x =&gt; x.DeletedAt == null)</c>. Call sites that must
+    /// still see soft-deleted rows (e.g. reviving a previously soft-deleted ban/mute on re-application)
+    /// opt out per query with <c>.IgnoreQueryFilters()</c>.
+    /// </summary>
+    public static void ApplySoftDeleteQueryFilter(this ModelBuilder mb)
+    {
+        foreach (IMutableEntityType entityType in mb.Model.GetEntityTypes())
+        {
+            // Owned types are mapped into their owner's table and cannot carry their own filter.
+            if (entityType.IsOwned())
+            {
+                continue;
+            }
+
+            if (!typeof(TurboEntity).IsAssignableFrom(entityType.ClrType))
+            {
+                continue;
+            }
+
+            ParameterExpression parameter = Expression.Parameter(entityType.ClrType, "e");
+            LambdaExpression filter = Expression.Lambda(
+                Expression.Equal(
+                    Expression.Property(parameter, nameof(TurboEntity.DeletedAt)),
+                    Expression.Constant(null, typeof(DateTime?))
+                ),
+                parameter
+            );
+
+            mb.Entity(entityType.ClrType).HasQueryFilter(filter);
+        }
+    }
+
     public static void ApplyDefaultAttributesFromEntities(this ModelBuilder modelBuilder)
     {
         // Iterate only types already in the model (no assembly hardcoding)

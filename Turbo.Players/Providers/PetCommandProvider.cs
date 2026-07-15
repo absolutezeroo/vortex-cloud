@@ -17,13 +17,16 @@ public sealed class PetCommandProvider(
     ILogger<IPetCommandProvider> logger
 ) : IPetCommandProvider
 {
-    private readonly Dictionary<int, List<PetCommandEntry>> _byType = [];
+    private ImmutableDictionary<int, ImmutableArray<PetCommandEntry>> _byType = ImmutableDictionary<
+        int,
+        ImmutableArray<PetCommandEntry>
+    >.Empty;
     private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<IPetCommandProvider> _logger = logger;
 
     public IReadOnlyList<PetCommandEntry> GetCommandsForType(int petType)
     {
-        if (_byType.TryGetValue(petType, out List<PetCommandEntry>? entries))
+        if (_byType.TryGetValue(petType, out ImmutableArray<PetCommandEntry> entries))
         {
             return entries;
         }
@@ -65,8 +68,6 @@ public sealed class PetCommandProvider(
 
     public async Task ReloadAsync(CancellationToken ct)
     {
-        _byType.Clear();
-
         TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
@@ -78,31 +79,29 @@ public sealed class PetCommandProvider(
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
-            foreach (PetCommandEntity entity in entities)
-            {
-                if (!_byType.TryGetValue(entity.PetType, out List<PetCommandEntry>? bucket))
-                {
-                    bucket = [];
-                    _byType[entity.PetType] = bucket;
-                }
-
-                bucket.Add(
-                    new PetCommandEntry
-                    {
-                        PetType = entity.PetType,
-                        CommandId = entity.CommandId,
-                        LevelRequired = entity.LevelRequired,
-                        Posture = entity.Posture,
-                        EnergyCost = entity.EnergyCost,
-                        XpReward = entity.XpReward,
-                    }
+            ImmutableDictionary<int, ImmutableArray<PetCommandEntry>> byType = entities
+                .GroupBy(e => e.PetType)
+                .ToImmutableDictionary(
+                    g => g.Key,
+                    g =>
+                        g.Select(entity => new PetCommandEntry
+                            {
+                                PetType = entity.PetType,
+                                CommandId = entity.CommandId,
+                                LevelRequired = entity.LevelRequired,
+                                Posture = entity.Posture,
+                                EnergyCost = entity.EnergyCost,
+                                XpReward = entity.XpReward,
+                            })
+                            .ToImmutableArray()
                 );
-            }
+
+            _byType = byType;
 
             _logger.LogInformation(
                 "Loaded pet commands: {Count} entries across {Types} types",
                 entities.Count,
-                _byType.Count
+                byType.Count
             );
         }
         finally

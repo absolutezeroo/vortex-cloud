@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -15,13 +17,16 @@ public sealed class PetPaletteProvider(
     ILogger<IPetPaletteProvider> logger
 ) : IPetPaletteProvider
 {
-    private readonly Dictionary<int, List<PetPaletteEntry>> _byType = [];
+    private ImmutableDictionary<int, ImmutableArray<PetPaletteEntry>> _byType = ImmutableDictionary<
+        int,
+        ImmutableArray<PetPaletteEntry>
+    >.Empty;
     private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<IPetPaletteProvider> _logger = logger;
 
     public IReadOnlyList<PetPaletteEntry> GetPalettesForType(int petType)
     {
-        if (_byType.TryGetValue(petType, out List<PetPaletteEntry>? entries))
+        if (_byType.TryGetValue(petType, out ImmutableArray<PetPaletteEntry> entries))
         {
             return entries;
         }
@@ -31,8 +36,6 @@ public sealed class PetPaletteProvider(
 
     public async Task ReloadAsync(CancellationToken ct)
     {
-        _byType.Clear();
-
         TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
@@ -42,30 +45,28 @@ public sealed class PetPaletteProvider(
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
-            foreach (PetPaletteEntity entity in entities)
-            {
-                if (!_byType.TryGetValue(entity.PetType, out List<PetPaletteEntry>? bucket))
-                {
-                    bucket = [];
-                    _byType[entity.PetType] = bucket;
-                }
-
-                bucket.Add(
-                    new PetPaletteEntry
-                    {
-                        PetType = entity.PetType,
-                        BreedIndex = entity.BreedIndex,
-                        Color = entity.Color,
-                        Sellable = entity.Sellable,
-                        Rare = entity.Rare,
-                    }
+            ImmutableDictionary<int, ImmutableArray<PetPaletteEntry>> byType = entities
+                .GroupBy(e => e.PetType)
+                .ToImmutableDictionary(
+                    g => g.Key,
+                    g =>
+                        g.Select(entity => new PetPaletteEntry
+                            {
+                                PetType = entity.PetType,
+                                BreedIndex = entity.BreedIndex,
+                                Color = entity.Color,
+                                Sellable = entity.Sellable,
+                                Rare = entity.Rare,
+                            })
+                            .ToImmutableArray()
                 );
-            }
+
+            _byType = byType;
 
             _logger.LogInformation(
                 "Loaded pet palettes: {Count} entries across {Types} types",
                 entities.Count,
-                _byType.Count
+                byType.Count
             );
         }
         finally

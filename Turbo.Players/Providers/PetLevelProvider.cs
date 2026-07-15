@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,13 +17,16 @@ public sealed class PetLevelProvider(
     ILogger<IPetLevelProvider> logger
 ) : IPetLevelProvider
 {
-    private readonly Dictionary<int, List<PetLevelEntry>> _byType = [];
+    private ImmutableDictionary<int, ImmutableArray<PetLevelEntry>> _byType = ImmutableDictionary<
+        int,
+        ImmutableArray<PetLevelEntry>
+    >.Empty;
     private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<IPetLevelProvider> _logger = logger;
 
     public int GetLevelForExperience(int petType, int experience)
     {
-        if (!_byType.TryGetValue(petType, out List<PetLevelEntry>? levels))
+        if (!_byType.TryGetValue(petType, out ImmutableArray<PetLevelEntry> levels))
         {
             return 1;
         }
@@ -46,7 +50,7 @@ public sealed class PetLevelProvider(
 
     public int GetExperienceForNextLevel(int petType, int currentLevel)
     {
-        if (!_byType.TryGetValue(petType, out List<PetLevelEntry>? levels))
+        if (!_byType.TryGetValue(petType, out ImmutableArray<PetLevelEntry> levels))
         {
             return int.MaxValue;
         }
@@ -70,7 +74,7 @@ public sealed class PetLevelProvider(
 
     public PetLevelEntry? GetEntry(int petType, int level)
     {
-        if (!_byType.TryGetValue(petType, out List<PetLevelEntry>? levels))
+        if (!_byType.TryGetValue(petType, out ImmutableArray<PetLevelEntry> levels))
         {
             return null;
         }
@@ -80,7 +84,10 @@ public sealed class PetLevelProvider(
 
     public int GetMaxLevel(int petType)
     {
-        if (!_byType.TryGetValue(petType, out List<PetLevelEntry>? levels) || levels.Count == 0)
+        if (
+            !_byType.TryGetValue(petType, out ImmutableArray<PetLevelEntry> levels)
+            || levels.Length == 0
+        )
         {
             return 1;
         }
@@ -90,8 +97,6 @@ public sealed class PetLevelProvider(
 
     public async Task ReloadAsync(CancellationToken ct)
     {
-        _byType.Clear();
-
         TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
@@ -103,30 +108,30 @@ public sealed class PetLevelProvider(
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
-            foreach (PetLevelEntity entity in entities)
-            {
-                if (!_byType.TryGetValue(entity.PetType, out List<PetLevelEntry>? bucket))
-                {
-                    bucket = [];
-                    _byType[entity.PetType] = bucket;
-                }
-
-                bucket.Add(
-                    new PetLevelEntry
-                    {
-                        PetType = entity.PetType,
-                        Level = entity.Level,
-                        ExperienceRequired = entity.ExperienceRequired,
-                        EnergyCap = entity.EnergyCap,
-                        NutritionCap = entity.NutritionCap,
-                    }
+            // GroupBy is order-preserving, so each bucket keeps the (already Level-ordered) sequence
+            // the readers rely on.
+            ImmutableDictionary<int, ImmutableArray<PetLevelEntry>> byType = entities
+                .GroupBy(e => e.PetType)
+                .ToImmutableDictionary(
+                    g => g.Key,
+                    g =>
+                        g.Select(entity => new PetLevelEntry
+                            {
+                                PetType = entity.PetType,
+                                Level = entity.Level,
+                                ExperienceRequired = entity.ExperienceRequired,
+                                EnergyCap = entity.EnergyCap,
+                                NutritionCap = entity.NutritionCap,
+                            })
+                            .ToImmutableArray()
                 );
-            }
+
+            _byType = byType;
 
             _logger.LogInformation(
                 "Loaded pet levels: {Count} entries across {Types} types",
                 entities.Count,
-                _byType.Count
+                byType.Count
             );
         }
         finally

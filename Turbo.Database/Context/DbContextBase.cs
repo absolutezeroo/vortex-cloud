@@ -11,5 +11,6 @@ public abstract class DbContextBase<TContent>(DbContextOptions<TContent> options
     {
         mb.ApplyDefaultAttributesFromEntities();
         mb.ApplyConventions();
+        mb.ApplySoftDeleteQueryFilter();
     }
 }

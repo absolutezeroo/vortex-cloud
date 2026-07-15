@@ -382,8 +382,11 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
             return false;
         }
 
+        // IgnoreQueryFilters: an unban soft-deletes the row, so a later re-ban must find and revive
+        // that soft-deleted row rather than insert a duplicate under the unique account index.
         AccountBanEntity? existing = await dbCtx
-            .AccountBans.FirstOrDefaultAsync(b => b.PlayerAccountEntityId == accountId, ct)
+            .AccountBans.IgnoreQueryFilters()
+            .FirstOrDefaultAsync(b => b.PlayerAccountEntityId == accountId, ct)
             .ConfigureAwait(true);
 
         if (bannedUntil is null)

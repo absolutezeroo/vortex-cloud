@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -16,36 +17,39 @@ public sealed class CurrencyTypeProvider(
     ILogger<ICurrencyTypeProvider> logger
 ) : ICurrencyTypeProvider
 {
+    private sealed record State(
+        ImmutableDictionary<int, CurrencyTypeSnapshot> ById,
+        ImmutableDictionary<CurrencyKind, int> IdByKind
+    );
+
     private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<ICurrencyTypeProvider> _logger = logger;
-    private readonly Dictionary<int, CurrencyTypeSnapshot> _currenciesById = [];
-    private readonly Dictionary<CurrencyKind, int> _currencyIdsByKind = [];
+
+    private State _state = new(
+        ImmutableDictionary<int, CurrencyTypeSnapshot>.Empty,
+        ImmutableDictionary<CurrencyKind, int>.Empty
+    );
 
     public CurrencyTypeSnapshot? GetCurrencyType(int typeId)
     {
-        if (!_currenciesById.TryGetValue(typeId, out CurrencyTypeSnapshot? snapshot))
-        {
-            return null;
-        }
-
-        return snapshot;
+        return _state.ById.TryGetValue(typeId, out CurrencyTypeSnapshot? snapshot)
+            ? snapshot
+            : null;
     }
 
     public CurrencyTypeSnapshot? GetCurrencyTypeByKind(CurrencyKind kind)
     {
-        if (!_currencyIdsByKind.TryGetValue(kind, out int id))
-        {
-            return null;
-        }
+        State state = _state;
 
-        return GetCurrencyType(id);
+        return
+            state.IdByKind.TryGetValue(kind, out int id)
+            && state.ById.TryGetValue(id, out CurrencyTypeSnapshot? snapshot)
+            ? snapshot
+            : null;
     }
 
     public async Task ReloadAsync(CancellationToken ct)
     {
-        _currenciesById.Clear();
-        _currencyIdsByKind.Clear();
-
         TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
@@ -54,6 +58,11 @@ public sealed class CurrencyTypeProvider(
                 .CurrencyTypes.AsNoTracking()
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
+
+            ImmutableDictionary<int, CurrencyTypeSnapshot>.Builder byId =
+                ImmutableDictionary.CreateBuilder<int, CurrencyTypeSnapshot>();
+            ImmutableDictionary<CurrencyKind, int>.Builder idByKind =
+                ImmutableDictionary.CreateBuilder<CurrencyKind, int>();
 
             foreach (CurrencyTypeEntity entity in entities)
             {
@@ -73,14 +82,15 @@ public sealed class CurrencyTypeProvider(
                     ActivityPointType = snapshot.ActivityPointType,
                 };
 
-                _currencyIdsByKind[kind] = snapshot.Id;
-                _currenciesById[snapshot.Id] = snapshot;
+                idByKind[kind] = snapshot.Id;
+                byId[snapshot.Id] = snapshot;
             }
 
-            _logger.LogInformation(
-                "Loaded currency type mapping: Count={Count}",
-                _currenciesById.Count
-            );
+            State state = new State(byId.ToImmutable(), idByKind.ToImmutable());
+
+            _state = state;
+
+            _logger.LogInformation("Loaded currency type mapping: Count={Count}", state.ById.Count);
         }
         finally
         {

@@ -197,8 +197,12 @@ internal sealed class RoomModerationStore(
         {
             if (kind == ModerationKind.Ban)
             {
+                // IgnoreQueryFilters: an unban soft-deletes the row, so re-banning must find and
+                // revive that soft-deleted row rather than insert a duplicate under the unique
+                // (room, player) index.
                 RoomBanEntity? existing = await dbCtx
-                    .RoomBans.FirstOrDefaultAsync(
+                    .RoomBans.IgnoreQueryFilters()
+                    .FirstOrDefaultAsync(
                         b => b.RoomEntityId == roomId && b.PlayerEntityId == playerId,
                         ct
                     )
@@ -225,8 +229,12 @@ internal sealed class RoomModerationStore(
             }
             else
             {
+                // IgnoreQueryFilters: an unmute soft-deletes the row, so re-muting must find and
+                // revive that soft-deleted row rather than insert a duplicate under the unique
+                // (room, player) index.
                 RoomMuteEntity? existing = await dbCtx
-                    .RoomMutes.FirstOrDefaultAsync(
+                    .RoomMutes.IgnoreQueryFilters()
+                    .FirstOrDefaultAsync(
                         m => m.RoomEntityId == roomId && m.PlayerEntityId == playerId,
                         ct
                     )

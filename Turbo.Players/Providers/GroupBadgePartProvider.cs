@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,9 +20,9 @@ public sealed class GroupBadgePartProvider(
     private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<IGroupBadgePartProvider> _logger = logger;
 
-    private List<GroupBadgePartOptionSnapshot> _baseParts = [];
-    private List<GroupBadgePartOptionSnapshot> _layerParts = [];
-    private List<GroupColorOptionSnapshot> _colors = [];
+    private ImmutableArray<GroupBadgePartOptionSnapshot> _baseParts = [];
+    private ImmutableArray<GroupBadgePartOptionSnapshot> _layerParts = [];
+    private ImmutableArray<GroupColorOptionSnapshot> _colors = [];
 
     public IReadOnlyList<GroupBadgePartOptionSnapshot> BaseParts => _baseParts;
 
@@ -31,24 +32,22 @@ public sealed class GroupBadgePartProvider(
 
     public string ResolveColorHex(string? colorId)
     {
+        ImmutableArray<GroupColorOptionSnapshot> colors = _colors;
+
         if (int.TryParse(colorId, out int id))
         {
-            GroupColorOptionSnapshot? match = _colors.FirstOrDefault(c => c.Id == id);
+            GroupColorOptionSnapshot? match = colors.FirstOrDefault(c => c.Id == id);
             if (match is not null)
             {
                 return match.ColorHex;
             }
         }
 
-        return _colors.Count > 0 ? _colors[0].ColorHex : "ffffff";
+        return colors.Length > 0 ? colors[0].ColorHex : "ffffff";
     }
 
     public async Task ReloadAsync(CancellationToken ct)
     {
-        _baseParts = [];
-        _layerParts = [];
-        _colors = [];
-
         TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
@@ -60,7 +59,7 @@ public sealed class GroupBadgePartProvider(
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
-            _baseParts = parts
+            ImmutableArray<GroupBadgePartOptionSnapshot> baseParts = parts
                 .Where(p => p.Type == "base")
                 .Select(p => new GroupBadgePartOptionSnapshot
                 {
@@ -68,9 +67,9 @@ public sealed class GroupBadgePartProvider(
                     FileName = p.FileName,
                     MaskFileName = p.MaskFileName,
                 })
-                .ToList();
+                .ToImmutableArray();
 
-            _layerParts = parts
+            ImmutableArray<GroupBadgePartOptionSnapshot> layerParts = parts
                 .Where(p => p.Type == "symbol")
                 .Select(p => new GroupBadgePartOptionSnapshot
                 {
@@ -78,7 +77,7 @@ public sealed class GroupBadgePartProvider(
                     FileName = p.FileName,
                     MaskFileName = p.MaskFileName,
                 })
-                .ToList();
+                .ToImmutableArray();
 
             List<GroupColorEntity> colors = await dbCtx
                 .GroupColors.AsNoTracking()
@@ -86,15 +85,19 @@ public sealed class GroupBadgePartProvider(
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
-            _colors = colors
+            ImmutableArray<GroupColorOptionSnapshot> colorOptions = colors
                 .Select(c => new GroupColorOptionSnapshot { Id = c.ColorId, ColorHex = c.ColorHex })
-                .ToList();
+                .ToImmutableArray();
+
+            _baseParts = baseParts;
+            _layerParts = layerParts;
+            _colors = colorOptions;
 
             _logger.LogInformation(
                 "Loaded group badge parts: {Bases} bases, {Symbols} symbols, {Colors} colors",
-                _baseParts.Count,
-                _layerParts.Count,
-                _colors.Count
+                baseParts.Length,
+                layerParts.Length,
+                colorOptions.Length
             );
         }
         finally
