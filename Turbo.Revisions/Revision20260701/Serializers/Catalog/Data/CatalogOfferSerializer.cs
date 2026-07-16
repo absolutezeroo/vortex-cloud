@@ -39,7 +39,6 @@ internal class CatalogOfferSerializer
             .WriteInteger(offer.CostCredits)
             .WriteInteger(offer.CostCurrency)
             .WriteInteger(offer.CurrencyTypeId ?? -1)
-            .WriteInteger(offer.CostSilver)
             .WriteBoolean(offer.CanGift)
             .WriteInteger(offer.Products.Length);
 
