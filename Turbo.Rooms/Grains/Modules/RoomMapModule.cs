@@ -154,14 +154,17 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
         {
             for (int minY = y; minY < y + length; minY++)
             {
-                int idx = ToIdx(minX, minY);
-
-                if (!InBounds(idx))
+                // Bounds must be checked on the coordinates, not on the flattened index: ToIdx
+                // folds x into the row stride, so an x past Width does not leave the array, it
+                // silently lands on a real tile in a later row (x=Width,y=3 in a 10-wide room
+                // yields idx 40, which is tile (0,4)). InBounds(idx) accepts that, and a footprint
+                // hanging over the room edge would validate against tiles on the opposite side.
+                if (!InBounds(minX, minY))
                 {
                     throw new TurboException(TurboErrorCodeEnum.TileOutOfBounds);
                 }
 
-                tileIds.Add(idx);
+                tileIds.Add(ToIdx(minX, minY));
             }
         }
 
