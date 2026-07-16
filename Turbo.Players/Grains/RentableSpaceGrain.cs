@@ -277,6 +277,14 @@ internal sealed class RentableSpaceGrain(
 
         int renterId = _space.RenterPlayerEntityId.Value;
         await ClearRentalAsync(renterId, ct);
+
+        await events
+            .PublishAsync(
+                new RentalCancelledEvent(FurnitureId, renterId, _roomId ?? 0, actorPlayerId),
+                ct
+            )
+            .ConfigureAwait(true);
+
         return true;
     }
 
