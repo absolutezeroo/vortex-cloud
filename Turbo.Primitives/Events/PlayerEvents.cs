@@ -25,6 +25,3 @@ public sealed record PlayerLeftRoomEvent(
     DateTime LeftAtUtc,
     long RoomDurationSeconds
 ) : IEvent;
-
-/// <summary>Backwards-compatible event emitted by auth/session bridging.</summary>
-public record PlayerJoinedEvent(PlayerId PlayerId) : IEvent;
