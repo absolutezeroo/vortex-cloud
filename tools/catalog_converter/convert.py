@@ -520,9 +520,14 @@ def convert_catalog_items(
             skipped += 1
             continue
 
+        # Column order per the source dump's own CREATE TABLE `catalog_items`:
+        #   id, item_ids, page_id, offer_id, catalog_name, song_id, order_number,
+        #   cost_credits, cost_points, points_type, amount, limited_sells, limited_stack,
+        #   extradata, badge, have_offer, club_only, rate
+        # (note this dump declares limited_sells BEFORE limited_stack, unlike stock Arcturus).
         (
             item_id, item_ids_raw, page_id, offer_id_arc,
-            song_id, order_number, catalog_name,
+            catalog_name, song_id, order_number,
             cost_credits, cost_points, points_type, amount,
             limited_sells, limited_stack, extradata, badge,
             have_offer, club_only, rate
