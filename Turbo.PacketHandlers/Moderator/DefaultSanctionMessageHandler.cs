@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Turbo.Messages.Registry;
+using Turbo.Primitives.Events;
 using Turbo.Primitives.Messages.Incoming.Moderator;
 using Turbo.Primitives.Messages.Outgoing.Help;
 using Turbo.Primitives.Moderation;
@@ -19,6 +20,7 @@ public class DefaultSanctionMessageHandler(
     ISessionGateway sessionGateway,
     ISanctionPresetService sanctionPresets,
     ICfhTicketService tickets,
+    IEventPublisher events,
     ILogger<DefaultSanctionMessageHandler> logger
 ) : IMessageHandler<DefaultSanctionMessage>
 {
@@ -49,6 +51,18 @@ public class DefaultSanctionMessageHandler(
             )
         )
         {
+            await events
+                .PublishAsync(
+                    new ModerationActionDeniedEvent(
+                        ctx.PlayerId,
+                        message.UserId,
+                        ctx.RoomId,
+                        nameof(ModerationAction.Ban)
+                    ),
+                    ct
+                )
+                .ConfigureAwait(false);
+
             return;
         }
 
