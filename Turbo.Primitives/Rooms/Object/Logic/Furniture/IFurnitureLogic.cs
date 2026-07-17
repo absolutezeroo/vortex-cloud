@@ -28,6 +28,7 @@ public interface IFurnitureLogic : IRoomObjectLogic, IRollableObject
     public string GetLegacyString();
     public int GetNextToggleableState();
     public int GetPrevToggleableState();
+    public int GetRandomToggleableState();
     public Task SetStateAsync(int state, bool refresh = true);
     public Task OnStateChangedAsync(CancellationToken ct);
     public Task OnMoveAsync(ActionContext ctx, int prevIdx, CancellationToken ct);

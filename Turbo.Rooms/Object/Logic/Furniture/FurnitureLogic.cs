@@ -77,6 +77,18 @@ public abstract class FurnitureLogic<TObject, TSelf, TContext>
         return (StuffData.GetState() - 1 + totalStates) % totalStates;
     }
 
+    public virtual int GetRandomToggleableState()
+    {
+        int totalStates = _ctx.RoomObject.Definition.TotalStates;
+
+        if (totalStates <= 1 || StuffData is null)
+        {
+            return 0;
+        }
+
+        return System.Random.Shared.Next(totalStates);
+    }
+
     public virtual async Task SetStateAsync(int state, bool refresh = true)
     {
         StuffData.SetState(state.ToString());
