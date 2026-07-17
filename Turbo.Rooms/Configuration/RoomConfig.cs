@@ -38,4 +38,9 @@ public class RoomConfig
     public int MaxVisitorsLimit { get; init; } = 50;
 
     public int DoorbellTimeoutMs { get; init; } = 20000;
+
+    /// <summary>Business cap on how many items one player may offer on their side of a trade. The
+    /// parser also bounds a single batch (<c>ProtocolLimitsConfig.MaxTradeItems</c>) for wire safety;
+    /// this is the per-side offer ceiling enforced by the trade session.</summary>
+    public int MaxTradeItemsPerSide { get; init; } = 1500;
 }

@@ -40,6 +40,10 @@ public sealed class RoomLiveState
     /// timestamp (ms) the ring started — swept for timeout by <c>RoomGrain.Doorbell.cs</c>.</summary>
     public Dictionary<PlayerId, long> PendingDoorbellRingersMs { get; } = [];
 
+    /// <summary>Active trade sessions keyed by each participant's player id — both traders map to the
+    /// same <see cref="RoomTradeSession"/> instance. Managed by <c>RoomGrain.Trading.cs</c>.</summary>
+    internal Dictionary<PlayerId, RoomTradeSession> TradeSessionsByPlayerId { get; } = [];
+
     public Dictionary<string, string> RoomProperties { get; } = [];
 
     public HashSet<int> DirtyHeightTileIds { get; set; } = [];

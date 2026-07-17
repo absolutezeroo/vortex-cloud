@@ -69,6 +69,27 @@ public sealed class ItemMovedForensicsHandler(IItemForensics forensics)
     }
 }
 
+public sealed class ItemTradedForensicsHandler(IItemForensics forensics)
+    : IEventHandler<ItemTradedEvent>
+{
+    public ValueTask HandleAsync(ItemTradedEvent e, EventContext ctx, CancellationToken ct)
+    {
+        forensics.Record(
+            new ItemForensicEvent
+            {
+                ItemId = e.ItemId,
+                EventType = ItemEventType.Traded,
+                ActorPlayerId = e.ActorPlayerId,
+                FromOwnerId = e.FromOwnerId,
+                ToOwnerId = e.ToOwnerId,
+                RoomId = e.RoomId,
+            }
+        );
+
+        return ValueTask.CompletedTask;
+    }
+}
+
 public sealed class ItemPickedUpForensicsHandler(IItemForensics forensics)
     : IEventHandler<ItemPickedUpEvent>
 {

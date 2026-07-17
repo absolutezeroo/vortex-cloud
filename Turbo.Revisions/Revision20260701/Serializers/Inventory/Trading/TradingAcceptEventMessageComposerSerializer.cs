@@ -11,6 +11,6 @@ internal class TradingAcceptEventMessageComposerSerializer(int header)
         TradingAcceptEventMessageComposer message
     )
     {
-        //
+        packet.WriteInteger(message.UserId).WriteInteger(message.UserAccepts ? 1 : 0);
     }
 }

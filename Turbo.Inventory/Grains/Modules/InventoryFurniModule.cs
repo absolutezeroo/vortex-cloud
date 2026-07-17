@@ -36,6 +36,16 @@ internal sealed class InventoryFurniModule(
         _state.IsFurnitureReady = true;
     }
 
+    /// <summary>Forces a fresh load of owned furniture from the database, discarding the cache. Used
+    /// after a trade commit persists new ownership so the in-memory view re-syncs from the source of
+    /// truth.</summary>
+    public async Task ReloadAsync(CancellationToken ct)
+    {
+        _state.IsFurnitureReady = false;
+
+        await EnsureFurnitureReadyAsync(ct);
+    }
+
     public Task<bool> AddFurnitureAsync(IFurnitureItem item, CancellationToken ct)
     {
         if (!_state.FurnitureById.TryAdd(item.ItemId, item))

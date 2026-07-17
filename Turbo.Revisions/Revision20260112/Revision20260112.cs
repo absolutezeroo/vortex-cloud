@@ -693,7 +693,10 @@ public class Revision20260112(IOptions<ProtocolLimitsConfig> protocolLimits) : I
 
             #region Inventory Trading
             { MessageEvent.AcceptTradingEvent, new AcceptTradingMessageParser() },
-            { MessageEvent.AddItemsToTradeEvent, new AddItemsToTradeMessageParser() },
+            {
+                MessageEvent.AddItemsToTradeEvent,
+                new AddItemsToTradeMessageParser(protocolLimits.Value.MaxTradeItems)
+            },
             { MessageEvent.AddItemToTradeEvent, new AddItemToTradeMessageParser() },
             { MessageEvent.CloseTradingEvent, new CloseTradingMessageParser() },
             { MessageEvent.ConfirmAcceptTradingEvent, new ConfirmAcceptTradingMessageParser() },

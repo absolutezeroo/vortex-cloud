@@ -59,6 +59,8 @@ public sealed partial class RoomGrain
     {
         try
         {
+            await CloseTradeForLeavingPlayerAsync(playerId, ct);
+
             await AvatarModule.RemoveAvatarFromPlayerAsync(ctx, playerId, ct);
 
             await PublishRoomEventAsync(
