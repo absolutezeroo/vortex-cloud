@@ -448,7 +448,8 @@ public abstract class FurnitureWiredLogic(
             try
             {
                 if (
-                    _wiredData.DefinitionSpecifics[index] is not null
+                    index < _wiredData.DefinitionSpecifics.Count
+                    && _wiredData.DefinitionSpecifics[index] is not null
                     && specType.IsAssignableFrom(_wiredData.DefinitionSpecifics[index].GetType())
                 )
                 {
@@ -487,7 +488,8 @@ public abstract class FurnitureWiredLogic(
             try
             {
                 if (
-                    _wiredData.TypeSpecifics[index] is not null
+                    index < _wiredData.TypeSpecifics.Count
+                    && _wiredData.TypeSpecifics[index] is not null
                     && specType.IsAssignableFrom(_wiredData.TypeSpecifics[index].GetType())
                 )
                 {
@@ -738,6 +740,14 @@ public abstract class FurnitureWiredLogic(
                 _wiredData.MarkDirty();
             }
         }
+
+        // Ensure the definition/type-specific slots exist and are correctly sized before any leaf
+        // reads them in its own FillInternalDataAsync (conditions/selectors read the quantifier +
+        // invert flags, actions read the delay). A freshly placed, never-configured box otherwise has
+        // empty lists and GetDefinitionParam(0) throws IndexOutOfRange. GetDefinitionSpecifics /
+        // GetTypeSpecifics preserve any valid persisted values and fill defaults for the rest.
+        _wiredData.DefinitionSpecifics = GetDefinitionSpecifics();
+        _wiredData.TypeSpecifics = GetTypeSpecifics();
 
         _wiredData.SetAction(() =>
         {
