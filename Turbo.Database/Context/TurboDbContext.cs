@@ -12,6 +12,7 @@ using Turbo.Database.Entities.Navigator;
 using Turbo.Database.Entities.Permissions;
 using Turbo.Database.Entities.Pets;
 using Turbo.Database.Entities.Players;
+using Turbo.Database.Entities.Quests;
 using Turbo.Database.Entities.Room;
 using Turbo.Database.Entities.Security;
 using Turbo.Database.Entities.Wired;
@@ -191,6 +192,10 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
 
     public DbSet<PlayerAchievementEntity> PlayerAchievements { get; init; } = null!;
 
+    public DbSet<QuestEntity> Quests { get; init; } = null!;
+
+    public DbSet<PlayerQuestEntity> PlayerQuests { get; init; } = null!;
+
     protected override void OnModelCreating(ModelBuilder mb)
     {
         base.OnModelCreating(mb);
@@ -268,6 +273,20 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
             .HasOne(p => p.AchievementEntity)
             .WithMany()
             .HasForeignKey(p => p.AchievementEntityId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Player quest progress: cascade with the player, non-cascade with the definition so a
+        // quest definition edit never wipes progress silently.
+        mb.Entity<PlayerQuestEntity>()
+            .HasOne(p => p.PlayerEntity)
+            .WithMany()
+            .HasForeignKey(p => p.PlayerEntityId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        mb.Entity<PlayerQuestEntity>()
+            .HasOne(p => p.QuestEntity)
+            .WithMany()
+            .HasForeignKey(p => p.QuestEntityId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

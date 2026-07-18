@@ -4,6 +4,7 @@ using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Room.Chat;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Quests;
 using Turbo.Primitives.Rooms.Grains;
 
 namespace Turbo.PacketHandlers.Room.Chat;
@@ -34,6 +35,11 @@ public class ChatMessageHandler(IGrainFactory grainFactory) : IMessageHandler<Ch
                 [],
                 message.TrackingId
             )
+            .ConfigureAwait(false);
+
+        await _grainFactory
+            .GetPlayerQuestGrain(ctx.PlayerId)
+            .ProgressAsync(QuestTypes.Chat, 1, ct)
             .ConfigureAwait(false);
     }
 }

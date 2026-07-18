@@ -8,6 +8,7 @@ internal class QuestCancelledMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, QuestCancelledMessageComposer message)
     {
-        //
+        packet.WriteBoolean(message.Expired);
+        QuestDataWriter.Write(packet, message.Quest);
     }
 }

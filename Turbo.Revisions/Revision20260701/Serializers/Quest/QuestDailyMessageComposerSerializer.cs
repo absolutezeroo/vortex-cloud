@@ -8,6 +8,14 @@ internal class QuestDailyMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, QuestDailyMessageComposer message)
     {
-        //
+        bool hasDaily = message.Quest is not null;
+        packet.WriteBoolean(hasDaily);
+
+        if (hasDaily)
+        {
+            QuestDataWriter.Write(packet, message.Quest!);
+            packet.WriteInteger(message.EasyQuestCount);
+            packet.WriteInteger(message.HardQuestCount);
+        }
     }
 }

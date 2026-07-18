@@ -8,6 +8,6 @@ internal class QuestMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, QuestMessageComposer message)
     {
-        //
+        QuestDataWriter.Write(packet, message.Quest);
     }
 }

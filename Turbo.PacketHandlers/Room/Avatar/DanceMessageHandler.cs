@@ -4,6 +4,7 @@ using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Room.Avatar;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Quests;
 using Turbo.Primitives.Rooms.Enums;
 
 namespace Turbo.PacketHandlers.Room.Avatar;
@@ -31,6 +32,15 @@ public class DanceMessageHandler(IGrainFactory grainFactory) : IMessageHandler<D
         )
         {
             return;
+        }
+
+        // Only an actual dance (not "stop dancing") advances a Dance quest.
+        if (message.DanceId != 0)
+        {
+            await _grainFactory
+                .GetPlayerQuestGrain(ctx.PlayerId)
+                .ProgressAsync(QuestTypes.Dance, 1, ct)
+                .ConfigureAwait(false);
         }
     }
 }

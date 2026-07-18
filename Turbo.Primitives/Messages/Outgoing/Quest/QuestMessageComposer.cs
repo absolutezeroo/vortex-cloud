@@ -1,10 +1,13 @@
 using Orleans;
 using Turbo.Primitives.Networking;
+using Turbo.Primitives.Quests.Snapshots;
 
 namespace Turbo.Primitives.Messages.Outgoing.Quest;
 
+/// <summary>A single quest (the quest tracker's active quest).</summary>
 [GenerateSerializer, Immutable]
 public sealed record QuestMessageComposer : IComposer
 {
-    // TODO: add properties if/when identified
+    [Id(0)]
+    public required QuestSnapshot Quest { get; init; }
 }

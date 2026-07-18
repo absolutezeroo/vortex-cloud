@@ -6,6 +6,7 @@ using Turbo.Primitives.Inventory.Grains;
 using Turbo.Primitives.Marketplace.Grains;
 using Turbo.Primitives.Players;
 using Turbo.Primitives.Players.Grains;
+using Turbo.Primitives.Quests.Grains;
 using Turbo.Primitives.Rooms;
 using Turbo.Primitives.Rooms.Grains;
 
@@ -151,4 +152,17 @@ public static class GrainFactoryExtensions
         this IGrainFactory factory,
         long playerId
     ) => factory.GetGrain<IPlayerAchievementGrain>(playerId);
+
+    public static IQuestManagerGrain GetQuestManagerGrain(this IGrainFactory factory) =>
+        factory.GetGrain<IQuestManagerGrain>(SingletonGrainId.GLOBAL);
+
+    public static IPlayerQuestGrain GetPlayerQuestGrain(
+        this IGrainFactory factory,
+        PlayerId playerId
+    ) => factory.GetGrain<IPlayerQuestGrain>(playerId.Value);
+
+    public static IPlayerQuestGrain GetPlayerQuestGrain(
+        this IGrainFactory factory,
+        long playerId
+    ) => factory.GetGrain<IPlayerQuestGrain>(playerId);
 }

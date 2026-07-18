@@ -1,11 +1,16 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Turbo.Messages.Registry;
 using Turbo.Primitives.Messages.Incoming.Quest;
+using Turbo.Primitives.Messages.Outgoing.Quest;
+using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Quests.Snapshots;
 
 namespace Turbo.PacketHandlers.Quest;
 
-public class GetSeasonalQuestsOnlyMessageHandler : IMessageHandler<GetSeasonalQuestsOnlyMessage>
+public class GetSeasonalQuestsOnlyMessageHandler(IGrainFactory grainFactory)
+    : IMessageHandler<GetSeasonalQuestsOnlyMessage>
 {
     public async ValueTask HandleAsync(
         GetSeasonalQuestsOnlyMessage message,
@@ -13,6 +18,19 @@ public class GetSeasonalQuestsOnlyMessageHandler : IMessageHandler<GetSeasonalQu
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        if (ctx.PlayerId <= 0)
+        {
+            return;
+        }
+
+        QuestListSnapshot list = await grainFactory
+            .GetPlayerQuestGrain(ctx.PlayerId)
+            .GetSeasonalQuestsAsync(ct)
+            .ConfigureAwait(false);
+
+        await grainFactory
+            .GetPlayerPresenceGrain(ctx.PlayerId)
+            .SendComposerAsync(new SeasonalQuestsMessageComposer { Quests = list.Quests })
+            .ConfigureAwait(false);
     }
 }
