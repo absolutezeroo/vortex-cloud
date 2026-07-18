@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Orleans;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Players;
@@ -8,6 +9,7 @@ using Turbo.Primitives.Rooms.Object.Avatars;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Object.Logic;
 using Turbo.Primitives.Rooms.Wired;
+using Turbo.Rooms.Wired.Rules;
 
 namespace Turbo.Rooms.Object.Logic.Furniture.Floor.Wired.Conditions;
 
@@ -24,6 +26,9 @@ public class WiredConditionHabboPerformsAction(
 ) : FurnitureWiredConditionLogic(grainFactory, stuffDataFactory, ctx)
 {
     public override int WiredCode => (int)WiredConditionType.PERFORMING_ACTION;
+
+    // [0] = WiredUserAction code. Rules must be declared or the client config update is rejected.
+    public override List<IWiredParamRule> GetIntParamRules() => [new WiredParamRule(0)];
 
     public override bool Evaluate(IWiredProcessingContext ctx)
     {

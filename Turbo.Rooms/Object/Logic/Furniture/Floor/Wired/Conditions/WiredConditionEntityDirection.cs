@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Orleans;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Players;
@@ -7,6 +8,7 @@ using Turbo.Primitives.Rooms.Object.Avatars;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Object.Logic;
 using Turbo.Primitives.Rooms.Wired;
+using Turbo.Rooms.Wired.Rules;
 
 namespace Turbo.Rooms.Object.Logic.Furniture.Floor.Wired.Conditions;
 
@@ -21,6 +23,10 @@ public class WiredConditionEntityDirection(
 ) : FurnitureWiredConditionLogic(grainFactory, stuffDataFactory, ctx)
 {
     public override int WiredCode => (int)WiredConditionType.USER_DIRECTION;
+
+    // [0] = allowed-rotation bitmask. Param rules must be declared or the whole client config update is
+    // rejected by the normalizer (FurnitureWiredLogic.TryNormalizeIntParams).
+    public override List<IWiredParamRule> GetIntParamRules() => [new WiredParamRule(0)];
 
     public override bool Evaluate(IWiredProcessingContext ctx)
     {

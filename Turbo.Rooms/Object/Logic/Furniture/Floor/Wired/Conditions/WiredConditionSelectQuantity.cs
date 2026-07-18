@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using Orleans;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Rooms.Enums.Wired;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Object.Logic;
 using Turbo.Primitives.Rooms.Wired;
+using Turbo.Rooms.Wired.Rules;
 
 namespace Turbo.Rooms.Object.Logic.Furniture.Floor.Wired.Conditions;
 
@@ -19,6 +21,11 @@ public class WiredConditionSelectQuantity(
 ) : FurnitureWiredConditionLogic(grainFactory, stuffDataFactory, ctx)
 {
     public override int WiredCode => (int)WiredConditionType.INPUT_SOURCE_QUANTITY;
+
+    // [0] = flag (unused here), [1] = threshold, [2] = operator (0 eq / 1 less / 2 more). Rules must be
+    // declared or the client config update is rejected.
+    public override List<IWiredParamRule> GetIntParamRules() =>
+        [new WiredBoolParamRule(false), new WiredParamRule(0), new WiredRangeParamRule(0, 2, 0)];
 
     public override bool Evaluate(IWiredProcessingContext ctx)
     {

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Orleans;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Rooms.Enums.Wired;
@@ -5,6 +6,7 @@ using Turbo.Primitives.Rooms.Object.Furniture;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Object.Logic;
 using Turbo.Primitives.Rooms.Wired;
+using Turbo.Rooms.Wired.Rules;
 
 namespace Turbo.Rooms.Object.Logic.Furniture.Floor.Wired.Conditions;
 
@@ -21,6 +23,11 @@ public class WiredConditionItemHeightMatch(
 ) : FurnitureWiredConditionLogic(grainFactory, stuffDataFactory, ctx)
 {
     public override int WiredCode => (int)WiredConditionType.FURNI_HAS_ALTITUDE;
+
+    // [0] = target altitude (hundredths, 0-8000), [1] = operator (0 eq / 1 less / 2 more). Rules must
+    // be declared or the client config update is rejected.
+    public override List<IWiredParamRule> GetIntParamRules() =>
+        [new WiredRangeParamRule(0, 8000, 0), new WiredRangeParamRule(0, 2, 0)];
 
     public override bool Evaluate(IWiredProcessingContext ctx)
     {

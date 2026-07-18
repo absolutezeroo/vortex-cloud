@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using Orleans;
 using Turbo.Primitives.Furniture.Providers;
 using Turbo.Primitives.Rooms.Enums.Wired;
 using Turbo.Primitives.Rooms.Object.Furniture.Floor;
 using Turbo.Primitives.Rooms.Object.Logic;
 using Turbo.Primitives.Rooms.Wired;
+using Turbo.Rooms.Wired.Rules;
 
 namespace Turbo.Rooms.Object.Logic.Furniture.Floor.Wired.Conditions;
 
@@ -18,6 +20,10 @@ public class WiredConditionRoomHabboCount(
 ) : FurnitureWiredConditionLogic(grainFactory, stuffDataFactory, ctx)
 {
     public override int WiredCode => (int)WiredConditionType.USER_COUNT_IN;
+
+    // [0] = lower bound, [1] = upper bound. Rules must be declared or the client config update is rejected.
+    public override List<IWiredParamRule> GetIntParamRules() =>
+        [new WiredParamRule(0), new WiredParamRule(0)];
 
     public override bool Evaluate(IWiredProcessingContext ctx)
     {
