@@ -92,6 +92,9 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
             await _roomGrain.ObjectModule.RemoveObjectAsync(ctx, avatar, ct, -1);
 
             _roomGrain._state.AvatarsByPlayerId.Remove(playerId);
+
+            // Team membership must never outlive a player's presence in the room.
+            _roomGrain.GameSystem.OnPlayerLeft(playerId);
         }
         catch (Exception ex)
         {
