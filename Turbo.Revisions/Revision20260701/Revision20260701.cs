@@ -2563,7 +2563,7 @@ public class Revision20260701(IOptions<ProtocolLimitsConfig> protocolLimits) : I
             {
                 typeof(HabboActivityPointNotificationMessageComposer),
                 new HabboActivityPointNotificationMessageComposerSerializer(
-                    MessageComposer.HabboAchievementNotificationMessageComposer
+                    MessageComposer.HabboActivityPointNotificationMessageComposer
                 )
             },
             {

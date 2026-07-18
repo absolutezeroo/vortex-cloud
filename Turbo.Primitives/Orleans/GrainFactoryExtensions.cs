@@ -138,4 +138,17 @@ public static class GrainFactoryExtensions
         this IGrainFactory factory,
         long playerId
     ) => factory.GetGrain<IPlayerBadgeGrain>(playerId);
+
+    public static IAchievementManagerGrain GetAchievementManagerGrain(this IGrainFactory factory) =>
+        factory.GetGrain<IAchievementManagerGrain>(SingletonGrainId.GLOBAL);
+
+    public static IPlayerAchievementGrain GetPlayerAchievementGrain(
+        this IGrainFactory factory,
+        PlayerId playerId
+    ) => factory.GetGrain<IPlayerAchievementGrain>(playerId.Value);
+
+    public static IPlayerAchievementGrain GetPlayerAchievementGrain(
+        this IGrainFactory factory,
+        long playerId
+    ) => factory.GetGrain<IPlayerAchievementGrain>(playerId);
 }

@@ -8,6 +8,6 @@ internal class AchievementEventMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, AchievementEventMessageComposer message)
     {
-        //
+        AchievementDataWriter.Write(packet, message.Achievement);
     }
 }

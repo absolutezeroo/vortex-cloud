@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Turbo.Database.Entities.Achievements;
 using Turbo.Database.Entities.Audit;
 using Turbo.Database.Entities.Catalog;
 using Turbo.Database.Entities.Errors;
@@ -184,6 +185,12 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
 
     public DbSet<PlayerWiredPreferencesEntity> PlayerWiredPreferences { get; init; } = null!;
 
+    public DbSet<AchievementEntity> Achievements { get; init; } = null!;
+
+    public DbSet<AchievementLevelEntity> AchievementLevels { get; init; } = null!;
+
+    public DbSet<PlayerAchievementEntity> PlayerAchievements { get; init; } = null!;
+
     protected override void OnModelCreating(ModelBuilder mb)
     {
         base.OnModelCreating(mb);
@@ -240,6 +247,27 @@ public class TurboDbContext(DbContextOptions<TurboDbContext> options)
             .HasOne(t => t.PickerPlayerEntity)
             .WithMany()
             .HasForeignKey(t => t.PickerPlayerEntityId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Deleting an achievement definition cascades to its levels, but a player's progress row
+        // references the definition non-cascade so definition edits never wipe player progress
+        // silently; player progress is instead cleaned up when the player is deleted.
+        mb.Entity<AchievementLevelEntity>()
+            .HasOne(l => l.AchievementEntity)
+            .WithMany(a => a.Levels)
+            .HasForeignKey(l => l.AchievementEntityId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        mb.Entity<PlayerAchievementEntity>()
+            .HasOne(p => p.PlayerEntity)
+            .WithMany()
+            .HasForeignKey(p => p.PlayerEntityId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        mb.Entity<PlayerAchievementEntity>()
+            .HasOne(p => p.AchievementEntity)
+            .WithMany()
+            .HasForeignKey(p => p.AchievementEntityId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

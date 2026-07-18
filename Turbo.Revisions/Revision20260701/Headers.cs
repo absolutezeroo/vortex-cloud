@@ -366,7 +366,7 @@ internal static class MessageEvent
     public const int GetMarketplaceOwnOffersMessageEvent = 2086;
     public const int MakeOfferMessageEvent = 3695; // AS3-verified (direct read): MarketplaceModel::makeOffer() -> connection.send(new _SafeCls_2606(price,category,refs)) @3695; corrects a never-verified baseline value that actually belonged to DefaultSanctionMessageEvent
     public const int RedeemMarketplaceOfferCreditsMessageEvent = 3546;
-    public const int GetAchievementsEvent = 9108; // UNRESOLVED: collided with the AS3-verified WiredSetRoomSettingsMessageEvent (2553); this constant's own value had zero backing (only weak event-side candidates found, wrong side for this incoming message) - flagged for a future retrace
+    public const int GetAchievementsEvent = 2435; // UNRESOLVED: collided with the AS3-verified WiredSetRoomSettingsMessageEvent (2553); this constant's own value had zero backing (only weak event-side candidates found, wrong side for this incoming message) - flagged for a future retrace
     public const int AddSpamWallPostItMessageEvent = 2684; // AS3-verified (direct read, both revisions): SpamWallPostItWidgetHandler::processWidgetMessage() RWSWPFEE_SEND_POSTIT_DATA -> connection.send(new _SafeCls_3639(...)) @2684; corrects a self-inflicted regression - the prior fix mistook the incoming _SafeCls_3830 handler-param class for the outgoing composer
     public const int ControlYoutubeDisplayPlaybackMessageEvent = 1727; // AS3-verified (old-revision trace): _SafeCls_2950 -> switchToPreviousVideo() still exists in current revision at 1727
     public const int CreditFurniRedeemMessageEvent = 434;

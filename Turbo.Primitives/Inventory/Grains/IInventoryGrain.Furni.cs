@@ -33,6 +33,12 @@ public partial interface IInventoryGrain
 
     public Task GrantBadgeAsync(string badgeCode, CancellationToken ct);
 
+    /// <summary>
+    /// Removes a badge the player owns (no-op if absent). Used when an achievement level-up replaces
+    /// the previous level's badge with the new one.
+    /// </summary>
+    public Task RemoveBadgeAsync(string badgeCode, CancellationToken ct);
+
     public Task GrantFurnitureDefinitionAsync(
         int definitionId,
         string? extraData,

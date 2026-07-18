@@ -52,6 +52,13 @@ public class PlayerEntity : TurboEntity
     [Column("room_chat_style_id")]
     public int? RoomChatStyleId { get; set; }
 
+    /// <summary>Denormalised total achievement score (sum of completed levels' score points),
+    /// surfaced on the profile without activating the achievement grain. Kept in sync by
+    /// <c>PlayerAchievementGrain</c> on progression.</summary>
+    [Column("achievement_score")]
+    [DefaultValue(0)]
+    public int AchievementScore { get; set; }
+
     // The player's favourite guild, surfaced on the guild badge in the UI. Plain scalar (no FK
     // navigation) to avoid yet another circular relationship through groups/rooms.
     [Column("favourite_group_id")]

@@ -17,6 +17,5 @@ public sealed class PacketHandlersModule : IHostPluginModule
         services.Configure<ModerationConfig>(
             builder.Configuration.GetSection(ModerationConfig.SECTION_NAME)
         );
-        services.Configure<BadgeConfig>(builder.Configuration.GetSection(BadgeConfig.SECTION_NAME));
     }
 }

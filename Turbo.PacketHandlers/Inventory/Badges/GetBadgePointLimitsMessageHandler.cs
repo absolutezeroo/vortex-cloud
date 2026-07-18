@@ -1,24 +1,25 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using Orleans;
 using Turbo.Messages.Registry;
-using Turbo.PacketHandlers.Configuration;
 using Turbo.Primitives.Messages.Incoming.Inventory.Badges;
 using Turbo.Primitives.Messages.Outgoing.Inventory.Badges;
 using Turbo.Primitives.Orleans;
+using Turbo.Primitives.Players.Snapshots;
 
 namespace Turbo.PacketHandlers.Inventory.Badges;
 
-public class GetBadgePointLimitsMessageHandler(
-    IGrainFactory grainFactory,
-    IOptions<BadgeConfig> badgeConfig
-) : IMessageHandler<GetBadgePointLimitsMessage>
+/// <summary>
+/// Serves the badge tool's "points needed per level" catalog from the real achievement definitions
+/// (the badge code is <c>"ACH_" + achievement name + level</c>), so the display matches actual
+/// progression thresholds instead of a hardcoded config.
+/// </summary>
+public class GetBadgePointLimitsMessageHandler(IGrainFactory grainFactory)
+    : IMessageHandler<GetBadgePointLimitsMessage>
 {
-    private readonly BadgeConfig _badgeConfig = badgeConfig.Value;
-
     public async ValueTask HandleAsync(
         GetBadgePointLimitsMessage message,
         MessageContext ctx,
@@ -30,15 +31,21 @@ public class GetBadgePointLimitsMessageHandler(
             return;
         }
 
-        List<BadgePointLimitGroup> groups = _badgeConfig
-            .LimitsByCategory.Select(kv => new BadgePointLimitGroup
+        ImmutableArray<AchievementDefinitionSnapshot> definitions = await grainFactory
+            .GetAchievementManagerGrain()
+            .GetDefinitionsAsync(ct)
+            .ConfigureAwait(false);
+
+        List<BadgePointLimitGroup> groups = definitions
+            .Select(definition => new BadgePointLimitGroup
             {
-                BadgeCodePrefix = kv.Key,
-                Levels = kv
-                    .Value.Select(
-                        (limit, index) =>
-                            new BadgePointLimitLevel { Level = index + 1, Limit = limit }
-                    )
+                BadgeCodePrefix = definition.Name,
+                Levels = definition
+                    .Levels.Select(level => new BadgePointLimitLevel
+                    {
+                        Level = level.Level,
+                        Limit = level.ProgressRequirement,
+                    })
                     .ToList(),
             })
             .ToList();

@@ -313,6 +313,40 @@ public sealed partial class InventoryGrain
         }
     }
 
+    public async Task RemoveBadgeAsync(string badgeCode, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(badgeCode))
+        {
+            return;
+        }
+
+        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
+
+        try
+        {
+            PlayerBadgeEntity? badge = await dbCtx
+                .PlayerBadges.FirstOrDefaultAsync(
+                    b =>
+                        b.PlayerEntityId == (int)this.GetPrimaryKeyLong()
+                        && b.BadgeCode == badgeCode,
+                    ct
+                )
+                .ConfigureAwait(true);
+
+            if (badge is null)
+            {
+                return;
+            }
+
+            dbCtx.PlayerBadges.Remove(badge);
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+        }
+        finally
+        {
+            await dbCtx.DisposeAsync().ConfigureAwait(true);
+        }
+    }
+
     public async Task GrantFurnitureDefinitionAsync(
         int definitionId,
         string? extraData,

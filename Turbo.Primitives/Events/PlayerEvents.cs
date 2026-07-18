@@ -25,3 +25,9 @@ public sealed record PlayerLeftRoomEvent(
     DateTime LeftAtUtc,
     long RoomDurationSeconds
 ) : IEvent;
+
+/// <summary>Player changed their motto.</summary>
+public sealed record PlayerMottoChangedEvent(PlayerId PlayerId, string Motto) : IEvent;
+
+/// <summary>Player changed their avatar figure (look).</summary>
+public sealed record PlayerFigureChangedEvent(PlayerId PlayerId, string Figure) : IEvent;

@@ -325,6 +325,11 @@ public sealed class GroupDirectoryGrainCreationTests
             throw new NotSupportedException();
         }
 
+        public Task<int> AddAchievementScoreAsync(int delta, CancellationToken ct)
+        {
+            throw new NotSupportedException();
+        }
+
         public Task<PlayerSummarySnapshot> GetSummaryAsync(CancellationToken ct)
         {
             throw new NotSupportedException();

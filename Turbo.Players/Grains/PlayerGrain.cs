@@ -65,6 +65,24 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         await playerPresence.OnFigureUpdatedAsync(await GetSummaryAsync(ct), ct);
 
         await WriteToDatabaseAsync(ct);
+
+        await _events
+            .PublishAsync(new PlayerFigureChangedEvent(_state.PlayerId, figure), ct)
+            .ConfigureAwait(true);
+    }
+
+    public async Task<int> AddAchievementScoreAsync(int delta, CancellationToken ct)
+    {
+        if (delta == 0)
+        {
+            return _state.AchievementScore;
+        }
+
+        _state.AchievementScore += delta;
+
+        await WriteToDatabaseAsync(ct);
+
+        return _state.AchievementScore;
     }
 
     public async Task SetNameAsync(string name, CancellationToken ct)
@@ -97,6 +115,10 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         await playerPresence.OnPlayerUpdatedAsync(await GetSummaryAsync(ct), ct);
 
         await WriteToDatabaseAsync(ct);
+
+        await _events
+            .PublishAsync(new PlayerMottoChangedEvent(_state.PlayerId, text), ct)
+            .ConfigureAwait(true);
     }
 
     public Task<PlayerSummarySnapshot> GetSummaryAsync(CancellationToken ct)
@@ -629,7 +651,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         _state.Motto = entity.Motto ?? string.Empty;
         _state.Figure = entity.Figure;
         _state.Gender = entity.Gender;
-        _state.AchievementScore = 0;
+        _state.AchievementScore = entity.AchievementScore;
         _state.CreatedAt = entity.CreatedAt;
         _state.LastUpdated = entity.UpdatedAt;
 
@@ -701,7 +723,8 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
                     up.SetProperty(p => p.Name, snapshot.Name)
                         .SetProperty(p => p.Motto, snapshot.Motto)
                         .SetProperty(p => p.Figure, snapshot.Figure)
-                        .SetProperty(p => p.Gender, snapshot.Gender),
+                        .SetProperty(p => p.Gender, snapshot.Gender)
+                        .SetProperty(p => p.AchievementScore, snapshot.AchievementScore),
                 ct
             );
 

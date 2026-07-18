@@ -13,6 +13,14 @@ public interface IPlayerGrain : IGrainWithIntegerKey
     public Task SetFigureAsync(string figure, AvatarGenderType gender, CancellationToken ct);
     public Task SetNameAsync(string name, CancellationToken ct);
     public Task SetMottoAsync(string text, CancellationToken ct);
+
+    /// <summary>
+    /// Adjusts the player's persisted achievement score by <paramref name="delta"/> and returns the
+    /// new total. Owned here (not by the achievement grain) because the score is cached in this
+    /// grain's state and surfaced on the profile.
+    /// </summary>
+    public Task<int> AddAchievementScoreAsync(int delta, CancellationToken ct);
+
     public Task<PlayerSummarySnapshot> GetSummaryAsync(CancellationToken ct);
 
     public Task<PlayerExtendedProfileSnapshot> GetExtendedProfileSnapshotAsync(
