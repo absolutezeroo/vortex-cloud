@@ -26,7 +26,7 @@ public sealed class AchievementLoginHandler(IGrainFactory grainFactory)
     ) =>
         await grainFactory
             .GetPlayerAchievementGrain((long)e.PlayerId)
-            .ProgressAsync(AchievementNames.Login, 1, ct)
+            .ProgressDailyAsync(AchievementNames.Login, 1, ct)
             .ConfigureAwait(false);
 }
 
@@ -96,8 +96,8 @@ public sealed class AchievementFriendCountHandler(IGrainFactory grainFactory)
         );
 
         await Task.WhenAll(
-                actor.ProgressAsync(AchievementNames.FriendCount, 1, ct),
-                target.ProgressAsync(AchievementNames.FriendCount, 1, ct)
+                actor.ProgressAsync(AchievementNames.FriendListSize, 1, ct),
+                target.ProgressAsync(AchievementNames.FriendListSize, 1, ct)
             )
             .ConfigureAwait(false);
     }

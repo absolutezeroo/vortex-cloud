@@ -11,6 +11,6 @@ public static class AchievementNames
     public const string RoomEntry = "RoomEntry";
     public const string Motto = "Motto";
     public const string AvatarLooks = "AvatarLooks";
-    public const string FriendCount = "FriendCount";
+    public const string FriendListSize = "FriendListSize";
     public const string RoomDecoFurniCount = "RoomDecoFurniCount";
 }

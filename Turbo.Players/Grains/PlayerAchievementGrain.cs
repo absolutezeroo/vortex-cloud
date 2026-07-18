@@ -85,7 +85,18 @@ internal sealed class PlayerAchievementGrain(
         };
     }
 
-    public async Task ProgressAsync(string achievementName, int amount, CancellationToken ct)
+    public Task ProgressAsync(string achievementName, int amount, CancellationToken ct) =>
+        ProgressCoreAsync(achievementName, amount, oncePerDay: false, ct);
+
+    public Task ProgressDailyAsync(string achievementName, int amount, CancellationToken ct) =>
+        ProgressCoreAsync(achievementName, amount, oncePerDay: true, ct);
+
+    private async Task ProgressCoreAsync(
+        string achievementName,
+        int amount,
+        bool oncePerDay,
+        CancellationToken ct
+    )
     {
         if (string.IsNullOrWhiteSpace(achievementName) || amount <= 0)
         {
@@ -122,6 +133,13 @@ internal sealed class PlayerAchievementGrain(
                     ct
                 )
                 .ConfigureAwait(true);
+
+            // Daily achievements (e.g. Login) advance at most once per calendar day: the row's
+            // last-write date is when it last progressed, so skip if that was already today.
+            if (oncePerDay && row is not null && row.UpdatedAt.Date == DateTime.Now.Date)
+            {
+                return;
+            }
 
             oldCompleted = row?.Level ?? 0;
 
