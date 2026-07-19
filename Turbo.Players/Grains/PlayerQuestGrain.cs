@@ -33,6 +33,10 @@ internal sealed class PlayerQuestGrain(
     private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<PlayerQuestGrain> _logger = logger;
 
+    /// <summary>Campaign whose quests form the rotating daily pool (shown via the daily section, not
+    /// the main campaign list).</summary>
+    private const string DailyCampaign = "daily";
+
     private int PlayerId => (int)this.GetPrimaryKeyLong();
 
     public async Task<QuestListSnapshot> GetQuestsAsync(bool openWindow, CancellationToken ct)
@@ -41,7 +45,7 @@ internal sealed class PlayerQuestGrain(
 
         return new QuestListSnapshot
         {
-            Quests = [.. all.Where(q => !q.Seasonal)],
+            Quests = [.. all.Where(q => !q.Seasonal && q.CampaignCode != DailyCampaign)],
             OpenWindow = openWindow,
         };
     }
@@ -61,12 +65,22 @@ internal sealed class PlayerQuestGrain(
     {
         ImmutableArray<QuestSnapshot> all = await BuildAllAsync(ct).ConfigureAwait(true);
 
-        // Daily rotation is not built yet: report the easy/hard pool sizes and no active daily quest.
+        List<QuestSnapshot> dailyPool =
+        [
+            .. all.Where(q => q.CampaignCode == DailyCampaign && !q.Seasonal).OrderBy(q => q.Id),
+        ];
+
+        QuestSnapshot? daily = DailyQuestSelector.Pick(
+            dailyPool,
+            PlayerId,
+            DateOnly.FromDateTime(DateTime.Now)
+        );
+
         return new DailyQuestSnapshot
         {
-            Quest = null,
-            EasyQuestCount = all.Count(q => !q.Seasonal && q.Easy),
-            HardQuestCount = all.Count(q => !q.Seasonal && !q.Easy),
+            Quest = daily,
+            EasyQuestCount = dailyPool.Count(q => q.Easy),
+            HardQuestCount = dailyPool.Count(q => !q.Easy),
         };
     }
 
@@ -168,6 +182,10 @@ internal sealed class PlayerQuestGrain(
             return;
         }
 
+        // Today's daily quest (of this type) is auto-active: it progresses without being manually
+        // accepted, so resolve which one it is for this player and day.
+        int? dailyQuestId = ResolveTodaysDailyOfType(definitions, defByType);
+
         List<(int QuestId, bool Completed)> changed = [];
 
         try
@@ -177,22 +195,46 @@ internal sealed class PlayerQuestGrain(
                 .ConfigureAwait(true);
 
             List<int> ids = [.. defByType.Keys];
-            List<PlayerQuestEntity> rows = await dbCtx
+            List<PlayerQuestEntity> existing = await dbCtx
                 .PlayerQuests.Where(p =>
-                    p.PlayerEntityId == PlayerId
-                    && p.Accepted
-                    && !p.Completed
-                    && ids.Contains(p.QuestEntityId)
+                    p.PlayerEntityId == PlayerId && ids.Contains(p.QuestEntityId)
                 )
                 .ToListAsync(ct)
                 .ConfigureAwait(true);
 
-            if (rows.Count == 0)
+            // Quests to advance: accepted campaign quests, plus today's daily (auto-active).
+            List<PlayerQuestEntity> toProcess =
+            [
+                .. existing.Where(r => r.Accepted && !r.Completed),
+            ];
+
+            if (dailyQuestId is int did)
+            {
+                PlayerQuestEntity? dailyRow = existing.FirstOrDefault(r => r.QuestEntityId == did);
+                if (dailyRow is null)
+                {
+                    dailyRow = new PlayerQuestEntity
+                    {
+                        PlayerEntityId = PlayerId,
+                        QuestEntityId = did,
+                        Accepted = true,
+                        AcceptedAt = DateTime.Now,
+                    };
+                    dbCtx.PlayerQuests.Add(dailyRow);
+                    toProcess.Add(dailyRow);
+                }
+                else if (!dailyRow.Completed && !toProcess.Contains(dailyRow))
+                {
+                    toProcess.Add(dailyRow);
+                }
+            }
+
+            if (toProcess.Count == 0)
             {
                 return;
             }
 
-            foreach (PlayerQuestEntity row in rows)
+            foreach (PlayerQuestEntity row in toProcess)
             {
                 QuestDefinitionSnapshot def = defByType[row.QuestEntityId];
                 (int newSteps, bool done) = QuestProgressCalculator.Apply(
@@ -249,6 +291,35 @@ internal sealed class PlayerQuestGrain(
                     .ConfigureAwait(true);
             }
         }
+    }
+
+    /// <summary>
+    /// Resolves this player's daily quest for today and returns its id only if its type is among
+    /// <paramref name="defByType"/> (i.e. the current trigger can advance it); otherwise null.
+    /// </summary>
+    private int? ResolveTodaysDailyOfType(
+        ImmutableArray<QuestDefinitionSnapshot> definitions,
+        Dictionary<int, QuestDefinitionSnapshot> defByType
+    )
+    {
+        List<QuestDefinitionSnapshot> dailyDefs =
+        [
+            .. definitions.Where(d => d.CampaignCode == DailyCampaign).OrderBy(d => d.Id),
+        ];
+
+        int index = DailyQuestSelector.PickIndex(
+            dailyDefs.Count,
+            PlayerId,
+            DateOnly.FromDateTime(DateTime.Now)
+        );
+
+        if (index < 0)
+        {
+            return null;
+        }
+
+        int questId = dailyDefs[index].Id;
+        return defByType.ContainsKey(questId) ? questId : null;
     }
 
     private async Task UnacceptAsync(int? questId, CancellationToken ct)
