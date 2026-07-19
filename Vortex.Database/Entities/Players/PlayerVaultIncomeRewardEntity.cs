@@ -5,7 +5,7 @@ namespace Vortex.Database.Entities.Players;
 
 [Table("player_vault_income_rewards")]
 [Index(nameof(PlayerEntityId))]
-public class PlayerVaultIncomeRewardEntity : TurboEntity
+public class PlayerVaultIncomeRewardEntity : VortexEntity
 {
     [Column("player_id")]
     public int PlayerEntityId { get; set; }

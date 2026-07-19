@@ -12,12 +12,12 @@ namespace Vortex.Observability.Audit;
 /// </summary>
 public sealed class ChannelEconomyLedger(
     AuditChannel channel,
-    ITurboContextAccessor contextAccessor,
+    IVortexContextAccessor contextAccessor,
     ILogger<ChannelEconomyLedger> logger
 ) : IEconomyLedger
 {
     private readonly AuditChannel _channel = channel;
-    private readonly ITurboContextAccessor _contextAccessor = contextAccessor;
+    private readonly IVortexContextAccessor _contextAccessor = contextAccessor;
     private readonly ILogger<ChannelEconomyLedger> _logger = logger;
 
     public void Record(in EconomyLedgerEvent entry)
@@ -28,7 +28,7 @@ public sealed class ChannelEconomyLedger(
         if (!_channel.TryWrite(record))
         {
             _logger.LogWarning(
-                TurboEventIds.AuditDropped,
+                VortexEventIds.AuditDropped,
                 "Economy ledger entry dropped (channel saturated): {Reason} {Delta} {Currency}",
                 entry.Reason,
                 entry.Delta,

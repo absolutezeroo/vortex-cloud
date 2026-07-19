@@ -13,7 +13,7 @@ namespace Vortex.Authentication;
 /// verification is CPU-bound, so it runs off the calling thread. When the account is missing a dummy
 /// BCrypt verification is still performed so the response time does not reveal account existence.
 /// </summary>
-internal sealed class AccountAuthenticator(IDbContextFactory<TurboDbContext> dbContextFactory)
+internal sealed class AccountAuthenticator(IDbContextFactory<VortexDbContext> dbContextFactory)
     : IAccountAuthenticator
 {
     // A pre-computed BCrypt hash of a random value, used to keep timing constant when no account
@@ -33,7 +33,7 @@ internal sealed class AccountAuthenticator(IDbContextFactory<TurboDbContext> dbC
 
         string normalizedEmail = email.Trim().ToLowerInvariant();
 
-        await using TurboDbContext dbCtx = await dbContextFactory
+        await using VortexDbContext dbCtx = await dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 

@@ -6,7 +6,7 @@ using Vortex.Primitives.Plugins.Exports;
 
 namespace Vortex.Primitives.Plugins;
 
-public interface ITurboPlugin : IAsyncDisposable
+public interface IVortexPlugin : IAsyncDisposable
 {
     string Key { get; }
     string Version { get; }

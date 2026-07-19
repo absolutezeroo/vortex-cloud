@@ -11,7 +11,7 @@ namespace Vortex.Database.Entities.Furniture;
 
 [Table("furniture_definitions")]
 [Index(nameof(SpriteId), nameof(ProductType), nameof(FurniCategory), IsUnique = true)]
-public class FurnitureDefinitionEntity : TurboEntity
+public class FurnitureDefinitionEntity : VortexEntity
 {
     [Column("sprite_id")]
     public required int SpriteId { get; set; }

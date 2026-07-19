@@ -22,16 +22,16 @@ namespace Vortex.Messages;
 /// </summary>
 public sealed class MessageSystem(
     MessageRegistry registry,
-    ITurboContextAccessor contextAccessor,
-    ITurboMetrics metrics,
+    IVortexContextAccessor contextAccessor,
+    IVortexMetrics metrics,
     ISessionGateway sessionGateway,
     IGrainFactory grainFactory,
     ILogger<MessageSystem> logger
 )
 {
     private readonly MessageRegistry _registry = registry;
-    private readonly ITurboContextAccessor _contextAccessor = contextAccessor;
-    private readonly ITurboMetrics _metrics = metrics;
+    private readonly IVortexContextAccessor _contextAccessor = contextAccessor;
+    private readonly IVortexMetrics _metrics = metrics;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ILogger<MessageSystem> _logger = logger;
@@ -49,7 +49,7 @@ public sealed class MessageSystem(
             : ToPlayerId(_sessionGateway.GetPlayerId(meta.SessionKey));
         int? roomId = await ResolveRoomIdAsync(actorId).ConfigureAwait(false);
 
-        using ITurboTraceScope scope = _contextAccessor.BeginScope(
+        using IVortexTraceScope scope = _contextAccessor.BeginScope(
             operation,
             meta?.SessionKey.ToString(),
             playerId: actorId,

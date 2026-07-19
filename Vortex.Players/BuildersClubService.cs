@@ -15,17 +15,17 @@ namespace Vortex.Players;
 /// through PlayerGrain state -- unlike Habbo Club, there's no gift-token/kickback/badge bookkeeping
 /// to carry across grain activations, so a live per-call read is simpler and just as correct.
 /// </summary>
-internal sealed class BuildersClubService(IDbContextFactory<TurboDbContext> dbContextFactory)
+internal sealed class BuildersClubService(IDbContextFactory<VortexDbContext> dbContextFactory)
     : IBuildersClubService
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
 
     public async Task<BuildersClubSubscriptionSnapshot> GetSubscriptionAsync(
         int playerId,
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -58,7 +58,7 @@ internal sealed class BuildersClubService(IDbContextFactory<TurboDbContext> dbCo
 
     public async Task<int> GetOwnedFurnitureCountAsync(int playerId, CancellationToken ct = default)
     {
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 

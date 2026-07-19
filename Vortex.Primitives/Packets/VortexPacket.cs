@@ -2,7 +2,7 @@ using System.Text;
 
 namespace Vortex.Primitives.Packets;
 
-public class TurboPacket(int header) : ITurboPacket
+public class VortexPacket(int header) : IVortexPacket
 {
     protected readonly StringBuilder _logger = new();
 

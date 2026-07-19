@@ -1,4 +1,4 @@
-# Turbo Cloud
+# Vortex Cloud
 
 ## 5-Minute Quickstart
 1. Clone and enter the repo.
@@ -9,8 +9,8 @@
 Clone:
 
 ```bash
-git clone <your-repo-url> turbo-cloud
-cd turbo-cloud
+git clone <your-repo-url> vortex-cloud
+cd vortex-cloud
 ```
 
 Bootstrap (PowerShell):
@@ -25,7 +25,7 @@ Bootstrap (bash/zsh):
 sh scripts/bootstrap.sh
 ```
 
-Set `Turbo:Database:ConnectionString` in `appsettings.Development.json`, then run:
+Set `Vortex:Database:ConnectionString` in `appsettings.Development.json`, then run:
 
 PowerShell:
 
@@ -40,7 +40,7 @@ DOTNET_ENVIRONMENT=Development dotnet run --project Vortex.Main/Vortex.Main.cspr
 ```
 
 ## What This Repository Is
-`Vortex.Cloud.sln` is the main Turbo emulator solution.
+`Vortex.Cloud.sln` is the main Vortex emulator solution.
 It includes the host executable (`Vortex.Main`), domain modules (`Vortex.Rooms`, `Vortex.Players`, `Vortex.Database`, and others), networking/message layers, and plugin infrastructure.
 
 ## Tooling Baseline
@@ -61,12 +61,12 @@ dotnet --version
 
 ## Quality Model (Two-Phase)
 - Fast local commit check:
-  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudFastCheck`
 - Full quality gate (pre-push + CI):
-  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate`
 - AI policy rollout phase:
-  - Default is `TurboAIPolicyPhase=1` (warn-first).
-  - Preview strict mode with `-p:TurboAIPolicyPhase=2`.
+  - Default is `VortexAIPolicyPhase=1` (warn-first).
+  - Preview strict mode with `-p:VortexAIPolicyPhase=2`.
 
 Hooks are repository-managed in `.githooks`:
 - `pre-commit` runs the fast check.
@@ -85,20 +85,20 @@ Hooks are repository-managed in `.githooks`:
 - Core build (default): `dotnet build Vortex.Main/Vortex.Main.csproj`
 - Integrated solution build (optional): `dotnet build Vortex.Cloud.sln`
 - Plugin build only (optional): `dotnet build ../turbo-sample-plugin/TurboSamplePlugin/TurboSamplePlugin.csproj`
-- Fast checks: `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck`
-- Full quality gate: `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate`
+- Fast checks: `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudFastCheck`
+- Full quality gate: `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate`
 - Run in Development: `dotnet run --project Vortex.Main/Vortex.Main.csproj`
 
 ## Local Dev Plugins
 Plugin loading supports both the runtime plugin folder and dev-specific paths:
 - Default folder: `<runtime>/plugins`
-- Optional config: `Turbo:Plugin:DevPluginPaths`
+- Optional config: `Vortex:Plugin:DevPluginPaths`
 
 Example:
 
 ```json
 {
-  "Turbo": {
+  "Vortex": {
     "Plugin": {
       "DevPluginPaths": [
         "C:/Users/you/RiderProjects/turbo-sample-plugin/TurboSamplePlugin/bin/Debug/net10.0"
@@ -137,7 +137,7 @@ cd C:/path/to/your-plugin
 dotnet watch build
 ```
 
-When `dotnet watch` rebuilds your plugin, Turbo Cloud detects the new DLL and hot-reloads the plugin in-process.
+When `dotnet watch` rebuilds your plugin, Vortex Cloud detects the new DLL and hot-reloads the plugin in-process.
 
 ### Plugin hot-reload limitations
 - Grain types cannot be hot-reloaded because Orleans grain type registration happens at silo startup.
@@ -150,16 +150,16 @@ Canonical integrated workflow lives in the plugin repo:
 - bash/zsh: `sh ../turbo-sample-plugin/scripts/dev-integrated.sh`
 
 ## Orleans Notes
-Turbo Cloud uses Orleans as its core runtime model for stateful domain workflows.
+Vortex Cloud uses Orleans as its core runtime model for stateful domain workflows.
 For project-specific Orleans guidance, see `docs/orleans.md`.
 For a concrete end-to-end trace of a single packet through handlers, grains, and streams, see `docs/walkthroughs/request-lifecycle.md`.
 
 ## Troubleshooting
 ### MySQL connection errors
 If you see `Unable to connect to any of the specified MySQL hosts`:
-1. Verify `Turbo:Database:ConnectionString` in `appsettings.Development.json`.
+1. Verify `Vortex:Database:ConnectionString` in `appsettings.Development.json`.
 2. Verify MySQL host/port are reachable.
-3. Verify no `TURBO__...` environment variables override your local setting.
+3. Verify no `VORTEX__...` environment variables override your local setting.
 
 ### Development file not loading
 1. Ensure `DOTNET_ENVIRONMENT=Development` when running.
@@ -170,7 +170,7 @@ If you see `Unable to connect to any of the specified MySQL hosts`:
 2. Run `dotnet csharpier .`.
 3. Run `dotnet format style`.
 4. Run `dotnet format analyzers`.
-5. Re-run `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate`.
+5. Re-run `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate`.
 
 ### Solution build fails but core build passes
 If `dotnet build Vortex.Cloud.sln` fails because of plugin project state, use the default core build command:

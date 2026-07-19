@@ -16,11 +16,11 @@ public sealed class PackageHandler(
     IRevisionManager revisionManager,
     MessageSystem messageSystem,
     ILogger<PackageHandler> logger,
-    ITurboContextAccessor? contextAccessor = null,
+    IVortexContextAccessor? contextAccessor = null,
     IErrorGroupingSink? errorSink = null
 ) : IPackageHandler<IClientPacket>
 {
-    private readonly ITurboContextAccessor? _contextAccessor = contextAccessor;
+    private readonly IVortexContextAccessor? _contextAccessor = contextAccessor;
     private readonly IErrorGroupingSink? _errorSink = errorSink;
     private readonly ILogger<PackageHandler> _logger = logger;
     private readonly MessageSystem _messageSystem = messageSystem;
@@ -79,7 +79,7 @@ public sealed class PackageHandler(
                 ctx.SessionKey
             );
 
-            ITurboContext? context = _contextAccessor?.Current;
+            IVortexContext? context = _contextAccessor?.Current;
 
             if (_errorSink is not null)
             {

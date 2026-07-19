@@ -9,7 +9,7 @@ namespace Vortex.Database.Entities.Catalog;
 
 [Table("catalog_vouchers")]
 [Index(nameof(Code), IsUnique = true)]
-public class VoucherEntity : TurboEntity
+public class VoucherEntity : VortexEntity
 {
     [Column("code")]
     [MaxLength(64)]

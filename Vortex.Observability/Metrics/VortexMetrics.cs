@@ -10,12 +10,12 @@ using Vortex.Primitives.Observability;
 namespace Vortex.Observability.Metrics;
 
 /// <summary>
-/// <c>System.Diagnostics.Metrics</c>-based implementation of <see cref="ITurboMetrics"/>. Instruments
-/// live under the shared "Turbo" meter and are tagged only by bounded dimensions (the operation
+/// <c>System.Diagnostics.Metrics</c>-based implementation of <see cref="IVortexMetrics"/>. Instruments
+/// live under the shared "Vortex" meter and are tagged only by bounded dimensions (the operation
 /// name) to keep cardinality safe for Prometheus/OpenTelemetry exporters. Never tag by user id or
 /// room id — high-cardinality breakdowns belong to in-memory aggregators, not metric tags.
 /// </summary>
-public sealed class TurboMetrics : ITurboMetrics, IDisposable
+public sealed class VortexMetrics : IVortexMetrics, IDisposable
 {
     private readonly bool _enabled;
     private readonly Meter _meter;
@@ -24,14 +24,14 @@ public sealed class TurboMetrics : ITurboMetrics, IDisposable
     private readonly Counter<long> _packetFailed;
     private readonly ILiveStatsAggregator _liveStats;
 
-    public TurboMetrics(
+    public VortexMetrics(
         IMeterFactory meterFactory,
         ILiveStatsAggregator liveStats,
         IOptions<ObservabilityConfig> options
     )
     {
         _enabled = options.Value.MetricsEnabled;
-        _meter = meterFactory.Create(TurboTelemetry.Name, TurboTelemetry.Version);
+        _meter = meterFactory.Create(VortexTelemetry.Name, VortexTelemetry.Version);
         _liveStats = liveStats;
 
         _packetReceived = _meter.CreateCounter<long>(

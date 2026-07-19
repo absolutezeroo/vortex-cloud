@@ -15,10 +15,10 @@ namespace Vortex.Rooms;
 /// Owns cfh_tickets and the cfh_categories/cfh_topics catalog. Ticket volume is low (staff/report
 /// action rate, not a hot path) so every method opens its own short-lived context.
 /// </summary>
-internal sealed class CfhTicketService(IDbContextFactory<TurboDbContext> dbContextFactory)
+internal sealed class CfhTicketService(IDbContextFactory<VortexDbContext> dbContextFactory)
     : ICfhTicketService
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
 
     public async Task<int> CreateTicketAsync(
         int topicId,
@@ -30,7 +30,7 @@ internal sealed class CfhTicketService(IDbContextFactory<TurboDbContext> dbConte
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -69,7 +69,7 @@ internal sealed class CfhTicketService(IDbContextFactory<TurboDbContext> dbConte
             return;
         }
 
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -101,7 +101,7 @@ internal sealed class CfhTicketService(IDbContextFactory<TurboDbContext> dbConte
             return [];
         }
 
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -147,7 +147,7 @@ internal sealed class CfhTicketService(IDbContextFactory<TurboDbContext> dbConte
             return;
         }
 
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -169,7 +169,7 @@ internal sealed class CfhTicketService(IDbContextFactory<TurboDbContext> dbConte
 
     public async Task<CfhTicketSummary?> GetTicketAsync(int issueId, CancellationToken ct = default)
     {
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -193,7 +193,7 @@ internal sealed class CfhTicketService(IDbContextFactory<TurboDbContext> dbConte
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -228,7 +228,7 @@ internal sealed class CfhTicketService(IDbContextFactory<TurboDbContext> dbConte
 
     public async Task<CfhTopicSnapshot?> GetTopicAsync(int topicId, CancellationToken ct = default)
     {
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -251,7 +251,7 @@ internal sealed class CfhTicketService(IDbContextFactory<TurboDbContext> dbConte
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -295,7 +295,7 @@ internal sealed class CfhTicketService(IDbContextFactory<TurboDbContext> dbConte
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 

@@ -17,13 +17,13 @@ using Vortex.WebApi.Configuration;
 namespace Vortex.WebApi.Services;
 
 public sealed class WebApiPlayerService(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
     IOptions<WebApiConfig> options,
     ILogger<WebApiPlayerService> logger
 ) : IWebApiPlayerService
 {
-    private readonly IDbContextFactory<TurboDbContext> _db = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _db = dbCtxFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly WebApiConfig _config = options.Value;
     private readonly ILogger<WebApiPlayerService> _logger = logger;
@@ -33,7 +33,7 @@ public sealed class WebApiPlayerService(
         CancellationToken ct
     )
     {
-        await using TurboDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using VortexDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         List<PlayerEntity> players = await db
             .Players.AsNoTracking()
@@ -52,7 +52,7 @@ public sealed class WebApiPlayerService(
         CancellationToken ct
     )
     {
-        await using TurboDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using VortexDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         int count = await db
             .Players.AsNoTracking()
@@ -106,13 +106,13 @@ public sealed class WebApiPlayerService(
 
     public async Task<bool> NameAvailableAsync(string name, CancellationToken ct)
     {
-        await using TurboDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using VortexDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
         return !await db.Players.AnyAsync(p => p.Name == name, ct).ConfigureAwait(false);
     }
 
     public async Task<bool> SetNameAsync(int playerId, string name, CancellationToken ct)
     {
-        await using TurboDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using VortexDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         bool taken = await db
             .Players.AsNoTracking()
@@ -145,7 +145,7 @@ public sealed class WebApiPlayerService(
         CancellationToken ct
     )
     {
-        await using TurboDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using VortexDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         bool exists = await db
             .Players.AsNoTracking()
@@ -169,7 +169,7 @@ public sealed class WebApiPlayerService(
 
     public async Task<AvatarInfo?> GetAvatarAsync(int playerId, CancellationToken ct)
     {
-        await using TurboDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using VortexDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         PlayerEntity? player = await db
             .Players.AsNoTracking()

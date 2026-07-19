@@ -5,7 +5,7 @@ using System.Text;
 namespace Vortex.Primitives.Packets;
 
 public class ClientPacket(int header, ReadOnlyMemory<byte> payload)
-    : TurboPacket(header),
+    : VortexPacket(header),
         IClientPacket
 {
     private ReadOnlyMemory<byte> _payload = payload;

@@ -6,7 +6,7 @@ namespace Vortex.Database.Entities.Players;
 
 [Table("player_navigator_preferences")]
 [Index(nameof(PlayerEntityId), IsUnique = true)]
-public class PlayerNavigatorPreferencesEntity : TurboEntity
+public class PlayerNavigatorPreferencesEntity : VortexEntity
 {
     [Column("player_id")]
     public required int PlayerEntityId { get; set; }

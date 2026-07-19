@@ -19,9 +19,9 @@ namespace Vortex.Database.Tests.Groups;
 /// </summary>
 public sealed class GroupCreationTests
 {
-    private static TurboDbContext NewContext() =>
+    private static VortexDbContext NewContext() =>
         new(
-            new DbContextOptionsBuilder<TurboDbContext>()
+            new DbContextOptionsBuilder<VortexDbContext>()
                 .UseInMemoryDatabase($"groups-{Guid.NewGuid():N}")
                 .Options
         );
@@ -29,7 +29,7 @@ public sealed class GroupCreationTests
     [Fact]
     public void CreatingGroup_PersistsExactlyOneDefaultForumSettingsRow()
     {
-        using TurboDbContext context = NewContext();
+        using VortexDbContext context = NewContext();
 
         // Act — create a group through the single creation path (the §2.4 invariant lives here).
         GroupEntity group = GroupFactory.Create(
@@ -64,7 +64,7 @@ public sealed class GroupCreationTests
     [Fact]
     public void CircularRoomGroupLink_IsConfiguredNonCascade()
     {
-        using TurboDbContext context = NewContext();
+        using VortexDbContext context = NewContext();
 
         IForeignKey groupToRoom = context
             .Model.FindEntityType(typeof(GroupEntity))!
@@ -83,7 +83,7 @@ public sealed class GroupCreationTests
             .DeleteBehavior.Should()
             .NotBe(DeleteBehavior.Cascade, "rooms.group_id must not cascade (§2.7)");
 
-        // Specifically the Restrict behavior we configured in TurboDbContext.OnModelCreating.
+        // Specifically the Restrict behavior we configured in VortexDbContext.OnModelCreating.
         groupToRoom.DeleteBehavior.Should().Be(DeleteBehavior.Restrict);
         roomToGroup.DeleteBehavior.Should().Be(DeleteBehavior.Restrict);
     }

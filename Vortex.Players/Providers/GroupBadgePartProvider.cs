@@ -13,11 +13,11 @@ using Vortex.Primitives.Groups.Snapshots;
 namespace Vortex.Players.Providers;
 
 public sealed class GroupBadgePartProvider(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<IGroupBadgePartProvider> logger
 ) : IGroupBadgePartProvider
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<IGroupBadgePartProvider> _logger = logger;
 
     private ImmutableArray<GroupBadgePartOptionSnapshot> _baseParts = [];
@@ -48,7 +48,7 @@ public sealed class GroupBadgePartProvider(
 
     public async Task ReloadAsync(CancellationToken ct)
     {
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {

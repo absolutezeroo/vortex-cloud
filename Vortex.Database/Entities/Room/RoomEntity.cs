@@ -12,7 +12,7 @@ using Vortex.Primitives.Rooms.Enums;
 namespace Vortex.Database.Entities.Room;
 
 [Table("rooms")]
-public class RoomEntity : TurboEntity
+public class RoomEntity : VortexEntity
 {
     [Column("name")]
     public required string Name { get; set; }
@@ -38,7 +38,7 @@ public class RoomEntity : TurboEntity
     public int? NavigatorCategoryEntityId { get; set; }
 
     // Group this room is the home room of, if any. Forms a circular link with groups.room_id;
-    // both sides are configured OnDelete non-cascade in TurboDbContext (DATA-MODEL §2.7).
+    // both sides are configured OnDelete non-cascade in VortexDbContext (DATA-MODEL §2.7).
     [Column("group_id")]
     public int? GroupEntityId { get; set; }
 

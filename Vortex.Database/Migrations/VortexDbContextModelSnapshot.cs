@@ -10,8 +10,8 @@ using Vortex.Database.Context;
 
 namespace Vortex.Database.Migrations
 {
-    [DbContext(typeof(TurboDbContext))]
-    partial class TurboDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(VortexDbContext))]
+    partial class VortexDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {

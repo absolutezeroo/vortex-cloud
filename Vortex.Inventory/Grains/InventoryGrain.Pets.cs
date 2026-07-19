@@ -24,7 +24,7 @@ public sealed partial class InventoryGrain
             throw new ArgumentException("Pet name is required.", nameof(request));
         }
 
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {
@@ -71,7 +71,7 @@ public sealed partial class InventoryGrain
 
     public async Task<PetSnapshot?> GetPetSnapshotAsync(int petId, CancellationToken ct)
     {
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {
@@ -105,7 +105,7 @@ public sealed partial class InventoryGrain
 
     public async Task<ImmutableArray<PetSnapshot>> GetAllPetSnapshotsAsync(CancellationToken ct)
     {
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {

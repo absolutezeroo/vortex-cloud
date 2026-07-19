@@ -13,7 +13,7 @@ namespace Vortex.Database.Entities.Moderation;
 /// which the user explicitly flagged as a design smell not to replicate).</summary>
 [Table("cfh_tickets")]
 [Index(nameof(State))]
-public class CfhTicketEntity : TurboEntity
+public class CfhTicketEntity : VortexEntity
 {
     [Column("state")]
     public required CfhTicketState State { get; set; }

@@ -9,7 +9,7 @@ namespace Vortex.Database.Entities.Moderation;
 /// is what CloseIssueDefaultActionMessageHandler/DefaultSanctionMessageHandler apply, mirroring
 /// Daybreak's topic-linked default sanction (reviewed for behavior only, not code).</summary>
 [Table("cfh_topics")]
-public class CfhTopicEntity : TurboEntity
+public class CfhTopicEntity : VortexEntity
 {
     [Column("category_id")]
     public required int CfhCategoryEntityId { get; set; }

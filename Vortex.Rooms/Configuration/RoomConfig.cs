@@ -5,7 +5,7 @@ namespace Vortex.Rooms.Configuration;
 
 public class RoomConfig
 {
-    public const string SECTION_NAME = "Turbo:Rooms";
+    public const string SECTION_NAME = "Vortex:Rooms";
 
     public Altitude MaxStackHeight { get; init; } = Altitude.FromInt(4000);
     public RoomScaleType DefaultRoomScale { get; init; } = RoomScaleType.Normal;

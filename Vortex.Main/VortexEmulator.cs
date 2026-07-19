@@ -18,8 +18,8 @@ using Vortex.Revisions.Revision20260701;
 
 namespace Vortex.Main;
 
-public class TurboEmulator(
-    ILogger<TurboEmulator> logger,
+public class VortexEmulator(
+    ILogger<VortexEmulator> logger,
     IFurnitureDefinitionProvider furnitureProvider,
     ICatalogSnapshotProvider<NormalCatalog> catalogProvider,
     ICatalogSnapshotProvider<BuildersClubCatalog> buildersClubCatalogProvider,
@@ -48,7 +48,7 @@ public class TurboEmulator(
     private readonly Revision20260701 _defaultRevision = defaultRevision;
     private readonly IFurnitureDefinitionProvider _furnitureProvider = furnitureProvider;
     private readonly IGroupBadgePartProvider _guildBadgePartProvider = guildBadgePartProvider;
-    private readonly ILogger<TurboEmulator> _logger = logger;
+    private readonly ILogger<VortexEmulator> _logger = logger;
     private readonly IMarketplaceSettingsProvider _marketplaceSettingsProvider =
         marketplaceSettingsProvider;
     private readonly INetworkManager _networkManager = networkManager;
@@ -95,7 +95,7 @@ public class TurboEmulator(
 
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Turbo StopAsync called.");
+        _logger.LogInformation("Vortex StopAsync called.");
 
         try
         {

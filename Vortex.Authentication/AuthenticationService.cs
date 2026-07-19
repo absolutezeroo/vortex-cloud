@@ -14,12 +14,12 @@ using Vortex.Primitives.Events;
 namespace Vortex.Authentication;
 
 public sealed class AuthenticationService(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     IEventPublisher events,
     IOptions<AuthenticationConfig> options
 ) : IAuthenticationService
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IEventPublisher _events = events;
     private readonly string _ipHashSecret = options.Value.IpHashSecret;
     private readonly int _ticketTtlSeconds = options.Value.TicketTtlSeconds;
@@ -35,7 +35,7 @@ public sealed class AuthenticationService(
             return 0;
         }
 
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {

@@ -46,7 +46,7 @@ public static class AssemblyExplorer
                     else
                     {
                         throw new InvalidOperationException(
-                            $"Multiple ITurboPlugin implementers in assembly {asm.GetName().Name}"
+                            $"Multiple IVortexPlugin implementers in assembly {asm.GetName().Name}"
                         );
                     }
                 }

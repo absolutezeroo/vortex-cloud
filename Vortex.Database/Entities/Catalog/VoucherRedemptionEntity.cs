@@ -7,7 +7,7 @@ namespace Vortex.Database.Entities.Catalog;
 
 [Table("catalog_voucher_redemptions")]
 [Index(nameof(VoucherEntityId), nameof(PlayerEntityId), IsUnique = true)]
-public class VoucherRedemptionEntity : TurboEntity
+public class VoucherRedemptionEntity : VortexEntity
 {
     [Column("voucher_id")]
     public required int VoucherEntityId { get; set; }

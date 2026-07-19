@@ -140,7 +140,7 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
     {
         try
         {
-            await using TurboDbContext dbCtx = await _roomGrain
+            await using VortexDbContext dbCtx = await _roomGrain
                 ._dbCtxFactory.CreateDbContextAsync()
                 .ConfigureAwait(false);
 

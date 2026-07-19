@@ -5,7 +5,7 @@ namespace Vortex.Primitives.Observability;
 /// observability brick (packet pipeline only); further instruments are added as later phases land.
 /// Implementations must be cheap and allocation-free on the hot path.
 /// </summary>
-public interface ITurboMetrics
+public interface IVortexMetrics
 {
     void PacketReceived(string operation, long? actorId = null, int? roomId = null);
 

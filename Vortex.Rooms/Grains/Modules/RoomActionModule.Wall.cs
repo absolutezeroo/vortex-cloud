@@ -30,14 +30,14 @@ public sealed partial class RoomActionModule
     {
         if (!await _roomGrain.SecurityModule.CanPlaceFurniAsync(ctx))
         {
-            throw new TurboException(TurboErrorCodeEnum.NoPermissionToPlaceFurni);
+            throw new VortexException(VortexErrorCodeEnum.NoPermissionToPlaceFurni);
         }
 
         IRoomItem item = _roomGrain._itemsLoader.CreateFromFurnitureItemSnapshot(snapshot);
 
         if (item is not IRoomWallItem wallItem)
         {
-            throw new TurboException(TurboErrorCodeEnum.WallItemNotFound);
+            throw new VortexException(VortexErrorCodeEnum.WallItemNotFound);
         }
 
         if (
@@ -52,7 +52,7 @@ public sealed partial class RoomActionModule
             )
         )
         {
-            throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+            throw new VortexException(VortexErrorCodeEnum.InvalidMoveTarget);
         }
 
         if (
@@ -113,7 +113,7 @@ public sealed partial class RoomActionModule
     {
         if (!await _roomGrain.SecurityModule.CanManipulateFurniAsync(ctx))
         {
-            throw new TurboException(TurboErrorCodeEnum.NoPermissionToManipulateFurni);
+            throw new VortexException(VortexErrorCodeEnum.NoPermissionToManipulateFurni);
         }
 
         if (
@@ -128,7 +128,7 @@ public sealed partial class RoomActionModule
             )
         )
         {
-            throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+            throw new VortexException(VortexErrorCodeEnum.InvalidMoveTarget);
         }
 
         if (

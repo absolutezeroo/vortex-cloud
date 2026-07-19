@@ -10,7 +10,7 @@ namespace Vortex.Database.Entities.Marketplace;
 /// operator edits it.
 /// </summary>
 [Table("marketplace_settings")]
-public class MarketplaceSettingsEntity : TurboEntity
+public class MarketplaceSettingsEntity : VortexEntity
 {
     [Column("commission_percent")]
     [DefaultValue(1)]

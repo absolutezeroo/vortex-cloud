@@ -17,7 +17,7 @@ namespace Vortex.Messages.Registry;
 public sealed class MessageRegistry(
     IServiceProvider sp,
     IErrorGroupingSink errorGroupingSink,
-    ITurboContextAccessor contextAccessor,
+    IVortexContextAccessor contextAccessor,
     ILogger<MessageRegistry> logger
 )
     : EnvelopeHost<IMessageEvent, ISessionContext, MessageContext>(
@@ -32,7 +32,7 @@ public sealed class MessageRegistry(
     > CreateOptions(
         IServiceProvider serviceProvider,
         IErrorGroupingSink errorGroupingSink,
-        ITurboContextAccessor contextAccessor,
+        IVortexContextAccessor contextAccessor,
         ILogger<MessageRegistry> logger
     )
     {
@@ -42,7 +42,7 @@ public sealed class MessageRegistry(
             {
                 if (data is null)
                 {
-                    throw new TurboException(TurboErrorCodeEnum.InvalidSession);
+                    throw new VortexException(VortexErrorCodeEnum.InvalidSession);
                 }
 
                 IGrainFactory grainFactory = serviceProvider.GetRequiredService<IGrainFactory>();
@@ -117,11 +117,11 @@ public sealed class MessageRegistry(
         string source,
         object env,
         IErrorGroupingSink errorGroupingSink,
-        ITurboContextAccessor contextAccessor,
+        IVortexContextAccessor contextAccessor,
         ILogger logger
     )
     {
-        ITurboContext? context = contextAccessor.Current;
+        IVortexContext? context = contextAccessor.Current;
 
         try
         {

@@ -52,7 +52,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
             return;
         }
 
-        await using TurboDbContext dbCtx = await _roomGrain
+        await using VortexDbContext dbCtx = await _roomGrain
             ._dbCtxFactory.CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -224,7 +224,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
             return;
         }
 
-        await using TurboDbContext dbCtx = await _roomGrain
+        await using VortexDbContext dbCtx = await _roomGrain
             ._dbCtxFactory.CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -304,7 +304,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
     {
         if (!_roomGrain.MapModule.InBounds(x, y))
         {
-            throw new TurboException(TurboErrorCodeEnum.TileOutOfBounds);
+            throw new VortexException(VortexErrorCodeEnum.TileOutOfBounds);
         }
 
         int tileIdx = _roomGrain.MapModule.ToIdx(x, y);
@@ -316,7 +316,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
             || flags.Has(RoomTileFlags.AvatarOccupied)
         )
         {
-            throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+            throw new VortexException(VortexErrorCodeEnum.InvalidMoveTarget);
         }
 
         return _roomGrain._state.TileHeights[tileIdx].Value;
@@ -456,7 +456,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
     }
 
     private async Task<PetEntity?> LoadPlacedPetAsync(
-        TurboDbContext dbCtx,
+        VortexDbContext dbCtx,
         int petId,
         CancellationToken ct
     )
@@ -476,7 +476,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
     {
         if (pet.OwnerPlayerEntityId != ctx.PlayerId)
         {
-            throw new TurboException(TurboErrorCodeEnum.NoPermissionToManipulatePet);
+            throw new VortexException(VortexErrorCodeEnum.NoPermissionToManipulatePet);
         }
     }
 

@@ -18,7 +18,7 @@ namespace Vortex.Authentication.Permissions;
 /// administrator configured them. Failures are logged, never fatal (e.g. before the migration runs).
 /// </summary>
 internal sealed class PermissionSeederService(
-    IDbContextFactory<TurboDbContext> dbContextFactory,
+    IDbContextFactory<VortexDbContext> dbContextFactory,
     IOptions<AuthenticationConfig> config,
     ILogger<PermissionSeederService> logger
 ) : IHostedService
@@ -29,7 +29,7 @@ internal sealed class PermissionSeederService(
     {
         try
         {
-            TurboDbContext db = await dbContextFactory
+            VortexDbContext db = await dbContextFactory
                 .CreateDbContextAsync(cancellationToken)
                 .ConfigureAwait(false);
 
@@ -95,7 +95,7 @@ internal sealed class PermissionSeederService(
     /// can sign in (e.g. to the admin dashboard) before any role has been assigned. Idempotent: does
     /// nothing if the email is unset, the account is missing, or the assignment already exists.
     /// </summary>
-    private async Task EnsureBootstrapOwnerAsync(TurboDbContext db, CancellationToken ct)
+    private async Task EnsureBootstrapOwnerAsync(VortexDbContext db, CancellationToken ct)
     {
         string? email = _config.BootstrapOwnerEmail?.Trim().ToLowerInvariant();
 

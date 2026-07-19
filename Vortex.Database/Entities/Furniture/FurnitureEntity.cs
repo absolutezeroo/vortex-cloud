@@ -7,7 +7,7 @@ using Vortex.Primitives.Rooms.Enums;
 namespace Vortex.Database.Entities.Furniture;
 
 [Table("furniture")]
-public class FurnitureEntity : TurboEntity
+public class FurnitureEntity : VortexEntity
 {
     [Column("player_id")]
     public int PlayerEntityId { get; set; }

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Vortex.Database.Entities.Catalog;
 
 [Table("catalog_club_offers")]
-public class CatalogClubOfferEntity : TurboEntity
+public class CatalogClubOfferEntity : VortexEntity
 {
     [Column("product_code")]
     [MaxLength(64)]

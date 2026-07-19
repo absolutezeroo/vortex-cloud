@@ -21,7 +21,7 @@ namespace Vortex.Observability;
 /// </summary>
 public sealed class ObservabilityModule : IHostPluginModule
 {
-    public string Key => "turbo-observability";
+    public string Key => "vortex-observability";
 
     public void ConfigureServices(IServiceCollection services, HostApplicationBuilder builder)
     {
@@ -31,9 +31,9 @@ public sealed class ObservabilityModule : IHostPluginModule
 
         services.AddMetrics();
 
-        services.TryAddSingleton<ITurboContextAccessor, TurboContextAccessor>();
+        services.TryAddSingleton<IVortexContextAccessor, VortexContextAccessor>();
         services.TryAddSingleton<ILiveStatsAggregator, LiveStatsAggregator>();
-        services.TryAddSingleton<ITurboMetrics, TurboMetrics>();
+        services.TryAddSingleton<IVortexMetrics, VortexMetrics>();
         services.TryAddSingleton<ClubMetrics>();
         services.AddHostedService<ClubMetricsRefreshService>();
         services.TryAddSingleton<ClientPerformanceMetrics>();

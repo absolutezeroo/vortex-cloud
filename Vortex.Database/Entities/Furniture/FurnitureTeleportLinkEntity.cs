@@ -6,7 +6,7 @@ namespace Vortex.Database.Entities.Furniture;
 [Table("furniture_teleport_links")]
 [Index(nameof(FurnitureEntityOneId), IsUnique = true)]
 [Index(nameof(FurnitureEntityTwoId), IsUnique = true)]
-public class FurnitureTeleportLinkEntity : TurboEntity
+public class FurnitureTeleportLinkEntity : VortexEntity
 {
     [Column("furniture_one_id")]
     public int FurnitureEntityOneId { get; set; }

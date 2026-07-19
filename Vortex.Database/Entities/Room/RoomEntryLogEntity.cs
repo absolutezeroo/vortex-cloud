@@ -5,12 +5,12 @@ using Vortex.Database.Entities.Players;
 
 namespace Vortex.Database.Entities.Room;
 
-/// <summary>One row per room visit. Entry time is <see cref="TurboEntity.CreatedAt"/>; null
+/// <summary>One row per room visit. Entry time is <see cref="VortexEntity.CreatedAt"/>; null
 /// <see cref="ExitedAt"/> means the visit is still open (or the session ended without a clean
 /// exit, e.g. a crash — an accepted, rare imperfection of this kind of log).</summary>
 [Table("room_entry_logs")]
 [Index(nameof(PlayerEntityId), nameof(RoomEntityId), nameof(ExitedAt))]
-public class RoomEntryLogEntity : TurboEntity
+public class RoomEntryLogEntity : VortexEntity
 {
     [Column("room_id")]
     public required int RoomEntityId { get; set; }

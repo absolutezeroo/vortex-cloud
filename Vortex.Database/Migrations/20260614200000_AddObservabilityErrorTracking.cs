@@ -9,7 +9,7 @@ using Vortex.Database.Context;
 namespace Vortex.Database.Migrations
 {
     /// <inheritdoc />
-    [DbContext(typeof(TurboDbContext))]
+    [DbContext(typeof(VortexDbContext))]
     [Migration("20260614200000_AddObservabilityErrorTracking")]
     public partial class AddObservabilityErrorTracking : Migration
     {

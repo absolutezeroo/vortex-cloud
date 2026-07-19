@@ -7,7 +7,7 @@ namespace Vortex.Database.Entities.Pets;
 [Table("pet_palettes")]
 [Index(nameof(PetType))]
 [Index(nameof(PetType), nameof(BreedIndex), nameof(Rare), IsUnique = true)]
-public class PetPaletteEntity : TurboEntity
+public class PetPaletteEntity : VortexEntity
 {
     [Column("pet_type")]
     public required int PetType { get; set; }

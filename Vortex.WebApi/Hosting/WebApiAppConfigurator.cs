@@ -53,8 +53,8 @@ internal static class WebApiAppConfigurator
         app.UseSwagger();
         app.UseSwaggerUI(ui =>
         {
-            ui.SwaggerEndpoint("/swagger/v1/swagger.json", "Turbo Web API v1");
-            ui.DocumentTitle = "Turbo Web API";
+            ui.SwaggerEndpoint("/swagger/v1/swagger.json", "Vortex Web API v1");
+            ui.DocumentTitle = "Vortex Web API";
         });
 
         app.UseCors(CorsPolicyName);
@@ -145,10 +145,10 @@ internal static class WebApiAppConfigurator
                 "v1",
                 new OpenApiInfo
                 {
-                    Title = "Turbo Web API",
+                    Title = "Vortex Web API",
                     Version = "v1",
                     Description =
-                        "Client-facing onboarding API for the Turbo emulator: login, registration, "
+                        "Client-facing onboarding API for the Vortex emulator: login, registration, "
                         + "avatar management and SSO ticket issuance. Sensitive endpoints are rate "
                         + "limited and the session is carried by the habbo-web-session cookie.",
                 }

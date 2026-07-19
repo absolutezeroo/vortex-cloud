@@ -2,7 +2,7 @@ namespace Vortex.Networking.Configuration;
 
 public class NetworkingConfig
 {
-    public const string SECTION_NAME = "Turbo:Networking";
+    public const string SECTION_NAME = "Vortex:Networking";
 
     /// <summary>
     ///     Default cap on a single client-declared packet body length, in bytes. Bounds

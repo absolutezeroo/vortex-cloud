@@ -37,7 +37,7 @@ public sealed partial class RoomActionModule
 
         if (item is not IRoomFloorItem floorItem)
         {
-            throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+            throw new VortexException(VortexErrorCodeEnum.FloorItemNotFound);
         }
 
         IRoomFloorItem? rentedSpace = null;
@@ -54,7 +54,7 @@ public sealed partial class RoomActionModule
                 )
             )
             {
-                throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+                throw new VortexException(VortexErrorCodeEnum.InvalidMoveTarget);
             }
         }
         else
@@ -66,7 +66,7 @@ public sealed partial class RoomActionModule
 
             if (rentedSpace is null)
             {
-                throw new TurboException(TurboErrorCodeEnum.NoPermissionToPlaceFurni);
+                throw new VortexException(VortexErrorCodeEnum.NoPermissionToPlaceFurni);
             }
 
             if (
@@ -80,7 +80,7 @@ public sealed partial class RoomActionModule
                 )
             )
             {
-                throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+                throw new VortexException(VortexErrorCodeEnum.InvalidMoveTarget);
             }
         }
 
@@ -97,9 +97,8 @@ public sealed partial class RoomActionModule
         {
             try
             {
-                await using TurboDbContext db = await _roomGrain._dbCtxFactory.CreateDbContextAsync(
-                    ct
-                );
+                await using VortexDbContext db =
+                    await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct);
                 await db
                     .Furnitures.Where(f => f.Id == floorItem.ObjectId.Value && f.DeletedAt == null)
                     .ExecuteUpdateAsync(
@@ -166,7 +165,7 @@ public sealed partial class RoomActionModule
                 )
             )
             {
-                throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+                throw new VortexException(VortexErrorCodeEnum.InvalidMoveTarget);
             }
         }
         else
@@ -176,7 +175,7 @@ public sealed partial class RoomActionModule
 
             if (rentedSpace is null)
             {
-                throw new TurboException(TurboErrorCodeEnum.NoPermissionToManipulateFurni);
+                throw new VortexException(VortexErrorCodeEnum.NoPermissionToManipulateFurni);
             }
 
             if (
@@ -190,7 +189,7 @@ public sealed partial class RoomActionModule
                 )
             )
             {
-                throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+                throw new VortexException(VortexErrorCodeEnum.InvalidMoveTarget);
             }
         }
 
@@ -230,12 +229,12 @@ public sealed partial class RoomActionModule
     {
         if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item))
         {
-            throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+            throw new VortexException(VortexErrorCodeEnum.FloorItemNotFound);
         }
 
         if (item.Logic is not FurnitureWiredLogic wiredLogic)
         {
-            throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+            throw new VortexException(VortexErrorCodeEnum.FloorItemNotFound);
         }
 
         if (!await wiredLogic.ApplyWiredUpdateAsync(ctx, update, ct))

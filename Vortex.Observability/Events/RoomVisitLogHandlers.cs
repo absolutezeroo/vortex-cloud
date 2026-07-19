@@ -15,7 +15,7 @@ namespace Vortex.Observability.Events;
 /// something to reconstruct by parsing the generic <see cref="Vortex.Primitives.Observability.AuditEvent"/>
 /// JSON blob that <see cref="SessionLifecycleAuditHandlers"/> also writes from these same events).
 /// </summary>
-public sealed class RoomVisitLogEnteredHandler(IDbContextFactory<TurboDbContext> dbCtxFactory)
+public sealed class RoomVisitLogEnteredHandler(IDbContextFactory<VortexDbContext> dbCtxFactory)
     : IEventHandler<PlayerEnteredRoomEvent>
 {
     public async ValueTask HandleAsync(
@@ -24,7 +24,7 @@ public sealed class RoomVisitLogEnteredHandler(IDbContextFactory<TurboDbContext>
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory
+        await using VortexDbContext dbCtx = await dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -36,7 +36,7 @@ public sealed class RoomVisitLogEnteredHandler(IDbContextFactory<TurboDbContext>
     }
 }
 
-public sealed class RoomVisitLogLeftHandler(IDbContextFactory<TurboDbContext> dbCtxFactory)
+public sealed class RoomVisitLogLeftHandler(IDbContextFactory<VortexDbContext> dbCtxFactory)
     : IEventHandler<PlayerLeftRoomEvent>
 {
     public async ValueTask HandleAsync(
@@ -45,7 +45,7 @@ public sealed class RoomVisitLogLeftHandler(IDbContextFactory<TurboDbContext> db
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory
+        await using VortexDbContext dbCtx = await dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 

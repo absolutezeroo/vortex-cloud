@@ -95,9 +95,9 @@ internal sealed class DashboardWebHost(
         catch (Exception ex)
         {
             logger.LogError(
-                TurboEventIds.DashboardFault,
+                VortexEventIds.DashboardFault,
                 ex,
-                "Failed to build Turbo dashboard API"
+                "Failed to build Vortex dashboard API"
             );
             return;
         }
@@ -109,9 +109,9 @@ internal sealed class DashboardWebHost(
         catch (Exception ex)
         {
             logger.LogError(
-                TurboEventIds.DashboardFault,
+                VortexEventIds.DashboardFault,
                 ex,
-                "Failed to start Turbo dashboard API on {Prefixes}",
+                "Failed to start Vortex dashboard API on {Prefixes}",
                 prefixes
             );
             await app.DisposeAsync().ConfigureAwait(false);
@@ -119,8 +119,8 @@ internal sealed class DashboardWebHost(
         }
 
         logger.LogInformation(
-            TurboEventIds.DashboardReady,
-            "Turbo dashboard API listening on {Prefixes} (Swagger UI at {HttpPrefix}/swagger)",
+            VortexEventIds.DashboardReady,
+            "Vortex dashboard API listening on {Prefixes} (Swagger UI at {HttpPrefix}/swagger)",
             prefixes,
             httpPrefix
         );
@@ -299,10 +299,10 @@ internal sealed class DashboardWebHost(
                 "v1",
                 new OpenApiInfo
                 {
-                    Title = "Turbo Dashboard API",
+                    Title = "Vortex Dashboard API",
                     Version = "v1",
                     Description =
-                        "Operations and observability API for the Turbo emulator. Authenticate via "
+                        "Operations and observability API for the Vortex emulator. Authenticate via "
                         + "POST /api/login (issues the dash_session cookie); endpoints are authorized "
                         + "by dashboard.* capabilities.",
                 }
@@ -374,8 +374,8 @@ internal sealed class DashboardWebHost(
         app.UseSwagger();
         app.UseSwaggerUI(ui =>
         {
-            ui.SwaggerEndpoint("/swagger/v1/swagger.json", "Turbo Dashboard API v1");
-            ui.DocumentTitle = "Turbo Dashboard API";
+            ui.SwaggerEndpoint("/swagger/v1/swagger.json", "Vortex Dashboard API v1");
+            ui.DocumentTitle = "Vortex Dashboard API";
         });
 
         app.UseAuthentication();

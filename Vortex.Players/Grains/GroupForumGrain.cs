@@ -20,7 +20,7 @@ using Vortex.Primitives.Players;
 namespace Vortex.Players.Grains;
 
 internal sealed class GroupForumGrain(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     IEventPublisher events,
     ILogger<GroupForumGrain> logger,
     IOptions<GroupConfig> groupConfig
@@ -44,7 +44,7 @@ internal sealed class GroupForumGrain(
 
     public async Task<ForumSnapshot?> GetForumAsync(PlayerId viewer, CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         GroupEntity? group = await dbCtx
             .Groups.AsNoTracking()
@@ -66,7 +66,7 @@ internal sealed class GroupForumGrain(
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         GroupEntity? group = await dbCtx
             .Groups.AsNoTracking()
@@ -119,7 +119,7 @@ internal sealed class GroupForumGrain(
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         GroupEntity? group = await dbCtx
             .Groups.AsNoTracking()
@@ -187,7 +187,7 @@ internal sealed class GroupForumGrain(
             return null;
         }
 
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         GroupEntity? group = await dbCtx
             .Groups.Include(g => g.ForumSettings)
@@ -343,7 +343,7 @@ internal sealed class GroupForumGrain(
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         (GroupEntity? group, ForumRole role) = await LoadForModerationAsync(dbCtx, actor, ct);
         if (group is null)
@@ -389,7 +389,7 @@ internal sealed class GroupForumGrain(
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         (GroupEntity? group, ForumRole role) = await LoadForModerationAsync(dbCtx, actor, ct);
         if (group is null)
@@ -430,7 +430,7 @@ internal sealed class GroupForumGrain(
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         (GroupEntity? group, ForumRole role) = await LoadForModerationAsync(dbCtx, actor, ct);
         if (group is null)
@@ -475,7 +475,7 @@ internal sealed class GroupForumGrain(
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         GroupEntity? group = await dbCtx
             .Groups.Include(g => g.ForumSettings)
@@ -508,7 +508,7 @@ internal sealed class GroupForumGrain(
     }
 
     private async Task<ForumRole> GetRoleAsync(
-        TurboDbContext dbCtx,
+        VortexDbContext dbCtx,
         GroupEntity group,
         int playerId,
         CancellationToken ct
@@ -548,7 +548,7 @@ internal sealed class GroupForumGrain(
         settings.Enabled ? Allows(settings.ReadPermission, role) : role == ForumRole.Owner;
 
     private async Task<(GroupEntity? group, ForumRole role)> LoadForModerationAsync(
-        TurboDbContext dbCtx,
+        VortexDbContext dbCtx,
         PlayerId actor,
         CancellationToken ct
     )
@@ -568,7 +568,7 @@ internal sealed class GroupForumGrain(
     }
 
     private async Task<ForumSnapshot> BuildForumSnapshotAsync(
-        TurboDbContext dbCtx,
+        VortexDbContext dbCtx,
         GroupEntity group,
         GroupForumSettingsEntity settings,
         ForumRole role,
@@ -695,7 +695,7 @@ internal sealed class GroupForumGrain(
         };
 
     private async Task<Dictionary<int, int>> GetAuthorPostCountsAsync(
-        TurboDbContext dbCtx,
+        VortexDbContext dbCtx,
         List<GroupForumPostEntity> posts,
         CancellationToken ct
     )

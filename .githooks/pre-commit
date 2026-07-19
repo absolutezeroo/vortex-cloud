@@ -2,4 +2,4 @@
 set -eu
 
 echo "Running fast local checks..."
-dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck
+dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudFastCheck

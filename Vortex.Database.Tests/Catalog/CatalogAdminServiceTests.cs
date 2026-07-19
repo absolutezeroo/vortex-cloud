@@ -26,16 +26,16 @@ namespace Vortex.Database.Tests.Catalog;
 /// </summary>
 public sealed class CatalogAdminServiceTests
 {
-    private static TurboDbContext NewContext(DbContextOptions<TurboDbContext> options) =>
+    private static VortexDbContext NewContext(DbContextOptions<VortexDbContext> options) =>
         new(options);
 
-    private static DbContextOptions<TurboDbContext> NewOptions() =>
-        new DbContextOptionsBuilder<TurboDbContext>()
+    private static DbContextOptions<VortexDbContext> NewOptions() =>
+        new DbContextOptionsBuilder<VortexDbContext>()
             .UseInMemoryDatabase($"catalog-admin-{Guid.NewGuid():N}")
             .Options;
 
     private static CatalogAdminService NewService(
-        DbContextOptions<TurboDbContext> options,
+        DbContextOptions<VortexDbContext> options,
         out FakeSnapshotProvider<NormalCatalog> normalProvider,
         out FakeSnapshotProvider<BuildersClubCatalog> bcProvider
     )
@@ -54,7 +54,7 @@ public sealed class CatalogAdminServiceTests
     [Fact]
     public async Task CreatePage_Succeeds_AndReloadsBothSnapshotProviders()
     {
-        DbContextOptions<TurboDbContext> options = NewOptions();
+        DbContextOptions<VortexDbContext> options = NewOptions();
         CatalogAdminService service = NewService(
             options,
             out FakeSnapshotProvider<NormalCatalog> normalProvider,
@@ -82,7 +82,7 @@ public sealed class CatalogAdminServiceTests
         result.Success.Should().BeTrue();
         result.Id.Should().NotBeNull();
 
-        await using TurboDbContext verify = NewContext(options);
+        await using VortexDbContext verify = NewContext(options);
         (await verify.CatalogPages.FindAsync(result.Id!.Value).ConfigureAwait(true))
             .Should()
             .NotBeNull();
@@ -97,7 +97,7 @@ public sealed class CatalogAdminServiceTests
     [Fact]
     public async Task CreatePage_UnderParentOfDifferentCatalogType_IsRejected()
     {
-        DbContextOptions<TurboDbContext> options = NewOptions();
+        DbContextOptions<VortexDbContext> options = NewOptions();
         CatalogAdminService service = NewService(options, out _, out _);
 
         CatalogAdminResult bcRoot = await service
@@ -143,7 +143,7 @@ public sealed class CatalogAdminServiceTests
     [Fact]
     public async Task DeletePage_WithChildren_IsBlocked()
     {
-        DbContextOptions<TurboDbContext> options = NewOptions();
+        DbContextOptions<VortexDbContext> options = NewOptions();
         CatalogAdminService service = NewService(options, out _, out _);
 
         CatalogAdminResult parent = await service
@@ -193,7 +193,7 @@ public sealed class CatalogAdminServiceTests
     [Fact]
     public async Task DeletePage_WithOffers_IsBlocked()
     {
-        DbContextOptions<TurboDbContext> options = NewOptions();
+        DbContextOptions<VortexDbContext> options = NewOptions();
         CatalogAdminService service = NewService(options, out _, out _);
 
         CatalogAdminResult page = await service
@@ -243,7 +243,7 @@ public sealed class CatalogAdminServiceTests
     [Fact]
     public async Task DeleteOffer_WithProducts_IsBlocked_ThenSucceedsAfterProductRemoved()
     {
-        DbContextOptions<TurboDbContext> options = NewOptions();
+        DbContextOptions<VortexDbContext> options = NewOptions();
         CatalogAdminService service = NewService(options, out _, out _);
 
         CatalogAdminResult page = await service
@@ -327,7 +327,7 @@ public sealed class CatalogAdminServiceTests
     [Fact]
     public async Task UpdatePage_UnknownId_ReturnsNotFound()
     {
-        DbContextOptions<TurboDbContext> options = NewOptions();
+        DbContextOptions<VortexDbContext> options = NewOptions();
         CatalogAdminService service = NewService(options, out _, out _);
 
         CatalogAdminResult result = await service
@@ -352,10 +352,10 @@ public sealed class CatalogAdminServiceTests
         result.ErrorCode.Should().Be("page_not_found");
     }
 
-    private sealed class TestDbContextFactory(DbContextOptions<TurboDbContext> options)
-        : IDbContextFactory<TurboDbContext>
+    private sealed class TestDbContextFactory(DbContextOptions<VortexDbContext> options)
+        : IDbContextFactory<VortexDbContext>
     {
-        public TurboDbContext CreateDbContext() => new(options);
+        public VortexDbContext CreateDbContext() => new(options);
     }
 
     private sealed class FakeSnapshotProvider<TTag>(CatalogType catalogType)

@@ -16,7 +16,7 @@ namespace Vortex.Catalog;
 
 public sealed class CatalogModule : IHostPluginModule
 {
-    public string Key => "turbo-catalog";
+    public string Key => "vortex-catalog";
 
     public void ConfigureServices(IServiceCollection services, HostApplicationBuilder builder)
     {
@@ -31,7 +31,7 @@ public sealed class CatalogModule : IHostPluginModule
         services.AddSingleton<ICatalogClubGiftProvider, CatalogClubGiftProvider>();
         services.AddSingleton<ICatalogSnapshotProvider<NormalCatalog>>(
             sp => new CatalogSnapshotProvider<NormalCatalog>(
-                sp.GetRequiredService<IDbContextFactory<TurboDbContext>>(),
+                sp.GetRequiredService<IDbContextFactory<VortexDbContext>>(),
                 sp.GetRequiredService<ILogger<ICatalogSnapshotProvider<NormalCatalog>>>(),
                 sp.GetRequiredService<IFurnitureDefinitionProvider>(),
                 CatalogType.Normal
@@ -39,7 +39,7 @@ public sealed class CatalogModule : IHostPluginModule
         );
         services.AddSingleton<ICatalogSnapshotProvider<BuildersClubCatalog>>(
             sp => new CatalogSnapshotProvider<BuildersClubCatalog>(
-                sp.GetRequiredService<IDbContextFactory<TurboDbContext>>(),
+                sp.GetRequiredService<IDbContextFactory<VortexDbContext>>(),
                 sp.GetRequiredService<ILogger<ICatalogSnapshotProvider<BuildersClubCatalog>>>(),
                 sp.GetRequiredService<IFurnitureDefinitionProvider>(),
                 CatalogType.BuildersClub

@@ -24,11 +24,11 @@ public sealed class PetFeedingTests
     [Fact]
     public async Task FeedAsync_MatchingFood_IncreasesNutritionAndConsumesFood()
     {
-        DbContextOptions<TurboDbContext> options = NewOptions();
+        DbContextOptions<VortexDbContext> options = NewOptions();
 
         await SeedFeedScenarioAsync(options).ConfigureAwait(true);
 
-        using TurboDbContext db = new TurboDbContext(options);
+        using VortexDbContext db = new VortexDbContext(options);
 
         PetFeedResult result = await RoomPetRuntime
             .FeedAsync(
@@ -71,14 +71,14 @@ public sealed class PetFeedingTests
         food.ExtraData.Should().Be("4", "descending: MaxUses=5, first use leaves 4 remaining");
     }
 
-    private static DbContextOptions<TurboDbContext> NewOptions() =>
-        new DbContextOptionsBuilder<TurboDbContext>()
+    private static DbContextOptions<VortexDbContext> NewOptions() =>
+        new DbContextOptionsBuilder<VortexDbContext>()
             .UseInMemoryDatabase($"pet-feed-{Guid.NewGuid():N}")
             .Options;
 
-    private static async Task SeedFeedScenarioAsync(DbContextOptions<TurboDbContext> options)
+    private static async Task SeedFeedScenarioAsync(DbContextOptions<VortexDbContext> options)
     {
-        using TurboDbContext db = new TurboDbContext(options);
+        using VortexDbContext db = new VortexDbContext(options);
 
         PlayerEntity player = new()
         {

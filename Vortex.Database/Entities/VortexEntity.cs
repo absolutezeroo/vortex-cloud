@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Vortex.Database.Entities;
 
-public class TurboEntity
+public class VortexEntity
 {
     [Key]
     [Column("id")]

@@ -21,9 +21,9 @@ namespace Vortex.Database.Tests.Catalog;
 /// </summary>
 public sealed class CatalogTypeIsolationTests
 {
-    private static TurboDbContext NewContext() =>
+    private static VortexDbContext NewContext() =>
         new(
-            new DbContextOptionsBuilder<TurboDbContext>()
+            new DbContextOptionsBuilder<VortexDbContext>()
                 .UseInMemoryDatabase($"catalog-isolation-{Guid.NewGuid():N}")
                 .Options
         );
@@ -31,7 +31,7 @@ public sealed class CatalogTypeIsolationTests
     [Fact]
     public void FilteringPagesByCatalogType_NeverLeaksTheOtherTypesPage()
     {
-        using TurboDbContext context = NewContext();
+        using VortexDbContext context = NewContext();
 
         CatalogPageEntity normalPage = new()
         {
@@ -71,7 +71,7 @@ public sealed class CatalogTypeIsolationTests
     [Fact]
     public void FilteringCascadesToOffersAndProducts_NeverLeaksAcrossCatalogTypes()
     {
-        using TurboDbContext context = NewContext();
+        using VortexDbContext context = NewContext();
 
         CatalogPageEntity normalPage = new()
         {

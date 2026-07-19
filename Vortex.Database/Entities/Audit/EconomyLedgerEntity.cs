@@ -15,7 +15,7 @@ namespace Vortex.Database.Entities.Audit;
 [Table("economy_ledger")]
 [Index(nameof(PlayerId), nameof(OccurredAt))]
 [Index(nameof(CorrelationId))]
-public class EconomyLedgerEntity : TurboEntity
+public class EconomyLedgerEntity : VortexEntity
 {
     [Column("occurred_at")]
     public required DateTime OccurredAt { get; set; }

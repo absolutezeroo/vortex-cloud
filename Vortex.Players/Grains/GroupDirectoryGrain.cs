@@ -26,7 +26,7 @@ using Vortex.Primitives.Players.Wallet;
 namespace Vortex.Players.Grains;
 
 internal sealed class GroupDirectoryGrain(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
     IGroupBadgePartProvider badgePartProvider,
     IEventPublisher events,
@@ -44,7 +44,7 @@ internal sealed class GroupDirectoryGrain(
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         int playerId = player.Value;
 
@@ -83,7 +83,7 @@ internal sealed class GroupDirectoryGrain(
     {
         int ownerId = owner.Value;
 
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         RoomEntity? room = await dbCtx.Rooms.FirstOrDefaultAsync(
             r => r.Id == baseRoomId && r.DeletedAt == null,
@@ -233,7 +233,7 @@ internal sealed class GroupDirectoryGrain(
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         int playerId = player.Value;
 
@@ -286,7 +286,7 @@ internal sealed class GroupDirectoryGrain(
     {
         int playerId = player.Value;
 
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         // Only a member may favourite a group; clearing is unconditional.
         if (favourite)
@@ -338,7 +338,7 @@ internal sealed class GroupDirectoryGrain(
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         int playerId = player.Value;
 
@@ -368,7 +368,7 @@ internal sealed class GroupDirectoryGrain(
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         int take =
             (amount <= 0 || amount > _groupConfig.MaxForumPageSize)

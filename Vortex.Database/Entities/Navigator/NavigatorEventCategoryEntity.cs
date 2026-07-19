@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Vortex.Database.Entities.Navigator;
 
 [Table("navigator_eventcats")]
-public class NavigatorEventCategoryEntity : TurboEntity
+public class NavigatorEventCategoryEntity : VortexEntity
 {
     [Key]
     [Column("id")]

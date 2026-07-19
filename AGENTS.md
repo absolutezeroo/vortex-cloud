@@ -1,6 +1,6 @@
-# Turbo Cloud AI Contract
+# Vortex Cloud AI Contract
 
-This file is the canonical coding contract for AI-assisted changes in `turbo-cloud`.
+This file is the canonical coding contract for AI-assisted changes in `vortex-cloud`.
 Tool-specific instruction files should reference this file instead of duplicating rules.
 
 ## Foundational context
@@ -39,7 +39,7 @@ Activate the relevant skill checklist before editing code in that domain:
     embedded default `Revision20260112`.
   - Enforce: edit plugin revision tree in `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`.
   - Note: `Revision20260112` itself is embedded in core and is edited directly under
-    `Vortex.Revisions/Revision20260112/**` in `turbo-cloud` — this rule does not apply to it.
+    `Vortex.Revisions/Revision20260112/**` in `vortex-cloud` — this rule does not apply to it.
 
 ## Priority order
 1. Build and quality checks in repo files (`Directory.Build.props`, `Directory.Build.targets`, `.editorconfig`)
@@ -80,12 +80,12 @@ Default output format:
 - Do not alter serializer/composer behavior by replacing real payload writes with placeholder constants (for example, unconditional `WriteInteger(0)`) unless explicitly requested.
 - `Vortex.Revisions/Revision20260112/**` (including its `Parsers/` and `Serializers/` trees) is the
   **default revision embedded in core** so the emulator can run standalone without a plugin. Editing
-  it in `turbo-cloud` is expected and correct — see the "Packet addition checklist" below.
+  it in `vortex-cloud` is expected and correct — see the "Packet addition checklist" below.
 - Any **additional/custom** protocol revision (a different client version added via the plugin
   system) belongs in the plugin repo instead:
   - `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`
   - Do not hallucinate new `Revision<id>/Parsers` or `Revision<id>/Serializers` trees into
-    `turbo-cloud` for revisions other than the embedded `Revision20260112` default.
+    `vortex-cloud` for revisions other than the embedded `Revision20260112` default.
 
 ## Orleans grain development rules
 These rules exist because every one of these mistakes has shipped and caused real issues.
@@ -115,7 +115,7 @@ Follow the `RoomPersistenceGrain` pattern: queue dirty state, flush with `Regist
 Do not issue per-event DB writes that block the grain turn.
 
 ### Do not hardcode limits in grains
-Handlers already read configuration values (e.g. `Turbo:FriendList:UserFriendLimit`) from `IConfiguration` and pass them to grains.
+Handlers already read configuration values (e.g. `Vortex:FriendList:UserFriendLimit`) from `IConfiguration` and pass them to grains.
 Magic numbers like `Take(50)`, `Take(20)`, or `maxIgnoreCapacity = 100` must come from configuration parameters on the grain interface method.
 A 10,000 user hotel needs different tuning than a 10 player dev server.
 
@@ -218,8 +218,8 @@ When adding packet mappings in `Vortex.Revisions/Revision20260112`:
   - no direct session/socket sends
   - no ad-hoc grain key literals when extension methods exist
 - Validation:
-  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck`
-  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudFastCheck`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate`
 
 ### Change grain behavior
 - Required context files:
@@ -233,8 +233,8 @@ When adding packet mappings in `Vortex.Revisions/Revision20260112`:
   - no handler-layer fallback logic that bypasses grain ownership
   - no lifecycle changes that abuse `[KeepAlive]` without infrastructure justification
 - Validation:
-  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck`
-  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudFastCheck`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate`
 
 ### Add message/composer mapping
 - Required context files:
@@ -249,8 +249,8 @@ When adding packet mappings in `Vortex.Revisions/Revision20260112`:
   - no placeholder payload collections when source snapshot data exists
   - no implicit default-fallback contracts for mandatory incoming fields
 - Validation:
-  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck`
-  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudFastCheck`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate`
 
 ### Refactor lookup/cache logic
 - Required context files:
@@ -264,13 +264,13 @@ When adding packet mappings in `Vortex.Revisions/Revision20260112`:
   - no one-way cache updates; forward/reverse mappings must stay coherent
   - no loss of case-insensitive semantics for username lookups
 - Validation:
-  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck`
-  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudFastCheck`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate`
 
 ## Required validation before completion
 ```bash
-dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck
-dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate
+dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudFastCheck
+dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate
 ```
 
 ## Definition of done for AI changes

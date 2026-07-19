@@ -33,7 +33,7 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
     private readonly int _batchSize;
 
     private readonly ErrorGroupingChannel _channel;
-    private readonly IDbContextFactory<TurboDbContext> _dbContextFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbContextFactory;
     private readonly string _deadLetterPath;
     private readonly ILogger<ErrorGroupingWriterService> _logger;
     private readonly int _retryAttempts;
@@ -41,7 +41,7 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
 
     public ErrorGroupingWriterService(
         ErrorGroupingChannel channel,
-        IDbContextFactory<TurboDbContext> dbContextFactory,
+        IDbContextFactory<VortexDbContext> dbContextFactory,
         IOptions<ObservabilityConfig> options,
         ILogger<ErrorGroupingWriterService> logger
     )
@@ -136,7 +136,7 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
         {
             try
             {
-                await using TurboDbContext db = await _dbContextFactory
+                await using VortexDbContext db = await _dbContextFactory
                     .CreateDbContextAsync(ct)
                     .ConfigureAwait(false);
 
@@ -209,7 +209,7 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
             catch (Exception ex) when (attempt < _retryAttempts)
             {
                 _logger.LogWarning(
-                    TurboEventIds.ErrorGroupingWriteRetry,
+                    VortexEventIds.ErrorGroupingWriteRetry,
                     ex,
                     "Failed to persist a batch of {Count} error-grouping rows (attempt {Attempt}/{Max}). Retrying.",
                     batch.Count,
@@ -225,7 +225,7 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
             catch (Exception ex)
             {
                 _logger.LogError(
-                    TurboEventIds.ErrorGroupingWriteFailed,
+                    VortexEventIds.ErrorGroupingWriteFailed,
                     ex,
                     "Failed to persist a batch of {Count} error-grouping rows; moving to dead-letter.",
                     batch.Count
@@ -239,7 +239,7 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
     }
 
     private static async Task<Dictionary<string, ErrorGroupEntity>> LoadOrCreateGroupsAsync(
-        TurboDbContext db,
+        VortexDbContext db,
         List<ErrorGroupingRecord> batch,
         CancellationToken ct
     )
@@ -323,7 +323,7 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
                 .ConfigureAwait(false);
 
             _logger.LogInformation(
-                TurboEventIds.ErrorGroupingWriteDeadLettered,
+                VortexEventIds.ErrorGroupingWriteDeadLettered,
                 "Wrote {Count} error-grouping records to dead-letter file {Path}",
                 batch.Count,
                 path
@@ -332,7 +332,7 @@ internal sealed class ErrorGroupingWriterService : BackgroundService
         catch (Exception ex)
         {
             _logger.LogError(
-                TurboEventIds.ErrorGroupingDeadLetterWriteFailed,
+                VortexEventIds.ErrorGroupingDeadLetterWriteFailed,
                 ex,
                 "Failed to write {Count} error-grouping records to dead-letter file.",
                 batch.Count

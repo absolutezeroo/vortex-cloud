@@ -17,7 +17,7 @@ namespace Vortex.Observability.Diagnostics;
 /// </list>
 /// New ids are appended here rather than declared inline at the call site.
 /// </summary>
-public static class TurboEventIds
+public static class VortexEventIds
 {
     public static readonly EventId ObservabilityReady = new(1000, nameof(ObservabilityReady));
     public static readonly EventId TraceScopeFault = new(1001, nameof(TraceScopeFault));

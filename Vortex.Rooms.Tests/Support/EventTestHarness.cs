@@ -84,12 +84,12 @@ internal sealed class EventTestHarness
         }
     }
 
-    private sealed class FixedContextAccessor(string correlationId) : ITurboContextAccessor
+    private sealed class FixedContextAccessor(string correlationId) : IVortexContextAccessor
     {
-        public ITurboContext? Current { get; private set; } =
-            new TurboContext(new CorrelationId(correlationId), "test");
+        public IVortexContext? Current { get; private set; } =
+            new VortexContext(new CorrelationId(correlationId), "test");
 
-        public ITurboTraceScope BeginScope(
+        public IVortexTraceScope BeginScope(
             string operation,
             string? sessionKey = null,
             CorrelationId? correlationId = null,
@@ -97,8 +97,8 @@ internal sealed class EventTestHarness
             int? roomId = null
         )
         {
-            ITurboContext? previous = Current;
-            Current = new TurboContext(
+            IVortexContext? previous = Current;
+            Current = new VortexContext(
                 correlationId ?? previous?.CorrelationId ?? CorrelationId.None,
                 operation,
                 sessionKey,
@@ -109,10 +109,10 @@ internal sealed class EventTestHarness
             return new Scope(this, previous);
         }
 
-        private sealed class Scope(FixedContextAccessor accessor, ITurboContext? previous)
-            : ITurboTraceScope
+        private sealed class Scope(FixedContextAccessor accessor, IVortexContext? previous)
+            : IVortexTraceScope
         {
-            public ITurboContext Context { get; } = accessor.Current!;
+            public IVortexContext Context { get; } = accessor.Current!;
 
             public void Dispose()
             {

@@ -15,7 +15,7 @@ namespace Vortex.Database.Extensions;
 public static class ModelBuilderExtensions
 {
     /// <summary>
-    /// Applies a global <c>DeletedAt == null</c> query filter to every mapped <see cref="TurboEntity"/>,
+    /// Applies a global <c>DeletedAt == null</c> query filter to every mapped <see cref="VortexEntity"/>,
     /// so soft-deleted rows are excluded from every LINQ query by default instead of relying on each
     /// call site remembering to add <c>.Where(x =&gt; x.DeletedAt == null)</c>. Call sites that must
     /// still see soft-deleted rows (e.g. reviving a previously soft-deleted ban/mute on re-application)
@@ -31,7 +31,7 @@ public static class ModelBuilderExtensions
                 continue;
             }
 
-            if (!typeof(TurboEntity).IsAssignableFrom(entityType.ClrType))
+            if (!typeof(VortexEntity).IsAssignableFrom(entityType.ClrType))
             {
                 continue;
             }
@@ -39,7 +39,7 @@ public static class ModelBuilderExtensions
             ParameterExpression parameter = Expression.Parameter(entityType.ClrType, "e");
             LambdaExpression filter = Expression.Lambda(
                 Expression.Equal(
-                    Expression.Property(parameter, nameof(TurboEntity.DeletedAt)),
+                    Expression.Property(parameter, nameof(VortexEntity.DeletedAt)),
                     Expression.Constant(null, typeof(DateTime?))
                 ),
                 parameter

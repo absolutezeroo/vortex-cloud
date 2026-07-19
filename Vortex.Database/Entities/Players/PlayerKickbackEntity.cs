@@ -6,7 +6,7 @@ namespace Vortex.Database.Entities.Players;
 
 [Table("player_kickback")]
 [Index(nameof(PlayerEntityId), IsUnique = true)]
-public class PlayerKickbackEntity : TurboEntity
+public class PlayerKickbackEntity : VortexEntity
 {
     [Column("player_id")]
     public required int PlayerEntityId { get; set; }

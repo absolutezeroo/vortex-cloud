@@ -2,9 +2,9 @@ using Microsoft.Extensions.Logging.Console;
 
 namespace Vortex.Logging;
 
-internal class TurboConsoleFormatterOptions : ConsoleFormatterOptions
+internal class VortexConsoleFormatterOptions : ConsoleFormatterOptions
 {
-    public const string SECTION_NAME = "Logging:TurboConsole";
+    public const string SECTION_NAME = "Logging:VortexConsole";
 
     /// <summary>Render timestamps in UTC (default: false = local).</summary>
     public new bool UseUtcTimestamp { get; set; } = false;

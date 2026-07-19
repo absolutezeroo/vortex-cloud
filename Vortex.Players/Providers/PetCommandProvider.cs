@@ -13,7 +13,7 @@ using Vortex.Primitives.Pets.Snapshots;
 namespace Vortex.Players.Providers;
 
 public sealed class PetCommandProvider(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<IPetCommandProvider> logger
 ) : IPetCommandProvider
 {
@@ -21,7 +21,7 @@ public sealed class PetCommandProvider(
         int,
         ImmutableArray<PetCommandEntry>
     >.Empty;
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<IPetCommandProvider> _logger = logger;
 
     public IReadOnlyList<PetCommandEntry> GetCommandsForType(int petType)
@@ -68,7 +68,7 @@ public sealed class PetCommandProvider(
 
     public async Task ReloadAsync(CancellationToken ct)
     {
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {

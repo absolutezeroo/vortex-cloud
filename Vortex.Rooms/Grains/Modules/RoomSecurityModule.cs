@@ -119,7 +119,7 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
         DateTime now = DateTime.UtcNow;
         int roomId = _roomGrain._state.RoomId.Value;
 
-        await using TurboDbContext db = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext db = await _roomGrain._dbCtxFactory.CreateDbContextAsync(ct);
 
         int furnitureId = await (
             from rrs in db.RoomRentableSpaces.AsNoTracking()

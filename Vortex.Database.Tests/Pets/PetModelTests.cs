@@ -15,7 +15,7 @@ public sealed class PetModelTests
     [Fact]
     public void PetEntity_HasInventoryPlacementIndexesAndDefaults()
     {
-        using TurboDbContext context = NewContext();
+        using VortexDbContext context = NewContext();
 
         IEntityType pet = context.Model.FindEntityType(typeof(PetEntity))!;
 
@@ -42,7 +42,7 @@ public sealed class PetModelTests
     [Fact]
     public void PetFoodEntity_HasDefinitionUniquenessAndPetTypeIndex()
     {
-        using TurboDbContext context = NewContext();
+        using VortexDbContext context = NewContext();
 
         IEntityType petFood = context.Model.FindEntityType(typeof(PetFoodEntity))!;
 
@@ -61,9 +61,9 @@ public sealed class PetModelTests
             .Contain(i => i.Properties.Any(p => p.Name == nameof(PetFoodEntity.PetType)));
     }
 
-    private static TurboDbContext NewContext() =>
+    private static VortexDbContext NewContext() =>
         new(
-            new DbContextOptionsBuilder<TurboDbContext>()
+            new DbContextOptionsBuilder<VortexDbContext>()
                 .UseInMemoryDatabase($"pet-model-{Guid.NewGuid():N}")
                 .Options
         );

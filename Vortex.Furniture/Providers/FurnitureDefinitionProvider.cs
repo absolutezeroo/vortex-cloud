@@ -17,12 +17,12 @@ namespace Vortex.Furniture.Providers;
 
 public sealed class FurnitureDefinitionProvider(
     IOptions<FurnitureConfig> config,
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<IFurnitureDefinitionProvider> logger
 ) : IFurnitureDefinitionProvider
 {
     private readonly FurnitureConfig _config = config.Value;
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<IFurnitureDefinitionProvider> _logger = logger;
 
     private ImmutableDictionary<int, FurnitureDefinitionSnapshot> _definitionsById =
@@ -35,7 +35,7 @@ public sealed class FurnitureDefinitionProvider(
 
     public async Task ReloadAsync(CancellationToken ct = default)
     {
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {

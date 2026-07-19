@@ -14,7 +14,7 @@ namespace Vortex.Database.Entities.Audit;
 [Table("item_events")]
 [Index(nameof(ItemId), nameof(OccurredAt))]
 [Index(nameof(CorrelationId))]
-public class ItemEventEntity : TurboEntity
+public class ItemEventEntity : VortexEntity
 {
     [Column("item_id")]
     public required long ItemId { get; set; }

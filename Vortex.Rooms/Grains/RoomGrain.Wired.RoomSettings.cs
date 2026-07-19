@@ -15,7 +15,7 @@ public sealed partial class RoomGrain
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         RoomEntity? entity = await dbCtx
             .Rooms.AsNoTracking()
@@ -42,7 +42,7 @@ public sealed partial class RoomGrain
             return null;
         }
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         RoomEntity? entity = await dbCtx.Rooms.FirstOrDefaultAsync(
             r => r.Id == _state.RoomId.Value,

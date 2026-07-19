@@ -20,14 +20,14 @@ using Vortex.Primitives.Players.Wallet;
 namespace Vortex.Players.Grains;
 
 internal sealed class PlayerWalletGrain(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     ICurrencyTypeProvider currencyTypeProvider,
     IGrainFactory grainFactory,
     IEventPublisher events,
     ILogger<PlayerWalletGrain> logger
 ) : Grain, IPlayerWalletGrain
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ICurrencyTypeProvider _currencyTypeProvider = currencyTypeProvider;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IEventPublisher _events = events;
@@ -62,7 +62,7 @@ internal sealed class PlayerWalletGrain(
             && normalizedRequests.Count > 0
         )
         {
-            await using TurboDbContext dbCtx = await _dbCtxFactory
+            await using VortexDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(true);
             await using IDbContextTransaction tx = await dbCtx
@@ -245,7 +245,7 @@ internal sealed class PlayerWalletGrain(
     }
 
     private async Task<WalletCurrencyUpdateSnapshot> ProcessDebitRequestAsync(
-        TurboDbContext dbCtx,
+        VortexDbContext dbCtx,
         WalletDebitRequest request,
         CancellationToken ct
     )
@@ -324,7 +324,7 @@ internal sealed class PlayerWalletGrain(
             return;
         }
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         PlayerCurrencyEntity? entity = await dbCtx
             .PlayerCurrencies.Where(x =>
@@ -375,7 +375,7 @@ internal sealed class PlayerWalletGrain(
     {
         _currenciesByKind.Clear();
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         List<PlayerCurrencyEntity> entities = await dbCtx
             .PlayerCurrencies.AsNoTracking()
@@ -417,7 +417,7 @@ internal sealed class PlayerWalletGrain(
 
             if (creditType is not null)
             {
-                await using TurboDbContext writeCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+                await using VortexDbContext writeCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
                 PlayerCurrencyEntity entity = new PlayerCurrencyEntity
                 {

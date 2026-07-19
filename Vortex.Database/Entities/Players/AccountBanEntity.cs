@@ -12,7 +12,7 @@ namespace Vortex.Database.Entities.Players;
 /// </summary>
 [Table("account_bans")]
 [Index(nameof(PlayerAccountEntityId), IsUnique = true)]
-public class AccountBanEntity : TurboEntity
+public class AccountBanEntity : VortexEntity
 {
     [Column("account_id")]
     public required int PlayerAccountEntityId { get; set; }

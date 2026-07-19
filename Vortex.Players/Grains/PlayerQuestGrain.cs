@@ -25,12 +25,12 @@ namespace Vortex.Players.Grains;
 /// </summary>
 internal sealed class PlayerQuestGrain(
     IGrainFactory grainFactory,
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<PlayerQuestGrain> logger
 ) : Grain, IPlayerQuestGrain
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<PlayerQuestGrain> _logger = logger;
 
     /// <summary>Campaign whose quests form the rotating daily pool (shown via the daily section, not
@@ -97,7 +97,7 @@ internal sealed class PlayerQuestGrain(
     {
         try
         {
-            await using TurboDbContext dbCtx = await _dbCtxFactory
+            await using VortexDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(true);
 
@@ -190,7 +190,7 @@ internal sealed class PlayerQuestGrain(
 
         try
         {
-            await using TurboDbContext dbCtx = await _dbCtxFactory
+            await using VortexDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(true);
 
@@ -328,7 +328,7 @@ internal sealed class PlayerQuestGrain(
 
         try
         {
-            await using TurboDbContext dbCtx = await _dbCtxFactory
+            await using VortexDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(true);
 
@@ -458,7 +458,7 @@ internal sealed class PlayerQuestGrain(
     {
         try
         {
-            await using TurboDbContext dbCtx = await _dbCtxFactory
+            await using VortexDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(true);
 

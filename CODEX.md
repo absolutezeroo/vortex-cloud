@@ -1,11 +1,11 @@
-# Codex Adapter (Turbo Cloud)
+# Codex Adapter (Vortex Cloud)
 
 This adapter points Codex to the canonical AI contract for this repository.
 
 ## Workspace context
 When this repository is opened through the parent multi-root workspace, also load
 `../docs/AI_CONTEXT.md` before making workspace-level or cross-project changes.
-That file defines the Vortex Core product identity, the Turbo technical naming
+That file defines the Vortex Core product identity, the Vortex technical naming
 boundary, and the rule that the server and client roots must stay separate.
 
 ## Required context load order
@@ -18,10 +18,10 @@ boundary, and the rule that the server and client roots must stay separate.
 - Keep packet handlers orchestration-only.
 - Do not query database contexts/repositories from packet handlers.
 - Do not send composers directly to sockets/sessions from handlers; route via `PlayerPresenceGrain.SendComposerAsync`.
-- For `Revision<id>` parser/serializer work, edit `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`, not `turbo-cloud`.
+- For `Revision<id>` parser/serializer work, edit `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`, not `vortex-cloud`.
 
 ## Validation commands
 ```bash
-dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck
-dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate
+dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudFastCheck
+dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate
 ```

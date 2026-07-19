@@ -179,7 +179,7 @@ serializer needs to turn `WaveComposer` into bytes for your target client. Per
 ```
 
 Do **not** create `Revision<id>/Parsers` or `Revision<id>/Serializers` directories
-inside `turbo-cloud`. Add the header→message and composer→bytes mappings in the plugin
+inside `vortex-cloud`. Add the header→message and composer→bytes mappings in the plugin
 repo for the revision you target.
 
 ---
@@ -209,7 +209,7 @@ code is this?" and put it where the answer says:
   to the room stream; presence grains fan out.
 - ❌ Trusting a player id from the packet body. → Read it from `MessageContext`.
 - ❌ Putting permission logic in the handler. → It goes in `SecurityModule`.
-- ❌ Adding a `Revision/Serializers` folder in `turbo-cloud`. → That lives in the
+- ❌ Adding a `Revision/Serializers` folder in `vortex-cloud`. → That lives in the
   plugin repo.
 
 ---

@@ -20,7 +20,7 @@ using Vortex.Primitives.Players;
 namespace Vortex.Players.Grains;
 
 internal sealed class GroupGrain(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     IEventPublisher events,
     ILogger<GroupGrain> logger,
     IOptions<GroupConfig> groupConfig
@@ -48,7 +48,7 @@ internal sealed class GroupGrain(
 
     public async Task<GroupDetailsSnapshot?> GetDetailsAsync(PlayerId viewer, CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         GroupEntity? group = await dbCtx
             .Groups.AsNoTracking()
@@ -142,7 +142,7 @@ internal sealed class GroupGrain(
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         GroupEntity? group = await dbCtx
             .Groups.AsNoTracking()
@@ -264,7 +264,7 @@ internal sealed class GroupGrain(
 
     public async Task<int?> JoinAsync(PlayerId player, CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         GroupEntity? group = await dbCtx
             .Groups.AsNoTracking()
@@ -347,7 +347,7 @@ internal sealed class GroupGrain(
 
     public async Task<GroupEditInfoSnapshot?> GetEditInfoAsync(PlayerId actor, CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         GroupEntity? group = await dbCtx
             .Groups.AsNoTracking()
@@ -488,7 +488,7 @@ internal sealed class GroupGrain(
 
     public async Task<bool> DeactivateAsync(PlayerId actor, CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         GroupEntity? group = await dbCtx.Groups.FirstOrDefaultAsync(
             g => g.Id == GroupId && g.DeletedAt == null,
@@ -538,7 +538,7 @@ internal sealed class GroupGrain(
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         GroupEntity? group = await LoadIfAdminAsync(dbCtx, actor, ct);
         if (group is null)
@@ -596,7 +596,7 @@ internal sealed class GroupGrain(
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         if (await LoadIfAdminAsync(dbCtx, actor, ct) is null)
         {
@@ -632,7 +632,7 @@ internal sealed class GroupGrain(
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         GroupEntity? group = await LoadIfAdminAsync(dbCtx, actor, ct);
         if (group is null)
@@ -700,7 +700,7 @@ internal sealed class GroupGrain(
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         GroupEntity? group = await LoadIfAdminAsync(dbCtx, actor, ct);
         // The owner can never be removed.
@@ -749,7 +749,7 @@ internal sealed class GroupGrain(
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         GroupEntity? group = await dbCtx.Groups.FirstOrDefaultAsync(
             g => g.Id == GroupId && g.DeletedAt == null,
@@ -801,7 +801,7 @@ internal sealed class GroupGrain(
 
     public async Task<int> GetMemberFurniCountAsync(int targetPlayerId, CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         int? baseRoomId = await dbCtx
             .Groups.AsNoTracking()
@@ -841,7 +841,7 @@ internal sealed class GroupGrain(
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         GroupEntity? group = await dbCtx.Groups.FirstOrDefaultAsync(
             g => g.Id == GroupId && g.DeletedAt == null,
@@ -885,7 +885,7 @@ internal sealed class GroupGrain(
 
     /// <summary>Loads the (tracked) group iff the actor is owner or admin; else null.</summary>
     private async Task<GroupEntity?> LoadIfAdminAsync(
-        TurboDbContext dbCtx,
+        VortexDbContext dbCtx,
         PlayerId actor,
         CancellationToken ct
     )

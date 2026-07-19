@@ -15,11 +15,11 @@ using Vortex.Primitives.Vault.Enums;
 namespace Vortex.Players.Grains;
 
 internal sealed class PlayerVaultGrain(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory
 ) : Grain, IPlayerVaultGrain
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
 
     private readonly List<PlayerVaultIncomeRewardEntity> _pendingRewards = [];
@@ -80,7 +80,7 @@ internal sealed class PlayerVaultGrain(
 
         List<int> ids = toGrant.Select(r => r.Id).ToList();
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
 
@@ -107,7 +107,7 @@ internal sealed class PlayerVaultGrain(
             return;
         }
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
 
@@ -149,7 +149,7 @@ internal sealed class PlayerVaultGrain(
     {
         _pendingRewards.Clear();
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
 

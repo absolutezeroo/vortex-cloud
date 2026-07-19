@@ -26,7 +26,7 @@ internal sealed partial class RoomService
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 

@@ -12,7 +12,7 @@ namespace Vortex.Database.Entities.Furniture;
 [Table("room_rentable_spaces")]
 [Index(nameof(FurnitureEntityId), IsUnique = true)]
 [Index(nameof(RenterPlayerEntityId))]
-public class RoomRentableSpaceEntity : TurboEntity
+public class RoomRentableSpaceEntity : VortexEntity
 {
     [Column("furniture_id")]
     public required int FurnitureEntityId { get; set; }

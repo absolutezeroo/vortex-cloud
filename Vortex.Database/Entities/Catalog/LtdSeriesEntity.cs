@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Vortex.Database.Entities.Catalog;
 
 [Table("catalog_ltd_series")]
-public class LtdSeriesEntity : TurboEntity
+public class LtdSeriesEntity : VortexEntity
 {
     [Column("catalog_product_id")]
     public required int CatalogProductEntityId { get; set; }

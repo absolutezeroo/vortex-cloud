@@ -21,7 +21,7 @@ namespace Vortex.Database.Entities.Audit;
 [Index(nameof(TargetPlayerId), nameof(OccurredAt))]
 [Index(nameof(RoomId), nameof(OccurredAt))]
 [Index(nameof(Category), nameof(OccurredAt))]
-public class AuditEventEntity : TurboEntity
+public class AuditEventEntity : VortexEntity
 {
     [Column("occurred_at")]
     public required DateTime OccurredAt { get; set; }

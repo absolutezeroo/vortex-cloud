@@ -15,7 +15,7 @@ namespace Vortex.Database.Entities.Players;
 
 [Table("players")]
 [Index(nameof(Name), IsUnique = true)]
-public class PlayerEntity : TurboEntity
+public class PlayerEntity : VortexEntity
 {
     [Column("account_id")]
     public int? PlayerAccountEntityId { get; set; }

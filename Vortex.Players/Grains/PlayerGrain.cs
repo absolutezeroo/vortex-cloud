@@ -27,7 +27,7 @@ namespace Vortex.Players.Grains;
 internal sealed partial class PlayerGrain : Grain, IPlayerGrain
 {
     private readonly ClubConfig _clubConfig;
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory;
     private readonly IEventPublisher _events;
     private readonly IGrainFactory _grainFactory;
     private readonly ILogger<PlayerGrain> _logger;
@@ -35,7 +35,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
     private readonly PlayerLiveState _state;
 
     public PlayerGrain(
-        IDbContextFactory<TurboDbContext> dbCtxFactory,
+        IDbContextFactory<VortexDbContext> dbCtxFactory,
         IGrainFactory grainFactory,
         IEventPublisher events,
         ILogger<PlayerGrain> logger,
@@ -309,7 +309,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
             _state.KickbackPaydayAt = now.AddDays(_clubConfig.GiftCycleDays);
         }
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         PlayerSubscriptionEntity? existing = await dbCtx.PlayerSubscriptions.FirstOrDefaultAsync(
             x =>
@@ -335,7 +335,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         {
             PlayerEntity playerEntity =
                 await dbCtx.Players.FindAsync([_state.PlayerId.Value], ct)
-                ?? throw new TurboException(TurboErrorCodeEnum.PlayerNotFound);
+                ?? throw new VortexException(VortexErrorCodeEnum.PlayerNotFound);
 
             dbCtx.PlayerSubscriptions.Add(
                 new PlayerSubscriptionEntity
@@ -386,7 +386,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
 
         _state.ClubGiftsAvailable--;
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         await dbCtx
             .PlayerSubscriptions.Where(x =>
@@ -426,7 +426,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         int? accountId = await FindLinkedAccountIdAsync(dbCtx, ct).ConfigureAwait(true);
 
@@ -492,7 +492,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         PlayerEntity? player = await dbCtx
             .Players.FindAsync([_state.PlayerId.Value], ct)
@@ -519,7 +519,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
 
     public async Task<DateTime?> GetActiveBanExpiryAsync(CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         int? accountId = await FindLinkedAccountIdAsync(dbCtx, ct).ConfigureAwait(true);
 
@@ -544,7 +544,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         return activeBan?.DateExpires;
     }
 
-    private async Task<int?> FindLinkedAccountIdAsync(TurboDbContext dbCtx, CancellationToken ct)
+    private async Task<int?> FindLinkedAccountIdAsync(VortexDbContext dbCtx, CancellationToken ct)
     {
         PlayerEntity? player = await dbCtx
             .Players.FindAsync([_state.PlayerId.Value], ct)
@@ -641,7 +641,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         _state.ClubGiftsAvailable += tokensToGrant;
         _state.ClubNextGiftAt = nextGift;
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         await dbCtx
             .PlayerSubscriptions.Where(x =>
@@ -670,13 +670,13 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
 
     private async Task HydrateAsync(CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         PlayerEntity entity =
             await dbCtx
                 .Players.AsNoTracking()
                 .SingleOrDefaultAsync(x => x.Id == (int)_state.PlayerId, ct)
-            ?? throw new TurboException(TurboErrorCodeEnum.PlayerNotFound);
+            ?? throw new VortexException(VortexErrorCodeEnum.PlayerNotFound);
 
         _state.Name = entity.Name;
         _state.Motto = entity.Motto ?? string.Empty;
@@ -746,7 +746,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
 
     private async Task WriteToDatabaseAsync(CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         PlayerSummarySnapshot snapshot = await GetSummaryAsync(ct);
 
@@ -819,7 +819,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         _state.ClubLastExpiredAt = _state.ClubExpiresAt;
         _state.ClubLevel = 0;
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         await dbCtx
             .PlayerSubscriptions.Where(x =>
@@ -895,7 +895,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
             return;
         }
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         PlayerKickbackEntity? existing = await dbCtx.PlayerKickbacks.FirstOrDefaultAsync(
             x => x.PlayerEntityId == (int)_state.PlayerId,
@@ -913,7 +913,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         {
             PlayerEntity playerEntity =
                 await dbCtx.Players.FindAsync([(int)_state.PlayerId], ct)
-                ?? throw new TurboException(TurboErrorCodeEnum.PlayerNotFound);
+                ?? throw new VortexException(VortexErrorCodeEnum.PlayerNotFound);
 
             dbCtx.PlayerKickbacks.Add(
                 new PlayerKickbackEntity

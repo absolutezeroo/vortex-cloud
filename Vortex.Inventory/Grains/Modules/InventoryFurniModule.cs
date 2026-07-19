@@ -50,7 +50,7 @@ internal sealed class InventoryFurniModule(
     {
         if (!_state.FurnitureById.TryAdd(item.ItemId, item))
         {
-            throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+            throw new VortexException(VortexErrorCodeEnum.FloorItemNotFound);
         }
 
         return Task.FromResult(true);

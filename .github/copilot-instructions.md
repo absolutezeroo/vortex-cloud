@@ -1,4 +1,4 @@
-# Copilot Instructions (Turbo Cloud)
+# Copilot Instructions (Vortex Cloud)
 
 Before suggesting code, read:
 1. `AGENTS.md` (canonical AI coding contract)
@@ -26,11 +26,11 @@ Include in every request:
 - Keep plugin lifecycle logic centralized in `Vortex.Plugins`.
 - Keep packet handlers in `Vortex.PacketHandlers` and domain logic in domain modules.
 - Respect Orleans grain boundaries and avoid bypassing grain orchestration.
-- `Vortex.Revisions/Revision20260112/**` is the embedded default revision and stays in `turbo-cloud`
+- `Vortex.Revisions/Revision20260112/**` is the embedded default revision and stays in `vortex-cloud`
   (`Parsers/`/`Serializers/` there are expected, not a violation).
 - For any other/additional protocol revision, target the plugin repo path instead:
   - `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`
-  - Do not generate new `Revision<id>/Parsers` or `Revision<id>/Serializers` in `turbo-cloud` for
+  - Do not generate new `Revision<id>/Parsers` or `Revision<id>/Serializers` in `vortex-cloud` for
     revisions other than the embedded `Revision20260112` default.
 - For extended profile flow:
   - keep handlers orchestration-only
@@ -68,5 +68,5 @@ Include in every request:
 
 ## Validation guidance
 Generated changes should pass:
-- `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck`
-- `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate`
+- `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudFastCheck`
+- `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate`

@@ -231,7 +231,7 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
             {
                 return false;
 
-                //throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+                //throw new VortexException(VortexErrorCodeEnum.InvalidMoveTarget);
             }
 
             IReadOnlyList<(int X, int Y)> path = _roomGrain.PathingSystem.FindPath(
@@ -244,7 +244,7 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
             {
                 return false;
 
-                // throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+                // throw new VortexException(VortexErrorCodeEnum.InvalidMoveTarget);
             }
 
             avatar.TilePath.Clear();

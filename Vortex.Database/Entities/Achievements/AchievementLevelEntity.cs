@@ -12,7 +12,7 @@ namespace Vortex.Database.Entities.Achievements;
 /// </summary>
 [Table("achievement_levels")]
 [Index(nameof(AchievementEntityId), nameof(Level), IsUnique = true)]
-public class AchievementLevelEntity : TurboEntity
+public class AchievementLevelEntity : VortexEntity
 {
     [Column("achievement_id")]
     public required int AchievementEntityId { get; set; }

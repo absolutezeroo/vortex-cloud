@@ -20,8 +20,8 @@ using Vortex.Primitives.Catalog;
 
 namespace Vortex.Database.Context;
 
-public class TurboDbContext(DbContextOptions<TurboDbContext> options)
-    : DbContextBase<TurboDbContext>(options)
+public class VortexDbContext(DbContextOptions<VortexDbContext> options)
+    : DbContextBase<VortexDbContext>(options)
 {
     public DbSet<AuditEventEntity> AuditEvents { get; init; } = null!;
 

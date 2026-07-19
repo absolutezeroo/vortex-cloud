@@ -11,7 +11,7 @@ using Vortex.Database.Context;
 
 namespace Vortex.Database.Migrations
 {
-    [DbContext(typeof(TurboDbContext))]
+    [DbContext(typeof(VortexDbContext))]
     [Migration("20260613102045_AddCatalogFrontPageItems")]
     partial class AddCatalogFrontPageItems
     {

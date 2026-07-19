@@ -12,11 +12,11 @@ using Vortex.Primitives.Catalog.Providers;
 namespace Vortex.Catalog.Providers;
 
 public sealed class CatalogClubOfferProvider(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<ICatalogClubOfferProvider> logger
 ) : ICatalogClubOfferProvider
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<ICatalogClubOfferProvider> _logger = logger;
 
     private IReadOnlyList<ClubOffer> _offers = [];
@@ -41,7 +41,7 @@ public sealed class CatalogClubOfferProvider(
 
     public async Task ReloadAsync(CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 

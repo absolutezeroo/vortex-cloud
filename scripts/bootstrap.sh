@@ -51,7 +51,7 @@ dotnet build Vortex.Main/Vortex.Main.csproj
 
 step "Bootstrap complete"
 echo "Next steps:"
-echo "  1) Update Turbo:Database:ConnectionString in appsettings.Development.json"
-echo "  2) Run: dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate"
+echo "  1) Update Vortex:Database:ConnectionString in appsettings.Development.json"
+echo "  2) Run: dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate"
 echo "  3) Run: DOTNET_ENVIRONMENT=Development dotnet run --project Vortex.Main/Vortex.Main.csproj"
 echo "  4) Optional integrated core+plugin loop: sh ../turbo-sample-plugin/scripts/dev-integrated.sh"

@@ -41,7 +41,7 @@ public class ConvertGlobalRoomIdMessageHandler(
                 )
                 .ConfigureAwait(false);
         }
-        catch (TurboException ex)
+        catch (VortexException ex)
         {
             logger.LogWarning(
                 ex,

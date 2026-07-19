@@ -5,7 +5,7 @@ namespace Vortex.Database.Entities.Players;
 
 [Table("player_navigator_view_modes")]
 [Index(nameof(PlayerEntityId), nameof(SearchCode), IsUnique = true)]
-public class PlayerNavigatorViewModeEntity : TurboEntity
+public class PlayerNavigatorViewModeEntity : VortexEntity
 {
     [Column("player_id")]
     public required int PlayerEntityId { get; set; }

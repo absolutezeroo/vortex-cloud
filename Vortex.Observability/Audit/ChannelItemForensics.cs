@@ -12,12 +12,12 @@ namespace Vortex.Observability.Audit;
 /// </summary>
 public sealed class ChannelItemForensics(
     AuditChannel channel,
-    ITurboContextAccessor contextAccessor,
+    IVortexContextAccessor contextAccessor,
     ILogger<ChannelItemForensics> logger
 ) : IItemForensics
 {
     private readonly AuditChannel _channel = channel;
-    private readonly ITurboContextAccessor _contextAccessor = contextAccessor;
+    private readonly IVortexContextAccessor _contextAccessor = contextAccessor;
     private readonly ILogger<ChannelItemForensics> _logger = logger;
 
     public void Record(in ItemForensicEvent itemEvent)
@@ -28,7 +28,7 @@ public sealed class ChannelItemForensics(
         if (!_channel.TryWrite(record))
         {
             _logger.LogWarning(
-                TurboEventIds.AuditDropped,
+                VortexEventIds.AuditDropped,
                 "Item forensic event dropped (channel saturated): {EventType} item {ItemId}",
                 itemEvent.EventType,
                 itemEvent.ItemId

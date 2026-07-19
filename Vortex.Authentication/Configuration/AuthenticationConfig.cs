@@ -2,7 +2,7 @@ namespace Vortex.Authentication.Configuration;
 
 public sealed class AuthenticationConfig
 {
-    public const string SECTION_NAME = "Turbo:Authentication";
+    public const string SECTION_NAME = "Vortex:Authentication";
 
     /// <summary>
     /// Secret used for HMAC-SHA256 hashing of remote IP addresses in auth events.

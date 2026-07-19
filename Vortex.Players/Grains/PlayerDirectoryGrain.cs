@@ -16,11 +16,11 @@ namespace Vortex.Players.Grains;
 
 [KeepAlive]
 internal class PlayerDirectoryGrain(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<PlayerDirectoryGrain> logger
 ) : Grain, IPlayerDirectoryGrain
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<PlayerDirectoryGrain> _logger = logger;
 
     private readonly Dictionary<PlayerId, string> _idToName = [];
@@ -37,7 +37,7 @@ internal class PlayerDirectoryGrain(
 
         try
         {
-            await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+            await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
             dbName = await dbCtx
                 .Players.AsNoTracking()
@@ -99,7 +99,9 @@ internal class PlayerDirectoryGrain(
 
                 try
                 {
-                    await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+                    await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(
+                        ct
+                    );
 
                     players = await dbCtx
                         .Players.AsNoTracking()
@@ -156,7 +158,7 @@ internal class PlayerDirectoryGrain(
 
         try
         {
-            await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+            await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
             var player = await dbCtx
                 .Players.AsNoTracking()
@@ -206,7 +208,7 @@ internal class PlayerDirectoryGrain(
 
         try
         {
-            await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+            await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
             var players = await dbCtx
                 .Players.AsNoTracking()

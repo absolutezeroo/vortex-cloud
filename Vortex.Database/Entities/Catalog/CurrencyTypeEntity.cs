@@ -7,7 +7,7 @@ using Vortex.Primitives.Players.Enums.Wallet;
 namespace Vortex.Database.Entities.Catalog;
 
 [Table("currency_types")]
-public class CurrencyTypeEntity : TurboEntity
+public class CurrencyTypeEntity : VortexEntity
 {
     [Column("name")]
     public required string? Name { get; set; }

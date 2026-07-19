@@ -11,7 +11,7 @@ Summary: 0) conventions and naming · 1) friends (existing) · 2) groups · 3) r
 
 ## 0. Conventions & naming rule
 
-### 0.1 Base entity (inherited from `TurboEntity`, DO NOT redeclare)
+### 0.1 Base entity (inherited from `VortexEntity`, DO NOT redeclare)
 
 | Column | Type | Role |
 |---|---|---|
@@ -85,7 +85,7 @@ Habbo-style group model. **Decision**: forum config is separated from identity (
 [Table("groups")]
 [Index(nameof(RoomEntityId), IsUnique = true)]
 [Index(nameof(OwnerPlayerEntityId))]
-public class GroupEntity : TurboEntity
+public class GroupEntity : VortexEntity
 {
     [Column("name")] [MaxLength(50)] public required string Name { get; set; }
     [Column("description")] [MaxLength(255)] public string? Description { get; set; }
@@ -189,7 +189,7 @@ support filtered uniqueness) · history is **free via `economy_ledger`** (rental
 [Table("room_rentable_spaces")]
 [Index(nameof(FurnitureEntityId), IsUnique = true)]
 [Index(nameof(RenterPlayerEntityId))]
-public class RoomRentableSpaceEntity : TurboEntity
+public class RoomRentableSpaceEntity : VortexEntity
 {
     [Column("furniture_id")] public required int FurnitureEntityId { get; set; }
     [Column("renter_player_id")] public int? RenterPlayerEntityId { get; set; }
@@ -240,7 +240,7 @@ Standard Habbo pet model. A pet belongs to a player, lives in a room or in inven
 [Table("pets")]
 [Index(nameof(OwnerPlayerEntityId))]
 [Index(nameof(RoomEntityId))]
-public class PetEntity : TurboEntity
+public class PetEntity : VortexEntity
 {
     [Column("player_id")] public required int OwnerPlayerEntityId { get; set; }
     [Column("room_id")] public int? RoomEntityId { get; set; }
@@ -286,7 +286,7 @@ Effect values are server-owned (obfuscated client does not expose them, same as 
 ```csharp
 [Table("pet_food")]
 [Index(nameof(FurnitureDefinitionEntityId), nameof(PetType), IsUnique = true)]
-public class PetFoodEntity : TurboEntity
+public class PetFoodEntity : VortexEntity
 {
     [Column("furniture_definition_id")] public required int FurnitureDefinitionEntityId { get; set; }
     [Column("pet_type")] public required int PetType { get; set; }
@@ -329,7 +329,7 @@ Pet design (learning loop) implies two config tables. See `PETS-DESIGN.md` for r
 | `level_required` | int | no | — | minimum level to execute |
 
 > A pet executes a command only if `pet.level >= level_required`. Same conventions as rest of
-> model (`TurboEntity`, enums in `Vortex.Primitives.Pets.Enums`).
+> model (`VortexEntity`, enums in `Vortex.Primitives.Pets.Enums`).
 
 **Out of immediate scope:**
 - **Color palettes** (`SellablePetPalettesEvent`) → `pet_palettes` (`pet_type`, palette, colors) —
@@ -363,7 +363,7 @@ responses). Two tables.
 [Table("bots")]
 [Index(nameof(OwnerPlayerEntityId))]
 [Index(nameof(RoomEntityId))]
-public class BotEntity : TurboEntity
+public class BotEntity : VortexEntity
 {
     [Column("player_id")] public required int OwnerPlayerEntityId { get; set; }
     [Column("room_id")] public int? RoomEntityId { get; set; }
@@ -451,7 +451,7 @@ loss of typed columns/indexes, and impossible retention by type.
 
 ## 9. Anti-error checklist (review before adding a table)
 
-- [ ] Inherits `TurboEntity`; do not redeclare id/created_at/updated_at/deleted_at.
+- [ ] Inherits `VortexEntity`; do not redeclare id/created_at/updated_at/deleted_at.
 - [ ] “Delete” means `deleted_at`, never hard delete.
 - [ ] FK uses `[Column("x_id")] int` + `[ForeignKey]` nav pair, nullable configured correctly.
 - [ ] Relational pairs use `[Index(..., IsUnique = true)]` composite constraints.

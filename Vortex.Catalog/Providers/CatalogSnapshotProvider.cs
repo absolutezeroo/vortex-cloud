@@ -16,14 +16,14 @@ using Vortex.Primitives.Furniture.Providers;
 namespace Vortex.Catalog.Providers;
 
 public sealed class CatalogSnapshotProvider<TTag>(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<ICatalogSnapshotProvider<TTag>> logger,
     IFurnitureDefinitionProvider furnitureProvider,
     CatalogType catalogType
 ) : ICatalogSnapshotProvider<TTag>
     where TTag : ICatalogTag
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<ICatalogSnapshotProvider<TTag>> _logger = logger;
     private readonly IFurnitureDefinitionProvider _furnitureProvider = furnitureProvider;
     private CatalogSnapshot _current = CatalogSnapshot.Empty;
@@ -43,7 +43,7 @@ public sealed class CatalogSnapshotProvider<TTag>(
 
     public async Task ReloadAsync(CancellationToken ct)
     {
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {

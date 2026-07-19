@@ -11,7 +11,7 @@ internal sealed partial class PlayerGrain
 {
     public async Task<PlayerWiredPreferencesSnapshot> GetWiredPreferencesAsync(CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         PlayerWiredPreferencesEntity? entity = await dbCtx
             .PlayerWiredPreferences.AsNoTracking()
@@ -33,7 +33,7 @@ internal sealed partial class PlayerGrain
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         PlayerWiredPreferencesEntity? entity =
             await dbCtx.PlayerWiredPreferences.FirstOrDefaultAsync(

@@ -8,7 +8,7 @@ namespace Vortex.Database.Entities.Room;
 /// this table exists only to reject a repeat vote from the same player.</summary>
 [Table("room_ratings")]
 [Index(nameof(RoomEntityId), nameof(PlayerEntityId), IsUnique = true)]
-public class RoomRatingEntity : TurboEntity
+public class RoomRatingEntity : VortexEntity
 {
     [Column("room_id")]
     public required int RoomEntityId { get; set; }

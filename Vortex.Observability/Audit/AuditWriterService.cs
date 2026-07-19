@@ -35,7 +35,7 @@ public sealed class AuditWriterService : BackgroundService
     private readonly int _batchSize;
 
     private readonly AuditChannel _channel;
-    private readonly IDbContextFactory<TurboDbContext> _dbContextFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbContextFactory;
     private readonly string _deadLetterPath;
     private readonly ILogger<AuditWriterService> _logger;
     private readonly int _retryAttempts;
@@ -43,7 +43,7 @@ public sealed class AuditWriterService : BackgroundService
 
     public AuditWriterService(
         AuditChannel channel,
-        IDbContextFactory<TurboDbContext> dbContextFactory,
+        IDbContextFactory<VortexDbContext> dbContextFactory,
         IOptions<ObservabilityConfig> options,
         ILogger<AuditWriterService> logger
     )
@@ -143,7 +143,7 @@ public sealed class AuditWriterService : BackgroundService
         {
             try
             {
-                TurboDbContext db = await _dbContextFactory
+                VortexDbContext db = await _dbContextFactory
                     .CreateDbContextAsync(ct)
                     .ConfigureAwait(false);
 
@@ -170,7 +170,7 @@ public sealed class AuditWriterService : BackgroundService
             catch (Exception ex) when (attempt < _retryAttempts)
             {
                 _logger.LogWarning(
-                    TurboEventIds.AuditWriteRetry,
+                    VortexEventIds.AuditWriteRetry,
                     ex,
                     "Failed to persist a batch of {Count} durable observability record(s) (attempt {Attempt}/{Max}). Retrying.",
                     batch.Count,
@@ -186,7 +186,7 @@ public sealed class AuditWriterService : BackgroundService
             catch (Exception ex)
             {
                 _logger.LogError(
-                    TurboEventIds.AuditWriteFailed,
+                    VortexEventIds.AuditWriteFailed,
                     ex,
                     "Failed to persist a batch of {Count} durable observability record(s); moving to dead-letter.",
                     batch.Count
@@ -227,7 +227,7 @@ public sealed class AuditWriterService : BackgroundService
                 .ConfigureAwait(false);
 
             _logger.LogInformation(
-                TurboEventIds.AuditWriteDeadLettered,
+                VortexEventIds.AuditWriteDeadLettered,
                 "Wrote {Count} durable audit records to dead-letter file {Path}",
                 batch.Count,
                 _deadLetterPath
@@ -236,7 +236,7 @@ public sealed class AuditWriterService : BackgroundService
         catch (Exception ex)
         {
             _logger.LogError(
-                TurboEventIds.AuditDeadLetterWriteFailed,
+                VortexEventIds.AuditDeadLetterWriteFailed,
                 ex,
                 "Failed to write {Count} durable observability records to dead-letter file {Path}.",
                 batch.Count,

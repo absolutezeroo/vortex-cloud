@@ -16,16 +16,16 @@ namespace Vortex.Catalog;
 /// through the cached ICatalogSnapshotProvider, since scheduling (StartsAt/EndsAt) is time-sensitive
 /// in a way a periodically-refreshed snapshot isn't a good fit for.
 /// </summary>
-internal sealed class LtdScheduleService(IDbContextFactory<TurboDbContext> dbContextFactory)
+internal sealed class LtdScheduleService(IDbContextFactory<VortexDbContext> dbContextFactory)
     : ILtdScheduleService
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
 
     public async Task<LimitedOfferAppearanceSnapshot> GetNextAppearanceAsync(
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -80,7 +80,7 @@ internal sealed class LtdScheduleService(IDbContextFactory<TurboDbContext> dbCon
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 

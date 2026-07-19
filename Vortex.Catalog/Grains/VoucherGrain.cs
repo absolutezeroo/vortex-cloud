@@ -19,7 +19,7 @@ using Vortex.Primitives.Players.Grains;
 namespace Vortex.Catalog.Grains;
 
 public sealed class VoucherGrain(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
     ILogger<VoucherGrain> logger
 ) : Grain, IVoucherGrain
@@ -30,7 +30,7 @@ public sealed class VoucherGrain(
 
     public override async Task OnActivateAsync(CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         _voucher = await dbCtx
             .Vouchers.AsNoTracking()
@@ -71,7 +71,7 @@ public sealed class VoucherGrain(
             CreatedBy = spec.CreatedBy,
         };
 
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         dbCtx.Vouchers.Add(entity);
         await dbCtx.SaveChangesAsync(ct);
@@ -125,7 +125,7 @@ public sealed class VoucherGrain(
 
         int playerIdInt = playerId.Value;
 
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         bool alreadyRedeemed = await dbCtx.VoucherRedemptions.AnyAsync(
             v => v.VoucherEntityId == _voucher.Id && v.PlayerEntityId == playerIdInt,
@@ -194,7 +194,7 @@ public sealed class VoucherGrain(
             return FailCreate("not_found");
         }
 
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         VoucherEntity? entity = await dbCtx.Vouchers.FindAsync([_voucher.Id], ct);
 
@@ -226,7 +226,7 @@ public sealed class VoucherGrain(
             };
         }
 
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         int redemptionCount = await dbCtx.VoucherRedemptions.CountAsync(
             v => v.VoucherEntityId == _voucher.Id,

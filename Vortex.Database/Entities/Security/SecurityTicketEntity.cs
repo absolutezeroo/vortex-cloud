@@ -9,7 +9,7 @@ namespace Vortex.Database.Entities.Security;
 [Table("security_tickets")]
 [Index(nameof(PlayerEntityId), IsUnique = true)]
 [Index(nameof(Ticket), IsUnique = true)]
-public class SecurityTicketEntity : TurboEntity
+public class SecurityTicketEntity : VortexEntity
 {
     [Column("player_id")]
     public int PlayerEntityId { get; set; }

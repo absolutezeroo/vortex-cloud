@@ -2,7 +2,7 @@ namespace Vortex.PacketHandlers.Configuration;
 
 public sealed class ModerationConfig
 {
-    public const string SECTION_NAME = "Turbo:Moderation";
+    public const string SECTION_NAME = "Vortex:Moderation";
 
     /// <summary>
     /// The staff CFH tool's mute action carries no duration on the wire (unlike the in-room mute

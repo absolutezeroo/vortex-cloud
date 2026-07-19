@@ -4,7 +4,7 @@ namespace Vortex.Furniture.Configuration;
 
 public class FurnitureConfig
 {
-    public const string SECTION_NAME = "Turbo:Furniture";
+    public const string SECTION_NAME = "Vortex:Furniture";
 
     public Altitude MinimumZValue { get; init; } = Altitude.FromValue(0.01);
 }

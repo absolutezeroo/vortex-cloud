@@ -4,12 +4,12 @@ namespace Vortex.Logging.Extensions;
 
 public static class LoggingBuilderExtensions
 {
-    public static ILoggingBuilder AddTurboConsoleLogger(this ILoggingBuilder builder)
+    public static ILoggingBuilder AddVortexConsoleLogger(this ILoggingBuilder builder)
     {
-        builder.AddConsoleFormatter<TurboConsoleFormatter, TurboConsoleFormatterOptions>();
+        builder.AddConsoleFormatter<VortexConsoleFormatter, VortexConsoleFormatterOptions>();
         builder.AddConsole(opts =>
         {
-            opts.FormatterName = TurboConsoleFormatter.FORMATTER_NAME;
+            opts.FormatterName = VortexConsoleFormatter.FORMATTER_NAME;
         });
 
         return builder;

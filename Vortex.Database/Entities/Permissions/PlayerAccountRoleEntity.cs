@@ -8,7 +8,7 @@ namespace Vortex.Database.Entities.Permissions;
 /// shares the same staff rights.</summary>
 [Table("player_account_roles")]
 [Index(nameof(PlayerAccountEntityId), nameof(RoleEntityId), IsUnique = true)]
-public class PlayerAccountRoleEntity : TurboEntity
+public class PlayerAccountRoleEntity : VortexEntity
 {
     [Column("account_id")]
     public required int PlayerAccountEntityId { get; set; }

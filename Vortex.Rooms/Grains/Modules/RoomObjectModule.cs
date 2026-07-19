@@ -35,7 +35,7 @@ public sealed partial class RoomObjectModule(RoomGrain roomGrain)
             {
                 if (!_roomGrain._state.ItemsById.TryAdd(item.ObjectId, item))
                 {
-                    throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+                    throw new VortexException(VortexErrorCodeEnum.FloorItemNotFound);
                 }
 
                 if (!_roomGrain._state.OwnerNamesById.TryGetValue(item.OwnerId, out string? value))
@@ -62,7 +62,7 @@ public sealed partial class RoomObjectModule(RoomGrain roomGrain)
             {
                 if (!_roomGrain._state.AvatarsByObjectId.TryAdd(avatar.ObjectId, avatar))
                 {
-                    throw new TurboException(TurboErrorCodeEnum.AvatarNotFound);
+                    throw new VortexException(VortexErrorCodeEnum.AvatarNotFound);
                 }
 
                 await AttatchLogicAsync(avatar, ct);

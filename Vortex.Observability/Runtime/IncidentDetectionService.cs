@@ -21,13 +21,13 @@ public interface IIncidentDetectionService
 
 public sealed class IncidentDetectionService(
     IInfrastructureHealthService healthService,
-    IDbContextFactory<TurboDbContext> dbContextFactory,
+    IDbContextFactory<VortexDbContext> dbContextFactory,
     IOptions<ObservabilityConfig> options,
     ILogger<IncidentDetectionService> logger
 ) : IIncidentDetectionService
 {
     private readonly IInfrastructureHealthService _healthService = healthService;
-    private readonly IDbContextFactory<TurboDbContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
     private readonly ObservabilityConfig _config = options.Value;
     private readonly ILogger<IncidentDetectionService> _logger = logger;
     private readonly int _lookbackMinutes = Math.Max(1, options.Value.IncidentLookbackMinutes);
@@ -64,7 +64,7 @@ public sealed class IncidentDetectionService(
 
         try
         {
-            await using TurboDbContext db = await _dbContextFactory
+            await using VortexDbContext db = await _dbContextFactory
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(false);
 

@@ -52,7 +52,7 @@ public sealed class RoomObjectLogicProvider(
 
         if (reg is null)
         {
-            throw new TurboException(TurboErrorCodeEnum.InvalidLogic);
+            throw new VortexException(VortexErrorCodeEnum.InvalidLogic);
         }
 
         IServiceProvider sp = reg.ServiceProvider;

@@ -8,7 +8,7 @@ namespace Vortex.Database.Entities.Permissions;
 /// a role.</summary>
 [Table("role_permissions")]
 [Index(nameof(RoleEntityId), nameof(CapabilityKey), IsUnique = true)]
-public class RolePermissionEntity : TurboEntity
+public class RolePermissionEntity : VortexEntity
 {
     [Column("role_id")]
     public required int RoleEntityId { get; set; }

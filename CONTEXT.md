@@ -1,4 +1,4 @@
-# Turbo Cloud Architecture Context
+# Vortex Cloud Architecture Context
 
 `Vortex.Cloud.sln` is the main emulator solution. `Vortex.Main` is the runtime host and composition root.
 
@@ -26,11 +26,11 @@
 - Keep plugin lifecycle operations inside `Vortex.Plugins`; do not duplicate plugin loading logic in unrelated modules.
 - `Vortex.Revisions/Revision20260112/**` is the default revision embedded in core (so the emulator
   runs standalone without a plugin) — its `Parsers/` and `Serializers/` trees legitimately live in
-  `turbo-cloud` and are edited there.
+  `vortex-cloud` and are edited there.
 - Protocol revision parser/serializer trees for any **other/additional** revision (added via the
   plugin system) are owned by the plugin repo at:
   - `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`
-  - Do not create new `Revision<id>/Parsers` or `Revision<id>/Serializers` trees in `turbo-cloud`
+  - Do not create new `Revision<id>/Parsers` or `Revision<id>/Serializers` trees in `vortex-cloud`
     for revisions other than the embedded `Revision20260112` default.
 - Extended profile flow boundary:
   - `Vortex.PacketHandlers/Users/*ExtendedProfile*Handler.cs` orchestrates lookup + response mapping only.

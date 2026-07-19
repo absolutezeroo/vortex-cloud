@@ -7,7 +7,7 @@ namespace Vortex.Database.Entities.Players;
 
 [Table("player_currencies")]
 [Index(nameof(PlayerEntityId), nameof(CurrencyTypeEntityId), IsUnique = true)]
-public class PlayerCurrencyEntity : TurboEntity
+public class PlayerCurrencyEntity : VortexEntity
 {
     [Column("player_id")]
     public int PlayerEntityId { get; set; }

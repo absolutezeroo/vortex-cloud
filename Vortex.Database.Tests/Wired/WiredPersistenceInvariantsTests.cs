@@ -19,10 +19,10 @@ namespace Vortex.Database.Tests.Wired;
 /// </summary>
 public sealed class WiredPersistenceInvariantsTests
 {
-    private static TurboDbContext NewContext()
+    private static VortexDbContext NewContext()
     {
-        return new TurboDbContext(
-            new DbContextOptionsBuilder<TurboDbContext>()
+        return new VortexDbContext(
+            new DbContextOptionsBuilder<VortexDbContext>()
                 .UseInMemoryDatabase($"wired-{Guid.NewGuid():N}")
                 .Options
         );
@@ -31,7 +31,7 @@ public sealed class WiredPersistenceInvariantsTests
     [Fact]
     public void PermanentVariable_UniqueIndex_CoversTargetTypeTargetIdVariableId()
     {
-        using TurboDbContext ctx = NewContext();
+        using VortexDbContext ctx = NewContext();
 
         IIndex? uniqueIndex = ctx
             .Model.FindEntityType(typeof(WiredPermanentVariableEntity))!
@@ -57,7 +57,7 @@ public sealed class WiredPersistenceInvariantsTests
     [Fact]
     public void PermanentVariable_SetThenRead_RoundTrips()
     {
-        using TurboDbContext ctx = NewContext();
+        using VortexDbContext ctx = NewContext();
 
         ctx.WiredPermanentVariables.Add(
             new WiredPermanentVariableEntity
@@ -82,7 +82,7 @@ public sealed class WiredPersistenceInvariantsTests
     [Fact]
     public void PermanentVariable_DifferentTargetTypes_DoNotCollide()
     {
-        using TurboDbContext ctx = NewContext();
+        using VortexDbContext ctx = NewContext();
 
         // Same target id, same variable name, different target type — must be two distinct rows.
         ctx.WiredPermanentVariables.Add(
@@ -111,7 +111,7 @@ public sealed class WiredPersistenceInvariantsTests
     [Fact]
     public void RoomWiredLog_FilteredAndOrderedByRoom()
     {
-        using TurboDbContext ctx = NewContext();
+        using VortexDbContext ctx = NewContext();
 
         ctx.RoomWiredLogs.Add(
             new RoomWiredLogEntity
@@ -143,7 +143,7 @@ public sealed class WiredPersistenceInvariantsTests
     [Fact]
     public void PlayerWiredPreferences_UniqueIndex_CoversPlayerId()
     {
-        using TurboDbContext ctx = NewContext();
+        using VortexDbContext ctx = NewContext();
 
         IIndex? uniqueIndex = ctx
             .Model.FindEntityType(typeof(PlayerWiredPreferencesEntity))!

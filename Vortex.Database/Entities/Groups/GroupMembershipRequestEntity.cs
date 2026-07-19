@@ -11,7 +11,7 @@ namespace Vortex.Database.Entities.Groups;
 [Table("group_membership_requests")]
 [Index(nameof(GroupEntityId), nameof(PlayerEntityId), IsUnique = true)]
 [Index(nameof(PlayerEntityId))]
-public class GroupMembershipRequestEntity : TurboEntity
+public class GroupMembershipRequestEntity : VortexEntity
 {
     [Column("group_id")]
     public required int GroupEntityId { get; set; }

@@ -9,7 +9,7 @@ internal sealed class PluginEnvelope : AssemblyDescriptor
 {
     public required PluginManifest Manifest { get; init; }
     public required string Folder { get; init; }
-    public required ITurboPlugin Instance { get; init; }
+    public required IVortexPlugin Instance { get; init; }
     public required IServiceProvider ServiceProvider { get; init; }
     public required List<object> Disposables { get; init; }
 }

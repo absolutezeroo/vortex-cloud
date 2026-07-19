@@ -9,13 +9,14 @@ using Microsoft.Extensions.Options;
 
 namespace Vortex.Logging;
 
-internal sealed class TurboConsoleFormatter(
-    IOptionsMonitor<TurboConsoleFormatterOptions> optionsMonitor
+internal sealed class VortexConsoleFormatter(
+    IOptionsMonitor<VortexConsoleFormatterOptions> optionsMonitor
 ) : ConsoleFormatter(FORMATTER_NAME)
 {
-    public const string FORMATTER_NAME = "turbo";
+    public const string FORMATTER_NAME = "vortex";
 
-    private readonly IOptionsMonitor<TurboConsoleFormatterOptions> _optionsMonitor = optionsMonitor;
+    private readonly IOptionsMonitor<VortexConsoleFormatterOptions> _optionsMonitor =
+        optionsMonitor;
 
     private static readonly Dictionary<LogLevel, string> LOG_LEVEL_LABELS = new()
     {
@@ -51,7 +52,7 @@ internal sealed class TurboConsoleFormatter(
         TextWriter textWriter
     )
     {
-        TurboConsoleFormatterOptions options = _optionsMonitor.CurrentValue;
+        VortexConsoleFormatterOptions options = _optionsMonitor.CurrentValue;
 
         DateTimeOffset now = options.UseUtcTimestamp ? DateTimeOffset.UtcNow : DateTimeOffset.Now;
         string ts = now.ToString(options.TimestampFormat ?? "HH:mm:ss.fff");

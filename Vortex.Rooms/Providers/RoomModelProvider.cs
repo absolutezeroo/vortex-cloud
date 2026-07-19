@@ -16,11 +16,11 @@ using Vortex.Primitives.Rooms.Snapshots.Mapping;
 namespace Vortex.Rooms.Providers;
 
 public sealed class RoomModelProvider(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<IRoomModelProvider> logger
 ) : IRoomModelProvider
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<IRoomModelProvider> _logger = logger;
 
     private ImmutableDictionary<int, RoomModelSnapshot> _modelsById = ImmutableDictionary<
@@ -37,7 +37,7 @@ public sealed class RoomModelProvider(
 
     public async Task ReloadAsync(CancellationToken ct = default)
     {
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {

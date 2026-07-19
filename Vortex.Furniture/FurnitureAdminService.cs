@@ -20,7 +20,7 @@ namespace Vortex.Furniture;
 /// from the database (the same class of bug flagged for the catalog snapshot providers).
 /// </summary>
 internal sealed class FurnitureAdminService(
-    IDbContextFactory<TurboDbContext> dbContextFactory,
+    IDbContextFactory<VortexDbContext> dbContextFactory,
     IFurnitureDefinitionProvider definitionProvider,
     ILogger<FurnitureAdminService> logger
 ) : IFurnitureAdminService
@@ -30,7 +30,7 @@ internal sealed class FurnitureAdminService(
         CancellationToken ct
     )
     {
-        await using TurboDbContext db = await dbContextFactory
+        await using VortexDbContext db = await dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -87,7 +87,7 @@ internal sealed class FurnitureAdminService(
         CancellationToken ct
     )
     {
-        await using TurboDbContext db = await dbContextFactory
+        await using VortexDbContext db = await dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -146,7 +146,7 @@ internal sealed class FurnitureAdminService(
 
     public async Task<FurnitureAdminResult> DeleteAsync(int id, CancellationToken ct)
     {
-        await using TurboDbContext db = await dbContextFactory
+        await using VortexDbContext db = await dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -195,7 +195,7 @@ internal sealed class FurnitureAdminService(
             // The DB write already committed -- the live snapshot is now stale until the next
             // successful reload or a full restart. Never swallow this.
             logger.LogError(
-                TurboEventIds.FurnitureDefinitionReloadFailed,
+                VortexEventIds.FurnitureDefinitionReloadFailed,
                 ex,
                 "Furniture definition snapshot reload failed after an admin write committed -- live definitions are now stale until the next reload or restart"
             );

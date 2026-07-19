@@ -11,7 +11,7 @@ using Vortex.Primitives.Marketplace.Snapshots;
 namespace Vortex.Marketplace.Providers;
 
 public sealed class MarketplaceSettingsProvider(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<MarketplaceSettingsProvider> logger
 ) : IMarketplaceSettingsProvider
 {
@@ -21,7 +21,7 @@ public sealed class MarketplaceSettingsProvider(
         OfferDurationSeconds = 259200,
     };
 
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<MarketplaceSettingsProvider> _logger = logger;
 
     // Single reference swap on reload - never mutated in place, so concurrent reads during a
@@ -32,7 +32,7 @@ public sealed class MarketplaceSettingsProvider(
 
     public async Task ReloadAsync(CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 

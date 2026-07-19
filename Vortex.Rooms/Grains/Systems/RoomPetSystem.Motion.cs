@@ -36,7 +36,7 @@ public sealed partial class RoomPetSystem
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await _roomGrain
+        await using VortexDbContext dbCtx = await _roomGrain
             ._dbCtxFactory.CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -495,7 +495,7 @@ public sealed partial class RoomPetSystem
     }
 
     private async Task SyncLiveStatsToPetEntityAsync(
-        TurboDbContext dbCtx,
+        VortexDbContext dbCtx,
         int petId,
         CancellationToken ct
     )

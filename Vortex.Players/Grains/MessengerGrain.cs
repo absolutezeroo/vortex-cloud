@@ -31,7 +31,7 @@ namespace Vortex.Players.Grains;
 ///     <c>MessengerGrain.Presence.cs</c>.
 /// </summary>
 internal sealed partial class MessengerGrain(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
     IEventPublisher events,
     ILogger<MessengerGrain> logger,
@@ -78,7 +78,7 @@ internal sealed partial class MessengerGrain(
 
     private async Task HydrateAsync(CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         int playerId = SelfId;
 
@@ -180,7 +180,7 @@ internal sealed partial class MessengerGrain(
 
         try
         {
-            await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+            await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
             await dbCtx
                 .MessengerMessages.Where(m => ids.Contains(m.Id))
@@ -206,7 +206,7 @@ internal sealed partial class MessengerGrain(
 
     private async Task DeliverOfflinePendingMessagesAsync(CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         List<MessengerMessageEntity> pending = await dbCtx
             .MessengerMessages.AsNoTracking()

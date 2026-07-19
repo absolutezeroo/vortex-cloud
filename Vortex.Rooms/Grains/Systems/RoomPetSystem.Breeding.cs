@@ -154,7 +154,7 @@ public sealed partial class RoomPetSystem
 
         _breedingByPetOneId.Remove(session.PetOneId);
 
-        await using TurboDbContext dbCtx = await _roomGrain
+        await using VortexDbContext dbCtx = await _roomGrain
             ._dbCtxFactory.CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -285,7 +285,7 @@ public sealed partial class RoomPetSystem
         double z = seedItem.Z;
         PlayerId ownerId = seedItem.OwnerId;
 
-        await using TurboDbContext dbCtx = await _roomGrain
+        await using VortexDbContext dbCtx = await _roomGrain
             ._dbCtxFactory.CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 

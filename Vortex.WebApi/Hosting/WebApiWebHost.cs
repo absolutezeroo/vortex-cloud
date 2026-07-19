@@ -51,7 +51,7 @@ internal sealed class WebApiWebHost(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to build Turbo web API");
+            logger.LogError(ex, "Failed to build Vortex web API");
             return;
         }
 
@@ -61,13 +61,13 @@ internal sealed class WebApiWebHost(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to start Turbo web API on {Prefixes}", prefixes);
+            logger.LogError(ex, "Failed to start Vortex web API on {Prefixes}", prefixes);
             await app.DisposeAsync().ConfigureAwait(false);
             return;
         }
 
         logger.LogInformation(
-            "Turbo web API listening on {Prefixes} (Swagger UI at {HttpPrefix}/swagger)",
+            "Vortex web API listening on {Prefixes} (Swagger UI at {HttpPrefix}/swagger)",
             prefixes,
             httpPrefix
         );

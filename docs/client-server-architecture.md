@@ -1,8 +1,8 @@
 # Habbo Client-Server Architecture
 
-How **Turbo Cloud** (`vortex-emulator`, the server) and **vortex-client** (the client, package name `com.sulake.habbo` — "habbo-client-clean") work together.
+How **Vortex Cloud** (`vortex-emulator`, the server) and **vortex-client** (the client, package name `com.sulake.habbo` — "habbo-client-clean") work together.
 
-**Server:** Turbo Cloud — .NET 10, Microsoft Orleans (virtual actors), SuperSocket networking, EF Core (Pomelo MySQL)
+**Server:** Vortex Cloud — .NET 10, Microsoft Orleans (virtual actors), SuperSocket networking, EF Core (Pomelo MySQL)
 **Client:** vortex-client — ActionScript 3 / Flash Player, protocol revision `WIN63-202601121721-391685409`
 **Protocol:** Binary TCP **and** WebSocket with the classic length+header framing, optional RC4 encryption
 
@@ -44,7 +44,7 @@ How **Turbo Cloud** (`vortex-emulator`, the server) and **vortex-client** (the c
 
 ### What Each Side Does
 
-The **server** (Turbo Cloud) is the authoritative game state manager. It owns all persistent data (players, rooms, items, currencies) in MySQL via EF Core, enforces game rules inside Orleans grains, validates every action, and fans state changes back out to connected clients over Orleans streams. It never trusts the client.
+The **server** (Vortex Cloud) is the authoritative game state manager. It owns all persistent data (players, rooms, items, currencies) in MySQL via EF Core, enforces game rules inside Orleans grains, validates every action, and fans state changes back out to connected clients over Orleans streams. It never trusts the client.
 
 The **client** (vortex-client) is a Flash-based rendering and input layer. It presents the hotel visually, captures user input, sends requests to the server, and applies the server's responses to the local display. It has no authority over game state.
 
@@ -74,7 +74,7 @@ The **client** (vortex-client) is a Flash-based rendering and input layer. It pr
               ══════════════╪══════════════  Network
                             │
 ┌───────────────────────────┼─────────────────────────────────┐
-│  Turbo Cloud (Vortex.Cloud.sln, .NET 10 + Orleans)             │
+│  Vortex Cloud (Vortex.Cloud.sln, .NET 10 + Orleans)             │
 │  ┌───────────────────────────────────────────────────────┐  │
 │  │  Vortex.Main               Host composition root        │  │
 │  │  ├─ Vortex.Networking       SuperSocket TCP + WS, session│  │
@@ -124,11 +124,11 @@ Everything under a domain project (`Vortex.Rooms`, `Vortex.Catalog`, `Vortex.Pla
 `Vortex.Main/Program.cs` builds the host in a fixed order:
 
 1. `builder.AddOrleans()` (`Vortex.Main/Extensions/HostApplicationBuilderExtensions.cs`) — configures a single-silo, localhost-clustered Orleans runtime (`UseLocalhostClustering()`, in-memory grain storage for player/room/pub-sub state, in-memory stream providers for the default and room stream providers). In non-Development environments this logs an explicit warning that this clustering configuration won't survive restarts or scale across nodes.
-2. `AddTurboLogging → AddTurboNetworking → AddTurboPlugins → AddTurboDatabaseContext → AddTurboEventSystem → AddTurboMessageSystem → AddTurboCrypto → AddTurboRevisions`.
+2. `AddVortexLogging → AddVortexNetworking → AddVortexPlugins → AddVortexDatabaseContext → AddVortexEventSystem → AddVortexMessageSystem → AddVortexCrypto → AddVortexRevisions`.
 3. Domain plugin modules registered via `AddHostPlugin<TModule>`: `ObservabilityModule, AuthenticationModule, FurnitureModule, CatalogModule, PlayerModule, InventoryModule, MarketplaceModule, DashboardApiModule, NavigatorModule, RoomModule, PacketHandlersModule, WebApiModule`. Each module's assembly gets scanned later for message handlers.
-4. `AddHostedService<TurboEmulator>()` — registered **last**, so it starts after `PluginBootstrapper` (which does the assembly scanning) and any hot-reload service.
+4. `AddHostedService<VortexEmulator>()` — registered **last**, so it starts after `PluginBootstrapper` (which does the assembly scanning) and any hot-reload service.
 
-`TurboEmulator.StartAsync` (`Vortex.Main/TurboEmulator.cs`): registers the embedded `Revision20260112` with `IRevisionManager`, sequentially reloads every static-data provider (furniture definitions, catalog/club-offer/club-gift snapshots, currency types, group badge parts, pet palettes/commands/levels, navigator contexts, room models), and only then calls `INetworkManager.StartAsync` — so TCP/WS sockets don't open until the revision and all data providers are warm.
+`VortexEmulator.StartAsync` (`Vortex.Main/VortexEmulator.cs`): registers the embedded `Revision20260112` with `IRevisionManager`, sequentially reloads every static-data provider (furniture definitions, catalog/club-offer/club-gift snapshots, currency types, group badge parts, pet palettes/commands/levels, navigator contexts, room models), and only then calls `INetworkManager.StartAsync` — so TCP/WS sockets don't open until the revision and all data providers are warm.
 
 ### Phase 2: Transport
 
@@ -163,7 +163,7 @@ Client                                          Server
   │                                                │
 ```
 
-Note the asymmetry versus a "sign the DH params, encrypt the reply" model some servers use: Turbo's handshake **signs** (not encrypts) the prime/generator/server-pubkey with RSA (so the client can verify authenticity without needing to decrypt anything expensive), and only the client's own DH public key is RSA-**encrypted** on the wire (§4 has the full detail, including why the DH prime is only 384 bits).
+Note the asymmetry versus a "sign the DH params, encrypt the reply" model some servers use: Vortex's handshake **signs** (not encrypts) the prime/generator/server-pubkey with RSA (so the client can verify authenticity without needing to decrypt anything expensive), and only the client's own DH public key is RSA-**encrypted** on the wire (§4 has the full detail, including why the DH prime is only 384 bits).
 
 ### Phase 4: Session
 
@@ -219,7 +219,7 @@ Length = size of (Header + Body), NOT including the 4 length bytes themselves
 
 ### Maximum Packet Size
 
-`NetworkingConfig.MaxPacketBodyBytes` = **65536 bytes** (config section `Turbo:Networking`), enforced identically for both the TCP and WebSocket transports since both funnel through the same decoder.
+`NetworkingConfig.MaxPacketBodyBytes` = **65536 bytes** (config section `Vortex:Networking`), enforced identically for both the TCP and WebSocket transports since both funnel through the same decoder.
 
 ---
 
@@ -227,7 +227,7 @@ Length = size of (Header + Body), NOT including the 4 length bytes themselves
 
 ### Overview
 
-`Turbo:Crypto` config (`Vortex.Crypto/Configuration/CryptoConfig.cs`) controls whether encryption runs at all (`EnableServerToClientEncryption` gates the *server→client* direction specifically — client→server RC4 is always armed once the handshake completes). The scheme is Diffie-Hellman (secured by RSA signing/encryption) producing a shared secret used as an RC4 stream-cipher key — same overall shape as classic Habbo servers, different concrete implementation.
+`Vortex:Crypto` config (`Vortex.Crypto/Configuration/CryptoConfig.cs`) controls whether encryption runs at all (`EnableServerToClientEncryption` gates the *server→client* direction specifically — client→server RC4 is always armed once the handshake completes). The scheme is Diffie-Hellman (secured by RSA signing/encryption) producing a shared secret used as an RC4 stream-cipher key — same overall shape as classic Habbo servers, different concrete implementation.
 
 ### Step-by-Step
 
@@ -250,13 +250,13 @@ Length = size of (Header + Body), NOT including the 4 length bytes themselves
 
 ### RSA Key Configuration
 
-`Turbo:Crypto` config keys (`CryptoConfig`): `KeySize` (actually the RSA public **exponent** hex, not a byte length — a slightly confusing name inherited from the field's role), `PublicKey` (modulus hex), `PrivateKey` (private exponent hex, server-only), `EnableServerToClientEncryption` (bool). `RsaService` builds BouncyCastle `RsaKeyParameters` from these and does PKCS#1 encrypt/decrypt via `Pkcs1Encoding(RsaEngine)`.
+`Vortex:Crypto` config keys (`CryptoConfig`): `KeySize` (actually the RSA public **exponent** hex, not a byte length — a slightly confusing name inherited from the field's role), `PublicKey` (modulus hex), `PrivateKey` (private exponent hex, server-only), `EnableServerToClientEncryption` (bool). `RsaService` builds BouncyCastle `RsaKeyParameters` from these and does PKCS#1 encrypt/decrypt via `Pkcs1Encoding(RsaEngine)`.
 
 The client has the matching public exponent/modulus embedded in its own crypto classes; if these don't match the server's `PublicKey`, the DH handshake will fail (the client can't correctly verify/decrypt).
 
 ### Security Notes
 
-- RC4 is a weak cipher by modern standards; this is accepted as inherent to supporting the legacy Flash client, not a Turbo-specific oversight.
+- RC4 is a weak cipher by modern standards; this is accepted as inherent to supporting the legacy Flash client, not a Vortex-specific oversight.
 - The 384-bit DH prime is well below modern recommendations — again, a deliberate, documented legacy-client constraint (see step 2), not an accidental bug.
 - `Rc4Engine` (`Vortex.Crypto/Rc4Engine.cs`) is a standard KSA+PRGA implementation with a `Peek` mode (clone-and-simulate without consuming keystream) specifically to support reading the still-encrypted length prefix in the decoder (§3) — a small but important implementation detail that a naive RC4 port would miss.
 
@@ -271,7 +271,7 @@ There is no separate password-based login packet — authentication is **exclusi
 1. User logs into a **web application** outside this repo, which mints a ticket and stores it as a `SecurityTicketEntity` row (`Vortex.Database.Entities.Security`).
 2. The client sends that ticket via `SSOTicketMessageEvent` (header 749).
 3. `Vortex.PacketHandlers/Handshake/SSOTicketMessageHandler.cs` calls `IAuthenticationService.GetPlayerIdFromTicketAsync` (`Vortex.Authentication/AuthenticationService.cs`):
-    - Looks up the ticket row via `IDbContextFactory<TurboDbContext>`.
+    - Looks up the ticket row via `IDbContextFactory<VortexDbContext>`.
     - Missing ticket → publishes `PlayerLoginFailedEvent` (with an HMAC-SHA256 hash of the remote IP, never the raw IP) and fails.
     - Expired (past `entity.ExpiresAt`, or `CreatedAt + TicketTtlSeconds` if unset) and not locked → deletes the ticket and fails.
     - Otherwise **refreshes the ticket's expiry** on every successful use (bounded replay window, allows reconnect without a fresh ticket) and returns the resolved player id, publishing `PlayerLoggedInEvent`.
@@ -317,7 +317,7 @@ internal static class MessageComposer   // server → client (outgoing from the 
 
 `Vortex.Revisions/Revision20260112/Revision20260112.cs` (3480 lines) builds the actual `IRevision` from these constants: `Parsers` is `IDictionary<int, IParser>` keyed by the `MessageEvent` ids; `Serializers` is `IDictionary<Type, ISerializer>` keyed by the **composer's CLR type** (each serializer's constructor is handed its header id from `MessageComposer`). Both dictionaries are hand-built object initializers, grouped into `#region`s by domain (Room, Catalog, Inventory, Navigator, FriendList, Moderator, Handshake, Game, Wired, ...).
 
-`Vortex.Networking/Revisions/RevisionManager.cs` (`IRevisionManager`) holds a `Dictionary<string, IRevision>` keyed by the revision's build string (`"WIN63-202601121721-391685409"` for the embedded default). This is the plugin extension point: additional client revisions can be registered by a separate plugin without touching core code — see `CONTEXT.md`'s note that `Revision<id>/Parsers|Serializers` trees for *other* revisions belong in a plugin repo, not in `turbo-cloud` itself.
+`Vortex.Networking/Revisions/RevisionManager.cs` (`IRevisionManager`) holds a `Dictionary<string, IRevision>` keyed by the revision's build string (`"WIN63-202601121721-391685409"` for the embedded default). This is the plugin extension point: additional client revisions can be registered by a separate plugin without touching core code — see `CONTEXT.md`'s note that `Revision<id>/Parsers|Serializers` trees for *other* revisions belong in a plugin repo, not in `vortex-cloud` itself.
 
 ### Client — `HabboMessages.as` (~1,996 lines)
 
@@ -334,7 +334,7 @@ Note the naming convention is **side-relative**: the same logical "chat" packet 
 
 ### Handler Instantiation (Server)
 
-There is no manual registration file to edit. `Vortex.Plugins/PluginBootstrapper.cs` (an `IHostedService` that runs before `TurboEmulator`) iterates every `IHostPluginModule` registered in `Program.cs` and calls `AssemblyProcessor.ProcessAsync` on each module's assembly. For `PacketHandlersModule` (assembly = `Vortex.PacketHandlers`), this uses reflection (`AssemblyExplorer.FindClosedImplementations`) to find every class implementing `IMessageHandler<TMessage>` and registers it — activator + invoker delegates — on the shared `MessageRegistry`. **Dropping a new `IMessageHandler<T>` class into `Vortex.PacketHandlers/<Domain>/` is the entire registration step.**
+There is no manual registration file to edit. `Vortex.Plugins/PluginBootstrapper.cs` (an `IHostedService` that runs before `VortexEmulator`) iterates every `IHostPluginModule` registered in `Program.cs` and calls `AssemblyProcessor.ProcessAsync` on each module's assembly. For `PacketHandlersModule` (assembly = `Vortex.PacketHandlers`), this uses reflection (`AssemblyExplorer.FindClosedImplementations`) to find every class implementing `IMessageHandler<TMessage>` and registers it — activator + invoker delegates — on the shared `MessageRegistry`. **Dropping a new `IMessageHandler<T>` class into `Vortex.PacketHandlers/<Domain>/` is the entire registration step.**
 
 Dispatch (`Vortex.Messages/MessageSystem.cs` → `Vortex.Messages/Registry/MessageRegistry.cs`, both built on the generic `Vortex.Pipeline` envelope-dispatch engine also reused by `Vortex.Events` for domain events):
 - Resolves the acting player id and active room id from `ISessionGateway`/`IPlayerPresenceGrain`.
@@ -387,7 +387,7 @@ public IMessageEvent Parse(IClientPacket packet) =>
 packet.WriteInteger(message.ObjectId).WriteString(message.Text).WriteInteger(message.Gesture)...
 ```
 
-If the field order or types diverge between a Turbo parser and vortex-client's matching composer (or vice versa), the packet is misread — there is no schema validation on the wire, only sequential binary reads, same as any classic Habbo-derived protocol.
+If the field order or types diverge between a Vortex parser and vortex-client's matching composer (or vice versa), the packet is misread — there is no schema validation on the wire, only sequential binary reads, same as any classic Habbo-derived protocol.
 
 ### Broadcast Patterns
 
@@ -739,24 +739,24 @@ This section replaces the old draft's fabricated Arcturus-vs-client numbers with
 
 ### Summary
 
-| Direction | Turbo entries | Client entries | Shared ids | Turbo-only | Client-only |
+| Direction | Vortex entries | Client entries | Shared ids | Vortex-only | Client-only |
 |---|---|---|---|---|---|
 | Client → Server (`MessageEvent` vs. client `_composers`) | 525 | 471 | 430 | 95 | 41 |
 | Server → Client (`MessageComposer` vs. client `_events`) | 538 | 479 | 460 | 78 | 19 |
 
 Of the 430 shared client→server ids, 419 have clearly-matching class-name stems on both sides (high confidence they're the same logical packet); 11 have same-id-but-different-looking names and are worth double-checking before relying on them. Of the 460 shared server→client ids, 457 match cleanly and 3 look mismatched.
 
-### "Turbo-only" and "Client-only" — mostly explained by feature scope, not bugs
+### "Vortex-only" and "Client-only" — mostly explained by feature scope, not bugs
 
-The bulk of the "Turbo-only" ids on both sides are packets for features vortex-client's build genuinely doesn't send/expect at all: NFT/collectibles (`ClaimNftClaimsMessageEvent`, `GetNftCreditsMessageEvent`, ...), the treasure-hunt/seasonal-quest system, marketplace tokens, and — on the server→client side — packets for features described elsewhere in this doc as unimplemented-but-protocol-scaffolded (`WiredFurniSelectorComposer`, `FurniListRemoveMultipleComposer`, `BlockListMessageComposer`, `LtdRaffleResultMessageComposer`, etc. — several of these correspond to real Turbo features whose composer just isn't in this particular client build's registry, which is a client-coverage gap rather than a protocol bug).
+The bulk of the "Vortex-only" ids on both sides are packets for features vortex-client's build genuinely doesn't send/expect at all: NFT/collectibles (`ClaimNftClaimsMessageEvent`, `GetNftCreditsMessageEvent`, ...), the treasure-hunt/seasonal-quest system, marketplace tokens, and — on the server→client side — packets for features described elsewhere in this doc as unimplemented-but-protocol-scaffolded (`WiredFurniSelectorComposer`, `FurniListRemoveMultipleComposer`, `BlockListMessageComposer`, `LtdRaffleResultMessageComposer`, etc. — several of these correspond to real Vortex features whose composer just isn't in this particular client build's registry, which is a client-coverage gap rather than a protocol bug).
 
-The "Client-only" ids (client can send/expects to receive a packet with no Turbo counterpart at that id) are the more actionable half — these represent either client UI paths with literally no server handler (e.g. `SearchFaqsMessageComposer`, `GetWeeklyCompetitiveLeaderboardComposer`, `GetUserGameAchievementsMessageComposer`, `IgnoreUserIdMessageComposer`, `GetGiftMessageComposer`, `GiveStarGemToUserMessageComposer` — clicking these UI elements sends a packet the server silently drops as unknown, per `PackageHandler`'s "Incoming Unknown {Header}" warning-and-drop behavior) or client-expected server events that never arrive (`HotelMergeNameChangeEvent`, `AvailabilityTimeMessageEvent`, `CameraSnapshotMessageEvent`, `WeeklyCompetitiveLeaderboardEvent`, the whole FAQ-related event family, `BotReceivedMessageEvent` — several of these map directly onto features this doc already covers as unbuilt: FAQ system, weekly competitive leaderboards, camera, bots).
+The "Client-only" ids (client can send/expects to receive a packet with no Vortex counterpart at that id) are the more actionable half — these represent either client UI paths with literally no server handler (e.g. `SearchFaqsMessageComposer`, `GetWeeklyCompetitiveLeaderboardComposer`, `GetUserGameAchievementsMessageComposer`, `IgnoreUserIdMessageComposer`, `GetGiftMessageComposer`, `GiveStarGemToUserMessageComposer` — clicking these UI elements sends a packet the server silently drops as unknown, per `PackageHandler`'s "Incoming Unknown {Header}" warning-and-drop behavior) or client-expected server events that never arrive (`HotelMergeNameChangeEvent`, `AvailabilityTimeMessageEvent`, `CameraSnapshotMessageEvent`, `WeeklyCompetitiveLeaderboardEvent`, the whole FAQ-related event family, `BotReceivedMessageEvent` — several of these map directly onto features this doc already covers as unbuilt: FAQ system, weekly competitive leaderboards, camera, bots).
 
 ### Candidate Semantic Mismatches (same id, different-looking name — not yet manually verified)
 
 These are **candidates for investigation**, not confirmed bugs — flagged by the diff's name-stem heuristic, not by reading both implementations side-by-side:
 
-| Id | Direction | Turbo name | Client name |
+| Id | Direction | Vortex name | Client name |
 |---|---|---|---|
 | 991 | C→S | `SetMannequinFigureEvent` | `GetTargetedOfferComposer` |
 | 2932 | C→S | `ReleaseIssuesMessageEvent` | `GetHabboBasicMembershipExtendOfferComposer` |
@@ -772,33 +772,33 @@ If any of these ids are ever hit in practice, the payload will misparse on one s
 
 ### Server Configuration
 
-Turbo uses the standard .NET configuration system (`appsettings.json` + environment variables prefixed `TURBO__`), not an `.ini` file. Key sections:
+Vortex uses the standard .NET configuration system (`appsettings.json` + environment variables prefixed `VORTEX__`), not an `.ini` file. Key sections:
 
 ```jsonc
-// Turbo:Networking
+// Vortex:Networking
 { "PingIntervalMilliseconds": 10000, "MaxPacketBodyBytes": 65536 }
 
-// Turbo:Crypto
+// Vortex:Crypto
 { "KeySize": "<RSA public exponent hex>", "PublicKey": "<RSA modulus hex>",
   "PrivateKey": "<RSA private exponent hex>", "EnableServerToClientEncryption": true }
 
-// Turbo:Database
+// Vortex:Database
 { "ConnectionString": "...", "LoggingEnabled": false }
 
-// Turbo:Orleans
+// Vortex:Orleans
 { "AdvertisedIp": "127.0.0.1", "SiloPort": 11111, "GatewayPort": 3000 }
 
-// Turbo:Rooms
+// Vortex:Rooms
 { "RoomTickMs": 50, "AvatarTickMs": 500, /* ...see §7 for the full list... */ }
 ```
 
 ### RSA/DH Key Alignment
 
-Same requirement as any Habbo-derived protocol: the server's `Turbo:Crypto.PublicKey`/`KeySize` (modulus/exponent) must match whatever RSA public key is embedded in vortex-client's crypto classes, or the handshake in §4 fails at the signature-verification/encryption step.
+Same requirement as any Habbo-derived protocol: the server's `Vortex:Crypto.PublicKey`/`KeySize` (modulus/exponent) must match whatever RSA public key is embedded in vortex-client's crypto classes, or the handshake in §4 fails at the signature-verification/encryption step.
 
 ### Database
 
-EF Core with the **Pomelo MySQL** provider (`Vortex.Database/Extensions/ServiceCollectionExtensions.cs`, `UseMySql(...)`), accessed via `IDbContextFactory<TurboDbContext>` (factory pattern — a fresh, short-lived context per operation, not one long-lived scoped context). `Vortex.Database/Context/TurboDbContext.cs` exposes ~60 `DbSet<>`s, grouped by domain folder under `Entities/`:
+EF Core with the **Pomelo MySQL** provider (`Vortex.Database/Extensions/ServiceCollectionExtensions.cs`, `UseMySql(...)`), accessed via `IDbContextFactory<VortexDbContext>` (factory pattern — a fresh, short-lived context per operation, not one long-lived scoped context). `Vortex.Database/Context/VortexDbContext.cs` exposes ~60 `DbSet<>`s, grouped by domain folder under `Entities/`:
 
 | Category | Example Tables |
 |----------|---------------|
@@ -819,7 +819,7 @@ Notable relationship design: most FKs use `DeleteBehavior.Restrict`/`SetNull` ra
 
 ### Server Concurrency Model
 
-Turbo's concurrency model is **Orleans virtual actors**, not a Netty-style boss/worker thread-pool:
+Vortex's concurrency model is **Orleans virtual actors**, not a Netty-style boss/worker thread-pool:
 
 ```
 Host process
@@ -948,7 +948,7 @@ Domain Grain (e.g. RoomGrain, PlayerGrain, CatalogPurchaseGrain, ...)
 ┌──────────────────────────────┼────────────────────────────────────────┐
 │  ┌───────────────────────────┴───────────────────────────────────┐     │
 │  │   SuperSocket (TCP + WS) → ClientPacketDecoder → PackageHandler │     │
-│  │              → MessageSystem/MessageRegistry (Turbo Cloud)      │     │
+│  │              → MessageSystem/MessageRegistry (Vortex Cloud)      │     │
 │  └────┬────────────┬────────────┬────────────┬────────────┬──────┘     │
 │       │            │            │            │            │            │
 │  ┌────┴─────┐ ┌────┴─────┐ ┌────┴─────┐ ┌────┴─────┐ ┌────┴─────┐    │
@@ -960,7 +960,7 @@ Domain Grain (e.g. RoomGrain, PlayerGrain, CatalogPurchaseGrain, ...)
 │  │             MySQL (EF Core / Pomelo, IDbContextFactory)        │     │
 │  └───────────────────────────────────────────────────────────────┘     │
 │                                                                        │
-│                     SERVER SUBSYSTEMS (Turbo Cloud, Orleans grains)   │
+│                     SERVER SUBSYSTEMS (Vortex Cloud, Orleans grains)   │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -1002,7 +1002,7 @@ RoomGrain's timer callback
 | File | Purpose |
 |------|---------|
 | `Vortex.Main/Program.cs` | Host entry point, service registration order |
-| `Vortex.Main/TurboEmulator.cs` | Hosted service: revision registration, data-provider warm-up, network start |
+| `Vortex.Main/VortexEmulator.cs` | Hosted service: revision registration, data-provider warm-up, network start |
 | `Vortex.Main/Extensions/HostApplicationBuilderExtensions.cs` | Orleans silo configuration |
 | `Vortex.Networking/NetworkManager.cs` | TCP + WebSocket SuperSocket host setup |
 | `Vortex.Networking/Package/ClientPacketDecoder.cs` | Frame decode (length/header/RC4-peek) |
@@ -1031,7 +1031,7 @@ RoomGrain's timer callback
 | `Vortex.Players/Grains/MessengerGrain.cs` (+ partials) | Friends, messaging, presence fan-out |
 | `Vortex.Players/Grains/PlayerPresenceGrain.cs` | Session delivery, active-room stream subscription |
 | `Vortex.Players/Grains/GroupDirectoryGrain.cs`, `GroupGrain.cs` | Guild creation/membership |
-| `Vortex.Database/Context/TurboDbContext.cs` | EF Core DbContext (Pomelo MySQL) |
+| `Vortex.Database/Context/VortexDbContext.cs` | EF Core DbContext (Pomelo MySQL) |
 | `docs/walkthroughs/request-lifecycle.md` | Full traced example of one chat packet, socket to socket |
 | `CONTEXT.md`, `ROADMAP.md`, `TODO.md`, `CONSOLIDATION.md`, `DATA-MODEL.md`, `PETS-DESIGN.md` | Living architecture/status docs — check these before assuming a feature's state |
 

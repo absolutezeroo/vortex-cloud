@@ -57,7 +57,7 @@ internal sealed partial class DashboardApiService
 
     public async Task<object> OverviewAsync(DateTime startedAtUtc, CancellationToken ct)
     {
-        TurboDbContext db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        VortexDbContext db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {

@@ -29,13 +29,13 @@ using Vortex.Rooms.Object.Furniture.Wall;
 namespace Vortex.Rooms.Providers;
 
 internal sealed class RoomItemsProvider(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<IRoomItemsProvider> logger,
     IGrainFactory grainFactory,
     IFurnitureDefinitionProvider defsProvider
 ) : IRoomItemsProvider
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<IRoomItemsProvider> _logger = logger;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IFurnitureDefinitionProvider _defsProvider = defsProvider;
@@ -46,7 +46,7 @@ internal sealed class RoomItemsProvider(
         IReadOnlyDictionary<PlayerId, string>
     )> LoadByRoomIdAsync(RoomId roomId, CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -115,7 +115,7 @@ internal sealed class RoomItemsProvider(
     {
         FurnitureDefinitionSnapshot definition =
             _defsProvider.TryGetDefinition(entity.FurnitureDefinitionEntityId)
-            ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
+            ?? throw new VortexException(VortexErrorCodeEnum.FurnitureDefinitionNotFound);
 
         return definition.ProductType switch
         {
@@ -135,7 +135,7 @@ internal sealed class RoomItemsProvider(
                 Definition = definition,
             },
 
-            _ => throw new TurboException(TurboErrorCodeEnum.InvalidFurnitureProductType),
+            _ => throw new VortexException(VortexErrorCodeEnum.InvalidFurnitureProductType),
         };
     }
 
@@ -169,7 +169,7 @@ internal sealed class RoomItemsProvider(
 
         if (item is null)
         {
-            throw new TurboException(TurboErrorCodeEnum.InvalidFurnitureProductType);
+            throw new VortexException(VortexErrorCodeEnum.InvalidFurnitureProductType);
         }
 
         item.SetExtraData(snapshot.ExtraData);

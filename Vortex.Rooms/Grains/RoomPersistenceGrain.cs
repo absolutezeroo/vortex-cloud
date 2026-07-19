@@ -19,12 +19,12 @@ using Vortex.Rooms.Configuration;
 namespace Vortex.Rooms.Grains;
 
 public sealed class RoomPersistenceGrain(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     IOptions<RoomConfig> roomConfig,
     ILogger<IRoomPersistenceGrain> logger
 ) : Grain, IRoomPersistenceGrain
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
 
     private readonly Dictionary<long, RoomItemSnapshot> _dirtyItems = [];
     private readonly ILogger<IRoomPersistenceGrain> _logger = logger;
@@ -99,7 +99,7 @@ public sealed class RoomPersistenceGrain(
 
         try
         {
-            using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+            using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
             foreach (RoomItemSnapshot item in batch)
             {

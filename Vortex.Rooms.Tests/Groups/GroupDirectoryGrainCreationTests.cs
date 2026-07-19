@@ -35,7 +35,7 @@ public sealed class GroupDirectoryGrainCreationTests
     [Fact]
     public async Task CreateGroupAsync_CancelledCreatingEvent_DoesNotDebitOrWriteRows()
     {
-        DbContextOptions<TurboDbContext> options = NewOptions();
+        DbContextOptions<VortexDbContext> options = NewOptions();
         await SeedOwnerRoomAsync(options, ownerId: 7, roomId: 70).ConfigureAwait(true);
         EventTestHarness harness = new EventTestHarness(CORRELATION_ID);
         CancellingGroupCreatingBehavior behavior = new CancellingGroupCreatingBehavior();
@@ -62,7 +62,7 @@ public sealed class GroupDirectoryGrainCreationTests
         player.TrackCreditSpendCalls.Should().Be(0);
         behavior.CorrelationId.Should().Be(CORRELATION_ID);
 
-        using TurboDbContext db = new TurboDbContext(options);
+        using VortexDbContext db = new VortexDbContext(options);
         (await db.Groups.CountAsync().ConfigureAwait(true)).Should().Be(0);
         (await db.GroupMembers.CountAsync().ConfigureAwait(true)).Should().Be(0);
         (await db.EconomyLedger.CountAsync().ConfigureAwait(true)).Should().Be(0);
@@ -73,7 +73,7 @@ public sealed class GroupDirectoryGrainCreationTests
     [Fact]
     public async Task CreateGroupAsync_NotCancelled_DebitsAndCreatesGroup()
     {
-        DbContextOptions<TurboDbContext> options = NewOptions();
+        DbContextOptions<VortexDbContext> options = NewOptions();
         await SeedOwnerRoomAsync(options, ownerId: 8, roomId: 80).ConfigureAwait(true);
         EventTestHarness harness = new EventTestHarness(CORRELATION_ID);
         CountingGroupCreatedHandler createdHandler = new CountingGroupCreatedHandler();
@@ -103,7 +103,7 @@ public sealed class GroupDirectoryGrainCreationTests
         player.TrackCreditSpendCalls.Should().Be(1);
         createdHandler.Count.Should().Be(1);
 
-        using TurboDbContext db = new TurboDbContext(options);
+        using VortexDbContext db = new VortexDbContext(options);
         GroupEntity group = await db.Groups.SingleAsync().ConfigureAwait(true);
         group.Name.Should().Be("Allowed Guild");
         group.RoomEntityId.Should().Be(80);
@@ -112,20 +112,20 @@ public sealed class GroupDirectoryGrainCreationTests
         room.GroupEntityId.Should().Be(group.Id);
     }
 
-    private static DbContextOptions<TurboDbContext> NewOptions()
+    private static DbContextOptions<VortexDbContext> NewOptions()
     {
-        return new DbContextOptionsBuilder<TurboDbContext>()
+        return new DbContextOptionsBuilder<VortexDbContext>()
             .UseInMemoryDatabase($"group-directory-{Guid.NewGuid():N}")
             .Options;
     }
 
     private static async Task SeedOwnerRoomAsync(
-        DbContextOptions<TurboDbContext> options,
+        DbContextOptions<VortexDbContext> options,
         int ownerId,
         int roomId
     )
     {
-        using TurboDbContext db = new TurboDbContext(options);
+        using VortexDbContext db = new VortexDbContext(options);
         PlayerEntity owner = new PlayerEntity
         {
             Id = ownerId,
@@ -187,7 +187,7 @@ public sealed class GroupDirectoryGrainCreationTests
     }
 
     private static GroupDirectoryGrain CreateGrain(
-        DbContextOptions<TurboDbContext> options,
+        DbContextOptions<VortexDbContext> options,
         EventTestHarness harness,
         FakeWalletGrain wallet,
         FakePlayerGrain player
@@ -216,12 +216,12 @@ public sealed class GroupDirectoryGrainCreationTests
         return grainFactory;
     }
 
-    private sealed class TestDbContextFactory(DbContextOptions<TurboDbContext> options)
-        : IDbContextFactory<TurboDbContext>
+    private sealed class TestDbContextFactory(DbContextOptions<VortexDbContext> options)
+        : IDbContextFactory<VortexDbContext>
     {
-        public TurboDbContext CreateDbContext()
+        public VortexDbContext CreateDbContext()
         {
-            return new TurboDbContext(options);
+            return new VortexDbContext(options);
         }
     }
 

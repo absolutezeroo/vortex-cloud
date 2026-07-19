@@ -12,12 +12,12 @@ namespace Vortex.Observability.Audit;
 /// </summary>
 public sealed class ChannelAuditSink(
     AuditChannel channel,
-    ITurboContextAccessor contextAccessor,
+    IVortexContextAccessor contextAccessor,
     ILogger<ChannelAuditSink> logger
 ) : IAuditSink
 {
     private readonly AuditChannel _channel = channel;
-    private readonly ITurboContextAccessor _contextAccessor = contextAccessor;
+    private readonly IVortexContextAccessor _contextAccessor = contextAccessor;
     private readonly ILogger<ChannelAuditSink> _logger = logger;
 
     public void Emit(in AuditEvent auditEvent)
@@ -32,7 +32,7 @@ public sealed class ChannelAuditSink(
         {
             // Never block the caller; a saturated channel means the writer cannot keep up.
             _logger.LogWarning(
-                TurboEventIds.AuditDropped,
+                VortexEventIds.AuditDropped,
                 "Audit event dropped (channel saturated): {Category}/{Action}",
                 auditEvent.Category,
                 auditEvent.Action

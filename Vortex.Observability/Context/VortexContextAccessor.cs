@@ -12,7 +12,7 @@ using Vortex.Primitives.Observability;
 namespace Vortex.Observability.Context;
 
 /// <summary>
-/// <see cref="AsyncLocal{T}"/>-backed implementation of <see cref="ITurboContextAccessor"/>.
+/// <see cref="AsyncLocal{T}"/>-backed implementation of <see cref="IVortexContextAccessor"/>.
 /// On <see cref="BeginScope"/> it:
 /// <list type="number">
 /// <item>sets the ambient context for the current async flow;</item>
@@ -23,24 +23,27 @@ namespace Vortex.Observability.Context;
 /// </list>
 /// Disposing the returned scope unwinds all four in reverse.
 /// </summary>
-public sealed class TurboContextAccessor : ITurboContextAccessor
+public sealed class VortexContextAccessor : IVortexContextAccessor
 {
-    public const string RequestContextKey = "turbo-cid";
+    public const string RequestContextKey = "vortex-cid";
 
-    private static readonly AsyncLocal<ITurboContext?> Ambient = new();
+    private static readonly AsyncLocal<IVortexContext?> Ambient = new();
 
     private readonly ILogger _logger;
     private readonly bool _tracingEnabled;
 
-    public TurboContextAccessor(ILoggerFactory loggerFactory, IOptions<ObservabilityConfig> options)
+    public VortexContextAccessor(
+        ILoggerFactory loggerFactory,
+        IOptions<ObservabilityConfig> options
+    )
     {
         _logger = loggerFactory.CreateLogger("Vortex.Trace");
         _tracingEnabled = options.Value.TracingEnabled;
     }
 
-    public ITurboContext? Current => Ambient.Value;
+    public IVortexContext? Current => Ambient.Value;
 
-    public ITurboTraceScope BeginScope(
+    public IVortexTraceScope BeginScope(
         string operation,
         string? sessionKey = null,
         CorrelationId? correlationId = null,
@@ -48,11 +51,11 @@ public sealed class TurboContextAccessor : ITurboContextAccessor
         int? roomId = null
     )
     {
-        ITurboContext? previous = Ambient.Value;
+        IVortexContext? previous = Ambient.Value;
         CorrelationId id = correlationId ?? CorrelationId.New();
         long? resolvedPlayerId = playerId ?? previous?.PlayerId;
         int? resolvedRoomId = roomId ?? previous?.RoomId;
-        TurboContext context = new TurboContext(
+        VortexContext context = new VortexContext(
             id,
             operation,
             sessionKey ?? previous?.SessionKey,
@@ -72,7 +75,7 @@ public sealed class TurboContextAccessor : ITurboContextAccessor
         );
 
         Activity? activity = _tracingEnabled
-            ? TurboTelemetry.ActivitySource.StartActivity(operation)
+            ? VortexTelemetry.ActivitySource.StartActivity(operation)
             : null;
         activity?.SetTag("Vortex.correlation_id", id.Value);
 
@@ -80,13 +83,13 @@ public sealed class TurboContextAccessor : ITurboContextAccessor
     }
 
     private sealed class TraceScope(
-        ITurboContext context,
-        ITurboContext? previous,
+        IVortexContext context,
+        IVortexContext? previous,
         IDisposable? logScope,
         Activity? activity
-    ) : ITurboTraceScope
+    ) : IVortexTraceScope
     {
-        public ITurboContext Context { get; } = context;
+        public IVortexContext Context { get; } = context;
 
         public void Dispose()
         {

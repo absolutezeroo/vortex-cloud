@@ -9,18 +9,18 @@ namespace Vortex.Logging.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddTurboLogging(
+    public static IServiceCollection AddVortexLogging(
         this IServiceCollection services,
         HostApplicationBuilder builder
     )
     {
-        services.Configure<TurboConsoleFormatterOptions>(
-            builder.Configuration.GetSection(TurboConsoleFormatterOptions.SECTION_NAME)
+        services.Configure<VortexConsoleFormatterOptions>(
+            builder.Configuration.GetSection(VortexConsoleFormatterOptions.SECTION_NAME)
         );
 
         builder.Logging.ClearProviders();
         builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
-        builder.Logging.AddTurboConsoleLogger();
+        builder.Logging.AddVortexConsoleLogger();
 
         return services;
     }

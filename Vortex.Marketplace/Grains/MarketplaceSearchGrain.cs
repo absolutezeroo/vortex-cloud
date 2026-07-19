@@ -14,11 +14,11 @@ using Vortex.Primitives.Marketplace.Snapshots;
 namespace Vortex.Marketplace.Grains;
 
 public sealed class MarketplaceSearchGrain(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<MarketplaceSearchGrain> logger
 ) : Grain, IMarketplaceSearchGrain
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<MarketplaceSearchGrain> _logger = logger;
 
     public async Task<(List<MarketplaceOfferSnapshot> Offers, int TotalFound)> GetOffersAsync(
@@ -31,7 +31,7 @@ public sealed class MarketplaceSearchGrain(
     {
         try
         {
-            await using TurboDbContext dbCtx = await _dbCtxFactory
+            await using VortexDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(true);
 
@@ -111,7 +111,7 @@ public sealed class MarketplaceSearchGrain(
     {
         try
         {
-            await using TurboDbContext dbCtx = await _dbCtxFactory
+            await using VortexDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(true);
 

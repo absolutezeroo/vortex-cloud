@@ -7,7 +7,7 @@ namespace Vortex.Messages.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddTurboMessageSystem(this IServiceCollection services)
+    public static IServiceCollection AddVortexMessageSystem(this IServiceCollection services)
     {
         services.AddSingleton<IAssemblyFeatureProcessor, MessageFeatureProcessor>();
         services.AddSingleton<EnvelopeInvokerFactory<MessageContext>>();

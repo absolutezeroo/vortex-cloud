@@ -9,7 +9,7 @@ namespace Vortex.Database.Entities.Groups;
 [Table("group_members")]
 [Index(nameof(GroupEntityId), nameof(PlayerEntityId), IsUnique = true)]
 [Index(nameof(PlayerEntityId))]
-public class GroupMemberEntity : TurboEntity
+public class GroupMemberEntity : VortexEntity
 {
     [Column("group_id")]
     public required int GroupEntityId { get; set; }

@@ -17,11 +17,11 @@ namespace Vortex.Rooms;
 /// database is the source of truth; the room grain caches active mutes in memory for chat enforcement.
 /// </summary>
 internal sealed class RoomModerationStore(
-    IDbContextFactory<TurboDbContext> dbContextFactory,
+    IDbContextFactory<VortexDbContext> dbContextFactory,
     ILogger<RoomModerationStore> logger
 ) : IRoomModerationStore
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
     private readonly ILogger<RoomModerationStore> _logger = logger;
 
     public async Task<bool> IsBannedAsync(int roomId, int playerId, CancellationToken ct = default)
@@ -31,7 +31,7 @@ internal sealed class RoomModerationStore(
             return false;
         }
 
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -71,7 +71,7 @@ internal sealed class RoomModerationStore(
             return;
         }
 
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -115,7 +115,7 @@ internal sealed class RoomModerationStore(
             return;
         }
 
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -162,7 +162,7 @@ internal sealed class RoomModerationStore(
             return [];
         }
 
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -189,7 +189,7 @@ internal sealed class RoomModerationStore(
             return;
         }
 
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 

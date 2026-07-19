@@ -7,7 +7,7 @@ namespace Vortex.Database.Entities.Room;
 
 [Table("room_models")]
 [Index(nameof(Name), IsUnique = true)]
-public class RoomModelEntity : TurboEntity
+public class RoomModelEntity : VortexEntity
 {
     [Column("name")]
     public required string Name { get; set; }

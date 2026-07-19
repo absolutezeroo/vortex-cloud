@@ -8,7 +8,7 @@ namespace Vortex.Database.Entities.Room;
 [Index(nameof(RoomEntityId), nameof(CreatedAt))]
 [Index(nameof(PlayerEntityId), nameof(CreatedAt))]
 [Table("room_chatlogs")]
-public class RoomChatlogEntity : TurboEntity
+public class RoomChatlogEntity : VortexEntity
 {
     [Column("room_id")]
     public required int RoomEntityId { get; set; }

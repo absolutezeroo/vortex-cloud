@@ -8,7 +8,7 @@ namespace Vortex.Database.Entities.Room;
 /// "is this room currently advertised" is whichever row for a room has the latest ExpiresAt in the
 /// future.</summary>
 [Table("room_advertisements")]
-public class RoomAdvertisementEntity : TurboEntity
+public class RoomAdvertisementEntity : VortexEntity
 {
     [Column("room_id")]
     public required int RoomEntityId { get; set; }

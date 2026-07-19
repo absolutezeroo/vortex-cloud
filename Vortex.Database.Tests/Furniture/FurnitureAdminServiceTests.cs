@@ -29,8 +29,8 @@ namespace Vortex.Database.Tests.Furniture;
 /// </summary>
 public sealed class FurnitureAdminServiceTests
 {
-    private static DbContextOptions<TurboDbContext> NewOptions() =>
-        new DbContextOptionsBuilder<TurboDbContext>()
+    private static DbContextOptions<VortexDbContext> NewOptions() =>
+        new DbContextOptionsBuilder<VortexDbContext>()
             .UseInMemoryDatabase($"furniture-admin-{Guid.NewGuid():N}")
             .Options;
 
@@ -59,7 +59,7 @@ public sealed class FurnitureAdminServiceTests
         );
 
     private static FurnitureAdminService NewService(
-        DbContextOptions<TurboDbContext> options,
+        DbContextOptions<VortexDbContext> options,
         out FakeDefinitionProvider provider
     )
     {
@@ -75,7 +75,7 @@ public sealed class FurnitureAdminServiceTests
     [Fact]
     public async Task CreateAsync_Succeeds_AndReloadsLiveProvider()
     {
-        DbContextOptions<TurboDbContext> options = NewOptions();
+        DbContextOptions<VortexDbContext> options = NewOptions();
         FurnitureAdminService service = NewService(options, out FakeDefinitionProvider provider);
 
         FurnitureAdminResult result = await service
@@ -85,7 +85,7 @@ public sealed class FurnitureAdminServiceTests
         result.Success.Should().BeTrue();
         result.Id.Should().NotBeNull();
 
-        await using TurboDbContext verify = new(options);
+        await using VortexDbContext verify = new(options);
         (await verify.FurnitureDefinitions.FindAsync(result.Id!.Value).ConfigureAwait(true))
             .Should()
             .NotBeNull();
@@ -95,7 +95,7 @@ public sealed class FurnitureAdminServiceTests
     [Fact]
     public async Task CreateAsync_DuplicateSpriteTypeCategory_IsRejected()
     {
-        DbContextOptions<TurboDbContext> options = NewOptions();
+        DbContextOptions<VortexDbContext> options = NewOptions();
         FurnitureAdminService service = NewService(options, out _);
 
         await service
@@ -112,7 +112,7 @@ public sealed class FurnitureAdminServiceTests
     [Fact]
     public async Task UpdateAsync_UnknownId_ReturnsNotFound()
     {
-        DbContextOptions<TurboDbContext> options = NewOptions();
+        DbContextOptions<VortexDbContext> options = NewOptions();
         FurnitureAdminService service = NewService(options, out _);
 
         FurnitureAdminResult result = await service
@@ -126,14 +126,14 @@ public sealed class FurnitureAdminServiceTests
     [Fact]
     public async Task DeleteAsync_WithPlacedInstance_IsBlocked()
     {
-        DbContextOptions<TurboDbContext> options = NewOptions();
+        DbContextOptions<VortexDbContext> options = NewOptions();
         FurnitureAdminService service = NewService(options, out _);
 
         FurnitureAdminResult created = await service
             .CreateAsync(NewSpec(300, "lamp"), CancellationToken.None)
             .ConfigureAwait(true);
 
-        await using (TurboDbContext db = new(options))
+        await using (VortexDbContext db = new(options))
         {
             db.Furnitures.Add(
                 new FurnitureEntity { FurnitureDefinitionEntityId = created.Id!.Value }
@@ -152,14 +152,14 @@ public sealed class FurnitureAdminServiceTests
     [Fact]
     public async Task DeleteAsync_UsedByCatalogProduct_IsBlocked()
     {
-        DbContextOptions<TurboDbContext> options = NewOptions();
+        DbContextOptions<VortexDbContext> options = NewOptions();
         FurnitureAdminService service = NewService(options, out _);
 
         FurnitureAdminResult created = await service
             .CreateAsync(NewSpec(400, "table"), CancellationToken.None)
             .ConfigureAwait(true);
 
-        await using (TurboDbContext db = new(options))
+        await using (VortexDbContext db = new(options))
         {
             CatalogPageEntity page = new()
             {
@@ -215,7 +215,7 @@ public sealed class FurnitureAdminServiceTests
     [Fact]
     public async Task DeleteAsync_Unused_Succeeds()
     {
-        DbContextOptions<TurboDbContext> options = NewOptions();
+        DbContextOptions<VortexDbContext> options = NewOptions();
         FurnitureAdminService service = NewService(options, out FakeDefinitionProvider provider);
 
         FurnitureAdminResult created = await service
@@ -230,10 +230,10 @@ public sealed class FurnitureAdminServiceTests
         provider.ReloadCount.Should().Be(2); // once for create, once for delete
     }
 
-    private sealed class TestDbContextFactory(DbContextOptions<TurboDbContext> options)
-        : IDbContextFactory<TurboDbContext>
+    private sealed class TestDbContextFactory(DbContextOptions<VortexDbContext> options)
+        : IDbContextFactory<VortexDbContext>
     {
-        public TurboDbContext CreateDbContext() => new(options);
+        public VortexDbContext CreateDbContext() => new(options);
     }
 
     private sealed class FakeDefinitionProvider : IFurnitureDefinitionProvider

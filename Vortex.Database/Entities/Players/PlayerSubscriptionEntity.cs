@@ -7,7 +7,7 @@ namespace Vortex.Database.Entities.Players;
 
 [Table("player_subscriptions")]
 [Index(nameof(PlayerEntityId), nameof(SubscriptionType), IsUnique = true)]
-public class PlayerSubscriptionEntity : TurboEntity
+public class PlayerSubscriptionEntity : VortexEntity
 {
     [Column("player_id")]
     public required int PlayerEntityId { get; set; }

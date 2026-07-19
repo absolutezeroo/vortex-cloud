@@ -40,7 +40,7 @@ internal sealed partial class MessengerGrain
 
         DateTime now = DateTime.UtcNow;
 
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         PlayerEntity? selfEntity = await dbCtx.Players.FindAsync([(int)SelfId], ct);
         PlayerEntity? receiverEntity = await dbCtx.Players.FindAsync([receiverId.Value], ct);
@@ -125,7 +125,7 @@ internal sealed partial class MessengerGrain
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         int selfIdInt = SelfId;
         int friendIdInt = friendId.Value;

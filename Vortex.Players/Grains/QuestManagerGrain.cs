@@ -19,11 +19,11 @@ namespace Vortex.Players.Grains;
 /// </summary>
 [KeepAlive]
 internal sealed class QuestManagerGrain(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<QuestManagerGrain> logger
 ) : Grain, IQuestManagerGrain
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<QuestManagerGrain> _logger = logger;
 
     private ImmutableArray<QuestDefinitionSnapshot> _definitions =
@@ -52,7 +52,7 @@ internal sealed class QuestManagerGrain(
     {
         try
         {
-            await using TurboDbContext dbCtx = await _dbCtxFactory
+            await using VortexDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(true);
 

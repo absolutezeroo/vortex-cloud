@@ -43,7 +43,7 @@ internal sealed class WsPackageHandler(
     }
 
     /// <summary>
-    ///     Handler for WebSocket transports that keep the Turbo session context separate
+    ///     Handler for WebSocket transports that keep the Vortex session context separate
     ///     from the SuperSocket session object.
     /// </summary>
     public async ValueTask HandleManualAsync(

@@ -56,10 +56,10 @@ public sealed partial class RoomPetSystem
         {
             z = GetTileHeightForPet(x, y);
         }
-        catch (TurboException ex)
+        catch (VortexException ex)
             when (ex.ErrorCode
-                    is TurboErrorCodeEnum.TileOutOfBounds
-                        or TurboErrorCodeEnum.InvalidMoveTarget
+                    is VortexErrorCodeEnum.TileOutOfBounds
+                        or VortexErrorCodeEnum.InvalidMoveTarget
             )
         {
             await SendPetPlacingErrorAsync(ctx, PetPlacementSelectedTileNotFreeError)
@@ -67,7 +67,7 @@ public sealed partial class RoomPetSystem
             return null;
         }
 
-        await using TurboDbContext dbCtx = await _roomGrain
+        await using VortexDbContext dbCtx = await _roomGrain
             ._dbCtxFactory.CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -142,7 +142,7 @@ public sealed partial class RoomPetSystem
 
         double z = GetTileHeightForPet(x, y);
 
-        await using TurboDbContext dbCtx = await _roomGrain
+        await using VortexDbContext dbCtx = await _roomGrain
             ._dbCtxFactory.CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -193,7 +193,7 @@ public sealed partial class RoomPetSystem
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await _roomGrain
+        await using VortexDbContext dbCtx = await _roomGrain
             ._dbCtxFactory.CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 

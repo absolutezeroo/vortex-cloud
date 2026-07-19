@@ -13,10 +13,10 @@ namespace Vortex.Rooms;
 /// Reads <c>room_chatlogs</c> for the staff mod tool's chatlog views. Read-only, low call volume
 /// (a staff member manually requesting a log) — no caching, straightforward per-room queries.
 /// </summary>
-internal sealed class ModeratorChatlogService(IDbContextFactory<TurboDbContext> dbContextFactory)
+internal sealed class ModeratorChatlogService(IDbContextFactory<VortexDbContext> dbContextFactory)
     : IModeratorChatlogService
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
 
     public async Task<ChatlogBlockSnapshot> GetRoomChatlogAsync(
         int roomId,
@@ -24,7 +24,7 @@ internal sealed class ModeratorChatlogService(IDbContextFactory<TurboDbContext> 
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -69,7 +69,7 @@ internal sealed class ModeratorChatlogService(IDbContextFactory<TurboDbContext> 
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 

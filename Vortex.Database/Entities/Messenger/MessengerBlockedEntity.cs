@@ -6,7 +6,7 @@ namespace Vortex.Database.Entities.Messenger;
 
 [Table("messenger_blocked")]
 [Index(nameof(PlayerEntityId), nameof(BlockedPlayerEntityId), IsUnique = true)]
-public class MessengerBlockedEntity : TurboEntity
+public class MessengerBlockedEntity : VortexEntity
 {
     [Column("player_id")]
     public required int PlayerEntityId { get; set; }

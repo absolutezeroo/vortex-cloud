@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Vortex.Database.Entities.Players;
 
 [Table("player_navigator_saved_searches")]
-public class PlayerNavigatorSavedSearchEntity : TurboEntity
+public class PlayerNavigatorSavedSearchEntity : VortexEntity
 {
     [Column("player_id")]
     public required int PlayerEntityId { get; set; }

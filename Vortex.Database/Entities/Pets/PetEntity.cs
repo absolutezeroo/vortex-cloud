@@ -12,7 +12,7 @@ namespace Vortex.Database.Entities.Pets;
 [Table("pets")]
 [Index(nameof(OwnerPlayerEntityId))]
 [Index(nameof(RoomEntityId))]
-public class PetEntity : TurboEntity
+public class PetEntity : VortexEntity
 {
     [Column("player_id")]
     public required int OwnerPlayerEntityId { get; set; }

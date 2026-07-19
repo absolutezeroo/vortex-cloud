@@ -27,7 +27,7 @@ The repo's default quality/build contract is project-scoped to `Vortex.Main/Vort
 ### Fast check (pre-commit)
 
 ```bash
-dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck
+dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudFastCheck
 ```
 
 This is the default local commit gate and should stay fast.
@@ -35,23 +35,23 @@ This is the default local commit gate and should stay fast.
 ### Full gate (pre-push + CI)
 
 ```bash
-dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate
+dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate
 ```
 
 This includes formatting/style/analyzer enforcement plus build and is required before pushing.
 
 Policy phase controls:
-- Current default: `TurboAIPolicyPhase=1` (warn-first rollout).
+- Current default: `VortexAIPolicyPhase=1` (warn-first rollout).
 - Preview strict phase locally:
 
 ```bash
-dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate -p:TurboAIPolicyPhase=2
+dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate -p:VortexAIPolicyPhase=2
 ```
 
 ## Integrated plugin workflow
 
 Canonical integrated workflow is documented in `../turbo-sample-plugin/README.md`.
-Run from `turbo-cloud` root:
+Run from `vortex-cloud` root:
 - PowerShell: `pwsh -File ../turbo-sample-plugin/scripts/dev-integrated.ps1`
 - bash/zsh: `sh ../turbo-sample-plugin/scripts/dev-integrated.sh`
 
@@ -61,13 +61,13 @@ Toolchain versions are pinned for consistent local and CI behavior:
 - .NET SDK pin: `global.json`
 - Local tools pin: `.config/dotnet-tools.json`
 
-When updating these, include the version bump and a passing `TurboCloudQualityGate` run in the same change.
+When updating these, include the version bump and a passing `VortexCloudQualityGate` run in the same change.
 
 ## Git hooks
 
 Repository-managed hooks are in `.githooks`:
-- `pre-commit` -> `TurboCloudFastCheck`
-- `pre-push` -> `TurboCloudQualityGate`
+- `pre-commit` -> `VortexCloudFastCheck`
+- `pre-push` -> `VortexCloudQualityGate`
 
 Enable them if needed:
 
@@ -144,9 +144,9 @@ DOTNET_ENVIRONMENT=Development dotnet run --project Vortex.Main/Vortex.Main.cspr
 ## Troubleshooting MySQL connection
 
 If you get `Unable to connect to any of the specified MySQL hosts`:
-1. Verify `Turbo:Database:ConnectionString` in `appsettings.Development.json`.
+1. Verify `Vortex:Database:ConnectionString` in `appsettings.Development.json`.
 2. Verify MySQL is listening on that host and port.
-3. Verify no `TURBO__...` environment variable overrides the connection string.
+3. Verify no `VORTEX__...` environment variable overrides the connection string.
 
 ## Troubleshooting integrated solution build
 

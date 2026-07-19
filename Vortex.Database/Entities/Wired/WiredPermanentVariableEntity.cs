@@ -7,7 +7,7 @@ namespace Vortex.Database.Entities.Wired;
 
 [Table("wired_permanent_variables")]
 [Index(nameof(TargetType), nameof(TargetId), nameof(VariableId), IsUnique = true)]
-public class WiredPermanentVariableEntity : TurboEntity
+public class WiredPermanentVariableEntity : VortexEntity
 {
     [Column("target_type")]
     public required WiredVariableTargetType TargetType { get; set; }

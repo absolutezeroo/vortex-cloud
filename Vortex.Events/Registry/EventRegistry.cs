@@ -12,7 +12,7 @@ namespace Vortex.Events.Registry;
 public sealed class EventRegistry(
     IServiceProvider sp,
     IErrorGroupingSink errorGroupingSink,
-    ITurboContextAccessor contextAccessor,
+    IVortexContextAccessor contextAccessor,
     ILogger<EventRegistry> logger
 )
     : EnvelopeHost<IEvent, object, EventContext>(
@@ -22,7 +22,7 @@ public sealed class EventRegistry(
 {
     private static EnvelopeHostOptions<IEvent, object, EventContext> CreateOptions(
         IErrorGroupingSink errorGroupingSink,
-        ITurboContextAccessor contextAccessor,
+        IVortexContextAccessor contextAccessor,
         ILogger<EventRegistry> logger
     )
     {
@@ -85,11 +85,11 @@ public sealed class EventRegistry(
         string source,
         object env,
         IErrorGroupingSink errorGroupingSink,
-        ITurboContextAccessor contextAccessor,
+        IVortexContextAccessor contextAccessor,
         ILogger logger
     )
     {
-        ITurboContext? context = contextAccessor.Current;
+        IVortexContext? context = contextAccessor.Current;
 
         try
         {

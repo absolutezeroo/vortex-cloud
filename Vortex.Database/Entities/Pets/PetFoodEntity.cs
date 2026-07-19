@@ -6,7 +6,7 @@ namespace Vortex.Database.Entities.Pets;
 
 [Table("pet_food")]
 [Index(nameof(FurnitureDefinitionEntityId), nameof(PetType), IsUnique = true)]
-public class PetFoodEntity : TurboEntity
+public class PetFoodEntity : VortexEntity
 {
     [Column("furniture_definition_id")]
     public required int FurnitureDefinitionEntityId { get; set; }

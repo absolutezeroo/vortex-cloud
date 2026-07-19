@@ -25,10 +25,10 @@ namespace Vortex.Database.Tests.RentableSpaces;
 /// </summary>
 public sealed class RentableSpaceInvariantsTests
 {
-    private static TurboDbContext NewContext()
+    private static VortexDbContext NewContext()
     {
-        return new TurboDbContext(
-            new DbContextOptionsBuilder<TurboDbContext>()
+        return new VortexDbContext(
+            new DbContextOptionsBuilder<VortexDbContext>()
                 .UseInMemoryDatabase($"rentable-{Guid.NewGuid():N}")
                 .Options
         );
@@ -39,7 +39,7 @@ public sealed class RentableSpaceInvariantsTests
         FurnitureDefinitionEntity definition,
         FurnitureEntity furniture,
         RentableSpaceTermsEntity terms
-    ) Seed(TurboDbContext ctx, int playerId = 1, int furniId = 10)
+    ) Seed(VortexDbContext ctx, int playerId = 1, int furniId = 10)
     {
         CurrencyTypeEntity currency = new()
         {
@@ -108,7 +108,7 @@ public sealed class RentableSpaceInvariantsTests
     [Fact]
     public void StateRow_IsUniquePerFurnitureInstance()
     {
-        using TurboDbContext ctx = NewContext();
+        using VortexDbContext ctx = NewContext();
         (_, _, FurnitureEntity furniture, _) = Seed(ctx);
 
         RoomRentableSpaceEntity space1 = new()
@@ -137,7 +137,7 @@ public sealed class RentableSpaceInvariantsTests
     [Fact]
     public void StateRow_ClearedInPlace_OnExpiry()
     {
-        using TurboDbContext ctx = NewContext();
+        using VortexDbContext ctx = NewContext();
         (PlayerEntity player, _, FurnitureEntity furniture, _) = Seed(ctx);
 
         RoomRentableSpaceEntity space = new()
@@ -169,7 +169,7 @@ public sealed class RentableSpaceInvariantsTests
     [Fact]
     public void TaggedFurniture_SelfFk_IsNonCascade()
     {
-        using TurboDbContext ctx = NewContext();
+        using VortexDbContext ctx = NewContext();
 
         IForeignKey? fkConfig = ctx
             .Model.FindEntityType(typeof(FurnitureEntity))!
@@ -192,7 +192,7 @@ public sealed class RentableSpaceInvariantsTests
     [Fact]
     public void FurnitureTag_SetAndClearedInBulk()
     {
-        using TurboDbContext ctx = NewContext();
+        using VortexDbContext ctx = NewContext();
         (PlayerEntity player, FurnitureDefinitionEntity definition, FurnitureEntity spaceFurni, _) =
             Seed(ctx);
 
@@ -243,7 +243,7 @@ public sealed class RentableSpaceInvariantsTests
     [Fact]
     public void RenterPlayerIdIndex_Exists()
     {
-        using TurboDbContext ctx = NewContext();
+        using VortexDbContext ctx = NewContext();
 
         IIndex? index = ctx
             .Model.FindEntityType(typeof(RoomRentableSpaceEntity))!

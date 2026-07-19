@@ -12,7 +12,7 @@ namespace Vortex.Database.Entities.Quests;
 /// </summary>
 [Table("player_quests")]
 [Index(nameof(PlayerEntityId), nameof(QuestEntityId), IsUnique = true)]
-public class PlayerQuestEntity : TurboEntity
+public class PlayerQuestEntity : VortexEntity
 {
     [Column("player_id")]
     public required int PlayerEntityId { get; set; }

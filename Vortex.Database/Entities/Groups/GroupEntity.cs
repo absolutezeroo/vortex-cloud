@@ -12,7 +12,7 @@ namespace Vortex.Database.Entities.Groups;
 [Table("groups")]
 [Index(nameof(RoomEntityId), IsUnique = true)]
 [Index(nameof(OwnerPlayerEntityId))]
-public class GroupEntity : TurboEntity
+public class GroupEntity : VortexEntity
 {
     [Column("name")]
     [MaxLength(50)]

@@ -29,7 +29,7 @@ public sealed partial class RoomGrain
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         List<WiredPermanentVariableEntity> rows = await dbCtx
             .WiredPermanentVariables.AsNoTracking()
@@ -89,7 +89,7 @@ public sealed partial class RoomGrain
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         WiredPermanentVariableEntity? existing =
             await dbCtx.WiredPermanentVariables.FirstOrDefaultAsync(
@@ -145,7 +145,7 @@ public sealed partial class RoomGrain
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         IQueryable<WiredPermanentVariableEntity> query = dbCtx
             .WiredPermanentVariables.AsNoTracking()

@@ -28,7 +28,7 @@ using Vortex.Primitives.Rooms.Grains;
 namespace Vortex.Dashboard.API.Api;
 
 internal sealed partial class DashboardApiService(
-    IDbContextFactory<TurboDbContext> dbContextFactory,
+    IDbContextFactory<VortexDbContext> dbContextFactory,
     IGrainFactory grainFactory,
     ISessionGateway sessionGateway,
     ILiveStatsAggregator liveStats,
@@ -39,7 +39,7 @@ internal sealed partial class DashboardApiService(
     IOptions<ObservabilityConfig> options
 )
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
     private readonly ILiveStatsAggregator _liveStats = liveStats;
@@ -52,9 +52,9 @@ internal sealed partial class DashboardApiService(
     private static readonly TimeSpan TotalsCacheTtl = TimeSpan.FromSeconds(30);
     private volatile CachedTotals? _cachedTotals;
 
-    private async Task<T> QueryAsync<T>(Func<TurboDbContext, Task<T>> work, CancellationToken ct)
+    private async Task<T> QueryAsync<T>(Func<VortexDbContext, Task<T>> work, CancellationToken ct)
     {
-        TurboDbContext db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        VortexDbContext db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {
@@ -71,7 +71,7 @@ internal sealed partial class DashboardApiService(
     /// for a short interval instead of being recomputed on every overview poll. Concurrent cache
     /// misses simply recompute the same value, so no lock is needed.
     /// </summary>
-    private async Task<CachedTotals> GetTotalsAsync(TurboDbContext db, CancellationToken ct)
+    private async Task<CachedTotals> GetTotalsAsync(VortexDbContext db, CancellationToken ct)
     {
         CachedTotals? cached = _cachedTotals;
 
@@ -228,7 +228,7 @@ internal sealed partial class DashboardApiService(
         ids.Where(id => id.HasValue).Select(id => id.GetValueOrDefault()).Distinct().ToList();
 
     private static async Task<Dictionary<int, string>> LoadPlayerNamesAsync(
-        TurboDbContext db,
+        VortexDbContext db,
         IReadOnlyList<int> playerIds,
         CancellationToken ct
     ) =>
@@ -241,7 +241,7 @@ internal sealed partial class DashboardApiService(
                 .ConfigureAwait(false);
 
     private static async Task<Dictionary<int, string>> LoadRoomNamesAsync(
-        TurboDbContext db,
+        VortexDbContext db,
         IReadOnlyList<int> roomIds,
         CancellationToken ct
     ) =>

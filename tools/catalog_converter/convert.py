@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Arcturus → Turbo catalog converter
+Arcturus → Vortex catalog converter
 =====================================
 Input  (./input/):
     items_base.sql       → output/furniture_definitions.sql
@@ -29,7 +29,7 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 BATCH_SIZE = 500
 
 # ---------------------------------------------------------------------------
-# Layout mapping  Arcturus string → Turbo wire string
+# Layout mapping  Arcturus string → Vortex wire string
 # ---------------------------------------------------------------------------
 LAYOUT_MAP: dict[str, str] = {
     "default_3x3": "default_3x3",
@@ -73,7 +73,7 @@ LAYOUT_MAP: dict[str, str] = {
 }
 
 # ---------------------------------------------------------------------------
-# Arcturus items_base.type → Turbo ProductType int
+# Arcturus items_base.type → Vortex ProductType int
 # ---------------------------------------------------------------------------
 PRODUCT_TYPE_MAP: dict[str, int] = {
     "s": 0,  # Floor
@@ -379,7 +379,7 @@ def convert_items_base(src: Path, dst: Path) -> tuple[dict[int, dict], dict[int,
 
 
 # ---------------------------------------------------------------------------
-# 2. catalog_pages → catalog_pages (Turbo)
+# 2. catalog_pages → catalog_pages (Vortex)
 # ---------------------------------------------------------------------------
 def convert_catalog_pages(src: Path, dst: Path) -> None:
     rows = iter_inserts(src)
@@ -433,7 +433,7 @@ def convert_catalog_pages(src: Path, dst: Path) -> None:
 
         name_val     = str(caption or "").strip()[:50]
         layout_str   = str(page_layout or "default_3x3").strip().lower()
-        turbo_layout = LAYOUT_MAP.get(layout_str, "default_3x3")
+        vortex_layout = LAYOUT_MAP.get(layout_str, "default_3x3")
         icon_val     = int(icon_image) if icon_image is not None else 0
         is_visible   = (str(visible or "0") == "1") and (str(enabled or "0") == "1")
         image_data   = json_array([page_headline, page_teaser, page_special])
@@ -444,7 +444,7 @@ def convert_catalog_pages(src: Path, dst: Path) -> None:
             "parent_id": parent_int,
             "value": (
                 f"({sql_str(page_id_int)},{parent_val},{sql_str(localization[:50])},"
-                f"{sql_str(name_val)},{sql_str(icon_val)},{sql_str(turbo_layout)},"
+                f"{sql_str(name_val)},{sql_str(icon_val)},{sql_str(vortex_layout)},"
                 f"{image_data},{text_data},{sql_str(sort)},{sql_bool(is_visible)},"
                 f"NOW(),NOW(),NULL)"
             ),
@@ -588,7 +588,7 @@ def convert_catalog_items(
         if song_id_v:
             song_notes.append(
                 f"-- [MANUAL REVIEW] song_id={song_id_v} for offer {item_id_val} — "
-                f"Turbo has no direct sound track product_type; adjust manually."
+                f"Vortex has no direct sound track product_type; adjust manually."
             )
 
         for def_id in item_id_list:
@@ -830,7 +830,7 @@ def main() -> None:
     print("Notes:")
     print("  • furniture_definitions: public_name, multiheight, vending_ids, effects dropped")
     print("  • catalog_pages: min_rank, club_only, vip_only, room_id, includes dropped")
-    print("  • catalog_offers: order_number dropped (no column in Turbo)")
+    print("  • catalog_offers: order_number dropped (no column in Vortex)")
     print("  • catalog_products: song_id rows marked [MANUAL REVIEW] at end of file")
     print("  • currency_type_id: set to the points_type value as a placeholder;")
     print("    update it after inserting your currency_types rows")

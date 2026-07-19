@@ -14,7 +14,7 @@ namespace Vortex.Players;
 /// edited a tier's limit, it's theirs and never overwritten.
 /// </summary>
 internal sealed class BuildersClubTierSeederService(
-    IDbContextFactory<TurboDbContext> dbContextFactory,
+    IDbContextFactory<VortexDbContext> dbContextFactory,
     ILogger<BuildersClubTierSeederService> logger
 ) : IHostedService
 {
@@ -22,7 +22,7 @@ internal sealed class BuildersClubTierSeederService(
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        TurboDbContext db = await dbContextFactory
+        VortexDbContext db = await dbContextFactory
             .CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 

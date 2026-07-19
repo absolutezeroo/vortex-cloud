@@ -18,11 +18,11 @@ using Vortex.Primitives.Players;
 namespace Vortex.Navigator;
 
 public sealed class NavigatorProvider(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<NavigatorProvider> logger
 ) : INavigatorProvider
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<NavigatorProvider> _logger = logger;
 
     private ImmutableArray<NavigatorTopLevelContextSnapshot> _topLevelContexts = [];
@@ -42,7 +42,7 @@ public sealed class NavigatorProvider(
 
     public async Task<List<RoomInfoSnapshot>> GetAllRoomsAsync(CancellationToken ct = default)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -57,7 +57,7 @@ public sealed class NavigatorProvider(
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -72,7 +72,7 @@ public sealed class NavigatorProvider(
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -86,7 +86,7 @@ public sealed class NavigatorProvider(
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -105,7 +105,7 @@ public sealed class NavigatorProvider(
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -122,7 +122,7 @@ public sealed class NavigatorProvider(
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -139,7 +139,7 @@ public sealed class NavigatorProvider(
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -154,7 +154,7 @@ public sealed class NavigatorProvider(
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -176,7 +176,7 @@ public sealed class NavigatorProvider(
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -208,7 +208,7 @@ public sealed class NavigatorProvider(
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -228,7 +228,7 @@ public sealed class NavigatorProvider(
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -244,7 +244,7 @@ public sealed class NavigatorProvider(
 
     public async Task ReloadAsync(CancellationToken ct = default)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -315,7 +315,7 @@ public sealed class NavigatorProvider(
     }
 
     private static IQueryable<Database.Entities.Room.RoomEntity> BuildRoomQuery(
-        TurboDbContext dbCtx
+        VortexDbContext dbCtx
     ) => dbCtx.Rooms.AsNoTracking().Where(x => x.DeletedAt == null);
 }
 

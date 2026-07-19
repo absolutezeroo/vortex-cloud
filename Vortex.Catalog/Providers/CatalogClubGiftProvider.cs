@@ -15,12 +15,12 @@ using Vortex.Primitives.Furniture.Providers;
 namespace Vortex.Catalog.Providers;
 
 public sealed class CatalogClubGiftProvider(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<ICatalogClubGiftProvider> logger,
     IFurnitureDefinitionProvider furnitureProvider
 ) : ICatalogClubGiftProvider
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<ICatalogClubGiftProvider> _logger = logger;
     private readonly IFurnitureDefinitionProvider _furnitureProvider = furnitureProvider;
 
@@ -33,7 +33,7 @@ public sealed class CatalogClubGiftProvider(
 
     public async Task ReloadAsync(CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 

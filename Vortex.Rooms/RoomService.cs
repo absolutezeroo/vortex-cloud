@@ -38,11 +38,11 @@ internal sealed partial class RoomService(
     IOptions<RoomConfig> roomConfig,
     ISessionGateway sessionGateway,
     IGrainFactory grainFactory,
-    IDbContextFactory<TurboDbContext> dbContextFactory,
+    IDbContextFactory<VortexDbContext> dbContextFactory,
     IRoomModerationStore roomModerationStore
 ) : IRoomService
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ILogger<IRoomService> _logger = logger;
     private readonly RoomConfig _roomConfig = roomConfig.Value;

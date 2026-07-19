@@ -1,5 +1,5 @@
 <Project>
-  <Target Name="TurboCloudFastCheck" Condition="'$(MSBuildProjectName)' == 'Vortex.Main'">
+  <Target Name="VortexCloudFastCheck" Condition="'$(MSBuildProjectName)' == 'Vortex.Main'">
     <Exec Command="dotnet tool restore" WorkingDirectory="$(MSBuildThisFileDirectory)" />
     <Exec Command="dotnet csharpier check ." WorkingDirectory="$(MSBuildThisFileDirectory)" />
     <Exec
@@ -12,9 +12,9 @@
     />
   </Target>
 
-  <Target Name="TurboCloudAiGovernanceCheck" Condition="'$(MSBuildProjectName)' == 'Vortex.Main'">
+  <Target Name="VortexCloudAiGovernanceCheck" Condition="'$(MSBuildProjectName)' == 'Vortex.Main'">
     <Message
-      Text="Validating AI governance files (phase $(TurboAIPolicyPhase))."
+      Text="Validating AI governance files (phase $(VortexAIPolicyPhase))."
       Importance="high"
     />
     <Error
@@ -44,9 +44,9 @@
   </Target>
 
   <Target
-    Name="TurboCloudQualityGate"
+    Name="VortexCloudQualityGate"
     Condition="'$(MSBuildProjectName)' == 'Vortex.Main'"
-    DependsOnTargets="TurboCloudFastCheck;TurboCloudAiGovernanceCheck"
+    DependsOnTargets="VortexCloudFastCheck;VortexCloudAiGovernanceCheck"
   >
     <!--
       Was scoped to Vortex.Main.csproj only (the composition root, near-zero domain logic) — every

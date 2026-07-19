@@ -19,7 +19,7 @@ public sealed class AuthenticationModule : IHostPluginModule
         "replace-with-a-production-secret",
     ];
 
-    public string Key => "turbo-authentication";
+    public string Key => "vortex-authentication";
 
     public void ConfigureServices(IServiceCollection services, HostApplicationBuilder builder)
     {
@@ -28,7 +28,7 @@ public sealed class AuthenticationModule : IHostPluginModule
         );
 
         // Fail fast outside Development if the placeholder IP-hash secret was never overridden
-        // (via TURBO__Turbo__Authentication__IpHashSecret or user-secrets) — a default secret here
+        // (via VORTEX__Vortex__Authentication__IpHashSecret or user-secrets) — a default secret here
         // would make the hashed IPs in auth events trivially reversible/guessable in production.
         string ipHashSecret =
             builder.Configuration[$"{AuthenticationConfig.SECTION_NAME}:IpHashSecret"]
@@ -43,8 +43,8 @@ public sealed class AuthenticationModule : IHostPluginModule
         )
         {
             throw new InvalidOperationException(
-                "Turbo:Authentication:IpHashSecret is unset or still a placeholder default. "
-                    + "Set a real secret via the TURBO__Turbo__Authentication__IpHashSecret "
+                "Vortex:Authentication:IpHashSecret is unset or still a placeholder default. "
+                    + "Set a real secret via the VORTEX__Vortex__Authentication__IpHashSecret "
                     + "environment variable or user-secrets before running outside Development."
             );
         }

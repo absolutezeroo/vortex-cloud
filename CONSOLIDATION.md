@@ -51,7 +51,7 @@ catch-block re-audit (P5).
 - S2 — `appsettings.json` (the file that applies outside `Development`, per `launchSettings.json`
   setting `DOTNET_ENVIRONMENT=Development` only for local `dotnet run`) no longer carries working
   secrets: `Database:ConnectionString` and `Crypto:PublicKey`/`PrivateKey` are `CHANGE_ME_*`
-  placeholders that must be supplied via `TURBO__Turbo__*` environment variables or user-secrets.
+  placeholders that must be supplied via `VORTEX__Vortex__*` environment variables or user-secrets.
   `Observability:DashboardToken` (dead config — the dashboard has used per-account
   email/password + capability auth for a while, nothing ever bound this key) was deleted.
   `AuthenticationModule` now fails fast outside `Development` if `IpHashSecret` is unset or still
@@ -71,9 +71,9 @@ catch-block re-audit (P5).
 
 **Priority 2 items closed (2026-07-04):**
 - S4/S5 — `ClientPacketDecoder.TryRead` rejects a declared body length that is negative or exceeds
-  `Turbo:Networking:MaxPacketBodyBytes` (default 64 KiB) *before* the `length + 4` addition that used
+  `Vortex:Networking:MaxPacketBodyBytes` (default 64 KiB) *before* the `length + 4` addition that used
   to be overflow-prone. `RemoveFriendMessageParser`/`SaveRoomSettingsMessageParser.ParseTags` now
-  clamp their wire-declared counts (`Turbo:Protocol:MaxFriendRemovalIds` / `MaxRoomTags`, defaults
+  clamp their wire-declared counts (`Vortex:Protocol:MaxFriendRemovalIds` / `MaxRoomTags`, defaults
   1000/100) before allocating.
 - S6 — `WsPackageHandler` catches the decoder's rejection, logs the session key/remote IP, clears
   `WsBuffer`, and closes the session instead of buffering indefinitely.
@@ -85,7 +85,7 @@ catch-block re-audit (P5).
   half-updated (ghost) mapping. `AddSessionToPlayerAsync` gained an optional `CancellationToken`
   that threads through instead of hardcoded `CancellationToken.None`.
 - O4 — `PlayerPresenceGrain`'s outgoing composer queue is capped (drop-oldest + warning log) via
-  `Turbo:PlayerPresence:MaxOutgoingQueueSize` (default 500); `OnErrorAsync` logs stream faults
+  `Vortex:PlayerPresence:MaxOutgoingQueueSize` (default 500); `OnErrorAsync` logs stream faults
   instead of swallowing them; `OnDeactivateAsync` unsubscribes the room-outbound stream handle.
 - D7 — `AddPluginTablePrefix` no longer ignores its own computed fallback: the `.Select(...).ToString()`
   bug (which returned the enumerable's type name, not the joined prefix) is fixed with
@@ -171,10 +171,10 @@ and `Vortex.Players.Configuration.PlayerPresenceConfig`.
   objects, just unused for these specific constants). Handler side: `MessengerInitMessageHandler`'s
   `FragmentSize`/`UserFriendLimit`/`NormalFriendLimit`/`ExtendedFriendLimit` and
   `HabboSearchMessageHandler`'s `SearchLimit` now bind from a new `FriendListConfig`
-  (`Turbo:FriendList`, matching the section AGENTS.md already claimed existed per C3) instead of
+  (`Vortex:FriendList`, matching the section AGENTS.md already claimed existed per C3) instead of
   being hardcoded — this is the first real implementation of that documented pattern.
 - A4 — Orleans silo endpoint (advertised IP, silo port, gateway port) now binds from
-  `Turbo:Orleans` via a new `OrleansHostConfig`, defaults unchanged. Clustering/storage/stream
+  `Vortex:Orleans` via a new `OrleansHostConfig`, defaults unchanged. Clustering/storage/stream
   *providers* were deliberately left as `UseLocalhostClustering()` + in-memory: picking a real
   production provider (ADO.NET clustering, Redis/SQL storage, etc.) is a deployment-target decision
   I can't make unilaterally without knowing the target infrastructure, and guessing wrong means
@@ -215,7 +215,7 @@ and `Vortex.Players.Configuration.PlayerPresenceConfig`.
   packages at `5.6.0`. The Orleans 10 analyzer then flagged 172 `ConfigureAwait(false)` call sites
   in grain code as `ORLEANS0014` (grain continuations must stay on the captured/grain context, not
   escape it) — fixed via `dotnet format analyzers` + `dotnet csharpier format .`; all 99 tests and
-  the full `TurboCloudQualityGate` pass clean (0 warnings, 0 errors). `Microsoft.EntityFrameworkCore*`
+  the full `VortexCloudQualityGate` pass clean (0 warnings, 0 errors). `Microsoft.EntityFrameworkCore*`
   and `Pomelo.EntityFrameworkCore.MySql` remain pinned to the 9.x line: Pomelo has no EF Core
   10-compatible release yet (tracked upstream: `PomeloFoundation/Pomelo.EntityFrameworkCore.MySql#2007`).
   EF Core 9 packages run fine on the `net10.0` TFM/runtime, so this is not a build defect — bump both
@@ -239,7 +239,7 @@ balance never invokes the grant step, a successful grant never refunds, a throwi
 exactly one `CreditBackAsync` call with the original debit requests before the exception rethrows,
 and an empty debit list (nothing to refund) is not refunded on grant failure. `Vortex.Rooms.Tests` is
 now 40/40 green (was 36) and runs in the gate via `dotnet test Vortex.Cloud.sln` in
-`TurboCloudFastCheck`.
+`VortexCloudFastCheck`.
 **Done when:** policies and ledger are covered; the gate executes these tests. ✅
 
 ### P2 — Fill the empty shells — done
@@ -285,11 +285,11 @@ boundaries, not the over-modularization anti-pattern this section originally des
 
 ### P4 — Lock the quality gate — done
 **Evidence:** `dotnet csharpier check .` is green repo-wide (3656 files, 0 failures).
-**Closed (2026-07-04):** `TurboCloudQualityGate` now runs `dotnet format Vortex.Cloud.sln
+**Closed (2026-07-04):** `VortexCloudQualityGate` now runs `dotnet format Vortex.Cloud.sln
 style|analyzers --verify-no-changes` (was scoped to `Vortex.Main.csproj` only, so `Vortex.Rooms`,
 `Vortex.PacketHandlers`, `Vortex.Players`, etc. — where the actual logic lives — were never gated).
 Widening the scope surfaced real, fixable debt that had been invisible until now:
-- **69 `CS8618`** in `TurboDbContext.cs` — every `DbSet<T>` property lacked its (harmless, standard
+- **69 `CS8618`** in `VortexDbContext.cs` — every `DbSet<T>` property lacked its (harmless, standard
   EF Core) `= null!;` initializer. Added mechanically.
 - **96 `CA2007`** ("call ConfigureAwait") across 14 files — every single one turned out to be the
   same unfixable-without-restructuring pattern: `await using` disposal has no `.ConfigureAwait()`
@@ -347,7 +347,7 @@ only ever summed as a total.
 `PerformanceLogMessageHandler` → `IPerformanceLogSink` is now implemented by
 `Vortex.Observability.Metrics.ClientPerformanceMetrics` (registered in place of the old
 `ChannelPerformanceLogSink`): histograms for elapsed time/memory/frame rate, a counter for GC count,
-tagged only by OS/Browser (bounded cardinality, matching `TurboMetrics`'/`ClubMetrics`' documented
+tagged only by OS/Browser (bounded cardinality, matching `VortexMetrics`'/`ClubMetrics`' documented
 convention — never tag by player id). An `ObservableCounter` plus a plain `TotalSamples` property
 (same dual-purpose pattern as `ClubMetrics.ActiveSubscribers`) replaces the old `performance_logs`
 row-count dashboard stat — it's in-memory since process start, not a durable lifetime total, which is

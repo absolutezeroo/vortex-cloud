@@ -59,7 +59,7 @@ public sealed partial class RoomFurniModule
             || item is not IRoomWallItem wall
         )
         {
-            throw new TurboException(TurboErrorCodeEnum.WallItemNotFound);
+            throw new VortexException(VortexErrorCodeEnum.WallItemNotFound);
         }
 
         if (!_roomGrain.MapModule.MoveWallItem(wall, x, y, z, rot, wallOffset))

@@ -39,7 +39,7 @@ namespace Vortex.Rooms.Grains;
 public sealed partial class RoomGrain : Grain, IRoomGrain
 {
     internal readonly IRoomAvatarProvider _avatarProvider;
-    internal readonly IDbContextFactory<TurboDbContext> _dbCtxFactory;
+    internal readonly IDbContextFactory<VortexDbContext> _dbCtxFactory;
     internal readonly IEventPublisher _events;
     internal readonly IGrainFactory _grainFactory;
     internal readonly IRoomItemsProvider _itemsLoader;
@@ -75,7 +75,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     internal IAsyncStream<RoomOutbound> _roomOutbound = default!;
 
     public RoomGrain(
-        IDbContextFactory<TurboDbContext> dbCtxFactory,
+        IDbContextFactory<VortexDbContext> dbCtxFactory,
         IOptions<RoomConfig> roomConfig,
         ILogger<IRoomGrain> logger,
         IRoomModelProvider roomModelProvider,
@@ -260,7 +260,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
     private async Task HydrateRoomStateAsync(CancellationToken ct)
     {
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         try
         {
@@ -269,7 +269,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                     .Rooms.AsNoTracking()
                     .Include(e => e.GroupEntity)
                     .SingleOrDefaultAsync(e => e.Id == _state.RoomId.Value, ct)
-                ?? throw new TurboException(TurboErrorCodeEnum.RoomNotFound);
+                ?? throw new VortexException(VortexErrorCodeEnum.RoomNotFound);
 
             _state.Model = _roomModelProvider.GetModelById(entity.RoomModelEntityId);
 

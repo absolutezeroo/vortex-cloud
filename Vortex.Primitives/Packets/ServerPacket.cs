@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Vortex.Primitives.Packets;
 
-public class ServerPacket(int header) : TurboPacket(header), IServerPacket
+public class ServerPacket(int header) : VortexPacket(header), IServerPacket
 {
     public BinaryWriter Writer { get; } = new(new MemoryStream());
     public MemoryStream Stream => (MemoryStream)Writer.BaseStream;

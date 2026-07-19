@@ -13,7 +13,7 @@ namespace Vortex.Database.Entities.Permissions;
 /// </summary>
 [Table("sanction_presets")]
 [Index(nameof(Kind), nameof(PresetIndex), IsUnique = true)]
-public class SanctionPresetEntity : TurboEntity
+public class SanctionPresetEntity : VortexEntity
 {
     [Column("kind")]
     public required SanctionPresetKind Kind { get; set; }

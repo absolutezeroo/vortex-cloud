@@ -10,7 +10,7 @@ namespace Vortex.Networking.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddTurboNetworking(
+    public static IServiceCollection AddVortexNetworking(
         this IServiceCollection services,
         HostApplicationBuilder builder
     )

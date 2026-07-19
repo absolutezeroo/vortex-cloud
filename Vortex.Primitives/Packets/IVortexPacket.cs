@@ -1,6 +1,6 @@
 namespace Vortex.Primitives.Packets;
 
-public interface ITurboPacket
+public interface IVortexPacket
 {
     public int Header { get; }
 }

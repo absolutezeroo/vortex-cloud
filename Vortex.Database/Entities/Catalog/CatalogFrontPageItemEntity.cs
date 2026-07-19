@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Vortex.Database.Entities.Catalog;
 
 [Table("catalog_frontpage_items")]
-public class CatalogFrontPageItemEntity : TurboEntity
+public class CatalogFrontPageItemEntity : VortexEntity
 {
     [Column("position")]
     public required int Position { get; set; }

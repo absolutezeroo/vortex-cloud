@@ -9,7 +9,7 @@ namespace Vortex.WebApi.Configuration;
 /// </summary>
 public sealed class WebApiConfig
 {
-    public const string SECTION_NAME = "Turbo:WebApi";
+    public const string SECTION_NAME = "Vortex:WebApi";
 
     public bool Enabled { get; set; } = false;
 

@@ -11,7 +11,7 @@ using Vortex.Database.Context;
 
 namespace Vortex.Database.Migrations
 {
-    [DbContext(typeof(TurboDbContext))]
+    [DbContext(typeof(VortexDbContext))]
     [Migration("20260705031132_AddRoomEntryLogExitTracking")]
     partial class AddRoomEntryLogExitTracking
     {

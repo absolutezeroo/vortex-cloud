@@ -18,14 +18,14 @@ namespace Vortex.Rooms.Wired.Logs;
 /// </summary>
 public sealed class RoomWiredLogWriterService(
     RoomWiredLogChannel channel,
-    IDbContextFactory<TurboDbContext> dbContextFactory,
+    IDbContextFactory<VortexDbContext> dbContextFactory,
     ILogger<RoomWiredLogWriterService> logger
 ) : BackgroundService
 {
     private const int BatchSize = 100;
 
     private readonly RoomWiredLogChannel _channel = channel;
-    private readonly IDbContextFactory<TurboDbContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
     private readonly ILogger<RoomWiredLogWriterService> _logger = logger;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -71,7 +71,7 @@ public sealed class RoomWiredLogWriterService(
     {
         try
         {
-            await using TurboDbContext dbCtx = await _dbContextFactory
+            await using VortexDbContext dbCtx = await _dbContextFactory
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(false);
 

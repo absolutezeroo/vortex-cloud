@@ -5,12 +5,12 @@ using Microsoft.Extensions.Configuration;
 
 namespace Vortex.Database.Context
 {
-    public class TurboDbContextFactory : IDesignTimeDbContextFactory<TurboDbContext>
+    public class VortexDbContextFactory : IDesignTimeDbContextFactory<VortexDbContext>
     {
-        public TurboDbContext CreateDbContext(string[] args)
+        public VortexDbContext CreateDbContext(string[] args)
         {
-            DbContextOptionsBuilder<TurboDbContext> optionsBuilder =
-                new DbContextOptionsBuilder<TurboDbContext>();
+            DbContextOptionsBuilder<VortexDbContext> optionsBuilder =
+                new DbContextOptionsBuilder<VortexDbContext>();
 
             string basePath = Path.Combine(Directory.GetCurrentDirectory(), "..");
             IConfigurationRoot configuration = new ConfigurationBuilder()
@@ -20,12 +20,12 @@ namespace Vortex.Database.Context
                 .AddEnvironmentVariables()
                 .Build();
 
-            string? connectionString = configuration["Turbo:Database:ConnectionString"];
+            string? connectionString = configuration["Vortex:Database:ConnectionString"];
 
             // AutoDetect requires a live MySQL connection, which is unavailable when authoring
             // migrations offline. Allow pinning the server version via configuration
-            // (Turbo:Database:ServerVersion, e.g. "8.0.32-mysql") to bypass detection.
-            string? versionConfig = configuration["Turbo:Database:ServerVersion"];
+            // (Vortex:Database:ServerVersion, e.g. "8.0.32-mysql") to bypass detection.
+            string? versionConfig = configuration["Vortex:Database:ServerVersion"];
             ServerVersion? serverVersion = string.IsNullOrWhiteSpace(versionConfig)
                 ? ServerVersion.AutoDetect(connectionString)
                 : ServerVersion.Parse(versionConfig);
@@ -39,7 +39,7 @@ namespace Vortex.Database.Context
                 }
             );
 
-            return new TurboDbContext(optionsBuilder.Options);
+            return new VortexDbContext(optionsBuilder.Options);
         }
     }
 }

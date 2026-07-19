@@ -16,7 +16,7 @@ namespace Vortex.Database.Entities.Groups;
 [Table("group_forum_threads")]
 [Index(nameof(GroupEntityId))]
 [Index(nameof(LastPostAt))]
-public class GroupForumThreadEntity : TurboEntity
+public class GroupForumThreadEntity : VortexEntity
 {
     [Column("group_id")]
     public required int GroupEntityId { get; set; }

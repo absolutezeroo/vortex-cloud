@@ -8,10 +8,10 @@ using Vortex.Primitives.Rooms;
 
 namespace Vortex.Rooms;
 
-internal sealed class RoomAdvertisementService(IDbContextFactory<TurboDbContext> dbContextFactory)
+internal sealed class RoomAdvertisementService(IDbContextFactory<VortexDbContext> dbContextFactory)
     : IRoomAdvertisementService
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
 
     public async Task<RoomAdvertisementSnapshot?> EditAsync(
         int advertisementId,
@@ -21,7 +21,7 @@ internal sealed class RoomAdvertisementService(IDbContextFactory<TurboDbContext>
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -62,7 +62,7 @@ internal sealed class RoomAdvertisementService(IDbContextFactory<TurboDbContext>
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -90,7 +90,7 @@ internal sealed class RoomAdvertisementService(IDbContextFactory<TurboDbContext>
 
     public async Task<bool> HasActiveAdvertisementAsync(int roomId, CancellationToken ct = default)
     {
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -114,7 +114,7 @@ internal sealed class RoomAdvertisementService(IDbContextFactory<TurboDbContext>
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 

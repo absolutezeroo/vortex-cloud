@@ -15,7 +15,7 @@ public sealed partial class RoomMapModule
 
         if (!InBounds(tileIdx))
         {
-            throw new TurboException(TurboErrorCodeEnum.TileOutOfBounds);
+            throw new VortexException(VortexErrorCodeEnum.TileOutOfBounds);
         }
 
         if (
@@ -44,7 +44,7 @@ public sealed partial class RoomMapModule
     {
         if (!InBounds(nTileIdx))
         {
-            throw new TurboException(TurboErrorCodeEnum.TileOutOfBounds);
+            throw new VortexException(VortexErrorCodeEnum.TileOutOfBounds);
         }
 
         (int targetX, int targetY) = GetTileXY(nTileIdx);
@@ -65,7 +65,7 @@ public sealed partial class RoomMapModule
     {
         if (!InBounds(tileIdx))
         {
-            throw new TurboException(TurboErrorCodeEnum.TileOutOfBounds);
+            throw new VortexException(VortexErrorCodeEnum.TileOutOfBounds);
         }
 
         (int sourceX, int sourceY, Rotation sourceRot) = (item.X, item.Y, item.Rotation);
@@ -103,7 +103,7 @@ public sealed partial class RoomMapModule
     {
         if (!InBounds(tileIdx))
         {
-            throw new TurboException(TurboErrorCodeEnum.TileOutOfBounds);
+            throw new VortexException(VortexErrorCodeEnum.TileOutOfBounds);
         }
 
         RemoveFloorItem(item);
@@ -124,7 +124,7 @@ public sealed partial class RoomMapModule
 
         if (!InBounds(tileIdx))
         {
-            throw new TurboException(TurboErrorCodeEnum.TileOutOfBounds);
+            throw new VortexException(VortexErrorCodeEnum.TileOutOfBounds);
         }
 
         if (

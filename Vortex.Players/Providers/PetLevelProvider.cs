@@ -13,7 +13,7 @@ using Vortex.Primitives.Pets.Snapshots;
 namespace Vortex.Players.Providers;
 
 public sealed class PetLevelProvider(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<IPetLevelProvider> logger
 ) : IPetLevelProvider
 {
@@ -21,7 +21,7 @@ public sealed class PetLevelProvider(
         int,
         ImmutableArray<PetLevelEntry>
     >.Empty;
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<IPetLevelProvider> _logger = logger;
 
     public int GetLevelForExperience(int petType, int experience)
@@ -97,7 +97,7 @@ public sealed class PetLevelProvider(
 
     public async Task ReloadAsync(CancellationToken ct)
     {
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {

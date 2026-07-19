@@ -90,7 +90,7 @@ internal static class RoomPetRuntime
             : $"{pet.Type} {pet.Race} {pet.Color} 0";
 
     public static async Task<PetFeedResult> FeedAsync(
-        TurboDbContext dbCtx,
+        VortexDbContext dbCtx,
         int roomId,
         int actorPlayerId,
         int petId,

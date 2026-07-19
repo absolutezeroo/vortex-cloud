@@ -12,7 +12,7 @@ namespace Vortex.Database.Entities.Groups;
 /// </summary>
 [Table("group_forum_settings")]
 [Index(nameof(GroupEntityId), IsUnique = true)]
-public class GroupForumSettingsEntity : TurboEntity
+public class GroupForumSettingsEntity : VortexEntity
 {
     [Column("group_id")]
     public required int GroupEntityId { get; set; }

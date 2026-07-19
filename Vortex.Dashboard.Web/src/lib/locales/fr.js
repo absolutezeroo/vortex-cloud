@@ -805,7 +805,7 @@ export default {
     searchPlaceholder: 'Filtrer les sections...',
     noMatch: 'Aucune section ne correspond à "{query}".',
     dashboardFallback: 'Tableau de bord',
-    brandTitle: 'Turbo Ops',
+    brandTitle: 'Vortex Ops',
     brandSubtitle: "Centre d'observabilité",
     overview: "Vue d'ensemble",
     overviewShort: 'Santé en direct',

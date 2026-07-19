@@ -10,7 +10,7 @@ namespace Vortex.Database.Entities.Catalog;
 [Table("catalog_ltd_raffle_entries")]
 [Index(nameof(SeriesEntityId))]
 [Index(nameof(PlayerEntityId))]
-public class LtdRaffleEntryEntity : TurboEntity
+public class LtdRaffleEntryEntity : VortexEntity
 {
     [Column("series_id")]
     public required int SeriesEntityId { get; set; }

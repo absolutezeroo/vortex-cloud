@@ -9,7 +9,7 @@ namespace Vortex.Database.Entities.Permissions;
 /// the union of their roles' capabilities.</summary>
 [Table("roles")]
 [Index(nameof(Key), IsUnique = true)]
-public class RoleEntity : TurboEntity
+public class RoleEntity : VortexEntity
 {
     [Column("key")]
     [MaxLength(64)]

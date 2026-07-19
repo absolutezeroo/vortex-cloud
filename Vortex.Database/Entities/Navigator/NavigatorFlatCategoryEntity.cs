@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Vortex.Database.Entities.Navigator;
 
 [Table("navigator_flatcats")]
-public class NavigatorFlatCategoryEntity : TurboEntity
+public class NavigatorFlatCategoryEntity : VortexEntity
 {
     [Key]
     [Column("id")]

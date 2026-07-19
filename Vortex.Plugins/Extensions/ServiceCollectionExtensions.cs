@@ -8,7 +8,7 @@ namespace Vortex.Plugins.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddTurboPlugins(
+    public static IServiceCollection AddVortexPlugins(
         this IServiceCollection services,
         HostApplicationBuilder builder
     )

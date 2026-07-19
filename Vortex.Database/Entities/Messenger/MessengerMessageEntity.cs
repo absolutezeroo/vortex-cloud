@@ -10,7 +10,7 @@ namespace Vortex.Database.Entities.Messenger;
 [Table("messenger_messages")]
 [Index(nameof(ReceiverEntityId), nameof(SenderEntityId), nameof(Timestamp))]
 [Index(nameof(SenderEntityId), nameof(ReceiverEntityId), nameof(Timestamp))]
-public class MessengerMessageEntity : TurboEntity
+public class MessengerMessageEntity : VortexEntity
 {
     [Column("sender_id")]
     public required int SenderEntityId { get; set; }

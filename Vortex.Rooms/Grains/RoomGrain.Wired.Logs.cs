@@ -22,7 +22,7 @@ public sealed partial class RoomGrain
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         IQueryable<RoomWiredLogEntity> logs = dbCtx
             .RoomWiredLogs.AsNoTracking()

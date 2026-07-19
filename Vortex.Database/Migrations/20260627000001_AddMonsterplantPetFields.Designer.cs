@@ -9,7 +9,7 @@ using Vortex.Database.Context;
 
 namespace Vortex.Database.Migrations
 {
-    [DbContext(typeof(TurboDbContext))]
+    [DbContext(typeof(VortexDbContext))]
     [Migration("20260627000001_AddMonsterplantPetFields")]
     partial class AddMonsterplantPetFields
     {

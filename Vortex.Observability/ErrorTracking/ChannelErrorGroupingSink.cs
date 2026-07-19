@@ -11,12 +11,12 @@ namespace Vortex.Observability.ErrorTracking;
 /// </summary>
 internal sealed class ChannelErrorGroupingSink(
     ErrorGroupingChannel channel,
-    ITurboContextAccessor contextAccessor,
+    IVortexContextAccessor contextAccessor,
     ILogger<ChannelErrorGroupingSink> logger
 ) : IErrorGroupingSink
 {
     private readonly ErrorGroupingChannel _channel = channel;
-    private readonly ITurboContextAccessor _contextAccessor = contextAccessor;
+    private readonly IVortexContextAccessor _contextAccessor = contextAccessor;
     private readonly ILogger<ChannelErrorGroupingSink> _logger = logger;
 
     public void Record(
@@ -30,7 +30,7 @@ internal sealed class ChannelErrorGroupingSink(
         string? remoteIp = null
     )
     {
-        ITurboContext? current = _contextAccessor.Current;
+        IVortexContext? current = _contextAccessor.Current;
         long? resolvedActorId = actorId ?? current?.PlayerId;
         int? resolvedRoomId = roomId ?? current?.RoomId;
         string? resolvedCorrelationId = correlationId ?? current?.CorrelationId.Value;
@@ -51,7 +51,7 @@ internal sealed class ChannelErrorGroupingSink(
         if (!_channel.TryWrite(record))
         {
             _logger.LogWarning(
-                TurboEventIds.ErrorGroupingDropped,
+                VortexEventIds.ErrorGroupingDropped,
                 "Runtime error grouping event dropped (channel saturated): {Source}/{Operation}",
                 source,
                 operation

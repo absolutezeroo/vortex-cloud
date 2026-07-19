@@ -6,7 +6,7 @@ namespace Vortex.Database.Entities.Players;
 
 [Table("player_badges")]
 [Index(nameof(PlayerEntityId), nameof(BadgeCode), IsUnique = true)]
-public class PlayerBadgeEntity : TurboEntity
+public class PlayerBadgeEntity : VortexEntity
 {
     [Column("player_id")]
     public required int PlayerEntityId { get; set; }

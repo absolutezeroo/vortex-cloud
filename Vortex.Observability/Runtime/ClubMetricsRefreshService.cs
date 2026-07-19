@@ -16,7 +16,7 @@ namespace Vortex.Observability.Runtime;
 /// (online vs offline), which a delta-counter approach could not guarantee.
 /// </summary>
 public sealed class ClubMetricsRefreshService(
-    IDbContextFactory<TurboDbContext> dbContextFactory,
+    IDbContextFactory<VortexDbContext> dbContextFactory,
     ClubMetrics metrics,
     ILogger<ClubMetricsRefreshService> logger
 ) : BackgroundService
@@ -29,7 +29,7 @@ public sealed class ClubMetricsRefreshService(
         {
             try
             {
-                await using TurboDbContext dbCtx = await dbContextFactory
+                await using VortexDbContext dbCtx = await dbContextFactory
                     .CreateDbContextAsync(stoppingToken)
                     .ConfigureAwait(false);
 

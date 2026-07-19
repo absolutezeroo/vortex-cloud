@@ -21,7 +21,7 @@ using Vortex.Primitives.Players.Wallet;
 namespace Vortex.Catalog.Grains;
 
 public sealed class LtdRaffleGrain(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
     IEventPublisher events,
     ILogger<LtdRaffleGrain> logger
@@ -78,7 +78,7 @@ public sealed class LtdRaffleGrain(
 
         // Resolve the entities the entry needs *before* touching the wallet, so a missing
         // player/series never leaves credits debited with nothing recorded to show for it.
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         PlayerEntity? playerEntity = await dbCtx.Players.FindAsync([playerIdInt], ct);
         if (playerEntity is null)
@@ -218,7 +218,7 @@ public sealed class LtdRaffleGrain(
 
     private async Task LoadSeriesAsync(CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         _series = await dbCtx
             .LtdSeries.Include(s => s.CatalogProductEntity)
@@ -232,7 +232,7 @@ public sealed class LtdRaffleGrain(
         }
 
         // Resolve furniture definition id from catalog product
-        await using TurboDbContext dbCtx2 = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx2 = await dbCtxFactory.CreateDbContextAsync(ct);
 
         CatalogProductEntity? product = await dbCtx2
             .CatalogProducts.AsNoTracking()
@@ -330,7 +330,7 @@ public sealed class LtdRaffleGrain(
             // Decrement remaining
             _series.RemainingQuantity--;
 
-            await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+            await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
             await dbCtx
                 .LtdSeries.Where(s => s.Id == SeriesId)
                 .ExecuteUpdateAsync(
@@ -371,7 +371,7 @@ public sealed class LtdRaffleGrain(
         List<int> batchIds = _currentBatch.Select(e => e.Id).ToList();
         DateTime now = DateTime.UtcNow;
 
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         await dbCtx
             .LtdRaffleEntries.Where(e =>

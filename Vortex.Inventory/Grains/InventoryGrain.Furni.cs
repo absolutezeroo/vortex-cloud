@@ -104,7 +104,7 @@ public sealed partial class InventoryGrain
             {
                 FurnitureDefinitionSnapshot def =
                     _furnitureDefinitionProvider.TryGetDefinition(product.FurniDefinitionId)
-                    ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
+                    ?? throw new VortexException(VortexErrorCodeEnum.FurnitureDefinitionNotFound);
 
                 for (int i = 0; i < quantity; i++)
                 {
@@ -158,7 +158,7 @@ public sealed partial class InventoryGrain
             }
         }
 
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {
@@ -202,7 +202,7 @@ public sealed partial class InventoryGrain
                 FurnitureDefinitionSnapshot def =
                     _furnitureDefinitionProvider.TryGetDefinition(
                         entity.FurnitureDefinitionEntityId
-                    ) ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
+                    ) ?? throw new VortexException(VortexErrorCodeEnum.FurnitureDefinitionNotFound);
 
                 await AddFurnitureAsync(
                     new FurnitureItem
@@ -271,7 +271,7 @@ public sealed partial class InventoryGrain
             return;
         }
 
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {
@@ -320,7 +320,7 @@ public sealed partial class InventoryGrain
             return;
         }
 
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {
@@ -355,7 +355,7 @@ public sealed partial class InventoryGrain
     {
         FurnitureDefinitionSnapshot def =
             _furnitureDefinitionProvider.TryGetDefinition(definitionId)
-            ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
+            ?? throw new VortexException(VortexErrorCodeEnum.FurnitureDefinitionNotFound);
 
         FurnitureEntity entity = new()
         {
@@ -364,7 +364,7 @@ public sealed partial class InventoryGrain
             ExtraData = extraData,
         };
 
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {
@@ -409,7 +409,7 @@ public sealed partial class InventoryGrain
 
         FurnitureDefinitionSnapshot def =
             _furnitureDefinitionProvider.TryGetDefinition(definitionId)
-            ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
+            ?? throw new VortexException(VortexErrorCodeEnum.FurnitureDefinitionNotFound);
 
         FurnitureEntity entity = new()
         {
@@ -418,7 +418,7 @@ public sealed partial class InventoryGrain
             ExtraData = extraData,
         };
 
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {
@@ -454,7 +454,7 @@ public sealed partial class InventoryGrain
     {
         FurnitureDefinitionSnapshot def =
             _furnitureDefinitionProvider.TryGetDefinition(furniDefinitionId)
-            ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
+            ?? throw new VortexException(VortexErrorCodeEnum.FurnitureDefinitionNotFound);
 
         string extraData = $"{{\"serial\":{serialNumber},\"seriesSize\":{seriesSize}}}";
 
@@ -465,7 +465,7 @@ public sealed partial class InventoryGrain
             ExtraData = extraData,
         };
 
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {

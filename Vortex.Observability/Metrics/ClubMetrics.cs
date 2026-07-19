@@ -6,7 +6,7 @@ using Vortex.Observability.Diagnostics;
 namespace Vortex.Observability.Metrics;
 
 /// <summary>
-/// Exposes a live gauge of active Habbo Club subscribers under the shared "Turbo" meter. The value
+/// Exposes a live gauge of active Habbo Club subscribers under the shared "Vortex" meter. The value
 /// is pulled from a cached count refreshed off the hot path (see the refresh service), so scrapes
 /// never touch the database directly.
 /// </summary>
@@ -17,7 +17,7 @@ public sealed class ClubMetrics : IDisposable
 
     public ClubMetrics(IMeterFactory meterFactory)
     {
-        _meter = meterFactory.Create(TurboTelemetry.Name, TurboTelemetry.Version);
+        _meter = meterFactory.Create(VortexTelemetry.Name, VortexTelemetry.Version);
 
         _meter.CreateObservableGauge(
             "Vortex.club.active_subscribers",

@@ -1,12 +1,12 @@
 namespace Vortex.Observability.Configuration;
 
 /// <summary>
-/// Strongly-typed options for the observability brick, bound from the <c>Turbo:Observability</c>
+/// Strongly-typed options for the observability brick, bound from the <c>Vortex:Observability</c>
 /// configuration section following the project's per-module options convention.
 /// </summary>
 public sealed class ObservabilityConfig
 {
-    public const string SECTION_NAME = "Turbo:Observability";
+    public const string SECTION_NAME = "Vortex:Observability";
 
     /// <summary>Master switch for emitting <c>System.Diagnostics.Metrics</c> instruments.</summary>
     public bool MetricsEnabled { get; init; } = true;

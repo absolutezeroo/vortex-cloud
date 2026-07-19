@@ -23,13 +23,13 @@ using Vortex.Primitives.Rooms.Object;
 namespace Vortex.Marketplace.Grains;
 
 public sealed class MarketplacePurchaseGrain(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
     IMarketplaceSettingsProvider settingsProvider,
     ILogger<MarketplacePurchaseGrain> logger
 ) : Grain, IMarketplacePurchaseGrain
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IMarketplaceSettingsProvider _settingsProvider = settingsProvider;
     private readonly ILogger<MarketplacePurchaseGrain> _logger = logger;
@@ -92,7 +92,7 @@ public sealed class MarketplacePurchaseGrain(
             ),
         };
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
         dbCtx.MarketplaceOffers.Add(offer);
@@ -103,7 +103,7 @@ public sealed class MarketplacePurchaseGrain(
 
     public async Task<bool> CancelOrRedeemOfferAsync(int offerId, CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
 
@@ -137,7 +137,7 @@ public sealed class MarketplacePurchaseGrain(
 
     public async Task<int> BuyOfferAsync(int offerId, CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
 
@@ -254,7 +254,7 @@ public sealed class MarketplacePurchaseGrain(
 
     public async Task<int> RedeemCreditsAsync(CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
 
@@ -293,7 +293,7 @@ public sealed class MarketplacePurchaseGrain(
         CancellationToken ct
     )
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
 

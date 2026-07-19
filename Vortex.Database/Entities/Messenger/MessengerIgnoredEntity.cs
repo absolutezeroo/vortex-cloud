@@ -6,7 +6,7 @@ namespace Vortex.Database.Entities.Messenger;
 
 [Table("messenger_ignored")]
 [Index(nameof(PlayerEntityId), nameof(IgnoredPlayerEntityId), IsUnique = true)]
-public class MessengerIgnoredEntity : TurboEntity
+public class MessengerIgnoredEntity : VortexEntity
 {
     [Column("player_id")]
     public required int PlayerEntityId { get; set; }

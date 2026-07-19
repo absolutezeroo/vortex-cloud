@@ -6,7 +6,7 @@ namespace Vortex.Database.Entities.Moderation;
 /// <summary>Top-level grouping shown in the staff CFH tool's report-topic picker
 /// (CfhTopicsInitMessageEvent's "categories" list).</summary>
 [Table("cfh_categories")]
-public class CfhCategoryEntity : TurboEntity
+public class CfhCategoryEntity : VortexEntity
 {
     [Column("name")]
     [MaxLength(100)]

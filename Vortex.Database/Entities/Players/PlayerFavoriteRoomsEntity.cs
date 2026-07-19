@@ -7,7 +7,7 @@ namespace Vortex.Database.Entities.Players;
 
 [Table("player_favorite_rooms")]
 [Index(nameof(PlayerEntityId), nameof(RoomEntityId), IsUnique = true)]
-public class PlayerFavoriteRoomsEntity : TurboEntity
+public class PlayerFavoriteRoomsEntity : VortexEntity
 {
     [Column("player_id")]
     public required int PlayerEntityId { get; set; }

@@ -7,7 +7,7 @@ namespace Vortex.Database.Entities.Players;
 
 [Table("player_wired_preferences")]
 [Index(nameof(PlayerEntityId), IsUnique = true)]
-public class PlayerWiredPreferencesEntity : TurboEntity
+public class PlayerWiredPreferencesEntity : VortexEntity
 {
     [Column("player_id")]
     public required int PlayerEntityId { get; set; }

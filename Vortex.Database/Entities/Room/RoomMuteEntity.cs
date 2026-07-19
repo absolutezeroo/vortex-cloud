@@ -7,7 +7,7 @@ namespace Vortex.Database.Entities.Room;
 
 [Table("room_mutes")]
 [Index(nameof(RoomEntityId), nameof(PlayerEntityId), IsUnique = true)]
-public class RoomMuteEntity : TurboEntity
+public class RoomMuteEntity : VortexEntity
 {
     [Column("room_id")]
     public required int RoomEntityId { get; set; }

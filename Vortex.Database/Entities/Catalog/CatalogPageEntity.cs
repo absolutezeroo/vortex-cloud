@@ -8,7 +8,7 @@ using Vortex.Primitives.Catalog.Enums;
 namespace Vortex.Database.Entities.Catalog;
 
 [Table("catalog_pages")]
-public class CatalogPageEntity : TurboEntity
+public class CatalogPageEntity : VortexEntity
 {
     /// <summary>Which catalog tree this page belongs to. BuildersClub pages are a real separate
     /// section, not a filtered view of Normal -- only visible/browsable to active Builders Club

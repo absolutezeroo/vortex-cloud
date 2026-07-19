@@ -8,7 +8,7 @@ namespace Vortex.Database.Entities.Messenger;
 
 [Table("messenger_friends")]
 [Index(nameof(PlayerEntityId), nameof(FriendPlayerEntityId), IsUnique = true)]
-public class MessengerFriendEntity : TurboEntity
+public class MessengerFriendEntity : VortexEntity
 {
     [Column("player_id")]
     public required int PlayerEntityId { get; set; }

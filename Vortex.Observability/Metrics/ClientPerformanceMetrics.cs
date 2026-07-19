@@ -24,7 +24,7 @@ public sealed class ClientPerformanceMetrics : IPerformanceLogSink, IDisposable
 
     public ClientPerformanceMetrics(IMeterFactory meterFactory)
     {
-        _meter = meterFactory.Create(TurboTelemetry.Name, TurboTelemetry.Version);
+        _meter = meterFactory.Create(VortexTelemetry.Name, VortexTelemetry.Version);
 
         _elapsedTime = _meter.CreateHistogram<int>(
             "Vortex.client.performance.elapsed_time",

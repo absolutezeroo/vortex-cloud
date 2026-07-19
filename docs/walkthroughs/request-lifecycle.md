@@ -1,7 +1,7 @@
 ﻿# Request Lifecycle: From Socket to Client
 
 This document traces **one real incoming packet** â€” a chat message â€” through every
-layer of Turbo Cloud, using the actual code that ships in the repository today. If
+layer of Vortex Cloud, using the actual code that ships in the repository today. If
 you understand this one flow, you understand how the whole emulator is wired:
 networking â†’ decode â†’ handler â†’ grain â†’ system â†’ Orleans stream â†’ presence â†’ session.
 
@@ -60,7 +60,7 @@ public sealed class ChatMessage
 }
 ```
 
-You do not write decoding by hand per packet in `turbo-cloud`. Parser/serializer
+You do not write decoding by hand per packet in `vortex-cloud`. Parser/serializer
 trees for a given client revision live in the **plugin repo**
 (`../turbo-sample-plugin/TurboSamplePlugin/Revision/**`) â€” see `CONTEXT.md`. The core
 only ever sees the typed message.
@@ -262,7 +262,7 @@ A naÃ¯ve emulator (e.g. classic Arcturus) holds a list of connected users on t
 object and loops over their sockets. That works on one process and falls apart the
 moment you want horizontal scale, because the room must know about every connection.
 
-Turbo's flow decouples the three concerns completely:
+Vortex's flow decouples the three concerns completely:
 
 | Concern | Owner | Knows about |
 |---|---|---|

@@ -8,7 +8,7 @@ namespace Vortex.Database.Entities.Players;
 /// sensible defaults -- same idempotent-additive-only convention as SanctionPresetEntity.</summary>
 [Table("builders_club_tiers")]
 [Index(nameof(Level), IsUnique = true)]
-public class BuildersClubTierEntity : TurboEntity
+public class BuildersClubTierEntity : VortexEntity
 {
     [Column("level")]
     public required int Level { get; set; }

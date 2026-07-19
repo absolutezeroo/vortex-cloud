@@ -13,12 +13,12 @@ This folder is the source of truth for plugin protocol revision mappings.
 
 ## Cross-repo boundary (important)
 - `turbo-sample-plugin` owns revision parser/serializer code.
-- `turbo-cloud` does not own `Revision<id>/Parsers` or `Revision<id>/Serializers`.
-- `turbo-cloud` owns runtime host/domain handlers; plugin revision folders own packet read/write mappings.
+- `vortex-cloud` does not own `Revision<id>/Parsers` or `Revision<id>/Serializers`.
+- `vortex-cloud` owns runtime host/domain handlers; plugin revision folders own packet read/write mappings.
 - For handler/grain architecture rules (for example extended profile flow), follow:
-  - `../turbo-cloud/AGENTS.md`
-  - `../turbo-cloud/CONTEXT.md`
-- For reusable AI task recipes/prompt contract, follow `../turbo-cloud/AGENTS.md`.
+  - `../vortex-cloud/AGENTS.md`
+  - `../vortex-cloud/CONTEXT.md`
+- For reusable AI task recipes/prompt contract, follow `../vortex-cloud/AGENTS.md`.
 
 ## When adding protocol support
 1. Add parser(s) under `Parsers/<Domain>/`.

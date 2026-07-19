@@ -26,14 +26,14 @@ using Vortex.Primitives.Rooms.Snapshots.Furniture;
 namespace Vortex.Inventory.Factories;
 
 internal sealed class InventoryFurnitureLoader(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     IFurnitureDefinitionProvider defsProvider,
     IStuffDataFactory stuffDataFactory,
     IGrainFactory grainFactory,
     ILogger<InventoryFurnitureLoader> logger
 ) : IInventoryFurnitureLoader
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IFurnitureDefinitionProvider _defsProvider = defsProvider;
     private readonly IStuffDataFactory _stuffDataFactory = stuffDataFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
@@ -44,7 +44,7 @@ internal sealed class InventoryFurnitureLoader(
         CancellationToken ct
     )
     {
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {
@@ -96,7 +96,7 @@ internal sealed class InventoryFurnitureLoader(
     {
         FurnitureDefinitionSnapshot definition =
             _defsProvider.TryGetDefinition(entity.FurnitureDefinitionEntityId)
-            ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
+            ?? throw new VortexException(VortexErrorCodeEnum.FurnitureDefinitionNotFound);
 
         ExtraData extraData = new ExtraData(entity.ExtraData);
         string jsonData = extraData.TryGetSection(
@@ -124,7 +124,7 @@ internal sealed class InventoryFurnitureLoader(
     {
         FurnitureDefinitionSnapshot definition =
             _defsProvider.TryGetDefinition(snapshot.DefinitionId)
-            ?? throw new TurboException(TurboErrorCodeEnum.FurnitureDefinitionNotFound);
+            ?? throw new VortexException(VortexErrorCodeEnum.FurnitureDefinitionNotFound);
 
         return new FurnitureItem()
         {

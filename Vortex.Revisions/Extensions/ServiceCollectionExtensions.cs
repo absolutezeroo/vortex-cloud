@@ -7,7 +7,7 @@ namespace Vortex.Revisions.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddTurboRevisions(
+    public static IServiceCollection AddVortexRevisions(
         this IServiceCollection services,
         HostApplicationBuilder builder
     )

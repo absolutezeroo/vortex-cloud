@@ -8,7 +8,7 @@ namespace Vortex.Events.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddTurboEventSystem(this IServiceCollection services)
+    public static IServiceCollection AddVortexEventSystem(this IServiceCollection services)
     {
         services.AddSingleton<IAssemblyFeatureProcessor, EventFeatureProcessor>();
         services.AddSingleton<EnvelopeInvokerFactory<EventContext>>();

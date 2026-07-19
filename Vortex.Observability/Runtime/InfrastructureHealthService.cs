@@ -17,13 +17,13 @@ using Vortex.Primitives.Players.Grains;
 namespace Vortex.Observability.Runtime;
 
 public sealed class InfrastructureHealthService(
-    IDbContextFactory<TurboDbContext> dbContextFactory,
+    IDbContextFactory<VortexDbContext> dbContextFactory,
     IClusterClient clusterClient,
     IOptions<ObservabilityConfig> config,
     ILogger<InfrastructureHealthService> logger
 ) : IInfrastructureHealthService
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
     private readonly IClusterClient _clusterClient = clusterClient;
     private readonly ILogger<InfrastructureHealthService> _logger = logger;
     private readonly int _dbDegradedLatencyMs = Math.Max(1, config.Value.DatabaseProbeDegradedMs);
@@ -66,7 +66,7 @@ public sealed class InfrastructureHealthService(
 
         try
         {
-            await using TurboDbContext db = await _dbContextFactory
+            await using VortexDbContext db = await _dbContextFactory
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(false);
 

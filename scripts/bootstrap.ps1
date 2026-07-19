@@ -46,7 +46,7 @@ dotnet build Vortex.Main/Vortex.Main.csproj
 
 Write-Step "Bootstrap complete"
 Write-Host "Next steps:"
-Write-Host "  1) Update Turbo:Database:ConnectionString in appsettings.Development.json"
-Write-Host "  2) Run: dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate"
+Write-Host "  1) Update Vortex:Database:ConnectionString in appsettings.Development.json"
+Write-Host "  2) Run: dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate"
 Write-Host "  3) Run: `$env:DOTNET_ENVIRONMENT='Development'; dotnet run --project Vortex.Main/Vortex.Main.csproj"
 Write-Host "  4) Optional integrated core+plugin loop: pwsh -File ../turbo-sample-plugin/scripts/dev-integrated.ps1"

@@ -5,7 +5,7 @@ namespace Vortex.Plugins.Configuration;
 
 public class PluginConfig
 {
-    public const string SECTION_NAME = "Turbo:Plugin";
+    public const string SECTION_NAME = "Vortex:Plugin";
 
     public string PluginFolderPath { get; init; } =
         Path.Combine(AppContext.BaseDirectory, "plugins");

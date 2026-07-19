@@ -16,7 +16,7 @@ namespace Vortex.Inventory.Grains;
 
 public sealed partial class InventoryGrain : Grain, IInventoryGrain
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory;
     private readonly InventoryConfig _inventoryConfig;
     private readonly IGrainFactory _grainFactory;
     private readonly IFurnitureDefinitionProvider _furnitureDefinitionProvider;
@@ -29,7 +29,7 @@ public sealed partial class InventoryGrain : Grain, IInventoryGrain
     private readonly InventoryFurniModule _furniModule;
 
     public InventoryGrain(
-        IDbContextFactory<TurboDbContext> dbContextFactory,
+        IDbContextFactory<VortexDbContext> dbContextFactory,
         IOptions<InventoryConfig> inventoryConfig,
         IGrainFactory grainFactory,
         IFurnitureDefinitionProvider furnitureDefinitionProvider,

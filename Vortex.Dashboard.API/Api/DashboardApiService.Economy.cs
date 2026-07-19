@@ -198,11 +198,11 @@ internal sealed partial class DashboardApiService
     /// <see cref="AuditEventEntity"/> published for the same operation, sharing the same ambient
     /// correlation id (see
     /// <c>ChannelEconomyLedger</c>/<c>ChannelAuditSink</c>, both stamp
-    /// <c>ITurboContextAccessor.Current.CorrelationId</c> when the caller doesn't set one
+    /// <c>IVortexContextAccessor.Current.CorrelationId</c> when the caller doesn't set one
     /// explicitly). Joining on that id attributes each debit to its originating action.
     /// </summary>
     private static async Task<List<object>> BuildSpendCategoriesAsync(
-        TurboDbContext db,
+        VortexDbContext db,
         DateTime since,
         DateTime until,
         CancellationToken ct

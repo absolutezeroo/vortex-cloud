@@ -13,7 +13,7 @@ namespace Vortex.Database.Entities.Groups;
 [Table("group_forum_posts")]
 [Index(nameof(ThreadEntityId))]
 [Index(nameof(GroupEntityId))]
-public class GroupForumPostEntity : TurboEntity
+public class GroupForumPostEntity : VortexEntity
 {
     [Column("thread_id")]
     public required int ThreadEntityId { get; set; }

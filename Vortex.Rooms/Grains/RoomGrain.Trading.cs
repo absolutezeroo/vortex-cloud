@@ -425,7 +425,7 @@ public sealed partial class RoomGrain
         int oneOwner = session.UserOneId.Value;
         int twoOwner = session.UserTwoId.Value;
 
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
 
         try
         {

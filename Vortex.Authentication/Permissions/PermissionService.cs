@@ -18,13 +18,13 @@ namespace Vortex.Authentication.Permissions;
 /// the source of truth; the cache is just the hot path.
 /// </summary>
 public sealed class PermissionService(
-    IDbContextFactory<TurboDbContext> dbContextFactory,
+    IDbContextFactory<VortexDbContext> dbContextFactory,
     ILogger<PermissionService> logger
 ) : IPermissionService
 {
     private static readonly TimeSpan CacheTtl = TimeSpan.FromSeconds(60);
 
-    private readonly IDbContextFactory<TurboDbContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
     private readonly ILogger<PermissionService> _logger = logger;
 
     private readonly ConcurrentDictionary<int, CacheEntry> _byAccount = new();
@@ -88,7 +88,7 @@ public sealed class PermissionService(
             return cached;
         }
 
-        TurboDbContext db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        VortexDbContext db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {
@@ -114,7 +114,7 @@ public sealed class PermissionService(
 
     private async Task<PermissionSet> LoadAccountAsync(int accountId, CancellationToken ct)
     {
-        TurboDbContext db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        VortexDbContext db = await _dbContextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {

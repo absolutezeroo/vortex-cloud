@@ -8,7 +8,7 @@ namespace Vortex.Database.Entities.Navigator;
 
 [Table("navigator_top_level_contexts")]
 [Index(nameof(SearchCode), IsUnique = true)]
-public class NavigatorTopLevelContextEntity : TurboEntity
+public class NavigatorTopLevelContextEntity : VortexEntity
 {
     [Column("search_code")]
     public required string SearchCode { get; set; }

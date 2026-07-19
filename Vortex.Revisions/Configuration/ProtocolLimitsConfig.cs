@@ -7,7 +7,7 @@ namespace Vortex.Revisions.Configuration;
 /// </summary>
 public sealed class ProtocolLimitsConfig
 {
-    public const string SECTION_NAME = "Turbo:Protocol";
+    public const string SECTION_NAME = "Vortex:Protocol";
 
     public int MaxFriendRemovalIds { get; init; } = 1000;
     public int MaxRoomTags { get; init; } = 100;

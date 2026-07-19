@@ -94,13 +94,13 @@ not before them.
       `Vortex.Rooms.Tests/Grains/RoomDirectoryGrainClusterTests.cs`. Complements (does not replace) the
       hand-constructed grain test in `Vortex.Rooms.Tests/Groups/GroupDirectoryGrainCreationTests.cs`.
 - [x] Target: these tests run in the quality gate. — `dotnet test Vortex.Cloud.sln` runs as part of
-      `TurboCloudFastCheck`. `Vortex.Rooms.Tests` is 42/42 green.
+      `VortexCloudFastCheck`. `Vortex.Rooms.Tests` is 42/42 green.
 
 **Story 0.2 — Grain error and resilience strategy**
 *As a* developer, *I want* a single grain failure contract,
 *so that* a grain state is never left inconsistent.
 - [x] Define the contract for a failed grain operation — established in practice and applied
-      consistently: catch narrowly where a recovery action exists (e.g. `TurboException` with a
+      consistently: catch narrowly where a recovery action exists (e.g. `VortexException` with a
       specific `ErrorCode`), always log via injected `ILogger<T>` with the identifying ids (item/room/
       player), never swallow with an empty `catch {}`, prefer `LogAndForget` over Orleans `.Ignore()`
       for fire-and-forget cross-grain calls (see `AGENTS.md` "Replace .Ignore() with a LogAndForget
@@ -117,8 +117,8 @@ not before them.
 **Story 0.3 — Formatting gate**
 - [x] `csharpier check` passes across the whole repo (all ~118 non-compliant files formatted). —
       verified clean across all 3659 files.
-- [x] Blocking pre-commit hook. — `.githooks/pre-commit` runs `TurboCloudFastCheck` (build + csharpier
-      check + `dotnet test`), `.githooks/pre-push` runs the full `TurboCloudQualityGate`;
+- [x] Blocking pre-commit hook. — `.githooks/pre-commit` runs `VortexCloudFastCheck` (build + csharpier
+      check + `dotnet test`), `.githooks/pre-push` runs the full `VortexCloudQualityGate`;
       `core.hooksPath` is configured to `.githooks` (see `scripts/bootstrap.ps1`/`.sh`).
 
 **Epic 0 DoD:** quality gate runs policy tests and at least one grain test; no `// TODO handle exceptions`;

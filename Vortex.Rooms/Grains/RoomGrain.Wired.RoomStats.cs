@@ -23,7 +23,7 @@ public sealed partial class RoomGrain
         ImmutableArray<RoomFloorItemSnapshot> floorItems = await GetAllFloorItemSnapshotsAsync(ct);
         ImmutableArray<RoomWallItemSnapshot> wallItems = await GetAllWallItemSnapshotsAsync(ct);
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
         int[] floorItemIds = floorItems.Select(i => i.ObjectId.Value).ToArray();
 

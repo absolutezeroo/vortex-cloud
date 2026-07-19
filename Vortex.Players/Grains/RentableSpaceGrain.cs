@@ -30,7 +30,7 @@ namespace Vortex.Players.Grains;
 ///     Serializes all rent / cancel / expire transitions; all DB mutations go through here.
 /// </summary>
 internal sealed class RentableSpaceGrain(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
     IEventPublisher events,
     ILogger<RentableSpaceGrain> logger
@@ -98,7 +98,7 @@ internal sealed class RentableSpaceGrain(
             return (int)RentableSpaceRentFailedType.AlreadyRented;
         }
 
-        await using TurboDbContext db = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext db = await dbCtxFactory.CreateDbContextAsync(ct);
 
         // HC check.
         if (_terms.RequiresHc)
@@ -263,7 +263,7 @@ internal sealed class RentableSpaceGrain(
         // Verify actor: furni owner OR staff.
         if (!isStaff)
         {
-            await using TurboDbContext authDb = await dbCtxFactory.CreateDbContextAsync(ct);
+            await using VortexDbContext authDb = await dbCtxFactory.CreateDbContextAsync(ct);
             int? furniOwnerId = await authDb
                 .Furnitures.Where(f => f.Id == FurnitureId)
                 .Select(f => (int?)f.PlayerEntityId)
@@ -310,7 +310,7 @@ internal sealed class RentableSpaceGrain(
 
     public async Task<RentableSpaceConfigSnapshot> GetConfigAsync(CancellationToken ct)
     {
-        await using TurboDbContext db = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext db = await dbCtxFactory.CreateDbContextAsync(ct);
 
         List<AvailableCurrencySnapshot> currencies = await db
             .CurrencyTypes.Where(c => c.Enabled && c.DeletedAt == null)
@@ -340,7 +340,7 @@ internal sealed class RentableSpaceGrain(
         CancellationToken ct
     )
     {
-        await using TurboDbContext db = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext db = await dbCtxFactory.CreateDbContextAsync(ct);
 
         // Verify actor is the furniture owner (staff bypass allowed).
         int? furniOwnerId = await db
@@ -407,7 +407,7 @@ internal sealed class RentableSpaceGrain(
 
     public override async Task OnActivateAsync(CancellationToken ct)
     {
-        await using TurboDbContext db = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext db = await dbCtxFactory.CreateDbContextAsync(ct);
 
         _space = await db
             .RoomRentableSpaces.Include(s => s.RenterPlayerEntity)
@@ -452,7 +452,7 @@ internal sealed class RentableSpaceGrain(
 
         try
         {
-            await using TurboDbContext db = await dbCtxFactory.CreateDbContextAsync(ct);
+            await using VortexDbContext db = await dbCtxFactory.CreateDbContextAsync(ct);
 
             // Collect IDs of all furniture tagged to this space.
             List<int> taggedIds = await db

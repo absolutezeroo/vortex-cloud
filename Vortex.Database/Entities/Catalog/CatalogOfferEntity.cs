@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Vortex.Database.Entities.Catalog;
 
 [Table("catalog_offers")]
-public class CatalogOfferEntity : TurboEntity
+public class CatalogOfferEntity : VortexEntity
 {
     [Column("page_id")]
     public required int CatalogPageEntityId { get; set; }

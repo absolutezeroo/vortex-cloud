@@ -14,13 +14,13 @@ using Vortex.WebApi.Session;
 namespace Vortex.WebApi.Services;
 
 public sealed class WebApiAuthService(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     WebApiSessionStore sessions,
     IOptions<WebApiConfig> options,
     ILogger<WebApiAuthService> logger
 ) : IWebApiAuthService
 {
-    private readonly IDbContextFactory<TurboDbContext> _db = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _db = dbCtxFactory;
     private readonly WebApiSessionStore _sessions = sessions;
     private readonly WebApiConfig _config = options.Value;
     private readonly ILogger<WebApiAuthService> _logger = logger;
@@ -35,7 +35,7 @@ public sealed class WebApiAuthService(
         CancellationToken ct
     )
     {
-        await using TurboDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using VortexDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         PlayerAccountEntity? account = await db
             .PlayerAccounts.AsNoTracking()
@@ -69,7 +69,7 @@ public sealed class WebApiAuthService(
         CancellationToken ct
     )
     {
-        await using TurboDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using VortexDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         string normalizedEmail = email.ToLowerInvariant();
 
@@ -117,7 +117,7 @@ public sealed class WebApiAuthService(
         CancellationToken ct
     )
     {
-        await using TurboDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
+        await using VortexDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         PlayerEntity? player = await db
             .Players.FirstOrDefaultAsync(p => p.Id == playerId, ct)

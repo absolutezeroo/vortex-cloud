@@ -6,7 +6,7 @@ namespace Vortex.Database.Entities.Messenger;
 
 [Table("messenger_requests")]
 [Index(nameof(PlayerEntityId), nameof(RequestedPlayerEntityId), IsUnique = true)]
-public class MessengerRequestEntity : TurboEntity
+public class MessengerRequestEntity : VortexEntity
 {
     [Column("player_id")]
     public required int PlayerEntityId { get; set; }

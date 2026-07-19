@@ -36,7 +36,7 @@ internal sealed partial class DashboardOperationsService(
     ICatalogAdminService catalogAdmin,
     IFurnitureAdminService furnitureAdmin,
     IAuditSink auditSink,
-    ITurboContextAccessor context,
+    IVortexContextAccessor context,
     ILogger<DashboardOperationsService> logger
 )
 {
@@ -55,7 +55,7 @@ internal sealed partial class DashboardOperationsService(
     private readonly ICatalogAdminService _catalogAdmin = catalogAdmin;
     private readonly IFurnitureAdminService _furnitureAdmin = furnitureAdmin;
     private readonly IAuditSink _auditSink = auditSink;
-    private readonly ITurboContextAccessor _context = context;
+    private readonly IVortexContextAccessor _context = context;
     private readonly ILogger<DashboardOperationsService> _logger = logger;
     private readonly SemaphoreSlim _staffActorLock = new(1, 1);
     private PlayerId? _staffActorPlayerId;
@@ -115,7 +115,7 @@ internal sealed partial class DashboardOperationsService(
     {
         CorrelationId correlationId = CorrelationId.New();
 
-        using ITurboTraceScope scope = _context.BeginScope(
+        using IVortexTraceScope scope = _context.BeginScope(
             action,
             correlationId: correlationId,
             playerId: targetPlayerId,
@@ -147,7 +147,7 @@ internal sealed partial class DashboardOperationsService(
             // infrastructure fault — logged at a lower severity and the reason is surfaced to the
             // operator instead of the generic "operation_failed".
             _logger.LogInformation(
-                TurboEventIds.DashboardFault,
+                VortexEventIds.DashboardFault,
                 "Dashboard operation {Action} rejected: {Reason}",
                 action,
                 ex.Message
@@ -171,7 +171,7 @@ internal sealed partial class DashboardOperationsService(
         catch (Exception ex)
         {
             _logger.LogError(
-                TurboEventIds.DashboardFault,
+                VortexEventIds.DashboardFault,
                 ex,
                 "Dashboard operation {Action} failed",
                 action

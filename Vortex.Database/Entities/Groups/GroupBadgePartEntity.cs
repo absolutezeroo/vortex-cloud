@@ -6,7 +6,7 @@ namespace Vortex.Database.Entities.Groups;
 
 [Table("group_badge_parts")]
 [Index(nameof(PartId), nameof(Type), IsUnique = true)]
-public class GroupBadgePartEntity : TurboEntity
+public class GroupBadgePartEntity : VortexEntity
 {
     /// <summary>Arcturus-compatible part id (stored in badge codes). Unique within its type.</summary>
     [Column("part_id")]

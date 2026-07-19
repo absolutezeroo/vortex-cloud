@@ -1,13 +1,13 @@
 namespace Vortex.Players.Configuration;
 
 /// <summary>
-/// Strongly-typed options for Habbo Club / VIP, bound from the <c>Turbo:Club</c> configuration
+/// Strongly-typed options for Habbo Club / VIP, bound from the <c>Vortex:Club</c> configuration
 /// section following the project's per-module options convention. Lets operators tune membership
 /// economics and the granted badge codes without code changes.
 /// </summary>
 public sealed class ClubConfig
 {
-    public const string SECTION_NAME = "Turbo:Club";
+    public const string SECTION_NAME = "Vortex:Club";
 
     /// <summary>Badge code granted on the first Habbo Club purchase.</summary>
     public string ClubBadgeCode { get; init; } = "HC1";

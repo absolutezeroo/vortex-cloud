@@ -9,7 +9,7 @@ public static class BootstrapLoggingFactory
     {
         return LoggerFactory.Create(builder =>
         {
-            builder.AddTurboConsoleLogger();
+            builder.AddVortexConsoleLogger();
         });
     }
 }

@@ -7,7 +7,7 @@ namespace Vortex.Database.Entities.Room;
 
 [Table("room_bans")]
 [Index(nameof(RoomEntityId), nameof(PlayerEntityId), IsUnique = true)]
-public class RoomBanEntity : TurboEntity
+public class RoomBanEntity : VortexEntity
 {
     [Column("room_id")]
     public required int RoomEntityId { get; set; }

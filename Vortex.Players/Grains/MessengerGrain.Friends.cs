@@ -103,7 +103,7 @@ internal sealed partial class MessengerGrain
         int playerId = SelfId;
         int targetIdInt = targetId;
 
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         int targetCountFriends = await dbCtx.MessengerFriends.CountAsync(
             f => f.PlayerEntityId == targetIdInt && f.DeletedAt == null,
@@ -192,7 +192,7 @@ internal sealed partial class MessengerGrain
     {
         List<AcceptFriendFailureSnapshot> failures = new();
 
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         // Hoisted: the calling player is the same on every iteration.
         PlayerEntity? selfEntity = await dbCtx.Players.FindAsync([(int)SelfId], ct);
@@ -324,7 +324,7 @@ internal sealed partial class MessengerGrain
         {
             _incomingRequests.Clear();
 
-            await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+            await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
             await dbCtx
                 .MessengerRequests.Where(r =>
                     r.RequestedPlayerEntityId == (int)SelfId && r.DeletedAt == null
@@ -342,7 +342,7 @@ internal sealed partial class MessengerGrain
             return;
         }
 
-        await using TurboDbContext dbCtxScoped = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtxScoped = await dbCtxFactory.CreateDbContextAsync(ct);
 
         await dbCtxScoped
             .MessengerRequests.Where(r =>
@@ -366,7 +366,7 @@ internal sealed partial class MessengerGrain
 
         int selfId = SelfId;
 
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         // Remove both directions for every removed friend in a single batched delete
         await dbCtx
@@ -432,7 +432,7 @@ internal sealed partial class MessengerGrain
 
         _friends[friendKey] = existing with { RelationshipStatus = (short)relationType };
 
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
         await dbCtx
             .MessengerFriends.Where(f =>
                 f.PlayerEntityId == (int)SelfId
@@ -452,7 +452,7 @@ internal sealed partial class MessengerGrain
 
         _blockedIds.Add(targetId.Value);
 
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         PlayerEntity? selfEntity = await dbCtx.Players.FindAsync([(int)SelfId], ct);
         PlayerEntity? targetEntity = await dbCtx.Players.FindAsync([targetId.Value], ct);
@@ -486,7 +486,7 @@ internal sealed partial class MessengerGrain
             return;
         }
 
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         await dbCtx
             .MessengerBlocked.Where(b =>
@@ -510,7 +510,7 @@ internal sealed partial class MessengerGrain
 
         _ignoredIds.Add(targetId.Value);
 
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         PlayerEntity? selfEntity = await dbCtx.Players.FindAsync([(int)SelfId], ct);
         PlayerEntity? targetEntity = await dbCtx.Players.FindAsync([targetId.Value], ct);
@@ -540,7 +540,7 @@ internal sealed partial class MessengerGrain
             return;
         }
 
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         await dbCtx
             .MessengerIgnored.Where(i =>

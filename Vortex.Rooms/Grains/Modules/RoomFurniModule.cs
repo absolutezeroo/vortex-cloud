@@ -75,7 +75,7 @@ public sealed partial class RoomFurniModule(RoomGrain roomGrain)
     {
         if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item))
         {
-            throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+            throw new VortexException(VortexErrorCodeEnum.FloorItemNotFound);
         }
 
         await item.Logic.OnUseAsync(ctx, param, ct);
@@ -92,7 +92,7 @@ public sealed partial class RoomFurniModule(RoomGrain roomGrain)
     {
         if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item))
         {
-            throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+            throw new VortexException(VortexErrorCodeEnum.FloorItemNotFound);
         }
 
         await item.Logic.OnClickAsync(ctx, param, ct);

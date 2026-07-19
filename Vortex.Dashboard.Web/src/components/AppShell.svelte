@@ -76,7 +76,7 @@
   // Which nav groups are collapsed, keyed by the stable GROUP_ORDER id (not the translated label,
   // which changes with $locale and would silently reset saved state on a language switch).
   // Persisted so a collapse choice survives reloads.
-  const COLLAPSE_STORAGE_KEY = 'turbo-dashboard-nav-collapsed';
+  const COLLAPSE_STORAGE_KEY = 'vortex-dashboard-nav-collapsed';
 
   function loadCollapsedGroups() {
     try {
@@ -231,7 +231,7 @@
   <section class="workspace">
     <header class="topline">
       <div>
-        <p class="eyebrow">Turbo Cloud</p>
+        <p class="eyebrow">Vortex Cloud</p>
         <h1>{activeLabel}</h1>
       </div>
       <div class="session-area">

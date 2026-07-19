@@ -1,7 +1,7 @@
-# Orleans in Turbo Cloud
+# Orleans in Vortex Cloud
 
 ## Quick Mental Model
-Turbo Cloud runs Orleans in-process with the emulator host. Domain behavior is modeled as grains (players, rooms, catalog, inventory, directories), and app services/packet handlers call grains through `IGrainFactory`.
+Vortex Cloud runs Orleans in-process with the emulator host. Domain behavior is modeled as grains (players, rooms, catalog, inventory, directories), and app services/packet handlers call grains through `IGrainFactory`.
 
 Think of the runtime flow as:
 1. `Vortex.Main` boots host + Orleans silo.
@@ -98,7 +98,7 @@ The current architecture intentionally decouples sessions from player identity:
 This model supports multiple live sessions per player identity while keeping domain behavior player-centric.
 
 ## How Plugins Fit with Orleans
-Turbo plugins are hosted by `Vortex.Plugins/PluginManager.cs`. Plugins can still use Orleans normally by resolving host services (including grain access paths) through DI.
+Vortex plugins are hosted by `Vortex.Plugins/PluginManager.cs`. Plugins can still use Orleans normally by resolving host services (including grain access paths) through DI.
 
 Plugin lifecycle note:
 1. Plugin service provider is built.

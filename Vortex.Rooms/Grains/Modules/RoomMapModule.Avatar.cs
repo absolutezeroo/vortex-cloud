@@ -166,7 +166,7 @@ public sealed partial class RoomMapModule
     {
         if (!InBounds(tileIdx))
         {
-            throw new TurboException(TurboErrorCodeEnum.TileOutOfBounds);
+            throw new VortexException(VortexErrorCodeEnum.TileOutOfBounds);
         }
 
         RemoveAvatar(avatar, false);
@@ -191,7 +191,7 @@ public sealed partial class RoomMapModule
     {
         if (!InBounds(tileIdx))
         {
-            throw new TurboException(TurboErrorCodeEnum.TileOutOfBounds);
+            throw new VortexException(VortexErrorCodeEnum.TileOutOfBounds);
         }
 
         _roomGrain._state.TileAvatarStacks[tileIdx].Add(avatar.ObjectId);
@@ -212,7 +212,7 @@ public sealed partial class RoomMapModule
     {
         if (!InBounds(tileIdx))
         {
-            throw new TurboException(TurboErrorCodeEnum.TileOutOfBounds);
+            throw new VortexException(VortexErrorCodeEnum.TileOutOfBounds);
         }
 
         _roomGrain._state.TileAvatarStacks[tileIdx].Remove(avatar.ObjectId);

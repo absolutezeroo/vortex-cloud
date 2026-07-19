@@ -6,7 +6,7 @@ namespace Vortex.Database.Entities.Players;
 
 [Table("player_accounts")]
 [Index(nameof(Email), IsUnique = true)]
-public class PlayerAccountEntity : TurboEntity
+public class PlayerAccountEntity : VortexEntity
 {
     [Column("email")]
     public required string Email { get; set; }

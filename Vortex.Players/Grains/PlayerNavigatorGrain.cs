@@ -14,11 +14,11 @@ using Vortex.Primitives.Players.Grains;
 namespace Vortex.Players.Grains;
 
 internal sealed class PlayerNavigatorGrain(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<PlayerNavigatorGrain> logger
 ) : Grain, IPlayerNavigatorGrain
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<PlayerNavigatorGrain> _logger = logger;
 
     private NavigatorWindowPreferencesSnapshot _preferences = new();
@@ -56,7 +56,7 @@ internal sealed class PlayerNavigatorGrain(
             ResultsMode = resultsMode,
         };
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
 
@@ -99,7 +99,7 @@ internal sealed class PlayerNavigatorGrain(
 
     public async Task AddSavedSearchAsync(string searchCode, string filter, CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
 
@@ -130,7 +130,7 @@ internal sealed class PlayerNavigatorGrain(
 
     public async Task DeleteSavedSearchAsync(int searchId, CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
 
@@ -156,7 +156,7 @@ internal sealed class PlayerNavigatorGrain(
             return;
         }
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
 
@@ -180,7 +180,7 @@ internal sealed class PlayerNavigatorGrain(
             return;
         }
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
 
@@ -203,7 +203,7 @@ internal sealed class PlayerNavigatorGrain(
     {
         _viewModes[searchCode] = viewMode;
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
 
@@ -237,7 +237,7 @@ internal sealed class PlayerNavigatorGrain(
 
     public async Task AddFavouriteRoomAsync(int roomId, CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
 
@@ -270,7 +270,7 @@ internal sealed class PlayerNavigatorGrain(
 
     public async Task RemoveFavouriteRoomAsync(int roomId, CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
 
@@ -290,7 +290,7 @@ internal sealed class PlayerNavigatorGrain(
     {
         _homeRoomId = roomId;
 
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
 
@@ -338,7 +338,7 @@ internal sealed class PlayerNavigatorGrain(
 
     private async Task HydrateCoreAsync(CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await _dbCtxFactory
+        await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
 

@@ -13,7 +13,7 @@ using Vortex.Primitives.Pets.Snapshots;
 namespace Vortex.Players.Providers;
 
 public sealed class PetPaletteProvider(
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<IPetPaletteProvider> logger
 ) : IPetPaletteProvider
 {
@@ -21,7 +21,7 @@ public sealed class PetPaletteProvider(
         int,
         ImmutableArray<PetPaletteEntry>
     >.Empty;
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<IPetPaletteProvider> _logger = logger;
 
     public IReadOnlyList<PetPaletteEntry> GetPalettesForType(int petType)
@@ -36,7 +36,7 @@ public sealed class PetPaletteProvider(
 
     public async Task ReloadAsync(CancellationToken ct)
     {
-        TurboDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
 
         try
         {

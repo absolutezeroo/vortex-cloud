@@ -27,7 +27,7 @@ public class CanCreateRoomMessageHandler(
     )
     {
         int maxRooms = _configuration.GetValue(
-            "Turbo:Rooms:MaxRoomsPerPlayer",
+            "Vortex:Rooms:MaxRoomsPerPlayer",
             DefaultMaxRoomsPerPlayer
         );
 

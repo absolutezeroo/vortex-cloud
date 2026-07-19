@@ -125,7 +125,7 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
     {
         if (!InBounds(idx))
         {
-            throw new TurboException(TurboErrorCodeEnum.TileOutOfBounds);
+            throw new VortexException(VortexErrorCodeEnum.TileOutOfBounds);
         }
 
         return (GetX(idx), GetY(idx));
@@ -161,7 +161,7 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
                 // hanging over the room edge would validate against tiles on the opposite side.
                 if (!InBounds(minX, minY))
                 {
-                    throw new TurboException(TurboErrorCodeEnum.TileOutOfBounds);
+                    throw new VortexException(VortexErrorCodeEnum.TileOutOfBounds);
                 }
 
                 tileIds.Add(ToIdx(minX, minY));

@@ -5,7 +5,7 @@ using Vortex.Primitives.Navigator.Enums;
 namespace Vortex.Database.Entities.Navigator;
 
 [Table("navigator_quick_links")]
-public class NavigatorQuickLinkEntity : TurboEntity
+public class NavigatorQuickLinkEntity : VortexEntity
 {
     [Column("top_level_context_id")]
     public required int TopLevelContextEntityId { get; set; }

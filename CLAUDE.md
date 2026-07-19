@@ -1,4 +1,4 @@
-# Claude Adapter (Turbo Cloud)
+# Claude Adapter (Vortex Cloud)
 
 This adapter points Claude to the canonical AI contract for this repository.
 
@@ -12,10 +12,10 @@ This adapter points Claude to the canonical AI contract for this repository.
 - Keep packet handlers orchestration-only.
 - Do not query database contexts/repositories from packet handlers.
 - Do not send composers directly to sockets/sessions from handlers; route via `PlayerPresenceGrain.SendComposerAsync`.
-- For `Revision<id>` parser/serializer work, edit `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`, not `turbo-cloud`.
+- For `Revision<id>` parser/serializer work, edit `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`, not `vortex-cloud`.
 
 ## Validation commands
 ```bash
-dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck
-dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate
+dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudFastCheck
+dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate
 ```

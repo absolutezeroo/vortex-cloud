@@ -5,7 +5,7 @@ namespace Vortex.Database.Entities.Players;
 
 [Table("player_chat_styles_owned")]
 [Index(nameof(PlayerEntityId), nameof(ChatStyleId), IsUnique = true)]
-public class PlayerChatStyleOwnedEntity : TurboEntity
+public class PlayerChatStyleOwnedEntity : VortexEntity
 {
     [Column("player_id")]
     public required int PlayerEntityId { get; set; }

@@ -13,7 +13,7 @@ namespace Vortex.Database.Entities.Quests;
 /// </summary>
 [Table("quests")]
 [Index(nameof(CampaignCode))]
-public class QuestEntity : TurboEntity
+public class QuestEntity : VortexEntity
 {
     [Column("campaign_code")]
     public required string CampaignCode { get; set; }

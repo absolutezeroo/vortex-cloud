@@ -2,7 +2,7 @@ using System.IO;
 
 namespace Vortex.Primitives.Packets;
 
-public interface IServerPacket : ITurboPacket
+public interface IServerPacket : IVortexPacket
 {
     public BinaryWriter Writer { get; }
     public MemoryStream Stream { get; }

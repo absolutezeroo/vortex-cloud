@@ -5,7 +5,7 @@ namespace Vortex.Database.Entities.Groups;
 
 [Table("group_colors")]
 [Index(nameof(ColorId), IsUnique = true)]
-public class GroupColorEntity : TurboEntity
+public class GroupColorEntity : VortexEntity
 {
     /// <summary>Arcturus-compatible color id (stored in GroupEntity.ColorOne / ColorTwo).</summary>
     [Column("color_id")]

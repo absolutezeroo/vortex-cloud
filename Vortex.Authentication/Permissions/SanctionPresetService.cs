@@ -12,10 +12,10 @@ namespace Vortex.Authentication.Permissions;
 /// ModBan/ModTradingLock dropdowns. Read-mostly, low call volume (one lookup per sanction applied) —
 /// no caching needed, unlike <see cref="PermissionService"/>.
 /// </summary>
-public sealed class SanctionPresetService(IDbContextFactory<TurboDbContext> dbContextFactory)
+public sealed class SanctionPresetService(IDbContextFactory<VortexDbContext> dbContextFactory)
     : ISanctionPresetService
 {
-    private readonly IDbContextFactory<TurboDbContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
 
     public async Task<SanctionPresetSnapshot?> ResolveAsync(
         SanctionPresetKind kind,
@@ -23,7 +23,7 @@ public sealed class SanctionPresetService(IDbContextFactory<TurboDbContext> dbCo
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -45,7 +45,7 @@ public sealed class SanctionPresetService(IDbContextFactory<TurboDbContext> dbCo
         CancellationToken ct = default
     )
     {
-        await using TurboDbContext dbCtx = await _dbContextFactory
+        await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 

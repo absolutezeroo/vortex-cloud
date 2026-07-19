@@ -29,7 +29,7 @@ public sealed partial class RoomActionModule(RoomGrain roomGrain)
     {
         if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item))
         {
-            throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+            throw new VortexException(VortexErrorCodeEnum.FloorItemNotFound);
         }
 
         FurniturePickupType pickupType = await _roomGrain.SecurityModule.GetFurniPickupTypeAsync(
@@ -38,7 +38,7 @@ public sealed partial class RoomActionModule(RoomGrain roomGrain)
 
         if (pickupType == FurniturePickupType.None)
         {
-            throw new TurboException(TurboErrorCodeEnum.NoPermissionToManipulateFurni);
+            throw new VortexException(VortexErrorCodeEnum.NoPermissionToManipulateFurni);
         }
 
         PlayerId previousOwnerId = item.OwnerId;
@@ -84,7 +84,7 @@ public sealed partial class RoomActionModule(RoomGrain roomGrain)
     {
         if (!_roomGrain._state.ItemsById.TryGetValue(itemId, out IRoomItem? item))
         {
-            throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+            throw new VortexException(VortexErrorCodeEnum.FloorItemNotFound);
         }
 
         FurnitureUsageType usagePolicy = item.Logic.GetUsagePolicy();

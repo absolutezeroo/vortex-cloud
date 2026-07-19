@@ -15,7 +15,7 @@ namespace Vortex.Authentication.Permissions;
 /// creation; an existing (Kind, PresetIndex) row is left exactly as the administrator configured it.
 /// </summary>
 internal sealed class SanctionPresetSeederService(
-    IDbContextFactory<TurboDbContext> dbContextFactory,
+    IDbContextFactory<VortexDbContext> dbContextFactory,
     ILogger<SanctionPresetSeederService> logger
 ) : IHostedService
 {
@@ -23,7 +23,7 @@ internal sealed class SanctionPresetSeederService(
     {
         try
         {
-            TurboDbContext db = await dbContextFactory
+            VortexDbContext db = await dbContextFactory
                 .CreateDbContextAsync(cancellationToken)
                 .ConfigureAwait(false);
 

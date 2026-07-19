@@ -45,7 +45,7 @@ internal static class MessageEvent
     public const int ForwardToRandomCompetitionRoomMessageEvent = 9002; // UNRESOLVED: collided with RoomsWhereMyFriendsAreSearchMessageEvent after the WIN63-202607011411 client header remap; ForwardToRandomCompetitionRoomMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
 
     public const int GetCurrentTimingCodeMessageEvent = 1503;
-    public const int GetIsUserPartOfCompetitionMessageEvent = 2732; // UNRESOLVED: no distinct AS3 backing found - RoomCompetitionController::sendRoomCompetitionInit()/onRoomEnter() send the only composer for this check (_SafeCls_3605/_SafeCls_2954 @1477), already correctly held by RoomCompetitionInitMessageEvent; likely a duplicate Turbo constant with no separate real message
+    public const int GetIsUserPartOfCompetitionMessageEvent = 2732; // UNRESOLVED: no distinct AS3 backing found - RoomCompetitionController::sendRoomCompetitionInit()/onRoomEnter() send the only composer for this check (_SafeCls_3605/_SafeCls_2954 @1477), already correctly held by RoomCompetitionInitMessageEvent; likely a duplicate Vortex constant with no separate real message
     public const int GetSecondsUntilMessageEvent = 1814; // AS3-verified (old-revision trace): _SafeCls_2528 -> NewFeatureNotification() still exists in current revision at 1814
     public const int RoomCompetitionInitMessageEvent = 1477; // AS3-verified (old-revision trace): _SafeCls_3605 -> onRoomEnter() still exists in current revision at 1477
     public const int SubmitRoomToCompetitionMessageEvent = 2612; // AS3-verified (direct read, both revisions): RoomCompetitionController::onSubmit() -> connection.send(new _SafeCls_3367(goalCode,2)) @2612 (old _SafeCls_3390 mode=2 @2579; same unified composer also serves accept=1/confirm=3)
@@ -110,7 +110,7 @@ internal static class MessageEvent
     public const int GetCatalogPageEvent = 2093;
     public const int GetCatalogPageWithEarliestExpiryEvent = 287;
     public const int GetClubGiftMessageEvent = 472;
-    public const int GetClubGiftInfoRequestMessageEvent = 1422; // UNRESOLVED: no distinct AS3 backing found - ClubGiftController::set widget() sends the only request composer for this feature (_SafeCls_3393/_SafeCls_2457 @472), already correctly held by GetClubGiftMessageEvent (client-verified); likely a duplicate Turbo constant with no separate real message
+    public const int GetClubGiftInfoRequestMessageEvent = 1422; // UNRESOLVED: no distinct AS3 backing found - ClubGiftController::set widget() sends the only request composer for this feature (_SafeCls_3393/_SafeCls_2457 @472), already correctly held by GetClubGiftMessageEvent (client-verified); likely a duplicate Vortex constant with no separate real message
     public const int GetClubOffersMessageEvent = 667;
     public const int GetGiftWrappingConfigurationEvent = 940; // AS3-verified: HabboCatalog::getGiftWrappingConfiguration(). Note: GetGiftWrappingConfigurationVortexEvent also resolves to this same AS3 message - likely a Vortex-specific duplicate/extension with no distinct AS3 backing, left untouched
 
@@ -217,7 +217,7 @@ internal static class MessageEvent
     public const int DefaultSanctionMessageEvent = 2375; // AS3-verified (direct read, both revisions): ModActionCtrl::onDefaultSanctionButton() -> connection.send(new _SafeCls_2494(...)) @2375 (slot freed by correcting MakeOfferMessageEvent above)
     public const int GetCfhChatlogMessageEvent = 1580; // AS3-verified (direct read, both revisions): IssueHandler CFH ChatlogCtrl construction (type=3) -> connection.send(new _SafeCls_2471(issueId)) @1580 (old _SafeCls_3765@757)
     public const int GetModeratorRoomInfoMessageEvent = 1504; // AS3-verified (direct read, both revisions): RoomToolCtrl::show() -> connection.send(new _SafeCls_2915(flatId)) @1504 (old _SafeCls_3268@3513)
-    public const int GetModeratorUserInfoMessageEvent = 1948; // UNRESOLVED: no distinct AS3 backing found - UserInfoCtrl::load()/ModerationMessageHandler::onModeratorActionResult() both send the same _SafeCls_2825/_SafeCls_2387, already correctly claimed by ModeratorActionMessageEvent@3230; likely a duplicate Turbo constant with no separate real message
+    public const int GetModeratorUserInfoMessageEvent = 1948; // UNRESOLVED: no distinct AS3 backing found - UserInfoCtrl::load()/ModerationMessageHandler::onModeratorActionResult() both send the same _SafeCls_2825/_SafeCls_2387, already correctly claimed by ModeratorActionMessageEvent@3230; likely a duplicate Vortex constant with no separate real message
     public const int GetRoomChatlogMessageEvent = 1346; // AS3-verified (old-revision trace): _SafeCls_3359 -> onChatlog() still exists in current revision at 1346
     public const int GetRoomVisitsMessageEvent = 903; // AS3-verified (direct read, both revisions): RoomVisitsCtrl constructor -> connection.send(new _SafeCls_2383(roomId)) @903 (old _SafeCls_3716@101)
     public const int GetUserChatlogMessageEvent = 1686; // AS3-verified (old-revision trace): _SafeCls_3430 -> onChatlogButton() still exists in current revision at 1686
@@ -291,7 +291,7 @@ internal static class MessageEvent
     public const int TogglePetBreedingPermissionMessageEvent = 144;
     public const int TogglePetRidingPermissionMessageEvent = 3713;
     public const int UseFurnitureMessageEvent = 3353;
-    public const int UseWallItemMessageEvent = 1540; // UNRESOLVED: no distinct AS3 backing found - room engine modifyWallItemData() sends the only composer for this action (_SafeCls_2502/_SafeCls_2735 @3498), already held by SetItemDataMessageEvent; likely a duplicate Turbo constant with no separate real message
+    public const int UseWallItemMessageEvent = 1540; // UNRESOLVED: no distinct AS3 backing found - room engine modifyWallItemData() sends the only composer for this action (_SafeCls_2502/_SafeCls_2735 @3498), already held by SetItemDataMessageEvent; likely a duplicate Vortex constant with no separate real message
     public const int CreditVaultStatusMessageEvent = 1645;
     public const int IncomeRewardClaimMessageEvent = 809;
     public const int IncomeRewardStatusMessageEvent = 3417;
@@ -326,7 +326,7 @@ internal static class MessageEvent
     public const int Game2GetAccountGameStatusMessageEvent = 9013; // UNRESOLVED: collided with RespectUserMessageEvent after the WIN63-202607011411 client header remap; Game2GetAccountGameStatusMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
 
     public const int Game2LeaveGameMessageEvent = 2698; // UNRESOLVED: not found - a dedicated "leave game" composer distinct from the room-exit/game-end flows already ported elsewhere could not be located in either official AS3 revision
-    public const int Game2QuickJoinGameMessageEvent = 2000; // UNRESOLVED: no distinct AS3 backing found - HabboGameManager::startQuickSnowWarGame()/SnowWarEngine::startQuickServerGame() both send the same _SafeCls_2129, already correctly claimed by Game2StartSnowWarMessageEvent below; likely a duplicate Turbo constant with no separate real message
+    public const int Game2QuickJoinGameMessageEvent = 2000; // UNRESOLVED: no distinct AS3 backing found - HabboGameManager::startQuickSnowWarGame()/SnowWarEngine::startQuickServerGame() both send the same _SafeCls_2129, already correctly claimed by Game2StartSnowWarMessageEvent below; likely a duplicate Vortex constant with no separate real message
     public const int Game2StartSnowWarMessageEvent = 1506; // shape+AS3-verified: HabboGameManager::startQuickSnowWarGame() (_SafeCls_2129)
     public const int GetForumsListMessageEvent = 488; // AS3-verified (ghost fix): GroupForumController::openForumsList()
     public const int GetForumStatsMessageEvent = 3592; // AS3-verified (old-revision trace): GroupForumController::initForum() still exists in current revision at 3592
@@ -351,7 +351,7 @@ internal static class MessageEvent
     public const int GetSoundSettingsEvent = 541; // AS3-verified (direct read, both revisions): HabboSoundManagerFlash10::init() -> _SafeCls_1901
     public const int GetUserSongDisksMessageEvent = 1685; // AS3-verified (ghost fix): HabboMusicController::requestUserSongDisks()
     public const int RemoveJukeboxDiskEvent = 2003; // AS3-verified (direct read, both revisions): PlayListEditorWidgetHandler RWPLAM_REMOVE_FROM_PLAYLIST -> _SafeCls_3444
-    public const int ChangeUserNameInRoomMessageEvent = 3652; // UNRESOLVED: no distinct AS3 backing found - NameChangeController::changeName() has only one send call (_SafeCls_2633/_SafeCls_3913), already correctly claimed by ChangeUserNameMessageEvent below; likely a duplicate Turbo constant with no separate real message
+    public const int ChangeUserNameInRoomMessageEvent = 3652; // UNRESOLVED: no distinct AS3 backing found - NameChangeController::changeName() has only one send call (_SafeCls_2633/_SafeCls_3913), already correctly claimed by ChangeUserNameMessageEvent below; likely a duplicate Vortex constant with no separate real message
     public const int ChangeUserNameMessageEvent = 1703; // AS3-verified (ghost fix): NameChangeController::changeName()
     public const int CheckUserNameMessageEvent = 413; // AS3-verified (ghost fix): AvatarEditorMessageHandler::checkName()
     public const int GetWardrobeMessageEvent = 2210; // AS3-verified (ghost fix): AvatarEditorMessageHandler::getWardrobe()

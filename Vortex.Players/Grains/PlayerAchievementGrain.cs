@@ -27,12 +27,12 @@ namespace Vortex.Players.Grains;
 /// </summary>
 internal sealed class PlayerAchievementGrain(
     IGrainFactory grainFactory,
-    IDbContextFactory<TurboDbContext> dbCtxFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<PlayerAchievementGrain> logger
 ) : Grain, IPlayerAchievementGrain
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
-    private readonly IDbContextFactory<TurboDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<PlayerAchievementGrain> _logger = logger;
 
     private int PlayerId => (int)this.GetPrimaryKeyLong();
@@ -123,7 +123,7 @@ internal sealed class PlayerAchievementGrain(
 
         try
         {
-            await using TurboDbContext dbCtx = await _dbCtxFactory
+            await using VortexDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(true);
 
@@ -294,7 +294,7 @@ internal sealed class PlayerAchievementGrain(
     {
         try
         {
-            await using TurboDbContext dbCtx = await _dbCtxFactory
+            await using VortexDbContext dbCtx = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(true);
 

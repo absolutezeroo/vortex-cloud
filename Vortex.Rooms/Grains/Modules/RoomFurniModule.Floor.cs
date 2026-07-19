@@ -30,7 +30,7 @@ public sealed partial class RoomFurniModule
 
         if (!_roomGrain.MapModule.InBounds(tileIdx))
         {
-            throw new TurboException(TurboErrorCodeEnum.TileOutOfBounds);
+            throw new VortexException(VortexErrorCodeEnum.TileOutOfBounds);
         }
 
         if (
@@ -65,7 +65,7 @@ public sealed partial class RoomFurniModule
             || item is not IRoomFloorItem floor
         )
         {
-            throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+            throw new VortexException(VortexErrorCodeEnum.FloorItemNotFound);
         }
 
         int prevIdx = _roomGrain.MapModule.ToIdx(item.X, item.Y);
@@ -96,7 +96,7 @@ public sealed partial class RoomFurniModule
             || item is not IRoomFloorItem tItem
         )
         {
-            throw new TurboException(TurboErrorCodeEnum.FloorItemNotFound);
+            throw new VortexException(VortexErrorCodeEnum.FloorItemNotFound);
         }
 
         if (

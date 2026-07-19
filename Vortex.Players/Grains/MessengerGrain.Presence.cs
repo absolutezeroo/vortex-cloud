@@ -24,7 +24,7 @@ internal sealed partial class MessengerGrain
         // Fan out to all friends (fire-and-forget) so they update their snapshot for us
         int selfIdInt = SelfId;
 
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
         PlayerEntity? selfEntity = await dbCtx
             .Players.AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == selfIdInt, ct);
@@ -54,7 +54,7 @@ internal sealed partial class MessengerGrain
 
     public async Task NotifyOfflineAsync(CancellationToken ct)
     {
-        await using TurboDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
         PlayerEntity? selfEntity = await dbCtx
             .Players.AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == (int)SelfId, ct);

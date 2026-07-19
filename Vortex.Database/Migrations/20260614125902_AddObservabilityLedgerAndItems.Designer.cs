@@ -11,7 +11,7 @@ using Vortex.Database.Context;
 
 namespace Vortex.Database.Migrations
 {
-    [DbContext(typeof(TurboDbContext))]
+    [DbContext(typeof(VortexDbContext))]
     [Migration("20260614125902_AddObservabilityLedgerAndItems")]
     partial class AddObservabilityLedgerAndItems
     {

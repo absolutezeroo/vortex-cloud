@@ -5,7 +5,7 @@ namespace Vortex.Database.Entities.Players;
 
 [Table("player_navigator_collapsed_categories")]
 [Index(nameof(PlayerEntityId), nameof(CategoryName), IsUnique = true)]
-public class PlayerNavigatorCollapsedCategoryEntity : TurboEntity
+public class PlayerNavigatorCollapsedCategoryEntity : VortexEntity
 {
     [Column("player_id")]
     public required int PlayerEntityId { get; set; }

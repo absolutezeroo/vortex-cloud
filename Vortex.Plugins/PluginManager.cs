@@ -430,7 +430,7 @@ public sealed class PluginManager(
         CancellationToken ct
     )
     {
-        ITurboPlugin inst = CreatePluginInstance(asm.Assembly);
+        IVortexPlugin inst = CreatePluginInstance(asm.Assembly);
 
         if (!string.Equals(inst.Key, m.Key, StringComparison.Ordinal))
         {
@@ -475,19 +475,19 @@ public sealed class PluginManager(
         }
     }
 
-    private static ITurboPlugin CreatePluginInstance(Assembly asm)
+    private static IVortexPlugin CreatePluginInstance(Assembly asm)
     {
         Type pluginType =
-            AssemblyExplorer.FindType(asm, typeof(ITurboPlugin))
+            AssemblyExplorer.FindType(asm, typeof(IVortexPlugin))
             ?? throw new InvalidOperationException(
-                $"Failed to find ITurboPlugin in assembly '{asm.GetName().Name}'."
+                $"Failed to find IVortexPlugin in assembly '{asm.GetName().Name}'."
             );
 
-        return (ITurboPlugin)Activator.CreateInstance(pluginType)!;
+        return (IVortexPlugin)Activator.CreateInstance(pluginType)!;
     }
 
     private ServiceProvider CreatePluginServiceProvider(
-        ITurboPlugin plugin,
+        IVortexPlugin plugin,
         PluginManifest manifest
     )
     {
@@ -504,7 +504,7 @@ public sealed class PluginManager(
     }
 
     private async Task StartPluginAsync(
-        ITurboPlugin plugin,
+        IVortexPlugin plugin,
         IServiceProvider sp,
         CancellationToken ct
     )

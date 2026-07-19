@@ -2,9 +2,9 @@ namespace Vortex.Primitives.Observability;
 
 /// <summary>
 /// Ambient, read-only view of the operation currently being processed. Resolved through
-/// <see cref="ITurboContextAccessor"/>; it is never passed explicitly through method signatures.
+/// <see cref="IVortexContextAccessor"/>; it is never passed explicitly through method signatures.
 /// </summary>
-public interface ITurboContext
+public interface IVortexContext
 {
     CorrelationId CorrelationId { get; }
 

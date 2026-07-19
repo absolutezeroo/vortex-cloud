@@ -12,7 +12,7 @@ namespace Vortex.Database.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddTurboDatabaseContext(
+    public static IServiceCollection AddVortexDatabaseContext(
         this IServiceCollection services,
         HostApplicationBuilder builder
     )
@@ -21,7 +21,7 @@ public static class ServiceCollectionExtensions
             builder.Configuration.GetSection(DatabaseConfig.SECTION_NAME)
         );
 
-        services.AddDbContextFactory<TurboDbContext>(
+        services.AddDbContextFactory<VortexDbContext>(
             (sp, options) =>
             {
                 DatabaseConfig dbConfig = sp.GetRequiredService<IOptions<DatabaseConfig>>().Value;

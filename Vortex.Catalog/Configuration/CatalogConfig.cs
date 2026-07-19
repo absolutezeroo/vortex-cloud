@@ -2,7 +2,7 @@ namespace Vortex.Catalog.Configuration;
 
 public class CatalogConfig
 {
-    public const string SECTION_NAME = "Turbo:Catalog";
+    public const string SECTION_NAME = "Vortex:Catalog";
 
     public LtdRaffleConfig LtdRaffle { get; set; } = new();
 

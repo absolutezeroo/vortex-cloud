@@ -11,7 +11,7 @@ using Vortex.Database.Context;
 
 namespace Vortex.Database.Migrations
 {
-    [DbContext(typeof(TurboDbContext))]
+    [DbContext(typeof(VortexDbContext))]
     [Migration("20260609080527_AddPlayerNavigatorPreferences")]
     partial class AddPlayerNavigatorPreferences
     {

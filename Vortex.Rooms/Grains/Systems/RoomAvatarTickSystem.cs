@@ -131,7 +131,7 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
 
             if (Math.Abs(nextHeight - prevHeight) > Math.Abs(_roomGrain._roomConfig.MaxStepHeight))
             {
-                throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+                throw new VortexException(VortexErrorCodeEnum.InvalidMoveTarget);
             }
 
             if (!_roomGrain.MapModule.CanAvatarWalkBetween(avatar, prevTileId, nextTileId, isGoal))
@@ -148,7 +148,7 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
                     }
                 }
 
-                throw new TurboException(TurboErrorCodeEnum.InvalidMoveTarget);
+                throw new VortexException(VortexErrorCodeEnum.InvalidMoveTarget);
             }
 
             RoomObjectId prevHighestItemId = _roomGrain._state.TileHighestFloorItems[prevTileId];

@@ -17,7 +17,7 @@ namespace Vortex.Authentication.Moderation;
 /// — once an admin has touched the catalog at all, it's entirely theirs to restructure.
 /// </summary>
 internal sealed class CfhCatalogSeederService(
-    IDbContextFactory<TurboDbContext> dbContextFactory,
+    IDbContextFactory<VortexDbContext> dbContextFactory,
     ILogger<CfhCatalogSeederService> logger
 ) : IHostedService
 {
@@ -25,7 +25,7 @@ internal sealed class CfhCatalogSeederService(
     {
         try
         {
-            TurboDbContext db = await dbContextFactory
+            VortexDbContext db = await dbContextFactory
                 .CreateDbContextAsync(cancellationToken)
                 .ConfigureAwait(false);
 

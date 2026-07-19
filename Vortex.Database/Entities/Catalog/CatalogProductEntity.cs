@@ -6,7 +6,7 @@ using Vortex.Primitives.Furniture.Enums;
 namespace Vortex.Database.Entities.Catalog;
 
 [Table("catalog_products")]
-public class CatalogProductEntity : TurboEntity
+public class CatalogProductEntity : VortexEntity
 {
     [Column("offer_id")]
     public required int CatalogOfferEntityId { get; set; }

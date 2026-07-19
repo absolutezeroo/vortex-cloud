@@ -807,7 +807,7 @@ export default {
     searchPlaceholder: 'Filter sections...',
     noMatch: 'No section matches "{query}".',
     dashboardFallback: 'Dashboard',
-    brandTitle: 'Turbo Ops',
+    brandTitle: 'Vortex Ops',
     brandSubtitle: 'Observability center',
     overview: 'Overview',
     overviewShort: 'Live health',

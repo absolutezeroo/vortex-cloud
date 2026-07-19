@@ -8,7 +8,7 @@ namespace Vortex.Database.Entities.Wired;
 
 [Table("room_wired_logs")]
 [Index(nameof(RoomEntityId), nameof(CreatedAt))]
-public class RoomWiredLogEntity : TurboEntity
+public class RoomWiredLogEntity : VortexEntity
 {
     [Column("room_id")]
     public required int RoomEntityId { get; set; }

@@ -10,23 +10,23 @@ using Vortex.Primitives.Observability;
 namespace Vortex.Observability.Runtime;
 
 /// <summary>
-/// Rehydrates the ambient <see cref="ITurboContext"/> on the grain side from the correlation id that
+/// Rehydrates the ambient <see cref="IVortexContext"/> on the grain side from the correlation id that
 /// Orleans propagated through <see cref="RequestContext"/>. This lets business services invoked by a
 /// grain observe the same correlation id without threading it through method signatures. The filter
 /// is a no-op for calls that carry no correlation id (for example timer/reminder-triggered calls).
 /// </summary>
 public sealed class ObservabilityGrainCallFilter(
-    ITurboContextAccessor accessor,
+    IVortexContextAccessor accessor,
     ILogger<ObservabilityGrainCallFilter> logger
 ) : IIncomingGrainCallFilter
 {
-    private readonly ITurboContextAccessor _accessor = accessor;
+    private readonly IVortexContextAccessor _accessor = accessor;
     private readonly ILogger<ObservabilityGrainCallFilter> _logger = logger;
 
     public async Task Invoke(IIncomingGrainCallContext context)
     {
         if (
-            RequestContext.Get(TurboContextAccessor.RequestContextKey) is not string cid
+            RequestContext.Get(VortexContextAccessor.RequestContextKey) is not string cid
             || cid.Length == 0
         )
         {
@@ -34,7 +34,7 @@ public sealed class ObservabilityGrainCallFilter(
             return;
         }
 
-        ITurboTraceScope? scope = null;
+        IVortexTraceScope? scope = null;
 
         try
         {
@@ -47,7 +47,7 @@ public sealed class ObservabilityGrainCallFilter(
         {
             // Never let observability break a grain call; degrade to no context.
             _logger.LogWarning(
-                TurboEventIds.GrainContextFault,
+                VortexEventIds.GrainContextFault,
                 ex,
                 "Failed to rehydrate trace context for grain call."
             );

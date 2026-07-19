@@ -17,7 +17,7 @@ namespace Vortex.Catalog;
 /// <summary>
 /// CRUD for catalog_pages/catalog_offers/catalog_products. Not a grain — catalog rows aren't
 /// grain-owned and there is no per-item concurrency need the way <c>VoucherGrain</c> has, so a plain
-/// singleton opening a short-lived <see cref="TurboDbContext"/> per call is enough.
+/// singleton opening a short-lived <see cref="VortexDbContext"/> per call is enough.
 ///
 /// The live catalog clients see is an immutable in-memory snapshot rebuilt only via
 /// <c>ICatalogSnapshotProvider{TTag}.ReloadAsync</c> — every write here reloads BOTH the Normal and
@@ -30,7 +30,7 @@ namespace Vortex.Catalog;
 /// a meaningful cost.
 /// </summary>
 internal sealed class CatalogAdminService(
-    IDbContextFactory<TurboDbContext> dbContextFactory,
+    IDbContextFactory<VortexDbContext> dbContextFactory,
     ICatalogSnapshotProvider<NormalCatalog> normalProvider,
     ICatalogSnapshotProvider<BuildersClubCatalog> buildersClubProvider,
     ILogger<CatalogAdminService> logger
@@ -41,7 +41,7 @@ internal sealed class CatalogAdminService(
         CancellationToken ct
     )
     {
-        await using TurboDbContext db = await dbContextFactory
+        await using VortexDbContext db = await dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -90,7 +90,7 @@ internal sealed class CatalogAdminService(
         CancellationToken ct
     )
     {
-        await using TurboDbContext db = await dbContextFactory
+        await using VortexDbContext db = await dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -144,7 +144,7 @@ internal sealed class CatalogAdminService(
 
     public async Task<CatalogAdminResult> DeletePageAsync(int pageId, CancellationToken ct)
     {
-        await using TurboDbContext db = await dbContextFactory
+        await using VortexDbContext db = await dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -187,7 +187,7 @@ internal sealed class CatalogAdminService(
         CancellationToken ct
     )
     {
-        await using TurboDbContext db = await dbContextFactory
+        await using VortexDbContext db = await dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -241,7 +241,7 @@ internal sealed class CatalogAdminService(
         CancellationToken ct
     )
     {
-        await using TurboDbContext db = await dbContextFactory
+        await using VortexDbContext db = await dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -285,7 +285,7 @@ internal sealed class CatalogAdminService(
 
     public async Task<CatalogAdminResult> DeleteOfferAsync(int offerId, CancellationToken ct)
     {
-        await using TurboDbContext db = await dbContextFactory
+        await using VortexDbContext db = await dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -319,7 +319,7 @@ internal sealed class CatalogAdminService(
         CancellationToken ct
     )
     {
-        await using TurboDbContext db = await dbContextFactory
+        await using VortexDbContext db = await dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -371,7 +371,7 @@ internal sealed class CatalogAdminService(
         CancellationToken ct
     )
     {
-        await using TurboDbContext db = await dbContextFactory
+        await using VortexDbContext db = await dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -413,7 +413,7 @@ internal sealed class CatalogAdminService(
 
     public async Task<CatalogAdminResult> DeleteProductAsync(int productId, CancellationToken ct)
     {
-        await using TurboDbContext db = await dbContextFactory
+        await using VortexDbContext db = await dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
@@ -446,7 +446,7 @@ internal sealed class CatalogAdminService(
             // the next successful reload or a full restart. Never swallow this: it is exactly the
             // "DB write not reflected in live state" bug class called out in AGENTS.md.
             logger.LogError(
-                TurboEventIds.CatalogSnapshotReloadFailed,
+                VortexEventIds.CatalogSnapshotReloadFailed,
                 ex,
                 "Catalog snapshot reload failed after an admin write committed -- live catalog is now stale until the next reload or restart"
             );

@@ -1,7 +1,7 @@
 # Glossary
 
-Turbo Cloud sits at the intersection of two dense vocabularies: **Habbo domain terms**
-(controller level, rights, wired, furni) and **Turbo/Orleans architecture terms**
+Vortex Cloud sits at the intersection of two dense vocabularies: **Habbo domain terms**
+(controller level, rights, wired, furni) and **Vortex/Orleans architecture terms**
 (grain, presence, snapshot, composer, system vs module). This glossary defines each and
 points to the file that *embodies* it, so a term is never abstract — you can open the
 code that implements it.
@@ -17,7 +17,7 @@ specific.
 **Grain**
 An Orleans virtual actor: a single-threaded, individually-addressable stateful object
 that Orleans activates on demand and can deactivate, migrate, or rehydrate
-transparently. In Turbo, the big ones are one room and one player per grain.
+transparently. In Vortex, the big ones are one room and one player per grain.
 → `Vortex.Rooms/Grains/RoomGrain.cs`, `Vortex.Players/Grains/PlayerGrain.cs`
 
 **Silo**
@@ -109,7 +109,7 @@ behaviors around it (ordering, cross-cutting concerns).
 
 **Revision**
 Everything specific to one client build's wire format — which header maps to which
-message, and how composers serialize. **Owned by the plugin repo, not `turbo-cloud`.**
+message, and how composers serialize. **Owned by the plugin repo, not `vortex-cloud`.**
 → `../turbo-sample-plugin/TurboSamplePlugin/Revision/**` (per `CONTEXT.md`);
 selection logic `Vortex.Networking/Revisions/RevisionManager.cs`
 
@@ -223,7 +223,7 @@ a logic provider per item.
 
 **Wired**
 Habbo's in-room visual programming: **triggers** (when X happens), **conditions** (if Y
-holds), **actions** (do Z), plus selectors, addons, and variables. Turbo implements all
+holds), **actions** (do Z), plus selectors, addons, and variables. Vortex implements all
 four families as furniture logic.
 → `Vortex.Rooms/Object/Logic/Furniture/Floor/Wired/{Triggers,Conditions,Actions,Selectors,Addons,Variables}/**`;
 engine `Vortex.Rooms/Grains/Systems/RoomWiredSystem.cs`

@@ -42,7 +42,7 @@ internal class Program
             .Create(builder =>
             {
                 builder.ClearProviders();
-                builder.AddTurboConsoleLogger();
+                builder.AddVortexConsoleLogger();
             })
             .CreateLogger("Bootstrap");
 
@@ -65,7 +65,7 @@ internal class Program
 
         HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
-        builder.Configuration.AddEnvironmentVariables(prefix: "TURBO__");
+        builder.Configuration.AddEnvironmentVariables(prefix: "VORTEX__");
 
         if (builder.Environment.IsDevelopment())
         {
@@ -95,14 +95,14 @@ internal class Program
 
         builder.AddOrleans();
 
-        builder.Services.AddTurboLogging(builder);
-        builder.Services.AddTurboNetworking(builder);
-        builder.Services.AddTurboPlugins(builder);
-        builder.Services.AddTurboDatabaseContext(builder);
-        builder.Services.AddTurboEventSystem();
-        builder.Services.AddTurboMessageSystem();
-        builder.Services.AddTurboCrypto(builder);
-        builder.Services.AddTurboRevisions(builder);
+        builder.Services.AddVortexLogging(builder);
+        builder.Services.AddVortexNetworking(builder);
+        builder.Services.AddVortexPlugins(builder);
+        builder.Services.AddVortexDatabaseContext(builder);
+        builder.Services.AddVortexEventSystem();
+        builder.Services.AddVortexMessageSystem();
+        builder.Services.AddVortexCrypto(builder);
+        builder.Services.AddVortexRevisions(builder);
 
         builder.Services.AddHostPlugin<ObservabilityModule>(builder);
         builder.Services.AddHostPlugin<AuthenticationModule>(builder);
@@ -120,7 +120,7 @@ internal class Program
         builder.Services.AddSingleton<AssemblyProcessor>();
         builder.Services.AddSingleton<ConsoleCommandService>();
 
-        builder.Services.AddHostedService<TurboEmulator>();
+        builder.Services.AddHostedService<VortexEmulator>();
 
         IHost host = builder.Build();
 
@@ -155,7 +155,7 @@ internal class Program
 
     private static string GetProjectName()
     {
-        return "Turbo Emulator";
+        return "Vortex Emulator";
     }
 
     public static Version GetProjectVersion()

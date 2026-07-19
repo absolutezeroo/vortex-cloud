@@ -2,7 +2,7 @@ using System.Text;
 
 namespace Vortex.Primitives.Packets;
 
-public interface IClientPacket : ITurboPacket
+public interface IClientPacket : IVortexPacket
 {
     public int Remaining { get; }
     public bool End { get; }

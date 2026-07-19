@@ -10,7 +10,7 @@ namespace Vortex.Database.Entities.Marketplace;
 [Index(nameof(State), nameof(ExpiresAt))]
 [Index(nameof(SellerEntityId), nameof(State))]
 [Table("marketplace_offers")]
-public class MarketplaceOfferEntity : TurboEntity
+public class MarketplaceOfferEntity : VortexEntity
 {
     [Column("seller_id")]
     public int SellerEntityId { get; set; }

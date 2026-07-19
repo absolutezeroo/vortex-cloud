@@ -7,7 +7,7 @@ namespace Vortex.Crypto.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddTurboCrypto(
+    public static IServiceCollection AddVortexCrypto(
         this IServiceCollection services,
         HostApplicationBuilder builder
     )
