@@ -79,6 +79,8 @@ public static class Capabilities
         public const string CfhRead = "dashboard.cfh.read";
         public const string CatalogPurchasesRead = "dashboard.catalog.purchases.read";
         public const string WiredRead = "dashboard.wired.read";
+        public const string TargetedOffersRead = "dashboard.targeted_offers.read";
+        public const string OpsTargetedOffersManage = "dashboard.ops.targeted_offers.manage";
     }
 
     /// <summary>Every declared capability, for validation and dashboard enumeration.</summary>
@@ -121,5 +123,7 @@ public static class Capabilities
             Dashboard.CfhRead,
             Dashboard.CatalogPurchasesRead,
             Dashboard.WiredRead,
+            Dashboard.TargetedOffersRead,
+            Dashboard.OpsTargetedOffersManage,
         };
 }

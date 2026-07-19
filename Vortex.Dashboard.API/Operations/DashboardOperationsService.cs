@@ -34,6 +34,7 @@ internal sealed partial class DashboardOperationsService(
     ISessionGateway sessionGateway,
     ICfhTicketService cfhTickets,
     ICatalogAdminService catalogAdmin,
+    ITargetedOfferAdminService targetedOfferAdmin,
     IFurnitureAdminService furnitureAdmin,
     IAuditSink auditSink,
     IVortexContextAccessor context,
@@ -53,6 +54,7 @@ internal sealed partial class DashboardOperationsService(
     private readonly ISessionGateway _sessionGateway = sessionGateway;
     private readonly ICfhTicketService _cfhTickets = cfhTickets;
     private readonly ICatalogAdminService _catalogAdmin = catalogAdmin;
+    private readonly ITargetedOfferAdminService _targetedOfferAdmin = targetedOfferAdmin;
     private readonly IFurnitureAdminService _furnitureAdmin = furnitureAdmin;
     private readonly IAuditSink _auditSink = auditSink;
     private readonly IVortexContextAccessor _context = context;

@@ -12,6 +12,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Catalog;
 using Vortex.Primitives.Catalog.Grains;
 using Vortex.Primitives.Catalog.Snapshots;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Enums.Wallet;
@@ -28,11 +29,13 @@ namespace Vortex.Catalog.Grains;
 internal sealed class PlayerTargetedOfferGrain(
     IGrainFactory grainFactory,
     IDbContextFactory<VortexDbContext> dbCtxFactory,
+    IEventPublisher events,
     ILogger<PlayerTargetedOfferGrain> logger
 ) : Grain, IPlayerTargetedOfferGrain
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IEventPublisher _events = events;
     private readonly ILogger<PlayerTargetedOfferGrain> _logger = logger;
 
     private int PlayerId => (int)this.GetPrimaryKeyLong();
@@ -119,6 +122,24 @@ internal sealed class PlayerTargetedOfferGrain(
         }
 
         int newCount = await IncrementPurchaseCountAsync(offerId, units, ct).ConfigureAwait(true);
+
+        // Success path only: feeds the dashboard's targeted-offer purchase analytics via
+        // TargetedOfferPurchasedAuditHandler (economy.targeted_offer_purchase). Non-transactional --
+        // the furniture is already granted and the count already committed.
+        await _events
+            .PublishAsync(
+                new TargetedOfferPurchasedEvent(
+                    PlayerId,
+                    offerId,
+                    definition.Identifier,
+                    units,
+                    definition.PriceInCredits * units,
+                    definition.PriceInActivityPoints * units
+                ),
+                ct
+            )
+            .ConfigureAwait(true);
+
         return TargetedOfferMapper.ToWire(definition, newCount, trackingState, DateTime.Now);
     }
 

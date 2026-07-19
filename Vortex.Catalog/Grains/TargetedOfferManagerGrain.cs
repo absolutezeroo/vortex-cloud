@@ -49,6 +49,8 @@ internal sealed class TargetedOfferManagerGrain(
         return _definitions;
     }
 
+    public Task ReloadAsync(CancellationToken ct) => LoadAsync(ct);
+
     private async Task LoadAsync(CancellationToken ct)
     {
         try

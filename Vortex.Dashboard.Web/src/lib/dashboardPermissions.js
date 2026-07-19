@@ -21,6 +21,8 @@ export const CAPABILITIES = {
   cfhRead: 'dashboard.cfh.read',
   catalogPurchasesRead: 'dashboard.catalog.purchases.read',
   wiredRead: 'dashboard.wired.read',
+  targetedOffersRead: 'dashboard.targeted_offers.read',
+  opsTargetedOffersManage: 'dashboard.ops.targeted_offers.manage',
 };
 
 export const ROUTE_PERMISSIONS = {
@@ -48,6 +50,8 @@ export const ROUTE_PERMISSIONS = {
   cfhStats: [CAPABILITIES.cfhRead],
   catalogPurchases: [CAPABILITIES.catalogPurchasesRead],
   wiredStats: [CAPABILITIES.wiredRead],
+  targetedOffers: [CAPABILITIES.targetedOffersRead],
+  targetedOffersStats: [CAPABILITIES.targetedOffersRead],
   apiExplorer: [CAPABILITIES.overviewRead],
   operations: [
     CAPABILITIES.opsGrantCurrency,

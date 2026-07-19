@@ -21,6 +21,16 @@ public sealed record CatalogPurchasedEvent(
     int CreditCost
 ) : IEvent;
 
+/// <summary>A player bought a targeted (personalised/promotional) offer at its special price.</summary>
+public sealed record TargetedOfferPurchasedEvent(
+    int PlayerId,
+    int OfferId,
+    string Identifier,
+    int Quantity,
+    int CreditCost,
+    int ActivityPointCost
+) : IEvent;
+
 /// <summary>A player entered an LTD (limited edition) raffle.</summary>
 public sealed record LtdRaffleEnteredEvent(int PlayerId, int SeriesId, int Cost) : IEvent;
 

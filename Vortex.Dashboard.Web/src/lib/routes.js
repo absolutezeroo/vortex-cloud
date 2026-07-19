@@ -35,6 +35,8 @@ import PetsStatsPage from '../pages/PetsStatsPage.svelte';
 import CfhStatsPage from '../pages/CfhStatsPage.svelte';
 import CatalogPurchasesStatsPage from '../pages/CatalogPurchasesStatsPage.svelte';
 import WiredStatsPage from '../pages/WiredStatsPage.svelte';
+import TargetedOffersPage from '../pages/TargetedOffersPage.svelte';
+import TargetedOffersStatsPage from '../pages/TargetedOffersStatsPage.svelte';
 
 // Display + permission metadata for the navigation sidebar. Order is the nav order within each
 // group. `group` buckets items in the sidebar (see AppShell.svelte) — Live: auto-refreshing health
@@ -60,6 +62,7 @@ export const NAV = [
   { path: '/pets-stats', labelKey: 'nav.petsStats', shortKey: 'nav.petsStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.petsStats, component: PetsStatsPage },
   { path: '/cfh-stats', labelKey: 'nav.cfhStats', shortKey: 'nav.cfhStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.cfhStats, component: CfhStatsPage },
   { path: '/catalog-purchases', labelKey: 'nav.catalogPurchases', shortKey: 'nav.catalogPurchasesShort', group: 'Stats', caps: ROUTE_PERMISSIONS.catalogPurchases, component: CatalogPurchasesStatsPage },
+  { path: '/targeted-offers-stats', labelKey: 'nav.targetedOffersStats', shortKey: 'nav.targetedOffersStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.targetedOffersStats, component: TargetedOffersStatsPage },
   { path: '/wired-stats', labelKey: 'nav.wiredStats', shortKey: 'nav.wiredStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.wiredStats, component: WiredStatsPage },
   { path: '/operations', labelKey: 'nav.operations', shortKey: 'nav.operationsShort', group: 'Act', caps: ROUTE_PERMISSIONS.operations, component: OperationsPage },
   { path: '/moderation-actions', labelKey: 'nav.moderationActions', shortKey: 'nav.moderationActionsShort', group: 'Act', caps: ROUTE_PERMISSIONS.moderationActions, component: ModerationActionsPage },
@@ -67,6 +70,7 @@ export const NAV = [
   { path: '/room-control', labelKey: 'nav.roomControl', shortKey: 'nav.roomControlShort', group: 'Act', caps: ROUTE_PERMISSIONS.roomControl, component: RoomControlPage },
   { path: '/vouchers', labelKey: 'nav.vouchers', shortKey: 'nav.vouchersShort', group: 'Act', caps: ROUTE_PERMISSIONS.vouchers, component: VouchersPage },
   { path: '/catalog', labelKey: 'nav.catalog', shortKey: 'nav.catalogShort', group: 'Act', caps: ROUTE_PERMISSIONS.catalog, component: CatalogPage },
+  { path: '/targeted-offers', labelKey: 'nav.targetedOffers', shortKey: 'nav.targetedOffersShort', group: 'Act', caps: ROUTE_PERMISSIONS.targetedOffers, component: TargetedOffersPage },
   { path: '/furniture-definitions', labelKey: 'nav.furnitureDefinitions', shortKey: 'nav.furnitureDefinitionsShort', group: 'Act', caps: ROUTE_PERMISSIONS.furnitureDefinitions, component: FurnitureDefinitionsPage },
   { path: '/api-explorer', labelKey: 'nav.apiExplorer', shortKey: 'nav.apiExplorerShort', group: 'Dev', caps: ROUTE_PERMISSIONS.apiExplorer, component: ApiExplorerPage },
 ];

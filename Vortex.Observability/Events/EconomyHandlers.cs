@@ -63,6 +63,40 @@ public sealed class CatalogPurchasedAuditHandler(IAuditSink audit)
     }
 }
 
+public sealed class TargetedOfferPurchasedAuditHandler(IAuditSink audit)
+    : IEventHandler<TargetedOfferPurchasedEvent>
+{
+    public ValueTask HandleAsync(
+        TargetedOfferPurchasedEvent e,
+        EventContext ctx,
+        CancellationToken ct
+    )
+    {
+        audit.Emit(
+            new AuditEvent
+            {
+                Category = AuditCategory.Economy,
+                Action = "economy.targeted_offer_purchase",
+                Severity = AuditSeverity.Info,
+                Result = AuditResult.Success,
+                ActorPlayerId = e.PlayerId,
+                Data = JsonSerializer.Serialize(
+                    new
+                    {
+                        offerId = e.OfferId,
+                        identifier = e.Identifier,
+                        quantity = e.Quantity,
+                        creditCost = e.CreditCost,
+                        activityPointCost = e.ActivityPointCost,
+                    }
+                ),
+            }
+        );
+
+        return ValueTask.CompletedTask;
+    }
+}
+
 public sealed class LtdRaffleEnteredAuditHandler(IAuditSink audit)
     : IEventHandler<LtdRaffleEnteredEvent>
 {
