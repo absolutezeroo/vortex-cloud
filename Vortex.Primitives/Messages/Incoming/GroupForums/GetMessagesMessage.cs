@@ -1,0 +1,11 @@
+using Vortex.Primitives.Networking;
+
+namespace Vortex.Primitives.Messages.Incoming.GroupForums;
+
+public record GetMessagesMessage : IMessageEvent
+{
+    public required int GroupId { get; init; }
+    public required int ThreadId { get; init; }
+    public required int StartIndex { get; init; }
+    public required int Amount { get; init; }
+}

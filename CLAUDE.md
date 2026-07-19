@@ -16,6 +16,6 @@ This adapter points Claude to the canonical AI contract for this repository.
 
 ## Validation commands
 ```bash
-dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudFastCheck
-dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudQualityGate
+dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck
+dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate
 ```

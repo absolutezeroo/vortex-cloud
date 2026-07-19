@@ -1,0 +1,16 @@
+using Vortex.Primitives.Messages.Outgoing.Help;
+using Vortex.Primitives.Packets;
+
+namespace Vortex.Revisions.Revision20260701.Serializers.Help;
+
+internal class ChatReviewSessionVotingStatusMessageComposerSerializer(int header)
+    : AbstractSerializer<ChatReviewSessionVotingStatusMessageComposer>(header)
+{
+    protected override void Serialize(
+        IServerPacket packet,
+        ChatReviewSessionVotingStatusMessageComposer message
+    )
+    {
+        //
+    }
+}

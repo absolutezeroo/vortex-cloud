@@ -82,19 +82,19 @@ not before them.
 **Story 0.1 — Extend core test harness**
 *As a* developer, *I want* to test pure policies and critical grain logic,
 *so I can* refactor without silent regressions in economy and rights.
-- [x] New project `Turbo.Permissions.Tests` (or equivalent) based on
-      `Turbo.WebApi.Tests` (xunit + FluentAssertions, already used). — done as
-      `Turbo.Rooms.Tests/Permissions/` (equivalent, not a separate project).
+- [x] New project `Vortex.Permissions.Tests` (or equivalent) based on
+      `Vortex.WebApi.Tests` (xunit + FluentAssertions, already used). — done as
+      `Vortex.Rooms.Tests/Permissions/` (equivalent, not a separate project).
 - [x] Unit tests for `RoomSecurityPolicy.ResolveControllerLevel` (all cases:
       System, superuser, ModerateAny, BuildAny, explicit owner, rights, none).
 - [x] Unit tests for `ModerationPolicy.IsAllowed` (each action × specific capability × ModerateAny × wildcard × deny).
 - [x] Orleans TestKit setup for at least one grain as proof of concept. — `Microsoft.Orleans.TestingHost`
       (matching the pinned 9.2.1 Orleans version) spins up a real in-process `TestCluster` and exercises
       `RoomDirectoryGrain` end-to-end (activation + DI wiring + grain-reference calls), in
-      `Turbo.Rooms.Tests/Grains/RoomDirectoryGrainClusterTests.cs`. Complements (does not replace) the
-      hand-constructed grain test in `Turbo.Rooms.Tests/Groups/GroupDirectoryGrainCreationTests.cs`.
-- [x] Target: these tests run in the quality gate. — `dotnet test Turbo.Cloud.sln` runs as part of
-      `TurboCloudFastCheck`. `Turbo.Rooms.Tests` is 42/42 green.
+      `Vortex.Rooms.Tests/Grains/RoomDirectoryGrainClusterTests.cs`. Complements (does not replace) the
+      hand-constructed grain test in `Vortex.Rooms.Tests/Groups/GroupDirectoryGrainCreationTests.cs`.
+- [x] Target: these tests run in the quality gate. — `dotnet test Vortex.Cloud.sln` runs as part of
+      `TurboCloudFastCheck`. `Vortex.Rooms.Tests` is 42/42 green.
 
 **Story 0.2 — Grain error and resilience strategy**
 *As a* developer, *I want* a single grain failure contract,
@@ -123,7 +123,7 @@ not before them.
 
 **Epic 0 DoD:** quality gate runs policy tests and at least one grain test; no `// TODO handle exceptions`;
 formatting green. ✅ **Met.** Remaining hardening tracked in `CONSOLIDATION.md` (P4: quality gate's
-`dotnet format` step only scopes `Turbo.Main`, not the full solution — widening it today would
+`dotnet format` step only scopes `Vortex.Main`, not the full solution — widening it today would
 immediately break the blocking gate on ~1200 pre-existing analyzer warnings elsewhere, so it's left as
 a separate follow-up rather than forced through; P5: the `FurnitureWiredLogic.cs` gap above).
 
@@ -250,7 +250,7 @@ across all stories are peripheral extras, not on this path.
 **Story 2.3 — Staff moderation tool — Done (2026-07-05)**
 *As staff, I want* moderation tooling (CFH/tickets, alerts, sanctions),
 *so I can* operate hotel moderation.
-- [x] `Turbo.PacketHandlers/Moderator` handlers implemented, gated by capabilities
+- [x] `Vortex.PacketHandlers/Moderator` handlers implemented, gated by capabilities
   `Capabilities.Moderation.*` (added `Chatlogs`/`Cfh`, matching the WIN63 client's own distinct
   tool-permission flags rather than reusing Kick/Mute/Ban/Alert).
 - [x] Every action emits moderation audit event (category Moderation), both success and denial.
@@ -280,10 +280,10 @@ throughout; group rooms handled; moderation tool is functional and audited.
 **Story 3.1 — Merge feature branch**
 - [x] `feat/webapi-aspnetcore-migration` reviewed and merged into `main` (tip `43a924e` is an
       ancestor of `main`).
-- [x] 16 integration tests run in gate — `Turbo.WebApi.Tests`, 16/16 green.
+- [x] 16 integration tests run in gate — `Vortex.WebApi.Tests`, 16/16 green.
 
 **Story 3.2 — Finish and harden**
-- [x] All endpoints migrated (parity with old HttpListener) — `Turbo.WebApi/Hosting/WebApiEndpoints.cs`.
+- [x] All endpoints migrated (parity with old HttpListener) — `Vortex.WebApi/Hosting/WebApiEndpoints.cs`.
 - [x] Strict rate limiting verified on `/login`, `/registration/new`, `/ssotoken` — `WebApiAppConfigurator.cs`
       wires per-route `FixedWindowLimiter` policies; `WebApiEndpointsTests.Login_ExceedingRateLimit_Returns429`
       asserts the 429.
@@ -292,7 +292,7 @@ throughout; group rooms handled; moderation tool is functional and audited.
 
 **Story 3.3 — Remove legacy**
 - [x] Remove `WebApiService.cs` (HttpListener) and `WebApiResponseWriter` — neither exists in the repo;
-      only doc-comments in `Turbo.WebApi/Hosting/*.cs` reference the old `HttpListener` behavior for
+      only doc-comments in `Vortex.WebApi/Hosting/*.cs` reference the old `HttpListener` behavior for
       migration-parity context.
 
 **Epic 3 DoD:** no `HttpListener` remains; public surface runs on ASP.NET, tested and hardened. ✅ **Met.**

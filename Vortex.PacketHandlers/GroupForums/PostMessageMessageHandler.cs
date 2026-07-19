@@ -1,0 +1,64 @@
+using System.Threading;
+using System.Threading.Tasks;
+using Orleans;
+using Vortex.Messages.Registry;
+using Vortex.Primitives.Groups.Snapshots;
+using Vortex.Primitives.Messages.Incoming.GroupForums;
+using Vortex.Primitives.Messages.Outgoing.Groupforums;
+using Vortex.Primitives.Orleans;
+
+namespace Vortex.PacketHandlers.GroupForums;
+
+public class PostMessageMessageHandler(IGrainFactory grainFactory)
+    : IMessageHandler<PostMessageMessage>
+{
+    private readonly IGrainFactory _grainFactory = grainFactory;
+
+    public async ValueTask HandleAsync(
+        PostMessageMessage message,
+        MessageContext ctx,
+        CancellationToken ct
+    )
+    {
+        if (ctx.PlayerId <= 0 || message.GroupId <= 0)
+        {
+            return;
+        }
+
+        ForumPostResultSnapshot? result = await _grainFactory
+            .GetGroupForumGrain(message.GroupId)
+            .PostAsync(ctx.PlayerId, message.ThreadId, message.Title, message.Message, ct)
+            .ConfigureAwait(false);
+
+        if (result is null)
+        {
+            return;
+        }
+
+        if (result.IsNewThread && result.Thread is not null)
+        {
+            await ctx.SendComposerAsync(
+                    new PostThreadMessageComposer
+                    {
+                        GroupId = result.GroupId,
+                        Thread = result.Thread,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
+        }
+        else if (result.Post is not null)
+        {
+            await ctx.SendComposerAsync(
+                    new PostMessageMessageComposer
+                    {
+                        GroupId = result.GroupId,
+                        ThreadId = result.ThreadId,
+                        Post = result.Post,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
+        }
+    }
+}

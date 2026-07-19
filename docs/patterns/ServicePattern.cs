@@ -1,8 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
-using Turbo.Primitives.Players;
-using Turbo.Primitives.Players.Grains;
+using Vortex.Primitives.Players;
+using Vortex.Primitives.Players.Grains;
 
 namespace Docs.Patterns;
 

@@ -18,7 +18,7 @@ Related documents: `CONSOLIDATION.md` (live backlog), `ROADMAP.md`,
 | Dimension | Score | Rationale (one line) |
 |---|---:|---|
 | **Global** | **68 / 100** | Sound modular architecture undermined by silent failure paths, security defaults, thin tests, and doc drift |
-| Architecture | 78 / 100 | Acyclic 28-project layout with a clean composition root; coarse coupling to `Turbo.Database` and a "gravity well" `Turbo.Primitives` |
+| Architecture | 78 / 100 | Acyclic 28-project layout with a clean composition root; coarse coupling to `Vortex.Database` and a "gravity well" `Vortex.Primitives` |
 | Code quality | 66 / 100 | Consistent formatting (csharpier green) but 29 bare `catch { }`, several 1000–3500-line files, and duplicated handler orchestration |
 | Maintainability | 62 / 100 | 72 tests for ~3 670 files; 10+ production modules with no dedicated test project; oversized grains/services |
 | Performance | 70 / 100 | Good use of caching/timer-flush; per-packet allocations, unbounded queues/buffers, N+1 grain/DB loops remain |
@@ -34,7 +34,7 @@ serializers, ~300 stub handlers per `CONSOLIDATION.md`), and (4) security defaul
 without functional change; item (3) is feature work already tracked in `ROADMAP.md`/P7.
 
 **Verified strengths**
-- Acyclic project dependency graph across 28 projects; `Turbo.Main` is a genuine composition root
+- Acyclic project dependency graph across 28 projects; `Vortex.Main` is a genuine composition root
   (`Program.cs`) with ordered registration (Orleans → infrastructure → domain modules).
 - No handler source file accesses `TurboDbContext`/repositories (grep-verified) — the
   "orchestration-only handler" boundary holds at the code level.
@@ -45,7 +45,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 - Purchase-refund invariant is now shared (`WalletPurchaseExtensions.ExecutePurchaseAsync`) and
   regression-tested (`WalletPurchaseExtensionsTests.cs`).
 - Plugin system uses collectible `AssemblyLoadContext` with byte-loading and unload polling
-  (`Turbo.Runtime/AssemblyProcessing/`).
+  (`Vortex.Runtime/AssemblyProcessing/`).
 - DbContext lifetime is factory-based (`AddDbContextFactory<TurboDbContext>`); no scoped-context
   capture in singletons was found.
 - `dotnet csharpier check` is green repo-wide; central package management is in place.
@@ -54,11 +54,11 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 
 ## 2. Findings — Architecture and organization
 
-### A1. `Turbo.PacketHandlers` carries an unused reference to `Turbo.Database`
-1. **File:** `Turbo.PacketHandlers/Turbo.PacketHandlers.csproj` (line 12)
+### A1. `Vortex.PacketHandlers` carries an unused reference to `Vortex.Database`
+1. **File:** `Vortex.PacketHandlers/Vortex.PacketHandlers.csproj` (line 12)
 2. **Class:** — (project file)
 3. **Method:** —
-4. **Problem:** the project references `Turbo.Database` while no handler source uses it.
+4. **Problem:** the project references `Vortex.Database` while no handler source uses it.
 5. **Impact:** the compiler no longer enforces the documented hard boundary ("no DB access in
    handlers", `CONTEXT.md` §Hard boundaries); a future violation would build silently.
 6. **Reference:** dependency-inversion / enforce architecture via assembly boundaries (Microsoft
@@ -90,7 +90,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 8. **Improvement:** update `AGENTS.md`/adapters to the actual `net10.0` toolchain (doc-only change).
 
 ### A4. Orleans host is hard-wired to localhost clustering and memory storage
-1. **File:** `Turbo.Main/Extensions/HostApplicationBuilderExtensions.cs` (lines 28–33)
+1. **File:** `Vortex.Main/Extensions/HostApplicationBuilderExtensions.cs` (lines 28–33)
 2. **Class:** `HostApplicationBuilderExtensions`
 3. **Method:** silo configuration
 4. **Problem:** `UseLocalhostClustering()` and in-memory streams/storage are unconditional.
@@ -101,8 +101,8 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 8. **Improvement:** select clustering/stream/storage providers from `IConfiguration` with the
    current values as defaults (no behavior change in dev).
 
-### A5. `Turbo.Primitives` is a contracts gravity well
-1. **File:** `Turbo.Primitives/**` (1 458 files, ~19.6 k lines; `Messages/` alone 1 019 files)
+### A5. `Vortex.Primitives` is a contracts gravity well
+1. **File:** `Vortex.Primitives/**` (1 458 files, ~19.6 k lines; `Messages/` alone 1 019 files)
 2–3. —
 4. **Problem:** every module depends on one very large contracts assembly.
 5. **Impact:** build/navigation friction and coupling gravity; any contract touch rebuilds the
@@ -113,7 +113,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
    build times degrade. `CONSOLIDATION.md` P3 (merging tiny projects) remains the better lever.
 
 ### A6. Plugins can resolve any host service
-1. **File:** `Turbo.Plugins/HostServices.cs` (lines 11–12)
+1. **File:** `Vortex.Plugins/HostServices.cs` (lines 11–12)
 2. **Class:** `HostServices`
 3. **Method:** service resolution surface
 4. **Problem:** plugins receive the root `IServiceProvider` surface rather than a scoped capability
@@ -133,10 +133,10 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 > 0 `async void`.
 
 ### R1. Wired subsystem swallows exceptions across 14 files
-1. **Files:** `Turbo.Rooms/Object/Logic/Furniture/Floor/Wired/FurnitureWiredLogic.cs` (9 bare
-   catches), `Turbo.Rooms/Wired/WiredExecutionContext.cs` (l. 50, 93, 141),
+1. **Files:** `Vortex.Rooms/Object/Logic/Furniture/Floor/Wired/FurnitureWiredLogic.cs` (9 bare
+   catches), `Vortex.Rooms/Wired/WiredExecutionContext.cs` (l. 50, 93, 141),
    `…/Wired/Selectors/WiredSelectorItemsInNeighborhood.cs` (4), plus 9 more wired files and
-   `Turbo.Rooms/Grains/Systems/RoomWiredSystem.cs` (l. 356, `ProcessPendingActionAsync`).
+   `Vortex.Rooms/Grains/Systems/RoomWiredSystem.cs` (l. 356, `ProcessPendingActionAsync`).
 2. **Classes:** `FurnitureWiredLogic`, `WiredExecutionContext`, wired selectors/actions/addons,
    `RoomWiredSystem`
 3. **Methods:** rehydration (`Activator.CreateInstance` paths), execution, pending-action flush
@@ -150,7 +150,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
    catch sites — no functional change either way.
 
 ### R2. Plugin hosted-service startup failures are invisible
-1. **File:** `Turbo.Plugins/PluginManager.cs` (lines 470–490)
+1. **File:** `Vortex.Plugins/PluginManager.cs` (lines 470–490)
 2. **Class:** `PluginManager`
 3. **Method:** `StartPluginAsync`
 4. **Problem:** `catch { /* bubble via plugin Start */ }` swallows `IHostedService.StartAsync`
@@ -161,7 +161,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 8. **Improvement:** log the exception and mark the plugin start failed (logging-only change).
 
 ### R3. Reloadable-export swap/subscriber failures are silent
-1. **File:** `Turbo.Plugins/Exports/ReloadableExport.cs` (lines 25–45, 48–62; 3 bare catches)
+1. **File:** `Vortex.Plugins/Exports/ReloadableExport.cs` (lines 25–45, 48–62; 3 bare catches)
 2. **Class:** `ReloadableExport`
 3. **Methods:** `SwapAsync`, `Subscribe`
 4. **Problem:** disposal and subscriber-callback exceptions are swallowed.
@@ -171,7 +171,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 8. **Improvement:** inject a logger (type is already DI-constructed) and log each failure.
 
 ### R4. Wallet debit failure masquerades as "insufficient balance"
-1. **File:** `Turbo.Players/Grains/PlayerWalletGrain.cs` (line 90)
+1. **File:** `Vortex.Players/Grains/PlayerWalletGrain.cs` (line 90)
 2. **Class:** `PlayerWalletGrain`
 3. **Method:** `TryDebitAsync`
 4. **Problem:** a broad unlogged catch rolls back and returns the insufficient-balance result.
@@ -182,7 +182,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 8. **Improvement:** `catch (Exception ex)` + `LogError`, preserving the existing rollback/result.
 
 ### R5. `MessengerGrain` friend-request accept is non-atomic
-1. **File:** `Turbo.Players/Grains/MessengerGrain.cs`
+1. **File:** `Vortex.Players/Grains/MessengerGrain.cs`
 2. **Class:** `MessengerGrain`
 3. **Method:** `AcceptFriendRequestsAsync`
 4. **Problem:** `ExecuteDeleteAsync` removes the request immediately, before the tracked friendship
@@ -196,7 +196,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
    transaction); identical external behavior on success.
 
 ### R6. Marketplace offer marked *Sold* before the inventory grant completes
-1. **File:** `Turbo.Marketplace/Grains/MarketplacePurchaseGrain.cs` (lines ~173–187)
+1. **File:** `Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs` (lines ~173–187)
 2. **Class:** `MarketplacePurchaseGrain`
 3. **Method:** `BuyOfferAsync` (grant step passed to `ExecutePurchaseAsync`)
 4. **Problem:** the grant step sets `offer.State = Sold` + `CreditsOwed` and `SaveChangesAsync`
@@ -211,7 +211,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
    in the same failure path that triggers the refund.
 
 ### R7. LTD raffle refunds are fire-and-forget before finalization
-1. **File:** `Turbo.Catalog/Grains/LtdRaffleGrain.cs` (lines ~311–325, 408–421)
+1. **File:** `Vortex.Catalog/Grains/LtdRaffleGrain.cs` (lines ~311–325, 408–421)
 2. **Class:** `LtdRaffleGrain`
 3. **Methods:** `RunRaffleAsync`, `LogAndForgetRefund`
 4. **Problem:** non-winner refunds are dispatched with `CancellationToken.None` and never awaited;
@@ -223,7 +223,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
    before finalizing (same externally visible outcome on success).
 
 ### R8. Authentication ticket expiry is disabled
-1. **File:** `Turbo.Authentication/AuthenticationService.cs` (lines ~61–81 commented out)
+1. **File:** `Vortex.Authentication/AuthenticationService.cs` (lines ~61–81 commented out)
 2. **Class:** `AuthenticationService`
 3. **Method:** `GetPlayerIdFromTicketAsync`
 4. **Problem:** the whole TTL/expiry block is commented out; `_ticketTtlSeconds` (l. 25) is read but
@@ -235,8 +235,8 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
    documented behavior rather than adding features.
 
 ### R9. WebApi registration ignores `PasswordRepeated`
-1. **File:** `Turbo.WebApi/Http/WebApiRequests.cs` (lines 14–18); endpoint
-   `Turbo.WebApi/Hosting/WebApiEndpoints.cs` (lines 118–140)
+1. **File:** `Vortex.WebApi/Http/WebApiRequests.cs` (lines 14–18); endpoint
+   `Vortex.WebApi/Hosting/WebApiEndpoints.cs` (lines 118–140)
 2. **Class:** `WebApiRequests` / `WebApiEndpoints`
 3. **Method:** register endpoint (`MapUser`)
 4. **Problem:** the confirmation field is accepted but never compared to `Password`.
@@ -250,7 +250,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 ## 4. Findings — Security and cryptography
 
 ### S1. Diffie-Hellman parameters are 128-bit and randomly generated
-1. **File:** `Turbo.Crypto/DiffieService.cs` (lines 11, 24–25)
+1. **File:** `Vortex.Crypto/DiffieService.cs` (lines 11, 24–25)
 2. **Class:** `DiffieService`
 3. **Method:** constructor
 4. **Problem:** `DH_PRIMES_BIT_SIZE = 128`; both "prime" and "generator" are random probable
@@ -278,7 +278,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
    in non-dev environments.)
 
 ### S3. Destructive interpolated SQL in migration uninstall
-1. **File:** `Turbo.Database/Migrations/MigrationHelper.cs`
+1. **File:** `Vortex.Database/Migrations/MigrationHelper.cs`
 2. **Class:** `MigrationHelper`
 3. **Method:** `UninstallAsync`
 4. **Problem:** builds `LIKE '{tablePrefix}%'` (and related raw statements) by interpolation; only
@@ -290,7 +290,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
    behavior for valid prefixes.
 
 ### S4. Client-controlled loop counts in packet parsers are uncapped
-1. **Files:** `Turbo.Revisions/Revision20260112/Parsers/FriendList/RemoveFriendMessageParser.cs`
+1. **Files:** `Vortex.Revisions/Revision20260112/Parsers/FriendList/RemoveFriendMessageParser.cs`
    (`Parse`), `…/Parsers/RoomSettings/SaveRoomSettingsMessageParser.cs` (`ParseTags`) — pattern
    likely recurs in sibling parsers (not exhaustively verified).
 2. **Classes:** respective parsers
@@ -303,7 +303,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
    no legitimate behavior changes).
 
 ### S5. Packet framing lacks length bounds
-1. **File:** `Turbo.Networking/Package/ClientPacketDecoder.cs`
+1. **File:** `Vortex.Networking/Package/ClientPacketDecoder.cs`
 2. **Class:** `ClientPacketDecoder`
 3. **Method:** `TryRead`
 4. **Problem:** client-supplied `length` is used without negative/max checks; `length + 4` can
@@ -314,7 +314,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 8. **Improvement:** reject `length < 0`, cap maximum packet size, use checked arithmetic.
 
 ### S6. WebSocket receive buffer is unbounded
-1. **File:** `Turbo.Networking/Ws/WsPackageHandler.cs`
+1. **File:** `Vortex.Networking/Ws/WsPackageHandler.cs`
 2. **Class:** `WsPackageHandler`
 3. **Method:** `ProcessPackageAsync`
 4. **Problem:** partial data accumulates in `ctx.WsBuffer` with no cap; remainder kept via
@@ -325,7 +325,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 8. **Improvement:** enforce a max buffered-bytes threshold that closes the offending session.
 
 ### S7. RC4 without keystream drop
-1. **File:** `Turbo.Crypto/Rc4Engine.cs`
+1. **File:** `Vortex.Crypto/Rc4Engine.cs`
 2. **Class:** `Rc4Engine`
 3. **Method:** constructor (`dropN = 0` default)
 4. **Problem:** raw RC4 keystream, no integrity protection.
@@ -345,8 +345,8 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 > call-cycle deadlock was verified, but reentrancy posture is implicit rather than designed.
 
 ### O1. `IRoomGrain` exposes `void` grain methods
-1. **File:** `Turbo.Primitives/Rooms/Grains/IRoomGrain.cs` (lines 12–13); call sites
-   `Turbo.Rooms/Grains/RoomDirectoryGrain.cs` (lines 151, 156)
+1. **File:** `Vortex.Primitives/Rooms/Grains/IRoomGrain.cs` (lines 12–13); call sites
+   `Vortex.Rooms/Grains/RoomDirectoryGrain.cs` (lines 151, 156)
 2. **Class:** `IRoomGrain` / `RoomDirectoryGrain`
 3. **Methods:** `DeactivateRoom`, `DelayRoomDeactivation`; caller `CheckRoomsAsync`
 4. **Problem:** grain interface methods return `void`.
@@ -357,8 +357,8 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 8. **Improvement:** change signatures to `Task` and await at the two call sites (no behavior change).
 
 ### O2. Fire-and-forget continuations rely on `TaskScheduler.Current`
-1. **Files:** `Turbo.Players/Grains/PlayerPresenceGrain.cs` (l. 170),
-   `Turbo.Players/Grains/MessengerGrain.cs` (l. 1041), `Turbo.Catalog/Grains/LtdRaffleGrain.cs`
+1. **Files:** `Vortex.Players/Grains/PlayerPresenceGrain.cs` (l. 170),
+   `Vortex.Players/Grains/MessengerGrain.cs` (l. 1041), `Vortex.Catalog/Grains/LtdRaffleGrain.cs`
    (l. 420)
 2. **Classes:** respective grains
 3. **Method:** local `LogAndForget` helpers
@@ -372,9 +372,9 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
    (`try { await t; } catch (Exception ex) { log; }`) — repo contract already calls for this helper.
 
 ### O3. Room stream publishes discarded without observation
-1. **Files:** `Turbo.Rooms/Grains/RoomGrain.Map.cs` (l. 51, 61),
-   `Turbo.Rooms/Grains/Modules/RoomAvatarModule.cs` (l. 314, 347, 371, 398, 420, 461, 481),
-   `Turbo.Rooms/Grains/Systems/RoomRollerSystem.cs` (l. 314)
+1. **Files:** `Vortex.Rooms/Grains/RoomGrain.Map.cs` (l. 51, 61),
+   `Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs` (l. 314, 347, 371, 398, 420, 461, 481),
+   `Vortex.Rooms/Grains/Systems/RoomRollerSystem.cs` (l. 314)
 2–3. `FlushDirtyTilesAsync`, avatar mutators, roller broadcast
 4. **Problem:** `_ = SendComposerToRoomAsync(...)` discards the task.
 5. **Impact:** stream publish failures (broken subscribers, provider faults) are invisible;
@@ -384,7 +384,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 8. **Improvement:** route through the shared logged fire-and-forget helper (O2).
 
 ### O4. `PlayerPresenceGrain` outgoing queue is unbounded and stream errors are dropped
-1. **File:** `Turbo.Players/Grains/PlayerPresenceGrain.cs` (l. 28, 96–157, 72–75, 128–132) and
+1. **File:** `Vortex.Players/Grains/PlayerPresenceGrain.cs` (l. 28, 96–157, 72–75, 128–132) and
    `PlayerPresenceGrain.Room.cs` (l. 65–72, 139–144)
 2. **Class:** `PlayerPresenceGrain`
 3. **Methods:** `SendComposerAsync`, `ProcessOutgoingQueueAsync`, `OnErrorAsync`,
@@ -401,7 +401,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
    unsubscribe in `OnDeactivateAsync` when a subscription is active.
 
 ### O5. Pet operations write to the DB inside room hot paths
-1. **File:** `Turbo.Rooms/Grains/Systems/RoomPetSystem.cs` (l. 288, 334, 389, 1549, 2063)
+1. **File:** `Vortex.Rooms/Grains/Systems/RoomPetSystem.cs` (l. 288, 334, 389, 1549, 2063)
 2. **Class:** `RoomPetSystem`
 3. **Methods:** `PlacePetAsync`, `MovePetAsync`, `PickUpPetAsync`, `ConfirmPetBreedingAsync`,
    `PlantMonsterplantSeedAsync`
@@ -415,10 +415,10 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
    keep immediate writes only where a subsequent read depends on them.
 
 ### O6. Sequential grain/DB calls in loops
-1. **Files:** `Turbo.Players/Grains/MessengerGrain.cs` — `DeclineFriendRequestsAsync`
+1. **Files:** `Vortex.Players/Grains/MessengerGrain.cs` — `DeclineFriendRequestsAsync`
    (l. 359–372), `RemoveFriendsAsync` (l. 384–398): per-id `ExecuteDeleteAsync` in loops;
    `AcceptFriendRequestsAsync`: per-request `FindAsync` incl. repeated self-lookup.
-   `Turbo.Inventory/Grains/InventoryGrain.Furni.cs` — `GrantCatalogOfferAsync` (l. 200–259):
+   `Vortex.Inventory/Grains/InventoryGrain.Furni.cs` — `GrantCatalogOfferAsync` (l. 200–259):
    sequential awaits and a repeated presence-grain lookup inside the loop.
 2–3. as listed
 4. **Problem:** O(n) sequential round-trips for independent operations; repeated identical lookups.
@@ -430,7 +430,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
    independent notifications with `Task.WhenAll` where ordering is not semantically required.
 
 ### O7. Inventory hydration emits "item added" notifications
-1. **File:** `Turbo.Inventory/Grains/Modules/InventoryFurniModule.cs` (l. 89–91)
+1. **File:** `Vortex.Inventory/Grains/Modules/InventoryFurniModule.cs` (l. 89–91)
 2. **Class:** `InventoryFurniModule`
 3. **Method:** `LoadFurnitureAsync`
 4. **Problem:** hydration reuses `AddFurnitureAsync`, which triggers presence notifications.
@@ -440,8 +440,8 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 8. **Improvement:** internal load path that populates state without the outbound notification.
 
 ### O8. Timer callbacks capture the wrong cancellation token
-1. **Files:** `Turbo.Rooms/Grains/RoomDirectoryGrain.cs` (l. 37, `OnActivateAsync`/`CheckRoomsAsync`),
-   `Turbo.Players/Grains/RentableSpaceGrain.cs` (l. 557–559, `ScheduleExpiryTimer`)
+1. **Files:** `Vortex.Rooms/Grains/RoomDirectoryGrain.cs` (l. 37, `OnActivateAsync`/`CheckRoomsAsync`),
+   `Vortex.Players/Grains/RentableSpaceGrain.cs` (l. 557–559, `ScheduleExpiryTimer`)
 2–3. as listed
 4. **Problem:** timer callbacks capture the activation `ct` or pass `CancellationToken.None`
    instead of using the token supplied to the timer callback.
@@ -451,10 +451,10 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 8. **Improvement:** thread the timer-callback token through.
 
 ### O9. God-grain scale: `RoomGrain`, `RoomPetSystem`, `MessengerGrain`
-1. **Files:** `Turbo.Rooms/Grains/RoomGrain.cs` + partials (~2 246 l. incl. module wiring at
-   l. 52–66), `Turbo.Rooms/Grains/Systems/RoomPetSystem.cs` (2 110 l.),
-   `Turbo.Players/Grains/MessengerGrain.cs` (1 089 l.), `Turbo.Players/Grains/GroupGrain.cs`
-   (926 l.), `Turbo.Players/Grains/GroupForumGrain.cs` (743 l.)
+1. **Files:** `Vortex.Rooms/Grains/RoomGrain.cs` + partials (~2 246 l. incl. module wiring at
+   l. 52–66), `Vortex.Rooms/Grains/Systems/RoomPetSystem.cs` (2 110 l.),
+   `Vortex.Players/Grains/MessengerGrain.cs` (1 089 l.), `Vortex.Players/Grains/GroupGrain.cs`
+   (926 l.), `Vortex.Players/Grains/GroupForumGrain.cs` (743 l.)
 2–3. class-level
 4. **Problem:** single classes accumulate placement, movement, breeding, stats, persistence,
    composer fan-out, etc.
@@ -465,7 +465,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
    `RoomGrain` modules) without changing grain interfaces.
 
 ### O10. Hardcoded limits and intervals in grains
-1. **Files:** `Turbo.Players/Grains/GroupDirectoryGrain.cs` (l. 373 — `50`),
+1. **Files:** `Vortex.Players/Grains/GroupDirectoryGrain.cs` (l. 373 — `50`),
    `GroupForumGrain.cs` (l. 722 — `20`), `Modules/PlayerInventoryModule.cs` (l. 30 — fragment
    `100`), `MessengerGrain.cs` (l. 890–891 — 10 s flush), `PlayerGrain.cs` (l. 359–360 — 1 h timer)
 2–3. as listed
@@ -481,10 +481,10 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 ## 6. Findings — Handlers, networking, protocol
 
 ### H1. Handlers send directly to the session via `MessageContext`
-1. **File:** `Turbo.Messages/Registry/MessageContext.cs` (l. 33–34); representative callers:
-   `Turbo.PacketHandlers/FriendList/MessengerInitMessageHandler.cs` (l. 44–75),
+1. **File:** `Vortex.Messages/Registry/MessageContext.cs` (l. 33–34); representative callers:
+   `Vortex.PacketHandlers/FriendList/MessengerInitMessageHandler.cs` (l. 44–75),
    `HabboSearchMessageHandler.cs` (l. 60–68),
-   `Turbo.PacketHandlers/Users/ApproveAllMembershipRequestsMessageHandler.cs` (l. 34–44)
+   `Vortex.PacketHandlers/Users/ApproveAllMembershipRequestsMessageHandler.cs` (l. 34–44)
 2. **Class:** `MessageContext` + many handlers
 3. **Method:** `SendComposerAsync`
 4. **Problem:** `MessageContext.SendComposerAsync` wraps `_session.SendComposerAsync` directly and
@@ -501,8 +501,8 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
    and violated on its literal reading.
 
 ### H2. Business rules embedded in handlers
-1. **Files:** `Turbo.PacketHandlers/Users/ApproveNameMessageHandler.cs` (`Validate` — name
-   length/regex policy), `Turbo.PacketHandlers/Room/Pets/GetPetInfoMessageHandler.cs`
+1. **Files:** `Vortex.PacketHandlers/Users/ApproveNameMessageHandler.cs` (`Validate` — name
+   length/regex policy), `Vortex.PacketHandlers/Room/Pets/GetPetInfoMessageHandler.cs`
    (`HandleAsync` — monster-plant type `16`, max wellbeing `86_400`, remaining-wellbeing math)
 2–3. as listed
 4. **Problem:** domain policy lives at the transport layer.
@@ -514,7 +514,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
    computed snapshot.
 
 ### H3. Hardcoded limits in handlers
-1. **Files:** `Turbo.PacketHandlers/FriendList/MessengerInitMessageHandler.cs` (`FragmentSize=500`,
+1. **Files:** `Vortex.PacketHandlers/FriendList/MessengerInitMessageHandler.cs` (`FragmentSize=500`,
    `UserFriendLimit=300`, `NormalFriendLimit=300`, `ExtendedFriendLimit=2000`),
    `HabboSearchMessageHandler.cs` (`SearchLimit=30`)
 2–3. `HandleAsync`
@@ -537,9 +537,9 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 8. **Improvement:** shared logged fire-and-forget helper (see O2) + `Task.WhenAll` for fan-out.
 
 ### H5. Per-packet allocations on both directions
-1. **Files:** `Turbo.Networking/Package/ClientPacketDecoder.cs` (`TryRead` — `hdr.ToArray()`, full
-   packet `ToArray()`), `Turbo.Networking/Package/PackageEncoder.cs` (`Encode` —
-   `Serialize(...).ToArray()` + encryption copy), `Turbo.Networking/Ws/WebSocketSessionContext.cs`
+1. **Files:** `Vortex.Networking/Package/ClientPacketDecoder.cs` (`TryRead` — `hdr.ToArray()`, full
+   packet `ToArray()`), `Vortex.Networking/Package/PackageEncoder.cs` (`Encode` —
+   `Serialize(...).ToArray()` + encryption copy), `Vortex.Networking/Ws/WebSocketSessionContext.cs`
    (`SendComposerAsync` — new `ArrayBufferWriter` + `ToArray()` per send; also logs all send
    failures at Debug only)
 2–3. as listed
@@ -551,7 +551,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
    raise unexpected WS send failures to Warning.
 
 ### H6. Session↔player bidirectional map updates are non-atomic
-1. **File:** `Turbo.Networking/Session/SessionGateway.cs` (l. 96–143)
+1. **File:** `Vortex.Networking/Session/SessionGateway.cs` (l. 96–143)
 2. **Class:** `SessionGateway`
 3. **Methods:** `AddSessionToPlayerAsync`, `RemovePlayerSessionAsync`
 4. **Problem:** `_sessionToPlayer` and `_playerToSession` are updated with separate concurrent
@@ -565,7 +565,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 
 ### H7. 284 registered serializers have empty bodies; placeholder payload fields
 1. **Files:** representative
-   `Turbo.Revisions/Revision20260112/Serializers/Competition/CompetitionVotingInfoMessageComposerSerializer.cs`
+   `Vortex.Revisions/Revision20260112/Serializers/Competition/CompetitionVotingInfoMessageComposerSerializer.cs`
    (`Serialize` body is a lone `//`; 284 serializers match this pattern),
    `…/Serializers/Handshake/UserObjectMessageSerializer.cs` (`Serialize` writes hardcoded `0` for
    respect totals / pet-respect remaining)
@@ -579,7 +579,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 8. **Improvement:** unregister unimplemented composers or emit a one-time warning log on first use.
 
 ### H8. Navigator search handlers duplicate orchestration
-1. **Files:** `Turbo.PacketHandlers/Navigator/GuildBaseSearchMessageHandler.cs`,
+1. **Files:** `Vortex.PacketHandlers/Navigator/GuildBaseSearchMessageHandler.cs`,
    `RoomAdSearchMessageHandler.cs`, `GetOfficialRoomsMessageHandler.cs`,
    `MyFriendsRoomsSearchMessageHandler.cs`, `MyRoomRightsSearchMessageHandler.cs`
 2–3. `HandleAsync` in each
@@ -594,7 +594,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 ## 7. Findings — Data access and performance
 
 ### D1. Marketplace search loads and aggregates in memory
-1. **File:** `Turbo.Marketplace/Grains/MarketplaceSearchGrain.cs`
+1. **File:** `Vortex.Marketplace/Grains/MarketplaceSearchGrain.cs`
 2. **Class:** `MarketplaceSearchGrain`
 3. **Methods:** `GetOffersAsync`, `GetItemStatsAsync`
 4. **Problem:** tracked full-entity loads without `AsNoTracking`; grouping/sorting/avg/min/max done
@@ -605,7 +605,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 8. **Improvement:** `AsNoTracking` + SQL-side projection/`GroupBy` aggregates (same results).
 
 ### D2. Navigator loads full entities with no paging cap
-1. **File:** `Turbo.Navigator/NavigatorProvider.cs`
+1. **File:** `Vortex.Navigator/NavigatorProvider.cs`
 2. **Class:** `NavigatorProvider`
 3. **Methods:** `GetAllRoomsAsync`, `GetRoomsBy*Async`, `ToRoomInfoSnapshots`
 4. **Problem:** includes owner/group entities and materializes all matches before mapping.
@@ -615,7 +615,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 8. **Improvement:** project directly to snapshot shape and cap/paginate.
 
 ### D3. `GroupForumGrain.PostAsync` saves twice
-1. **File:** `Turbo.Players/Grains/GroupForumGrain.cs` (l. 228, 243)
+1. **File:** `Vortex.Players/Grains/GroupForumGrain.cs` (l. 228, 243)
 2. **Class:** `GroupForumGrain`
 3. **Method:** `PostAsync`
 4. **Problem:** thread saved, then post saved in a second `SaveChangesAsync`.
@@ -625,7 +625,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 8. **Improvement:** attach post via navigation and save once.
 
 ### D4. Hot-path allocation in the avatar tick
-1. **File:** `Turbo.Rooms/Grains/Systems/RoomAvatarTickSystem.cs` (l. 22–87)
+1. **File:** `Vortex.Rooms/Grains/Systems/RoomAvatarTickSystem.cs` (l. 22–87)
 2. **Class:** `RoomAvatarTickSystem`
 3. **Method:** `ProcessAvatarsAsync`
 4. **Problem:** a fresh `List<RoomAvatarSnapshot>` per tick per room.
@@ -635,7 +635,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 8. **Improvement:** reuse a cleared instance field (grain is single-threaded — safe).
 
 ### D5. Observability aggregation queues are time- but not count-bounded
-1. **File:** `Turbo.Observability/Runtime/LiveStatsAggregator.cs` (l. 12–22, 145–230)
+1. **File:** `Vortex.Observability/Runtime/LiveStatsAggregator.cs` (l. 12–22, 145–230)
 2. **Class:** `LiveStatsAggregator`
 3–4. sample queues are trimmed by time window only.
 5. **Impact:** a burst inside the window grows memory without cap.
@@ -644,7 +644,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 8. **Improvement:** add max-sample caps (drop-oldest) alongside the time trim.
 
 ### D6. Sequential provider reloads at startup
-1. **Files:** `Turbo.Main/TurboEmulator.cs` (`StartAsync`, l. 58–68)
+1. **Files:** `Vortex.Main/TurboEmulator.cs` (`StartAsync`, l. 58–68)
 2–3. as listed
 4. **Problem:** independent cache reloads run sequentially after their real dependencies.
 5. **Impact:** startup latency is the sum, not the max.
@@ -653,7 +653,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
 8. **Improvement:** group independent reloads with `Task.WhenAll`.
 
 ### D7. Plugin table-prefix computation is dead code
-1. **File:** `Turbo.Database/Extensions/ServiceCollectionExtensions.cs`
+1. **File:** `Vortex.Database/Extensions/ServiceCollectionExtensions.cs`
 2. **Class:** `ServiceCollectionExtensions`
 3. **Method:** `AddPluginTablePrefix`
 4. **Problem:** a fallback prefix is computed (and would be wrong anyway —
@@ -678,7 +678,7 @@ without functional change; item (3) is feature work already tracked in `ROADMAP.
    migrations; document either way.
 
 ### D9. `PetEntity` breeding lineage has no referential integrity
-1. **File:** `Turbo.Database/Entities/Pets/PetEntity.cs`
+1. **File:** `Vortex.Database/Entities/Pets/PetEntity.cs`
 2. **Class:** `PetEntity`
 3. **Properties:** `ParentOneId`, `ParentTwoId`
 4. **Problem:** plain nullable ints, no FK/navigation.
@@ -695,7 +695,7 @@ Divergences verified between the internal docs and the code as of `84c6190`:
 
 | # | Document (claim) | Observed in code | Assessment |
 |---|---|---|---|
-| C1 | `CONSOLIDATION.md` (P5): "0 silent swallows outside `Turbo.Rooms`; one tracked gap in `FurnitureWiredLogic.cs`" | **29 bare `catch { }` across 14 files**, including 3 in `Turbo.Plugins/Exports/ReloadableExport.cs` (outside `Turbo.Rooms`) and 13 in wired files *other than* `FurnitureWiredLogic.cs` (`WiredExecutionContext.cs`, `WiredSelectorItemsInNeighborhood.cs`, `RoomWiredSystem.cs`, …) | Doc materially understates the gap; update P5 scope |
+| C1 | `CONSOLIDATION.md` (P5): "0 silent swallows outside `Vortex.Rooms`; one tracked gap in `FurnitureWiredLogic.cs`" | **29 bare `catch { }` across 14 files**, including 3 in `Vortex.Plugins/Exports/ReloadableExport.cs` (outside `Vortex.Rooms`) and 13 in wired files *other than* `FurnitureWiredLogic.cs` (`WiredExecutionContext.cs`, `WiredSelectorItemsInNeighborhood.cs`, `RoomWiredSystem.cs`, …) | Doc materially understates the gap; update P5 scope |
 | C2 | `AGENTS.md`: ".NET SDK 9.0.310 … net9.0", Orleans 9.2.1, EF 9.0.8 | `global.json` pins SDK `10.0`; all projects target `net10.0` (package versions match) | TFM/SDK statement outdated |
 | C3 | `AGENTS.md`: "Handlers already read configuration values (e.g. `Turbo:FriendList:UserFriendLimit`) and pass them to grains" | `MessengerInitMessageHandler.cs` hardcodes `UserFriendLimit = 300` etc.; the documented key is not read | Documented pattern not implemented in the flagship example |
 | C4 | `CONTEXT.md`: player outbound must go through `PlayerPresenceGrain.SendComposerAsync` | `MessageContext.SendComposerAsync` sends directly to the session and is used pervasively for request replies | Rule ambiguous (request-reply vs push) and violated on literal reading — clarify doc or change code (H1) |
@@ -746,18 +746,18 @@ parser beyond the two cited has uncapped loops (pattern sampled, not exhaustivel
 
 ## 10. Priority refactor list (files)
 
-1. `Turbo.Players/Grains/MessengerGrain.cs` — atomicity bug (R5) + batched deletes (O6) + size (1 089 l.)
-2. `Turbo.Marketplace/Grains/MarketplacePurchaseGrain.cs` — Sold-before-grant consistency (R6)
-3. `Turbo.Catalog/Grains/LtdRaffleGrain.cs` — refund fire-and-forget (R7)
-4. `Turbo.Crypto/DiffieService.cs` — 128-bit DH (S1)
-5. `appsettings.json` + `Turbo.Database/Migrations/MigrationHelper.cs` — secrets (S2) / SQL safety (S3)
-6. `Turbo.Rooms/Object/Logic/Furniture/Floor/Wired/FurnitureWiredLogic.cs` + `Turbo.Rooms/Wired/WiredExecutionContext.cs` — silent-catch epicenter (R1)
-7. `Turbo.Plugins/PluginManager.cs` + `Turbo.Plugins/Exports/ReloadableExport.cs` — silent lifecycle failures (R2, R3)
-8. `Turbo.Players/Grains/PlayerPresenceGrain.cs` — unbounded queue, stream errors, subscription lifecycle (O4)
-9. `Turbo.Networking/Package/ClientPacketDecoder.cs` + `Ws/WsPackageHandler.cs` + `Session/SessionGateway.cs` — framing caps, buffer caps, mapping race (S5, S6, H6)
-10. `Turbo.Rooms/Grains/Systems/RoomPetSystem.cs` — 2 110 l., hot-path DB writes (O5, O9)
-11. `Turbo.Dashboard.API/Api/DashboardApiService.cs` — 2 585 l. service (split by concern)
-12. `Turbo.Authentication/AuthenticationService.cs` — re-enable TTL (R8)
+1. `Vortex.Players/Grains/MessengerGrain.cs` — atomicity bug (R5) + batched deletes (O6) + size (1 089 l.)
+2. `Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs` — Sold-before-grant consistency (R6)
+3. `Vortex.Catalog/Grains/LtdRaffleGrain.cs` — refund fire-and-forget (R7)
+4. `Vortex.Crypto/DiffieService.cs` — 128-bit DH (S1)
+5. `appsettings.json` + `Vortex.Database/Migrations/MigrationHelper.cs` — secrets (S2) / SQL safety (S3)
+6. `Vortex.Rooms/Object/Logic/Furniture/Floor/Wired/FurnitureWiredLogic.cs` + `Vortex.Rooms/Wired/WiredExecutionContext.cs` — silent-catch epicenter (R1)
+7. `Vortex.Plugins/PluginManager.cs` + `Vortex.Plugins/Exports/ReloadableExport.cs` — silent lifecycle failures (R2, R3)
+8. `Vortex.Players/Grains/PlayerPresenceGrain.cs` — unbounded queue, stream errors, subscription lifecycle (O4)
+9. `Vortex.Networking/Package/ClientPacketDecoder.cs` + `Ws/WsPackageHandler.cs` + `Session/SessionGateway.cs` — framing caps, buffer caps, mapping race (S5, S6, H6)
+10. `Vortex.Rooms/Grains/Systems/RoomPetSystem.cs` — 2 110 l., hot-path DB writes (O5, O9)
+11. `Vortex.Dashboard.API/Api/DashboardApiService.cs` — 2 585 l. service (split by concern)
+12. `Vortex.Authentication/AuthenticationService.cs` — re-enable TTL (R8)
 
 ---
 

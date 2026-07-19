@@ -1,5 +1,0 @@
-using Turbo.Primitives.Networking;
-
-namespace Turbo.Primitives.Messages.Incoming.Poll;
-
-public record PollAnswerMessage : IMessageEvent { }

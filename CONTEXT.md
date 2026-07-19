@@ -1,30 +1,30 @@
 # Turbo Cloud Architecture Context
 
-`Turbo.Cloud.sln` is the main emulator solution. `Turbo.Main` is the runtime host and composition root.
+`Vortex.Cloud.sln` is the main emulator solution. `Vortex.Main` is the runtime host and composition root.
 
 ## Core structure and responsibilities
-- `Turbo.Main/`
+- `Vortex.Main/`
   - Host startup and wiring (`Program.cs`), configuration, lifetime, and console commands.
-- `Turbo.Plugins/`
+- `Vortex.Plugins/`
   - Runtime discovery, loading, start/stop, and unload lifecycle for plugins.
-- `Turbo.PacketHandlers/`
+- `Vortex.PacketHandlers/`
   - Incoming message handling orchestration and domain dispatch.
-- `Turbo.Events/`
+- `Vortex.Events/`
   - Event behavior/handler pipeline registration and execution.
-- `Turbo.*` domain modules (`Rooms`, `Players`, `Catalog`, `Inventory`, etc.)
+- `Vortex.*` domain modules (`Rooms`, `Players`, `Catalog`, `Inventory`, etc.)
   - Domain services, snapshot providers, and Orleans grain orchestration.
-- `Turbo.Database/`
+- `Vortex.Database/`
   - EF Core context and persistence infrastructure.
-- `Turbo.Primitives/`
+- `Vortex.Primitives/`
   - Cross-module contracts, identifiers, snapshots, and message types.
 
 ## Hard boundaries
-- Keep host composition and module registration in `Turbo.Main`; avoid leaking host concerns into domain modules.
+- Keep host composition and module registration in `Vortex.Main`; avoid leaking host concerns into domain modules.
 - Keep packet handlers focused on request/response orchestration, not persistence infrastructure wiring.
 - Keep database querying and persistence access out of packet handlers.
 - Keep grain lifecycle/state logic within grain modules; do not bypass grain boundaries with direct cross-layer shortcuts.
-- Keep plugin lifecycle operations inside `Turbo.Plugins`; do not duplicate plugin loading logic in unrelated modules.
-- `Turbo.Revisions/Revision20260112/**` is the default revision embedded in core (so the emulator
+- Keep plugin lifecycle operations inside `Vortex.Plugins`; do not duplicate plugin loading logic in unrelated modules.
+- `Vortex.Revisions/Revision20260112/**` is the default revision embedded in core (so the emulator
   runs standalone without a plugin) — its `Parsers/` and `Serializers/` trees legitimately live in
   `turbo-cloud` and are edited there.
 - Protocol revision parser/serializer trees for any **other/additional** revision (added via the
@@ -33,9 +33,9 @@
   - Do not create new `Revision<id>/Parsers` or `Revision<id>/Serializers` trees in `turbo-cloud`
     for revisions other than the embedded `Revision20260112` default.
 - Extended profile flow boundary:
-  - `Turbo.PacketHandlers/Users/*ExtendedProfile*Handler.cs` orchestrates lookup + response mapping only.
-  - `Turbo.Players/Grains/PlayerDirectoryGrain.cs` owns username/id lookup semantics and cache coherence.
-  - `Turbo.Players/Grains/PlayerGrain.cs` exposes profile snapshots consumed by handlers.
+  - `Vortex.PacketHandlers/Users/*ExtendedProfile*Handler.cs` orchestrates lookup + response mapping only.
+  - `Vortex.Players/Grains/PlayerDirectoryGrain.cs` owns username/id lookup semantics and cache coherence.
+  - `Vortex.Players/Grains/PlayerGrain.cs` exposes profile snapshots consumed by handlers.
 
 ## Data and lookup semantics
 - Username-to-id lookup behavior is case-insensitive.
@@ -73,13 +73,13 @@
 
 ## Placement rules
 - New host startup/wiring behavior:
-  - `Turbo.Main/` (usually `Program.cs`, `Extensions/`, or `Console/`)
+  - `Vortex.Main/` (usually `Program.cs`, `Extensions/`, or `Console/`)
 - New incoming packet behavior:
-  - `Turbo.PacketHandlers/<Domain>/<Name>MessageHandler.cs`
+  - `Vortex.PacketHandlers/<Domain>/<Name>MessageHandler.cs`
 - New domain service/provider:
-  - `Turbo.<Domain>/...` in the existing service/provider structure
+  - `Vortex.<Domain>/...` in the existing service/provider structure
 - New grain behavior:
-  - `Turbo.<Domain>/Grains/...`
+  - `Vortex.<Domain>/Grains/...`
 
 ## Pattern references
 Use and adapt these examples before inventing new structure:

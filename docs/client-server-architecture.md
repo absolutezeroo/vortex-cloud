@@ -74,24 +74,24 @@ The **client** (vortex-client) is a Flash-based rendering and input layer. It pr
               ══════════════╪══════════════  Network
                             │
 ┌───────────────────────────┼─────────────────────────────────┐
-│  Turbo Cloud (Turbo.Cloud.sln, .NET 10 + Orleans)             │
+│  Turbo Cloud (Vortex.Cloud.sln, .NET 10 + Orleans)             │
 │  ┌───────────────────────────────────────────────────────┐  │
-│  │  Turbo.Main               Host composition root        │  │
-│  │  ├─ Turbo.Networking       SuperSocket TCP + WS, session│  │
-│  │  ├─ Turbo.Crypto            DH + RSA + RC4              │  │
-│  │  ├─ Turbo.Pipeline/Messages Generic envelope dispatch    │  │
-│  │  ├─ Turbo.Revisions         Protocol def (Headers,       │  │
+│  │  Vortex.Main               Host composition root        │  │
+│  │  ├─ Vortex.Networking       SuperSocket TCP + WS, session│  │
+│  │  ├─ Vortex.Crypto            DH + RSA + RC4              │  │
+│  │  ├─ Vortex.Pipeline/Messages Generic envelope dispatch    │  │
+│  │  ├─ Vortex.Revisions         Protocol def (Headers,       │  │
 │  │  │   /Revision20260112      Parsers/, Serializers/)      │  │
-│  │  ├─ Turbo.PacketHandlers    Orchestration-only handlers  │  │
-│  │  ├─ Turbo.Rooms             RoomGrain (modules+systems)  │  │
-│  │  ├─ Turbo.Players           PlayerGrain, PlayerPresence, │  │
+│  │  ├─ Vortex.PacketHandlers    Orchestration-only handlers  │  │
+│  │  ├─ Vortex.Rooms             RoomGrain (modules+systems)  │  │
+│  │  ├─ Vortex.Players           PlayerGrain, PlayerPresence, │  │
 │  │  │                          Messenger, Groups            │  │
-│  │  ├─ Turbo.Catalog           CatalogPurchaseGrain, LTD     │  │
-│  │  ├─ Turbo.Inventory         InventoryGrain                │  │
-│  │  ├─ Turbo.Marketplace       Auction-style listings        │  │
-│  │  ├─ Turbo.Navigator         Room search/categories         │  │
-│  │  ├─ Turbo.Authentication    SSO ticket resolution           │  │
-│  │  ├─ Turbo.Plugins           Assembly scan / hot reload      │  │
+│  │  ├─ Vortex.Catalog           CatalogPurchaseGrain, LTD     │  │
+│  │  ├─ Vortex.Inventory         InventoryGrain                │  │
+│  │  ├─ Vortex.Marketplace       Auction-style listings        │  │
+│  │  ├─ Vortex.Navigator         Room search/categories         │  │
+│  │  ├─ Vortex.Authentication    SSO ticket resolution           │  │
+│  │  ├─ Vortex.Plugins           Assembly scan / hot reload      │  │
 │  │  └─ [Furniture, Events, Observability, WebApi, ...]        │  │
 │  └───────────────────────────────────────────────────────┘  │
 │                           │                                 │
@@ -102,14 +102,14 @@ The **client** (vortex-client) is a Flash-based rendering and input layer. It pr
 └─────────────────────────────────────────────────────────────┘
 ```
 
-Everything under a domain project (`Turbo.Rooms`, `Turbo.Catalog`, `Turbo.Players`, ...) is implemented as one or more **Orleans grains** — virtual actors, not singleton manager classes. There is no `Emulator`-style static service locator.
+Everything under a domain project (`Vortex.Rooms`, `Vortex.Catalog`, `Vortex.Players`, ...) is implemented as one or more **Orleans grains** — virtual actors, not singleton manager classes. There is no `Emulator`-style static service locator.
 
 ### Data Flow Summary
 
 1. User performs an action in the client (click, type, drag).
 2. Client builds a message via `HabboMessages.as`'s composer registry and sends it over the socket via `EvaWireFormat`.
-3. Server's `ClientPacketDecoder` (`Turbo.Networking/Package`) decodes the frame into a typed message using the active `IRevision`'s parser table.
-4. `MessageSystem`/`MessageRegistry` (`Turbo.Messages`) dispatch the message to every registered `IMessageHandler<T>` for that type (assembly-scanned at boot, not hand-registered).
+3. Server's `ClientPacketDecoder` (`Vortex.Networking/Package`) decodes the frame into a typed message using the active `IRevision`'s parser table.
+4. `MessageSystem`/`MessageRegistry` (`Vortex.Messages`) dispatch the message to every registered `IMessageHandler<T>` for that type (assembly-scanned at boot, not hand-registered).
 5. The handler is orchestration-only — it resolves an Orleans grain (a room, player, catalog, etc.) and calls a method on it. All actual game logic and persistence lives in the grain.
 6. The grain mutates state and — for room broadcasts — publishes an outgoing composer onto an **Orleans stream**, never writing to a socket directly.
 7. Each affected player's `PlayerPresenceGrain` (subscribed to the relevant stream(s)) receives the composer and hands it to the session layer (`SessionObserver`), which serializes it via the revision's serializer table and writes the framed bytes to that player's actual socket.
@@ -121,18 +121,18 @@ Everything under a domain project (`Turbo.Rooms`, `Turbo.Catalog`, `Turbo.Player
 
 ### Phase 1: Host Startup
 
-`Turbo.Main/Program.cs` builds the host in a fixed order:
+`Vortex.Main/Program.cs` builds the host in a fixed order:
 
-1. `builder.AddOrleans()` (`Turbo.Main/Extensions/HostApplicationBuilderExtensions.cs`) — configures a single-silo, localhost-clustered Orleans runtime (`UseLocalhostClustering()`, in-memory grain storage for player/room/pub-sub state, in-memory stream providers for the default and room stream providers). In non-Development environments this logs an explicit warning that this clustering configuration won't survive restarts or scale across nodes.
+1. `builder.AddOrleans()` (`Vortex.Main/Extensions/HostApplicationBuilderExtensions.cs`) — configures a single-silo, localhost-clustered Orleans runtime (`UseLocalhostClustering()`, in-memory grain storage for player/room/pub-sub state, in-memory stream providers for the default and room stream providers). In non-Development environments this logs an explicit warning that this clustering configuration won't survive restarts or scale across nodes.
 2. `AddTurboLogging → AddTurboNetworking → AddTurboPlugins → AddTurboDatabaseContext → AddTurboEventSystem → AddTurboMessageSystem → AddTurboCrypto → AddTurboRevisions`.
 3. Domain plugin modules registered via `AddHostPlugin<TModule>`: `ObservabilityModule, AuthenticationModule, FurnitureModule, CatalogModule, PlayerModule, InventoryModule, MarketplaceModule, DashboardApiModule, NavigatorModule, RoomModule, PacketHandlersModule, WebApiModule`. Each module's assembly gets scanned later for message handlers.
 4. `AddHostedService<TurboEmulator>()` — registered **last**, so it starts after `PluginBootstrapper` (which does the assembly scanning) and any hot-reload service.
 
-`TurboEmulator.StartAsync` (`Turbo.Main/TurboEmulator.cs`): registers the embedded `Revision20260112` with `IRevisionManager`, sequentially reloads every static-data provider (furniture definitions, catalog/club-offer/club-gift snapshots, currency types, group badge parts, pet palettes/commands/levels, navigator contexts, room models), and only then calls `INetworkManager.StartAsync` — so TCP/WS sockets don't open until the revision and all data providers are warm.
+`TurboEmulator.StartAsync` (`Vortex.Main/TurboEmulator.cs`): registers the embedded `Revision20260112` with `IRevisionManager`, sequentially reloads every static-data provider (furniture definitions, catalog/club-offer/club-gift snapshots, currency types, group badge parts, pet palettes/commands/levels, navigator contexts, room models), and only then calls `INetworkManager.StartAsync` — so TCP/WS sockets don't open until the revision and all data providers are warm.
 
 ### Phase 2: Transport
 
-`NetworkManager` (`Turbo.Networking/NetworkManager.cs`) starts **two independent SuperSocket hosts concurrently** — a TCP host and a WebSocket host — both listening from the same process. This is a real architectural difference from a TCP-only classic server: vortex-client can (depending on build/config) connect over either transport, and both funnel into the same `PackageHandler`/`MessageSystem` dispatch stack (see §6).
+`NetworkManager` (`Vortex.Networking/NetworkManager.cs`) starts **two independent SuperSocket hosts concurrently** — a TCP host and a WebSocket host — both listening from the same process. This is a real architectural difference from a TCP-only classic server: vortex-client can (depending on build/config) connect over either transport, and both funnel into the same `PackageHandler`/`MessageSystem` dispatch stack (see §6).
 
 ### Phase 3: Handshake
 
@@ -204,12 +204,12 @@ Length = size of (Header + Body), NOT including the 4 length bytes themselves
 
 ### Server Side: Encoding and Decoding
 
-`Turbo.Networking/Package/ClientPacketDecoder.cs` (incoming):
+`Vortex.Networking/Package/ClientPacketDecoder.cs` (incoming):
 1. Peek 4 bytes for the length. If RC4 is active on this session (`ctx.CryptoIn`), those 4 bytes are decrypted via `Rc4Engine.Peek(...)` — a clone-and-simulate read that does **not** consume real keystream — because with encryption on, the length prefix itself is encrypted and has to be read before the decoder knows how many more bytes to wait for.
-2. Reject (`InvalidDataException`, connection closed) if `length < 0` or `length > MaxPacketBodyBytes` (default **65536**, `Turbo.Networking/Configuration/NetworkingConfig.cs` — not the 417,792 figure from the old draft).
+2. Reject (`InvalidDataException`, connection closed) if `length < 0` or `length > MaxPacketBodyBytes` (default **65536**, `Vortex.Networking/Configuration/NetworkingConfig.cs` — not the 417,792 figure from the old draft).
 3. Wait for `length + 4` bytes to be buffered; once available, decrypt the whole frame for real via `ctx.CryptoIn.Process(...)`, then read the 2-byte big-endian header immediately following the (now-discarded) length.
 
-`Turbo.Primitives/Packets/AbstractSerializer.cs` (outgoing): writes a placeholder 4-byte length, then the 2-byte header, then the body; goes back and overwrites the length field with the real body+header length once serialization is complete.
+`Vortex.Primitives/Packets/AbstractSerializer.cs` (outgoing): writes a placeholder 4-byte length, then the 2-byte header, then the body; goes back and overwrites the length field with the real body+header length once serialization is complete.
 
 `ClientPacket`'s primitive readers (`PopInt`, `PopShort`, `PopString`, ...) all use `BinaryPrimitives.Read*BigEndian`; the outgoing side's writers are the fluent `WriteInteger`/`WriteShort`/`WriteString`/`WriteBoolean` equivalents.
 
@@ -227,13 +227,13 @@ Length = size of (Header + Body), NOT including the 4 length bytes themselves
 
 ### Overview
 
-`Turbo:Crypto` config (`Turbo.Crypto/Configuration/CryptoConfig.cs`) controls whether encryption runs at all (`EnableServerToClientEncryption` gates the *server→client* direction specifically — client→server RC4 is always armed once the handshake completes). The scheme is Diffie-Hellman (secured by RSA signing/encryption) producing a shared secret used as an RC4 stream-cipher key — same overall shape as classic Habbo servers, different concrete implementation.
+`Turbo:Crypto` config (`Vortex.Crypto/Configuration/CryptoConfig.cs`) controls whether encryption runs at all (`EnableServerToClientEncryption` gates the *server→client* direction specifically — client→server RC4 is always armed once the handshake completes). The scheme is Diffie-Hellman (secured by RSA signing/encryption) producing a shared secret used as an RC4 stream-cipher key — same overall shape as classic Habbo servers, different concrete implementation.
 
 ### Step-by-Step
 
 **1. Client requests DH parameters** — `InitDiffieHandshakeMessageEvent` (header 3644), essentially an empty request.
 
-**2. Server generates/serves DH parameters** — `Turbo.Crypto/DiffieService.cs`:
+**2. Server generates/serves DH parameters** — `Vortex.Crypto/DiffieService.cs`:
 - Uses a **fixed, hard-coded 384-bit safe prime** (`p = 2q+1` form, generator `2`) rather than generating a fresh prime per boot. This is a deliberate, documented trade-off: the client can only RSA-decrypt a DH public key up to the ~117-byte block size of a 1024-bit RSA key, which caps the DH prime size — the code comment explicitly calls this "an accepted residual risk imposed by the legacy client handshake," below the ≥2048-bit modern recommendation.
 - Server's own DH keypair (`DH_PRIVATE_BIT_SIZE = 380` random bits, top bit forced set) is generated fresh via `SecureRandom` **once per process start**, not per session.
 - The prime, generator, and server public key are each **RSA-signed** (`RsaService.Sign` — really a raw private-key PKCS#1 encryption of the decimal string form, chunked; not a padded verifiable signature scheme) and returned as lowercase hex via `InitDiffieHandshakeComposer` (header 2334).
@@ -242,7 +242,7 @@ Length = size of (Header + Body), NOT including the 4 length bytes themselves
 
 **4. Client sends its public key** — `CompleteDiffieHandshakeMessageEvent` (header 1517), RSA-**encrypted** (not signed) hex string.
 
-**5. Server completes the handshake** — `Turbo.PacketHandlers/Handshake/CompleteDiffieHandshakeMessageHandler.cs`:
+**5. Server completes the handshake** — `Vortex.PacketHandlers/Handshake/CompleteDiffieHandshakeMessageHandler.cs`:
 - `DiffieService.GetSharedKey(...)` hex-decodes and RSA-decrypts the client's public key, parses it as a decimal `BigInteger`, **validates it's in range `[2, p-2]`** (rejects trivial/small-subgroup values — a real security check the legacy protocol shape doesn't strictly require but this implementation adds anyway), computes `clientPubKey^serverPrivate mod p`, and uses the unsigned byte representation as the RC4 key.
 - Replies with `CompleteDiffieHandshakeComposer` (header 3034, containing the server's own DH public key) — **sent in plaintext**, *then* calls `ISessionContext.SetupEncryption(sharedKey, enableServerToClientEncryption)` to arm the RC4 engines. `CryptoIn` (client→server) is always armed; `CryptoOut` (server→client) only if the config flag is set.
 
@@ -258,7 +258,7 @@ The client has the matching public exponent/modulus embedded in its own crypto c
 
 - RC4 is a weak cipher by modern standards; this is accepted as inherent to supporting the legacy Flash client, not a Turbo-specific oversight.
 - The 384-bit DH prime is well below modern recommendations — again, a deliberate, documented legacy-client constraint (see step 2), not an accidental bug.
-- `Rc4Engine` (`Turbo.Crypto/Rc4Engine.cs`) is a standard KSA+PRGA implementation with a `Peek` mode (clone-and-simulate without consuming keystream) specifically to support reading the still-encrypted length prefix in the decoder (§3) — a small but important implementation detail that a naive RC4 port would miss.
+- `Rc4Engine` (`Vortex.Crypto/Rc4Engine.cs`) is a standard KSA+PRGA implementation with a `Peek` mode (clone-and-simulate without consuming keystream) specifically to support reading the still-encrypted length prefix in the decoder (§3) — a small but important implementation detail that a naive RC4 port would miss.
 
 ---
 
@@ -268,9 +268,9 @@ The client has the matching public exponent/modulus embedded in its own crypto c
 
 There is no separate password-based login packet — authentication is **exclusively SSO-ticket based**:
 
-1. User logs into a **web application** outside this repo, which mints a ticket and stores it as a `SecurityTicketEntity` row (`Turbo.Database.Entities.Security`).
+1. User logs into a **web application** outside this repo, which mints a ticket and stores it as a `SecurityTicketEntity` row (`Vortex.Database.Entities.Security`).
 2. The client sends that ticket via `SSOTicketMessageEvent` (header 749).
-3. `Turbo.PacketHandlers/Handshake/SSOTicketMessageHandler.cs` calls `IAuthenticationService.GetPlayerIdFromTicketAsync` (`Turbo.Authentication/AuthenticationService.cs`):
+3. `Vortex.PacketHandlers/Handshake/SSOTicketMessageHandler.cs` calls `IAuthenticationService.GetPlayerIdFromTicketAsync` (`Vortex.Authentication/AuthenticationService.cs`):
     - Looks up the ticket row via `IDbContextFactory<TurboDbContext>`.
     - Missing ticket → publishes `PlayerLoginFailedEvent` (with an HMAC-SHA256 hash of the remote IP, never the raw IP) and fails.
     - Expired (past `entity.ExpiresAt`, or `CreatedAt + TicketTtlSeconds` if unset) and not locked → deletes the ticket and fails.
@@ -284,7 +284,7 @@ There is no separate password-based login packet — authentication is **exclusi
 
 ### Permissions
 
-`Turbo.Authentication/Permissions/PermissionService.cs` (`IPermissionService.ResolveForPlayerAsync`) resolves the player's `PermissionSet` from `RoleEntity`/`RolePermissionEntity`/`PlayerAccountRoleEntity` — this is what gates moderator-tool bootstrap and every `Capabilities.Moderation.*`-checked handler (§16). See §24 for a real, currently-open gap in how new accounts get their initial role.
+`Vortex.Authentication/Permissions/PermissionService.cs` (`IPermissionService.ResolveForPlayerAsync`) resolves the player's `PermissionSet` from `RoleEntity`/`RolePermissionEntity`/`PlayerAccountRoleEntity` — this is what gates moderator-tool bootstrap and every `Capabilities.Moderation.*`-checked handler (§16). See §24 for a real, currently-open gap in how new accounts get their initial role.
 
 ---
 
@@ -292,7 +292,7 @@ There is no separate password-based login packet — authentication is **exclusi
 
 ### How Packets Map to Code
 
-Packet IDs and their handling code are defined in exactly **one place**: `Turbo.Revisions/Revision20260112/Headers.cs`, two `internal static class`es of `public const int` fields —
+Packet IDs and their handling code are defined in exactly **one place**: `Vortex.Revisions/Revision20260112/Headers.cs`, two `internal static class`es of `public const int` fields —
 
 ```csharp
 // Headers.cs
@@ -315,9 +315,9 @@ internal static class MessageComposer   // server → client (outgoing from the 
 }
 ```
 
-`Turbo.Revisions/Revision20260112/Revision20260112.cs` (3480 lines) builds the actual `IRevision` from these constants: `Parsers` is `IDictionary<int, IParser>` keyed by the `MessageEvent` ids; `Serializers` is `IDictionary<Type, ISerializer>` keyed by the **composer's CLR type** (each serializer's constructor is handed its header id from `MessageComposer`). Both dictionaries are hand-built object initializers, grouped into `#region`s by domain (Room, Catalog, Inventory, Navigator, FriendList, Moderator, Handshake, Game, Wired, ...).
+`Vortex.Revisions/Revision20260112/Revision20260112.cs` (3480 lines) builds the actual `IRevision` from these constants: `Parsers` is `IDictionary<int, IParser>` keyed by the `MessageEvent` ids; `Serializers` is `IDictionary<Type, ISerializer>` keyed by the **composer's CLR type** (each serializer's constructor is handed its header id from `MessageComposer`). Both dictionaries are hand-built object initializers, grouped into `#region`s by domain (Room, Catalog, Inventory, Navigator, FriendList, Moderator, Handshake, Game, Wired, ...).
 
-`Turbo.Networking/Revisions/RevisionManager.cs` (`IRevisionManager`) holds a `Dictionary<string, IRevision>` keyed by the revision's build string (`"WIN63-202601121721-391685409"` for the embedded default). This is the plugin extension point: additional client revisions can be registered by a separate plugin without touching core code — see `CONTEXT.md`'s note that `Revision<id>/Parsers|Serializers` trees for *other* revisions belong in a plugin repo, not in `turbo-cloud` itself.
+`Vortex.Networking/Revisions/RevisionManager.cs` (`IRevisionManager`) holds a `Dictionary<string, IRevision>` keyed by the revision's build string (`"WIN63-202601121721-391685409"` for the embedded default). This is the plugin extension point: additional client revisions can be registered by a separate plugin without touching core code — see `CONTEXT.md`'s note that `Revision<id>/Parsers|Serializers` trees for *other* revisions belong in a plugin repo, not in `turbo-cloud` itself.
 
 ### Client — `HabboMessages.as` (~1,996 lines)
 
@@ -334,9 +334,9 @@ Note the naming convention is **side-relative**: the same logical "chat" packet 
 
 ### Handler Instantiation (Server)
 
-There is no manual registration file to edit. `Turbo.Plugins/PluginBootstrapper.cs` (an `IHostedService` that runs before `TurboEmulator`) iterates every `IHostPluginModule` registered in `Program.cs` and calls `AssemblyProcessor.ProcessAsync` on each module's assembly. For `PacketHandlersModule` (assembly = `Turbo.PacketHandlers`), this uses reflection (`AssemblyExplorer.FindClosedImplementations`) to find every class implementing `IMessageHandler<TMessage>` and registers it — activator + invoker delegates — on the shared `MessageRegistry`. **Dropping a new `IMessageHandler<T>` class into `Turbo.PacketHandlers/<Domain>/` is the entire registration step.**
+There is no manual registration file to edit. `Vortex.Plugins/PluginBootstrapper.cs` (an `IHostedService` that runs before `TurboEmulator`) iterates every `IHostPluginModule` registered in `Program.cs` and calls `AssemblyProcessor.ProcessAsync` on each module's assembly. For `PacketHandlersModule` (assembly = `Vortex.PacketHandlers`), this uses reflection (`AssemblyExplorer.FindClosedImplementations`) to find every class implementing `IMessageHandler<TMessage>` and registers it — activator + invoker delegates — on the shared `MessageRegistry`. **Dropping a new `IMessageHandler<T>` class into `Vortex.PacketHandlers/<Domain>/` is the entire registration step.**
 
-Dispatch (`Turbo.Messages/MessageSystem.cs` → `Turbo.Messages/Registry/MessageRegistry.cs`, both built on the generic `Turbo.Pipeline` envelope-dispatch engine also reused by `Turbo.Events` for domain events):
+Dispatch (`Vortex.Messages/MessageSystem.cs` → `Vortex.Messages/Registry/MessageRegistry.cs`, both built on the generic `Vortex.Pipeline` envelope-dispatch engine also reused by `Vortex.Events` for domain events):
 - Resolves the acting player id and active room id from `ISessionGateway`/`IPlayerPresenceGrain`.
 - Runs every matching handler for a message type **in parallel** (`Task.WhenAll`, `HandlerExecutionMode.Parallel`, unbounded degree of parallelism) — not sequentially like a single-dispatch classic server.
 - Handler/behavior errors are caught, logged, and reported to an `IErrorGroupingSink` — a bad handler doesn't take down the connection.
@@ -344,7 +344,7 @@ Dispatch (`Turbo.Messages/MessageSystem.cs` → `Turbo.Messages/Registry/Message
 Representative real handlers:
 
 ```csharp
-// Turbo.PacketHandlers/Room/Engine/MoveAvatarMessageHandler.cs
+// Vortex.PacketHandlers/Room/Engine/MoveAvatarMessageHandler.cs
 public class MoveAvatarMessageHandler(IRoomService roomService) : IMessageHandler<MoveAvatarMessage>
 {
     public async ValueTask HandleAsync(MoveAvatarMessage message, MessageContext ctx, CancellationToken ct) =>
@@ -353,7 +353,7 @@ public class MoveAvatarMessageHandler(IRoomService roomService) : IMessageHandle
 ```
 
 ```csharp
-// Turbo.PacketHandlers/Room/Chat/ChatMessageHandler.cs
+// Vortex.PacketHandlers/Room/Chat/ChatMessageHandler.cs
 public class ChatMessageHandler(IGrainFactory grainFactory) : IMessageHandler<ChatMessage>
 {
     public async ValueTask HandleAsync(ChatMessage message, MessageContext ctx, CancellationToken ct)
@@ -370,20 +370,20 @@ Handlers are **orchestration-only** — guard the context, resolve one grain, de
 
 ### Field Read/Write Convention
 
-Parsers and serializers under `Turbo.Revisions/Revision20260112/{Parsers,Serializers}/**` use the same `Pop*`/`Write*` idiom as the classic protocol shape:
+Parsers and serializers under `Vortex.Revisions/Revision20260112/{Parsers,Serializers}/**` use the same `Pop*`/`Write*` idiom as the classic protocol shape:
 
 ```csharp
-// Turbo.Revisions/Revision20260112/Parsers/Room/Engine/MoveAvatarMessageParser.cs
+// Vortex.Revisions/Revision20260112/Parsers/Room/Engine/MoveAvatarMessageParser.cs
 public IMessageEvent Parse(IClientPacket packet) =>
     new MoveAvatarMessage { TargetX = packet.PopInt(), TargetY = packet.PopInt() };
 
-// Turbo.Revisions/Revision20260112/Parsers/Room/Chat/ChatMessageParser.cs
+// Vortex.Revisions/Revision20260112/Parsers/Room/Chat/ChatMessageParser.cs
 public IMessageEvent Parse(IClientPacket packet) =>
     new ChatMessage { Text = packet.PopString(), StyleId = packet.PopInt(), TrackingId = packet.PopInt() };
 ```
 
 ```csharp
-// Turbo.Revisions/Revision20260112/Serializers/Room/Chat/ChatMessageComposerSerializer.cs (shape)
+// Vortex.Revisions/Revision20260112/Serializers/Room/Chat/ChatMessageComposerSerializer.cs (shape)
 packet.WriteInteger(message.ObjectId).WriteString(message.Text).WriteInteger(message.Gesture)...
 ```
 
@@ -406,7 +406,7 @@ The critical architectural point (see the full walkthrough in §7 and §25): **a
 
 ### Entering a Room
 
-`Turbo.PacketHandlers/Room/Session/OpenFlatConnectionMessageHandler.cs` → `IRoomService.OpenRoomForPlayerIdAsync` (`Turbo.Rooms/RoomService.cs`):
+`Vortex.PacketHandlers/Room/Session/OpenFlatConnectionMessageHandler.cs` → `IRoomService.OpenRoomForPlayerIdAsync` (`Vortex.Rooms/RoomService.cs`):
 
 ```
 Client                                          Server
@@ -444,7 +444,7 @@ Client                                          Server
 
 ### Room Grain Architecture
 
-`Turbo.Rooms/Grains/RoomGrain.cs` is a `sealed partial class` split across 9 files by concern (`.Security`, `.Map`, `.Settings`, `.Avatar`, `.Pets`, `.Furni`, `.Furni.Floor`, `.Furni.Wall`, `.Moderation`). It composes:
+`Vortex.Rooms/Grains/RoomGrain.cs` is a `sealed partial class` split across 9 files by concern (`.Security`, `.Map`, `.Settings`, `.Avatar`, `.Pets`, `.Furni`, `.Furni.Floor`, `.Furni.Wall`, `.Moderation`). It composes:
 
 - **Modules** (own a slice of state + operations on it): `RoomActionModule`, `RoomAvatarModule`, `RoomEventModule`, `RoomFurniModule`, `RoomMapModule`, `RoomObjectModule`, `RoomSecurityModule`.
 - **Systems** (behavioral engines over that state): `RoomPathingSystem`, `RoomAvatarTickSystem`, `RoomPetSystem`, `RoomRollerSystem`, `RoomWiredSystem`, `RoomChatSystem`.
@@ -462,11 +462,11 @@ Both are plain classes holding a back-reference to the grain, constructed once w
 
 Boundaries are computed against a per-room `EpochMs` set at first activation, so each sub-system only does real work once its own interval has elapsed even though the outer timer fires every 50ms. `RoomGrain.OnDeactivateAsync` flushes dirty state and deregisters from `RoomDirectoryGrain` before Orleans deactivates the grain (idle timeout `RoomDeactivationDelayMs` = 1,800,000ms / 30 minutes, or explicit deactivation).
 
-There is no `RoomUnit` grain — avatars, pets, and bots-as-a-concept are plain in-memory objects (`IRoomAvatar` et al., `Turbo.Primitives.Rooms.Object.Avatars`) living in the room grain's own dictionaries.
+There is no `RoomUnit` grain — avatars, pets, and bots-as-a-concept are plain in-memory objects (`IRoomAvatar` et al., `Vortex.Primitives.Rooms.Object.Avatars`) living in the room grain's own dictionaries.
 
 ### Movement
 
-`MoveAvatarMessageHandler` → `IRoomService.ClickTileAsync` → `RoomGrain.ClickTileAsync` (fires wired click-tile triggers) + `WalkAvatarToAsync` (kicks off pathing). Pathfinding is a real **A\*** (`Turbo.Rooms/Grains/Systems/RoomPathingSystem.cs`): 8-directional, cardinal cost 10 / diagonal cost 14 (classic Habbo-style costs), capped at `MaxPathNodes` = 4096, walkability delegated to `RoomMapModule` (height-diff limited by `MaxStepHeight`, diagonal-corner checking configurable via `EnableDiagonalChecking`).
+`MoveAvatarMessageHandler` → `IRoomService.ClickTileAsync` → `RoomGrain.ClickTileAsync` (fires wired click-tile triggers) + `WalkAvatarToAsync` (kicks off pathing). Pathfinding is a real **A\*** (`Vortex.Rooms/Grains/Systems/RoomPathingSystem.cs`): 8-directional, cardinal cost 10 / diagonal cost 14 (classic Habbo-style costs), capped at `MaxPathNodes` = 4096, walkability delegated to `RoomMapModule` (height-diff limited by `MaxStepHeight`, diagonal-corner checking configurable via `EnableDiagonalChecking`).
 
 Per-tick advancement (`RoomAvatarTickSystem`, gated at the 500ms avatar boundary): pops one tile off the path, validates the step, fires floor-item walk-on/walk-off hooks, updates position/rotation, and **batches all changed avatars into one `UserUpdateMessageComposer` broadcast per tick** rather than one packet per avatar.
 
@@ -474,7 +474,7 @@ Per-tick advancement (`RoomAvatarTickSystem`, gated at the 500ms avatar boundary
 
 Dispatch chain: `UseFurnitureMessageHandler` → `IRoomService.UseItemInRoomAsync` → `RoomGrain.UseItemByIdAsync` → `RoomActionModule` (permission check via `RoomSecurityModule.CanUseFurniAsync`, with a rentable-space fallback) → `RoomFurniModule.UseItemByIdAsync` → `item.Logic.OnUseAsync(...)`.
 
-Interaction behavior is **not** a classic `InteractionDefault`/`InteractionTeleport` class hierarchy — it's a string-keyed **`RoomObjectLogic`** registry (`Turbo.Rooms/Providers/RoomObjectLogicProvider.cs`), populated at startup by scanning for a `[RoomObjectLogic("key")]` attribute, falling back to `"default_floor"` for any furniture whose logic-type string has no registered class. Real non-wired logic types that exist: `default_floor`, `default_wall`, `default_avatar`, `dice`, `fireworks`, `roller`, `wheel_of_fortune`, `gate`, `room_invisible_click_tile`, `pet_food`/`pet_nest`/`pet_drink`, `monsterplant_seed`. This is a smaller set than classic Habbo's `InteractionType` zoo (no dedicated teleport/vending/trophy-specific classes) — most special furniture is handled more generically. WIRED itself is implemented as ~90 additional `RoomObjectLogic` subclasses (§17).
+Interaction behavior is **not** a classic `InteractionDefault`/`InteractionTeleport` class hierarchy — it's a string-keyed **`RoomObjectLogic`** registry (`Vortex.Rooms/Providers/RoomObjectLogicProvider.cs`), populated at startup by scanning for a `[RoomObjectLogic("key")]` attribute, falling back to `"default_floor"` for any furniture whose logic-type string has no registered class. Real non-wired logic types that exist: `default_floor`, `default_wall`, `default_avatar`, `dice`, `fireworks`, `roller`, `wheel_of_fortune`, `gate`, `room_invisible_click_tile`, `pet_food`/`pet_nest`/`pet_drink`, `monsterplant_seed`. This is a smaller set than classic Habbo's `InteractionType` zoo (no dedicated teleport/vending/trophy-specific classes) — most special furniture is handled more generically. WIRED itself is implemented as ~90 additional `RoomObjectLogic` subclasses (§17).
 
 ### The Golden Rule: Rooms Don't Touch Sockets
 
@@ -528,7 +528,7 @@ Do not assume either protection exists when reasoning about client behavior — 
 
 ### Purchasing an Item
 
-`PurchaseFromCatalogMessageHandler` → the per-player **`CatalogPurchaseGrain`** (`Turbo.Catalog/Grains/CatalogPurchaseGrain.cs`, `ICatalogPurchaseGrain.PurchaseOfferFromCatalogAsync`):
+`PurchaseFromCatalogMessageHandler` → the per-player **`CatalogPurchaseGrain`** (`Vortex.Catalog/Grains/CatalogPurchaseGrain.cs`, `ICatalogPurchaseGrain.PurchaseOfferFromCatalogAsync`):
 
 1. Looks up the offer in the in-memory `CatalogSnapshot` (built/reloaded by `CatalogSnapshotProvider`, DB-backed).
 2. Resolves club level/discount via `IPlayerGrain.GetClubSubscriptionAsync`.
@@ -538,11 +538,11 @@ Do not assume either protection exists when reasoning about client behavior — 
 
 **Limited-edition items** get their own dedicated grain, `LtdRaffleGrain` (keyed per LTD series) — batches raffle entries; a losing entry's refund is awaited (`Task.WhenAll`), not fire-and-forget (a real fix logged in `CONSOLIDATION.md`).
 
-Other catalog grains: `VoucherGrain` (redeem-code grain), a room-ad purchase path in `CatalogPurchaseGrain.RoomAd.cs` (marked partial — needs more room/furniture orchestration per `ROADMAP.md` Story 4.2). Builders Club subscription tiers are tracked in `Turbo.Players/BuildersClubService.cs`, but placing a Builders-Club-gifted item directly into a room (`BuildersClubPlaceRoomItemMessageHandler`/`...WallItemMessageHandler`) is explicitly deferred.
+Other catalog grains: `VoucherGrain` (redeem-code grain), a room-ad purchase path in `CatalogPurchaseGrain.RoomAd.cs` (marked partial — needs more room/furniture orchestration per `ROADMAP.md` Story 4.2). Builders Club subscription tiers are tracked in `Vortex.Players/BuildersClubService.cs`, but placing a Builders-Club-gifted item directly into a room (`BuildersClubPlaceRoomItemMessageHandler`/`...WallItemMessageHandler`) is explicitly deferred.
 
 ### Currencies
 
-`CurrencyType` (`Turbo.Primitives/Players/Enums/Wallet/CurrencyType.cs`):
+`CurrencyType` (`Vortex.Primitives/Players/Enums/Wallet/CurrencyType.cs`):
 
 ```csharp
 public enum CurrencyType { Credits = 1, Silver = 2, Emeralds = 3, ActivityPoints = 4 }
@@ -560,7 +560,7 @@ Targeted offers (`GetTargetedOffer`/`PurchaseTargetedOffer` etc.), the seasonal-
 
 ### Loading Inventory
 
-Per-player **`InventoryGrain`** (`Turbo.Inventory/Grains/InventoryGrain.cs` + `.Furni.cs`/`.Pets.cs` partials), hydrated from DB via `InventoryFurnitureLoader`. The client requests furniture inventory on demand (`RequestFurniInventoryMessageHandler`) → `IPlayerPresenceGrain.OpenFurnitureInventoryAsync` (`Turbo.Players/Grains/Modules/PlayerInventoryModule.cs`) fetches all item snapshots from the grain and **fragments** them into `FurniListEventMessageComposer` packets, sized by a config value (`PlayerPresenceConfig.FurniInventoryFragmentSize` — no longer a hardcoded 100, per `CONSOLIDATION.md`).
+Per-player **`InventoryGrain`** (`Vortex.Inventory/Grains/InventoryGrain.cs` + `.Furni.cs`/`.Pets.cs` partials), hydrated from DB via `InventoryFurnitureLoader`. The client requests furniture inventory on demand (`RequestFurniInventoryMessageHandler`) → `IPlayerPresenceGrain.OpenFurnitureInventoryAsync` (`Vortex.Players/Grains/Modules/PlayerInventoryModule.cs`) fetches all item snapshots from the grain and **fragments** them into `FurniListEventMessageComposer` packets, sized by a config value (`PlayerPresenceConfig.FurniInventoryFragmentSize` — no longer a hardcoded 100, per `CONSOLIDATION.md`).
 
 ### Placing Furniture
 
@@ -569,15 +569,15 @@ Real flow, a clean two-grain cross-call matching the "one grain per responsibili
 1. `IInventoryGrain.GetItemSnapshotAsync(itemId)` on the **player's** inventory grain — validates ownership/product type.
 2. `IRoomGrain.PlaceFloorItemAsync`/`PlaceWallItemInRoomAsync` on the **room's** grain — the actual world-state mutation, gated by `RoomSecurityModule.CanPlaceFurniAsync`.
 
-Handler: `Turbo.PacketHandlers/Room/Engine/PlaceObjectMessageHandler.cs` (parses wall vs. floor coordinate strings) → `IRoomService.PlaceFloorItemInRoomAsync`/`PlaceWallItemInRoomAsync` (`Turbo.Rooms/RoomService.Floor.cs`/`.Wall.cs`).
+Handler: `Vortex.PacketHandlers/Room/Engine/PlaceObjectMessageHandler.cs` (parses wall vs. floor coordinate strings) → `IRoomService.PlaceFloorItemInRoomAsync`/`PlaceWallItemInRoomAsync` (`Vortex.Rooms/RoomService.Floor.cs`/`.Wall.cs`).
 
-The place/move/pickup/use core furniture loop is complete for the literal verbs (`ROADMAP.md` Epic 1: "100%"); peripheral extras (gift/mystery-trophy consumables, dimmer, mannequin figure display, YouTube display furni, rent/buyout flows, bot placement, pet mounting UX) remain partial — the underlying furniture stuff-data types (`Turbo.Furniture/StuffData/*.cs`) exist, the surrounding UX flows for some of them don't.
+The place/move/pickup/use core furniture loop is complete for the literal verbs (`ROADMAP.md` Epic 1: "100%"); peripheral extras (gift/mystery-trophy consumables, dimmer, mannequin figure display, YouTube display furni, rent/buyout flows, bot placement, pet mounting UX) remain partial — the underlying furniture stuff-data types (`Vortex.Furniture/StuffData/*.cs`) exist, the surrounding UX flows for some of them don't.
 
 ---
 
 ## 11. Navigator
 
-Core classes: `Turbo.Navigator/NavigatorService.cs` (`INavigatorService`), `Turbo.Navigator/NavigatorProvider.cs` (`INavigatorProvider`, DB-backed cache).
+Core classes: `Vortex.Navigator/NavigatorService.cs` (`INavigatorService`), `Vortex.Navigator/NavigatorProvider.cs` (`INavigatorProvider`, DB-backed cache).
 
 Categories and quick-links are **entirely data-driven**, not one-hardcoded-handler-per-feature: `NavigatorProvider.ReloadAsync` loads `NavigatorTopLevelContextEntity`/`NavigatorFlatCategoryEntity` rows, each carrying a `SearchCode` string mapped to a `NavigatorQueryType` enum value via a dictionary built from that DB data. `NavigatorService.FetchRoomsAsync` dispatches on the resolved query type:
 
@@ -593,7 +593,7 @@ Categories and quick-links are **entirely data-driven**, not one-hardcoded-handl
 
 ## 12. Messenger and Friends
 
-No separate "Messenger" project — it's a set of grains on **`Turbo.Players/Grains/`**, split by concern:
+No separate "Messenger" project — it's a set of grains on **`Vortex.Players/Grains/`**, split by concern:
 
 - `MessengerGrain.cs` — lifecycle/hydration, per-player grain.
 - `MessengerGrain.Friends.cs` — friend list, requests, accept/decline, blocking.
@@ -610,7 +610,7 @@ These are **two entirely separate systems** — treat them as unrelated features
 
 ### Trading (classic two-player room exchange) — Does Not Exist
 
-Every handler under `Turbo.PacketHandlers/Inventory/Trading/` is a **100% empty stub**:
+Every handler under `Vortex.PacketHandlers/Inventory/Trading/` is a **100% empty stub**:
 
 ```csharp
 // e.g. OpenTradingMessageHandler.cs, AddItemToTradeMessageHandler.cs, and 8 others
@@ -621,7 +621,7 @@ Confirmed by `TODO.md` ("Trading … are stubs"), `ROADMAP.md` (Epic 6: **Stub**
 
 ### Marketplace (async listing/auction) — Real and Working
 
-`Turbo.Marketplace/Grains/MarketplacePurchaseGrain.cs` (`IMarketplacePurchaseGrain`): `MakeOfferAsync(itemId, price)` validates ownership via the seller's `InventoryGrain`, takes a flat commission (`COMMISSION_PERCENT = 1`), and lists for a fixed `OFFER_DURATION` (3 days). `BuyOfferAsync` atomically claims the offer (`ExecuteUpdate` guarded on `State == Active`) and re-lists it if the inventory grant fails after payment — closing a real "sold but ungranted" bug (`CONSOLIDATION.md` R6). `MarketplaceSearchGrain` handles search/stats queries. Handlers: `Turbo.PacketHandlers/Marketplace/*` (`MakeOfferMessageHandler`, `GetMarketplaceOffersMessageHandler`, `BuyMarketplaceOfferMessageHandler`, `CancelMarketplaceOfferMessageHandler`, `GetMarketplaceItemStatsMessageHandler`, `RedeemMarketplaceOfferCreditsMessageHandler`, `BuyMarketplaceTokensMessageHandler`).
+`Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs` (`IMarketplacePurchaseGrain`): `MakeOfferAsync(itemId, price)` validates ownership via the seller's `InventoryGrain`, takes a flat commission (`COMMISSION_PERCENT = 1`), and lists for a fixed `OFFER_DURATION` (3 days). `BuyOfferAsync` atomically claims the offer (`ExecuteUpdate` guarded on `State == Active`) and re-lists it if the inventory grant fails after payment — closing a real "sold but ungranted" bug (`CONSOLIDATION.md` R6). `MarketplaceSearchGrain` handles search/stats queries. Handlers: `Vortex.PacketHandlers/Marketplace/*` (`MakeOfferMessageHandler`, `GetMarketplaceOffersMessageHandler`, `BuyMarketplaceOfferMessageHandler`, `CancelMarketplaceOfferMessageHandler`, `GetMarketplaceItemStatsMessageHandler`, `RedeemMarketplaceOfferCreditsMessageHandler`, `BuyMarketplaceTokensMessageHandler`).
 
 In short: **Marketplace** = list an item for sale, any other player buys it asynchronously, no direct negotiation. **Trading** = synchronous two-player item-for-item exchange in a room — unimplemented.
 
@@ -629,13 +629,13 @@ In short: **Marketplace** = list an item for sale, any other player buys it asyn
 
 ## 14. Groups and Guilds
 
-Fully implemented — a real subsystem, not a stub. Lives in `Turbo.Players/Grains/`:
+Fully implemented — a real subsystem, not a stub. Lives in `Vortex.Players/Grains/`:
 
 - `GroupDirectoryGrain.cs` (singleton grain) — creation wizard data, **group creation** (validates room ownership, room-not-already-a-guild-base, publishes a cancellable `GroupCreatingEvent`, debits creation cost via `IPlayerWalletGrain.TryDebitAsync`, creates the group + enrolls the owner as admin, publishes `GroupCreatedEvent`), memberships, favouriting, badge editor data, forums listing.
 - `GroupGrain.cs` — per-group member management; `AdminOnlyDecoration`/`MembersCanDecorate` are real DB-backed columns (re-verified per `CONSOLIDATION.md` P2, not hardcoded).
 - `GroupForumGrain.cs` — thread/post CRUD, config-bound page-size caps.
 - Badge system: part/color/position triples assembled into a badge code (`GuildBadgeLibrary`, `GroupBadgePartProvider`).
-- A real production event hook, `GroupNameValidationBehavior` (`IEventBehavior<GroupCreatingEvent>`), rejects empty/too-long guild names — proof the event-behavior extension point (`Turbo.Events`) is exercised in production, not just scaffolding.
+- A real production event hook, `GroupNameValidationBehavior` (`IEventBehavior<GroupCreatingEvent>`), rejects empty/too-long guild names — proof the event-behavior extension point (`Vortex.Events`) is exercised in production, not just scaffolding.
 
 DB: `DATA-MODEL.md` §2 labels Groups **IMPLEMENTED** (migration `20260619035829_AddGroups.cs` onward — tables `groups`, `group_members`, `group_membership_requests`, `group_forum_settings`, `group_forum_threads`, `group_forum_posts`). Known gaps: unread-forum-post counts aren't persisted (always reports 0, documented inline as a deliberate simplification); `CanChangeSettings`/`IsStaff` forum fields are hardcoded `false`; real `isGroupRoom`/`canGroupDecorate` wiring into `RoomSecurityModule` is still open (`ROADMAP.md` Epic 2.2).
 
@@ -653,7 +653,7 @@ hd-180-1.ch-255-92.lg-285-82.sh-290-92.hr-100-61.ha-1003-92
 
 ### Server-Side Handling
 
-`UpdateFigureDataMessageHandler` (`Turbo.PacketHandlers/Register/`) → `IPlayerGrain.SetFigureAsync(figure, gender)` in `Turbo.Players/Grains/PlayerGrain.cs`. This method **stores the raw figure string verbatim, with zero server-side validation** — no check on part ownership, valid part/color combinations, or gender-appropriateness anywhere in the repo (confirmed by grep: no `ValidateFigure`/`FigureValidator`-shaped call exists at all). After persisting, it notifies `PlayerPresenceGrain.OnFigureUpdatedAsync`, which sends `FigureUpdateEventMessageComposer` to the owning client and broadcasts `UserChangeMessageComposer` (figure + gender + motto + achievement score) to the player's current room.
+`UpdateFigureDataMessageHandler` (`Vortex.PacketHandlers/Register/`) → `IPlayerGrain.SetFigureAsync(figure, gender)` in `Vortex.Players/Grains/PlayerGrain.cs`. This method **stores the raw figure string verbatim, with zero server-side validation** — no check on part ownership, valid part/color combinations, or gender-appropriateness anywhere in the repo (confirmed by grep: no `ValidateFigure`/`FigureValidator`-shaped call exists at all). After persisting, it notifies `PlayerPresenceGrain.OnFigureUpdatedAsync`, which sends `FigureUpdateEventMessageComposer` to the owning client and broadcasts `UserChangeMessageComposer` (figure + gender + motto + achievement score) to the player's current room.
 
 This confirms the expected division of responsibility: **the server never renders or interprets figure/avatar visuals** — it's a string that gets stored and relayed; all rendering is 100% client-side (`AvatarRenderManager.as` and friends in vortex-client). The lack of any server-side figure validation is a real, if deliberate-looking, gap worth knowing about if reasoning about trust boundaries.
 
@@ -665,7 +665,7 @@ Related, separate: `SetMannequinFigureMessageHandler` (a furniture-level figure 
 
 Real and, per `ROADMAP.md` Epic 2.3, **"Done (2026-07-05)"** for the core loop:
 
-- All 24 files under `Turbo.PacketHandlers/Moderator/` are real handlers, gated by `Capabilities.Moderation.*` permission checks (`IPermissionService`).
+- All 24 files under `Vortex.PacketHandlers/Moderator/` are real handlers, gated by `Capabilities.Moderation.*` permission checks (`IPermissionService`).
 - **Bans**: `ModBanMessageHandler` resolves a `SanctionPresetSnapshot` (real DB-backed `SanctionPresetEntity`), computes ban duration (or permanent), calls `IPlayerGrain.ApplyAccountBanAsync`, force-disconnects the live session via `ISessionGateway`, and sends `UserBannedMessageComposer`. Every action goes through `ModToolActionHelper.IsAuthorizedAsync` (a staff member can't sanction someone of equal or higher rank) and emits an audit event.
 - **Mutes/kicks/alerts/trading-locks**: `ModMuteMessageHandler`, `ModKickMessageHandler`, `ModAlertMessageHandler`, `ModTradingLockMessageHandler` — same authorization pattern.
 - **CFH (Call For Help) ticket system**: real DB entities (`CfhTicketEntity`, `CfhTopicEntity`). Full lifecycle: player-side report (`CallForHelpMessageHandler`, `GetCfhStatusMessageHandler`) and staff pick/close/default-sanction (`PickIssuesMessageHandler`, `CloseIssuesMessageHandler`, `ReleaseIssuesMessageHandler`, `CloseIssueDefaultActionMessageHandler`, `DefaultSanctionMessageHandler`, `GetCfhChatlogMessageHandler`).
@@ -678,7 +678,7 @@ Not yet done: `ModToolPreferencesMessageHandler` (cosmetic, per-staff window geo
 
 ## 17. WIRED
 
-Real and extensive — this is one of the more sophisticated subsystems in the codebase, implemented as `Turbo.Rooms/Grains/Systems/RoomWiredSystem.cs` plus ~90 `RoomObjectLogic` subclasses under `Turbo.Rooms/Object/Logic/Furniture/Floor/Wired/**`.
+Real and extensive — this is one of the more sophisticated subsystems in the codebase, implemented as `Vortex.Rooms/Grains/Systems/RoomWiredSystem.cs` plus ~90 `RoomObjectLogic` subclasses under `Vortex.Rooms/Object/Logic/Furniture/Floor/Wired/**`.
 
 ### Shape
 
@@ -711,7 +711,7 @@ Wired configuration (selected items, params, variable ids) is stored per-item as
 
 ### Pets — Fully Implemented
 
-`RoomPetSystem` (`Turbo.Rooms/Grains/Systems/RoomPetSystem*.cs`, split into `.Placement`/`.Motion`/`.Care`/`.Breeding` partials) is a **room-scoped system, deliberately not a separate grain** — `PETS-DESIGN.md` explains the rationale directly: pets need continuous access to room-state for navigation, and a separate `PetGrain` would add a cross-grain-call round trip on every movement step. It reuses the same `RoomPathingSystem` A* as avatars, and runs its own needs-driven state machine (Idle → Wander → Hungry → Eat → Sleep → Command) with nutrition/energy decay over real time, XP/leveling, and learned commands.
+`RoomPetSystem` (`Vortex.Rooms/Grains/Systems/RoomPetSystem*.cs`, split into `.Placement`/`.Motion`/`.Care`/`.Breeding` partials) is a **room-scoped system, deliberately not a separate grain** — `PETS-DESIGN.md` explains the rationale directly: pets need continuous access to room-state for navigation, and a separate `PetGrain` would add a cross-grain-call round trip on every movement step. It reuses the same `RoomPathingSystem` A* as avatars, and runs its own needs-driven state machine (Idle → Wander → Hungry → Eat → Sleep → Command) with nutrition/energy decay over real time, XP/leveling, and learned commands.
 
 Backed by real DB entities (`PetEntity`, `PetFoodEntity`, `PetCommandEntity`, `PetLevelEntity`, `PetPaletteEntity`) with a substantial migration history (breeding fields, monsterplant fields, energy/max-uses). Handlers cover placement, feeding, commands, riding/mounting, breeding, respect. `ROADMAP.md` marks "Room/Pets: 100%". Pet position writes deliberately ride the existing dirty-flush timer rather than writing on every move (a real optimization, `CONSOLIDATION.md` O5) — but `CONSOLIDATION.md` also flags most of `RoomPetSystem`'s logic beyond feeding as having no test coverage yet.
 
@@ -723,7 +723,7 @@ Backed by real DB entities (`PetEntity`, `PetFoodEntity`, `PetCommandEntity`, `P
 
 ## 19. Games
 
-No `Turbo.Games` project exists in the solution at all (confirmed against the full 28-project `.sln` list). The entire `Turbo.PacketHandlers/Game/{Arena,Directory,Ingame,Lobby,Score}/*Handler.cs` tree — game-directory join/leave/status, arena chat/exit/play-again, in-game snowball throw/move/status, leaderboard queries — is **100% no-op protocol stubs**, inherited purely from the revision's parser/serializer scaffolding (`Turbo.Revisions/.../Parsers/Game/**`). There is no game-room grain, no team/score state, no collision logic, no lobby matchmaking. This was never scheduled work (not even listed as an epic in `ROADMAP.md`) — treat SnowStorm/Freeze/BattleBall-style minigames as entirely unbuilt, not "partially built."
+No `Vortex.Games` project exists in the solution at all (confirmed against the full 28-project `.sln` list). The entire `Vortex.PacketHandlers/Game/{Arena,Directory,Ingame,Lobby,Score}/*Handler.cs` tree — game-directory join/leave/status, arena chat/exit/play-again, in-game snowball throw/move/status, leaderboard queries — is **100% no-op protocol stubs**, inherited purely from the revision's parser/serializer scaffolding (`Vortex.Revisions/.../Parsers/Game/**`). There is no game-room grain, no team/score state, no collision logic, no lobby matchmaking. This was never scheduled work (not even listed as an epic in `ROADMAP.md`) — treat SnowStorm/Freeze/BattleBall-style minigames as entirely unbuilt, not "partially built."
 
 ---
 
@@ -735,7 +735,7 @@ Does not exist as a system. `Inventory/Achievements/GetAchievementsMessageHandle
 
 ## 21. Packet Alignment Audit
 
-This section replaces the old draft's fabricated Arcturus-vs-client numbers with a real diff, generated by parsing `Turbo.Revisions/Revision20260112/Headers.cs` (`MessageEvent`/`MessageComposer` constants) against `vortex-client/src/com/sulake/habbo/communication/HabboMessages.as` (`_composers`/`_events` registration maps), matched by numeric header id per direction.
+This section replaces the old draft's fabricated Arcturus-vs-client numbers with a real diff, generated by parsing `Vortex.Revisions/Revision20260112/Headers.cs` (`MessageEvent`/`MessageComposer` constants) against `vortex-client/src/com/sulake/habbo/communication/HabboMessages.as` (`_composers`/`_events` registration maps), matched by numeric header id per direction.
 
 ### Summary
 
@@ -798,7 +798,7 @@ Same requirement as any Habbo-derived protocol: the server's `Turbo:Crypto.Publi
 
 ### Database
 
-EF Core with the **Pomelo MySQL** provider (`Turbo.Database/Extensions/ServiceCollectionExtensions.cs`, `UseMySql(...)`), accessed via `IDbContextFactory<TurboDbContext>` (factory pattern — a fresh, short-lived context per operation, not one long-lived scoped context). `Turbo.Database/Context/TurboDbContext.cs` exposes ~60 `DbSet<>`s, grouped by domain folder under `Entities/`:
+EF Core with the **Pomelo MySQL** provider (`Vortex.Database/Extensions/ServiceCollectionExtensions.cs`, `UseMySql(...)`), accessed via `IDbContextFactory<TurboDbContext>` (factory pattern — a fresh, short-lived context per operation, not one long-lived scoped context). `Vortex.Database/Context/TurboDbContext.cs` exposes ~60 `DbSet<>`s, grouped by domain folder under `Entities/`:
 
 | Category | Example Tables |
 |----------|---------------|
@@ -863,7 +863,7 @@ All items below are sourced directly from the emulator's own status docs (`ROADM
 | Trading (classic room-to-room) | 100% stub handlers (§13) |
 | Achievements | 100% stub, `AchievementScore` hardcoded 0 (§20) |
 | Bots | Protocol scaffolding only, no entity/AI (§18) |
-| Games (SnowStorm/Freeze/BattleBall-style) | 100% stub, no `Turbo.Games` project exists (§19) |
+| Games (SnowStorm/Freeze/BattleBall-style) | 100% stub, no `Vortex.Games` project exists (§19) |
 | Avatar effects | Deferred alongside Achievements — needs a full subsystem from zero |
 
 ### Real, Precise Gaps in Otherwise-Implemented Systems
@@ -903,13 +903,13 @@ The emulator's own `vortex-emulator/docs/walkthroughs/request-lifecycle.md` trac
 client socket
    │  raw bytes
    ▼
-ClientPacketDecoder                 (Turbo.Networking/Package)
+ClientPacketDecoder                 (Vortex.Networking/Package)
    │  decrypt (RC4, if active) → typed IMessageEvent via the active IRevision's parser
    ▼
-PackageHandler → MessageSystem.PublishAsync   (Turbo.Networking / Turbo.Messages)
+PackageHandler → MessageSystem.PublishAsync   (Vortex.Networking / Vortex.Messages)
    │  resolves PlayerId/RoomId from ISessionGateway, builds MessageContext
    ▼
-MessageRegistry → IMessageHandler<T>.HandleAsync   (Turbo.PacketHandlers/<Domain>)
+MessageRegistry → IMessageHandler<T>.HandleAsync   (Vortex.PacketHandlers/<Domain>)
    │  orchestration only: guard ctx, resolve ONE grain, delegate, return
    ▼
 Domain Grain (e.g. RoomGrain, PlayerGrain, CatalogPurchaseGrain, ...)
@@ -997,41 +997,41 @@ RoomGrain's timer callback
 
 ## Appendix A: Key File Locations
 
-### Server (`vortex-emulator`, solution `Turbo.Cloud.sln`)
+### Server (`vortex-emulator`, solution `Vortex.Cloud.sln`)
 
 | File | Purpose |
 |------|---------|
-| `Turbo.Main/Program.cs` | Host entry point, service registration order |
-| `Turbo.Main/TurboEmulator.cs` | Hosted service: revision registration, data-provider warm-up, network start |
-| `Turbo.Main/Extensions/HostApplicationBuilderExtensions.cs` | Orleans silo configuration |
-| `Turbo.Networking/NetworkManager.cs` | TCP + WebSocket SuperSocket host setup |
-| `Turbo.Networking/Package/ClientPacketDecoder.cs` | Frame decode (length/header/RC4-peek) |
-| `Turbo.Networking/Package/PackageHandler.cs` | Parser lookup + dispatch into `MessageSystem` |
-| `Turbo.Networking/Session/SessionGateway.cs` | Session↔player mapping, session/observer registration |
-| `Turbo.Crypto/DiffieService.cs` | DH parameter generation, shared-key derivation |
-| `Turbo.Crypto/RsaService.cs` | RSA sign/encrypt/decrypt for the handshake |
-| `Turbo.Crypto/Rc4Engine.cs` | RC4 stream cipher, incl. non-consuming `Peek` |
-| `Turbo.Messages/MessageSystem.cs` | Incoming packet publish entry point |
-| `Turbo.Messages/Registry/MessageRegistry.cs` | Handler/behavior registry + dispatch (parallel execution) |
-| `Turbo.Plugins/PluginBootstrapper.cs` | Assembly scan that registers all `IMessageHandler<T>`s |
-| `Turbo.Revisions/Revision20260112/Headers.cs` | The packet ID registry (`MessageEvent`/`MessageComposer`) |
-| `Turbo.Revisions/Revision20260112/Revision20260112.cs` | Parser/serializer dictionaries for the embedded revision |
-| `Turbo.Authentication/AuthenticationService.cs` | SSO ticket → player id resolution |
-| `Turbo.Rooms/Grains/RoomGrain.cs` (+ 9 partials) | Room grain: state, modules, systems, tick timer |
-| `Turbo.Rooms/Grains/Systems/RoomPathingSystem.cs` | A* pathfinding |
-| `Turbo.Rooms/Grains/Systems/RoomChatSystem.cs` | Say/shout/whisper, mute, chatlog |
-| `Turbo.Rooms/Grains/Systems/RoomWiredSystem.cs` | WIRED evaluation/scheduling engine |
-| `Turbo.Rooms/Grains/Systems/RoomPetSystem.cs` (+ partials) | Pet AI/movement/breeding |
-| `Turbo.Rooms/Providers/RoomObjectLogicProvider.cs` | Furniture interaction-logic registry |
-| `Turbo.Catalog/Grains/CatalogPurchaseGrain.cs` | Purchase debit/grant/refund flow |
-| `Turbo.Catalog/Grains/LtdRaffleGrain.cs` | Limited-edition raffle purchasing |
-| `Turbo.Inventory/Grains/InventoryGrain.cs` (+ partials) | Per-player furniture/pet inventory |
-| `Turbo.Marketplace/Grains/MarketplacePurchaseGrain.cs` | Auction-style listing/buying |
-| `Turbo.Navigator/NavigatorService.cs` | Room search/category dispatch |
-| `Turbo.Players/Grains/MessengerGrain.cs` (+ partials) | Friends, messaging, presence fan-out |
-| `Turbo.Players/Grains/PlayerPresenceGrain.cs` | Session delivery, active-room stream subscription |
-| `Turbo.Players/Grains/GroupDirectoryGrain.cs`, `GroupGrain.cs` | Guild creation/membership |
-| `Turbo.Database/Context/TurboDbContext.cs` | EF Core DbContext (Pomelo MySQL) |
+| `Vortex.Main/Program.cs` | Host entry point, service registration order |
+| `Vortex.Main/TurboEmulator.cs` | Hosted service: revision registration, data-provider warm-up, network start |
+| `Vortex.Main/Extensions/HostApplicationBuilderExtensions.cs` | Orleans silo configuration |
+| `Vortex.Networking/NetworkManager.cs` | TCP + WebSocket SuperSocket host setup |
+| `Vortex.Networking/Package/ClientPacketDecoder.cs` | Frame decode (length/header/RC4-peek) |
+| `Vortex.Networking/Package/PackageHandler.cs` | Parser lookup + dispatch into `MessageSystem` |
+| `Vortex.Networking/Session/SessionGateway.cs` | Session↔player mapping, session/observer registration |
+| `Vortex.Crypto/DiffieService.cs` | DH parameter generation, shared-key derivation |
+| `Vortex.Crypto/RsaService.cs` | RSA sign/encrypt/decrypt for the handshake |
+| `Vortex.Crypto/Rc4Engine.cs` | RC4 stream cipher, incl. non-consuming `Peek` |
+| `Vortex.Messages/MessageSystem.cs` | Incoming packet publish entry point |
+| `Vortex.Messages/Registry/MessageRegistry.cs` | Handler/behavior registry + dispatch (parallel execution) |
+| `Vortex.Plugins/PluginBootstrapper.cs` | Assembly scan that registers all `IMessageHandler<T>`s |
+| `Vortex.Revisions/Revision20260112/Headers.cs` | The packet ID registry (`MessageEvent`/`MessageComposer`) |
+| `Vortex.Revisions/Revision20260112/Revision20260112.cs` | Parser/serializer dictionaries for the embedded revision |
+| `Vortex.Authentication/AuthenticationService.cs` | SSO ticket → player id resolution |
+| `Vortex.Rooms/Grains/RoomGrain.cs` (+ 9 partials) | Room grain: state, modules, systems, tick timer |
+| `Vortex.Rooms/Grains/Systems/RoomPathingSystem.cs` | A* pathfinding |
+| `Vortex.Rooms/Grains/Systems/RoomChatSystem.cs` | Say/shout/whisper, mute, chatlog |
+| `Vortex.Rooms/Grains/Systems/RoomWiredSystem.cs` | WIRED evaluation/scheduling engine |
+| `Vortex.Rooms/Grains/Systems/RoomPetSystem.cs` (+ partials) | Pet AI/movement/breeding |
+| `Vortex.Rooms/Providers/RoomObjectLogicProvider.cs` | Furniture interaction-logic registry |
+| `Vortex.Catalog/Grains/CatalogPurchaseGrain.cs` | Purchase debit/grant/refund flow |
+| `Vortex.Catalog/Grains/LtdRaffleGrain.cs` | Limited-edition raffle purchasing |
+| `Vortex.Inventory/Grains/InventoryGrain.cs` (+ partials) | Per-player furniture/pet inventory |
+| `Vortex.Marketplace/Grains/MarketplacePurchaseGrain.cs` | Auction-style listing/buying |
+| `Vortex.Navigator/NavigatorService.cs` | Room search/category dispatch |
+| `Vortex.Players/Grains/MessengerGrain.cs` (+ partials) | Friends, messaging, presence fan-out |
+| `Vortex.Players/Grains/PlayerPresenceGrain.cs` | Session delivery, active-room stream subscription |
+| `Vortex.Players/Grains/GroupDirectoryGrain.cs`, `GroupGrain.cs` | Guild creation/membership |
+| `Vortex.Database/Context/TurboDbContext.cs` | EF Core DbContext (Pomelo MySQL) |
 | `docs/walkthroughs/request-lifecycle.md` | Full traced example of one chat packet, socket to socket |
 | `CONTEXT.md`, `ROADMAP.md`, `TODO.md`, `CONSOLIDATION.md`, `DATA-MODEL.md`, `PETS-DESIGN.md` | Living architecture/status docs — check these before assuming a feature's state |
 
@@ -1055,7 +1055,7 @@ RoomGrain's timer callback
 
 ## Appendix B: Packet ID Quick Reference
 
-All values below are read directly from `Turbo.Revisions/Revision20260112/Headers.cs` — grep it yourself for anything not listed here rather than assuming a value.
+All values below are read directly from `Vortex.Revisions/Revision20260112/Headers.cs` — grep it yourself for anything not listed here rather than assuming a value.
 
 ### Handshake Sequence
 

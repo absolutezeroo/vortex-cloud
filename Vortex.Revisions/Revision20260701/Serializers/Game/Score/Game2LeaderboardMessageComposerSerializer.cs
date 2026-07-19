@@ -1,0 +1,13 @@
+using Vortex.Primitives.Messages.Outgoing.Game.Score;
+using Vortex.Primitives.Packets;
+
+namespace Vortex.Revisions.Revision20260701.Serializers.Game.Score;
+
+internal class Game2LeaderboardMessageComposerSerializer(int header)
+    : AbstractSerializer<Game2LeaderboardMessageComposer>(header)
+{
+    protected override void Serialize(IServerPacket packet, Game2LeaderboardMessageComposer message)
+    {
+        //
+    }
+}

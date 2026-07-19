@@ -16,19 +16,19 @@ document is the concrete counterpart to that one.
 client socket
    â”‚  raw bytes
    â–¼
-ClientPacketDecoder            (Turbo.Networking/Package)
+ClientPacketDecoder            (Vortex.Networking/Package)
    â”‚  ChatMessage (typed incoming message)
    â–¼
-ChatMessageHandler             (Turbo.PacketHandlers/Room/Chat)
+ChatMessageHandler             (Vortex.PacketHandlers/Room/Chat)
    â”‚  delegates, never touches DB or sockets
    â–¼
-RoomGrain.SendChatFromPlayerAsync   (Turbo.Rooms/Grains/RoomGrain.Avatar.cs)
+RoomGrain.SendChatFromPlayerAsync   (Vortex.Rooms/Grains/RoomGrain.Avatar.cs)
    â”‚  thin partial entry point
    â–¼
-RoomChatSystem.SendChatFromPlayerAsync   (Turbo.Rooms/Grains/Systems)
+RoomChatSystem.SendChatFromPlayerAsync   (Vortex.Rooms/Grains/Systems)
    â”‚  resolves player â†’ avatar, builds outgoing composer
    â–¼
-RoomGrain.SendComposerToRoomAsync   (Turbo.Rooms/Grains/RoomGrain.cs)
+RoomGrain.SendComposerToRoomAsync   (Vortex.Rooms/Grains/RoomGrain.cs)
    â”‚  publishes to an Orleans stream (RoomOutbound) â€” NOT a direct socket write
    â–¼
 PlayerPresenceGrain  (subscribed to that room's stream)
@@ -51,7 +51,7 @@ The client sends a framed packet. `ClientPacketDecoder` and the revision layer t
 the wire bytes into a strongly-typed incoming message. For chat, that type is:
 
 ```csharp
-// Turbo.Primitives/Messages/Incoming/Room/Chat/ChatMessage.cs
+// Vortex.Primitives/Messages/Incoming/Room/Chat/ChatMessage.cs
 public sealed class ChatMessage
 {
     public string Text { get; init; }
@@ -71,7 +71,7 @@ The pipeline routes the decoded message to the one handler registered for its ty
 Here is the **real, complete** handler â€” note how little it does:
 
 ```csharp
-// Turbo.PacketHandlers/Room/Chat/ChatMessageHandler.cs
+// Vortex.PacketHandlers/Room/Chat/ChatMessageHandler.cs
 public class ChatMessageHandler(IGrainFactory grainFactory) : IMessageHandler<ChatMessage>
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
@@ -120,7 +120,7 @@ What to take from this:
 point is a one-line forward into a *system*:
 
 ```csharp
-// Turbo.Rooms/Grains/RoomGrain.Avatar.cs
+// Vortex.Rooms/Grains/RoomGrain.Avatar.cs
 public Task SendChatFromPlayerAsync(
     PlayerId playerId,
     string text,
@@ -136,7 +136,7 @@ each take the grain in their constructor and are instantiated once when the grai
 activates:
 
 ```csharp
-// Turbo.Rooms/Grains/RoomGrain.cs  (constructor, abridged)
+// Vortex.Rooms/Grains/RoomGrain.cs  (constructor, abridged)
 PathingSystem = new(this);
 EventModule   = new(this);
 SecurityModule = new(this);
@@ -156,7 +156,7 @@ AvatarModule  = new(this);
 ## Step 4 â€” The system does the work
 
 ```csharp
-// Turbo.Rooms/Grains/Systems/RoomChatSystem.cs
+// Vortex.Rooms/Grains/Systems/RoomChatSystem.cs
 public async Task SendChatFromPlayerAsync(
     PlayerId playerId,
     string text,
@@ -207,12 +207,12 @@ Two things happen here:
 2. **An outgoing composer is built** (`ChatMessageComposer`). A *composer* is the
    outgoing counterpart to an incoming message â€” it knows how to serialize itself to
    the client. Composers live under
-   `Turbo.Primitives/Messages/Outgoing/**`.
+   `Vortex.Primitives/Messages/Outgoing/**`.
 
 ## Step 5 â€” Publish to the stream (the pivot)
 
 ```csharp
-// Turbo.Rooms/Grains/RoomGrain.cs
+// Vortex.Rooms/Grains/RoomGrain.cs
 public Task SendComposerToRoomAsync(IComposer composer) =>
     _roomOutbound.OnNextAsync(new RoomOutbound { RoomId = _state.RoomId, Composer = composer });
 ```
@@ -228,7 +228,7 @@ When a player enters a room, their `PlayerPresenceGrain` **subscribes** to that 
 outbound stream. This is the real subscription code:
 
 ```csharp
-// Turbo.Players/Grains/PlayerPresenceGrain.Room.cs  (inside SetActiveRoomAsync)
+// Vortex.Players/Grains/PlayerPresenceGrain.Room.cs  (inside SetActiveRoomAsync)
 var provider = this.GetStreamProvider(OrleansStreamProviders.ROOM_STREAM_PROVIDER);
 var streamId = StreamId.Create(OrleansStreamNames.ROOM_STREAM, roomId.Value);
 var stream   = provider.GetStream<RoomOutbound>(streamId);
@@ -240,7 +240,7 @@ Because the presence grain implements the stream observer, each `RoomOutbound` i
 receives is handed to its own delivery method, which calls down to the session layer:
 
 ```csharp
-// Turbo.Players/Grains/PlayerPresenceGrain.cs  (shape)
+// Vortex.Players/Grains/PlayerPresenceGrain.cs  (shape)
 public Task SendComposerAsync(IComposer composer)
 {
     // â€¦ resolves the player's live session(s) â€¦
@@ -250,7 +250,7 @@ public Task SendComposerAsync(IComposer composer)
 
 ## Step 7 â€” The session writes to the socket
 
-`SessionObserver` / `SessionGateway` (in `Turbo.Networking/Session`) hold the live
+`SessionObserver` / `SessionGateway` (in `Vortex.Networking/Session`) hold the live
 connection. `SendComposerAsync` serializes the composer for the player's client
 revision and writes the framed bytes back to the socket. The chat bubble appears.
 
@@ -280,12 +280,12 @@ design, and this chat path is the clearest example of it in the codebase.
 
 | Step | File |
 |---|---|
-| Typed incoming message | `Turbo.Primitives/Messages/Incoming/Room/Chat/ChatMessage.cs` |
-| Handler | `Turbo.PacketHandlers/Room/Chat/ChatMessageHandler.cs` |
-| Grain entry | `Turbo.Rooms/Grains/RoomGrain.Avatar.cs` |
-| Chat system | `Turbo.Rooms/Grains/Systems/RoomChatSystem.cs` |
-| Stream publish | `Turbo.Rooms/Grains/RoomGrain.cs` (`SendComposerToRoomAsync`) |
-| Outgoing composer | `Turbo.Primitives/Messages/Outgoing/Room/Chat/ChatMessageComposer.cs` |
-| Stream subscribe + fan-out | `Turbo.Players/Grains/PlayerPresenceGrain.Room.cs`, `PlayerPresenceGrain.cs` |
-| Socket write | `Turbo.Networking/Session/SessionObserver.cs` |
+| Typed incoming message | `Vortex.Primitives/Messages/Incoming/Room/Chat/ChatMessage.cs` |
+| Handler | `Vortex.PacketHandlers/Room/Chat/ChatMessageHandler.cs` |
+| Grain entry | `Vortex.Rooms/Grains/RoomGrain.Avatar.cs` |
+| Chat system | `Vortex.Rooms/Grains/Systems/RoomChatSystem.cs` |
+| Stream publish | `Vortex.Rooms/Grains/RoomGrain.cs` (`SendComposerToRoomAsync`) |
+| Outgoing composer | `Vortex.Primitives/Messages/Outgoing/Room/Chat/ChatMessageComposer.cs` |
+| Stream subscribe + fan-out | `Vortex.Players/Grains/PlayerPresenceGrain.Room.cs`, `PlayerPresenceGrain.cs` |
+| Socket write | `Vortex.Networking/Session/SessionObserver.cs` |
 

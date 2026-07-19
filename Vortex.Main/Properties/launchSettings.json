@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Vortex.Main": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

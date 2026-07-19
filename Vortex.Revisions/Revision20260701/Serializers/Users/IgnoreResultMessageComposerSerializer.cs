@@ -1,0 +1,14 @@
+using Vortex.Primitives.Messages.Outgoing.Users;
+using Vortex.Primitives.Packets;
+
+namespace Vortex.Revisions.Revision20260701.Serializers.Users;
+
+internal class IgnoreResultMessageComposerSerializer(int header)
+    : AbstractSerializer<IgnoreResultMessageComposer>(header)
+{
+    protected override void Serialize(IServerPacket packet, IgnoreResultMessageComposer message)
+    {
+        packet.WriteInteger(message.UserId);
+        packet.WriteInteger(message.ResultCode);
+    }
+}

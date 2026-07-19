@@ -1,0 +1,27 @@
+using System;
+using System.Collections.Concurrent;
+using System.Threading;
+
+namespace Vortex.Runtime;
+
+public sealed class CompositeServiceProviderBag(IServiceProvider baseSp)
+{
+    private readonly IServiceProvider _baseSp = baseSp;
+    private readonly ConcurrentDictionary<IServiceProvider, Lazy<IServiceProvider>> _byOwner = new(
+        concurrencyLevel: Environment.ProcessorCount,
+        capacity: 4
+    );
+
+    public IServiceProvider Get(IServiceProvider owner)
+    {
+        Lazy<IServiceProvider> lazy = _byOwner.GetOrAdd(
+            owner,
+            o => new Lazy<IServiceProvider>(
+                () => new CompositeServiceProvider(_baseSp, o),
+                LazyThreadSafetyMode.ExecutionAndPublication
+            )
+        );
+
+        return lazy.Value;
+    }
+}

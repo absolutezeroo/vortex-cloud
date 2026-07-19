@@ -1,0 +1,16 @@
+using Vortex.Primitives.Messages.Incoming.Room.Engine;
+using Vortex.Primitives.Networking;
+using Vortex.Primitives.Packets;
+
+namespace Vortex.Revisions.Revision20260701.Parsers.Room.Engine;
+
+internal class PlacePetMessageParser : IParser
+{
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new PlacePetMessage
+        {
+            PetId = packet.PopInt(),
+            X = packet.PopInt(),
+            Y = packet.PopInt(),
+        };
+}

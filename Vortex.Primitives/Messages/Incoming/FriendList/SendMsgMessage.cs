@@ -1,0 +1,10 @@
+using Vortex.Primitives.Networking;
+
+namespace Vortex.Primitives.Messages.Incoming.FriendList;
+
+public record SendMsgMessage : IMessageEvent
+{
+    public int ChatId { get; init; }
+    public required string Message { get; init; }
+    public int ConfirmationId { get; init; }
+}

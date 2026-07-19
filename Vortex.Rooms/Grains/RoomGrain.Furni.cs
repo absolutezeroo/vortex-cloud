@@ -1,0 +1,173 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Vortex.Primitives.Action;
+using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Players;
+using Vortex.Primitives.Rooms.Object;
+using Vortex.Primitives.Rooms.Object.Furniture;
+using Vortex.Primitives.Rooms.Snapshots.Furniture;
+
+namespace Vortex.Rooms.Grains;
+
+public sealed partial class RoomGrain
+{
+    public async Task<bool> AddItemAsync(IRoomItem item, CancellationToken ct)
+    {
+        try
+        {
+            if (!await ActionModule.AddItemAsync(item, ct))
+            {
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to add item {ItemId} to room {RoomId}",
+                item.ObjectId,
+                _state.RoomId
+            );
+
+            return false;
+        }
+    }
+
+    public async Task<bool> RemoveItemByIdAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            if (!await ActionModule.RemoveItemByIdAsync(ctx, itemId, ct))
+            {
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to remove item {ItemId} from room {RoomId}",
+                itemId,
+                _state.RoomId
+            );
+
+            return false;
+        }
+    }
+
+    public async Task<bool> UseItemByIdAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        CancellationToken ct,
+        int param = -1
+    )
+    {
+        try
+        {
+            if (!await ActionModule.UseItemByIdAsync(ctx, itemId, ct, param))
+            {
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to use item {ItemId} in room {RoomId}",
+                itemId,
+                _state.RoomId
+            );
+
+            return false;
+        }
+    }
+
+    public async Task<bool> ClickItemByIdAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        CancellationToken ct,
+        int param = -1
+    )
+    {
+        try
+        {
+            if (!await ActionModule.ClickItemByIdAsync(ctx, itemId, ct, param))
+            {
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to click item {ItemId} in room {RoomId}",
+                itemId,
+                _state.RoomId
+            );
+
+            return false;
+        }
+    }
+
+    public Task<ImmutableDictionary<PlayerId, string>> GetAllOwnersAsync(CancellationToken ct) =>
+        FurniModule.GetAllOwnersAsync(ct);
+
+    public Task<RoomItemSnapshot?> GetItemSnapshotByIdAsync(
+        RoomObjectId itemId,
+        CancellationToken ct
+    ) =>
+        Task.FromResult(
+            _state.ItemsById.TryGetValue(itemId, out IRoomItem? item) ? item.GetSnapshot() : null
+        );
+
+    public async Task SetFloorItemStateAsync(RoomObjectId itemId, int state, CancellationToken ct)
+    {
+        if (!_state.ItemsById.TryGetValue(itemId, out IRoomItem? item))
+        {
+            return;
+        }
+
+        await item.Logic.SetStateAsync(state);
+    }
+
+    private async Task FlushDirtyItemsAsync(CancellationToken ct)
+    {
+        if (_state.DirtyItemIds.Count == 0)
+        {
+            return;
+        }
+
+        List<RoomItemSnapshot> batch = new List<RoomItemSnapshot>();
+
+        batch.AddRange(
+            _state
+                .DirtyItemIds.Select(x =>
+                    _state.ItemsById.TryGetValue(x, out IRoomItem? item) ? item.GetSnapshot() : null
+                )
+                .Where(x => x is not null)!
+        );
+
+        _state.DirtyItemIds.Clear();
+
+        await _grainFactory
+            .GetRoomPersistenceGrain(_state.RoomId)
+            .EnqueueDirtyItemsAsync(_state.RoomId, batch, ct);
+    }
+}

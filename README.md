@@ -30,18 +30,18 @@ Set `Turbo:Database:ConnectionString` in `appsettings.Development.json`, then ru
 PowerShell:
 
 ```powershell
-$env:DOTNET_ENVIRONMENT="Development"; dotnet run --project Turbo.Main/Turbo.Main.csproj
+$env:DOTNET_ENVIRONMENT="Development"; dotnet run --project Vortex.Main/Vortex.Main.csproj
 ```
 
 bash/zsh:
 
 ```bash
-DOTNET_ENVIRONMENT=Development dotnet run --project Turbo.Main/Turbo.Main.csproj
+DOTNET_ENVIRONMENT=Development dotnet run --project Vortex.Main/Vortex.Main.csproj
 ```
 
 ## What This Repository Is
-`Turbo.Cloud.sln` is the main Turbo emulator solution.
-It includes the host executable (`Turbo.Main`), domain modules (`Turbo.Rooms`, `Turbo.Players`, `Turbo.Database`, and others), networking/message layers, and plugin infrastructure.
+`Vortex.Cloud.sln` is the main Turbo emulator solution.
+It includes the host executable (`Vortex.Main`), domain modules (`Vortex.Rooms`, `Vortex.Players`, `Vortex.Database`, and others), networking/message layers, and plugin infrastructure.
 
 ## Tooling Baseline
 - .NET SDK 9.x (pinned via `global.json`)
@@ -61,9 +61,9 @@ dotnet --version
 
 ## Quality Model (Two-Phase)
 - Fast local commit check:
-  - `dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudFastCheck`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck`
 - Full quality gate (pre-push + CI):
-  - `dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudQualityGate`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate`
 - AI policy rollout phase:
   - Default is `TurboAIPolicyPhase=1` (warn-first).
   - Preview strict mode with `-p:TurboAIPolicyPhase=2`.
@@ -75,19 +75,19 @@ Hooks are repository-managed in `.githooks`:
 ## Build Scope Matrix
 | Command | Scope | Default? | Use when |
 | --- | --- | --- | --- |
-| `dotnet build Turbo.Main/Turbo.Main.csproj` | Core emulator only | Yes | Normal core development and CI-compatible local checks |
-| `dotnet build Turbo.Cloud.sln` | All projects currently in solution (including sample plugin) | No | One-window integrated core + plugin work |
+| `dotnet build Vortex.Main/Vortex.Main.csproj` | Core emulator only | Yes | Normal core development and CI-compatible local checks |
+| `dotnet build Vortex.Cloud.sln` | All projects currently in solution (including sample plugin) | No | One-window integrated core + plugin work |
 | `dotnet build ../turbo-sample-plugin/TurboSamplePlugin/TurboSamplePlugin.csproj` | Sample plugin only | No | Plugin-only iteration |
 
-`TurboSamplePlugin` intentionally stays in `Turbo.Cloud.sln` for IDE convenience, but the default repo build contract is project-scoped to `Turbo.Main`.
+`TurboSamplePlugin` intentionally stays in `Vortex.Cloud.sln` for IDE convenience, but the default repo build contract is project-scoped to `Vortex.Main`.
 
 ## Daily Commands
-- Core build (default): `dotnet build Turbo.Main/Turbo.Main.csproj`
-- Integrated solution build (optional): `dotnet build Turbo.Cloud.sln`
+- Core build (default): `dotnet build Vortex.Main/Vortex.Main.csproj`
+- Integrated solution build (optional): `dotnet build Vortex.Cloud.sln`
 - Plugin build only (optional): `dotnet build ../turbo-sample-plugin/TurboSamplePlugin/TurboSamplePlugin.csproj`
-- Fast checks: `dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudFastCheck`
-- Full quality gate: `dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudQualityGate`
-- Run in Development: `dotnet run --project Turbo.Main/Turbo.Main.csproj`
+- Fast checks: `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck`
+- Full quality gate: `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate`
+- Run in Development: `dotnet run --project Vortex.Main/Vortex.Main.csproj`
 
 ## Local Dev Plugins
 Plugin loading supports both the runtime plugin folder and dev-specific paths:
@@ -127,7 +127,7 @@ You can list multiple plugin paths in `DevPluginPaths` when developing several p
 Terminal 1 (run emulator):
 
 ```bash
-dotnet run --project Turbo.Main
+dotnet run --project Vortex.Main
 ```
 
 Terminal 2 (watch plugin):
@@ -170,13 +170,13 @@ If you see `Unable to connect to any of the specified MySQL hosts`:
 2. Run `dotnet csharpier .`.
 3. Run `dotnet format style`.
 4. Run `dotnet format analyzers`.
-5. Re-run `dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudQualityGate`.
+5. Re-run `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate`.
 
 ### Solution build fails but core build passes
-If `dotnet build Turbo.Cloud.sln` fails because of plugin project state, use the default core build command:
+If `dotnet build Vortex.Cloud.sln` fails because of plugin project state, use the default core build command:
 
 ```bash
-dotnet build Turbo.Main/Turbo.Main.csproj
+dotnet build Vortex.Main/Vortex.Main.csproj
 ```
 
 ## AI-Assisted Development

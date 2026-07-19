@@ -25,8 +25,8 @@ knows nothing about how the wave is implemented.
 ```csharp
 using System.Threading;
 using System.Threading.Tasks;
-using Turbo.Messages.Registry;
-using Turbo.Primitives.Messages.Incoming.Room.Engine;
+using Vortex.Messages.Registry;
+using Vortex.Primitives.Messages.Incoming.Room.Engine;
 
 namespace Docs.Patterns;
 
@@ -64,8 +64,8 @@ module never touches sessions or sockets.
 
 ```csharp
 using System.Threading.Tasks;
-using Turbo.Primitives.Messages.Outgoing.Room.Engine;
-using Turbo.Primitives.Players;
+using Vortex.Primitives.Messages.Outgoing.Room.Engine;
+using Vortex.Primitives.Players;
 
 namespace Docs.Patterns;
 

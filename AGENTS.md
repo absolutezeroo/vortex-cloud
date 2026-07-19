@@ -22,24 +22,24 @@ EF Core 10 support; do not bump one without the other.
 ## Skills activation
 Activate the relevant skill checklist before editing code in that domain:
 - `handler-development`
-  - Trigger: editing files under `Turbo.PacketHandlers/**` or message-to-composer orchestration logic.
+  - Trigger: editing files under `Vortex.PacketHandlers/**` or message-to-composer orchestration logic.
   - Enforce: orchestration-only handlers, no DB queries, canonical grain access, no silent catches.
 - `grain-development`
-  - Trigger: editing files under `Turbo.*\\Grains\\**` or `Turbo.Primitives/**/Grains/*.cs`.
+  - Trigger: editing files under `Vortex.*\\Grains\\**` or `Vortex.Primitives/**/Grains/*.cs`.
   - Enforce: keep ownership boundaries, lifecycle rules, and snapshot/state coherence.
   - Enforce: all rules in the **Orleans grain development rules** section below.
 - `session-presence-routing`
   - Trigger: touching session gateway, presence flow, room routing, outbound composer fan-out.
   - Enforce: player outbound via `PlayerPresenceGrain.SendComposerAsync`; no direct handler socket sends.
 - `message-contracts`
-  - Trigger: editing `Turbo.Primitives/Messages/Incoming/**` or outgoing composer payload mappings.
+  - Trigger: editing `Vortex.Primitives/Messages/Incoming/**` or outgoing composer payload mappings.
   - Enforce: explicit mandatory fields, no placeholder payloads when source data exists.
 - `revision-protocol` (cross-repo)
   - Trigger: changes referencing `Revision<id>` packet mappings for a revision other than the
     embedded default `Revision20260112`.
   - Enforce: edit plugin revision tree in `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`.
   - Note: `Revision20260112` itself is embedded in core and is edited directly under
-    `Turbo.Revisions/Revision20260112/**` in `turbo-cloud` — this rule does not apply to it.
+    `Vortex.Revisions/Revision20260112/**` in `turbo-cloud` — this rule does not apply to it.
 
 ## Priority order
 1. Build and quality checks in repo files (`Directory.Build.props`, `Directory.Build.targets`, `.editorconfig`)
@@ -76,9 +76,9 @@ Default output format:
 - Preserve cancellation and async flow where it already exists.
 - Handle failure paths explicitly; do not ship happy-path-only changes.
 - Avoid dead code, unused allocations, and broad catch blocks that hide errors (see **Orleans grain development rules** for specifics).
-- For revision compatibility work, prefer restoring/adding missing incoming message contracts in `Turbo.Primitives/Messages/Incoming/**` before mutating serializer/composer payload behavior.
+- For revision compatibility work, prefer restoring/adding missing incoming message contracts in `Vortex.Primitives/Messages/Incoming/**` before mutating serializer/composer payload behavior.
 - Do not alter serializer/composer behavior by replacing real payload writes with placeholder constants (for example, unconditional `WriteInteger(0)`) unless explicitly requested.
-- `Turbo.Revisions/Revision20260112/**` (including its `Parsers/` and `Serializers/` trees) is the
+- `Vortex.Revisions/Revision20260112/**` (including its `Parsers/` and `Serializers/` trees) is the
   **default revision embedded in core** so the emulator can run standalone without a plugin. Editing
   it in `turbo-cloud` is expected and correct — see the "Packet addition checklist" below.
 - Any **additional/custom** protocol revision (a different client version added via the plugin
@@ -175,7 +175,7 @@ updated in the *same* method that persists the change, and hydrated from DB on g
 - Do not use ad-hoc grain key strings in handlers when extension-based access exists.
 - Do not add silent `catch` blocks in handlers.
 - When snapshot fields are available, map them into composer payloads instead of TODO placeholders.
-- For incoming message records in `Turbo.Primitives/Messages/Incoming/**`, keep mandatory fields explicit (use `required` where appropriate) instead of default-fallback contracts.
+- For incoming message records in `Vortex.Primitives/Messages/Incoming/**`, keep mandatory fields explicit (use `required` where appropriate) instead of default-fallback contracts.
 
 ## Session and room routing constraints
 - Connection/session lifecycle starts in gateway flow; do not duplicate session registration in handlers.
@@ -189,16 +189,16 @@ updated in the *same* method that persists the change, and hydrated from DB on g
 - Grain lifetime remains Orleans-managed by default; use `[KeepAlive]` only for explicitly justified directory/manager grains.
 
 ## Packet addition checklist (revision work)
-When adding packet mappings in `Turbo.Revisions/Revision20260112`:
-1. Update `Turbo.Revisions/Revision20260112/Headers.cs`:
+When adding packet mappings in `Vortex.Revisions/Revision20260112`:
+1. Update `Vortex.Revisions/Revision20260112/Headers.cs`:
    - add/update incoming `MessageEvent` id constants
    - add/update outgoing `MessageComposer` id constants
 2. Add parser class under:
-   - `Turbo.Revisions/Revision20260112/Parsers/<Domain>/*MessageParser.cs`
+   - `Vortex.Revisions/Revision20260112/Parsers/<Domain>/*MessageParser.cs`
 3. Add serializer class under:
-   - `Turbo.Revisions/Revision20260112/Serializers/<Domain>/*MessageComposerSerializer.cs`
+   - `Vortex.Revisions/Revision20260112/Serializers/<Domain>/*MessageComposerSerializer.cs`
 4. Register mappings in:
-   - `Turbo.Revisions/Revision20260112/Revision20260112.cs`
+   - `Vortex.Revisions/Revision20260112/Revision20260112.cs`
    - incoming: `Parsers` dictionary with `MessageEvent` key
    - outgoing: `Serializers` dictionary with composer type + `MessageComposer` id
 5. Ensure the required `using` directives are present in `Revision20260112.cs` for new parser/serializer namespaces.
@@ -209,32 +209,32 @@ When adding packet mappings in `Turbo.Revisions/Revision20260112`:
 - Required context files:
   - `AGENTS.md`
   - `CONTEXT.md`
-  - `Turbo.Primitives/Orleans/GrainFactoryExtensions.cs`
+  - `Vortex.Primitives/Orleans/GrainFactoryExtensions.cs`
 - Required references:
-  - one handler in same domain under `Turbo.PacketHandlers/<Domain>/`
-  - related incoming message type under `Turbo.Primitives/Messages/Incoming/**`
+  - one handler in same domain under `Vortex.PacketHandlers/<Domain>/`
+  - related incoming message type under `Vortex.Primitives/Messages/Incoming/**`
 - Forbidden changes:
   - no direct DB access in handler
   - no direct session/socket sends
   - no ad-hoc grain key literals when extension methods exist
 - Validation:
-  - `dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudFastCheck`
-  - `dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudQualityGate`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate`
 
 ### Change grain behavior
 - Required context files:
   - `AGENTS.md`
   - `CONTEXT.md`
-  - target grain interface in `Turbo.Primitives/**/Grains/*.cs`
+  - target grain interface in `Vortex.Primitives/**/Grains/*.cs`
 - Required references:
   - existing grain in same module
-  - related snapshot/state types in `Turbo.Primitives/Orleans/Snapshots/**` or `States/**`
+  - related snapshot/state types in `Vortex.Primitives/Orleans/Snapshots/**` or `States/**`
 - Forbidden changes:
   - no handler-layer fallback logic that bypasses grain ownership
   - no lifecycle changes that abuse `[KeepAlive]` without infrastructure justification
 - Validation:
-  - `dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudFastCheck`
-  - `dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudQualityGate`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate`
 
 ### Add message/composer mapping
 - Required context files:
@@ -242,15 +242,15 @@ When adding packet mappings in `Turbo.Revisions/Revision20260112`:
   - `CONTEXT.md`
   - neighboring message/composer classes
 - Required references:
-  - incoming message under `Turbo.Primitives/Messages/Incoming/**`
-  - outgoing composer under `Turbo.Primitives/Messages/Outgoing/**`
+  - incoming message under `Vortex.Primitives/Messages/Incoming/**`
+  - outgoing composer under `Vortex.Primitives/Messages/Outgoing/**`
   - handler using same message family
 - Forbidden changes:
   - no placeholder payload collections when source snapshot data exists
   - no implicit default-fallback contracts for mandatory incoming fields
 - Validation:
-  - `dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudFastCheck`
-  - `dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudQualityGate`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate`
 
 ### Refactor lookup/cache logic
 - Required context files:
@@ -264,13 +264,13 @@ When adding packet mappings in `Turbo.Revisions/Revision20260112`:
   - no one-way cache updates; forward/reverse mappings must stay coherent
   - no loss of case-insensitive semantics for username lookups
 - Validation:
-  - `dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudFastCheck`
-  - `dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudQualityGate`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck`
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate`
 
 ## Required validation before completion
 ```bash
-dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudFastCheck
-dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudQualityGate
+dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck
+dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate
 ```
 
 ## Definition of done for AI changes

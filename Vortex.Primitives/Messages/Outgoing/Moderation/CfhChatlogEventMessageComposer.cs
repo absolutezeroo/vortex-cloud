@@ -1,0 +1,24 @@
+using Orleans;
+using Vortex.Primitives.Moderation;
+using Vortex.Primitives.Networking;
+
+namespace Vortex.Primitives.Messages.Outgoing.Moderation;
+
+[GenerateSerializer, Immutable]
+public sealed record CfhChatlogEventMessageComposer : IComposer
+{
+    [Id(0)]
+    public required int CallId { get; init; }
+
+    [Id(1)]
+    public required int CallerUserId { get; init; }
+
+    [Id(2)]
+    public required int ReportedUserId { get; init; }
+
+    [Id(3)]
+    public required int ChatRecordId { get; init; }
+
+    [Id(4)]
+    public required ChatlogBlockSnapshot ChatRecord { get; init; }
+}

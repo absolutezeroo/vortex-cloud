@@ -1,18 +1,18 @@
 <Project>
-  <Target Name="TurboCloudFastCheck" Condition="'$(MSBuildProjectName)' == 'Turbo.Main'">
+  <Target Name="TurboCloudFastCheck" Condition="'$(MSBuildProjectName)' == 'Vortex.Main'">
     <Exec Command="dotnet tool restore" WorkingDirectory="$(MSBuildThisFileDirectory)" />
     <Exec Command="dotnet csharpier check ." WorkingDirectory="$(MSBuildThisFileDirectory)" />
     <Exec
-      Command="dotnet build Turbo.Main/Turbo.Main.csproj --no-restore"
+      Command="dotnet build Vortex.Main/Vortex.Main.csproj --no-restore"
       WorkingDirectory="$(MSBuildThisFileDirectory)"
     />
     <Exec
-      Command="dotnet test Turbo.Cloud.sln --no-restore"
+      Command="dotnet test Vortex.Cloud.sln --no-restore"
       WorkingDirectory="$(MSBuildThisFileDirectory)"
     />
   </Target>
 
-  <Target Name="TurboCloudAiGovernanceCheck" Condition="'$(MSBuildProjectName)' == 'Turbo.Main'">
+  <Target Name="TurboCloudAiGovernanceCheck" Condition="'$(MSBuildProjectName)' == 'Vortex.Main'">
     <Message
       Text="Validating AI governance files (phase $(TurboAIPolicyPhase))."
       Importance="high"
@@ -45,22 +45,22 @@
 
   <Target
     Name="TurboCloudQualityGate"
-    Condition="'$(MSBuildProjectName)' == 'Turbo.Main'"
+    Condition="'$(MSBuildProjectName)' == 'Vortex.Main'"
     DependsOnTargets="TurboCloudFastCheck;TurboCloudAiGovernanceCheck"
   >
     <!--
-      Was scoped to Turbo.Main.csproj only (the composition root, near-zero domain logic) — every
-      analyzer/style violation in Turbo.Rooms, Turbo.PacketHandlers, Turbo.Players, etc., where the
+      Was scoped to Vortex.Main.csproj only (the composition root, near-zero domain logic) — every
+      analyzer/style violation in Vortex.Rooms, Vortex.PacketHandlers, Vortex.Players, etc., where the
       actual logic lives, went ungated. Now covers the whole solution. IDE1006 (naming) is excluded
-      here: ~1220 pre-existing violations outside Turbo.Main, many touching public/Orleans-serialized
+      here: ~1220 pre-existing violations outside Vortex.Main, many touching public/Orleans-serialized
       members — tracked as debt in CONSOLIDATION.md P4 rather than mass-renamed under gate pressure.
     -->
     <Exec
-      Command="dotnet format Turbo.Cloud.sln style --verify-no-changes --no-restore --exclude-diagnostics IDE1006"
+      Command="dotnet format Vortex.Cloud.sln style --verify-no-changes --no-restore --exclude-diagnostics IDE1006"
       WorkingDirectory="$(MSBuildThisFileDirectory)"
     />
     <Exec
-      Command="dotnet format Turbo.Cloud.sln analyzers --verify-no-changes --no-restore --exclude-diagnostics IDE1006"
+      Command="dotnet format Vortex.Cloud.sln analyzers --verify-no-changes --no-restore --exclude-diagnostics IDE1006"
       WorkingDirectory="$(MSBuildThisFileDirectory)"
     />
   </Target>

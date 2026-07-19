@@ -18,16 +18,16 @@ sh scripts/bootstrap.sh
 
 | Command | Scope | Use when |
 | --- | --- | --- |
-| `dotnet build Turbo.Main/Turbo.Main.csproj` | Core emulator only | Default contributor build |
-| `dotnet build Turbo.Cloud.sln` | Full integrated solution build (includes sample plugin project if present in solution) | One-window core+plugin workflow |
+| `dotnet build Vortex.Main/Vortex.Main.csproj` | Core emulator only | Default contributor build |
+| `dotnet build Vortex.Cloud.sln` | Full integrated solution build (includes sample plugin project if present in solution) | One-window core+plugin workflow |
 | `dotnet build ../turbo-sample-plugin/TurboSamplePlugin/TurboSamplePlugin.csproj` | Sample plugin only | Plugin iteration |
 
-The repo's default quality/build contract is project-scoped to `Turbo.Main/Turbo.Main.csproj`.
+The repo's default quality/build contract is project-scoped to `Vortex.Main/Vortex.Main.csproj`.
 
 ### Fast check (pre-commit)
 
 ```bash
-dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudFastCheck
+dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck
 ```
 
 This is the default local commit gate and should stay fast.
@@ -35,7 +35,7 @@ This is the default local commit gate and should stay fast.
 ### Full gate (pre-push + CI)
 
 ```bash
-dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudQualityGate
+dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate
 ```
 
 This includes formatting/style/analyzer enforcement plus build and is required before pushing.
@@ -45,7 +45,7 @@ Policy phase controls:
 - Preview strict phase locally:
 
 ```bash
-dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudQualityGate -p:TurboAIPolicyPhase=2
+dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate -p:TurboAIPolicyPhase=2
 ```
 
 ## Integrated plugin workflow
@@ -132,13 +132,13 @@ Recommended flow:
 PowerShell:
 
 ```powershell
-$env:DOTNET_ENVIRONMENT="Development"; dotnet run --project Turbo.Main/Turbo.Main.csproj
+$env:DOTNET_ENVIRONMENT="Development"; dotnet run --project Vortex.Main/Vortex.Main.csproj
 ```
 
 bash/zsh:
 
 ```bash
-DOTNET_ENVIRONMENT=Development dotnet run --project Turbo.Main/Turbo.Main.csproj
+DOTNET_ENVIRONMENT=Development dotnet run --project Vortex.Main/Vortex.Main.csproj
 ```
 
 ## Troubleshooting MySQL connection
@@ -150,10 +150,10 @@ If you get `Unable to connect to any of the specified MySQL hosts`:
 
 ## Troubleshooting integrated solution build
 
-If `dotnet build Turbo.Cloud.sln` fails due to plugin state but core work is unaffected, fall back to:
+If `dotnet build Vortex.Cloud.sln` fails due to plugin state but core work is unaffected, fall back to:
 
 ```bash
-dotnet build Turbo.Main/Turbo.Main.csproj
+dotnet build Vortex.Main/Vortex.Main.csproj
 ```
 
 ## Orleans design and lifecycle checks

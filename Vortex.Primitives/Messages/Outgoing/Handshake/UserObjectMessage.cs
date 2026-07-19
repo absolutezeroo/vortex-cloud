@@ -1,0 +1,9 @@
+using Vortex.Primitives.Networking;
+using Vortex.Primitives.Orleans.Snapshots.Players;
+
+namespace Vortex.Primitives.Messages.Outgoing.Handshake;
+
+public sealed record UserObjectMessage : IComposer
+{
+    public required PlayerSummarySnapshot Player { get; init; }
+}

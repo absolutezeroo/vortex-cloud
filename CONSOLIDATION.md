@@ -13,13 +13,13 @@ Dated audit snapshots are archived under `docs/audits/` (latest:
 
 | Metric | Value | Interpretation |
 |---|---|---|
-| Projects | 29 | some too small (over-modularization); `Turbo.Contracts` already merged away |
+| Projects | 29 | some too small (over-modularization); `Vortex.Contracts` already merged away |
 | Test projects | 4 (`WebApi.Tests`, `Rooms.Tests`, `Database.Tests`, `Revisions.Tests`) | `Rooms.Tests` now covers policies, ledger, and the purchase-refund invariant |
 | Test cases | 40 in `Rooms.Tests` alone (was 21 total incl. WebApi) | policies (all branches), ledger mapping, purchase refund-on-failure, wired round-trip, group creation grain test all covered |
 | Handlers | 501 | including **~300 empty stubs (~60%)** — down from 78%, still majority |
 | TODO/FIXME/HACK | 276 | scattered technical debt, down from 327 |
 | `TODO handle exceptions` | **0** | ✅ error strategy now applied |
-| Catch blocks | 167 | repo-wide re-audit found 0 silent swallows outside `Turbo.Rooms`; last 3 in `Turbo.Rooms`/`Turbo.Inventory` fixed; the wired-subsystem gap (26 sites in `FurnitureWiredLogic.cs` and friends) is now closed too — see P5 below |
+| Catch blocks | 167 | repo-wide re-audit found 0 silent swallows outside `Vortex.Rooms`; last 3 in `Vortex.Rooms`/`Vortex.Inventory` fixed; the wired-subsystem gap (26 sites in `FurnitureWiredLogic.cs` and friends) is now closed too — see P5 below |
 | `EventContext` | no longer empty (`Cancel`, `CancelReason`, `CorrelationId`, `Items`); `PublishCancellableAsync` is wired and used in prod by `GroupDirectoryGrain` | interception plumbing works, but **zero production `IEventBehavior<T>` implementations** exist (only test doubles) — seam is functional, just unused |
 | Hardcoded `= false` (Rooms) | not re-audited since this snapshot | verify before relying on this line |
 
@@ -65,7 +65,7 @@ catch-block re-audit (P5).
   P5 pass worried about turned out to be unnecessary: every one of these classes already carries a
   `_roomGrain` field (`FurnitureWiredLogic`/`WiredContext` constructor parameter), and `RoomGrain`
   already exposes `internal readonly ILogger<IRoomGrain> _logger`, reachable from anywhere in
-  `Turbo.Rooms`. Every site now logs via `_roomGrain._logger.LogWarning(ex, …)` with the wired
+  `Vortex.Rooms`. Every site now logs via `_roomGrain._logger.LogWarning(ex, …)` with the wired
   item/tile/furni id for diagnosis — no constructor signatures changed, no behavior changed on
   the success path.
 
@@ -95,11 +95,11 @@ catch-block re-audit (P5).
   `PetFoodEntity`/`PetCommandEntity`) removed at the user's direction.
 
 All new limits follow the existing `IOptions<T>` pattern (`RoomConfig`, `MessengerConfig`,
-`NetworkingConfig`) rather than hardcoded constants — see `Turbo.Revisions.Configuration.ProtocolLimitsConfig`
-and `Turbo.Players.Configuration.PlayerPresenceConfig`.
+`NetworkingConfig`) rather than hardcoded constants — see `Vortex.Revisions.Configuration.ProtocolLimitsConfig`
+and `Vortex.Players.Configuration.PlayerPresenceConfig`.
 
 **Priority 3 items closed (2026-07-04):**
-- O2/O3/H4 — one shared `Turbo.Logging.Extensions.TaskLoggingExtensions.LogAndForget` (async local
+- O2/O3/H4 — one shared `Vortex.Logging.Extensions.TaskLoggingExtensions.LogAndForget` (async local
   function, no `async void`, no `ContinueWith(TaskScheduler.Current)`) replaces the three per-grain
   copies (`PlayerPresenceGrain`, `MessengerGrain`; `LtdRaffleGrain`'s was already removed in R7).
   Applied to the room-stream publishes that used to discard the task (`RoomGrain.Map.cs`,
@@ -230,15 +230,15 @@ and `Turbo.Players.Configuration.PlayerPresenceConfig`.
 
 ### P1 — Test sensitive paths (highest leverage) — done
 **Evidence:** `RoomSecurityPolicyTests.cs` and `ModerationPolicyTests.cs`
-(`Turbo.Rooms.Tests/Permissions/`) now cover every branch of both policies. Ledger mapping is
+(`Vortex.Rooms.Tests/Permissions/`) now cover every branch of both policies. Ledger mapping is
 covered by `EconomyLedgerTests.cs`, and the specific bug this section used to flag — a failure
 after a successful wallet debit permanently losing the player's credits — now has a regression
-test: `WalletPurchaseExtensionsTests.cs` (`Turbo.Rooms.Tests/Observability/`) exercises
+test: `WalletPurchaseExtensionsTests.cs` (`Vortex.Rooms.Tests/Observability/`) exercises
 `IPlayerWalletGrain.ExecutePurchaseAsync` directly against a recording fake wallet: insufficient
 balance never invokes the grant step, a successful grant never refunds, a throwing grant triggers
 exactly one `CreditBackAsync` call with the original debit requests before the exception rethrows,
-and an empty debit list (nothing to refund) is not refunded on grant failure. `Turbo.Rooms.Tests` is
-now 40/40 green (was 36) and runs in the gate via `dotnet test Turbo.Cloud.sln` in
+and an empty debit list (nothing to refund) is not refunded on grant failure. `Vortex.Rooms.Tests` is
+now 40/40 green (was 36) and runs in the gate via `dotnet test Vortex.Cloud.sln` in
 `TurboCloudFastCheck`.
 **Done when:** policies and ledger are covered; the gate executes these tests. ✅
 
@@ -247,14 +247,14 @@ now 40/40 green (was 36) and runs in the gate via `dotnet test Turbo.Cloud.sln` 
 are implemented, and `PublishCancellableAsync` is wired + used in production by `GroupDirectoryGrain`,
 with test coverage (`EventSystemTests`, `GroupDirectoryGrainCreationTests`) proving cancellation works.
 **Closed (2026-07-04):** shipped a real production `IEventBehavior<GroupCreatingEvent>` —
-`Turbo.Players.Events.GroupNameValidationBehavior` rejects guild creation with an empty/whitespace
+`Vortex.Players.Events.GroupNameValidationBehavior` rejects guild creation with an empty/whitespace
 name or a name over `GroupConfig.MaxNameLength` (default 50). This was a genuine, previously-unguarded
 gap: neither `GroupDirectoryGrain.CreateGroupAsync` nor `CreateGuildMessageHandler` validated the
 name, and `GroupEntity.Name` has no DB-level length constraint either. Auto-discovered via the
 existing assembly-scan mechanism (`PluginBootstrapper` scans every `IHostPluginModule` assembly for
 `IEventHandler<>`/`IEventBehavior<>`) — zero changes to `GroupDirectoryGrain` were needed, proving the
 seam works end-to-end exactly as designed. Covered by
-`GroupNameValidationBehaviorTests` (`Turbo.Rooms.Tests/Events/`).
+`GroupNameValidationBehaviorTests` (`Vortex.Rooms.Tests/Events/`).
 **Hardcoded `= false` capability flags re-audited:** `AdminOnlyDecoration`/`MembersCanDecorate`
 (the "group room decoration" example originally cited) turned out to already be fully wired
 (real DB column, read/write in `GroupGrain.cs`) — resolved since the original snapshot, not a bug.
@@ -267,34 +267,34 @@ No undocumented hardcoded-capability bug found.
 hardcoded via `false`. ✅
 
 ### P3 — Reduce over-modularization — reassessed, no action taken
-**Re-verified (2026-07-04):** `Turbo.Contracts` — the one clear violator this section named — no
+**Re-verified (2026-07-04):** `Vortex.Contracts` — the one clear violator this section named — no
 longer exists as a project at all; it was merged away before this session (28 `.csproj` today,
 none named `Contracts`). The other three still-small projects cited
-(`Turbo.Events` 231 l., `Turbo.Logging` 365 l., `Turbo.Messages` 357 l.) are not disguised
-folders: each is a thin specialization of the shared generic pipeline engine in `Turbo.Pipeline`
-(735 l.) — `Turbo.Events` defines `IEventBehavior<T>`/`EventContext`/`EventRegistry`,
-`Turbo.Messages` defines `IMessageHandler<T>`/`MessageContext`/`MessageSystem`, both delegating
-their actual dispatch/behavior-chain mechanics to `Turbo.Pipeline`. They're small *because* they
+(`Vortex.Events` 231 l., `Vortex.Logging` 365 l., `Vortex.Messages` 357 l.) are not disguised
+folders: each is a thin specialization of the shared generic pipeline engine in `Vortex.Pipeline`
+(735 l.) — `Vortex.Events` defines `IEventBehavior<T>`/`EventContext`/`EventRegistry`,
+`Vortex.Messages` defines `IMessageHandler<T>`/`MessageContext`/`MessageSystem`, both delegating
+their actual dispatch/behavior-chain mechanics to `Vortex.Pipeline`. They're small *because* they
 delegate, not because they were arbitrarily split off a bigger module. All three are referenced by
-essentially every domain project (`Turbo.Rooms`, `Turbo.Players`, `Turbo.Catalog`, …) as
+essentially every domain project (`Vortex.Rooms`, `Vortex.Players`, `Vortex.Catalog`, …) as
 cross-cutting infrastructure — there is no single "logical parent" domain to fold them into without
-creating an artificial dependency (e.g. folding `Turbo.Events` into `Turbo.Players` would force
-`Turbo.Rooms`/`Turbo.Catalog`/etc. to depend on `Turbo.Players` just for event plumbing).
+creating an artificial dependency (e.g. folding `Vortex.Events` into `Vortex.Players` would force
+`Vortex.Rooms`/`Vortex.Catalog`/etc. to depend on `Vortex.Players` just for event plumbing).
 **Conclusion:** no merge performed. The remaining small projects are legitimate shared-infrastructure
 boundaries, not the over-modularization anti-pattern this section originally described.
 
 ### P4 — Lock the quality gate — done
 **Evidence:** `dotnet csharpier check .` is green repo-wide (3656 files, 0 failures).
-**Closed (2026-07-04):** `TurboCloudQualityGate` now runs `dotnet format Turbo.Cloud.sln
-style|analyzers --verify-no-changes` (was scoped to `Turbo.Main.csproj` only, so `Turbo.Rooms`,
-`Turbo.PacketHandlers`, `Turbo.Players`, etc. — where the actual logic lives — were never gated).
+**Closed (2026-07-04):** `TurboCloudQualityGate` now runs `dotnet format Vortex.Cloud.sln
+style|analyzers --verify-no-changes` (was scoped to `Vortex.Main.csproj` only, so `Vortex.Rooms`,
+`Vortex.PacketHandlers`, `Vortex.Players`, etc. — where the actual logic lives — were never gated).
 Widening the scope surfaced real, fixable debt that had been invisible until now:
 - **69 `CS8618`** in `TurboDbContext.cs` — every `DbSet<T>` property lacked its (harmless, standard
   EF Core) `= null!;` initializer. Added mechanically.
 - **96 `CA2007`** ("call ConfigureAwait") across 14 files — every single one turned out to be the
   same unfixable-without-restructuring pattern: `await using` disposal has no `.ConfigureAwait()`
   call site of its own. `CA2007` was *already* disabled per-project for this exact reason
-  (`*Grain.cs`, `Grains/**`, `Turbo.Rooms`, `Turbo.Inventory`, `Turbo.Players`) — this is a pure
+  (`*Grain.cs`, `Grains/**`, `Vortex.Rooms`, `Vortex.Inventory`, `Vortex.Players`) — this is a pure
   Orleans + ASP.NET Core minimal-API backend, so no `SynchronizationContext` is ever captured
   anywhere; the rule provides zero value repo-wide. Finished the trend: `.editorconfig` now disables
   `CA2007` for `[*.cs]` instead of allow-listing project by project.
@@ -307,7 +307,7 @@ Widening the scope surfaced real, fixable debt that had been invisible until now
   inline with `#pragma warning disable/restore VSTHRD003` and a one-line justification each.
 - **`IDE1006`** (naming, ~1220 instances across 61 files) is the one category left unaddressed:
   genuine pre-existing debt (the project's `ALL_CAPS` const/static-readonly convention, never
-  enforced outside `Turbo.Main`), but mass-renaming 1220 identifiers — some public, some Orleans
+  enforced outside `Vortex.Main`), but mass-renaming 1220 identifiers — some public, some Orleans
   `[Id(n)]`-serialized — is a separate, much larger and riskier undertaking than "fix the gate."
   Excluded via `--exclude-diagnostics IDE1006` on both `dotnet format` invocations; tracked here as
   the gate's one remaining known gap rather than silently ignored.
@@ -317,8 +317,8 @@ change, not something this session touched — left for whoever owns that pipeli
 
 ### P5 — Audit catch block uniformity — done
 **Evidence:** repo now has 167 `catch` blocks (up from 164 as new logging/tests were added); 0
-`TODO exception`. A full repo-wide sweep (not just `Turbo.Rooms`) found the previously-listed
-`Turbo.Rooms` files (`RoomService.Floor.cs`, `RoomService.Wall.cs`, `RoomWiredSystem.cs`,
+`TODO exception`. A full repo-wide sweep (not just `Vortex.Rooms`) found the previously-listed
+`Vortex.Rooms` files (`RoomService.Floor.cs`, `RoomService.Wall.cs`, `RoomWiredSystem.cs`,
 `RoomRollerSystem.cs`, `RoomPathingSystem.cs`, `RoomMapModule.Avatar.cs`, `RoomAvatarModule.cs`)
 already fixed by an earlier pass (each now logs via `_roomGrain._logger.LogWarning`). Three more
 silent swallows were found and fixed this round: `RoomAvatarTickSystem.cs` (walk-step failure
@@ -334,7 +334,7 @@ Selector/Trigger base+leaf classes, `WiredExecutionContext.cs`, and
 selection, pending-action execution). The previously-assumed DI cascade across all 6 abstract
 wired-kind classes and 83 concrete leaf classes was unnecessary: every one of these classes already
 holds a `_roomGrain` field, and `RoomGrain` already exposes `internal readonly
-ILogger<IRoomGrain> _logger` (accessible repo-wide within `Turbo.Rooms`). All 26 sites now log via
+ILogger<IRoomGrain> _logger` (accessible repo-wide within `Vortex.Rooms`). All 26 sites now log via
 `_roomGrain._logger.LogWarning(ex, …)` with contextual ids (wired item, tile, furni/player id) — no
 constructor signatures changed.
 **Done when:** no silent swallowing remains. ✅
@@ -345,7 +345,7 @@ client wrote a row periodically — unbounded transactional-DB growth for data n
 only ever summed as a total.
 **Closed (2026-07-05):** per user decision, routed to OTel and dropped the table.
 `PerformanceLogMessageHandler` → `IPerformanceLogSink` is now implemented by
-`Turbo.Observability.Metrics.ClientPerformanceMetrics` (registered in place of the old
+`Vortex.Observability.Metrics.ClientPerformanceMetrics` (registered in place of the old
 `ChannelPerformanceLogSink`): histograms for elapsed time/memory/frame rate, a counter for GC count,
 tagged only by OS/Browser (bounded cardinality, matching `TurboMetrics`'/`ClubMetrics`' documented
 convention — never tag by player id). An `ObservableCounter` plus a plain `TotalSamples` property

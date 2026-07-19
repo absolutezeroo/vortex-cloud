@@ -15,7 +15,7 @@ function Require-File {
 }
 
 Write-Step "Validating repository layout"
-Require-File "Turbo.Cloud.sln" "solution file"
+Require-File "Vortex.Cloud.sln" "solution file"
 Require-File ".githooks" "git hooks directory"
 Require-File "appsettings.json" "base appsettings file"
 
@@ -42,11 +42,11 @@ if (-not (Test-Path "appsettings.Development.json")) {
 }
 
 Write-Step "Running smoke build"
-dotnet build Turbo.Main/Turbo.Main.csproj
+dotnet build Vortex.Main/Vortex.Main.csproj
 
 Write-Step "Bootstrap complete"
 Write-Host "Next steps:"
 Write-Host "  1) Update Turbo:Database:ConnectionString in appsettings.Development.json"
-Write-Host "  2) Run: dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudQualityGate"
-Write-Host "  3) Run: `$env:DOTNET_ENVIRONMENT='Development'; dotnet run --project Turbo.Main/Turbo.Main.csproj"
+Write-Host "  2) Run: dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate"
+Write-Host "  3) Run: `$env:DOTNET_ENVIRONMENT='Development'; dotnet run --project Vortex.Main/Vortex.Main.csproj"
 Write-Host "  4) Optional integrated core+plugin loop: pwsh -File ../turbo-sample-plugin/scripts/dev-integrated.ps1"

@@ -1,0 +1,18 @@
+using Vortex.Primitives.Messages.Outgoing.Room.Engine;
+using Vortex.Primitives.Packets;
+
+namespace Vortex.Revisions.Revision20260701.Serializers.Room.Engine;
+
+internal class HeightMapUpdateMessageComposerSerializer(int header)
+    : AbstractSerializer<HeightMapUpdateMessageComposer>(header)
+{
+    protected override void Serialize(IServerPacket packet, HeightMapUpdateMessageComposer message)
+    {
+        packet.WriteByte((byte)message.TileHeights.Length);
+
+        foreach ((int X, int Y, short Height) tile in message.TileHeights)
+        {
+            packet.WriteByte((byte)tile.X).WriteByte((byte)tile.Y).WriteShort(tile.Height);
+        }
+    }
+}

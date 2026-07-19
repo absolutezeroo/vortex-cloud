@@ -2,4 +2,4 @@
 set -eu
 
 echo "Running full quality gate before push..."
-dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudQualityGate
+dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate

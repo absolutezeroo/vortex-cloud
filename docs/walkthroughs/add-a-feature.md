@@ -19,11 +19,11 @@ that the *wiring* is the lesson, not the logic.
 
 A client→room→broadcast feature touches these layers, in this order:
 
-1. **Incoming message** — the typed packet the client sends (`Turbo.Primitives`)
-2. **Handler** — orchestration only (`Turbo.PacketHandlers`)
-3. **Grain entry point** — thin partial method (`Turbo.Rooms/Grains`)
-4. **System/Module** — the actual behavior (`Turbo.Rooms/Grains/Systems` or `Modules`)
-5. **Outgoing composer** — what the other clients receive (`Turbo.Primitives`)
+1. **Incoming message** — the typed packet the client sends (`Vortex.Primitives`)
+2. **Handler** — orchestration only (`Vortex.PacketHandlers`)
+3. **Grain entry point** — thin partial method (`Vortex.Rooms/Grains`)
+4. **System/Module** — the actual behavior (`Vortex.Rooms/Grains/Systems` or `Modules`)
+5. **Outgoing composer** — what the other clients receive (`Vortex.Primitives`)
 6. **Test** — failure-path first (see `docs/patterns/vertical-slice.md`)
 7. **Revision wiring** — parser/serializer, in the **plugin repo**, not here
 
@@ -38,8 +38,8 @@ DB write happens — never the handler.
 Create the typed message the client sends. Keep it a plain data carrier; no logic.
 
 ```csharp
-// Turbo.Primitives/Messages/Incoming/Room/Engine/WaveMessage.cs
-namespace Turbo.Primitives.Messages.Incoming.Room.Engine;
+// Vortex.Primitives/Messages/Incoming/Room/Engine/WaveMessage.cs
+namespace Vortex.Primitives.Messages.Incoming.Room.Engine;
 
 public sealed class WaveMessage
 {
@@ -54,13 +54,13 @@ public sealed class WaveMessage
 ## Step 2 — Write the handler (orchestration only)
 
 ```csharp
-// Turbo.PacketHandlers/Room/Engine/WaveMessageHandler.cs
+// Vortex.PacketHandlers/Room/Engine/WaveMessageHandler.cs
 using System.Threading;
 using System.Threading.Tasks;
-using Turbo.Messages.Registry;
-using Turbo.Primitives.Messages.Incoming.Room.Engine;
+using Vortex.Messages.Registry;
+using Vortex.Primitives.Messages.Incoming.Room.Engine;
 
-namespace Turbo.PacketHandlers.Room.Engine;
+namespace Vortex.PacketHandlers.Room.Engine;
 
 public sealed class WaveMessageHandler(IGrainFactory grainFactory)
     : IMessageHandler<WaveMessage>
@@ -94,7 +94,7 @@ module (Step 4), not here.
 next to `SendChatFromPlayerAsync`, and keep it a one-liner that forwards to a system:
 
 ```csharp
-// Turbo.Rooms/Grains/RoomGrain.Avatar.cs  (add alongside the existing chat method)
+// Vortex.Rooms/Grains/RoomGrain.Avatar.cs  (add alongside the existing chat method)
 public Task WaveFromPlayerAsync(PlayerId playerId) =>
     AvatarModule.WaveFromPlayerAsync(playerId);
 ```
@@ -102,7 +102,7 @@ public Task WaveFromPlayerAsync(PlayerId playerId) =>
 You also need this method to exist on the grain interface so the handler can call it:
 
 ```csharp
-// Turbo.Primitives/Rooms/Grains/IRoomGrain.cs  (add to the interface)
+// Vortex.Primitives/Rooms/Grains/IRoomGrain.cs  (add to the interface)
 Task WaveFromPlayerAsync(PlayerId playerId);
 ```
 
@@ -118,7 +118,7 @@ goes in `RoomAvatarModule`. This is where resolution and (if any) permission che
 live:
 
 ```csharp
-// Turbo.Rooms/Grains/Modules/RoomAvatarModule.cs  (new method)
+// Vortex.Rooms/Grains/Modules/RoomAvatarModule.cs  (new method)
 public async Task WaveFromPlayerAsync(PlayerId playerId)
 {
     if (
@@ -146,10 +146,10 @@ sessions yourself.
 ## Step 5 — Define the outgoing composer
 
 ```csharp
-// Turbo.Primitives/Messages/Outgoing/Room/Engine/WaveComposer.cs
-using Turbo.Primitives.Rooms.Object;
+// Vortex.Primitives/Messages/Outgoing/Room/Engine/WaveComposer.cs
+using Vortex.Primitives.Rooms.Object;
 
-namespace Turbo.Primitives.Messages.Outgoing.Room.Engine;
+namespace Vortex.Primitives.Messages.Outgoing.Room.Engine;
 
 public sealed class WaveComposer : IComposer
 {
@@ -191,14 +191,14 @@ code is this?" and put it where the answer says:
 
 | Kind of code | Goes in | Example from this walkthrough |
 |---|---|---|
-| Typed incoming packet | `Turbo.Primitives/Messages/Incoming/<Domain>/` | `WaveMessage` |
-| Request orchestration | `Turbo.PacketHandlers/<Domain>/<Name>MessageHandler.cs` | `WaveMessageHandler` |
-| Room public API method | `Turbo.Primitives/Rooms/Grains/IRoomGrain.cs` | `WaveFromPlayerAsync` (interface) |
-| Grain entry point | `Turbo.Rooms/Grains/RoomGrain.<Slice>.cs` | one-line forward |
-| State + operation | `Turbo.Rooms/Grains/Modules/` | `RoomAvatarModule.WaveFromPlayerAsync` |
-| Behavioral engine | `Turbo.Rooms/Grains/Systems/` | (chat uses `RoomChatSystem`) |
+| Typed incoming packet | `Vortex.Primitives/Messages/Incoming/<Domain>/` | `WaveMessage` |
+| Request orchestration | `Vortex.PacketHandlers/<Domain>/<Name>MessageHandler.cs` | `WaveMessageHandler` |
+| Room public API method | `Vortex.Primitives/Rooms/Grains/IRoomGrain.cs` | `WaveFromPlayerAsync` (interface) |
+| Grain entry point | `Vortex.Rooms/Grains/RoomGrain.<Slice>.cs` | one-line forward |
+| State + operation | `Vortex.Rooms/Grains/Modules/` | `RoomAvatarModule.WaveFromPlayerAsync` |
+| Behavioral engine | `Vortex.Rooms/Grains/Systems/` | (chat uses `RoomChatSystem`) |
 | Permission check | `RoomSecurityModule` | consulted from the module |
-| Outgoing packet | `Turbo.Primitives/Messages/Outgoing/<Domain>/` | `WaveComposer` |
+| Outgoing packet | `Vortex.Primitives/Messages/Outgoing/<Domain>/` | `WaveComposer` |
 | Parser / serializer | **plugin repo** `Revision/**` | header + bytes mapping |
 | Test | test project, failure-path first | no-avatar no-op |
 

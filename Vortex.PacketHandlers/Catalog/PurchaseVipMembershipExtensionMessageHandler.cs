@@ -1,0 +1,97 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Orleans;
+using Vortex.Messages.Registry;
+using Vortex.Primitives.Catalog;
+using Vortex.Primitives.Catalog.Providers;
+using Vortex.Primitives.Messages.Incoming.Catalog;
+using Vortex.Primitives.Messages.Outgoing.Catalog;
+using Vortex.Primitives.Messages.Outgoing.Handshake;
+using Vortex.Primitives.Messages.Outgoing.Users;
+using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Orleans.Snapshots.Players;
+using Vortex.Primitives.Players.Enums;
+using Vortex.Primitives.Players.Grains;
+
+namespace Vortex.PacketHandlers.Catalog;
+
+public class PurchaseVipMembershipExtensionMessageHandler(
+    IGrainFactory grainFactory,
+    ICatalogClubOfferProvider clubOfferProvider
+) : IMessageHandler<PurchaseVipMembershipExtensionMessage>
+{
+    private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly ICatalogClubOfferProvider _clubOfferProvider = clubOfferProvider;
+
+    public async ValueTask HandleAsync(
+        PurchaseVipMembershipExtensionMessage message,
+        MessageContext ctx,
+        CancellationToken ct
+    )
+    {
+        if (ctx.PlayerId <= 0)
+        {
+            return;
+        }
+
+        ClubOffer? offer = _clubOfferProvider.FindById(message.OfferId);
+        if (offer is null || !offer.IsVip)
+        {
+            return;
+        }
+
+        IPlayerGrain playerGrain = _grainFactory.GetPlayerGrain(ctx.PlayerId);
+
+        ClubPurchaseResult result = await playerGrain
+            .PurchaseClubAsync(offer.Months, true, offer.PriceCredits, ct)
+            .ConfigureAwait(false);
+
+        if (result != ClubPurchaseResult.Success)
+        {
+            await ctx.SendComposerAsync(new PurchaseErrorMessageComposer(), ct)
+                .ConfigureAwait(false);
+            return;
+        }
+
+        ClubSubscriptionSnapshot sub = await playerGrain
+            .GetClubSubscriptionAsync(ct)
+            .ConfigureAwait(false);
+
+        await ctx.SendComposerAsync(
+                new UserRightsMessage
+                {
+                    ClubLevel = ClubLevelType.Vip,
+                    SecurityLevel = SecurityLevelType.None,
+                    IsAmbassador = false,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
+
+        if (sub.IsActive)
+        {
+            int daysLeft = sub.DaysLeft;
+            int rem = daysLeft % 31;
+            await ctx.SendComposerAsync(
+                    new ScrSendUserInfoMessageComposer
+                    {
+                        ProductName = "habbo_club",
+                        DaysToPeriodEnd = rem == 0 ? 31 : rem,
+                        MemberPeriods = sub.TotalMonths,
+                        PeriodsSubscribedAhead = daysLeft / 31 - (rem == 0 ? 1 : 0),
+                        ResponseType = 2,
+                        HasEverBeenMember = sub.TotalMonths > 0 || sub.IsActive,
+                        IsVIP = true,
+                        PastClubDays = sub.PastClubDays,
+                        PastVipDays = sub.PastVipDays,
+                        MinutesUntilExpiration = (int)
+                            (sub.ExpiresAt - DateTime.UtcNow).TotalMinutes,
+                        MinutesSinceLastModified = 0,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
+        }
+    }
+}

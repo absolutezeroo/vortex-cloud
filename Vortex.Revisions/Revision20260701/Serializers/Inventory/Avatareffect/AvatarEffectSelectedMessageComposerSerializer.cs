@@ -1,0 +1,16 @@
+using Vortex.Primitives.Messages.Outgoing.Inventory.Avatareffect;
+using Vortex.Primitives.Packets;
+
+namespace Vortex.Revisions.Revision20260701.Serializers.Inventory.Avatareffect;
+
+internal class AvatarEffectSelectedMessageComposerSerializer(int header)
+    : AbstractSerializer<AvatarEffectSelectedMessageComposer>(header)
+{
+    protected override void Serialize(
+        IServerPacket packet,
+        AvatarEffectSelectedMessageComposer message
+    )
+    {
+        //
+    }
+}

@@ -1,0 +1,5 @@
+using Vortex.Primitives.Networking;
+
+namespace Vortex.Primitives.Messages.Incoming.Game.Score;
+
+public record Game2GetWeeklyGroupLeaderboardMessage : IMessageEvent { }

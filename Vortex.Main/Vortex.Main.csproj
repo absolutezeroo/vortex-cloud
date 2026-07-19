@@ -1,0 +1,63 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <UserSecretsId>a638c0bb-c7d5-45bc-a28e-daf3be3fcdc6</UserSecretsId>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Orleans.Persistence.Memory" />
+    <PackageReference Include="Microsoft.Orleans.Server" />
+    <PackageReference Include="Microsoft.Orleans.Streaming" />
+    <PackageReference Include="Microsoft.Orleans.Serialization.Abstractions" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="../appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content
+      Include="../appsettings.Development.json"
+      Condition="Exists('../appsettings.Development.json')"
+    >
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DependentUpon>appsettings.json</DependentUpon>
+    </Content>
+    <Content
+      Include="../appsettings.Production.json"
+      Condition="Exists('../appsettings.Production.json')"
+    >
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DependentUpon>appsettings.json</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Vortex.Authentication\Vortex.Authentication.csproj" />
+    <ProjectReference Include="..\Vortex.Catalog\Vortex.Catalog.csproj" />
+    <ProjectReference Include="..\Vortex.Crypto\Vortex.Crypto.csproj" />
+    <ProjectReference Include="..\Vortex.Database\Vortex.Database.csproj" />
+    <ProjectReference Include="..\Vortex.Events\Vortex.Events.csproj" />
+    <ProjectReference Include="..\Vortex.Furniture\Vortex.Furniture.csproj" />
+    <ProjectReference Include="..\Vortex.Inventory\Vortex.Inventory.csproj" />
+    <ProjectReference Include="..\Vortex.Logging\Vortex.Logging.csproj" />
+    <ProjectReference Include="..\Vortex.Marketplace\Vortex.Marketplace.csproj" />
+    <ProjectReference Include="..\Vortex.Messages\Vortex.Messages.csproj" />
+    <ProjectReference Include="..\Vortex.Navigator\Vortex.Navigator.csproj" />
+    <ProjectReference Include="..\Vortex.Networking\Vortex.Networking.csproj" />
+    <ProjectReference Include="..\Vortex.Dashboard.API\Vortex.Dashboard.API.csproj" />
+    <ProjectReference Include="..\Vortex.Observability\Vortex.Observability.csproj" />
+    <ProjectReference Include="..\Vortex.PacketHandlers\Vortex.PacketHandlers.csproj" />
+    <ProjectReference Include="..\Vortex.Pipeline\Vortex.Pipeline.csproj" />
+    <ProjectReference Include="..\Vortex.Players\Vortex.Players.csproj" />
+    <ProjectReference Include="..\Vortex.Plugins\Vortex.Plugins.csproj" />
+    <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
+    <ProjectReference Include="..\Vortex.Revisions\Vortex.Revisions.csproj" />
+    <ProjectReference Include="..\Vortex.Rooms\Vortex.Rooms.csproj" />
+    <ProjectReference Include="..\Vortex.WebApi\Vortex.WebApi.csproj" />
+    <ProjectReference Include="..\Vortex.Runtime\Vortex.Runtime.csproj" />
+  </ItemGroup>
+</Project>

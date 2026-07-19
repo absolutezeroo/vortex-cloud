@@ -1,0 +1,44 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Vortex.Primitives.Moderation;
+using Vortex.Primitives.Plugins;
+using Vortex.Primitives.Rooms;
+using Vortex.Primitives.Rooms.Providers;
+using Vortex.Rooms.Configuration;
+using Vortex.Rooms.Object.Logic;
+using Vortex.Rooms.Providers;
+using Vortex.Rooms.Wired.Logs;
+using Vortex.Rooms.Wired.Variables;
+using Vortex.Runtime.AssemblyProcessing;
+
+namespace Vortex.Rooms;
+
+public sealed class RoomModule : IHostPluginModule
+{
+    public string Key => "turbo-rooms";
+
+    public void ConfigureServices(IServiceCollection services, HostApplicationBuilder builder)
+    {
+        services.Configure<RoomConfig>(builder.Configuration.GetSection(RoomConfig.SECTION_NAME));
+
+        services.AddSingleton<IRoomAvatarProvider, RoomAvatarProvider>();
+        services.AddSingleton<IRoomItemsProvider, RoomItemsProvider>();
+        services.AddSingleton<IRoomModelProvider, RoomModelProvider>();
+        services.AddSingleton<IRoomObjectLogicProvider, RoomObjectLogicProvider>();
+        services.AddSingleton<IRoomWiredVariablesProvider, RoomWiredVariablesProvider>();
+
+        services.AddSingleton<IAssemblyFeatureProcessor, RoomObjectLogicFeatureProcessor>();
+        services.AddSingleton<IAssemblyFeatureProcessor, WiredVariableFeatureProcessor>();
+
+        services.AddSingleton<IRoomService, RoomService>();
+        services.AddSingleton<IRoomModerationStore, RoomModerationStore>();
+        services.AddSingleton<IModeratorChatlogService, ModeratorChatlogService>();
+        services.AddSingleton<ICfhTicketService, CfhTicketService>();
+        services.AddSingleton<IRoomAdvertisementService, RoomAdvertisementService>();
+
+        // Wired room-logs pipeline: one bounded channel -> single background writer (no DB on
+        // the wired-execution hot path). Mirrors Vortex.Observability's audit pipeline.
+        services.AddSingleton<RoomWiredLogChannel>();
+        services.AddHostedService<RoomWiredLogWriterService>();
+    }
+}

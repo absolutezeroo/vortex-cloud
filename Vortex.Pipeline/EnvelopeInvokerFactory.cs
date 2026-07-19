@@ -1,0 +1,65 @@
+using System;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using Vortex.Pipeline.Delegates;
+using Vortex.Pipeline.Registry;
+using Vortex.Runtime.AssemblyProcessing;
+
+namespace Vortex.Pipeline;
+
+public class EnvelopeInvokerFactory<TContext>
+{
+    public HandlerInvoker<TContext> CreateHandlerInvoker(Type handlerType, Type envType)
+    {
+        MethodInfo impl = AssemblyExplorer.ResolveImplementation(
+            handlerType,
+            typeof(IHandler<,>).MakeGenericType(envType, typeof(TContext)),
+            "HandleAsync"
+        );
+
+        ParameterExpression inst = Expression.Parameter(typeof(object), "inst");
+        ParameterExpression env = Expression.Parameter(typeof(object), "env");
+        ParameterExpression ctx = Expression.Parameter(typeof(TContext), "ctx");
+        ParameterExpression ct = Expression.Parameter(typeof(CancellationToken), "ct");
+
+        MethodCallExpression call = Expression.Call(
+            Expression.Convert(inst, handlerType),
+            impl,
+            Expression.Convert(env, envType),
+            ctx,
+            ct
+        );
+
+        return Expression.Lambda<HandlerInvoker<TContext>>(call, inst, env, ctx, ct).Compile();
+    }
+
+    public BehaviorInvoker<TContext> CreateBehaviorInvoker(Type behaviorType, Type envType)
+    {
+        MethodInfo impl = AssemblyExplorer.ResolveImplementation(
+            behaviorType,
+            typeof(IBehavior<,>).MakeGenericType(envType, typeof(TContext)),
+            "InvokeAsync"
+        );
+
+        ParameterExpression inst = Expression.Parameter(typeof(object), "inst");
+        ParameterExpression env = Expression.Parameter(typeof(object), "env");
+        ParameterExpression ctx = Expression.Parameter(typeof(TContext), "ctx");
+        ParameterExpression next = Expression.Parameter(typeof(Func<ValueTask>), "next");
+        ParameterExpression ct = Expression.Parameter(typeof(CancellationToken), "ct");
+
+        MethodCallExpression call = Expression.Call(
+            Expression.Convert(inst, behaviorType),
+            impl,
+            Expression.Convert(env, envType),
+            ctx,
+            next,
+            ct
+        );
+
+        return Expression
+            .Lambda<BehaviorInvoker<TContext>>(call, inst, env, ctx, next, ct)
+            .Compile();
+    }
+}

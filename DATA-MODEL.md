@@ -27,7 +27,7 @@ Summary: 0) conventions and naming · 1) friends (existing) · 2) groups · 3) r
   public required XEntity XEntity;` (nullable nav if FK nullable).
 - Composite uniqueness: `[Index(nameof(A), nameof(B), IsUnique = true)]`.
 - Required fields: `required`; optional nullable where appropriate. Enums: direct type, `[DefaultValue]` +
-  `DatabaseGeneratedOption.None`, located in `Turbo.Primitives.<Domain>.Enums`.
+  `DatabaseGeneratedOption.None`, located in `Vortex.Primitives.<Domain>.Enums`.
 - Soft delete everywhere; never hard delete.
 
 ### 0.3 Prefix rule (resolves `ltd_` inconsistency)
@@ -63,7 +63,7 @@ Epic 5 for friends = handler wiring only, zero schema.
 
 ---
 
-## 2. Groups / Guilds — IMPLEMENTED (see `Turbo.Database/Migrations/20260619035829_AddGroups.cs` onward)
+## 2. Groups / Guilds — IMPLEMENTED (see `Vortex.Database/Migrations/20260619035829_AddGroups.cs` onward)
 
 Habbo-style group model. **Decision**: forum config is separated from identity (1:1 table), not columns on
 `groups`.
@@ -143,7 +143,7 @@ Created with defaults at group creation (invariant: one row per group).
 > **Circular relation** `groups.room_id` ↔ `rooms.group_id` must use non-cascade `OnDelete`
 > (Fluent API). Deleting/detaching a group: set `rooms.group_id` to null first, then soft-delete.
 
-### 2.8 Enums (`Turbo.Primitives.Groups.Enums`)
+### 2.8 Enums (`Vortex.Primitives.Groups.Enums`)
 
 ```csharp
 public enum GroupType { Open = 0, Exclusive = 1, Private = 2 }
@@ -214,7 +214,7 @@ via `renter_player_id` index) · cancellation by furniture owner **or** staff (`
 
 ---
 
-## 4. Pets — IMPLEMENTED (see `Turbo.Database/Migrations/20260620231004_AddPets.cs` onward)
+## 4. Pets — IMPLEMENTED (see `Vortex.Database/Migrations/20260620231004_AddPets.cs` onward)
 
 Standard Habbo pet model. A pet belongs to a player, lives in a room or in inventory, carries stats.
 
@@ -329,7 +329,7 @@ Pet design (learning loop) implies two config tables. See `PETS-DESIGN.md` for r
 | `level_required` | int | no | — | minimum level to execute |
 
 > A pet executes a command only if `pet.level >= level_required`. Same conventions as rest of
-> model (`TurboEntity`, enums in `Turbo.Primitives.Pets.Enums`).
+> model (`TurboEntity`, enums in `Vortex.Primitives.Pets.Enums`).
 
 **Out of immediate scope:**
 - **Color palettes** (`SellablePetPalettesEvent`) → `pet_palettes` (`pet_type`, palette, colors) —
@@ -455,7 +455,7 @@ loss of typed columns/indexes, and impossible retention by type.
 - [ ] “Delete” means `deleted_at`, never hard delete.
 - [ ] FK uses `[Column("x_id")] int` + `[ForeignKey]` nav pair, nullable configured correctly.
 - [ ] Relational pairs use `[Index(..., IsUnique = true)]` composite constraints.
-- [ ] Enums in `Turbo.Primitives.<Domain>.Enums`, `[DefaultValue]` + `DatabaseGeneratedOption.None`.
+- [ ] Enums in `Vortex.Primitives.<Domain>.Enums`, `[DefaultValue]` + `DatabaseGeneratedOption.None`.
 - [ ] **Naming:** prefix = owning bounded context; shared reference = neutral (e.g.
   `catalog_ltd_*`, but `currency_types` stays neutral).
 - [ ] Circular relations use non-cascade `OnDelete` (Fluent API).

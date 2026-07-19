@@ -1,11 +1,11 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Turbo.Messages.Registry;
-using Turbo.Primitives.Messages.Incoming.Vault;
+using Vortex.Messages.Registry;
+using Vortex.Primitives.Messages.Incoming.Vault;
 
 namespace Docs.Patterns;
 
-// Reference-only sample: mirrors packet handler shape used in Turbo.PacketHandlers.
+// Reference-only sample: mirrors packet handler shape used in Vortex.PacketHandlers.
 public sealed class HandlerPattern : IMessageHandler<CreditVaultStatusMessage>
 {
     public async ValueTask HandleAsync(

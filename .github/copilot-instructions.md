@@ -22,11 +22,11 @@ Include in every request:
 6. Validation commands
 
 ## Core-specific constraints
-- Keep host composition in `Turbo.Main`.
-- Keep plugin lifecycle logic centralized in `Turbo.Plugins`.
-- Keep packet handlers in `Turbo.PacketHandlers` and domain logic in domain modules.
+- Keep host composition in `Vortex.Main`.
+- Keep plugin lifecycle logic centralized in `Vortex.Plugins`.
+- Keep packet handlers in `Vortex.PacketHandlers` and domain logic in domain modules.
 - Respect Orleans grain boundaries and avoid bypassing grain orchestration.
-- `Turbo.Revisions/Revision20260112/**` is the embedded default revision and stays in `turbo-cloud`
+- `Vortex.Revisions/Revision20260112/**` is the embedded default revision and stays in `turbo-cloud`
   (`Parsers/`/`Serializers/` there are expected, not a violation).
 - For any other/additional protocol revision, target the plugin repo path instead:
   - `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`
@@ -61,12 +61,12 @@ Include in every request:
 - All mutations to grain-owned data go through grain methods. No direct DB updates for grain-owned state.
 
 ## Task routing hints
-- Handler task: use neighboring handler + `Turbo.Primitives/Orleans/GrainFactoryExtensions.cs`.
+- Handler task: use neighboring handler + `Vortex.Primitives/Orleans/GrainFactoryExtensions.cs`.
 - Grain task: use grain interface + snapshot/state types as primary references.
 - Message/composer task: update incoming/outgoing contracts and handler mapping together.
 - Lookup/cache task: preserve bidirectional + case-insensitive behavior across set/invalidate/get flows.
 
 ## Validation guidance
 Generated changes should pass:
-- `dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudFastCheck`
-- `dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudQualityGate`
+- `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudFastCheck`
+- `dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate`

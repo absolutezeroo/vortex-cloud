@@ -15,7 +15,7 @@ require_file() {
 }
 
 step "Validating repository layout"
-require_file "Turbo.Cloud.sln" "solution file"
+require_file "Vortex.Cloud.sln" "solution file"
 require_file ".githooks" "git hooks directory"
 require_file "appsettings.json" "base appsettings file"
 
@@ -47,11 +47,11 @@ else
 fi
 
 step "Running smoke build"
-dotnet build Turbo.Main/Turbo.Main.csproj
+dotnet build Vortex.Main/Vortex.Main.csproj
 
 step "Bootstrap complete"
 echo "Next steps:"
 echo "  1) Update Turbo:Database:ConnectionString in appsettings.Development.json"
-echo "  2) Run: dotnet build Turbo.Main/Turbo.Main.csproj -t:TurboCloudQualityGate"
-echo "  3) Run: DOTNET_ENVIRONMENT=Development dotnet run --project Turbo.Main/Turbo.Main.csproj"
+echo "  2) Run: dotnet build Vortex.Main/Vortex.Main.csproj -t:TurboCloudQualityGate"
+echo "  3) Run: DOTNET_ENVIRONMENT=Development dotnet run --project Vortex.Main/Vortex.Main.csproj"
 echo "  4) Optional integrated core+plugin loop: sh ../turbo-sample-plugin/scripts/dev-integrated.sh"

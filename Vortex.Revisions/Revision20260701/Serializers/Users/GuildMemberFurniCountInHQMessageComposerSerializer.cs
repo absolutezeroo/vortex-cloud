@@ -1,0 +1,17 @@
+using Vortex.Primitives.Messages.Outgoing.Users;
+using Vortex.Primitives.Packets;
+
+namespace Vortex.Revisions.Revision20260701.Serializers.Users;
+
+internal class GuildMemberFurniCountInHQMessageComposerSerializer(int header)
+    : AbstractSerializer<GuildMemberFurniCountInHQMessageComposer>(header)
+{
+    protected override void Serialize(
+        IServerPacket packet,
+        GuildMemberFurniCountInHQMessageComposer message
+    )
+    {
+        packet.WriteInteger(message.UserId);
+        packet.WriteInteger(message.FurniCount);
+    }
+}

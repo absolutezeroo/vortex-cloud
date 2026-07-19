@@ -1,0 +1,349 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Vortex.Primitives.Action;
+using Vortex.Primitives.Orleans.Snapshots.Players;
+using Vortex.Primitives.Players;
+using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Events.Player;
+using Vortex.Primitives.Rooms.Object;
+using Vortex.Primitives.Rooms.Object.Avatars;
+using Vortex.Primitives.Rooms.Snapshots.Avatars;
+
+namespace Vortex.Rooms.Grains;
+
+public sealed partial class RoomGrain
+{
+    public async Task<bool> CreateAvatarFromPlayerAsync(
+        ActionContext ctx,
+        PlayerSummarySnapshot snapshot,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            IRoomAvatar avatar = await AvatarModule.CreateAvatarFromPlayerAsync(ctx, snapshot, ct);
+
+            await PublishRoomEventAsync(
+                new PlayerEnterEvent
+                {
+                    RoomId = _state.RoomId,
+                    CausedBy = ctx,
+                    PlayerId = snapshot.PlayerId,
+                },
+                ct
+            );
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                $"Failed to create avatar for player {snapshot.PlayerId} in room {_state.RoomId}."
+            );
+
+            return false;
+        }
+    }
+
+    public async Task<bool> RemoveAvatarFromPlayerAsync(
+        ActionContext ctx,
+        PlayerId playerId,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            await CloseTradeForLeavingPlayerAsync(playerId, ct);
+
+            await AvatarModule.RemoveAvatarFromPlayerAsync(ctx, playerId, ct);
+
+            await PublishRoomEventAsync(
+                new PlayerLeftEvent
+                {
+                    RoomId = _state.RoomId,
+                    CausedBy = ctx,
+                    PlayerId = playerId,
+                },
+                ct
+            );
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                $"Failed to remove avatar for player {playerId} in room {_state.RoomId}."
+            );
+
+            return false;
+        }
+    }
+
+    public async Task<bool> WalkAvatarToAsync(
+        ActionContext ctx,
+        int targetX,
+        int targetY,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            return await AvatarModule.WalkAvatarToAsync(ctx, targetX, targetY, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                $"Failed to walk avatar for player {ctx.PlayerId} in room {_state.RoomId} to ({targetX}, {targetY})."
+            );
+
+            return false;
+        }
+    }
+
+    public async Task<bool> UpdateAvatarWithPlayerAsync(
+        PlayerSummarySnapshot snapshot,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            return await AvatarModule.UpdateAvatarWithPlayerAsync(snapshot, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                $"Failed to update avatar for player {snapshot.PlayerId} in room {_state.RoomId}"
+            );
+
+            return false;
+        }
+    }
+
+    public async Task<bool> SetAvatarDanceAsync(
+        ActionContext ctx,
+        AvatarDanceType danceType,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            if (
+                !_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out RoomObjectId objectId)
+                || !await AvatarModule.SetAvatarDanceAsync(objectId, danceType, ct)
+            )
+            {
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                $"Failed to dance:{danceType} avatar for player {ctx.PlayerId} in room {_state.RoomId}"
+            );
+
+            return false;
+        }
+    }
+
+    public async Task<bool> SetAvatarExpressionAsync(
+        ActionContext ctx,
+        AvatarExpressionType expressionType,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            if (
+                !_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out RoomObjectId objectId)
+                || !await AvatarModule.SetAvatarExpressionAsync(objectId, expressionType, ct)
+            )
+            {
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                $"Failed to set expression:{expressionType} avatar for player {ctx.PlayerId} in room {_state.RoomId}"
+            );
+
+            return false;
+        }
+    }
+
+    public async Task RespectPlayerAsync(
+        ActionContext ctx,
+        int targetPlayerId,
+        int dailyLimit,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            await AvatarModule.RespectPlayerAsync(
+                (int)ctx.PlayerId,
+                targetPlayerId,
+                dailyLimit,
+                ct
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to respect player {Target} from {Giver} in room {RoomId}",
+                targetPlayerId,
+                ctx.PlayerId,
+                _state.RoomId
+            );
+        }
+    }
+
+    public async Task<bool> SetAvatarPostureAsync(ActionContext ctx, CancellationToken ct)
+    {
+        try
+        {
+            if (
+                !_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out RoomObjectId objectId)
+                || !await AvatarModule.SetAvatarPostureAsync(objectId, ct)
+            )
+            {
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                $"Failed to set posture for player {ctx.PlayerId} in room {_state.RoomId}."
+            );
+
+            return false;
+        }
+    }
+
+    public async Task<bool> SetAvatarSignAsync(ActionContext ctx, int signId, CancellationToken ct)
+    {
+        try
+        {
+            if (
+                !_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out RoomObjectId objectId)
+                || !await AvatarModule.SetAvatarSignAsync(objectId, signId, ct)
+            )
+            {
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                $"Failed to set sign:{signId} for player {ctx.PlayerId} in room {_state.RoomId}."
+            );
+
+            return false;
+        }
+    }
+
+    public async Task<bool> LookToAvatarAsync(
+        ActionContext ctx,
+        int targetX,
+        int targetY,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            if (
+                !_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out RoomObjectId objectId)
+                || !await AvatarModule.LookToAvatarAsync(objectId, targetX, targetY, ct)
+            )
+            {
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                $"Failed to look-to ({targetX},{targetY}) for player {ctx.PlayerId} in room {_state.RoomId}."
+            );
+
+            return false;
+        }
+    }
+
+    public async Task SetAvatarTypingAsync(ActionContext ctx, bool isTyping, CancellationToken ct)
+    {
+        try
+        {
+            if (!_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out RoomObjectId objectId))
+            {
+                return;
+            }
+
+            await AvatarModule.SetAvatarTypingAsync(objectId, isTyping, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                $"Failed to set typing:{isTyping} for player {ctx.PlayerId} in room {_state.RoomId}."
+            );
+        }
+    }
+
+    public Task SendChatFromPlayerAsync(
+        PlayerId playerId,
+        string text,
+        AvatarGestureType gesture,
+        int styleId,
+        List<(string, string, bool)> links,
+        int trackingId,
+        PlayerId? targetPlayerId = null
+    ) =>
+        ChatSystem.SendChatFromPlayerAsync(
+            playerId,
+            text,
+            gesture,
+            styleId,
+            links,
+            trackingId,
+            targetPlayerId
+        );
+
+    public async Task<ImmutableArray<RoomAvatarSnapshot>> GetAllAvatarSnapshotsAsync(
+        CancellationToken ct
+    )
+    {
+        ImmutableArray<RoomAvatarSnapshot> avatars = await AvatarModule
+            .GetAllAvatarSnapshotsAsync(ct)
+            .ConfigureAwait(true);
+        ImmutableArray<RoomAvatarSnapshot> pets = await PetSystem
+            .GetPlacedPetAvatarSnapshotsAsync(ct)
+            .ConfigureAwait(true);
+
+        return avatars.Concat(pets).ToImmutableArray();
+    }
+}

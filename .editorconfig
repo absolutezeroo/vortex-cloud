@@ -69,8 +69,8 @@ dotnet_sort_system_directives_first = true
 
 # ConfigureAwait — off repo-wide. This is a pure Orleans + ASP.NET Core minimal API backend; neither
 # host captures a SynchronizationContext, so there is never a context to avoid resuming on. The rule
-# was already disabled project-by-project (*Grain.cs, Grains/**, Turbo.Rooms, Turbo.Inventory,
-# Turbo.Players) as each one hit the one pattern where it's also unfixable without restructuring:
+# was already disabled project-by-project (*Grain.cs, Grains/**, Vortex.Rooms, Vortex.Inventory,
+# Vortex.Players) as each one hit the one pattern where it's also unfixable without restructuring:
 # `await using` disposal has no `.ConfigureAwait(false)` call site of its own. Finishing that trend
 # repo-wide instead of exception-listing project by project every time a new one is gated.
 [*.cs]
