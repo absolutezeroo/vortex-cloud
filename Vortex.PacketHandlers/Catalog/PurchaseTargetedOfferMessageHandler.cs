@@ -2,7 +2,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Catalog.Snapshots;
 using Vortex.Primitives.Messages.Incoming.Catalog;
 using Vortex.Primitives.Orleans;
 
@@ -22,14 +21,12 @@ public class PurchaseTargetedOfferMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        TargetedOfferSnapshot? offer = await grainFactory
+        // The client updates the offer view locally on purchase and expects no offer echo (re-sending
+        // it would re-maximise the offer the client just minimised); the granted furniture's own
+        // inventory composers are the purchase feedback.
+        await grainFactory
             .GetPlayerTargetedOfferGrain(ctx.PlayerId)
             .PurchaseAsync(message.OfferId, message.Quantity, ct)
-            .ConfigureAwait(false);
-
-        // Echo the offer's refreshed state (remaining purchases) so the client updates in place.
-        await TargetedOfferResponse
-            .SendAsync(grainFactory, ctx.PlayerId, offer)
             .ConfigureAwait(false);
     }
 }
