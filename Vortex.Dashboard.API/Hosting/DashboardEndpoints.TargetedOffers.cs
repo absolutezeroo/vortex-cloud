@@ -39,6 +39,15 @@ internal static partial class DashboardEndpoints
         );
         MapReadGet(
             app,
+            ApiTargetedOffers + "/form-meta",
+            "/api/targeted-offers/form-meta",
+            (DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.TargetedOfferFormMetaAsync(ct)),
+            Capabilities.Dashboard.TargetedOffersRead,
+            TagTargetedOffers
+        );
+        MapReadGet(
+            app,
             ApiTargetedOffers + "/{offerId:int}",
             "/api/targeted-offers/{offerId:int}",
             (int offerId, DashboardApiService api, CancellationToken ct) =>

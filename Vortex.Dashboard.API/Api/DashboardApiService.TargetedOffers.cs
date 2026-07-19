@@ -48,6 +48,8 @@ internal sealed partial class DashboardApiService
                         o.Identifier,
                         o.OfferType,
                         o.Title,
+                        o.ImageUrl,
+                        o.IconImageUrl,
                         o.ProductCode,
                         o.PriceInCredits,
                         o.PriceInActivityPoints,
@@ -78,6 +80,8 @@ internal sealed partial class DashboardApiService
                         o.Identifier,
                         o.OfferType,
                         o.Title,
+                        o.ImageUrl,
+                        o.IconImageUrl,
                         o.ProductCode,
                         o.PriceInCredits,
                         o.PriceInActivityPoints,
@@ -183,6 +187,35 @@ internal sealed partial class DashboardApiService
                     totalPurchases,
                     products,
                 };
+            },
+            ct
+        );
+
+    /// <summary>
+    /// Everything the targeted-offer admin form needs that isn't per-offer: the configured promo-image
+    /// base template (so the operator supplies just a filename with a live preview instead of a whole
+    /// URL) and the currency types for the activity-point-type picker (the client filters out Credits,
+    /// which are already handled by the separate credits price field — no duplicate).
+    /// </summary>
+    public Task<object> TargetedOfferFormMetaAsync(CancellationToken ct) =>
+        QueryAsync<object>(
+            async db =>
+            {
+                var currencyTypes = await db
+                    .CurrencyTypes.AsNoTracking()
+                    .Where(c => c.Enabled)
+                    .OrderBy(c => c.Id)
+                    .Select(c => new
+                    {
+                        c.Id,
+                        c.Name,
+                        type = c.CurrencyType.ToString(),
+                        c.ActivityPointType,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                return new { imageTemplate = _assetUrls.TargetedOfferImageTemplate, currencyTypes };
             },
             ct
         );

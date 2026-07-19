@@ -5,8 +5,10 @@
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer } from '../lib/session.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import AssetImage from '../components/AssetImage.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import LineChart from '../components/LineChart.svelte';
+  import { Shield } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
   const granularities = ['day', 'month', 'year'];
@@ -147,7 +149,7 @@
           {#each data.topGroupsByMembers || [] as g}
             <tr>
               <td>{g.name}</td>
-              <td>{g.badge}</td>
+              <td title={g.badge}><AssetImage src={g.badgeUrl} alt={g.badge} size={28} fallbackIcon={Shield} /></td>
               <td><EntityLink type="player" id={g.ownerId} label={g.ownerName} {openPlayer} /></td>
               <td>{formatNumber(g.memberCount)}</td>
               <td>{g.roomId}</td>

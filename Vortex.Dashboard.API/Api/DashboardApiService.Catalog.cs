@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.Specialized;
-using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -367,19 +366,5 @@ internal sealed partial class DashboardApiService
                 : _config.CatalogIconUrlTemplate,
         };
 
-    private string? BuildCatalogIconUrl(int iconId)
-    {
-        string template = _config.CatalogIconUrlTemplate;
-
-        if (string.IsNullOrWhiteSpace(template))
-        {
-            return null;
-        }
-
-        return template.Replace(
-            "{id}",
-            iconId.ToString(CultureInfo.InvariantCulture),
-            StringComparison.Ordinal
-        );
-    }
+    private string? BuildCatalogIconUrl(int iconId) => _assetUrls.CatalogIcon(iconId);
 }

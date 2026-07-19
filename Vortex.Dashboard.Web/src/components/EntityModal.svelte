@@ -3,6 +3,8 @@
   import { compactCorrelation, formatDate, summarizeData } from '../lib/format.js';
   import EntityLink from './EntityLink.svelte';
   import AccessDeniedNotice from './AccessDeniedNotice.svelte';
+  import AssetImage from './AssetImage.svelte';
+  import { User } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { modal, closeModal, openPlayer, openItem } from '../lib/session.js';
   import { t } from '../lib/i18n.js';
@@ -67,12 +69,15 @@
       {:else if error}
         <p class="empty-state danger">{$t('entityModal.unableToLoad', { error })}</p>
       {:else if $modal.type === 'player' && playerProfile}
-        <div class="modal-grid">
-          <article>
-            <span>{$t('entityModal.identity')}</span>
+        <div class="profile-headline">
+          <AssetImage src={playerProfile.avatarUrl} alt={playerProfile.name} size={56} fallbackIcon={User} />
+          <div class="profile-headline-text">
             <strong>{playerProfile.name} #{playerProfile.id}</strong>
+            {#if playerProfile.motto}<small>{playerProfile.motto}</small>{/if}
             <small>{playerProfile.status} - {playerProfile.gender}</small>
-          </article>
+          </div>
+        </div>
+        <div class="modal-grid">
           <article>
             <span>{$t('entityModal.created')}</span>
             <strong>{formatDate(playerProfile.createdAt)}</strong>
@@ -205,4 +210,23 @@
     </section>
   </div>
 {/if}
+
+<style>
+  .profile-headline {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .profile-headline-text {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .profile-headline-text small {
+    color: var(--muted);
+  }
+</style>
 

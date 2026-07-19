@@ -190,6 +190,7 @@ internal sealed class DashboardWebHost(
         services.AddSingleton(rootServices.GetRequiredService<DashboardAuthService>());
         services.AddSingleton(rootServices.GetRequiredService<DashboardSessionStore>());
         services.AddSingleton(rootServices.GetRequiredService<DashboardAssetStore>());
+        services.AddSingleton(rootServices.GetRequiredService<DashboardAssetUrls>());
         services.AddSingleton(rootServices.GetRequiredService<DashboardAuditEmitter>());
         services.AddSingleton(options);
     }
@@ -339,8 +340,7 @@ internal sealed class DashboardWebHost(
     private void ConfigurePipeline(WebApplication app)
     {
         string csp = DashboardSecurityHeaders.BuildCsp(
-            _config.FurniIconUrlTemplate,
-            _config.CatalogIconUrlTemplate
+            app.Services.GetRequiredService<DashboardAssetUrls>().ImgSrcOrigins
         );
         DashboardAuditEmitter emitter = app.Services.GetRequiredService<DashboardAuditEmitter>();
 

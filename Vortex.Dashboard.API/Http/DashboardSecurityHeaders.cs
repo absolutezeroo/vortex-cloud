@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 
@@ -12,23 +13,15 @@ namespace Vortex.Dashboard.API.Http;
 internal static class DashboardSecurityHeaders
 {
     /// <summary>
-    /// Builds the Content-Security-Policy. When a furniture and/or catalog icon host is configured,
-    /// its origin is added to <c>img-src</c> so operator tools can render those icons.
+    /// Builds the Content-Security-Policy. Each configured asset host origin (furniture/catalog icons,
+    /// targeted-offer images, avatar heads, guild badges — resolved once by <c>DashboardAssetUrls</c>)
+    /// is added to <c>img-src</c> so operator tools can render those images.
     /// </summary>
-    public static string BuildCsp(string? furniIconTemplate, string? catalogIconTemplate = null)
+    public static string BuildCsp(IEnumerable<string>? imgOrigins)
     {
         string imgSrc = "img-src 'self' data:";
 
-        string[] origins = new[]
-        {
-            TryGetIconOrigin(furniIconTemplate, "{name}"),
-            TryGetIconOrigin(catalogIconTemplate, "{id}"),
-        }
-            .Where(origin => origin is not null)
-            .Distinct()
-            .ToArray()!;
-
-        foreach (string origin in origins)
+        foreach (string origin in (imgOrigins ?? []).Distinct(StringComparer.Ordinal))
         {
             imgSrc += " " + origin;
         }
@@ -61,21 +54,5 @@ internal static class DashboardSecurityHeaders
         headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
         headers["Pragma"] = "no-cache";
         headers["Expires"] = "0";
-    }
-
-    private static string? TryGetIconOrigin(string? template, string placeholder)
-    {
-        if (string.IsNullOrWhiteSpace(template))
-        {
-            return null;
-        }
-
-        string probe = template.Replace(placeholder, "icon", StringComparison.Ordinal);
-
-        return
-            Uri.TryCreate(probe, UriKind.Absolute, out Uri? uri)
-            && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
-            ? uri.GetLeftPart(UriPartial.Authority)
-            : null;
     }
 }

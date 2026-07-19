@@ -93,6 +93,22 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
+                // GroupBadge isn't SQL-translatable, so the badge URL is attached in a second pass over
+                // the materialized rows (same shape as the catalog/furni icon URLs).
+                var topByMembersWithBadges = topByMembers
+                    .Select(g => new
+                    {
+                        g.groupId,
+                        g.Name,
+                        g.Badge,
+                        badgeUrl = _assetUrls.GroupBadge(g.Badge),
+                        g.ownerId,
+                        g.ownerName,
+                        g.memberCount,
+                        g.roomId,
+                    })
+                    .ToList();
+
                 var topByForumActivity = await db
                     .Groups.AsNoTracking()
                     .Select(g => new
@@ -164,7 +180,7 @@ internal sealed partial class DashboardApiService
                         avgMembersPerGroup,
                     },
                     growth,
-                    topGroupsByMembers = topByMembers,
+                    topGroupsByMembers = topByMembersWithBadges,
                     topGroupsByForumActivity = topByForumActivity,
                     recentActivity = recentActivityWithNames,
                 };

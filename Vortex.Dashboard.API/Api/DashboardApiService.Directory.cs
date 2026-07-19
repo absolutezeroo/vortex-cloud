@@ -522,6 +522,7 @@ internal sealed partial class DashboardApiService
                             player.Name,
                             player.Motto,
                             player.Figure,
+                            avatarUrl = _assetUrls.AvatarImage(player.Figure),
                             createdAt = player.CreatedAt,
                             updatedAt = player.UpdatedAt,
                             player.status,
@@ -989,7 +990,7 @@ internal sealed partial class DashboardApiService
                                 .Where(p => onlineIds.Contains(p.Id))
                                 .OrderBy(p => p.Name)
                                 .Take(limit)
-                                .Select(p => new PlayerRow(p.Id, p.Name))
+                                .Select(p => new PlayerRow(p.Id, p.Name, p.Figure))
                                 .ToListAsync(ct)
                                 .ConfigureAwait(false)
                             : new List<PlayerRow>();
@@ -1003,7 +1004,7 @@ internal sealed partial class DashboardApiService
                                 .Where(p => !onlineIds.Contains(p.Id))
                                 .OrderByDescending(p => p.Id)
                                 .Take(remaining)
-                                .Select(p => new PlayerRow(p.Id, p.Name))
+                                .Select(p => new PlayerRow(p.Id, p.Name, p.Figure))
                                 .ToListAsync(ct)
                                 .ConfigureAwait(false)
                             : new List<PlayerRow>();
@@ -1026,7 +1027,7 @@ internal sealed partial class DashboardApiService
                     rows = await players
                         .OrderBy(p => p.Name)
                         .Take(limit)
-                        .Select(p => new PlayerRow(p.Id, p.Name))
+                        .Select(p => new PlayerRow(p.Id, p.Name, p.Figure))
                         .ToListAsync(ct)
                         .ConfigureAwait(false);
                 }
@@ -1035,6 +1036,7 @@ internal sealed partial class DashboardApiService
                     {
                         id = p.Id,
                         name = p.Name,
+                        avatarUrl = _assetUrls.AvatarImage(p.Figure),
                         online = online.Contains(p.Id),
                     })
                     .OrderByDescending(p => p.online)
@@ -1117,17 +1119,7 @@ internal sealed partial class DashboardApiService
             ct
         );
 
-    private string? BuildFurniIconUrl(string name)
-    {
-        string template = _config.FurniIconUrlTemplate;
+    private string? BuildFurniIconUrl(string name) => _assetUrls.FurniIcon(name);
 
-        if (string.IsNullOrWhiteSpace(template) || string.IsNullOrEmpty(name))
-        {
-            return null;
-        }
-
-        return template.Replace("{name}", Uri.EscapeDataString(name), StringComparison.Ordinal);
-    }
-
-    private sealed record PlayerRow(int Id, string Name);
+    private sealed record PlayerRow(int Id, string Name, string Figure);
 }

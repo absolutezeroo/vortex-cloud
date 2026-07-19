@@ -4,12 +4,15 @@
   import { compactCorrelation, formatDate, summarizeData } from '../lib/format.js';
   import EntityLink from '../components/EntityLink.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import AssetImage from '../components/AssetImage.svelte';
+  import { User } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer, openItem } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
 
   let query = '';
   let rows = [];
+  let player = null;
   let state = '';
   $: if (!state) state = translate('investigation.hint');
   let error = '';
@@ -31,11 +34,13 @@
 
     forbidden = false;
     error = '';
+    player = null;
     try {
       const data = await apiGet(`/api/v1/directory/search?q=${encodeURIComponent(term)}`);
       const nextRows = [];
 
       if (data.kind === 'id') {
+        player = data.playerProfile || null;
         (data.asActor || []).forEach((row) => push(nextRows, { kind: 'audit', ...row }));
         (data.ledger || []).forEach((row) => push(nextRows, { kind: 'ledger', playerId: term, ...row }));
         (data.itemHistory || []).forEach((row) => push(nextRows, { kind: 'item', ...row }));
@@ -54,12 +59,14 @@
       if (isPermissionDeniedError(err)) {
         forbidden = true;
         rows = [];
+        player = null;
         error = '';
         return;
       }
 
       error = err.message;
       rows = [];
+      player = null;
     }
   }
 </script>
@@ -79,6 +86,17 @@
     <AccessDeniedNotice message={$t('investigation.accessDenied')} />
   {:else if error}
     <p class="empty-state danger">{error}</p>
+  {/if}
+
+  {#if player}
+    <div class="player-headline">
+      <AssetImage src={player.avatarUrl} alt={player.name} size={56} fallbackIcon={User} />
+      <div class="player-headline-text">
+        <strong>{player.name} #{player.id}</strong>
+        {#if player.motto}<small class="muted">{player.motto}</small>{/if}
+        <small class="muted">{player.status} - {player.gender}</small>
+      </div>
+    </div>
   {/if}
 
   <table>
@@ -109,3 +127,18 @@
     </tbody>
   </table>
 </section>
+
+<style>
+  .player-headline {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 0 12px;
+  }
+
+  .player-headline-text {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+</style>

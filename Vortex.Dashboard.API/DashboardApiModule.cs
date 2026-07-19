@@ -32,6 +32,7 @@ public sealed class DashboardApiModule : IHostPluginModule
         services.TryAddSingleton<DashboardSessionStore>();
         services.TryAddSingleton<DashboardAuthService>();
         services.TryAddSingleton<DashboardAssetStore>();
+        services.TryAddSingleton<DashboardAssetUrls>();
         services.TryAddSingleton<DashboardAuditEmitter>();
         services.TryAddSingleton<DashboardApiService>();
         services.TryAddSingleton<DashboardOperationsService>();

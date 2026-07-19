@@ -112,6 +112,33 @@ public sealed class ObservabilityConfig
     /// </summary>
     public string CatalogIconUrlTemplate { get; init; } = string.Empty;
 
+    /// <summary>
+    /// Optional URL template for targeted-offer promo images shown in the dashboard's targeted-offer
+    /// admin surface. Use <c>{file}</c> as the image filename placeholder, for example
+    /// <c>http://vortex-assets.local/c_images/targetedoffers/{file}</c>. The admin then supplies just
+    /// the filename instead of a full URL. Empty falls back to typing the whole URL. When set, the
+    /// host origin is added to the dashboard CSP <c>img-src</c>.
+    /// </summary>
+    public string TargetedOfferImageUrlTemplate { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Optional URL template for avatar images (player inspector heads) rendered from a player's
+    /// figure string. Use <c>{figure}</c> as the placeholder, for example the Habbo imaging endpoint
+    /// <c>http://vortex-assets.local/habbo-imaging/avatarimage?figure={figure}&amp;headonly=1&amp;size=m</c>.
+    /// Empty hides the avatar (a generic icon is shown). When set, the host origin is added to the
+    /// dashboard CSP <c>img-src</c>.
+    /// </summary>
+    public string AvatarImageUrlTemplate { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Optional URL template for guild/group badges rendered from a group's badge code. Use
+    /// <c>{badge}</c> as the placeholder, for example
+    /// <c>http://vortex-assets.local/c_images/Badgeparts/generated/{badge}.gif</c>. Empty hides the
+    /// badge (a generic icon is shown). When set, the host origin is added to the dashboard CSP
+    /// <c>img-src</c>.
+    /// </summary>
+    public string GroupBadgeUrlTemplate { get; init; } = string.Empty;
+
     /// <summary>Bounded capacity of the in-memory error-grouping queue.</summary>
     public int ErrorGroupingChannelCapacity { get; init; } = 10_000;
 

@@ -21,6 +21,8 @@
   import { reasonOk } from '../lib/validation.js';
   import { rememberReason } from '../lib/reasonHistory.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import AssetImage from '../components/AssetImage.svelte';
+  import OfferImageField from '../components/OfferImageField.svelte';
   import { identity } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
 
@@ -54,6 +56,14 @@
   }
 
   let activeOnly = false;
+
+  // Admin-form metadata loaded once: the configured promo-image base template (drives the
+  // filename-only image inputs) and the currency types for the activity-point picker.
+  let imageTemplate = null;
+  let currencyTypes = [];
+  // Activity points can be paid in any non-Credits currency; Credits are handled by the separate
+  // credits price field, so excluding them here avoids offering the same currency twice.
+  $: activityPointCurrencyTypes = currencyTypes.filter((c) => c.type !== 'Credits');
 
   let offers = [];
   let loading = false;
@@ -391,7 +401,23 @@
     );
   }
 
-  onMount(loadOffers);
+  // Form metadata is optional polish: if it fails to load the form still works with plain full-URL
+  // image inputs and the "none" activity-point option, so failures are swallowed rather than surfaced.
+  async function loadFormMeta() {
+    try {
+      const meta = await apiGet('/api/targeted-offers/form-meta');
+      imageTemplate = meta.imageTemplate ?? null;
+      currencyTypes = meta.currencyTypes || [];
+    } catch {
+      imageTemplate = null;
+      currencyTypes = [];
+    }
+  }
+
+  onMount(() => {
+    loadOffers();
+    loadFormMeta();
+  });
 </script>
 
 <section class="panel">
@@ -443,14 +469,20 @@
           <label for="new-offer-product-code">{$t('targetedOffers.productCode')}</label>
           <input id="new-offer-product-code" bind:value={newOffer.productCode} />
         </div>
-        <div class="op-field">
-          <label for="new-offer-image">{$t('targetedOffers.imageUrl')}</label>
-          <input id="new-offer-image" bind:value={newOffer.imageUrl} placeholder="https://..." />
-        </div>
-        <div class="op-field">
-          <label for="new-offer-icon">{$t('targetedOffers.iconImageUrl')}</label>
-          <input id="new-offer-icon" bind:value={newOffer.iconImageUrl} placeholder="https://..." />
-        </div>
+        <OfferImageField
+          id="new-offer-image"
+          label={$t('targetedOffers.imageUrl')}
+          {imageTemplate}
+          previewAlt={newOffer.title || newOffer.identifier}
+          bind:value={newOffer.imageUrl}
+        />
+        <OfferImageField
+          id="new-offer-icon"
+          label={$t('targetedOffers.iconImageUrl')}
+          {imageTemplate}
+          previewAlt={newOffer.title || newOffer.identifier}
+          bind:value={newOffer.iconImageUrl}
+        />
         <div class="op-field">
           <label for="new-offer-credits">{$t('targetedOffers.priceInCredits')}</label>
           <input id="new-offer-credits" type="number" min="0" bind:value={newOffer.priceInCredits} />
@@ -461,7 +493,12 @@
         </div>
         <div class="op-field">
           <label for="new-offer-point-type">{$t('targetedOffers.activityPointType')}</label>
-          <input id="new-offer-point-type" type="number" min="0" bind:value={newOffer.activityPointType} />
+          <select id="new-offer-point-type" bind:value={newOffer.activityPointType}>
+            <option value={0}>{$t('targetedOffers.activityPointTypeNone')}</option>
+            {#each activityPointCurrencyTypes as currency (currency.id)}
+              <option value={currency.activityPointType}>{currency.name}</option>
+            {/each}
+          </select>
         </div>
         <div class="op-field">
           <label for="new-offer-limit">{$t('targetedOffers.purchaseLimit')}</label>
@@ -507,7 +544,7 @@
         {#each offers as offer (offer.id)}
           <div class="catalog-card">
             <div class="catalog-row static">
-              <span class="catalog-row-icon"><Sparkles size={18} strokeWidth={2} aria-hidden="true" /></span>
+              <AssetImage src={offer.imageUrl} alt={offer.title || offer.identifier} size={38} fallbackIcon={Sparkles} />
               <span class="catalog-row-main">
                 <strong>{offer.title || offer.identifier}</strong>
                 <small class="muted">{offer.identifier} - #{offer.id}{offer.productCode ? ` - ${offer.productCode}` : ''}</small>
@@ -559,14 +596,20 @@
                     <label for={`edit-offer-product-code-${offer.id}`}>{$t('targetedOffers.productCode')}</label>
                     <input id={`edit-offer-product-code-${offer.id}`} bind:value={editOfferForm.productCode} />
                   </div>
-                  <div class="op-field">
-                    <label for={`edit-offer-image-${offer.id}`}>{$t('targetedOffers.imageUrl')}</label>
-                    <input id={`edit-offer-image-${offer.id}`} bind:value={editOfferForm.imageUrl} />
-                  </div>
-                  <div class="op-field">
-                    <label for={`edit-offer-icon-${offer.id}`}>{$t('targetedOffers.iconImageUrl')}</label>
-                    <input id={`edit-offer-icon-${offer.id}`} bind:value={editOfferForm.iconImageUrl} />
-                  </div>
+                  <OfferImageField
+                    id={`edit-offer-image-${offer.id}`}
+                    label={$t('targetedOffers.imageUrl')}
+                    {imageTemplate}
+                    previewAlt={editOfferForm.title || editOfferForm.identifier}
+                    bind:value={editOfferForm.imageUrl}
+                  />
+                  <OfferImageField
+                    id={`edit-offer-icon-${offer.id}`}
+                    label={$t('targetedOffers.iconImageUrl')}
+                    {imageTemplate}
+                    previewAlt={editOfferForm.title || editOfferForm.identifier}
+                    bind:value={editOfferForm.iconImageUrl}
+                  />
                   <div class="op-field">
                     <label for={`edit-offer-credits-${offer.id}`}>{$t('targetedOffers.priceInCredits')}</label>
                     <input id={`edit-offer-credits-${offer.id}`} type="number" min="0" bind:value={editOfferForm.priceInCredits} />
@@ -577,7 +620,12 @@
                   </div>
                   <div class="op-field">
                     <label for={`edit-offer-point-type-${offer.id}`}>{$t('targetedOffers.activityPointType')}</label>
-                    <input id={`edit-offer-point-type-${offer.id}`} type="number" min="0" bind:value={editOfferForm.activityPointType} />
+                    <select id={`edit-offer-point-type-${offer.id}`} bind:value={editOfferForm.activityPointType}>
+                      <option value={0}>{$t('targetedOffers.activityPointTypeNone')}</option>
+                      {#each activityPointCurrencyTypes as currency (currency.id)}
+                        <option value={currency.activityPointType}>{currency.name}</option>
+                      {/each}
+                    </select>
                   </div>
                   <div class="op-field">
                     <label for={`edit-offer-limit-${offer.id}`}>{$t('targetedOffers.purchaseLimit')}</label>

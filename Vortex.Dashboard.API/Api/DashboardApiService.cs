@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Orleans;
+using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Audit;
 using Vortex.Database.Entities.Furniture;
@@ -36,10 +37,12 @@ internal sealed partial class DashboardApiService(
     IInfrastructureHealthService infrastructureHealth,
     ClubMetrics clubMetrics,
     ClientPerformanceMetrics clientPerformanceMetrics,
+    DashboardAssetUrls assetUrls,
     IOptions<ObservabilityConfig> options
 )
 {
     private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
+    private readonly DashboardAssetUrls _assetUrls = assetUrls;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
     private readonly ILiveStatsAggregator _liveStats = liveStats;

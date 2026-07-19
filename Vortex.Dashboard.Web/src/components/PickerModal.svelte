@@ -1,6 +1,8 @@
 <script>
   import { apiGet } from '../lib/api.js';
   import AccessDeniedNotice from './AccessDeniedNotice.svelte';
+  import AssetImage from './AssetImage.svelte';
+  import { User } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { t } from '../lib/i18n.js';
 
@@ -115,6 +117,7 @@
           </button>
         {:else}
           <button type="button" class="pick-row" on:click={() => choose(row)}>
+            <AssetImage src={row.avatarUrl} alt={row.name} size={38} fallbackIcon={User} />
             <span class="pick-dot" class:on={row.online} aria-hidden="true"></span>
             <span class="pick-main">
               <strong>{row.name}</strong>
