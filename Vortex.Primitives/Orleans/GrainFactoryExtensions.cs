@@ -165,4 +165,13 @@ public static class GrainFactoryExtensions
         this IGrainFactory factory,
         long playerId
     ) => factory.GetGrain<IPlayerQuestGrain>(playerId);
+
+    public static ITargetedOfferManagerGrain GetTargetedOfferManagerGrain(
+        this IGrainFactory factory
+    ) => factory.GetGrain<ITargetedOfferManagerGrain>(SingletonGrainId.GLOBAL);
+
+    public static IPlayerTargetedOfferGrain GetPlayerTargetedOfferGrain(
+        this IGrainFactory factory,
+        long playerId
+    ) => factory.GetGrain<IPlayerTargetedOfferGrain>(playerId);
 }

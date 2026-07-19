@@ -43,6 +43,12 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<CatalogProductEntity> CatalogProducts { get; init; } = null!;
 
+    public DbSet<TargetedOfferEntity> TargetedOffers { get; init; } = null!;
+
+    public DbSet<TargetedOfferProductEntity> TargetedOfferProducts { get; init; } = null!;
+
+    public DbSet<PlayerTargetedOfferEntity> PlayerTargetedOffers { get; init; } = null!;
+
     public DbSet<VoucherEntity> Vouchers { get; init; } = null!;
 
     public DbSet<VoucherRedemptionEntity> VoucherRedemptions { get; init; } = null!;
@@ -287,6 +293,32 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
             .HasOne(p => p.QuestEntity)
             .WithMany()
             .HasForeignKey(p => p.QuestEntityId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Targeted offers: deleting an offer cascades to its bundle products; a player's per-offer
+        // state references the offer non-cascade and is cleaned up with the player.
+        mb.Entity<TargetedOfferProductEntity>()
+            .HasOne(p => p.TargetedOfferEntity)
+            .WithMany(o => o.Products)
+            .HasForeignKey(p => p.TargetedOfferEntityId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        mb.Entity<TargetedOfferProductEntity>()
+            .HasOne(p => p.FurnitureDefinition)
+            .WithMany()
+            .HasForeignKey(p => p.FurnitureDefinitionEntityId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        mb.Entity<PlayerTargetedOfferEntity>()
+            .HasOne(p => p.PlayerEntity)
+            .WithMany()
+            .HasForeignKey(p => p.PlayerEntityId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        mb.Entity<PlayerTargetedOfferEntity>()
+            .HasOne(p => p.TargetedOfferEntity)
+            .WithMany()
+            .HasForeignKey(p => p.TargetedOfferEntityId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

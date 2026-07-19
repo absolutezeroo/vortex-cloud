@@ -1,11 +1,14 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Messages.Incoming.Catalog;
+using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Catalog;
 
-public class ShopTargetedOfferViewedMessageHandler : IMessageHandler<ShopTargetedOfferViewedMessage>
+public class ShopTargetedOfferViewedMessageHandler(IGrainFactory grainFactory)
+    : IMessageHandler<ShopTargetedOfferViewedMessage>
 {
     public async ValueTask HandleAsync(
         ShopTargetedOfferViewedMessage message,
@@ -13,6 +16,14 @@ public class ShopTargetedOfferViewedMessageHandler : IMessageHandler<ShopTargete
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        if (ctx.PlayerId <= 0 || message.TargetedOfferId <= 0)
+        {
+            return;
+        }
+
+        await grainFactory
+            .GetPlayerTargetedOfferGrain(ctx.PlayerId)
+            .SetTrackingStateAsync(message.TargetedOfferId, message.TrackingState, ct)
+            .ConfigureAwait(false);
     }
 }

@@ -1,11 +1,16 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Messages.Registry;
+using Vortex.Primitives.Catalog.Snapshots;
 using Vortex.Primitives.Messages.Incoming.Catalog;
+using Vortex.Primitives.Messages.Outgoing.Catalog;
+using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Catalog;
 
-public class GetTargetedOfferMessageHandler : IMessageHandler<GetTargetedOfferMessage>
+public class GetTargetedOfferMessageHandler(IGrainFactory grainFactory)
+    : IMessageHandler<GetTargetedOfferMessage>
 {
     public async ValueTask HandleAsync(
         GetTargetedOfferMessage message,
@@ -13,6 +18,18 @@ public class GetTargetedOfferMessageHandler : IMessageHandler<GetTargetedOfferMe
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        if (ctx.PlayerId <= 0)
+        {
+            return;
+        }
+
+        TargetedOfferSnapshot? offer = await grainFactory
+            .GetPlayerTargetedOfferGrain(ctx.PlayerId)
+            .GetCurrentOfferAsync(ct)
+            .ConfigureAwait(false);
+
+        await TargetedOfferResponse
+            .SendAsync(grainFactory, ctx.PlayerId, offer)
+            .ConfigureAwait(false);
     }
 }
