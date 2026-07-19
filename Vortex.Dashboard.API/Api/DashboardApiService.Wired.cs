@@ -25,12 +25,16 @@ internal sealed partial class DashboardApiService
         QueryAsync<object>(
             async db =>
             {
-                List<(int RoomEntityId, string Logic)> placed = await (
+                List<(int RoomEntityId, string Logic, string Name)> placed = await (
                     from f in db.Furnitures.AsNoTracking()
                     join d in db.FurnitureDefinitions.AsNoTracking()
                         on f.FurnitureDefinitionEntityId equals d.Id
                     where f.RoomEntityId != null && d.Logic.StartsWith("wf_")
-                    select new ValueTuple<int, string>(f.RoomEntityId!.Value, d.Logic)
+                    select new ValueTuple<int, string, string>(
+                        f.RoomEntityId!.Value,
+                        d.Logic,
+                        d.Name
+                    )
                 )
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
@@ -46,7 +50,12 @@ internal sealed partial class DashboardApiService
 
                 var byLogic = placed
                     .GroupBy(p => p.Logic)
-                    .Select(g => new { logic = g.Key, count = g.Count() })
+                    .Select(g => new
+                    {
+                        logic = g.Key,
+                        count = g.Count(),
+                        furniIconUrl = BuildFurniIconUrl(g.First().Name),
+                    })
                     .OrderByDescending(g => g.count)
                     .Take(20)
                     .ToList();

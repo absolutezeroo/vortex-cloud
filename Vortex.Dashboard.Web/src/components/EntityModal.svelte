@@ -4,7 +4,7 @@
   import EntityLink from './EntityLink.svelte';
   import AccessDeniedNotice from './AccessDeniedNotice.svelte';
   import AssetImage from './AssetImage.svelte';
-  import { User } from '@lucide/svelte';
+  import { User, Package } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { modal, closeModal, openPlayer, openItem } from '../lib/session.js';
   import { t } from '../lib/i18n.js';
@@ -114,7 +114,12 @@
               {#each playerProfile.inventory?.latest || [] as item}
                 <tr>
                   <td><EntityLink type="item" id={item.itemId} label={`item #${item.itemId}`} {openPlayer} {openItem} /></td>
-                  <td>{item.definitionName || '-'}</td>
+                  <td>
+                    <span style="display: inline-flex; align-items: center; gap: 8px;">
+                      <AssetImage src={item.furniIconUrl} alt={item.definitionName} size={26} fallbackIcon={Package} />
+                      <span>{item.definitionName || '-'}</span>
+                    </span>
+                  </td>
                   <td>{item.roomName || $t('entityModal.notPlaced')}</td>
                 </tr>
               {:else}

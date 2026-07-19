@@ -365,6 +365,24 @@ internal sealed partial class DashboardApiService
                         .ToListAsync(ct)
                         .ConfigureAwait(false);
 
+                    // BuildFurniIconUrl isn't SQL-translatable, so the furni icon is attached in a
+                    // second pass over the materialized rows (same shape as the catalog products).
+                    var ownedItemsWithIcons = ownedItems
+                        .Select(f => new
+                        {
+                            f.itemId,
+                            f.definitionId,
+                            f.definitionName,
+                            furniIconUrl = f.definitionName is null
+                                ? null
+                                : BuildFurniIconUrl(f.definitionName),
+                            f.RoomEntityId,
+                            f.roomName,
+                            f.roomX,
+                            f.roomY,
+                        })
+                        .ToList();
+
                     var roomEntries = await db
                         .RoomEntryLogs.AsNoTracking()
                         .Where(e => e.PlayerEntityId == id)

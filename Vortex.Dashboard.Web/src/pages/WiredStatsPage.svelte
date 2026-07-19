@@ -4,6 +4,8 @@
   import { formatNumber } from '../lib/format.js';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import AssetImage from '../components/AssetImage.svelte';
+  import { Package } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
   let loading = false;
@@ -96,7 +98,7 @@
         <thead><tr><th>{$t('wiredStats.colLogic')}</th><th>{$t('wiredStats.colCount')}</th></tr></thead>
         <tbody>
           {#each data.byLogic || [] as row}
-            <tr><td><code>{row.logic}</code></td><td>{formatNumber(row.count)}</td></tr>
+            <tr><td><span style="display: inline-flex; align-items: center; gap: 8px;"><AssetImage src={row.furniIconUrl} alt={row.logic} size={26} fallbackIcon={Package} /><code>{row.logic}</code></span></td><td>{formatNumber(row.count)}</td></tr>
           {:else}
             <tr><td colspan="2" class="muted">{$t('wiredStats.noWired')}</td></tr>
           {/each}

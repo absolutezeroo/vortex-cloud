@@ -23,6 +23,7 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import OfferImageField from '../components/OfferImageField.svelte';
+  import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import { identity } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
 
@@ -61,6 +62,9 @@
   // filename-only image inputs) and the currency types for the activity-point picker.
   let imageTemplate = null;
   let currencyTypes = [];
+  // Available promo images (from the asset folder) for the gallery picker, so operators pick a real
+  // image instead of typing a filename blind. Empty when the picker is unconfigured.
+  let offerImages = [];
   // Activity points can be paid in any non-Credits currency; Credits are handled by the separate
   // credits price field, so excluding them here avoids offering the same currency twice.
   $: activityPointCurrencyTypes = currencyTypes.filter((c) => c.type !== 'Credits');
@@ -85,8 +89,11 @@
   let editProductId = null;
   let editProductForm = null;
 
-  let deleteOfferReason = {};
-  let deleteProductReason = {};
+  // Deletes go through a shared reason modal (ConfirmReasonModal) instead of an inline reason input
+  // beside every trash button. deleteTarget describes the pending delete; the modal supplies the reason.
+  let deleteTarget = null;
+  let deleteBusy = false;
+  let deleteError = '';
 
   let results = {};
   let errors = {};
@@ -303,25 +310,26 @@
     );
   }
 
-  function stageDeleteOffer(offer) {
+  function openDeleteOffer(offer) {
     if (!canManage) return;
-
-    stage(
-      'deleteOffer',
-      translate('targetedOffers.deleteOffer'),
-      '/api/operations/targeted-offers/delete',
-      reasonOk(deleteOfferReason[offer.id]),
-      { offerId: offer.id, reason: (deleteOfferReason[offer.id] || '').trim() },
-      translate('targetedOffers.deleteOfferSummary', { id: offer.id, name: offer.identifier }),
-      async () => {
-        deleteOfferReason = { ...deleteOfferReason, [offer.id]: '' };
+    deleteError = '';
+    deleteTarget = {
+      endpoint: '/api/operations/targeted-offers/delete',
+      body: { offerId: offer.id },
+      resultId: 'deleteOffer',
+      title: translate('targetedOffers.deleteOffer'),
+      summary: translate('targetedOffers.deleteOfferSummary', {
+        id: offer.id,
+        name: offer.identifier,
+      }),
+      onSuccess: async () => {
         if (selectedOfferId === offer.id) {
           selectedOfferId = null;
           offerDetail = null;
         }
         await loadOffers();
       },
-    );
+    };
   }
 
   function stageCreateProduct() {
@@ -383,22 +391,53 @@
     );
   }
 
-  function stageDeleteProduct(product) {
+  function openDeleteProduct(product) {
     if (!canManage) return;
-
-    stage(
-      'deleteProduct',
-      translate('targetedOffers.deleteProduct'),
-      '/api/operations/targeted-offers/products/delete',
-      reasonOk(deleteProductReason[product.id]),
-      { productId: product.id, reason: (deleteProductReason[product.id] || '').trim() },
-      translate('targetedOffers.deleteProductSummary', { id: product.id }),
-      async () => {
-        deleteProductReason = { ...deleteProductReason, [product.id]: '' };
+    deleteError = '';
+    deleteTarget = {
+      endpoint: '/api/operations/targeted-offers/products/delete',
+      body: { productId: product.id },
+      resultId: 'deleteProduct',
+      title: translate('targetedOffers.deleteProduct'),
+      summary: translate('targetedOffers.deleteProductSummary', { id: product.id }),
+      onSuccess: async () => {
         await loadOfferDetail(selectedOfferId);
         await loadOffers();
       },
-    );
+    };
+  }
+
+  function cancelDelete() {
+    deleteTarget = null;
+    deleteError = '';
+  }
+
+  // The reason comes from the shared modal; on failure we keep the modal open and show the server's
+  // message (e.g. offer_has_purchases) so the operator can react without re-opening it.
+  async function confirmDelete(reason) {
+    if (!deleteTarget) return;
+    const target = deleteTarget;
+
+    deleteBusy = true;
+    deleteError = '';
+    try {
+      const result = await apiPost(target.endpoint, { ...target.body, reason });
+      results = { ...results, [target.resultId]: result };
+
+      if (result.ok) {
+        rememberReason(reason);
+        deleteTarget = null;
+        await target.onSuccess?.();
+      } else {
+        deleteError = result.message || translate('targetedOffers.fillFields');
+      }
+    } catch (err) {
+      deleteError = isPermissionDeniedError(err)
+        ? translate('common.insufficientRightsAction')
+        : err.code || err.message;
+    } finally {
+      deleteBusy = false;
+    }
   }
 
   // Form metadata is optional polish: if it fails to load the form still works with plain full-URL
@@ -411,6 +450,13 @@
     } catch {
       imageTemplate = null;
       currencyTypes = [];
+    }
+
+    try {
+      const gallery = await apiGet('/api/targeted-offers/images');
+      offerImages = gallery.items || [];
+    } catch {
+      offerImages = [];
     }
   }
 
@@ -474,6 +520,7 @@
           label={$t('targetedOffers.imageUrl')}
           {imageTemplate}
           previewAlt={newOffer.title || newOffer.identifier}
+          images={offerImages}
           bind:value={newOffer.imageUrl}
         />
         <OfferImageField
@@ -481,6 +528,7 @@
           label={$t('targetedOffers.iconImageUrl')}
           {imageTemplate}
           previewAlt={newOffer.title || newOffer.identifier}
+          images={offerImages}
           bind:value={newOffer.iconImageUrl}
         />
         <div class="op-field">
@@ -543,25 +591,13 @@
       <div class="catalog-list">
         {#each offers as offer (offer.id)}
           <div class="catalog-card">
-            <div class="catalog-row static">
-              <AssetImage src={offer.imageUrl} alt={offer.title || offer.identifier} size={38} fallbackIcon={Sparkles} />
+            <div class="offer-head">
+              <AssetImage src={offer.imageUrl} alt={offer.title || offer.identifier} size={44} fallbackIcon={Sparkles} />
               <span class="catalog-row-main">
                 <strong>{offer.title || offer.identifier}</strong>
                 <small class="muted">{offer.identifier} - #{offer.id}{offer.productCode ? ` - ${offer.productCode}` : ''}</small>
               </span>
-              <span class="catalog-row-meta">
-                <span class="cost-chip"><Coins size={12} strokeWidth={2} aria-hidden="true" /> {offer.priceInCredits}c{offer.priceInActivityPoints > 0 ? ` + ${offer.priceInActivityPoints}pt` : ''}</span>
-                <span class="op-chip" title={$t('targetedOffers.bundleProducts')}><Package size={12} strokeWidth={2} aria-hidden="true" /> {offer.productCount}</span>
-                <span class="op-chip" title={$t('targetedOffers.buyers')}><Users size={12} strokeWidth={2} aria-hidden="true" /> {offer.buyerCount}</span>
-                {#if offer.expired}
-                  <span class="status-badge status-badge--warn"><Clock size={12} strokeWidth={2} aria-hidden="true" /> {$t('targetedOffers.expiredLabel')}</span>
-                {/if}
-                <span class="status-badge" class:status-badge--ok={offer.active} class:status-badge--bad={!offer.active}>
-                  {#if offer.active}<Eye size={12} strokeWidth={2} aria-hidden="true" />{:else}<EyeOff size={12} strokeWidth={2} aria-hidden="true" />{/if}
-                  {offer.active ? $t('targetedOffers.activeLabel') : $t('targetedOffers.inactive')}
-                </span>
-              </span>
-              <div class="op-actions">
+              <div class="op-actions offer-actions">
                 <button type="button" class="ghost-button" class:active={selectedOfferId === offer.id} on:click={() => toggleOfferDetail(offer.id)}>
                   <Package size={14} strokeWidth={2} aria-hidden="true" /> {offerProductsLabel(offer, selectedOfferId, $t)}
                 </button>
@@ -571,6 +607,18 @@
                   </button>
                 {/if}
               </div>
+            </div>
+            <div class="offer-meta">
+              <span class="cost-chip"><Coins size={12} strokeWidth={2} aria-hidden="true" /> {offer.priceInCredits}c{offer.priceInActivityPoints > 0 ? ` + ${offer.priceInActivityPoints}pt` : ''}</span>
+              <span class="op-chip" title={$t('targetedOffers.bundleProducts')}><Package size={12} strokeWidth={2} aria-hidden="true" /> {offer.productCount}</span>
+              <span class="op-chip" title={$t('targetedOffers.buyers')}><Users size={12} strokeWidth={2} aria-hidden="true" /> {offer.buyerCount}</span>
+              {#if offer.expired}
+                <span class="status-badge status-badge--warn"><Clock size={12} strokeWidth={2} aria-hidden="true" /> {$t('targetedOffers.expiredLabel')}</span>
+              {/if}
+              <span class="status-badge" class:status-badge--ok={offer.active} class:status-badge--bad={!offer.active}>
+                {#if offer.active}<Eye size={12} strokeWidth={2} aria-hidden="true" />{:else}<EyeOff size={12} strokeWidth={2} aria-hidden="true" />{/if}
+                {offer.active ? $t('targetedOffers.activeLabel') : $t('targetedOffers.inactive')}
+              </span>
             </div>
 
             {#if editOfferId === offer.id}
@@ -601,6 +649,7 @@
                     label={$t('targetedOffers.imageUrl')}
                     {imageTemplate}
                     previewAlt={editOfferForm.title || editOfferForm.identifier}
+                    images={offerImages}
                     bind:value={editOfferForm.imageUrl}
                   />
                   <OfferImageField
@@ -608,6 +657,7 @@
                     label={$t('targetedOffers.iconImageUrl')}
                     {imageTemplate}
                     previewAlt={editOfferForm.title || editOfferForm.identifier}
+                    images={offerImages}
                     bind:value={editOfferForm.iconImageUrl}
                   />
                   <div class="op-field">
@@ -665,9 +715,8 @@
             {/if}
 
             {#if canManage}
-              <div class="catalog-card-detail op-pick">
-                <input bind:value={deleteOfferReason[offer.id]} placeholder={$t('targetedOffers.deleteOfferReasonPlaceholder')} list="reason-history" style="flex: 1;" />
-                <button type="button" class="ghost-button danger" on:click={() => stageDeleteOffer(offer)}>
+              <div class="catalog-card-detail delete-bar">
+                <button type="button" class="ghost-button danger" on:click={() => openDeleteOffer(offer)}>
                   <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> {$t('targetedOffers.deleteOffer')}
                 </button>
               </div>
@@ -781,9 +830,8 @@
                           {/if}
 
                           {#if canManage}
-                            <div class="catalog-card-detail op-pick">
-                              <input bind:value={deleteProductReason[product.id]} placeholder={$t('targetedOffers.deleteProductReasonPlaceholder')} list="reason-history" style="flex: 1;" />
-                              <button type="button" class="ghost-button danger" on:click={() => stageDeleteProduct(product)}>
+                            <div class="catalog-card-detail delete-bar">
+                              <button type="button" class="ghost-button danger" on:click={() => openDeleteProduct(product)}>
                                 <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> {$t('targetedOffers.deleteProduct')}
                               </button>
                             </div>
@@ -836,6 +884,17 @@
   </div>
 {/if}
 
+<ConfirmReasonModal
+  open={Boolean(deleteTarget)}
+  title={deleteTarget?.title ?? ''}
+  summary={deleteTarget?.summary ?? ''}
+  confirmLabel={deleteTarget?.title ?? $t('common.confirm')}
+  busy={deleteBusy}
+  error={deleteError}
+  on:confirm={(e) => confirmDelete(e.detail)}
+  on:cancel={cancelDelete}
+/>
+
 <style>
   .head-actions {
     display: flex;
@@ -869,6 +928,46 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
+  }
+
+  /* Offer card laid out as a column: a header line (thumbnail + title + actions) with the status
+     chips on their own line beneath, instead of everything crammed into one wrapping row. */
+  .offer-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    flex-wrap: wrap;
+  }
+
+  .offer-head .catalog-row-main {
+    flex: 1 1 160px;
+    min-width: 120px;
+  }
+
+  .offer-actions {
+    margin-left: auto;
+    flex-wrap: wrap;
+  }
+
+  .offer-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px 10px 68px;
+  }
+
+  .offer-meta > .op-chip,
+  .offer-meta > .status-badge,
+  .offer-meta > .cost-chip {
+    height: 24px;
+    box-sizing: border-box;
+  }
+
+  .delete-bar {
+    display: flex;
+    justify-content: flex-end;
   }
 
   .panel-head {

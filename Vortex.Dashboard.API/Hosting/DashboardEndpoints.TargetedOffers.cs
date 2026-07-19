@@ -48,6 +48,14 @@ internal static partial class DashboardEndpoints
         );
         MapReadGet(
             app,
+            ApiTargetedOffers + "/images",
+            "/api/targeted-offers/images",
+            (DashboardApiService api) => Results.Ok(api.TargetedOfferImages()),
+            Capabilities.Dashboard.TargetedOffersRead,
+            TagTargetedOffers
+        );
+        MapReadGet(
+            app,
             ApiTargetedOffers + "/{offerId:int}",
             "/api/targeted-offers/{offerId:int}",
             (int offerId, DashboardApiService api, CancellationToken ct) =>

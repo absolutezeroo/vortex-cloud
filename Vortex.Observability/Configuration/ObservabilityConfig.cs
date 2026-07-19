@@ -139,6 +139,14 @@ public sealed class ObservabilityConfig
     /// </summary>
     public string GroupBadgeUrlTemplate { get; init; } = string.Empty;
 
+    /// <summary>
+    /// Optional local filesystem root of the asset host (e.g. <c>C:\Laragon\www\vortex-assets</c>),
+    /// used ONLY to enumerate available images for dashboard pickers (e.g. the targeted-offer promo
+    /// image gallery, so operators pick a real image instead of typing a filename blind). Empty
+    /// disables the pickers and operators fall back to typing. Never used to serve files.
+    /// </summary>
+    public string AssetsLocalRoot { get; init; } = string.Empty;
+
     /// <summary>Bounded capacity of the in-memory error-grouping queue.</summary>
     public int ErrorGroupingChannelCapacity { get; init; } = 10_000;
 

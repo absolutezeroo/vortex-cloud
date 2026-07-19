@@ -5,6 +5,8 @@
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import LineChart from '../components/LineChart.svelte';
+  import AssetImage from '../components/AssetImage.svelte';
+  import { Package } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
   const granularities = ['day', 'month', 'year'];
@@ -151,7 +153,12 @@
         <tbody>
           {#each data.topOffers || [] as row}
             <tr>
-              <td>{row.offerName}</td>
+              <td>
+                <span style="display: inline-flex; align-items: center; gap: 8px;">
+                  <AssetImage src={row.furniIconUrl} alt={row.offerName} size={26} fallbackIcon={Package} />
+                  <span>{row.offerName}</span>
+                </span>
+              </td>
               <td>{formatNumber(row.purchaseCount)}</td>
               <td>{formatNumber(row.quantity)}</td>
               <td>{formatNumber(row.creditsSpent)}</td>

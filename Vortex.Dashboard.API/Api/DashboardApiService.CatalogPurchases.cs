@@ -101,11 +101,35 @@ internal sealed partial class DashboardApiService
                     .ToDictionaryAsync(o => o.Id, o => o.LocalizationId, ct)
                     .ConfigureAwait(false);
 
+                // An offer's icon is its first bundled furniture's icon. Fetch the furni names for the
+                // top offers' products, then pick the first per offer in memory (BuildFurniIconUrl
+                // isn't SQL-translatable anyway).
+                List<CatalogOfferFurni> offerProductFurni = await db
+                    .CatalogProducts.AsNoTracking()
+                    .Where(p =>
+                        offerIds.Contains(p.CatalogOfferEntityId)
+                        && p.FurnitureDefinitionEntityId != null
+                    )
+                    .OrderBy(p => p.Id)
+                    .Select(p => new CatalogOfferFurni(
+                        p.CatalogOfferEntityId,
+                        p.FurnitureDefinition!.Name
+                    ))
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                Dictionary<int, string> offerFurniNames = offerProductFurni
+                    .GroupBy(p => p.OfferId)
+                    .ToDictionary(g => g.Key, g => g.First().Name);
+
                 var topOffers = topOfferGroups
                     .Select(g => new
                     {
                         g.offerId,
                         offerName = offerNames.GetValueOrDefault(g.offerId, $"offer #{g.offerId}"),
+                        furniIconUrl = offerFurniNames.TryGetValue(g.offerId, out string? furniName)
+                            ? BuildFurniIconUrl(furniName)
+                            : null,
                         g.catalogType,
                         g.purchaseCount,
                         g.quantity,
@@ -133,6 +157,8 @@ internal sealed partial class DashboardApiService
             },
             ct
         );
+
+    private sealed record CatalogOfferFurni(int OfferId, string Name);
 
     private sealed record CatalogPurchasePayload(
         DateTime OccurredAt,
