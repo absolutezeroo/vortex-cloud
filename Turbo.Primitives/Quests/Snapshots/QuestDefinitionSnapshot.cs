@@ -47,4 +47,7 @@ public sealed record QuestDefinitionSnapshot
 
     [Id(13)]
     public required int SeasonalSeconds { get; init; }
+
+    [Id(14)]
+    public System.DateTime? EndsAt { get; init; }
 }

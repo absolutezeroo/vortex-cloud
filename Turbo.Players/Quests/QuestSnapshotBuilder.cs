@@ -16,7 +16,8 @@ public static class QuestSnapshotBuilder
         bool accepted,
         bool completed,
         int completedQuestsInCampaign,
-        int questCountInCampaign
+        int questCountInCampaign,
+        DateTime now
     )
     {
         int steps = completed
@@ -42,7 +43,28 @@ public static class QuestSnapshotBuilder
             ChainCode = definition.ChainCode,
             Easy = definition.Easy,
             Seasonal = definition.Seasonal,
-            SecondsLeft = definition.Seasonal ? definition.SeasonalSeconds : 0,
+            SecondsLeft = SecondsLeftFor(definition, now),
         };
+    }
+
+    /// <summary>
+    /// Seconds remaining for a seasonal quest: counts down to <see cref="QuestDefinitionSnapshot.EndsAt"/>
+    /// when set (clamped at 0), else the static <see cref="QuestDefinitionSnapshot.SeasonalSeconds"/>.
+    /// Non-seasonal quests are always 0.
+    /// </summary>
+    private static int SecondsLeftFor(QuestDefinitionSnapshot definition, DateTime now)
+    {
+        if (!definition.Seasonal)
+        {
+            return 0;
+        }
+
+        if (definition.EndsAt is DateTime endsAt)
+        {
+            double remaining = (endsAt - now).TotalSeconds;
+            return remaining <= 0 ? 0 : (int)remaining;
+        }
+
+        return definition.SeasonalSeconds;
     }
 }

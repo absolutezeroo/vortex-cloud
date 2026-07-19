@@ -81,6 +81,7 @@ internal sealed class QuestManagerGrain(
                     Easy = q.Easy,
                     Seasonal = q.Seasonal,
                     SeasonalSeconds = q.SeasonalSeconds,
+                    EndsAt = q.EndsAt,
                 }),
             ];
 

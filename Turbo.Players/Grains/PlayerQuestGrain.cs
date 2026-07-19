@@ -445,7 +445,8 @@ internal sealed class PlayerQuestGrain(
                     progress?.Accepted ?? false,
                     progress?.Completed ?? false,
                     completedInCampaign,
-                    questCountByCampaign.GetValueOrDefault(definition.CampaignCode)
+                    questCountByCampaign.GetValueOrDefault(definition.CampaignCode),
+                    DateTime.Now
                 )
             );
         }

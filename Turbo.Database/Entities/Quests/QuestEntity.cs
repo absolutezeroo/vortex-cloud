@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
@@ -57,8 +58,12 @@ public class QuestEntity : TurboEntity
     [DefaultValue(false)]
     public bool Seasonal { get; set; }
 
-    /// <summary>Lifetime in seconds for a seasonal quest (0 = not time-limited).</summary>
+    /// <summary>Lifetime in seconds for a seasonal quest (fallback when <see cref="EndsAt"/> is null).</summary>
     [Column("seasonal_seconds")]
     [DefaultValue(0)]
     public int SeasonalSeconds { get; set; }
+
+    /// <summary>Absolute end time of a seasonal quest; the wire seconds-left is <c>EndsAt - now</c>.</summary>
+    [Column("ends_at")]
+    public DateTime? EndsAt { get; set; }
 }
