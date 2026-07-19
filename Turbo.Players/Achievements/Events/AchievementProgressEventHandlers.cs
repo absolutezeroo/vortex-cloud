@@ -113,3 +113,33 @@ public sealed class AchievementFurniPlacedHandler(IGrainFactory grainFactory)
             .ProgressAsync(AchievementNames.RoomDecoFurniCount, 1, ct)
             .ConfigureAwait(false);
 }
+
+/// <summary>Advances the "RespectGiven" achievement for the player who gave respect.</summary>
+public sealed class AchievementRespectGivenHandler(IGrainFactory grainFactory)
+    : IEventHandler<RespectGivenEvent>
+{
+    public async ValueTask HandleAsync(
+        RespectGivenEvent e,
+        EventContext ctx,
+        CancellationToken ct
+    ) =>
+        await grainFactory
+            .GetPlayerAchievementGrain((long)e.ActorPlayerId)
+            .ProgressAsync(AchievementNames.RespectGiven, 1, ct)
+            .ConfigureAwait(false);
+}
+
+/// <summary>Advances the "RespectEarned" achievement for the player who received respect.</summary>
+public sealed class AchievementRespectEarnedHandler(IGrainFactory grainFactory)
+    : IEventHandler<RespectReceivedEvent>
+{
+    public async ValueTask HandleAsync(
+        RespectReceivedEvent e,
+        EventContext ctx,
+        CancellationToken ct
+    ) =>
+        await grainFactory
+            .GetPlayerAchievementGrain((long)e.PlayerId)
+            .ProgressAsync(AchievementNames.RespectEarned, 1, ct)
+            .ConfigureAwait(false);
+}

@@ -1362,6 +1362,7 @@ public class Revision20260701(IOptions<ProtocolLimitsConfig> protocolLimits) : I
                 new GetExtendedProfileByNameMessageParser()
             },
             { MessageEvent.GetExtendedProfileMessageEvent, new GetExtendedProfileMessageParser() },
+            { MessageEvent.RespectUserMessageEvent, new RespectUserMessageParser() },
             {
                 MessageEvent.GetGuildCreationInfoMessageEvent,
                 new GetGuildCreationInfoMessageParser()

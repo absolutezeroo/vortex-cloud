@@ -9,11 +9,14 @@ using Turbo.Logging;
 using Turbo.Logging.Extensions;
 using Turbo.Primitives;
 using Turbo.Primitives.Action;
+using Turbo.Primitives.Events;
 using Turbo.Primitives.Messages.Outgoing.Room.Action;
 using Turbo.Primitives.Messages.Outgoing.Room.Chat;
 using Turbo.Primitives.Messages.Outgoing.Room.Engine;
+using Turbo.Primitives.Messages.Outgoing.Users;
 using Turbo.Primitives.Orleans.Snapshots.Players;
 using Turbo.Primitives.Players;
+using Turbo.Primitives.Players.Grains;
 using Turbo.Primitives.Rooms.Enums;
 using Turbo.Primitives.Rooms.Object;
 using Turbo.Primitives.Rooms.Object.Avatars;
@@ -26,6 +29,63 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
     private readonly RoomGrain _roomGrain = roomGrain;
 
     private int _nextObjectId = 0;
+
+    /// <summary>
+    /// One player gives a respect point to another present in this room. Enforces the giver's daily
+    /// budget, increments the target's total, broadcasts the respect animation, and publishes the
+    /// respect events that feed achievements/quests.
+    /// </summary>
+    public async Task RespectPlayerAsync(
+        int giverPlayerId,
+        int targetPlayerId,
+        int dailyLimit,
+        CancellationToken ct
+    )
+    {
+        if (giverPlayerId <= 0 || targetPlayerId <= 0 || giverPlayerId == targetPlayerId)
+        {
+            return;
+        }
+
+        bool targetPresent = _roomGrain
+            ._state.AvatarsByObjectId.Values.OfType<IRoomPlayer>()
+            .Any(a => (int)a.PlayerId == targetPlayerId);
+
+        if (!targetPresent)
+        {
+            return;
+        }
+
+        bool given = await _roomGrain
+            ._grainFactory.GetGrain<IPlayerGrain>((long)giverPlayerId)
+            .TryGiveRespectAsync(dailyLimit, ct);
+
+        if (!given)
+        {
+            return;
+        }
+
+        int newTotal = await _roomGrain
+            ._grainFactory.GetGrain<IPlayerGrain>((long)targetPlayerId)
+            .AddRespectReceivedAsync(ct);
+
+        await _roomGrain.SendComposerToRoomAsync(
+            new RespectNotificationMessageComposer
+            {
+                UserId = targetPlayerId,
+                RespectTotal = newTotal,
+            }
+        );
+
+        await _roomGrain._events.PublishAsync(
+            new RespectGivenEvent(giverPlayerId, targetPlayerId),
+            ct
+        );
+        await _roomGrain._events.PublishAsync(
+            new RespectReceivedEvent(targetPlayerId, newTotal),
+            ct
+        );
+    }
 
     public async Task<IRoomAvatar> CreateAvatarFromPlayerAsync(
         ActionContext ctx,

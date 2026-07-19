@@ -68,4 +68,13 @@ public partial interface IRoomGrain
     );
 
     public Task SetAvatarTypingAsync(ActionContext ctx, bool isTyping, CancellationToken ct);
+
+    /// <summary>The acting player (<paramref name="ctx"/>) gives a respect point to
+    /// <paramref name="targetPlayerId"/> if present in the room and within the daily budget.</summary>
+    public Task RespectPlayerAsync(
+        ActionContext ctx,
+        int targetPlayerId,
+        int dailyLimit,
+        CancellationToken ct
+    );
 }

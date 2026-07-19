@@ -12,6 +12,9 @@ public sealed class PlayerLiveState
     public string Figure { get; set; } = string.Empty;
     public AvatarGenderType Gender { get; set; } = AvatarGenderType.Male;
     public int AchievementScore { get; set; } = 0;
+    public int RespectReceived { get; set; } = 0;
+    public int RespectGivenToday { get; set; } = 0;
+    public DateTime? RespectResetDate { get; set; } = null;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime LastUpdated { get; set; } = DateTime.UtcNow;
 

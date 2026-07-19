@@ -71,6 +71,37 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
             .ConfigureAwait(true);
     }
 
+    public async Task<bool> TryGiveRespectAsync(int dailyLimit, CancellationToken ct)
+    {
+        (bool allowed, int givenToday, DateTime resetDate) = RespectBudget.TryConsume(
+            _state.RespectGivenToday,
+            _state.RespectResetDate,
+            DateTime.Now,
+            dailyLimit
+        );
+
+        _state.RespectGivenToday = givenToday;
+        _state.RespectResetDate = resetDate;
+
+        if (!allowed)
+        {
+            return false;
+        }
+
+        await WriteToDatabaseAsync(ct);
+
+        return true;
+    }
+
+    public async Task<int> AddRespectReceivedAsync(CancellationToken ct)
+    {
+        _state.RespectReceived += 1;
+
+        await WriteToDatabaseAsync(ct);
+
+        return _state.RespectReceived;
+    }
+
     public async Task<int> AddAchievementScoreAsync(int delta, CancellationToken ct)
     {
         if (delta == 0)
@@ -652,6 +683,9 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         _state.Figure = entity.Figure;
         _state.Gender = entity.Gender;
         _state.AchievementScore = entity.AchievementScore;
+        _state.RespectReceived = entity.RespectReceived;
+        _state.RespectGivenToday = entity.RespectGivenToday;
+        _state.RespectResetDate = entity.RespectResetDate;
         _state.CreatedAt = entity.CreatedAt;
         _state.LastUpdated = entity.UpdatedAt;
 
@@ -724,7 +758,10 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
                         .SetProperty(p => p.Motto, snapshot.Motto)
                         .SetProperty(p => p.Figure, snapshot.Figure)
                         .SetProperty(p => p.Gender, snapshot.Gender)
-                        .SetProperty(p => p.AchievementScore, snapshot.AchievementScore),
+                        .SetProperty(p => p.AchievementScore, snapshot.AchievementScore)
+                        .SetProperty(p => p.RespectReceived, _state.RespectReceived)
+                        .SetProperty(p => p.RespectGivenToday, _state.RespectGivenToday)
+                        .SetProperty(p => p.RespectResetDate, _state.RespectResetDate),
                 ct
             );
 

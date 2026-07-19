@@ -11,3 +11,9 @@ public sealed record UserBlockedEvent(int ActorPlayerId, int TargetPlayerId) : I
 
 /// <summary>A player unblocked a previously blocked user.</summary>
 public sealed record UserUnblockedEvent(int ActorPlayerId, int TargetPlayerId) : IEvent;
+
+/// <summary>A player gave a respect point to another player.</summary>
+public sealed record RespectGivenEvent(int ActorPlayerId, int TargetPlayerId) : IEvent;
+
+/// <summary>A player received a respect point; <paramref name="RespectTotal"/> is their new total.</summary>
+public sealed record RespectReceivedEvent(int PlayerId, int RespectTotal) : IEvent;

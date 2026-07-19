@@ -186,6 +186,34 @@ public sealed partial class RoomGrain
         }
     }
 
+    public async Task RespectPlayerAsync(
+        ActionContext ctx,
+        int targetPlayerId,
+        int dailyLimit,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            await AvatarModule.RespectPlayerAsync(
+                (int)ctx.PlayerId,
+                targetPlayerId,
+                dailyLimit,
+                ct
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to respect player {Target} from {Giver} in room {RoomId}",
+                targetPlayerId,
+                ctx.PlayerId,
+                _state.RoomId
+            );
+        }
+    }
+
     public async Task<bool> SetAvatarPostureAsync(ActionContext ctx, CancellationToken ct)
     {
         try

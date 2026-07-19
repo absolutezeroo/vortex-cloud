@@ -62,3 +62,18 @@ public sealed class QuestFigureHandler(IGrainFactory grainFactory)
             .ProgressAsync(QuestTypes.AvatarLooks, 1, ct)
             .ConfigureAwait(false);
 }
+
+/// <summary>Advances "RespectGiven" quests (e.g. the social GIVERESPECT quest) for the giver.</summary>
+public sealed class QuestRespectHandler(IGrainFactory grainFactory)
+    : IEventHandler<RespectGivenEvent>
+{
+    public async ValueTask HandleAsync(
+        RespectGivenEvent e,
+        EventContext ctx,
+        CancellationToken ct
+    ) =>
+        await grainFactory
+            .GetPlayerQuestGrain((long)e.ActorPlayerId)
+            .ProgressAsync(QuestTypes.RespectGiven, 1, ct)
+            .ConfigureAwait(false);
+}

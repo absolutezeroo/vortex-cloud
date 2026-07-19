@@ -330,6 +330,16 @@ public sealed class GroupDirectoryGrainCreationTests
             throw new NotSupportedException();
         }
 
+        public Task<bool> TryGiveRespectAsync(int dailyLimit, CancellationToken ct)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task<int> AddRespectReceivedAsync(CancellationToken ct)
+        {
+            throw new NotSupportedException();
+        }
+
         public Task<PlayerSummarySnapshot> GetSummaryAsync(CancellationToken ct)
         {
             throw new NotSupportedException();

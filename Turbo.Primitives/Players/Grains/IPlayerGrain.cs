@@ -21,6 +21,15 @@ public interface IPlayerGrain : IGrainWithIntegerKey
     /// </summary>
     public Task<int> AddAchievementScoreAsync(int delta, CancellationToken ct);
 
+    /// <summary>
+    /// Consumes one of the player's daily respect points if any remain (resetting the budget on a new
+    /// day). Returns true if a respect could be given, false if the daily limit is reached.
+    /// </summary>
+    public Task<bool> TryGiveRespectAsync(int dailyLimit, CancellationToken ct);
+
+    /// <summary>Increments the player's total received respect and returns the new total.</summary>
+    public Task<int> AddRespectReceivedAsync(CancellationToken ct);
+
     public Task<PlayerSummarySnapshot> GetSummaryAsync(CancellationToken ct);
 
     public Task<PlayerExtendedProfileSnapshot> GetExtendedProfileSnapshotAsync(

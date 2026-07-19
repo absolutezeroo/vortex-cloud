@@ -13,4 +13,6 @@ public static class AchievementNames
     public const string AvatarLooks = "AvatarLooks";
     public const string FriendListSize = "FriendListSize";
     public const string RoomDecoFurniCount = "RoomDecoFurniCount";
+    public const string RespectGiven = "RespectGiven";
+    public const string RespectEarned = "RespectEarned";
 }
