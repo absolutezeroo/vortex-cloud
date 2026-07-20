@@ -19,8 +19,24 @@ internal sealed class DashboardAssetUrls(IOptions<ObservabilityConfig> options)
 {
     private readonly ObservabilityConfig _config = options.Value;
 
-    /// <summary>Furniture icon by definition name (<c>{name}</c>).</summary>
-    public string? FurniIcon(string? name) => Build(_config.FurniIconUrlTemplate, "{name}", name);
+    /// <summary>
+    /// Furniture icon by definition name (<c>{name}</c>). Habbo multi-quantity items are named
+    /// <c>basename*count</c> (e.g. <c>waterbowl*4</c>), but the icon asset is the base name
+    /// (<c>waterbowl_icon.png</c>) — so the <c>*count</c> suffix is dropped before resolving. Clean
+    /// names are unaffected.
+    /// </summary>
+    public string? FurniIcon(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return null;
+        }
+
+        int star = name.IndexOf('*', StringComparison.Ordinal);
+        string baseName = star >= 0 ? name[..star] : name;
+
+        return Build(_config.FurniIconUrlTemplate, "{name}", baseName);
+    }
 
     /// <summary>Catalog page icon by icon id (<c>{id}</c>).</summary>
     public string? CatalogIcon(int iconId) =>

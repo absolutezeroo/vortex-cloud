@@ -30,6 +30,7 @@ using Vortex.Primitives.Messages.Outgoing.Nft;
 using Vortex.Primitives.Messages.Outgoing.Notifications;
 using Vortex.Primitives.Messages.Outgoing.Perk;
 using Vortex.Primitives.Messages.Outgoing.Preferences;
+using Vortex.Primitives.Messages.Outgoing.Quest;
 using Vortex.Primitives.Messages.Outgoing.Room.Action;
 using Vortex.Primitives.Messages.Outgoing.Room.Bots;
 using Vortex.Primitives.Messages.Outgoing.Room.Chat;
@@ -137,6 +138,7 @@ using Vortex.Revisions.Revision20260701.Serializers.Nft;
 using Vortex.Revisions.Revision20260701.Serializers.Notifications;
 using Vortex.Revisions.Revision20260701.Serializers.Perk;
 using Vortex.Revisions.Revision20260701.Serializers.Preferences;
+using Vortex.Revisions.Revision20260701.Serializers.Quest;
 using Vortex.Revisions.Revision20260701.Serializers.Room.Action;
 using Vortex.Revisions.Revision20260701.Serializers.Room.Bots;
 using Vortex.Revisions.Revision20260701.Serializers.Room.Chat;
@@ -2631,6 +2633,39 @@ public class Revision20260701(IOptions<ProtocolLimitsConfig> protocolLimits) : I
                 typeof(AccountPreferencesEventMessageComposer),
                 new AccountPreferencesEventMessageComposerSerializer(
                     MessageComposer.AccountPreferencesComposer
+                )
+            },
+            #endregion
+
+            #region Quest
+            {
+                typeof(QuestsMessageComposer),
+                new QuestsMessageComposerSerializer(MessageComposer.QuestsMessageComposer)
+            },
+            {
+                typeof(QuestMessageComposer),
+                new QuestMessageComposerSerializer(MessageComposer.QuestMessageComposer)
+            },
+            {
+                typeof(QuestDailyMessageComposer),
+                new QuestDailyMessageComposerSerializer(MessageComposer.QuestDailyMessageComposer)
+            },
+            {
+                typeof(SeasonalQuestsMessageComposer),
+                new SeasonalQuestsMessageComposerSerializer(
+                    MessageComposer.SeasonalQuestsMessageComposer
+                )
+            },
+            {
+                typeof(QuestCompletedMessageComposer),
+                new QuestCompletedMessageComposerSerializer(
+                    MessageComposer.QuestCompletedMessageComposer
+                )
+            },
+            {
+                typeof(QuestCancelledMessageComposer),
+                new QuestCancelledMessageComposerSerializer(
+                    MessageComposer.QuestCancelledMessageComposer
                 )
             },
             #endregion

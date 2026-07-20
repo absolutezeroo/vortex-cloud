@@ -549,7 +549,11 @@ internal sealed partial class DashboardApiService
                             window = new { since = profileWindowSince, until = profileWindowUntil },
                             ownedRooms = new { total = ownedRoomCount, latest = ownedRooms },
                             wallets = playerCurrencies,
-                            inventory = new { total = ownedItemCount, latest = ownedItemsWithIcons },
+                            inventory = new
+                            {
+                                total = ownedItemCount,
+                                latest = ownedItemsWithIcons,
+                            },
                             activity = new
                             {
                                 auditEvents = auditCount,
@@ -1106,7 +1110,11 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var items = rows.Select(p => new { id = p.Id, avatarUrl = _assetUrls.AvatarImage(p.Figure) })
+                var items = rows.Select(p => new
+                    {
+                        id = p.Id,
+                        avatarUrl = _assetUrls.AvatarImage(p.Figure),
+                    })
                     .ToList();
 
                 return new { items };
