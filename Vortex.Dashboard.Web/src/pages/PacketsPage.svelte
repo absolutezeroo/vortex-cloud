@@ -3,6 +3,8 @@
   import { apiGet } from '../lib/api.js';
   import { formatNumber } from '../lib/format.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import StatCard from '../components/StatCard.svelte';
+  import { Gauge, TriangleAlert, Timer } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { t } from '../lib/i18n.js';
 
@@ -54,10 +56,20 @@
   {/if}
 
   <div class="metric-grid compact">
-    <article><span>{$t('packets.packetsPerSec')}</span><strong>{formatNumber(data?.packetsPerSecond, 2)}</strong></article>
-    <article><span>{$t('packets.errorsPerMin')}</span><strong>{formatNumber(data?.errorsPerMinute, 2)}</strong></article>
-    <article><span>{$t('packets.latencyP50')}</span><strong>{formatNumber(data?.latencyP50Ms, 2)} ms</strong></article>
-    <article><span>{$t('packets.latencyP95')}</span><strong>{formatNumber(data?.latencyP95Ms, 2)} ms</strong></article>
+    <StatCard label={$t('packets.packetsPerSec')} value={formatNumber(data?.packetsPerSecond, 2)}>
+      <Gauge slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('packets.errorsPerMin')} value={formatNumber(data?.errorsPerMinute, 2)}>
+      <TriangleAlert slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('packets.latencyP50')}>
+      <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      <span slot="value">{formatNumber(data?.latencyP50Ms, 2)} ms</span>
+    </StatCard>
+    <StatCard label={$t('packets.latencyP95')}>
+      <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      <span slot="value">{formatNumber(data?.latencyP95Ms, 2)} ms</span>
+    </StatCard>
   </div>
 </section>
 

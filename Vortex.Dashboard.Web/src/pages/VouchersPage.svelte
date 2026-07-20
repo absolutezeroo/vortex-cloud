@@ -1,10 +1,13 @@
 <script>
+  import OpResult from '../components/OpResult.svelte';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { apiGet, apiPost } from '../lib/api.js';
   import { compactCorrelation, formatDate } from '../lib/format.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { reasonOk, positive, nonNegative } from '../lib/validation.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import StatCard from '../components/StatCard.svelte';
+  import { Activity, Coins, Hash, Timer } from '@lucide/svelte';
   import { identity } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
 
@@ -211,11 +214,7 @@
       </div>
       {#if errors.create}<p class="empty-state danger">{errors.create}</p>{/if}
       {#if results.create}
-        <p class="op-result" class:danger={!results.create.ok}>
-          {results.create.ok ? '✅' : '❌'} {results.create.message} - cid
-          <code>{compactCorrelation(results.create.correlationId)}</code>
-          <button class="ghost-button" type="button" on:click={() => copy(results.create.correlationId)}>{$t('common.copy')}</button>
-        </p>
+        <OpResult result={results.create} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
   </section>
@@ -238,11 +237,7 @@
       </div>
       {#if errors.deactivate}<p class="empty-state danger">{errors.deactivate}</p>{/if}
       {#if results.deactivate}
-        <p class="op-result" class:danger={!results.deactivate.ok}>
-          {results.deactivate.ok ? '✅' : '❌'} {results.deactivate.message} - cid
-          <code>{compactCorrelation(results.deactivate.correlationId)}</code>
-          <button class="ghost-button" type="button" on:click={() => copy(results.deactivate.correlationId)}>{$t('common.copy')}</button>
-        </p>
+        <OpResult result={results.deactivate} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
   </section>
@@ -262,11 +257,22 @@
         <p class="empty-state">{$t('vouchers.noVoucher')}</p>
       {:else}
         <div class="metric-grid compact">
-          <article><span>{$t('vouchers.status')}</span><strong>{lookupResult.isActive ? $t('vouchers.active') : $t('vouchers.inactive')}</strong></article>
-          <article><span>{$t('vouchers.currencyCol')}</span><strong>{currencyLabel(lookupResult.currencyType, $t)}</strong></article>
-          <article><span>{$t('vouchers.amountCol')}</span><strong>{lookupResult.amount}</strong></article>
-          <article><span>{$t('vouchers.redemptions')}</span><strong>{lookupResult.redemptionCount}{lookupResult.maxRedemptions ? ` / ${lookupResult.maxRedemptions}` : ''}</strong></article>
-          <article><span>{$t('vouchers.expires')}</span><strong>{lookupResult.expiresAt ? formatDate(lookupResult.expiresAt) : $t('vouchers.never')}</strong></article>
+          <StatCard label={$t('vouchers.status')} value={lookupResult.isActive ? $t('vouchers.active') : $t('vouchers.inactive')}>
+            <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+          </StatCard>
+          <StatCard label={$t('vouchers.currencyCol')} value={currencyLabel(lookupResult.currencyType, $t)} accent>
+            <Coins slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+          </StatCard>
+          <StatCard label={$t('vouchers.amountCol')} value={lookupResult.amount} accent>
+            <Coins slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+          </StatCard>
+          <StatCard label={$t('vouchers.redemptions')}>
+            <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+            <span slot="value">{lookupResult.redemptionCount}{lookupResult.maxRedemptions ? ` / ${lookupResult.maxRedemptions}` : ''}</span>
+          </StatCard>
+          <StatCard label={$t('vouchers.expires')} value={lookupResult.expiresAt ? formatDate(lookupResult.expiresAt) : $t('vouchers.never')}>
+            <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+          </StatCard>
         </div>
       {/if}
     {/if}

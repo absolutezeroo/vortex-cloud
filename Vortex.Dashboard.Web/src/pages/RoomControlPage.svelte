@@ -1,4 +1,5 @@
 <script>
+  import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
   import { apiGet, apiPost } from '../lib/api.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
@@ -200,10 +201,7 @@
   {/if}
 
   {#if lastResult}
-    <p class="op-result" class:danger={!lastResult.ok}>
-      {lastResult.ok ? '✅' : '❌'} {lastResult.message} - cid
-      <code>{compactCorrelation(lastResult.correlationId)}</code>
-    </p>
+    <OpResult result={lastResult} />
   {/if}
 
   <table>

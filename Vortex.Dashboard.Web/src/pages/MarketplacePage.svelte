@@ -6,6 +6,8 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import LineChart from '../components/LineChart.svelte';
+  import StatCard from '../components/StatCard.svelte';
+  import { ShoppingCart, ShoppingBag, Coins } from '@lucide/svelte';
   import { openPlayer, openItem } from '../lib/session.js';
   import { t } from '../lib/i18n.js';
 
@@ -123,10 +125,18 @@
 
 {#if data}
   <div class="metric-grid" style="margin-top: 12px;">
-    <article><span>{$t('marketplace.activeListings')}</span><strong>{formatNumber(data.totals.activeListings)}</strong></article>
-    <article><span>{$t('marketplace.soldWindow')}</span><strong>{formatNumber(data.totals.soldCount)}</strong></article>
-    <article><span>{$t('marketplace.volumeCredits')}</span><strong>{formatNumber(data.totals.totalVolume)}</strong></article>
-    <article><span>{$t('marketplace.averagePrice')}</span><strong>{formatNumber(data.totals.averagePrice, 1)}</strong></article>
+    <StatCard label={$t('marketplace.activeListings')} value={formatNumber(data.totals.activeListings)}>
+      <ShoppingCart slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('marketplace.soldWindow')} value={formatNumber(data.totals.soldCount)}>
+      <ShoppingBag slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('marketplace.volumeCredits')} value={formatNumber(data.totals.totalVolume)} accent>
+      <Coins slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('marketplace.averagePrice')} value={formatNumber(data.totals.averagePrice, 1)} accent>
+      <Coins slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
   </div>
 
   <div class="split-grid" style="margin-top: 12px;">

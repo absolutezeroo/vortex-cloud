@@ -1,9 +1,9 @@
 <script>
+  import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
   import { Eye, EyeOff, Image, Package, Pencil, Plus, Trash2 } from '@lucide/svelte';
   import { apiGet, apiPost } from '../lib/api.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
-  import { compactCorrelation } from '../lib/format.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { reasonOk } from '../lib/validation.js';
   import { rememberReason } from '../lib/reasonHistory.js';
@@ -15,6 +15,7 @@
     LOGIC_GROUPS,
   } from '../lib/furnitureEnums.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import Pagination from '../components/Pagination.svelte';
   import { identity } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
 
@@ -365,10 +366,7 @@
       </div>
       {#if errors.create}<p class="empty-state danger">{errors.create}</p>{/if}
       {#if results.create}
-        <p class="op-result" class:danger={!results.create.ok}>
-          {results.create.ok ? '✅' : '❌'} {results.create.message} - cid
-          <code>{compactCorrelation(results.create.correlationId)}</code>
-        </p>
+        <OpResult result={results.create} />
       {/if}
     </div>
   {/if}
@@ -497,10 +495,7 @@
               </div>
               {#if errors.update}<p class="empty-state danger">{errors.update}</p>{/if}
               {#if results.update}
-                <p class="op-result" class:danger={!results.update.ok}>
-                  {results.update.ok ? '✅' : '❌'} {results.update.message} - cid
-                  <code>{compactCorrelation(results.update.correlationId)}</code>
-                </p>
+                <OpResult result={results.update} />
               {/if}
             </div>
           {/if}
@@ -518,17 +513,17 @@
     </div>
     {#if errors.delete}<p class="empty-state danger">{errors.delete}</p>{/if}
     {#if results.delete}
-      <p class="op-result" class:danger={!results.delete.ok}>
-        {results.delete.ok ? '✅' : '❌'} {results.delete.message} - cid
-        <code>{compactCorrelation(results.delete.correlationId)}</code>
-      </p>
+      <OpResult result={results.delete} />
     {/if}
 
-    <div class="op-actions" style="margin-top: 10px;">
-      <button type="button" class="ghost-button" disabled={page <= 1} on:click={() => goToPage(page - 1)}>{$t('furnitureAdmin.previous')}</button>
-      <span class="muted">{$t('furnitureAdmin.pageOfTotal', { page, totalPages, total })}</span>
-      <button type="button" class="ghost-button" disabled={page >= totalPages} on:click={() => goToPage(page + 1)}>{$t('common.next')}</button>
-    </div>
+    <Pagination
+      page={page}
+      pageCount={totalPages}
+      pageWord={$t('common.page')}
+      prevLabel={$t('furnitureAdmin.previous')}
+      nextLabel={$t('common.next')}
+      on:change={(e) => goToPage(e.detail)}
+    />
   {/if}
 </section>
 

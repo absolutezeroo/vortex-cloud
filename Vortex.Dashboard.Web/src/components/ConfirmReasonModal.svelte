@@ -4,6 +4,7 @@
   // beside every button), and `confirm` fires with the trimmed reason. The caller keeps the modal
   // open on failure by passing `error` (e.g. offer_has_purchases) and clearing `busy`.
   import { createEventDispatcher } from 'svelte';
+  import { CircleX } from '@lucide/svelte';
   import { reasonOk } from '../lib/validation.js';
   import { t } from '../lib/i18n.js';
 
@@ -65,7 +66,7 @@
           on:keydown={(e) => e.key === 'Enter' && confirm()}
         />
       </div>
-      {#if error}<p class="op-result danger">❌ {error}</p>{/if}
+      {#if error}<p class="op-result danger"><CircleX size={16} strokeWidth={2} aria-hidden="true" /> {error}</p>{/if}
       <div class="op-actions">
         <button type="button" class:danger on:click={confirm} disabled={busy || !valid}>
           {confirmLabel || $t('common.confirm')}

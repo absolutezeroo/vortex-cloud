@@ -5,7 +5,8 @@
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import AssetImage from '../components/AssetImage.svelte';
-  import { Package } from '@lucide/svelte';
+  import StatCard from '../components/StatCard.svelte';
+  import { Package, Cable, DoorOpen } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
   let loading = false;
@@ -71,8 +72,12 @@
 
 {#if data}
   <div class="metric-grid" style="margin-top: 12px;">
-    <article><span>{$t('wiredStats.totalWiredPlaced')}</span><strong>{formatNumber(data.totals.totalWiredPlaced)}</strong></article>
-    <article><span>{$t('wiredStats.roomsWithWired')}</span><strong>{formatNumber(data.totals.roomsWithWired)}</strong></article>
+    <StatCard label={$t('wiredStats.totalWiredPlaced')} value={formatNumber(data.totals.totalWiredPlaced)}>
+      <Cable slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('wiredStats.roomsWithWired')} value={formatNumber(data.totals.roomsWithWired)}>
+      <DoorOpen slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
   </div>
 
   <div class="panel" style="margin-top: 12px;">

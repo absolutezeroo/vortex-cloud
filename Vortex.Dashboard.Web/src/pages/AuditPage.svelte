@@ -4,6 +4,7 @@
   import { compactCorrelation, formatDate, summarizeData } from '../lib/format.js';
   import EntityLink from '../components/EntityLink.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import Pagination from '../components/Pagination.svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer, openItem } from '../lib/session.js';
   import { t } from '../lib/i18n.js';
@@ -213,15 +214,15 @@
   </div>
 
   {#if total > 0}
-    <div class="pagination">
-      <button type="button" class="ghost-button" on:click={() => goToPage(page - 1)} disabled={page <= 1 || loading}>
-        {$t('common.prev')}
-      </button>
-      <span class="muted">{$t('common.page')} {page} / {totalPages}</span>
-      <button type="button" class="ghost-button" on:click={() => goToPage(page + 1)} disabled={page >= totalPages || loading}>
-        {$t('common.next')}
-      </button>
-    </div>
+    <Pagination
+      page={page}
+      pageCount={totalPages}
+      pageWord={$t('common.page')}
+      prevLabel={$t('common.prev')}
+      nextLabel={$t('common.next')}
+      disabled={loading}
+      on:change={(e) => goToPage(e.detail)}
+    />
   {/if}
 </section>
 
@@ -233,12 +234,5 @@
     padding: 2px 8px;
     font-size: 0.8rem;
     color: var(--muted-strong);
-  }
-
-  .pagination {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 12px;
   }
 </style>

@@ -1,4 +1,5 @@
 <script>
+  import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
   import { apiGet, apiPost } from '../lib/api.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
@@ -249,10 +250,7 @@
       </div>
       {#if banError}<p class="empty-state danger">{banError}</p>{/if}
       {#if banResult}
-        <p class="op-result" class:danger={!banResult.ok}>
-          {banResult.ok ? '✅' : '❌'} {banResult.message} - cid
-          <code>{compactCorrelation(banResult.correlationId)}</code>
-        </p>
+        <OpResult result={banResult} />
       {/if}
       <div class="op-actions">
         <button type="button" on:click={confirmBanDraft} disabled={banBusy}>{$t('cfh.confirmBan')}</button>

@@ -5,6 +5,9 @@
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import EntityLink from '../components/EntityLink.svelte';
+  import Pagination from '../components/Pagination.svelte';
+  import StatCard from '../components/StatCard.svelte';
+  import { Hash, Activity, TriangleAlert, Timer } from '@lucide/svelte';
   import { openPlayer, openItem } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
 
@@ -334,14 +337,31 @@
   {/if}
 
   <div class="metric-grid compact">
-    <article><span>{$t('moderation.totalActions')}</span><strong>{formatNumber(data?.totals?.total || 0)}</strong></article>
-    <article><span>{$t('moderation.successful')}</span><strong>{formatNumber(data?.totals?.success || 0)}</strong></article>
-    <article><span>{$t('moderation.denied')}</span><strong>{formatNumber(data?.totals?.denied || 0)}</strong></article>
-    <article><span>{$t('moderation.failed')}</span><strong>{formatNumber(data?.totals?.failed || 0)}</strong></article>
-    <article><span>{$t('moderation.renewals')}</span><strong>{formatNumber(data?.totals?.renewalCount || 0)}</strong></article>
-    <article><span>{$t('moderation.avgDuration')}</span><strong>{formatDuration(data?.totals?.averageDurationSeconds || 0)}</strong></article>
-    <article><span>{$t('moderation.activeBans')}</span><strong>{formatNumber(data?.totals?.activeBans || 0)}</strong></article>
-    <article><span>{$t('moderation.bansRetention')}</span><strong>{((data?.totals?.retentionRate || 0) * 100).toFixed(2)}%</strong></article>
+    <StatCard label={$t('moderation.totalActions')} value={formatNumber(data?.totals?.total || 0)}>
+      <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('moderation.successful')} value={formatNumber(data?.totals?.success || 0)}>
+      <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('moderation.denied')} value={formatNumber(data?.totals?.denied || 0)}>
+      <TriangleAlert slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('moderation.failed')} value={formatNumber(data?.totals?.failed || 0)}>
+      <TriangleAlert slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('moderation.renewals')} value={formatNumber(data?.totals?.renewalCount || 0)}>
+      <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('moderation.avgDuration')} value={formatDuration(data?.totals?.averageDurationSeconds || 0)}>
+      <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('moderation.activeBans')} value={formatNumber(data?.totals?.activeBans || 0)}>
+      <TriangleAlert slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('moderation.bansRetention')}>
+      <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      <span slot="value">{((data?.totals?.retentionRate || 0) * 100).toFixed(2)}%</span>
+    </StatCard>
   </div>
 
   <div class="split-grid" style="margin-top: 14px;">
@@ -487,25 +507,16 @@
     </div>
 
     {#if (data?.totals?.total || 0) > 0}
-      <div class="pagination">
-        <button type="button" class="ghost-button" on:click={() => goToPage(page - 1)} disabled={page <= 1 || loading}>
-          {$t('common.prev')}
-        </button>
-        <span class="muted">{$t('common.page')} {page} / {totalPages}</span>
-        <button type="button" class="ghost-button" on:click={() => goToPage(page + 1)} disabled={page >= totalPages || loading}>
-          {$t('common.next')}
-        </button>
-      </div>
+      <Pagination
+        page={page}
+        pageCount={totalPages}
+        pageWord={$t('common.page')}
+        prevLabel={$t('common.prev')}
+        nextLabel={$t('common.next')}
+        disabled={loading}
+        on:change={(e) => goToPage(e.detail)}
+      />
     {/if}
   </div>
 </section>
-
-<style>
-  .pagination {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 12px;
-  }
-</style>
 

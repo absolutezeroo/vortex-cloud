@@ -7,6 +7,8 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import LineChart from '../components/LineChart.svelte';
+  import StatCard from '../components/StatCard.svelte';
+  import { MessageCircleWarning, Hash, TriangleAlert, Activity, Timer } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
   const granularities = ['day', 'month', 'year'];
@@ -123,13 +125,28 @@
 
 {#if data}
   <div class="metric-grid" style="margin-top: 12px;">
-    <article><span>{$t('cfhStats.totalTickets')}</span><strong>{formatNumber(data.totals.totalTickets)}</strong></article>
-    <article><span>{$t('cfhStats.openCount')}</span><strong>{formatNumber(data.totals.openCount)}</strong></article>
-    <article><span>{$t('cfhStats.pickedCount')}</span><strong>{formatNumber(data.totals.pickedCount)}</strong></article>
-    <article><span>{$t('cfhStats.closedCount')}</span><strong>{formatNumber(data.totals.closedCount)}</strong></article>
-    <article><span>{$t('cfhStats.sanctionedCount')}</span><strong>{formatNumber(data.totals.sanctionedCount)}</strong></article>
-    <article><span>{$t('cfhStats.sanctionRate')}</span><strong>{sanctionRatePercent}%</strong></article>
-    <article><span>{$t('cfhStats.avgResolutionMinutes')}</span><strong>{data.totals.avgResolutionMinutes}</strong></article>
+    <StatCard label={$t('cfhStats.totalTickets')} value={formatNumber(data.totals.totalTickets)}>
+      <MessageCircleWarning slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('cfhStats.openCount')} value={formatNumber(data.totals.openCount)}>
+      <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('cfhStats.pickedCount')} value={formatNumber(data.totals.pickedCount)}>
+      <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('cfhStats.closedCount')} value={formatNumber(data.totals.closedCount)}>
+      <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('cfhStats.sanctionedCount')} value={formatNumber(data.totals.sanctionedCount)}>
+      <TriangleAlert slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('cfhStats.sanctionRate')}>
+      <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      <span slot="value">{sanctionRatePercent}%</span>
+    </StatCard>
+    <StatCard label={$t('cfhStats.avgResolutionMinutes')} value={data.totals.avgResolutionMinutes}>
+      <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
   </div>
 
   <div class="panel" style="margin-top: 12px;">

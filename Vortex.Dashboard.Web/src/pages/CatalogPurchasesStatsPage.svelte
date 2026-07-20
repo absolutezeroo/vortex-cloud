@@ -6,7 +6,8 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import LineChart from '../components/LineChart.svelte';
   import AssetImage from '../components/AssetImage.svelte';
-  import { Package } from '@lucide/svelte';
+  import StatCard from '../components/StatCard.svelte';
+  import { Package, ShoppingBag, Coins, Hash } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
   const granularities = ['day', 'month', 'year'];
@@ -121,9 +122,15 @@
 
 {#if data}
   <div class="metric-grid" style="margin-top: 12px;">
-    <article><span>{$t('catalogPurchases.purchaseCount')}</span><strong>{formatNumber(data.totals.purchaseCount)}</strong></article>
-    <article><span>{$t('catalogPurchases.totalCreditsSpent')}</span><strong>{formatNumber(data.totals.totalCreditsSpent)}</strong></article>
-    <article><span>{$t('catalogPurchases.totalQuantity')}</span><strong>{formatNumber(data.totals.totalQuantity)}</strong></article>
+    <StatCard label={$t('catalogPurchases.purchaseCount')} value={formatNumber(data.totals.purchaseCount)}>
+      <ShoppingBag slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('catalogPurchases.totalCreditsSpent')} value={formatNumber(data.totals.totalCreditsSpent)} accent>
+      <Coins slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('catalogPurchases.totalQuantity')} value={formatNumber(data.totals.totalQuantity)}>
+      <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
   </div>
 
   <div class="panel" style="margin-top: 12px;">

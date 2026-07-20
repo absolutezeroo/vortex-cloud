@@ -1,17 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-  --color-dashboard-page: #0c111b;
-  --color-dashboard-surface: #121a28;
-  --color-dashboard-raised: #172132;
-  --color-dashboard-line: rgba(148, 163, 184, 0.16);
-  --color-dashboard-accent: #5aa7c8;
-  --color-dashboard-success: #56b991;
-  --color-dashboard-warning: #d4a84e;
-  --color-dashboard-danger: #df6f7b;
-  --font-dashboard: "Bahnschrift", "Aptos Display", "Segoe UI", sans-serif;
+  --color-dashboard-page: #121d2a;
+  --color-dashboard-surface: #1a2939;
+  --color-dashboard-raised: #223347;
+  --color-dashboard-line: rgba(126, 166, 206, 0.14);
+  --color-dashboard-accent: #4fb0e6;
+  --color-dashboard-gold: #ffc21c;
+  --color-dashboard-success: #57c98a;
+  --color-dashboard-warning: #f2b23c;
+  --color-dashboard-danger: #ef6d76;
+  --font-dashboard: "Ubuntu", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
   --radius-dashboard-card: 0.875rem;
-  --shadow-dashboard-panel: 0 12px 30px rgba(0, 0, 0, 0.24);
+  --shadow-dashboard-panel: 0 14px 34px rgba(0, 0, 0, 0.34);
 }
 
 /* Three themes, switched by setting data-theme on <html> (see lib/theme.js). "blue" is the
@@ -24,46 +25,60 @@
 :root,
 :root[data-theme='blue'] {
   color-scheme: dark;
-  --page: #0c111b;
-  --page-soft: #101827;
-  --surface: #121a28;
-  --surface-strong: #172132;
-  --surface-raised: #1b2638;
-  --surface-hover: #1a2738;
-  --sidebar-bg: #0e1522;
-  --input-bg: #0f1724;
-  --nav-icon-bg: #111a28;
-  --button-bg: #22445a;
-  --button-ink: #f0f7fb;
-  --ink: #e7edf5;
-  --muted: #8b9aad;
-  --muted-strong: #b3bfce;
-  --muted-rgb: 139, 154, 173;
-  --success-bg: rgba(86, 185, 145, 0.16);
-  --success-border: rgba(86, 185, 145, 0.45);
-  --warning-bg: rgba(212, 168, 78, 0.16);
-  --warning-border: rgba(212, 168, 78, 0.45);
-  --danger-bg: rgba(223, 111, 123, 0.16);
-  --danger-border: rgba(223, 111, 123, 0.45);
-  --line: rgba(148, 163, 184, 0.16);
-  --line-strong: rgba(148, 163, 184, 0.28);
-  --accent: #5aa7c8;
-  --accent-strong: #7dbad3;
-  --accent-soft: rgba(90, 167, 200, 0.1);
-  --accent-rgb: 90, 167, 200;
-  --ok-rgb: 86, 185, 145;
-  --warning-rgb: 212, 168, 78;
-  --danger-rgb: 223, 111, 123;
-  --danger: #df6f7b;
-  --warning: #d4a84e;
-  --ok: #56b991;
-  --overlay-bg: rgba(4, 8, 14, 0.74);
-  --shadow: 0 12px 30px rgba(0, 0, 0, 0.24);
-  --panel-shadow: 0 1px 0 rgba(255, 255, 255, 0.03), 0 12px 28px rgba(0, 0, 0, 0.22);
+  /* "Hotel Ops" — deep warm Habbo navy, with the gold of the coin as the one signature accent
+     and the client's sky-blue for links/players. Typography leans on Ubuntu (Habbo's own web
+     face) with a condensed numeral face echoing the in-client credit counter. */
+  --font: "Ubuntu", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --numerals: "Bahnschrift", "DIN Condensed", "Segoe UI", sans-serif;
+  --page: #121d2a;
+  --page-soft: #0e1824;
+  --surface: #1a2939;
+  --surface-strong: #213246;
+  --surface-raised: #223347;
+  --surface-hover: #26394f;
+  --sidebar-bg: #0e1824;
+  --input-bg: #0f1a27;
+  --nav-icon-bg: #17242f;
+  /* Default "filled" buttons become the Habbo gold primary — every page's primary action
+     (Refresh/Run/Save) turns gold with no page edits, since they consume --button-bg. */
+  --button-bg: linear-gradient(180deg, #ffc21c, #eaa60c);
+  --button-ink: #2a2100;
+  --ink: #e9f1f9;
+  --muted: #8ba3bc;
+  --muted-strong: #b4c6da;
+  --muted-rgb: 139, 163, 188;
+  --success-bg: rgba(87, 201, 138, 0.15);
+  --success-border: rgba(87, 201, 138, 0.42);
+  --warning-bg: rgba(242, 178, 60, 0.15);
+  --warning-border: rgba(242, 178, 60, 0.42);
+  --danger-bg: rgba(239, 109, 118, 0.15);
+  --danger-border: rgba(239, 109, 118, 0.42);
+  --line: rgba(126, 166, 206, 0.14);
+  --line-strong: rgba(126, 166, 206, 0.26);
+  --accent: #4fb0e6;
+  --accent-strong: #6cc0ef;
+  --accent-soft: rgba(79, 176, 230, 0.12);
+  --accent-rgb: 79, 176, 230;
+  --gold: #ffc21c;
+  --gold-strong: #ffd34d;
+  --gold-soft: rgba(255, 194, 28, 0.14);
+  --gold-ink: #2a2100;
+  --gold-rgb: 255, 194, 28;
+  --ok-rgb: 87, 201, 138;
+  --warning-rgb: 242, 178, 60;
+  --danger-rgb: 239, 109, 118;
+  --danger: #ef6d76;
+  --warning: #f2b23c;
+  --ok: #57c98a;
+  --overlay-bg: rgba(6, 12, 20, 0.74);
+  --shadow: 0 14px 34px rgba(0, 0, 0, 0.34);
+  --panel-shadow: 0 1px 0 rgba(255, 255, 255, 0.03), 0 14px 30px rgba(0, 0, 0, 0.28);
 }
 
 :root[data-theme='dark'] {
   color-scheme: dark;
+  --font: "Ubuntu", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --numerals: "Bahnschrift", "DIN Condensed", "Segoe UI", sans-serif;
   --page: #08090b;
   --page-soft: #0d0e11;
   --surface: #131417;
@@ -73,8 +88,8 @@
   --sidebar-bg: #0a0b0d;
   --input-bg: #0e0f12;
   --nav-icon-bg: #17181c;
-  --button-bg: #2b3a44;
-  --button-ink: #f2f5f7;
+  --button-bg: linear-gradient(180deg, #ffc21c, #e5a00c);
+  --button-ink: #2a2100;
   --ink: #f0f1f3;
   --muted: #8d9096;
   --muted-strong: #b8bac0;
@@ -91,6 +106,11 @@
   --accent-strong: #8fc6de;
   --accent-soft: rgba(108, 178, 209, 0.1);
   --accent-rgb: 108, 178, 209;
+  --gold: #ffc21c;
+  --gold-strong: #ffd34d;
+  --gold-soft: rgba(255, 194, 28, 0.13);
+  --gold-ink: #2a2100;
+  --gold-rgb: 255, 194, 28;
   --ok-rgb: 99, 195, 157;
   --warning-rgb: 219, 177, 94;
   --danger-rgb: 227, 124, 136;
@@ -104,42 +124,49 @@
 
 :root[data-theme='white'] {
   color-scheme: light;
-  --page: #eef1f5;
-  --page-soft: #e5e9ef;
+  --font: "Ubuntu", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --numerals: "Bahnschrift", "DIN Condensed", "Segoe UI", sans-serif;
+  --page: #e9eef4;
+  --page-soft: #dfe6ee;
   --surface: #ffffff;
-  --surface-strong: #f3f5f8;
+  --surface-strong: #f2f6fa;
   --surface-raised: #ffffff;
-  --surface-hover: #e9edf2;
+  --surface-hover: #e9f0f7;
   --sidebar-bg: #ffffff;
-  --input-bg: #f6f8fa;
-  --nav-icon-bg: #eef1f5;
-  --button-bg: #2b6f96;
-  --button-ink: #ffffff;
-  --ink: #161b22;
-  --muted: #5b6472;
-  --muted-strong: #333a45;
-  --muted-rgb: 91, 100, 114;
-  --success-bg: rgba(31, 143, 95, 0.12);
-  --success-border: rgba(31, 143, 95, 0.35);
-  --warning-bg: rgba(160, 109, 10, 0.12);
-  --warning-border: rgba(160, 109, 10, 0.35);
-  --danger-bg: rgba(192, 49, 63, 0.1);
-  --danger-border: rgba(192, 49, 63, 0.32);
-  --line: rgba(15, 23, 42, 0.1);
-  --line-strong: rgba(15, 23, 42, 0.18);
-  --accent: #2b6f96;
-  --accent-strong: #1f5878;
-  --accent-soft: rgba(43, 111, 150, 0.08);
-  --accent-rgb: 43, 111, 150;
-  --ok-rgb: 31, 143, 95;
-  --warning-rgb: 160, 109, 10;
-  --danger-rgb: 192, 49, 63;
-  --danger: #c0313f;
-  --warning: #a06d0a;
-  --ok: #1f8f5f;
-  --overlay-bg: rgba(15, 23, 42, 0.45);
-  --shadow: 0 12px 30px rgba(15, 23, 42, 0.1);
-  --panel-shadow: 0 1px 0 rgba(255, 255, 255, 0.7), 0 10px 24px rgba(15, 23, 42, 0.08);
+  --input-bg: #f4f7fb;
+  --nav-icon-bg: #eaf0f6;
+  --button-bg: linear-gradient(180deg, #f4b21b, #e09a00);
+  --button-ink: #3a2c00;
+  --ink: #16283a;
+  --muted: #5f7085;
+  --muted-strong: #38495c;
+  --muted-rgb: 95, 112, 133;
+  --success-bg: rgba(31, 157, 99, 0.12);
+  --success-border: rgba(31, 157, 99, 0.35);
+  --warning-bg: rgba(185, 121, 26, 0.12);
+  --warning-border: rgba(185, 121, 26, 0.35);
+  --danger-bg: rgba(207, 59, 69, 0.1);
+  --danger-border: rgba(207, 59, 69, 0.32);
+  --line: rgba(20, 45, 75, 0.1);
+  --line-strong: rgba(20, 45, 75, 0.18);
+  --accent: #1f83c2;
+  --accent-strong: #17689b;
+  --accent-soft: rgba(31, 131, 194, 0.09);
+  --accent-rgb: 31, 131, 194;
+  --gold: #eaa100;
+  --gold-strong: #f4b21b;
+  --gold-soft: rgba(234, 161, 0, 0.14);
+  --gold-ink: #3a2c00;
+  --gold-rgb: 234, 161, 0;
+  --ok-rgb: 31, 157, 99;
+  --warning-rgb: 185, 121, 26;
+  --danger-rgb: 207, 59, 69;
+  --danger: #cf3b45;
+  --warning: #b9791a;
+  --ok: #1f9d63;
+  --overlay-bg: rgba(20, 45, 75, 0.45);
+  --shadow: 0 14px 30px rgba(20, 45, 75, 0.1);
+  --panel-shadow: 0 1px 0 rgba(255, 255, 255, 0.7), 0 10px 24px rgba(20, 45, 75, 0.08);
 }
 
 *,
@@ -157,10 +184,11 @@ body,
 
 body {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 22rem),
-    linear-gradient(135deg, var(--page) 0%, var(--page-soft) 100%);
+    radial-gradient(1100px 520px at 85% -8%, rgba(var(--accent-rgb), 0.10), transparent 60%),
+    linear-gradient(180deg, var(--page) 0%, var(--page-soft) 100%);
+  background-attachment: fixed;
   color: var(--ink);
-  font-family: "Bahnschrift", "Aptos Display", "Segoe UI", sans-serif;
+  font-family: var(--font);
   letter-spacing: 0;
   transition: background-color 160ms ease, color 160ms ease;
 }
@@ -201,15 +229,20 @@ button {
 }
 
 .brand-mark {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
   display: grid;
   place-items: center;
-  border: 1px solid var(--line-strong);
-  border-radius: 9px;
-  background: var(--surface-raised);
-  color: var(--ink);
+  border-radius: 11px;
+  background: linear-gradient(160deg, var(--gold-strong), #e0870f);
+  box-shadow: 0 3px 0 #a9640a, 0 8px 16px rgba(0, 0, 0, 0.28);
+  color: var(--gold-ink);
   font-weight: 800;
+}
+
+.brand-mark svg {
+  display: block;
 }
 
 .brand strong,
@@ -280,8 +313,9 @@ button {
 }
 
 .sidebar a.active {
-  border-color: rgba(var(--accent-rgb), 0.38);
-  box-shadow: inset 3px 0 0 var(--accent);
+  border-color: rgba(var(--gold-rgb), 0.4);
+  background: var(--gold-soft);
+  box-shadow: inset 3px 0 0 var(--gold);
 }
 
 .sidebar a small {
@@ -300,11 +334,16 @@ button {
   color: var(--accent);
 }
 
-.sidebar a.active .nav-icon,
 .sidebar a:hover .nav-icon {
   border-color: rgba(var(--accent-rgb), 0.34);
   background: var(--surface-hover);
   color: var(--accent-strong);
+}
+
+.sidebar a.active .nav-icon {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: var(--gold-ink);
 }
 
 .nav-copy {
@@ -326,6 +365,7 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .topline h1 {
@@ -446,22 +486,47 @@ button {
   color: var(--muted);
 }
 
-.panel button,
-.toolbar button,
-.ghost-button {
-  border: 1px solid rgba(var(--accent-rgb), 0.34);
+/* Default filled button = the gold primary. Wrapped in :where() so its specificity is (0,0,1) and
+   any explicit button class (.ghost-button, .btn-*, or a page-local .catalog-tab/.crumb-button/row)
+   reliably wins. Without this, `.panel button` (0,1,1) silently overrode `.ghost-button` (0,1,0),
+   leaving ghost buttons gold with dark ink — which turned unreadable on the grey :hover. */
+:where(.panel, .toolbar) button {
+  border: 1px solid transparent;
   border-radius: 9px;
   background: var(--button-bg);
   color: var(--button-ink);
   padding: 8px 12px;
   font-weight: 700;
   box-shadow: none;
+  transition: filter 140ms ease, background 140ms ease, border-color 140ms ease;
 }
 
+:where(.panel, .toolbar) button:hover:not(:disabled) {
+  filter: brightness(1.04);
+}
+
+/* Neutral/secondary action — fully self-contained so it stays neutral (and its text stays
+   readable on hover) even inside a panel. */
 .ghost-button {
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
   background: var(--surface-strong);
   color: var(--ink);
+  padding: 8px 12px;
+  font-weight: 700;
   box-shadow: none;
+  transition: filter 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+
+.ghost-button:hover:not(:disabled) {
+  background: var(--surface-hover);
+}
+
+/* Destructive stays a ghost tinted red so it never competes with the gold primary for the eye. */
+.ghost-button.danger {
+  color: var(--danger);
+  border-color: var(--danger-border);
+  background: var(--danger-bg);
 }
 
 .toolbar {
@@ -503,6 +568,15 @@ button {
 .toolbar-grid input {
   min-width: 0;
   width: 100%;
+}
+
+/* A submit/refresh button dropped straight into the filter grid must NOT stretch to fill its whole
+   cell — grid items stretch by default, which turned "Refresh" into a giant full-height, ~160px
+   block (loud as gold). Size it to its content and sit it at the bottom-left of the row so it lines
+   up with the inputs beside it. */
+.toolbar-grid > button {
+  align-self: end;
+  justify-self: start;
 }
 
 .chart-wrap {
@@ -590,9 +664,16 @@ button {
 .modal-grid article {
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: var(--surface-strong);
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgba(var(--accent-rgb), 0.07), transparent 55%),
+    var(--surface-strong);
   padding: 12px;
   min-width: 0;
+  transition: border-color 140ms ease, transform 140ms ease;
+}
+
+.metric-grid article:hover {
+  border-color: var(--line-strong);
 }
 
 .metric-grid span,
@@ -606,10 +687,24 @@ button {
 
 .metric-grid strong,
 .modal-grid strong {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
   margin-top: 5px;
-  font-size: 1.2rem;
+  font-family: var(--numerals);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  letter-spacing: 0.4px;
   color: var(--ink);
+}
+
+/* When a metric's "value" is actually a status badge/pill (e.g. the catalog "Visible" tile), keep
+   it at its own small size and baseline instead of being stretched by the 1.5rem numeral line. */
+.metric-grid strong .status-badge,
+.modal-grid strong .status-badge {
+  font-size: 0.78rem;
 }
 
 .metric-grid small,
@@ -890,8 +985,14 @@ code {
 /* Bare element selectors so every <select>/<textarea> in the app is themed, not just the ones
    inside .op-field -- native selects otherwise render with the browser's light-mode UA styling
    (white background, black text) regardless of the dark surrounding page. */
+/* One input look for EVERY control type. Previously only `.toolbar input` / `.op-field input` were
+   themed, so a bare `<input type="date">`/`type="number"` (e.g. inside a `.toolbar-grid` filter)
+   fell back to the browser's light-mode native styling — a white date box next to a dark text box.
+   Theming `input` globally (minus checkbox/radio, which have their own accent-color treatment)
+   makes text, date, number, search and select all identical. */
 select,
-textarea {
+textarea,
+input:not([type='checkbox']):not([type='radio']) {
   border: 1px solid var(--line-strong);
   border-radius: 9px;
   background: var(--input-bg);
@@ -899,12 +1000,26 @@ textarea {
   padding: 9px 10px;
   outline: none;
   font: inherit;
+  /* Makes native affordances (the date picker's calendar glyph, number spinners) follow the app
+     theme instead of rendering a light-on-light control. */
+  color-scheme: inherit;
 }
 
 select:focus,
-textarea:focus {
+textarea:focus,
+input:not([type='checkbox']):not([type='radio']):focus {
   border-color: rgba(var(--accent-rgb), 0.58);
   box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.12);
+}
+
+/* Keep the date picker's calendar glyph visible and tinted like the rest of the muted iconography
+   rather than the default near-black square. */
+input[type='date']::-webkit-calendar-picker-indicator,
+input[type='datetime-local']::-webkit-calendar-picker-indicator,
+input[type='month']::-webkit-calendar-picker-indicator,
+input[type='time']::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.7;
 }
 
 select option {
@@ -981,17 +1096,20 @@ textarea {
 }
 
 .op-actions button {
-  border: 1px solid rgba(var(--accent-rgb), 0.34);
+  border: 1px solid transparent;
   border-radius: 9px;
   background: var(--button-bg);
   color: var(--button-ink);
   padding: 8px 12px;
   font-weight: 700;
+  box-shadow: none;
 }
 
 .op-actions button.ghost-button {
   background: var(--surface-strong);
   color: var(--ink);
+  border-color: var(--line-strong);
+  box-shadow: none;
 }
 
 .op-actions button:disabled {
@@ -1048,4 +1166,304 @@ textarea {
     overflow-x: auto;
     white-space: nowrap;
   }
+}
+
+/* ============================================================================
+   SHARED KIT — the one grammar every page reuses (see components/Button.svelte,
+   Pagination.svelte, CoinAmount.svelte, PlayerCell.svelte, StatCard.svelte).
+   Adopting these across pages is what removes the historical per-page drift
+   (three pagination styles, two button looks, emoji result icons, etc.).
+   ========================================================================== */
+
+/* --- Buttons: one gold primary, a neutral ghost, a red danger, + icon-only --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  line-height: 1.1;
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: filter 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+
+.btn svg {
+  flex: 0 0 auto;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.btn-primary {
+  background: var(--button-bg);
+  color: var(--button-ink);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+.btn-primary:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.btn-ghost {
+  background: var(--surface-strong);
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--surface-hover);
+}
+
+.btn-danger {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border-color: var(--danger-border);
+}
+
+.btn-danger:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.btn-sm {
+  padding: 6px 10px;
+  font-size: 0.8rem;
+}
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 9px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-strong);
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: color 140ms ease, background 140ms ease;
+}
+
+.icon-btn:hover:not(:disabled) {
+  color: var(--ink);
+  background: var(--surface-hover);
+}
+
+/* --- Pagination: the single shared pager (replaces the duplicated .pagination
+   blocks in AuditPage/ModerationPage and the "dump everything" pages). --- */
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.pager .pager-count {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.pager .pager-count b {
+  color: var(--ink);
+  font-family: var(--numerals);
+  font-variant-numeric: tabular-nums;
+}
+
+.pager .pager-pages {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.pager .pager-pages button {
+  min-width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-strong);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  font-family: var(--numerals);
+  cursor: pointer;
+  box-shadow: none;
+  padding: 0 8px;
+}
+
+.pager .pager-pages button:hover:not(:disabled) {
+  background: var(--surface-hover);
+}
+
+.pager .pager-pages button.active {
+  background: var(--gold);
+  color: var(--gold-ink);
+  border-color: var(--gold);
+}
+
+.pager .pager-pages button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.pager .pager-ellipsis {
+  color: var(--muted);
+  padding: 0 2px;
+}
+
+/* --- Currency: a coin/HC/ducket sprite + a tabular count, the same everywhere
+   a price or balance is shown (the Habbo "purse" signature). --- */
+.coin {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--numerals);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.coin img {
+  width: 16px;
+  height: 16px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  flex: 0 0 auto;
+}
+
+/* --- Player identity: an avatar-head tile + a linked name, the same cell in
+   every table/list that references a player. --- */
+.avatar-head {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  background: var(--input-bg);
+}
+
+.avatar-head img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.player {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.player .player-name {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.player .player-name:hover {
+  text-decoration: underline;
+}
+
+/* --- Stat tiles: the richer metric card (icon + big numeral + delta). The
+   legacy .metric-grid still works; .stats/.stat is the upgraded StatCard. --- */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(184px, 1fr));
+  gap: 12px;
+}
+
+.stat {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--panel-shadow);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.stat .stat-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.stat .stat-label .stat-ico {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.stat.accent .stat-label .stat-ico {
+  background: var(--gold-soft);
+  color: var(--gold);
+}
+
+.stat .stat-value {
+  font-family: var(--numerals);
+  font-variant-numeric: tabular-nums;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat .stat-value img {
+  width: 22px;
+  height: 22px;
+  image-rendering: pixelated;
+}
+
+.stat .stat-sub {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.stat .stat-delta {
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat .stat-delta.up {
+  color: var(--ok);
+}
+
+.stat .stat-delta.down {
+  color: var(--danger);
+}
+
+.stat .stat-delta.flat {
+  color: var(--muted);
 }

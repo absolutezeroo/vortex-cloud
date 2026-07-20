@@ -1,4 +1,5 @@
 <script>
+  import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
   import {
     Clock,
@@ -16,7 +17,6 @@
   } from '@lucide/svelte';
   import { apiGet, apiPost } from '../lib/api.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
-  import { compactCorrelation } from '../lib/format.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { reasonOk } from '../lib/validation.js';
   import { rememberReason } from '../lib/reasonHistory.js';
@@ -573,10 +573,7 @@
         </div>
         {#if errors.createOffer}<p class="empty-state danger">{errors.createOffer}</p>{/if}
         {#if results.createOffer}
-          <p class="op-result" class:danger={!results.createOffer.ok}>
-            {results.createOffer.ok ? '✅' : '❌'} {results.createOffer.message} - cid
-            <code>{compactCorrelation(results.createOffer.correlationId)}</code>
-          </p>
+          <OpResult result={results.createOffer} />
         {/if}
       </div>
     {/if}
@@ -703,10 +700,7 @@
                   </div>
                   {#if errors.updateOffer}<p class="empty-state danger">{errors.updateOffer}</p>{/if}
                   {#if results.updateOffer}
-                    <p class="op-result" class:danger={!results.updateOffer.ok}>
-                      {results.updateOffer.ok ? '✅' : '❌'} {results.updateOffer.message} - cid
-                      <code>{compactCorrelation(results.updateOffer.correlationId)}</code>
-                    </p>
+                    <OpResult result={results.updateOffer} />
                   {/if}
                 </div>
               {:else if errors.updateOffer}
@@ -761,10 +755,7 @@
                       </div>
                       {#if errors.createProduct}<p class="empty-state danger">{errors.createProduct}</p>{/if}
                       {#if results.createProduct}
-                        <p class="op-result" class:danger={!results.createProduct.ok}>
-                          {results.createProduct.ok ? '✅' : '❌'} {results.createProduct.message} - cid
-                          <code>{compactCorrelation(results.createProduct.correlationId)}</code>
-                        </p>
+                        <OpResult result={results.createProduct} />
                       {/if}
                     </div>
                   {/if}
@@ -821,10 +812,7 @@
                               </div>
                               {#if errors.updateProduct}<p class="empty-state danger">{errors.updateProduct}</p>{/if}
                               {#if results.updateProduct}
-                                <p class="op-result" class:danger={!results.updateProduct.ok}>
-                                  {results.updateProduct.ok ? '✅' : '❌'} {results.updateProduct.message} - cid
-                                  <code>{compactCorrelation(results.updateProduct.correlationId)}</code>
-                                </p>
+                                <OpResult result={results.updateProduct} />
                               {/if}
                             </div>
                           {/if}
@@ -842,10 +830,7 @@
                   {/if}
                   {#if errors.deleteProduct}<p class="empty-state danger">{errors.deleteProduct}</p>{/if}
                   {#if results.deleteProduct}
-                    <p class="op-result" class:danger={!results.deleteProduct.ok}>
-                      {results.deleteProduct.ok ? '✅' : '❌'} {results.deleteProduct.message} - cid
-                      <code>{compactCorrelation(results.deleteProduct.correlationId)}</code>
-                    </p>
+                    <OpResult result={results.deleteProduct} />
                   {/if}
                 {/if}
               </div>
@@ -856,10 +841,7 @@
     {/if}
     {#if errors.deleteOffer}<p class="empty-state danger">{errors.deleteOffer}</p>{/if}
     {#if results.deleteOffer}
-      <p class="op-result" class:danger={!results.deleteOffer.ok}>
-        {results.deleteOffer.ok ? '✅' : '❌'} {results.deleteOffer.message} - cid
-        <code>{compactCorrelation(results.deleteOffer.correlationId)}</code>
-      </p>
+      <OpResult result={results.deleteOffer} />
     {/if}
   </section>
 {/if}

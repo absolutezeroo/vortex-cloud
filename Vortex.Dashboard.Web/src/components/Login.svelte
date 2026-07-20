@@ -35,7 +35,11 @@
 <div class="login-screen">
   <form class="login-card" on:submit|preventDefault={submit}>
     <div class="login-brand">
-      <span class="brand-mark">T</span>
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M3 11 12 4l9 7v8a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="currentColor" />
+        </svg>
+      </span>
       <div>
         <strong>{$t('nav.brandTitle')}</strong>
         <small>{$t('nav.brandSubtitle')}</small>
@@ -77,9 +81,9 @@
     gap: 16px;
     padding: 28px;
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
   }
 
   .login-brand {
@@ -94,19 +98,23 @@
   }
 
   .login-brand small {
-    opacity: 0.6;
+    color: var(--muted);
   }
 
   .brand-mark {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: #4f7cff;
-    color: #fff;
-    font-weight: 700;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    background: linear-gradient(160deg, var(--gold-strong), #e0870f);
+    box-shadow: 0 3px 0 #a9640a, 0 8px 16px rgba(0, 0, 0, 0.28);
+    color: var(--gold-ink);
+    font-weight: 800;
+  }
+
+  .brand-mark svg {
+    display: block;
   }
 
   label {
@@ -114,27 +122,39 @@
     flex-direction: column;
     gap: 6px;
     font-size: 13px;
-    opacity: 0.85;
+    color: var(--muted);
   }
 
   input {
     padding: 10px 12px;
     border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(0, 0, 0, 0.25);
-    color: inherit;
+    border: 1px solid var(--line-strong);
+    background: var(--input-bg);
+    color: var(--ink);
     font-size: 14px;
+    outline: none;
+  }
+
+  input:focus {
+    border-color: rgba(var(--accent-rgb), 0.58);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.12);
   }
 
   button {
     margin-top: 4px;
     padding: 11px 12px;
-    border: 0;
+    border: 1px solid transparent;
     border-radius: 10px;
-    background: #4f7cff;
-    color: #fff;
-    font-weight: 600;
+    background: var(--button-bg);
+    color: var(--button-ink);
+    font-weight: 700;
     cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+    transition: filter 140ms ease;
+  }
+
+  button:hover:not(:disabled) {
+    filter: brightness(1.06);
   }
 
   button:disabled {
@@ -144,7 +164,7 @@
 
   .login-error {
     margin: 0;
-    color: #ff6b6b;
+    color: var(--danger);
     font-size: 13px;
   }
 </style>

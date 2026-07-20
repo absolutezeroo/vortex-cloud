@@ -3,6 +3,8 @@
   import { apiGet } from '../lib/api.js';
   import { formatDate, formatDuration, formatNumber } from '../lib/format.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import StatCard from '../components/StatCard.svelte';
+  import { Activity, Cpu, Timer, Hash } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { t } from '../lib/i18n.js';
 
@@ -99,36 +101,27 @@
   {/if}
 
   <div class="metric-grid">
-    <article>
-      <span>{$t('infrastructure.emulator')}</span>
-      <strong class={statusClass(data?.runtime?.status)}>{data?.runtime?.status || '-'}</strong>
-      <small>{$t('infrastructure.process', { id: data?.runtime?.processId || '-' })}</small>
-    </article>
-    <article>
-      <span>{$t('infrastructure.overallHealth')}</span>
-      <strong class={statusClass(data?.overall)}>{data?.overall || '-'}</strong>
-      <small>{$t('infrastructure.dbAndOrleans')}</small>
-    </article>
-    <article>
-      <span>{$t('infrastructure.uptime')}</span>
-      <strong>{formatDuration(data?.runtime?.uptimeSeconds)}</strong>
-      <small>{$t('infrastructure.started', { date: formatDate(data?.runtime?.startedAtUtc) })}</small>
-    </article>
-    <article>
-      <span>{$t('infrastructure.environment')}</span>
-      <strong>{data?.runtime?.environmentName || '-'}</strong>
-      <small>{data?.runtime?.machineName || '-'}</small>
-    </article>
-    <article>
-      <span>{$t('infrastructure.memory')}</span>
-      <strong>{formatNumber(data?.runtime?.workingSetMb)} MB</strong>
-      <small>{$t('infrastructure.managed', { value: formatNumber(data?.runtime?.managedMemoryMb) })}</small>
-    </article>
-    <article>
-      <span>{$t('infrastructure.cpu')}</span>
-      <strong>{data?.runtime?.processorCount ?? '-'}</strong>
-      <small>{$t('infrastructure.logicalProcessors')}</small>
-    </article>
+    <StatCard label={$t('infrastructure.emulator')} sub={$t('infrastructure.process', { id: data?.runtime?.processId || '-' })}>
+      <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      <strong slot="value" class={statusClass(data?.runtime?.status)}>{data?.runtime?.status || '-'}</strong>
+    </StatCard>
+    <StatCard label={$t('infrastructure.overallHealth')} sub={$t('infrastructure.dbAndOrleans')}>
+      <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      <strong slot="value" class={statusClass(data?.overall)}>{data?.overall || '-'}</strong>
+    </StatCard>
+    <StatCard label={$t('infrastructure.uptime')} value={formatDuration(data?.runtime?.uptimeSeconds)} sub={$t('infrastructure.started', { date: formatDate(data?.runtime?.startedAtUtc) })}>
+      <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('infrastructure.environment')} value={data?.runtime?.environmentName || '-'} sub={data?.runtime?.machineName || '-'}>
+      <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('infrastructure.memory')} sub={$t('infrastructure.managed', { value: formatNumber(data?.runtime?.managedMemoryMb) })}>
+      <Cpu slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      <span slot="value">{formatNumber(data?.runtime?.workingSetMb)} MB</span>
+    </StatCard>
+    <StatCard label={$t('infrastructure.cpu')} value={data?.runtime?.processorCount ?? '-'} sub={$t('infrastructure.logicalProcessors')}>
+      <Cpu slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
   </div>
 </section>
 
@@ -143,16 +136,13 @@
     </div>
 
     <div class="metric-grid compact">
-      <article>
-        <span>{$t('infrastructure.latency')}</span>
-        <strong>{formatNumber(data?.database?.latencyMs, 2)} ms</strong>
-        <small>{$t('infrastructure.canConnectProbe')}</small>
-      </article>
-      <article>
-        <span>{$t('infrastructure.detail')}</span>
-        <strong>{data?.database?.name || $t('infrastructure.database')}</strong>
-        <small>{data?.database?.detail || '-'}</small>
-      </article>
+      <StatCard label={$t('infrastructure.latency')} sub={$t('infrastructure.canConnectProbe')}>
+        <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+        <span slot="value">{formatNumber(data?.database?.latencyMs, 2)} ms</span>
+      </StatCard>
+      <StatCard label={$t('infrastructure.detail')} value={data?.database?.name || $t('infrastructure.database')} sub={data?.database?.detail || '-'}>
+        <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      </StatCard>
     </div>
   </div>
 
@@ -166,16 +156,14 @@
     </div>
 
     <div class="metric-grid compact">
-      <article>
-        <span>{$t('infrastructure.probeLatency')}</span>
-        <strong>{formatNumber(data?.orleans?.latencyMs, 2)} ms</strong>
-        <small>{$t('infrastructure.managementGrains')}</small>
-      </article>
-      <article>
-        <span>{$t('infrastructure.activeSilos')}</span>
-        <strong>{data?.orleansCluster?.activeSiloCount ?? '-'}/{data?.orleansCluster?.siloCount ?? '-'}</strong>
-        <small>{data?.orleansCluster?.detail || data?.orleans?.detail || '-'}</small>
-      </article>
+      <StatCard label={$t('infrastructure.probeLatency')} sub={$t('infrastructure.managementGrains')}>
+        <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+        <span slot="value">{formatNumber(data?.orleans?.latencyMs, 2)} ms</span>
+      </StatCard>
+      <StatCard label={$t('infrastructure.activeSilos')} sub={data?.orleansCluster?.detail || data?.orleans?.detail || '-'}>
+        <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+        <span slot="value">{data?.orleansCluster?.activeSiloCount ?? '-'}/{data?.orleansCluster?.siloCount ?? '-'}</span>
+      </StatCard>
     </div>
   </div>
 </section>

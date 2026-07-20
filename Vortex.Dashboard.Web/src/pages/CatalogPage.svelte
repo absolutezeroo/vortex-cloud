@@ -1,12 +1,15 @@
 <script>
+  import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
   import {
+    Activity,
     ChevronRight,
     Coins,
     Eye,
     EyeOff,
     Folder,
     FolderOpen,
+    Hash,
     Image,
     Package,
     Pencil,
@@ -16,7 +19,6 @@
   } from '@lucide/svelte';
   import { apiGet, apiPost } from '../lib/api.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
-  import { compactCorrelation } from '../lib/format.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { reasonOk, nonNegative } from '../lib/validation.js';
   import { rememberReason } from '../lib/reasonHistory.js';
@@ -24,6 +26,7 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import PickerModal from '../components/PickerModal.svelte';
   import CatalogIconPickerModal from '../components/CatalogIconPickerModal.svelte';
+  import StatCard from '../components/StatCard.svelte';
   import { identity } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
 
@@ -724,26 +727,34 @@
         {/if}
       </div>
       <div class="metric-grid compact">
-        <article><span>{$t('catalogAdmin.layout')}</span><strong>{currentPage.layout}</strong></article>
-        <article>
-          <span>{$t('catalogAdmin.icon')}</span>
-          <strong class="icon-preview">
+        <StatCard label={$t('catalogAdmin.layout')} value={currentPage.layout}>
+          <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+        </StatCard>
+        <StatCard label={$t('catalogAdmin.icon')}>
+          <Image slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+          <strong slot="value" class="icon-preview">
             {#if currentPage.iconUrl}<img src={currentPage.iconUrl} alt="" />{/if}
             #{currentPage.icon}
           </strong>
-        </article>
-        <article><span>{$t('catalogAdmin.sortOrder')}</span><strong>{currentPage.sortOrder}</strong></article>
-        <article>
-          <span>{$t('catalogAdmin.visible')}</span>
-          <strong>
+        </StatCard>
+        <StatCard label={$t('catalogAdmin.sortOrder')} value={currentPage.sortOrder}>
+          <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+        </StatCard>
+        <StatCard label={$t('catalogAdmin.visible')}>
+          <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+          <span slot="value">
             <span class="status-badge" class:status-badge--ok={currentPage.visible} class:status-badge--bad={!currentPage.visible}>
               {#if currentPage.visible}<Eye size={12} strokeWidth={2} aria-hidden="true" />{:else}<EyeOff size={12} strokeWidth={2} aria-hidden="true" />{/if}
               {currentPage.visible ? $t('catalogAdmin.visible') : $t('catalogAdmin.hidden')}
             </span>
-          </strong>
-        </article>
-        <article><span>{$t('catalogAdmin.imageData')}</span><strong>{$t('catalogAdmin.lineCount', { count: (currentPage.imageData || []).length })}</strong></article>
-        <article><span>{$t('catalogAdmin.textData')}</span><strong>{$t('catalogAdmin.lineCount', { count: (currentPage.textData || []).length })}</strong></article>
+          </span>
+        </StatCard>
+        <StatCard label={$t('catalogAdmin.imageData')} value={$t('catalogAdmin.lineCount', { count: (currentPage.imageData || []).length })}>
+          <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+        </StatCard>
+        <StatCard label={$t('catalogAdmin.textData')} value={$t('catalogAdmin.lineCount', { count: (currentPage.textData || []).length })}>
+          <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+        </StatCard>
       </div>
 
       {#if editPageOpen && editPageForm}
@@ -799,10 +810,7 @@
           </div>
           {#if errors.updatePage}<p class="empty-state danger">{errors.updatePage}</p>{/if}
           {#if results.updatePage}
-            <p class="op-result" class:danger={!results.updatePage.ok}>
-              {results.updatePage.ok ? '✅' : '❌'} {results.updatePage.message} - cid
-              <code>{compactCorrelation(results.updatePage.correlationId)}</code>
-            </p>
+            <OpResult result={results.updatePage} />
           {/if}
         </div>
       {/if}
@@ -821,10 +829,7 @@
           </div>
           {#if errors.deletePage}<p class="empty-state danger">{errors.deletePage}</p>{/if}
           {#if results.deletePage}
-            <p class="op-result" class:danger={!results.deletePage.ok}>
-              {results.deletePage.ok ? '✅' : '❌'} {results.deletePage.message} - cid
-              <code>{compactCorrelation(results.deletePage.correlationId)}</code>
-            </p>
+            <OpResult result={results.deletePage} />
           {/if}
         </div>
       {/if}
@@ -893,10 +898,7 @@
         </div>
         {#if errors.createPage}<p class="empty-state danger">{errors.createPage}</p>{/if}
         {#if results.createPage}
-          <p class="op-result" class:danger={!results.createPage.ok}>
-            {results.createPage.ok ? '✅' : '❌'} {results.createPage.message} - cid
-            <code>{compactCorrelation(results.createPage.correlationId)}</code>
-          </p>
+          <OpResult result={results.createPage} />
         {/if}
       </div>
     {/if}
@@ -995,10 +997,7 @@
           </div>
           {#if errors.createOffer}<p class="empty-state danger">{errors.createOffer}</p>{/if}
           {#if results.createOffer}
-            <p class="op-result" class:danger={!results.createOffer.ok}>
-              {results.createOffer.ok ? '✅' : '❌'} {results.createOffer.message} - cid
-              <code>{compactCorrelation(results.createOffer.correlationId)}</code>
-            </p>
+            <OpResult result={results.createOffer} />
           {/if}
         </div>
       {/if}
@@ -1095,10 +1094,7 @@
                   </div>
                   {#if errors.updateOffer}<p class="empty-state danger">{errors.updateOffer}</p>{/if}
                   {#if results.updateOffer}
-                    <p class="op-result" class:danger={!results.updateOffer.ok}>
-                      {results.updateOffer.ok ? '✅' : '❌'} {results.updateOffer.message} - cid
-                      <code>{compactCorrelation(results.updateOffer.correlationId)}</code>
-                    </p>
+                    <OpResult result={results.updateOffer} />
                   {/if}
                 </div>
               {/if}
@@ -1185,10 +1181,7 @@
                         </div>
                         {#if errors.createProduct}<p class="empty-state danger">{errors.createProduct}</p>{/if}
                         {#if results.createProduct}
-                          <p class="op-result" class:danger={!results.createProduct.ok}>
-                            {results.createProduct.ok ? '✅' : '❌'} {results.createProduct.message} - cid
-                            <code>{compactCorrelation(results.createProduct.correlationId)}</code>
-                          </p>
+                          <OpResult result={results.createProduct} />
                         {/if}
                       </div>
                     {/if}
@@ -1266,10 +1259,7 @@
                                 </div>
                                 {#if errors.updateProduct}<p class="empty-state danger">{errors.updateProduct}</p>{/if}
                                 {#if results.updateProduct}
-                                  <p class="op-result" class:danger={!results.updateProduct.ok}>
-                                    {results.updateProduct.ok ? '✅' : '❌'} {results.updateProduct.message} - cid
-                                    <code>{compactCorrelation(results.updateProduct.correlationId)}</code>
-                                  </p>
+                                  <OpResult result={results.updateProduct} />
                                 {/if}
                               </div>
                             {/if}
@@ -1288,10 +1278,7 @@
                     {/if}
                     {#if errors.deleteProduct}<p class="empty-state danger">{errors.deleteProduct}</p>{/if}
                     {#if results.deleteProduct}
-                      <p class="op-result" class:danger={!results.deleteProduct.ok}>
-                        {results.deleteProduct.ok ? '✅' : '❌'} {results.deleteProduct.message} - cid
-                        <code>{compactCorrelation(results.deleteProduct.correlationId)}</code>
-                      </p>
+                      <OpResult result={results.deleteProduct} />
                     {/if}
                   {/if}
                 </div>
@@ -1302,10 +1289,7 @@
       {/if}
       {#if errors.deleteOffer}<p class="empty-state danger">{errors.deleteOffer}</p>{/if}
       {#if results.deleteOffer}
-        <p class="op-result" class:danger={!results.deleteOffer.ok}>
-          {results.deleteOffer.ok ? '✅' : '❌'} {results.deleteOffer.message} - cid
-          <code>{compactCorrelation(results.deleteOffer.correlationId)}</code>
-        </p>
+        <OpResult result={results.deleteOffer} />
       {/if}
     </section>
   {/if}

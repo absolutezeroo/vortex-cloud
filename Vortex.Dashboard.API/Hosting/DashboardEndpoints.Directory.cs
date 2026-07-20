@@ -40,6 +40,17 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.PlayersRead,
             TagDirectory
         );
+        // Batch avatar-head resolver (?ids=1,2,3) so every surface that shows a player can render the
+        // real head via lib/avatars.js. Users without PlayersRead simply keep the plain name.
+        MapReadGet(
+            app,
+            ApiDirectory + "/avatars",
+            "/api/avatars",
+            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.AvatarsAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.PlayersRead,
+            TagDirectory
+        );
         MapReadGet(
             app,
             ApiDirectory + "/furniture",

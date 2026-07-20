@@ -4,6 +4,8 @@
   import { formatDate, formatNumber } from '../lib/format.js';
   import EntityLink from '../components/EntityLink.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import StatCard from '../components/StatCard.svelte';
+  import { Sparkles, Timer, ShoppingBag } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer, openItem } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
@@ -85,28 +87,19 @@
         </div>
 
         <div class="metric-grid compact">
-          <article>
-            <span>{$t('subscriptions.totalSubs')}</span>
-            <strong>{clubStats?.totals?.totalSubscriptions || 0}</strong>
-            <small>{$t('subscriptions.inDatabase')}</small>
-          </article>
-          <article>
-            <span>{$t('subscriptions.expiring7d')}</span>
-            <strong>{clubStats?.totals?.expiringIn7Days || 0}</strong>
-            <small>{$t('subscriptions.priorityRenewal')}</small>
-          </article>
-          <article>
-            <span>{$t('subscriptions.expiring30d')}</span>
-            <strong>{clubStats?.totals?.expiringIn30Days || 0}</strong>
-            <small>{$t('subscriptions.window30d')}</small>
-          </article>
-          <article>
-            <span>{$t('subscriptions.renewalRate')}</span>
-            <strong>{formatNumber((clubStats?.lifecycle?.totals?.renewalShare || 0) * 100, 2)}%</strong>
-            <small>
-              {$t('subscriptions.actionsCount', { renewals: clubStats?.lifecycle?.totals?.renewals || 0, purchases: clubStats?.lifecycle?.totals?.purchases || 0 })}
-            </small>
-          </article>
+          <StatCard label={$t('subscriptions.totalSubs')} value={clubStats?.totals?.totalSubscriptions || 0} sub={$t('subscriptions.inDatabase')} accent>
+            <Sparkles slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+          </StatCard>
+          <StatCard label={$t('subscriptions.expiring7d')} value={clubStats?.totals?.expiringIn7Days || 0} sub={$t('subscriptions.priorityRenewal')} accent>
+            <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+          </StatCard>
+          <StatCard label={$t('subscriptions.expiring30d')} value={clubStats?.totals?.expiringIn30Days || 0} sub={$t('subscriptions.window30d')} accent>
+            <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+          </StatCard>
+          <StatCard label={$t('subscriptions.renewalRate')} sub={$t('subscriptions.actionsCount', { renewals: clubStats?.lifecycle?.totals?.renewals || 0, purchases: clubStats?.lifecycle?.totals?.purchases || 0 })} accent>
+            <Sparkles slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+            <span slot="value">{formatNumber((clubStats?.lifecycle?.totals?.renewalShare || 0) * 100, 2)}%</span>
+          </StatCard>
         </div>
       </div>
 
@@ -142,21 +135,15 @@
       <p class="empty-state">{$t('subscriptions.noLifecycleData')}</p>
     {:else}
       <div class="metric-grid compact">
-        <article>
-          <span>{$t('subscriptions.purchases')}</span>
-          <strong>{clubStats?.lifecycle?.totals?.purchases || 0}</strong>
-          <small>{$t('subscriptions.newSubs')}</small>
-        </article>
-        <article>
-          <span>{$t('subscriptions.renewals')}</span>
-          <strong>{clubStats?.lifecycle?.totals?.renewals || 0}</strong>
-          <small>{$t('subscriptions.topUps')}</small>
-        </article>
-        <article>
-          <span>{$t('subscriptions.expirations')}</span>
-          <strong>{clubStats?.lifecycle?.totals?.expired || 0}</strong>
-          <small>{$t('subscriptions.churn')}</small>
-        </article>
+        <StatCard label={$t('subscriptions.purchases')} value={clubStats?.lifecycle?.totals?.purchases || 0} sub={$t('subscriptions.newSubs')} accent>
+          <ShoppingBag slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+        </StatCard>
+        <StatCard label={$t('subscriptions.renewals')} value={clubStats?.lifecycle?.totals?.renewals || 0} sub={$t('subscriptions.topUps')} accent>
+          <Sparkles slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+        </StatCard>
+        <StatCard label={$t('subscriptions.expirations')} value={clubStats?.lifecycle?.totals?.expired || 0} sub={$t('subscriptions.churn')} accent>
+          <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+        </StatCard>
       </div>
 
       <p class="eyebrow" style="margin: 10px 0;">

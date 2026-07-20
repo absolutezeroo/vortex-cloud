@@ -7,6 +7,8 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import LineChart from '../components/LineChart.svelte';
+  import StatCard from '../components/StatCard.svelte';
+  import { PawPrint, Hash } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
   const granularities = ['day', 'month', 'year'];
@@ -111,12 +113,24 @@
 
 {#if data}
   <div class="metric-grid" style="margin-top: 12px;">
-    <article><span>{$t('petsStats.totalPets')}</span><strong>{formatNumber(data.totals.totalPets)}</strong></article>
-    <article><span>{$t('petsStats.avgLevel')}</span><strong>{data.totals.avgLevel}</strong></article>
-    <article><span>{$t('petsStats.avgEnergy')}</span><strong>{data.totals.avgEnergy}</strong></article>
-    <article><span>{$t('petsStats.avgNutrition')}</span><strong>{data.totals.avgNutrition}</strong></article>
-    <article><span>{$t('petsStats.breedablePets')}</span><strong>{formatNumber(data.totals.breedablePets)}</strong></article>
-    <article><span>{$t('petsStats.bredPets')}</span><strong>{formatNumber(data.totals.bredPets)}</strong></article>
+    <StatCard label={$t('petsStats.totalPets')} value={formatNumber(data.totals.totalPets)}>
+      <PawPrint slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('petsStats.avgLevel')} value={data.totals.avgLevel}>
+      <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('petsStats.avgEnergy')} value={data.totals.avgEnergy}>
+      <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('petsStats.avgNutrition')} value={data.totals.avgNutrition}>
+      <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('petsStats.breedablePets')} value={formatNumber(data.totals.breedablePets)}>
+      <PawPrint slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('petsStats.bredPets')} value={formatNumber(data.totals.bredPets)}>
+      <PawPrint slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
   </div>
 
   <div class="panel" style="margin-top: 12px;">

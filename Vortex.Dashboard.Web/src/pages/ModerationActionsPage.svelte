@@ -1,8 +1,8 @@
 <script>
+  import OpResult from '../components/OpResult.svelte';
   import { Ban, ShieldCheck, VolumeX, Lock, LockOpen } from '@lucide/svelte';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { apiPost } from '../lib/api.js';
-  import { compactCorrelation } from '../lib/format.js';
   import { MODERATION_OPERATION_CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { reasonOk, positive } from '../lib/validation.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
@@ -267,11 +267,7 @@
       </div>
       {#if errors.ban}<p class="empty-state danger">{errors.ban}</p>{/if}
       {#if results.ban}
-        <p class="op-result" class:danger={!results.ban.ok}>
-          {results.ban.ok ? '✅' : '❌'} {results.ban.message} - cid
-          <code>{compactCorrelation(results.ban.correlationId)}</code>
-          <button class="ghost-button" type="button" on:click={() => copy(results.ban.correlationId)}>{$t('common.copy')}</button>
-        </p>
+        <OpResult result={results.ban} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
   </section>
@@ -313,11 +309,7 @@
       </div>
       {#if errors.unban}<p class="empty-state danger">{errors.unban}</p>{/if}
       {#if results.unban}
-        <p class="op-result" class:danger={!results.unban.ok}>
-          {results.unban.ok ? '✅' : '❌'} {results.unban.message} - cid
-          <code>{compactCorrelation(results.unban.correlationId)}</code>
-          <button class="ghost-button" type="button" on:click={() => copy(results.unban.correlationId)}>{$t('common.copy')}</button>
-        </p>
+        <OpResult result={results.unban} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
   </section>
@@ -364,11 +356,7 @@
       </div>
       {#if errors.mute}<p class="empty-state danger">{errors.mute}</p>{/if}
       {#if results.mute}
-        <p class="op-result" class:danger={!results.mute.ok}>
-          {results.mute.ok ? '✅' : '❌'} {results.mute.message} - cid
-          <code>{compactCorrelation(results.mute.correlationId)}</code>
-          <button class="ghost-button" type="button" on:click={() => copy(results.mute.correlationId)}>{$t('common.copy')}</button>
-        </p>
+        <OpResult result={results.mute} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
   </section>
@@ -426,11 +414,7 @@
       </div>
       {#if errors.tradingLock}<p class="empty-state danger">{errors.tradingLock}</p>{/if}
       {#if results.tradingLock}
-        <p class="op-result" class:danger={!results.tradingLock.ok}>
-          {results.tradingLock.ok ? '✅' : '❌'} {results.tradingLock.message} - cid
-          <code>{compactCorrelation(results.tradingLock.correlationId)}</code>
-          <button class="ghost-button" type="button" on:click={() => copy(results.tradingLock.correlationId)}>{$t('common.copy')}</button>
-        </p>
+        <OpResult result={results.tradingLock} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
   </section>
@@ -478,11 +462,7 @@
       </div>
       {#if errors.tradingUnlock}<p class="empty-state danger">{errors.tradingUnlock}</p>{/if}
       {#if results.tradingUnlock}
-        <p class="op-result" class:danger={!results.tradingUnlock.ok}>
-          {results.tradingUnlock.ok ? '✅' : '❌'} {results.tradingUnlock.message} - cid
-          <code>{compactCorrelation(results.tradingUnlock.correlationId)}</code>
-          <button class="ghost-button" type="button" on:click={() => copy(results.tradingUnlock.correlationId)}>{$t('common.copy')}</button>
-        </p>
+        <OpResult result={results.tradingUnlock} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
   </section>

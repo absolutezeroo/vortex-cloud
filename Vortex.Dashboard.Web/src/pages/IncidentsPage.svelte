@@ -3,6 +3,8 @@
   import { apiGet } from '../lib/api.js';
   import { formatDate, formatNumber } from '../lib/format.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import StatCard from '../components/StatCard.svelte';
+  import { Activity, TriangleAlert } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { t } from '../lib/i18n.js';
 
@@ -91,26 +93,18 @@
   </div>
 
   <div class="metric-grid compact" style="margin-top: 12px;">
-    <article>
-      <span>{$t('incidents.activeSignals')}</span>
-      <strong>{formatNumber(signals.length)}</strong>
-      <small>{$t('incidents.latestSnapshot')}</small>
-    </article>
-    <article>
-      <span>{$t('incidents.errorSpikes')}</span>
-      <strong>{formatRate(data?.errorSpikesPerMinute)}</strong>
-      <small>{$t('incidents.runtimeErrorsPerMin')}</small>
-    </article>
-    <article>
-      <span>{$t('incidents.loginFailedSpikes')}</span>
-      <strong>{formatRate(data?.loginFailedSpikesPerMinute)}</strong>
-      <small>{$t('incidents.authFailuresPerMin')}</small>
-    </article>
-    <article>
-      <span>{$t('incidents.topErrorGroups')}</span>
-      <strong>{formatNumber(topErrorGroups.length)}</strong>
-      <small>{$t('incidents.windowAggregation')}</small>
-    </article>
+    <StatCard label={$t('incidents.activeSignals')} value={formatNumber(signals.length)} sub={$t('incidents.latestSnapshot')}>
+      <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('incidents.errorSpikes')} value={formatRate(data?.errorSpikesPerMinute)} sub={$t('incidents.runtimeErrorsPerMin')}>
+      <TriangleAlert slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('incidents.loginFailedSpikes')} value={formatRate(data?.loginFailedSpikesPerMinute)} sub={$t('incidents.authFailuresPerMin')}>
+      <TriangleAlert slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('incidents.topErrorGroups')} value={formatNumber(topErrorGroups.length)} sub={$t('incidents.windowAggregation')}>
+      <TriangleAlert slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
   </div>
 </section>
 

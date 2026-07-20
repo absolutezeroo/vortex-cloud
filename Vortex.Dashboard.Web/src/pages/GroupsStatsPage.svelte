@@ -8,7 +8,8 @@
   import AssetImage from '../components/AssetImage.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import LineChart from '../components/LineChart.svelte';
-  import { Shield } from '@lucide/svelte';
+  import StatCard from '../components/StatCard.svelte';
+  import { Shield, Users, Hash } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
   const granularities = ['day', 'month', 'year'];
@@ -120,11 +121,21 @@
 
 {#if data}
   <div class="metric-grid" style="margin-top: 12px;">
-    <article><span>{$t('groupsStats.totalGroups')}</span><strong>{formatNumber(data.totals.totalGroups)}</strong></article>
-    <article><span>{$t('groupsStats.totalMembers')}</span><strong>{formatNumber(data.totals.totalMembers)}</strong></article>
-    <article><span>{$t('groupsStats.totalThreads')}</span><strong>{formatNumber(data.totals.totalThreads)}</strong></article>
-    <article><span>{$t('groupsStats.totalPosts')}</span><strong>{formatNumber(data.totals.totalPosts)}</strong></article>
-    <article><span>{$t('groupsStats.avgMembersPerGroup')}</span><strong>{data.totals.avgMembersPerGroup}</strong></article>
+    <StatCard label={$t('groupsStats.totalGroups')} value={formatNumber(data.totals.totalGroups)}>
+      <Users slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('groupsStats.totalMembers')} value={formatNumber(data.totals.totalMembers)}>
+      <Users slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('groupsStats.totalThreads')} value={formatNumber(data.totals.totalThreads)}>
+      <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('groupsStats.totalPosts')} value={formatNumber(data.totals.totalPosts)}>
+      <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('groupsStats.avgMembersPerGroup')} value={data.totals.avgMembersPerGroup}>
+      <Users slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
   </div>
 
   <div class="panel" style="margin-top: 12px;">

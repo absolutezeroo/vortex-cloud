@@ -549,7 +549,7 @@ internal sealed partial class DashboardApiService
                             window = new { since = profileWindowSince, until = profileWindowUntil },
                             ownedRooms = new { total = ownedRoomCount, latest = ownedRooms },
                             wallets = playerCurrencies,
-                            inventory = new { total = ownedItemCount, latest = ownedItems },
+                            inventory = new { total = ownedItemCount, latest = ownedItemsWithIcons },
                             activity = new
                             {
                                 auditEvents = auditCount,
@@ -1067,6 +1067,49 @@ internal sealed partial class DashboardApiService
                     online = online.Count,
                     items,
                 };
+            },
+            ct
+        );
+    }
+
+    /// <summary>
+    /// Batch avatar-head lookup: <c>?ids=1,2,3</c> → <c>{ items: [{ id, avatarUrl }] }</c>. Lets any
+    /// dashboard surface that already shows a player id/name (audit, moderation, CFH, economy…) render
+    /// the real Habbo avatar head without every one of those endpoints having to load <c>Figure</c>
+    /// and emit its own <c>avatarUrl</c>. The frontend batches the ids it needs per tick through
+    /// <c>lib/avatars.js</c> and caches the result. A player with no figure yields a null url (the UI
+    /// falls back to a neutral head), and the id cap keeps a single request bounded.
+    /// </summary>
+    public Task<object> AvatarsAsync(NameValueCollection query, CancellationToken ct)
+    {
+        List<int> ids = (query["ids"] ?? string.Empty)
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(part => int.TryParse(part, out int parsed) ? parsed : (int?)null)
+            .Where(parsed => parsed.HasValue)
+            .Select(parsed => parsed!.Value)
+            .Distinct()
+            .Take(200)
+            .ToList();
+
+        if (ids.Count == 0)
+        {
+            return Task.FromResult<object>(new { items = Array.Empty<object>() });
+        }
+
+        return QueryAsync<object>(
+            async db =>
+            {
+                var rows = await db
+                    .Players.AsNoTracking()
+                    .Where(p => ids.Contains(p.Id))
+                    .Select(p => new { p.Id, p.Figure })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                var items = rows.Select(p => new { id = p.Id, avatarUrl = _assetUrls.AvatarImage(p.Figure) })
+                    .ToList();
+
+                return new { items };
             },
             ct
         );

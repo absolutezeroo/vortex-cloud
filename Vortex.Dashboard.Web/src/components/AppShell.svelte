@@ -166,7 +166,11 @@
 <main class="app-shell">
   <aside class="sidebar">
     <div class="brand">
-      <span class="brand-mark">T</span>
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M3 11 12 4l9 7v8a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="currentColor" />
+        </svg>
+      </span>
       <div>
         <strong>{$t('nav.brandTitle')}</strong>
         <small>{$t('nav.brandSubtitle')}</small>
@@ -353,6 +357,8 @@
   .session-area {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
     gap: 10px;
   }
 
