@@ -9,9 +9,10 @@
   export let sub = '';
   export let accent = false;
   export let delta = null; // { dir: 'up' | 'down' | 'flat', text: string }
+  export let color = ''; // optional left-accent stripe, e.g. to match a chart series colour
 </script>
 
-<article class="stat" class:accent>
+<article class="stat" class:accent style={color ? `border-left: 3px solid ${color};` : undefined}>
   <span class="stat-label">
     {#if $$slots.icon}<span class="stat-ico"><slot name="icon" /></span>{/if}
     {label}

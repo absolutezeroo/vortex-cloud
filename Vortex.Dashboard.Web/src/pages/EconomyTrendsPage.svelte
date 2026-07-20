@@ -5,6 +5,8 @@
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import LineChart from '../components/LineChart.svelte';
+  import StatCard from '../components/StatCard.svelte';
+  import { Coins } from '@lucide/svelte';
   import { t, translate } from '../lib/i18n.js';
 
   const granularities = ['day', 'month', 'year'];
@@ -139,11 +141,10 @@
 {#if currencies.length > 0}
   <div class="metric-grid" style="margin-top: 12px;">
     {#each currencies as currency, i}
-      <article style={`border-left: 3px solid ${colorFor(i)};`}>
-        <span>{currency}</span>
-        <strong>{formatNumber(data.totals[currency]?.spend || 0)}</strong>
-        <small>{$t('economyTrends.spentSuffix')} · {formatNumber(data.totals[currency]?.earned || 0)} {$t('economyTrends.earnedSuffix')} · {formatNumber(data.totals[currency]?.transactionCount || 0)} {$t('economyTrends.txnsSuffix')}</small>
-      </article>
+      <StatCard label={currency} value={formatNumber(data.totals[currency]?.spend || 0)} color={colorFor(i)}>
+        <Coins slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+        <span slot="sub">{$t('economyTrends.spentSuffix')} · {formatNumber(data.totals[currency]?.earned || 0)} {$t('economyTrends.earnedSuffix')} · {formatNumber(data.totals[currency]?.transactionCount || 0)} {$t('economyTrends.txnsSuffix')}</span>
+      </StatCard>
     {/each}
   </div>
 

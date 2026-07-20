@@ -6,6 +6,7 @@
   import { formatDate, compactCorrelation } from '../lib/format.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { reasonOk } from '../lib/validation.js';
+  import { ChevronDown, ChevronRight } from '@lucide/svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import { identity, openPlayer, openItem } from '../lib/session.js';
@@ -219,7 +220,7 @@
         <tr>
           <td>
             <button class="ghost-button" type="button" on:click={() => toggleExpand(roomId(room))}>
-              {expanded === roomId(room) ? '▾' : '▸'} {roomName(room)} <small>#{roomId(room)}</small>
+              {#if expanded === roomId(room)}<ChevronDown size={14} strokeWidth={2} aria-hidden="true" />{:else}<ChevronRight size={14} strokeWidth={2} aria-hidden="true" />{/if} {roomName(room)} <small>#{roomId(room)}</small>
             </button>
           </td>
           <td><EntityLink id={roomOwnerId(room)} label={roomOwnerName(room)} {openPlayer} {openItem} /></td>

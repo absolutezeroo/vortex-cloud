@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api.js';
   import { formatDate } from '../lib/format.js';
+  import { X } from '@lucide/svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { t } from '../lib/i18n.js';
@@ -238,7 +239,7 @@
     <h3>{$t('apiExplorer.routesCount', { count: filtered.length })}</h3>
     {#if domainFilter !== 'all'}
       <button type="button" class="ghost-button" on:click={() => selectDomain('all')}>
-        ✕ {domainFilter}
+        <X size={14} strokeWidth={2} aria-hidden="true" /> {domainFilter}
       </button>
     {/if}
   </div>
