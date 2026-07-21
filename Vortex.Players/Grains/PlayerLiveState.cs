@@ -11,6 +11,7 @@ public sealed class PlayerLiveState
     public string Motto { get; set; } = string.Empty;
     public string Figure { get; set; } = string.Empty;
     public AvatarGenderType Gender { get; set; } = AvatarGenderType.Male;
+    public int RoomChatStyleId { get; set; } = 0;
     public int AchievementScore { get; set; } = 0;
     public int RespectReceived { get; set; } = 0;
     public int RespectGivenToday { get; set; } = 0;

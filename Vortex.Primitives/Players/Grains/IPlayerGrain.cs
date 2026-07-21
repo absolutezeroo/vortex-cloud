@@ -14,6 +14,14 @@ public interface IPlayerGrain : IGrainWithIntegerKey
     public Task SetNameAsync(string name, CancellationToken ct);
     public Task SetMottoAsync(string text, CancellationToken ct);
 
+    /// <summary>Persists the player's preferred chat-bubble style (SetChatStylePreference, header
+    /// 2634). No-op when the style is unchanged so a repeated toggle doesn't touch the database.</summary>
+    public Task SetChatStylePreferenceAsync(int chatStyle, CancellationToken ct);
+
+    /// <summary>The player's persisted preferred chat-bubble style (0 = default). Surfaced back to the
+    /// client in the account-preferences packet so the settings UI shows the saved selection.</summary>
+    public Task<int> GetChatStylePreferenceAsync(CancellationToken ct);
+
     /// <summary>
     /// Adjusts the player's persisted achievement score by <paramref name="delta"/> and returns the
     /// new total. Owned here (not by the achievement grain) because the score is cached in this

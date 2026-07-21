@@ -319,28 +319,55 @@ internal sealed class PlayerWalletGrain(
             return;
         }
 
-        if (!_currenciesByKind.TryGetValue(kind, out WalletCurrencySnapshot? snapshot))
-        {
-            return;
-        }
-
         await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
-        PlayerCurrencyEntity? entity = await dbCtx
-            .PlayerCurrencies.Where(x =>
-                x.Id == snapshot.Id && x.PlayerEntityId == (int)this.GetPrimaryKeyLong()
-            )
-            .FirstOrDefaultAsync(ct);
+        PlayerCurrencyEntity? entity;
 
-        if (entity is null)
+        if (_currenciesByKind.TryGetValue(kind, out WalletCurrencySnapshot? snapshot))
         {
-            return;
+            entity = await dbCtx
+                .PlayerCurrencies.Where(x =>
+                    x.Id == snapshot.Id && x.PlayerEntityId == (int)this.GetPrimaryKeyLong()
+                )
+                .FirstOrDefaultAsync(ct);
+
+            if (entity is null)
+            {
+                return;
+            }
+        }
+        else
+        {
+            // Lazily create the row the same way HydrateAsync() bootstraps Credits below - a
+            // player can be granted a currency (e.g. a specific activity point type) for the
+            // first time via a quest/achievement reward without ever having debited or been
+            // granted it before, so there is no cached row yet to update.
+            CurrencyTypeSnapshot? currencyType = _currencyTypeProvider.GetCurrencyTypeByKind(kind);
+
+            if (currencyType is null || !currencyType.Enabled)
+            {
+                return;
+            }
+
+            entity = new PlayerCurrencyEntity
+            {
+                PlayerEntityId = (int)this.GetPrimaryKeyLong(),
+                CurrencyTypeEntityId = currencyType.Id,
+                Amount = currencyType.StartingAmount,
+            };
+
+            dbCtx.PlayerCurrencies.Add(entity);
         }
 
         entity.Amount += amount;
         await dbCtx.SaveChangesAsync(ct);
 
-        _currenciesByKind[kind] = snapshot with { Amount = entity.Amount };
+        _currenciesByKind[kind] = new WalletCurrencySnapshot
+        {
+            Id = entity.Id,
+            CurrencyKind = kind,
+            Amount = entity.Amount,
+        };
 
         (string currencyName, int? activityPointType) = DescribeCurrency(kind);
 

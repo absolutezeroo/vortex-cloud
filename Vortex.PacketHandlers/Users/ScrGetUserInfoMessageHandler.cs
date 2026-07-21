@@ -42,6 +42,10 @@ public class ScrGetUserInfoMessageHandler(IGrainFactory grainFactory)
             .GetWiredPreferencesAsync(ct)
             .ConfigureAwait(false);
 
+        // Reflect the player's saved chat-bubble style so the settings UI shows their selection
+        // (in-memory read on the already-activated grain — no extra DB query).
+        int preferedChatStyle = await player.GetChatStylePreferenceAsync(ct).ConfigureAwait(false);
+
         await ctx.SendComposerAsync(
                 new AccountPreferencesEventMessageComposer
                 {
@@ -52,7 +56,7 @@ public class ScrGetUserInfoMessageHandler(IGrainFactory grainFactory)
                     RoomInvitesIgnored = false,
                     RoomCameraFollowDisabled = false,
                     UIFlags = UIFlags.FriendBarExpanded | UIFlags.RoomToolsExpanded,
-                    PreferedChatStyle = 1,
+                    PreferedChatStyle = preferedChatStyle,
                     WiredMenuButton = wiredPrefs.WiredMenuButton,
                     WiredInspectButton = wiredPrefs.WiredInspectButton,
                     PlayTestMode = wiredPrefs.PlayTestMode,
