@@ -35,7 +35,8 @@ public sealed record ItemPlacedEvent(
     int ActorPlayerId,
     int OwnerId,
     int RoomId,
-    string? Data
+    string? Data,
+    int DefinitionId = 0
 ) : IEvent;
 
 /// <summary>A furniture item was moved within a room.</summary>

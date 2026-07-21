@@ -18,6 +18,7 @@ using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums.Wallet;
+using Vortex.Primitives.Quests;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
 
@@ -35,6 +36,7 @@ internal sealed partial class DashboardOperationsService(
     ICfhTicketService cfhTickets,
     ICatalogAdminService catalogAdmin,
     ITargetedOfferAdminService targetedOfferAdmin,
+    IQuestAdminService questAdmin,
     IFurnitureAdminService furnitureAdmin,
     IAuditSink auditSink,
     IVortexContextAccessor context,
@@ -55,6 +57,7 @@ internal sealed partial class DashboardOperationsService(
     private readonly ICfhTicketService _cfhTickets = cfhTickets;
     private readonly ICatalogAdminService _catalogAdmin = catalogAdmin;
     private readonly ITargetedOfferAdminService _targetedOfferAdmin = targetedOfferAdmin;
+    private readonly IQuestAdminService _questAdmin = questAdmin;
     private readonly IFurnitureAdminService _furnitureAdmin = furnitureAdmin;
     private readonly IAuditSink _auditSink = auditSink;
     private readonly IVortexContextAccessor _context = context;

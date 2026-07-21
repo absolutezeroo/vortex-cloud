@@ -23,6 +23,8 @@ export const CAPABILITIES = {
   wiredRead: 'dashboard.wired.read',
   targetedOffersRead: 'dashboard.targeted_offers.read',
   opsTargetedOffersManage: 'dashboard.ops.targeted_offers.manage',
+  questsRead: 'dashboard.quests.read',
+  opsQuestsManage: 'dashboard.ops.quests.manage',
 };
 
 export const ROUTE_PERMISSIONS = {
@@ -52,6 +54,8 @@ export const ROUTE_PERMISSIONS = {
   wiredStats: [CAPABILITIES.wiredRead],
   targetedOffers: [CAPABILITIES.targetedOffersRead],
   targetedOffersStats: [CAPABILITIES.targetedOffersRead],
+  quests: [CAPABILITIES.questsRead],
+  questsStats: [CAPABILITIES.questsRead],
   apiExplorer: [CAPABILITIES.overviewRead],
   operations: [
     CAPABILITIES.opsGrantCurrency,

@@ -81,6 +81,8 @@ public static class Capabilities
         public const string WiredRead = "dashboard.wired.read";
         public const string TargetedOffersRead = "dashboard.targeted_offers.read";
         public const string OpsTargetedOffersManage = "dashboard.ops.targeted_offers.manage";
+        public const string QuestsRead = "dashboard.quests.read";
+        public const string OpsQuestsManage = "dashboard.ops.quests.manage";
     }
 
     /// <summary>Every declared capability, for validation and dashboard enumeration.</summary>
@@ -125,5 +127,7 @@ public static class Capabilities
             Dashboard.WiredRead,
             Dashboard.TargetedOffersRead,
             Dashboard.OpsTargetedOffersManage,
+            Dashboard.QuestsRead,
+            Dashboard.OpsQuestsManage,
         };
 }

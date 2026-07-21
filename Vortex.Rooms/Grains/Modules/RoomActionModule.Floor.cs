@@ -135,7 +135,8 @@ public sealed partial class RoomActionModule
                             y,
                             rotation = rot.ToString(),
                         }
-                    )
+                    ),
+                    snapshot.Definition.Id
                 ),
                 ct
             )

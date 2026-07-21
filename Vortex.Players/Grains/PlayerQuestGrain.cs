@@ -13,6 +13,7 @@ using Vortex.Players.Quests;
 using Vortex.Primitives.Messages.Outgoing.Quest;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
+using Vortex.Primitives.Quests;
 using Vortex.Primitives.Quests.Grains;
 using Vortex.Primitives.Quests.Snapshots;
 
@@ -43,11 +44,7 @@ internal sealed class PlayerQuestGrain(
     {
         ImmutableArray<QuestSnapshot> all = await BuildAllAsync(ct).ConfigureAwait(true);
 
-        return new QuestListSnapshot
-        {
-            Quests = [.. all.Where(q => !q.Seasonal && q.CampaignCode != DailyCampaign)],
-            OpenWindow = openWindow,
-        };
+        return new QuestListSnapshot { Quests = BuildListQuests(all), OpenWindow = openWindow };
     }
 
     public async Task<QuestListSnapshot> GetSeasonalQuestsAsync(CancellationToken ct)
@@ -95,6 +92,8 @@ internal sealed class PlayerQuestGrain(
 
     public async Task ActivateAsync(int questId, CancellationToken ct)
     {
+        List<int> deactivatedQuestIds = [];
+
         try
         {
             await using VortexDbContext dbCtx = await _dbCtxFactory
@@ -106,6 +105,19 @@ internal sealed class PlayerQuestGrain(
                 .ToListAsync(ct)
                 .ConfigureAwait(true);
 
+            PlayerQuestEntity? row = rows.FirstOrDefault(r => r.QuestEntityId == questId);
+
+            // An already-completed quest has nothing left to activate - bail before touching any
+            // other in-progress quest. Without this, a stale "Activate" click on a finished quest
+            // (still on screen from before the list refreshed) would deactivate whatever else was
+            // genuinely in progress for no reason, and re-push the finished quest's own now-stale
+            // single-quest update - re-showing/refreshing its tracker as if newly active instead of
+            // leaving the already-played completion animation alone.
+            if (row is { Completed: true })
+            {
+                return;
+            }
+
             // One active quest at a time: deactivate any other in-progress quest.
             foreach (
                 PlayerQuestEntity other in rows.Where(r =>
@@ -114,9 +126,9 @@ internal sealed class PlayerQuestGrain(
             )
             {
                 other.Accepted = false;
+                deactivatedQuestIds.Add(other.QuestEntityId);
             }
 
-            PlayerQuestEntity? row = rows.FirstOrDefault(r => r.QuestEntityId == questId);
             if (row is null)
             {
                 dbCtx.PlayerQuests.Add(
@@ -129,7 +141,7 @@ internal sealed class PlayerQuestGrain(
                     }
                 );
             }
-            else if (!row.Completed)
+            else
             {
                 row.Accepted = true;
                 row.AcceptedAt = DateTime.Now;
@@ -148,20 +160,139 @@ internal sealed class PlayerQuestGrain(
             return;
         }
 
-        QuestSnapshot? snapshot = await BuildOneAsync(questId, ct).ConfigureAwait(true);
-        if (snapshot is not null)
+        ImmutableArray<QuestSnapshot> all = await BuildAllAsync(ct).ConfigureAwait(true);
+        Dictionary<int, QuestSnapshot> byId = all.ToDictionary(q => q.Id);
+
+        // Tell the client about every quest the "one active quest at a time" rule above just
+        // deactivated, *before* the newly-activated quest's own update. A same-campaign quest
+        // shares one QuestTracker client-side (campaignChainCode is just the campaign code for
+        // non-seasonal quests) - without this, the tracker never receives the cancellation signal
+        // that resets its animation state (AS3's own onQuest() only resets from the SLIDE_OUT
+        // status this produces), and can get stuck mid a stale completion animation instead of
+        // cleanly transitioning to the newly-activated quest.
+        foreach (int deactivatedId in deactivatedQuestIds)
+        {
+            if (byId.TryGetValue(deactivatedId, out QuestSnapshot? deactivatedSnapshot))
+            {
+                await Presence
+                    .SendComposerAsync(
+                        new QuestCancelledMessageComposer
+                        {
+                            Expired = false,
+                            Quest = deactivatedSnapshot,
+                        }
+                    )
+                    .ConfigureAwait(true);
+            }
+        }
+
+        if (byId.TryGetValue(questId, out QuestSnapshot? snapshot))
         {
             await Presence
                 .SendComposerAsync(new QuestMessageComposer { Quest = snapshot })
                 .ConfigureAwait(true);
         }
+
+        // The single-quest update above is what drives the tracker/details/completed popups,
+        // but QuestsList (the main quest window, if already open) only ever refreshes off a full
+        // list push - without this, a quest accepted while the list is open never shows its
+        // "accepted" (yellow) state until the window is closed and reopened. Reuses the snapshot
+        // array already built above instead of re-querying.
+        await Presence
+            .SendComposerAsync(
+                new QuestsMessageComposer { Quests = BuildListQuests(all), OpenWindow = false }
+            )
+            .ConfigureAwait(true);
     }
 
     public Task CancelAsync(CancellationToken ct) => UnacceptAsync(questId: null, ct);
 
     public Task RejectAsync(int questId, CancellationToken ct) => UnacceptAsync(questId, ct);
 
-    public async Task ProgressAsync(string questType, int amount, CancellationToken ct)
+    public Task ProgressAsync(string questType, int amount, CancellationToken ct) =>
+        ProgressCoreAsync(questType, amount, null, null, oncePerDay: false, ct);
+
+    public Task ProgressAsync(
+        string questType,
+        int amount,
+        string? targetType,
+        string? targetValue,
+        CancellationToken ct
+    ) => ProgressCoreAsync(questType, amount, targetType, targetValue, oncePerDay: false, ct);
+
+    public Task ProgressDailyAsync(string questType, int amount, CancellationToken ct) =>
+        ProgressCoreAsync(questType, amount, null, null, oncePerDay: true, ct);
+
+    public async Task ProgressRoomVisitAsync(
+        int roomId,
+        DateTime enteredAtUtc,
+        CancellationToken ct
+    )
+    {
+        // "Visit N different rooms": skip the player's own room and count each room only once. Both
+        // checks reuse existing data (the rooms table + the room-entry log the observability handler
+        // already writes for every entry), so there is no dedup table. Re-entering a known room hits
+        // these two cheap indexed reads and early-exits before the heavier progression runs.
+        try
+        {
+            await using VortexDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(true);
+
+            int? ownerId = await dbCtx
+                .Rooms.AsNoTracking()
+                .Where(r => r.Id == roomId)
+                .Select(r => (int?)r.PlayerEntityId)
+                .FirstOrDefaultAsync(ct)
+                .ConfigureAwait(true);
+
+            if (ownerId is null || ownerId == PlayerId)
+            {
+                return;
+            }
+
+            // Any earlier entry (strictly before this one) means the room was already counted. The
+            // timestamp guard makes this robust to the log writer running before or after us for the
+            // current entry, since it shares the same PlayerEnteredRoomEvent.
+            bool visitedBefore = await dbCtx
+                .RoomEntryLogs.AsNoTracking()
+                .AnyAsync(
+                    l =>
+                        l.PlayerEntityId == PlayerId
+                        && l.RoomEntityId == roomId
+                        && l.CreatedAt < enteredAtUtc,
+                    ct
+                )
+                .ConfigureAwait(true);
+
+            if (visitedBefore)
+            {
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed the room-visit dedup check for room {RoomId}, player {PlayerId}",
+                roomId,
+                PlayerId
+            );
+            return;
+        }
+
+        await ProgressCoreAsync(QuestTypes.RoomEntry, 1, null, null, oncePerDay: false, ct)
+            .ConfigureAwait(true);
+    }
+
+    private async Task ProgressCoreAsync(
+        string questType,
+        int amount,
+        string? targetType,
+        string? targetValue,
+        bool oncePerDay,
+        CancellationToken ct
+    )
     {
         if (string.IsNullOrWhiteSpace(questType) || amount <= 0)
         {
@@ -173,8 +304,19 @@ internal sealed class PlayerQuestGrain(
             .GetDefinitionsAsync(ct)
             .ConfigureAwait(true);
 
+        // A quest with no configured target advances on any occurrence of its type; a targeted quest
+        // only advances when the trigger supplies a matching target (e.g. "buy offer 12").
         Dictionary<int, QuestDefinitionSnapshot> defByType = definitions
-            .Where(d => string.Equals(d.QuestType, questType, StringComparison.OrdinalIgnoreCase))
+            .Where(d =>
+                string.Equals(d.QuestType, questType, StringComparison.OrdinalIgnoreCase)
+                && (
+                    string.IsNullOrEmpty(d.TargetType)
+                    || (
+                        string.Equals(d.TargetType, targetType, StringComparison.Ordinal)
+                        && string.Equals(d.TargetValue, targetValue, StringComparison.Ordinal)
+                    )
+                )
+            )
             .ToDictionary(d => d.Id);
 
         if (defByType.Count == 0)
@@ -229,6 +371,15 @@ internal sealed class PlayerQuestGrain(
                 }
             }
 
+            // Once-per-day objectives (e.g. Login) advance at most once per calendar day: a row's
+            // last-write date is when it last progressed, so skip any that already progressed today
+            // (a freshly-created row has a default date and still counts as its first time today).
+            if (oncePerDay)
+            {
+                DateTime today = DateTime.Now.Date;
+                toProcess = [.. toProcess.Where(r => r.UpdatedAt.Date != today)];
+            }
+
             if (toProcess.Count == 0)
             {
                 return;
@@ -244,6 +395,11 @@ internal sealed class PlayerQuestGrain(
                 );
                 row.CompletedSteps = newSteps;
                 row.Completed = done;
+                if (done && row.CompletedAt is null)
+                {
+                    row.CompletedAt = DateTime.Now;
+                }
+
                 changed.Add((row.QuestEntityId, done));
             }
 
@@ -291,6 +447,14 @@ internal sealed class PlayerQuestGrain(
                     .ConfigureAwait(true);
             }
         }
+
+        // See ActivateAsync's matching comment - refresh the still-open QuestsList (if any) once
+        // for the whole batch, reusing the snapshot array already built above.
+        await Presence
+            .SendComposerAsync(
+                new QuestsMessageComposer { Quests = BuildListQuests(all), OpenWindow = false }
+            )
+            .ConfigureAwait(true);
     }
 
     /// <summary>
@@ -364,7 +528,9 @@ internal sealed class PlayerQuestGrain(
             return;
         }
 
-        QuestSnapshot? snapshot = await BuildOneAsync(targetQuestId, ct).ConfigureAwait(true);
+        ImmutableArray<QuestSnapshot> all = await BuildAllAsync(ct).ConfigureAwait(true);
+        QuestSnapshot? snapshot = all.FirstOrDefault(q => q.Id == targetQuestId);
+
         if (snapshot is not null)
         {
             await Presence
@@ -373,6 +539,13 @@ internal sealed class PlayerQuestGrain(
                 )
                 .ConfigureAwait(true);
         }
+
+        // See ActivateAsync's matching comment - QuestsList only refreshes off a full list push.
+        await Presence
+            .SendComposerAsync(
+                new QuestsMessageComposer { Quests = BuildListQuests(all), OpenWindow = false }
+            )
+            .ConfigureAwait(true);
     }
 
     private async Task GrantRewardAsync(int rewardType, int rewardAmount, CancellationToken ct)
@@ -396,11 +569,80 @@ internal sealed class PlayerQuestGrain(
         }
     }
 
-    private async Task<QuestSnapshot?> BuildOneAsync(int questId, CancellationToken ct)
+    /// <summary>
+    /// The quest list shows exactly one row per campaign - the client (QuestsList.as::onQuests())
+    /// renders every row it is sent with no campaign-collapsing of its own, so the server is what's
+    /// responsible for picking which single quest represents each campaign. Mirrors the reference
+    /// Arcturus-Daybreak emulator's QuestManager.getVisibleQuestFromList(): the in-progress quest if
+    /// one is accepted, else the earliest not-yet-completed quest, else (whole campaign done) the
+    /// last quest in sort order - never more than one row per campaign. Without this, every quest a
+    /// campaign has ever had (completed ones included) was sent as its own row, all sharing the same
+    /// campaign name/counter - which is exactly the "duplicate Make Friends rows stuck at 100%" bug.
+    /// Shared so callers that already have a full snapshot array (e.g. after mutating one quest) can
+    /// push a fresh QuestsMessageComposer without re-querying.
+    /// </summary>
+    private static ImmutableArray<QuestSnapshot> BuildListQuests(
+        ImmutableArray<QuestSnapshot> all
+    ) =>
+        [
+            .. all.Where(q => !q.Seasonal && q.CampaignCode != DailyCampaign)
+                .GroupBy(q => q.CampaignCode)
+                .Select(SelectVisibleQuest)
+                .OrderBy(q => q.SortOrder)
+                .ThenBy(q => q.Id),
+        ];
+
+    private static QuestSnapshot SelectVisibleQuest(IGrouping<string, QuestSnapshot> campaignQuests)
     {
-        ImmutableArray<QuestSnapshot> all = await BuildAllAsync(ct).ConfigureAwait(true);
-        return all.FirstOrDefault(q => q.Id == questId);
+        List<QuestSnapshot> ordered =
+        [
+            .. campaignQuests.OrderBy(q => q.SortOrder).ThenBy(q => q.Id),
+        ];
+
+        QuestSnapshot representative = ordered[^1];
+
+        // Whole campaign completed: emit the id=0 "campaign completed" marker (à la Arcturus) instead
+        // of re-showing the last already-completed quest as if it were current. The client reads id < 1
+        // as "this campaign is finished" and renders the completed state.
+        if (
+            representative.QuestCountInCampaign > 0
+            && representative.CompletedQuestsInCampaign >= representative.QuestCountInCampaign
+        )
+        {
+            return CompletedCampaignMarker(representative);
+        }
+
+        return ordered.FirstOrDefault(q => q.Accepted && q.CompletedSteps < q.TotalSteps)
+            ?? ordered.FirstOrDefault(q => q.CompletedSteps < q.TotalSteps)
+            ?? representative;
     }
+
+    /// <summary>
+    /// The "campaign completed" list entry: keeps the campaign identity + progress counts but blanks
+    /// the objective and uses <c>Id = 0</c>, which the client (like Arcturus) reads as "campaign done".
+    /// </summary>
+    private static QuestSnapshot CompletedCampaignMarker(QuestSnapshot representative) =>
+        new()
+        {
+            CampaignCode = representative.CampaignCode,
+            CompletedQuestsInCampaign = representative.CompletedQuestsInCampaign,
+            QuestCountInCampaign = representative.QuestCountInCampaign,
+            ActivityPointType = representative.ActivityPointType,
+            Id = 0,
+            Accepted = false,
+            QuestType = string.Empty,
+            ImageVersion = string.Empty,
+            RewardCurrencyAmount = 0,
+            LocalizationCode = string.Empty,
+            CompletedSteps = 0,
+            TotalSteps = 0,
+            SortOrder = representative.SortOrder,
+            CatalogPageName = string.Empty,
+            ChainCode = representative.ChainCode,
+            Easy = false,
+            Seasonal = false,
+            SecondsLeft = 0,
+        };
 
     private IPlayerPresenceGrain Presence => _grainFactory.GetPlayerPresenceGrain((long)PlayerId);
 

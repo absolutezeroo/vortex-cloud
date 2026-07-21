@@ -48,6 +48,8 @@ internal sealed class QuestManagerGrain(
         return _definitions;
     }
 
+    public Task ReloadAsync(CancellationToken ct) => LoadAsync(ct);
+
     private async Task LoadAsync(CancellationToken ct)
     {
         try
@@ -61,6 +63,7 @@ internal sealed class QuestManagerGrain(
                 .. (
                     await dbCtx
                         .Quests.AsNoTracking()
+                        .Where(q => q.Enabled)
                         .OrderBy(q => q.SortOrder)
                         .ThenBy(q => q.Id)
                         .ToListAsync(ct)
@@ -72,6 +75,8 @@ internal sealed class QuestManagerGrain(
                     ChainCode = q.ChainCode,
                     LocalizationCode = q.LocalizationCode,
                     QuestType = q.QuestType,
+                    TargetType = q.TargetType,
+                    TargetValue = q.TargetValue,
                     TotalSteps = Math.Max(1, q.TotalSteps),
                     RewardType = q.RewardType,
                     RewardAmount = q.RewardAmount,

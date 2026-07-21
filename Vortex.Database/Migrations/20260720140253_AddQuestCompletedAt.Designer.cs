@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Vortex.Database.Context;
 
@@ -11,9 +12,11 @@ using Vortex.Database.Context;
 namespace Vortex.Database.Migrations
 {
     [DbContext(typeof(VortexDbContext))]
-    partial class VortexDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260720140253_AddQuestCompletedAt")]
+    partial class AddQuestCompletedAt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5086,12 +5089,6 @@ namespace Vortex.Database.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("easy");
 
-                    b.Property<bool>("Enabled")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(true)
-                        .HasColumnName("enabled");
-
                     b.Property<DateTime?>("EndsAt")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("ends_at");
@@ -5141,22 +5138,6 @@ namespace Vortex.Database.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0)
                         .HasColumnName("sort_order");
-
-                    b.Property<string>("TargetType")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(512)
-                        .HasColumnType("varchar(512)")
-                        .HasDefaultValue("")
-                        .HasColumnName("target_type");
-
-                    b.Property<string>("TargetValue")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(512)
-                        .HasColumnType("varchar(512)")
-                        .HasDefaultValue("")
-                        .HasColumnName("target_value");
 
                     b.Property<int>("TotalSteps")
                         .HasColumnType("int")

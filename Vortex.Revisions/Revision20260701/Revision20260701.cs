@@ -2668,6 +2668,28 @@ public class Revision20260701(IOptions<ProtocolLimitsConfig> protocolLimits) : I
                     MessageComposer.QuestCancelledMessageComposer
                 )
             },
+            {
+                typeof(EpicPopupMessageComposer),
+                new EpicPopupMessageComposerSerializer(MessageComposer.EpicPopupMessageComposer)
+            },
+            {
+                typeof(CommunityGoalHallOfFameMessageComposer),
+                new CommunityGoalHallOfFameMessageComposerSerializer(
+                    MessageComposer.CommunityGoalHallOfFameMessageComposer
+                )
+            },
+            {
+                typeof(CommunityGoalProgressMessageComposer),
+                new CommunityGoalProgressMessageComposerSerializer(
+                    MessageComposer.CommunityGoalProgressMessageComposer
+                )
+            },
+            {
+                typeof(ConcurrentUsersGoalProgressMessageComposer),
+                new ConcurrentUsersGoalProgressMessageComposerSerializer(
+                    MessageComposer.ConcurrentUsersGoalProgressMessageComposer
+                )
+            },
             #endregion
 
             #region Room

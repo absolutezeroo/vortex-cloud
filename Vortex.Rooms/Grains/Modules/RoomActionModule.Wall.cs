@@ -91,7 +91,8 @@ public sealed partial class RoomActionModule
                             wallOffset,
                             rotation = rot.ToString(),
                         }
-                    )
+                    ),
+                    snapshot.Definition.Id
                 ),
                 ct
             )

@@ -35,6 +35,11 @@ public class PlayerQuestEntity : VortexEntity
     [Column("accepted_at")]
     public DateTime? AcceptedAt { get; set; }
 
+    /// <summary>When the quest was completed (set once, on the completing progression). Drives the
+    /// dashboard's completion timeline; null while still in progress.</summary>
+    [Column("completed_at")]
+    public DateTime? CompletedAt { get; set; }
+
     [ForeignKey(nameof(PlayerEntityId))]
     public PlayerEntity? PlayerEntity { get; set; }
 

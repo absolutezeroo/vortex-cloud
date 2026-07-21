@@ -21,6 +21,14 @@ public sealed record QuestDefinitionSnapshot
     [Id(4)]
     public required string QuestType { get; init; }
 
+    /// <summary>Parameterised target kind (e.g. "offer_id"); empty = advances on any occurrence.</summary>
+    [Id(15)]
+    public string TargetType { get; init; } = string.Empty;
+
+    /// <summary>Specific target value paired with <see cref="TargetType"/>.</summary>
+    [Id(16)]
+    public string TargetValue { get; init; } = string.Empty;
+
     [Id(5)]
     public required int TotalSteps { get; init; }
 

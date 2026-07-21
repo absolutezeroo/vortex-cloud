@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
@@ -45,4 +46,30 @@ public interface IPlayerQuestGrain : IGrainWithIntegerKey
     /// </summary>
     [OneWay]
     public Task ProgressAsync(string questType, int amount, CancellationToken ct);
+
+    /// <summary>
+    /// Advances quests of <paramref name="questType"/>, matching the parameterised target: a quest
+    /// with no target advances on any occurrence; a quest with a target only advances when
+    /// <paramref name="targetType"/>/<paramref name="targetValue"/> match it (e.g. "buy offer 12").
+    /// </summary>
+    public Task ProgressAsync(
+        string questType,
+        int amount,
+        string? targetType,
+        string? targetValue,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Like <see cref="ProgressAsync(string,int,CancellationToken)"/> but advances a matching quest at
+    /// most once per calendar day (e.g. a daily-login objective, so 20 reconnections still count once).
+    /// </summary>
+    public Task ProgressDailyAsync(string questType, int amount, CancellationToken ct);
+
+    /// <summary>
+    /// Advances "RoomEntry" quests for a room visit, counting only distinct <em>other</em> players'
+    /// rooms — the player's own room is ignored and re-entering a room already visited does not count
+    /// again ("visit 10 different rooms").
+    /// </summary>
+    public Task ProgressRoomVisitAsync(int roomId, DateTime enteredAtUtc, CancellationToken ct);
 }

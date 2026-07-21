@@ -25,9 +25,29 @@ public class QuestEntity : VortexEntity
     [Column("localization_code")]
     public required string LocalizationCode { get; set; }
 
-    /// <summary>The objective type; matches a progression trigger (e.g. "GamePlayed", "RoomEntry").</summary>
+    /// <summary>The objective type; matches a progression trigger (e.g. "RoomEntry", "CatalogPurchase").</summary>
     [Column("quest_type")]
     public required string QuestType { get; set; }
+
+    /// <summary>
+    /// Optional parameterised target kind for the objective (e.g. "offer_id", "base_item_id"), à la
+    /// Arcturus. Empty = the objective advances on any occurrence; set = only when a trigger fires
+    /// with a matching <see cref="TargetValue"/> (e.g. "buy THIS offer", "switch THIS furni type").
+    /// </summary>
+    [Column("target_type")]
+    [DefaultValue("")]
+    public string TargetType { get; set; } = string.Empty;
+
+    /// <summary>The specific target value paired with <see cref="TargetType"/> (e.g. an offer id).</summary>
+    [Column("target_value")]
+    [DefaultValue("")]
+    public string TargetValue { get; set; } = string.Empty;
+
+    /// <summary>When false the quest is hidden from players and never progresses (disable without
+    /// deleting — the admin can still see it).</summary>
+    [Column("enabled")]
+    [DefaultValue(true)]
+    public bool Enabled { get; set; } = true;
 
     [Column("total_steps")]
     public required int TotalSteps { get; set; }
