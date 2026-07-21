@@ -170,7 +170,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         await dbCtx
             .Players.Where(p => p.Id == (int)_state.PlayerId)
             .ExecuteUpdateAsync(up => up.SetProperty(p => p.RoomChatStyleId, chatStyle), ct)
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
     }
 
     public Task<int> GetChatStylePreferenceAsync(CancellationToken ct) =>
