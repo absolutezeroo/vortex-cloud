@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Wallet;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Server.Grains;
 using Vortex.Rooms.Tests.Support;
 using Xunit;
 
@@ -201,8 +203,7 @@ public sealed class GroupDirectoryGrainCreationTests
             new NullGroupBadgePartProvider(),
             harness.System,
             harness.System,
-            NullLogger<GroupDirectoryGrain>.Instance,
-            Microsoft.Extensions.Options.Options.Create(new Players.Configuration.GroupConfig())
+            NullLogger<GroupDirectoryGrain>.Instance
         );
     }
 
@@ -246,10 +247,36 @@ public sealed class GroupDirectoryGrainCreationTests
                 {
                     return Player;
                 }
+
+                if (grainType == typeof(IServerConfigGrain))
+                {
+                    return new FakeServerConfigGrain();
+                }
             }
 
             throw new NotSupportedException(targetMethod?.Name);
         }
+    }
+
+    private sealed class FakeServerConfigGrain : IServerConfigGrain
+    {
+        // Returns the caller's fallback, so every migrated group knob resolves to its in-code
+        // default (creation cost = 10) — preserving the pre-migration IOptions defaults.
+        public Task<int> GetIntAsync(string key, int fallback) => Task.FromResult(fallback);
+
+        public Task<string?> GetValueAsync(string key) => Task.FromResult<string?>(null);
+
+        public Task<bool> GetBoolAsync(string key, bool fallback) => Task.FromResult(fallback);
+
+        public Task SetValueAsync(string key, string value, string? description) =>
+            Task.CompletedTask;
+
+        public Task ReloadAsync() => Task.CompletedTask;
+
+        public Task<ImmutableArray<string>> GetMotdAsync() =>
+            Task.FromResult(ImmutableArray<string>.Empty);
+
+        public Task SetMotdAsync(ImmutableArray<string> lines) => Task.CompletedTask;
     }
 
     private sealed class FakeWalletGrain : IPlayerWalletGrain

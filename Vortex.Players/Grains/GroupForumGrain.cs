@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Groups;
@@ -15,19 +14,19 @@ using Vortex.Primitives.Events;
 using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Groups.Grains;
 using Vortex.Primitives.Groups.Snapshots;
+using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
+using Vortex.Primitives.Server.Grains;
 
 namespace Vortex.Players.Grains;
 
 internal sealed class GroupForumGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IEventPublisher events,
-    ILogger<GroupForumGrain> logger,
-    IOptions<GroupConfig> groupConfig
+    ILogger<GroupForumGrain> logger
 ) : Grain, IGroupForumGrain
 {
     private readonly ILogger<GroupForumGrain> _logger = logger;
-    private readonly GroupConfig _groupConfig = groupConfig.Value;
 
     private const string DeniedError = "You are not allowed to do that.";
     private const string DisabledError = "This forum is disabled.";
@@ -83,7 +82,18 @@ internal sealed class GroupForumGrain(
             return null;
         }
 
-        int take = NormalizeAmount(amount);
+        IServerConfigGrain config = this.GrainFactory.GetServerConfigGrain();
+        int maxPageSize = await config
+            .GetIntAsync(GroupConfig.MaxForumPageSizeKey, GroupConfig.MaxForumPageSizeDefault)
+            .ConfigureAwait(true);
+        int defaultPageSize = await config
+            .GetIntAsync(
+                GroupConfig.DefaultForumPageSizeKey,
+                GroupConfig.DefaultForumPageSizeDefault
+            )
+            .ConfigureAwait(true);
+
+        int take = NormalizeAmount(amount, maxPageSize, defaultPageSize);
         int skip = Math.Max(startIndex, 0);
 
         List<GroupForumThreadEntity> threads = await dbCtx
@@ -136,7 +146,18 @@ internal sealed class GroupForumGrain(
             return null;
         }
 
-        int take = NormalizeAmount(amount);
+        IServerConfigGrain config = this.GrainFactory.GetServerConfigGrain();
+        int maxPageSize = await config
+            .GetIntAsync(GroupConfig.MaxForumPageSizeKey, GroupConfig.MaxForumPageSizeDefault)
+            .ConfigureAwait(true);
+        int defaultPageSize = await config
+            .GetIntAsync(
+                GroupConfig.DefaultForumPageSizeKey,
+                GroupConfig.DefaultForumPageSizeDefault
+            )
+            .ConfigureAwait(true);
+
+        int take = NormalizeAmount(amount, maxPageSize, defaultPageSize);
         int skip = Math.Max(startIndex, 0);
 
         List<GroupForumPostEntity> posts = await dbCtx
@@ -723,10 +744,8 @@ internal sealed class GroupForumGrain(
     private static int SecondsAgo(DateTime then, DateTime now) =>
         (int)Math.Max(0, (now - then).TotalSeconds);
 
-    private int NormalizeAmount(int amount) =>
-        (amount <= 0 || amount > _groupConfig.MaxForumPageSize)
-            ? _groupConfig.DefaultForumPageSize
-            : amount;
+    private static int NormalizeAmount(int amount, int maxPageSize, int defaultPageSize) =>
+        (amount <= 0 || amount > maxPageSize) ? defaultPageSize : amount;
 
     private static GroupForumPermission ClampPermission(int value) =>
         value is >= 0 and <= 3 ? (GroupForumPermission)value : GroupForumPermission.Members;

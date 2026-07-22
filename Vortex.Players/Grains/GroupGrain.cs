@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Groups;
@@ -15,19 +14,18 @@ using Vortex.Primitives.Events;
 using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Groups.Grains;
 using Vortex.Primitives.Groups.Snapshots;
+using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
+using Vortex.Primitives.Server.Grains;
 
 namespace Vortex.Players.Grains;
 
 internal sealed class GroupGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IEventPublisher events,
-    ILogger<GroupGrain> logger,
-    IOptions<GroupConfig> groupConfig
+    ILogger<GroupGrain> logger
 ) : Grain, IGroupGrain
 {
-    private readonly GroupConfig _groupConfig = groupConfig.Value;
-
     // RoleType values mirror the client member enum.
     private const int RoleOwner = 0;
     private const int RoleAdmin = 1;
@@ -167,8 +165,13 @@ internal sealed class GroupGrain(
             group.OwnerPlayerEntityId == viewerId
             || viewerMembership?.Rank == GroupMemberRank.Admin;
 
+        int membersPerPage = await this
+            .GrainFactory.GetServerConfigGrain()
+            .GetIntAsync(GroupConfig.MembersPerPageKey, GroupConfig.MembersPerPageDefault)
+            .ConfigureAwait(true);
+
         string filter = userNameFilter?.Trim() ?? string.Empty;
-        int skip = Math.Max(pageIndex, 0) * _groupConfig.MembersPerPage;
+        int skip = Math.Max(pageIndex, 0) * membersPerPage;
 
         List<GroupMemberSnapshot> members;
         int totalEntries;
@@ -191,11 +194,7 @@ internal sealed class GroupGrain(
             members =
             [
                 .. (
-                    await query
-                        .OrderBy(r => r.Id)
-                        .Skip(skip)
-                        .Take(_groupConfig.MembersPerPage)
-                        .ToListAsync(ct)
+                    await query.OrderBy(r => r.Id).Skip(skip).Take(membersPerPage).ToListAsync(ct)
                 ).Select(r => new GroupMemberSnapshot
                 {
                     RoleType = RoleRequested,
@@ -228,7 +227,7 @@ internal sealed class GroupGrain(
                         .OrderByDescending(m => m.Rank)
                         .ThenBy(m => m.Id)
                         .Skip(skip)
-                        .Take(_groupConfig.MembersPerPage)
+                        .Take(membersPerPage)
                         .ToListAsync(ct)
                 ).Select(m => new GroupMemberSnapshot
                 {
@@ -253,7 +252,7 @@ internal sealed class GroupGrain(
             TotalEntries = totalEntries,
             Members = members,
             AllowedToManage = allowedToManage,
-            PageSize = _groupConfig.MembersPerPage,
+            PageSize = membersPerPage,
             PageIndex = pageIndex,
             SearchType = searchType,
             UserNameFilter = filter,

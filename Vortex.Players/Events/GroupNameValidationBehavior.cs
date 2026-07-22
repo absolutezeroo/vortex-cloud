@@ -1,10 +1,12 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
+using Orleans;
 using Vortex.Events.Registry;
 using Vortex.Players.Configuration;
 using Vortex.Primitives.Events;
+using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Server.Grains;
 
 namespace Vortex.Players.Events;
 
@@ -14,11 +16,9 @@ namespace Vortex.Players.Events;
 ///     <c>Name</c> before this — <c>GroupEntity.Name</c> has no length constraint either — so a
 ///     player could create a guild with an empty or arbitrarily long name.
 /// </summary>
-internal sealed class GroupNameValidationBehavior(IOptions<GroupConfig> groupConfig)
+internal sealed class GroupNameValidationBehavior(IGrainFactory grainFactory)
     : IEventBehavior<GroupCreatingEvent>
 {
-    private readonly GroupConfig _groupConfig = groupConfig.Value;
-
     public async ValueTask InvokeAsync(
         GroupCreatingEvent env,
         EventContext ctx,
@@ -26,6 +26,11 @@ internal sealed class GroupNameValidationBehavior(IOptions<GroupConfig> groupCon
         CancellationToken ct
     )
     {
+        int maxNameLength = await grainFactory
+            .GetServerConfigGrain()
+            .GetIntAsync(GroupConfig.MaxNameLengthKey, GroupConfig.MaxNameLengthDefault)
+            .ConfigureAwait(false);
+
         string name = env.GroupName?.Trim() ?? string.Empty;
 
         if (name.Length == 0)
@@ -33,7 +38,7 @@ internal sealed class GroupNameValidationBehavior(IOptions<GroupConfig> groupCon
             ctx.Cancel = true;
             ctx.CancelReason = "empty_name";
         }
-        else if (name.Length > _groupConfig.MaxNameLength)
+        else if (name.Length > maxNameLength)
         {
             ctx.Cancel = true;
             ctx.CancelReason = "name_too_long";

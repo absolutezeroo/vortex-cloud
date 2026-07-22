@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Groups;
@@ -22,6 +21,7 @@ using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Wallet;
+using Vortex.Primitives.Server.Grains;
 
 namespace Vortex.Players.Grains;
 
@@ -31,12 +31,9 @@ internal sealed class GroupDirectoryGrain(
     IGroupBadgePartProvider badgePartProvider,
     IEventPublisher events,
     ICancellableEventPublisher cancellableEvents,
-    ILogger<GroupDirectoryGrain> logger,
-    IOptions<GroupConfig> groupConfig
+    ILogger<GroupDirectoryGrain> logger
 ) : Grain, IGroupDirectoryGrain
 {
-    private readonly GroupConfig _groupConfig = groupConfig.Value;
-
     private const string CatalogPurchaseTypeGuild = "Guild";
 
     public async Task<GroupCreationInfoSnapshot> GetCreationInfoAsync(
@@ -45,6 +42,14 @@ internal sealed class GroupDirectoryGrain(
     )
     {
         await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+
+        int creationCost = await grainFactory
+            .GetServerConfigGrain()
+            .GetIntAsync(
+                GroupConfig.CreationCostInCreditsKey,
+                GroupConfig.CreationCostInCreditsDefault
+            )
+            .ConfigureAwait(true);
 
         int playerId = player.Value;
 
@@ -63,7 +68,7 @@ internal sealed class GroupDirectoryGrain(
 
         return new GroupCreationInfoSnapshot
         {
-            CostInCredits = _groupConfig.CreationCostInCredits,
+            CostInCredits = creationCost,
             Rooms = rooms,
             // Default starting badge the wizard pre-fills; the player edits it before confirming.
             BadgeParts = GuildBadgeLibrary.DefaultBadgeParts,
@@ -85,6 +90,14 @@ internal sealed class GroupDirectoryGrain(
 
         await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
+        int creationCost = await grainFactory
+            .GetServerConfigGrain()
+            .GetIntAsync(
+                GroupConfig.CreationCostInCreditsKey,
+                GroupConfig.CreationCostInCreditsDefault
+            )
+            .ConfigureAwait(true);
+
         RoomEntity? room = await dbCtx.Rooms.FirstOrDefaultAsync(
             r => r.Id == baseRoomId && r.DeletedAt == null,
             ct
@@ -104,12 +117,7 @@ internal sealed class GroupDirectoryGrain(
 
         EventContext creatingContext = await cancellableEvents
             .PublishCancellableAsync(
-                new GroupCreatingEvent(
-                    ownerId,
-                    name,
-                    baseRoomId,
-                    _groupConfig.CreationCostInCredits
-                ),
+                new GroupCreatingEvent(ownerId, name, baseRoomId, creationCost),
                 ct
             )
             .ConfigureAwait(true);
@@ -136,7 +144,7 @@ internal sealed class GroupDirectoryGrain(
                     new WalletDebitRequest
                     {
                         CurrencyKind = new CurrencyKind { CurrencyType = CurrencyType.Credits },
-                        Amount = _groupConfig.CreationCostInCredits,
+                        Amount = creationCost,
                     },
                 ],
                 ct
@@ -148,7 +156,7 @@ internal sealed class GroupDirectoryGrain(
             logger.LogInformation(
                 "Player {OwnerId} could not afford guild creation ({Cost} credits)",
                 ownerId,
-                _groupConfig.CreationCostInCredits
+                creationCost
             );
             return null;
         }
@@ -189,31 +197,19 @@ internal sealed class GroupDirectoryGrain(
         // in catalog purchase metrics/audit alongside every other purchase.
         await grainFactory
             .GetPlayerGrain(owner)
-            .TrackCreditSpendAsync(_groupConfig.CreationCostInCredits, ct)
+            .TrackCreditSpendAsync(creationCost, ct)
             .ConfigureAwait(true);
 
         await events
             .PublishAsync(
-                new CatalogPurchasedEvent(
-                    ownerId,
-                    CatalogPurchaseTypeGuild,
-                    0,
-                    1,
-                    _groupConfig.CreationCostInCredits
-                ),
+                new CatalogPurchasedEvent(ownerId, CatalogPurchaseTypeGuild, 0, 1, creationCost),
                 ct
             )
             .ConfigureAwait(true);
 
         await events
             .PublishAsync(
-                new GroupCreatedEvent(
-                    ownerId,
-                    group.Id,
-                    group.Name,
-                    baseRoomId,
-                    _groupConfig.CreationCostInCredits
-                ),
+                new GroupCreatedEvent(ownerId, group.Id, group.Name, baseRoomId, creationCost),
                 ct
             )
             .ConfigureAwait(true);
@@ -370,10 +366,18 @@ internal sealed class GroupDirectoryGrain(
     {
         await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
-        int take =
-            (amount <= 0 || amount > _groupConfig.MaxForumPageSize)
-                ? _groupConfig.DefaultForumPageSize
-                : amount;
+        IServerConfigGrain config = grainFactory.GetServerConfigGrain();
+        int maxForumPageSize = await config
+            .GetIntAsync(GroupConfig.MaxForumPageSizeKey, GroupConfig.MaxForumPageSizeDefault)
+            .ConfigureAwait(true);
+        int defaultForumPageSize = await config
+            .GetIntAsync(
+                GroupConfig.DefaultForumPageSizeKey,
+                GroupConfig.DefaultForumPageSizeDefault
+            )
+            .ConfigureAwait(true);
+
+        int take = (amount <= 0 || amount > maxForumPageSize) ? defaultForumPageSize : amount;
         int skip = Math.Max(startIndex, 0);
 
         IQueryable<GroupEntity> enabledForums = dbCtx

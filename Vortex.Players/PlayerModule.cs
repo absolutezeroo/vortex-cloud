@@ -22,7 +22,6 @@ public sealed class PlayerModule : IHostPluginModule
         services.Configure<MessengerConfig>(
             builder.Configuration.GetSection(MessengerConfig.SECTION_NAME)
         );
-        services.Configure<GroupConfig>(builder.Configuration.GetSection(GroupConfig.SECTION_NAME));
         services.Configure<PlayerPresenceConfig>(
             builder.Configuration.GetSection(PlayerPresenceConfig.SECTION_NAME)
         );
