@@ -10,7 +10,12 @@ Input  (./input/):
     FurnitureData.json   → output/furnidata.xml   (optional)
     ProductData.json     → output/productdata.txt (optional)
 
-Run: python convert.py
+Run: python convert.py [--replace]
+
+    --replace   Generate `INSERT ... ON DUPLICATE KEY UPDATE` instead of
+                `INSERT IGNORE`, so re-importing UPDATES existing rows in place
+                (matched by primary/unique key) rather than skipping them. Lets
+                you re-run the import to apply fixes without purging the tables.
 """
 
 import re
@@ -27,6 +32,9 @@ OUTPUT_DIR = BASE_DIR / "output"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 BATCH_SIZE = 500
+
+# Set from --replace in main(). When True, write_bulk_inserts emits upserts.
+UPSERT = False
 
 # ---------------------------------------------------------------------------
 # Layout mapping  Arcturus string → Vortex wire string
@@ -180,14 +188,26 @@ def write_bulk_inserts(
 ) -> None:
     if not value_rows:
         return
-    kw = " IGNORE" if ignore else ""
+    # In --replace mode, upsert wins over IGNORE (the two are mutually exclusive in MySQL):
+    # existing rows are UPDATEd from the inserted values instead of skipped. id / created_at
+    # are preserved so re-imports don't churn primary keys or lose original insert times.
+    kw = " IGNORE" if (ignore and not UPSERT) else ""
     col_str = ", ".join(f"`{c}`" for c in columns)
     header = f"INSERT{kw} INTO `{table}` ({col_str}) VALUES"
+    dup_clause = ""
+    if UPSERT:
+        upd_cols = [c for c in columns if c not in ("id", "created_at")]
+        dup_clause = "ON DUPLICATE KEY UPDATE " + ", ".join(
+            f"`{c}`=VALUES(`{c}`)" for c in upd_cols
+        )
     for i in range(0, len(value_rows), BATCH_SIZE):
         batch = value_rows[i : i + BATCH_SIZE]
         lines.append(header)
         for j, row in enumerate(batch):
-            sep = "," if j < len(batch) - 1 else ";"
+            if j < len(batch) - 1:
+                sep = ","
+            else:
+                sep = f"\n{dup_clause};" if UPSERT else ";"
             lines.append(f"  {row}{sep}")
         lines.append("")
 
@@ -375,9 +395,12 @@ def convert_items_base(src: Path, dst: Path) -> tuple[dict[int, dict], dict[int,
             f"{sql_bool(to_int(allow_lay, 0))}, "
             f"{sql_bool(to_int(allow_recycle, 0))}, "
             f"{sql_bool(to_int(allow_trade, 1))}, "
+            f"1, "  # can_group
+            f"{sql_bool(to_int(allow_marketplace_sell, 0))}, "  # can_sell
+            # usage_policy: 1=Controller (matches the entity default). items_base carries no
+            # usage field, so 0=Nobody was disabling interaction on every multi-state furni
+            # (FurnitureLogic falls back to the stored policy when total_states > 0).
             f"1, "
-            f"{sql_bool(to_int(allow_marketplace_sell, 0))}, "
-            f"0, "
             f"{sql_str(extra_data if extra_data else None)}, "
             f"NOW(), NOW(), NULL)"
         )
@@ -558,15 +581,20 @@ def convert_catalog_items(
         club_level    = 1 if str(club_only or "0") == "1" else 0
         loc_id        = str(catalog_name or "").strip()
 
-        if currency_val == 0 or points_type_v == 0:
+        # currency_type_id holds the activity-point type (0=duckets, 5=diamonds, ...) -- that
+        # is what the purchase path debits and what the catalog wire sends to the client. It
+        # is NULL only when the offer has no activity-point cost. A zero points_type is NOT
+        # "no currency": duckets legitimately use type 0, so it must survive here (the old
+        # `or points_type_v == 0` nulled every duckets offer).
+        if currency_val == 0:
             currency_type_id = "NULL"
         else:
             if points_type_v not in warn_currency:
                 warn_currency.add(points_type_v)
                 print(
-                    f"  [INFO] points_type={points_type_v} found -> "
-                    f"update catalog_offers.currency_type_id manually "
-                    f"to match your currency_types row for activity_point_type={points_type_v}",
+                    f"  [INFO] points_type={points_type_v} used as currency_type_id -> ensure a "
+                    f"currency_types row exists with activity_point_type={points_type_v} "
+                    f"(0=duckets, 5=diamonds)",
                     file=sys.stderr,
                 )
             currency_type_id = sql_str(points_type_v)
@@ -793,6 +821,9 @@ def convert_productdata_to_json(src: Path, dst: Path) -> None:
 # Main
 # ---------------------------------------------------------------------------
 def main() -> None:
+    global UPSERT
+    UPSERT = "--replace" in sys.argv[1:]
+
     items_base_sql    = INPUT_DIR / "items_base.sql"
     catalog_pages_sql = INPUT_DIR / "catalog_pages.sql"
     catalog_items_sql = INPUT_DIR / "catalog_items.sql"
@@ -803,6 +834,9 @@ def main() -> None:
     if missing:
         print("Missing input files:", [str(p) for p in missing])
         sys.exit(1)
+
+    if UPSERT:
+        print("Mode: --replace (INSERT ... ON DUPLICATE KEY UPDATE) -- re-import updates in place")
 
     print("Converting items_base ...")
     lookup, id_remap = convert_items_base(items_base_sql, OUTPUT_DIR / "furniture_definitions.sql")
