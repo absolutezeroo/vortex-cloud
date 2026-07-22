@@ -9,6 +9,7 @@ using Vortex.Primitives.Rooms.Events;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
 using Vortex.Primitives.Rooms.Wired;
+using Vortex.Rooms.Wired;
 using Vortex.Rooms.Wired.Rules;
 
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Triggers;
@@ -25,24 +26,26 @@ public class WiredTriggerPeriodically(
 
     public virtual WiredPeriodicTriggerType PeriodicType => WiredPeriodicTriggerType.Short;
 
-    private int _delayValue = 0;
+    // Ephemeral runtime cadence, (re)built from persisted config on load. Never serialized.
+    private WiredPeriodicSchedule? _schedule;
 
     public override List<IWiredParamRule> GetIntParamRules() => [new WiredRangeParamRule(1, 10, 1)];
 
-    public int GetPeriodicDelayMs()
-    {
-        return PeriodicType switch
-        {
-            WiredPeriodicTriggerType.Short => Math.Clamp(_delayValue, 1, 10) * 50,
-            WiredPeriodicTriggerType.Long => Math.Clamp(_delayValue, 1, 120) * 5000,
-            _ => 50,
-        };
-    }
+    /// <summary>Whether the configured interval has elapsed and the box is due to fire now.</summary>
+    public bool IsDue(long nowMs) => _schedule?.IsDue(nowMs) ?? true;
+
+    /// <summary>Arm the next firing one interval after <paramref name="nowMs"/>.</summary>
+    public void ScheduleNextFire(long nowMs) => _schedule?.Advance(nowMs);
+
+    public override Task<bool> CanTriggerAsync(IWiredProcessingContext ctx, CancellationToken ct) =>
+        Task.FromResult(ctx.Event is PeriodicRoomEvent);
 
     protected override async Task FillInternalDataAsync(CancellationToken ct)
     {
         await base.FillInternalDataAsync(ct);
 
-        //_delayValue = WiredData.GetIntParam<int>(0); WiredData.IntParams?[0] ?? 0;
+        int delayValue = _wiredData.IntParams.Count > 0 ? _wiredData.GetIntParam<int>(0) : 1;
+
+        _schedule = new WiredPeriodicSchedule(PeriodicType) { DelayValue = delayValue };
     }
 }

@@ -116,6 +116,8 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             return;
         }
 
+        await ProcessPeriodicTriggersAsync(now, ct);
+
         int budget = _roomGrain._roomConfig.WiredMaxEventsPerTick;
 
         while (budget-- > 0 && _eventQueue.Count > 0)
@@ -126,6 +128,34 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         }
 
         //await RunDueScheduledStackExecutionsAsync(now, ct);
+    }
+
+    private async Task ProcessPeriodicTriggersAsync(long now, CancellationToken ct)
+    {
+        foreach (IWiredStack stack in _stacksById.Values)
+        {
+            foreach (IWiredTrigger trigger in stack.Triggers)
+            {
+                if (trigger is not WiredTriggerPeriodically periodic || !periodic.IsDue(now))
+                {
+                    continue;
+                }
+
+                periodic.ScheduleNextFire(now);
+
+                await FireTriggerWithEventAsync(
+                    periodic,
+                    new PeriodicRoomEvent
+                    {
+                        RoomId = _roomGrain.RoomId,
+                        CausedBy = ActionContext.CreateForWired(_roomGrain.RoomId),
+                    },
+                    stack,
+                    now,
+                    ct
+                );
+            }
+        }
     }
 
     private async Task ProcessRoomEventAsync(RoomEvent evt, long now, CancellationToken ct)
