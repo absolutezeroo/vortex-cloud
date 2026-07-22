@@ -83,6 +83,8 @@ public static class Capabilities
         public const string OpsTargetedOffersManage = "dashboard.ops.targeted_offers.manage";
         public const string QuestsRead = "dashboard.quests.read";
         public const string OpsQuestsManage = "dashboard.ops.quests.manage";
+        public const string ConfigRead = "dashboard.config.read";
+        public const string OpsConfigManage = "dashboard.ops.config.manage";
     }
 
     /// <summary>Every declared capability, for validation and dashboard enumeration.</summary>
@@ -129,5 +131,7 @@ public static class Capabilities
             Dashboard.OpsTargetedOffersManage,
             Dashboard.QuestsRead,
             Dashboard.OpsQuestsManage,
+            Dashboard.ConfigRead,
+            Dashboard.OpsConfigManage,
         };
 }

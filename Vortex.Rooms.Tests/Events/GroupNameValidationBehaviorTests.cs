@@ -55,6 +55,9 @@ public sealed class GroupNameValidationBehaviorTests
 
         public Task<bool> GetBoolAsync(string key, bool fallback) => Task.FromResult(fallback);
 
+        public Task<ImmutableDictionary<string, string>> GetAllAsync() =>
+            Task.FromResult(ImmutableDictionary<string, string>.Empty);
+
         public Task SetValueAsync(string key, string value, string? description) =>
             Task.CompletedTask;
 

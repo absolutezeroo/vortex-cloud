@@ -24,6 +24,10 @@ public sealed record OperationResult(bool Ok, string CorrelationId, string Messa
 /// <summary>Grant credits to a player's wallet. <paramref name="Reason"/> is mandatory and audited.</summary>
 public sealed record GiveCreditsRequest(int PlayerId, int Amount, string Reason);
 
+/// <summary>Set a runtime server-config value. <paramref name="Key"/> must be a known
+/// <c>ConfigKeyCatalog</c> key and <paramref name="Value"/> must parse for that key's kind.</summary>
+public sealed record SetConfigRequest(string Key, string Value, string Reason);
+
 /// <summary>Grant activity points of a given type to a player.</summary>
 public sealed record GiveActivityPointsRequest(int PlayerId, int Type, int Amount, string Reason);
 

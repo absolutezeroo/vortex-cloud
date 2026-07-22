@@ -25,6 +25,9 @@ public interface IServerConfigGrain : IGrainWithStringKey
     /// <summary>Upserts a config value (write-through: DB then cache, so reads are instantly live).</summary>
     Task SetValueAsync(string key, string value, string? description);
 
+    /// <summary>A snapshot of every currently-set config key/value (whatever exists in the cache/DB).</summary>
+    Task<ImmutableDictionary<string, string>> GetAllAsync();
+
     /// <summary>Re-reads the whole config from the database (for out-of-band / direct-DB edits).</summary>
     Task ReloadAsync();
 

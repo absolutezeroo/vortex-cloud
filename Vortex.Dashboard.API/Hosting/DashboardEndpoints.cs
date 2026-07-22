@@ -149,6 +149,7 @@ internal static partial class DashboardEndpoints
         MapStatsReads(app);
         MapTargetedOfferReads(app);
         MapQuestReads(app);
+        MapConfigReads(app);
     }
 
     public static void MapOperations(WebApplication app)
@@ -161,6 +162,7 @@ internal static partial class DashboardEndpoints
         MapFurnitureOperations(app);
         MapTargetedOfferOperations(app);
         MapQuestOperations(app);
+        MapConfigOperations(app);
     }
 
     public static void MapMeta(WebApplication app)

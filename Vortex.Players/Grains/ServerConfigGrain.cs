@@ -89,6 +89,9 @@ internal sealed class ServerConfigGrain(
         _cache[key] = value;
     }
 
+    public Task<ImmutableDictionary<string, string>> GetAllAsync() =>
+        Task.FromResult(_cache.ToImmutableDictionary());
+
     public Task ReloadAsync() => LoadAsync(CancellationToken.None);
 
     public Task<ImmutableArray<string>> GetMotdAsync()
