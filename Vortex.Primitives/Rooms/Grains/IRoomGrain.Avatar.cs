@@ -69,6 +69,11 @@ public partial interface IRoomGrain
 
     public Task SetAvatarTypingAsync(ActionContext ctx, bool isTyping, CancellationToken ct);
 
+    /// <summary>The acting player (<paramref name="ctx"/>) clicked the avatar with room object id
+    /// <paramref name="targetObjectId"/>; raises the wired USER_CLICKS_USER trigger when that avatar
+    /// is another player.</summary>
+    public Task ClickCharacterAsync(ActionContext ctx, int targetObjectId, CancellationToken ct);
+
     /// <summary>The acting player (<paramref name="ctx"/>) gives a respect point to
     /// <paramref name="targetPlayerId"/> if present in the room and within the daily budget.</summary>
     public Task RespectPlayerAsync(

@@ -51,6 +51,38 @@ public sealed partial class RoomGrain
         }
     }
 
+    public async Task ClickCharacterAsync(
+        ActionContext ctx,
+        int targetObjectId,
+        CancellationToken ct
+    )
+    {
+        if (ctx.Origin != ActionOrigin.Player || ctx.PlayerId <= 0)
+        {
+            return;
+        }
+
+        // Only clicks on another player's avatar drive the wired trigger — not bots or pets.
+        if (
+            !_state.AvatarsByObjectId.TryGetValue(targetObjectId, out IRoomAvatar? avatar)
+            || avatar is not IRoomPlayer target
+        )
+        {
+            return;
+        }
+
+        await PublishRoomEventAsync(
+            new PlayerClickedPlayerEvent
+            {
+                RoomId = _state.RoomId,
+                CausedBy = ctx,
+                PlayerId = ctx.PlayerId,
+                TargetPlayerId = target.PlayerId,
+            },
+            ct
+        );
+    }
+
     public async Task<bool> RemoveAvatarFromPlayerAsync(
         ActionContext ctx,
         PlayerId playerId,
