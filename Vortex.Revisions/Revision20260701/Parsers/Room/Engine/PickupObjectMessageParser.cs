@@ -1,6 +1,7 @@
 using Vortex.Primitives.Messages.Incoming.Room.Engine;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
+using Vortex.Primitives.Rooms.Object;
 
 namespace Vortex.Revisions.Revision20260701.Parsers.Room.Engine;
 
@@ -14,7 +15,7 @@ internal class PickupObjectMessageParser : IParser
         return new PickupObjectMessage
         {
             CategoryId = categoryId,
-            ObjectId = objectId,
+            ObjectId = new RoomObjectId(objectId),
             Confirm = confirm,
         };
     }
