@@ -84,4 +84,32 @@ public interface IPlayerGrain : IGrainWithIntegerKey
         PlayerWiredPreferencesSnapshot preferences,
         CancellationToken ct
     );
+
+    /// <summary>The player's persisted account preferences (volumes, chat/camera/invite toggles, UI
+    /// flags) surfaced back to the client in the account-preferences packet on login so the settings
+    /// dialog shows the saved selection.</summary>
+    public Task<PlayerAccountPreferencesSnapshot> GetAccountPreferencesAsync(CancellationToken ct);
+
+    /// <summary>Persists the three audio volumes (SetSoundSettings, header 3662). Values are clamped
+    /// to 0..100.</summary>
+    public Task SetSoundSettingsAsync(
+        int uiVolume,
+        int furniVolume,
+        int traxVolume,
+        CancellationToken ct
+    );
+
+    /// <summary>Persists whether free-flow (bubble) chat is disabled (SetChatPreferences, header 1149).</summary>
+    public Task SetFreeFlowChatDisabledAsync(bool disabled, CancellationToken ct);
+
+    /// <summary>Persists whether incoming room invites are ignored (SetIgnoreRoomInvites, header 1332).</summary>
+    public Task SetRoomInvitesIgnoredAsync(bool ignored, CancellationToken ct);
+
+    /// <summary>Persists whether the room camera stops following the avatar (SetRoomCameraPreferences,
+    /// header 3917).</summary>
+    public Task SetRoomCameraFollowDisabledAsync(bool disabled, CancellationToken ct);
+
+    /// <summary>Persists the client UI-flags bitmask, e.g. expanded friend bar / room tools
+    /// (SetUIFlags, header 3653).</summary>
+    public Task SetUiFlagsAsync(int flags, CancellationToken ct);
 }

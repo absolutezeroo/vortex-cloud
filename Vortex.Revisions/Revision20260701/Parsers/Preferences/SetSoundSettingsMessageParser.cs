@@ -6,5 +6,11 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Preferences;
 
 internal class SetSoundSettingsMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new SetSoundSettingsMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new SetSoundSettingsMessage
+        {
+            Trax = packet.PopInt(),
+            Furni = packet.PopInt(),
+            Generic = packet.PopInt(),
+        };
 }

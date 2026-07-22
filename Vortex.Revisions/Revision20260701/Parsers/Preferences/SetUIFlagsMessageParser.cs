@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Preferences;
 
 internal class SetUIFlagsMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new SetUIFlagsMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new SetUIFlagsMessage { Flags = packet.PopInt() };
 }

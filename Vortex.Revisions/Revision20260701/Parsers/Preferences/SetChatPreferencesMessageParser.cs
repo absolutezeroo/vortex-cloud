@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Preferences;
 
 internal class SetChatPreferencesMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new SetChatPreferencesMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new SetChatPreferencesMessage { FreeFlowChatDisabled = packet.PopBoolean() };
 }

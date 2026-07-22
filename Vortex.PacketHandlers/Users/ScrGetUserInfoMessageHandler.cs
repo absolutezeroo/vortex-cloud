@@ -46,16 +46,20 @@ public class ScrGetUserInfoMessageHandler(IGrainFactory grainFactory)
         // (in-memory read on the already-activated grain — no extra DB query).
         int preferedChatStyle = await player.GetChatStylePreferenceAsync(ct).ConfigureAwait(false);
 
+        PlayerAccountPreferencesSnapshot accountPrefs = await player
+            .GetAccountPreferencesAsync(ct)
+            .ConfigureAwait(false);
+
         await ctx.SendComposerAsync(
                 new AccountPreferencesEventMessageComposer
                 {
-                    UIVolume = 0,
-                    FurniVolume = 0,
-                    TraxVolume = 0,
-                    FreeFlowChatDisabled = false,
-                    RoomInvitesIgnored = false,
-                    RoomCameraFollowDisabled = false,
-                    UIFlags = UIFlags.FriendBarExpanded | UIFlags.RoomToolsExpanded,
+                    UIVolume = accountPrefs.UiVolume,
+                    FurniVolume = accountPrefs.FurniVolume,
+                    TraxVolume = accountPrefs.TraxVolume,
+                    FreeFlowChatDisabled = accountPrefs.FreeFlowChatDisabled,
+                    RoomInvitesIgnored = accountPrefs.RoomInvitesIgnored,
+                    RoomCameraFollowDisabled = accountPrefs.RoomCameraFollowDisabled,
+                    UIFlags = (UIFlags)accountPrefs.UiFlags,
                     PreferedChatStyle = preferedChatStyle,
                     WiredMenuButton = wiredPrefs.WiredMenuButton,
                     WiredInspectButton = wiredPrefs.WiredInspectButton,

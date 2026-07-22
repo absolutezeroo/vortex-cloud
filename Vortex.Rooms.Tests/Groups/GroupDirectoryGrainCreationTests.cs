@@ -418,6 +418,43 @@ public sealed class GroupDirectoryGrainCreationTests
         {
             throw new NotSupportedException();
         }
+
+        public Task<PlayerAccountPreferencesSnapshot> GetAccountPreferencesAsync(
+            CancellationToken ct
+        )
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task SetSoundSettingsAsync(
+            int uiVolume,
+            int furniVolume,
+            int traxVolume,
+            CancellationToken ct
+        )
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task SetFreeFlowChatDisabledAsync(bool disabled, CancellationToken ct)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task SetRoomInvitesIgnoredAsync(bool ignored, CancellationToken ct)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task SetRoomCameraFollowDisabledAsync(bool disabled, CancellationToken ct)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task SetUiFlagsAsync(int flags, CancellationToken ct)
+        {
+            throw new NotSupportedException();
+        }
     }
 
     private sealed class CancellingGroupCreatingBehavior : IEventBehavior<GroupCreatingEvent>

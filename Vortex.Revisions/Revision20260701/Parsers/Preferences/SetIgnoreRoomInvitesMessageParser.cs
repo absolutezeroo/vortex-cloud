@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Preferences;
 
 internal class SetIgnoreRoomInvitesMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new SetIgnoreRoomInvitesMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new SetIgnoreRoomInvitesMessage { Ignored = packet.PopBoolean() };
 }
