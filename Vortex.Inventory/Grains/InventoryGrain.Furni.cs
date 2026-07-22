@@ -106,7 +106,13 @@ public sealed partial class InventoryGrain
                     _furnitureDefinitionProvider.TryGetDefinition(product.FurniDefinitionId)
                     ?? throw new VortexException(VortexErrorCodeEnum.FurnitureDefinitionNotFound);
 
-                for (int i = 0; i < quantity; i++)
+                // Each product carries its own per-offer count (a bundle is an offer holding
+                // several products, and any product may bundle >1 of an item), so the copies to
+                // grant are the purchase multiplier times that count. Ignoring product.Quantity
+                // collapsed every bundle to one of each item.
+                int copies = quantity * Math.Max(1, product.Quantity);
+
+                for (int i = 0; i < copies; i++)
                 {
                     furniEntities.Add(
                         new FurnitureEntity
