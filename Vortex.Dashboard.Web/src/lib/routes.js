@@ -39,6 +39,7 @@ import TargetedOffersPage from '../pages/TargetedOffersPage.svelte';
 import TargetedOffersStatsPage from '../pages/TargetedOffersStatsPage.svelte';
 import QuestsPage from '../pages/QuestsPage.svelte';
 import QuestsStatsPage from '../pages/QuestsStatsPage.svelte';
+import ConfigPage from '../pages/ConfigPage.svelte';
 
 // Display + permission metadata for the navigation sidebar. Order is the nav order within each
 // group. `group` buckets items in the sidebar (see AppShell.svelte) — Live: auto-refreshing health
@@ -76,6 +77,7 @@ export const NAV = [
   { path: '/targeted-offers', labelKey: 'nav.targetedOffers', shortKey: 'nav.targetedOffersShort', group: 'Act', caps: ROUTE_PERMISSIONS.targetedOffers, component: TargetedOffersPage },
   { path: '/quests', labelKey: 'nav.quests', shortKey: 'nav.questsShort', group: 'Act', caps: ROUTE_PERMISSIONS.quests, component: QuestsPage },
   { path: '/furniture-definitions', labelKey: 'nav.furnitureDefinitions', shortKey: 'nav.furnitureDefinitionsShort', group: 'Act', caps: ROUTE_PERMISSIONS.furnitureDefinitions, component: FurnitureDefinitionsPage },
+  { path: '/config', labelKey: 'nav.config', shortKey: 'nav.configShort', group: 'Act', caps: ROUTE_PERMISSIONS.config, component: ConfigPage },
   { path: '/api-explorer', labelKey: 'nav.apiExplorer', shortKey: 'nav.apiExplorerShort', group: 'Dev', caps: ROUTE_PERMISSIONS.apiExplorer, component: ApiExplorerPage },
 ];
 

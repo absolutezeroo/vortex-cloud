@@ -798,6 +798,19 @@ export default {
     retryNow: 'Retry now',
     autoRetry: 'Auto retry runs while this window is open.',
   },
+  config: {
+    title: 'Server configuration',
+    description:
+      'Runtime-tunable settings, edited live through the config grain. Changes apply immediately and each one is audited with a reason. Bootstrap and secret settings stay in appsettings.',
+    overridden: 'Overridden',
+    default: 'Default',
+    save: 'Save',
+    newValue: 'New value',
+    reasonPlaceholder: 'why this change?',
+    reasonMissing: 'A reason is required.',
+    confirmEyebrow: 'Confirm config change',
+    readOnlyNotice: 'You can view configuration but not change it.',
+  },
   nav: {
     groupLive: 'Live',
     groupInvestigate: 'Investigate',
@@ -851,6 +864,8 @@ export default {
     questsShort: 'Campaigns and rewards',
     furnitureDefinitions: 'Furniture definitions',
     furnitureDefinitionsShort: 'Sprites and physics',
+    config: 'Server config',
+    configShort: 'Runtime settings',
     apiExplorer: 'API explorer',
     apiExplorerShort: 'Routes and contract',
     groupsStats: 'Guilds',

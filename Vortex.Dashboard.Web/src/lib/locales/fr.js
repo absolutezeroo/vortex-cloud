@@ -796,6 +796,19 @@ export default {
     retryNow: 'Réessayer maintenant',
     autoRetry: 'Nouvelle tentative automatique tant que cette fenêtre est ouverte.',
   },
+  config: {
+    title: 'Configuration serveur',
+    description:
+      "Réglages modifiables à chaud via le grain de config. Les changements s'appliquent immédiatement et chacun est audité avec un motif. Les réglages de bootstrap et secrets restent dans appsettings.",
+    overridden: 'Modifié',
+    default: 'Défaut',
+    save: 'Enregistrer',
+    newValue: 'Nouvelle valeur',
+    reasonPlaceholder: 'pourquoi ce changement ?',
+    reasonMissing: 'Un motif est requis.',
+    confirmEyebrow: 'Confirmer le changement',
+    readOnlyNotice: 'Vous pouvez voir la configuration mais pas la modifier.',
+  },
   nav: {
     groupLive: 'En direct',
     groupInvestigate: 'Investigation',
@@ -849,6 +862,8 @@ export default {
     questsShort: 'Campagnes et récompenses',
     furnitureDefinitions: 'Définitions de mobilier',
     furnitureDefinitionsShort: 'Sprites et physique',
+    config: 'Config serveur',
+    configShort: 'Réglages à chaud',
     apiExplorer: "Explorateur d'API",
     apiExplorerShort: 'Routes et contrat',
     groupsStats: 'Guildes',

@@ -25,6 +25,8 @@ export const CAPABILITIES = {
   opsTargetedOffersManage: 'dashboard.ops.targeted_offers.manage',
   questsRead: 'dashboard.quests.read',
   opsQuestsManage: 'dashboard.ops.quests.manage',
+  configRead: 'dashboard.config.read',
+  opsManageConfig: 'dashboard.ops.config.manage',
 };
 
 export const ROUTE_PERMISSIONS = {
@@ -56,6 +58,7 @@ export const ROUTE_PERMISSIONS = {
   targetedOffersStats: [CAPABILITIES.targetedOffersRead],
   quests: [CAPABILITIES.questsRead],
   questsStats: [CAPABILITIES.questsRead],
+  config: [CAPABILITIES.configRead],
   apiExplorer: [CAPABILITIES.overviewRead],
   operations: [
     CAPABILITIES.opsGrantCurrency,
