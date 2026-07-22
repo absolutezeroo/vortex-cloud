@@ -15,6 +15,7 @@ using Vortex.Database.Entities.Players;
 using Vortex.Database.Entities.Quests;
 using Vortex.Database.Entities.Room;
 using Vortex.Database.Entities.Security;
+using Vortex.Database.Entities.Server;
 using Vortex.Database.Entities.Wired;
 using Vortex.Primitives.Catalog;
 
@@ -195,6 +196,8 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
     public DbSet<PlayerAccountPreferencesEntity> PlayerAccountPreferences { get; init; } = null!;
 
     public DbSet<PlayerWardrobeOutfitEntity> PlayerWardrobeOutfits { get; init; } = null!;
+
+    public DbSet<ServerConfigEntity> ServerConfig { get; init; } = null!;
 
     public DbSet<AchievementEntity> Achievements { get; init; } = null!;
 

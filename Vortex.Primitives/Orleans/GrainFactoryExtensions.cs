@@ -9,6 +9,7 @@ using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Quests.Grains;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Grains;
+using Vortex.Primitives.Server.Grains;
 
 namespace Vortex.Primitives.Orleans;
 
@@ -142,6 +143,9 @@ public static class GrainFactoryExtensions
 
     public static IAchievementManagerGrain GetAchievementManagerGrain(this IGrainFactory factory) =>
         factory.GetGrain<IAchievementManagerGrain>(SingletonGrainId.GLOBAL);
+
+    public static IServerConfigGrain GetServerConfigGrain(this IGrainFactory factory) =>
+        factory.GetGrain<IServerConfigGrain>(SingletonGrainId.GLOBAL);
 
     public static IPlayerAchievementGrain GetPlayerAchievementGrain(
         this IGrainFactory factory,
