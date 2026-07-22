@@ -8,12 +8,14 @@ using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Messenger;
 using Vortex.Database.Entities.Players;
+using Vortex.Players.Configuration;
 using Vortex.Primitives.FriendList.Enums;
 using Vortex.Primitives.FriendList.Grains;
 using Vortex.Primitives.Messages.Outgoing.FriendList;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Grains;
+using Vortex.Primitives.Server.Grains;
 using Vortex.Primitives.Snapshots.FriendList;
 
 namespace Vortex.Players.Grains;
@@ -125,6 +127,14 @@ internal sealed partial class MessengerGrain
         CancellationToken ct
     )
     {
+        int messageHistoryLimit = await this
+            .GrainFactory.GetServerConfigGrain()
+            .GetIntAsync(
+                MessengerConfig.MessageHistoryLimitKey,
+                MessengerConfig.MessageHistoryLimitDefault
+            )
+            .ConfigureAwait(true);
+
         await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         int selfIdInt = SelfId;
@@ -142,7 +152,7 @@ internal sealed partial class MessengerGrain
                 )
             )
             .OrderByDescending(m => m.Timestamp)
-            .Take(_messengerConfig.MessageHistoryLimit)
+            .Take(messageHistoryLimit)
             .ToListAsync(ct);
 
         return messages

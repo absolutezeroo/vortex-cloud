@@ -20,6 +20,7 @@ using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Server.Grains;
 using Vortex.Primitives.Snapshots.FriendList;
 
 namespace Vortex.Players.Grains;
@@ -206,6 +207,14 @@ internal sealed partial class MessengerGrain(
 
     private async Task DeliverOfflinePendingMessagesAsync(CancellationToken ct)
     {
+        int messageHistoryLimit = await this
+            .GrainFactory.GetServerConfigGrain()
+            .GetIntAsync(
+                MessengerConfig.MessageHistoryLimitKey,
+                MessengerConfig.MessageHistoryLimitDefault
+            )
+            .ConfigureAwait(true);
+
         await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         List<MessengerMessageEntity> pending = await dbCtx
@@ -213,7 +222,7 @@ internal sealed partial class MessengerGrain(
             .Include(m => m.SenderEntity)
             .Where(m => m.ReceiverEntityId == (int)SelfId && !m.Delivered && m.DeletedAt == null)
             .OrderBy(m => m.Timestamp)
-            .Take(_messengerConfig.MessageHistoryLimit)
+            .Take(messageHistoryLimit)
             .ToListAsync(ct);
 
         if (pending.Count == 0)

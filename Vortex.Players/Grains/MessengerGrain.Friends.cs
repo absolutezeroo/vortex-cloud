@@ -8,6 +8,7 @@ using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Messenger;
 using Vortex.Database.Entities.Players;
+using Vortex.Players.Configuration;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.FriendList.Enums;
 using Vortex.Primitives.FriendList.Grains;
@@ -15,6 +16,7 @@ using Vortex.Primitives.Messages.Outgoing.FriendList;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Grains;
+using Vortex.Primitives.Server.Grains;
 using Vortex.Primitives.Snapshots.FriendList;
 
 namespace Vortex.Players.Grains;
@@ -90,7 +92,12 @@ internal sealed partial class MessengerGrain
         CancellationToken ct
     )
     {
-        if (_friends.Count >= _messengerConfig.MaxFriends)
+        int maxFriends = await this
+            .GrainFactory.GetServerConfigGrain()
+            .GetIntAsync(MessengerConfig.MaxFriendsKey, MessengerConfig.MaxFriendsDefault)
+            .ConfigureAwait(true);
+
+        if (_friends.Count >= maxFriends)
         {
             return FriendListErrorCodeType.YouHitFriendLimit;
         }
@@ -110,7 +117,7 @@ internal sealed partial class MessengerGrain
             ct
         );
 
-        if (targetCountFriends >= _messengerConfig.MaxFriends)
+        if (targetCountFriends >= maxFriends)
         {
             return FriendListErrorCodeType.TheyHitFriendLimit;
         }
@@ -192,6 +199,11 @@ internal sealed partial class MessengerGrain
     {
         List<AcceptFriendFailureSnapshot> failures = new();
 
+        int maxFriends = await this
+            .GrainFactory.GetServerConfigGrain()
+            .GetIntAsync(MessengerConfig.MaxFriendsKey, MessengerConfig.MaxFriendsDefault)
+            .ConfigureAwait(true);
+
         await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
 
         // Hoisted: the calling player is the same on every iteration.
@@ -216,7 +228,7 @@ internal sealed partial class MessengerGrain
                 continue;
             }
 
-            if (_friends.Count >= _messengerConfig.MaxFriends)
+            if (_friends.Count >= maxFriends)
             {
                 failures.Add(
                     new AcceptFriendFailureSnapshot
