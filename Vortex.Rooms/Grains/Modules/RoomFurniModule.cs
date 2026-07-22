@@ -8,6 +8,7 @@ using Vortex.Primitives;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms;
+using Vortex.Primitives.Rooms.Events.RoomItem;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
@@ -79,6 +80,20 @@ public sealed partial class RoomFurniModule(RoomGrain roomGrain)
         }
 
         await item.Logic.OnUseAsync(ctx, param, ct);
+
+        // A player-driven "use" feeds the wired "furni is used" (USE_STUFF) trigger. Distinct from
+        // RoomItemStateChangedEvent, which fires for any state change and carries no using player.
+        await _roomGrain
+            .PublishRoomEventAsync(
+                new RoomItemUsedEvent
+                {
+                    RoomId = _roomGrain.RoomId,
+                    CausedBy = ctx,
+                    ObjectId = itemId,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
 
         return true;
     }

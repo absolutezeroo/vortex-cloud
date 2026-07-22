@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Orleans;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Rooms.Enums.Wired;
-using Vortex.Primitives.Rooms.Events.Avatar;
+using Vortex.Primitives.Rooms.Events.RoomItem;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
+using Vortex.Primitives.Rooms.Wired;
 
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Triggers;
 
@@ -17,5 +20,25 @@ public class WiredTriggerHabboChangesItemState(
 ) : FurnitureWiredTriggerLogic(grainFactory, stuffDataFactory, ctx)
 {
     public override int WiredCode => (int)WiredTriggerType.USE_STUFF;
-    public override List<Type> SupportedEventTypes { get; } = [typeof(AvatarWalkOnFurniEvent)];
+    public override List<Type> SupportedEventTypes { get; } = [typeof(RoomItemUsedEvent)];
+
+    public override List<WiredFurniSourceType[]> GetAllowedFurniSources() =>
+        [
+            [WiredFurniSourceType.SelectedItems, WiredFurniSourceType.SelectorItems],
+        ];
+
+    public override async Task<bool> CanTriggerAsync(
+        IWiredProcessingContext ctx,
+        CancellationToken ct
+    )
+    {
+        if (ctx.Event is not RoomItemUsedEvent evt)
+        {
+            return false;
+        }
+
+        IWiredSelectionSet selection = await ctx.GetEffectiveSelectionAsync(this, ct);
+
+        return selection.SelectedFurniIds.Contains((int)evt.ObjectId);
+    }
 }
