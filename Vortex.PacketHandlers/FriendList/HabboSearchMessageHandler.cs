@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.PacketHandlers.Configuration;
@@ -11,17 +10,15 @@ using Vortex.Primitives.Messages.Incoming.FriendList;
 using Vortex.Primitives.Messages.Outgoing.FriendList;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
+using Vortex.Primitives.Server.Grains;
 using Vortex.Primitives.Snapshots.FriendList;
 
 namespace Vortex.PacketHandlers.FriendList;
 
-public class HabboSearchMessageHandler(
-    IGrainFactory grainFactory,
-    IOptions<FriendListConfig> friendListConfig
-) : IMessageHandler<HabboSearchMessage>
+public class HabboSearchMessageHandler(IGrainFactory grainFactory)
+    : IMessageHandler<HabboSearchMessage>
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
-    private readonly FriendListConfig _friendListConfig = friendListConfig.Value;
 
     public async ValueTask HandleAsync(
         HabboSearchMessage message,
@@ -34,6 +31,11 @@ public class HabboSearchMessageHandler(
             return;
         }
 
+        int searchLimit = await _grainFactory
+            .GetServerConfigGrain()
+            .GetIntAsync(FriendListConfig.SearchLimitKey, FriendListConfig.SearchLimitDefault)
+            .ConfigureAwait(false);
+
         IMessengerGrain grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
         IPlayerDirectoryGrain directory = _grainFactory.GetPlayerDirectoryGrain();
 
@@ -41,7 +43,7 @@ public class HabboSearchMessageHandler(
             grain.GetFriendSearchResultsAsync(message.SearchQuery, ct);
         Task<List<MessengerSearchResultSnapshot>> globalResultsTask = directory.SearchPlayersAsync(
             message.SearchQuery,
-            _friendListConfig.SearchLimit,
+            searchLimit,
             ct
         );
 
@@ -58,7 +60,7 @@ public class HabboSearchMessageHandler(
             .Where(r =>
                 !friendIds.Contains(r.PlayerId.Value) && r.PlayerId.Value != ctx.PlayerId.Value
             )
-            .Take(_friendListConfig.SearchLimit)
+            .Take(searchLimit)
             .ToList();
 
         await ctx.SendComposerAsync(

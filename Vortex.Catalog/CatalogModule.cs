@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Vortex.Catalog.Configuration;
 using Vortex.Catalog.Providers;
 using Vortex.Database.Context;
 using Vortex.Primitives.Catalog;
@@ -20,10 +19,6 @@ public sealed class CatalogModule : IHostPluginModule
 
     public void ConfigureServices(IServiceCollection services, HostApplicationBuilder builder)
     {
-        services.Configure<CatalogConfig>(
-            builder.Configuration.GetSection(CatalogConfig.SECTION_NAME)
-        );
-
         services.AddSingleton<ICatalogService, CatalogService>();
         services.AddSingleton<ICatalogAdminService, CatalogAdminService>();
         services.AddSingleton<ITargetedOfferAdminService, TargetedOfferAdminService>();

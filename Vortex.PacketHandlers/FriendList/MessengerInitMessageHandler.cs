@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Logging.Extensions;
 using Vortex.Messages.Registry;
@@ -12,19 +11,18 @@ using Vortex.Primitives.FriendList.Grains;
 using Vortex.Primitives.Messages.Incoming.FriendList;
 using Vortex.Primitives.Messages.Outgoing.FriendList;
 using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Server.Grains;
 using Vortex.Primitives.Snapshots.FriendList;
 
 namespace Vortex.PacketHandlers.FriendList;
 
 public class MessengerInitMessageHandler(
     IGrainFactory grainFactory,
-    ILogger<MessengerInitMessageHandler> logger,
-    IOptions<FriendListConfig> friendListConfig
+    ILogger<MessengerInitMessageHandler> logger
 ) : IMessageHandler<MessengerInitMessage>
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ILogger<MessengerInitMessageHandler> _logger = logger;
-    private readonly FriendListConfig _friendListConfig = friendListConfig.Value;
 
     public async ValueTask HandleAsync(
         MessengerInitMessage message,
@@ -38,9 +36,27 @@ public class MessengerInitMessageHandler(
         }
 
         IMessengerGrain grain = _grainFactory.GetMessengerGrain(ctx.PlayerId);
+        IServerConfigGrain config = _grainFactory.GetServerConfigGrain();
 
+        // Kick off everything up front so the limit lookups overlap the friend/category loads.
         Task<List<FriendCategorySnapshot>> categoriesTask = grain.GetCategoriesAsync(ct);
         Task<List<MessengerFriendSnapshot>> friendsTask = grain.GetFriendsAsync(ct);
+        Task<int> userLimitTask = config.GetIntAsync(
+            FriendListConfig.UserFriendLimitKey,
+            FriendListConfig.UserFriendLimitDefault
+        );
+        Task<int> normalLimitTask = config.GetIntAsync(
+            FriendListConfig.NormalFriendLimitKey,
+            FriendListConfig.NormalFriendLimitDefault
+        );
+        Task<int> extendedLimitTask = config.GetIntAsync(
+            FriendListConfig.ExtendedFriendLimitKey,
+            FriendListConfig.ExtendedFriendLimitDefault
+        );
+        Task<int> fragmentSizeTask = config.GetIntAsync(
+            FriendListConfig.FragmentSizeKey,
+            FriendListConfig.FragmentSizeDefault
+        );
 
         List<FriendCategorySnapshot> categories = await categoriesTask.ConfigureAwait(false);
         List<MessengerFriendSnapshot> friends = await friendsTask.ConfigureAwait(false);
@@ -48,16 +64,17 @@ public class MessengerInitMessageHandler(
         await ctx.SendComposerAsync(
                 new MessengerInitMessageComposer
                 {
-                    UserFriendLimit = _friendListConfig.UserFriendLimit,
-                    NormalFriendLimit = _friendListConfig.NormalFriendLimit,
-                    ExtendedFriendLimit = _friendListConfig.ExtendedFriendLimit,
+                    UserFriendLimit = await userLimitTask.ConfigureAwait(false),
+                    NormalFriendLimit = await normalLimitTask.ConfigureAwait(false),
+                    ExtendedFriendLimit = await extendedLimitTask.ConfigureAwait(false),
                     FriendCategories = categories,
                 },
                 ct
             )
             .ConfigureAwait(false);
 
-        int fragmentSize = _friendListConfig.FragmentSize;
+        // Guard against a misconfigured 0/negative size that would break the fragment maths.
+        int fragmentSize = Math.Max(1, await fragmentSizeTask.ConfigureAwait(false));
         int totalFragments = Math.Max(1, (int)Math.Ceiling(friends.Count / (double)fragmentSize));
 
         for (int i = 0; i < totalFragments; i++)
