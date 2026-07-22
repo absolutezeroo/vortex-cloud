@@ -21,6 +21,7 @@ using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Wallet;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Server.Grains;
 
 namespace Vortex.Players.Grains;
 
@@ -277,6 +278,14 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
             return ClubPurchaseResult.NotEnoughCredits;
         }
 
+        IServerConfigGrain config = this.GrainFactory.GetServerConfigGrain();
+        int giftCycleDays = await config
+            .GetIntAsync(ClubConfig.GiftCycleDaysKey, ClubConfig.GiftCycleDaysDefault)
+            .ConfigureAwait(true);
+        int streakGraceDays = await config
+            .GetIntAsync(ClubConfig.StreakGraceDaysKey, ClubConfig.StreakGraceDaysDefault)
+            .ConfigureAwait(true);
+
         DateTime now = DateTime.UtcNow;
         bool isRenewal = _state.ClubLevel > 0 && _state.ClubExpiresAt > now;
 
@@ -294,7 +303,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
                 ? (now - _state.ClubExpiresAt).TotalDays
                 : double.MaxValue;
             newTotalMonths =
-                lapsedDays > _clubConfig.StreakGraceDays ? months : _state.ClubTotalMonths + months;
+                lapsedDays > streakGraceDays ? months : _state.ClubTotalMonths + months;
         }
 
         DateTime baseDate = isRenewal ? _state.ClubExpiresAt : now;
@@ -307,13 +316,13 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         DateTime? newNextGiftAt =
             isRenewal && _state.ClubNextGiftAt.HasValue
                 ? _state.ClubNextGiftAt
-                : now.AddDays(_clubConfig.GiftCycleDays);
+                : now.AddDays(giftCycleDays);
 
         // Lifetime membership days (never reset, VIP tracked separately) feed the club info window.
-        _state.ClubPastClubDays += months * _clubConfig.GiftCycleDays;
+        _state.ClubPastClubDays += months * giftCycleDays;
         if (isVip)
         {
-            _state.ClubPastVipDays += months * _clubConfig.GiftCycleDays;
+            _state.ClubPastVipDays += months * giftCycleDays;
         }
 
         _state.ClubLevel = newLevel;
@@ -330,7 +339,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         // Init payday on first subscription; renewals keep the existing cycle
         if (_state.KickbackPaydayAt is null)
         {
-            _state.KickbackPaydayAt = now.AddDays(_clubConfig.GiftCycleDays);
+            _state.KickbackPaydayAt = now.AddDays(giftCycleDays);
         }
 
         await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
@@ -652,6 +661,11 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
             return;
         }
 
+        int giftCycleDays = await this
+            .GrainFactory.GetServerConfigGrain()
+            .GetIntAsync(ClubConfig.GiftCycleDaysKey, ClubConfig.GiftCycleDaysDefault)
+            .ConfigureAwait(true);
+
         int tokensToGrant = 0;
         DateTime nextGift = _state.ClubNextGiftAt.Value;
         DateTime now = DateTime.UtcNow;
@@ -659,7 +673,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         while (nextGift <= now)
         {
             tokensToGrant++;
-            nextGift = nextGift.AddDays(_clubConfig.GiftCycleDays);
+            nextGift = nextGift.AddDays(giftCycleDays);
         }
 
         _state.ClubGiftsAvailable += tokensToGrant;
@@ -801,15 +815,23 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
                 (int)this.GetPrimaryKeyLong()
             );
 
+            IServerConfigGrain config = this.GrainFactory.GetServerConfigGrain();
+            string clubBadgeCode =
+                await config.GetValueAsync(ClubConfig.ClubBadgeCodeKey).ConfigureAwait(true)
+                ?? ClubConfig.ClubBadgeCodeDefault;
+            string vipBadgeCode =
+                await config.GetValueAsync(ClubConfig.VipBadgeCodeKey).ConfigureAwait(true)
+                ?? ClubConfig.VipBadgeCodeDefault;
+
             if (!_state.ClubBadgeGranted)
             {
-                await inventory.GrantBadgeAsync(_clubConfig.ClubBadgeCode, ct).ConfigureAwait(true);
+                await inventory.GrantBadgeAsync(clubBadgeCode, ct).ConfigureAwait(true);
                 _state.ClubBadgeGranted = true;
             }
 
             if (isVip)
             {
-                await inventory.GrantBadgeAsync(_clubConfig.VipBadgeCode, ct).ConfigureAwait(true);
+                await inventory.GrantBadgeAsync(vipBadgeCode, ct).ConfigureAwait(true);
             }
         }
         catch (Exception ex)
@@ -880,15 +902,21 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
             return;
         }
 
+        IServerConfigGrain config = this.GrainFactory.GetServerConfigGrain();
+        int kickbackPercent = await config
+            .GetIntAsync(ClubConfig.KickbackPercentKey, ClubConfig.KickbackPercentDefault)
+            .ConfigureAwait(true);
+        int giftCycleDays = await config
+            .GetIntAsync(ClubConfig.GiftCycleDaysKey, ClubConfig.GiftCycleDaysDefault)
+            .ConfigureAwait(true);
+
         DateTime now = DateTime.UtcNow;
         DateTime payday = _state.KickbackPaydayAt.Value;
 
         while (payday <= now)
         {
-            int monthlyReward = (int)(
-                _state.KickbackCreditsSpent * (_clubConfig.KickbackPercent / 100.0)
-            );
-            int streakBonus = Math.Min(_state.ClubTotalMonths, _clubConfig.GiftCycleDays);
+            int monthlyReward = (int)(_state.KickbackCreditsSpent * (kickbackPercent / 100.0));
+            int streakBonus = Math.Min(_state.ClubTotalMonths, giftCycleDays);
             int totalReward = monthlyReward + streakBonus;
 
             if (totalReward > 0)
@@ -905,7 +933,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
             }
 
             _state.KickbackCreditsSpent = 0;
-            payday = payday.AddDays(_clubConfig.GiftCycleDays);
+            payday = payday.AddDays(giftCycleDays);
         }
 
         _state.KickbackPaydayAt = payday;
