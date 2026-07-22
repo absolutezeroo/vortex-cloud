@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
@@ -112,4 +113,17 @@ public interface IPlayerGrain : IGrainWithIntegerKey
     /// <summary>Persists the client UI-flags bitmask, e.g. expanded friend bar / room tools
     /// (SetUIFlags, header 3653).</summary>
     public Task SetUiFlagsAsync(int flags, CancellationToken ct);
+
+    /// <summary>All the player's saved avatar-editor wardrobe outfits, ordered by slot, echoed to the
+    /// client on GetWardrobe (header 2210).</summary>
+    public Task<List<PlayerWardrobeOutfitSnapshot>> GetWardrobeAsync(CancellationToken ct);
+
+    /// <summary>Upserts one wardrobe slot's figure + gender (SaveWardrobeOutfit, header 116).
+    /// Out-of-range slot ids are ignored.</summary>
+    public Task SaveWardrobeOutfitAsync(
+        int slotId,
+        string figure,
+        string gender,
+        CancellationToken ct
+    );
 }

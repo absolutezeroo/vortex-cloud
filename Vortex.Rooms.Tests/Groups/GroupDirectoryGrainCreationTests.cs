@@ -455,6 +455,21 @@ public sealed class GroupDirectoryGrainCreationTests
         {
             throw new NotSupportedException();
         }
+
+        public Task<List<PlayerWardrobeOutfitSnapshot>> GetWardrobeAsync(CancellationToken ct)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task SaveWardrobeOutfitAsync(
+            int slotId,
+            string figure,
+            string gender,
+            CancellationToken ct
+        )
+        {
+            throw new NotSupportedException();
+        }
     }
 
     private sealed class CancellingGroupCreatingBehavior : IEventBehavior<GroupCreatingEvent>

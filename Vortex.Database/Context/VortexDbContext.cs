@@ -194,6 +194,8 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<PlayerAccountPreferencesEntity> PlayerAccountPreferences { get; init; } = null!;
 
+    public DbSet<PlayerWardrobeOutfitEntity> PlayerWardrobeOutfits { get; init; } = null!;
+
     public DbSet<AchievementEntity> Achievements { get; init; } = null!;
 
     public DbSet<AchievementLevelEntity> AchievementLevels { get; init; } = null!;

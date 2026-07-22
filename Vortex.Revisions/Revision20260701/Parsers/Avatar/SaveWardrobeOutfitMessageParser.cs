@@ -6,5 +6,11 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Avatar;
 
 internal class SaveWardrobeOutfitMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new SaveWardrobeOutfitMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new SaveWardrobeOutfitMessage
+        {
+            SlotId = packet.PopInt(),
+            Figure = packet.PopString(),
+            Gender = packet.PopString(),
+        };
 }
