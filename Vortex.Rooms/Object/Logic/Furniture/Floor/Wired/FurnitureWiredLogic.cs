@@ -132,21 +132,12 @@ public abstract class FurnitureWiredLogic(
         {
             WiredFurniSourceType[] sourceTypes = source;
 
-            try
+            // Defaults yield one slot per allowed source; the persisted list only holds
+            // slots the player has configured (often fewer, empty when unconfigured), so
+            // fall back to the default whenever this slot has no persisted override.
+            if (index < _wiredData.FurniSources.Count && _wiredData.FurniSources[index] is not null)
             {
-                if (_wiredData.FurniSources[index] is not null)
-                {
-                    sourceTypes = _wiredData.FurniSources[index];
-                }
-            }
-            catch (Exception ex)
-            {
-                _roomGrain._logger.LogWarning(
-                    ex,
-                    "Malformed persisted FurniSources[{Index}] for wired item {ItemId}; falling back to default source.",
-                    index,
-                    _ctx.ObjectId
-                );
+                sourceTypes = _wiredData.FurniSources[index];
             }
 
             sources.Add(sourceTypes);
@@ -165,21 +156,15 @@ public abstract class FurnitureWiredLogic(
         {
             WiredPlayerSourceType[] sourceTypes = source;
 
-            try
+            // Defaults yield one slot per allowed source; the persisted list only holds
+            // slots the player has configured (often fewer, empty when unconfigured), so
+            // fall back to the default whenever this slot has no persisted override.
+            if (
+                index < _wiredData.PlayerSources.Count
+                && _wiredData.PlayerSources[index] is not null
+            )
             {
-                if (_wiredData.PlayerSources[index] is not null)
-                {
-                    sourceTypes = _wiredData.PlayerSources[index];
-                }
-            }
-            catch (Exception ex)
-            {
-                _roomGrain._logger.LogWarning(
-                    ex,
-                    "Malformed persisted PlayerSources[{Index}] for wired item {ItemId}; falling back to default source.",
-                    index,
-                    _ctx.ObjectId
-                );
+                sourceTypes = _wiredData.PlayerSources[index];
             }
 
             sources.Add(sourceTypes);
