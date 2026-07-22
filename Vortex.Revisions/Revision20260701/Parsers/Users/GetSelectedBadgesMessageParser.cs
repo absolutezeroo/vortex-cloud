@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Users;
 
 internal class GetSelectedBadgesMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new GetSelectedBadgesMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new GetSelectedBadgesMessage { UserId = packet.PopInt() };
 }

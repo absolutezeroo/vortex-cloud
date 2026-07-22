@@ -2070,6 +2070,12 @@ public class Revision20260701(IOptions<ProtocolLimitsConfig> protocolLimits) : I
                 new BadgesEventMessageComposerSerializer(MessageComposer.BadgesComposer)
             },
             {
+                typeof(HabboUserBadgesMessageComposer),
+                new HabboUserBadgesMessageComposerSerializer(
+                    MessageComposer.HabboUserBadgesMessageComposer
+                )
+            },
+            {
                 typeof(IsBadgeRequestFulfilledEventMessageComposer),
                 new IsBadgeRequestFulfilledEventMessageComposerSerializer(
                     MessageComposer.IsBadgeRequestFulfilledComposer
