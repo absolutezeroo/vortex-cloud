@@ -71,6 +71,18 @@ public sealed class WiredPeriodicScheduleTests
     }
 
     [Fact]
+    public void TryConsumeDue_FiresWhenDue_AndRearms()
+    {
+        WiredPeriodicSchedule schedule = new(WiredPeriodicTriggerType.Short) { DelayValue = 2 };
+        // DelayMs = 2 * 50 = 100ms.
+
+        schedule.TryConsumeDue(1_000).Should().BeTrue(); // immediately due, re-arms to 1_100
+        schedule.TryConsumeDue(1_099).Should().BeFalse();
+        schedule.TryConsumeDue(1_100).Should().BeTrue(); // re-armed interval elapsed
+        schedule.TryConsumeDue(1_100).Should().BeFalse(); // same tick, already consumed
+    }
+
+    [Fact]
     public void Rearming_From_ActualFireTime_KeepsFixedInterval()
     {
         // Mirrors the producer loop: fire at `now`, advance from `now`, repeat. Each firing is one

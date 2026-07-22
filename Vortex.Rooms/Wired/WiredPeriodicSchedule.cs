@@ -37,4 +37,20 @@ public sealed class WiredPeriodicSchedule(WiredPeriodicTriggerType type)
 
     /// <summary>Arm the next firing one interval after <paramref name="nowMs"/>.</summary>
     public void Advance(long nowMs) => _nextFireMs = nowMs + DelayMs;
+
+    /// <summary>
+    /// Returns <c>true</c> if due at <paramref name="nowMs"/>, re-arming the next interval as it does
+    /// so; <c>false</c> otherwise. Convenience for the room-tick poll.
+    /// </summary>
+    public bool TryConsumeDue(long nowMs)
+    {
+        if (!IsDue(nowMs))
+        {
+            return false;
+        }
+
+        Advance(nowMs);
+
+        return true;
+    }
 }

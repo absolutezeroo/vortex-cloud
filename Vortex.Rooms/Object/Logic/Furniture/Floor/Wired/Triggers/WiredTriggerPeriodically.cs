@@ -19,7 +19,7 @@ public class WiredTriggerPeriodically(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,
     IRoomFloorItemContext ctx
-) : FurnitureWiredTriggerLogic(grainFactory, stuffDataFactory, ctx)
+) : FurnitureWiredTriggerLogic(grainFactory, stuffDataFactory, ctx), IWiredTimedTrigger
 {
     public override int WiredCode => (int)WiredTriggerType.TRIGGER_PERIODICALLY;
     public override List<Type> SupportedEventTypes { get; } = [typeof(PeriodicRoomEvent)];
@@ -31,11 +31,7 @@ public class WiredTriggerPeriodically(
 
     public override List<IWiredParamRule> GetIntParamRules() => [new WiredRangeParamRule(1, 10, 1)];
 
-    /// <summary>Whether the configured interval has elapsed and the box is due to fire now.</summary>
-    public bool IsDue(long nowMs) => _schedule?.IsDue(nowMs) ?? true;
-
-    /// <summary>Arm the next firing one interval after <paramref name="nowMs"/>.</summary>
-    public void ScheduleNextFire(long nowMs) => _schedule?.Advance(nowMs);
+    public bool TryConsumeDue(long nowMs) => _schedule?.TryConsumeDue(nowMs) ?? false;
 
     public override Task<bool> CanTriggerAsync(IWiredProcessingContext ctx, CancellationToken ct) =>
         Task.FromResult(ctx.Event is PeriodicRoomEvent);
