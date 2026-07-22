@@ -73,6 +73,8 @@ internal sealed class DashboardWebHost(
         Capabilities.Dashboard.OpsTargetedOffersManage,
         Capabilities.Dashboard.QuestsRead,
         Capabilities.Dashboard.OpsQuestsManage,
+        Capabilities.Dashboard.ConfigRead,
+        Capabilities.Dashboard.OpsConfigManage,
     ];
 
     private readonly ObservabilityConfig _config = options.Value;
