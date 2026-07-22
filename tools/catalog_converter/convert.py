@@ -311,12 +311,23 @@ def convert_items_base(src: Path, dst: Path) -> tuple[dict[int, dict], dict[int,
             print(f"  [WARN] items_base row too short ({len(row)} cols), skipping", file=sys.stderr)
             continue
 
+        # Column order per this dump's own CREATE TABLE `items_base` -- NOT stock Arcturus:
+        #   id, sprite_id, item_name, public_name, type, width, length, stack_height,
+        #   allow_stack, allow_sit, allow_lay, allow_walk, allow_gift, allow_trade,
+        #   allow_recycle, allow_marketplace_sell, allow_inventory_stack, interaction_type,
+        #   interaction_modes_count, vending_ids, multiheight, customparams,
+        #   effect_id_male, effect_id_female, clothing_on_walk, page_id, rare
+        # This dump puts `type` at index 4 (stock Arcturus puts it at 16). Unpacking with
+        # the stock layout shifted every field from index 4 on by one, so can_sit read
+        # allow_stack (~1 everywhere -> sit on everything), product_type read
+        # allow_inventory_stack (everything became Floor), and width/length/stack_height
+        # were all off by one.
         (
-            ib_id, sprite_id, item_name, public_name,
+            ib_id, sprite_id, item_name, public_name, item_type,
             width, length, stack_height,
             allow_stack, allow_sit, allow_lay, allow_walk,
             allow_gift, allow_trade, allow_recycle, allow_marketplace_sell,
-            allow_inventory_stack, item_type, interaction_type,
+            allow_inventory_stack, interaction_type,
             interaction_modes_count, vending_ids, multiheight, customparams,
             effect_id_male, effect_id_female, clothing_on_walk, page_id, rare
         ) = row[:27]
@@ -338,7 +349,7 @@ def convert_items_base(src: Path, dst: Path) -> tuple[dict[int, dict], dict[int,
             "type":         item_type,
             "product_type": product_type,
             "category":     category,
-            "allow_gift":   bool(int(allow_gift or 1)),
+            "allow_gift":   bool(to_int(allow_gift, 1)),
         }
 
         key = (sprite_int, product_type, category)
@@ -358,14 +369,14 @@ def convert_items_base(src: Path, dst: Path) -> tuple[dict[int, dict], dict[int,
             f"{sql_str(category)}, {sql_str(logic)}, "
             f"{sql_str(to_int(interaction_modes_count, 1))}, "
             f"{sql_str(width_val)}, {sql_str(length_val)}, {sql_str(sh_val)}, "
-            f"{sql_bool(int(allow_stack or 1))}, "
-            f"{sql_bool(int(allow_walk  or 0))}, "
-            f"{sql_bool(int(allow_sit   or 0))}, "
-            f"{sql_bool(int(allow_lay   or 0))}, "
-            f"{sql_bool(int(allow_recycle or 0))}, "
-            f"{sql_bool(int(allow_trade  or 1))}, "
+            f"{sql_bool(to_int(allow_stack, 1))}, "
+            f"{sql_bool(to_int(allow_walk, 0))}, "
+            f"{sql_bool(to_int(allow_sit, 0))}, "
+            f"{sql_bool(to_int(allow_lay, 0))}, "
+            f"{sql_bool(to_int(allow_recycle, 0))}, "
+            f"{sql_bool(to_int(allow_trade, 1))}, "
             f"1, "
-            f"{sql_bool(int(allow_marketplace_sell or 0))}, "
+            f"{sql_bool(to_int(allow_marketplace_sell, 0))}, "
             f"0, "
             f"{sql_str(extra_data if extra_data else None)}, "
             f"NOW(), NOW(), NULL)"
