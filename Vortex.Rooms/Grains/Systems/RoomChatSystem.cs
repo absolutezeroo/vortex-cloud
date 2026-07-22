@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
+using Vortex.Primitives.Action;
 using Vortex.Primitives.Messages.Outgoing.Room.Chat;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Events.Player;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 
@@ -76,6 +79,23 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
                 targetPlayerId
             )
             .ConfigureAwait(false);
+
+        // Public chat (not whispers) feeds the wired "avatar says (keyword)" trigger.
+        if (targetPlayerId is null && !string.IsNullOrWhiteSpace(text))
+        {
+            await _roomGrain
+                .PublishRoomEventAsync(
+                    new PlayerChatEvent
+                    {
+                        RoomId = _roomGrain.RoomId,
+                        CausedBy = ActionContext.CreateForPlayer(playerId, _roomGrain.RoomId),
+                        PlayerId = playerId,
+                        Message = text,
+                    },
+                    CancellationToken.None
+                )
+                .ConfigureAwait(false);
+        }
     }
 
     private async Task SendChatAsync(
