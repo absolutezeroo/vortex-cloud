@@ -1,6 +1,5 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.PacketHandlers.Configuration;
@@ -9,18 +8,16 @@ using Vortex.Primitives.Messages.Outgoing.Moderation;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Permissions;
+using Vortex.Primitives.Server.Grains;
 
 namespace Vortex.PacketHandlers.Moderator;
 
 public class GetRoomChatlogMessageHandler(
     IGrainFactory grainFactory,
     IPermissionService permissionService,
-    IModeratorChatlogService chatlogService,
-    IOptions<ModerationConfig> moderationConfig
+    IModeratorChatlogService chatlogService
 ) : IMessageHandler<GetRoomChatlogMessage>
 {
-    private readonly ModerationConfig _moderationConfig = moderationConfig.Value;
-
     public async ValueTask HandleAsync(
         GetRoomChatlogMessage message,
         MessageContext ctx,
@@ -41,8 +38,16 @@ public class GetRoomChatlogMessageHandler(
             return;
         }
 
+        int limit = await grainFactory
+            .GetServerConfigGrain()
+            .GetIntAsync(
+                ModerationConfig.RoomChatlogLimitKey,
+                ModerationConfig.RoomChatlogLimitDefault
+            )
+            .ConfigureAwait(false);
+
         ChatlogBlockSnapshot block = await chatlogService
-            .GetRoomChatlogAsync(message.RoomId, _moderationConfig.RoomChatlogLimit, ct)
+            .GetRoomChatlogAsync(message.RoomId, limit, ct)
             .ConfigureAwait(false);
 
         await grainFactory

@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.PacketHandlers.Configuration;
@@ -12,18 +11,16 @@ using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Grains;
+using Vortex.Primitives.Server.Grains;
 
 namespace Vortex.PacketHandlers.Moderator;
 
 public class ModMuteMessageHandler(
     IGrainFactory grainFactory,
     IPermissionService permissionService,
-    IEventPublisher events,
-    IOptions<ModerationConfig> moderationConfig
+    IEventPublisher events
 ) : IMessageHandler<ModMuteMessage>
 {
-    private readonly ModerationConfig _moderationConfig = moderationConfig.Value;
-
     public async ValueTask HandleAsync(
         ModMuteMessage message,
         MessageContext ctx,
@@ -56,12 +53,17 @@ public class ModMuteMessageHandler(
             && targetRoomId > 0
         )
         {
+            int muteMinutes = await grainFactory
+                .GetServerConfigGrain()
+                .GetIntAsync(
+                    ModerationConfig.ModToolDefaultMuteMinutesKey,
+                    ModerationConfig.ModToolDefaultMuteMinutesDefault
+                )
+                .ConfigureAwait(false);
+
             ActionContext actorCtx = ctx.AsActionContext() with { RoomId = targetRoomId };
             IRoomGrain roomGrain = grainFactory.GetRoomGrain(targetRoomId);
-            int durationSeconds = (int)
-                TimeSpan
-                    .FromMinutes(_moderationConfig.ModToolDefaultMuteDurationMinutes)
-                    .TotalSeconds;
+            int durationSeconds = (int)TimeSpan.FromMinutes(muteMinutes).TotalSeconds;
 
             success = await roomGrain
                 .MuteUserAsync(actorCtx, message.UserId, durationSeconds, ct)

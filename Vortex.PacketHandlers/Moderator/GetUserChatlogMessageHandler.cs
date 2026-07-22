@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.PacketHandlers.Configuration;
@@ -12,18 +11,16 @@ using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Players.Grains;
+using Vortex.Primitives.Server.Grains;
 
 namespace Vortex.PacketHandlers.Moderator;
 
 public class GetUserChatlogMessageHandler(
     IGrainFactory grainFactory,
     IPermissionService permissionService,
-    IModeratorChatlogService chatlogService,
-    IOptions<ModerationConfig> moderationConfig
+    IModeratorChatlogService chatlogService
 ) : IMessageHandler<GetUserChatlogMessage>
 {
-    private readonly ModerationConfig _moderationConfig = moderationConfig.Value;
-
     public async ValueTask HandleAsync(
         GetUserChatlogMessage message,
         MessageContext ctx,
@@ -44,13 +41,22 @@ public class GetUserChatlogMessageHandler(
             return;
         }
 
-        ImmutableArray<ChatlogBlockSnapshot> rooms = await chatlogService
-            .GetUserChatlogAsync(
-                message.UserId,
-                _moderationConfig.UserChatlogRoomLimit,
-                _moderationConfig.UserChatlogMessagesPerRoom,
-                ct
+        IServerConfigGrain config = grainFactory.GetServerConfigGrain();
+        int roomLimit = await config
+            .GetIntAsync(
+                ModerationConfig.UserChatlogRoomLimitKey,
+                ModerationConfig.UserChatlogRoomLimitDefault
             )
+            .ConfigureAwait(false);
+        int messagesPerRoom = await config
+            .GetIntAsync(
+                ModerationConfig.UserChatlogMessagesPerRoomKey,
+                ModerationConfig.UserChatlogMessagesPerRoomDefault
+            )
+            .ConfigureAwait(false);
+
+        ImmutableArray<ChatlogBlockSnapshot> rooms = await chatlogService
+            .GetUserChatlogAsync(message.UserId, roomLimit, messagesPerRoom, ct)
             .ConfigureAwait(false);
 
         PlayerSummarySnapshot targetSummary = await grainFactory
