@@ -14,5 +14,8 @@ public class WiredTriggerShortPeriodically(
 ) : WiredTriggerPeriodically(grainFactory, stuffDataFactory, ctx)
 {
     public override int WiredCode => (int)WiredTriggerType.PERIODIC_SHORT;
-    public override WiredPeriodicTriggerType PeriodicType => WiredPeriodicTriggerType.Short;
+
+    // Client PeriodicShort.ts: 1..10 slider in 50ms steps.
+    protected override int MsPerUnit => 50;
+    protected override int MaxUnits => 10;
 }

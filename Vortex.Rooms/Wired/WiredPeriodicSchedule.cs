@@ -1,37 +1,28 @@
 using System;
-using Vortex.Primitives.Rooms.Enums.Wired;
 
 namespace Vortex.Rooms.Wired;
 
 /// <summary>
-/// Pure, in-memory firing cadence for a periodic wired trigger (<c>wf_trg_periodically</c> and
-/// its short/long variants). It converts the configured delay into a room-clock interval and
-/// tracks the next time the box is due to fire, re-arming exactly one interval at a time.
-/// <para>
-/// This is ephemeral runtime state — it is intentionally never persisted into
-/// <see cref="WiredData"/> and resets whenever the wired box is (re)loaded, matching the
-/// config/runtime boundary the wired subsystem enforces.
-/// </para>
+/// Pure, in-memory firing cadence for a periodic wired trigger. Each periodic furni has its own unit —
+/// <c>wf_trg_periodically</c> counts in half-seconds (500ms), <c>wf_trg_period_short</c> in 50ms steps,
+/// <c>wf_trg_period_long</c> in 5-second steps — so the schedule is parameterised by the milliseconds
+/// per configured unit and the maximum unit count (both taken from the client slider). It tracks the
+/// next fire time and re-arms exactly one interval at a time.
+/// <para>Ephemeral runtime state — never persisted into <see cref="WiredData"/>; resets on box reload.</para>
 /// </summary>
-public sealed class WiredPeriodicSchedule(WiredPeriodicTriggerType type)
+public sealed class WiredPeriodicSchedule(int msPerUnit, int maxUnits)
 {
     private long _nextFireMs;
 
-    /// <summary>The player-configured delay knob (int-param 0), clamped by <see cref="DelayMs"/>.</summary>
+    /// <summary>The player-configured slider value (int-param 0), clamped by <see cref="DelayMs"/>.</summary>
     public int DelayValue { get; set; } = 1;
 
-    /// <summary>The interval between firings, in milliseconds, for this box's period type.</summary>
-    public int DelayMs =>
-        type switch
-        {
-            WiredPeriodicTriggerType.Short => Math.Clamp(DelayValue, 1, 10) * 50,
-            WiredPeriodicTriggerType.Long => Math.Clamp(DelayValue, 1, 120) * 5000,
-            _ => 50,
-        };
+    /// <summary>The interval between firings in milliseconds for this box.</summary>
+    public int DelayMs => Math.Clamp(DelayValue, 1, maxUnits) * msPerUnit;
 
     /// <summary>
-    /// Whether the configured interval has elapsed and the box should fire now. A freshly loaded
-    /// schedule (never advanced) is immediately due, so a placed box fires on the next wired tick.
+    /// Whether the interval has elapsed and the box should fire now. A freshly loaded schedule (never
+    /// advanced) is immediately due, so a placed box fires on the next wired tick.
     /// </summary>
     public bool IsDue(long nowMs) => nowMs >= _nextFireMs;
 

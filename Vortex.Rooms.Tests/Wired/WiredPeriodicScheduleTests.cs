@@ -22,10 +22,7 @@ public sealed class WiredPeriodicScheduleTests
     [InlineData(25, 500)] // clamped down to the maximum knob (10)
     public void Short_DelayValue_MapsTo_FiftyMsSteps(int delayValue, int expectedMs)
     {
-        WiredPeriodicSchedule schedule = new(WiredPeriodicTriggerType.Short)
-        {
-            DelayValue = delayValue,
-        };
+        WiredPeriodicSchedule schedule = new(50, 10) { DelayValue = delayValue };
 
         schedule.DelayMs.Should().Be(expectedMs);
     }
@@ -38,10 +35,7 @@ public sealed class WiredPeriodicScheduleTests
     [InlineData(500, 600_000)] // clamped down to the maximum knob (120)
     public void Long_DelayValue_MapsTo_FiveSecondSteps(int delayValue, int expectedMs)
     {
-        WiredPeriodicSchedule schedule = new(WiredPeriodicTriggerType.Long)
-        {
-            DelayValue = delayValue,
-        };
+        WiredPeriodicSchedule schedule = new(5000, 120) { DelayValue = delayValue };
 
         schedule.DelayMs.Should().Be(expectedMs);
     }
@@ -51,7 +45,7 @@ public sealed class WiredPeriodicScheduleTests
     {
         // A box that was just placed / reloaded has never been advanced, so it must fire on the
         // very next wired tick rather than waiting a full interval first.
-        WiredPeriodicSchedule schedule = new(WiredPeriodicTriggerType.Short) { DelayValue = 4 };
+        WiredPeriodicSchedule schedule = new(50, 10) { DelayValue = 4 };
 
         schedule.IsDue(0).Should().BeTrue();
         schedule.IsDue(123_456).Should().BeTrue();
@@ -60,7 +54,7 @@ public sealed class WiredPeriodicScheduleTests
     [Fact]
     public void After_Advance_NotDue_Until_ExactlyOneInterval_Later()
     {
-        WiredPeriodicSchedule schedule = new(WiredPeriodicTriggerType.Short) { DelayValue = 4 };
+        WiredPeriodicSchedule schedule = new(50, 10) { DelayValue = 4 };
         // DelayMs = 4 * 50 = 200ms.
 
         schedule.Advance(1_000);
@@ -73,7 +67,7 @@ public sealed class WiredPeriodicScheduleTests
     [Fact]
     public void TryConsumeDue_FiresWhenDue_AndRearms()
     {
-        WiredPeriodicSchedule schedule = new(WiredPeriodicTriggerType.Short) { DelayValue = 2 };
+        WiredPeriodicSchedule schedule = new(50, 10) { DelayValue = 2 };
         // DelayMs = 2 * 50 = 100ms.
 
         schedule.TryConsumeDue(1_000).Should().BeTrue(); // immediately due, re-arms to 1_100
@@ -87,7 +81,7 @@ public sealed class WiredPeriodicScheduleTests
     {
         // Mirrors the producer loop: fire at `now`, advance from `now`, repeat. Each firing is one
         // full interval after the previous fire time.
-        WiredPeriodicSchedule schedule = new(WiredPeriodicTriggerType.Long) { DelayValue = 1 };
+        WiredPeriodicSchedule schedule = new(5000, 120) { DelayValue = 1 };
         // DelayMs = 5000ms.
 
         long now = 10_000;
