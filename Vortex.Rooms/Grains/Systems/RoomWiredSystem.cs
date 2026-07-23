@@ -168,7 +168,8 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
                     continue;
                 }
 
-                // The countdown just hit zero — fire the counter's CLOCK_REACH_TIME wired.
+                // The countdown just hit zero — fire the counter's CLOCK_REACH_TIME wired and end the
+                // room game (GAME_ENDS), matching "the game timer ran out".
                 await FireTriggerWithEventAsync(
                     trigger,
                     new PeriodicRoomEvent
@@ -180,6 +181,8 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
                     now,
                     ct
                 );
+
+                await _roomGrain.GameSystem.EndGameAsync(ct);
             }
         }
     }

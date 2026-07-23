@@ -71,6 +71,17 @@ public class WiredActionControlClock(
             }
         }
 
+        // Starting the counter starts the room game (GAME_STARTS); stopping or resetting it ends the
+        // game (GAME_ENDS). Both are idempotent, so pause/resume leave the game state untouched.
+        if (control == ControlStart)
+        {
+            await _roomGrain.GameSystem.StartGameAsync(ct);
+        }
+        else if (control is ControlStop or ControlReset)
+        {
+            await _roomGrain.GameSystem.EndGameAsync(ct);
+        }
+
         return true;
     }
 }

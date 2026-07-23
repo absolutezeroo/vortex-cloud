@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Primitives.Action;
 using Vortex.Primitives.Messages.Outgoing.Room.Action;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums.Games;
+using Vortex.Primitives.Rooms.Events;
 using Vortex.Primitives.Rooms.Object;
 
 namespace Vortex.Rooms.Grains.Systems;
@@ -23,6 +25,49 @@ public sealed class RoomGameSystem(RoomGrain roomGrain)
 
     private readonly RoomGrain _roomGrain = roomGrain;
     private readonly GameTeamState _state = new();
+
+    private bool _isRunning;
+
+    /// <summary>Whether the room's wired game is currently running.</summary>
+    public bool IsRunning => _isRunning;
+
+    /// <summary>Transition the room game to running (idempotent). The first start fires the wired
+    /// GAME_STARTS trigger; a start while already running is a no-op.</summary>
+    public async Task StartGameAsync(CancellationToken ct)
+    {
+        if (_isRunning)
+        {
+            return;
+        }
+
+        _isRunning = true;
+
+        await _roomGrain.PublishRoomEventAsync(
+            new WiredGameStartedEvent
+            {
+                RoomId = _roomGrain.RoomId,
+                CausedBy = ActionContext.Wired,
+            },
+            ct
+        );
+    }
+
+    /// <summary>Transition the room game to stopped (idempotent). Ending a running game fires the
+    /// wired GAME_ENDS trigger; ending an already-stopped game is a no-op.</summary>
+    public async Task EndGameAsync(CancellationToken ct)
+    {
+        if (!_isRunning)
+        {
+            return;
+        }
+
+        _isRunning = false;
+
+        await _roomGrain.PublishRoomEventAsync(
+            new WiredGameEndedEvent { RoomId = _roomGrain.RoomId, CausedBy = ActionContext.Wired },
+            ct
+        );
+    }
 
     public GameTeamColor GetTeam(PlayerId playerId) => _state.GetTeam(playerId);
 
