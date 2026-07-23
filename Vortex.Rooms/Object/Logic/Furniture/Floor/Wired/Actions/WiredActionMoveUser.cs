@@ -104,10 +104,7 @@ public class WiredActionMoveUser(
         }
     }
 
-    private bool TryResolveAvatar(
-        int playerId,
-        [NotNullWhen(true)] out IRoomAvatar? avatar
-    )
+    private bool TryResolveAvatar(int playerId, [NotNullWhen(true)] out IRoomAvatar? avatar)
     {
         avatar = null;
 
