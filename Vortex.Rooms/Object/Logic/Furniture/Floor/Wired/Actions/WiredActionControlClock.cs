@@ -59,11 +59,11 @@ public class WiredActionControlClock(
                     counter.StartClock();
                     break;
                 case ControlStop:
-                case ControlPause:
-                    counter.HaltClock();
-                    break;
                 case ControlReset:
                     counter.ResetClock();
+                    break;
+                case ControlPause:
+                    counter.HaltClock();
                     break;
                 case ControlResume:
                     counter.ResumeClock();

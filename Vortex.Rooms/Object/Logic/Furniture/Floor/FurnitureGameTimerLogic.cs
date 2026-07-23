@@ -7,8 +7,10 @@ using Vortex.Primitives.Action;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Events;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
+using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Triggers;
 using Vortex.Rooms.Wired;
 
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor;
@@ -28,7 +30,8 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor;
 /// </summary>
 [RoomObjectLogic("game_timer")]
 public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFloorItemContext ctx)
-    : FurnitureFloorLogic(stuffDataFactory, ctx)
+    : FurnitureFloorLogic(stuffDataFactory, ctx),
+        IWiredCounter
 {
     private const int ActionStartStop = 1;
     private const int ActionIncreaseTime = 2;
@@ -86,6 +89,17 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
         if (tick.DisplayChanged)
         {
             ApplyDisplay();
+
+            // Let the wired CLOCK_REACH_TIME trigger react to the new remaining time.
+            await _ctx.PublishRoomEventAsync(
+                new GameTimerTimeReachedEvent
+                {
+                    RoomId = _ctx.RoomId,
+                    CausedBy = ActionContext.Wired,
+                    RemainingSeconds = _clock.RemainingSeconds,
+                },
+                ct
+            );
         }
 
         if (tick.ReachedZero)
@@ -100,11 +114,7 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
     {
         if (!_gameActive)
         {
-            _gameActive = true;
-            _clock.SetSeconds(_baseTime);
-            _clock.Start();
-
-            ApplyDisplay();
+            StartCountdown();
 
             await _roomGrain.GameSystem.StartGameAsync(ct);
 
@@ -119,6 +129,58 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
         {
             _clock.Resume(); // unpause
         }
+    }
+
+    private void StartCountdown()
+    {
+        _gameActive = true;
+        _clock.SetSeconds(_baseTime);
+        _clock.Start();
+
+        ApplyDisplay();
+    }
+
+    // --- IWiredCounter: the wired control_clock / adjust_clock actions drive the timer through these.
+    // GAME_STARTS / GAME_ENDS are raised by the control_clock action itself, so these only touch the
+    // clock/game state. ---
+
+    void IWiredCounter.StartClock()
+    {
+        EnsureInitialized();
+
+        if (!_gameActive)
+        {
+            StartCountdown();
+        }
+    }
+
+    void IWiredCounter.HaltClock() => _clock.Halt();
+
+    void IWiredCounter.ResumeClock() => _clock.Resume();
+
+    void IWiredCounter.ResetClock()
+    {
+        EnsureInitialized();
+
+        _gameActive = false;
+        _clock.Halt();
+        _clock.SetSeconds(_baseTime);
+
+        ApplyDisplay();
+    }
+
+    void IWiredCounter.SetClockSeconds(int seconds)
+    {
+        _clock.SetSeconds(seconds);
+
+        ApplyDisplay();
+    }
+
+    void IWiredCounter.AddClockSeconds(int seconds)
+    {
+        _clock.AddSeconds(seconds);
+
+        ApplyDisplay();
     }
 
     private async Task HandleIncreaseTimeAsync(CancellationToken ct)
