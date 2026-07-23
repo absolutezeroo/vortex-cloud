@@ -532,7 +532,21 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
 
         foreach (int stackId in dirtyStackIds)
         {
-            await ProcessWiredStackAsync(stackId, ct);
+            try
+            {
+                await ProcessWiredStackAsync(stackId, ct);
+            }
+            catch (Exception ex)
+            {
+                // One bad stack must not abort the whole rebuild pass — otherwise the remaining dirty
+                // stacks stay stale in _stacksById and keep firing removed/edited boxes.
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Failed to rebuild wired stack {StackId} in room {RoomId}.",
+                    stackId,
+                    _roomGrain.RoomId
+                );
+            }
         }
 
         _stackIdsByEventType.Clear();
@@ -579,9 +593,18 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         // scheduled actions keep firing long after the box is gone.
         PurgePendingStackExecutions(stackId);
 
+        if (stackId < 0 || stackId >= _roomGrain._state.TileFloorStacks.Length)
+        {
+            return;
+        }
+
+        // Skip ids that are no longer in ItemsById — a box can be removed from the room while its id
+        // still lingers in the tile stack; dereferencing it would throw and abort the whole rebuild
+        // pass, leaving other stacks stale (and still firing their removed actions).
         List<IRoomItem> wiredItems = _roomGrain
             ._state.TileFloorStacks[stackId]
-            .Select(x => _roomGrain._state.ItemsById[x])
+            .Where(id => _roomGrain._state.ItemsById.ContainsKey(id))
+            .Select(id => _roomGrain._state.ItemsById[id])
             .Where(x =>
                 x.Logic is FurnitureWiredLogic && x.Logic is not FurnitureWiredVariableLogic
             )
