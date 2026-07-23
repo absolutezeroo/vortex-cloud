@@ -983,10 +983,15 @@ internal static class MessageComposer
     public const int YouAreControllerMessageComposer = 934;
     public const int YouAreNotControllerMessageComposer = 456;
     public const int YouAreOwnerMessageComposer = 1986;
-    public const int AvatarEffectActivatedMessageComposer = 3814; // AS3-verified (ghost fix): onAvatarEffectActivated @ AvatarEditorMessageHandler
-    public const int AvatarEffectAddedMessageComposer = 1577; // AS3-verified (ghost fix): onAvatarEffectAdded @ AvatarEditorMessageHandler
-    public const int AvatarEffectExpiredMessageComposer = 2236; // AS3-verified (ghost fix): onAvatarEffectExpired @ AvatarEditorMessageHandler
-    public const int AvatarEffectSelectedMessageComposer = 3629; // AS3-verified (ghost fix): onAvatarEffectSelected @ AvatarEditorMessageHandler
+
+    // Last-known Sulake header set for the avatar-effect inventory acks (WIN63 2026-01-12 registry +
+    // vortex-flash-client). The exact WIN63-202607011411 values are not in the local sources; re-confirm
+    // against that SWF when the client's AvatarEditorMessageHandler acks are ported. The previous 3629 for
+    // Selected collided with the room-apply AvatarEffectMessageComposer (3629) and mis-parsed on the client.
+    public const int AvatarEffectActivatedMessageComposer = 1548;
+    public const int AvatarEffectAddedMessageComposer = 399;
+    public const int AvatarEffectExpiredMessageComposer = 3925;
+    public const int AvatarEffectSelectedMessageComposer = 1333;
     public const int AvatarEffectsMessageComposer = 2405;
     public const int TalentLevelUpMessageComposer = 1564; // AS3-verified (ghost fix): onTalentLevelUp @ TalentLevelUpController
     public const int TalentTrackLevelMessageComposer = 2210; // AS3-verified (ghost fix): onTalentTrackLevel @ TalentPromoCtrl

@@ -14,5 +14,8 @@ public class WiredTriggerLongPeriodically(
 ) : WiredTriggerPeriodically(grainFactory, stuffDataFactory, ctx)
 {
     public override int WiredCode => (int)WiredTriggerType.PERIODIC_LONG;
-    public override WiredPeriodicTriggerType PeriodicType => WiredPeriodicTriggerType.Long;
+
+    // Client TriggerPeriodicallyLong.ts: 1..120 slider in 5-second steps.
+    protected override int MsPerUnit => 5000;
+    protected override int MaxUnits => 120;
 }

@@ -36,11 +36,11 @@ public abstract class WiredContext(RoomGrain roomGrain) : IWiredContext
         return false;
     }
 
-    public async Task<bool> SetContextVariableAsync(string key, int value)
+    public Task<bool> SetContextVariableAsync(string key, int value)
     {
         Variables[key] = value;
 
-        return await Task.FromResult(true);
+        return Task.FromResult(true);
     }
 
     public Task<IWiredSelectionSet> GetWiredSelectionSetAsync(IWiredBox wired, CancellationToken ct)

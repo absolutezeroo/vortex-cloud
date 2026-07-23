@@ -11,6 +11,20 @@ public sealed class WiredOneShotSchedule(int delayMs)
     private long _fireAtMs = -1;
     private bool _fired;
 
+    /// <summary>The configured one-shot delay, used to detect a reconfigure (which re-arms the box).</summary>
+    public int DelayMs => delayMs;
+
+    /// <summary>
+    /// Re-arm the one-shot so it can fire again: the next poll restarts the delay from that moment. This
+    /// is what the Timer Reset effect (<c>wf_act_reset_timers</c>) does to an "at given time" trigger —
+    /// without it the box fires exactly once for the lifetime of the room.
+    /// </summary>
+    public void Reset()
+    {
+        _fireAtMs = -1;
+        _fired = false;
+    }
+
     /// <summary>
     /// Returns <c>true</c> exactly once — on the first poll at or after the armed fire time — and
     /// <c>false</c> every other time. The first poll only arms the timer (fire time = that poll's

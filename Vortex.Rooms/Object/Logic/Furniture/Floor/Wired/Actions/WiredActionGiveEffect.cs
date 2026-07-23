@@ -6,6 +6,7 @@ using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Messages.Outgoing.Room.Action;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object;
+using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
 using Vortex.Primitives.Rooms.Wired;
@@ -57,8 +58,16 @@ public class WiredActionGiveEffect(
         {
             if (
                 _roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId)
+                && _roomGrain._state.AvatarsByObjectId.TryGetValue(
+                    objectId,
+                    out IRoomAvatar? avatar
+                )
             )
             {
+                // Store it on the avatar (transient) so late joiners re-sync it and the "is wearing
+                // effect" condition can read it; a re-entry restores the player's inventory selection.
+                avatar.SetEffect(effectId);
+
                 await ctx.SendComposerToRoomAsync(
                     new AvatarEffectMessageComposer
                     {

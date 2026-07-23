@@ -42,6 +42,9 @@ public partial interface IRoomGrain
         AvatarExpressionType expressionType,
         CancellationToken ct
     );
+
+    /// <summary>Sets the acting player's worn avatar effect (0 = none) and broadcasts it to the room.</summary>
+    public Task<bool> SetAvatarEffectAsync(ActionContext ctx, int effectId, CancellationToken ct);
     public Task SendChatFromPlayerAsync(
         PlayerId playerId,
         string text,

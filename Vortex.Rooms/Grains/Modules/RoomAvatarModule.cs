@@ -431,6 +431,42 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
         return Task.FromResult(true);
     }
 
+    public Task<bool> SetAvatarEffectAsync(
+        RoomObjectId objectId,
+        int effectId,
+        CancellationToken ct
+    )
+    {
+        if (
+            objectId <= 0
+            || !_roomGrain._state.AvatarsByObjectId.TryGetValue(
+                objectId.Value,
+                out IRoomAvatar? avatar
+            )
+            || !avatar.SetEffect(effectId)
+        )
+        {
+            return Task.FromResult(false);
+        }
+
+        _roomGrain
+            .SendComposerToRoomAsync(
+                new AvatarEffectMessageComposer
+                {
+                    UserId = avatar.ObjectId,
+                    EffectId = effectId,
+                    DelayMilliseconds = 0,
+                }
+            )
+            .LogAndForget(
+                _roomGrain._logger,
+                "Failed to publish avatar effect for room {RoomId}",
+                _roomGrain._state.RoomId
+            );
+
+        return Task.FromResult(true);
+    }
+
     public Task<bool> SetAvatarExpressionAsync(
         RoomObjectId objectId,
         AvatarExpressionType expressionType,

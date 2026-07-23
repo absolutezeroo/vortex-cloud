@@ -35,6 +35,15 @@ public class RoomConfig
     public int WiredMaxIntParams { get; init; } = 16;
     public int WiredNeighborhoodRadius { get; init; } = 5;
 
+    /// <summary>Hard cap on the wired event queue. WiredMaxEventsPerTick bounds the tick's work;
+    /// this bounds memory under a sustained event storm — events past the cap are dropped and
+    /// reported once per tick in the room's wired log.</summary>
+    public int WiredMaxQueuedEvents { get; init; } = 512;
+
+    /// <summary>How long a wired box stays lit after firing before the wired system reverts its
+    /// visual state.</summary>
+    public int WiredFlashDurationMs { get; init; } = 500;
+
     public int MaxVisitorsLimit { get; init; } = 50;
 
     public int DoorbellTimeoutMs { get; init; } = 20000;

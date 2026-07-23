@@ -44,4 +44,34 @@ public sealed class WiredOneShotScheduleTests
         schedule.TryConsumeDue(10_000).Should().BeTrue(); // long overdue → fires
         schedule.TryConsumeDue(10_001).Should().BeFalse();
     }
+
+    [Fact]
+    public void Reset_ReArms_SoItCanFireAgain()
+    {
+        // The Timer Reset effect (wf_act_reset_timers) re-arms an "at given time" box: the delay restarts
+        // from the next poll and it fires once more. Without a reset it stays fired forever.
+        WiredOneShotSchedule schedule = new(200);
+
+        schedule.TryConsumeDue(1_000).Should().BeFalse(); // arms fire at 1_200
+        schedule.TryConsumeDue(1_200).Should().BeTrue(); // the single firing
+        schedule.TryConsumeDue(5_000).Should().BeFalse(); // still spent
+
+        schedule.Reset();
+
+        schedule.TryConsumeDue(5_000).Should().BeFalse(); // re-arms from this poll → fires at 5_200
+        schedule.TryConsumeDue(5_199).Should().BeFalse();
+        schedule.TryConsumeDue(5_200).Should().BeTrue(); // fires again after the reset
+        schedule.TryConsumeDue(9_999).Should().BeFalse(); // and is spent again
+    }
+
+    [Fact]
+    public void DelayMs_ExposesTheConfiguredDelay()
+    {
+        // The trigger compares this against the freshly-parsed config to decide whether a reload is a
+        // genuine reconfigure (re-arm) or just the pile being resolved again (must NOT re-arm, or the
+        // one-shot would fire over and over).
+        new WiredOneShotSchedule(3_500)
+            .DelayMs.Should()
+            .Be(3_500);
+    }
 }

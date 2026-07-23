@@ -19,19 +19,29 @@ public class WiredTriggerPeriodically(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,
     IRoomFloorItemContext ctx
-) : FurnitureWiredTriggerLogic(grainFactory, stuffDataFactory, ctx), IWiredTimedTrigger
+)
+    : FurnitureWiredTriggerLogic(grainFactory, stuffDataFactory, ctx),
+        IWiredTimedTrigger,
+        IWiredResettableTimer
 {
     public override int WiredCode => (int)WiredTriggerType.TRIGGER_PERIODICALLY;
     public override List<Type> SupportedEventTypes { get; } = [typeof(PeriodicRoomEvent)];
 
-    public virtual WiredPeriodicTriggerType PeriodicType => WiredPeriodicTriggerType.Short;
+    // Client slider unit and max, per box type. wf_trg_periodically (TriggerPeriodically.ts) is a
+    // 1..120 slider in half-second pulses → 500ms per unit. Overridden by the short/long variants.
+    protected virtual int MsPerUnit => 500;
+    protected virtual int MaxUnits => 120;
 
     // Ephemeral runtime cadence, (re)built from persisted config on load. Never serialized.
     private WiredPeriodicSchedule? _schedule;
 
-    public override List<IWiredParamRule> GetIntParamRules() => [new WiredRangeParamRule(1, 10, 1)];
+    public override List<IWiredParamRule> GetIntParamRules() =>
+        [new WiredRangeParamRule(1, MaxUnits, 1)];
 
     public bool TryConsumeDue(long nowMs) => _schedule?.TryConsumeDue(nowMs) ?? false;
+
+    // Server side of the Timer Reset effect: fire on the next tick and restart the interval from now.
+    public void ResetTimer(long nowMs) => _schedule?.Reset(nowMs);
 
     public override Task<bool> CanTriggerAsync(IWiredProcessingContext ctx, CancellationToken ct) =>
         Task.FromResult(ctx.Event is PeriodicRoomEvent);
@@ -42,6 +52,18 @@ public class WiredTriggerPeriodically(
 
         int delayValue = _wiredData.IntParams.Count > 0 ? _wiredData.GetIntParam<int>(0) : 1;
 
-        _schedule = new WiredPeriodicSchedule(PeriodicType) { DelayValue = delayValue };
+        // Preserve the running fire clock across reloads. LoadWiredAsync (and thus this method) runs
+        // every time the pile is resolved live — i.e. on every fire and every reindex. Recreating the
+        // schedule here would clear its last-fired marker (immediately due), so the periodic would fire
+        // on the very next tick regardless of the configured interval — the cadence would never be
+        // respected. Instead we keep the existing schedule and only refresh the configured delay.
+        if (_schedule is null)
+        {
+            _schedule = new WiredPeriodicSchedule(MsPerUnit, MaxUnits) { DelayValue = delayValue };
+        }
+        else
+        {
+            _schedule.DelayValue = delayValue;
+        }
     }
 }

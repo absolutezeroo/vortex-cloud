@@ -53,6 +53,7 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
     public DbSet<VoucherEntity> Vouchers { get; init; } = null!;
 
     public DbSet<VoucherRedemptionEntity> VoucherRedemptions { get; init; } = null!;
+
     public DbSet<FurnitureDefinitionEntity> FurnitureDefinitions { get; init; } = null!;
 
     public DbSet<FurnitureEntity> Furnitures { get; init; } = null!;
@@ -61,7 +62,10 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<PlayerBadgeEntity> PlayerBadges { get; init; } = null!;
 
+    public DbSet<PlayerEffectEntity> PlayerEffects { get; init; } = null!;
+
     public DbSet<PlayerCurrencyEntity> PlayerCurrencies { get; init; } = null!;
+
     public DbSet<PlayerEntity> Players { get; init; } = null!;
 
     public DbSet<RoomBanEntity> RoomBans { get; init; } = null!;
@@ -81,6 +85,7 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
     public DbSet<RoomRatingEntity> RoomRatings { get; init; } = null!;
 
     public DbSet<RoomChatlogEntity> Chatlogs { get; init; } = null!;
+
     public DbSet<SecurityTicketEntity> SecurityTickets { get; init; } = null!;
 
     public DbSet<PlayerAccountEntity> PlayerAccounts { get; init; } = null!;
@@ -110,6 +115,7 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
     public DbSet<NavigatorQuickLinkEntity> NavigatorQuickLinks { get; init; } = null!;
 
     public DbSet<PlayerChatStyleEntity> PlayerChatStyles { get; init; } = null!;
+
     public DbSet<PlayerChatStyleOwnedEntity> PlayerOwnedChatStyles { get; init; } = null!;
 
     public DbSet<PlayerFavoriteRoomsEntity> PlayerFavouriteRooms { get; init; } = null!;

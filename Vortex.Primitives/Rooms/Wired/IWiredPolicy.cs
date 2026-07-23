@@ -5,8 +5,8 @@ namespace Vortex.Primitives.Rooms.Wired;
 
 public interface IWiredPolicy
 {
-    public WiredConditionModeType ConditionMode { get; }
-    public WiredEffectModeType EffectMode { get; }
+    public WiredConditionModeType ConditionMode { get; set; }
+    public WiredEffectModeType EffectMode { get; set; }
     public WiredAnimationModeType AnimationMode { get; set; }
     public int AnimationTimeMs { get; set; }
     public TimeSpan Delay { get; set; }

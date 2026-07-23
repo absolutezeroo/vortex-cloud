@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Messages.Outgoing.Room.Action;
+using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
@@ -27,6 +29,24 @@ public sealed partial class RoomGrain
         try
         {
             IRoomAvatar avatar = await AvatarModule.CreateAvatarFromPlayerAsync(ctx, snapshot, ct);
+
+            // Restore the effect the player was wearing (persisted selection) so it shows on entry and to
+            // everyone already in the room. Late joiners re-sync the same field via the room-entry handler.
+            int wornEffect = await _grainFactory
+                .GetPlayerEffectGrain(snapshot.PlayerId)
+                .GetSelectedEffectAsync(ct);
+
+            if (wornEffect > 0 && avatar.SetEffect(wornEffect))
+            {
+                await SendComposerToRoomAsync(
+                    new AvatarEffectMessageComposer
+                    {
+                        UserId = avatar.ObjectId,
+                        EffectId = wornEffect,
+                        DelayMilliseconds = 0,
+                    }
+                );
+            }
 
             await PublishRoomEventAsync(
                 new PlayerEnterEvent
@@ -183,6 +203,35 @@ public sealed partial class RoomGrain
             _logger.LogError(
                 ex,
                 $"Failed to dance:{danceType} avatar for player {ctx.PlayerId} in room {_state.RoomId}"
+            );
+
+            return false;
+        }
+    }
+
+    public async Task<bool> SetAvatarEffectAsync(
+        ActionContext ctx,
+        int effectId,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            if (
+                !_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out RoomObjectId objectId)
+                || !await AvatarModule.SetAvatarEffectAsync(objectId, effectId, ct)
+            )
+            {
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                $"Failed to set effect:{effectId} avatar for player {ctx.PlayerId} in room {_state.RoomId}"
             );
 
             return false;

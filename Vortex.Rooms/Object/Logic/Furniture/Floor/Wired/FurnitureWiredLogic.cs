@@ -38,20 +38,26 @@ public abstract class FurnitureWiredLogic(
     protected IWiredData _wiredData = null!;
 
     // Wired boxes hold durable player configuration (selected items, delays, conditions,
-    // sources) and an enabled/disabled activation state. All of it must survive a room
-    // unload / reboot, so a wired furni persists exactly like any other furni (Persistent),
-    // not RoomActive. Only ephemeral runtime state — the per-tick "already triggered"
-    // counters — stays in memory; that lives in the wired execution system and is never
-    // serialized into WiredData, so it is correctly lost on unload by design.
+    // sources), which must survive a room unload / reboot, so a wired furni persists exactly
+    // like any other furni (Persistent), not RoomActive. Note this covers the WIRED config
+    // section only: the box's furni *state* is purely the activation blink and is deliberately
+    // never persisted — see SetFlashStateAsync. Ephemeral runtime state (schedules, per-tick
+    // "already triggered" counters) lives in the wired execution system, is never serialized
+    // into WiredData, and is correctly lost on unload by design.
     protected override StuffPersistanceType _stuffPersistanceType =>
         StuffPersistanceType.Persistent;
 
     public abstract WiredType WiredType { get; }
     public abstract int WiredCode { get; }
 
-    /// <summary>The room object id of this wired box, used by the wired system to detect when a box has
-    /// been removed from the room (so its stale stack/schedule can be dropped).</summary>
+    /// <summary>The room object id of this wired box, used by the wired system to skip a box that has been
+    /// removed from the room (a stale trigger-registry entry) and reindex.</summary>
     public RoomObjectId ObjectId => _ctx.ObjectId;
+
+    /// <summary>The tile this wired box currently sits on. The wired system resolves a trigger's pile live
+    /// from this tile at fire time, so a box dragged to another tile drives that new tile's pile (and an
+    /// empty tile fires nothing) — the "same pile" rule holds without any cached stack.</summary>
+    public int TileIdx => _ctx.GetTileIdx();
 
     public async Task LoadWiredAsync(CancellationToken ct)
     {
@@ -60,7 +66,26 @@ public abstract class FurnitureWiredLogic(
 
     public Task FlashActivationStateAsync(CancellationToken ct)
     {
-        return SetStateAsync(GetState() == 1 ? 0 : 1);
+        // A real flash: light the box now, and let the wired system revert it to unlit after
+        // WiredFlashDurationMs. A plain toggle would leave the box lit every other fire.
+        _roomGrain.WiredSystem.ScheduleFlashRevert(_ctx.ObjectId);
+
+        return SetFlashStateAsync(1);
+    }
+
+    /// <summary>
+    /// Sets the box's lit/unlit visual and broadcasts it, without persisting. The activation blink is
+    /// the only thing a wired box's furni state is used for, and it is pure ephemeral runtime state:
+    /// routing it through <see cref="FurnitureLogic.SetStateAsync"/> would rewrite the furni's
+    /// <c>extra_data</c> on every fire *and* every revert — a periodic at 0.5s means several furni
+    /// writes per second, forever — and would leave a box stuck lit if the room unloaded mid-flash,
+    /// since the pending revert does not survive the unload.
+    /// </summary>
+    public Task SetFlashStateAsync(int state)
+    {
+        StuffData.SetState(state.ToString());
+
+        return _ctx.RefreshStuffDataAsync();
     }
 
     public virtual List<int> GetStuffIds()
@@ -324,7 +349,7 @@ public abstract class FurnitureWiredLogic(
                 {
                     if (
                         update.DefinitionSpecifics[index] is not null
-                        && specType.IsAssignableFrom(update.DefinitionSpecifics[index].GetType())
+                        && specType.IsInstanceOfType(update.DefinitionSpecifics[index])
                     )
                     {
                         specific = update.DefinitionSpecifics[index];
@@ -359,7 +384,7 @@ public abstract class FurnitureWiredLogic(
                 {
                     if (
                         update.TypeSpecifics[index] is not null
-                        && specType.IsAssignableFrom(update.TypeSpecifics[index].GetType())
+                        && specType.IsInstanceOfType(update.TypeSpecifics[index])
                     )
                     {
                         specific = update.TypeSpecifics[index];
@@ -396,6 +421,10 @@ public abstract class FurnitureWiredLogic(
 
             _wiredData.MarkDirty();
 
+            // The cached snapshot no longer reflects the config; without this a player reopening
+            // the box before the next pile resolution would see the pre-update values.
+            _snapshot = null;
+
             await OnWiredStackChangedAsync(ctx, [_ctx.GetTileIdx()], ct);
 
             return true;
@@ -426,75 +455,52 @@ public abstract class FurnitureWiredLogic(
         return true;
     }
 
-    public List<object> GetDefinitionSpecifics()
+    public List<object> GetDefinitionSpecifics() =>
+        MaterializeSpecifics(
+            _wiredData.DefinitionSpecifics,
+            GetDefinitionSpecificTypes(),
+            nameof(WiredData.DefinitionSpecifics)
+        );
+
+    public List<object> GetTypeSpecifics() =>
+        MaterializeSpecifics(
+            _wiredData.TypeSpecifics,
+            GetTypeSpecificTypes(),
+            nameof(WiredData.TypeSpecifics)
+        );
+
+    // Persisted slots survive the extra_data JSON round-trip as JsonElement, not as their declared
+    // CLR types — the codec converts them back. A slot that cannot be materialized (truly malformed
+    // data) falls back to a fresh default, loudly.
+    private List<object> MaterializeSpecifics(
+        List<object> stored,
+        List<Type> slotTypes,
+        string slotKind
+    )
     {
         List<object> specifics = new();
         int index = 0;
 
-        foreach (Type specType in GetDefinitionSpecificTypes())
+        foreach (Type specType in slotTypes)
         {
-            object specific = null!;
+            object? specific = null;
 
-            try
+            if (index < stored.Count && stored[index] is not null)
             {
-                if (
-                    index < _wiredData.DefinitionSpecifics.Count
-                    && _wiredData.DefinitionSpecifics[index] is not null
-                    && specType.IsAssignableFrom(_wiredData.DefinitionSpecifics[index].GetType())
-                )
+                if (WiredSpecificsCodec.TryMaterialize(stored[index], specType, out object? value))
                 {
-                    specific = _wiredData.DefinitionSpecifics[index];
+                    specific = value;
                 }
-            }
-            catch (Exception ex)
-            {
-                _roomGrain._logger.LogWarning(
-                    ex,
-                    "Malformed persisted DefinitionSpecifics[{Index}] ({Type}) for wired item {ItemId}; falling back to a fresh instance.",
-                    index,
-                    specType,
-                    _ctx.ObjectId
-                );
-            }
-
-            specific ??= Activator.CreateInstance(specType)!;
-
-            specifics.Add(specific);
-            index++;
-        }
-
-        return specifics;
-    }
-
-    public List<object> GetTypeSpecifics()
-    {
-        List<object> specifics = new();
-        int index = 0;
-
-        foreach (Type specType in GetTypeSpecificTypes())
-        {
-            object specific = null!;
-
-            try
-            {
-                if (
-                    index < _wiredData.TypeSpecifics.Count
-                    && _wiredData.TypeSpecifics[index] is not null
-                    && specType.IsAssignableFrom(_wiredData.TypeSpecifics[index].GetType())
-                )
+                else
                 {
-                    specific = _wiredData.TypeSpecifics[index];
+                    _roomGrain._logger.LogWarning(
+                        "Malformed persisted {SlotKind}[{Index}] ({Type}) for wired item {ItemId}; falling back to a fresh instance.",
+                        slotKind,
+                        index,
+                        specType,
+                        _ctx.ObjectId
+                    );
                 }
-            }
-            catch (Exception ex)
-            {
-                _roomGrain._logger.LogWarning(
-                    ex,
-                    "Malformed persisted TypeSpecifics[{Index}] ({Type}) for wired item {ItemId}; falling back to a fresh instance.",
-                    index,
-                    specType,
-                    _ctx.ObjectId
-                );
             }
 
             specific ??= Activator.CreateInstance(specType)!;
@@ -671,24 +677,45 @@ public abstract class FurnitureWiredLogic(
     {
         _snapshot = null;
 
-        if (_wiredData is null)
+        // Hydrate-once: LoadWiredAsync runs on every live pile resolution (every fire), so this
+        // method must stay cheap after the first call. The eager normalization below is only needed
+        // when the config first comes out of JSON — afterwards ApplyWiredUpdateAsync validates
+        // everything it writes, and stuff/variable ids self-heal on read (GetStuffIds /
+        // GetValidVariableIds prune stale entries lazily). Leaf overrides still run on every call to
+        // refresh their cached params, which is intentional and cheap.
+        if (_wiredData is not null)
         {
-            if (
-                _ctx.RoomObject.ExtraData.TryGetSection(
-                    ExtraDataSectionType.WIRED,
-                    out JsonElement wiredDataElement
-                )
-            )
-            {
-                _wiredData = wiredDataElement.Deserialize<WiredData>() ?? new WiredData();
-            }
-            else
-            {
-                _wiredData = new WiredData();
-            }
-
-            _wiredData.AttatchRules(GetIntParamRules());
+            return Task.CompletedTask;
         }
+
+        if (
+            _ctx.RoomObject.ExtraData.TryGetSection(
+                ExtraDataSectionType.WIRED,
+                out JsonElement wiredDataElement
+            )
+        )
+        {
+            _wiredData = wiredDataElement.Deserialize<WiredData>() ?? new WiredData();
+        }
+        else
+        {
+            _wiredData = new WiredData();
+        }
+
+        _wiredData.AttatchRules(GetIntParamRules());
+
+        // Register persistence before the normalization below, so any repair it makes (pruned stale
+        // ids, resized slots, rematerialized specifics) is written back instead of re-derived on
+        // every future hydration.
+        _wiredData.SetAction(() =>
+        {
+            _ctx.RoomObject.ExtraData.UpdateSection(
+                ExtraDataSectionType.WIRED,
+                JsonSerializer.SerializeToNode(_wiredData, _wiredData.GetType())
+            );
+
+            return Task.CompletedTask;
+        });
 
         if (TryNormalizeIntParams(_wiredData.IntParams, out List<int> normalizedIntParams))
         {
@@ -738,16 +765,6 @@ public abstract class FurnitureWiredLogic(
         // GetTypeSpecifics preserve any valid persisted values and fill defaults for the rest.
         _wiredData.DefinitionSpecifics = GetDefinitionSpecifics();
         _wiredData.TypeSpecifics = GetTypeSpecifics();
-
-        _wiredData.SetAction(() =>
-        {
-            _ctx.RoomObject.ExtraData.UpdateSection(
-                ExtraDataSectionType.WIRED,
-                JsonSerializer.SerializeToNode(_wiredData, _wiredData.GetType())
-            );
-
-            return Task.CompletedTask;
-        });
 
         return Task.CompletedTask;
     }
