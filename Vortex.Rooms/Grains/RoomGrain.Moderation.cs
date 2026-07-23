@@ -10,37 +10,51 @@ namespace Vortex.Rooms.Grains;
 
 public sealed partial class RoomGrain
 {
-    public async Task<bool> KickUserAsync(
+    public Task<bool> KickUserAsync(
         ActionContext actorCtx,
+        PlayerId targetPlayerId,
+        CancellationToken ct
+    )
+    {
+        if (
+            actorCtx.PlayerId <= 0
+            || actorCtx.RoomId != _state.RoomId
+            || actorCtx.PlayerId == targetPlayerId
+        )
+        {
+            return Task.FromResult(false);
+        }
+
+        return KickUserInternalAsync(actorCtx, targetPlayerId, ct);
+    }
+
+    /// <summary>Kicks a user without a human actor — for wired / system-driven kicks (the
+    /// <c>wf_act_kick_user</c> action). Called directly on the grain from inside its own turn, so it is
+    /// not a re-entrant grain-reference call.</summary>
+    public Task<bool> KickUserFromWiredAsync(PlayerId targetPlayerId, CancellationToken ct) =>
+        KickUserInternalAsync(ActionContext.CreateForWired(_state.RoomId), targetPlayerId, ct);
+
+    private async Task<bool> KickUserInternalAsync(
+        ActionContext ctx,
         PlayerId targetPlayerId,
         CancellationToken ct
     )
     {
         try
         {
-            if (actorCtx.PlayerId <= 0 || targetPlayerId <= 0 || actorCtx.RoomId != _state.RoomId)
-            {
-                return false;
-            }
-
-            if (actorCtx.PlayerId == targetPlayerId)
-            {
-                return false;
-            }
-
-            if (!_state.AvatarsByPlayerId.ContainsKey(targetPlayerId))
+            if (targetPlayerId <= 0 || !_state.AvatarsByPlayerId.ContainsKey(targetPlayerId))
             {
                 return false;
             }
 
             await AvatarModule
-                .RemoveAvatarFromPlayerAsync(actorCtx, targetPlayerId, ct)
+                .RemoveAvatarFromPlayerAsync(ctx, targetPlayerId, ct)
                 .ConfigureAwait(true);
 
             await _events
                 .PublishAsync(
                     new PlayerKickedFromRoomEvent(
-                        actorCtx.PlayerId,
+                        ctx.PlayerId,
                         targetPlayerId,
                         _state.RoomId.Value
                     ),
