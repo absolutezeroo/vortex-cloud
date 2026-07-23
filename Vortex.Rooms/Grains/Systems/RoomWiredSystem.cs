@@ -117,6 +117,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         }
 
         await ProcessTimedTriggersAsync(now, ct);
+        await ProcessCountersAsync(now, ct);
 
         int budget = _roomGrain._roomConfig.WiredMaxEventsPerTick;
 
@@ -141,6 +142,33 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
                     continue;
                 }
 
+                await FireTriggerWithEventAsync(
+                    trigger,
+                    new PeriodicRoomEvent
+                    {
+                        RoomId = _roomGrain.RoomId,
+                        CausedBy = ActionContext.CreateForWired(_roomGrain.RoomId),
+                    },
+                    stack,
+                    now,
+                    ct
+                );
+            }
+        }
+    }
+
+    private async Task ProcessCountersAsync(long now, CancellationToken ct)
+    {
+        foreach (IWiredStack stack in _stacksById.Values)
+        {
+            foreach (IWiredTrigger trigger in stack.Triggers)
+            {
+                if (trigger is not IWiredCounter counter || !counter.AdvanceClock(now))
+                {
+                    continue;
+                }
+
+                // The countdown just hit zero — fire the counter's CLOCK_REACH_TIME wired.
                 await FireTriggerWithEventAsync(
                     trigger,
                     new PeriodicRoomEvent
