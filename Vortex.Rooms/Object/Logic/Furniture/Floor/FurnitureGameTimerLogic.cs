@@ -50,6 +50,10 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
     private bool _gameActive; // Arcturus isRunning: a game has been started (it may be paused)
     private bool _initialized;
 
+    /// <summary>The timer's current displayed value in whole seconds — read by the wired
+    /// CLOCK_TIME_MATCHES condition.</summary>
+    public int RemainingSeconds => _clock.RemainingSeconds;
+
     /// <summary>Only room controllers/owners may operate the timer (Arcturus room.hasRights).</summary>
     public override FurnitureUsageType GetUsagePolicy() => FurnitureUsageType.Controller;
 
