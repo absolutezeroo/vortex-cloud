@@ -131,17 +131,26 @@ public sealed partial class RoomGrain
         CancellationToken ct
     ) => FurniModule.GetAllFloorItemSnapshotsAsync(ct);
 
-    public Task<WiredDataSnapshot?> GetWiredDataSnapshotByFloorItemIdAsync(
+    public async Task<WiredDataSnapshot?> GetWiredDataSnapshotByFloorItemIdAsync(
         RoomObjectId itemId,
         CancellationToken ct
-    ) =>
-        Task.FromResult(
-            _state.ItemsById.TryGetValue(itemId, out IRoomItem? item)
-                ? item.Logic is FurnitureWiredLogic wiredLogic
-                    ? wiredLogic.GetSnapshot()
-                    : null
-                : null
-        );
+    )
+    {
+        if (
+            !_state.ItemsById.TryGetValue(itemId, out IRoomItem? item)
+            || item.Logic is not FurnitureWiredLogic wiredLogic
+        )
+        {
+            return null;
+        }
+
+        // Make sure the box's persisted config is deserialized before we snapshot it — opening the
+        // wired editor can happen before the wired tick has ever processed this furni's stack, and
+        // BuildSnapshot dereferences the (otherwise null) wired data.
+        await wiredLogic.LoadWiredAsync(ct);
+
+        return wiredLogic.GetSnapshot();
+    }
 
     public Task<WiredVariablesSnapshot> GetWiredVariablesSnapshotAsync(CancellationToken ct) =>
         WiredSystem.GetWiredVariablesSnapshotAsync(ct);
