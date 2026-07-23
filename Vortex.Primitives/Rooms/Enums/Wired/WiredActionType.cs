@@ -44,4 +44,5 @@ public enum WiredActionType
     CHANGE_VARIABLE = 41,
     MOVE_USER = 42,
     MOVE_USER_TO_FURNI = 43,
+    GIVE_EFFECT = 52,
 }
