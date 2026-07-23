@@ -14,6 +14,7 @@ using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Events;
+using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Snapshots.Wired;
@@ -47,6 +48,10 @@ public abstract class FurnitureWiredLogic(
 
     public abstract WiredType WiredType { get; }
     public abstract int WiredCode { get; }
+
+    /// <summary>The room object id of this wired box, used by the wired system to detect when a box has
+    /// been removed from the room (so its stale stack/schedule can be dropped).</summary>
+    public RoomObjectId ObjectId => _ctx.ObjectId;
 
     public async Task LoadWiredAsync(CancellationToken ct)
     {

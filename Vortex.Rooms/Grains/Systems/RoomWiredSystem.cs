@@ -136,7 +136,23 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         {
             foreach (IWiredTrigger trigger in stack.Triggers)
             {
-                if (trigger is not IWiredTimedTrigger timed || !timed.TryConsumeDue(now))
+                if (trigger is not IWiredTimedTrigger timed)
+                {
+                    continue;
+                }
+
+                // If the box has been removed from the room, stop firing it and rebuild the stack so
+                // its stale entry is dropped — a periodic box must never keep firing after pickup.
+                if (
+                    trigger is FurnitureWiredLogic box
+                    && !_roomGrain._state.ItemsById.ContainsKey(box.ObjectId)
+                )
+                {
+                    _dirtyStackIds.Add(stack.StackId);
+                    continue;
+                }
+
+                if (!timed.TryConsumeDue(now))
                 {
                     continue;
                 }
@@ -539,9 +555,29 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         }
     }
 
+    private void PurgePendingStackExecutions(int stackId)
+    {
+        List<WiredExecutionKey> staleKeys = _pendingStackExecutions
+            .Keys.Where(key => key.StackId == stackId)
+            .ToList();
+
+        foreach (WiredExecutionKey key in staleKeys)
+        {
+            _pendingStackExecutions.Remove(key);
+        }
+
+        // The matching _stackSchedule entries are left as orphans — RunDueScheduledStackExecutionsAsync
+        // skips any whose pending execution is gone.
+    }
+
     private async Task ProcessWiredStackAsync(int stackId, CancellationToken ct)
     {
         _stacksById.Remove(stackId);
+
+        // Drop any pending/scheduled executions for this stack. Rebuilding it (a box was added,
+        // removed or reconfigured) invalidates them — otherwise a removed periodic box's already
+        // scheduled actions keep firing long after the box is gone.
+        PurgePendingStackExecutions(stackId);
 
         List<IRoomItem> wiredItems = _roomGrain
             ._state.TileFloorStacks[stackId]
