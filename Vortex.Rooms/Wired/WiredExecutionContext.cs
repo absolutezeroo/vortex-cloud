@@ -193,6 +193,15 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
 
             if (_roomGrain.MapModule.RollAvatar(avatar, tileIdx, targetZ))
             {
+                // Face the direction moved (unless it was an in-place move).
+                Rotation facing =
+                    sourceX != avatar.X || sourceY != avatar.Y
+                        ? RotationExtensions.FromPoints(sourceX, sourceY, avatar.X, avatar.Y)
+                        : avatar.Rotation;
+
+                avatar.SetBodyRotation(facing);
+                avatar.SetHeadRotation(facing);
+
                 UserMoves.Add(
                     new()
                     {
@@ -206,8 +215,8 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
                         MoveType = moveType,
                         AnimationTime =
                             moveType == SlideAvatarMoveType.Slide ? Policy.AnimationTimeMs : 0,
-                        BodyDirection = avatar.Rotation,
-                        HeadDirection = avatar.HeadRotation,
+                        BodyDirection = facing,
+                        HeadDirection = facing,
                     }
                 );
             }
@@ -221,6 +230,32 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
                 tileIdx
             );
         }
+
+        return Task.CompletedTask;
+    }
+
+    public Task ProcessUserDirectionAsync(
+        IRoomAvatar avatar,
+        Rotation bodyRotation,
+        Rotation headRotation
+    )
+    {
+        if (avatar is null)
+        {
+            return Task.CompletedTask;
+        }
+
+        avatar.SetBodyRotation(bodyRotation);
+        avatar.SetHeadRotation(headRotation);
+
+        UserDirections.Add(
+            new()
+            {
+                ObjectId = avatar.ObjectId,
+                BodyRotation = avatar.Rotation,
+                HeadRotation = avatar.HeadRotation,
+            }
+        );
 
         return Task.CompletedTask;
     }

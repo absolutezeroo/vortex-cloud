@@ -42,6 +42,11 @@ public interface IWiredExecutionContext : IWiredContext
         int tileIdx,
         SlideAvatarMoveType moveType
     );
+    public Task ProcessUserDirectionAsync(
+        IRoomAvatar avatar,
+        Rotation bodyRotation,
+        Rotation headRotation
+    );
     public ActionContext AsActionContext();
     public Task SendComposerToRoomAsync(IComposer composer);
 }
