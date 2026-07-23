@@ -39,7 +39,7 @@ public class WiredActionGiveScoreToTeam(
             ),
         ];
 
-    public override Task<bool> ExecuteAsync(IWiredExecutionContext ctx, CancellationToken ct)
+    public override async Task<bool> ExecuteAsync(IWiredExecutionContext ctx, CancellationToken ct)
     {
         int points = _wiredData.IntParams.Count > 0 ? _wiredData.GetIntParam<int>(0) : 0;
         int cap = _wiredData.IntParams.Count > 1 ? _wiredData.GetIntParam<int>(1) : 0;
@@ -50,9 +50,15 @@ public class WiredActionGiveScoreToTeam(
 
         if (points != 0 && team != GameTeamColor.None)
         {
-            _roomGrain.GameSystem.TryGiveScoreToTeam(_ctx.ObjectId, team, points, cap);
+            await _roomGrain.GameSystem.TryGiveScoreToTeamAsync(
+                _ctx.ObjectId,
+                team,
+                points,
+                cap,
+                ct
+            );
         }
 
-        return Task.FromResult(true);
+        return true;
     }
 }

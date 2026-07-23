@@ -88,15 +88,63 @@ public sealed class RoomGameSystem(RoomGrain roomGrain)
     public Task LeaveTeamAsync(PlayerId playerId, CancellationToken ct) =>
         _state.LeaveTeam(playerId) ? BroadcastEffectAsync(playerId, NoEffect) : Task.CompletedTask;
 
-    public bool TryGiveScoreToPlayerTeam(
+    public async Task<bool> TryGiveScoreToPlayerTeamAsync(
         RoomObjectId box,
         PlayerId playerId,
         int amount,
-        int cap
-    ) => _state.TryGiveScoreToPlayerTeam(box, playerId, amount, cap);
+        int cap,
+        CancellationToken ct
+    )
+    {
+        GameTeamColor team = _state.GetTeam(playerId);
+        int previousScore = _state.GetTeamScore(team);
 
-    public bool TryGiveScoreToTeam(RoomObjectId box, GameTeamColor team, int amount, int cap) =>
-        _state.TryGiveScoreToTeam(box, team, amount, cap);
+        if (!_state.TryGiveScoreToPlayerTeam(box, playerId, amount, cap))
+        {
+            return false;
+        }
+
+        await PublishScoreChangedAsync(team, previousScore, ct);
+
+        return true;
+    }
+
+    public async Task<bool> TryGiveScoreToTeamAsync(
+        RoomObjectId box,
+        GameTeamColor team,
+        int amount,
+        int cap,
+        CancellationToken ct
+    )
+    {
+        int previousScore = _state.GetTeamScore(team);
+
+        if (!_state.TryGiveScoreToTeam(box, team, amount, cap))
+        {
+            return false;
+        }
+
+        await PublishScoreChangedAsync(team, previousScore, ct);
+
+        return true;
+    }
+
+    private Task PublishScoreChangedAsync(
+        GameTeamColor team,
+        int previousScore,
+        CancellationToken ct
+    ) =>
+        _roomGrain.PublishRoomEventAsync(
+            new WiredTeamScoreChangedEvent
+            {
+                RoomId = _roomGrain.RoomId,
+                CausedBy = ActionContext.Wired,
+                Team = team,
+                Score = _state.GetTeamScore(team),
+                PreviousScore = previousScore,
+            },
+            ct
+        );
 
     /// <summary>Clears membership when a player leaves the room, so team state never outlives a player's
     /// presence. No effect broadcast — the avatar is already gone.</summary>

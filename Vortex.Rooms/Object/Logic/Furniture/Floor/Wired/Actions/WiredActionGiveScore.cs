@@ -56,11 +56,12 @@ public class WiredActionGiveScore(
         {
             try
             {
-                _roomGrain.GameSystem.TryGiveScoreToPlayerTeam(
+                await _roomGrain.GameSystem.TryGiveScoreToPlayerTeamAsync(
                     _ctx.ObjectId,
                     playerId,
                     points,
-                    cap
+                    cap,
+                    ct
                 );
             }
             catch
