@@ -1090,7 +1090,7 @@ internal static class MessageComposer
     public const int PostItPlacedComposer = 2145; // AS3-verified: onPostItPlaced
 
     public const int OpenComposer = 2635; // AS3-verified (ghost fix): onOpen
-    public const int WiredFurniActionComposer = 655;
+    public const int WiredFurniActionComposer = 2552;
     public const int WiredFurniAddonComposer = 2574; // AS3-verified (old-revision trace): _SafeCls_3380 -> onAddon() still exists in current revision at 2574
     public const int WiredFurniConditionComposer = 2250; // AS3-verified (old-revision trace): _SafeCls_3766 -> onCondition() still exists in current revision at 2250
     public const int WiredFurniSelectorComposer = 722; // AS3-verified (direct read, both revisions): roomevents handler::onSelector() -> _SafeCls_2636 @722 (old _SafeCls_3032@108; sibling of WiredFurniTrigger/Condition/Addon/Variable)
