@@ -7,6 +7,7 @@ using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Primitives.Rooms.Events;
 using Vortex.Primitives.Rooms.Object;
+using Vortex.Primitives.Rooms.Object.Avatars;
 
 namespace Vortex.Rooms.Grains.Systems;
 
@@ -165,6 +166,12 @@ public sealed class RoomGameSystem(RoomGrain roomGrain)
         if (!_roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId))
         {
             return Task.CompletedTask;
+        }
+
+        // Persist the aura on the avatar so a player entering mid-game re-syncs existing team auras.
+        if (_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar))
+        {
+            avatar.SetEffect(effectId);
         }
 
         return _roomGrain.SendComposerToRoomAsync(

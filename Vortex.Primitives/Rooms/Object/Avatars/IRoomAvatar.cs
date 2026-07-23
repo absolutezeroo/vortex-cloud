@@ -38,7 +38,13 @@ public interface IRoomAvatar : IRoomObject
 
     public int LastChatStyleId { get; set; }
 
+    /// <summary>The avatar's currently worn effect id (0 = none). Sourced from the effect inventory (worn
+    /// selection), wired give-effect, or a game team aura; broadcast via <c>AvatarEffectMessageComposer</c>
+    /// and re-synced to late joiners at room entry.</summary>
+    public int CurrentEffectId { get; }
+
     public bool SetGoalTileId(int tileId);
+    public bool SetEffect(int effectId);
     public void SetHeight(Altitude z);
     public void SetBodyRotation(Rotation rot);
     public void SetHeadRotation(Rotation rot);

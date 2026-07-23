@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Authentication;
+using Vortex.Primitives.Inventory.Snapshots;
 using Vortex.Primitives.Messages.Incoming.Handshake;
 using Vortex.Primitives.Messages.Outgoing.Availability;
 using Vortex.Primitives.Messages.Outgoing.Callforhelp;
@@ -130,7 +131,11 @@ public class SSOTicketMessageHandler(
                     ct
                 )
                 .ConfigureAwait(false);
-            await ctx.SendComposerAsync(new AvatarEffectsMessageComposer { Effects = [] }, ct)
+            ImmutableArray<AvatarEffectSnapshot> effects = await _grainFactory
+                .GetPlayerEffectGrain(playerId)
+                .GetEffectsAsync(ct)
+                .ConfigureAwait(false);
+            await ctx.SendComposerAsync(new AvatarEffectsMessageComposer { Effects = effects }, ct)
                 .ConfigureAwait(false);
             int homeRoomId = await _grainFactory
                 .GetPlayerNavigatorGrain(playerId)

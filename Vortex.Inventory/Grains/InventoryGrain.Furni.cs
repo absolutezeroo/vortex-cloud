@@ -97,6 +97,7 @@ public sealed partial class InventoryGrain
         List<FurnitureEntity> furniEntities = new();
         List<string> badgeCodes = new();
         List<PetCreateRequest> petRequests = new();
+        List<(int EffectId, int SubType, int Duration)> effectGrants = new();
 
         foreach (CatalogProductSnapshot product in offer.Products)
         {
@@ -132,6 +133,30 @@ public sealed partial class InventoryGrain
             )
             {
                 badgeCodes.Add(product.ExtraParam);
+                continue;
+            }
+
+            if (
+                product.ProductType is ProductType.Effect
+                && !string.IsNullOrWhiteSpace(product.ExtraParam)
+            )
+            {
+                // ExtraParam encodes the effect: "effectId", "effectId:durationSeconds", or
+                // "effectId:durationSeconds:subType" (duration 0/absent = permanent). One grant per copy.
+                string[] fx = product.ExtraParam.Split(':');
+
+                if (int.TryParse(fx[0], out int effectId) && effectId > 0)
+                {
+                    int duration = fx.Length > 1 && int.TryParse(fx[1], out int d) ? d : 0;
+                    int subType = fx.Length > 2 && int.TryParse(fx[2], out int s) ? s : 0;
+                    int copies = quantity * Math.Max(1, product.Quantity);
+
+                    for (int i = 0; i < copies; i++)
+                    {
+                        effectGrants.Add((effectId, subType, duration));
+                    }
+                }
+
                 continue;
             }
 
@@ -266,6 +291,20 @@ public sealed partial class InventoryGrain
                 PetSnapshot pet = await CreatePetAsync(req, ct).ConfigureAwait(true);
 
                 await petPresence.OnPetAddedToInventoryAsync(pet, ct).ConfigureAwait(true);
+            }
+        }
+
+        if (effectGrants.Count > 0)
+        {
+            // The effect grain owns the player_effects table and pushes AvatarEffectAdded itself. A throw
+            // here propagates to the wallet's ExecutePurchaseAsync so the purchase auto-refunds.
+            IPlayerEffectGrain effects = _grainFactory.GetPlayerEffectGrain(
+                this.GetPrimaryKeyLong()
+            );
+
+            foreach ((int effectId, int subType, int duration) in effectGrants)
+            {
+                await effects.AddEffectAsync(effectId, subType, duration, ct).ConfigureAwait(true);
             }
         }
     }

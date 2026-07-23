@@ -87,6 +87,7 @@ public sealed class RoomPlayerAvatar
             SwimFigure = SwimFigure,
             ActivityPoints = ActivityPoints,
             IsModerator = IsModerator,
+            CurrentEffectId = CurrentEffectId,
         };
     }
 }

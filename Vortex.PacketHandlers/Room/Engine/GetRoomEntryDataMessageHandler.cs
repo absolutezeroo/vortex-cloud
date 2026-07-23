@@ -79,6 +79,22 @@ public class GetRoomEntryDataMessageHandler(IGrainFactory grainFactory)
             )
             .ToArray();
 
+        // Re-sync worn avatar effects the same way as dances: the effect is not in the Users wire payload,
+        // so replay one AvatarEffectMessageComposer per occupant currently wearing an effect.
+        IComposer[] effectComposers = avatarSnapshots
+            .OfType<RoomPlayerAvatarSnapshot>()
+            .Where(x => x.CurrentEffectId != 0)
+            .Select(x =>
+                (IComposer)
+                    new AvatarEffectMessageComposer
+                    {
+                        UserId = x.ObjectId,
+                        EffectId = x.CurrentEffectId,
+                        DelayMilliseconds = 0,
+                    }
+            )
+            .ToArray();
+
         await playerPresence
             .SendComposerAsync(
                 new ObjectsMessageComposer
@@ -112,6 +128,11 @@ public class GetRoomEntryDataMessageHandler(IGrainFactory grainFactory)
         if (danceComposers.Length > 0)
         {
             await playerPresence.SendComposerAsync(danceComposers).ConfigureAwait(false);
+        }
+
+        if (effectComposers.Length > 0)
+        {
+            await playerPresence.SendComposerAsync(effectComposers).ConfigureAwait(false);
         }
 
         await playerPresence.SetActiveRoomAsync(roomId, ct).ConfigureAwait(false);

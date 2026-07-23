@@ -40,6 +40,8 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
 
     public int LastChatStyleId { get; set; } = 0;
 
+    public int CurrentEffectId { get; private set; } = 0;
+
     private int _goalTries = 0;
 
     protected RoomAvatarSnapshot? _snapshot;
@@ -197,6 +199,21 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
         {
             MarkDirty();
         }
+    }
+
+    public bool SetEffect(int effectId)
+    {
+        effectId = effectId < 0 ? 0 : effectId;
+
+        if (CurrentEffectId == effectId)
+        {
+            return false;
+        }
+
+        CurrentEffectId = effectId;
+        _snapshot = null;
+
+        return true;
     }
 
     public RoomAvatarSnapshot GetSnapshot()

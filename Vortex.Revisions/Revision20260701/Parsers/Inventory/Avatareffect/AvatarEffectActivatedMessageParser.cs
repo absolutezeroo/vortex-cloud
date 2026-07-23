@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Inventory.Avatareffect;
 
 internal class AvatarEffectActivatedMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new AvatarEffectActivatedMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new AvatarEffectActivatedMessage { EffectType = packet.PopInt() };
 }

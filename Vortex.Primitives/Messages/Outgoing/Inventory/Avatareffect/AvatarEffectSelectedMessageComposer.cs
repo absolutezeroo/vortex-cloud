@@ -6,5 +6,6 @@ namespace Vortex.Primitives.Messages.Outgoing.Inventory.Avatareffect;
 [GenerateSerializer, Immutable]
 public sealed record AvatarEffectSelectedMessageComposer : IComposer
 {
-    // TODO: add properties if/when identified
+    [Id(0)]
+    public required int Type { get; init; }
 }
