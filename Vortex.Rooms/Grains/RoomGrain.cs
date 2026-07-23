@@ -60,6 +60,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     public readonly RoomAvatarTickSystem AvatarTickSystem;
     public readonly RoomChatSystem ChatSystem;
     public readonly RoomGameSystem GameSystem;
+    public readonly RoomGameTimerSystem GameTimerSystem;
 
     public readonly RoomEventModule EventModule;
     public readonly RoomFurniModule FurniModule;
@@ -124,6 +125,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         WiredSystem = new RoomWiredSystem(this);
         ChatSystem = new RoomChatSystem(this);
         GameSystem = new RoomGameSystem(this);
+        GameTimerSystem = new RoomGameTimerSystem(this);
 
         EventModule.Register(RollerSystem);
         EventModule.Register(WiredSystem);
@@ -233,6 +235,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                 await PetSystem.ProcessPetsAsync(now, ct);
                 await WiredSystem.ProcessWiredAsync(now, ct);
                 await RollerSystem.ProcessRollersAsync(now, ct);
+                await GameTimerSystem.ProcessAsync(now, ct);
                 await ProcessDoorbellTimeoutsAsync(now, ct);
                 await FlushDirtyTilesAsync(ct);
                 await FlushDirtyItemsAsync(ct);
