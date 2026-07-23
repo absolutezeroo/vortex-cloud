@@ -49,9 +49,14 @@ public abstract class FurnitureWiredLogic(
     public abstract WiredType WiredType { get; }
     public abstract int WiredCode { get; }
 
-    /// <summary>The room object id of this wired box, used by the wired system to detect when a box has
-    /// been removed from the room (so its stale stack/schedule can be dropped).</summary>
+    /// <summary>The room object id of this wired box, used by the wired system to skip a box that has been
+    /// removed from the room (a stale trigger-registry entry) and reindex.</summary>
     public RoomObjectId ObjectId => _ctx.ObjectId;
+
+    /// <summary>The tile this wired box currently sits on. The wired system resolves a trigger's pile live
+    /// from this tile at fire time, so a box dragged to another tile drives that new tile's pile (and an
+    /// empty tile fires nothing) — the "same pile" rule holds without any cached stack.</summary>
+    public int TileIdx => _ctx.GetTileIdx();
 
     public async Task LoadWiredAsync(CancellationToken ct)
     {
@@ -324,7 +329,7 @@ public abstract class FurnitureWiredLogic(
                 {
                     if (
                         update.DefinitionSpecifics[index] is not null
-                        && specType.IsAssignableFrom(update.DefinitionSpecifics[index].GetType())
+                        && specType.IsInstanceOfType(update.DefinitionSpecifics[index])
                     )
                     {
                         specific = update.DefinitionSpecifics[index];
@@ -359,7 +364,7 @@ public abstract class FurnitureWiredLogic(
                 {
                     if (
                         update.TypeSpecifics[index] is not null
-                        && specType.IsAssignableFrom(update.TypeSpecifics[index].GetType())
+                        && specType.IsInstanceOfType(update.TypeSpecifics[index])
                     )
                     {
                         specific = update.TypeSpecifics[index];
@@ -440,7 +445,7 @@ public abstract class FurnitureWiredLogic(
                 if (
                     index < _wiredData.DefinitionSpecifics.Count
                     && _wiredData.DefinitionSpecifics[index] is not null
-                    && specType.IsAssignableFrom(_wiredData.DefinitionSpecifics[index].GetType())
+                    && specType.IsInstanceOfType(_wiredData.DefinitionSpecifics[index])
                 )
                 {
                     specific = _wiredData.DefinitionSpecifics[index];
@@ -480,7 +485,7 @@ public abstract class FurnitureWiredLogic(
                 if (
                     index < _wiredData.TypeSpecifics.Count
                     && _wiredData.TypeSpecifics[index] is not null
-                    && specType.IsAssignableFrom(_wiredData.TypeSpecifics[index].GetType())
+                    && specType.IsInstanceOfType(_wiredData.TypeSpecifics[index])
                 )
                 {
                     specific = _wiredData.TypeSpecifics[index];
