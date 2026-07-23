@@ -5,6 +5,7 @@ using Vortex.Primitives.Furniture.Snapshots.StuffData;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
+using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Furniture.Wall;
@@ -35,6 +36,11 @@ public interface IWiredExecutionContext : IWiredContext
         Altitude z,
         Rotation rot,
         int wallOffset
+    );
+    public Task ProcessUserMovementAsync(
+        IRoomAvatar avatar,
+        int tileIdx,
+        SlideAvatarMoveType moveType
     );
     public ActionContext AsActionContext();
     public Task SendComposerToRoomAsync(IComposer composer);

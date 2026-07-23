@@ -8,6 +8,7 @@ using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object;
+using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Furniture.Wall;
@@ -168,6 +169,56 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
                 wallItem.ObjectId,
                 x,
                 y
+            );
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task ProcessUserMovementAsync(
+        IRoomAvatar avatar,
+        int tileIdx,
+        SlideAvatarMoveType moveType
+    )
+    {
+        if (avatar is null || !_roomGrain.MapModule.InBounds(tileIdx))
+        {
+            return Task.CompletedTask;
+        }
+
+        try
+        {
+            (int sourceX, int sourceY, Altitude sourceZ) = (avatar.X, avatar.Y, avatar.Z);
+            Altitude targetZ = _roomGrain._state.TileHeights[tileIdx];
+
+            if (_roomGrain.MapModule.RollAvatar(avatar, tileIdx, targetZ))
+            {
+                UserMoves.Add(
+                    new()
+                    {
+                        ObjectId = avatar.ObjectId,
+                        SourceX = sourceX,
+                        SourceY = sourceY,
+                        SourceZ = sourceZ,
+                        TargetX = avatar.X,
+                        TargetY = avatar.Y,
+                        TargetZ = avatar.Z,
+                        MoveType = moveType,
+                        AnimationTime =
+                            moveType == SlideAvatarMoveType.Slide ? Policy.AnimationTimeMs : 0,
+                        BodyDirection = avatar.Rotation,
+                        HeadDirection = avatar.HeadRotation,
+                    }
+                );
+            }
+        }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to process wired user movement for avatar {ObjectId} to tile {TileIdx}.",
+                avatar.ObjectId,
+                tileIdx
             );
         }
 
