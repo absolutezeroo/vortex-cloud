@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Action;
@@ -168,6 +169,7 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
         _baseTime = newBase;
         _clock.SetSeconds(newBase);
 
+        PersistBaseTime();
         ApplyDisplay();
     }
 
@@ -180,8 +182,34 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
 
         _initialized = true;
         _steps = ParseSteps(_ctx.Definition.ExtraData);
-        _baseTime = _steps[0];
+        _baseTime = LoadBaseTime();
         _clock.SetSeconds(_baseTime);
+    }
+
+    /// <summary>Read the persisted selected duration (baseTime); falls back to the first preset step.
+    /// This is the durable half of Arcturus's <c>timeNow\tbaseTime</c> — the running countdown is not
+    /// persisted, but the chosen duration survives a room reload.</summary>
+    private int LoadBaseTime()
+    {
+        if (
+            _ctx.RoomObject.ExtraData.TryGetSection(
+                ExtraDataSectionType.GAME_TIMER,
+                out JsonElement element
+            )
+            && element.ValueKind == JsonValueKind.Number
+            && element.TryGetInt32(out int stored)
+            && stored > 0
+        )
+        {
+            return stored;
+        }
+
+        return _steps[0];
+    }
+
+    private void PersistBaseTime()
+    {
+        _ctx.RoomObject.ExtraData.UpdateSection(ExtraDataSectionType.GAME_TIMER, _baseTime);
     }
 
     /// <summary>Mirror the current countdown value onto the furni state and broadcast it (ephemeral —
