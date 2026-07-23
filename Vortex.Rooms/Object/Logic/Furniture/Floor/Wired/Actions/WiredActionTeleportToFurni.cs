@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
@@ -82,7 +83,10 @@ public class WiredActionTeleportToFurni(
         return false;
     }
 
-    private bool TryResolveAvatar(int playerId, out IRoomAvatar? avatar)
+    private bool TryResolveAvatar(
+        int playerId,
+        [NotNullWhen(true)] out IRoomAvatar? avatar
+    )
     {
         avatar = null;
 

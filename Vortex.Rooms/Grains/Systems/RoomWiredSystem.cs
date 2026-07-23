@@ -54,6 +54,18 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
     private bool _firstRun = true;
     private long _nextStackExecutionId;
 
+    // Boxes currently lit by FlashActivationStateAsync, mapped to the room-clock time their visual
+    // state reverts to unlit. Re-flashing a box simply pushes its revert time back.
+    private readonly Dictionary<RoomObjectId, long> _flashRevertAtMs = [];
+
+    // Events rejected because the queue hit WiredMaxQueuedEvents, reported once per tick in the
+    // room's wired log instead of spamming one entry per drop.
+    private int _droppedEventCount;
+
+    // The room-clock time of the tick currently being processed, so an executing action (e.g. the Timer
+    // Reset effect) can re-anchor schedules to "now" without threading the value through every call.
+    private long _currentTickMs;
+
     private int _tickMs => _roomGrain._roomConfig.WiredTickMs;
 
     public Task OnRoomEventAsync(RoomEvent evt, CancellationToken ct)
@@ -81,17 +93,40 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
                 break;
             case PlayerLeftEvent playerLeftEvt:
                 _playerActiveStore.RemovePlayerStore(playerLeftEvt.PlayerId);
-                _eventQueue.Enqueue(evt);
+                EnqueueRoomEvent(evt);
                 break;
             case RoomItemDetachedEvent detatchedEvt:
                 _furnitureActiveStore.RemoveFurnitureStore(detatchedEvt.ObjectId);
                 break;
             default:
-                _eventQueue.Enqueue(evt);
+                EnqueueRoomEvent(evt);
                 break;
         }
 
         return Task.CompletedTask;
+    }
+
+    private void EnqueueRoomEvent(RoomEvent evt)
+    {
+        // With a clean index we know exactly which event types have a listening trigger; anything
+        // else would only consume dequeue budget before being discarded, so reject it now. A dirty
+        // index means membership is unknown until the next tick's rebuild — enqueue conservatively.
+        if (!_indexDirty && !_triggersByEventType.ContainsKey(evt.GetType()))
+        {
+            return;
+        }
+
+        // WiredMaxEventsPerTick bounds the tick's work; this bounds the queue's memory under a
+        // sustained storm. Rejecting the incoming event (rather than evicting an older one) keeps
+        // trigger ordering intact for what was already accepted.
+        if (_eventQueue.Count >= _roomGrain._roomConfig.WiredMaxQueuedEvents)
+        {
+            _droppedEventCount++;
+
+            return;
+        }
+
+        _eventQueue.Enqueue(evt);
     }
 
     public async Task ProcessWiredAsync(long now, CancellationToken ct)
@@ -104,6 +139,21 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         while (now >= _roomGrain._state.NextWiredBoundaryMs)
         {
             _roomGrain._state.NextWiredBoundaryMs += _tickMs;
+        }
+
+        _currentTickMs = now;
+
+        await ProcessFlashRevertsAsync(now, ct);
+
+        if (_droppedEventCount > 0)
+        {
+            WriteWiredRoomLog(
+                WiredLogLevel.Warning,
+                WiredLogSource.System,
+                $"Dropped {_droppedEventCount} room event(s): the wired event queue was full."
+            );
+
+            _droppedEventCount = 0;
         }
 
         if (_firstRun)
@@ -194,6 +244,23 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         }
     }
 
+    /// <summary>
+    /// Server side of the Timer Reset effect (<c>wf_act_reset_timers</c>): restart every resettable timed
+    /// trigger in the room — repeaters re-anchor (fire next tick, interval afresh) and "at given time"
+    /// one-shots re-arm so they can fire again. Room-wide, matching Habbo (the effect takes the room, not
+    /// the pile).
+    /// </summary>
+    public void ResetTimers()
+    {
+        foreach (FurnitureWiredTriggerLogic trigger in _timedTriggers)
+        {
+            if (trigger is IWiredResettableTimer resettable)
+            {
+                resettable.ResetTimer(_currentTickMs);
+            }
+        }
+    }
+
     private async Task ProcessRoomEventAsync(RoomEvent evt, long now, CancellationToken ct)
     {
         if (
@@ -267,7 +334,19 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
 
         foreach (IWiredAddon addon in ctx.Stack.Addons)
         {
-            await addon.MutatePolicyAsync(ctx, ct);
+            try
+            {
+                await addon.MutatePolicyAsync(ctx, ct);
+            }
+            catch (Exception ex)
+            {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Wired addon {AddonType} failed to mutate the policy in room {RoomId}.",
+                    addon.GetType().Name,
+                    _roomGrain.RoomId
+                );
+            }
         }
 
         if (!EvaluateConditions(ctx.Stack.Conditions, ctx))
@@ -282,24 +361,12 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
 
         _ = ctx.Trigger.FlashActivationStateAsync(ct);
 
-        foreach (IWiredAddon addon in ctx.Stack.Addons)
-        {
-            await addon.BeforeEffectsAsync(ctx, ct);
-        }
-
-        ScheduleStackExecution(ctx, now, ct);
-
-        foreach (IWiredAddon addon in ctx.Stack.Addons)
-        {
-            await addon.AfterEffectsAsync(ctx, ct);
-        }
+        // Before/AfterEffects addon hooks run in ExecuteStackChainAsync, around the chain's actual
+        // execution — which can be ticks later than this scheduling when actions carry delays.
+        ScheduleStackExecution(ctx, now);
     }
 
-    private void ScheduleStackExecution(
-        WiredProcessingContext ctx,
-        long dueAtMs,
-        CancellationToken ct
-    )
+    private void ScheduleStackExecution(WiredProcessingContext ctx, long dueAtMs)
     {
         // ctx.Stack was resolved live from the trigger's current tile, so every action in it is already
         // co-located with the trigger. Delayed actions are re-validated again at execution time in
@@ -324,6 +391,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             Policy = ctx.Policy,
             Selected = ctx.Selected,
             SelectorPool = ctx.SelectorPool,
+            ProcessingContext = ctx,
             Version = 1,
             DueAtMs = dueAtMs,
             NextActionIndex = 0,
@@ -387,6 +455,13 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         CancellationToken ct
     )
     {
+        if (!pending.EffectsStarted)
+        {
+            pending.EffectsStarted = true;
+
+            await RunAddonEffectHooksAsync(pending, before: true, ct);
+        }
+
         for (int i = pending.NextActionIndex; i < pending.Actions.Count; i++)
         {
             IWiredAction action = pending.Actions[i];
@@ -474,7 +549,99 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             pending.NextActionIndex = i + 1;
         }
 
+        await RunAddonEffectHooksAsync(pending, before: false, ct);
+
         return true;
+    }
+
+    private async Task RunAddonEffectHooksAsync(
+        WiredPendingStackExecution pending,
+        bool before,
+        CancellationToken ct
+    )
+    {
+        foreach (IWiredAddon addon in pending.Stack.Addons)
+        {
+            try
+            {
+                if (before)
+                {
+                    await addon.BeforeEffectsAsync(pending.ProcessingContext, ct);
+                }
+                else
+                {
+                    await addon.AfterEffectsAsync(pending.ProcessingContext, ct);
+                }
+            }
+            catch (Exception ex)
+            {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Wired addon {AddonType} {Hook} hook failed in room {RoomId}.",
+                    addon.GetType().Name,
+                    before ? "BeforeEffects" : "AfterEffects",
+                    _roomGrain.RoomId
+                );
+            }
+        }
+    }
+
+    /// <summary>Marks a wired box as lit; the wired tick reverts it to unlit after
+    /// <c>WiredFlashDurationMs</c>. Re-flashing an already-lit box pushes its revert back.</summary>
+    public void ScheduleFlashRevert(RoomObjectId objectId)
+    {
+        _flashRevertAtMs[objectId] = _currentTickMs + _roomGrain._roomConfig.WiredFlashDurationMs;
+    }
+
+    private async Task ProcessFlashRevertsAsync(long now, CancellationToken ct)
+    {
+        if (_flashRevertAtMs.Count == 0)
+        {
+            return;
+        }
+
+        List<RoomObjectId>? due = null;
+
+        foreach ((RoomObjectId objectId, long revertAtMs) in _flashRevertAtMs)
+        {
+            if (revertAtMs <= now)
+            {
+                (due ??= []).Add(objectId);
+            }
+        }
+
+        if (due is null)
+        {
+            return;
+        }
+
+        foreach (RoomObjectId objectId in due)
+        {
+            _flashRevertAtMs.Remove(objectId);
+
+            // A box picked up (or replaced) while lit simply has no revert to apply.
+            if (
+                !_roomGrain._state.ItemsById.TryGetValue(objectId, out IRoomItem? item)
+                || item.Logic is not FurnitureWiredLogic wiredLogic
+            )
+            {
+                continue;
+            }
+
+            try
+            {
+                await wiredLogic.SetFlashStateAsync(0);
+            }
+            catch (Exception ex)
+            {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Failed to revert the flash state of wired item {ItemId} in room {RoomId}.",
+                    objectId,
+                    _roomGrain.RoomId
+                );
+            }
+        }
     }
 
     private void RecordWiredErrorLog(Exception ex, IWiredAction action, long now)

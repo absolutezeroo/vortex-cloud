@@ -19,7 +19,10 @@ public class WiredTriggerPeriodically(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,
     IRoomFloorItemContext ctx
-) : FurnitureWiredTriggerLogic(grainFactory, stuffDataFactory, ctx), IWiredTimedTrigger
+)
+    : FurnitureWiredTriggerLogic(grainFactory, stuffDataFactory, ctx),
+        IWiredTimedTrigger,
+        IWiredResettableTimer
 {
     public override int WiredCode => (int)WiredTriggerType.TRIGGER_PERIODICALLY;
     public override List<Type> SupportedEventTypes { get; } = [typeof(PeriodicRoomEvent)];
@@ -37,6 +40,9 @@ public class WiredTriggerPeriodically(
 
     public bool TryConsumeDue(long nowMs) => _schedule?.TryConsumeDue(nowMs) ?? false;
 
+    // Server side of the Timer Reset effect: fire on the next tick and restart the interval from now.
+    public void ResetTimer(long nowMs) => _schedule?.Reset(nowMs);
+
     public override Task<bool> CanTriggerAsync(IWiredProcessingContext ctx, CancellationToken ct) =>
         Task.FromResult(ctx.Event is PeriodicRoomEvent);
 
@@ -46,12 +52,11 @@ public class WiredTriggerPeriodically(
 
         int delayValue = _wiredData.IntParams.Count > 0 ? _wiredData.GetIntParam<int>(0) : 1;
 
-        // Preserve the running fire clock across reloads. LoadWiredAsync (and thus this method) runs on
-        // every stack rebuild — a neighbouring box being moved/added/removed on the same tile marks the
-        // stack dirty and reloads every box in it. Recreating the schedule here would reset _nextFireMs
-        // to 0 (immediately due), so the periodic would fire on the very next tick regardless of the
-        // configured interval — the box's cadence would never be respected in an actively edited room.
-        // Instead we keep the existing schedule and only refresh the configured delay.
+        // Preserve the running fire clock across reloads. LoadWiredAsync (and thus this method) runs
+        // every time the pile is resolved live — i.e. on every fire and every reindex. Recreating the
+        // schedule here would clear its last-fired marker (immediately due), so the periodic would fire
+        // on the very next tick regardless of the configured interval — the cadence would never be
+        // respected. Instead we keep the existing schedule and only refresh the configured delay.
         if (_schedule is null)
         {
             _schedule = new WiredPeriodicSchedule(MsPerUnit, MaxUnits) { DelayValue = delayValue };

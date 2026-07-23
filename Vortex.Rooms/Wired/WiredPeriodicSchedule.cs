@@ -49,7 +49,8 @@ public sealed class WiredPeriodicSchedule(int msPerUnit, int maxUnits)
     /// tick. Both timestamps are bucketed with the current <see cref="DelayMs"/>, so this stays correct
     /// across an interval change.
     /// </summary>
-    public bool IsDue(long nowMs) => _lastFiredMs == Never || BucketAt(nowMs) > BucketAt(_lastFiredMs);
+    public bool IsDue(long nowMs) =>
+        _lastFiredMs == Never || BucketAt(nowMs) > BucketAt(_lastFiredMs);
 
     /// <summary>Record that a firing happened at <paramref name="nowMs"/>.</summary>
     public void Advance(long nowMs) => _lastFiredMs = nowMs;
