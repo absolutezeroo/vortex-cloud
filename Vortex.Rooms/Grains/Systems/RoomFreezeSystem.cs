@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Logging.Extensions;
 using Vortex.Primitives.Messages.Outgoing.Room.Action;
 using Vortex.Primitives.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Messages.Outgoing.Room.Session;
@@ -135,15 +136,29 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         return winner;
     }
 
-    public async Task OnPlayerLeftAsync(PlayerId playerId, CancellationToken ct)
+    public Task OnPlayerLeftAsync(PlayerId playerId, CancellationToken ct)
     {
-        if (_game.Remove(playerId) is not null)
+        if (_game.Remove(playerId) is null)
         {
-            // The playing-game flag is session-scoped, so it must be cleared here too — leaving the room
-            // by any means other than the exit tile would otherwise strand the client in "game mode".
-            await SetPlayingModeAsync(playerId, false);
-            await RefreshGateCountersAsync();
+            return Task.CompletedTask;
         }
+
+        // The playing-game flag is session-scoped, so it must be cleared here too — leaving the room
+        // by any means other than the exit tile would otherwise strand the client in "game mode".
+        //
+        // Deliberately not awaited: this runs inside RemoveAvatarFromPlayerAsync, which the leaver's own
+        // presence grain calls while clearing its active room — including from OnDeactivateAsync, where
+        // the activation no longer dispatches incoming requests at all. Awaiting a call back into it
+        // would hang this room's turn (every player in it) until the 30s Orleans call timeout.
+        SetPlayingModeAsync(playerId, false)
+            .LogAndForget(
+                _roomGrain._logger,
+                "Failed to clear game mode for player {PlayerId} leaving room {RoomId}",
+                playerId,
+                _roomGrain.RoomId
+            );
+
+        return RefreshGateCountersAsync();
     }
 
     /// <summary>A player walked onto an exit tile: they leave the game (forfeit), and their effect and the

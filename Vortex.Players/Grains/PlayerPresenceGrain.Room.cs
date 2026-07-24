@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Runtime;
 using Orleans.Streams;
@@ -126,18 +127,43 @@ internal sealed partial class PlayerPresenceGrain
 
         IRoomGrain roomGrain = _grainFactory.GetRoomGrain(prev);
 
-        await roomGrain.RemoveAvatarFromPlayerAsync(ctx, ctx.PlayerId, ct);
-        await _events.PublishAsync(
-            new PlayerLeftRoomEvent(ctx.PlayerId, prev.Value, leftAt, Math.Max(0, durationSeconds)),
-            ct
-        );
+        // The room call is best-effort: if it fails or is cancelled (this also runs from
+        // OnDeactivateAsync, whose token is cancelled once the grace period elapses), the player must
+        // still stop counting as an occupant here and in the directory, or they linger as a ghost in
+        // the navigator and cannot cleanly re-enter.
+        try
+        {
+            await roomGrain.RemoveAvatarFromPlayerAsync(ctx, ctx.PlayerId, ct);
+            await _events.PublishAsync(
+                new PlayerLeftRoomEvent(
+                    ctx.PlayerId,
+                    prev.Value,
+                    leftAt,
+                    Math.Max(0, durationSeconds)
+                ),
+                ct
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "Failed to remove player {PlayerId} from room {RoomId}; clearing local room state anyway",
+                this.GetPrimaryKeyLong(),
+                prev.Value
+            );
+        }
 
         _state.ActiveRoomId = -1;
         _state.ActiveRoomSinceUtc = leftAt;
 
         await _grainFactory
             .GetRoomDirectoryGrain()
-            .RemovePlayerFromRoomAsync((PlayerId)this.GetPrimaryKeyLong(), prev, ct);
+            .RemovePlayerFromRoomAsync(
+                (PlayerId)this.GetPrimaryKeyLong(),
+                prev,
+                CancellationToken.None
+            );
 
         if (_roomOutboundSub is not null)
         {
