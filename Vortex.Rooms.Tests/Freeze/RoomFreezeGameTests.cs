@@ -81,6 +81,23 @@ public sealed class RoomFreezeGameTests
     }
 
     [Fact]
+    public void LivingTeamCount_Drops_As_A_Team_Is_Wiped_Out()
+    {
+        // The early-end rule keys off this: a round armed with two+ teams ends when it falls to one.
+        RoomFreezeGame game = new();
+        game.ToggleGate(P(1), GameTeamColor.Red);
+        game.ToggleGate(P(2), GameTeamColor.Blue);
+        game.Start();
+
+        game.LivingTeamCount().Should().Be(2);
+
+        // Blue's only player is eliminated (removed from the game).
+        game.Remove(P(2));
+
+        game.LivingTeamCount().Should().Be(1);
+    }
+
+    [Fact]
     public void Freeze_Costs_A_Life_And_Kills_At_Zero()
     {
         FreezePlayerState player = new(P(1), GameTeamColor.Red, FreezeSettings.Default);

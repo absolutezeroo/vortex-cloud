@@ -43,6 +43,11 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
     private long _currentTickMs;
     private long _nextPlayerTickMs;
 
+    // Armed at kick-off only when two or more teams have players, so the round can end early the moment
+    // one team is wiped out — while a solo/one-team game still runs to the timer instead of instantly
+    // "winning".
+    private bool _endEarlyArmed;
+
     private readonly record struct FreezeBlast(
         int X,
         int Y,
@@ -90,6 +95,7 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         _blasts.Clear();
         _resets.Clear();
         _nextPlayerTickMs = 0;
+        _endEarlyArmed = _game.LivingTeamCount() >= 2;
 
         await ResetBlocksAsync();
 
@@ -99,12 +105,14 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         }
 
         await RefreshGateCountersAsync();
+        await RefreshScoreboardsAsync();
     }
 
     public async Task<GameTeamColor> EndGameAsync(CancellationToken ct)
     {
         GameTeamColor winner = _game.Stop();
 
+        _endEarlyArmed = false;
         _blasts.Clear();
         _resets.Clear();
 
@@ -114,6 +122,7 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         }
 
         await RefreshGateCountersAsync();
+        await RefreshScoreboardsAsync();
 
         return winner;
     }
@@ -147,6 +156,14 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         {
             _resets.Dequeue();
             await ResetTilesAsync(tiles);
+        }
+
+        // A round that started with two+ teams ends the moment only one (or none) is left standing.
+        if (_endEarlyArmed && _game.LivingTeamCount() <= 1)
+        {
+            await EndGameAsync(ct);
+
+            return;
         }
 
         if (_nextPlayerTickMs == 0)
@@ -266,6 +283,8 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
                 now + FreezeConstants.ResetDelayMs - FreezeConstants.BlastDelayMs
             );
         }
+
+        await RefreshScoreboardsAsync();
     }
 
     private async Task FreezeOccupantsAsync(
@@ -431,6 +450,7 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
 
         // A shield pick-up changes the effect the player wears.
         await BroadcastEffectAsync(playerId, player.CurrentEffect());
+        await RefreshScoreboardsAsync();
     }
 
     /// <summary>Restores every ice block in the room to intact for a fresh round.</summary>
@@ -532,6 +552,21 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
             }
 
             await gate.SetStateAsync(_game.GetTeamCount(gate.TeamColor));
+        }
+    }
+
+    /// <summary>Pushes each team's live score to its <c>es_score_*</c> scoreboard (furniture_score shows
+    /// the raw state as a number).</summary>
+    private async Task RefreshScoreboardsAsync()
+    {
+        foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
+        {
+            if (item.Logic is not FurnitureFreezeCounterLogic counter)
+            {
+                continue;
+            }
+
+            await counter.SetStateAsync(_game.GetTeamScore(counter.TeamColor));
         }
     }
 

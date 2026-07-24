@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Primitives.Rooms.Object.Avatars;
@@ -12,13 +13,17 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Freeze;
 /// A Freeze team gate (the <c>es_gate_*</c> furni). Walking onto it joins that team (or leaves, if the
 /// player is already on it) — the emulator's Freeze "choose a team" mechanic. Each colour is a concrete
 /// subclass carrying its <see cref="GameTeamColor"/>; the gate is walkable and its state shows the
-/// team's member count (kept in sync by <see cref="Systems.RoomFreezeSystem"/>).
+/// team's member count (kept in sync by <see cref="Systems.RoomFreezeSystem"/>). The count is live game
+/// display, so it is never persisted.
 /// </summary>
 public abstract class FurnitureFreezeGateLogic(
     IStuffDataFactory stuffDataFactory,
     IRoomFloorItemContext ctx
 ) : FurnitureFloorLogic(stuffDataFactory, ctx)
 {
+    protected override StuffPersistanceType _stuffPersistanceType =>
+        StuffPersistanceType.RoomActive;
+
     public abstract GameTeamColor TeamColor { get; }
 
     public override bool CanWalk() => true;
