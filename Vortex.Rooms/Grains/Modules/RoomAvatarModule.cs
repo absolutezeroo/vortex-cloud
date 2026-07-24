@@ -100,10 +100,20 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
 
         if (!_roomGrain.MapModule.InBounds(startX, startY))
         {
-            // TODO get a valid tile
-            startX = 0;
-            startY = 0;
+            // A door outside the map means broken model data: spawning blindly on (0, 0) can drop
+            // the avatar on a closed/blocked tile it can never walk off, so pick a real one.
+            (startX, startY) = _roomGrain.MapModule.FindFallbackSpawnTile();
             startRot = Rotation.North;
+
+            _roomGrain._logger.LogWarning(
+                "Room {RoomId} model {ModelName} has an out-of-bounds door ({DoorX}, {DoorY}); spawning at ({StartX}, {StartY}).",
+                _roomGrain.RoomId,
+                _roomGrain._state.Model?.Name ?? string.Empty,
+                _roomGrain._state.Model?.DoorX ?? 0,
+                _roomGrain._state.Model?.DoorY ?? 0,
+                startX,
+                startY
+            );
         }
 
         IRoomPlayer avatar = _roomGrain._avatarProvider.CreateAvatarFromPlayerSnapshot(

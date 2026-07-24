@@ -121,6 +121,72 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
         return true;
     }
 
+    /// <summary>
+    /// Picks a spawn tile when the model's door coordinates cannot be used (malformed model whose
+    /// door falls outside the map). Scans the map in index order and returns the first tile the
+    /// room considers enterable, preferring one that nothing is standing on; falls back to any
+    /// enterable tile, then to (0, 0) when the model has none at all.
+    /// </summary>
+    public (int x, int y) FindFallbackSpawnTile()
+    {
+        int size = Size;
+        int occupiedIdx = -1;
+
+        for (int idx = 0; idx < size; idx++)
+        {
+            RoomTileFlags flags = GetTileFlagsOrBase(idx);
+
+            if (flags.Has(RoomTileFlags.Disabled) || flags.Has(RoomTileFlags.Closed))
+            {
+                continue;
+            }
+
+            // Mirrors CanAvatarWalk with isGoal: a sittable/layable tile is a legal destination,
+            // any other furniture-occupied tile is only enterable when the stack is walkable.
+            if (
+                flags.Has(RoomTileFlags.FurnitureOccupied)
+                && !flags.Has(RoomTileFlags.Walkable)
+                && !flags.Has(RoomTileFlags.Sittable)
+                && !flags.Has(RoomTileFlags.Layable)
+            )
+            {
+                continue;
+            }
+
+            if (!flags.Has(RoomTileFlags.AvatarOccupied))
+            {
+                return (GetX(idx), GetY(idx));
+            }
+
+            if (occupiedIdx < 0)
+            {
+                occupiedIdx = idx;
+            }
+        }
+
+        return occupiedIdx >= 0 ? (GetX(occupiedIdx), GetY(occupiedIdx)) : (0, 0);
+    }
+
+    /// <summary>
+    /// Reads live tile flags, falling back to the model's base flags when the live map has not been
+    /// built yet, and to a closed tile when neither is available.
+    /// </summary>
+    private RoomTileFlags GetTileFlagsOrBase(int idx)
+    {
+        RoomTileFlags[] liveFlags = _roomGrain._state.TileFlags;
+
+        if ((uint)idx < (uint)liveFlags.Length)
+        {
+            return liveFlags[idx];
+        }
+
+        RoomTileFlags[]? baseFlags = _roomGrain._state.Model?.BaseFlags;
+
+        return baseFlags is not null && (uint)idx < (uint)baseFlags.Length
+            ? baseFlags[idx]
+            : RoomTileFlags.Disabled | RoomTileFlags.Closed;
+    }
+
     public (int x, int y) GetTileXY(int idx)
     {
         if (!InBounds(idx))
