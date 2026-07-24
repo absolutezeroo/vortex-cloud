@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Rooms.Enums.Wired;
+using Vortex.Primitives.Rooms.Object;
+using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Wired;
 using Vortex.Rooms.Wired;
@@ -48,6 +50,29 @@ public abstract class FurnitureWiredSelectorLogic(
     public bool GetIsFilter() => _isFilter;
 
     public bool GetIsInvert() => _isInvert;
+
+    /// <summary>Adds every player currently standing on <paramref name="tileId"/> to the selection.
+    /// Shared by the user-position selectors (on-furni / in-area / in-neighborhood), which resolve the
+    /// same tiles as their furni counterparts but collect avatars instead of items. Only real players
+    /// are added — a selection set is addressed by player id, so pets and bots have nothing to add.</summary>
+    protected void AddPlayersOnTile(int tileId, WiredSelectionSet output)
+    {
+        if (tileId < 0 || tileId >= _roomGrain._state.TileAvatarStacks.Length)
+        {
+            return;
+        }
+
+        foreach (RoomObjectId avatarId in _roomGrain._state.TileAvatarStacks[tileId])
+        {
+            if (
+                _roomGrain._state.AvatarsByObjectId.TryGetValue(avatarId, out IRoomAvatar? avatar)
+                && avatar is IRoomPlayer player
+            )
+            {
+                output.SelectedPlayerIds.Add((int)player.PlayerId);
+            }
+        }
+    }
 
     public virtual Task<IWiredSelectionSet> SelectAsync(
         IWiredProcessingContext ctx,

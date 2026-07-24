@@ -62,6 +62,17 @@ public class WiredSelectorItemsInNeighborhood(
         return new WiredParamRule(0);
     }
 
+    /// <summary>Collects what this selector picks from one resolved neighbourhood tile. The furni
+    /// selector adds the floor items on it; the user-neighbourhood subclass overrides this to add the
+    /// players standing on it, reusing the whole spiral/mask computation unchanged.</summary>
+    protected virtual void CollectFromTile(int tileId, WiredSelectionSet output)
+    {
+        foreach (RoomObjectId itemId in _roomGrain._state.TileFloorStacks[tileId])
+        {
+            output.SelectedFurniIds.Add(itemId);
+        }
+    }
+
     public override async Task<IWiredSelectionSet> SelectAsync(
         IWiredProcessingContext ctx,
         CancellationToken ct
@@ -98,12 +109,7 @@ public class WiredSelectorItemsInNeighborhood(
                 {
                     try
                     {
-                        HashSet<RoomObjectId> itemIds = _roomGrain._state.TileFloorStacks[tileId];
-
-                        foreach (RoomObjectId itemId in itemIds)
-                        {
-                            output.SelectedFurniIds.Add(itemId);
-                        }
+                        CollectFromTile(tileId, output);
                     }
                     catch (Exception ex)
                     {
@@ -159,12 +165,7 @@ public class WiredSelectorItemsInNeighborhood(
                 {
                     try
                     {
-                        HashSet<RoomObjectId> itemIds = _roomGrain._state.TileFloorStacks[tileId];
-
-                        foreach (RoomObjectId itemId in itemIds)
-                        {
-                            output.SelectedFurniIds.Add(itemId);
-                        }
+                        CollectFromTile(tileId, output);
                     }
                     catch (Exception ex)
                     {

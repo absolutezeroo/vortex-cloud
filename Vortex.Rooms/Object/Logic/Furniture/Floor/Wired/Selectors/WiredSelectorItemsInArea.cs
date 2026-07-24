@@ -23,7 +23,8 @@ public class WiredSelectorItemsInArea(
     IRoomFloorItemContext ctx
 ) : FurnitureWiredSelectorLogic(grainFactory, stuffDataFactory, ctx)
 {
-    private readonly HashSet<int> _tileIds = [];
+    // Protected so the user-in-area selector can reuse the computed tile set and collect avatars.
+    protected readonly HashSet<int> _tileIds = [];
     public override int WiredCode => (int)WiredSelectorType.FURNI_IN_AREA;
 
     public override List<IWiredParamRule> GetIntParamRules()
