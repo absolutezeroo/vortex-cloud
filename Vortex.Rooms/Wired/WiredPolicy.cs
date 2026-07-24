@@ -10,6 +10,7 @@ public sealed class WiredPolicy : IWiredPolicy
     public int ConditionCompareValue { get; set; }
     public WiredEffectModeType EffectMode { get; set; } = WiredEffectModeType.All;
     public WiredAnimationModeType AnimationMode { get; set; } = WiredAnimationModeType.Smooth;
+
     // The default slide duration for wired moves. 50ms (one wired tick) was imperceptible — furni and
     // users snapped to their destination instead of sliding. 500ms is Habbo's standard object/avatar
     // slide; the animation-time addon (wf_xtra_anim_time) can still tune it 50-2000ms per box.

@@ -23,7 +23,9 @@ public class WiredSelectorEntitiesFromSignal(
     public override int WiredCode => (int)WiredSelectorType.USERS_FROM_SIGNAL;
 
     public override List<WiredPlayerSourceType[]> GetAllowedPlayerSources() =>
-        [[WiredPlayerSourceType.SignalUsers]];
+        [
+            [WiredPlayerSourceType.SignalUsers],
+        ];
 
     public override Task<IWiredSelectionSet> SelectAsync(
         IWiredProcessingContext ctx,

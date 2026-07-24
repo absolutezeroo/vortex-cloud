@@ -60,6 +60,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     public readonly RoomAvatarTickSystem AvatarTickSystem;
     public readonly RoomChatSystem ChatSystem;
     public readonly RoomGameSystem GameSystem;
+    public readonly RoomFreezeSystem FreezeSystem;
     public readonly RoomGameTimerSystem GameTimerSystem;
 
     public readonly RoomEventModule EventModule;
@@ -125,6 +126,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         WiredSystem = new RoomWiredSystem(this);
         ChatSystem = new RoomChatSystem(this);
         GameSystem = new RoomGameSystem(this);
+        FreezeSystem = new RoomFreezeSystem(this);
         GameTimerSystem = new RoomGameTimerSystem(this);
 
         EventModule.Register(RollerSystem);

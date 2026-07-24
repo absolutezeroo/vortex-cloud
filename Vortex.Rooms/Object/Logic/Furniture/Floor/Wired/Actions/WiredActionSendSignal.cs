@@ -67,8 +67,12 @@ public class WiredActionSendSignal(
         // One "group" per emitted signal. A split source becomes one group per member; an unsplit one
         // becomes a single group with the whole set (empty groups are still one empty group, so a bare
         // signal with no payload still fires its receive-signal stacks).
-        IReadOnlyList<int>[] furniGroups = splitFurni ? [.. furni.Select(f => (IReadOnlyList<int>)[f])] : [furni];
-        IReadOnlyList<int>[] userGroups = splitUsers ? [.. users.Select(u => (IReadOnlyList<int>)[u])] : [users];
+        IReadOnlyList<int>[] furniGroups = splitFurni
+            ? [.. furni.Select(f => (IReadOnlyList<int>)[f])]
+            : [furni];
+        IReadOnlyList<int>[] userGroups = splitUsers
+            ? [.. users.Select(u => (IReadOnlyList<int>)[u])]
+            : [users];
 
         int emitted = 0;
 

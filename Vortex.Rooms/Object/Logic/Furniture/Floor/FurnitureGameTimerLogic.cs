@@ -111,6 +111,7 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
             _gameActive = false;
 
             await _roomGrain.GameSystem.EndGameAsync(ct);
+            await _roomGrain.FreezeSystem.EndGameAsync(ct);
         }
     }
 
@@ -121,6 +122,7 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
             StartCountdown();
 
             await _roomGrain.GameSystem.StartGameAsync(ct);
+            await _roomGrain.FreezeSystem.StartGameAsync(ct);
 
             return;
         }
@@ -202,6 +204,7 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
             _gameActive = false;
 
             await _roomGrain.GameSystem.EndGameAsync(ct);
+            await _roomGrain.FreezeSystem.EndGameAsync(ct);
 
             IncreaseTimer();
         }

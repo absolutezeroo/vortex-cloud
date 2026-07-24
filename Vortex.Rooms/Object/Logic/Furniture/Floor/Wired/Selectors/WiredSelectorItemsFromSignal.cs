@@ -23,7 +23,9 @@ public class WiredSelectorItemsFromSignal(
     public override int WiredCode => (int)WiredSelectorType.FURNI_FROM_SIGNAL;
 
     public override List<WiredFurniSourceType[]> GetAllowedFurniSources() =>
-        [[WiredFurniSourceType.SignalItems]];
+        [
+            [WiredFurniSourceType.SignalItems],
+        ];
 
     public override Task<IWiredSelectionSet> SelectAsync(
         IWiredProcessingContext ctx,
