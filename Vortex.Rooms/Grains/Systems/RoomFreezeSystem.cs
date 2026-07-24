@@ -253,11 +253,11 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         if (targetX != thrower!.X || targetY != thrower.Y)
         {
             Rotation facing = RotationExtensions.FromPoints(thrower.X, thrower.Y, targetX, targetY);
-            thrower.SetBodyRotation(facing);
             thrower.SetHeadRotation(facing);
+            thrower.SetBodyRotation(facing);
 
             await _roomGrain.SendComposerToRoomAsync(
-                new UsersMessageComposer { Avatars = [thrower.GetSnapshot()] }
+                new UserUpdateMessageComposer { Avatars = [thrower.GetSnapshot()] }
             );
         }
 
@@ -394,7 +394,7 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
             );
 
             await _roomGrain.SendComposerToRoomAsync(
-                new UsersMessageComposer { Avatars = [avatar.GetSnapshot()] }
+                new UserUpdateMessageComposer { Avatars = [avatar.GetSnapshot()] }
             );
         }
 
