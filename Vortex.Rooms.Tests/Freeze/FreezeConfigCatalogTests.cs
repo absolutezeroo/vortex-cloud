@@ -25,6 +25,7 @@ public sealed class FreezeConfigCatalogTests
         yield return [FreezeConfig.MaxLivesKey, I(d.MaxLives)];
         yield return [FreezeConfig.StartSnowballsKey, I(d.StartSnowballs)];
         yield return [FreezeConfig.MaxSnowballsKey, I(d.MaxSnowballs)];
+        yield return [FreezeConfig.SnowballRegenTicksKey, I(d.SnowballRegenTicks)];
         yield return [FreezeConfig.MaxBoostKey, I(d.MaxExplosionBoost)];
         yield return [FreezeConfig.FrozenTicksKey, I(d.FrozenTicks)];
         yield return [FreezeConfig.ProtectionTicksKey, I(d.ProtectionTicks)];

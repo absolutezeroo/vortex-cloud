@@ -15,6 +15,7 @@ public static class FreezeConfig
     public const string MaxLivesKey = "freeze.max_lives";
     public const string StartSnowballsKey = "freeze.start_snowballs";
     public const string MaxSnowballsKey = "freeze.max_snowballs";
+    public const string SnowballRegenTicksKey = "freeze.snowball_regen_ticks";
     public const string MaxBoostKey = "freeze.max_explosion_boost";
     public const string FrozenTicksKey = "freeze.frozen_ticks";
     public const string ProtectionTicksKey = "freeze.protection_ticks";
@@ -38,6 +39,10 @@ public static class FreezeConfig
             MaxLives = await config.GetIntAsync(MaxLivesKey, d.MaxLives),
             StartSnowballs = await config.GetIntAsync(StartSnowballsKey, d.StartSnowballs),
             MaxSnowballs = await config.GetIntAsync(MaxSnowballsKey, d.MaxSnowballs),
+            SnowballRegenTicks = await config.GetIntAsync(
+                SnowballRegenTicksKey,
+                d.SnowballRegenTicks
+            ),
             MaxExplosionBoost = await config.GetIntAsync(MaxBoostKey, d.MaxExplosionBoost),
             FrozenTicks = await config.GetIntAsync(FrozenTicksKey, d.FrozenTicks),
             ProtectionTicks = await config.GetIntAsync(ProtectionTicksKey, d.ProtectionTicks),

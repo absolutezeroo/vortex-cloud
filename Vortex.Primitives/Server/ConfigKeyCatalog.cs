@@ -215,6 +215,13 @@ public static class ConfigKeyCatalog
             "Freeze"
         ),
         new(
+            "freeze.snowball_regen_ticks",
+            "2",
+            ConfigValueKind.Int,
+            "Freeze: game ticks (1s each) to regenerate one snowball (0 disables)",
+            "Freeze"
+        ),
+        new(
             "freeze.max_explosion_boost",
             "5",
             ConfigValueKind.Int,

@@ -28,6 +28,8 @@ public sealed class FreezePlayerState(
     public int FrozenTicks { get; private set; }
     public int ProtectionTicks { get; private set; }
 
+    private int _regenTicks;
+
     /// <summary>The next throw also hits the four diagonals (X-blast). Consumed after one throw.</summary>
     public bool NextDiagonal { get; set; }
 
@@ -60,6 +62,7 @@ public sealed class FreezePlayerState(
         NextHorizontal = true;
         TempMassive = false;
         Dead = false;
+        _regenTicks = 0;
     }
 
     /// <summary>The blast radius (arm length) of the next throw; Mega forces the max once.</summary>
@@ -118,8 +121,9 @@ public sealed class FreezePlayerState(
         return false;
     }
 
-    /// <summary>One game tick: counts the frozen/protection timers down. Returns <c>true</c> when the
-    /// player just thawed (frozen reached zero this tick), so the wrapper refreshes their effect.</summary>
+    /// <summary>One game tick: counts the frozen/protection timers down and slowly regenerates ammo.
+    /// Returns <c>true</c> when the player just thawed (frozen reached zero this tick), so the wrapper
+    /// refreshes their effect.</summary>
     public bool Tick()
     {
         bool thawed = false;
@@ -135,7 +139,33 @@ public sealed class FreezePlayerState(
             thawed = FrozenTicks == 0;
         }
 
+        RegenerateSnowball();
+
         return thawed;
+    }
+
+    /// <summary>Refills one snowball every <c>SnowballRegenTicks</c> ticks while able to act and below the
+    /// max, so a player is never left permanently out of ammo. Paused (and the counter reset) while
+    /// frozen, dead, full or when regen is disabled.</summary>
+    private void RegenerateSnowball()
+    {
+        if (
+            _settings.SnowballRegenTicks <= 0
+            || IsFrozen
+            || Dead
+            || Snowballs >= _settings.MaxSnowballs
+        )
+        {
+            _regenTicks = 0;
+
+            return;
+        }
+
+        if (++_regenTicks >= _settings.SnowballRegenTicks)
+        {
+            _regenTicks = 0;
+            AddSnowball();
+        }
     }
 
     /// <summary>The avatar effect id this player should currently show.</summary>

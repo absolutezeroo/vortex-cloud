@@ -5,8 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Messages.Outgoing.Room.Action;
 using Vortex.Primitives.Messages.Outgoing.Room.Engine;
+using Vortex.Primitives.Messages.Outgoing.Room.Session;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
+using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
@@ -101,7 +103,9 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
 
         foreach ((PlayerId playerId, FreezePlayerState player) in _game.Players)
         {
+            await SetPlayingModeAsync(playerId, true);
             await BroadcastEffectAsync(playerId, player.CurrentEffect());
+            await BroadcastPlayerValueAsync(playerId, player.Lives);
         }
 
         await RefreshGateCountersAsync();
@@ -119,6 +123,8 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         foreach ((PlayerId playerId, _) in _game.Players)
         {
             await BroadcastEffectAsync(playerId, FreezeConstants.NoEffect);
+            await BroadcastPlayerValueAsync(playerId, 0);
+            await SetPlayingModeAsync(playerId, false);
         }
 
         await RefreshGateCountersAsync();
@@ -133,6 +139,22 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         {
             await RefreshGateCountersAsync();
         }
+    }
+
+    /// <summary>A player walked onto an exit tile: they leave the game (forfeit), and their effect and the
+    /// gate counters are cleared. No-op for anyone not in the game.</summary>
+    public async Task OnExitWalkOnAsync(PlayerId playerId, CancellationToken ct)
+    {
+        if (_game.GetPlayer(playerId) is null)
+        {
+            return;
+        }
+
+        await BroadcastEffectAsync(playerId, FreezeConstants.NoEffect);
+        await BroadcastPlayerValueAsync(playerId, 0);
+        await SetPlayingModeAsync(playerId, false);
+        _game.Remove(playerId);
+        await RefreshGateCountersAsync();
     }
 
     /// <summary>Room-tick entry: lands due snowball blasts, resets finished ripples and runs the 1s
@@ -226,6 +248,18 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         }
 
         player.SpendSnowball();
+
+        // Turn to face the tile being thrown at (unless it is the thrower's own tile).
+        if (targetX != thrower!.X || targetY != thrower.Y)
+        {
+            Rotation facing = RotationExtensions.FromPoints(thrower.X, thrower.Y, targetX, targetY);
+            thrower.SetBodyRotation(facing);
+            thrower.SetHeadRotation(facing);
+
+            await _roomGrain.SendComposerToRoomAsync(
+                new UsersMessageComposer { Avatars = [thrower.GetSnapshot()] }
+            );
+        }
 
         int radius = player.TakeThrowRadius();
         bool diagonal = player.NextDiagonal;
@@ -336,6 +370,7 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
             else
             {
                 await BroadcastEffectAsync(victim.PlayerId, victim.CurrentEffect());
+                await BroadcastPlayerValueAsync(victim.PlayerId, victim.Lives);
             }
         }
     }
@@ -347,6 +382,8 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
     )
     {
         await BroadcastEffectAsync(victim.PlayerId, FreezeConstants.NoEffect);
+        await BroadcastPlayerValueAsync(victim.PlayerId, 0);
+        await SetPlayingModeAsync(victim.PlayerId, false);
 
         if (TryFindRandomExitTile(out int exitIdx))
         {
@@ -448,8 +485,14 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
             (state + FreezeConstants.BlockCollectedOffset) * FreezeConstants.StateWireScale
         );
 
-        // A shield pick-up changes the effect the player wears.
+        // A shield pick-up changes the effect the player wears; an extra life changes the lives bubble.
         await BroadcastEffectAsync(playerId, player.CurrentEffect());
+
+        if (powerUp == FreezePowerUp.ExtraLife)
+        {
+            await BroadcastPlayerValueAsync(playerId, player.Lives);
+        }
+
         await RefreshScoreboardsAsync();
     }
 
@@ -589,6 +632,29 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
                 EffectId = effectId,
                 DelayMilliseconds = 0,
             }
+        );
+    }
+
+    // The room Freeze game has no bespoke HUD protocol: the client shows "game mode" from the generic
+    // YouArePlayingGame message, and a number over an avatar from the generic GamePlayerValue message
+    // (used here for the remaining lives). Everything else the player sees is avatar effects + furni.
+
+    private Task SetPlayingModeAsync(PlayerId playerId, bool isPlaying) =>
+        _roomGrain
+            ._grainFactory.GetPlayerPresenceGrain(playerId)
+            .SendComposerAsync(new YouArePlayingGameMessageComposer { IsPlaying = isPlaying });
+
+    /// <summary>Shows <paramref name="value"/> as a number bubble over the player's avatar (0 clears it).
+    /// Used for the remaining-lives display.</summary>
+    private Task BroadcastPlayerValueAsync(PlayerId playerId, int value)
+    {
+        if (!_roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId))
+        {
+            return Task.CompletedTask;
+        }
+
+        return _roomGrain.SendComposerToRoomAsync(
+            new GamePlayerValueMessageComposer { UserId = objectId, Value = value }
         );
     }
 }

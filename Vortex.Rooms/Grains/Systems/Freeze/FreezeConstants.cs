@@ -7,8 +7,9 @@ namespace Vortex.Rooms.Grains.Systems.Freeze;
 /// <see cref="FreezeConfig"/> / <see cref="FreezeSettings"/>.
 /// <para>
 /// Effect ids: a joined player wears <c>TeamEffectBase + team</c> (team 1-4), a frozen player wears
-/// <see cref="FrozenEffect"/>, and a shielded player adds <see cref="ProtectionEffectBonus"/>. These
-/// mirror the Habbo Freeze effect set (as used by Arcturus); verify against the WIN63 client.
+/// <see cref="FrozenEffect"/>, and a shielded player adds <see cref="ProtectionEffectBonus"/>. Verified
+/// against the client's effectmap.json: 12 = Ice, 40-43 = ESred/green/blue/yellow (team), 49-52 =
+/// ES*Untouchable (shielded, i.e. team + 9).
 /// </para>
 /// </summary>
 public static class FreezeConstants

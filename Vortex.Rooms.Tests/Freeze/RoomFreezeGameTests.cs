@@ -152,6 +152,48 @@ public sealed class RoomFreezeGameTests
     }
 
     [Fact]
+    public void Snowballs_Regenerate_Over_Ticks_Up_To_Max()
+    {
+        FreezeSettings settings = FreezeSettings.Default with
+        {
+            StartSnowballs = 0,
+            MaxSnowballs = 2,
+            SnowballRegenTicks = 2,
+        };
+        FreezePlayerState player = new(P(1), GameTeamColor.Red, settings);
+
+        player.Snowballs.Should().Be(0);
+        player.Tick(); // 1st tick — not yet
+        player.Snowballs.Should().Be(0);
+        player.Tick(); // 2nd — +1
+        player.Snowballs.Should().Be(1);
+        player.Tick();
+        player.Tick(); // +1 — now at max
+        player.Snowballs.Should().Be(2);
+        player.Tick();
+        player.Tick(); // stays capped
+        player.Snowballs.Should().Be(2);
+    }
+
+    [Fact]
+    public void Frozen_Player_Does_Not_Regenerate_Ammo()
+    {
+        FreezeSettings settings = FreezeSettings.Default with
+        {
+            StartSnowballs = 0,
+            MaxSnowballs = 5,
+            SnowballRegenTicks = 1,
+            FrozenTicks = 3,
+        };
+        FreezePlayerState player = new(P(1), GameTeamColor.Red, settings);
+        player.Freeze();
+
+        player.Tick(); // frozen — no regen
+        player.IsFrozen.Should().BeTrue();
+        player.Snowballs.Should().Be(0);
+    }
+
+    [Fact]
     public void Effect_Reflects_State()
     {
         FreezePlayerState player = new(P(1), GameTeamColor.Green, FreezeSettings.Default);

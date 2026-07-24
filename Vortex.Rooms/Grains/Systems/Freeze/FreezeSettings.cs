@@ -12,6 +12,10 @@ public sealed record FreezeSettings
     public int MaxLives { get; init; } = 5;
     public int StartSnowballs { get; init; } = 1;
     public int MaxSnowballs { get; init; } = 5;
+
+    /// <summary>Game ticks (1s each) to regenerate one snowball while below the max; 0 disables regen.</summary>
+    public int SnowballRegenTicks { get; init; } = 2;
+
     public int MaxExplosionBoost { get; init; } = 5;
 
     public int FrozenTicks { get; init; } = 5;
