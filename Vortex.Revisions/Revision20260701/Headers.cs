@@ -744,7 +744,13 @@ internal static class MessageComposer
     public const int RoomOccupiedTilesMessageComposer = 1235; // AS3-verified (name-only): onOccupiedTiles @ BCFloorPlanEditor
     public const int HotLooksMessageComposer = 3853; // AS3-verified (ghost fix): onHotLooksMessage @ HotLooksModel
     public const int CreditBalanceComposer = 3642;
-    public const int AvatarEffectMessageComposer = 3629;
+    // AS3-verified (client fix 5316023): the in-room figure_effect broadcast is 2624, not 3629.
+    // WIN63 registry _SafeCls_2046.as maps _SafeStr_4546[2624] = _SafeCls_2589 (parser _SafeCls_3361:
+    // userId, effectId, delayMilliSeconds) to RoomMessageHandler.onAvatarEffect. Header 3629 there is a
+    // different message (AvatarEditorMessageHandler.onAvatarEffectSelected). Serializer field order
+    // already matches the client's 2624 parser, so only the header number was wrong — this is why
+    // worn effects never appeared on avatars in-room.
+    public const int AvatarEffectMessageComposer = 2624;
     public const int CarryObjectMessageComposer = 2850;
     public const int DanceMessageComposer = 2217;
     public const int ExpressionMessageComposer = 1036;
@@ -984,10 +990,10 @@ internal static class MessageComposer
     public const int YouAreNotControllerMessageComposer = 456;
     public const int YouAreOwnerMessageComposer = 1986;
 
-    // Last-known Sulake header set for the avatar-effect inventory acks (WIN63 2026-01-12 registry +
-    // vortex-flash-client). The exact WIN63-202607011411 values are not in the local sources; re-confirm
-    // against that SWF when the client's AvatarEditorMessageHandler acks are ported. The previous 3629 for
-    // Selected collided with the room-apply AvatarEffectMessageComposer (3629) and mis-parsed on the client.
+    // Avatar-effect inventory acks. Activated/Added/Expired/AvatarEffects are confirmed against the
+    // WIN63-202607011411 registry (_SafeCls_2046.as) and the ported client parsers. The room-apply
+    // broadcast now lives on 2624 (AvatarEffectMessageComposer above), so 3629 is free — the Selected
+    // ack stays on 1333 (the client currently registers no handler for it, so it is harmless either way).
     public const int AvatarEffectActivatedMessageComposer = 3814;
     public const int AvatarEffectAddedMessageComposer = 1577;
     public const int AvatarEffectExpiredMessageComposer = 2236;
