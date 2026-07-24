@@ -744,6 +744,7 @@ internal static class MessageComposer
     public const int RoomOccupiedTilesMessageComposer = 1235; // AS3-verified (name-only): onOccupiedTiles @ BCFloorPlanEditor
     public const int HotLooksMessageComposer = 3853; // AS3-verified (ghost fix): onHotLooksMessage @ HotLooksModel
     public const int CreditBalanceComposer = 3642;
+
     // AS3-verified (client fix 5316023): the in-room figure_effect broadcast is 2624, not 3629.
     // WIN63 registry _SafeCls_2046.as maps _SafeStr_4546[2624] = _SafeCls_2589 (parser _SafeCls_3361:
     // userId, effectId, delayMilliSeconds) to RoomMessageHandler.onAvatarEffect. Header 3629 there is a
