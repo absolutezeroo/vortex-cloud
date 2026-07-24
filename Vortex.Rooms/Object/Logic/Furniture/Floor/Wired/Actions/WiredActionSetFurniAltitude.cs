@@ -72,10 +72,12 @@ public class WiredActionSetFurniAltitude(
 
                 int current = floorItem.Z.ToInt();
 
+                // Client operator radio (loc wiredfurni.params.operator.*): 0 Increase, 1 Decrease,
+                // 2 Set value — the same order AdjustClock already decodes.
                 int target = op switch
                 {
-                    1 => current + value,
-                    2 => current - value,
+                    0 => current + value,
+                    1 => current - value,
                     _ => value,
                 };
 

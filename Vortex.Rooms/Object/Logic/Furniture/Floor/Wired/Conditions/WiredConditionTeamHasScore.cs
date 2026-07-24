@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Orleans;
 using Vortex.Primitives.Furniture.Providers;
+using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
@@ -26,8 +27,11 @@ public class WiredConditionTeamHasScore(
 
     public override List<IWiredParamRule> GetIntParamRules() =>
         [
+            // None is the client's default option ("Any team" / "Triggerer's team"); rejecting it
+            // makes the box impossible to save straight out of the catalogue.
             new WiredEnumParamRule<GameTeamColor>(
-                GameTeamColor.Red,
+                GameTeamColor.None,
+                GameTeamColor.None,
                 GameTeamColor.Red,
                 GameTeamColor.Green,
                 GameTeamColor.Blue,
@@ -44,14 +48,30 @@ public class WiredConditionTeamHasScore(
             return IsNegative();
         }
 
-        int score = _roomGrain.GameSystem.GetTeamScore(_wiredData.GetIntParam<GameTeamColor>(0));
+        GameTeamColor team = _wiredData.GetIntParam<GameTeamColor>(0);
+
+        // None is the client's "Triggerer's team": resolve it against whoever set the trigger off. If
+        // they are not on a team there is no score to compare, so the condition simply does not pass.
+        if (team == GameTeamColor.None)
+        {
+            PlayerId triggerer = ctx.Event.CausedBy.PlayerId;
+
+            team = triggerer > 0 ? _roomGrain.GameSystem.GetTeam(triggerer) : GameTeamColor.None;
+
+            if (team == GameTeamColor.None)
+            {
+                return IsNegative();
+            }
+        }
+
+        int score = _roomGrain.GameSystem.GetTeamScore(team);
         int threshold = _wiredData.GetIntParam<int>(1);
 
         bool result = _wiredData.GetIntParam<int>(2) switch
         {
-            0 => score == threshold,
-            1 => score < threshold,
-            2 => score > threshold,
+            0 => score < threshold, // Lower than
+            1 => score == threshold, // Equals
+            2 => score > threshold, // Higher than
             _ => false,
         };
 

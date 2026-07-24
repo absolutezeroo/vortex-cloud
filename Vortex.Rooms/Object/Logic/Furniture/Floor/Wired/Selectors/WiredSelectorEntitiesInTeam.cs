@@ -28,8 +28,11 @@ public class WiredSelectorEntitiesInTeam(
 
     public override List<IWiredParamRule> GetIntParamRules() =>
         [
+            // None is the client's default option ("Any team" / "Triggerer's team"); rejecting it
+            // makes the box impossible to save straight out of the catalogue.
             new WiredEnumParamRule<GameTeamColor>(
-                GameTeamColor.Red,
+                GameTeamColor.None,
+                GameTeamColor.None,
                 GameTeamColor.Red,
                 GameTeamColor.Green,
                 GameTeamColor.Blue,
@@ -46,13 +49,27 @@ public class WiredSelectorEntitiesInTeam(
 
         if (_wiredData.IntParams.Count > 0)
         {
-            foreach (
-                PlayerId playerId in _roomGrain.GameSystem.GetPlayersInTeam(
-                    _wiredData.GetIntParam<GameTeamColor>(0)
-                )
-            )
+            GameTeamColor required = _wiredData.GetIntParam<GameTeamColor>(0);
+
+            // None is the client's "Any team" option: it means everyone who is on a team, not the
+            // members of a "none" team (which is simply everyone unassigned).
+            GameTeamColor[] wanted =
+                required == GameTeamColor.None
+                    ?
+                    [
+                        GameTeamColor.Red,
+                        GameTeamColor.Green,
+                        GameTeamColor.Blue,
+                        GameTeamColor.Yellow,
+                    ]
+                    : [required];
+
+            foreach (GameTeamColor color in wanted)
             {
-                output.SelectedPlayerIds.Add(playerId);
+                foreach (PlayerId playerId in _roomGrain.GameSystem.GetPlayersInTeam(color))
+                {
+                    output.SelectedPlayerIds.Add(playerId);
+                }
             }
         }
 

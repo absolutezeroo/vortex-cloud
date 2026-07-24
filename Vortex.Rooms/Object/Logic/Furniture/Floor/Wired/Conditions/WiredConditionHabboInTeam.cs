@@ -26,8 +26,11 @@ public class WiredConditionHabboInTeam(
 
     public override List<IWiredParamRule> GetIntParamRules() =>
         [
+            // None is the client's "Any team" option and is its default, so it must be accepted or the
+            // box cannot be saved as it comes out of the catalogue.
             new WiredEnumParamRule<GameTeamColor>(
-                GameTeamColor.Red,
+                GameTeamColor.None,
+                GameTeamColor.None,
                 GameTeamColor.Red,
                 GameTeamColor.Green,
                 GameTeamColor.Blue,
@@ -42,9 +45,13 @@ public class WiredConditionHabboInTeam(
 
         if (_wiredData.IntParams.Count > 0 && triggerer > 0)
         {
+            GameTeamColor required = _wiredData.GetIntParam<GameTeamColor>(0);
+            GameTeamColor actual = _roomGrain.GameSystem.GetTeam(triggerer);
+
+            // "Any team" (None) asks whether the triggerer is on a team at all, not whether they are
+            // on the "none" team — reading it as a plain equality would invert the check.
             result =
-                _roomGrain.GameSystem.GetTeam(triggerer)
-                == _wiredData.GetIntParam<GameTeamColor>(0);
+                required == GameTeamColor.None ? actual != GameTeamColor.None : actual == required;
         }
 
         return IsNegative() ? !result : result;

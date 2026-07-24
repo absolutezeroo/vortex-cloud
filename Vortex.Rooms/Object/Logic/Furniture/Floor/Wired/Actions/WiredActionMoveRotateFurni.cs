@@ -30,7 +30,10 @@ public class WiredActionMoveRotateFurni(
 
     public override List<IWiredParamRule> GetIntParamRules() =>
         [
-            new WiredRangeParamRule(0, 7, 0), // Movement Type
+            // Client MoveFurni.ts offers ids 0..11: 0 none, 1 random, 2 diagonal, 3 vertical, and
+            // the eight compass directions as 4,8,5,9,6,10,7,11. A 0..7 range rejected every
+            // diagonal, and a rejected value discards the whole box configuration.
+            new WiredRangeParamRule(0, 11, 0), // Movement Type
             new WiredRangeParamRule(0, 3, 0), // Rotation Type
         ];
 
@@ -136,6 +139,10 @@ public class WiredActionMoveRotateFurni(
             5 => Rotation.East,
             6 => Rotation.South,
             7 => Rotation.West,
+            8 => Rotation.NorthEast,
+            9 => Rotation.SouthEast,
+            10 => Rotation.SouthWest,
+            11 => Rotation.NorthWest,
             _ => Rotation.None,
         };
 

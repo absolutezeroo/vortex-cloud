@@ -35,9 +35,9 @@ public class WiredConditionSelectQuantity(
 
         bool result = op switch
         {
-            0 => quantity == threshold,
-            1 => quantity < threshold,
-            2 => quantity > threshold,
+            0 => quantity < threshold, // Lower than
+            1 => quantity == threshold, // Equals
+            2 => quantity > threshold, // Higher than
             _ => false,
         };
 

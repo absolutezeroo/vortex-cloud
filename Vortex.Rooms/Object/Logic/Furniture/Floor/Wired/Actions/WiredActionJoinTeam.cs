@@ -12,11 +12,18 @@ using Vortex.Rooms.Wired.Rules;
 
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Actions;
 
-/// <summary>Adds each resolved user to a game team (Habbo's "join team"). Int params from the client
-/// setup form (actiontypes/class_3938): [0] = team (1-4, matching <see cref="GameTeamColor"/>),
-/// [1] = mode (0 = the chosen team, 1 = auto-balance into the currently smallest team). Delegates to
-/// <see cref="Grains.Systems.RoomGameSystem"/> so team state has one owner; the balanced mode
-/// recomputes the smallest team per user so several joiners distribute evenly.</summary>
+/// <summary>
+/// Adds each resolved user to a game team (Habbo's "join team"). Client JoinTeam.ts sends
+/// <c>[team, type]</c>: the team is 1-4 (matching <see cref="GameTeamColor"/>), and the type picks
+/// which game the team belongs to — <c>team_type.0</c> Wired, <c>.1</c> Battle Banzai, <c>.2</c>
+/// Freeze. Delegates to <see cref="Grains.Systems.RoomGameSystem"/> so team state has one owner.
+/// <para>
+/// The type was previously read as an auto-balance flag, which does not exist in the client: picking
+/// Battle Banzai silently put the user in the smallest team rather than the one chosen, and Freeze was
+/// out of range so the box could not be saved at all. Only the Wired team subsystem is modelled today,
+/// so all three types share it; the parameter is honoured to the extent it can be.
+/// </para>
+/// </summary>
 [RoomObjectLogic("wf_act_join_team")]
 public class WiredActionJoinTeam(
     IGrainFactory grainFactory,
@@ -24,8 +31,6 @@ public class WiredActionJoinTeam(
     IRoomFloorItemContext ctx
 ) : FurnitureWiredActionLogic(grainFactory, stuffDataFactory, ctx)
 {
-    private const int ModeBalanced = 1;
-
     public override int WiredCode => (int)WiredActionType.JOIN_TEAM;
 
     public override List<IWiredParamRule> GetIntParamRules() =>
@@ -37,7 +42,7 @@ public class WiredActionJoinTeam(
                 GameTeamColor.Blue,
                 GameTeamColor.Yellow
             ),
-            new WiredRangeParamRule(0, 1, 0), // mode: 0 = chosen team, 1 = balanced
+            new WiredRangeParamRule(0, 2, 0), // team type: 0 Wired, 1 Battle Banzai, 2 Freeze
         ];
 
     public override List<WiredPlayerSourceType[]> GetAllowedPlayerSources() =>
@@ -52,8 +57,6 @@ public class WiredActionJoinTeam(
     public override async Task<bool> ExecuteAsync(IWiredExecutionContext ctx, CancellationToken ct)
     {
         GameTeamColor chosenTeam = _wiredData.GetIntParam<GameTeamColor>(0);
-        bool balanced =
-            _wiredData.IntParams.Count > 1 && _wiredData.GetIntParam<int>(1) == ModeBalanced;
 
         IWiredSelectionSet selection = await ctx.GetEffectiveSelectionAsync(this, ct);
 
@@ -61,11 +64,7 @@ public class WiredActionJoinTeam(
         {
             try
             {
-                GameTeamColor team = balanced
-                    ? _roomGrain.GameSystem.GetSmallestTeam()
-                    : chosenTeam;
-
-                await _roomGrain.GameSystem.JoinTeamAsync(playerId, team, ct);
+                await _roomGrain.GameSystem.JoinTeamAsync(playerId, chosenTeam, ct);
             }
             catch
             {

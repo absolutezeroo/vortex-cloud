@@ -53,9 +53,9 @@ public class WiredConditionItemHeightMatch(
             int altitude = floor.Z.ToInt();
             bool match = op switch
             {
-                0 => altitude == target,
-                1 => altitude < target,
-                2 => altitude > target,
+                0 => altitude < target, // Lower than
+                1 => altitude == target, // Equals
+                2 => altitude > target, // Higher than
                 _ => false,
             };
 

@@ -9,6 +9,7 @@ using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
 using Vortex.Primitives.Rooms.Wired;
+using Vortex.Rooms.Wired.Rules;
 
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Actions;
 
@@ -24,6 +25,15 @@ public class WiredActionRelativeMoveFurni(
 ) : FurnitureWiredActionLogic(grainFactory, stuffDataFactory, ctx)
 {
     public override int WiredCode => (int)WiredActionType.RELATIVE_FURNI_MOVE;
+
+    // Client RelativeFurniMove.ts sends two signed offsets. They were read but never declared, and a
+    // parameter count that does not match the client makes the update handler discard the entire box
+    // configuration - so the box could not be saved at all.
+    public override List<IWiredParamRule> GetIntParamRules() =>
+        [
+            new WiredRangeParamRule(-20, 20, 0), // offset X
+            new WiredRangeParamRule(-20, 20, 0), // offset Y
+        ];
 
     public override List<WiredFurniSourceType[]> GetAllowedFurniSources() =>
         [

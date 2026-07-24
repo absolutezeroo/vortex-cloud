@@ -22,8 +22,10 @@ public class WiredConditionCounterTimeMatch(
     IRoomFloorItemContext ctx
 ) : FurnitureWiredConditionLogic(grainFactory, stuffDataFactory, ctx)
 {
-    private const int ComparisonEqual = 0;
-    private const int ComparisonLess = 1;
+    // Client comparison radio (loc wiredfurni.params.comparison.*): 0 Lower than, 1 Equals,
+    // 2 Higher than — the same order as WiredComparisonType.
+    private const int ComparisonLess = 0;
+    private const int ComparisonEqual = 1;
     private const int ComparisonGreater = 2;
 
     public override int WiredCode => (int)WiredConditionType.CLOCK_TIME_MATCHES;
