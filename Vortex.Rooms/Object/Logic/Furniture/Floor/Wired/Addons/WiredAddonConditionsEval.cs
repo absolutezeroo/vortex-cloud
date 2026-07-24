@@ -11,7 +11,7 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Addons;
 
 /// <summary>Habbo's OR-eval addon: its mere presence on the pile switches condition evaluation from
 /// "all conditions must pass" to "at least one condition must pass". It has no configuration.</summary>
-[RoomObjectLogic("wf_xtra_or_eval")]
+[RoomObjectLogic("wf_xtra_one_condition")]
 public class WiredAddonConditionsEval(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,

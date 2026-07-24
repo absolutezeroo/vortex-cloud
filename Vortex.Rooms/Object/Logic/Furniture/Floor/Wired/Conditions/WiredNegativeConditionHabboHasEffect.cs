@@ -6,7 +6,7 @@ using Vortex.Primitives.Rooms.Object.Logic;
 
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Conditions;
 
-[RoomObjectLogic("wf_cnd_not_wearing_fx")]
+[RoomObjectLogic("wf_cnd_not_wears_effect")]
 public class WiredNegativeConditionHabboHasEffect(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,

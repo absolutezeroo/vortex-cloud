@@ -6,7 +6,7 @@ using Vortex.Primitives.Rooms.Object.Logic;
 
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Conditions;
 
-[RoomObjectLogic("wf_cnd_not_has_handitem")]
+[RoomObjectLogic("wf_cnd_not_wears_handitem")]
 public class WiredNegativeConditionHabboHasHanditem(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,

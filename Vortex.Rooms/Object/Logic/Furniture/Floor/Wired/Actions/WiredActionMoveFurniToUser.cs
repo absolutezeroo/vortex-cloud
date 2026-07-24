@@ -16,7 +16,7 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Actions;
 
 /// <summary>Moves the selected furni onto the triggering user's tile (Habbo's "move furni to user",
 /// <c>wf_act_furni_to_user</c>, no int params). A move that fails placement validation is skipped.</summary>
-[RoomObjectLogic("wf_act_furni_to_user")]
+[RoomObjectLogic("wf_act_tp_furni_to_habbo")]
 public class WiredActionMoveFurniToUser(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,

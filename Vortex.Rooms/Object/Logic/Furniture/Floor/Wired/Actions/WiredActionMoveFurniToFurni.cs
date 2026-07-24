@@ -16,7 +16,7 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Actions;
 /// (Habbo's "move furni to furni", <c>wf_act_cnd_furni_to_furni</c>, no int params). Slot 0 =
 /// StuffIds (the furni to move), slot 1 = StuffIds2 (the destination furni). Invalid moves are
 /// skipped.</summary>
-[RoomObjectLogic("wf_act_cnd_furni_to_furni")]
+[RoomObjectLogic("wf_act_cnd_move_furni")]
 public class WiredActionMoveFurniToFurni(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,

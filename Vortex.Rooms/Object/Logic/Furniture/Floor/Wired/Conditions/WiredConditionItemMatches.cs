@@ -6,7 +6,7 @@ using Vortex.Primitives.Rooms.Object.Logic;
 
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Conditions;
 
-[RoomObjectLogic("wf_cnd_match_snapshot")]
+[RoomObjectLogic("wf_cnd_match_snapshot_new")]
 public class WiredConditionItemMatches(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,

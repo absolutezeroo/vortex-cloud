@@ -15,7 +15,7 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Conditions;
 /// setup form): [0] = target altitude in hundredths of a tile (0-8000), [1] = comparison operator
 /// (0 = equal, 1 = less than, 2 = greater than). This box has no negative variant; the operator
 /// already covers the inverse cases.</summary>
-[RoomObjectLogic("wf_cnd_has_altitude")]
+[RoomObjectLogic("wf_cnd_has_same_height")]
 public class WiredConditionItemHeightMatch(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,
