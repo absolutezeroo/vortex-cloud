@@ -91,6 +91,8 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         _resets.Clear();
         _nextPlayerTickMs = 0;
 
+        await ResetBlocksAsync();
+
         foreach ((PlayerId playerId, FreezePlayerState player) in _game.Players)
         {
             await BroadcastEffectAsync(playerId, player.CurrentEffect());
@@ -200,8 +202,8 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         int targetIdx = _roomGrain.MapModule.ToIdx(targetX, targetY);
         FurnitureFreezeTileLogic? tile = FindFreezeTile(targetIdx);
 
-        // Only onto an idle arena tile (state 0) — never mid-animation.
-        if (tile is null || tile.GetState() != 0)
+        // Only onto an idle arena tile — never mid-animation.
+        if (tile is null || tile.GetState() != FreezeConstants.TileIdle)
         {
             return;
         }
@@ -212,8 +214,8 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         bool diagonal = player.NextDiagonal;
         player.NextDiagonal = false;
 
-        // Rise animation now; the blast lands BlastDelayMs later.
-        await tile.SetStateAsync((radius + 1) * 1000);
+        // Rise animation now (the ball rises to height radius + 1); the blast lands BlastDelayMs later.
+        await tile.SetStateAsync((radius + 1) * FreezeConstants.StateWireScale);
 
         _blasts.Enqueue(
             new FreezeBlast(targetX, targetY, radius, diagonal, playerId),
@@ -237,16 +239,24 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         {
             int idx = _roomGrain.MapModule.ToIdx(x, y);
 
-            if (idx < 0 || FindFreezeTile(idx) is not FurnitureFreezeTileLogic tile)
+            if (idx < 0)
             {
-                // Only arena tiles blast (and only they can freeze someone standing on them).
                 continue;
             }
 
-            await tile.SetStateAsync(11000);
-            animated.Add(idx);
+            // Arena tiles flash and freeze whoever stands on them...
+            if (FindFreezeTile(idx) is FurnitureFreezeTileLogic tile)
+            {
+                await tile.SetStateAsync(
+                    FreezeConstants.TileBlast * FreezeConstants.StateWireScale
+                );
+                animated.Add(idx);
 
-            await FreezeOccupantsAsync(idx, thrower, blast.Thrower, ct);
+                await FreezeOccupantsAsync(idx, thrower, blast.Thrower, ct);
+            }
+
+            // ...and an ice block on the tile is shattered, maybe dropping a power-up.
+            await DestroyBlockAsync(idx, thrower, ct);
         }
 
         if (animated.Count > 0)
@@ -343,7 +353,97 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         {
             if (FindFreezeTile(idx) is FurnitureFreezeTileLogic tile)
             {
-                await tile.SetStateAsync(0);
+                await tile.SetStateAsync(FreezeConstants.TileIdle);
+            }
+        }
+    }
+
+    /// <summary>Shatters an intact ice block caught in a blast: it rolls the power-up chance and either
+    /// reveals a random power-up (states 2..7) or breaks empty (state 1), scoring the thrower's team for
+    /// the kill. Already-broken blocks are inert.</summary>
+    private async Task DestroyBlockAsync(int idx, FreezePlayerState? thrower, CancellationToken ct)
+    {
+        if (FindFreezeBlock(idx) is not FurnitureFreezeBlockLogic block)
+        {
+            return;
+        }
+
+        if (block.GetState() != FreezeConstants.BlockIntact)
+        {
+            return;
+        }
+
+        int revealState = FreezeConstants.BlockEmpty;
+
+        if (Random.Shared.Next(100) < _game.Settings.PowerUpChancePercent)
+        {
+            FreezePowerUp powerUp = FreezePowerUps.Pick(
+                Random.Shared.Next(FreezePowerUps.Pickable.Length)
+            );
+            revealState = FreezePowerUps.RevealState(powerUp);
+        }
+
+        await block.SetStateAsync(revealState * FreezeConstants.StateWireScale);
+
+        if (thrower is not null)
+        {
+            _game.AddTeamScore(thrower.Team, _game.Settings.DestroyBlockPoints);
+        }
+    }
+
+    /// <summary>A player stepped onto a broken block: if it is showing an uncollected power-up, apply it,
+    /// score the pick-up and fade the icon out (the client plays the collect transition).</summary>
+    public async Task OnBlockWalkOnAsync(PlayerId playerId, int x, int y, CancellationToken ct)
+    {
+        if (!_game.IsRunning)
+        {
+            return;
+        }
+
+        FreezePlayerState? player = _game.GetPlayer(playerId);
+
+        if (player is null || player.Dead)
+        {
+            return;
+        }
+
+        int idx = _roomGrain.MapModule.ToIdx(x, y);
+
+        if (idx < 0 || FindFreezeBlock(idx) is not FurnitureFreezeBlockLogic block)
+        {
+            return;
+        }
+
+        int state = block.GetState() / FreezeConstants.StateWireScale;
+        FreezePowerUp powerUp = FreezePowerUps.FromRevealState(state);
+
+        if (powerUp == FreezePowerUp.None)
+        {
+            return;
+        }
+
+        FreezePowerUps.Apply(powerUp, player);
+        _game.AddTeamScore(player.Team, _game.Settings.PowerUpPoints);
+
+        await block.SetStateAsync(
+            (state + FreezeConstants.BlockCollectedOffset) * FreezeConstants.StateWireScale
+        );
+
+        // A shield pick-up changes the effect the player wears.
+        await BroadcastEffectAsync(playerId, player.CurrentEffect());
+    }
+
+    /// <summary>Restores every ice block in the room to intact for a fresh round.</summary>
+    private async Task ResetBlocksAsync()
+    {
+        foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
+        {
+            if (
+                item.Logic is FurnitureFreezeBlockLogic block
+                && block.GetState() != FreezeConstants.BlockIntact
+            )
+            {
+                await block.SetStateAsync(FreezeConstants.BlockIntact);
             }
         }
     }
@@ -371,6 +471,27 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
             )
             {
                 return tile;
+            }
+        }
+
+        return null;
+    }
+
+    private FurnitureFreezeBlockLogic? FindFreezeBlock(int tileIdx)
+    {
+        if (tileIdx < 0 || tileIdx >= _roomGrain._state.TileFloorStacks.Length)
+        {
+            return null;
+        }
+
+        foreach (RoomObjectId id in _roomGrain._state.TileFloorStacks[tileIdx])
+        {
+            if (
+                _roomGrain._state.ItemsById.TryGetValue(id, out IRoomItem? item)
+                && item.Logic is FurnitureFreezeBlockLogic block
+            )
+            {
+                return block;
             }
         }
 
