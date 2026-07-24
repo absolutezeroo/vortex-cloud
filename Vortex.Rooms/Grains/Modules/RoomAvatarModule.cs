@@ -282,6 +282,30 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
                 .ToImmutableArray()
         );
 
+    /// <summary>
+    /// Cancels an avatar's walk outright: clears its queued path, goal and move status without taking
+    /// the pending step <see cref="StopWalkingAsync"/> would apply first.
+    /// <para>
+    /// Used when something relocates an avatar instantly (a wired teleport / move-user). The walk tick
+    /// consumes <c>TilePath[0]</c> each step, and that path was computed from the tile the avatar just
+    /// left — so leaving it in place makes the avatar walk straight back towards its old goal, which
+    /// looks exactly like the teleport being undone.
+    /// </para>
+    /// </summary>
+    public void CancelWalk(IRoomAvatar avatar)
+    {
+        avatar.IsWalking = false;
+        avatar.NextMoveStepAtMs = 0;
+        avatar.NextMoveUpdateAtMs = 0;
+        avatar.PendingStopAtMs = 0;
+
+        avatar.TilePath.Clear();
+        avatar.NextTileId = -1;
+        avatar.SetGoalTileId(-1);
+        avatar.RemoveStatus(AvatarStatusType.Move);
+        avatar.NeedsInvoke = true;
+    }
+
     public async Task StopWalkingAsync(IRoomAvatar avatar, CancellationToken ct)
     {
         try

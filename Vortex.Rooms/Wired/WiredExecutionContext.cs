@@ -175,21 +175,33 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
         return Task.CompletedTask;
     }
 
-    public Task ProcessUserMovementAsync(
+    public async Task ProcessUserMovementAsync(
         IRoomAvatar avatar,
         int tileIdx,
-        SlideAvatarMoveType moveType
+        SlideAvatarMoveType moveType,
+        WiredWalkMode walkMode = WiredWalkMode.KeepIfCloser
     )
     {
         if (avatar is null || !_roomGrain.MapModule.InBounds(tileIdx))
         {
-            return Task.CompletedTask;
+            return;
         }
 
         try
         {
             (int sourceX, int sourceY, Altitude sourceZ) = (avatar.X, avatar.Y, avatar.Z);
             Altitude targetZ = _roomGrain._state.TileHeights[tileIdx];
+
+            // Capture the walk before clearing it: "keep walking" means resuming towards the same goal
+            // from wherever the user lands, not replaying a path that was routed from the tile they are
+            // being moved off.
+            bool wasWalking = avatar.IsWalking;
+            int goalTileId = avatar.GoalTileId;
+            int sourceTileIdx = _roomGrain.MapModule.ToIdx(sourceX, sourceY);
+
+            // The queued path is stale the moment the avatar is relocated — the walk tick steps through
+            // TilePath, so leaving it in place walks the user straight back towards where they started.
+            _roomGrain.AvatarModule.CancelWalk(avatar);
 
             if (_roomGrain.MapModule.RollAvatar(avatar, tileIdx, targetZ))
             {
@@ -219,6 +231,15 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
                         HeadDirection = facing,
                     }
                 );
+
+                await ResumeWalkAfterMoveAsync(
+                    avatar,
+                    walkMode,
+                    wasWalking,
+                    goalTileId,
+                    sourceTileIdx,
+                    tileIdx
+                );
             }
         }
         catch (Exception ex)
@@ -230,8 +251,58 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
                 tileIdx
             );
         }
+    }
 
-        return Task.CompletedTask;
+    /// <summary>
+    /// Applies the effect's walk mode after the user has been relocated: re-routes them towards the goal
+    /// they were heading for (from where they landed), or leaves them stopped. Only ever resumes a walk
+    /// that was actually in progress and still has a reachable goal.
+    /// </summary>
+    private async Task ResumeWalkAfterMoveAsync(
+        IRoomAvatar avatar,
+        WiredWalkMode walkMode,
+        bool wasWalking,
+        int goalTileId,
+        int sourceTileIdx,
+        int targetTileIdx
+    )
+    {
+        if (
+            walkMode == WiredWalkMode.Stop
+            || !wasWalking
+            || goalTileId < 0
+            || goalTileId == targetTileIdx
+        )
+        {
+            return;
+        }
+
+        if (
+            walkMode == WiredWalkMode.KeepIfCloser
+            && StepsBetween(targetTileIdx, goalTileId) >= StepsBetween(sourceTileIdx, goalTileId)
+        )
+        {
+            return;
+        }
+
+        (int goalX, int goalY) = _roomGrain.MapModule.GetTileXY(goalTileId);
+
+        await _roomGrain.AvatarModule.WalkAvatarToAsync(
+            avatar,
+            goalX,
+            goalY,
+            System.Threading.CancellationToken.None
+        );
+    }
+
+    /// <summary>Steps between two tiles. Avatars move in eight directions, so a diagonal costs the same
+    /// as a straight step and the step count is the Chebyshev distance.</summary>
+    private int StepsBetween(int fromTileIdx, int toTileIdx)
+    {
+        (int fromX, int fromY) = _roomGrain.MapModule.GetTileXY(fromTileIdx);
+        (int toX, int toY) = _roomGrain.MapModule.GetTileXY(toTileIdx);
+
+        return Math.Max(Math.Abs(toX - fromX), Math.Abs(toY - fromY));
     }
 
     public Task ProcessUserDirectionAsync(

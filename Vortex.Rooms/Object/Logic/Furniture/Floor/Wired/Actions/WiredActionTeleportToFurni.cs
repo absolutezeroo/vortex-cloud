@@ -17,8 +17,8 @@ using Vortex.Rooms.Wired.Rules;
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Actions;
 
 /// <summary>Teleports the selected users onto the tile of the selected furni (Habbo's teleport pad,
-/// <c>wf_act_teleport_to</c>). Client MoveUserToFurni.ts carries a walk-mode toggle; this teleport
-/// furni moves instantly (walk mode not yet honoured).</summary>
+/// <c>wf_act_teleport_to</c>). The move is instant; the configured walk mode decides what happens to a
+/// walk that was in progress — see <see cref="WiredWalkMode"/>.</summary>
 [RoomObjectLogic("wf_act_teleport_to")]
 public class WiredActionTeleportToFurni(
     IGrainFactory grainFactory,
@@ -28,8 +28,10 @@ public class WiredActionTeleportToFurni(
 {
     public override int WiredCode => (int)WiredActionType.MOVE_USER_TO_FURNI;
 
-    // Client MoveUserToFurni.ts: intParams = [walkMode] (0/1). Persisted; instant teleport for now.
-    public override List<IWiredParamRule> GetIntParamRules() => [new WiredBoolParamRule(false)];
+    // Client MoveUserToFurni.ts: intParams = [walkMode], a three-way radio group
+    // (user_move.walkmode.0..2 = keep-if-closer / keep / stop), defaulting to 0. It was previously
+    // declared as a bool rule, which clamped away the third option.
+    public override List<IWiredParamRule> GetIntParamRules() => [new WiredRangeParamRule(0, 2, 0)];
 
     public override List<WiredFurniSourceType[]> GetAllowedFurniSources() =>
         [
@@ -54,11 +56,21 @@ public class WiredActionTeleportToFurni(
             return true;
         }
 
+        WiredWalkMode walkMode =
+            _wiredData.IntParams.Count > 0
+                ? (WiredWalkMode)_wiredData.GetIntParam<int>(0)
+                : WiredWalkMode.KeepIfCloser;
+
         foreach (int playerId in selection.SelectedPlayerIds)
         {
             if (TryResolveAvatar(playerId, out IRoomAvatar? avatar))
             {
-                await ctx.ProcessUserMovementAsync(avatar, tileIdx, SlideAvatarMoveType.Move);
+                await ctx.ProcessUserMovementAsync(
+                    avatar,
+                    tileIdx,
+                    SlideAvatarMoveType.Move,
+                    walkMode
+                );
             }
         }
 

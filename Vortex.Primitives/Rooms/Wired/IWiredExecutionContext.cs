@@ -4,6 +4,7 @@ using Vortex.Primitives.Action;
 using Vortex.Primitives.Furniture.Snapshots.StuffData;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
@@ -40,7 +41,8 @@ public interface IWiredExecutionContext : IWiredContext
     public Task ProcessUserMovementAsync(
         IRoomAvatar avatar,
         int tileIdx,
-        SlideAvatarMoveType moveType
+        SlideAvatarMoveType moveType,
+        WiredWalkMode walkMode = WiredWalkMode.KeepIfCloser
     );
     public Task ProcessUserDirectionAsync(
         IRoomAvatar avatar,

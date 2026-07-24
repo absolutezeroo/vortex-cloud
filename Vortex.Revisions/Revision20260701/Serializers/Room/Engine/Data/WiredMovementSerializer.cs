@@ -19,6 +19,11 @@ internal class WiredMovementSerializer
             .WriteInteger(item.AnimationTime)
             .WriteInteger((int)item.BodyDirection)
             .WriteInteger((int)item.HeadDirection);
+
+        // The client reads this presence boolean unconditionally and only then the value
+        // (AS3 _SafeCls_3809.parseUserMove: `if(readBoolean()) jumpPower = readInteger()`).
+        // Omitting it truncated the packet and threw "End of buffer" on the whole bundle.
+        WriteOptionalInteger(packet, item.JumpPower);
     }
 
     public static void SerializeFloorItemMovement(
@@ -36,6 +41,9 @@ internal class WiredMovementSerializer
             .WriteInteger(item.ObjectId.Value)
             .WriteInteger(item.AnimationTime)
             .WriteInteger((int)item.Rotation);
+
+        WriteOptionalInteger(packet, item.OvershootingDistance);
+        WriteOptionalInteger(packet, item.CurveStrength);
     }
 
     public static void SerializeWallItemMovement(
@@ -63,5 +71,15 @@ internal class WiredMovementSerializer
             .WriteInteger(item.ObjectId.Value)
             .WriteInteger((int)item.BodyRotation)
             .WriteInteger((int)item.HeadRotation);
+    }
+
+    private static void WriteOptionalInteger(IServerPacket packet, int? value)
+    {
+        packet.WriteBoolean(value.HasValue);
+
+        if (value.HasValue)
+        {
+            packet.WriteInteger(value.Value);
+        }
     }
 }

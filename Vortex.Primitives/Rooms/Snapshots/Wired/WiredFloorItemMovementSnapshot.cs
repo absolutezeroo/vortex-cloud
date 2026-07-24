@@ -33,4 +33,10 @@ public sealed record WiredFloorItemMovementSnapshot
 
     [Id(8)]
     public required int AnimationTime { get; init; }
+
+    [Id(9)]
+    public int? OvershootingDistance { get; init; }
+
+    [Id(10)]
+    public int? CurveStrength { get; init; }
 }
