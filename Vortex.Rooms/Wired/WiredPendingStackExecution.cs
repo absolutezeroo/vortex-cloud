@@ -11,6 +11,7 @@ internal sealed class WiredPendingStackExecution
     public required IWiredPolicy Policy { get; init; }
     public required IWiredSelectionSet Selected { get; init; }
     public required IWiredSelectionSet SelectorPool { get; init; }
+    public required IWiredSelectionSet Signal { get; init; }
 
     /// <summary>The processing context the trigger fired with, kept so the stack's addon hooks
     /// (Before/AfterEffects) run against the real firing context when the chain actually executes —

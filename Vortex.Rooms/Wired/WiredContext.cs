@@ -19,6 +19,10 @@ public abstract class WiredContext(RoomGrain roomGrain) : IWiredContext
     public IWiredPolicy Policy { get; init; } = new WiredPolicy();
     public IWiredSelectionSet Selected { get; init; } = new WiredSelectionSet();
     public IWiredSelectionSet SelectorPool { get; init; } = new WiredSelectionSet();
+
+    // The furni/users carried by the signal that fired this stack (empty unless a receive-signal
+    // trigger fired it). Read by the SignalItems / SignalUsers sources and the from-signal selectors.
+    public IWiredSelectionSet Signal { get; init; } = new WiredSelectionSet();
     public Dictionary<string, int> Variables { get; init; } = [];
     public CancellationToken CancellationToken { get; init; }
 
@@ -89,6 +93,9 @@ public abstract class WiredContext(RoomGrain roomGrain) : IWiredContext
                             }
                         }
                         break;
+                    case WiredFurniSourceType.SignalItems:
+                        set.SelectedFurniIds.UnionWith(Signal.SelectedFurniIds);
+                        break;
                     case WiredFurniSourceType.AllRoomItems:
                         {
                             foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
@@ -109,6 +116,9 @@ public abstract class WiredContext(RoomGrain roomGrain) : IWiredContext
                 {
                     case WiredPlayerSourceType.TriggeredUser:
                         set.SelectedPlayerIds.UnionWith(Selected.SelectedPlayerIds);
+                        break;
+                    case WiredPlayerSourceType.SignalUsers:
+                        set.SelectedPlayerIds.UnionWith(Signal.SelectedPlayerIds);
                         break;
                 }
             }
@@ -140,6 +150,9 @@ public abstract class WiredContext(RoomGrain roomGrain) : IWiredContext
                     case WiredFurniSourceType.TriggeredItem:
                         result.SelectedFurniIds.UnionWith(Selected.SelectedFurniIds);
                         break;
+                    case WiredFurniSourceType.SignalItems:
+                        result.SelectedFurniIds.UnionWith(Signal.SelectedFurniIds);
+                        break;
                 }
             }
         }
@@ -157,6 +170,7 @@ public abstract class WiredContext(RoomGrain roomGrain) : IWiredContext
                         result.SelectedPlayerIds.UnionWith(SelectorPool.SelectedPlayerIds);
                         break;
                     case WiredPlayerSourceType.SignalUsers:
+                        result.SelectedPlayerIds.UnionWith(Signal.SelectedPlayerIds);
                         break;
                 }
             }

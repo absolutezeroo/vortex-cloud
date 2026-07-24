@@ -314,6 +314,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             Event = evt,
             Stack = stack,
             Trigger = trigger,
+            Signal = BuildSignalSelection(evt),
         };
 
         if (evt.CausedBy.Origin == ActionOrigin.Player && evt.CausedBy.PlayerId > 0)
@@ -366,6 +367,21 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         ScheduleStackExecution(ctx, now);
     }
 
+    /// <summary>Builds the signal payload for a fired stack: the furni and users a receive-signal
+    /// trigger was handed by the send-signal action. Empty for every other event.</summary>
+    private static WiredSelectionSet BuildSignalSelection(RoomEvent evt)
+    {
+        WiredSelectionSet signal = new();
+
+        if (evt is SignalRoomEvent signalEvt)
+        {
+            signal.SelectedFurniIds.UnionWith(signalEvt.FurniIds);
+            signal.SelectedPlayerIds.UnionWith(signalEvt.PlayerIds);
+        }
+
+        return signal;
+    }
+
     private void ScheduleStackExecution(WiredProcessingContext ctx, long dueAtMs)
     {
         // ctx.Stack was resolved live from the trigger's current tile, so every action in it is already
@@ -391,6 +407,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             Policy = ctx.Policy,
             Selected = ctx.Selected,
             SelectorPool = ctx.SelectorPool,
+            Signal = ctx.Signal,
             ProcessingContext = ctx,
             Version = 1,
             DueAtMs = dueAtMs,
@@ -513,6 +530,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
                     Policy = pending.Policy,
                     Selected = new WiredSelectionSet().UnionWith(pending.Selected),
                     SelectorPool = new WiredSelectionSet().UnionWith(pending.SelectorPool),
+                    Signal = new WiredSelectionSet().UnionWith(pending.Signal),
                 };
 
                 _ = action.FlashActivationStateAsync(ct);

@@ -12,6 +12,7 @@ public interface IWiredContext
     public IWiredPolicy Policy { get; }
     public IWiredSelectionSet Selected { get; }
     public IWiredSelectionSet SelectorPool { get; }
+    public IWiredSelectionSet Signal { get; }
     public Dictionary<string, int> Variables { get; }
 
     public Task<IWiredSelectionSet> GetWiredSelectionSetAsync(
