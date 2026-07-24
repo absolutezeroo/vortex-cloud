@@ -144,7 +144,7 @@ public class WiredActionChaseHabbo(
                     await ctx.ProcessFloorItemMovementAsync(
                         floorItem,
                         targetIdx,
-                        floorItem.Z,
+                        null,
                         floorItem.Rotation
                     );
                 }

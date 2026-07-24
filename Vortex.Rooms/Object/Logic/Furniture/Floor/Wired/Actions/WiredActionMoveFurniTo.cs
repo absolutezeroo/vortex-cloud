@@ -78,7 +78,7 @@ public class WiredActionMoveFurniTo(
                 await ctx.ProcessFloorItemMovementAsync(
                     floorItem,
                     _roomGrain.MapModule.ToIdx(targetX, targetY),
-                    floorItem.Z,
+                    null,
                     floorItem.Rotation
                 );
             }

@@ -100,7 +100,7 @@ public class WiredActionMoveFurniToFurni(
             await ctx.ProcessFloorItemMovementAsync(
                 floorItem,
                 _roomGrain.MapModule.ToIdx(targetX, targetY),
-                floorItem.Z,
+                null,
                 floorItem.Rotation
             );
         }

@@ -122,7 +122,7 @@ public class WiredActionFleeHabbo(
                     await ctx.ProcessFloorItemMovementAsync(
                         floorItem,
                         targetIdx,
-                        floorItem.Z,
+                        null,
                         floorItem.Rotation
                     );
                 }
