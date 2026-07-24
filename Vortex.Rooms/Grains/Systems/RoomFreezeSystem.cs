@@ -1,12 +1,17 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Messages.Outgoing.Room.Action;
+using Vortex.Primitives.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
+using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Rooms.Grains.Systems.Freeze;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Freeze;
 
@@ -16,8 +21,9 @@ namespace Vortex.Rooms.Grains.Systems;
 /// Grain-side controller for the room's Freeze minigame — the thin, IO-owning wrapper around the pure
 /// <see cref="RoomFreezeGame"/> (mirroring how <see cref="RoomGameSystem"/> wraps
 /// <see cref="GameTeamState"/>). It turns the game's state changes into avatar-effect broadcasts, gate
-/// counter updates and (later) teleports and score, and it resolves the live balance from server config
-/// each round. All calls run inside the room grain's single-threaded turn, so no locking.
+/// counter updates, teleports and score, drives the snowball throw pipeline and the 1s freeze tick, and
+/// resolves the live balance from server config each round. All calls run inside the room grain's
+/// single-threaded turn, so no locking.
 /// <para>
 /// The Freeze game is deliberately separate from <see cref="RoomGameSystem"/> (the wired Battle-Banzai
 /// style team game): players join via physical gates, carry rich per-player state (lives, ammo,
@@ -29,12 +35,28 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
     private readonly RoomGrain _roomGrain = roomGrain;
     private readonly RoomFreezeGame _game = new();
 
+    // A snowball's flight: the blast lands BlastDelayMs after the throw, then the ripple resets
+    // ResetDelayMs after that. Kept as time-ordered queues drained each room tick.
+    private readonly PriorityQueue<FreezeBlast, long> _blasts = new();
+    private readonly PriorityQueue<List<int>, long> _resets = new();
+
+    private long _currentTickMs;
+    private long _nextPlayerTickMs;
+
+    private readonly record struct FreezeBlast(
+        int X,
+        int Y,
+        int Radius,
+        bool Diagonal,
+        PlayerId Thrower
+    );
+
     public bool IsRunning => _game.IsRunning;
 
     public GameTeamColor GetTeam(PlayerId playerId) => _game.GetTeam(playerId);
 
-    /// <summary>A player walked onto a team gate — toggle their membership and reflect it (effect +
-    /// gate counters). Only takes effect before the round starts.</summary>
+    // ---- lifecycle ---------------------------------------------------------
+
     public async Task OnGateWalkOnAsync(PlayerId playerId, GameTeamColor team, CancellationToken ct)
     {
         FreezeGateResult result = _game.ToggleGate(playerId, team);
@@ -54,8 +76,6 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         await RefreshGateCountersAsync();
     }
 
-    /// <summary>Starts the round when the game timer starts: resolves live balance, resets loadouts,
-    /// applies team effects and refreshes the gate counters.</summary>
     public async Task StartGameAsync(CancellationToken ct)
     {
         _game.Settings = await FreezeConfig.ResolveAsync(
@@ -67,6 +87,10 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
             return;
         }
 
+        _blasts.Clear();
+        _resets.Clear();
+        _nextPlayerTickMs = 0;
+
         foreach ((PlayerId playerId, FreezePlayerState player) in _game.Players)
         {
             await BroadcastEffectAsync(playerId, player.CurrentEffect());
@@ -75,11 +99,12 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         await RefreshGateCountersAsync();
     }
 
-    /// <summary>Ends the round when the game timer expires: stops the game and clears every player's
-    /// effect. Returns the winning team (highest score, None on a scoreless game).</summary>
     public async Task<GameTeamColor> EndGameAsync(CancellationToken ct)
     {
         GameTeamColor winner = _game.Stop();
+
+        _blasts.Clear();
+        _resets.Clear();
 
         foreach ((PlayerId playerId, _) in _game.Players)
         {
@@ -91,7 +116,6 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         return winner;
     }
 
-    /// <summary>Drop a player who left the room from the game.</summary>
     public async Task OnPlayerLeftAsync(PlayerId playerId, CancellationToken ct)
     {
         if (_game.Remove(playerId) is not null)
@@ -100,7 +124,283 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         }
     }
 
-    /// <summary>Sets each team gate's displayed state to that team's living member count.</summary>
+    /// <summary>Room-tick entry: lands due snowball blasts, resets finished ripples and runs the 1s
+    /// freeze/shield countdown. Cheap when no game is running.</summary>
+    public async Task ProcessAsync(long now, CancellationToken ct)
+    {
+        _currentTickMs = now;
+
+        if (!_game.IsRunning)
+        {
+            return;
+        }
+
+        while (_blasts.TryPeek(out FreezeBlast blast, out long blastDue) && blastDue <= now)
+        {
+            _blasts.Dequeue();
+            await HandleBlastAsync(blast, now, ct);
+        }
+
+        while (_resets.TryPeek(out List<int>? tiles, out long resetDue) && resetDue <= now)
+        {
+            _resets.Dequeue();
+            await ResetTilesAsync(tiles);
+        }
+
+        if (_nextPlayerTickMs == 0)
+        {
+            _nextPlayerTickMs = now + FreezeConstants.FreezeTickMs;
+        }
+
+        if (now >= _nextPlayerTickMs)
+        {
+            await TickPlayersAsync(ct);
+            _nextPlayerTickMs = now + FreezeConstants.FreezeTickMs;
+        }
+    }
+
+    private async Task TickPlayersAsync(CancellationToken ct)
+    {
+        foreach ((PlayerId playerId, FreezePlayerState player) in _game.Players.ToList())
+        {
+            if (player.Tick())
+            {
+                await BroadcastEffectAsync(playerId, player.CurrentEffect());
+            }
+        }
+    }
+
+    /// <summary>A player double-clicked a freeze tile: launch a snowball at it if the rules allow (game
+    /// running, has a snowball, target is an idle arena tile adjacent to the thrower).</summary>
+    public async Task ThrowBallAsync(
+        PlayerId playerId,
+        int targetX,
+        int targetY,
+        CancellationToken ct
+    )
+    {
+        if (!_game.IsRunning)
+        {
+            return;
+        }
+
+        FreezePlayerState? player = _game.GetPlayer(playerId);
+
+        if (player is null || !player.CanThrow || !TryGetAvatar(playerId, out IRoomAvatar? thrower))
+        {
+            return;
+        }
+
+        // Must be the thrower's own tile or one adjacent (Chebyshev <= 1).
+        if (Math.Max(Math.Abs(thrower!.X - targetX), Math.Abs(thrower.Y - targetY)) > 1)
+        {
+            return;
+        }
+
+        int targetIdx = _roomGrain.MapModule.ToIdx(targetX, targetY);
+        FurnitureFreezeTileLogic? tile = FindFreezeTile(targetIdx);
+
+        // Only onto an idle arena tile (state 0) — never mid-animation.
+        if (tile is null || tile.GetState() != 0)
+        {
+            return;
+        }
+
+        player.SpendSnowball();
+
+        int radius = player.TakeThrowRadius();
+        bool diagonal = player.NextDiagonal;
+        player.NextDiagonal = false;
+
+        // Rise animation now; the blast lands BlastDelayMs later.
+        await tile.SetStateAsync((radius + 1) * 1000);
+
+        _blasts.Enqueue(
+            new FreezeBlast(targetX, targetY, radius, diagonal, playerId),
+            _currentTickMs + FreezeConstants.BlastDelayMs
+        );
+    }
+
+    private async Task HandleBlastAsync(FreezeBlast blast, long now, CancellationToken ct)
+    {
+        FreezePlayerState? thrower = _game.GetPlayer(blast.Thrower);
+        List<int> animated = [];
+
+        foreach (
+            (int x, int y) in FreezeBlastGeometry.AffectedTiles(
+                blast.X,
+                blast.Y,
+                blast.Radius,
+                blast.Diagonal
+            )
+        )
+        {
+            int idx = _roomGrain.MapModule.ToIdx(x, y);
+
+            if (idx < 0 || FindFreezeTile(idx) is not FurnitureFreezeTileLogic tile)
+            {
+                // Only arena tiles blast (and only they can freeze someone standing on them).
+                continue;
+            }
+
+            await tile.SetStateAsync(11000);
+            animated.Add(idx);
+
+            await FreezeOccupantsAsync(idx, thrower, blast.Thrower, ct);
+        }
+
+        if (animated.Count > 0)
+        {
+            _resets.Enqueue(
+                animated,
+                now + FreezeConstants.ResetDelayMs - FreezeConstants.BlastDelayMs
+            );
+        }
+    }
+
+    private async Task FreezeOccupantsAsync(
+        int tileIdx,
+        FreezePlayerState? thrower,
+        PlayerId throwerId,
+        CancellationToken ct
+    )
+    {
+        if (tileIdx < 0 || tileIdx >= _roomGrain._state.TileAvatarStacks.Length)
+        {
+            return;
+        }
+
+        foreach (RoomObjectId avatarId in _roomGrain._state.TileAvatarStacks[tileIdx].ToList())
+        {
+            if (
+                !_roomGrain._state.AvatarsByObjectId.TryGetValue(avatarId, out IRoomAvatar? avatar)
+                || avatar is not IRoomPlayer roomPlayer
+            )
+            {
+                continue;
+            }
+
+            FreezePlayerState? victim = _game.GetPlayer(roomPlayer.PlayerId);
+
+            if (victim is null || !victim.CanBeFrozen)
+            {
+                continue;
+            }
+
+            // Freezing an enemy scores; catching your own team (or yourself) is a friendly-fire penalty.
+            if (thrower is not null)
+            {
+                int points =
+                    victim.Team == thrower.Team
+                        ? -_game.Settings.FreezePlayerPoints
+                        : _game.Settings.FreezePlayerPoints;
+
+                _game.AddTeamScore(thrower.Team, points);
+            }
+
+            bool died = victim.Freeze();
+
+            if (died)
+            {
+                await EliminateAsync(victim, avatar, ct);
+            }
+            else
+            {
+                await BroadcastEffectAsync(victim.PlayerId, victim.CurrentEffect());
+            }
+        }
+    }
+
+    private async Task EliminateAsync(
+        FreezePlayerState victim,
+        IRoomAvatar avatar,
+        CancellationToken ct
+    )
+    {
+        await BroadcastEffectAsync(victim.PlayerId, FreezeConstants.NoEffect);
+
+        if (TryFindRandomExitTile(out int exitIdx))
+        {
+            _roomGrain.MapModule.RollAvatar(
+                avatar,
+                exitIdx,
+                _roomGrain._state.TileHeights[exitIdx]
+            );
+
+            await _roomGrain.SendComposerToRoomAsync(
+                new UsersMessageComposer { Avatars = [avatar.GetSnapshot()] }
+            );
+        }
+
+        _game.Remove(victim.PlayerId);
+
+        await RefreshGateCountersAsync();
+    }
+
+    private async Task ResetTilesAsync(List<int> tileIndices)
+    {
+        foreach (int idx in tileIndices)
+        {
+            if (FindFreezeTile(idx) is FurnitureFreezeTileLogic tile)
+            {
+                await tile.SetStateAsync(0);
+            }
+        }
+    }
+
+    private bool TryGetAvatar(PlayerId playerId, out IRoomAvatar? avatar)
+    {
+        avatar = null;
+
+        return _roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId)
+            && _roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out avatar);
+    }
+
+    private FurnitureFreezeTileLogic? FindFreezeTile(int tileIdx)
+    {
+        if (tileIdx < 0 || tileIdx >= _roomGrain._state.TileFloorStacks.Length)
+        {
+            return null;
+        }
+
+        foreach (RoomObjectId id in _roomGrain._state.TileFloorStacks[tileIdx])
+        {
+            if (
+                _roomGrain._state.ItemsById.TryGetValue(id, out IRoomItem? item)
+                && item.Logic is FurnitureFreezeTileLogic tile
+            )
+            {
+                return tile;
+            }
+        }
+
+        return null;
+    }
+
+    private bool TryFindRandomExitTile(out int tileIdx)
+    {
+        List<int> exits = [];
+
+        foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
+        {
+            if (item.Logic is FurnitureFreezeExitLogic && item is IRoomFloorItem floor)
+            {
+                exits.Add(_roomGrain.MapModule.ToIdx(floor.X, floor.Y));
+            }
+        }
+
+        if (exits.Count == 0)
+        {
+            tileIdx = -1;
+
+            return false;
+        }
+
+        tileIdx = exits[Random.Shared.Next(exits.Count)];
+
+        return true;
+    }
+
     private async Task RefreshGateCountersAsync()
     {
         foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
@@ -114,7 +414,6 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         }
     }
 
-    /// <summary>Sets the avatar effect and broadcasts it so the room (and late joiners) re-syncs it.</summary>
     private Task BroadcastEffectAsync(PlayerId playerId, int effectId)
     {
         if (!_roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId))
