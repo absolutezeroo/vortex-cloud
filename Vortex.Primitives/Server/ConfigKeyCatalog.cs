@@ -190,6 +190,107 @@ public static class ConfigKeyCatalog
             "Max rooms a player may own",
             "Rooms"
         ),
+        // Freeze minigame balance. Keys/defaults mirror Vortex.Rooms FreezeConfig / FreezeSettings
+        // (duplicated here because Primitives can't reference that feature project).
+        new("freeze.start_lives", "3", ConfigValueKind.Int, "Freeze: starting lives", "Freeze"),
+        new(
+            "freeze.max_lives",
+            "5",
+            ConfigValueKind.Int,
+            "Freeze: max lives (extra-life cap)",
+            "Freeze"
+        ),
+        new(
+            "freeze.start_snowballs",
+            "1",
+            ConfigValueKind.Int,
+            "Freeze: starting snowballs",
+            "Freeze"
+        ),
+        new(
+            "freeze.max_snowballs",
+            "5",
+            ConfigValueKind.Int,
+            "Freeze: max carried snowballs",
+            "Freeze"
+        ),
+        new(
+            "freeze.max_explosion_boost",
+            "5",
+            ConfigValueKind.Int,
+            "Freeze: max blast radius boost",
+            "Freeze"
+        ),
+        new(
+            "freeze.frozen_ticks",
+            "5",
+            ConfigValueKind.Int,
+            "Freeze: frozen duration in game ticks (1s each)",
+            "Freeze"
+        ),
+        new(
+            "freeze.protection_ticks",
+            "12",
+            ConfigValueKind.Int,
+            "Freeze: shield duration in game ticks (1s each)",
+            "Freeze"
+        ),
+        new(
+            "freeze.freeze_lose_snowballs",
+            "1",
+            ConfigValueKind.Int,
+            "Freeze: snowballs lost when frozen",
+            "Freeze"
+        ),
+        new(
+            "freeze.freeze_lose_boost",
+            "1",
+            ConfigValueKind.Int,
+            "Freeze: blast boost lost when frozen",
+            "Freeze"
+        ),
+        new(
+            "freeze.powerup_chance_percent",
+            "25",
+            ConfigValueKind.Int,
+            "Freeze: chance (%) a destroyed block yields a power-up",
+            "Freeze"
+        ),
+        new(
+            "freeze.protection_stacks",
+            "false",
+            ConfigValueKind.Bool,
+            "Freeze: shields stack in duration instead of refreshing",
+            "Freeze"
+        ),
+        new(
+            "freeze.points_freeze_player",
+            "10",
+            ConfigValueKind.Int,
+            "Freeze: points for freezing an enemy",
+            "Freeze"
+        ),
+        new(
+            "freeze.points_destroy_block",
+            "5",
+            ConfigValueKind.Int,
+            "Freeze: points for destroying a block",
+            "Freeze"
+        ),
+        new(
+            "freeze.points_powerup",
+            "5",
+            ConfigValueKind.Int,
+            "Freeze: points for collecting a power-up",
+            "Freeze"
+        ),
+        new(
+            "freeze.max_players_per_team",
+            "5",
+            ConfigValueKind.Int,
+            "Freeze: max players per team",
+            "Freeze"
+        ),
     ];
 
     /// <summary>The descriptor for <paramref name="key"/>, or null if the key is not a known config key.</summary>
