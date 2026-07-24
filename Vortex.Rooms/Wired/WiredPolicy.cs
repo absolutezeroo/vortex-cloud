@@ -7,6 +7,7 @@ namespace Vortex.Rooms.Wired;
 public sealed class WiredPolicy : IWiredPolicy
 {
     public WiredConditionModeType ConditionMode { get; set; } = WiredConditionModeType.All;
+    public int ConditionCompareValue { get; set; }
     public WiredEffectModeType EffectMode { get; set; } = WiredEffectModeType.All;
     public WiredAnimationModeType AnimationMode { get; set; } = WiredAnimationModeType.Smooth;
     public int AnimationTimeMs { get; set; } = 50;

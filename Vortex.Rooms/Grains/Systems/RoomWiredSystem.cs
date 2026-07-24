@@ -885,12 +885,31 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             return true;
         }
 
+        // Every condition is evaluated, not short-circuited: the counting modes need the exact number
+        // that passed, and conditions are pure predicates over room state.
+        int matched = 0;
+
+        foreach (IWiredCondition condition in conditions)
+        {
+            if (condition.Evaluate(ctx))
+            {
+                matched++;
+            }
+        }
+
+        int total = conditions.Count;
+        int target = ctx.Policy.ConditionCompareValue;
+
         return ctx.Policy.ConditionMode switch
         {
-            WiredConditionModeType.None => true,
-            WiredConditionModeType.Any => conditions.Exists(c => c.Evaluate(ctx)),
-            WiredConditionModeType.All => conditions.TrueForAll(c => c.Evaluate(ctx)),
-            _ => conditions.TrueForAll(c => c.Evaluate(ctx)),
+            WiredConditionModeType.All => matched == total,
+            WiredConditionModeType.AtLeastOne => matched > 0,
+            WiredConditionModeType.NotAll => matched < total,
+            WiredConditionModeType.None => matched == 0,
+            WiredConditionModeType.CountLessThan => matched < target,
+            WiredConditionModeType.CountExactly => matched == target,
+            WiredConditionModeType.CountMoreThan => matched > target,
+            _ => matched == total,
         };
     }
 }

@@ -13,9 +13,8 @@ using Vortex.Primitives.Rooms.Wired;
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Actions;
 
 /// <summary>Moves the furni in the first selection slot onto the tile of the furni in the second slot
-/// (Habbo's "move furni to furni", <c>wf_act_cnd_furni_to_furni</c>, no int params). Slot 0 =
-/// StuffIds (the furni to move), slot 1 = StuffIds2 (the destination furni). Invalid moves are
-/// skipped.</summary>
+/// (Habbo's "move furni to furni", no int params). Slot 0 = StuffIds (the furni to move), slot 1 =
+/// StuffIds2 (the destination furni). Invalid moves are skipped.</summary>
 [RoomObjectLogic("wf_act_cnd_move_furni")]
 public class WiredActionMoveFurniToFurni(
     IGrainFactory grainFactory,
@@ -24,6 +23,19 @@ public class WiredActionMoveFurniToFurni(
 ) : FurnitureWiredActionLogic(grainFactory, stuffDataFactory, ctx)
 {
     public override int WiredCode => (int)WiredActionType.MOVE_FURNI_TO_FURNI;
+
+    // Two furni slots, matching the client's mv.0 ("the moving furni") and mv.1 ("the target furni").
+    // Declaring them is what makes the client render the pickers at all — without it StuffIds and
+    // StuffIds2 can never be filled and the action is inert however it is configured.
+    public override List<WiredFurniSourceType[]> GetAllowedFurniSources() =>
+        [
+            [
+                WiredFurniSourceType.SelectedItems,
+                WiredFurniSourceType.SelectorItems,
+                WiredFurniSourceType.SignalItems,
+            ],
+            [WiredFurniSourceType.SelectedItems, WiredFurniSourceType.SelectorItems],
+        ];
 
     public override async Task<bool> ExecuteAsync(IWiredExecutionContext ctx, CancellationToken ct)
     {
