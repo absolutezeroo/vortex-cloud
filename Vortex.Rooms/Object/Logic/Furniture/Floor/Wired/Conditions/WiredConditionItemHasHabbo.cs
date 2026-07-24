@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Orleans;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Rooms.Enums.Wired;
@@ -5,6 +6,7 @@ using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
 using Vortex.Primitives.Rooms.Wired;
+using Vortex.Rooms.Wired.Rules;
 
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Conditions;
 
@@ -20,9 +22,15 @@ public class WiredConditionItemHasHabbo(
 {
     public override int WiredCode => (int)WiredConditionType.FURNIS_HAVE_AVATARS;
 
+    // Client radio (loc requireall.*): 0 "if one of the selected furni", 1 "if all of them". It was
+    // neither declared - so the box could not be saved - nor read, so it always behaved as "one".
+    public override List<IWiredParamRule> GetIntParamRules() => [new WiredBoolParamRule(false)];
+
     public override bool Evaluate(IWiredProcessingContext ctx)
     {
-        bool result = false;
+        bool requireAll = _wiredData.IntParams.Count > 0 && _wiredData.GetIntParam<bool>(0);
+        int considered = 0;
+        int occupied = 0;
 
         foreach (int furniId in GetStuffIds())
         {
@@ -36,16 +44,20 @@ public class WiredConditionItemHasHabbo(
 
             int idx = _roomGrain.MapModule.ToIdx(floor.X, floor.Y);
 
-            if (
-                idx >= 0
-                && idx < _roomGrain._state.TileAvatarStacks.Length
-                && _roomGrain._state.TileAvatarStacks[idx].Count > 0
-            )
+            if (idx < 0 || idx >= _roomGrain._state.TileAvatarStacks.Length)
             {
-                result = true;
-                break;
+                continue;
+            }
+
+            considered++;
+
+            if (_roomGrain._state.TileAvatarStacks[idx].Count > 0)
+            {
+                occupied++;
             }
         }
+
+        bool result = considered > 0 && (requireAll ? occupied == considered : occupied > 0);
 
         return IsNegative() ? !result : result;
     }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Orleans;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Rooms.Enums.Wired;
@@ -6,6 +7,7 @@ using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
 using Vortex.Primitives.Rooms.Wired;
+using Vortex.Rooms.Wired.Rules;
 
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Conditions;
 
@@ -21,9 +23,15 @@ public class WiredConditionItemHasItems(
 {
     public override int WiredCode => (int)WiredConditionType.HAS_STACKED_FURNIS;
 
+    // Client radio (loc requireall.*): 0 "if one of the selected furni", 1 "if all of them". It was
+    // neither declared - so the box could not be saved - nor read, so it always behaved as "one".
+    public override List<IWiredParamRule> GetIntParamRules() => [new WiredBoolParamRule(false)];
+
     public override bool Evaluate(IWiredProcessingContext ctx)
     {
-        bool result = false;
+        bool requireAll = _wiredData.IntParams.Count > 0 && _wiredData.GetIntParam<bool>(0);
+        int considered = 0;
+        int stacked = 0;
 
         foreach (int furniId in GetStuffIds())
         {
@@ -42,6 +50,9 @@ public class WiredConditionItemHasItems(
                 continue;
             }
 
+            considered++;
+            bool hasStacked = false;
+
             foreach (RoomObjectId otherId in _roomGrain._state.TileFloorStacks[idx])
             {
                 if (
@@ -51,16 +62,18 @@ public class WiredConditionItemHasItems(
                     && otherFloor.Z > floor.Z
                 )
                 {
-                    result = true;
+                    hasStacked = true;
                     break;
                 }
             }
 
-            if (result)
+            if (hasStacked)
             {
-                break;
+                stacked++;
             }
         }
+
+        bool result = considered > 0 && (requireAll ? stacked == considered : stacked > 0);
 
         return IsNegative() ? !result : result;
     }
