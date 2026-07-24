@@ -17,7 +17,9 @@ public sealed class FreezePlayerState(
     FreezeSettings settings
 )
 {
-    private readonly FreezeSettings _settings = settings;
+    // Refreshed from the live server config each round by Reset(), so config edits between rounds take
+    // effect for players who joined a gate before the round started.
+    private FreezeSettings _settings = settings;
 
     public PlayerId PlayerId { get; } = playerId;
     public GameTeamColor Team { get; } = team;
@@ -50,9 +52,11 @@ public sealed class FreezePlayerState(
     /// <summary>Has a snowball to throw and is able to act.</summary>
     public bool CanThrow => Snowballs > 0 && !IsFrozen && !Dead;
 
-    /// <summary>Reset to the starting loadout for a fresh game.</summary>
-    public void Reset()
+    /// <summary>Reset to the starting loadout for a fresh game, adopting the round's freshly-resolved
+    /// balance (so live config edits reach players who joined before the round started).</summary>
+    public void Reset(FreezeSettings settings)
     {
+        _settings = settings;
         Lives = _settings.StartLives;
         Snowballs = _settings.StartSnowballs;
         ExplosionBoost = 0;

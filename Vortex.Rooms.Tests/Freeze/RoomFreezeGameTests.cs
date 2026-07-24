@@ -52,6 +52,39 @@ public sealed class RoomFreezeGameTests
     }
 
     [Fact]
+    public void Switching_To_A_Full_Team_Keeps_Current_Membership()
+    {
+        RoomFreezeGame game = new()
+        {
+            Settings = FreezeSettings.Default with { MaxPlayersPerTeam = 1 },
+        };
+        game.ToggleGate(P(1), GameTeamColor.Blue); // Blue is now full (1/1)
+        game.ToggleGate(P(2), GameTeamColor.Red);
+
+        // P2 tries to switch to full Blue -> rejected, and must stay on Red (not stripped to no team).
+        game.ToggleGate(P(2), GameTeamColor.Blue).Should().Be(FreezeGateResult.None);
+        game.GetTeam(P(2)).Should().Be(GameTeamColor.Red);
+        game.GetTeamCount(GameTeamColor.Red).Should().Be(1);
+    }
+
+    [Fact]
+    public void Start_Adopts_Live_Settings_For_Already_Joined_Players()
+    {
+        RoomFreezeGame game = new(); // Settings = Default (StartLives 3)
+        game.ToggleGate(P(1), GameTeamColor.Red); // player joins under the current settings
+        game.GetPlayer(P(1))!.Lives.Should().Be(FreezeSettings.Default.StartLives);
+
+        // Admin edits the config after the player joined but before the round starts.
+        game.Settings = FreezeSettings.Default with
+        {
+            StartLives = 7,
+        };
+        game.Start();
+
+        game.GetPlayer(P(1))!.Lives.Should().Be(7);
+    }
+
+    [Fact]
     public void Gate_Is_Ignored_While_Running()
     {
         RoomFreezeGame game = new();

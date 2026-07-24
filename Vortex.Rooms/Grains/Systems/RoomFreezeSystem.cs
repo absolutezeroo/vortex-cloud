@@ -15,7 +15,9 @@ using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Rooms.Grains.Systems.Freeze;
+using Vortex.Rooms.Object.Logic.Furniture.Floor;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Freeze;
+using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Triggers;
 
 namespace Vortex.Rooms.Grains.Systems;
 
@@ -137,6 +139,9 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
     {
         if (_game.Remove(playerId) is not null)
         {
+            // The playing-game flag is session-scoped, so it must be cleared here too — leaving the room
+            // by any means other than the exit tile would otherwise strand the client in "game mode".
+            await SetPlayingModeAsync(playerId, false);
             await RefreshGateCountersAsync();
         }
     }
@@ -184,6 +189,7 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         if (_endEarlyArmed && _game.LivingTeamCount() <= 1)
         {
             await EndGameAsync(ct);
+            ResetGameTimers();
 
             return;
         }
@@ -232,8 +238,12 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
             return;
         }
 
-        // Must be the thrower's own tile or one adjacent (Chebyshev <= 1).
-        if (Math.Max(Math.Abs(thrower!.X - targetX), Math.Abs(thrower.Y - targetY)) > 1)
+        // Must be the thrower's own tile or one adjacent (Chebyshev <= 1), and on the map (an edge
+        // thrower could otherwise aim at an off-map coordinate that ToIdx aliases onto a real tile).
+        if (
+            Math.Max(Math.Abs(thrower!.X - targetX), Math.Abs(thrower.Y - targetY)) > 1
+            || !_roomGrain.MapModule.InBounds(targetX, targetY)
+        )
         {
             return;
         }
@@ -288,12 +298,14 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
             )
         )
         {
-            int idx = _roomGrain.MapModule.ToIdx(x, y);
-
-            if (idx < 0)
+            // Bounds-check before ToIdx: a blast arm can project off the map, and ToIdx does no bounds
+            // check, so a negative/overflowing coordinate would otherwise alias onto an unrelated tile.
+            if (!_roomGrain.MapModule.InBounds(x, y))
             {
                 continue;
             }
+
+            int idx = _roomGrain.MapModule.ToIdx(x, y);
 
             // Arena tiles flash and freeze whoever stands on them...
             if (FindFreezeTile(idx) is FurnitureFreezeTileLogic tile)
@@ -595,6 +607,20 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
             }
 
             await gate.SetStateAsync(_game.GetTeamCount(gate.TeamColor));
+        }
+    }
+
+    /// <summary>Resets the room's game-timer furni after a Freeze round finishes on its own (early-end),
+    /// so its countdown and <c>gameActive</c> flag clear and a controller can immediately start the next
+    /// round. On a normal timer expiry the furni resets itself, so this is only needed for early-end.</summary>
+    private void ResetGameTimers()
+    {
+        foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
+        {
+            if (item.Logic is FurnitureGameTimerLogic and IWiredCounter counter)
+            {
+                counter.ResetClock();
+            }
         }
     }
 

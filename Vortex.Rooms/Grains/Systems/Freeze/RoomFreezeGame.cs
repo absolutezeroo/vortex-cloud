@@ -93,22 +93,25 @@ public sealed class RoomFreezeGame
             return FreezeGateResult.None;
         }
 
-        if (_players.TryGetValue(playerId, out FreezePlayerState? existing))
+        // Touching your own team's gate leaves it.
+        if (
+            _players.TryGetValue(playerId, out FreezePlayerState? existing)
+            && existing.Team == team
+        )
         {
-            // Already on this team -> leave; on another team's gate -> switch (leave then rejoin).
             _players.Remove(playerId);
 
-            if (existing.Team == team)
-            {
-                return FreezeGateResult.Left;
-            }
+            return FreezeGateResult.Left;
         }
 
+        // Joining or switching: the target team must have room. Check before leaving the current team so
+        // a rejected switch never strips the player of their existing membership.
         if (GetTeamCount(team) >= Settings.MaxPlayersPerTeam)
         {
-            return existing is not null ? FreezeGateResult.Left : FreezeGateResult.None;
+            return FreezeGateResult.None;
         }
 
+        _players.Remove(playerId); // leave the old team if switching
         _players[playerId] = new FreezePlayerState(playerId, team, Settings);
 
         return FreezeGateResult.Joined;
@@ -139,7 +142,7 @@ public sealed class RoomFreezeGame
 
         foreach (FreezePlayerState player in _players.Values)
         {
-            player.Reset();
+            player.Reset(Settings);
         }
 
         Phase = FreezeGamePhase.Running;
