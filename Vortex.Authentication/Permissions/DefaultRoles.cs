@@ -57,6 +57,8 @@ internal static class DefaultRoles
             [
                 Capabilities.Room.BuildAny,
                 Capabilities.Room.ModerateAny,
+                Capabilities.Room.FurniEdit,
+                Capabilities.Furniture.DefinitionEdit,
                 Capabilities.Navigator.StaffPick,
                 Capabilities.Moderation.Kick,
                 Capabilities.Moderation.Mute,

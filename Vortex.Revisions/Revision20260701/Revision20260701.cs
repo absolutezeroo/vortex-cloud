@@ -1063,6 +1063,22 @@ public class Revision20260701(IOptions<ProtocolLimitsConfig> protocolLimits) : I
             { MessageEvent.MoveObjectMessageEvent, new MoveObjectMessageParser() },
             { MessageEvent.MovePetMessageEvent, new MovePetMessageParser() },
             { MessageEvent.MoveWallItemMessageEvent, new MoveWallItemMessageParser() },
+            {
+                MessageEvent.VortexGetFurniEditorDataMessageEvent,
+                new VortexGetFurniEditorDataMessageParser()
+            },
+            {
+                MessageEvent.VortexApplyFurniEditMessageEvent,
+                new VortexApplyFurniEditMessageParser()
+            },
+            {
+                MessageEvent.VortexGetFurniDefinitionMessageEvent,
+                new VortexGetFurniDefinitionMessageParser()
+            },
+            {
+                MessageEvent.VortexApplyFurniDefinitionMessageEvent,
+                new VortexApplyFurniDefinitionMessageParser()
+            },
             { MessageEvent.PickupObjectMessageEvent, new PickupObjectMessageParser() },
             { MessageEvent.PlaceBotMessageEvent, new PlaceBotMessageParser() },
             { MessageEvent.PlaceObjectMessageEvent, new PlaceObjectMessageParser() },
@@ -2908,6 +2924,24 @@ public class Revision20260701(IOptions<ProtocolLimitsConfig> protocolLimits) : I
                 typeof(ObjectUpdateMessageComposer),
                 new ObjectUpdateMessageComposerSerializer(
                     MessageComposer.ObjectUpdateMessageComposer
+                )
+            },
+            {
+                typeof(VortexFurniEditorDataMessageComposer),
+                new VortexFurniEditorDataMessageComposerSerializer(
+                    MessageComposer.VortexFurniEditorDataMessageComposer
+                )
+            },
+            {
+                typeof(VortexFurniEditorRightsMessageComposer),
+                new VortexFurniEditorRightsMessageComposerSerializer(
+                    MessageComposer.VortexFurniEditorRightsMessageComposer
+                )
+            },
+            {
+                typeof(VortexFurniDefinitionMessageComposer),
+                new VortexFurniDefinitionMessageComposerSerializer(
+                    MessageComposer.VortexFurniDefinitionMessageComposer
                 )
             },
             {

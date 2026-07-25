@@ -22,6 +22,7 @@ using Vortex.Primitives.Messages.Outgoing.Mysterybox;
 using Vortex.Primitives.Messages.Outgoing.Navigator;
 using Vortex.Primitives.Messages.Outgoing.Notifications;
 using Vortex.Primitives.Messages.Outgoing.Perk;
+using Vortex.Primitives.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Messages.Outgoing.Users;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Networking;
@@ -196,6 +197,19 @@ public class SSOTicketMessageHandler(
             {
                 await SendModeratorBootstrapAsync(ctx, permissions, ct).ConfigureAwait(false);
             }
+
+            // Vortex-specific: tells the client whether to offer the in-client furni editor's
+            // button. Sent unconditionally, including the false case, so the client never has to
+            // infer the answer from a missing packet. It is a UI hint only — both furni-editor
+            // handlers re-check the capability on every request.
+            await ctx.SendComposerAsync(
+                    new VortexFurniEditorRightsMessageComposer
+                    {
+                        CanEdit = permissions.Has(Capabilities.Room.FurniEdit),
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
 
             if (sub.IsActive)
             {

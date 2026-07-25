@@ -111,6 +111,26 @@ public sealed class ItemPickedUpForensicsHandler(IItemForensics forensics)
     }
 }
 
+public sealed class ItemStaffEditedForensicsHandler(IItemForensics forensics)
+    : IEventHandler<ItemStaffEditedEvent>
+{
+    public ValueTask HandleAsync(ItemStaffEditedEvent e, EventContext ctx, CancellationToken ct)
+    {
+        forensics.Record(
+            new ItemForensicEvent
+            {
+                ItemId = e.ItemId,
+                EventType = ItemEventType.StaffAction,
+                ActorPlayerId = e.ActorPlayerId,
+                RoomId = e.RoomId,
+                Data = e.Data,
+            }
+        );
+
+        return ValueTask.CompletedTask;
+    }
+}
+
 public sealed class ItemDeletedForensicsHandler(IItemForensics forensics)
     : IEventHandler<ItemDeletedEvent>
 {

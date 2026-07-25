@@ -21,6 +21,25 @@ public static class Capabilities
 
         /// <summary>Moderate (kick/mute/settings) in any room.</summary>
         public const string ModerateAny = "room.moderate.any";
+
+        /// <summary>Rewrite a placed furni's stored row through the in-client furni editor:
+        /// transform, extra data, owner and definition. Deliberately separate from
+        /// <see cref="BuildAny"/> — that only lifts the ownership/room-rights check on the ordinary
+        /// place/move/pickup path, and every edit it allows is one an ordinary player could also
+        /// perform in their own room. This one grants writes with no player-facing equivalent
+        /// (reassigning ownership, swapping the definition out from under an item, setting an
+        /// arbitrary altitude), so it is granted separately.</summary>
+        public const string FurniEdit = "room.furni.edit";
+    }
+
+    public static class Furniture
+    {
+        /// <summary>Edit rows in <c>furniture_definitions</c> from inside the game client: the
+        /// interaction (logic), footprint, stack height, walk/sit/lay flags, state count and trade
+        /// policy of a furniture *type*. Hotel-wide by nature — one edit changes every placed copy
+        /// and every future purchase — which is why it is not folded into
+        /// <see cref="Room.FurniEdit"/>, whose blast radius is a single placed item.</summary>
+        public const string DefinitionEdit = "furniture.definition.edit";
     }
 
     public static class Moderation
@@ -94,6 +113,8 @@ public static class Capabilities
             Wildcard,
             Room.BuildAny,
             Room.ModerateAny,
+            Room.FurniEdit,
+            Furniture.DefinitionEdit,
             Moderation.Kick,
             Moderation.Mute,
             Moderation.Alert,

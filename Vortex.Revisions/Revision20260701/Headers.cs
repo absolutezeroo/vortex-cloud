@@ -557,6 +557,19 @@ internal static class MessageEvent
     public const int UpdateTriggerMessageEvent = 3953; // AS3-verified (direct read, both revisions): UserDefinedRoomEventsCtrl::update() TriggerDefinition branch -> _SafeCls_2484 @3953 (old _SafeCls_2594@2669)
     public const int UpdateVariableMessageEvent = 2475; // AS3-verified (direct read, both revisions): UserDefinedRoomEventsCtrl::update() VariableDefinition branch -> _SafeCls_3053 @2475 (old _SafeCls_3715@1160)
     #endregion
+
+    #region Vortex-specific (no AS3 backing)
+    // These headers do NOT exist in any Habbo client. They belong to the in-client furni editor, a
+    // Vortex-only staff tool, and are matched by hand against vortex-modern-client's
+    // HabboMessages.ts. The 8000-8999 band was picked because it is empty in BOTH registries (0
+    // occurrences in this file and in HabboMessages.ts as of 2026-07-25) and is clear of the 9xxx
+    // placeholders above, which are unresolved *real* messages awaiting a retrace — do not allocate
+    // Vortex-specific headers there. Never renumber one side alone.
+    public const int VortexGetFurniEditorDataMessageEvent = 8001;
+    public const int VortexApplyFurniEditMessageEvent = 8003;
+    public const int VortexGetFurniDefinitionMessageEvent = 8005;
+    public const int VortexApplyFurniDefinitionMessageEvent = 8007;
+    #endregion
 }
 
 internal static class MessageComposer
@@ -1112,5 +1125,13 @@ internal static class MessageComposer
     public const int WiredRewardResultMessageComposer = 2997; // AS3-verified (old-revision trace): _SafeCls_3012 -> onReward() still exists in current revision at 2997
     public const int WiredSaveSuccessComposer = 1192; // AS3-verified (direct read, both revisions): roomevents handler::onSaveSuccess() -> _SafeCls_2958 @1192 (old _SafeCls_3773@1875)
     public const int WiredValidationErrorComposer = 3201; // AS3-verified (direct read, both revisions): roomevents handler::onValidationError() -> _SafeCls_2398 @3201 (old _SafeCls_3434@367)
+    #endregion
+
+    #region Vortex-specific (no AS3 backing)
+    // Outgoing half of the in-client furni editor. See the matching note in MessageEvent above for
+    // why the 8000-8999 band was chosen.
+    public const int VortexFurniEditorDataMessageComposer = 8002;
+    public const int VortexFurniEditorRightsMessageComposer = 8004;
+    public const int VortexFurniDefinitionMessageComposer = 8006;
     #endregion
 }

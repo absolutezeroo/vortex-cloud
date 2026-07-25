@@ -43,6 +43,20 @@ public sealed record ItemPlacedEvent(
 public sealed record ItemMovedEvent(int ItemId, int ActorPlayerId, int RoomId, string? Data)
     : IEvent;
 
+/// <summary>A staff member rewrote a placed item's stored row through the in-client furni editor.
+/// Audited separately from <see cref="ItemMovedEvent"/> and <see cref="ItemTradedEvent"/> on
+/// purpose: those record actions an ordinary player can take, this one records a privileged
+/// out-of-band write (<c>room.furni.edit</c>) and is the only trace that an item's owner or
+/// definition was changed without a trade or a purchase. <paramref name="Data"/> carries the before
+/// and after values of every field the edit touched.</summary>
+public sealed record ItemStaffEditedEvent(
+    int ItemId,
+    int ActorPlayerId,
+    int RoomId,
+    string Fields,
+    string? Data
+) : IEvent;
+
 /// <summary>A furniture item changed owner through a completed player-to-player trade.
 /// <paramref name="ActorPlayerId"/> is the trade participant giving the item away.</summary>
 public sealed record ItemTradedEvent(
