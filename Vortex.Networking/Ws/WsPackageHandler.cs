@@ -68,6 +68,12 @@ internal sealed class WsPackageHandler(
         CancellationToken ct
     )
     {
+        // Record activity on the raw frame, before decoding. The heartbeat closes sessions that go
+        // silent, so "silent" has to mean "sent us nothing", not "sent us nothing we could parse" —
+        // otherwise an unrecognised header would count as death. This is also what makes the PONG
+        // reply register without PongMessageHandler needing to do anything.
+        ctx.Touch();
+
         foreach (ReadOnlyMemory<byte> segment in package.Data)
         {
             ctx.WsBuffer?.Write(segment.Span);

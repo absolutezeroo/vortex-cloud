@@ -19,6 +19,7 @@ using Vortex.Networking.Package;
 using Vortex.Networking.Session;
 using Vortex.Networking.Tcp;
 using Vortex.Networking.Ws;
+using Vortex.Primitives.Messages.Outgoing.Handshake;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Primitives.Packets;
@@ -164,6 +165,10 @@ public sealed class NetworkManager(
                     .AddSessionAsync(context.SessionKey, context)
                     .ConfigureAwait(false);
 
+                context.Touch();
+
+                _ = RunWsHeartbeatAsync(context, context.HeartbeatCts.Token);
+
                 _logger.LogInformation(
                     "WebSocket session connected: {SessionId}",
                     session.SessionID
@@ -173,6 +178,8 @@ public sealed class NetworkManager(
             {
                 if (_wsSessions.TryRemove(session.SessionID, out WebSocketSessionContext? context))
                 {
+                    await context.HeartbeatCts.CancelAsync().ConfigureAwait(false);
+
                     await _sessionGateway
                         .RemoveSessionAsync(context.SessionKey, CancellationToken.None)
                         .ConfigureAwait(false);
@@ -206,6 +213,86 @@ public sealed class NetworkManager(
         );
 
         _wsHost = builder.Build();
+    }
+
+    /// <summary>
+    ///     Keeps a WebSocket session's link warm while it is otherwise idle.
+    ///
+    ///     The browser client cannot do this itself and stay faithful to the Flash client: its only
+    ///     periodic traffic is <c>LatencyTracker</c>, which AS3 drives from the frame loop, and a
+    ///     browser pauses requestAnimationFrame outright for a backgrounded tab. With no server
+    ///     heartbeat either, a hidden tab carried zero bytes in both directions. PING/PONG (composer
+    ///     1407 / event 362) is the AS3 protocol's own answer, and both halves were already
+    ///     implemented; only this timer was missing.
+    ///
+    ///     It does NOT reap silent sessions by default — see <c>NetworkingConfig.PongTimeout</c>.
+    ///     A tab answers PINGs for the first few minutes in the background and then stops dead when
+    ///     Chrome freezes the page; it is not gone, and closing it there is precisely the disconnect
+    ///     this was meant to prevent.
+    ///
+    ///     Note this lives here rather than in <c>UsePingPong()</c>: that extension only covers the
+    ///     TCP listener (and is disabled at its call site), while the WebSocket listener builds its
+    ///     sessions through <c>UseSessionHandler</c> and never went through it.
+    /// </summary>
+    private async Task RunWsHeartbeatAsync(ISessionContext session, CancellationToken ct)
+    {
+        using PeriodicTimer timer = new(
+            TimeSpan.FromMilliseconds(_config.PingIntervalMilliseconds)
+        );
+
+        DateTime lastPingUtc = DateTime.MinValue;
+
+        try
+        {
+            while (await timer.WaitForNextTickAsync(ct).ConfigureAwait(false))
+            {
+                TimeSpan silence = DateTime.UtcNow - session.LastActivityUtc;
+
+                // Off by default — see NetworkingConfig.PongTimeout. A silent session is almost
+                // always a frozen background tab, which cannot answer and is not dead.
+                if (_config.PongTimeout > TimeSpan.Zero && silence >= _config.PongTimeout)
+                {
+                    _logger.LogInformation(
+                        "Closing WebSocket session {SessionKey}: silent for {Silence}",
+                        session.SessionKey,
+                        silence
+                    );
+
+                    await session.CloseSessionAsync().ConfigureAwait(false);
+
+                    return;
+                }
+
+                if (silence < _config.IdleOkActivityWindow)
+                {
+                    continue;
+                }
+
+                // A session that never answers keeps `silence` above the window forever, so without
+                // this it would be pinged on every tick — six a minute, for as long as the tab stays
+                // frozen. Space them by the same window instead.
+                if (DateTime.UtcNow - lastPingUtc < _config.IdleOkActivityWindow)
+                {
+                    continue;
+                }
+
+                lastPingUtc = DateTime.UtcNow;
+
+                await session.SendComposerAsync(new PingMessage(), ct).ConfigureAwait(false);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Session closed — expected.
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "WebSocket heartbeat stopped for session {SessionKey}",
+                session.SessionKey
+            );
+        }
     }
 
     private void ConfigureCommonServices(IServiceCollection services)
