@@ -12,4 +12,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- Reference-data seeds are embedded so migrations can apply them without shipping loose
+         .sql files next to the binaries. -->
+    <EmbeddedResource Include="Seeds\*.sql" />
+  </ItemGroup>
 </Project>

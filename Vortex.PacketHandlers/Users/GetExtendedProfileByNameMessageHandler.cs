@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
+using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Messages.Incoming.Users;
 using Vortex.Primitives.Messages.Outgoing.Users;
 using Vortex.Primitives.Orleans;
@@ -42,6 +44,13 @@ public class GetExtendedProfileByNameMessageHandler
             .GetExtendedProfileSnapshotAsync(ct)
             .ConfigureAwait(false);
 
+        // Guild membership lives in the group directory, not on the player grain, so the profile's
+        // guild list is assembled here rather than shipped empty.
+        List<GuildInfoSnapshot> guilds = await _grainFactory
+            .GetGroupDirectoryGrain()
+            .GetMembershipsAsync(playerId.Value, ct)
+            .ConfigureAwait(false);
+
         await ctx.SendComposerAsync(
                 new ExtendedProfileMessageComposer
                 {
@@ -55,7 +64,7 @@ public class GetExtendedProfileByNameMessageHandler
                     IsFriend = snapshot.IsFriend,
                     IsFriendRequestSent = snapshot.IsFriendRequestSent,
                     IsOnline = snapshot.IsOnline,
-                    Guilds = snapshot.Guilds,
+                    Guilds = guilds,
                     LastAccessSinceInSeconds = snapshot.LastAccessSinceInSeconds,
                     OpenProfileWindow = snapshot.OpenProfileWindow,
                     IsHidden = snapshot.IsHidden,

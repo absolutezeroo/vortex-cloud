@@ -2129,6 +2129,55 @@ namespace Vortex.Database.Migrations
                     b.ToTable("group_badge_parts");
                 });
 
+            modelBuilder.Entity("Vortex.Database.Entities.Groups.GroupBlockedMemberEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BlockedByPlayerEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("blocked_by_player_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int>("GroupEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("group_id");
+
+                    b.Property<int>("PlayerEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("player_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerEntityId");
+
+                    b.HasIndex("GroupEntityId", "PlayerEntityId")
+                        .IsUnique();
+
+                    b.ToTable("group_blocked_members");
+                });
+
             modelBuilder.Entity("Vortex.Database.Entities.Groups.GroupColorEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -2253,8 +2302,7 @@ namespace Vortex.Database.Migrations
 
                     b.HasIndex("OwnerPlayerEntityId");
 
-                    b.HasIndex("RoomEntityId")
-                        .IsUnique();
+                    b.HasIndex("RoomEntityId");
 
                     b.ToTable("groups");
                 });
@@ -2267,6 +2315,14 @@ namespace Vortex.Database.Migrations
                         .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("AdminOperationAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("admin_operation_at");
+
+                    b.Property<int?>("AdminPlayerEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("admin_player_id");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -2311,6 +2367,8 @@ namespace Vortex.Database.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AdminPlayerEntityId");
+
                     b.HasIndex("GroupEntityId");
 
                     b.HasIndex("PlayerEntityId");
@@ -2318,6 +2376,57 @@ namespace Vortex.Database.Migrations
                     b.HasIndex("ThreadEntityId");
 
                     b.ToTable("group_forum_posts");
+                });
+
+            modelBuilder.Entity("Vortex.Database.Entities.Groups.GroupForumReadMarkerEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int>("GroupEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("group_id");
+
+                    b.Property<int>("PlayerEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("player_id");
+
+                    b.Property<int>("ReadMessageCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("read_message_count");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerEntityId");
+
+                    b.HasIndex("GroupEntityId", "PlayerEntityId")
+                        .IsUnique();
+
+                    b.ToTable("group_forum_read_markers");
                 });
 
             modelBuilder.Entity("Vortex.Database.Entities.Groups.GroupForumSettingsEntity", b =>
@@ -2377,6 +2486,12 @@ namespace Vortex.Database.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
 
+                    b.Property<int>("ViewCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("view_count");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GroupEntityId")
@@ -2393,6 +2508,14 @@ namespace Vortex.Database.Migrations
                         .HasColumnName("id");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("AdminOperationAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("admin_operation_at");
+
+                    b.Property<int?>("AdminPlayerEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("admin_player_id");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -2452,6 +2575,8 @@ namespace Vortex.Database.Migrations
                     MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AdminPlayerEntityId");
 
                     b.HasIndex("GroupEntityId");
 
@@ -5771,7 +5896,8 @@ namespace Vortex.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GroupEntityId");
+                    b.HasIndex("GroupEntityId")
+                        .IsUnique();
 
                     b.HasIndex("NavigatorCategoryEntityId");
 
@@ -6512,6 +6638,25 @@ namespace Vortex.Database.Migrations
                     b.Navigation("RenterPlayerEntity");
                 });
 
+            modelBuilder.Entity("Vortex.Database.Entities.Groups.GroupBlockedMemberEntity", b =>
+                {
+                    b.HasOne("Vortex.Database.Entities.Groups.GroupEntity", "GroupEntity")
+                        .WithMany()
+                        .HasForeignKey("GroupEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Vortex.Database.Entities.Players.PlayerEntity", "PlayerEntity")
+                        .WithMany()
+                        .HasForeignKey("PlayerEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GroupEntity");
+
+                    b.Navigation("PlayerEntity");
+                });
+
             modelBuilder.Entity("Vortex.Database.Entities.Groups.GroupEntity", b =>
                 {
                     b.HasOne("Vortex.Database.Entities.Players.PlayerEntity", "OwnerPlayerEntity")
@@ -6533,6 +6678,10 @@ namespace Vortex.Database.Migrations
 
             modelBuilder.Entity("Vortex.Database.Entities.Groups.GroupForumPostEntity", b =>
                 {
+                    b.HasOne("Vortex.Database.Entities.Players.PlayerEntity", "AdminPlayerEntity")
+                        .WithMany()
+                        .HasForeignKey("AdminPlayerEntityId");
+
                     b.HasOne("Vortex.Database.Entities.Groups.GroupEntity", "GroupEntity")
                         .WithMany()
                         .HasForeignKey("GroupEntityId")
@@ -6551,11 +6700,32 @@ namespace Vortex.Database.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("AdminPlayerEntity");
+
                     b.Navigation("GroupEntity");
 
                     b.Navigation("PlayerEntity");
 
                     b.Navigation("ThreadEntity");
+                });
+
+            modelBuilder.Entity("Vortex.Database.Entities.Groups.GroupForumReadMarkerEntity", b =>
+                {
+                    b.HasOne("Vortex.Database.Entities.Groups.GroupEntity", "GroupEntity")
+                        .WithMany()
+                        .HasForeignKey("GroupEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Vortex.Database.Entities.Players.PlayerEntity", "PlayerEntity")
+                        .WithMany()
+                        .HasForeignKey("PlayerEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GroupEntity");
+
+                    b.Navigation("PlayerEntity");
                 });
 
             modelBuilder.Entity("Vortex.Database.Entities.Groups.GroupForumSettingsEntity", b =>
@@ -6571,6 +6741,10 @@ namespace Vortex.Database.Migrations
 
             modelBuilder.Entity("Vortex.Database.Entities.Groups.GroupForumThreadEntity", b =>
                 {
+                    b.HasOne("Vortex.Database.Entities.Players.PlayerEntity", "AdminPlayerEntity")
+                        .WithMany()
+                        .HasForeignKey("AdminPlayerEntityId");
+
                     b.HasOne("Vortex.Database.Entities.Groups.GroupEntity", "GroupEntity")
                         .WithMany()
                         .HasForeignKey("GroupEntityId")
@@ -6586,6 +6760,8 @@ namespace Vortex.Database.Migrations
                         .HasForeignKey("PlayerEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AdminPlayerEntity");
 
                     b.Navigation("GroupEntity");
 

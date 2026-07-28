@@ -33,10 +33,24 @@ public sealed class NavigatorProvider(
     public Task<ImmutableArray<NavigatorTopLevelContextSnapshot>> GetTopLevelContextsAsync() =>
         Task.FromResult(_topLevelContexts);
 
+    /// <summary>
+    /// Search codes the emulator's own handlers hardcode, so their routing must not depend on a
+    /// matching navigator config row existing. Without this the guild searches silently degrade to
+    /// <see cref="NavigatorQueryType.AllRooms"/> and return the whole hotel.
+    /// </summary>
+    private static readonly ImmutableDictionary<
+        string,
+        NavigatorQueryType
+    > BuiltInQueryTypeBySearchCode = ImmutableDictionary.CreateRange([
+        KeyValuePair.Create("groups", NavigatorQueryType.GuildBases),
+        KeyValuePair.Create("my_groups", NavigatorQueryType.MyGroups),
+    ]);
+
     public NavigatorQueryType ResolveQueryType(string searchCode) =>
-        _queryTypeBySearchCode.TryGetValue(searchCode, out NavigatorQueryType qt)
-            ? qt
-            : NavigatorQueryType.AllRooms;
+        _queryTypeBySearchCode.TryGetValue(searchCode, out NavigatorQueryType qt) ? qt
+        : BuiltInQueryTypeBySearchCode.TryGetValue(searchCode, out NavigatorQueryType builtIn)
+            ? builtIn
+        : NavigatorQueryType.AllRooms;
 
     public ImmutableArray<NavigatorFlatCategorySnapshot> GetFlatCategories() => _flatCategories;
 
@@ -149,6 +163,28 @@ public sealed class NavigatorProvider(
             .ConfigureAwait(false);
     }
 
+    public async Task<List<RoomInfoSnapshot>> GetRoomsByGroupNameAsync(
+        string groupName,
+        CancellationToken ct = default
+    )
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        string lower = groupName.ToLowerInvariant();
+
+        return await BuildRoomQuery(dbCtx)
+            .Where(x =>
+                x.GroupEntityId != null
+                && x.GroupEntity!.DeletedAt == null
+                && x.GroupEntity.Name.ToLower().Contains(lower)
+            )
+            .OrderByDescending(x => x.UsersNow)
+            .ToRoomInfoSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+    }
+
     public async Task<ImmutableArray<string>> GetPopularTagsAsync(
         int limit,
         CancellationToken ct = default
@@ -238,6 +274,42 @@ public sealed class NavigatorProvider(
                     f.PlayerEntityId == playerId.Value && f.RoomEntityId == x.Id
                 )
             )
+            .ToRoomInfoSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<List<RoomInfoSnapshot>> GetGuildBaseRoomsAsync(CancellationToken ct = default)
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        return await BuildRoomQuery(dbCtx)
+            .Where(x => x.GroupEntityId != null)
+            .OrderByDescending(x => x.UsersNow)
+            .ToRoomInfoSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<List<RoomInfoSnapshot>> GetMyGuildBaseRoomsAsync(
+        PlayerId playerId,
+        CancellationToken ct = default
+    )
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        return await BuildRoomQuery(dbCtx)
+            .Where(x =>
+                x.GroupEntityId != null
+                && dbCtx.GroupMembers.Any(m =>
+                    m.GroupEntityId == x.GroupEntityId
+                    && m.PlayerEntityId == playerId.Value
+                    && m.DeletedAt == null
+                )
+            )
+            .OrderByDescending(x => x.UsersNow)
             .ToRoomInfoSnapshotsAsync(ct)
             .ConfigureAwait(false);
     }

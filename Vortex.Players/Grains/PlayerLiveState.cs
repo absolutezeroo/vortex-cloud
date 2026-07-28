@@ -16,6 +16,12 @@ public sealed class PlayerLiveState
     public int RespectReceived { get; set; } = 0;
     public int RespectGivenToday { get; set; } = 0;
     public DateTime? RespectResetDate { get; set; } = null;
+
+    /// <summary>Guild whose badge this player shows on their avatar, or 0 for none. Owned here:
+    /// every write goes through <c>PlayerGrain.SetFavouriteGroupAsync</c> so the cached value, the
+    /// database and the badge on the avatar in the room never drift apart.</summary>
+    public int FavouriteGroupId { get; set; } = 0;
+    public string FavouriteGroupName { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime LastUpdated { get; set; } = DateTime.UtcNow;
 

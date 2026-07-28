@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
@@ -32,8 +33,19 @@ public class GroupForumPostEntity : VortexEntity
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public required GroupForumPostState State { get; set; }
 
+    /// <summary>Admin who last moderated this post; surfaced to the client so the forum can show
+    /// "hidden by X". Null until the post is moderated.</summary>
+    [Column("admin_player_id")]
+    public int? AdminPlayerEntityId { get; set; }
+
+    [Column("admin_operation_at")]
+    public DateTime? AdminOperationAt { get; set; }
+
     [ForeignKey(nameof(ThreadEntityId))]
     public required GroupForumThreadEntity ThreadEntity { get; set; }
+
+    [ForeignKey(nameof(AdminPlayerEntityId))]
+    public PlayerEntity? AdminPlayerEntity { get; set; }
 
     [ForeignKey(nameof(GroupEntityId))]
     public required GroupEntity GroupEntity { get; set; }

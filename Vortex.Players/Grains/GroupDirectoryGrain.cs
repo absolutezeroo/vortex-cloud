@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
@@ -17,6 +18,7 @@ using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Groups.Grains;
 using Vortex.Primitives.Groups.Providers;
 using Vortex.Primitives.Groups.Snapshots;
+using Vortex.Primitives.Messages.Incoming.GroupForums;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums.Wallet;
@@ -35,6 +37,10 @@ internal sealed class GroupDirectoryGrain(
 ) : Grain, IGroupDirectoryGrain
 {
     private const string CatalogPurchaseTypeGuild = "Guild";
+
+    // Forum list tabs, per the client's groupforum.view.forums_list.{code} localization keys.
+    private const int ForumsListMostViewed = 1;
+    private const int ForumsListMyForums = 2;
 
     public async Task<GroupCreationInfoSnapshot> GetCreationInfoAsync(
         PlayerId player,
@@ -134,12 +140,13 @@ internal sealed class GroupDirectoryGrain(
             return null;
         }
 
-        // Charge the creation cost through the wallet — this is the "purchase". The wallet writes
-        // the economy ledger entry, emits CurrencyChangedEvent and pushes the new balance to the
-        // client; we only proceed if the debit succeeds (insufficient funds → abort, no group).
-        WalletDebitResult debit = await grainFactory
+        // Charge the creation cost through the shared debit-then-grant executor, exactly like every
+        // other catalog purchase: the wallet writes the economy ledger entry, emits
+        // CurrencyChangedEvent and pushes the new balance, and if the insert below throws (most
+        // likely the unique guild-per-room constraint) the credits are refunded instead of lost.
+        WalletPurchaseResult<int> purchase = await grainFactory
             .GetPlayerWalletGrain(ownerId)
-            .TryDebitAsync(
+            .ExecutePurchaseAsync(
                 [
                     new WalletDebitRequest
                     {
@@ -147,11 +154,54 @@ internal sealed class GroupDirectoryGrain(
                         Amount = creationCost,
                     },
                 ],
+                async token =>
+                {
+                    // The group row and the room back-link must land together: a committed group
+                    // whose room never got linked would permanently burn that room as a guild base.
+                    await using IDbContextTransaction tx = await dbCtx
+                        .Database.BeginTransactionAsync(token)
+                        .ConfigureAwait(true);
+
+                    GroupEntity created = GroupFactory.Create(
+                        name,
+                        BuildBadgeCode(badgeParts),
+                        baseRoomId,
+                        ownerId,
+                        GroupType.Open,
+                        primaryColorId.ToString(),
+                        secondaryColorId.ToString(),
+                        string.IsNullOrEmpty(description) ? null : description
+                    );
+                    created.RoomEntity = room;
+                    created.OwnerPlayerEntity = ownerEntity;
+
+                    dbCtx.Groups.Add(created);
+                    await dbCtx.SaveChangesAsync(token).ConfigureAwait(true);
+
+                    // Link the room back to the group and enrol the owner as an admin member.
+                    room.GroupEntityId = created.Id;
+                    dbCtx.GroupMembers.Add(
+                        new GroupMemberEntity
+                        {
+                            GroupEntityId = created.Id,
+                            PlayerEntityId = ownerId,
+                            Rank = GroupMemberRank.Admin,
+                            GroupEntity = created,
+                            PlayerEntity = ownerEntity,
+                        }
+                    );
+
+                    await dbCtx.SaveChangesAsync(token).ConfigureAwait(true);
+                    await tx.CommitAsync(token).ConfigureAwait(true);
+
+                    return created.Id;
+                },
+                logger,
                 ct
             )
             .ConfigureAwait(true);
 
-        if (!debit.Succeeded)
+        if (!purchase.Succeeded)
         {
             logger.LogInformation(
                 "Player {OwnerId} could not afford guild creation ({Cost} credits)",
@@ -161,36 +211,7 @@ internal sealed class GroupDirectoryGrain(
             return null;
         }
 
-        GroupEntity group = GroupFactory.Create(
-            name,
-            BuildBadgeCode(badgeParts),
-            baseRoomId,
-            ownerId,
-            GroupType.Open,
-            primaryColorId.ToString(),
-            secondaryColorId.ToString(),
-            string.IsNullOrEmpty(description) ? null : description
-        );
-        group.RoomEntity = room;
-        group.OwnerPlayerEntity = ownerEntity;
-
-        dbCtx.Groups.Add(group);
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
-
-        // Link the room back to the group and enrol the owner as an admin member.
-        room.GroupEntityId = group.Id;
-        dbCtx.GroupMembers.Add(
-            new GroupMemberEntity
-            {
-                GroupEntityId = group.Id,
-                PlayerEntityId = ownerId,
-                Rank = GroupMemberRank.Admin,
-                GroupEntity = group,
-                PlayerEntity = ownerEntity,
-            }
-        );
-
-        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+        int groupId = purchase.Reward;
 
         // Hook the spend into the catalog purchase path, exactly like CatalogPurchaseGrain: track
         // the credit spend (Club payday) and raise CatalogPurchasedEvent so guild creation shows up
@@ -209,7 +230,7 @@ internal sealed class GroupDirectoryGrain(
 
         await events
             .PublishAsync(
-                new GroupCreatedEvent(ownerId, group.Id, group.Name, baseRoomId, creationCost),
+                new GroupCreatedEvent(ownerId, groupId, name, baseRoomId, creationCost),
                 ct
             )
             .ConfigureAwait(true);
@@ -217,11 +238,11 @@ internal sealed class GroupDirectoryGrain(
         logger.LogInformation(
             "Player {OwnerId} created group {GroupId} on room {RoomId}",
             ownerId,
-            group.Id,
+            groupId,
             baseRoomId
         );
 
-        return group.Id;
+        return groupId;
     }
 
     public async Task<List<GuildInfoSnapshot>> GetMembershipsAsync(
@@ -300,15 +321,18 @@ internal sealed class GroupDirectoryGrain(
             }
         }
 
-        int? newValue = favourite ? groupId : null;
+        int newValue = favourite ? groupId : 0;
 
-        await dbCtx
-            .Players.Where(p => p.Id == playerId)
-            .ExecuteUpdateAsync(up => up.SetProperty(p => p.FavouriteGroupId, newValue), ct)
+        // PlayerGrain owns players.favourite_group_id: it caches the value for the avatar snapshot
+        // and re-badges the avatar in the room, so writing the column from here would leave that
+        // cache — and the badge everyone in the room can see — stale.
+        await grainFactory
+            .GetPlayerGrain(player)
+            .SetFavouriteGroupAsync(newValue, ct)
             .ConfigureAwait(true);
 
         await events
-            .PublishAsync(new GroupFavouriteChangedEvent(playerId, newValue), ct)
+            .PublishAsync(new GroupFavouriteChangedEvent(playerId, favourite ? groupId : null), ct)
             .ConfigureAwait(true);
     }
 
@@ -384,10 +408,36 @@ internal sealed class GroupDirectoryGrain(
             .Groups.AsNoTracking()
             .Where(g => g.DeletedAt == null && g.ForumSettings!.Enabled);
 
+        // listCode is the tab the client is showing. Verified against the localization keys
+        // groupforum.view.forums_list.{0,1,2}: 0 = Most Active, 1 = Most Viewed, 2 = My Forums.
+        if (listCode == ForumsListMyForums)
+        {
+            int viewerId = player.Value;
+
+            enabledForums = enabledForums.Where(g =>
+                dbCtx.GroupMembers.Any(m =>
+                    m.GroupEntityId == g.Id && m.PlayerEntityId == viewerId && m.DeletedAt == null
+                )
+            );
+        }
+
         int totalAmount = await enabledForums.CountAsync(ct);
 
-        var groups = await enabledForums
-            .OrderByDescending(g => g.Id)
+        IOrderedQueryable<GroupEntity> orderedForums = listCode switch
+        {
+            ForumsListMostViewed => enabledForums.OrderByDescending(g =>
+                g.ForumSettings!.ViewCount
+            ),
+            // "Most active" and "My forums" both rank by recent posting activity.
+            _ => enabledForums.OrderByDescending(g =>
+                dbCtx
+                    .GroupForumThreads.Where(t => t.GroupEntityId == g.Id && t.DeletedAt == null)
+                    .Max(t => (DateTime?)(t.LastPostAt ?? t.CreatedAt))
+            ),
+        };
+
+        var groups = await orderedForums
+            .ThenByDescending(g => g.Id)
             .Skip(skip)
             .Take(take)
             .Select(g => new
@@ -411,6 +461,15 @@ internal sealed class GroupDirectoryGrain(
         }
 
         List<int> groupIds = groups.Select(g => g.Id).ToList();
+
+        Dictionary<int, int> readCounts = await dbCtx
+            .GroupForumReadMarkers.AsNoTracking()
+            .Where(m =>
+                m.PlayerEntityId == player.Value
+                && groupIds.Contains(m.GroupEntityId)
+                && m.DeletedAt == null
+            )
+            .ToDictionaryAsync(m => m.GroupEntityId, m => m.ReadMessageCount, ct);
 
         Dictionary<int, int> threadCounts = await dbCtx
             .GroupForumThreads.AsNoTracking()
@@ -444,7 +503,11 @@ internal sealed class GroupDirectoryGrain(
                 TotalThreads = threadCounts.GetValueOrDefault(g.Id, 0),
                 LeaderboardScore = 0,
                 TotalMessages = messageCounts.GetValueOrDefault(g.Id, 0),
-                UnreadMessages = 0,
+                UnreadMessages = Math.Max(
+                    messageCounts.GetValueOrDefault(g.Id, 0)
+                        - readCounts.GetValueOrDefault(g.Id, 0),
+                    0
+                ),
                 LastMessageId = 0,
                 LastMessageAuthorId = 0,
                 LastMessageAuthorName = string.Empty,
@@ -473,11 +536,178 @@ internal sealed class GroupDirectoryGrain(
         };
     }
 
-    public Task<int> GetUnreadForumsCountAsync(PlayerId player, CancellationToken ct)
+    public async Task<GuildFurniIdentitySnapshot?> GetFurniIdentityAsync(
+        PlayerId player,
+        int groupId,
+        CancellationToken ct
+    )
     {
-        // Per-user read markers are not tracked yet (UpdateForumReadMarker is accepted but not
-        // persisted), so there is no unread state to count. Returns 0; revisit with read tracking.
-        return Task.FromResult(0);
+        if (groupId <= 0)
+        {
+            return null;
+        }
+
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+
+        int playerId = player.Value;
+
+        bool isMember = await dbCtx.GroupMembers.AnyAsync(
+            m => m.GroupEntityId == groupId && m.PlayerEntityId == playerId && m.DeletedAt == null,
+            ct
+        );
+
+        if (!isMember)
+        {
+            return null;
+        }
+
+        var group = await dbCtx
+            .Groups.AsNoTracking()
+            .Where(g => g.Id == groupId && g.DeletedAt == null)
+            .Select(g => new
+            {
+                g.Badge,
+                g.ColorOne,
+                g.ColorTwo,
+            })
+            .FirstOrDefaultAsync(ct);
+
+        if (group is null)
+        {
+            return null;
+        }
+
+        return new GuildFurniIdentitySnapshot
+        {
+            GroupId = groupId,
+            BadgeCode = group.Badge,
+            ColorOneHex = badgePartProvider.ResolveColorHex(group.ColorOne),
+            ColorTwoHex = badgePartProvider.ResolveColorHex(group.ColorTwo),
+        };
+    }
+
+    public async Task<int> GetUnreadForumsCountAsync(PlayerId player, CancellationToken ct)
+    {
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+
+        int playerId = player.Value;
+
+        // Only forums of guilds the player belongs to can show up as unread in their friend bar.
+        List<int> groupIds = await dbCtx
+            .GroupMembers.AsNoTracking()
+            .Where(m => m.PlayerEntityId == playerId && m.DeletedAt == null)
+            .Select(m => m.GroupEntityId)
+            .ToListAsync(ct);
+
+        if (groupIds.Count == 0)
+        {
+            return 0;
+        }
+
+        Dictionary<int, int> visibleMessageCounts = await dbCtx
+            .GroupForumPosts.AsNoTracking()
+            .Where(p =>
+                groupIds.Contains(p.GroupEntityId)
+                && p.DeletedAt == null
+                && p.State == GroupForumPostState.Visible
+            )
+            .GroupBy(p => p.GroupEntityId)
+            .Select(g => new { GroupId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.GroupId, x => x.Count, ct);
+
+        if (visibleMessageCounts.Count == 0)
+        {
+            return 0;
+        }
+
+        Dictionary<int, int> readCounts = await dbCtx
+            .GroupForumReadMarkers.AsNoTracking()
+            .Where(m =>
+                m.PlayerEntityId == playerId
+                && groupIds.Contains(m.GroupEntityId)
+                && m.DeletedAt == null
+            )
+            .ToDictionaryAsync(m => m.GroupEntityId, m => m.ReadMessageCount, ct);
+
+        return visibleMessageCounts.Count(entry =>
+            entry.Value > readCounts.GetValueOrDefault(entry.Key, 0)
+        );
+    }
+
+    public async Task UpdateForumReadMarkersAsync(
+        PlayerId player,
+        IReadOnlyList<ForumReadMarkerUpdate> markers,
+        CancellationToken ct
+    )
+    {
+        if (markers.Count == 0)
+        {
+            return;
+        }
+
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+
+        int playerId = player.Value;
+        List<int> groupIds = [.. markers.Select(m => m.GroupId).Distinct()];
+
+        // "Mark all read" must land on the server's own message count, not the client's — the
+        // client's totalMessages can be stale, which would leave the forum stuck showing unread.
+        Dictionary<int, int> serverMessageCounts = markers.Any(m => m.MarkAllRead)
+            ? await dbCtx
+                .GroupForumPosts.AsNoTracking()
+                .Where(p =>
+                    groupIds.Contains(p.GroupEntityId)
+                    && p.DeletedAt == null
+                    && p.State == GroupForumPostState.Visible
+                )
+                .GroupBy(p => p.GroupEntityId)
+                .Select(g => new { GroupId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.GroupId, x => x.Count, ct)
+            : [];
+
+        List<GroupForumReadMarkerEntity> existing = await dbCtx
+            .GroupForumReadMarkers.Where(m =>
+                m.PlayerEntityId == playerId
+                && groupIds.Contains(m.GroupEntityId)
+                && m.DeletedAt == null
+            )
+            .ToListAsync(ct);
+
+        Dictionary<int, GroupForumReadMarkerEntity> existingByGroup = existing.ToDictionary(m =>
+            m.GroupEntityId
+        );
+
+        foreach (ForumReadMarkerUpdate update in markers)
+        {
+            int groupId = update.GroupId;
+            int clamped = Math.Max(
+                update.MarkAllRead
+                    ? serverMessageCounts.GetValueOrDefault(groupId, update.ReadMessageCount)
+                    : update.ReadMessageCount,
+                0
+            );
+
+            if (existingByGroup.TryGetValue(groupId, out GroupForumReadMarkerEntity? marker))
+            {
+                // Never walk the marker backwards: the client sends per-view snapshots and an older
+                // view arriving late would otherwise resurrect already-read messages as unread.
+                marker.ReadMessageCount = Math.Max(marker.ReadMessageCount, clamped);
+                continue;
+            }
+
+            dbCtx.GroupForumReadMarkers.Add(
+                new GroupForumReadMarkerEntity
+                {
+                    GroupEntityId = groupId,
+                    PlayerEntityId = playerId,
+                    ReadMessageCount = clamped,
+                    GroupEntity = null!,
+                    PlayerEntity = null!,
+                }
+            );
+        }
+
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
     }
 
     /// <summary>

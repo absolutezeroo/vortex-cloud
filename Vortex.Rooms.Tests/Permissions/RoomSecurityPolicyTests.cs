@@ -106,6 +106,97 @@ public sealed class RoomSecurityPolicyTests
         level.Should().Be(RoomControllerType.None);
     }
 
+    [Fact]
+    public void GuildAdmin_ResolvesGroupAdmin()
+    {
+        RoomControllerType level = RoomSecurityPolicy.ResolveControllerLevel(
+            ActionOrigin.Player,
+            PermissionSet.Empty,
+            isExplicitOwner: false,
+            hasExplicitRights: false,
+            new RoomGroupContext(IsMember: true, IsAdmin: true, MembersCanDecorate: false)
+        );
+
+        level.Should().Be(RoomControllerType.GroupAdmin);
+    }
+
+    [Fact]
+    public void GuildMember_WhenMembersMayDecorate_ResolvesGroupRights()
+    {
+        RoomControllerType level = RoomSecurityPolicy.ResolveControllerLevel(
+            ActionOrigin.Player,
+            PermissionSet.Empty,
+            isExplicitOwner: false,
+            hasExplicitRights: false,
+            new RoomGroupContext(IsMember: true, IsAdmin: false, MembersCanDecorate: true)
+        );
+
+        level.Should().Be(RoomControllerType.GroupRights);
+    }
+
+    [Fact]
+    public void GuildMember_WhenDecorationIsAdminOnly_ResolvesNone()
+    {
+        RoomControllerType level = RoomSecurityPolicy.ResolveControllerLevel(
+            ActionOrigin.Player,
+            PermissionSet.Empty,
+            isExplicitOwner: false,
+            hasExplicitRights: false,
+            new RoomGroupContext(IsMember: true, IsAdmin: false, MembersCanDecorate: false)
+        );
+
+        level.Should().Be(RoomControllerType.None);
+    }
+
+    /// <summary>
+    /// Regression: a guild room used to require GroupAdmin for every build action, a level nothing
+    /// could produce, so classic rights-holders silently lost their build rights the moment a guild
+    /// was created on the room.
+    /// </summary>
+    [Fact]
+    public void ExplicitRights_InGuildRoom_KeepsAtLeastRights()
+    {
+        RoomControllerType level = RoomSecurityPolicy.ResolveControllerLevel(
+            ActionOrigin.Player,
+            PermissionSet.Empty,
+            isExplicitOwner: false,
+            hasExplicitRights: true,
+            new RoomGroupContext(IsMember: false, IsAdmin: false, MembersCanDecorate: true)
+        );
+
+        level.Should().Be(RoomControllerType.Rights);
+        (level >= RoomControllerType.Rights).Should().BeTrue();
+    }
+
+    [Fact]
+    public void GuildMemberWithExplicitRights_PrefersTheHigherGroupLevel()
+    {
+        RoomControllerType level = RoomSecurityPolicy.ResolveControllerLevel(
+            ActionOrigin.Player,
+            PermissionSet.Empty,
+            isExplicitOwner: false,
+            hasExplicitRights: true,
+            new RoomGroupContext(IsMember: true, IsAdmin: false, MembersCanDecorate: true)
+        );
+
+        level.Should().Be(RoomControllerType.GroupRights);
+    }
+
+    /// <summary>Staff and ownership must still outrank any guild standing.</summary>
+    [Fact]
+    public void ExplicitOwner_OutranksGuildAdmin()
+    {
+        RoomControllerType level = RoomSecurityPolicy.ResolveControllerLevel(
+            ActionOrigin.Player,
+            PermissionSet.Empty,
+            isExplicitOwner: true,
+            hasExplicitRights: false,
+            new RoomGroupContext(IsMember: true, IsAdmin: true, MembersCanDecorate: true)
+        );
+
+        level.Should().Be(RoomControllerType.Owner);
+    }
+
     private static PermissionSet Permissions(params string[] capabilities)
     {
         return new PermissionSet(Array.Empty<string>(), capabilities);

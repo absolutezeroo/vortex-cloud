@@ -22,7 +22,7 @@ internal class HabboGroupDetailsMessageComposerSerializer(int header)
         packet.WriteString(details.BadgeCode);
         packet.WriteInteger(details.RoomId);
         packet.WriteString(details.RoomName);
-        packet.WriteInteger(details.Status);
+        packet.WriteInteger((int)details.Status);
         packet.WriteInteger(details.TotalMembers);
         packet.WriteBoolean(details.Favourite);
         packet.WriteString(details.CreationDate);

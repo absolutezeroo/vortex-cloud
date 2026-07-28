@@ -30,14 +30,15 @@ public class RoomTextSearchMessageHandler(
     {
         string query = message.Query ?? string.Empty;
 
+        // The client prefixes this query itself ("group:", "roomname:", ...) depending on which
+        // quick-search the player used, so it has to be split here too — passing it through raw
+        // would search room names for the literal text "group:Foo".
+        (NavigatorSearchFilterType filterType, string filterValue) = NavigatorSearchFilter.Parse(
+            query
+        );
+
         ImmutableArray<NavigatorSearchResultSnapshot> results = await _navigatorService
-            .GetSearchResultsAsync(
-                SearchCode,
-                NavigatorSearchFilterType.Anything,
-                query,
-                ctx.PlayerId,
-                ct
-            )
+            .GetSearchResultsAsync(SearchCode, filterType, filterValue, ctx.PlayerId, ct)
             .ConfigureAwait(false);
 
         int viewMode = await _grainFactory

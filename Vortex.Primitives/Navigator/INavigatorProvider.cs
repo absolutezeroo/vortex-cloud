@@ -38,6 +38,12 @@ public interface INavigatorProvider
 
     Task<List<RoomInfoSnapshot>> GetRoomsByTagAsync(string tag, CancellationToken ct = default);
 
+    /// <summary>Guild bases whose guild name matches -- backs the client's "group:" search prefix.</summary>
+    Task<List<RoomInfoSnapshot>> GetRoomsByGroupNameAsync(
+        string groupName,
+        CancellationToken ct = default
+    );
+
     /// <summary>Most frequently used Tag1/Tag2 values across non-deleted rooms, most popular
     /// first -- backs GetPopularRoomTagsMessage.</summary>
     Task<ImmutableArray<string>> GetPopularTagsAsync(int limit, CancellationToken ct = default);
@@ -62,6 +68,17 @@ public interface INavigatorProvider
     /// <summary>Rooms with a currently non-expired RoomAdvertisementEntity -- backs
     /// NavigatorQueryType.RoomAds, the "sponsored rooms" navigator category.</summary>
     Task<List<RoomInfoSnapshot>> GetAdvertisedRoomsAsync(CancellationToken ct = default);
+
+    /// <summary>Every room that is a guild base -- backs NavigatorQueryType.GuildBases, the
+    /// "guild base" navigator search (GuildBaseSearchMessage).</summary>
+    Task<List<RoomInfoSnapshot>> GetGuildBaseRoomsAsync(CancellationToken ct = default);
+
+    /// <summary>Guild bases of the guilds <paramref name="playerId"/> belongs to -- backs
+    /// NavigatorQueryType.MyGroups (MyGuildBasesSearchMessage).</summary>
+    Task<List<RoomInfoSnapshot>> GetMyGuildBaseRoomsAsync(
+        PlayerId playerId,
+        CancellationToken ct = default
+    );
 
     Task ReloadAsync(CancellationToken ct = default);
 }

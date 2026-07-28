@@ -13,6 +13,7 @@ using Orleans;
 using Orleans.Runtime;
 using Orleans.Streams;
 using Vortex.Database.Context;
+using Vortex.Database.Entities.Groups;
 using Vortex.Database.Entities.Room;
 using Vortex.Logging;
 using Vortex.Primitives;
@@ -350,10 +351,50 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
             {
                 _state.PlayerIdsWithRights.Add(playerId);
             }
+
+            await HydrateGroupMembershipAsync(dbCtx, entity.GroupEntityId, ct).ConfigureAwait(true);
         }
         finally
         {
             await dbCtx.DisposeAsync();
+        }
+    }
+
+    /// <summary>
+    /// Loads the owning guild's membership roster and decoration policy into live state so
+    /// <see cref="Modules.RoomSecurityModule"/> can resolve group controller levels without a DB hit
+    /// per check. A no-op (and a full reset) for rooms that are not a guild base.
+    /// </summary>
+    private async Task HydrateGroupMembershipAsync(
+        VortexDbContext dbCtx,
+        int? groupId,
+        CancellationToken ct
+    )
+    {
+        _state.GroupMemberRanks.Clear();
+        _state.GroupAdminOnlyDecoration = false;
+
+        if (groupId is not int id)
+        {
+            return;
+        }
+
+        _state.GroupAdminOnlyDecoration = await dbCtx
+            .Groups.AsNoTracking()
+            .Where(g => g.Id == id && g.DeletedAt == null)
+            .Select(g => g.AdminOnlyDecoration)
+            .FirstOrDefaultAsync(ct)
+            .ConfigureAwait(true);
+
+        List<GroupMemberEntity> members = await dbCtx
+            .GroupMembers.AsNoTracking()
+            .Where(m => m.GroupEntityId == id && m.DeletedAt == null)
+            .ToListAsync(ct)
+            .ConfigureAwait(true);
+
+        foreach (GroupMemberEntity member in members)
+        {
+            _state.GroupMemberRanks[member.PlayerEntityId] = member.Rank;
         }
     }
 

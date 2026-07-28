@@ -61,7 +61,7 @@ public class WiredActionMoveToDirection(
 
     public override async Task<bool> ExecuteAsync(IWiredExecutionContext ctx, CancellationToken ct)
     {
-        var startDir = (Rotation)(
+        Rotation startDir = (Rotation)(
             _wiredData.IntParams.Count > 0 ? _wiredData.GetIntParam<int>(0) : 0
         );
         int turn = _wiredData.IntParams.Count > 1 ? _wiredData.GetIntParam<int>(1) : 0;

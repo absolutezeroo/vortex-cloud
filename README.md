@@ -191,7 +191,7 @@ Canonical AI context files:
 
 Planning & design references:
 - `ROADMAP.md` (completion plan: epics → stories → Definition of Done)
-- `DATA-MODEL.md` (authoritative schema for tables not yet in the codebase — groups, rentable space, pets, bots, … — plus naming conventions)
+- `DATA-MODEL.md` (authoritative schema + naming conventions; note that groups, rentable space and pets are implemented, not pending)
 - `PETS-DESIGN.md` (pet implementation: autonomous-agent behavior, state machine, persistence)
 
 Tool-specific adapters:

@@ -10,7 +10,11 @@ using Vortex.Primitives.Groups.Enums;
 namespace Vortex.Database.Entities.Groups;
 
 [Table("groups")]
-[Index(nameof(RoomEntityId), IsUnique = true)]
+// Deliberately NOT unique: a soft-deleted guild keeps its room_id, and MySQL has no partial
+// indexes, so a unique constraint here would permanently burn a room once its guild was dissolved.
+// The "at most one live guild per room" invariant is enforced on the room side instead, by the
+// unique index on rooms.group_id (which goes NULL on deactivation, freeing the room).
+[Index(nameof(RoomEntityId))]
 [Index(nameof(OwnerPlayerEntityId))]
 public class GroupEntity : VortexEntity
 {

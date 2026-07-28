@@ -18,7 +18,12 @@ public sealed class GuildManagementWireLayoutTests
     // Incoming MessageEvent ids (Headers.cs).
     private const int UpdateGuildBadgeEvent = 3882;
     private const int UpdateGuildSettingsEvent = 3716;
-    private const int KickMemberEvent = 781;
+
+    // 781 is GetMemberGuildItemCount (step 1 of the kick flow: "how much furni does this member
+    // have in the HQ?"). The kick itself is 3156, sent from onKickConfirmationClose. These were
+    // swapped, so kicking fired on the furni-count packet and the confirmation never appeared.
+    private const int KickMemberEvent = 3156;
+    private const int GetMemberGuildItemCountEvent = 781;
 
     private static readonly Rev Revision = new(Options.Create(new ProtocolLimitsConfig()));
 
@@ -112,6 +117,35 @@ public sealed class GuildManagementWireLayoutTests
         msg.GroupId.Should().Be(5);
         msg.UserId.Should().Be(7);
         msg.Block.Should().BeTrue();
+    }
+
+    /// <summary>
+    /// Regression: these two headers were swapped, so the kick handler ran on the client's
+    /// "how much furni does this member own in the HQ?" request. Pinning both sides keeps them from
+    /// colliding again.
+    /// </summary>
+    [Fact]
+    public void GetMemberGuildItemCountParser_IsDistinctFromKick()
+    {
+        ClientPacket packet = BuildClientPacket(
+            GetMemberGuildItemCountEvent,
+            sp =>
+            {
+                sp.WriteInteger(5); // groupId
+                sp.WriteInteger(7); // userId
+            }
+        );
+
+        GetMemberGuildItemCountMessage msg = Revision
+            .Parsers[GetMemberGuildItemCountEvent]
+            .Parse(packet)
+            .Should()
+            .BeOfType<GetMemberGuildItemCountMessage>()
+            .Subject;
+
+        msg.GroupId.Should().Be(5);
+        msg.UserId.Should().Be(7);
+        GetMemberGuildItemCountEvent.Should().NotBe(KickMemberEvent);
     }
 
     [Fact]

@@ -29,30 +29,11 @@ public class NewNavigatorSearchMessageHandler(
         string searchCode = message.SearchCodeOriginal ?? string.Empty;
         string filterRaw = message.FilteringData ?? string.Empty;
 
-        NavigatorSearchFilterType filterType = NavigatorSearchFilterType.Anything;
-        string filterValue = string.Empty;
+        (NavigatorSearchFilterType filterType, string filterValue) = NavigatorSearchFilter.Parse(
+            filterRaw
+        );
 
-        if (!string.IsNullOrWhiteSpace(filterRaw))
-        {
-            int splitIndex = filterRaw.IndexOf(':');
-
-            if (splitIndex > 0)
-            {
-                filterType = NavigatorSearchFilterTypeExtensions.FromLegacyString(
-                    filterRaw[..splitIndex]
-                );
-                filterValue = filterRaw[(splitIndex + 1)..];
-            }
-            else
-            {
-                filterValue = filterRaw;
-            }
-        }
-
-        string filteringDataOut =
-            filterType == NavigatorSearchFilterType.Anything
-                ? filterValue
-                : $"{filterType.ToLegacyString()}:{filterValue}";
+        string filteringDataOut = NavigatorSearchFilter.Format(filterType, filterValue);
 
         ImmutableArray<NavigatorSearchResultBlockSnapshot> blocks;
 

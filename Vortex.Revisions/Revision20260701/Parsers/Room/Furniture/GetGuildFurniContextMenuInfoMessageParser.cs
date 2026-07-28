@@ -6,5 +6,10 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Room.Furniture;
 
 internal class GetGuildFurniContextMenuInfoMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new GetGuildFurniContextMenuInfoMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new GetGuildFurniContextMenuInfoMessage
+        {
+            ObjectId = packet.PopInt(),
+            GuildId = packet.PopInt(),
+        };
 }

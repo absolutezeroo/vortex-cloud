@@ -1,3 +1,4 @@
+using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Messages.Outgoing.Users;
 using Vortex.Primitives.Packets;
 
@@ -11,6 +12,13 @@ internal class GroupMembershipRequestedMessageComposerSerializer(int header)
         GroupMembershipRequestedMessageComposer message
     )
     {
-        //
+        packet.WriteInteger(message.GroupId);
+
+        GroupMemberSnapshot requester = message.Requester;
+        packet.WriteInteger(requester.RoleType);
+        packet.WriteInteger(requester.UserId);
+        packet.WriteString(requester.UserName);
+        packet.WriteString(requester.Figure);
+        packet.WriteString(requester.MemberSince);
     }
 }

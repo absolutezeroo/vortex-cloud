@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
 
 namespace Vortex.Primitives.Rooms.Grains;
@@ -14,6 +16,32 @@ public partial interface IRoomGrain
     /// </summary>
     public Task<RoomControllerType> GetControllerLevelAsync(
         ActionContext ctx,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Re-reads the owning guild's roster and decoration policy into live state and re-pushes the
+    /// controller level of every affected player. Called by <c>GroupGrain</c> after membership or
+    /// settings changes so guild-derived rights take effect in the current session rather than at the
+    /// next room load. A no-op for rooms that are not a guild base.
+    /// </summary>
+    /// <param name="affectedPlayerIds">
+    /// Players whose controller level must be re-pushed; empty means "settings changed, refresh
+    /// everyone currently in the room".
+    /// </param>
+    public Task RefreshGroupMembershipAsync(
+        IReadOnlyList<int> affectedPlayerIds,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Re-badges <paramref name="playerId"/>'s avatar after they changed their favourite guild, and
+    /// tells everyone in the room about it. A no-op when the player is not in this room.
+    /// </summary>
+    public Task UpdateAvatarFavouriteGroupAsync(
+        PlayerId playerId,
+        int groupId,
+        string groupName,
         CancellationToken ct
     );
 }

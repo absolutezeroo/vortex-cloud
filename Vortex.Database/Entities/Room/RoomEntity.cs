@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Entities.Groups;
 using Vortex.Database.Entities.Navigator;
 using Vortex.Database.Entities.Players;
@@ -12,6 +13,11 @@ using Vortex.Primitives.Rooms.Enums;
 namespace Vortex.Database.Entities.Room;
 
 [Table("rooms")]
+// Enforces "a room hosts at most one guild". Lives here rather than on groups.room_id because this
+// column is nullable — MySQL allows repeated NULLs in a unique index, so dissolving a guild (which
+// nulls this column) frees the room for a new one, while a unique constraint on the guild side
+// would be blocked forever by the soft-deleted row.
+[Index(nameof(GroupEntityId), IsUnique = true)]
 public class RoomEntity : VortexEntity
 {
     [Column("name")]

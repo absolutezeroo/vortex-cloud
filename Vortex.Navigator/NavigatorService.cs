@@ -195,6 +195,9 @@ public sealed class NavigatorService(
                 NavigatorSearchFilterType.Tag => await _navigatorProvider
                     .GetRoomsByTagAsync(filterValue, ct)
                     .ConfigureAwait(false),
+                NavigatorSearchFilterType.Group => await _navigatorProvider
+                    .GetRoomsByGroupNameAsync(filterValue, ct)
+                    .ConfigureAwait(false),
                 _ => await _navigatorProvider
                     .GetRoomsByNameAsync(filterValue, ct)
                     .ConfigureAwait(false),
@@ -216,6 +219,12 @@ public sealed class NavigatorService(
                 .ConfigureAwait(false),
             NavigatorQueryType.RoomAds => await _navigatorProvider
                 .GetAdvertisedRoomsAsync(ct)
+                .ConfigureAwait(false),
+            NavigatorQueryType.GuildBases => await _navigatorProvider
+                .GetGuildBaseRoomsAsync(ct)
+                .ConfigureAwait(false),
+            NavigatorQueryType.MyGroups => await _navigatorProvider
+                .GetMyGuildBaseRoomsAsync(playerId, ct)
                 .ConfigureAwait(false),
             _ => await _navigatorProvider.GetAllRoomsAsync(ct).ConfigureAwait(false),
         };

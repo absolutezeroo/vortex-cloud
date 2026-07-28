@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Primitives.Groups.Snapshots;
+using Vortex.Primitives.Messages.Incoming.GroupForums;
 using Vortex.Primitives.Players;
 
 namespace Vortex.Primitives.Groups.Grains;
@@ -53,5 +54,27 @@ public interface IGroupDirectoryGrain : IGrainWithStringKey
     );
 
     /// <summary>Number of the player's group forums that have unread activity.</summary>
+    /// <summary>
+    /// The guild's visual identity as guild-customized furni needs it: badge code plus both recolour
+    /// slots already resolved to hex. Returns null if the guild does not exist, or if
+    /// <paramref name="player"/> is not a member — buying guild furni for a guild you left must not
+    /// stamp that guild's badge onto it.
+    /// </summary>
+    Task<GuildFurniIdentitySnapshot?> GetFurniIdentityAsync(
+        PlayerId player,
+        int groupId,
+        CancellationToken ct
+    );
+
     Task<int> GetUnreadForumsCountAsync(PlayerId player, CancellationToken ct);
+
+    /// <summary>
+    /// Records how far the player has read into each listed forum. Markers only ever move forward,
+    /// so a stale batch arriving late cannot resurrect already-read messages as unread.
+    /// </summary>
+    Task UpdateForumReadMarkersAsync(
+        PlayerId player,
+        IReadOnlyList<ForumReadMarkerUpdate> markers,
+        CancellationToken ct
+    );
 }

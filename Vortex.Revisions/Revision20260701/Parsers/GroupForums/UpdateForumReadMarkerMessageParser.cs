@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Vortex.Primitives.Messages.Incoming.GroupForums;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
@@ -9,13 +10,21 @@ internal class UpdateForumReadMarkerMessageParser : IParser
     public IMessageEvent Parse(IClientPacket packet)
     {
         int count = packet.PopInt();
+
+        ImmutableArray<ForumReadMarkerUpdate>.Builder markers =
+            ImmutableArray.CreateBuilder<ForumReadMarkerUpdate>(count);
+
         for (int i = 0; i < count; i++)
         {
-            packet.PopInt();
-            packet.PopInt();
-            packet.PopBoolean();
+            markers.Add(
+                new ForumReadMarkerUpdate(
+                    GroupId: packet.PopInt(),
+                    ReadMessageCount: packet.PopInt(),
+                    MarkAllRead: packet.PopBoolean()
+                )
+            );
         }
 
-        return new UpdateForumReadMarkerMessage();
+        return new UpdateForumReadMarkerMessage { Markers = markers.ToImmutable() };
     }
 }

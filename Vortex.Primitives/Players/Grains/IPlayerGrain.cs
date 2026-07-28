@@ -41,6 +41,13 @@ public interface IPlayerGrain : IGrainWithIntegerKey
 
     public Task<PlayerSummarySnapshot> GetSummaryAsync(CancellationToken ct);
 
+    /// <summary>
+    /// Sets the guild whose badge this player's avatar displays (0 clears it), persists it, and
+    /// re-badges the avatar in the room the player is currently standing in. Callers must have
+    /// already checked that the player is a member of <paramref name="groupId"/>.
+    /// </summary>
+    public Task SetFavouriteGroupAsync(int groupId, CancellationToken ct);
+
     public Task<PlayerExtendedProfileSnapshot> GetExtendedProfileSnapshotAsync(
         CancellationToken ct
     );

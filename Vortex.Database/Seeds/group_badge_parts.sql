@@ -4,7 +4,7 @@
 --
 -- mask_file_name: non-empty when the asset has a separate back-layer part file.
 
-INSERT INTO `group_badge_parts` (`part_id`, `type`, `file_name`, `mask_file_name`, `enabled`, `created_at`, `updated_at`) VALUES
+INSERT IGNORE INTO `group_badge_parts` (`part_id`, `type`, `file_name`, `mask_file_name`, `enabled`, `created_at`, `updated_at`) VALUES
 
 -- ── Base shapes ──────────────────────────────────────────────────────────────
 (1,  'base', 'base_basic_1',          '',                      1, NOW(), NOW()),

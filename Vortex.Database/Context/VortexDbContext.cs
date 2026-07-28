@@ -173,6 +173,10 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<GroupMembershipRequestEntity> GroupMembershipRequests { get; init; } = null!;
 
+    public DbSet<GroupBlockedMemberEntity> GroupBlockedMembers { get; init; } = null!;
+
+    public DbSet<GroupForumReadMarkerEntity> GroupForumReadMarkers { get; init; } = null!;
+
     public DbSet<GroupForumSettingsEntity> GroupForumSettings { get; init; } = null!;
 
     public DbSet<GroupForumThreadEntity> GroupForumThreads { get; init; } = null!;
@@ -243,6 +247,14 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
             .WithMany()
             .HasForeignKey(r => r.GroupEntityId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // The pair of reference navigations above makes EF's relationship convention mark
+        // groups.room_id unique, which the [Index] attribute alone cannot undo. It must not be
+        // unique: a dissolved guild keeps its room_id (soft delete) and MySQL has no partial
+        // indexes, so the constraint would permanently burn that room as a future guild base.
+        // "At most one live guild per room" is enforced on rooms.group_id instead — nullable, so
+        // repeated NULLs are allowed and dissolving a guild frees the room.
+        mb.Entity<GroupEntity>().HasIndex(g => g.RoomEntityId).IsUnique(false);
 
         // Self-referencing FK on furniture.rentable_space_furniture_id (DATA-MODEL §3.3).
         // Non-cascade: deleting a space furni must not cascade-delete the items placed in it.

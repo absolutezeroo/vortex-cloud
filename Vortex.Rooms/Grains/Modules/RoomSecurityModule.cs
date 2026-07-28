@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Players;
@@ -22,21 +23,12 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
 
     public async Task<bool> CanManipulateFurniAsync(ActionContext ctx)
     {
+        // Rights is the floor for building anywhere. In a guild room the group standing is already
+        // folded into the resolved level (GroupRights/GroupAdmin), so guild members and classic
+        // rights-holders are both covered without a separate guild branch here.
         RoomControllerType controllerLevel = await GetControllerLevelAsync(ctx);
 
-        if (controllerLevel >= RoomControllerType.GroupAdmin)
-        {
-            return true;
-        }
-
-        if (_roomGrain._state.RoomSnapshot.GroupId is null)
-        {
-            if (controllerLevel >= RoomControllerType.Rights)
-            {
-                return true;
-            }
-        }
-        return false;
+        return controllerLevel >= RoomControllerType.Rights;
     }
 
     public async Task<bool> CanUseFurniAsync(ActionContext ctx, FurnitureUsageType usageType)
@@ -185,7 +177,32 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
             ctx.Origin,
             permissions,
             isExplicitOwner,
-            hasExplicitRights
+            hasExplicitRights,
+            ResolveGroupContext(ctx.PlayerId)
+        );
+    }
+
+    /// <summary>
+    /// The subject's standing in the guild that owns this room, read from the live membership cache
+    /// hydrated on room load. Returns <see cref="RoomGroupContext.None"/> for non-guild rooms and for
+    /// players who hold no membership row.
+    /// </summary>
+    private RoomGroupContext ResolveGroupContext(PlayerId playerId)
+    {
+        if (_roomGrain._state.RoomSnapshot.GroupId is null)
+        {
+            return RoomGroupContext.None;
+        }
+
+        if (!_roomGrain._state.GroupMemberRanks.TryGetValue(playerId, out GroupMemberRank rank))
+        {
+            return RoomGroupContext.None;
+        }
+
+        return new RoomGroupContext(
+            IsMember: true,
+            IsAdmin: rank == GroupMemberRank.Admin,
+            MembersCanDecorate: !_roomGrain._state.GroupAdminOnlyDecoration
         );
     }
 

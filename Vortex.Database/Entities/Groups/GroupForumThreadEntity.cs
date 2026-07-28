@@ -47,8 +47,19 @@ public class GroupForumThreadEntity : VortexEntity
     [Column("last_post_player_id")]
     public int? LastPostPlayerEntityId { get; set; }
 
+    /// <summary>Admin who last moderated this thread; surfaced to the client so the forum can show
+    /// "hidden by X". Null until the thread is moderated.</summary>
+    [Column("admin_player_id")]
+    public int? AdminPlayerEntityId { get; set; }
+
+    [Column("admin_operation_at")]
+    public DateTime? AdminOperationAt { get; set; }
+
     [ForeignKey(nameof(GroupEntityId))]
     public required GroupEntity GroupEntity { get; set; }
+
+    [ForeignKey(nameof(AdminPlayerEntityId))]
+    public PlayerEntity? AdminPlayerEntity { get; set; }
 
     [ForeignKey(nameof(PlayerEntityId))]
     public required PlayerEntity PlayerEntity { get; set; }

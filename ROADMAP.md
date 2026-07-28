@@ -245,7 +245,7 @@ across all stories are peripheral extras, not on this path.
 - [ ] Client session rank is consistent with capabilities, but client rank remains UI hint only; server decision remains `IPermissionService`.
 
 **Story 2.2 — Group room rights**
-- [ ] Real `isGroupRoom` + `canGroupDecorate` + GroupMember/GroupRights/GroupAdmin levels in `RoomSecurityModule`.
+- [x] Real `isGroupRoom` + `canGroupDecorate` + GroupRights/GroupAdmin levels in `RoomSecurityModule` (via `RoomSecurityPolicy` + `RoomGroupContext`); room mod settings (`WhoCanMute`/`Kick`/`Ban`, including the guild-scoped options) enforced by `RoomModerationPolicy`.
 
 **Story 2.3 — Staff moderation tool — Done (2026-07-05)**
 *As staff, I want* moderation tooling (CFH/tickets, alerts, sanctions),
@@ -357,7 +357,7 @@ throughout; group rooms handled; moderation tool is functional and audited.
 - [ ] `FriendList` (+ messenger) handlers: requests, accept/deny, messages, presence.
 
 **Story 5.2 — Groups**
-- [ ] Group creation, member management, forums (`GroupForums`) gated by group permissions (see Epic 2).
+- [x] Group creation, member management, forums (`GroupForums`) gated by group permissions (see Epic 2). Shipped 2026-06-19; guild room rights, avatar badges, navigator guild searches, forum read markers and the block list landed 2026-07-28.
 
 **Epic 5 DoD:** player can add friend, message, create and manage a group.
 

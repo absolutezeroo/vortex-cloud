@@ -18,6 +18,8 @@ using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Snapshots;
 using Vortex.Primitives.Furniture.StuffData;
+using Vortex.Primitives.Groups;
+using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Inventory.Furniture;
 using Vortex.Primitives.Inventory.Snapshots;
 using Vortex.Primitives.Orleans;
@@ -99,6 +101,17 @@ public sealed partial class InventoryGrain
         List<PetCreateRequest> petRequests = new();
         List<(int EffectId, int SubType, int Duration)> effectGrants = new();
 
+        // Guild furni is bought from the guild pages with the guild id in extraParam; the badge and
+        // both recolours have to be baked into the item's stuff data at grant time, because the
+        // client renders them straight from there and never asks the server for them again.
+        GuildFurniIdentitySnapshot? guildIdentity =
+            int.TryParse(extraParam, out int guildId) && guildId > 0
+                ? await _grainFactory
+                    .GetGroupDirectoryGrain()
+                    .GetFurniIdentityAsync((int)this.GetPrimaryKeyLong(), guildId, ct)
+                    .ConfigureAwait(true)
+                : null;
+
         foreach (CatalogProductSnapshot product in offer.Products)
         {
             if (product.ProductType is ProductType.Floor || product.ProductType is ProductType.Wall)
@@ -106,6 +119,13 @@ public sealed partial class InventoryGrain
                 FurnitureDefinitionSnapshot def =
                     _furnitureDefinitionProvider.TryGetDefinition(product.FurniDefinitionId)
                     ?? throw new VortexException(VortexErrorCodeEnum.FurnitureDefinitionNotFound);
+
+                // Only string-array furni can carry the guild layout; stamping anything else would
+                // corrupt its own stuff data.
+                string? guildExtraData =
+                    guildIdentity is not null && def.StuffDataType == StuffDataType.StringKey
+                        ? BuildGuildExtraData(guildIdentity)
+                        : null;
 
                 // Each product carries its own per-offer count (a bundle is an offer holding
                 // several products, and any product may bundle >1 of an item), so the copies to
@@ -120,6 +140,7 @@ public sealed partial class InventoryGrain
                         {
                             PlayerEntityId = (int)this.GetPrimaryKeyLong(),
                             FurnitureDefinitionEntityId = def.Id,
+                            ExtraData = guildExtraData,
                         }
                     );
                 }
@@ -573,5 +594,29 @@ public sealed partial class InventoryGrain
     public Task EnsureFurnitureReadyAsync(CancellationToken ct)
     {
         return _furniModule.EnsureFurnitureReadyAsync(ct);
+    }
+
+    /// <summary>
+    /// Serializes the guild layout into the item's extra-data blob, in the same "stuff" section
+    /// shape <see cref="Vortex.Furniture.Providers.StuffDataFactory"/> reads back.
+    /// </summary>
+    private static string BuildGuildExtraData(GuildFurniIdentitySnapshot identity)
+    {
+        ExtraData extraData = new(null);
+
+        extraData.UpdateSection(
+            ExtraDataSectionType.STUFF,
+            new
+            {
+                Data = GuildFurniStuffData.Build(
+                    identity.GroupId,
+                    identity.BadgeCode,
+                    identity.ColorOneHex,
+                    identity.ColorTwoHex
+                ),
+            }
+        );
+
+        return extraData.GetJsonString();
     }
 }

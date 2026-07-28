@@ -5,6 +5,7 @@ using Orleans;
 using Vortex.Events.Registry;
 using Vortex.Players.Configuration;
 using Vortex.Primitives.Events;
+using Vortex.Primitives.Groups;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Server.Grains;
 
@@ -31,17 +32,10 @@ internal sealed class GroupNameValidationBehavior(IGrainFactory grainFactory)
             .GetIntAsync(GroupConfig.MaxNameLengthKey, GroupConfig.MaxNameLengthDefault)
             .ConfigureAwait(false);
 
-        string name = env.GroupName?.Trim() ?? string.Empty;
-
-        if (name.Length == 0)
+        if (GroupNameRules.Validate(env.GroupName, maxNameLength) is string reason)
         {
             ctx.Cancel = true;
-            ctx.CancelReason = "empty_name";
-        }
-        else if (name.Length > maxNameLength)
-        {
-            ctx.Cancel = true;
-            ctx.CancelReason = "name_too_long";
+            ctx.CancelReason = reason;
         }
 
         await next().ConfigureAwait(false);

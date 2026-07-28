@@ -31,6 +31,17 @@ internal static class RoomForwardHelper
         IRoomGrain roomGrain = grainFactory.GetRoomGrain(roomId);
         RoomSnapshot snapshot = await roomGrain.GetSnapshotAsync().ConfigureAwait(false);
 
+        // Drives the "you are a member" affordances on the room card; only worth a grain call when
+        // the room actually belongs to a guild.
+        bool isGroupMember =
+            snapshot.GroupId is int groupId
+            && groupId > 0
+            && await grainFactory
+                .GetGroupGrain(groupId)
+                .GetMemberRankAsync(ctx.PlayerId, ct)
+                .ConfigureAwait(false)
+                is not null;
+
         await ctx.SendComposerAsync(
                 new GetGuestRoomResultMessageComposer
                 {
@@ -38,7 +49,7 @@ internal static class RoomForwardHelper
                     RoomInfo = snapshot,
                     RoomForward = roomForward,
                     StaffPick = snapshot.StaffPick,
-                    IsGroupMember = false,
+                    IsGroupMember = isGroupMember,
                     AllInRoomMuted = false,
                     CanMute = false,
                     OpeningConnection = false,

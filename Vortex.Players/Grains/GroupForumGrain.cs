@@ -55,7 +55,40 @@ internal sealed class GroupForumGrain(
         }
 
         ForumRole role = await GetRoleAsync(dbCtx, group, viewer.Value, ct);
-        return await BuildForumSnapshotAsync(dbCtx, group, group.ForumSettings, role, ct);
+
+        if (CanRead(group.ForumSettings, role))
+        {
+            // Counted here rather than on every thread/message page so one visit is one view.
+            // Fire-and-forget would hide failures, but a failed counter must not fail the read —
+            // hence the targeted single-statement update inside the normal error path.
+            try
+            {
+                await dbCtx
+                    .GroupForumSettings.Where(s => s.GroupEntityId == GroupId)
+                    .ExecuteUpdateAsync(
+                        up => up.SetProperty(s => s.ViewCount, s => s.ViewCount + 1),
+                        ct
+                    )
+                    .ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    ex,
+                    "Failed to increment the view counter for forum {GroupId}",
+                    GroupId
+                );
+            }
+        }
+
+        return await BuildForumSnapshotAsync(
+            dbCtx,
+            group,
+            group.ForumSettings,
+            role,
+            viewer.Value,
+            ct
+        );
     }
 
     public async Task<ForumThreadsPageSnapshot?> GetThreadsAsync(
@@ -100,6 +133,7 @@ internal sealed class GroupForumGrain(
             .GroupForumThreads.AsNoTracking()
             .Include(t => t.PlayerEntity)
             .Include(t => t.LastPostPlayerEntity)
+            .Include(t => t.AdminPlayerEntity)
             .Where(t =>
                 t.GroupEntityId == GroupId
                 && t.DeletedAt == null
@@ -163,6 +197,7 @@ internal sealed class GroupForumGrain(
         List<GroupForumPostEntity> posts = await dbCtx
             .GroupForumPosts.AsNoTracking()
             .Include(p => p.PlayerEntity)
+            .Include(p => p.AdminPlayerEntity)
             .Where(p =>
                 p.ThreadEntityId == threadId && p.GroupEntityId == GroupId && p.DeletedAt == null
             )
@@ -375,6 +410,7 @@ internal sealed class GroupForumGrain(
         GroupForumThreadEntity? thread = await dbCtx
             .GroupForumThreads.Include(t => t.PlayerEntity)
             .Include(t => t.LastPostPlayerEntity)
+            .Include(t => t.AdminPlayerEntity)
             .FirstOrDefaultAsync(
                 t => t.Id == threadId && t.GroupEntityId == GroupId && t.DeletedAt == null,
                 ct
@@ -421,6 +457,7 @@ internal sealed class GroupForumGrain(
         GroupForumThreadEntity? thread = await dbCtx
             .GroupForumThreads.Include(t => t.PlayerEntity)
             .Include(t => t.LastPostPlayerEntity)
+            .Include(t => t.AdminPlayerEntity)
             .FirstOrDefaultAsync(
                 t => t.Id == threadId && t.GroupEntityId == GroupId && t.DeletedAt == null,
                 ct
@@ -431,6 +468,8 @@ internal sealed class GroupForumGrain(
         }
 
         thread.State = MapThreadAction(action);
+        thread.AdminPlayerEntityId = actor.Value;
+        thread.AdminOperationAt = DateTime.UtcNow;
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         await events
@@ -461,6 +500,7 @@ internal sealed class GroupForumGrain(
 
         GroupForumPostEntity? post = await dbCtx
             .GroupForumPosts.Include(p => p.PlayerEntity)
+            .Include(p => p.AdminPlayerEntity)
             .FirstOrDefaultAsync(
                 p =>
                     p.Id == messageId
@@ -475,6 +515,8 @@ internal sealed class GroupForumGrain(
         }
 
         post.State = MapPostAction(action);
+        post.AdminPlayerEntityId = actor.Value;
+        post.AdminOperationAt = DateTime.UtcNow;
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         await events
@@ -525,7 +567,14 @@ internal sealed class GroupForumGrain(
             .PublishAsync(new ForumSettingsUpdatedEvent(actor.Value, GroupId), ct)
             .ConfigureAwait(true);
 
-        return await BuildForumSnapshotAsync(dbCtx, group, settings, ForumRole.Owner, ct);
+        return await BuildForumSnapshotAsync(
+            dbCtx,
+            group,
+            settings,
+            ForumRole.Owner,
+            actor.Value,
+            ct
+        );
     }
 
     private async Task<ForumRole> GetRoleAsync(
@@ -593,6 +642,7 @@ internal sealed class GroupForumGrain(
         GroupEntity group,
         GroupForumSettingsEntity settings,
         ForumRole role,
+        int viewerId,
         CancellationToken ct
     )
     {
@@ -623,6 +673,14 @@ internal sealed class GroupForumGrain(
             .OrderByDescending(p => p.Id)
             .FirstOrDefaultAsync(ct);
 
+        int readMessageCount = await dbCtx
+            .GroupForumReadMarkers.AsNoTracking()
+            .Where(m =>
+                m.GroupEntityId == GroupId && m.PlayerEntityId == viewerId && m.DeletedAt == null
+            )
+            .Select(m => m.ReadMessageCount)
+            .FirstOrDefaultAsync(ct);
+
         DateTime now = DateTime.UtcNow;
         bool canRead = CanRead(settings, role);
         bool canPostMessage = settings.Enabled && Allows(settings.PostPermission, role);
@@ -638,7 +696,7 @@ internal sealed class GroupForumGrain(
             TotalThreads = totalThreads,
             LeaderboardScore = 0,
             TotalMessages = totalMessages,
-            UnreadMessages = 0,
+            UnreadMessages = Math.Max(totalMessages - readMessageCount, 0),
             LastMessageId = lastPost?.Id ?? 0,
             LastMessageAuthorId = lastPost?.PlayerEntityId ?? 0,
             LastMessageAuthorName = lastPost?.PlayerEntity.Name ?? string.Empty,
@@ -687,9 +745,11 @@ internal sealed class GroupForumGrain(
                 ? SecondsAgo(thread.CreatedAt, now)
                 : SecondsAgo(thread.LastPostAt.Value, now),
             State = (int)thread.State,
-            AdminId = 0,
-            AdminName = string.Empty,
-            AdminOperationTimeAsSecondsAgo = 0,
+            AdminId = thread.AdminPlayerEntityId ?? 0,
+            AdminName = thread.AdminPlayerEntity?.Name ?? string.Empty,
+            AdminOperationTimeAsSecondsAgo = thread.AdminOperationAt is null
+                ? 0
+                : SecondsAgo(thread.AdminOperationAt.Value, now),
         };
 
     private static ForumPostSnapshot BuildPostSnapshot(
@@ -709,9 +769,11 @@ internal sealed class GroupForumGrain(
             CreationTimeAsSecondsAgo = SecondsAgo(post.CreatedAt, now),
             MessageText = post.Message,
             State = (int)post.State,
-            AdminId = 0,
-            AdminName = string.Empty,
-            AdminOperationTimeAsSecondsAgo = 0,
+            AdminId = post.AdminPlayerEntityId ?? 0,
+            AdminName = post.AdminPlayerEntity?.Name ?? string.Empty,
+            AdminOperationTimeAsSecondsAgo = post.AdminOperationAt is null
+                ? 0
+                : SecondsAgo(post.AdminOperationAt.Value, now),
             AuthorPostCount = authorPostCount,
         };
 

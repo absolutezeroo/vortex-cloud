@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging.Abstractions;
 using Orleans;
@@ -118,6 +119,10 @@ public sealed class GroupDirectoryGrainCreationTests
     {
         return new DbContextOptionsBuilder<VortexDbContext>()
             .UseInMemoryDatabase($"group-directory-{Guid.NewGuid():N}")
+            // Guild creation wraps its two SaveChanges calls in a transaction so the group row and
+            // the room back-link land together. The in-memory provider has no transactions and
+            // warns instead; the atomicity this guards is a relational concern, so ignore it here.
+            .ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning))
             .Options;
     }
 
@@ -336,6 +341,15 @@ public sealed class GroupDirectoryGrainCreationTests
         public Task TrackCreditSpendAsync(int credits, CancellationToken ct)
         {
             TrackCreditSpendCalls++;
+
+            return Task.CompletedTask;
+        }
+
+        public int FavouriteGroupId { get; private set; }
+
+        public Task SetFavouriteGroupAsync(int groupId, CancellationToken ct)
+        {
+            FavouriteGroupId = groupId;
 
             return Task.CompletedTask;
         }

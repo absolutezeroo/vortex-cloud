@@ -4,11 +4,13 @@ using Vortex.Primitives.Rooms.Enums;
 namespace Vortex.Primitives.Permissions;
 
 /// <summary>
-/// Pure mapping from a resolved <see cref="PermissionSet"/> (plus a subject's explicit ownership and
-/// room-rights) to an effective <see cref="RoomControllerType"/>. Staff capabilities elevate the level
-/// across every room: <see cref="Capabilities.Wildcard"/> and <see cref="Capabilities.Room.ModerateAny"/>
-/// reach moderator everywhere, while <see cref="Capabilities.Room.BuildAny"/> reaches owner so build/pickup
-/// checks pass regardless of the room owner. The classic per-room rights fallback is preserved.
+/// Pure mapping from a resolved <see cref="PermissionSet"/> (plus a subject's explicit ownership,
+/// room-rights and guild standing) to an effective <see cref="RoomControllerType"/>. Staff capabilities
+/// elevate the level across every room: <see cref="Capabilities.Wildcard"/> and
+/// <see cref="Capabilities.Room.ModerateAny"/> reach moderator everywhere, while
+/// <see cref="Capabilities.Room.BuildAny"/> reaches owner so build/pickup checks pass regardless of the
+/// room owner. Guild standing layers on top of — and never displaces — the classic per-room rights
+/// fallback: a rights-holder in a guild room keeps at least <see cref="RoomControllerType.Rights"/>.
 /// </summary>
 public static class RoomSecurityPolicy
 {
@@ -16,7 +18,8 @@ public static class RoomSecurityPolicy
         ActionOrigin origin,
         PermissionSet permissions,
         bool isExplicitOwner,
-        bool hasExplicitRights
+        bool hasExplicitRights,
+        RoomGroupContext group = default
     )
     {
         if (origin == ActionOrigin.System)
@@ -32,6 +35,19 @@ public static class RoomSecurityPolicy
         if (isExplicitOwner || permissions.Has(Capabilities.Room.BuildAny))
         {
             return RoomControllerType.Owner;
+        }
+
+        // Guild admins outrank plain members, who in turn outrank classic rights-holders — but only
+        // while the guild actually lets members decorate. When it does not, a member falls through
+        // to whatever they hold in their own right.
+        if (group.IsAdmin)
+        {
+            return RoomControllerType.GroupAdmin;
+        }
+
+        if (group.IsMember && group.MembersCanDecorate)
+        {
+            return RoomControllerType.GroupRights;
         }
 
         if (hasExplicitRights)

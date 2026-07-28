@@ -28,4 +28,11 @@ public sealed record PlayerSummarySnapshot
 
     [Id(6)]
     public required DateTime CreatedAt { get; init; }
+
+    /// <summary>Guild whose badge the avatar displays, or 0 when the player has no favourite.</summary>
+    [Id(7)]
+    public int FavouriteGroupId { get; init; }
+
+    [Id(8)]
+    public string FavouriteGroupName { get; init; } = string.Empty;
 }

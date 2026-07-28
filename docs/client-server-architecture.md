@@ -632,7 +632,7 @@ In short: **Marketplace** = list an item for sale, any other player buys it asyn
 Fully implemented — a real subsystem, not a stub. Lives in `Vortex.Players/Grains/`:
 
 - `GroupDirectoryGrain.cs` (singleton grain) — creation wizard data, **group creation** (validates room ownership, room-not-already-a-guild-base, publishes a cancellable `GroupCreatingEvent`, debits creation cost via `IPlayerWalletGrain.TryDebitAsync`, creates the group + enrolls the owner as admin, publishes `GroupCreatedEvent`), memberships, favouriting, badge editor data, forums listing.
-- `GroupGrain.cs` — per-group member management; `AdminOnlyDecoration`/`MembersCanDecorate` are real DB-backed columns (re-verified per `CONSOLIDATION.md` P2, not hardcoded).
+- `GroupGrain.cs` — per-group member management. `groups.admin_only_decoration` is the real DB column; `MembersCanDecorate` is its inverse, computed on the snapshot (there is no column of that name). It is enforced: `RoomGrain` hydrates the guild roster into `RoomLiveState.GroupMemberRanks`, and `RoomSecurityPolicy` turns it into `GroupRights`/`GroupAdmin`.
 - `GroupForumGrain.cs` — thread/post CRUD, config-bound page-size caps.
 - Badge system: part/color/position triples assembled into a badge code (`GuildBadgeLibrary`, `GroupBadgePartProvider`).
 - A real production event hook, `GroupNameValidationBehavior` (`IEventBehavior<GroupCreatingEvent>`), rejects empty/too-long guild names — proof the event-behavior extension point (`Vortex.Events`) is exercised in production, not just scaffolding.

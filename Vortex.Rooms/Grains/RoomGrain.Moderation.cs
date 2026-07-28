@@ -4,7 +4,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Events;
+using Vortex.Primitives.Navigator.Enums;
+using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Players;
+using Vortex.Primitives.Rooms.Enums;
 
 namespace Vortex.Rooms.Grains;
 
@@ -25,7 +28,47 @@ public sealed partial class RoomGrain
             return Task.FromResult(false);
         }
 
-        return KickUserInternalAsync(actorCtx, targetPlayerId, ct);
+        return KickUserGuardedAsync(actorCtx, targetPlayerId, ct);
+    }
+
+    private async Task<bool> KickUserGuardedAsync(
+        ActionContext actorCtx,
+        PlayerId targetPlayerId,
+        CancellationToken ct
+    )
+    {
+        if (!await CanModerateAsync(actorCtx, _state.RoomSnapshot.ModSettings.WhoCanKick))
+        {
+            return false;
+        }
+
+        return await KickUserInternalAsync(actorCtx, targetPlayerId, ct).ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// Whether <paramref name="actorCtx"/> may perform a moderation action gated by
+    /// <paramref name="setting"/> in this room. System/wired origins resolve to moderator and pass.
+    /// </summary>
+    private async Task<bool> CanModerateAsync(ActionContext actorCtx, ModSettingType setting)
+    {
+        RoomControllerType level = await SecurityModule
+            .GetControllerLevelAsync(actorCtx)
+            .ConfigureAwait(true);
+
+        if (RoomModerationPolicy.CanModerate(level, setting))
+        {
+            return true;
+        }
+
+        _logger.LogDebug(
+            "Player {ActorId} lacks {Setting} moderation rights in room {RoomId} (level {Level}).",
+            actorCtx.PlayerId,
+            setting,
+            _state.RoomId,
+            level
+        );
+
+        return false;
     }
 
     /// <summary>Kicks a user without a human actor — for wired / system-driven kicks (the
@@ -94,6 +137,11 @@ public sealed partial class RoomGrain
             return false;
         }
 
+        if (!await CanModerateAsync(actorCtx, _state.RoomSnapshot.ModSettings.WhoCanMute))
+        {
+            return false;
+        }
+
         DateTime expiresUtc = DateTime.UtcNow.AddSeconds(durationSeconds);
 
         try
@@ -147,6 +195,11 @@ public sealed partial class RoomGrain
                 return false;
             }
 
+            if (!await CanModerateAsync(actorCtx, _state.RoomSnapshot.ModSettings.WhoCanBan))
+            {
+                return false;
+            }
+
             DateTime expiresUtc = DateTime.UtcNow.AddSeconds(durationSeconds);
 
             await _moderationStore.BanAsync(_state.RoomId.Value, targetPlayerId, expiresUtc, ct);
@@ -194,6 +247,11 @@ public sealed partial class RoomGrain
                 return false;
             }
 
+            if (!await CanModerateAsync(actorCtx, _state.RoomSnapshot.ModSettings.WhoCanMute))
+            {
+                return false;
+            }
+
             await _moderationStore
                 .UnmuteAsync(_state.RoomId.Value, targetPlayerId, ct)
                 .ConfigureAwait(true);
@@ -223,6 +281,11 @@ public sealed partial class RoomGrain
         try
         {
             if (actorCtx.PlayerId <= 0 || targetPlayerId <= 0 || actorCtx.RoomId != _state.RoomId)
+            {
+                return false;
+            }
+
+            if (!await CanModerateAsync(actorCtx, _state.RoomSnapshot.ModSettings.WhoCanBan))
             {
                 return false;
             }

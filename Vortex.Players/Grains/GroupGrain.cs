@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,11 +12,16 @@ using Vortex.Database.Entities.Groups;
 using Vortex.Database.Entities.Players;
 using Vortex.Players.Configuration;
 using Vortex.Primitives.Events;
+using Vortex.Primitives.Groups;
 using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Groups.Grains;
 using Vortex.Primitives.Groups.Snapshots;
+using Vortex.Primitives.Messages.Outgoing.Users;
 using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Players;
+using Vortex.Primitives.Rooms;
+using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Server.Grains;
 
 namespace Vortex.Players.Grains;
@@ -32,17 +38,10 @@ internal sealed class GroupGrain(
     private const int RoleMember = 2;
     private const int RoleRequested = 3;
 
-    // Membership status the detail view reports for the viewer.
-    private const int StatusNotMember = 0;
-    private const int StatusMember = 1;
-    private const int StatusRequested = 2;
-
     // Join failure reason code (client HabboGroupJoinFailedMessageEvent).
     private const int JoinFailedNotOpen = 2;
 
     private int GroupId => (int)this.GetPrimaryKeyLong();
-
-    // ── Reads ───────────────────────────────────────────────────────────────────
 
     public async Task<GroupDetailsSnapshot?> GetDetailsAsync(PlayerId viewer, CancellationToken ct)
     {
@@ -103,10 +102,10 @@ internal sealed class GroupGrain(
         bool isOwner = group.OwnerPlayerEntityId == viewerId;
         bool isAdmin = isOwner || membership?.Rank == GroupMemberRank.Admin;
 
-        int status =
-            membership is not null ? StatusMember
-            : hasPendingRequest ? StatusRequested
-            : StatusNotMember;
+        GroupMembershipStatus status =
+            membership is not null ? GroupMembershipStatus.Member
+            : hasPendingRequest ? GroupMembershipStatus.RequestPending
+            : GroupMembershipStatus.NotMember;
 
         return new GroupDetailsSnapshot
         {
@@ -130,6 +129,21 @@ internal sealed class GroupGrain(
             PendingMemberCount = pendingCount,
             HasForum = group.ForumSettings?.Enabled ?? false,
         };
+    }
+
+    public async Task<GroupMemberRank?> GetMemberRankAsync(PlayerId player, CancellationToken ct)
+    {
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+
+        int playerId = player.Value;
+
+        return await dbCtx
+            .GroupMembers.AsNoTracking()
+            .Where(m =>
+                m.GroupEntityId == GroupId && m.PlayerEntityId == playerId && m.DeletedAt == null
+            )
+            .Select(m => (GroupMemberRank?)m.Rank)
+            .FirstOrDefaultAsync(ct);
     }
 
     public async Task<GroupMembersPageSnapshot?> GetMembersAsync(
@@ -259,8 +273,6 @@ internal sealed class GroupGrain(
         };
     }
 
-    // ── Join ────────────────────────────────────────────────────────────────────
-
     public async Task<int?> JoinAsync(PlayerId player, CancellationToken ct)
     {
         await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
@@ -275,6 +287,18 @@ internal sealed class GroupGrain(
         }
 
         int playerId = player.Value;
+
+        // A blocked player is refused before anything else — otherwise kicking with "block" would
+        // only slow them down for as long as it takes to press join again.
+        bool blocked = await dbCtx.GroupBlockedMembers.AnyAsync(
+            b => b.GroupEntityId == GroupId && b.PlayerEntityId == playerId && b.DeletedAt == null,
+            ct
+        );
+
+        if (blocked)
+        {
+            return JoinFailedNotOpen;
+        }
 
         bool alreadyMember = await dbCtx.GroupMembers.AnyAsync(
             m => m.GroupEntityId == GroupId && m.PlayerEntityId == playerId && m.DeletedAt == null,
@@ -317,6 +341,21 @@ internal sealed class GroupGrain(
                 await events
                     .PublishAsync(new GroupMembershipRequestedEvent(playerId, GroupId), ct)
                     .ConfigureAwait(true);
+
+                await NotifyAdminsOfRequestAsync(
+                        dbCtx,
+                        group.OwnerPlayerEntityId,
+                        new GroupMemberSnapshot
+                        {
+                            RoleType = RoleRequested,
+                            UserId = playerId,
+                            UserName = playerEntity.Name,
+                            Figure = playerEntity.Figure,
+                            MemberSince = DateTime.UtcNow.ToString("dd-MM-yyyy"),
+                        },
+                        ct
+                    )
+                    .ConfigureAwait(true);
             }
 
             return null;
@@ -338,11 +377,11 @@ internal sealed class GroupGrain(
             .PublishAsync(new GroupMemberJoinedEvent(playerId, GroupId), ct)
             .ConfigureAwait(true);
 
+        await NotifyBaseRoomAsync([playerId], ct).ConfigureAwait(true);
+
         logger.LogInformation("Player {PlayerId} joined group {GroupId}", playerId, GroupId);
         return null;
     }
-
-    // ── Management ────────────────────────────────────────────────────────────────
 
     public async Task<GroupEditInfoSnapshot?> GetEditInfoAsync(PlayerId actor, CancellationToken ct)
     {
@@ -412,22 +451,44 @@ internal sealed class GroupGrain(
         };
     }
 
-    public Task<bool> UpdateIdentityAsync(
+    public async Task<bool> UpdateIdentityAsync(
         PlayerId actor,
         string name,
         string description,
         CancellationToken ct
     )
     {
-        return MutateAsAdminAsync(
-            actor,
-            group =>
-            {
-                group.Name = name;
-                group.Description = string.IsNullOrEmpty(description) ? null : description;
-            },
-            ct
-        );
+        // Renaming must clear the same bar as creating: without this an admin could rename a guild
+        // to an empty string, or to something past the column's 50-char limit (which would throw at
+        // SaveChanges rather than being refused cleanly).
+        int maxNameLength = await this
+            .GrainFactory.GetServerConfigGrain()
+            .GetIntAsync(GroupConfig.MaxNameLengthKey, GroupConfig.MaxNameLengthDefault)
+            .ConfigureAwait(true);
+
+        if (GroupNameRules.Validate(name, maxNameLength) is string reason)
+        {
+            logger.LogInformation(
+                "Rejected rename of group {GroupId} by player {ActorId}: {Reason}",
+                GroupId,
+                actor.Value,
+                reason
+            );
+            return false;
+        }
+
+        string trimmedName = name.Trim();
+
+        return await MutateAsAdminAsync(
+                actor,
+                group =>
+                {
+                    group.Name = trimmedName;
+                    group.Description = string.IsNullOrEmpty(description) ? null : description;
+                },
+                ct
+            )
+            .ConfigureAwait(true);
     }
 
     public Task<bool> UpdateColorsAsync(
@@ -461,7 +522,7 @@ internal sealed class GroupGrain(
         );
     }
 
-    public Task<bool> UpdateSettingsAsync(
+    public async Task<bool> UpdateSettingsAsync(
         PlayerId actor,
         int guildType,
         int rightsLevel,
@@ -469,20 +530,30 @@ internal sealed class GroupGrain(
     )
     {
         // Settings (join policy + decoration rights) are owner-only.
-        return MutateAsync(
-            actor,
-            true,
-            group =>
-            {
-                if (guildType is >= 0 and <= 2)
+        bool updated = await MutateAsync(
+                actor,
+                true,
+                group =>
                 {
-                    group.Type = (GroupType)guildType;
-                }
+                    if (guildType is >= 0 and <= 2)
+                    {
+                        group.Type = (GroupType)guildType;
+                    }
 
-                group.AdminOnlyDecoration = rightsLevel != 0;
-            },
-            ct
-        );
+                    group.AdminOnlyDecoration = rightsLevel != 0;
+                },
+                ct
+            )
+            .ConfigureAwait(true);
+
+        if (updated)
+        {
+            // The decoration policy moves every plain member's build rights at once — an empty
+            // affected list makes the room re-evaluate everyone standing in it.
+            await NotifyBaseRoomAsync([], ct).ConfigureAwait(true);
+        }
+
+        return updated;
     }
 
     public async Task<bool> DeactivateAsync(PlayerId actor, CancellationToken ct)
@@ -499,6 +570,7 @@ internal sealed class GroupGrain(
         }
 
         DateTime now = DateTime.UtcNow;
+        int baseRoomId = group.RoomEntityId;
 
         // Detach the room (clears the circular link), then soft-delete the group graph.
         await dbCtx
@@ -522,6 +594,10 @@ internal sealed class GroupGrain(
         await events
             .PublishAsync(new GroupDeactivatedEvent(actor.Value, GroupId), ct)
             .ConfigureAwait(true);
+
+        // The room is no longer a guild base — drop the cached roster so ex-members immediately
+        // lose the build rights the guild was granting them.
+        await NotifyRoomAsync(baseRoomId, [], ct).ConfigureAwait(true);
 
         logger.LogInformation(
             "Group {GroupId} deactivated by player {ActorId}",
@@ -578,6 +654,8 @@ internal sealed class GroupGrain(
                 ct
             )
             .ConfigureAwait(true);
+
+        await NotifyBaseRoomAsync([targetPlayerId], ct).ConfigureAwait(true);
 
         return new GroupMemberSnapshot
         {
@@ -689,6 +767,8 @@ internal sealed class GroupGrain(
             )
             .ConfigureAwait(true);
 
+        await NotifyBaseRoomAsync([.. added.Select(m => m.UserId)], ct).ConfigureAwait(true);
+
         return added;
     }
 
@@ -732,11 +812,75 @@ internal sealed class GroupGrain(
             return false;
         }
 
-        // NOTE: `block` (prevent rejoining) needs a per-group block list — not yet modelled; the
-        // member is removed regardless. Tracked for a follow-up slice.
+        if (block)
+        {
+            bool alreadyBlocked = await dbCtx.GroupBlockedMembers.AnyAsync(
+                b =>
+                    b.GroupEntityId == GroupId
+                    && b.PlayerEntityId == targetPlayerId
+                    && b.DeletedAt == null,
+                ct
+            );
+
+            if (!alreadyBlocked)
+            {
+                dbCtx.GroupBlockedMembers.Add(
+                    new GroupBlockedMemberEntity
+                    {
+                        GroupEntityId = GroupId,
+                        PlayerEntityId = targetPlayerId,
+                        BlockedByPlayerEntityId = actor.Value,
+                        GroupEntity = group,
+                        PlayerEntity = null!,
+                    }
+                );
+
+                await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+            }
+        }
+
         await events
             .PublishAsync(new GroupMemberKickedEvent(actor.Value, GroupId, targetPlayerId), ct)
             .ConfigureAwait(true);
+
+        await NotifyBaseRoomAsync([targetPlayerId], ct).ConfigureAwait(true);
+
+        return true;
+    }
+
+    public async Task<bool> UnblockMemberAsync(
+        PlayerId actor,
+        int targetPlayerId,
+        CancellationToken ct
+    )
+    {
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+
+        if (await LoadIfAdminAsync(dbCtx, actor, ct) is null)
+        {
+            return false;
+        }
+
+        int removed = await dbCtx
+            .GroupBlockedMembers.Where(b =>
+                b.GroupEntityId == GroupId
+                && b.PlayerEntityId == targetPlayerId
+                && b.DeletedAt == null
+            )
+            .ExecuteDeleteAsync(ct)
+            .ConfigureAwait(true);
+
+        if (removed == 0)
+        {
+            return false;
+        }
+
+        logger.LogInformation(
+            "Player {TargetId} unblocked from group {GroupId} by {ActorId}",
+            targetPlayerId,
+            GroupId,
+            actor.Value
+        );
 
         return true;
     }
@@ -788,6 +932,8 @@ internal sealed class GroupGrain(
             )
             .ConfigureAwait(true);
 
+        await NotifyBaseRoomAsync([targetPlayerId], ct).ConfigureAwait(true);
+
         return new GroupMemberSnapshot
         {
             RoleType = isAdmin ? RoleAdmin : RoleMember,
@@ -822,7 +968,121 @@ internal sealed class GroupGrain(
         );
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Pushes a pending join request to every admin (and the owner) so the guild-members window
+    /// refreshes while it is open, instead of them discovering the request only on a manual reload.
+    /// </summary>
+    private async Task NotifyAdminsOfRequestAsync(
+        VortexDbContext dbCtx,
+        int ownerPlayerId,
+        GroupMemberSnapshot requester,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            List<int> adminIds = await dbCtx
+                .GroupMembers.AsNoTracking()
+                .Where(m =>
+                    m.GroupEntityId == GroupId
+                    && m.DeletedAt == null
+                    && (m.Rank == GroupMemberRank.Admin || m.PlayerEntityId == ownerPlayerId)
+                )
+                .Select(m => m.PlayerEntityId)
+                .ToListAsync(ct)
+                .ConfigureAwait(true);
+
+            if (adminIds.Count == 0)
+            {
+                return;
+            }
+
+            GroupMembershipRequestedMessageComposer composer = new()
+            {
+                GroupId = GroupId,
+                Requester = requester,
+            };
+
+            // Independent grain calls — fan out in parallel rather than one round-trip per admin.
+            await Task.WhenAll(
+                    adminIds.Select(adminId =>
+                        this.GrainFactory.GetPlayerPresenceGrain(adminId)
+                            .SendComposerAsync(composer)
+                    )
+                )
+                .ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "Failed to notify admins of a membership request for group {GroupId}",
+                GroupId
+            );
+        }
+    }
+
+    /// <summary>
+    /// Pushes a membership/settings change into the guild's base room so guild-derived build rights
+    /// take effect immediately. Deliberately skipped when the room grain is not already active —
+    /// calling it would otherwise hydrate an empty room just to update a cache nobody is reading.
+    /// </summary>
+    /// <param name="affectedPlayerIds">
+    /// Players whose controller level changed; empty means the guild's decoration policy moved and
+    /// everyone currently in the room must be re-evaluated.
+    /// </param>
+    private async Task NotifyBaseRoomAsync(
+        IReadOnlyList<int> affectedPlayerIds,
+        CancellationToken ct
+    )
+    {
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+
+        int roomId = await dbCtx
+            .Groups.AsNoTracking()
+            .Where(g => g.Id == GroupId && g.DeletedAt == null)
+            .Select(g => g.RoomEntityId)
+            .FirstOrDefaultAsync(ct);
+
+        if (roomId != 0)
+        {
+            await NotifyRoomAsync(roomId, affectedPlayerIds, ct).ConfigureAwait(true);
+        }
+    }
+
+    /// <inheritdoc cref="NotifyBaseRoomAsync" />
+    private async Task NotifyRoomAsync(
+        int roomId,
+        IReadOnlyList<int> affectedPlayerIds,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            ImmutableArray<RoomSummarySnapshot> activeRooms = await this
+                .GrainFactory.GetRoomDirectoryGrain()
+                .GetActiveRoomsAsync()
+                .ConfigureAwait(true);
+
+            if (!activeRooms.Any(r => r.RoomId.Value == roomId))
+            {
+                return;
+            }
+
+            await this
+                .GrainFactory.GetRoomGrain(new RoomId(roomId))
+                .RefreshGroupMembershipAsync(affectedPlayerIds, ct)
+                .ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "Failed to refresh guild {GroupId} membership in its base room",
+                GroupId
+            );
+        }
+    }
 
     private Task<bool> MutateAsAdminAsync(
         PlayerId actor,

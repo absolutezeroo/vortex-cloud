@@ -185,7 +185,7 @@ internal static class MessageEvent
     public const int GetHabboGroupBadgesMessageEvent = 3346; // AS3-verified (old-revision trace): _SafeCls_3130 -> onRoomReady() still exists in current revision at 3346
     public const int GetHabboGroupDetailsMessageEvent = 1683;
     public const int GetIgnoredUsersMessageEvent = 1026;
-    public const int GetMemberGuildItemCountMessageEvent = 9115; // UNRESOLVED: prior 'old-revision trace' fix wrongly attributed HabboGroupsManager::handleUserKick()'s composer here - that's KickMemberMessageEvent's real value, not this one's. This constant's true AS3 backing is still unknown - flagged for a future retrace
+    public const int GetMemberGuildItemCountMessageEvent = 781; // AS3-verified: HabboGroupsManager::handleUserKick()/handleUserBlock() -> send(GetMemberGuildItemCountMessageComposer(userId, groupId)) [deobfuscated flash]; registry _composers[781] = _SafeCls_1795(int groupId, int userId). This is step 1 of the kick flow (ask how much furni the target has in the HQ), NOT the kick itself
     public const int GetMOTDMessageEvent = 3163;
     public const int GetRelationshipStatusInfoMessageEvent = 3219; // reverted to client-verified value: GetRelationshipStatusInfoMessageComposer=3219 in HabboMessages.ts. 1773 legitimately belongs to SetRelationshipStatusMessageEvent (also client-verified: SetRelationshipStatusMessageComposer=1773)
     public const int GetSelectedBadgesMessageEvent = 3726;
@@ -194,7 +194,7 @@ internal static class MessageEvent
     public const int IgnoreUserMessageEvent = 2070;
     public const int JoinHabboGroupMessageEvent = 1469;
 
-    public const int KickMemberMessageEvent = 781; // AS3-verified (direct read, both revisions): HabboGroupsManager::handleUserKick() -> connection.send(new _SafeCls_1795(groupId,userId)) @781 (old _SafeCls_2307@3677; slot freed by correcting GetMemberGuildItemCountMessageEvent above, which had been wrongly given this same value)
+    public const int KickMemberMessageEvent = 3156; // AS3-verified: HabboGroupsManager::onKickConfirmationClose() -> send(KickMemberMessageComposer(guildId, targetId, blocked)) [deobfuscated flash]; registry _composers[3156] = _SafeCls_2084(int, int, Boolean). The previous value 781 was handleUserKick()'s *furni-count request*, not the kick — it collided with GetMemberGuildItemCountMessageEvent and made kicking fire on the wrong packet
 
     public const int RejectMembershipRequestMessageEvent = 3200; // AS3-verified (old-revision trace): _SafeCls_3781 -> onRemoveMouseClick() still exists in current revision at 3200
     public const int RemoveAdminRightsFromMemberMessageEvent = 3999; // AS3-verified (direct read, both revisions): GuildMembersWindowCtrl::onActionLinkClick() admin-branch -> _SafeCls_3648
@@ -375,7 +375,7 @@ internal static class MessageEvent
     public const int ExtendRentOrBuyoutFurniMessageEvent = 1427;
     public const int ExtendRentOrBuyoutStripItemMessageEvent = 1029; // AS3-verified (direct read, both revisions): RentConfirmationWindow::windowProcedure() ok_button/mode==2 (FurniModel strip-item call path) -> _SafeCls_3492 in registry@1029
 
-    public const int GetGuildFurniContextMenuInfoMessageEvent = 9114; // UNRESOLVED: prior 'AS3-verified' comment was wrong (no composer send found; onGuildFurniContextMenuInfo() in FurnitureContextMenuWidgetHandler only displays the menu, doesn't request it - value 3220 doesn't exist in the AS3 composer registry at all) - flagged for a future retrace
+    public const int GetGuildFurniContextMenuInfoMessageEvent = 826; // AS3-verified: RoomObjectEventHandler case "ROWRE_GUILD_FURNI_CONTEXT_MENU" -> send(objectId, guildId); registry _composers[826] = _SafeCls_3874(int objectId, int guildId)
 
     public const int GetRentOrBuyoutOfferMessageEvent = 1583;
     public const int GetYoutubeDisplayStatusMessageEvent = 273; // AS3-verified (direct read, both revisions): YoutubeDisplayWidget handler::processEvent() RETWE_OPEN_WIDGET -> connection.send(new _SafeCls_2883(objectId)) @273 (old _SafeCls_3162@3635)
@@ -1029,14 +1029,15 @@ internal static class MessageComposer
     public const int GuildEditFailedMessageComposer = 496; // AS3-verified (ghost fix): onGuildEditFailed @ HabboGroupsManager
     public const int GuildEditInfoMessageComposer = 1288; // AS3-verified (ghost fix): onGuildEditInfo @ HabboGroupsManager
     public const int GuildEditorDataMessageComposer = 1132; // AS3-verified (ghost fix): onGuildEditorData @ HabboGroupsManager
-    public const int GuildMemberFurniCountInHQMessageComposer = 9113; // UNRESOLVED: both AS3 candidates found (onBuildersClubFurniCount, onGuildFurniContextMenuInfo) are already legitimately claimed by other constants - real identity still unresolved, flagged for a future retrace
+    public const int GuildMemberFurniCountInHQMessageComposer = 1402; // AS3-verified: HabboGroupsManager registers GuildMemberFurniCountInHQMessageEvent(onKickConfirmation), parser reads (int userId, int furniCount); registry _SafeStr_4546[1402] = _SafeCls_2145
     public const int GuildMemberMgmtFailedMessageComposer = 1735; // AS3-verified (direct read, both revisions): HabboGroupsManager onGuildMemberMgmtFailed -> _SafeCls_1768
     public const int GuildMembershipRejectedMessageComposer = 595; // AS3-verified (direct read, both revisions): HabboGroupsManager onGuildMembershipRejected -> _SafeCls_1930
     public const int GuildMembershipsMessageComposer = 3994; // AS3-verified (ghost fix): onGuildMemberships @ HabboCatalog
     public const int GuildMembershipUpdatedMessageComposer = 3477; // AS3-verified (direct read, both revisions): HabboGroupsManager onGuildMembershipUpdated -> _SafeCls_1730
     public const int GuildMembersMessageComposer = 403; // AS3-verified (direct read, both revisions): HabboGroupsManager onGuildMembers -> _SafeCls_2233
     public const int HabboGroupBadgesMessageComposer = 1400;
-    public const int HabboGroupDeactivatedMessageComposer = 2087;
+    public const int HabboGroupDeactivatedMessageComposer = 1948; // AS3-verified: HabboGroupsManager registers _SafeCls_2104(onGroupDeactivated) and its parser reads a single int groupId; registry _SafeStr_4546[1948]. The previous 2087 is GroupMembershipRequested, whose parser reads int + a 5-field MemberData block — the client was over-reading the buffer on every guild dissolution
+    public const int GroupMembershipRequestedMessageComposer = 2087; // AS3-verified: HabboGroupsManager registers _SafeCls_2076(GuildMembersWindowCtrl.onMembershipRequested); parser reads (int groupId, MemberData requester); registry _SafeStr_4546[2087]
     public const int HabboGroupDetailsMessageComposer = 2847;
     public const int HabboGroupJoinFailedMessageComposer = 3356;
     public const int HabboUserBadgesMessageComposer = 1292;

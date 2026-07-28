@@ -41,6 +41,12 @@ public class GroupForumSettingsEntity : VortexEntity
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public required GroupForumPermission ModPermission { get; set; }
 
+    /// <summary>Times this forum has been opened. Backs the client's "Most Viewed Forums" list
+    /// (<c>listCode == 1</c>), which would otherwise have to be faked as a copy of "Most Active".</summary>
+    [Column("view_count")]
+    [DefaultValue(0)]
+    public int ViewCount { get; set; }
+
     [ForeignKey(nameof(GroupEntityId))]
     public required GroupEntity GroupEntity { get; set; }
 }

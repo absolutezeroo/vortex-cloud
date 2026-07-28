@@ -11,6 +11,10 @@ internal class FavoriteMembershipUpdateMessageComposerSerializer(int header)
         FavoriteMembershipUpdateMessageComposer message
     )
     {
-        //
+        packet
+            .WriteInteger(message.RoomIndex)
+            .WriteInteger(message.GroupId)
+            .WriteInteger((int)message.Status)
+            .WriteString(message.GroupName);
     }
 }

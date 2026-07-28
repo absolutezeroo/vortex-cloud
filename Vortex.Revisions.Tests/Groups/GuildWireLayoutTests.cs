@@ -1,6 +1,7 @@
 using System;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
+using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Messages.Incoming.Users;
 using Vortex.Primitives.Messages.Outgoing.Users;
@@ -87,7 +88,7 @@ public sealed class GuildWireLayoutTests
             BadgeCode = "b0102",
             RoomId = 42,
             RoomName = "HQ",
-            Status = 1,
+            Status = GroupMembershipStatus.Member,
             TotalMembers = 9,
             Favourite = false,
             CreationDate = "19-06-2026 04:00",

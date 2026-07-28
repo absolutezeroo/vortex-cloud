@@ -18,4 +18,5 @@ public enum NavigatorQueryType
     StaffPicks = 13,
     TextSearch = 14,
     MyGroups = 15,
+    GuildBases = 16,
 }

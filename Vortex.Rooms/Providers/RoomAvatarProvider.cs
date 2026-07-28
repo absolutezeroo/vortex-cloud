@@ -19,6 +19,8 @@ public sealed class RoomAvatarProvider : IRoomAvatarProvider
             PlayerId = snapshot.PlayerId,
         };
 
+        // UpdateWithPlayer also stamps the favourite-guild badge from the snapshot, so the avatar
+        // enters the room already wearing it rather than staying unbadged until a manual toggle.
         avatar.UpdateWithPlayer(snapshot);
 
         return avatar;

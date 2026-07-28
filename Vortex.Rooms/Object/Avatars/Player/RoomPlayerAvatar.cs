@@ -1,4 +1,5 @@
 using System.Text;
+using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
@@ -12,9 +13,12 @@ public sealed class RoomPlayerAvatar
     : RoomAvatar<IRoomPlayer, IRoomPlayerLogic, IRoomPlayerContext>,
         IRoomPlayer
 {
-    public int GroupId { get; init; } = -1;
-    public int GroupStatus { get; init; } = -1;
-    public string GroupName { get; init; } = string.Empty;
+    /// <summary>The client's "no guild badge" sentinel.</summary>
+    private const int NoGroup = -1;
+
+    public int GroupId { get; private set; } = NoGroup;
+    public int GroupStatus { get; private set; } = NoGroup;
+    public string GroupName { get; private set; } = string.Empty;
     public string SwimFigure { get; init; } = string.Empty;
     public int ActivityPoints { get; init; } = 0;
     public bool IsModerator { get; init; } = false;
@@ -30,6 +34,32 @@ public sealed class RoomPlayerAvatar
         Motto = snapshot.Motto;
         Figure = snapshot.Figure;
         Gender = snapshot.Gender;
+
+        SetFavouriteGroup(snapshot.FavouriteGroupId, snapshot.FavouriteGroupName);
+
+        return true;
+    }
+
+    /// <summary>
+    /// Points the avatar's guild badge at <paramref name="groupId"/> (0 or less clears it). Returns
+    /// true when something actually changed, so callers can skip a pointless room broadcast.
+    /// </summary>
+    public bool SetFavouriteGroup(int groupId, string groupName)
+    {
+        int resolvedId = groupId > 0 ? groupId : NoGroup;
+        int resolvedStatus = groupId > 0 ? (int)GroupMembershipStatus.Member : NoGroup;
+        string resolvedName = groupId > 0 ? groupName : string.Empty;
+
+        if (GroupId == resolvedId && GroupStatus == resolvedStatus && GroupName == resolvedName)
+        {
+            return false;
+        }
+
+        GroupId = resolvedId;
+        GroupStatus = resolvedStatus;
+        GroupName = resolvedName;
+
+        _snapshot = null;
 
         return true;
     }

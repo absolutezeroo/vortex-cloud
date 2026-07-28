@@ -3501,6 +3501,12 @@ public class Revision20260701(IOptions<ProtocolLimitsConfig> protocolLimits) : I
                 )
             },
             {
+                typeof(GroupMembershipRequestedMessageComposer),
+                new GroupMembershipRequestedMessageComposerSerializer(
+                    MessageComposer.GroupMembershipRequestedMessageComposer
+                )
+            },
+            {
                 typeof(HabboGroupBadgesMessageComposer),
                 new HabboGroupBadgesMessageComposerSerializer(
                     MessageComposer.HabboGroupBadgesMessageComposer

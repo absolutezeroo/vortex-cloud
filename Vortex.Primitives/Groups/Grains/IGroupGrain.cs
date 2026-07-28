@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
+using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Players;
 
@@ -14,6 +15,12 @@ public interface IGroupGrain : IGrainWithIntegerKey
 {
     /// <summary>Detail view for <paramref name="viewer"/>; null if the group does not exist.</summary>
     Task<GroupDetailsSnapshot?> GetDetailsAsync(PlayerId viewer, CancellationToken ct);
+
+    /// <summary>
+    /// The player's rank in this guild, or null if they are not a member. Single-query alternative
+    /// to <see cref="GetDetailsAsync"/> for callers that only need to gate on membership.
+    /// </summary>
+    Task<GroupMemberRank?> GetMemberRankAsync(PlayerId player, CancellationToken ct);
 
     /// <summary>A page of the member list (or pending requests for <c>searchType == 1</c>).</summary>
     Task<GroupMembersPageSnapshot?> GetMembersAsync(
@@ -82,12 +89,19 @@ public interface IGroupGrain : IGrainWithIntegerKey
         CancellationToken ct
     );
 
+    /// <summary>
+    /// Removes a member. When <paramref name="block"/> is set the player is also barred from
+    /// rejoining until an admin calls <see cref="UnblockMemberAsync"/>.
+    /// </summary>
     Task<bool> KickMemberAsync(
         PlayerId actor,
         int targetPlayerId,
         bool block,
         CancellationToken ct
     );
+
+    /// <summary>Lifts a rejoin block. Returns false if the actor may not manage the guild.</summary>
+    Task<bool> UnblockMemberAsync(PlayerId actor, int targetPlayerId, CancellationToken ct);
 
     /// <summary>Grants/revokes admin rights; returns the updated member row, or null on failure.</summary>
     Task<GroupMemberSnapshot?> SetAdminRightsAsync(

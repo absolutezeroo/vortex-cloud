@@ -1,7 +1,7 @@
 -- group_colors seed — Arcturus guilds_elements background_color palette (108 entries)
 -- Used for badge part colour pickers and guild primary / secondary colour selectors.
 
-INSERT INTO `group_colors` (`color_id`, `color_hex`, `created_at`, `updated_at`) VALUES
+INSERT IGNORE INTO `group_colors` (`color_id`, `color_hex`, `created_at`, `updated_at`) VALUES
 (1,   'ffffff', NOW(), NOW()),
 (2,   'e5e5e5', NOW(), NOW()),
 (3,   'bfbfbf', NOW(), NOW()),

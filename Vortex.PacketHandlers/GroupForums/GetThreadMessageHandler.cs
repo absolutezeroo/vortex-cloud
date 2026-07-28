@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
+using Vortex.Players.Configuration;
 using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Messages.Incoming.GroupForums;
 using Vortex.Primitives.Messages.Outgoing.Groupforums;
@@ -24,9 +25,20 @@ public class GetThreadMessageHandler(IGrainFactory grainFactory) : IMessageHandl
             return;
         }
 
+        // The client's GetThreadMessageComposer carries no paging (groupId, threadId only), so this
+        // is always the first page; the size comes from config rather than a literal, and the grain
+        // clamps it against the configured maximum.
+        int pageSize = await _grainFactory
+            .GetServerConfigGrain()
+            .GetIntAsync(
+                GroupConfig.DefaultForumPageSizeKey,
+                GroupConfig.DefaultForumPageSizeDefault
+            )
+            .ConfigureAwait(false);
+
         ThreadMessagesPageSnapshot? page = await _grainFactory
             .GetGroupForumGrain(message.GroupId)
-            .GetMessagesAsync(ctx.PlayerId, message.ThreadId, 0, 20, ct)
+            .GetMessagesAsync(ctx.PlayerId, message.ThreadId, 0, pageSize, ct)
             .ConfigureAwait(false);
 
         if (page is null)

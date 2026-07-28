@@ -15,6 +15,7 @@ using Vortex.Primitives.Events;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
+using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Players.Enums.Wallet;
@@ -189,8 +190,73 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
                 Gender = _state.Gender,
                 AchievementScore = _state.AchievementScore,
                 CreatedAt = _state.CreatedAt,
+                FavouriteGroupId = _state.FavouriteGroupId,
+                FavouriteGroupName = _state.FavouriteGroupName,
             }
         );
+    }
+
+    public async Task SetFavouriteGroupAsync(int groupId, CancellationToken ct)
+    {
+        if (_state.FavouriteGroupId == groupId)
+        {
+            return;
+        }
+
+        int? persistedValue = groupId > 0 ? groupId : null;
+
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+
+        await dbCtx
+            .Players.Where(p => p.Id == (int)_state.PlayerId)
+            .ExecuteUpdateAsync(up => up.SetProperty(p => p.FavouriteGroupId, persistedValue), ct)
+            .ConfigureAwait(true);
+
+        _state.FavouriteGroupId = groupId;
+        _state.FavouriteGroupName =
+            groupId > 0
+                ? await dbCtx
+                    .Groups.AsNoTracking()
+                    .Where(g => g.Id == groupId && g.DeletedAt == null)
+                    .Select(g => g.Name)
+                    .FirstOrDefaultAsync(ct)
+                    .ConfigureAwait(true)
+                    ?? string.Empty
+                : string.Empty;
+
+        // Re-badge the avatar in place. Without this the new badge only appears the next time the
+        // player re-enters a room, because the avatar snapshot is built once on entry.
+        RoomPointerSnapshot activeRoom = await _grainFactory
+            .GetPlayerPresenceGrain(_state.PlayerId)
+            .GetActiveRoomAsync()
+            .ConfigureAwait(true);
+
+        if (activeRoom.RoomId.Value <= 0)
+        {
+            return;
+        }
+
+        try
+        {
+            await _grainFactory
+                .GetRoomGrain(activeRoom.RoomId)
+                .UpdateAvatarFavouriteGroupAsync(
+                    _state.PlayerId,
+                    _state.FavouriteGroupId,
+                    _state.FavouriteGroupName,
+                    ct
+                )
+                .ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to push favourite-guild badge for player {PlayerId} into room {RoomId}.",
+                _state.PlayerId,
+                activeRoom.RoomId
+            );
+        }
     }
 
     public Task<PlayerExtendedProfileSnapshot> GetExtendedProfileSnapshotAsync(CancellationToken ct)
@@ -727,6 +793,18 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         _state.RespectResetDate = entity.RespectResetDate;
         _state.CreatedAt = entity.CreatedAt;
         _state.LastUpdated = entity.UpdatedAt;
+
+        _state.FavouriteGroupId = entity.FavouriteGroupId ?? 0;
+        _state.FavouriteGroupName =
+            _state.FavouriteGroupId > 0
+                ? await dbCtx
+                    .Groups.AsNoTracking()
+                    .Where(g => g.Id == _state.FavouriteGroupId && g.DeletedAt == null)
+                    .Select(g => g.Name)
+                    .FirstOrDefaultAsync(ct)
+                    .ConfigureAwait(true)
+                    ?? string.Empty
+                : string.Empty;
 
         PlayerSubscriptionEntity? sub = await dbCtx
             .PlayerSubscriptions.AsNoTracking()

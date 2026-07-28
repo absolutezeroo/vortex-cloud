@@ -1,4 +1,5 @@
 using Orleans;
+using Vortex.Primitives.Groups.Enums;
 
 namespace Vortex.Primitives.Groups.Snapshots;
 
@@ -33,9 +34,9 @@ public sealed record GroupDetailsSnapshot
     [Id(7)]
     public required string RoomName { get; init; }
 
-    /// <summary>Viewer's membership status: 0 = not member, 1 = member, 2 = request pending.</summary>
+    /// <summary>Viewer's membership status; serialized to the client as its underlying int.</summary>
     [Id(8)]
-    public required int Status { get; init; }
+    public required GroupMembershipStatus Status { get; init; }
 
     [Id(9)]
     public required int TotalMembers { get; init; }
