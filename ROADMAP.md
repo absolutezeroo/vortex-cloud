@@ -250,7 +250,7 @@ across all stories are peripheral extras, not on this path.
 **Story 2.3 — Staff moderation tool — Done (2026-07-05)**
 *As staff, I want* moderation tooling (CFH/tickets, alerts, sanctions),
 *so I can* operate hotel moderation.
-- [x] `Vortex.PacketHandlers/Moderator` handlers implemented, gated by capabilities
+- [ ] `Vortex.PacketHandlers/Moderator` handlers implemented, gated by capabilities — PARTIAL: the capability gating and audit are real, but ModToolSanction, ModerateRoom, ModeratorAction, ModMessage, ModToolPreferences, GetModeratorUserInfo, GetModeratorRoomInfo and GetRoomVisits are still empty bodies (verified 2026-07-29).
   `Capabilities.Moderation.*` (added `Chatlogs`/`Cfh`, matching the WIN63 client's own distinct
   tool-permission flags rather than reusing Kick/Mute/Ban/Alert).
 - [x] Every action emits moderation audit event (category Moderation), both success and denial.

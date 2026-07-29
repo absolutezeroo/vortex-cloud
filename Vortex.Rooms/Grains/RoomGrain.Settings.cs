@@ -21,14 +21,25 @@ namespace Vortex.Rooms.Grains;
 
 public sealed partial class RoomGrain
 {
-    public Task<RoomSnapshot?> GetRoomSettingsAsync(PlayerId actor, CancellationToken ct)
+    /// <summary>
+    /// "May this subject administer the room?" — explicit ownership OR the staff build capability,
+    /// as decided by <see cref="Primitives.Permissions.RoomSecurityPolicy.IsRoomOwner"/>. Room
+    /// administration used to compare the owner id directly, which silently locked out staff
+    /// holding <c>room.build.any</c> and even wildcard administrators.
+    /// </summary>
+    private Task<bool> IsRoomOwnerAsync(PlayerId actor) =>
+        SecurityModule.GetIsRoomOwnerAsync(
+            new ActionContext { PlayerId = actor, Origin = ActionOrigin.Player }
+        );
+
+    public async Task<RoomSnapshot?> GetRoomSettingsAsync(PlayerId actor, CancellationToken ct)
     {
-        if (_state.RoomSnapshot.OwnerId != actor)
+        if (!await IsRoomOwnerAsync(actor).ConfigureAwait(true))
         {
-            return Task.FromResult<RoomSnapshot?>(null);
+            return null;
         }
 
-        return Task.FromResult<RoomSnapshot?>(_state.RoomSnapshot);
+        return _state.RoomSnapshot;
     }
 
     public async Task<bool> UpdateRoomSettingsAsync(
@@ -37,7 +48,7 @@ public sealed partial class RoomGrain
         CancellationToken ct
     )
     {
-        if (_state.RoomSnapshot.OwnerId != actor)
+        if (!await IsRoomOwnerAsync(actor).ConfigureAwait(true))
         {
             return false;
         }
@@ -136,6 +147,8 @@ public sealed partial class RoomGrain
 
     public async Task<bool> DeleteRoomAsync(PlayerId actor, CancellationToken ct)
     {
+        // Deliberately the literal owner only: deleting somebody's room is not part of
+        // room.build.any, and staff removals go through the moderation tooling instead.
         if (_state.RoomSnapshot.OwnerId != actor)
         {
             return false;
@@ -257,7 +270,7 @@ public sealed partial class RoomGrain
         CancellationToken ct
     )
     {
-        if (_state.RoomSnapshot.OwnerId != actor)
+        if (!await IsRoomOwnerAsync(actor).ConfigureAwait(true))
         {
             return false;
         }
@@ -311,7 +324,7 @@ public sealed partial class RoomGrain
 
     public async Task AssignRightsAsync(PlayerId actor, PlayerId target, CancellationToken ct)
     {
-        if (_state.RoomSnapshot.OwnerId != actor || target <= 0 || actor == target)
+        if (target <= 0 || actor == target || !await IsRoomOwnerAsync(actor).ConfigureAwait(true))
         {
             return;
         }
@@ -386,7 +399,7 @@ public sealed partial class RoomGrain
         CancellationToken ct
     )
     {
-        if (_state.RoomSnapshot.OwnerId != actor || targets.IsEmpty)
+        if (targets.IsEmpty || !await IsRoomOwnerAsync(actor).ConfigureAwait(true))
         {
             return;
         }
@@ -402,7 +415,7 @@ public sealed partial class RoomGrain
             List<RoomRightEntity> rows = await dbCtx
                 .RoomRights.Where(r =>
                     r.RoomEntityId == _state.RoomId.Value
-                    && targetValues.Contains(r.PlayerEntityId)
+                    && targetValues.AsEnumerable().Contains(r.PlayerEntityId)
                     && r.DeletedAt == null
                 )
                 .ToListAsync(ct)
@@ -449,7 +462,7 @@ public sealed partial class RoomGrain
 
     public async Task RemoveAllRightsAsync(PlayerId actor, CancellationToken ct)
     {
-        if (_state.RoomSnapshot.OwnerId != actor)
+        if (!await IsRoomOwnerAsync(actor).ConfigureAwait(true))
         {
             return;
         }
@@ -510,7 +523,7 @@ public sealed partial class RoomGrain
         CancellationToken ct
     )
     {
-        if (_state.RoomSnapshot.OwnerId != actor)
+        if (!await IsRoomOwnerAsync(actor).ConfigureAwait(true))
         {
             return false;
         }

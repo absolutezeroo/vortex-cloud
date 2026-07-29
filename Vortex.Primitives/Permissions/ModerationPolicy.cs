@@ -39,11 +39,25 @@ public static class ModerationPolicy
         ModerationAction action
     )
     {
-        if (!IsAllowed(actorPermissions, action))
-        {
-            return false;
-        }
+        return IsAllowed(actorPermissions, action)
+            && CanActOnTarget(actorPermissions, targetPermissions);
+    }
 
+    /// <summary>
+    /// The relative-rank guard on its own: a subject may act on a target of equal or lower
+    /// <see cref="SecurityLevelType"/>, never a higher one.
+    /// </summary>
+    /// <remarks>
+    /// Room-scoped moderation needs this protection *without* the staff capability the overload
+    /// above also demands. A room owner kicking a visitor from their own room is authorized by the
+    /// room (owner / rights / guild standing, per the room's mod settings), not by a staff
+    /// capability — but they still must not be able to kick an Administrator.
+    /// </remarks>
+    public static bool CanActOnTarget(
+        PermissionSet actorPermissions,
+        PermissionSet targetPermissions
+    )
+    {
         SecurityLevelType actorLevel = SecurityLevelPolicy.Resolve(actorPermissions);
         SecurityLevelType targetLevel = SecurityLevelPolicy.Resolve(targetPermissions);
 

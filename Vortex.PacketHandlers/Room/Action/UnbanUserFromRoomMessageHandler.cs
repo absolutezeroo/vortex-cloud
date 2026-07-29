@@ -29,30 +29,37 @@ public class UnbanUserFromRoomMessageHandler(
         }
 
         ActionContext actorCtx = ctx.AsActionContext();
-        PermissionSet permissions = await permissionService
-            .ResolveForPlayerAsync(ctx.PlayerId, ct)
-            .ConfigureAwait(false);
-        PermissionSet targetPermissions = await permissionService
-            .ResolveForPlayerAsync(message.UserId, ct)
-            .ConfigureAwait(false);
-
-        if (!ModerationPolicy.IsAllowed(permissions, targetPermissions, ModerationAction.Ban))
-        {
-            await events
-                .PublishAsync(
-                    new ModerationActionDeniedEvent(
-                        ctx.PlayerId,
-                        message.UserId,
-                        ctx.RoomId,
-                        nameof(ModerationAction.Ban)
-                    ),
+        // Room-scoped: the owner / rights-holders / guild members are authorized by the room's
+        // own mod settings inside RoomGrain. All that is enforced here is that nobody sanctions
+        // higher-ranked staff.
+        if (
+            !await RoomModerationGuard
+                .CanActOnTargetAsync(
+                    permissionService,
+                    events,
+                    ctx,
+                    ctx.RoomId,
+                    message.UserId,
+                    ModerationAction.Ban,
                     ct
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(false)
+        )
+        {
             return;
         }
 
         IRoomGrain roomGrain = grainFactory.GetRoomGrain(ctx.RoomId);
-        await roomGrain.UnbanUserAsync(actorCtx, message.UserId, ct).ConfigureAwait(false);
+        bool applied = await roomGrain
+            .UnbanUserAsync(actorCtx, message.UserId, ct)
+            .ConfigureAwait(false);
+
+        if (!applied)
+        {
+            // The room's mod settings did not grant this actor authority here.
+            await RoomModerationGuard
+                .AuditDenialAsync(events, ctx, ctx.RoomId, message.UserId, ModerationAction.Ban, ct)
+                .ConfigureAwait(false);
+        }
     }
 }

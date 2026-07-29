@@ -36,26 +36,23 @@ public class BanUserWithDurationMessageHandler(
         }
 
         ActionContext actorCtx = ctx.AsActionContext() with { RoomId = actorRoomId };
-        PermissionSet permissions = await permissionService
-            .ResolveForPlayerAsync(ctx.PlayerId, ct)
-            .ConfigureAwait(false);
-        PermissionSet targetPermissions = await permissionService
-            .ResolveForPlayerAsync(message.UserId, ct)
-            .ConfigureAwait(false);
-
-        if (!ModerationPolicy.IsAllowed(permissions, targetPermissions, ModerationAction.Ban))
-        {
-            await events
-                .PublishAsync(
-                    new ModerationActionDeniedEvent(
-                        ctx.PlayerId,
-                        message.UserId,
-                        actorRoomId,
-                        nameof(ModerationAction.Ban)
-                    ),
+        // Room-scoped: the owner / rights-holders / guild members are authorized by the room's
+        // own mod settings inside RoomGrain. All that is enforced here is that nobody sanctions
+        // higher-ranked staff.
+        if (
+            !await RoomModerationGuard
+                .CanActOnTargetAsync(
+                    permissionService,
+                    events,
+                    ctx,
+                    actorRoomId,
+                    message.UserId,
+                    ModerationAction.Ban,
                     ct
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(false)
+        )
+        {
             return;
         }
 
@@ -66,9 +63,24 @@ public class BanUserWithDurationMessageHandler(
         }
 
         IRoomGrain roomGrain = grainFactory.GetRoomGrain(actorRoomId);
-        await roomGrain
+        bool applied = await roomGrain
             .BanUserAsync(actorCtx, message.UserId, durationSeconds, ct)
             .ConfigureAwait(false);
+
+        if (!applied)
+        {
+            // The room's mod settings did not grant this actor authority here.
+            await RoomModerationGuard
+                .AuditDenialAsync(
+                    events,
+                    ctx,
+                    actorRoomId,
+                    message.UserId,
+                    ModerationAction.Ban,
+                    ct
+                )
+                .ConfigureAwait(false);
+        }
     }
 
     private static int ParseBanDurationSeconds(string banType)

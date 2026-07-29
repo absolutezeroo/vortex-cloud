@@ -37,7 +37,7 @@ public sealed partial class RoomGrain
         CancellationToken ct
     )
     {
-        if (_state.RoomSnapshot.OwnerId != actor)
+        if (!await IsRoomOwnerAsync(actor).ConfigureAwait(true))
         {
             return null;
         }

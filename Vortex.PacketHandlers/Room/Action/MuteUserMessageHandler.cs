@@ -37,34 +37,46 @@ public class MuteUserMessageHandler(
         }
 
         ActionContext actorCtx = ctx.AsActionContext() with { RoomId = actorRoomId };
-        PermissionSet permissions = await permissionService
-            .ResolveForPlayerAsync(ctx.PlayerId, ct)
-            .ConfigureAwait(false);
-        PermissionSet targetPermissions = await permissionService
-            .ResolveForPlayerAsync(message.UserId, ct)
-            .ConfigureAwait(false);
-
-        if (!ModerationPolicy.IsAllowed(permissions, targetPermissions, ModerationAction.Mute))
-        {
-            await events
-                .PublishAsync(
-                    new ModerationActionDeniedEvent(
-                        ctx.PlayerId,
-                        message.UserId,
-                        actorRoomId,
-                        nameof(ModerationAction.Mute)
-                    ),
+        // Room-scoped: the owner / rights-holders / guild members are authorized by the room's
+        // own mod settings inside RoomGrain. All that is enforced here is that nobody sanctions
+        // higher-ranked staff.
+        if (
+            !await RoomModerationGuard
+                .CanActOnTargetAsync(
+                    permissionService,
+                    events,
+                    ctx,
+                    actorRoomId,
+                    message.UserId,
+                    ModerationAction.Mute,
                     ct
                 )
-                .ConfigureAwait(false);
+                .ConfigureAwait(false)
+        )
+        {
             return;
         }
 
         IRoomGrain roomGrain = grainFactory.GetRoomGrain(actorRoomId);
         int durationSeconds = (int)Math.Ceiling(TimeSpan.FromMinutes(message.Minutes).TotalSeconds);
 
-        await roomGrain
+        bool applied = await roomGrain
             .MuteUserAsync(actorCtx, message.UserId, durationSeconds, ct)
             .ConfigureAwait(false);
+
+        if (!applied)
+        {
+            // The room's mod settings did not grant this actor authority here.
+            await RoomModerationGuard
+                .AuditDenialAsync(
+                    events,
+                    ctx,
+                    actorRoomId,
+                    message.UserId,
+                    ModerationAction.Mute,
+                    ct
+                )
+                .ConfigureAwait(false);
+        }
     }
 }
