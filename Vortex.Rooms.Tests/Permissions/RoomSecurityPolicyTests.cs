@@ -197,6 +197,35 @@ public sealed class RoomSecurityPolicyTests
         level.Should().Be(RoomControllerType.Owner);
     }
 
+    /// <summary>
+    /// Pins a deliberate divergence: a moderator sits ABOVE Owner on the controller ladder, yet is
+    /// not room-administration authority. Two similar-sounding questions, two correct answers —
+    /// locked here so nobody "harmonises" them by accident.
+    /// </summary>
+    [Fact]
+    public void Moderator_OutranksOwnerOnTheLadder_ButMayNotAdministerTheRoom()
+    {
+        PermissionSet moderator = Permissions(Capabilities.Room.ModerateAny);
+
+        RoomControllerType level = RoomSecurityPolicy.ResolveControllerLevel(
+            ActionOrigin.Player,
+            moderator,
+            isExplicitOwner: false,
+            hasExplicitRights: false
+        );
+
+        (level >= RoomControllerType.Owner).Should().BeTrue();
+        RoomSecurityPolicy.IsRoomOwner(moderator, isExplicitOwner: false).Should().BeFalse();
+    }
+
+    [Fact]
+    public void BuildAny_IsRoomAdministrationAuthority()
+    {
+        PermissionSet builder = Permissions(Capabilities.Room.BuildAny);
+
+        RoomSecurityPolicy.IsRoomOwner(builder, isExplicitOwner: false).Should().BeTrue();
+    }
+
     private static PermissionSet Permissions(params string[] capabilities)
     {
         return new PermissionSet(Array.Empty<string>(), capabilities);

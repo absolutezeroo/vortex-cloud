@@ -58,6 +58,14 @@ public static class RoomSecurityPolicy
         return RoomControllerType.None;
     }
 
+    /// <summary>
+    /// "May this subject administer the room?" — rename the room, hand out rights, change its
+    /// settings. Deliberately NOT the same question as
+    /// <c>ResolveControllerLevel(...) &gt;= RoomControllerType.Owner</c>, which is also true for a
+    /// moderator: <see cref="Capabilities.Room.ModerateAny"/> grants moderation everywhere, not the
+    /// owner's settings dialog. Only explicit ownership or
+    /// <see cref="Capabilities.Room.BuildAny"/> counts here.
+    /// </summary>
     public static bool IsRoomOwner(PermissionSet permissions, bool isExplicitOwner)
     {
         if (isExplicitOwner)

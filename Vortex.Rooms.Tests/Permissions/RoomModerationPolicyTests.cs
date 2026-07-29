@@ -88,6 +88,39 @@ public sealed class RoomModerationPolicyTests
         RoomModerationPolicy.CanModerate(level, ModSettingType.RightsOrGroup).Should().BeTrue();
     }
 
+    /// <summary>
+    /// Staff moderation authority is orthogonal to the controller ladder. A role holding
+    /// <c>moderation.kick</c> but not <c>room.moderate.any</c> resolves to
+    /// <see cref="RoomControllerType.None"/> in the room — it must still moderate, without that
+    /// elevation also handing it build rights everywhere.
+    /// </summary>
+    [Theory]
+    [InlineData(ModSettingType.Owner)]
+    [InlineData(ModSettingType.Rights)]
+    [InlineData(ModSettingType.GroupRights)]
+    [InlineData(ModSettingType.RightsOrGroup)]
+    public void StaffCapability_ModeratesRegardlessOfLadderAndSetting(ModSettingType setting)
+    {
+        RoomModerationPolicy
+            .CanModerate(RoomControllerType.None, setting, hasStaffModerationCapability: true)
+            .Should()
+            .BeTrue();
+    }
+
+    [Fact]
+    public void WithoutStaffCapability_TheLadderStillDecides()
+    {
+        RoomModerationPolicy
+            .CanModerate(RoomControllerType.None, ModSettingType.Rights, false)
+            .Should()
+            .BeFalse();
+
+        RoomModerationPolicy
+            .CanModerate(RoomControllerType.Rights, ModSettingType.Rights, false)
+            .Should()
+            .BeTrue();
+    }
+
     [Fact]
     public void RightsOrGroupSetting_RefusesPlainVisitor()
     {

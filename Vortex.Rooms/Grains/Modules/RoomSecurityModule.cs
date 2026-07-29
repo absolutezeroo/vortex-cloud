@@ -152,6 +152,26 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
         return FurniturePickupType.None;
     }
 
+    /// <summary>
+    /// Whether the subject holds the staff capability for <paramref name="action"/> (or the
+    /// room-wide moderate-any / wildcard). Kept separate from the controller level because staff
+    /// moderation must not imply build rights — see <see cref="RoomModerationPolicy.CanModerate"/>.
+    /// </summary>
+    public async Task<bool> HasStaffModerationCapabilityAsync(
+        ActionContext ctx,
+        ModerationAction action
+    )
+    {
+        if (ctx.Origin != ActionOrigin.Player)
+        {
+            return true;
+        }
+
+        PermissionSet permissions = await ResolvePermissionsAsync(ctx);
+
+        return ModerationPolicy.IsAllowed(permissions, action);
+    }
+
     public async Task<bool> GetIsRoomOwnerAsync(ActionContext ctx)
     {
         bool isExplicitOwner = _roomGrain._state.RoomSnapshot.OwnerId == ctx.PlayerId;

@@ -11,11 +11,26 @@ namespace Vortex.Primitives.Permissions;
 /// </summary>
 public static class RoomModerationPolicy
 {
-    public static bool CanModerate(RoomControllerType level, ModSettingType setting)
+    /// <param name="level">The subject's standing inside this room.</param>
+    /// <param name="setting">The room's policy for this action.</param>
+    /// <param name="hasStaffModerationCapability">
+    /// Whether the subject holds the staff capability for the action being attempted. Passed in
+    /// separately rather than folded into <paramref name="level"/> on purpose: moderation authority
+    /// and building authority are orthogonal, and <see cref="RoomControllerType"/> is a single
+    /// linear ladder. Elevating a moderator on that ladder would also hand them build rights in
+    /// every room, while leaving it out entirely would deny a staff role that holds
+    /// <c>moderation.kick</c> but not <c>room.moderate.any</c> — a combination an administrator can
+    /// create, since roles are editable.
+    /// </param>
+    public static bool CanModerate(
+        RoomControllerType level,
+        ModSettingType setting,
+        bool hasStaffModerationCapability = false
+    )
     {
-        // Staff moderation capability and room ownership override the per-room setting; that is
-        // what makes "owner only" still workable for staff intervention.
-        if (level >= RoomControllerType.Owner)
+        // Staff capability and room ownership both override the per-room setting; that is what
+        // keeps "owner only" workable for staff intervention.
+        if (hasStaffModerationCapability || level >= RoomControllerType.Owner)
         {
             return true;
         }

@@ -37,7 +37,13 @@ public sealed partial class RoomGrain
         CancellationToken ct
     )
     {
-        if (!await CanModerateAsync(actorCtx, _state.RoomSnapshot.ModSettings.WhoCanKick))
+        if (
+            !await CanModerateAsync(
+                actorCtx,
+                _state.RoomSnapshot.ModSettings.WhoCanKick,
+                ModerationAction.Kick
+            )
+        )
         {
             return false;
         }
@@ -49,13 +55,21 @@ public sealed partial class RoomGrain
     /// Whether <paramref name="actorCtx"/> may perform a moderation action gated by
     /// <paramref name="setting"/> in this room. System/wired origins resolve to moderator and pass.
     /// </summary>
-    private async Task<bool> CanModerateAsync(ActionContext actorCtx, ModSettingType setting)
+    private async Task<bool> CanModerateAsync(
+        ActionContext actorCtx,
+        ModSettingType setting,
+        ModerationAction action
+    )
     {
         RoomControllerType level = await SecurityModule
             .GetControllerLevelAsync(actorCtx)
             .ConfigureAwait(true);
 
-        if (RoomModerationPolicy.CanModerate(level, setting))
+        bool hasStaffCapability = await SecurityModule
+            .HasStaffModerationCapabilityAsync(actorCtx, action)
+            .ConfigureAwait(true);
+
+        if (RoomModerationPolicy.CanModerate(level, setting, hasStaffCapability))
         {
             return true;
         }
@@ -137,7 +151,13 @@ public sealed partial class RoomGrain
             return false;
         }
 
-        if (!await CanModerateAsync(actorCtx, _state.RoomSnapshot.ModSettings.WhoCanMute))
+        if (
+            !await CanModerateAsync(
+                actorCtx,
+                _state.RoomSnapshot.ModSettings.WhoCanMute,
+                ModerationAction.Mute
+            )
+        )
         {
             return false;
         }
@@ -195,7 +215,13 @@ public sealed partial class RoomGrain
                 return false;
             }
 
-            if (!await CanModerateAsync(actorCtx, _state.RoomSnapshot.ModSettings.WhoCanBan))
+            if (
+                !await CanModerateAsync(
+                    actorCtx,
+                    _state.RoomSnapshot.ModSettings.WhoCanBan,
+                    ModerationAction.Ban
+                )
+            )
             {
                 return false;
             }
@@ -247,7 +273,13 @@ public sealed partial class RoomGrain
                 return false;
             }
 
-            if (!await CanModerateAsync(actorCtx, _state.RoomSnapshot.ModSettings.WhoCanMute))
+            if (
+                !await CanModerateAsync(
+                    actorCtx,
+                    _state.RoomSnapshot.ModSettings.WhoCanMute,
+                    ModerationAction.Mute
+                )
+            )
             {
                 return false;
             }
@@ -285,7 +317,13 @@ public sealed partial class RoomGrain
                 return false;
             }
 
-            if (!await CanModerateAsync(actorCtx, _state.RoomSnapshot.ModSettings.WhoCanBan))
+            if (
+                !await CanModerateAsync(
+                    actorCtx,
+                    _state.RoomSnapshot.ModSettings.WhoCanBan,
+                    ModerationAction.Ban
+                )
+            )
             {
                 return false;
             }
