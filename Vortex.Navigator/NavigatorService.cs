@@ -97,6 +97,11 @@ public sealed class NavigatorService(
                                 PaintWall = x.PaintWall,
                                 PaintFloor = x.PaintFloor,
                                 PaintLandscape = x.PaintLandscape,
+                                // Drives RoomBitmaskFlags.GroupData in the navigator entry: the
+                                // client only draws the guild badge when these three are present.
+                                GroupId = x.GroupId,
+                                GroupName = x.GroupName,
+                                GroupBadge = x.GroupBadge,
                                 LastUpdatedUtc = x.LastUpdatedUtc,
                             };
                         }),
@@ -167,13 +172,18 @@ public sealed class NavigatorService(
                     PaintWall = x.PaintWall,
                     PaintFloor = x.PaintFloor,
                     PaintLandscape = x.PaintLandscape,
+                    // Drives RoomBitmaskFlags.GroupData in the navigator entry: the client only
+                    // draws the guild badge when these three are present.
+                    GroupId = x.GroupId,
+                    GroupName = x.GroupName,
+                    GroupBadge = x.GroupBadge,
                     LastUpdatedUtc = x.LastUpdatedUtc,
                 };
             }),
         ];
     }
 
-    private async Task<System.Collections.Generic.List<Primitives.Orleans.Snapshots.Room.RoomInfoSnapshot>> FetchRoomsAsync(
+    private async Task<List<Primitives.Orleans.Snapshots.Room.RoomInfoSnapshot>> FetchRoomsAsync(
         string searchCode,
         NavigatorSearchFilterType filterType,
         string filterValue,
