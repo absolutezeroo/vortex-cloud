@@ -12,9 +12,8 @@ internal static class PetDataSerializer
 
         PetFigureDataSerializer.Serialize(packet, pet);
 
-        // Rarity ranks seasonal and bred pets. Nothing here ranks them, so every pet reads as the
-        // common tier -- but the field has to be written: the client reads it unconditionally, and
-        // in a list that shift corrupted every pet after the first.
-        packet.WriteInteger(pet.Level).WriteInteger(0);
+        // The client reads the rarity tier unconditionally; in a list, omitting it shifted every pet
+        // after the first.
+        packet.WriteInteger(pet.Level).WriteInteger(pet.RarityLevel);
     }
 }

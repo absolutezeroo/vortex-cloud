@@ -261,6 +261,7 @@ public sealed partial class RoomPetSystem
             ClassId = pet?.Type ?? 0,
             UserId = ownerId.Value,
             UserName = pet?.Name ?? string.Empty,
+            RarityLevel = pet?.RarityLevel ?? 0,
         };
     }
 
