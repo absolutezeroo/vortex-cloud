@@ -259,15 +259,13 @@ internal static class MessageEvent
     public const int GetSeasonalQuestsOnlyMessageEvent = 1236; // shape+AS3-verified: HabboQuestEngine::requestSeasonalQuests() (_SafeCls_1847)
     public const int OpenQuestTrackerMessageEvent = 588; // AS3-verified (old-revision trace): _SafeCls_2973 -> onNextQuest() still exists in current revision at 588
     public const int RejectQuestMessageEvent = 20; // AS3-verified (direct read, both revisions): QuestDetails::onCancelQuest() -> _SafeCls_3635
-
-    public const int StartCampaignMessageEvent = 9011; // UNRESOLVED: collided with MyFavouriteRoomsSearchMessageEvent after the WIN63-202607011411 client header remap; StartCampaignMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
-
+    public const int StartCampaignMessageEvent = 3969; // UNRESOLVED: collided with MyFavouriteRoomsSearchMessageEvent after the WIN63-202607011411 client header remap; StartCampaignMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
     public const int GetHotLooksMessageEvent = 3834; // AS3-verified (ghost fix): HotLooksModel::requestHotLooks()
     public const int ClickFurniMessageEvent = 443;
     public const int CompostPlantMessageEvent = 1989;
     public const int GetFurnitureAliasesMessageEvent = 1901;
     public const int GetRoomEntryDataMessageEvent = 1250; // UNRESOLVED: not found - the no-arg client request that would trigger a room-entry-data response could not be located in either official AS3 revision
-    public const int GetItemDataMessageEvent = 204; // UNRESOLVED: not found in either official AS3 revision (matches vortex-client's registry exactly, but not confirmed as Vortex-custom vs. a real AS3 message vortex-client happens to represent under an older numbering)
+    public const int GetItemDataMessageEvent = 350;
     public const int GetPetCommandsMessageEvent = 2425;
     public const int GiveSupplementToPetMessageEvent = 1694;
     public const int HarvestPetMessageEvent = 1210;
@@ -395,7 +393,7 @@ internal static class MessageEvent
     public const int SetMannequinFigureEvent = 2301; // AS3-verified (old-revision trace): _SafeCls_3486 -> saveOutfit() still exists in current revision at 2301
     public const int SetMannequinNameEvent = 606; // AS3-verified (old-revision trace): MannequinWidget::saveOutfitName() still exists in current revision at 606
     public const int SetRandomStateMessageEvent = 1942; // AS3-verified (direct read, both revisions): room engine changeRoomObjectState() param5==true branch (floor item, param3==10) -> connection.send(new _SafeCls_3726(objectId,state)) @1942 (old _SafeCls_3310@938)
-    public const int SetRoomBackgroundColorDataEvent = 2019; // UNRESOLVED: not found - no matching "set background color" composer located near the room engine's other per-furni-type state composers in either official AS3 revision
+    public const int SetRoomBackgroundColorDataEvent = 1647; // UNRESOLVED: not found - no matching "set background color" composer located near the room engine's other per-furni-type state composers in either official AS3 revision
     public const int SetYoutubeDisplayPlaylistMessageEvent = 1672; // AS3-verified (old-revision trace): _SafeCls_2471 -> selectPlaylist() still exists in current revision at 1672
     public const int SpinWheelOfFortuneMessageEvent = 3625; // AS3-verified (direct read, both revisions): useObject() ROFCAE_USE_HABBOWHEEL -> _SafeCls_3425
     public const int ThrowDiceMessageEvent = 1673; // AS3-verified (direct read, both revisions): useObject() ROFCAE_DICE_ACTIVATE -> _SafeCls_3154
