@@ -231,26 +231,7 @@ public class PurchaseFromCatalogMessageHandler(
         }
         catch (CatalogPurchaseException ex)
         {
-            if (ex.BalanceFailure is not null)
-            {
-                await ctx.SendComposerAsync(
-                        new NotEnoughBalanceMessageComposer
-                        {
-                            NotEnoughCredits = ex.BalanceFailure.NotEnoughCredits,
-                            NotEnoughActivityPoints = ex.BalanceFailure.NotEnoughActivityPoints,
-                            ActivityPointType = ex.BalanceFailure.ActivityPointType,
-                        },
-                        ct
-                    )
-                    .ConfigureAwait(false);
-                return;
-            }
-
-            await ctx.SendComposerAsync(
-                    new PurchaseNotAllowedMessageComposer { ErrorType = ex.ErrorType },
-                    ct
-                )
-                .ConfigureAwait(false);
+            await CatalogPurchaseErrorResponder.SendAsync(ctx, ex, ct).ConfigureAwait(false);
         }
     }
 }

@@ -52,28 +52,7 @@ public sealed partial class CatalogPurchaseGrain(
             throw new CatalogPurchaseException(CatalogPurchaseErrorType.OfferNotFound);
         }
 
-        bool isHabboClub = false;
-
-        // Resolve membership once when the offer either gates on club level or carries an HC discount.
-        if (offer.ClubLevel > 0 || offer.DiscountPercent > 0)
-        {
-            ClubSubscriptionSnapshot sub = await _grainFactory
-                .GetPlayerGrain(PlayerId.Parse((int)this.GetPrimaryKeyLong()))
-                .GetClubSubscriptionAsync(ct)
-                .ConfigureAwait(true);
-
-            isHabboClub = sub.IsActive;
-
-            int playerClubLevel = sub.IsActive ? (sub.IsVip ? 2 : 1) : 0;
-
-            if (playerClubLevel < offer.ClubLevel)
-            {
-                throw new CatalogPurchaseException(CatalogPurchaseErrorType.RequiresHabboClub);
-            }
-        }
-
-        // HC members get the offer's configured discount off the credit cost (0 = no discount).
-        int discountPercent = isHabboClub ? Math.Clamp(offer.DiscountPercent, 0, 100) : 0;
+        int discountPercent = await ResolveClubPricingAsync(offer, ct).ConfigureAwait(true);
 
         TryGetDebitRequests(
             offer,
@@ -134,6 +113,39 @@ public sealed partial class CatalogPurchaseGrain(
         }
 
         return result.Reward!;
+    }
+
+    /// <summary>
+    /// Enforces the offer's club gate against the buyer and returns the credit discount they qualify
+    /// for. Shared by every purchase entry point: gifting an offer is still the buyer's purchase, so
+    /// a club-only offer has to stay club-only however the furniture is routed.
+    /// </summary>
+    private async Task<int> ResolveClubPricingAsync(
+        CatalogOfferSnapshot offer,
+        CancellationToken ct
+    )
+    {
+        // Resolve membership once, and only when the offer either gates on club level or carries an
+        // HC discount.
+        if (offer.ClubLevel <= 0 && offer.DiscountPercent <= 0)
+        {
+            return 0;
+        }
+
+        ClubSubscriptionSnapshot sub = await _grainFactory
+            .GetPlayerGrain(PlayerId.Parse((int)this.GetPrimaryKeyLong()))
+            .GetClubSubscriptionAsync(ct)
+            .ConfigureAwait(true);
+
+        int playerClubLevel = sub.IsActive ? (sub.IsVip ? 2 : 1) : 0;
+
+        if (playerClubLevel < offer.ClubLevel)
+        {
+            throw new CatalogPurchaseException(CatalogPurchaseErrorType.RequiresHabboClub);
+        }
+
+        // HC members get the offer's configured discount off the credit cost (0 = no discount).
+        return sub.IsActive ? Math.Clamp(offer.DiscountPercent, 0, 100) : 0;
     }
 
     private bool TryGetDebitRequests(

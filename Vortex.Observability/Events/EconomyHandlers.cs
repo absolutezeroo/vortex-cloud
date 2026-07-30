@@ -63,6 +63,34 @@ public sealed class CatalogPurchasedAuditHandler(IAuditSink audit)
     }
 }
 
+public sealed class CatalogGiftPurchasedAuditHandler(IAuditSink audit)
+    : IEventHandler<CatalogGiftPurchasedEvent>
+{
+    public ValueTask HandleAsync(
+        CatalogGiftPurchasedEvent e,
+        EventContext ctx,
+        CancellationToken ct
+    )
+    {
+        audit.Emit(
+            new AuditEvent
+            {
+                Category = AuditCategory.Economy,
+                Action = "economy.catalog_gift",
+                Severity = AuditSeverity.Info,
+                Result = AuditResult.Success,
+                ActorPlayerId = e.BuyerPlayerId,
+                TargetPlayerId = e.ReceiverPlayerId,
+                Data = JsonSerializer.Serialize(
+                    new { offerId = e.OfferId, creditCost = e.CreditCost }
+                ),
+            }
+        );
+
+        return ValueTask.CompletedTask;
+    }
+}
+
 public sealed class TargetedOfferPurchasedAuditHandler(IAuditSink audit)
     : IEventHandler<TargetedOfferPurchasedEvent>
 {

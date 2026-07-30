@@ -21,6 +21,18 @@ public sealed record CatalogPurchasedEvent(
     int CreditCost
 ) : IEvent;
 
+/// <summary>
+/// A player bought a catalog offer for someone else. Raised alongside <see cref="CatalogPurchasedEvent"/>
+/// -- that one records the spend, this one records who received the goods, which is the part a gift
+/// adds and the part an operator needs when tracing where furniture came from.
+/// </summary>
+public sealed record CatalogGiftPurchasedEvent(
+    int BuyerPlayerId,
+    int ReceiverPlayerId,
+    int OfferId,
+    int CreditCost
+) : IEvent;
+
 /// <summary>A player bought a targeted (personalised/promotional) offer at its special price.</summary>
 public sealed record TargetedOfferPurchasedEvent(
     int PlayerId,
