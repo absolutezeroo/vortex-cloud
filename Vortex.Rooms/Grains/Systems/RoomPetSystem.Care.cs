@@ -369,21 +369,15 @@ public sealed partial class RoomPetSystem
         PetSnapshot updated = pet with { Experience = newExperience, Level = newLevel };
         _roomGrain._state.PetsById[pet.PetId] = updated;
 
-        int xpForNext = _roomGrain._petLevelProvider.GetExperienceForNextLevel(
-            updated.Type,
-            updated.Level
-        );
-        int xpForNextSafe = xpForNext == int.MaxValue ? updated.Experience : xpForNext;
-
+        // Only the floating "+N" over the pet. The totals and thresholds this used to broadcast
+        // belong to PetInfo, which the client asks for when the pet's dialog is opened.
         await _roomGrain
             .SendComposerToRoomAsync(
                 new PetExperienceMessageComposer
                 {
                     PetId = updated.PetId,
-                    Experience = updated.Experience,
-                    ExperienceForNextLevel = xpForNextSafe,
-                    Level = updated.Level,
-                    MaxLevel = maxLevel,
+                    PetRoomIndex = RoomPetRuntime.ToRoomObjectId(updated.PetId).Value,
+                    GainedExperience = xp,
                 }
             )
             .ConfigureAwait(false);

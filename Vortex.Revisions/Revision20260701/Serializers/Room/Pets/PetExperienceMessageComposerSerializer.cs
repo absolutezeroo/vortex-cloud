@@ -10,9 +10,7 @@ internal class PetExperienceMessageComposerSerializer(int header)
     {
         packet
             .WriteInteger(message.PetId)
-            .WriteInteger(message.Experience)
-            .WriteInteger(message.ExperienceForNextLevel)
-            .WriteInteger(message.Level)
-            .WriteInteger(message.MaxLevel);
+            .WriteInteger(message.PetRoomIndex)
+            .WriteInteger(message.GainedExperience);
     }
 }
