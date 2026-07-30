@@ -92,9 +92,12 @@ public sealed partial class RoomGrain
             if (!hasKey)
             {
                 // Nobody joined, so don't leave an empty session behind for the sweep to clear.
+                // Ended rather than removed so every abandonment path goes through the one place
+                // that also puts the box back to its closed frame.
                 if (session.IsAbandoned)
                 {
-                    _state.MysteryBoxSessionsByOwnerId.Remove(ownerId);
+                    await EndMysteryBoxSessionAsync(session, notifyParticipants: false)
+                        .ConfigureAwait(true);
                 }
 
                 return;
@@ -158,12 +161,14 @@ public sealed partial class RoomGrain
         await SendMysteryBoxComposerAsync(actorId, new CancelMysteryBoxWaitMessageComposer())
             .ConfigureAwait(true);
 
+        // Ending the session rather than dropping it from the dictionary: the box was repainted to
+        // its waiting frame when this key holder claimed it, and nothing else repaints it. Removing
+        // the entry on its own left the box showing "in play" forever with no session behind it.
         if (session.IsAbandoned)
         {
-            _state.MysteryBoxSessionsByOwnerId.Remove(session.BoxOwnerId);
+            await EndMysteryBoxSessionAsync(session, notifyParticipants: false)
+                .ConfigureAwait(true);
         }
-
-        await Task.CompletedTask.ConfigureAwait(true);
     }
 
     public async Task OpenMysteryTrophyAsync(
@@ -310,9 +315,12 @@ public sealed partial class RoomGrain
 
             session.KeyHolderId = null;
 
+            // Same reason as the explicit cancel: the box carries the waiting frame this key holder
+            // put it in, so it has to be repainted rather than just forgotten.
             if (session.IsAbandoned)
             {
-                _state.MysteryBoxSessionsByOwnerId.Remove(session.BoxOwnerId);
+                await EndMysteryBoxSessionAsync(session, notifyParticipants: false)
+                    .ConfigureAwait(true);
             }
         }
     }

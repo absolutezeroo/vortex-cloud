@@ -36,7 +36,13 @@ internal sealed partial class DashboardOperationsService
             },
             work: async c =>
             {
-                if (!TryParsePrizeSpec(request.Pool, request.ProductType, out var parsed))
+                if (
+                    !TryParsePrizeSpec(
+                        request.Pool,
+                        request.ProductType,
+                        out (MysteryBoxPrizePool Pool, ProductType ProductType) parsed
+                    )
+                )
                 {
                     throw new InvalidOperationException("invalid_request");
                 }
@@ -82,7 +88,13 @@ internal sealed partial class DashboardOperationsService
             },
             work: async c =>
             {
-                if (!TryParsePrizeSpec(request.Pool, request.ProductType, out var parsed))
+                if (
+                    !TryParsePrizeSpec(
+                        request.Pool,
+                        request.ProductType,
+                        out (MysteryBoxPrizePool Pool, ProductType ProductType) parsed
+                    )
+                )
                 {
                     throw new InvalidOperationException("invalid_request");
                 }
