@@ -56,6 +56,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     internal readonly IPermissionService _permissionService;
     internal readonly IPetLevelProvider _petLevelProvider;
     internal readonly IPetCommandProvider _petCommandProvider;
+    internal readonly IPetVocalProvider _petVocalProvider;
     internal readonly RoomConfig _roomConfig;
     internal readonly IRoomModelProvider _roomModelProvider;
 
@@ -98,6 +99,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         IRoomModerationStore moderationStore,
         IPetLevelProvider petLevelProvider,
         IPetCommandProvider petCommandProvider,
+        IPetVocalProvider petVocalProvider,
         RoomWiredLogChannel wiredLogChannel
     )
     {
@@ -115,6 +117,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         _moderationStore = moderationStore;
         _petLevelProvider = petLevelProvider;
         _petCommandProvider = petCommandProvider;
+        _petVocalProvider = petVocalProvider;
         _wiredLogChannel = wiredLogChannel;
 
         _state = new RoomLiveState { RoomId = (RoomId)this.GetPrimaryKeyLong() };

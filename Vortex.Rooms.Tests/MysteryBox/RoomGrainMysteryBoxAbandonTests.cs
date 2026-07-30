@@ -190,6 +190,7 @@ public sealed class RoomGrainMysteryBoxAbandonTests
                 FakeProxy.Create<IRoomModerationStore>(_ => null),
                 FakeProxy.Create<IPetLevelProvider>(_ => null),
                 FakeProxy.Create<IPetCommandProvider>(_ => null),
+                FakeProxy.Create<IPetVocalProvider>(_ => null),
                 new RoomWiredLogChannel()
             );
 

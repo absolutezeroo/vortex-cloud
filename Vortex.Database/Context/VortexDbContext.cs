@@ -198,6 +198,8 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<PetPaletteEntity> PetPalettes { get; init; } = null!;
 
+    public DbSet<PetVocalEntity> PetVocals { get; init; } = null!;
+
     public DbSet<WiredPermanentVariableEntity> WiredPermanentVariables { get; init; } = null!;
 
     public DbSet<RoomWiredLogEntity> RoomWiredLogs { get; init; } = null!;

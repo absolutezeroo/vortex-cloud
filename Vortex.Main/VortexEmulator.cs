@@ -31,6 +31,7 @@ public class VortexEmulator(
     IPetPaletteProvider petPaletteProvider,
     IPetCommandProvider petCommandProvider,
     IPetLevelProvider petLevelProvider,
+    IPetVocalProvider petVocalProvider,
     INavigatorProvider topLevelContextProvider,
     IRoomModelProvider roomModelProvider,
     INetworkManager networkManager,
@@ -54,6 +55,7 @@ public class VortexEmulator(
     private readonly INetworkManager _networkManager = networkManager;
     private readonly IPetCommandProvider _petCommandProvider = petCommandProvider;
     private readonly IPetLevelProvider _petLevelProvider = petLevelProvider;
+    private readonly IPetVocalProvider _petVocalProvider = petVocalProvider;
     private readonly IPetPaletteProvider _petPaletteProvider = petPaletteProvider;
     private readonly IRevisionManager _revisionManager = revisionManager;
     private readonly IRoomModelProvider _roomModelProvider = roomModelProvider;
@@ -75,6 +77,7 @@ public class VortexEmulator(
             await _petPaletteProvider.ReloadAsync(ct).ConfigureAwait(false);
             await _petCommandProvider.ReloadAsync(ct).ConfigureAwait(false);
             await _petLevelProvider.ReloadAsync(ct).ConfigureAwait(false);
+            await _petVocalProvider.ReloadAsync(ct).ConfigureAwait(false);
             await _topLevelContextProvider.ReloadAsync(ct).ConfigureAwait(false);
             await _roomModelProvider.ReloadAsync(ct).ConfigureAwait(false);
             await _networkManager.StartAsync(ct).ConfigureAwait(false);

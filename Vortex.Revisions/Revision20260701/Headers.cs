@@ -981,7 +981,6 @@ internal static class MessageComposer
     public const int PetPlacingErrorComposer = 3195; // AS3-verified (ghost fix): onPetPlacingError @ RoomUsersHandler
     public const int PetRespectFailedComposer = 31;
     public const int PetStatusUpdateComposer = 2753;
-    public const int PetVocalComposer = 3073; // Vortex-custom (not in official AS3 dumps): confirmed via vortex-client's own registry (_events[3073] = PetVocalMessageEvent) and commit d6bc0d0 "feat(pets): add pet vocal message, IssuePetCommand compositor and command UI"
     public const int AchievementResolutionCompletedMessageComposer = 1166; // AS3-verified (ghost fix): onAchievementResolutionCompleted
     public const int AchievementResolutionProgressMessageComposer = 1844;
     public const int AchievementResolutionsMessageComposer = 3143; // AS3-verified (ghost fix): onAchievementResolutions

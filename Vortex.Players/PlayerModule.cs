@@ -33,6 +33,7 @@ public sealed class PlayerModule : IHostPluginModule
         services.AddSingleton<IPetPaletteProvider, PetPaletteProvider>();
         services.AddSingleton<IPetCommandProvider, PetCommandProvider>();
         services.AddSingleton<IPetLevelProvider, PetLevelProvider>();
+        services.AddSingleton<IPetVocalProvider, PetVocalProvider>();
         services.AddSingleton<IBuildersClubService, BuildersClubService>();
         services.AddSingleton<IQuestAdminService, QuestAdminService>();
         services.AddSingleton<IMysteryBoxAdminService, MysteryBoxAdminService>();

@@ -3198,10 +3198,6 @@ public class Revision20260701(IOptions<ProtocolLimitsConfig> protocolLimits) : I
                     MessageComposer.PetStatusUpdateComposer
                 )
             },
-            {
-                typeof(PetVocalMessageComposer),
-                new PetVocalMessageComposerSerializer(MessageComposer.PetVocalComposer)
-            },
             #endregion
 
             #region Room Session

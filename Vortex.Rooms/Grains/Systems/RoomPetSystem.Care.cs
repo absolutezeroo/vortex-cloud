@@ -14,6 +14,7 @@ using Vortex.Primitives;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Messages.Outgoing.Inventory.Pets;
 using Vortex.Primitives.Messages.Outgoing.Notifications;
+using Vortex.Primitives.Messages.Outgoing.Room.Chat;
 using Vortex.Primitives.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Messages.Outgoing.Room.Pets;
 using Vortex.Primitives.Messages.Outgoing.Users;
@@ -160,15 +161,30 @@ public sealed partial class RoomPetSystem
         return updated;
     }
 
+    /// <summary>
+    /// A pet says its piece. There is no pet-speech message on the wire: the client has no parser
+    /// for one, and nothing in it resolves the <c>pet.vocals.*</c> keys the text bundle is written
+    /// in. So the server picks the line and the pet speaks as any other room object does.
+    /// </summary>
     private Task BroadcastPetVocalAsync(PetSnapshot pet, string vocalType)
     {
+        string? line = _roomGrain._petVocalProvider.TryGetLine(pet.Type, vocalType);
+
+        // A pet type with no dialogue written for it stays quiet.
+        if (string.IsNullOrEmpty(line))
+        {
+            return Task.CompletedTask;
+        }
+
         return _roomGrain.SendComposerToRoomAsync(
-            new PetVocalMessageComposer
+            new ChatMessageComposer
             {
-                PetObjectId = RoomPetRuntime.ToRoomObjectId(pet.PetId),
-                PetType = pet.Type,
-                VocalType = vocalType,
-                VocalIndex = GetVocalIndex(pet.Type, vocalType),
+                ObjectId = RoomPetRuntime.ToRoomObjectId(pet.PetId),
+                Text = line,
+                Gesture = default,
+                StyleId = 0,
+                Links = [],
+                TrackingId = 0,
             }
         );
     }
@@ -225,48 +241,6 @@ public sealed partial class RoomPetSystem
             1 => "GENERIC_HAPPY",
             _ => "PLAYFUL",
         };
-    }
-
-    private static int GetVocalIndex(int petType, string vocalType)
-    {
-        // Max is the exclusive upper bound; Random.Next(0, max) → indices 0..max-1
-        int max = (petType, vocalType) switch
-        {
-            (35, "nlDISOBEY") => 3,
-            (35, "DRINKING") => 2,
-            (35, "EATING") => 3,
-            (35, "GENERIC_HAPPY") => 3,
-            (35, "GENERIC_NEUTRAL") => 3,
-            (35, "GENERIC_SAD") => 2,
-            (35, "GREET_OWNER") => 3,
-            (35, "HUNGRY") => 4,
-            (35, "LEVEL_UP") => 4,
-            (35, "MUTED") => 1,
-            (35, "PLAYFUL") => 2,
-            (35, "PLAYING") => 2,
-            (35, "SLEEPING") => 3,
-            (35, "THIRSTY") => 3,
-            (35, "TIRED") => 3,
-            (35, "UNKNOWN_COMMAND") => 2,
-            (15, "DISOBEY") => 3,
-            (15, "DRINKING") => 2,
-            (15, "EATING") => 3,
-            (15, "GENERIC_HAPPY") => 3,
-            (15, "GENERIC_NEUTRAL") => 3,
-            (15, "GENERIC_SAD") => 2,
-            (15, "GREET_OWNER") => 3,
-            (15, "HUNGRY") => 4,
-            (15, "LEVEL_UP") => 4,
-            (15, "MUTED") => 1,
-            (15, "PLAYFUL") => 2,
-            (15, "PLAYING") => 2,
-            (15, "SLEEPING") => 3,
-            (15, "THIRSTY") => 3,
-            (15, "TIRED") => 3,
-            (15, "UNKNOWN_COMMAND") => 2,
-            _ => 3,
-        };
-        return max > 1 ? Random.Shared.Next(0, max) : 0;
     }
 
     public async Task<PetSnapshot?> IssueCommandAsync(
