@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
@@ -206,6 +206,62 @@ public sealed partial class RoomGrain
             _logger.LogError(
                 ex,
                 "Failed to toggle breeding permission for pet {PetId} in room {RoomId}",
+                petId,
+                _state.RoomId
+            );
+        }
+    }
+
+    public async Task MountPetAsync(ActionContext ctx, int petId, bool mount, CancellationToken ct)
+    {
+        try
+        {
+            await PetSystem.MountPetAsync(ctx, petId, mount, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to {Action} pet {PetId} in room {RoomId}",
+                mount ? "mount" : "dismount",
+                petId,
+                _state.RoomId
+            );
+        }
+    }
+
+    public async Task RemoveSaddleFromPetAsync(ActionContext ctx, int petId, CancellationToken ct)
+    {
+        try
+        {
+            await PetSystem.RemoveSaddleFromPetAsync(ctx, petId, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to remove the saddle from pet {PetId} in room {RoomId}",
+                petId,
+                _state.RoomId
+            );
+        }
+    }
+
+    public async Task TogglePetRidingPermissionAsync(
+        ActionContext ctx,
+        int petId,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            await PetSystem.TogglePetRidingPermissionAsync(ctx, petId, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to toggle riding permission for pet {PetId} in room {RoomId}",
                 petId,
                 _state.RoomId
             );

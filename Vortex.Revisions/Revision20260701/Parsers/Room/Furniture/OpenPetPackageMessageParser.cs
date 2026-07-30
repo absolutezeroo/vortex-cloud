@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Room.Furniture;
 
 internal class OpenPetPackageMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new OpenPetPackageMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new OpenPetPackageMessage { ObjectId = packet.PopInt(), Name = packet.PopString() };
 }

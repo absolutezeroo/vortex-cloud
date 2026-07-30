@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Action;
@@ -54,6 +54,13 @@ public partial interface IRoomGrain
         int petId,
         CancellationToken ct
     );
+
+    /// <summary>Gets a player on or off a pet; the client sends one message for both.</summary>
+    public Task MountPetAsync(ActionContext ctx, int petId, bool mount, CancellationToken ct);
+
+    public Task RemoveSaddleFromPetAsync(ActionContext ctx, int petId, CancellationToken ct);
+
+    public Task TogglePetRidingPermissionAsync(ActionContext ctx, int petId, CancellationToken ct);
 
     public Task<bool> BreedPetsAsync(
         ActionContext ctx,

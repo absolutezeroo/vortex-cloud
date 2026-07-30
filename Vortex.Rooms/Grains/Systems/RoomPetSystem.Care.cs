@@ -19,6 +19,7 @@ using Vortex.Primitives.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Messages.Outgoing.Room.Pets;
 using Vortex.Primitives.Messages.Outgoing.Users;
 using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Pets.Snapshots;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
@@ -41,6 +42,36 @@ public sealed partial class RoomPetSystem
         if (!_roomGrain._state.PetsById.TryGetValue(petId, out PetSnapshot? pet))
         {
             return null;
+        }
+
+        int minimumAgeDays = _roomGrain._roomConfig.Pet.RespectMinimumAccountAgeDays;
+
+        if (minimumAgeDays > 0)
+        {
+            PlayerSummarySnapshot summary = await _roomGrain
+                ._grainFactory.GetPlayerGrain(ctx.PlayerId)
+                .GetSummaryAsync(ct)
+                .ConfigureAwait(false);
+
+            int ageDays = (int)(DateTime.UtcNow - summary.CreatedAt).TotalDays;
+
+            if (ageDays < minimumAgeDays)
+            {
+                // The client shows both numbers, so it needs both -- this used to send nothing and
+                // the refusal was silent.
+                await _roomGrain
+                    ._grainFactory.GetPlayerPresenceGrain(ctx.PlayerId)
+                    .SendComposerAsync(
+                        new PetRespectFailedMessageComposer
+                        {
+                            RequiredDays = minimumAgeDays,
+                            AvatarAgeInDays = ageDays,
+                        }
+                    )
+                    .ConfigureAwait(false);
+
+                return pet;
+            }
         }
 
         DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);

@@ -344,6 +344,12 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
         await _roomGrain
             .SendComposerToRoomAsync(new UserUpdateMessageComposer { Avatars = [snapshot] })
             .ConfigureAwait(false);
+
+        // The avatar update redraws the pet but says nothing about what can be done with it. Every
+        // caller here has just changed a stat or a permission that the answer depends on -- a
+        // monsterplant hitting full growth becomes harvestable, one running out of energy becomes
+        // revivable -- so the status goes out alongside.
+        await SendPetStatusAsync(pet).ConfigureAwait(false);
     }
 
     private async Task SendPetRemovedFromInventoryAsync(PetSnapshot pet)

@@ -22,6 +22,13 @@ public class PetConfig
     public int VocalIntervalMs { get; init; } = 20_000;
     public int MaxWellBeingSeconds { get; init; } = 86_400;
     public int RespectDailyCapPerPet { get; init; } = 3;
+
+    /// <summary>
+    /// How old an account must be, in days, before it may respect a pet. Habbo gates this; the
+    /// default of 0 leaves the gate open, so a hotel opts in rather than inheriting a rule it never
+    /// asked for.
+    /// </summary>
+    public int RespectMinimumAccountAgeDays { get; init; }
     public int RespectXpReward { get; init; } = 5;
     public int CommandXpReward { get; init; } = 3;
     public int SupplementEnergyBoost { get; init; } = 30;

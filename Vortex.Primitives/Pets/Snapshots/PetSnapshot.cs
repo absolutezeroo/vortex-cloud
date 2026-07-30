@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
@@ -79,4 +79,16 @@ public sealed record PetSnapshot
 
     [Id(23)]
     public DateTime? LastWateredAt { get; init; }
+
+    /// <summary>A saddle has been fitted; without one the pet cannot be ridden.</summary>
+    [Id(24)]
+    public bool HasSaddle { get; init; }
+
+    /// <summary>The owner lets other players ride it. The owner always may.</summary>
+    [Id(25)]
+    public bool RidingPermission { get; init; }
+
+    /// <summary>Who is on its back right now. Runtime only -- nobody is riding after a restart.</summary>
+    [Id(26)]
+    public PlayerId? RiderId { get; init; }
 }

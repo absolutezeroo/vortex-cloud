@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Room.Engine;
 
 internal class MountPetMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new MountPetMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new MountPetMessage { PetId = packet.PopInt(), Mount = packet.PopBoolean() };
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -80,6 +80,16 @@ public class PetEntity : VortexEntity
     [Column("can_breed")]
     [DefaultValue(true)]
     public bool CanBreed { get; set; } = true;
+
+    /// <summary>A saddle has been fitted, so the pet can be ridden at all.</summary>
+    [Column("has_saddle")]
+    [DefaultValue(false)]
+    public bool HasSaddle { get; set; }
+
+    /// <summary>The owner lets other players ride it. Riding is always allowed to the owner.</summary>
+    [Column("riding_permission")]
+    [DefaultValue(false)]
+    public bool RidingPermission { get; set; }
 
     [Column("x")]
     public required int X { get; set; }

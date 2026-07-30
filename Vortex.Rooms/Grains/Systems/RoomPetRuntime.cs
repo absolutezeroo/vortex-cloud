@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -74,15 +74,30 @@ internal static class RoomPetRuntime
             OwnerId = pet.OwnerId.Value,
             OwnerName = ownerName,
             RarityLevel = pet.RarityLevel,
-            HasSaddle = false,
-            IsRiding = false,
-            CanBreed = pet.Type != MonsterplantPetType && pet.CanBreed,
-            CanHarvest = pet.Type == MonsterplantPetType && pet.Level >= MonsterplantMaxLevel,
-            CanRevive = pet.Type == MonsterplantPetType && pet.Energy == 0,
-            HasBreedingPermission = pet.Type != MonsterplantPetType && pet.CanBreed,
+            HasSaddle = pet.HasSaddle,
+            IsRiding = pet.RiderId is not null,
+            CanBreed = CanBreed(pet),
+            CanHarvest = CanHarvest(pet),
+            CanRevive = CanRevive(pet),
+            HasBreedingPermission = HasBreedingPermission(pet),
             PetLevel = pet.Level,
             PetPosture = posture,
         };
+
+    /// <summary>
+    /// Which actions a pet offers. Shared with the status push so the room list and the status
+    /// message can never disagree about whether a pet can be bred, harvested or revived.
+    /// </summary>
+    public static bool CanBreed(PetSnapshot pet) => pet.Type != MonsterplantPetType && pet.CanBreed;
+
+    public static bool CanHarvest(PetSnapshot pet) =>
+        pet.Type == MonsterplantPetType && pet.Level >= MonsterplantMaxLevel;
+
+    public static bool CanRevive(PetSnapshot pet) =>
+        pet.Type == MonsterplantPetType && pet.Energy == 0;
+
+    public static bool HasBreedingPermission(PetSnapshot pet) =>
+        pet.Type != MonsterplantPetType && pet.CanBreed;
 
     private static string ToFigureString(PetSnapshot pet) =>
         pet.Type == MonsterplantPetType
