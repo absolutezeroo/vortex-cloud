@@ -1,5 +1,6 @@
 using Orleans;
 using Vortex.Primitives.Networking;
+using Vortex.Primitives.Pets.Snapshots;
 
 namespace Vortex.Primitives.Messages.Outgoing.Inventory.Pets;
 
@@ -7,8 +8,8 @@ namespace Vortex.Primitives.Messages.Outgoing.Inventory.Pets;
 public sealed record ConfirmBreedingResultEventMessageComposer : IComposer
 {
     [Id(0)]
-    public required bool Success { get; init; }
+    public required int BreedingNestStuffId { get; init; }
 
     [Id(1)]
-    public required int NewPetId { get; init; }
+    public required int Result { get; init; }
 }

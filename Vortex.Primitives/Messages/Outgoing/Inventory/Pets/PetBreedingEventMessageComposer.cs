@@ -1,29 +1,19 @@
 using Orleans;
 using Vortex.Primitives.Networking;
+using Vortex.Primitives.Pets.Snapshots;
 
 namespace Vortex.Primitives.Messages.Outgoing.Inventory.Pets;
 
 [GenerateSerializer, Immutable]
 public sealed record PetBreedingEventMessageComposer : IComposer
 {
+    /// <summary>Where the pairing is up to. The client drives its breeding dialog off this.</summary>
     [Id(0)]
-    public required int PetOneId { get; init; }
+    public required int State { get; init; }
 
     [Id(1)]
-    public required int PetTwoId { get; init; }
+    public required int OwnPetId { get; init; }
 
     [Id(2)]
-    public required int OwnerOneId { get; init; }
-
-    [Id(3)]
-    public required int OwnerTwoId { get; init; }
-
-    [Id(4)]
-    public required int ProposedRace { get; init; }
-
-    [Id(5)]
-    public required string ProposedColor { get; init; }
-
-    [Id(6)]
-    public required int ProposedGender { get; init; }
+    public required int OtherPetId { get; init; }
 }

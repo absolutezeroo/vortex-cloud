@@ -1,5 +1,6 @@
 using Vortex.Primitives.Messages.Outgoing.Notifications;
 using Vortex.Primitives.Packets;
+using Vortex.Revisions.Revision20260701.Serializers.Room.Pets.Snapshots;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Notifications;
 
@@ -13,7 +14,9 @@ internal class PetLevelNotificationEventMessageComposerSerializer(int header)
     {
         packet
             .WriteInteger(message.PetId)
-            .WriteInteger(message.NewLevel)
-            .WriteString(message.PetName);
+            .WriteString(message.PetName)
+            .WriteInteger(message.NewLevel);
+
+        PetFigureDataSerializer.Serialize(packet, message.Pet);
     }
 }

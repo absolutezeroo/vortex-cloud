@@ -1,17 +1,19 @@
 using Orleans;
 using Vortex.Primitives.Networking;
+using Vortex.Primitives.Pets.Snapshots;
 
 namespace Vortex.Primitives.Messages.Outgoing.Room.Pets;
 
+/// <summary>
+/// The two outcomes the breeding dialog lays out side by side. The client parses the same seven-field
+/// block twice, so both are always present.
+/// </summary>
 [GenerateSerializer, Immutable]
 public sealed record PetBreedingResultEventMessageComposer : IComposer
 {
     [Id(0)]
-    public required int PetOneId { get; init; }
+    public required PetBreedingOutcomeSnapshot Result { get; init; }
 
     [Id(1)]
-    public required int PetTwoId { get; init; }
-
-    [Id(2)]
-    public required int Result { get; init; }
+    public required PetBreedingOutcomeSnapshot OtherResult { get; init; }
 }

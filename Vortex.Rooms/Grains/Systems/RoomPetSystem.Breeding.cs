@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,6 +30,18 @@ namespace Vortex.Rooms.Grains.Systems;
 
 public sealed partial class RoomPetSystem
 {
+    /// <summary>Breeding dialog states the client understands: the pairing has begun.</summary>
+    private const int BreedingStateStarted = 1;
+
+    /// <summary>Result code the client treats as "a pet was produced".</summary>
+    private const int BreedingResultSuccess = 1;
+
+    /// <summary>
+    /// The nest the pairing happened at. BreedPetsMessage carries only the two pets, so this flow
+    /// never learns which nest was used; 0 is sent rather than an id made up on the spot.
+    /// </summary>
+    private const int UnknownBreedingNestId = 0;
+
     public async Task TogglePetBreedingPermissionAsync(
         ActionContext ctx,
         int petId,
@@ -102,26 +115,21 @@ public sealed partial class RoomPetSystem
 
         _breedingByPetOneId[petOneId] = session;
 
+        // The client drives its breeding dialog off a state and the two pets involved; the proposed
+        // offspring is settled later and reaches it through ConfirmBreedingRequest.
         PetBreedingEventMessageComposer requesterMsg = new()
         {
-            PetOneId = petOneId,
-            PetTwoId = petTwoId,
-            OwnerOneId = petOne.OwnerId.Value,
-            OwnerTwoId = petTwo.OwnerId.Value,
-            ProposedRace = proposedRace,
-            ProposedColor = proposedColor,
-            ProposedGender = proposedGender,
+            State = BreedingStateStarted,
+            OwnPetId = petOneId,
+            OtherPetId = petTwoId,
         };
 
         ConfirmBreedingRequestEventMessageComposer targetMsg = new()
         {
-            PetOneId = petOneId,
-            PetTwoId = petTwoId,
-            OwnerOneId = petOne.OwnerId.Value,
-            OwnerTwoId = petTwo.OwnerId.Value,
-            ProposedRace = proposedRace,
-            ProposedColor = proposedColor,
-            ProposedGender = proposedGender,
+            NestId = UnknownBreedingNestId,
+            PetOne = await DescribeBreedingParentAsync(petOne, ct).ConfigureAwait(false),
+            PetTwo = await DescribeBreedingParentAsync(petTwo, ct).ConfigureAwait(false),
+            ResultPetType = proposedRace,
         };
 
         await _roomGrain
@@ -186,10 +194,12 @@ public sealed partial class RoomPetSystem
         dbCtx.Pets.Add(baby);
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
 
+        // The client keys the outcome to the nest it was started from, and reads a result code
+        // rather than a flag: 1 is the success it acts on.
         ConfirmBreedingResultEventMessageComposer resultMsg = new()
         {
-            Success = true,
-            NewPetId = baby.Id,
+            BreedingNestStuffId = UnknownBreedingNestId,
+            Result = BreedingResultSuccess,
         };
 
         await _roomGrain
@@ -211,14 +221,47 @@ public sealed partial class RoomPetSystem
             .SendComposerToRoomAsync(
                 new PetBreedingResultEventMessageComposer
                 {
-                    PetOneId = session.PetOneId,
-                    PetTwoId = session.PetTwoId,
-                    Result = 0,
+                    // The dialog shows one block per parent. Breeding here yields a single pet with
+                    // no rarity or mutation, so those stay neutral instead of being invented.
+                    Result = DescribeParent(session.PetOneId, session.OwnerOneId),
+                    OtherResult = DescribeParent(session.PetTwoId, session.OwnerTwoId),
                 }
             )
             .ConfigureAwait(false);
 
         return true;
+    }
+
+    /// <summary>A parent as the confirmation dialog lists it. The figure is the string form the
+    /// client expects here -- type, breed and colour -- not the block used elsewhere.</summary>
+    private async Task<PetBreedingParentSnapshot> DescribeBreedingParentAsync(
+        PetSnapshot pet,
+        CancellationToken ct
+    ) =>
+        new()
+        {
+            WebId = pet.PetId,
+            Name = pet.Name,
+            Level = pet.Level,
+            Figure = string.Create(
+                CultureInfo.InvariantCulture,
+                $"{pet.Type} {pet.Race} {pet.Color}"
+            ),
+            Owner = await GetOwnerNameAsync(pet.OwnerId, ct).ConfigureAwait(false),
+        };
+
+    /// <summary>One side of the breeding outcome dialog, built from a parent pet.</summary>
+    private PetBreedingOutcomeSnapshot DescribeParent(int petId, PlayerId ownerId)
+    {
+        _roomGrain._state.PetsById.TryGetValue(petId, out PetSnapshot? pet);
+
+        return new PetBreedingOutcomeSnapshot
+        {
+            StuffId = petId,
+            ClassId = pet?.Type ?? 0,
+            UserId = ownerId.Value,
+            UserName = pet?.Name ?? string.Empty,
+        };
     }
 
     public Task CancelPetBreedingAsync(ActionContext ctx, int petId, CancellationToken ct)

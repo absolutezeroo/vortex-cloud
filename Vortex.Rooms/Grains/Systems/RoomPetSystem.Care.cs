@@ -390,6 +390,7 @@ public sealed partial class RoomPetSystem
                             PetId = updated.PetId,
                             NewLevel = updated.Level,
                             PetName = updated.Name,
+                            Pet = updated,
                         }
                     )
                     .ConfigureAwait(false);

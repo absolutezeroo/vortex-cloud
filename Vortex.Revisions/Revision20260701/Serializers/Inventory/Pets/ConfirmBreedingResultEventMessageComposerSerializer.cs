@@ -1,5 +1,6 @@
 using Vortex.Primitives.Messages.Outgoing.Inventory.Pets;
 using Vortex.Primitives.Packets;
+using Vortex.Revisions.Revision20260701.Serializers.Room.Pets.Snapshots;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Inventory.Pets;
 
@@ -11,6 +12,6 @@ internal class ConfirmBreedingResultEventMessageComposerSerializer(int header)
         ConfirmBreedingResultEventMessageComposer message
     )
     {
-        packet.WriteBoolean(message.Success).WriteInteger(message.NewPetId);
+        packet.WriteInteger(message.BreedingNestStuffId).WriteInteger(message.Result);
     }
 }

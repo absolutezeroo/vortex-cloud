@@ -1,5 +1,6 @@
 using Vortex.Primitives.Messages.Outgoing.Room.Pets;
 using Vortex.Primitives.Packets;
+using Vortex.Primitives.Pets.Snapshots;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Room.Pets;
 
@@ -11,9 +12,17 @@ internal class PetBreedingResultEventMessageComposerSerializer(int header)
         PetBreedingResultEventMessageComposer message
     )
     {
-        packet
-            .WriteInteger(message.PetOneId)
-            .WriteInteger(message.PetTwoId)
-            .WriteInteger(message.Result);
+        Write(packet, message.Result);
+        Write(packet, message.OtherResult);
     }
+
+    private static void Write(IServerPacket packet, PetBreedingOutcomeSnapshot outcome) =>
+        packet
+            .WriteInteger(outcome.StuffId)
+            .WriteInteger(outcome.ClassId)
+            .WriteString(outcome.ProductCode)
+            .WriteInteger(outcome.UserId)
+            .WriteString(outcome.UserName)
+            .WriteInteger(outcome.RarityLevel)
+            .WriteBoolean(outcome.HasMutation);
 }
