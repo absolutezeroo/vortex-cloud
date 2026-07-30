@@ -39,6 +39,12 @@ namespace Vortex.Rooms.Grains;
 
 public sealed partial class RoomGrain : Grain, IRoomGrain
 {
+    /// <summary>How many consecutive failures of one tick step pass between log lines.</summary>
+    private const int TickFailureLogInterval = 200;
+
+    /// <summary>Consecutive failure count per tick step, cleared as soon as the step succeeds.</summary>
+    private readonly Dictionary<string, int> _tickStepFailures = [];
+
     internal readonly IRoomAvatarProvider _avatarProvider;
     internal readonly IDbContextFactory<VortexDbContext> _dbCtxFactory;
     internal readonly IEventPublisher _events;
@@ -234,21 +240,71 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
             {
                 long now = NowMs();
 
-                await AvatarTickSystem.ProcessAvatarsAsync(now, ct);
-                await PetSystem.ProcessPetsAsync(now, ct);
-                await WiredSystem.ProcessWiredAsync(now, ct);
-                await RollerSystem.ProcessRollersAsync(now, ct);
-                await GameTimerSystem.ProcessAsync(now, ct);
-                await FreezeSystem.ProcessAsync(now, ct);
-                await ProcessDoorbellTimeoutsAsync(now, ct);
-                await ProcessMysteryBoxTimeoutsAsync(now, ct);
-                await FlushDirtyTilesAsync(ct);
-                await FlushDirtyItemsAsync(ct);
+                // Each step is isolated. Run bare, one throw -- a single malformed wired item, one
+                // pet with a broken path -- aborted the whole tick, and since the two flushes are
+                // last, the room also stopped persisting furniture and tile changes for as long as
+                // the fault lasted.
+                await RunTickStepAsync(
+                    "avatars",
+                    () => AvatarTickSystem.ProcessAvatarsAsync(now, ct)
+                );
+                await RunTickStepAsync("pets", () => PetSystem.ProcessPetsAsync(now, ct));
+                await RunTickStepAsync("wired", () => WiredSystem.ProcessWiredAsync(now, ct));
+                await RunTickStepAsync("rollers", () => RollerSystem.ProcessRollersAsync(now, ct));
+                await RunTickStepAsync("game-timer", () => GameTimerSystem.ProcessAsync(now, ct));
+                await RunTickStepAsync("freeze", () => FreezeSystem.ProcessAsync(now, ct));
+                await RunTickStepAsync("doorbell", () => ProcessDoorbellTimeoutsAsync(now, ct));
+                await RunTickStepAsync(
+                    "mystery-box",
+                    () => ProcessMysteryBoxTimeoutsAsync(now, ct)
+                );
+                await RunTickStepAsync("flush-tiles", () => FlushDirtyTilesAsync(ct));
+                await RunTickStepAsync("flush-items", () => FlushDirtyItemsAsync(ct));
             },
             null,
             TimeSpan.FromMilliseconds(_roomConfig.RoomTickMs),
             TimeSpan.FromMilliseconds(_roomConfig.RoomTickMs)
         );
+    }
+
+    /// <summary>
+    /// Runs one tick step, keeping its failure to itself. A step that throws must not take the rest
+    /// of the tick down with it -- least of all the two flushes at the end, which are what actually
+    /// persist the room.
+    /// </summary>
+    private async Task RunTickStepAsync(string step, Func<Task> stepAsync)
+    {
+        try
+        {
+            await stepAsync().ConfigureAwait(true);
+
+            _tickStepFailures.Remove(step);
+        }
+        catch (OperationCanceledException)
+        {
+            // The grain is going away; not a step failure.
+            throw;
+        }
+        catch (Exception ex)
+        {
+            // At 50ms a permanently broken step would emit twenty lines a second, per room, for as
+            // long as the fault lasts, so only the first failure and then one in every
+            // TickFailureLogInterval are written. The count doubles as "how long has this been
+            // broken", which is the part worth reading.
+            int failures = _tickStepFailures.GetValueOrDefault(step) + 1;
+            _tickStepFailures[step] = failures;
+
+            if (failures == 1 || failures % TickFailureLogInterval == 0)
+            {
+                _logger.LogError(
+                    ex,
+                    "Room tick step {Step} failed in room {RoomId} ({FailureCount} consecutive); the rest of the tick still ran.",
+                    step,
+                    _state.RoomId.Value,
+                    failures
+                );
+            }
+        }
     }
 
     public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken ct)
