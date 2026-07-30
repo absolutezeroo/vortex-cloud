@@ -1057,7 +1057,6 @@ public class Revision20260701(IOptions<ProtocolLimitsConfig> protocolLimits) : I
                 MessageEvent.GiveSupplementToPetMessageEvent,
                 new GiveSupplementToPetMessageParser()
             },
-            { MessageEvent.IssuePetCommandMessageEvent, new IssuePetCommandMessageParser() },
             { MessageEvent.MountPetMessageEvent, new MountPetMessageParser() },
             { MessageEvent.MoveAvatarMessageEvent, new MoveAvatarMessageParser() },
             { MessageEvent.MoveObjectMessageEvent, new MoveObjectMessageParser() },

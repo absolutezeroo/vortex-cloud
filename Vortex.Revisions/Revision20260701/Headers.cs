@@ -270,12 +270,11 @@ internal static class MessageEvent
     public const int GetItemDataMessageEvent = 204; // UNRESOLVED: not found in either official AS3 revision (matches vortex-client's registry exactly, but not confirmed as Vortex-custom vs. a real AS3 message vortex-client happens to represent under an older numbering)
     public const int GetPetCommandsMessageEvent = 2425;
     public const int GiveSupplementToPetMessageEvent = 1694;
-    public const int IssuePetCommandMessageEvent = 3072; // Vortex-custom (not in official AS3): vortex-client commit d6bc0d0 "feat(pets): add pet vocal message, IssuePetCommand compositor and command UI" registers this exact ID
     public const int HarvestPetMessageEvent = 1210;
     public const int MountPetMessageEvent = 1996;
     public const int MoveAvatarMessageEvent = 2364;
     public const int MoveObjectMessageEvent = 1482;
-    public const int MovePetMessageEvent = 2761; // Vortex-custom (not in official AS3): vortex-client commit e8dc43d "chore(protocol): register rentable space (4600/4601) and pet (3072/3073) message IDs" registers this exact ID
+    public const int MovePetMessageEvent = 432; // Vortex-custom (not in official AS3): vortex-client commit e8dc43d "chore(protocol): register rentable space (4600/4601) and pet (3072/3073) message IDs" registers this exact ID
     public const int MoveWallItemMessageEvent = 2999; // AS3-verified (direct read, both revisions): modifyRoomObject() param3==20 (wall item move) -> _SafeCls_2682
     public const int PickupObjectMessageEvent = 1919;
     public const int PlaceBotMessageEvent = 2102; // AS3-verified (old-revision trace): _SafeCls_3867 -> placeItemToRoom() still exists in current revision at 2102
