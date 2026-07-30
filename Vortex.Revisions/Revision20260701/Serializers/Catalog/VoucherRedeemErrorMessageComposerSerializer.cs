@@ -11,6 +11,6 @@ internal class VoucherRedeemErrorMessageComposerSerializer(int header)
         VoucherRedeemErrorMessageComposer message
     )
     {
-        //
+        packet.WriteString(message.ErrorCode);
     }
 }

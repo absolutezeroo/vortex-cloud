@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -95,16 +96,33 @@ public sealed class VoucherGrain(
 
         IPlayerPresenceGrain presence = grainFactory.GetPlayerPresenceGrain(playerId);
 
+        // Both of these carry payload the client reads unconditionally: the error key it displays,
+        // or what the voucher granted. They used to be sent empty, which left the client reading
+        // past the end of the packet.
         await presence
             .SendComposerAsync(
                 result.Success
-                    ? new VoucherRedeemOkMessageComposer()
-                    : new VoucherRedeemErrorMessageComposer()
+                    ? new VoucherRedeemOkMessageComposer
+                    {
+                        ProductName = DescribeGrant(),
+                        ProductDescription = DescribeGrant(),
+                    }
+                    : new VoucherRedeemErrorMessageComposer { ErrorCode = result.ErrorCode }
             )
             .ConfigureAwait(true);
 
         return result;
     }
+
+    /// <summary>What the voucher paid out, for the client's confirmation dialog. A voucher here is
+    /// always an amount of one currency, so there is no catalog product name to quote.</summary>
+    private string DescribeGrant() =>
+        _voucher is null
+            ? string.Empty
+            : string.Create(
+                CultureInfo.InvariantCulture,
+                $"{_voucher.Amount} {_voucher.CurrencyType}"
+            );
 
     private async Task<VoucherRedeemResult> TryRedeemAsync(PlayerId playerId, CancellationToken ct)
     {

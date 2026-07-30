@@ -11,6 +11,6 @@ internal class MarketplaceCanMakeOfferResultMessageComposerSerializer(int header
         MarketplaceCanMakeOfferResultMessageComposer message
     )
     {
-        packet.WriteBoolean(message.CanMakeOffer);
+        packet.WriteInteger(message.ResultCode).WriteInteger(message.TokenCount);
     }
 }

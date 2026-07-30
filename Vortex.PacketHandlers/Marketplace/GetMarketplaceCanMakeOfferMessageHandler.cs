@@ -15,8 +15,10 @@ public class GetMarketplaceCanMakeOfferMessageHandler
         CancellationToken ct
     )
     {
+        // 1 is "go ahead", which is what this hotel always answers -- there is no trading-pass or
+        // token gate here. TokenCount only matters for result code 4 (buy tokens).
         await ctx.SendComposerAsync(
-                new MarketplaceCanMakeOfferResultMessageComposer { CanMakeOffer = true },
+                new MarketplaceCanMakeOfferResultMessageComposer { ResultCode = 1 },
                 ct
             )
             .ConfigureAwait(false);

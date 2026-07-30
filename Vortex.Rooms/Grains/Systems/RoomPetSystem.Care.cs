@@ -394,6 +394,7 @@ public sealed partial class RoomPetSystem
                 .SendComposerToRoomAsync(
                     new PetLevelUpdateMessageComposer
                     {
+                        RoomIndex = RoomPetRuntime.ToRoomObjectId(updated.PetId).Value,
                         PetId = updated.PetId,
                         Level = updated.Level,
                     }

@@ -80,7 +80,7 @@ internal sealed class PlayerInventoryModule(PlayerPresenceGrain presenceGrain)
 
     public Task OnBadgeGrantedAsync(string badgeCode, CancellationToken ct) =>
         _presenceGrain.SendComposerAsync(
-            new BadgeReceivedEventMessageComposer { SlotId = 0, BadgeCode = badgeCode }
+            new BadgeReceivedEventMessageComposer { BadgeCode = badgeCode }
         );
 
     public Task OnPetAddedToInventoryAsync(PetSnapshot pet, CancellationToken ct) =>
