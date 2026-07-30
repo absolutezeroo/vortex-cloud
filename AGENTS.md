@@ -252,6 +252,39 @@ When adding packet mappings in `Vortex.Revisions/Revision20260112`:
   - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudFastCheck`
   - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate`
 
+### Add dashboard capability or admin page
+A dashboard capability string is duplicated across **six** files and nothing cross-checks them: a
+missing copy compiles, passes the gates, and fails only at runtime. Missing #2 below throws
+`InvalidOperationException: The AuthorizationPolicy named '<capability>' was not found` on the first
+request; missing #3 makes the page 403 for every operator. This has shipped four times — treat the
+list as mandatory, not advisory.
+- Required edits for every new capability:
+  1. `Vortex.Primitives/Permissions/Capabilities.cs` — the `const string` **and** the `All` array
+  2. `Vortex.Dashboard.API/Hosting/DashboardWebHost.cs` → `DashboardCapabilities` (builds one auth
+     policy per entry)
+  3. `Vortex.Dashboard.API/Security/DashboardAuthService.cs` → `DashboardCapabilities` (effective
+     capabilities granted at login)
+  4. `Vortex.Dashboard.Web/src/lib/dashboardPermissions.js` — `CAPABILITIES` **and**
+     `ROUTE_PERMISSIONS`
+  5. `Vortex.Dashboard.Web/src/lib/routes.js` — component import and route row
+  6. `Vortex.Dashboard.Web/src/lib/locales/en.js` **and** `fr.js` — page block **and** `nav.*` labels
+     (the two files must stay structurally identical; `en.js` is every other locale's fallback)
+- Required context files:
+  - `docs/walkthroughs/add-a-dashboard-page.md` (full walkthrough, server + front end)
+  - an existing pair such as `DashboardEndpoints.Quests.cs` + `DashboardApiService.Quests.cs`
+- Forbidden changes:
+  - no direct DB writes from `DashboardOperationsService`; route through an `I<Domain>AdminService`
+  - no admin write that skips reloading the manager-grain cache it feeds
+  - no new endpoint left unregistered in `DashboardEndpoints.cs`
+- Validation:
+  - `grep -rn "<an existing capability string>" --include=*.cs --include=*.js .` and confirm the new
+    capability appears in the same set of files
+  - `cd Vortex.Dashboard.Web && npm run build` (the SPA is served from
+    `Vortex.Dashboard.API/Assets/`; commit the regenerated output)
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate`
+  - restart the emulator — a running `Vortex.Main` holds its own DLLs, so a rebuilt binary is not
+    live until it is restarted
+
 ### Refactor lookup/cache logic
 - Required context files:
   - `AGENTS.md`

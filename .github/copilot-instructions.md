@@ -32,6 +32,11 @@ Include in every request:
   - `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`
   - Do not generate new `Revision<id>/Parsers` or `Revision<id>/Serializers` in `vortex-cloud` for
     revisions other than the embedded `Revision20260112` default.
+- A new dashboard capability string lives in six files (`Capabilities.cs` const + `All`,
+  `DashboardWebHost.DashboardCapabilities`, `DashboardAuthService.DashboardCapabilities`,
+  `dashboardPermissions.js`, `routes.js`, `locales/en.js` + `fr.js`). Nothing cross-checks them —
+  a missing copy compiles and fails at runtime. See `AGENTS.md` and
+  `docs/walkthroughs/add-a-dashboard-page.md`.
 - For extended profile flow:
   - keep handlers orchestration-only
   - do not query database contexts/repositories from handlers

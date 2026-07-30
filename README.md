@@ -186,6 +186,7 @@ Canonical AI context files:
 - `docs/patterns/` (golden implementation examples)
 - `docs/walkthroughs/request-lifecycle.md` (one packet, socket to client — the real flow)
 - `docs/walkthroughs/add-a-feature.md` (adding a feature, layer by layer)
+- `docs/walkthroughs/add-a-dashboard-page.md` (dashboard admin surface — including the six files a capability string lives in)
 - `docs/patterns/vertical-slice.md` (handler + grain + test on a single feature)
 - `docs/glossary.md` (Habbo + Orleans terminology, each term mapped to its file)
 

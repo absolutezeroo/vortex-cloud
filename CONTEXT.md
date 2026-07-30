@@ -80,6 +80,15 @@
   - `Vortex.<Domain>/...` in the existing service/provider structure
 - New grain behavior:
   - `Vortex.<Domain>/Grains/...`
+- New dashboard admin surface:
+  - read API `Vortex.Dashboard.API/Api/DashboardApiService.<Domain>.cs`, writes
+    `Vortex.Dashboard.API/Operations/DashboardOperationsService.<Domain>.cs`, endpoints
+    `Vortex.Dashboard.API/Hosting/DashboardEndpoints.<Domain>.cs`, page
+    `Vortex.Dashboard.Web/src/pages/<Domain>Page.svelte`
+  - the capability string must be added to **six** files — see the checklist in `AGENTS.md`
+    ("Add dashboard capability or admin page") and `docs/walkthroughs/add-a-dashboard-page.md`.
+    Omitting the policy list throws `AuthorizationPolicy named '<capability>' was not found` at
+    runtime; nothing in the build or tests catches it.
 
 ## Pattern references
 Use and adapt these examples before inventing new structure:
