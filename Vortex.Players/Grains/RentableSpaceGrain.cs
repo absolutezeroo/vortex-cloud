@@ -9,6 +9,8 @@ using Orleans;
 using Orleans.Runtime;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
+using Vortex.Logging;
+using Vortex.Primitives;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Messages.Outgoing.Room.Furniture;
@@ -136,30 +138,9 @@ internal sealed class RentableSpaceGrain(
             return (int)RentableSpaceRentFailedType.CanRentOnlyOneSpace;
         }
 
-        // Debit wallet (also writes the ledger entry via CurrencyChangedEvent).
-        CurrencyKind kind = new()
-        {
-            CurrencyType = _terms.CurrencyTypeEntity.CurrencyType,
-            ActivityPointType = _terms.CurrencyTypeEntity.ActivityPointType,
-        };
-
-        WalletDebitResult debitResult = await grainFactory
-            .GetPlayerWalletGrain((long)renterPlayerId)
-            .TryDebitAsync(
-                [new WalletDebitRequest { CurrencyKind = kind, Amount = _terms.Price }],
-                ct
-            );
-
-        if (!debitResult.Succeeded)
-        {
-            return _terms.CurrencyTypeEntity.CurrencyType == CurrencyType.Credits
-                ? (int)RentableSpaceRentFailedType.NotEnoughCredits
-                : (int)RentableSpaceRentFailedType.NotEnoughDuckets;
-        }
-
-        DateTime rentedUntil = now.AddSeconds(_terms.RentDurationSeconds);
-
-        // Load furniture entity (needed for both upsert navigation and owner credit).
+        // Loaded before the debit, not after. It used to be fetched once the money was already
+        // gone, so a rentable space whose furniture row had vanished charged the player and handed
+        // them a Generic failure with no refund.
         FurnitureEntity? furniEntity = await db.Furnitures.FirstOrDefaultAsync(
             f => f.Id == FurnitureId,
             ct
@@ -170,54 +151,93 @@ internal sealed class RentableSpaceGrain(
             return (int)RentableSpaceRentFailedType.Generic;
         }
 
-        // Upsert state row (insert first time, update in-place thereafter).
-        if (_space is null)
+        CurrencyKind kind = new()
         {
-            RoomRentableSpaceEntity newSpace = new()
-            {
-                FurnitureEntityId = FurnitureId,
-                RenterPlayerEntityId = renterPlayerId,
-                RentedUntil = rentedUntil,
-                FurnitureEntity = furniEntity,
-            };
-            db.RoomRentableSpaces.Add(newSpace);
-            await db.SaveChangesAsync(ct);
-            _space = newSpace;
-        }
-        else
-        {
-            RoomRentableSpaceEntity? entity = await db.RoomRentableSpaces.FirstOrDefaultAsync(
-                s => s.FurnitureEntityId == FurnitureId && s.DeletedAt == null,
+            CurrencyType = _terms.CurrencyTypeEntity.CurrencyType,
+            ActivityPointType = _terms.CurrencyTypeEntity.ActivityPointType,
+        };
+
+        DateTime rentedUntil = now.AddSeconds(_terms.RentDurationSeconds);
+
+        // Debit through the shared executor (it also writes the ledger entry via
+        // CurrencyChangedEvent): everything below moves money or grants the rental, so a throw
+        // anywhere in it has to put the renter's balance back rather than leave them paying for a
+        // space they never got.
+        WalletPurchaseResult<bool> result = await grainFactory
+            .GetPlayerWalletGrain((long)renterPlayerId)
+            .ExecutePurchaseAsync(
+                [new WalletDebitRequest { CurrencyKind = kind, Amount = _terms.Price }],
+                async innerCt =>
+                {
+                    // Upsert state row (insert first time, update in-place thereafter).
+                    if (_space is null)
+                    {
+                        RoomRentableSpaceEntity newSpace = new()
+                        {
+                            FurnitureEntityId = FurnitureId,
+                            RenterPlayerEntityId = renterPlayerId,
+                            RentedUntil = rentedUntil,
+                            FurnitureEntity = furniEntity,
+                        };
+                        db.RoomRentableSpaces.Add(newSpace);
+                        await db.SaveChangesAsync(innerCt).ConfigureAwait(true);
+                        _space = newSpace;
+                    }
+                    else
+                    {
+                        RoomRentableSpaceEntity entity =
+                            await db.RoomRentableSpaces.FirstOrDefaultAsync(
+                                s => s.FurnitureEntityId == FurnitureId && s.DeletedAt == null,
+                                innerCt
+                            )
+                            // Used to fall through silently: the row was never written, yet the
+                            // renter had paid and the owner was credited just below.
+                            ?? throw new VortexException(VortexErrorCodeEnum.FloorItemNotFound);
+
+                        entity.RenterPlayerEntityId = renterPlayerId;
+                        entity.RentedUntil = rentedUntil;
+                        await db.SaveChangesAsync(innerCt).ConfigureAwait(true);
+                        _space.RenterPlayerEntityId = renterPlayerId;
+                        _space.RentedUntil = rentedUntil;
+                    }
+
+                    // Credit the furniture owner (skip if renter == owner to avoid self-transfer).
+                    if (furniEntity.PlayerEntityId != renterPlayerId)
+                    {
+                        IPlayerWalletGrain ownerWallet = grainFactory.GetPlayerWalletGrain(
+                            (long)furniEntity.PlayerEntityId
+                        );
+
+                        if (kind.CurrencyType == CurrencyType.Credits)
+                        {
+                            await ownerWallet
+                                .GrantCreditsAsync(_terms.Price, innerCt)
+                                .ConfigureAwait(true);
+                        }
+                        else if (kind.ActivityPointType.HasValue)
+                        {
+                            await ownerWallet
+                                .GrantActivityPointsAsync(
+                                    kind.ActivityPointType.Value,
+                                    _terms.Price,
+                                    innerCt
+                                )
+                                .ConfigureAwait(true);
+                        }
+                    }
+
+                    return true;
+                },
+                logger,
                 ct
-            );
+            )
+            .ConfigureAwait(true);
 
-            if (entity is not null)
-            {
-                entity.RenterPlayerEntityId = renterPlayerId;
-                entity.RentedUntil = rentedUntil;
-                await db.SaveChangesAsync(ct);
-                _space.RenterPlayerEntityId = renterPlayerId;
-                _space.RentedUntil = rentedUntil;
-            }
-        }
-
-        // Credit the furniture owner (skip if renter == owner to avoid self-transfer).
-        if (furniEntity.PlayerEntityId != renterPlayerId)
+        if (!result.Succeeded)
         {
-            IPlayerWalletGrain ownerWallet = grainFactory.GetPlayerWalletGrain(
-                (long)furniEntity.PlayerEntityId
-            );
-
-            if (kind.CurrencyType == CurrencyType.Credits)
-            {
-                await ownerWallet.GrantCreditsAsync(_terms.Price, ct).ConfigureAwait(true);
-            }
-            else if (kind.ActivityPointType.HasValue)
-            {
-                await ownerWallet
-                    .GrantActivityPointsAsync(kind.ActivityPointType.Value, _terms.Price, ct)
-                    .ConfigureAwait(true);
-            }
+            return _terms.CurrencyTypeEntity.CurrencyType == CurrencyType.Credits
+                ? (int)RentableSpaceRentFailedType.NotEnoughCredits
+                : (int)RentableSpaceRentFailedType.NotEnoughDuckets;
         }
 
         string renterName =

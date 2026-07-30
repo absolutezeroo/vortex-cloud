@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -324,27 +325,32 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
             return ClubPurchaseResult.Success;
         }
 
-        IPlayerWalletGrain walletGrain = _grainFactory.GetPlayerWalletGrain(_state.PlayerId);
-
-        WalletDebitResult debitResult = await walletGrain
-            .TryDebitAsync(
+        List<WalletDebitRequest> debitRequests =
+            costCredits > 0
+                ?
                 [
                     new WalletDebitRequest
                     {
                         CurrencyKind = new CurrencyKind { CurrencyType = CurrencyType.Credits },
                         Amount = costCredits,
                     },
-                ],
+                ]
+                : [];
+
+        // Applying the months writes subscription rows, grants badges and raises events, any of
+        // which can throw. This used to sit after a bare debit, so a failure in there took the
+        // player's credits and left them without the membership they paid for.
+        WalletPurchaseResult<ClubPurchaseResult> result = await _grainFactory
+            .GetPlayerWalletGrain(_state.PlayerId)
+            .ExecutePurchaseAsync(
+                debitRequests,
+                innerCt => ApplyClubMonthsAsync(months, isVip, costCredits, innerCt),
+                _logger,
                 ct
             )
             .ConfigureAwait(true);
 
-        if (!debitResult.Succeeded)
-        {
-            return ClubPurchaseResult.NotEnoughCredits;
-        }
-
-        return await ApplyClubMonthsAsync(months, isVip, costCredits, ct).ConfigureAwait(true);
+        return result.Succeeded ? result.Reward! : ClubPurchaseResult.NotEnoughCredits;
     }
 
     public Task<ClubPurchaseResult> GrantClubMonthsAsync(
