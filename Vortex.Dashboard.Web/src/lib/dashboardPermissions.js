@@ -25,6 +25,8 @@ export const CAPABILITIES = {
   opsTargetedOffersManage: 'dashboard.ops.targeted_offers.manage',
   questsRead: 'dashboard.quests.read',
   opsQuestsManage: 'dashboard.ops.quests.manage',
+  mysteryBoxRead: 'dashboard.mystery_box.read',
+  opsMysteryBoxManage: 'dashboard.ops.mystery_box.manage',
   configRead: 'dashboard.config.read',
   opsManageConfig: 'dashboard.ops.config.manage',
 };
@@ -57,6 +59,7 @@ export const ROUTE_PERMISSIONS = {
   targetedOffers: [CAPABILITIES.targetedOffersRead],
   targetedOffersStats: [CAPABILITIES.targetedOffersRead],
   quests: [CAPABILITIES.questsRead],
+  mysteryBox: [CAPABILITIES.mysteryBoxRead],
   questsStats: [CAPABILITIES.questsRead],
   config: [CAPABILITIES.configRead],
   apiExplorer: [CAPABILITIES.overviewRead],

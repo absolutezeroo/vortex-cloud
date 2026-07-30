@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.MysteryBox;
 
 internal class MysteryBoxWaitingCanceledMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new MysteryBoxWaitingCanceledMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new MysteryBoxWaitingCanceledMessage { BoxOwnerId = packet.PopInt() };
 }

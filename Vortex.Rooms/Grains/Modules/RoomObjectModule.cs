@@ -96,6 +96,10 @@ public sealed partial class RoomObjectModule(RoomGrain roomGrain)
                     return false;
                 }
 
+                // A mystery box that leaves the floor cannot be opened any more, so whoever was
+                // waiting on it has to be released rather than left in front of a dead dialog.
+                await _roomGrain.CancelMysteryBoxSessionForItemAsync(item.ObjectId);
+
                 await _roomGrain.SendComposerToRoomAsync(item.GetRemoveComposer(pickerId));
 
                 await item.Logic.OnDetachAsync(ct);

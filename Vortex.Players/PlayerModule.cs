@@ -1,9 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Vortex.Players.Configuration;
+using Vortex.Players.MysteryBox;
 using Vortex.Players.Providers;
 using Vortex.Players.Quests;
 using Vortex.Primitives.Groups.Providers;
+using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.Pets.Providers;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Providers;
@@ -33,6 +35,7 @@ public sealed class PlayerModule : IHostPluginModule
         services.AddSingleton<IPetLevelProvider, PetLevelProvider>();
         services.AddSingleton<IBuildersClubService, BuildersClubService>();
         services.AddSingleton<IQuestAdminService, QuestAdminService>();
+        services.AddSingleton<IMysteryBoxAdminService, MysteryBoxAdminService>();
         services.AddHostedService<BuildersClubTierSeederService>();
     }
 }

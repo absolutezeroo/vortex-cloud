@@ -61,6 +61,14 @@ public interface IPlayerGrain : IGrainWithIntegerKey
         CancellationToken ct
     );
 
+    /// <summary>Extends the membership without taking payment -- a prize or a staff award. Applies
+    /// the same bookkeeping as <see cref="PurchaseClubAsync"/> (streak, gifts, badges, kickback).</summary>
+    public Task<ClubPurchaseResult> GrantClubMonthsAsync(
+        int months,
+        bool isVip,
+        CancellationToken ct
+    );
+
     public Task<bool> TryConsumeClubGiftAsync(string productCode, CancellationToken ct);
     public Task TrackCreditSpendAsync(int credits, CancellationToken ct);
 

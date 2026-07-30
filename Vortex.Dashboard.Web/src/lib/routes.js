@@ -37,6 +37,7 @@ import CatalogPurchasesStatsPage from '../pages/CatalogPurchasesStatsPage.svelte
 import WiredStatsPage from '../pages/WiredStatsPage.svelte';
 import TargetedOffersPage from '../pages/TargetedOffersPage.svelte';
 import TargetedOffersStatsPage from '../pages/TargetedOffersStatsPage.svelte';
+import MysteryBoxPage from '../pages/MysteryBoxPage.svelte';
 import QuestsPage from '../pages/QuestsPage.svelte';
 import QuestsStatsPage from '../pages/QuestsStatsPage.svelte';
 import ConfigPage from '../pages/ConfigPage.svelte';
@@ -76,6 +77,7 @@ export const NAV = [
   { path: '/catalog', labelKey: 'nav.catalog', shortKey: 'nav.catalogShort', group: 'Act', caps: ROUTE_PERMISSIONS.catalog, component: CatalogPage },
   { path: '/targeted-offers', labelKey: 'nav.targetedOffers', shortKey: 'nav.targetedOffersShort', group: 'Act', caps: ROUTE_PERMISSIONS.targetedOffers, component: TargetedOffersPage },
   { path: '/quests', labelKey: 'nav.quests', shortKey: 'nav.questsShort', group: 'Act', caps: ROUTE_PERMISSIONS.quests, component: QuestsPage },
+  { path: '/mystery-box', labelKey: 'nav.mysteryBox', shortKey: 'nav.mysteryBoxShort', group: 'Act', caps: ROUTE_PERMISSIONS.mysteryBox, component: MysteryBoxPage },
   { path: '/furniture-definitions', labelKey: 'nav.furnitureDefinitions', shortKey: 'nav.furnitureDefinitionsShort', group: 'Act', caps: ROUTE_PERMISSIONS.furnitureDefinitions, component: FurnitureDefinitionsPage },
   { path: '/config', labelKey: 'nav.config', shortKey: 'nav.configShort', group: 'Act', caps: ROUTE_PERMISSIONS.config, component: ConfigPage },
   { path: '/api-explorer', labelKey: 'nav.apiExplorer', shortKey: 'nav.apiExplorerShort', group: 'Dev', caps: ROUTE_PERMISSIONS.apiExplorer, component: ApiExplorerPage },

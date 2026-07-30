@@ -8,6 +8,7 @@ using Vortex.Database.Entities.Groups;
 using Vortex.Database.Entities.Marketplace;
 using Vortex.Database.Entities.Messenger;
 using Vortex.Database.Entities.Moderation;
+using Vortex.Database.Entities.MysteryBox;
 using Vortex.Database.Entities.Navigator;
 using Vortex.Database.Entities.Permissions;
 using Vortex.Database.Entities.Pets;
@@ -219,6 +220,10 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<PlayerQuestEntity> PlayerQuests { get; init; } = null!;
 
+    public DbSet<MysteryBoxPrizeEntity> MysteryBoxPrizes { get; init; } = null!;
+
+    public DbSet<PlayerMysteryBoxKeyEntity> PlayerMysteryBoxKeys { get; init; } = null!;
+
     protected override void OnModelCreating(ModelBuilder mb)
     {
         base.OnModelCreating(mb);
@@ -345,5 +350,13 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
             .WithMany()
             .HasForeignKey(p => p.TargetedOfferEntityId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // Prize rows carry a plain definition id (no FK) because effect and club prizes legitimately
+        // leave it at 0. Keys cascade with their player.
+        mb.Entity<PlayerMysteryBoxKeyEntity>()
+            .HasOne(k => k.PlayerEntity)
+            .WithMany()
+            .HasForeignKey(k => k.PlayerEntityId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -44,6 +44,15 @@ public partial interface IInventoryGrain
         string? extraData,
         CancellationToken ct
     );
+
+    /// <summary>Grants one item whose legacy stuff-data string is baked in at creation -- an
+    /// inscribed trophy, a pre-set display. Wraps <paramref name="legacyData"/> in the extra-data
+    /// blob shape the stuff-data factory reads back.</summary>
+    public Task GrantFurnitureWithLegacyStuffDataAsync(
+        int definitionId,
+        string legacyData,
+        CancellationToken ct
+    );
     public Task GrantLtdFurnitureAsync(
         int furniDefinitionId,
         int serialNumber,

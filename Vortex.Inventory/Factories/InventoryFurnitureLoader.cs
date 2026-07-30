@@ -99,12 +99,6 @@ internal sealed class InventoryFurnitureLoader(
             ?? throw new VortexException(VortexErrorCodeEnum.FurnitureDefinitionNotFound);
 
         ExtraData extraData = new ExtraData(entity.ExtraData);
-        string jsonData = extraData.TryGetSection(
-            ExtraDataSectionType.STUFF,
-            out JsonElement element
-        )
-            ? element.GetRawText()
-            : "{}";
 
         return new FurnitureItem()
         {
@@ -113,9 +107,12 @@ internal sealed class InventoryFurnitureLoader(
             OwnerName = ownerName ?? string.Empty,
             Definition = definition,
             ExtraData = extraData,
-            StuffData = _stuffDataFactory.CreateStuffDataFromJson(
+            // The whole blob, not the extracted "stuff" section: the factory looks that section up
+            // itself, so handing it the section's own body made every lookup miss and every loaded
+            // item come back with default stuff data.
+            StuffData = _stuffDataFactory.CreateStuffDataFromExtraData(
                 definition.StuffDataType,
-                jsonData
+                extraData
             ),
         };
     }

@@ -3297,6 +3297,140 @@ namespace Vortex.Database.Migrations
                     b.ToTable("cfh_topics");
                 });
 
+            modelBuilder.Entity("Vortex.Database.Entities.MysteryBox.MysteryBoxPrizeEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)")
+                        .HasDefaultValue("")
+                        .HasColumnName("color");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<bool>("Enabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(true)
+                        .HasColumnName("enabled");
+
+                    b.Property<string>("ExtraParam")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)")
+                        .HasDefaultValue("")
+                        .HasColumnName("extra_param");
+
+                    b.Property<int>("FurnitureDefinitionEntityId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("furniture_definition_id");
+
+                    b.Property<int>("Pool")
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("pool");
+
+                    b.Property<int>("ProductType")
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("product_type");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.Property<int>("Weight")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1)
+                        .HasColumnName("weight");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Pool", "Enabled");
+
+                    b.ToTable("mystery_box_prizes");
+                });
+
+            modelBuilder.Entity("Vortex.Database.Entities.MysteryBox.PlayerMysteryBoxKeyEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("color");
+
+                    b.Property<DateTime?>("ConsumedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("consumed_at");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int>("PlayerEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("player_id");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)")
+                        .HasDefaultValue("")
+                        .HasColumnName("source");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerEntityId", "ConsumedAt");
+
+                    b.ToTable("player_mystery_box_keys");
+                });
+
             modelBuilder.Entity("Vortex.Database.Entities.Navigator.NavigatorEventCategoryEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -6994,6 +7128,17 @@ namespace Vortex.Database.Migrations
                     b.Navigation("CfhCategoryEntity");
 
                     b.Navigation("DefaultSanctionPreset");
+                });
+
+            modelBuilder.Entity("Vortex.Database.Entities.MysteryBox.PlayerMysteryBoxKeyEntity", b =>
+                {
+                    b.HasOne("Vortex.Database.Entities.Players.PlayerEntity", "PlayerEntity")
+                        .WithMany()
+                        .HasForeignKey("PlayerEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PlayerEntity");
                 });
 
             modelBuilder.Entity("Vortex.Database.Entities.Navigator.NavigatorQuickLinkEntity", b =>

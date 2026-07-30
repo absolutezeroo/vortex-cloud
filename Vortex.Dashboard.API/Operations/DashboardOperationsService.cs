@@ -12,6 +12,7 @@ using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Snapshots;
 using Vortex.Primitives.Furniture;
 using Vortex.Primitives.Moderation;
+using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
@@ -37,6 +38,7 @@ internal sealed partial class DashboardOperationsService(
     ICatalogAdminService catalogAdmin,
     ITargetedOfferAdminService targetedOfferAdmin,
     IQuestAdminService questAdmin,
+    IMysteryBoxAdminService mysteryBoxAdmin,
     IFurnitureAdminService furnitureAdmin,
     IAuditSink auditSink,
     IVortexContextAccessor context,
@@ -58,6 +60,7 @@ internal sealed partial class DashboardOperationsService(
     private readonly ICatalogAdminService _catalogAdmin = catalogAdmin;
     private readonly ITargetedOfferAdminService _targetedOfferAdmin = targetedOfferAdmin;
     private readonly IQuestAdminService _questAdmin = questAdmin;
+    private readonly IMysteryBoxAdminService _mysteryBoxAdmin = mysteryBoxAdmin;
     private readonly IFurnitureAdminService _furnitureAdmin = furnitureAdmin;
     private readonly IAuditSink _auditSink = auditSink;
     private readonly IVortexContextAccessor _context = context;

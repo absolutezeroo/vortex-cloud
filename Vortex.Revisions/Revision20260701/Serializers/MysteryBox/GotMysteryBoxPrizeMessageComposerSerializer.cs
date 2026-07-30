@@ -11,6 +11,6 @@ internal class GotMysteryBoxPrizeMessageComposerSerializer(int header)
         GotMysteryBoxPrizeMessageComposer message
     )
     {
-        //
+        packet.WriteString(message.ContentType).WriteInteger(message.ClassId);
     }
 }

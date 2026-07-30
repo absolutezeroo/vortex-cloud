@@ -344,6 +344,31 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
             return ClubPurchaseResult.NotEnoughCredits;
         }
 
+        return await ApplyClubMonthsAsync(months, isVip, costCredits, ct).ConfigureAwait(true);
+    }
+
+    public Task<ClubPurchaseResult> GrantClubMonthsAsync(
+        int months,
+        bool isVip,
+        CancellationToken ct
+    ) =>
+        months <= 0
+            ? Task.FromResult(ClubPurchaseResult.Success)
+            : ApplyClubMonthsAsync(months, isVip, costCredits: 0, ct);
+
+    /// <summary>
+    /// Extends the membership and everything hanging off it (streak, gifts, badges, kickback, the
+    /// subscription row). Split out of <see cref="PurchaseClubAsync"/> so a free grant -- a mystery
+    /// box prize, a staff award -- reuses the exact same bookkeeping instead of a second, drifting
+    /// copy of it. The caller is responsible for taking payment first, if any.
+    /// </summary>
+    private async Task<ClubPurchaseResult> ApplyClubMonthsAsync(
+        int months,
+        bool isVip,
+        int costCredits,
+        CancellationToken ct
+    )
+    {
         IServerConfigGrain config = this.GrainFactory.GetServerConfigGrain();
         int giftCycleDays = await config
             .GetIntAsync(ClubConfig.GiftCycleDaysKey, ClubConfig.GiftCycleDaysDefault)

@@ -12,6 +12,18 @@ namespace Vortex.Furniture.Providers;
 
 public sealed class StuffDataFactory : IStuffDataFactory
 {
+    /// <summary>
+    /// <see cref="ExtraDataWriter"/> serializes sections with <see cref="JsonNamingPolicy.CamelCase"/>,
+    /// so a stored section reads <c>{"data":"..."}</c> while the stuff-data classes declare
+    /// <c>Data</c>. Deserializing with the default (case-sensitive) options silently matched nothing
+    /// and handed back a freshly defaulted instance, which is why saved furni state — a dice face, a
+    /// gate's open flag, a guild furni's badge — came back as "0" after a reload.
+    /// </summary>
+    private static readonly JsonSerializerOptions ReadOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+    };
+
     public IStuffData CreateStuffData(StuffDataType type)
     {
         return type switch
@@ -48,13 +60,17 @@ public sealed class StuffDataFactory : IStuffDataFactory
         {
             return type switch
             {
-                StuffDataType.MapKey => stuffElement.Deserialize<MapStuffData>()!,
-                StuffDataType.StringKey => stuffElement.Deserialize<StringStuffData>()!,
-                StuffDataType.VoteKey => stuffElement.Deserialize<VoteStuffData>()!,
-                StuffDataType.EmptyKey => stuffElement.Deserialize<EmptyStuffData>()!,
-                StuffDataType.NumberKey => stuffElement.Deserialize<NumberStuffData>()!,
-                StuffDataType.HighscoreKey => stuffElement.Deserialize<HighscoreStuffData>()!,
-                StuffDataType.CrackableKey or _ => stuffElement.Deserialize<LegacyStuffData>()!,
+                StuffDataType.MapKey => stuffElement.Deserialize<MapStuffData>(ReadOptions)!,
+                StuffDataType.StringKey => stuffElement.Deserialize<StringStuffData>(ReadOptions)!,
+                StuffDataType.VoteKey => stuffElement.Deserialize<VoteStuffData>(ReadOptions)!,
+                StuffDataType.EmptyKey => stuffElement.Deserialize<EmptyStuffData>(ReadOptions)!,
+                StuffDataType.NumberKey => stuffElement.Deserialize<NumberStuffData>(ReadOptions)!,
+                StuffDataType.HighscoreKey => stuffElement.Deserialize<HighscoreStuffData>(
+                    ReadOptions
+                )!,
+                StuffDataType.CrackableKey or _ => stuffElement.Deserialize<LegacyStuffData>(
+                    ReadOptions
+                )!,
             };
         }
 

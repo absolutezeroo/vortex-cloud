@@ -73,6 +73,8 @@ internal sealed class DashboardWebHost(
         Capabilities.Dashboard.OpsTargetedOffersManage,
         Capabilities.Dashboard.QuestsRead,
         Capabilities.Dashboard.OpsQuestsManage,
+        Capabilities.Dashboard.MysteryBoxRead,
+        Capabilities.Dashboard.OpsMysteryBoxManage,
         Capabilities.Dashboard.ConfigRead,
         Capabilities.Dashboard.OpsConfigManage,
     ];

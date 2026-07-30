@@ -2,18 +2,23 @@ using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Messages.Incoming.Mysterybox;
+using Vortex.Primitives.Rooms;
 
 namespace Vortex.PacketHandlers.MysteryBox;
 
-public class MysteryBoxWaitingCanceledMessageHandler
+public class MysteryBoxWaitingCanceledMessageHandler(IRoomService roomService)
     : IMessageHandler<MysteryBoxWaitingCanceledMessage>
 {
+    private readonly IRoomService _roomService = roomService;
+
     public async ValueTask HandleAsync(
         MysteryBoxWaitingCanceledMessage message,
         MessageContext ctx,
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        await _roomService
+            .CancelMysteryBoxWaitAsync(ctx.AsActionContext(), message.BoxOwnerId, ct)
+            .ConfigureAwait(false);
     }
 }

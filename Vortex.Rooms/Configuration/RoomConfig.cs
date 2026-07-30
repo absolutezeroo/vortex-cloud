@@ -52,4 +52,13 @@ public class RoomConfig
     /// parser also bounds a single batch (<c>ProtocolLimitsConfig.MaxTradeItems</c>) for wire safety;
     /// this is the per-side offer ceiling enforced by the trade session.</summary>
     public int MaxTradeItemsPerSide { get; init; } = 1500;
+
+    /// <summary>How long a half-open mystery box keeps waiting for its other half. The client's wait
+    /// dialog has no timer of its own, so without this a player who walked away leaves the box
+    /// permanently reserved against everyone else.</summary>
+    public int MysteryBoxWaitTimeoutMs { get; init; } = 120000;
+
+    /// <summary>Cap on the inscription a mystery trophy can carry, so an oversized string cannot be
+    /// pushed into the trophy's stuff data (which every viewer of the room then receives).</summary>
+    public int MysteryTrophyInscriptionMaxLength { get; init; } = 100;
 }

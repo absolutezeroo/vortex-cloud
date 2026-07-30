@@ -379,7 +379,7 @@ internal static class MessageEvent
 
     public const int GetRentOrBuyoutOfferMessageEvent = 1583;
     public const int GetYoutubeDisplayStatusMessageEvent = 273; // AS3-verified (direct read, both revisions): YoutubeDisplayWidget handler::processEvent() RETWE_OPEN_WIDGET -> connection.send(new _SafeCls_2883(objectId)) @273 (old _SafeCls_3162@3635)
-    public const int OpenMysteryTrophyMessageEvent = 2242; // AS3-verified (direct read, both revisions): MysteryTrophyOpenDialogView::onMouseClick() -> _SafeCls_3679
+    public const int OpenMysteryTrophyMessageEvent = 2242; // AS3-verified (WIN63 registry _composers[2242] = _SafeCls_3679): MysteryTrophyOpenDialogView::onMouseClick() -> new _SafeCls_3679(objectId, inscription) -> (int objectId, string inscription)
     public const int OpenPetPackageMessageEvent = 1884;
     public const int PlacePostItMessageEvent = 1122; // AS3-verified (direct read, both revisions): room engine placeObject() furniture_is_stickie branch -> _SafeCls_3815 @1122 (old _SafeCls_3355@174; slot freed by correcting PlaceObjectMessageEvent above)
     public const int PresentOpenMessageEvent = 2485;
@@ -920,10 +920,10 @@ internal static class MessageComposer
     public const int CompetitionStatusMessageComposer = 2622; // AS3-verified (ghost fix): onCompetitionStatus @ CameraWidgetHandler
     public const int InitCameraMessageComposer = 2768; // AS3-verified (ghost fix): onInitCameraEvent @ CameraWidgetHandler
     public const int ThumbnailStatusMessageComposer = 1325; // AS3-verified (name-only): onThumbnailStatus @ RoomThumbnailCameraWidgetHandler
-    public const int CancelMysteryBoxWaitMessageComposer = 3840; // AS3-verified (name-only): onCancelMysteryBoxWait @ MysteryBoxOpenDialogView
-    public const int GotMysteryBoxPrizeMessageComposer = 353; // AS3-verified (ghost fix): onGotMysteryBoxPrize @ MysteryBoxOpenDialogView
-    public const int MysteryBoxKeysMessageComposer = 1389;
-    public const int ShowMysteryBoxWaitMessageComposer = 691; // AS3-verified (ghost fix): onShowMysteryBoxWait @ MysteryBoxOpenDialogView
+    public const int CancelMysteryBoxWaitMessageComposer = 3840; // AS3-verified (WIN63 registry [3840] = _SafeCls_3997 -> onCancelMysteryBoxWait @ MysteryBoxOpenDialogView): empty payload
+    public const int GotMysteryBoxPrizeMessageComposer = 353; // AS3-verified (WIN63 registry [353] = _SafeCls_3978, parser _SafeCls_4210): (string contentType, int classId)
+    public const int MysteryBoxKeysMessageComposer = 1389; // AS3-verified (WIN63 registry [1389] = _SafeCls_2221, parser _SafeCls_1736): (string boxColor, string keyColor)
+    public const int ShowMysteryBoxWaitMessageComposer = 691; // AS3-verified (WIN63 registry [691] = _SafeCls_3631 -> onShowMysteryBoxWait @ MysteryBoxOpenDialogView): empty payload
     public const int WiredAllVariableHoldersComposer = 3506; // AS3-verified (ghost fix): onAllVariableHolders @ WiredMenuOverviewTab
     public const int WiredAllVariablesDiffsComposer = 2733;
     public const int WiredAllVariablesHashComposer = 3287; // AS3-verified (ghost fix): onAllVariablesHashEvent @ WiredVariablesSynchronizer

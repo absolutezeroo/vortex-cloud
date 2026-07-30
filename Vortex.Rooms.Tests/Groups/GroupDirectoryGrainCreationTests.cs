@@ -421,6 +421,15 @@ public sealed class GroupDirectoryGrainCreationTests
             throw new NotSupportedException();
         }
 
+        public Task<ClubPurchaseResult> GrantClubMonthsAsync(
+            int months,
+            bool isVip,
+            CancellationToken ct
+        )
+        {
+            throw new NotSupportedException();
+        }
+
         public Task<bool> TryConsumeClubGiftAsync(string productCode, CancellationToken ct)
         {
             throw new NotSupportedException();

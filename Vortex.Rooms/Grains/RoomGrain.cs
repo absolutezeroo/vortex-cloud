@@ -241,6 +241,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                 await GameTimerSystem.ProcessAsync(now, ct);
                 await FreezeSystem.ProcessAsync(now, ct);
                 await ProcessDoorbellTimeoutsAsync(now, ct);
+                await ProcessMysteryBoxTimeoutsAsync(now, ct);
                 await FlushDirtyTilesAsync(ct);
                 await FlushDirtyItemsAsync(ct);
             },

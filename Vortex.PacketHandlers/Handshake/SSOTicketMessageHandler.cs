@@ -25,6 +25,7 @@ using Vortex.Primitives.Messages.Outgoing.Perk;
 using Vortex.Primitives.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Messages.Outgoing.Users;
 using Vortex.Primitives.Moderation;
+using Vortex.Primitives.MysteryBox.Snapshots;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
@@ -269,11 +270,18 @@ public class SSOTicketMessageHandler(
                     ct
                 )
                 .ConfigureAwait(false);
+            // Drives the mystery box toolbar tracker. Sent inline rather than pushed by the grain so
+            // it keeps its place in the login sequence; the grain owns every later refresh.
+            MysteryBoxTrackerSnapshot mysteryBoxTracker = await _grainFactory
+                .GetPlayerMysteryBoxGrain(playerId)
+                .GetTrackerAsync(ct)
+                .ConfigureAwait(false);
+
             await ctx.SendComposerAsync(
                     new MysteryBoxKeysMessageComposer
                     {
-                        BoxColor = string.Empty,
-                        KeyColor = string.Empty,
+                        BoxColor = mysteryBoxTracker.BoxColor,
+                        KeyColor = mysteryBoxTracker.KeyColor,
                     },
                     ct
                 )

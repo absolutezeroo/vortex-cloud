@@ -46,6 +46,7 @@ public sealed partial class InventoryGrain
         );
 
         await presence.OnFurnitureAddedAsync(item.GetSnapshot(), ct);
+        await RefreshMysteryBoxTrackerAsync(item.Definition.Id, ct).ConfigureAwait(true);
 
         return true;
     }
@@ -73,6 +74,13 @@ public sealed partial class InventoryGrain
 
     public async Task<bool> RemoveFurnitureAsync(RoomObjectId itemId, CancellationToken ct)
     {
+        // Read the definition before the item is gone: the mystery box tracker is derived from the
+        // boxes a player owns, so losing one has to refresh it and afterwards there is nothing left
+        // to look the definition up from.
+        FurnitureItemSnapshot? leaving = await _furniModule
+            .GetItemSnapshotAsync(itemId, ct)
+            .ConfigureAwait(true);
+
         if (!await _furniModule.RemoveFurnitureAsync(itemId, ct))
         {
             return false;
@@ -84,7 +92,37 @@ public sealed partial class InventoryGrain
 
         await presence.OnFurnitureRemovedAsync(itemId, ct);
 
+        if (leaving is not null)
+        {
+            await RefreshMysteryBoxTrackerAsync(leaving.Definition.Id, ct).ConfigureAwait(true);
+        }
+
         return true;
+    }
+
+    /// <summary>
+    /// Re-pushes the mystery box toolbar tracker when the furniture that just entered or left the
+    /// inventory is a registered box. The tracker shows the colour of a box the player owns, so a
+    /// catalogue purchase, a trade or a staff grant all change it — without this it would only
+    /// correct itself on the next login. Gated on the definition actually being a box, so every
+    /// other furniture movement costs one cached dictionary lookup and nothing else.
+    /// </summary>
+    private async Task RefreshMysteryBoxTrackerAsync(int definitionId, CancellationToken ct)
+    {
+        bool isBox = await _grainFactory
+            .GetMysteryBoxManagerGrain()
+            .IsBoxDefinitionAsync(definitionId, ct)
+            .ConfigureAwait(true);
+
+        if (!isBox)
+        {
+            return;
+        }
+
+        await _grainFactory
+            .GetPlayerMysteryBoxGrain(this.GetPrimaryKeyLong())
+            .PushTrackerAsync(ct)
+            .ConfigureAwait(true);
     }
 
     public async Task GrantCatalogOfferAsync(
@@ -445,7 +483,13 @@ public sealed partial class InventoryGrain
                         OwnerName = string.Empty,
                         Definition = def,
                         ExtraData = new ExtraData(extraData ?? "{}"),
-                        StuffData = _stuffDataFactory.CreateStuffData(StuffDataType.LegacyKey),
+                        // Built from the stored blob, exactly like InventoryFurnitureLoader does on
+                        // login: a blank legacy default would drop whatever the grant baked in (a
+                        // guild badge, a trophy inscription) until the player next reconnected.
+                        StuffData = _stuffDataFactory.CreateStuffDataFromJson(
+                            def.StuffDataType,
+                            extraData
+                        ),
                     },
                     ct
                 )
@@ -455,6 +499,20 @@ public sealed partial class InventoryGrain
         {
             await dbCtx.DisposeAsync().ConfigureAwait(true);
         }
+    }
+
+    public async Task GrantFurnitureWithLegacyStuffDataAsync(
+        int definitionId,
+        string legacyData,
+        CancellationToken ct
+    )
+    {
+        ExtraData extraData = new(null);
+
+        extraData.UpdateSection(ExtraDataSectionType.STUFF, new { Data = legacyData });
+
+        await GrantFurnitureDefinitionAsync(definitionId, extraData.GetJsonString(), ct)
+            .ConfigureAwait(true);
     }
 
     public async Task<FurnitureItemSnapshot?> GrantSingleFurnitureIfUnderLimitAsync(

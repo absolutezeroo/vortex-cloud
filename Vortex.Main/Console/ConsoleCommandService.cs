@@ -3,7 +3,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Orleans;
 using Vortex.Plugins;
+using Vortex.Primitives.MysteryBox;
+using Vortex.Primitives.MysteryBox.Admin;
+using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Players;
 
 namespace Vortex.Main.Console;
 
@@ -72,7 +77,9 @@ public class ConsoleCommandService(IServiceProvider services)
         {
             case "help":
                 System.Console.WriteLine(
-                    "Available commands: help, quit, reload-plugins, reload-plugin <key>"
+                    "Available commands: help, quit, reload-plugins, reload-plugin <key>, "
+                        + "mystery-key <username> <colour>, mystery-box <username> <colour>, "
+                        + "reload-mystery-box"
                 );
                 break;
 
@@ -115,6 +122,159 @@ public class ConsoleCommandService(IServiceProvider services)
                 }
                 break;
             }
+
+            // Mystery box keys are not furniture, so there is no catalogue or inventory route to
+            // hand one out — this is the operator's grant path (and what a quest reward or a
+            // dashboard action would call into).
+            case "mystery-key":
+            {
+                if (args.Length < 2)
+                {
+                    System.Console.WriteLine(
+                        "Usage: mystery-key <username> <colour>  (colours: "
+                            + string.Join(", ", MysteryBoxColors.All)
+                            + ")"
+                    );
+                    break;
+                }
+
+                string colour = MysteryBoxColors.Normalize(args[1]);
+
+                if (colour.Length == 0)
+                {
+                    System.Console.WriteLine(
+                        $"'{args[1]}' is not a colour the client can render. Valid colours: "
+                            + string.Join(", ", MysteryBoxColors.All)
+                    );
+                    break;
+                }
+
+                try
+                {
+                    IGrainFactory grains = _services.GetRequiredService<IGrainFactory>();
+                    PlayerId? playerId = await grains
+                        .GetPlayerDirectoryGrain()
+                        .GetPlayerIdAsync(args[0], ct)
+                        .ConfigureAwait(false);
+
+                    if (playerId is null)
+                    {
+                        System.Console.WriteLine($"No player named '{args[0]}'.");
+                        break;
+                    }
+
+                    MysteryBoxAdminResult result = await _services
+                        .GetRequiredService<IMysteryBoxAdminService>()
+                        .GrantKeyAsync(playerId.Value.Value, colour, "console", ct)
+                        .ConfigureAwait(false);
+
+                    System.Console.WriteLine(
+                        result.Success
+                            ? $"Gave {args[0]} a {colour} mystery box key."
+                            : $"Could not give {args[0]} a key: {result.ErrorCode}"
+                    );
+                }
+                catch (Exception ex)
+                {
+                    System.Console.WriteLine($"mystery-key failed: {ex.Message}");
+                }
+                break;
+            }
+
+            // The generic item grant can create the same furniture, but only from a raw definition
+            // id and without refreshing the recipient's tracker; this picks the box by colour.
+            case "mystery-box":
+            {
+                if (args.Length < 2)
+                {
+                    System.Console.WriteLine(
+                        "Usage: mystery-box <username> <colour>  (colours: "
+                            + string.Join(", ", MysteryBoxColors.All)
+                            + ")"
+                    );
+                    break;
+                }
+
+                string boxColour = MysteryBoxColors.Normalize(args[1]);
+
+                if (boxColour.Length == 0)
+                {
+                    System.Console.WriteLine(
+                        $"'{args[1]}' is not a colour the client can render. Valid colours: "
+                            + string.Join(", ", MysteryBoxColors.All)
+                    );
+                    break;
+                }
+
+                try
+                {
+                    IMysteryBoxAdminService admin =
+                        _services.GetRequiredService<IMysteryBoxAdminService>();
+                    IGrainFactory grains = _services.GetRequiredService<IGrainFactory>();
+
+                    // Any furniture running the mystery box logic will do; the colour is baked into
+                    // the item's state, not into the definition.
+                    int definitionId = (
+                        await grains
+                            .GetMysteryBoxManagerGrain()
+                            .GetBoxDefinitionIdsAsync(ct)
+                            .ConfigureAwait(false)
+                    ).FirstOrDefault();
+
+                    if (definitionId <= 0)
+                    {
+                        System.Console.WriteLine(
+                            "No furniture definition runs the mystery box logic."
+                        );
+                        break;
+                    }
+
+                    PlayerId? boxPlayerId = await grains
+                        .GetPlayerDirectoryGrain()
+                        .GetPlayerIdAsync(args[0], ct)
+                        .ConfigureAwait(false);
+
+                    if (boxPlayerId is null)
+                    {
+                        System.Console.WriteLine($"No player named '{args[0]}'.");
+                        break;
+                    }
+
+                    MysteryBoxAdminResult result = await admin
+                        .GrantBoxAsync(
+                            boxPlayerId.Value.Value,
+                            definitionId,
+                            boxColour,
+                            "console",
+                            ct
+                        )
+                        .ConfigureAwait(false);
+
+                    System.Console.WriteLine(
+                        result.Success
+                            ? $"Gave {args[0]} a {boxColour} mystery box."
+                            : $"Could not give {args[0]} a box: {result.ErrorCode}"
+                    );
+                }
+                catch (Exception ex)
+                {
+                    System.Console.WriteLine($"mystery-box failed: {ex.Message}");
+                }
+                break;
+            }
+
+            case "reload-mystery-box":
+                try
+                {
+                    IGrainFactory grains = _services.GetRequiredService<IGrainFactory>();
+                    await grains.GetMysteryBoxManagerGrain().ReloadAsync(ct).ConfigureAwait(false);
+                    System.Console.WriteLine("Mystery box definitions and prize pools reloaded.");
+                }
+                catch (Exception ex)
+                {
+                    System.Console.WriteLine($"Reload failed: {ex.Message}");
+                }
+                break;
 
             default:
                 System.Console.WriteLine($"Unknown command: {cmd}");
