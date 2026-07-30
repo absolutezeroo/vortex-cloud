@@ -11,7 +11,6 @@ using Orleans;
 using Orleans.Runtime;
 using Vortex.Catalog.Exceptions;
 using Vortex.Catalog.Grains;
-using Vortex.Database.Tests.Support;
 using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Catalog.Snapshots;
@@ -23,6 +22,7 @@ using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Wallet;
 using Vortex.Primitives.Rooms;
+using Vortex.Tests.Support;
 using Xunit;
 
 namespace Vortex.Database.Tests.Catalog;

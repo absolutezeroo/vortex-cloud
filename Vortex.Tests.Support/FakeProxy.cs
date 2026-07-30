@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Vortex.Database.Tests.Support;
+namespace Vortex.Tests.Support;
 
 /// <summary>A single intercepted call: the method that was invoked and the arguments it got.</summary>
 public sealed record ProxyCall(MethodInfo Method, object?[]? Args);
@@ -24,6 +24,30 @@ public class FakeProxy : DispatchProxy
         T proxy = Create<T, FakeProxy>();
 
         ((FakeProxy)(object)proxy)._handler = handler;
+
+        return proxy;
+    }
+
+    /// <summary>Same thing when the interface is only known at runtime, which is what answering a
+    /// generic lookup like <c>GetComponent&lt;T&gt;()</c> needs.</summary>
+    public static object CreateFor(Type interfaceType, Func<ProxyCall, object?> handler)
+    {
+        // .NET ships more than one Create overload, so the two-type-parameter, no-argument one is
+        // picked explicitly rather than by name.
+        MethodInfo create =
+            Array.Find(
+                typeof(DispatchProxy).GetMethods(BindingFlags.Public | BindingFlags.Static),
+                m =>
+                    m.Name == nameof(DispatchProxy.Create)
+                    && m.GetGenericArguments().Length == 2
+                    && m.GetParameters().Length == 0
+            ) ?? throw new InvalidOperationException("DispatchProxy.Create<T, TProxy>() moved.");
+
+        object proxy =
+            create.MakeGenericMethod(interfaceType, typeof(FakeProxy)).Invoke(null, null)
+            ?? throw new InvalidOperationException($"Could not proxy {interfaceType.Name}.");
+
+        ((FakeProxy)proxy)._handler = handler;
 
         return proxy;
     }

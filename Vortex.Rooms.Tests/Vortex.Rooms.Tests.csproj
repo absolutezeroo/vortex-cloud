@@ -22,5 +22,6 @@
     <ProjectReference Include="..\Vortex.Players\Vortex.Players.csproj" />
     <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
     <ProjectReference Include="..\Vortex.Rooms\Vortex.Rooms.csproj" />
+    <ProjectReference Include="..\Vortex.Tests.Support\Vortex.Tests.Support.csproj" />
   </ItemGroup>
 </Project>
