@@ -209,6 +209,15 @@ internal sealed partial class MessengerGrain
         // Hoisted: the calling player is the same on every iteration.
         PlayerEntity? selfEntity = await dbCtx.Players.FindAsync([(int)SelfId], ct);
 
+        // Resolved rather than assumed. Accepting is something a connected player does, but the
+        // presence grain is the only thing entitled to answer that, and the value below is what the
+        // requester's client is told about us -- assuming it is how both sides ended up filed as
+        // offline the moment they became friends.
+        bool selfOnline = await grainFactory
+            .GetPlayerPresenceGrain(SelfId)
+            .IsOnlineAsync(ct)
+            .ConfigureAwait(true);
+
         foreach (int requesterId in requesterIds)
         {
             if (
@@ -288,6 +297,11 @@ internal sealed partial class MessengerGrain
                 .PublishAsync(new FriendRequestAcceptedEvent(SelfId, requesterId), ct)
                 .ConfigureAwait(true);
 
+            bool requesterOnline = await grainFactory
+                .GetPlayerPresenceGrain(PlayerId.Parse(requesterId))
+                .IsOnlineAsync(ct)
+                .ConfigureAwait(true);
+
             // Update self in-memory
             _incomingRequests.Remove(requesterId);
             _friends[PlayerId.Parse(requesterId)] = new MessengerFriendSnapshot
@@ -295,7 +309,7 @@ internal sealed partial class MessengerGrain
                 PlayerId = PlayerId.Parse(requesterId),
                 Name = friendEntity.Name,
                 Gender = friendEntity.Gender,
-                Online = false,
+                Online = requesterOnline,
                 FollowingAllowed = true,
                 Figure = friendEntity.Figure,
                 CategoryId = 0,
@@ -315,7 +329,7 @@ internal sealed partial class MessengerGrain
             LogAndForget(
                 friendGrain.NotifyFriendPresenceChangedAsync(
                     SelfId,
-                    false,
+                    selfOnline,
                     selfEntity.Figure,
                     selfEntity.Motto ?? string.Empty,
                     CancellationToken.None

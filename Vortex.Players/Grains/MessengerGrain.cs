@@ -99,9 +99,25 @@ internal sealed partial class MessengerGrain(
             .Where(f => f.PlayerEntityId == playerId && f.DeletedAt == null)
             .ToListAsync(ct);
 
-        foreach (MessengerFriendEntity f in friends)
+        // Resolve who is actually online, rather than assuming everyone is offline.
+        //
+        // This used to pass `false` for every friend. Presence then only ever reached a
+        // client through NotifyFriendPresenceChangedAsync, which fires on a *change* — so
+        // a friend who was already connected when you logged in never produced one and
+        // stayed offline in your client for the whole session. The friend list filed them
+        // under "Offline Friends" and the friend bar, which lists online friends only,
+        // showed nothing at all.
+        bool[] onlineFlags = await Task.WhenAll(
+            friends.Select(f =>
+                grainFactory
+                    .GetPlayerPresenceGrain(PlayerId.Parse(f.FriendPlayerEntityId))
+                    .IsOnlineAsync(ct)
+            )
+        );
+
+        for (int i = 0; i < friends.Count; i++)
         {
-            MessengerFriendSnapshot snapshot = BuildFriendSnapshot(f, false);
+            MessengerFriendSnapshot snapshot = BuildFriendSnapshot(friends[i], onlineFlags[i]);
             _friends[snapshot.PlayerId] = snapshot;
         }
 

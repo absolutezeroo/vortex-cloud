@@ -79,7 +79,7 @@ internal sealed partial class MessengerGrain
         }
     }
 
-    public Task NotifyFriendPresenceChangedAsync(
+    public async Task NotifyFriendPresenceChangedAsync(
         PlayerId friendId,
         bool online,
         string figure,
@@ -89,11 +89,19 @@ internal sealed partial class MessengerGrain
     {
         if (!_friends.TryGetValue(friendId, out MessengerFriendSnapshot? existing))
         {
-            // New friend added while we were offline — add to in-memory cache
+            // New friend added while we were offline -- add to in-memory cache. The notification
+            // carries a figure and a motto but no name, and the composer below goes straight to the
+            // client, so the name is resolved here rather than left blank; this branch only runs for
+            // a friend we have never cached, so the extra lookup stays off the fan-out path.
+            string name = await grainFactory
+                .GetPlayerDirectoryGrain()
+                .GetPlayerNameAsync(friendId, ct)
+                .ConfigureAwait(true);
+
             _friends[friendId] = new MessengerFriendSnapshot
             {
                 PlayerId = friendId,
-                Name = string.Empty,
+                Name = name,
                 Gender = AvatarGenderType.Male,
                 Online = online,
                 FollowingAllowed = true,
@@ -132,8 +140,6 @@ internal sealed partial class MessengerGrain
                 }
             )
         );
-
-        return Task.CompletedTask;
     }
 
     public Task ReceiveRoomInviteAsync(PlayerId senderId, string message, CancellationToken ct)
