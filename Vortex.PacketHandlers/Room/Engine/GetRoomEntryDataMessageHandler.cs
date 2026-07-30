@@ -54,7 +54,10 @@ public class GetRoomEntryDataMessageHandler(IGrainFactory grainFactory)
         ActionContext actionCtx = ActionContext.CreateForPlayer(ctx.PlayerId, roomId);
         RoomControllerType controllerLevel = await room.GetControllerLevelAsync(actionCtx, ct)
             .ConfigureAwait(false);
-        bool isOwner = controllerLevel == RoomControllerType.Owner;
+        // Moderator outranks Owner in this ladder, so an equality test excluded staff from the
+        // owner-facing entry data while PlayerPresenceGrain already sent them YouAreOwner. The two
+        // sites contradicted each other; both are >= now.
+        bool isOwner = controllerLevel >= RoomControllerType.Owner;
         bool hasRights = controllerLevel >= RoomControllerType.Rights;
 
         ImmutableDictionary<PlayerId, string> ownersSnapshot = await room.GetAllOwnersAsync(ct)

@@ -53,6 +53,36 @@ public sealed class RoomSecurityPolicyTests
     }
 
     [Fact]
+    public void ExplicitOwnerWhoIsAlsoAModerator_ResolvesOwner()
+    {
+        // Staff powers apply to other people's rooms. In their own, a moderator is the owner --
+        // resolving them as a moderator handed them a lower standing than they hold.
+        PermissionSet permissions = Permissions(Capabilities.Room.ModerateAny);
+
+        RoomControllerType level = RoomSecurityPolicy.ResolveControllerLevel(
+            ActionOrigin.Player,
+            permissions,
+            isExplicitOwner: true,
+            hasExplicitRights: false
+        );
+
+        level.Should().Be(RoomControllerType.Owner);
+    }
+
+    [Fact]
+    public void ExplicitOwnerWhoIsASuperUser_ResolvesOwner()
+    {
+        RoomControllerType level = RoomSecurityPolicy.ResolveControllerLevel(
+            ActionOrigin.Player,
+            Permissions("*"),
+            isExplicitOwner: true,
+            hasExplicitRights: false
+        );
+
+        level.Should().Be(RoomControllerType.Owner);
+    }
+
+    [Fact]
     public void BuildAny_ResolvesOwner()
     {
         PermissionSet permissions = Permissions(Capabilities.Room.BuildAny);

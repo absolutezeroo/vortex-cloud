@@ -300,6 +300,81 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
         return now + Random.Shared.Next(minMs, maxMs + 1);
     }
 
+    /// <summary>
+    /// Resolves where a pet dropped from the inventory lands. The client hard-codes (0, 0) for that
+    /// drop -- it has no tile to name yet -- so those coordinates mean "anywhere that works", not
+    /// the corner of the room. Taking them literally rejected the placement whenever tile 0,0 was
+    /// blocked, which is most rooms, and left non-owners unable to place a pet at all in a room that
+    /// allows them.
+    ///
+    /// Any other coordinates are the player pointing at a tile and are honoured as given.
+    /// </summary>
+    private bool TryResolvePetPlacementTile(int x, int y, out int resolvedX, out int resolvedY)
+    {
+        resolvedX = x;
+        resolvedY = y;
+
+        bool isInventoryDrop = x == 0 && y == 0;
+
+        if (!isInventoryDrop)
+        {
+            return IsTileFreeForPet(x, y);
+        }
+
+        // Out from the room's entry tile, so a pet appears near where the player is looking rather
+        // than in whichever corner happens to be scanned first.
+        int startX = _roomGrain._state.Model?.DoorX ?? 0;
+        int startY = _roomGrain._state.Model?.DoorY ?? 0;
+        int width = _roomGrain.MapModule.Width;
+        int height = _roomGrain.MapModule.Height;
+        int reach = Math.Max(width, height);
+
+        for (int radius = 0; radius <= reach; radius++)
+        {
+            for (int dx = -radius; dx <= radius; dx++)
+            {
+                for (int dy = -radius; dy <= radius; dy++)
+                {
+                    // Only the ring at this radius; the inside was covered by earlier passes.
+                    if (Math.Abs(dx) != radius && Math.Abs(dy) != radius)
+                    {
+                        continue;
+                    }
+
+                    int candidateX = startX + dx;
+                    int candidateY = startY + dy;
+
+                    if (!IsTileFreeForPet(candidateX, candidateY))
+                    {
+                        continue;
+                    }
+
+                    resolvedX = candidateX;
+                    resolvedY = candidateY;
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>A tile a pet may stand on: in bounds, not disabled, closed or already occupied.</summary>
+    private bool IsTileFreeForPet(int x, int y)
+    {
+        if (!_roomGrain.MapModule.InBounds(x, y))
+        {
+            return false;
+        }
+
+        RoomTileFlags flags = _roomGrain._state.TileFlags[_roomGrain.MapModule.ToIdx(x, y)];
+
+        return !flags.Has(RoomTileFlags.Disabled)
+            && !flags.Has(RoomTileFlags.Closed)
+            && !flags.Has(RoomTileFlags.AvatarOccupied);
+    }
+
     private double GetTileHeightForPet(int x, int y)
     {
         if (!_roomGrain.MapModule.InBounds(x, y))

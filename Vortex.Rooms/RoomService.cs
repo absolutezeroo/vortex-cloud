@@ -150,7 +150,10 @@ internal sealed partial class RoomService(
         RoomSnapshot snapshot = await room.GetSnapshotAsync().ConfigureAwait(false);
         RoomControllerType controllerLevel = await room.GetControllerLevelAsync(ctx, ct)
             .ConfigureAwait(false);
-        bool isOwner = controllerLevel == RoomControllerType.Owner;
+        // Moderator outranks Owner in this ladder, so an equality test excluded staff from the
+        // owner-facing entry data while PlayerPresenceGrain already sent them YouAreOwner. The two
+        // sites contradicted each other; both are >= now.
+        bool isOwner = controllerLevel >= RoomControllerType.Owner;
         ImmutableArray<RoomAvatarSnapshot> avatarSnapshots = await room.GetAllAvatarSnapshotsAsync(
                 ct
             )

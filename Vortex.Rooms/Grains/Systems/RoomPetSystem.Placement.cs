@@ -50,22 +50,17 @@ public sealed partial class RoomPetSystem
 
         await EnsureRoomReadyForPetPlacementAsync(ct).ConfigureAwait(false);
 
-        double z;
-
-        try
-        {
-            z = GetTileHeightForPet(x, y);
-        }
-        catch (VortexException ex)
-            when (ex.ErrorCode
-                    is VortexErrorCodeEnum.TileOutOfBounds
-                        or VortexErrorCodeEnum.InvalidMoveTarget
-            )
+        // (0, 0) from the client means "I dropped this from the inventory, put it somewhere",
+        // not the corner tile.
+        if (!TryResolvePetPlacementTile(x, y, out x, out y))
         {
             await SendPetPlacingErrorAsync(ctx, PetPlacementSelectedTileNotFreeError)
                 .ConfigureAwait(false);
+
             return null;
         }
+
+        double z = GetTileHeightForPet(x, y);
 
         await using VortexDbContext dbCtx = await _roomGrain
             ._dbCtxFactory.CreateDbContextAsync(ct)

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Messages.Incoming.Navigator;
 using Vortex.Primitives.Messages.Outgoing.Navigator;
+using Vortex.Primitives.Messages.Outgoing.Room.Session;
 using Vortex.Primitives.Rooms;
 
 namespace Vortex.PacketHandlers.Navigator;
@@ -30,10 +31,16 @@ public class CreateFlatMessageHandler(IRoomService roomService) : IMessageHandle
             )
             .ConfigureAwait(false);
 
+        // FlatCreated alone does not move the player: the client only listens for it in its guild
+        // window, to add the room to a dropdown. Walking into the room you just made is what
+        // RoomForward is for -- the navigator answers it with forwardToRoom.
         await ctx.SendComposerAsync(
                 new FlatCreatedMessageComposer { RoomId = roomId, Name = name },
                 ct
             )
+            .ConfigureAwait(false);
+
+        await ctx.SendComposerAsync(new RoomForwardMessageComposer { RoomId = roomId }, ct)
             .ConfigureAwait(false);
     }
 }

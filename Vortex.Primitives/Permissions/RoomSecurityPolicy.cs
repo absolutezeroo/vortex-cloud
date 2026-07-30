@@ -27,12 +27,20 @@ public static class RoomSecurityPolicy
             return RoomControllerType.Moderator;
         }
 
+        // Owning the room outranks holding staff powers inside it. ModerateAny is about other
+        // people's rooms; checking it first made a moderator enter their own room as a moderator,
+        // which is a lower standing than the owner they actually are.
+        if (isExplicitOwner)
+        {
+            return RoomControllerType.Owner;
+        }
+
         if (permissions.IsSuperUser || permissions.Has(Capabilities.Room.ModerateAny))
         {
             return RoomControllerType.Moderator;
         }
 
-        if (isExplicitOwner || permissions.Has(Capabilities.Room.BuildAny))
+        if (permissions.Has(Capabilities.Room.BuildAny))
         {
             return RoomControllerType.Owner;
         }
