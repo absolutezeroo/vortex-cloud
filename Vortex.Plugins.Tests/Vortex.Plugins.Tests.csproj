@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="FluentAssertions" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Vortex.Plugins\Vortex.Plugins.csproj" />
+    <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
+    <ProjectReference Include="..\Vortex.Runtime\Vortex.Runtime.csproj" />
+    <!--
+      Referenced only so its DLL lands in this project's output, where the tests copy it into a
+      temporary plugin folder. Its types are never touched from the test host: they must be loaded
+      fresh inside the plugin's own AssemblyLoadContext.
+    -->
+    <ProjectReference Include="..\Vortex.Plugins.TestPlugin\Vortex.Plugins.TestPlugin.csproj" />
+  </ItemGroup>
+</Project>
