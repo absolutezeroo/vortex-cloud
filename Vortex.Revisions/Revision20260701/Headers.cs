@@ -272,7 +272,7 @@ internal static class MessageEvent
     public const int MountPetMessageEvent = 1996;
     public const int MoveAvatarMessageEvent = 2364;
     public const int MoveObjectMessageEvent = 1482;
-    public const int MovePetMessageEvent = 432; // Vortex-custom (not in official AS3): vortex-client commit e8dc43d "chore(protocol): register rentable space (4600/4601) and pet (3072/3073) message IDs" registers this exact ID
+    public const int MovePetMessageEvent = 432; // AS3-verified (direct read): _composers[432] = _SafeCls_2560 in WIN63's registry _SafeCls_2046.as:1088, sent by habbo/room/_SafeCls_1821.as::sendMoveUserObjectMessage() on the "monsterplant" branch. The previous 2761 was win63_version's header — a different build, absent from this revision entirely
     public const int MoveWallItemMessageEvent = 2999; // AS3-verified (direct read, both revisions): modifyRoomObject() param3==20 (wall item move) -> _SafeCls_2682
     public const int PickupObjectMessageEvent = 1919;
     public const int PlaceBotMessageEvent = 2102; // AS3-verified (old-revision trace): _SafeCls_3867 -> placeItemToRoom() still exists in current revision at 2102

@@ -21,6 +21,9 @@ public sealed class PetCommandProvider(
         int,
         ImmutableArray<PetCommandEntry>
     >.Empty;
+
+    /// <summary>Command display name (lower-cased) to command id, for resolving a chat order.</summary>
+    private ImmutableDictionary<string, int> _idsByName = ImmutableDictionary<string, int>.Empty;
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<IPetCommandProvider> _logger = logger;
 
@@ -66,6 +69,27 @@ public sealed class PetCommandProvider(
             .ToImmutableArray();
     }
 
+    /// <summary>
+    /// Resolves the command a player typed. AS3 has no "issue pet command" packet: PetCommandTool
+    /// posts the order as ordinary chat, "&lt;pet name&gt; &lt;localised command&gt;", so the words
+    /// here are the exact strings the client prints on its training buttons.
+    /// </summary>
+    public int? ResolveCommandIdByName(int petType, string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return null;
+        }
+
+        if (!_idsByName.TryGetValue(name.Trim().ToLowerInvariant(), out int commandId))
+        {
+            return null;
+        }
+
+        // A name is global, but a pet only knows the commands configured for its own type.
+        return GetCommandConfig(petType, commandId) is null ? null : commandId;
+    }
+
     public async Task ReloadAsync(CancellationToken ct)
     {
         VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
@@ -98,10 +122,20 @@ public sealed class PetCommandProvider(
 
             _byType = byType;
 
+            List<PetCommandNameEntity> nameEntities = await dbCtx
+                .PetCommandNames.AsNoTracking()
+                .ToListAsync(ct)
+                .ConfigureAwait(false);
+
+            _idsByName = nameEntities
+                .GroupBy(e => e.Name.Trim().ToLowerInvariant())
+                .ToImmutableDictionary(g => g.Key, g => g.First().CommandId);
+
             _logger.LogInformation(
-                "Loaded pet commands: {Count} entries across {Types} types",
+                "Loaded pet commands: {Count} entries across {Types} types, {Names} command names",
                 entities.Count,
-                byType.Count
+                byType.Count,
+                _idsByName.Count
             );
         }
         finally
