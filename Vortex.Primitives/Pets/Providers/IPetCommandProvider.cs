@@ -16,5 +16,11 @@ public interface IPetCommandProvider
 
     PetCommandEntry? GetCommandConfig(int petType, int commandId);
 
+    /// <summary>
+    /// Resolves a command the player typed in chat, e.g. "Sit", to its id for this pet type.
+    /// Returns null when the words are not a command, or not one this type knows.
+    /// </summary>
+    int? ResolveCommandIdByName(int petType, string name);
+
     Task ReloadAsync(CancellationToken ct);
 }
