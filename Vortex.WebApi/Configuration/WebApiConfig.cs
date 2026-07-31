@@ -13,9 +13,38 @@ public sealed class WebApiConfig
 
     public bool Enabled { get; set; } = false;
 
+    /// <summary>
+    /// When true, a failure to build or start the API takes the whole emulator down with a non-zero
+    /// exit code instead of leaving it running without its public onboarding surface. Off by default
+    /// so existing deployments keep today's best-effort behaviour until they opt in.
+    /// </summary>
+    public bool Required { get; set; } = false;
+
     public string Host { get; set; } = "localhost";
 
     public int Port { get; set; } = 8080;
+
+    /// <summary>
+    /// Explicit opt-in to serving this API in cleartext on a non-local address. Off by default: the
+    /// API carries logins, passwords and session cookies, so binding it off-box without TLS exposes
+    /// all of them to the network path. Startup is refused unless this is set or HTTPS is enabled.
+    /// </summary>
+    public bool AllowInsecureRemoteHttp { get; set; } = false;
+
+    /// <summary>
+    /// Trusts <c>X-Forwarded-For</c>/<c>X-Forwarded-Proto</c> from a reverse proxy. Off by default —
+    /// honouring those headers without knowing who may set them lets any client spoof its source IP
+    /// (which drives the rate limiters) and claim its request arrived over HTTPS. Enable this only
+    /// when a proxy you control is the sole ingress, and list it in <see cref="KnownProxies"/> or
+    /// <see cref="KnownNetworks"/>.
+    /// </summary>
+    public bool UseForwardedHeaders { get; set; } = false;
+
+    /// <summary>Proxy IP addresses whose forwarded headers are trusted. Required when <see cref="UseForwardedHeaders"/> is set.</summary>
+    public string[] KnownProxies { get; set; } = Array.Empty<string>();
+
+    /// <summary>Trusted proxy networks in CIDR form (e.g. <c>10.0.0.0/8</c>).</summary>
+    public string[] KnownNetworks { get; set; } = Array.Empty<string>();
 
     public int MaxAvatarsPerAccount { get; set; } = 5;
 

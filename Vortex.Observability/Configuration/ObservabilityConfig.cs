@@ -46,6 +46,36 @@ public sealed class ObservabilityConfig
     public bool DashboardEnabled { get; init; }
 
     /// <summary>
+    /// When true, a failure to build or start the dashboard takes the whole emulator down with a
+    /// non-zero exit code instead of leaving it running without its admin surface. Off by default so
+    /// existing deployments keep today's best-effort behaviour until they opt in.
+    /// </summary>
+    public bool DashboardRequired { get; init; }
+
+    /// <summary>
+    /// Explicit opt-in to serving the dashboard in cleartext on a non-local address. Off by default:
+    /// the dashboard carries operator credentials and a session cookie that grants
+    /// <c>dashboard.*</c> capabilities, so binding it off-box without TLS exposes full admin access
+    /// to the network path. Startup is refused unless this is set or HTTPS is enabled.
+    /// </summary>
+    public bool DashboardAllowInsecureRemoteHttp { get; init; }
+
+    /// <summary>
+    /// Trusts <c>X-Forwarded-For</c>/<c>X-Forwarded-Proto</c> from a reverse proxy. Off by default —
+    /// honouring those headers without knowing who may set them lets any client spoof its source IP
+    /// (which drives the login rate limiter) and claim its request arrived over HTTPS. Enable only
+    /// when a proxy you control is the sole ingress, and list it in
+    /// <see cref="DashboardKnownProxies" /> or <see cref="DashboardKnownNetworks" />.
+    /// </summary>
+    public bool DashboardUseForwardedHeaders { get; init; }
+
+    /// <summary>Proxy IP addresses whose forwarded headers are trusted.</summary>
+    public string[] DashboardKnownProxies { get; init; } = [];
+
+    /// <summary>Trusted proxy networks in CIDR form (e.g. <c>10.0.0.0/8</c>).</summary>
+    public string[] DashboardKnownNetworks { get; init; } = [];
+
+    /// <summary>
     /// Serves the bundled SPA front-end (shell HTML + hashed JS/CSS assets) from the dashboard
     /// listener. On by default. Set to false to expose only the JSON API (for example when the
     /// front-end is hosted elsewhere or you want metrics/API without serving the SPA); asset and
