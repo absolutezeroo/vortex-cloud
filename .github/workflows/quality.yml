@@ -20,5 +20,37 @@ jobs:
         with:
           global-json-file: global.json
 
-      - name: Run quality gate
-        run: dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate -p:VortexAIPolicyPhase=1
+      # Explicit and solution-wide. The gate's inner steps all pass --no-restore, and building
+      # Vortex.Main only restores its own dependency graph — the test projects are not in it, so
+      # `dotnet test Vortex.Cloud.sln --no-restore` had no assets to work from on a clean checkout.
+      - name: Restore
+        run: dotnet restore Vortex.Cloud.sln
+
+      - name: Restore local tools
+        run: dotnet tool restore
+
+      # Phase 2 promotes the selected nullable/reliability diagnostics
+      # (CS8602;CS8604;CS8618;CA2000;CA2012;CA2201;IDE0005;IDE0058) from warnings to errors.
+      # Verified green on the whole solution before being turned on here; the remaining historical
+      # warning categories stay warnings on purpose, so the ratchet moves one notch rather than
+      # turning every legacy warning into a build break at once.
+      - name: Quality gate (build + tests + format + analyzers)
+        run: >-
+          dotnet build Vortex.Main/Vortex.Main.csproj
+          -t:VortexCloudQualityGate
+          -p:VortexAIPolicyPhase=2
+
+      # `dotnet list package --vulnerable` exits 0 even when it finds something, so the output has
+      # to be inspected. Transitive packages are included: that is where most advisories land.
+      - name: Scan for vulnerable packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          dotnet list Vortex.Cloud.sln package --vulnerable --include-transitive \
+            --no-restore > vulnerable.txt 2>&1 || true
+          cat vulnerable.txt
+          if grep -qiE '(Critical|High|Moderate|Low)$|has the following vulnerable packages' vulnerable.txt; then
+            echo "::error::Vulnerable NuGet packages detected. See the report above."
+            exit 1
+          fi
+          echo "No vulnerable packages reported."
