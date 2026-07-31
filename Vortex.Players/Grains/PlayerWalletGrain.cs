@@ -85,7 +85,13 @@ internal sealed class PlayerWalletGrain(
 
                     if (update.ChangedBy != request.Amount)
                     {
-                        throw new Exception("Failed to process debit request");
+                        // Specific type (CA2201): a bare Exception cannot be caught selectively, and
+                        // this is a wallet invariant breach — the amount actually debited did not
+                        // match what was asked for — not an arbitrary failure.
+                        throw new InvalidOperationException(
+                            $"Wallet debit changed {update.ChangedBy} but {request.Amount} was "
+                                + $"requested for {request.CurrencyKind.CurrencyType}."
+                        );
                     }
 
                     updates.Add(update);

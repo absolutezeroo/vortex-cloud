@@ -51,6 +51,12 @@ public sealed class PluginManager(
     private readonly ILogger _logger = logger;
     private readonly SemaphoreSlim _reloadGate = new(1, 1);
 
+    /// <summary>
+    /// Keys of the plugins that are fully activated right now. A key appears here only after every
+    /// activation step succeeded, so this is a truthful answer to "what is actually running".
+    /// </summary>
+    public IReadOnlyCollection<string> GetLiveKeys() => _live.Keys.ToArray();
+
     private List<(PluginManifest manifest, string folder)> DiscoverPlugins()
     {
         List<(PluginManifest, string)> list = new(16);
@@ -123,7 +129,11 @@ public sealed class PluginManager(
                 d => d.folder,
                 StringComparer.OrdinalIgnoreCase
             );
-            List<PluginEnvelope> envs = new();
+            // Staged, not live: an envelope is only published to _live once its assembly processing
+            // has also succeeded, so a plugin whose feature registration fails is never briefly
+            // visible as active.
+            List<PluginEnvelope> staged = new();
+            ConcurrentBag<string> failedProcessing = new();
             List<Func<Task>> tasks = new();
 
             RebuildDependents(manifests);
@@ -172,21 +182,43 @@ public sealed class PluginManager(
                         }
 
                         await StopAndTearDownAsync(current, ct).ConfigureAwait(false);
+
+                        // The old envelope is torn down and its ALC unloaded. Drop it now so a
+                        // failure building its replacement cannot leave a dead entry in _live —
+                        // which UnloadRemovedAsync would then tear down a second time.
+                        _live.TryRemove(m.Key, out _);
                     }
 
                     PluginEnvelope next = await BuildEnvelopeOrUnloadAsync(asm, m, folder, ct)
                         .ConfigureAwait(false);
 
-                    _live[m.Key] = next;
-                    envs.Add(next);
+                    staged.Add(next);
 
                     tasks.Add(async () =>
                     {
-                        IDisposable disp = await processor
-                            .ProcessAsync(asm.Assembly, next.ServiceProvider, ct)
-                            .ConfigureAwait(false);
+                        try
+                        {
+                            IDisposable disp = await processor
+                                .ProcessAsync(asm.Assembly, next.ServiceProvider, ct)
+                                .ConfigureAwait(false);
 
-                        next.Disposables.Add(disp);
+                            next.Disposables.Add(disp);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(
+                                ex,
+                                "Assembly processing failed for {Key}; the plugin will not be "
+                                    + "activated and is being torn down.",
+                                next.Manifest.Key
+                            );
+
+                            // Recorded rather than removed from `staged` directly: these callbacks
+                            // run concurrently and List<T> is not thread-safe.
+                            failedProcessing.Add(next.Manifest.Key);
+
+                            await StopAndTearDownAsync(next, ct).ConfigureAwait(false);
+                        }
                     });
                 }
                 catch (Exception ex)
@@ -209,9 +241,20 @@ public sealed class PluginManager(
 
             await BoundedHelper.RunAsync(tasks, degree, ct).ConfigureAwait(false);
 
+            // Publish only what fully activated.
+            HashSet<string> failed = new(failedProcessing, StringComparer.OrdinalIgnoreCase);
+            List<PluginEnvelope> activated = staged
+                .Where(e => !failed.Contains(e.Manifest.Key))
+                .ToList();
+
+            foreach (PluginEnvelope env in activated)
+            {
+                _live[env.Manifest.Key] = env;
+            }
+
             if (unloadRemoved)
             {
-                await UnloadRemovedAsync(envs.Select(d => d.Key), ct).ConfigureAwait(false);
+                await UnloadRemovedAsync(activated.Select(d => d.Key), ct).ConfigureAwait(false);
             }
 
             _logger.LogInformation("Loaded {Count} plugins", _live.Count);
@@ -283,16 +326,33 @@ public sealed class PluginManager(
                 if (current is not null)
                 {
                     await StopAndTearDownAsync(current, ct).ConfigureAwait(false);
+
+                    // Torn down and unloaded: drop it before building the replacement so a failed
+                    // rebuild cannot leave a dead envelope visible in _live.
+                    _live.TryRemove(key, out _);
                 }
 
                 PluginEnvelope next = await BuildEnvelopeOrUnloadAsync(asm, manifest, folder, ct)
                     .ConfigureAwait(false);
-                _live[key] = next;
 
-                IDisposable disp = await processor
-                    .ProcessAsync(asm.Assembly, next.ServiceProvider, ct)
-                    .ConfigureAwait(false);
-                next.Disposables.Add(disp);
+                // Assembly processing is part of the activation, so it happens before the plugin is
+                // published: a plugin whose feature registration fails must never appear as live.
+                try
+                {
+                    IDisposable disp = await processor
+                        .ProcessAsync(asm.Assembly, next.ServiceProvider, ct)
+                        .ConfigureAwait(false);
+
+                    next.Disposables.Add(disp);
+                }
+                catch
+                {
+                    await StopAndTearDownAsync(next, ct).ConfigureAwait(false);
+
+                    throw;
+                }
+
+                _live[key] = next;
 
                 _logger.LogInformation("Reloaded plugin {Key}", key);
             }
@@ -388,10 +448,16 @@ public sealed class PluginManager(
     }
 
     /// <summary>
-    /// Wraps <see cref="BuildEnvelopeAsync"/> so a failed activation (bad manifest key, hosted
-    /// service/plugin start failure) unloads the ALC that <see cref="GetLoadedPluginAssembly"/>
-    /// already created instead of leaking it — <see cref="BuildEnvelopeAsync"/> only returns a
-    /// <see cref="PluginEnvelope"/> (which owns teardown) on success.
+    /// Wraps <see cref="BuildEnvelopeAsync"/> so a failed activation is fully undone.
+    /// <para>
+    /// Previously this only unloaded the <c>AssemblyLoadContext</c> — while the plugin's
+    /// <see cref="ServiceProvider"/>, its already-started <see cref="IHostedService"/>s and its
+    /// published exports were all left in place. Because the service provider was still rooted, the
+    /// ALC could not actually be collected either, so the one thing this method did try to do
+    /// reliably failed and logged a "possible memory leak" warning. Now the rollback stack undoes
+    /// every completed step in reverse first, and the ALC is unloaded last, when nothing references
+    /// it any more.
+    /// </para>
     /// </summary>
     private async Task<PluginEnvelope> BuildEnvelopeOrUnloadAsync(
         LoadedAssembly asm,
@@ -400,12 +466,22 @@ public sealed class PluginManager(
         CancellationToken ct
     )
     {
+        ActivationRollback rollback = new(_logger, m.Key);
+
         try
         {
-            return await BuildEnvelopeAsync(asm, m, folder, ct).ConfigureAwait(false);
+            PluginEnvelope envelope = await BuildEnvelopeAsync(asm, m, folder, rollback, ct)
+                .ConfigureAwait(false);
+
+            // The envelope owns teardown from here on.
+            rollback.Commit();
+
+            return envelope;
         }
         catch
         {
+            await rollback.UnwindAsync().ConfigureAwait(false);
+
             bool unloaded = await AssemblyMemoryLoader
                 .UnloadAndWaitAsync(asm.Alc, 5000, ct)
                 .ConfigureAwait(false);
@@ -413,8 +489,8 @@ public sealed class PluginManager(
             if (!unloaded)
             {
                 _logger.LogWarning(
-                    "ALC for plugin {Key} did not unload within timeout after a failed activation. "
-                        + "Possible memory leak from retained type references.",
+                    "ALC for plugin {Key} did not unload within timeout after a failed activation "
+                        + "and its rollback. Possible memory leak from retained type references.",
                     m.Key
                 );
             }
@@ -427,10 +503,15 @@ public sealed class PluginManager(
         LoadedAssembly asm,
         PluginManifest m,
         string folder,
+        ActivationRollback rollback,
         CancellationToken ct
     )
     {
         IVortexPlugin inst = CreatePluginInstance(asm.Assembly);
+
+        // IVortexPlugin is IAsyncDisposable but nothing ever disposed the instance, because it is
+        // Activator-created rather than DI-owned.
+        rollback.Push("dispose plugin instance", () => inst.DisposeAsync().AsTask());
 
         if (!string.Equals(inst.Key, m.Key, StringComparison.Ordinal))
         {
@@ -441,8 +522,17 @@ public sealed class PluginManager(
 
         ServiceProvider sp = CreatePluginServiceProvider(inst, m);
 
-        await inst.BindExportsAsync(new ExportBinder(_exports), sp).ConfigureAwait(false);
-        await StartPluginAsync(inst, sp, ct).ConfigureAwait(false);
+        rollback.Push("dispose service provider", () => sp.DisposeAsync().AsTask());
+
+        ExportJournal journal = new(_logger);
+
+        rollback.Push("restore previous exports", () => journal.RollbackAsync(m.Key));
+
+        await inst.BindExportsAsync(new ExportBinder(_exports, journal), sp).ConfigureAwait(false);
+        await StartPluginAsync(inst, sp, rollback, ct).ConfigureAwait(false);
+
+        // Every step succeeded, so the instances this activation displaced are genuinely dead.
+        await journal.CommitAsync().ConfigureAwait(false);
 
         return new PluginEnvelope
         {
@@ -506,11 +596,16 @@ public sealed class PluginManager(
     private async Task StartPluginAsync(
         IVortexPlugin plugin,
         IServiceProvider sp,
+        ActivationRollback rollback,
         CancellationToken ct
     )
     {
         await ProcessMigrationsAsync(sp, ct).ConfigureAwait(false);
 
+        // Migrations are deliberately not compensated. IPluginDbModule exposes UninstallAsync, but
+        // that drops the plugin's tables — running it because a hosted service failed to start would
+        // turn a recoverable startup error into data loss. A partially applied migration is EF's own
+        // per-migration transaction to resolve, and the plugin will retry on the next load.
         foreach (IHostedService svc in sp.GetServices<IHostedService>())
         {
             try
@@ -528,9 +623,21 @@ public sealed class PluginManager(
 
                 throw;
             }
+
+            // Registered only after a successful start, so the rollback stops exactly the services
+            // that are actually running. The previous version rethrew on the first failure and left
+            // every earlier service in the loop started.
+            IHostedService started = svc;
+
+            rollback.Push(
+                $"stop hosted service {started.GetType().Name}",
+                () => started.StopAsync(CancellationToken.None)
+            );
         }
 
         await plugin.StartAsync(sp, ct).ConfigureAwait(false);
+
+        rollback.Push("stop plugin", () => plugin.StopAsync(CancellationToken.None));
     }
 
     private static async Task ProcessMigrationsAsync(
@@ -558,8 +665,19 @@ public sealed class PluginManager(
         }
     }
 
+    /// <summary>
+    /// Tears an activation down in reverse order: hosted services, the plugin, its registered
+    /// disposables (the service provider last of those), the plugin instance, then the ALC.
+    /// <para>
+    /// Each stage is independently guarded so one failure cannot skip the rest — the previous
+    /// version wrapped the whole sequence in a single try/catch, so a throw while enumerating hosted
+    /// services meant the service provider was never disposed and the ALC could never unload.
+    /// </para>
+    /// </summary>
     private async Task StopAndTearDownAsync(PluginEnvelope env, CancellationToken ct)
     {
+        // CancellationToken.None for the stop calls: teardown is cleanup, and abandoning it because
+        // the host is already shutting down is how sockets and file handles survive the process.
         try
         {
             if (env.ServiceProvider is { } sp)
@@ -568,61 +686,77 @@ public sealed class PluginManager(
                 {
                     try
                     {
-                        await svc.StopAsync(ct).ConfigureAwait(false);
+                        await svc.StopAsync(CancellationToken.None).ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {
                         _logger.LogWarning(
                             ex,
-                            "Hosted service stop failed for {Key}",
+                            "Hosted service {Service} failed to stop for plugin {Key}",
+                            svc.GetType().FullName,
                             env.Manifest.Key
                         );
                     }
                 }
-            }
-
-            try
-            {
-                await env.Instance.StopAsync(ct).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Failed to stop plugin {Key}", env.Manifest.Key);
-            }
-
-            if (env.Disposables.Count > 0)
-            {
-                foreach (object inst in env.Disposables)
-                {
-                    try
-                    {
-                        switch (inst)
-                        {
-                            case IAsyncDisposable iad:
-                                await iad.DisposeAsync().ConfigureAwait(false);
-                                continue;
-                            case IDisposable d:
-                                d.Dispose();
-                                continue;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogWarning(
-                            ex,
-                            "Failed to dispose {Type} for {Key}",
-                            inst.GetType().Name,
-                            env.Manifest.Key
-                        );
-                    }
-                }
-
-                env.Disposables.Clear();
             }
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to destroy {Key}", env.Manifest.Key);
+            _logger.LogWarning(
+                ex,
+                "Could not enumerate hosted services while tearing down plugin {Key}; continuing "
+                    + "with the rest of the teardown",
+                env.Manifest.Key
+            );
+        }
+
+        try
+        {
+            await env.Instance.StopAsync(CancellationToken.None).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to stop plugin {Key}", env.Manifest.Key);
+        }
+
+        foreach (object inst in env.Disposables)
+        {
+            try
+            {
+                switch (inst)
+                {
+                    case IAsyncDisposable iad:
+                        await iad.DisposeAsync().ConfigureAwait(false);
+
+                        continue;
+                    case IDisposable d:
+                        d.Dispose();
+
+                        continue;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    ex,
+                    "Failed to dispose {Type} for {Key}",
+                    inst.GetType().Name,
+                    env.Manifest.Key
+                );
+            }
+        }
+
+        env.Disposables.Clear();
+
+        try
+        {
+            // IVortexPlugin is IAsyncDisposable, but the instance is Activator-created rather than
+            // DI-owned, so nothing was disposing it. Anything it holds kept the ALC alive.
+            await env.Instance.DisposeAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to dispose plugin instance {Key}", env.Manifest.Key);
         }
 
         if (env.Alc is not null)

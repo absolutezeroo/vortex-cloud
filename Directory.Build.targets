@@ -1,6 +1,15 @@
 <Project>
   <Target Name="VortexCloudFastCheck" Condition="'$(MSBuildProjectName)' == 'Vortex.Main'">
     <Exec Command="dotnet tool restore" WorkingDirectory="$(MSBuildThisFileDirectory)" />
+    <!--
+      Solution-wide restore first: every step below runs with restore disabled, and building
+      Vortex.Main only restores its own dependency graph. The test projects are not in that graph,
+      so on a clean checkout the solution-wide test step had no project.assets.json to work from.
+    -->
+    <Exec
+      Command="dotnet restore Vortex.Cloud.sln"
+      WorkingDirectory="$(MSBuildThisFileDirectory)"
+    />
     <Exec Command="dotnet csharpier check ." WorkingDirectory="$(MSBuildThisFileDirectory)" />
     <Exec
       Command="dotnet build Vortex.Main/Vortex.Main.csproj --no-restore"

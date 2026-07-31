@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="FluentAssertions" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--
+      Startup-time guards live next to the config they validate, so this project reaches across the
+      modules that own them: listener security and the required-service policy (Primitives), plus
+      one IValidateOptions<T> per sensitive section.
+    -->
+    <ProjectReference Include="..\Vortex.Authentication\Vortex.Authentication.csproj" />
+    <ProjectReference Include="..\Vortex.Crypto\Vortex.Crypto.csproj" />
+    <ProjectReference Include="..\Vortex.Database\Vortex.Database.csproj" />
+    <ProjectReference Include="..\Vortex.Main\Vortex.Main.csproj" />
+    <ProjectReference Include="..\Vortex.Observability\Vortex.Observability.csproj" />
+    <ProjectReference Include="..\Vortex.Plugins\Vortex.Plugins.csproj" />
+    <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
+    <ProjectReference Include="..\Vortex.WebApi\Vortex.WebApi.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <!--
+      A deliberately tiny plugin used only by Vortex.Plugins.Tests. It is copied into a temporary
+      folder at test time and loaded through the real PluginManager, so activation failures are
+      exercised end to end (rollback, service-provider disposal, ALC unload) rather than mocked.
+      It references Vortex.Primitives only, which keeps the byte-loaded plugin folder small.
+    -->
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
+  </ItemGroup>
+</Project>

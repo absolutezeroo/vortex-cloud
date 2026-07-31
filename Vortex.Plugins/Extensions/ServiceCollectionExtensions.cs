@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Vortex.Plugins.Configuration;
 using Vortex.Primitives.Plugins;
 
@@ -17,7 +18,9 @@ public static class ServiceCollectionExtensions
             PluginConfig.SECTION_NAME
         );
 
-        services.Configure<PluginConfig>(pluginSection);
+        services.AddOptions<PluginConfig>().Bind(pluginSection).ValidateOnStart();
+
+        services.AddSingleton<IValidateOptions<PluginConfig>, PluginConfigValidator>();
 
         services.AddSingleton<PluginManager>();
         services.AddHostedService<PluginBootstrapper>();

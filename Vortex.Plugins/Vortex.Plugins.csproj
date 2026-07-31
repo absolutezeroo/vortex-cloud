@@ -6,6 +6,11 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
   </ItemGroup>
   <ItemGroup>
+    <!-- The activation rollback machinery (ActivationRollback, ExportJournal, ExportRegistry) is
+         internal; the plugin-activation tests drive it directly. -->
+    <InternalsVisibleTo Include="Vortex.Plugins.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Vortex.Database\Vortex.Database.csproj" />
     <ProjectReference Include="..\Vortex.Logging\Vortex.Logging.csproj" />
     <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.RateLimiting;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Constraints;
@@ -23,6 +25,7 @@ using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Security;
 using Vortex.Observability.Configuration;
 using Vortex.Observability.Diagnostics;
+using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Permissions;
 
@@ -41,9 +44,18 @@ namespace Vortex.Dashboard.API.Hosting;
 internal sealed class DashboardWebHost(
     IServiceProvider rootServices,
     IOptions<ObservabilityConfig> options,
+    RequiredServiceGuard guard,
     ILogger<DashboardWebHost> logger
 ) : BackgroundService
 {
+    internal const string SERVICE_NAME = "Vortex dashboard API";
+
+    internal const string REQUIRED_OPTION_PATH =
+        $"{ObservabilityConfig.SECTION_NAME}:{nameof(ObservabilityConfig.DashboardRequired)}";
+
+    internal const string ALLOW_INSECURE_OPTION_PATH =
+        $"{ObservabilityConfig.SECTION_NAME}:{nameof(ObservabilityConfig.DashboardAllowInsecureRemoteHttp)}";
+
     // Capability policies are named after the capability string they require.
     private static readonly string[] DashboardCapabilities =
     [
@@ -94,6 +106,28 @@ internal sealed class DashboardWebHost(
             ? $"{httpPrefix}, https://{_config.DashboardHost}:{_config.DashboardHttpsPort}"
             : httpPrefix;
 
+        // Refuse cleartext off-box exposure before a socket is ever opened: the dashboard session
+        // cookie grants dashboard.* capabilities, i.e. full operator access.
+        ListenerSecurityResult listener = ListenerSecurity.ValidateListener(
+            SERVICE_NAME,
+            _config.DashboardHost,
+            _config.DashboardPort,
+            _config.DashboardHttpsEnabled,
+            _config.DashboardAllowInsecureRemoteHttp,
+            ALLOW_INSECURE_OPTION_PATH
+        );
+
+        if (!listener.IsAllowed)
+        {
+            Fail(new InvalidOperationException(listener.Message));
+            return;
+        }
+
+        if (listener.Message is not null)
+        {
+            logger.LogWarning(VortexEventIds.DashboardFault, "{ListenerWarning}", listener.Message);
+        }
+
         WebApplication app;
 
         try
@@ -102,11 +136,7 @@ internal sealed class DashboardWebHost(
         }
         catch (Exception ex)
         {
-            logger.LogError(
-                VortexEventIds.DashboardFault,
-                ex,
-                "Failed to build Vortex dashboard API"
-            );
+            Fail(ex);
             return;
         }
 
@@ -116,15 +146,12 @@ internal sealed class DashboardWebHost(
         }
         catch (Exception ex)
         {
-            logger.LogError(
-                VortexEventIds.DashboardFault,
-                ex,
-                "Failed to start Vortex dashboard API on {Prefixes}",
-                prefixes
-            );
             await app.DisposeAsync().ConfigureAwait(false);
+            Fail(ex);
             return;
         }
+
+        guard.ReportStarted(SERVICE_NAME);
 
         logger.LogInformation(
             VortexEventIds.DashboardReady,
@@ -146,6 +173,19 @@ internal sealed class DashboardWebHost(
         await app.DisposeAsync().ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Routes a build/start failure through the shared policy: required means the host comes down
+    /// with a non-zero exit code, optional means the emulator is flagged degraded and carries on.
+    /// </summary>
+    private void Fail(Exception ex) =>
+        guard.ReportStartupFailure(
+            SERVICE_NAME,
+            _config.DashboardEnabled,
+            _config.DashboardRequired,
+            ex,
+            REQUIRED_OPTION_PATH
+        );
+
     private WebApplication BuildApp(string httpPrefix, Func<DateTime> startedAtUtc)
     {
         WebApplicationBuilder builder = WebApplication.CreateSlimBuilder();
@@ -162,6 +202,7 @@ internal sealed class DashboardWebHost(
         builder.Logging.ClearProviders();
 
         ForwardSingletons(builder.Services);
+        ConfigureForwardedHeaders(builder.Services);
         ConfigureAuth(builder.Services);
         ConfigureRateLimiting(builder.Services);
         ConfigureHttpsRedirection(builder.Services);
@@ -239,14 +280,17 @@ internal sealed class DashboardWebHost(
             return;
         }
 
-        if (
-            string.IsNullOrWhiteSpace(_config.DashboardCertificatePath)
-            || string.IsNullOrWhiteSpace(_config.DashboardCertificatePassword)
-        )
+        if (string.IsNullOrWhiteSpace(_config.DashboardCertificatePath))
         {
+            // No explicit certificate: Kestrel falls back to the ASP.NET Core development
+            // certificate. HttpsCertificateValidator refuses this outside Development at startup,
+            // so reaching here means it is a deliberate local-dev configuration.
             return;
         }
 
+        // Load eagerly and let failures propagate: BuildApp()'s caller routes them through the
+        // required/optional policy. Previously a bad path or password silently skipped HTTPS
+        // configuration, leaving a listener that looked like HTTPS but was never configured.
         builder.WebHost.ConfigureKestrel(kestrel =>
             kestrel.ConfigureHttpsDefaults(https =>
                 https.ServerCertificate = X509CertificateLoader.LoadPkcs12FromFile(
@@ -255,6 +299,52 @@ internal sealed class DashboardWebHost(
                 )
             )
         );
+    }
+
+    /// <summary>
+    /// Applies <see cref="ForwardedHeadersOptions"/> only when the operator has explicitly declared a
+    /// reverse proxy. ASP.NET Core trusts no proxy by default, and processing
+    /// <c>X-Forwarded-For</c>/<c>-Proto</c> from an unknown sender would let any client forge its
+    /// source IP (which partitions the login rate limiter) and claim a TLS-terminated request.
+    /// </summary>
+    private void ConfigureForwardedHeaders(IServiceCollection services)
+    {
+        if (!_config.DashboardUseForwardedHeaders)
+        {
+            return;
+        }
+
+        services.Configure<ForwardedHeadersOptions>(forwarded =>
+        {
+            forwarded.ForwardedHeaders =
+                ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+
+            // Defaults are loopback-only; clear them so the explicit allow-list below is authoritative.
+            forwarded.KnownProxies.Clear();
+            forwarded.KnownIPNetworks.Clear();
+
+            foreach (string proxy in _config.DashboardKnownProxies)
+            {
+                if (IPAddress.TryParse(proxy, out IPAddress? address))
+                {
+                    forwarded.KnownProxies.Add(address);
+                }
+            }
+
+            foreach (string network in _config.DashboardKnownNetworks)
+            {
+                string[] parts = network.Split('/', 2);
+
+                if (
+                    parts.Length == 2
+                    && IPAddress.TryParse(parts[0], out IPAddress? prefix)
+                    && int.TryParse(parts[1], out int length)
+                )
+                {
+                    forwarded.KnownIPNetworks.Add(new System.Net.IPNetwork(prefix, length));
+                }
+            }
+        });
     }
 
     private void ConfigureRateLimiting(IServiceCollection services)
@@ -345,6 +435,13 @@ internal sealed class DashboardWebHost(
 
     private void ConfigurePipeline(WebApplication app)
     {
+        if (_config.DashboardUseForwardedHeaders)
+        {
+            // Must run before anything reads the scheme or the remote IP (HTTPS redirection,
+            // rate limiting, auth, audit).
+            app.UseForwardedHeaders();
+        }
+
         string csp = DashboardSecurityHeaders.BuildCsp(
             app.Services.GetRequiredService<DashboardAssetUrls>().ImgSrcOrigins
         );
