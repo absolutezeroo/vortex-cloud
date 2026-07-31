@@ -1,6 +1,8 @@
 using System;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Orleans.Configuration;
 using Orleans.Hosting;
 using Vortex.Main.Configuration;
@@ -12,6 +14,19 @@ public static class HostApplicationBuilderExtensions
 {
     public static HostApplicationBuilder AddOrleans(this HostApplicationBuilder builder)
     {
+        // Bound for validation as well as read directly: the silo endpoint must be resolved here,
+        // before UseOrleans, but a bad advertised IP or a silo/gateway port collision should be a
+        // named startup error rather than an opaque clustering failure later.
+        builder
+            .Services.AddOptions<OrleansHostConfig>()
+            .Bind(builder.Configuration.GetSection(OrleansHostConfig.SECTION_NAME))
+            .ValidateOnStart();
+
+        builder.Services.AddSingleton<
+            IValidateOptions<OrleansHostConfig>,
+            OrleansHostConfigValidator
+        >();
+
         OrleansHostConfig hostConfig =
             builder
                 .Configuration.GetSection(OrleansHostConfig.SECTION_NAME)

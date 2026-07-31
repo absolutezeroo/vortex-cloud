@@ -1,6 +1,6 @@
-using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Vortex.Authentication.Configuration;
 using Vortex.Authentication.Moderation;
 using Vortex.Authentication.Permissions;
@@ -12,42 +12,23 @@ namespace Vortex.Authentication;
 
 public sealed class AuthenticationModule : IHostPluginModule
 {
-    private static readonly string[] DefaultIpHashSecrets =
-    [
-        "local-dev-ip-hash-secret",
-        "replace-with-a-development-secret",
-        "replace-with-a-production-secret",
-    ];
-
     public string Key => "vortex-authentication";
 
     public void ConfigureServices(IServiceCollection services, HostApplicationBuilder builder)
     {
-        services.Configure<AuthenticationConfig>(
-            builder.Configuration.GetSection(AuthenticationConfig.SECTION_NAME)
-        );
+        // The placeholder-IpHashSecret fail-fast that used to be inlined here now lives in
+        // AuthenticationConfigValidator, so every sensitive option is validated the same way
+        // (ValidateOnStart) instead of this one module hand-rolling its own check. Behaviour is
+        // unchanged: outside Development a placeholder secret still refuses to start.
+        services
+            .AddOptions<AuthenticationConfig>()
+            .Bind(builder.Configuration.GetSection(AuthenticationConfig.SECTION_NAME))
+            .ValidateOnStart();
 
-        // Fail fast outside Development if the placeholder IP-hash secret was never overridden
-        // (via VORTEX__Vortex__Authentication__IpHashSecret or user-secrets) — a default secret here
-        // would make the hashed IPs in auth events trivially reversible/guessable in production.
-        string ipHashSecret =
-            builder.Configuration[$"{AuthenticationConfig.SECTION_NAME}:IpHashSecret"]
-            ?? string.Empty;
-
-        if (
-            !builder.Environment.IsDevelopment()
-            && (
-                string.IsNullOrEmpty(ipHashSecret)
-                || Array.IndexOf(DefaultIpHashSecrets, ipHashSecret) >= 0
-            )
-        )
-        {
-            throw new InvalidOperationException(
-                "Vortex:Authentication:IpHashSecret is unset or still a placeholder default. "
-                    + "Set a real secret via the VORTEX__Vortex__Authentication__IpHashSecret "
-                    + "environment variable or user-secrets before running outside Development."
-            );
-        }
+        services.AddSingleton<
+            IValidateOptions<AuthenticationConfig>,
+            AuthenticationConfigValidator
+        >();
 
         services.AddSingleton<IAuthenticationService, AuthenticationService>();
         services.AddSingleton<IAccountAuthenticator, AccountAuthenticator>();

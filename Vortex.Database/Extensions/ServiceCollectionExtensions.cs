@@ -17,9 +17,14 @@ public static class ServiceCollectionExtensions
         HostApplicationBuilder builder
     )
     {
-        services.Configure<DatabaseConfig>(
-            builder.Configuration.GetSection(DatabaseConfig.SECTION_NAME)
-        );
+        // Validated at start so a missing or placeholder connection string is one clear startup
+        // error instead of every query failing later at the driver level.
+        services
+            .AddOptions<DatabaseConfig>()
+            .Bind(builder.Configuration.GetSection(DatabaseConfig.SECTION_NAME))
+            .ValidateOnStart();
+
+        services.AddSingleton<IValidateOptions<DatabaseConfig>, DatabaseConfigValidator>();
 
         services.AddDbContextFactory<VortexDbContext>(
             (sp, options) =>
