@@ -16,6 +16,12 @@ namespace Vortex.Rooms.Grains.Systems;
 internal static class RoomPetRuntime
 {
     private const int PetRoomObjectIdOffset = 1_000_000;
+
+    /// <summary>The coordinates the client sends when a pet is dropped from the inventory rather
+    /// than aimed at a tile.</summary>
+    public const int InventoryDropX = 0;
+    public const int InventoryDropY = 0;
+
     private const int MonsterplantPetType = 16;
     private const int MonsterplantMaxLevel = 7;
 
@@ -83,6 +89,69 @@ internal static class RoomPetRuntime
             PetLevel = pet.Level,
             PetPosture = posture,
         };
+
+    /// <summary>
+    /// Where a pet dropped from the inventory lands.
+    ///
+    /// The client hard-codes (0, 0) for that drop -- there is no tile to name yet -- so those
+    /// coordinates mean "anywhere that works", not the corner of the room. Read literally they
+    /// rejected the placement whenever tile 0,0 was blocked, which is most rooms, and left
+    /// non-owners unable to place a pet at all where the room allowed them.
+    ///
+    /// Any other coordinates are the player pointing at a tile and are honoured as given.
+    ///
+    /// The search runs outwards from the door in rings, so a pet appears near where players arrive
+    /// rather than in whichever corner is scanned first.
+    /// </summary>
+    public static bool TryResolveDropTile(
+        int x,
+        int y,
+        int doorX,
+        int doorY,
+        int width,
+        int height,
+        Func<int, int, bool> isFree,
+        out int resolvedX,
+        out int resolvedY
+    )
+    {
+        resolvedX = x;
+        resolvedY = y;
+
+        if (x != InventoryDropX || y != InventoryDropY)
+        {
+            return isFree(x, y);
+        }
+
+        int reach = Math.Max(width, height);
+
+        for (int radius = 0; radius <= reach; radius++)
+        {
+            for (int dx = -radius; dx <= radius; dx++)
+            {
+                for (int dy = -radius; dy <= radius; dy++)
+                {
+                    // Only the ring at this radius; the inside was covered by earlier passes.
+                    if (Math.Abs(dx) != radius && Math.Abs(dy) != radius)
+                    {
+                        continue;
+                    }
+
+                    if (!isFree(doorX + dx, doorY + dy))
+                    {
+                        continue;
+                    }
+
+                    resolvedX = doorX + dx;
+                    resolvedY = doorY + dy;
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
     /// <summary>
     /// Which actions a pet offers. Shared with the status push so the room list and the status
