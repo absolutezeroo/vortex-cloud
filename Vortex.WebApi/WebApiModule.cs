@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Plugins;
 using Vortex.WebApi.Configuration;
 using Vortex.WebApi.Hosting;
@@ -20,9 +22,17 @@ public sealed class WebApiModule : IHostPluginModule
 
     public void ConfigureServices(IServiceCollection services, HostApplicationBuilder builder)
     {
-        services.Configure<WebApiConfig>(
-            builder.Configuration.GetSection(WebApiConfig.SECTION_NAME)
-        );
+        // Validated at start so an insecure listener (cleartext off-box) or an unloadable HTTPS
+        // certificate is refused before the socket opens, not discovered in production.
+        services
+            .AddOptions<WebApiConfig>()
+            .Bind(builder.Configuration.GetSection(WebApiConfig.SECTION_NAME))
+            .ValidateOnStart();
+
+        services.AddSingleton<IValidateOptions<WebApiConfig>, WebApiConfigValidator>();
+
+        // Shared with DashboardApiModule; whichever module registers first wins.
+        services.TryAddSingleton<RequiredServiceGuard>();
 
         services.TryAddSingleton<WebApiSessionStore>();
         services.TryAddSingleton<IWebApiAuthService, WebApiAuthService>();

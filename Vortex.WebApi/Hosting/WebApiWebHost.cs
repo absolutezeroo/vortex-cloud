@@ -1,13 +1,16 @@
 using System;
+using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Vortex.Primitives.Hosting;
 using Vortex.WebApi.Configuration;
 using Vortex.WebApi.Services;
 using Vortex.WebApi.Session;
@@ -26,9 +29,18 @@ namespace Vortex.WebApi.Hosting;
 internal sealed class WebApiWebHost(
     IServiceProvider rootServices,
     IOptions<WebApiConfig> options,
+    RequiredServiceGuard guard,
     ILogger<WebApiWebHost> logger
 ) : BackgroundService
 {
+    internal const string SERVICE_NAME = "Vortex web API";
+
+    internal const string REQUIRED_OPTION_PATH =
+        $"{WebApiConfig.SECTION_NAME}:{nameof(WebApiConfig.Required)}";
+
+    internal const string ALLOW_INSECURE_OPTION_PATH =
+        $"{WebApiConfig.SECTION_NAME}:{nameof(WebApiConfig.AllowInsecureRemoteHttp)}";
+
     private readonly WebApiConfig _config = options.Value;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -43,6 +55,28 @@ internal sealed class WebApiWebHost(
             ? $"{httpPrefix}, https://{_config.Host}:{_config.HttpsPort}"
             : httpPrefix;
 
+        // Refuse cleartext off-box exposure before a socket is ever opened: this API carries
+        // registration/login credentials and the session cookie.
+        ListenerSecurityResult listener = ListenerSecurity.ValidateListener(
+            SERVICE_NAME,
+            _config.Host,
+            _config.Port,
+            _config.HttpsEnabled,
+            _config.AllowInsecureRemoteHttp,
+            ALLOW_INSECURE_OPTION_PATH
+        );
+
+        if (!listener.IsAllowed)
+        {
+            Fail(new InvalidOperationException(listener.Message));
+            return;
+        }
+
+        if (listener.Message is not null)
+        {
+            logger.LogWarning("{ListenerWarning}", listener.Message);
+        }
+
         WebApplication app;
 
         try
@@ -51,7 +85,7 @@ internal sealed class WebApiWebHost(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to build Vortex web API");
+            Fail(ex);
             return;
         }
 
@@ -61,10 +95,12 @@ internal sealed class WebApiWebHost(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to start Vortex web API on {Prefixes}", prefixes);
             await app.DisposeAsync().ConfigureAwait(false);
+            Fail(ex);
             return;
         }
+
+        guard.ReportStarted(SERVICE_NAME);
 
         logger.LogInformation(
             "Vortex web API listening on {Prefixes} (Swagger UI at {HttpPrefix}/swagger)",
@@ -85,6 +121,19 @@ internal sealed class WebApiWebHost(
         await app.DisposeAsync().ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Routes a build/start failure through the shared policy: required means the host comes down
+    /// with a non-zero exit code, optional means the emulator is flagged degraded and carries on.
+    /// </summary>
+    private void Fail(Exception ex) =>
+        guard.ReportStartupFailure(
+            SERVICE_NAME,
+            _config.Enabled,
+            _config.Required,
+            ex,
+            REQUIRED_OPTION_PATH
+        );
+
     private WebApplication BuildApp()
     {
         string httpPrefix = $"http://{_config.Host}:{_config.Port}";
@@ -101,9 +150,17 @@ internal sealed class WebApiWebHost(
         builder.Logging.ClearProviders();
 
         ForwardSingletons(builder.Services);
+        ConfigureForwardedHeaders(builder.Services);
         WebApiAppConfigurator.ConfigureServices(builder.Services, _config);
 
         WebApplication app = builder.Build();
+
+        if (_config.UseForwardedHeaders)
+        {
+            // Must run before anything reads the scheme or the remote IP (HTTPS redirection,
+            // rate limiting, auth).
+            app.UseForwardedHeaders();
+        }
 
         WebApiAppConfigurator.ConfigurePipeline(app, _config);
         WebApiEndpoints.Map(app);
@@ -118,14 +175,17 @@ internal sealed class WebApiWebHost(
             return;
         }
 
-        if (
-            string.IsNullOrWhiteSpace(_config.CertificatePath)
-            || string.IsNullOrWhiteSpace(_config.CertificatePassword)
-        )
+        if (string.IsNullOrWhiteSpace(_config.CertificatePath))
         {
+            // No explicit certificate: Kestrel falls back to the ASP.NET Core development
+            // certificate. HttpsCertificateValidator refuses this outside Development at startup,
+            // so reaching here means it is a deliberate local-dev configuration.
             return;
         }
 
+        // Load eagerly and let failures propagate: BuildApp()'s caller routes them through the
+        // required/optional policy. Previously a bad path or password silently skipped HTTPS
+        // configuration, leaving a listener that looked like HTTPS but was never configured.
         builder.WebHost.ConfigureKestrel(kestrel =>
             kestrel.ConfigureHttpsDefaults(https =>
                 https.ServerCertificate = X509CertificateLoader.LoadPkcs12FromFile(
@@ -134,6 +194,52 @@ internal sealed class WebApiWebHost(
                 )
             )
         );
+    }
+
+    /// <summary>
+    /// Applies <see cref="ForwardedHeadersOptions"/> only when the operator has explicitly declared a
+    /// reverse proxy. ASP.NET Core trusts no proxy by default, and processing
+    /// <c>X-Forwarded-For</c>/<c>-Proto</c> from an unknown sender would let any client forge its
+    /// source IP (which partitions the rate limiters) and claim a TLS-terminated request.
+    /// </summary>
+    private void ConfigureForwardedHeaders(IServiceCollection services)
+    {
+        if (!_config.UseForwardedHeaders)
+        {
+            return;
+        }
+
+        services.Configure<ForwardedHeadersOptions>(forwarded =>
+        {
+            forwarded.ForwardedHeaders =
+                ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+
+            // Defaults are loopback-only; clear them so the explicit allow-list below is authoritative.
+            forwarded.KnownProxies.Clear();
+            forwarded.KnownIPNetworks.Clear();
+
+            foreach (string proxy in _config.KnownProxies)
+            {
+                if (IPAddress.TryParse(proxy, out IPAddress? address))
+                {
+                    forwarded.KnownProxies.Add(address);
+                }
+            }
+
+            foreach (string network in _config.KnownNetworks)
+            {
+                string[] parts = network.Split('/', 2);
+
+                if (
+                    parts.Length == 2
+                    && IPAddress.TryParse(parts[0], out IPAddress? prefix)
+                    && int.TryParse(parts[1], out int length)
+                )
+                {
+                    forwarded.KnownIPNetworks.Add(new System.Net.IPNetwork(prefix, length));
+                }
+            }
+        });
     }
 
     /// <summary>

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Observability.Audit;
 using Vortex.Observability.Configuration;
@@ -25,8 +26,18 @@ public sealed class ObservabilityModule : IHostPluginModule
 
     public void ConfigureServices(IServiceCollection services, HostApplicationBuilder builder)
     {
-        services.Configure<ObservabilityConfig>(
-            builder.Configuration.GetSection(ObservabilityConfig.SECTION_NAME)
+        // DashboardApiModule binds the same section; both register the validator through
+        // TryAddEnumerable so it runs exactly once regardless of module order.
+        services
+            .AddOptions<ObservabilityConfig>()
+            .Bind(builder.Configuration.GetSection(ObservabilityConfig.SECTION_NAME))
+            .ValidateOnStart();
+
+        services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<
+                IValidateOptions<ObservabilityConfig>,
+                ObservabilityConfigValidator
+            >()
         );
 
         services.AddMetrics();

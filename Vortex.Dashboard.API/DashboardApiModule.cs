@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Hosting;
 using Vortex.Dashboard.API.Http;
@@ -8,6 +9,7 @@ using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Security;
 using Vortex.Observability.Configuration;
+using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Plugins;
 
 namespace Vortex.Dashboard.API;
@@ -25,9 +27,22 @@ public sealed class DashboardApiModule : IHostPluginModule
 
     public void ConfigureServices(IServiceCollection services, HostApplicationBuilder builder)
     {
-        services.Configure<ObservabilityConfig>(
-            builder.Configuration.GetSection(ObservabilityConfig.SECTION_NAME)
+        // ObservabilityModule binds the same section; both register the validator through
+        // TryAddEnumerable so it runs exactly once regardless of module order.
+        services
+            .AddOptions<ObservabilityConfig>()
+            .Bind(builder.Configuration.GetSection(ObservabilityConfig.SECTION_NAME))
+            .ValidateOnStart();
+
+        services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<
+                IValidateOptions<ObservabilityConfig>,
+                ObservabilityConfigValidator
+            >()
         );
+
+        // Shared with WebApiModule; whichever module registers first wins.
+        services.TryAddSingleton<RequiredServiceGuard>();
 
         services.TryAddSingleton<DashboardSessionStore>();
         services.TryAddSingleton<DashboardAuthService>();
