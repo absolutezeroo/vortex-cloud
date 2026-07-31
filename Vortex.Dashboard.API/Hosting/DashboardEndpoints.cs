@@ -173,7 +173,9 @@ internal static partial class DashboardEndpoints
                 ApiMeta + "/endpoints",
                 (IEnumerable<EndpointDataSource> dataSources) =>
                 {
-                    ApiRouteDescriptor?[] routes = dataSources
+                    // Non-nullable: the nulls are filtered out by the OfType below. The serialized
+                    // response shape is unchanged.
+                    ApiRouteDescriptor[] routes = dataSources
                         .SelectMany(source => source.Endpoints.OfType<RouteEndpoint>())
                         .Select(endpoint =>
                         {
@@ -224,9 +226,12 @@ internal static partial class DashboardEndpoints
                                 endpoint.DisplayName
                             );
                         })
-                        .Where(route => route is not null)
-                        .OrderBy(route => route!.Domain)
-                        .ThenBy(route => route!.Path)
+                        // OfType drops the nulls *and* yields a non-nullable element type, so the
+                        // aggregations below stop dereferencing a `T?` (CS8602). Behaviour is
+                        // identical to the previous `Where(route => route is not null)`.
+                        .OfType<ApiRouteDescriptor>()
+                        .OrderBy(route => route.Domain)
+                        .ThenBy(route => route.Path)
                         .ToArray();
 
                     var groups = routes

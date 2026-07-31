@@ -44,7 +44,12 @@ public class EnvelopeFeatureProcessor<TEnvelope, TMeta, TContext>(
             );
             Func<IServiceProvider, object> activator = ActivatorHelpers.BuildActivator(concrete);
 
+            // CA2000: ownership transfers to `batch`, which is returned as this method's IDisposable
+            // and disposed by the caller (AssemblyProcessor). The analyzer cannot follow ownership
+            // into a collection.
+#pragma warning disable CA2000
             batch.Add(_registry.RegisterHandler(envType, sp, activator, invoker));
+#pragma warning restore CA2000
         }
 
         foreach (
@@ -63,7 +68,10 @@ public class EnvelopeFeatureProcessor<TEnvelope, TMeta, TContext>(
             int order = concrete.GetCustomAttribute<OrderAttribute>()?.Value ?? 0;
             Func<IServiceProvider, object> activator = ActivatorHelpers.BuildActivator(concrete);
 
+            // CA2000: same ownership transfer to `batch` as the handler registration above.
+#pragma warning disable CA2000
             batch.Add(_registry.RegisterBehavior(envType, sp, activator, invoker, order));
+#pragma warning restore CA2000
         }
 
         return Task.FromResult<IDisposable>(batch);

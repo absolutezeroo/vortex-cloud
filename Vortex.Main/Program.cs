@@ -38,13 +38,15 @@ internal class Program
 {
     public static async Task Main(string[] args)
     {
-        ILogger bootstrapLogger = LoggerFactory
-            .Create(builder =>
-            {
-                builder.ClearProviders();
-                builder.AddVortexConsoleLogger();
-            })
-            .CreateLogger("Bootstrap");
+        // Held in a `using` for the whole of Main rather than discarded: the factory owns the
+        // console provider, and disposing it any earlier would break the logger it created (CA2000).
+        using ILoggerFactory bootstrapLoggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder.ClearProviders();
+            builder.AddVortexConsoleLogger();
+        });
+
+        ILogger bootstrapLogger = bootstrapLoggerFactory.CreateLogger("Bootstrap");
 
         System.Console.WriteLine(
             @"

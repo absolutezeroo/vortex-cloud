@@ -38,7 +38,11 @@ public readonly record struct ActionContext(
                 playerCtx.RoomObject.PlayerId,
                 ctx.RoomId
             ),
-            _ => throw new Exception("Cannot create ActionContext for object context"),
+            // Specific type (CA2201): callers can distinguish "this context kind is not supported"
+            // from an arbitrary failure, and a bare Exception cannot be caught selectively.
+            _ => throw new NotSupportedException(
+                $"Cannot create an ActionContext for room object context '{ctx.GetType().Name}'."
+            ),
         };
 
     public static ActionContext Invalid =>
