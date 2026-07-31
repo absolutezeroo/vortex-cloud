@@ -21,15 +21,16 @@ require_file "appsettings.json" "base appsettings file"
 
 step "Checking .NET SDK"
 if ! command -v dotnet >/dev/null 2>&1; then
-  echo "dotnet is not installed. Install .NET SDK 9.x and rerun." >&2
+  echo "dotnet is not installed. Install .NET SDK 10.x and rerun." >&2
   exit 1
 fi
 
+# global.json is the source of truth for the SDK band (10.0, rollForward latestFeature).
 dotnet_version="$(dotnet --version | tr -d '\r')"
 case "$dotnet_version" in
-  9.*) ;;
+  10.*) ;;
   *)
-    printf ".NET SDK 9.x is required. Found '%s'.\n" "$dotnet_version" >&2
+    printf ".NET SDK 10.x is required (see global.json). Found '%s'.\n" "$dotnet_version" >&2
     exit 1
     ;;
 esac
