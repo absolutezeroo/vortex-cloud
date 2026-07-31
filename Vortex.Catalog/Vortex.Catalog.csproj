@@ -3,6 +3,11 @@
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <!-- LtdRaffleGrain's persisted state machine and its scheduled-draw hook are internal; the
+         raffle's restart/idempotence tests assert on them directly. -->
+    <InternalsVisibleTo Include="Vortex.Database.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" />
   </ItemGroup>
   <ItemGroup>
