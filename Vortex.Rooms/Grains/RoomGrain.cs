@@ -81,6 +81,8 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     public readonly RoomRollerSystem RollerSystem;
     public readonly RoomSecurityModule SecurityModule;
     public readonly RoomWiredSystem WiredSystem;
+    public readonly RoomModerationSystem ModerationSystem;
+    public readonly RoomMysteryBoxSystem MysteryBoxSystem;
 
     internal IAsyncStream<RoomOutbound> _roomOutbound = default!;
 
@@ -138,6 +140,8 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         GameSystem = new RoomGameSystem(this);
         FreezeSystem = new RoomFreezeSystem(this);
         GameTimerSystem = new RoomGameTimerSystem(this);
+        ModerationSystem = new RoomModerationSystem(this);
+        MysteryBoxSystem = new RoomMysteryBoxSystem(this);
 
         EventModule.Register(RollerSystem);
         EventModule.Register(WiredSystem);

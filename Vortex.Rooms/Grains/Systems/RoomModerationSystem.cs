@@ -1,0 +1,390 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Vortex.Primitives.Action;
+using Vortex.Primitives.Events;
+using Vortex.Primitives.Navigator.Enums;
+using Vortex.Primitives.Permissions;
+using Vortex.Primitives.Players;
+using Vortex.Primitives.Rooms.Enums;
+
+namespace Vortex.Rooms.Grains.Systems;
+
+/// <summary>
+/// Kick/mute/ban enforcement. Kept on the room grain rather than a separate grain: kicking and
+/// banning mutate live avatar state (<c>AvatarModule.RemoveAvatarFromPlayerAsync</c>) and muting is
+/// read on every chat message via <c>RoomChatSystem</c>'s in-memory cache, both of which need the
+/// synchronous, single-turn access only the owning grain has.
+/// </summary>
+public sealed class RoomModerationSystem(RoomGrain roomGrain)
+{
+    private readonly RoomGrain _roomGrain = roomGrain;
+
+    public Task<bool> KickUserAsync(
+        ActionContext actorCtx,
+        PlayerId targetPlayerId,
+        CancellationToken ct
+    )
+    {
+        if (
+            actorCtx.PlayerId <= 0
+            || actorCtx.RoomId != _roomGrain._state.RoomId
+            || actorCtx.PlayerId == targetPlayerId
+        )
+        {
+            return Task.FromResult(false);
+        }
+
+        return KickUserGuardedAsync(actorCtx, targetPlayerId, ct);
+    }
+
+    private async Task<bool> KickUserGuardedAsync(
+        ActionContext actorCtx,
+        PlayerId targetPlayerId,
+        CancellationToken ct
+    )
+    {
+        if (
+            !await CanModerateAsync(
+                actorCtx,
+                _roomGrain._state.RoomSnapshot.ModSettings.WhoCanKick,
+                ModerationAction.Kick
+            )
+        )
+        {
+            return false;
+        }
+
+        return await KickUserInternalAsync(actorCtx, targetPlayerId, ct).ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// Whether <paramref name="actorCtx"/> may perform a moderation action gated by
+    /// <paramref name="setting"/> in this room. System/wired origins resolve to moderator and pass.
+    /// </summary>
+    private async Task<bool> CanModerateAsync(
+        ActionContext actorCtx,
+        ModSettingType setting,
+        ModerationAction action
+    )
+    {
+        RoomControllerType level = await _roomGrain
+            .SecurityModule.GetControllerLevelAsync(actorCtx)
+            .ConfigureAwait(true);
+
+        bool hasStaffCapability = await _roomGrain
+            .SecurityModule.HasStaffModerationCapabilityAsync(actorCtx, action)
+            .ConfigureAwait(true);
+
+        if (RoomModerationPolicy.CanModerate(level, setting, hasStaffCapability))
+        {
+            return true;
+        }
+
+        _roomGrain._logger.LogDebug(
+            "Player {ActorId} lacks {Setting} moderation rights in room {RoomId} (level {Level}).",
+            actorCtx.PlayerId,
+            setting,
+            _roomGrain._state.RoomId,
+            level
+        );
+
+        return false;
+    }
+
+    /// <summary>Kicks a user without a human actor — for wired / system-driven kicks (the
+    /// <c>wf_act_kick_user</c> action). Called directly on the grain from inside its own turn, so it is
+    /// not a re-entrant grain-reference call.</summary>
+    public Task<bool> KickUserFromWiredAsync(PlayerId targetPlayerId, CancellationToken ct) =>
+        KickUserInternalAsync(
+            ActionContext.CreateForWired(_roomGrain._state.RoomId),
+            targetPlayerId,
+            ct
+        );
+
+    private async Task<bool> KickUserInternalAsync(
+        ActionContext ctx,
+        PlayerId targetPlayerId,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            if (
+                targetPlayerId <= 0
+                || !_roomGrain._state.AvatarsByPlayerId.ContainsKey(targetPlayerId)
+            )
+            {
+                return false;
+            }
+
+            await _roomGrain
+                .AvatarModule.RemoveAvatarFromPlayerAsync(ctx, targetPlayerId, ct)
+                .ConfigureAwait(true);
+
+            await _roomGrain
+                ._events.PublishAsync(
+                    new PlayerKickedFromRoomEvent(
+                        ctx.PlayerId,
+                        targetPlayerId,
+                        _roomGrain._state.RoomId.Value
+                    ),
+                    ct
+                )
+                .ConfigureAwait(true);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to kick player {TargetPlayerId} from room {RoomId}.",
+                targetPlayerId,
+                _roomGrain._state.RoomId
+            );
+
+            return false;
+        }
+    }
+
+    public async Task<bool> MuteUserAsync(
+        ActionContext actorCtx,
+        PlayerId targetPlayerId,
+        int durationSeconds,
+        CancellationToken ct
+    )
+    {
+        if (
+            actorCtx.PlayerId <= 0
+            || targetPlayerId <= 0
+            || actorCtx.RoomId != _roomGrain._state.RoomId
+        )
+        {
+            return false;
+        }
+
+        if (durationSeconds <= 0 || actorCtx.PlayerId == targetPlayerId)
+        {
+            return false;
+        }
+
+        if (
+            !await CanModerateAsync(
+                actorCtx,
+                _roomGrain._state.RoomSnapshot.ModSettings.WhoCanMute,
+                ModerationAction.Mute
+            )
+        )
+        {
+            return false;
+        }
+
+        DateTime expiresUtc = DateTime.UtcNow.AddSeconds(durationSeconds);
+
+        try
+        {
+            await _roomGrain._moderationStore.MuteAsync(
+                _roomGrain._state.RoomId.Value,
+                targetPlayerId,
+                expiresUtc,
+                ct
+            );
+            _roomGrain._state.MuteExpiresUtc[targetPlayerId] = expiresUtc;
+
+            await _roomGrain
+                ._events.PublishAsync(
+                    new PlayerMutedInRoomEvent(
+                        actorCtx.PlayerId,
+                        targetPlayerId,
+                        _roomGrain._state.RoomId.Value,
+                        durationSeconds
+                    ),
+                    ct
+                )
+                .ConfigureAwait(true);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to mute player {TargetPlayerId} in room {RoomId}.",
+                targetPlayerId,
+                _roomGrain._state.RoomId
+            );
+        }
+
+        return false;
+    }
+
+    public async Task<bool> BanUserAsync(
+        ActionContext actorCtx,
+        PlayerId targetPlayerId,
+        int durationSeconds,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            if (
+                actorCtx.PlayerId <= 0
+                || targetPlayerId <= 0
+                || actorCtx.RoomId != _roomGrain._state.RoomId
+            )
+            {
+                return false;
+            }
+
+            if (durationSeconds <= 0 || actorCtx.PlayerId == targetPlayerId)
+            {
+                return false;
+            }
+
+            if (
+                !await CanModerateAsync(
+                    actorCtx,
+                    _roomGrain._state.RoomSnapshot.ModSettings.WhoCanBan,
+                    ModerationAction.Ban
+                )
+            )
+            {
+                return false;
+            }
+
+            DateTime expiresUtc = DateTime.UtcNow.AddSeconds(durationSeconds);
+
+            await _roomGrain._moderationStore.BanAsync(
+                _roomGrain._state.RoomId.Value,
+                targetPlayerId,
+                expiresUtc,
+                ct
+            );
+            await _roomGrain
+                .AvatarModule.RemoveAvatarFromPlayerAsync(actorCtx, targetPlayerId, ct)
+                .ConfigureAwait(true);
+
+            await _roomGrain
+                ._events.PublishAsync(
+                    new PlayerBannedInRoomEvent(
+                        actorCtx.PlayerId,
+                        targetPlayerId,
+                        _roomGrain._state.RoomId.Value,
+                        durationSeconds
+                    ),
+                    ct
+                )
+                .ConfigureAwait(true);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to ban player {TargetPlayerId} in room {RoomId}.",
+                targetPlayerId,
+                _roomGrain._state.RoomId
+            );
+
+            return false;
+        }
+    }
+
+    public async Task<bool> UnmuteUserAsync(
+        ActionContext actorCtx,
+        PlayerId targetPlayerId,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            if (
+                actorCtx.PlayerId <= 0
+                || targetPlayerId <= 0
+                || actorCtx.RoomId != _roomGrain._state.RoomId
+            )
+            {
+                return false;
+            }
+
+            if (
+                !await CanModerateAsync(
+                    actorCtx,
+                    _roomGrain._state.RoomSnapshot.ModSettings.WhoCanMute,
+                    ModerationAction.Mute
+                )
+            )
+            {
+                return false;
+            }
+
+            await _roomGrain
+                ._moderationStore.UnmuteAsync(_roomGrain._state.RoomId.Value, targetPlayerId, ct)
+                .ConfigureAwait(true);
+            _roomGrain._state.MuteExpiresUtc.Remove(targetPlayerId);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to unmute player {TargetPlayerId} in room {RoomId}.",
+                targetPlayerId,
+                _roomGrain._state.RoomId
+            );
+
+            return false;
+        }
+    }
+
+    public async Task<bool> UnbanUserAsync(
+        ActionContext actorCtx,
+        PlayerId targetPlayerId,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            if (
+                actorCtx.PlayerId <= 0
+                || targetPlayerId <= 0
+                || actorCtx.RoomId != _roomGrain._state.RoomId
+            )
+            {
+                return false;
+            }
+
+            if (
+                !await CanModerateAsync(
+                    actorCtx,
+                    _roomGrain._state.RoomSnapshot.ModSettings.WhoCanBan,
+                    ModerationAction.Ban
+                )
+            )
+            {
+                return false;
+            }
+
+            await _roomGrain
+                ._moderationStore.UnbanAsync(_roomGrain._state.RoomId.Value, targetPlayerId, ct)
+                .ConfigureAwait(true);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to unban player {TargetPlayerId} in room {RoomId}.",
+                targetPlayerId,
+                _roomGrain._state.RoomId
+            );
+
+            return false;
+        }
+    }
+}
