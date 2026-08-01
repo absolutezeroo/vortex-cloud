@@ -9,12 +9,15 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.TestHost" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="FluentAssertions" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Vortex.Database\Vortex.Database.csproj" />
+    <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
     <ProjectReference Include="..\Vortex.WebApi\Vortex.WebApi.csproj" />
   </ItemGroup>
 </Project>

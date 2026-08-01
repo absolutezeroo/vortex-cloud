@@ -29,6 +29,20 @@ public sealed class WebApiEndpointsTests
     }
 
     [Fact]
+    public async Task Health_WithDatabaseReachableAndNotDegraded_ReturnsHealthy()
+    {
+        await using WebApiTestFactory factory = new WebApiTestFactory();
+
+        HttpResponseMessage response = await factory.Client.GetAsync("/health");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        JsonElement body = await ReadJsonAsync(response);
+        body.GetProperty("status").GetString().Should().Be("Healthy");
+        body.GetProperty("database").GetString().Should().Be("up");
+    }
+
+    [Fact]
     public async Task Login_WithValidCredentials_Returns200AndIssuesCookie()
     {
         await using WebApiTestFactory factory = new WebApiTestFactory();

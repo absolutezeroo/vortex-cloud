@@ -4,10 +4,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Vortex.Database.Context;
+using Vortex.Primitives.Hosting;
 using Vortex.WebApi.Configuration;
 using Vortex.WebApi.Hosting;
 using Vortex.WebApi.Services;
@@ -51,6 +54,14 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
         builder.Services.AddSingleton<IWebApiAuthService>(new FakeAuthService(Sessions));
         builder.Services.AddSingleton<IWebApiPlayerService>(new FakePlayerService());
         builder.Services.AddSingleton<IOptions<WebApiConfig>>(Options.Create(config));
+        builder.Services.AddSingleton<RequiredServiceGuard>();
+        builder.Services.AddSingleton<IDbContextFactory<VortexDbContext>>(
+            new TestDbContextFactory(
+                new DbContextOptionsBuilder<VortexDbContext>()
+                    .UseInMemoryDatabase($"webapi-health-{Guid.NewGuid():N}")
+                    .Options
+            )
+        );
 
         WebApiAppConfigurator.ConfigureServices(builder.Services, config);
 
@@ -85,5 +96,11 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
     {
         Client.Dispose();
         await _app.DisposeAsync().ConfigureAwait(false);
+    }
+
+    private sealed class TestDbContextFactory(DbContextOptions<VortexDbContext> options)
+        : IDbContextFactory<VortexDbContext>
+    {
+        public VortexDbContext CreateDbContext() => new(options);
     }
 }

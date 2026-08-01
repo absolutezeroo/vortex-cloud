@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
+using Vortex.Database.Context;
+using Vortex.Primitives.Hosting;
 using Vortex.WebApi.Http;
 using Vortex.WebApi.Services;
 using Vortex.WebApi.Session;
@@ -40,6 +43,56 @@ internal static class WebApiEndpoints
         app.MapGet("/api/public/info/hello", () => Results.Json(new { status = "ok" }))
             .WithName("Hello")
             .WithSummary("Server liveness probe used by the onboarding client.")
+            .WithTags(TagPublic);
+
+        app.MapGet(
+                "/health",
+                async (
+                    RequiredServiceGuard guard,
+                    IDbContextFactory<VortexDbContext> dbCtxFactory,
+                    CancellationToken ct
+                ) =>
+                {
+                    bool databaseUp;
+
+                    try
+                    {
+                        await using VortexDbContext dbCtx = await dbCtxFactory
+                            .CreateDbContextAsync(ct)
+                            .ConfigureAwait(false);
+
+                        databaseUp = await dbCtx.Database.CanConnectAsync(ct).ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        // A probe failure is a health signal, not an error to propagate - report it
+                        // as part of the response body instead of a 500.
+                        databaseUp = false;
+                    }
+
+                    string status =
+                        !databaseUp ? "Unhealthy"
+                        : guard.IsDegraded ? "Degraded"
+                        : "Healthy";
+
+                    return Results.Json(
+                        new
+                        {
+                            status,
+                            database = databaseUp ? "up" : "down",
+                            degradedServices = guard.DegradedServices,
+                        },
+                        statusCode: status == "Unhealthy"
+                            ? StatusCodes.Status503ServiceUnavailable
+                            : StatusCodes.Status200OK
+                    );
+                }
+            )
+            .WithName("Health")
+            .WithSummary(
+                "Liveness/readiness probe: database connectivity and RequiredServiceGuard's "
+                    + "degraded-service state (OPS-02)."
+            )
             .WithTags(TagPublic);
     }
 

@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Vortex.Database.Context;
 using Vortex.Primitives.Hosting;
 using Vortex.WebApi.Configuration;
 using Vortex.WebApi.Services;
@@ -252,6 +254,8 @@ internal sealed class WebApiWebHost(
         services.AddSingleton(rootServices.GetRequiredService<WebApiSessionStore>());
         services.AddSingleton(rootServices.GetRequiredService<IWebApiAuthService>());
         services.AddSingleton(rootServices.GetRequiredService<IWebApiPlayerService>());
+        services.AddSingleton(rootServices.GetRequiredService<RequiredServiceGuard>());
+        services.AddSingleton(rootServices.GetRequiredService<IDbContextFactory<VortexDbContext>>());
         services.AddSingleton(options);
     }
 }
