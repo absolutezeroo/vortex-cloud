@@ -37,7 +37,7 @@ public class WiredSetObjectVariableValueMessageHandler(IGrainFactory grainFactor
             )
             .ConfigureAwait(false);
 
-        _ = ctx.SendComposerAsync(
+        await ctx.SendComposerAsync(
                 new WiredSetUserPermanentVariableResultComposer() { Success = success },
                 ct
             )

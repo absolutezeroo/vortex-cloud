@@ -33,7 +33,7 @@ public class WiredClearErrorLogsMessageHandler(IGrainFactory grainFactory)
         List<WiredErrorLogEntry> entries = await room.GetWiredErrorLogsAsync(ct)
             .ConfigureAwait(false);
 
-        _ = ctx.SendComposerAsync(
+        await ctx.SendComposerAsync(
                 new WiredErrorLogsEventMessageComposer() { Entries = entries },
                 ct
             )

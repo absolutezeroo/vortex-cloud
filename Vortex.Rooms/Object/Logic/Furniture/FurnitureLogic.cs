@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Logging.Extensions;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Providers;
@@ -103,7 +104,8 @@ public abstract class FurnitureLogic<TObject, TSelf, TContext>
 
         if (refresh)
         {
-            _ = _ctx.RefreshStuffDataAsync();
+            _ctx.RefreshStuffDataAsync()
+                .LogAndForget(_roomGrain._logger, "Failed to refresh stuff data.");
         }
 
         await OnStateChangedAsync(CancellationToken.None);

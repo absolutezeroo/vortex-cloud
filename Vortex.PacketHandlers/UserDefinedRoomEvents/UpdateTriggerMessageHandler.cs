@@ -31,7 +31,7 @@ public class UpdateTriggerMessageHandler(IGrainFactory grainFactory)
                 .ConfigureAwait(false)
         )
         {
-            _ = ctx.SendComposerAsync(
+            await ctx.SendComposerAsync(
                     new WiredValidationErrorEventMessageComposer
                     {
                         LocalizationKey = "wired.validation.error",
@@ -44,7 +44,7 @@ public class UpdateTriggerMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        _ = ctx.SendComposerAsync(new WiredSaveSuccessEventMessageComposer(), ct)
+        await ctx.SendComposerAsync(new WiredSaveSuccessEventMessageComposer(), ct)
             .ConfigureAwait(false);
     }
 }

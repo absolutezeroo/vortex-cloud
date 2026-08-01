@@ -66,6 +66,6 @@ public class OpenMessageHandler(IGrainFactory grainFactory) : IMessageHandler<Op
             return;
         }
 
-        _ = ctx.SendComposerAsync(composer, ct).ConfigureAwait(false);
+        await ctx.SendComposerAsync(composer, ct).ConfigureAwait(false);
     }
 }

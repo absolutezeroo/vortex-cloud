@@ -42,7 +42,7 @@ public class WiredGetAllVariableHoldersMessageHandler(IGrainFactory grainFactory
             (new RoomObjectId(h.ObjectId), h.Value)
         );
 
-        _ = ctx.SendComposerAsync(
+        await ctx.SendComposerAsync(
                 new WiredAllVariableHoldersEventMessageComposer
                 {
                     VariableSnapshot = result.Value.Variable,

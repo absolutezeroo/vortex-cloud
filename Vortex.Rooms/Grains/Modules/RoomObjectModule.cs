@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Logging;
+using Vortex.Logging.Extensions;
 using Vortex.Primitives;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Messages.Outgoing.Room.Engine;
@@ -68,9 +69,11 @@ public sealed partial class RoomObjectModule(RoomGrain roomGrain)
                 await AttatchLogicAsync(avatar, ct);
                 await _roomGrain.AvatarModule.ProcessNextAvatarStepAsync(avatar, ct);
 
-                _ = _roomGrain.SendComposerToRoomAsync(
-                    new UsersMessageComposer { Avatars = [avatar.GetSnapshot()] }
-                );
+                _roomGrain
+                    .SendComposerToRoomAsync(
+                        new UsersMessageComposer { Avatars = [avatar.GetSnapshot()] }
+                    )
+                    .LogAndForget(_roomGrain._logger, "Failed to broadcast avatar attach.");
                 break;
             }
             default:

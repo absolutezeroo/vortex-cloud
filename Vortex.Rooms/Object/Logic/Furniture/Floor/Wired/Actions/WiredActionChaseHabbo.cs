@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
+using Vortex.Logging.Extensions;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Rooms.Enums;
@@ -71,18 +72,19 @@ public class WiredActionChaseHabbo(
                     {
                         didCollide = true;
 
-                        _ = _ctx.PublishRoomEventAsync(
-                            new RoomItemCollisionEvent()
-                            {
-                                ObjectId = floorItem.ObjectId,
-                                CausedBy = ActionContext.CreateForPlayer(
-                                    player.PlayerId,
-                                    _roomGrain.RoomId
-                                ),
-                                RoomId = _roomGrain.RoomId,
-                            },
-                            ct
-                        );
+                        _ctx.PublishRoomEventAsync(
+                                new RoomItemCollisionEvent()
+                                {
+                                    ObjectId = floorItem.ObjectId,
+                                    CausedBy = ActionContext.CreateForPlayer(
+                                        player.PlayerId,
+                                        _roomGrain.RoomId
+                                    ),
+                                    RoomId = _roomGrain.RoomId,
+                                },
+                                ct
+                            )
+                            .LogAndForget(_roomGrain._logger, "Failed to publish room item collision event.");
 
                         break;
                     }

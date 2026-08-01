@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Vortex.Logging.Extensions;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Rooms;
@@ -360,7 +361,8 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             return;
         }
 
-        _ = ctx.Trigger.FlashActivationStateAsync(ct);
+        ctx.Trigger.FlashActivationStateAsync(ct)
+            .LogAndForget(_roomGrain._logger, "Failed to flash activation state for trigger.");
 
         // Before/AfterEffects addon hooks run in ExecuteStackChainAsync, around the chain's actual
         // execution — which can be ticks later than this scheduling when actions carry delays.
@@ -533,11 +535,14 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
                     Signal = new WiredSelectionSet().UnionWith(pending.Signal),
                 };
 
-                _ = action.FlashActivationStateAsync(ct);
+                action
+                    .FlashActivationStateAsync(ct)
+                    .LogAndForget(_roomGrain._logger, "Failed to flash activation state for action.");
 
                 await action.ExecuteAsync(ctx, ct);
 
-                _ = FlushWiredContextAsync(ctx);
+                FlushWiredContextAsync(ctx)
+                    .LogAndForget(_roomGrain._logger, "Failed to flush wired execution context.");
 
                 WriteWiredRoomLog(
                     WiredLogLevel.Info,
@@ -725,29 +730,32 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             || ctx.WallItemMoves.Count > 0
         )
         {
-            _ = ctx.SendComposerToRoomAsync(
-                new WiredMovementsMessageComposer
-                {
-                    Users = ctx.UserMoves,
-                    FloorItems = ctx.FloorItemMoves,
-                    WallItems = ctx.WallItemMoves,
-                    UserDirections = ctx.UserDirections,
-                }
-            );
+            ctx.SendComposerToRoomAsync(
+                    new WiredMovementsMessageComposer
+                    {
+                        Users = ctx.UserMoves,
+                        FloorItems = ctx.FloorItemMoves,
+                        WallItems = ctx.WallItemMoves,
+                        UserDirections = ctx.UserDirections,
+                    }
+                )
+                .LogAndForget(_roomGrain._logger, "Failed to broadcast wired movements.");
         }
 
         if (ctx.FloorItemStateUpdates.Count > 0)
         {
-            _ = ctx.SendComposerToRoomAsync(
-                new ObjectsDataUpdateMessageComposer { StuffDatas = ctx.FloorItemStateUpdates }
-            );
+            ctx.SendComposerToRoomAsync(
+                    new ObjectsDataUpdateMessageComposer { StuffDatas = ctx.FloorItemStateUpdates }
+                )
+                .LogAndForget(_roomGrain._logger, "Failed to broadcast floor item state updates.");
         }
 
         if (ctx.WallItemStateUpdates.Count > 0)
         {
-            _ = ctx.SendComposerToRoomAsync(
-                new ItemsStateUpdateMessageComposer { ObjectStates = ctx.WallItemStateUpdates }
-            );
+            ctx.SendComposerToRoomAsync(
+                    new ItemsStateUpdateMessageComposer { ObjectStates = ctx.WallItemStateUpdates }
+                )
+                .LogAndForget(_roomGrain._logger, "Failed to broadcast wall item state updates.");
         }
 
         return Task.CompletedTask;

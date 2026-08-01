@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Logging.Extensions;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Providers;
@@ -287,7 +288,8 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
     {
         StuffData.SetState(_clock.RemainingSeconds.ToString(CultureInfo.InvariantCulture));
 
-        _ = _ctx.RefreshStuffDataAsync();
+        _ctx.RefreshStuffDataAsync()
+            .LogAndForget(_roomGrain._logger, "Failed to refresh game timer stuff data.");
     }
 
     private static int[] ParseSteps(string? customParams)

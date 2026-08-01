@@ -36,6 +36,6 @@ public class WiredGetRoomLogsMessageHandler(IGrainFactory grainFactory)
             )
             .ConfigureAwait(false);
 
-        _ = ctx.SendComposerAsync(page, ct).ConfigureAwait(false);
+        await ctx.SendComposerAsync(page, ct).ConfigureAwait(false);
     }
 }

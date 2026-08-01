@@ -35,7 +35,7 @@ public class WiredGetUserPermanentVariablesMessageHandler(IGrainFactory grainFac
             )
             .ConfigureAwait(false);
 
-        _ = ctx.SendComposerAsync(
+        await ctx.SendComposerAsync(
                 new WiredUserPermanentVariablesComposer() { Snapshot = snapshot },
                 ct
             )

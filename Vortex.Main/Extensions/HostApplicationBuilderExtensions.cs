@@ -70,10 +70,11 @@ public static class HostApplicationBuilderExtensions
                         listenOnAnyHostAddress: true
                     );
 
+                    // PLAYER_STORE/ROOM_STORE were never wired to a [PersistentState] grain — every
+                    // grain in this codebase persists through EF Core instead, so only PubSubStore
+                    // (required by the stream providers below) is actually used.
                     silo.UseLocalhostClustering()
                         .AddMemoryGrainStorage(OrleansStorageNames.PUB_SUB_STORE)
-                        .AddMemoryGrainStorage(OrleansStorageNames.PLAYER_STORE)
-                        .AddMemoryGrainStorage(OrleansStorageNames.ROOM_STORE)
                         .AddMemoryStreams(OrleansStreamProviders.DEFAULT_STREAM_PROVIDER)
                         .AddMemoryStreams(OrleansStreamProviders.ROOM_STREAM_PROVIDER);
                 }

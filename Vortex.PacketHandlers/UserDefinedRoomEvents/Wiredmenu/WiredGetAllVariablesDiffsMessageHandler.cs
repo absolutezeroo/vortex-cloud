@@ -68,7 +68,7 @@ public class WiredGetAllVariablesDiffsMessageHandler(IGrainFactory grainFactory)
             diffs.Add(variable);
         }
 
-        _ = ctx.SendComposerAsync(
+        await ctx.SendComposerAsync(
                 new WiredAllVariablesDiffsEventMessageComposer()
                 {
                     AllVariablesHash = variables.AllVariablesHash,

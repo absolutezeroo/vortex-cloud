@@ -42,6 +42,6 @@ public class WiredSetRoomSettingsMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        _ = ctx.SendComposerAsync(settings, ct).ConfigureAwait(false);
+        await ctx.SendComposerAsync(settings, ct).ConfigureAwait(false);
     }
 }

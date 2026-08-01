@@ -30,7 +30,7 @@ public class WiredGetErrorLogsMessageHandler(IGrainFactory grainFactory)
             .GetWiredErrorLogsAsync(ct)
             .ConfigureAwait(false);
 
-        _ = ctx.SendComposerAsync(
+        await ctx.SendComposerAsync(
                 new WiredErrorLogsEventMessageComposer() { Entries = entries },
                 ct
             )

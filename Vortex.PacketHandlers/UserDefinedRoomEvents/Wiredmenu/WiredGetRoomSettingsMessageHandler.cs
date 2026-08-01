@@ -30,6 +30,6 @@ public class WiredGetRoomSettingsMessageHandler(IGrainFactory grainFactory)
             .GetWiredRoomSettingsAsync(new PlayerId(ctx.PlayerId), ct)
             .ConfigureAwait(false);
 
-        _ = ctx.SendComposerAsync(settings, ct).ConfigureAwait(false);
+        await ctx.SendComposerAsync(settings, ct).ConfigureAwait(false);
     }
 }

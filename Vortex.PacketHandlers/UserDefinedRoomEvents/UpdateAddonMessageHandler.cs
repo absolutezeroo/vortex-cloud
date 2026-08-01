@@ -34,7 +34,7 @@ public class UpdateAddonMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        _ = ctx.SendComposerAsync(new WiredSaveSuccessEventMessageComposer(), ct)
+        await ctx.SendComposerAsync(new WiredSaveSuccessEventMessageComposer(), ct)
             .ConfigureAwait(false);
     }
 }

@@ -29,6 +29,6 @@ public class WiredGetRoomStatsMessageHandler(IGrainFactory grainFactory)
             .GetWiredRoomStatsAsync(ct)
             .ConfigureAwait(false);
 
-        _ = ctx.SendComposerAsync(stats, ct).ConfigureAwait(false);
+        await ctx.SendComposerAsync(stats, ct).ConfigureAwait(false);
     }
 }

@@ -37,7 +37,7 @@ public class WiredGetVariableOwnersPageMessageHandler(IGrainFactory grainFactory
             )
             .ConfigureAwait(false);
 
-        _ = ctx.SendComposerAsync(new WiredUserVariablesListComposer() { Page = page }, ct)
+        await ctx.SendComposerAsync(new WiredUserVariablesListComposer() { Page = page }, ct)
             .ConfigureAwait(false);
     }
 }

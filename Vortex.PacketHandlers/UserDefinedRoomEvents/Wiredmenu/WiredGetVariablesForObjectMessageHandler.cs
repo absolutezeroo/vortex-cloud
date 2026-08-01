@@ -40,7 +40,7 @@ public class WiredGetVariablesForObjectMessageHandler(IGrainFactory grainFactory
             )
             .ConfigureAwait(false);
 
-        _ = ctx.SendComposerAsync(
+        await ctx.SendComposerAsync(
                 new WiredVariablesForObjectEventMessageComposer()
                 {
                     TargetType = (WiredVariableTargetType)message.SourceType,

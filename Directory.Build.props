@@ -3,9 +3,13 @@
     <AnalysisLevel>latest</AnalysisLevel>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <!-- Phase 1 is warn-first. Move to phase 2 in CI after stabilization to hard-fail additional diagnostics. -->
-    <VortexAIPolicyPhase Condition="'$(VortexAIPolicyPhase)' == ''">1</VortexAIPolicyPhase>
-    <VortexAIWarningsAsErrors>CS8602;CS8604;CS8618;CA2000;CA2012;CA2201;IDE0005;IDE0058</VortexAIWarningsAsErrors>
+    <!-- Phase 2: the solution builds warning-free, so the additional diagnostics below are now
+         hard-failed instead of just warned about. -->
+    <VortexAIPolicyPhase Condition="'$(VortexAIPolicyPhase)' == ''">2</VortexAIPolicyPhase>
+    <!-- IDE0005 is deliberately excluded: it only runs as a build-time analyzer when
+         GenerateDocumentationFile is true, and turning that on would demand XML doc comments
+         repo-wide, which conflicts with this project's "comment the why, not the what" style. -->
+    <VortexAIWarningsAsErrors>CS8602;CS8604;CS8618;CA2000;CA2012;CA2201;IDE0058</VortexAIWarningsAsErrors>
     <!-- Enforce critical Orleans serialization diagnostics for contributor safety. -->
     <WarningsAsErrors>$(WarningsAsErrors);ORLEANS0012;ORLEANS0013</WarningsAsErrors>
     <WarningsAsErrors Condition="'$(VortexAIPolicyPhase)' == '2'"
