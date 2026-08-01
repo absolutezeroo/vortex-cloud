@@ -107,7 +107,11 @@ public sealed class RoomTradingSystem(RoomGrain roomGrain)
 
         await _roomGrain
             ._events.PublishAsync(
-                new TradeStartedEvent(requesterId.Value, otherId.Value, _roomGrain._state.RoomId.Value),
+                new TradeStartedEvent(
+                    requesterId.Value,
+                    otherId.Value,
+                    _roomGrain._state.RoomId.Value
+                ),
                 ct
             )
             .ConfigureAwait(true);
@@ -136,7 +140,10 @@ public sealed class RoomTradingSystem(RoomGrain roomGrain)
 
         foreach (int itemId in itemIds)
         {
-            if (offer.Contains(itemId) || offer.Count >= _roomGrain._roomConfig.MaxTradeItemsPerSide)
+            if (
+                offer.Contains(itemId)
+                || offer.Count >= _roomGrain._roomConfig.MaxTradeItemsPerSide
+            )
             {
                 continue;
             }
@@ -584,8 +591,7 @@ public sealed class RoomTradingSystem(RoomGrain roomGrain)
             _roomGrain._state.TradeSessionsByPlayerId.TryGetValue(
                 playerId,
                 out RoomTradeSession? found
-            )
-            && found.IsParticipant(playerId)
+            ) && found.IsParticipant(playerId)
         )
         {
             session = found;
@@ -600,7 +606,8 @@ public sealed class RoomTradingSystem(RoomGrain roomGrain)
     {
         foreach (
             (PlayerId candidate, RoomObjectId candidateObjectId) in _roomGrain
-                ._state.AvatarsByPlayerId
+                ._state
+                .AvatarsByPlayerId
         )
         {
             if (candidateObjectId.Value == objectId)
@@ -731,7 +738,11 @@ public sealed class RoomTradingSystem(RoomGrain roomGrain)
 
     private Task SendToTradeAsync(RoomTradeSession session, IComposer composer) =>
         Task.WhenAll(
-            _roomGrain._grainFactory.GetPlayerPresenceGrain(session.UserOneId).SendComposerAsync(composer),
-            _roomGrain._grainFactory.GetPlayerPresenceGrain(session.UserTwoId).SendComposerAsync(composer)
+            _roomGrain
+                ._grainFactory.GetPlayerPresenceGrain(session.UserOneId)
+                .SendComposerAsync(composer),
+            _roomGrain
+                ._grainFactory.GetPlayerPresenceGrain(session.UserTwoId)
+                .SendComposerAsync(composer)
         );
 }

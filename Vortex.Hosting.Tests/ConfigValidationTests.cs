@@ -411,8 +411,9 @@ public sealed class ConfigValidationTests
 
     // ── Orleans ──────────────────────────────────────────────────────────────
 
-    private static OrleansHostConfigValidator OrleansValidator(string connectionString = "server=x") =>
-        new(Options.Create(new DatabaseConfig { ConnectionString = connectionString }));
+    private static OrleansHostConfigValidator OrleansValidator(
+        string connectionString = "server=x"
+    ) => new(Options.Create(new DatabaseConfig { ConnectionString = connectionString }));
 
     [Fact]
     public void TheDefaultOrleansEndpoint_Passes() =>

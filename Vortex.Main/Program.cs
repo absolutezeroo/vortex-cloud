@@ -88,7 +88,11 @@ internal class Program
                         IFileInfo? fi = fileProvider?.GetFileInfo(path);
                         string physical = fi?.PhysicalPath ?? "<virtual or unresolved>";
 
-                        bootstrapLogger.LogInformation("Json: '{Path}' -> {Physical}", path, physical);
+                        bootstrapLogger.LogInformation(
+                            "Json: '{Path}' -> {Physical}",
+                            path,
+                            physical
+                        );
                     }
                 }
             }

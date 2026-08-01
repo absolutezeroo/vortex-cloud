@@ -84,7 +84,10 @@ public class WiredActionChaseHabbo(
                                 },
                                 ct
                             )
-                            .LogAndForget(_roomGrain._logger, "Failed to publish room item collision event.");
+                            .LogAndForget(
+                                _roomGrain._logger,
+                                "Failed to publish room item collision event."
+                            );
 
                         break;
                     }

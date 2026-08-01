@@ -37,7 +37,8 @@ public static class HostApplicationBuilderExtensions
             ?? new OrleansHostConfig();
 
         bool usesAdoNet =
-            hostConfig.ClusteringProvider == "adonet" || hostConfig.GrainStorageProvider == "adonet";
+            hostConfig.ClusteringProvider == "adonet"
+            || hostConfig.GrainStorageProvider == "adonet";
 
         bool unclustered =
             hostConfig.ClusteringProvider == "localhost"
@@ -72,14 +73,18 @@ public static class HostApplicationBuilderExtensions
             // MySqlConnector isn't registered as a DbProviderFactory by default (unlike the EF Core
             // path, which references it directly) - Orleans's ADO.NET providers resolve their driver
             // by invariant name through DbProviderFactories.
-            DbProviderFactories.RegisterFactory(hostConfig.Invariant, MySqlConnectorFactory.Instance);
+            DbProviderFactories.RegisterFactory(
+                hostConfig.Invariant,
+                MySqlConnectorFactory.Instance
+            );
         }
 
         string databaseConnectionString =
             builder
                 .Configuration.GetSection(DatabaseConfig.SECTION_NAME)
                 .Get<DatabaseConfig>()
-                ?.ConnectionString ?? string.Empty;
+                ?.ConnectionString
+            ?? string.Empty;
 
         builder.UseOrleans(
             (System.Action<ISiloBuilder>)(

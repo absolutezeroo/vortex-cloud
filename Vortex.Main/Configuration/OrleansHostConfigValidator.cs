@@ -21,9 +21,7 @@ public sealed class OrleansHostConfigValidator(IOptions<DatabaseConfig> database
     {
         List<string> failures = [];
 
-        if (
-            Array.IndexOf(KnownClusteringProviders, options.ClusteringProvider) < 0
-        )
+        if (Array.IndexOf(KnownClusteringProviders, options.ClusteringProvider) < 0)
         {
             failures.Add(
                 $"'{OrleansHostConfig.SECTION_NAME}:{nameof(OrleansHostConfig.ClusteringProvider)}' "
@@ -32,9 +30,7 @@ public sealed class OrleansHostConfigValidator(IOptions<DatabaseConfig> database
             );
         }
 
-        if (
-            Array.IndexOf(KnownGrainStorageProviders, options.GrainStorageProvider) < 0
-        )
+        if (Array.IndexOf(KnownGrainStorageProviders, options.GrainStorageProvider) < 0)
         {
             failures.Add(
                 $"'{OrleansHostConfig.SECTION_NAME}:{nameof(OrleansHostConfig.GrainStorageProvider)}' "

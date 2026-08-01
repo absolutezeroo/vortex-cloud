@@ -95,8 +95,7 @@ public sealed class Rc4EngineTests
         Rc4Engine engine = new(Key("k"));
         byte[] buffer = new byte[8];
 
-        Action act = () =>
-            engine.ProcessBytes(buffer, inputOffset, 4, buffer, outputOffset);
+        Action act = () => engine.ProcessBytes(buffer, inputOffset, 4, buffer, outputOffset);
 
         act.Should().Throw<ArgumentOutOfRangeException>();
     }

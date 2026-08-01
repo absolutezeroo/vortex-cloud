@@ -70,7 +70,9 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
         {
             await _roomGrain
                 ._grainFactory.GetPlayerPresenceGrain(playerId)
-                .SendComposerAsync(new FloodControlMessageComposer { Seconds = floodSecondsRemaining })
+                .SendComposerAsync(
+                    new FloodControlMessageComposer { Seconds = floodSecondsRemaining }
+                )
                 .ConfigureAwait(false);
 
             return;
@@ -301,7 +303,7 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
             intervals.Length == 0 ? 0
             : sensitivityIndex >= 0 && sensitivityIndex < intervals.Length
                 ? intervals[sensitivityIndex]
-                : intervals[^1];
+            : intervals[^1];
 
         long nowMs = Environment.TickCount64;
 

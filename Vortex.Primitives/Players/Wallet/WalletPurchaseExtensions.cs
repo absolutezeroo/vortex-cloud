@@ -68,7 +68,9 @@ public static class WalletPurchaseExtensions
                 // the refund fail in exactly that case, leaving the player permanently debited.
                 try
                 {
-                    await wallet.CreditBackAsync(debitRequests, CancellationToken.None).ConfigureAwait(false);
+                    await wallet
+                        .CreditBackAsync(debitRequests, CancellationToken.None)
+                        .ConfigureAwait(false);
                 }
                 catch (Exception refundEx)
                 {

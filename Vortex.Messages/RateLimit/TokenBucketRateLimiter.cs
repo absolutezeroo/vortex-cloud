@@ -41,12 +41,16 @@ public sealed class TokenBucketRateLimiter : IRateLimiter
         lock (bucket)
         {
             long now = Stopwatch.GetTimestamp();
-            double elapsedSeconds = Stopwatch.GetElapsedTime(bucket.LastRefillTimestamp, now)
+            double elapsedSeconds = Stopwatch
+                .GetElapsedTime(bucket.LastRefillTimestamp, now)
                 .TotalSeconds;
 
             if (elapsedSeconds > 0)
             {
-                bucket.Tokens = Math.Min(_capacity, bucket.Tokens + (elapsedSeconds * _ratePerSecond));
+                bucket.Tokens = Math.Min(
+                    _capacity,
+                    bucket.Tokens + (elapsedSeconds * _ratePerSecond)
+                );
                 bucket.LastRefillTimestamp = now;
             }
 

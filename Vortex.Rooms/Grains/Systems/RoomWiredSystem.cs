@@ -537,7 +537,10 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
 
                 action
                     .FlashActivationStateAsync(ct)
-                    .LogAndForget(_roomGrain._logger, "Failed to flash activation state for action.");
+                    .LogAndForget(
+                        _roomGrain._logger,
+                        "Failed to flash activation state for action."
+                    );
 
                 await action.ExecuteAsync(ctx, ct);
 

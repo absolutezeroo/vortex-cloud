@@ -105,9 +105,7 @@ internal sealed class GroupDirectoryGrain(
         // Preflight check on its own short-lived context, purely to fail fast (and avoid debiting
         // the wallet) before ever publishing the cancellable event below. The authoritative check
         // happens again inside the retryable transaction further down.
-        await using (
-            VortexDbContext preflightCtx = await dbCtxFactory.CreateDbContextAsync(ct)
-        )
+        await using (VortexDbContext preflightCtx = await dbCtxFactory.CreateDbContextAsync(ct))
         {
             RoomEntity? preflightRoom = await preflightCtx
                 .Rooms.AsNoTracking()
@@ -181,17 +179,18 @@ internal sealed class GroupDirectoryGrain(
                             token
                         );
 
-                        if (room is null || room.PlayerEntityId != ownerId || room.GroupEntityId != null)
+                        if (
+                            room is null
+                            || room.PlayerEntityId != ownerId
+                            || room.GroupEntityId != null
+                        )
                         {
                             throw new InvalidOperationException(
                                 $"Room {baseRoomId} is no longer a valid guild base for player {ownerId}."
                             );
                         }
 
-                        PlayerEntity? ownerEntity = await dbCtx.Players.FindAsync(
-                            [ownerId],
-                            token
-                        );
+                        PlayerEntity? ownerEntity = await dbCtx.Players.FindAsync([ownerId], token);
 
                         if (ownerEntity is null)
                         {

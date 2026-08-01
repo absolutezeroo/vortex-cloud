@@ -33,7 +33,11 @@ public sealed class DiffieServiceTests
     private static readonly BigInteger s_prime = new(DH_SAFE_PRIME_HEX, 16);
     private static readonly BigInteger s_generator = BigInteger.Two;
 
-    private readonly struct Fixture(DiffieService diffie, RsaService rsa, RsaKeyParameters publicKey)
+    private readonly struct Fixture(
+        DiffieService diffie,
+        RsaService rsa,
+        RsaKeyParameters publicKey
+    )
     {
         public DiffieService Diffie { get; } = diffie;
         public RsaService Rsa { get; } = rsa;

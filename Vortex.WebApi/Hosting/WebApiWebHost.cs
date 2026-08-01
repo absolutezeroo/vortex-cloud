@@ -255,7 +255,9 @@ internal sealed class WebApiWebHost(
         services.AddSingleton(rootServices.GetRequiredService<IWebApiAuthService>());
         services.AddSingleton(rootServices.GetRequiredService<IWebApiPlayerService>());
         services.AddSingleton(rootServices.GetRequiredService<RequiredServiceGuard>());
-        services.AddSingleton(rootServices.GetRequiredService<IDbContextFactory<VortexDbContext>>());
+        services.AddSingleton(
+            rootServices.GetRequiredService<IDbContextFactory<VortexDbContext>>()
+        );
         services.AddSingleton(options);
     }
 }

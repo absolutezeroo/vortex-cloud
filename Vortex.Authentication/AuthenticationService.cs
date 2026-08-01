@@ -24,7 +24,9 @@ public sealed class AuthenticationService(
     private readonly string _ipHashSecret = options.Value.IpHashSecret;
     private readonly int _ticketTtlSeconds = options.Value.TicketTtlSeconds;
     private readonly bool _ticketSingleUse = options.Value.TicketSingleUse;
-    private readonly int? _ticketAbsoluteLifetimeSeconds = options.Value.TicketAbsoluteLifetimeSeconds;
+    private readonly int? _ticketAbsoluteLifetimeSeconds = options
+        .Value
+        .TicketAbsoluteLifetimeSeconds;
 
     public async Task<int> GetPlayerIdFromTicketAsync(
         string ticket,
@@ -98,9 +100,10 @@ public sealed class AuthenticationService(
                     // new ticket, while keeping the replay window bounded per use. Left default
                     // (TicketSingleUse = false) for compatibility with CMS integrations that reuse
                     // one ticket across reconnects.
-                    DateTime slidExpiry = _ticketTtlSeconds > 0
-                        ? now.AddSeconds(_ticketTtlSeconds)
-                        : DateTime.MaxValue;
+                    DateTime slidExpiry =
+                        _ticketTtlSeconds > 0
+                            ? now.AddSeconds(_ticketTtlSeconds)
+                            : DateTime.MaxValue;
 
                     if (_ticketAbsoluteLifetimeSeconds is int absoluteSeconds)
                     {

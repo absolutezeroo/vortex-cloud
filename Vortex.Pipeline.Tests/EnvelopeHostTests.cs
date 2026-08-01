@@ -19,7 +19,10 @@ namespace Vortex.Pipeline.Tests;
 /// </summary>
 public sealed class EnvelopeHostTests
 {
-    private static ServiceProvider NewProvider(Recorder recorder, ConcurrencyTracker? tracker = null)
+    private static ServiceProvider NewProvider(
+        Recorder recorder,
+        ConcurrencyTracker? tracker = null
+    )
     {
         ServiceCollection services = new();
         services.AddSingleton(recorder);
@@ -64,8 +67,13 @@ public sealed class EnvelopeHostTests
         where THandler : class
     {
         EnvelopeInvokerFactory<TestContext> factory = new();
-        HandlerInvoker<TestContext> invoker = factory.CreateHandlerInvoker(typeof(THandler), envType);
-        Func<IServiceProvider, object> activator = ActivatorHelpers.BuildActivator(typeof(THandler));
+        HandlerInvoker<TestContext> invoker = factory.CreateHandlerInvoker(
+            typeof(THandler),
+            envType
+        );
+        Func<IServiceProvider, object> activator = ActivatorHelpers.BuildActivator(
+            typeof(THandler)
+        );
 
         return host.RegisterHandler(envType, sp, activator, invoker);
     }
@@ -82,7 +90,9 @@ public sealed class EnvelopeHostTests
             typeof(TBehavior),
             envType
         );
-        Func<IServiceProvider, object> activator = ActivatorHelpers.BuildActivator(typeof(TBehavior));
+        Func<IServiceProvider, object> activator = ActivatorHelpers.BuildActivator(
+            typeof(TBehavior)
+        );
         int order = typeof(TBehavior).GetCustomAttribute<OrderAttribute>()?.Value ?? 0;
 
         return host.RegisterBehavior(envType, sp, activator, invoker, order);
@@ -96,8 +106,11 @@ public sealed class EnvelopeHostTests
         EnvelopeHost<TestEnvelope, string, TestContext> host = NewHost(sp);
         using IDisposable reg = RegisterHandler<RecordingHandlerA>(host, sp, typeof(TestEnvelope));
 
-        await host
-            .PublishAsync(new TestEnvelope { Payload = "hello" }, null, CancellationToken.None)
+        await host.PublishAsync(
+                new TestEnvelope { Payload = "hello" },
+                null,
+                CancellationToken.None
+            )
             .ConfigureAwait(true);
 
         recorder.Entries.Should().Equal("A:hello");
@@ -123,8 +136,7 @@ public sealed class EnvelopeHostTests
         using IDisposable regA = RegisterHandler<RecordingHandlerA>(host, sp, typeof(TestEnvelope));
         using IDisposable regB = RegisterHandler<RecordingHandlerB>(host, sp, typeof(TestEnvelope));
 
-        await host
-            .PublishAsync(new TestEnvelope { Payload = "x" }, null, CancellationToken.None)
+        await host.PublishAsync(new TestEnvelope { Payload = "x" }, null, CancellationToken.None)
             .ConfigureAwait(true);
 
         recorder.Entries.Should().BeEquivalentTo(["A:x", "B:x"]);
@@ -142,8 +154,7 @@ public sealed class EnvelopeHostTests
         using IDisposable regB = RegisterHandler<RecordingHandlerB>(host, sp, typeof(TestEnvelope));
         using IDisposable regA = RegisterHandler<RecordingHandlerA>(host, sp, typeof(TestEnvelope));
 
-        await host
-            .PublishAsync(new TestEnvelope { Payload = "y" }, null, CancellationToken.None)
+        await host.PublishAsync(new TestEnvelope { Payload = "y" }, null, CancellationToken.None)
             .ConfigureAwait(true);
 
         recorder.Entries.Should().Equal("B:y", "A:y");
@@ -179,8 +190,7 @@ public sealed class EnvelopeHostTests
             typeof(TestEnvelope)
         );
 
-        await host
-            .PublishAsync(new TestEnvelope { Payload = "z" }, null, CancellationToken.None)
+        await host.PublishAsync(new TestEnvelope { Payload = "z" }, null, CancellationToken.None)
             .ConfigureAwait(true);
 
         recorder
@@ -204,14 +214,12 @@ public sealed class EnvelopeHostTests
         EnvelopeHost<TestEnvelope, string, TestContext> host = NewHost(sp);
         IDisposable reg = RegisterHandler<RecordingHandlerA>(host, sp, typeof(TestEnvelope));
 
-        await host
-            .PublishAsync(new TestEnvelope { Payload = "1" }, null, CancellationToken.None)
+        await host.PublishAsync(new TestEnvelope { Payload = "1" }, null, CancellationToken.None)
             .ConfigureAwait(true);
 
         reg.Dispose();
 
-        await host
-            .PublishAsync(new TestEnvelope { Payload = "2" }, null, CancellationToken.None)
+        await host.PublishAsync(new TestEnvelope { Payload = "2" }, null, CancellationToken.None)
             .ConfigureAwait(true);
 
         recorder.Entries.Should().Equal("A:1");
@@ -225,8 +233,11 @@ public sealed class EnvelopeHostTests
         EnvelopeHost<TestEnvelope, string, TestContext> host = NewHost(sp, enableInheritance: true);
         using IDisposable reg = RegisterHandler<RecordingHandlerA>(host, sp, typeof(TestEnvelope));
 
-        await host
-            .PublishAsync(new DerivedTestEnvelope { Payload = "d" }, null, CancellationToken.None)
+        await host.PublishAsync(
+                new DerivedTestEnvelope { Payload = "d" },
+                null,
+                CancellationToken.None
+            )
             .ConfigureAwait(true);
 
         recorder.Entries.Should().Equal("A:d");
@@ -243,8 +254,11 @@ public sealed class EnvelopeHostTests
         );
         using IDisposable reg = RegisterHandler<RecordingHandlerA>(host, sp, typeof(TestEnvelope));
 
-        await host
-            .PublishAsync(new DerivedTestEnvelope { Payload = "d" }, null, CancellationToken.None)
+        await host.PublishAsync(
+                new DerivedTestEnvelope { Payload = "d" },
+                null,
+                CancellationToken.None
+            )
             .ConfigureAwait(true);
 
         recorder.Entries.Should().BeEmpty();
@@ -274,10 +288,13 @@ public sealed class EnvelopeHostTests
             throwingActivator,
             invoker
         );
-        using IDisposable goodReg = RegisterHandler<RecordingHandlerB>(host, sp, typeof(TestEnvelope));
+        using IDisposable goodReg = RegisterHandler<RecordingHandlerB>(
+            host,
+            sp,
+            typeof(TestEnvelope)
+        );
 
-        await host
-            .PublishAsync(new TestEnvelope { Payload = "e" }, null, CancellationToken.None)
+        await host.PublishAsync(new TestEnvelope { Payload = "e" }, null, CancellationToken.None)
             .ConfigureAwait(true);
 
         activationErrors.Should().ContainSingle();
@@ -301,10 +318,13 @@ public sealed class EnvelopeHostTests
             sp,
             typeof(TestEnvelope)
         );
-        using IDisposable goodReg = RegisterHandler<RecordingHandlerA>(host, sp, typeof(TestEnvelope));
+        using IDisposable goodReg = RegisterHandler<RecordingHandlerA>(
+            host,
+            sp,
+            typeof(TestEnvelope)
+        );
 
-        await host
-            .PublishAsync(new TestEnvelope { Payload = "f" }, null, CancellationToken.None)
+        await host.PublishAsync(new TestEnvelope { Payload = "f" }, null, CancellationToken.None)
             .ConfigureAwait(true);
 
         invokeErrors.Should().ContainSingle();
@@ -345,8 +365,11 @@ public sealed class EnvelopeHostTests
         using ServiceProvider sp = NewProvider(new Recorder());
         EnvelopeHost<TestEnvelope, string, TestContext> host = NewHost(sp);
 
-        TestContext ctx = await host
-            .PublishWithContextAsync(new TestEnvelope { Payload = "none" }, null, CancellationToken.None)
+        TestContext ctx = await host.PublishWithContextAsync(
+                new TestEnvelope { Payload = "none" },
+                null,
+                CancellationToken.None
+            )
             .ConfigureAwait(true);
 
         ctx.Should().NotBeNull();
@@ -363,13 +386,10 @@ public sealed class EnvelopeHostTests
         CompositeDisposable regs = new();
         for (int i = 0; i < 6; i++)
         {
-            regs.Add(
-                RegisterHandler<ConcurrencyTrackingHandler>(host, sp, typeof(TestEnvelope))
-            );
+            regs.Add(RegisterHandler<ConcurrencyTrackingHandler>(host, sp, typeof(TestEnvelope)));
         }
 
-        await host
-            .PublishAsync(new TestEnvelope { Payload = "p" }, null, CancellationToken.None)
+        await host.PublishAsync(new TestEnvelope { Payload = "p" }, null, CancellationToken.None)
             .ConfigureAwait(true);
 
         tracker.Max.Should().BeLessThanOrEqualTo(2);

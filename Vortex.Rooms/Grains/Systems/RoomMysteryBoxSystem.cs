@@ -261,7 +261,9 @@ public sealed class RoomMysteryBoxSystem(RoomGrain roomGrain)
 
         List<RoomMysteryBoxSession>? expired = null;
 
-        foreach (RoomMysteryBoxSession session in _roomGrain._state.MysteryBoxSessionsByOwnerId.Values)
+        foreach (
+            RoomMysteryBoxSession session in _roomGrain._state.MysteryBoxSessionsByOwnerId.Values
+        )
         {
             if (nowMs - session.StartedAtMs < _roomGrain._roomConfig.MysteryBoxWaitTimeoutMs)
             {
@@ -295,7 +297,9 @@ public sealed class RoomMysteryBoxSystem(RoomGrain roomGrain)
 
         List<RoomMysteryBoxSession>? affected = null;
 
-        foreach (RoomMysteryBoxSession session in _roomGrain._state.MysteryBoxSessionsByOwnerId.Values)
+        foreach (
+            RoomMysteryBoxSession session in _roomGrain._state.MysteryBoxSessionsByOwnerId.Values
+        )
         {
             if (session.IsParticipant(playerId))
             {
@@ -335,7 +339,9 @@ public sealed class RoomMysteryBoxSystem(RoomGrain roomGrain)
     {
         RoomMysteryBoxSession? attached = null;
 
-        foreach (RoomMysteryBoxSession session in _roomGrain._state.MysteryBoxSessionsByOwnerId.Values)
+        foreach (
+            RoomMysteryBoxSession session in _roomGrain._state.MysteryBoxSessionsByOwnerId.Values
+        )
         {
             if (session.BoxObjectId == boxObjectId)
             {

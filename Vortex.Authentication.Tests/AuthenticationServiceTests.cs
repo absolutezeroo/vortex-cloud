@@ -196,9 +196,7 @@ public sealed class AuthenticationServiceTests
         RecordingEventPublisher events = new();
         AuthenticationService service = NewService(options, events);
 
-        int playerId = await service
-            .GetPlayerIdFromTicketAsync(ticket!)
-            .ConfigureAwait(true);
+        int playerId = await service.GetPlayerIdFromTicketAsync(ticket!).ConfigureAwait(true);
 
         playerId.Should().Be(0);
         events.Published.Should().BeEmpty();
@@ -436,8 +434,8 @@ public sealed class AuthenticationServiceTests
             .GetPlayerIdFromTicketAsync("ip-ticket", remoteIp: "203.0.113.42")
             .ConfigureAwait(true);
 
-        PlayerLoggedInEvent published = events.Published.Should().ContainSingle().Which
-            as PlayerLoggedInEvent
+        PlayerLoggedInEvent published =
+            events.Published.Should().ContainSingle().Which as PlayerLoggedInEvent
             ?? throw new InvalidOperationException("expected a PlayerLoggedInEvent");
 
         published.IpHash.Should().NotBeNullOrEmpty();

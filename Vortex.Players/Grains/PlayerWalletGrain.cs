@@ -70,75 +70,69 @@ internal sealed class PlayerWalletGrain(
                 .ConfigureAwait(true);
             IExecutionStrategy strategy = strategyProbe.Database.CreateExecutionStrategy();
 
-            (
-                WalletDebitFailure? failure,
-                List<WalletCurrencyUpdateSnapshot> updates
-            ) = await strategy
-                .ExecuteAsync(async () =>
-                {
-                    await using VortexDbContext dbCtx = await _dbCtxFactory
-                        .CreateDbContextAsync(ct)
-                        .ConfigureAwait(true);
-                    await using IDbContextTransaction tx = await dbCtx
-                        .Database.BeginTransactionAsync(ct)
-                        .ConfigureAwait(true);
-
-                    List<WalletCurrencyUpdateSnapshot> attemptUpdates = new List<WalletCurrencyUpdateSnapshot>(
-                        normalizedRequests.Count
-                    );
-
-                    foreach (WalletDebitRequest request in normalizedRequests)
+            (WalletDebitFailure? failure, List<WalletCurrencyUpdateSnapshot> updates) =
+                await strategy
+                    .ExecuteAsync(async () =>
                     {
-                        try
-                        {
-                            WalletCurrencyUpdateSnapshot update = await ProcessDebitRequestAsync(
-                                dbCtx,
-                                request,
-                                ct
-                            );
+                        await using VortexDbContext dbCtx = await _dbCtxFactory
+                            .CreateDbContextAsync(ct)
+                            .ConfigureAwait(true);
+                        await using IDbContextTransaction tx = await dbCtx
+                            .Database.BeginTransactionAsync(ct)
+                            .ConfigureAwait(true);
 
-                            if (update.ChangedBy != request.Amount)
+                        List<WalletCurrencyUpdateSnapshot> attemptUpdates =
+                            new List<WalletCurrencyUpdateSnapshot>(normalizedRequests.Count);
+
+                        foreach (WalletDebitRequest request in normalizedRequests)
+                        {
+                            try
                             {
-                                // Specific type (CA2201): a bare Exception cannot be caught selectively, and
-                                // this is a wallet invariant breach — the amount actually debited did not
-                                // match what was asked for — not an arbitrary failure.
-                                throw new InvalidOperationException(
-                                    $"Wallet debit changed {update.ChangedBy} but {request.Amount} was "
-                                        + $"requested for {request.CurrencyKind.CurrencyType}."
+                                WalletCurrencyUpdateSnapshot update =
+                                    await ProcessDebitRequestAsync(dbCtx, request, ct);
+
+                                if (update.ChangedBy != request.Amount)
+                                {
+                                    // Specific type (CA2201): a bare Exception cannot be caught selectively, and
+                                    // this is a wallet invariant breach — the amount actually debited did not
+                                    // match what was asked for — not an arbitrary failure.
+                                    throw new InvalidOperationException(
+                                        $"Wallet debit changed {update.ChangedBy} but {request.Amount} was "
+                                            + $"requested for {request.CurrencyKind.CurrencyType}."
+                                    );
+                                }
+
+                                attemptUpdates.Add(update);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError(
+                                    ex,
+                                    "Wallet debit failed for player {PlayerId} ({Currency} x{Amount})",
+                                    this.GetPrimaryKeyLong(),
+                                    request.CurrencyKind.CurrencyType,
+                                    request.Amount
+                                );
+
+                                await tx.RollbackAsync(ct);
+
+                                return (
+                                    new WalletDebitFailure
+                                    {
+                                        CurrencyKind = request.CurrencyKind,
+                                        Amount = request.Amount,
+                                    },
+                                    attemptUpdates
                                 );
                             }
-
-                            attemptUpdates.Add(update);
                         }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError(
-                                ex,
-                                "Wallet debit failed for player {PlayerId} ({Currency} x{Amount})",
-                                this.GetPrimaryKeyLong(),
-                                request.CurrencyKind.CurrencyType,
-                                request.Amount
-                            );
 
-                            await tx.RollbackAsync(ct);
+                        await dbCtx.SaveChangesAsync(ct);
+                        await tx.CommitAsync(ct);
 
-                            return (
-                                new WalletDebitFailure
-                                {
-                                    CurrencyKind = request.CurrencyKind,
-                                    Amount = request.Amount,
-                                },
-                                attemptUpdates
-                            );
-                        }
-                    }
-
-                    await dbCtx.SaveChangesAsync(ct);
-                    await tx.CommitAsync(ct);
-
-                    return ((WalletDebitFailure?)null, attemptUpdates);
-                })
-                .ConfigureAwait(true);
+                        return ((WalletDebitFailure?)null, attemptUpdates);
+                    })
+                    .ConfigureAwait(true);
 
             if (failure is not null)
             {
