@@ -61,4 +61,10 @@ public class RoomConfig
     /// <summary>Cap on the inscription a mystery trophy can carry, so an oversized string cannot be
     /// pushed into the trophy's stuff data (which every viewer of the room then receives).</summary>
     public int MysteryTrophyInscriptionMaxLength { get; init; } = 100;
+
+    /// <summary>Minimum seconds between chat lines from the same player under each room-configured
+    /// <c>ChatFloodSensitivityType</c>, keyed Extra/Normal/Minimal (SEC-03). A line arriving before
+    /// its slot sends <c>FloodControlMessageComposer</c> with the remaining wait instead of being
+    /// spoken. These are starting defaults, not a tuned game-balance decision - adjust freely.</summary>
+    public int[] ChatFloodIntervalSeconds { get; init; } = [4, 2, 1];
 }

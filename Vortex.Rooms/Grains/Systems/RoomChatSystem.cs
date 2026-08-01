@@ -7,6 +7,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Messages.Outgoing.Room.Chat;
+using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Pets.Snapshots;
 using Vortex.Primitives.Players;
@@ -21,6 +22,11 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
 {
     private readonly RoomGrain _roomGrain = roomGrain;
     private static readonly int MaxChatMessageLength = 100;
+
+    // Per-player last-accepted-line timestamp, for the room's configured flood sensitivity
+    // (SEC-03). Lives only for this room activation; bounded by how many distinct players have
+    // spoken in the room since it last activated.
+    private readonly Dictionary<PlayerId, long> _lastChatAtMs = new();
 
     public async Task SendChatFromPlayerAsync(
         PlayerId playerId,
@@ -55,6 +61,16 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
                 .SendComposerAsync(
                     new RemainingMutePeriodMessageComposer { SecondsRemaining = secondsRemaining }
                 )
+                .ConfigureAwait(false);
+
+            return;
+        }
+
+        if (IsFloodGated(playerId, out int floodSecondsRemaining))
+        {
+            await _roomGrain
+                ._grainFactory.GetPlayerPresenceGrain(playerId)
+                .SendComposerAsync(new FloodControlMessageComposer { Seconds = floodSecondsRemaining })
                 .ConfigureAwait(false);
 
             return;
@@ -273,6 +289,35 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
         }
 
         _roomGrain._state.MuteExpiresUtc.Remove(playerId);
+        secondsRemaining = 0;
+        return false;
+    }
+
+    private bool IsFloodGated(PlayerId playerId, out int secondsRemaining)
+    {
+        int[] intervals = _roomGrain._roomConfig.ChatFloodIntervalSeconds;
+        int sensitivityIndex = (int)_roomGrain._state.RoomSnapshot.ChatSettings.FloodSensitivity;
+        int intervalSeconds =
+            intervals.Length == 0 ? 0
+            : sensitivityIndex >= 0 && sensitivityIndex < intervals.Length
+                ? intervals[sensitivityIndex]
+                : intervals[^1];
+
+        long nowMs = Environment.TickCount64;
+
+        if (intervalSeconds > 0 && _lastChatAtMs.TryGetValue(playerId, out long lastMs))
+        {
+            long requiredMs = intervalSeconds * 1000L;
+            long elapsedMs = nowMs - lastMs;
+
+            if (elapsedMs < requiredMs)
+            {
+                secondsRemaining = (int)Math.Ceiling((requiredMs - elapsedMs) / 1000.0);
+                return true;
+            }
+        }
+
+        _lastChatAtMs[playerId] = nowMs;
         secondsRemaining = 0;
         return false;
     }

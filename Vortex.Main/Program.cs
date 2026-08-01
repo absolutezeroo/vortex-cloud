@@ -102,7 +102,7 @@ internal class Program
         builder.Services.AddVortexPlugins(builder);
         builder.Services.AddVortexDatabaseContext(builder);
         builder.Services.AddVortexEventSystem();
-        builder.Services.AddVortexMessageSystem();
+        builder.Services.AddVortexMessageSystem(builder);
         builder.Services.AddVortexCrypto(builder);
         builder.Services.AddVortexRevisions(builder);
 
