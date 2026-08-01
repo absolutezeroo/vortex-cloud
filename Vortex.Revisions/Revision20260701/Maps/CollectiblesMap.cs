@@ -1,0 +1,153 @@
+using Vortex.Primitives.Messages.Outgoing.Collectibles;
+using Vortex.Primitives.Messages.Outgoing.Nft;
+using Vortex.Primitives.Networking.Revisions;
+using Vortex.Revisions.Revision20260701.Parsers.Collectibles;
+using Vortex.Revisions.Revision20260701.Serializers.Collectibles;
+using Vortex.Revisions.Revision20260701.Serializers.Nft;
+
+namespace Vortex.Revisions.Revision20260701.Maps;
+
+internal sealed class CollectiblesMap : IRevisionMap
+{
+    public void RegisterInto(IRevisionMapBuilder builder)
+    {
+        builder.MapParser(
+            MessageEvent.GetCollectibleMintableItemTypesMessageEvent,
+            new GetCollectibleMintableItemTypesMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.GetCollectibleMintingEnabledMessageEvent,
+            new GetCollectibleMintingEnabledMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.GetCollectibleMintTokensMessageEvent,
+            new GetCollectibleMintTokensMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.GetCollectibleWalletAddressesMessageEvent,
+            new GetCollectibleWalletAddressesMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.GetCollectorScoreMessageEvent,
+            new GetCollectorScoreMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.GetMintTokenOffersMessageEvent,
+            new GetMintTokenOffersMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.GetNftCollectionsMessageEvent,
+            new GetNftCollectionsMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.GetNftTransferFeeMessageEvent,
+            new GetNftTransferFeeMessageParser()
+        );
+        builder.MapParser(MessageEvent.MintItemMessageEvent, new MintItemMessageParser());
+        builder.MapParser(
+            MessageEvent.NftCollectiblesClaimBonusItemMessageEvent,
+            new NftCollectiblesClaimBonusItemMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.NftCollectiblesClaimRewardItemMessageEvent,
+            new NftCollectiblesClaimRewardItemMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.NftTransferAssetsMessageEvent,
+            new NftTransferAssetsMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.PurchaseMintTokenMessageEvent,
+            new PurchaseMintTokenMessageParser()
+        );
+
+        builder.MapSerializer(
+            typeof(CollectableMintableItemTypesMessageComposer),
+            new CollectableMintableItemTypesMessageComposerSerializer(
+                MessageComposer.CollectableMintableItemTypesMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(CollectibleMintableItemResultMessageComposer),
+            new CollectibleMintableItemResultMessageComposerSerializer(
+                MessageComposer.CollectibleMintableItemResultMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(CollectibleMintingEnabledMessageComposer),
+            new CollectibleMintingEnabledMessageComposerSerializer(
+                MessageComposer.CollectibleMintingEnabledMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(CollectibleMintTokenCountMessageComposer),
+            new CollectibleMintTokenCountMessageComposerSerializer(
+                MessageComposer.CollectibleMintTokenCountMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(CollectibleMintTokenOffersMessageComposer),
+            new CollectibleMintTokenOffersMessageComposerSerializer(
+                MessageComposer.CollectibleMintTokenOffersMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(CollectibleWalletAddressesMessageComposer),
+            new CollectibleWalletAddressesMessageComposerSerializer(
+                MessageComposer.CollectibleWalletAddressesMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(EmeraldBalanceMessageComposer),
+            new EmeraldBalanceMessageComposerSerializer(
+                MessageComposer.EmeraldBalanceMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(NftBonusItemClaimResultMessageComposer),
+            new NftBonusItemClaimResultMessageComposerSerializer(
+                MessageComposer.NftBonusItemClaimResultMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(NftCollectionsMessageComposer),
+            new NftCollectionsMessageComposerSerializer(
+                MessageComposer.NftCollectionsMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(NftCollectionsScoreMessageComposer),
+            new NftCollectionsScoreMessageComposerSerializer(
+                MessageComposer.NftCollectionsScoreMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(NftRewardItemClaimResultMessageComposer),
+            new NftRewardItemClaimResultMessageComposerSerializer(
+                MessageComposer.NftRewardItemClaimResultMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(NftTransferAssetsResultMessageComposer),
+            new NftTransferAssetsResultMessageComposerSerializer(
+                MessageComposer.NftTransferAssetsResultMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(NftTransferFeeMessageComposer),
+            new NftTransferFeeMessageComposerSerializer(
+                MessageComposer.NftTransferFeeMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(SilverBalanceMessageComposer),
+            new SilverBalanceMessageComposerSerializer(MessageComposer.SilverBalanceMessageComposer)
+        );
+        builder.MapSerializer(
+            typeof(UserNftChatStylesMessageComposer),
+            new UserNftChatStylesMessageComposerSerializer(
+                MessageComposer.UserNftChatStylesMessageComposer
+            )
+        );
+    }
+}

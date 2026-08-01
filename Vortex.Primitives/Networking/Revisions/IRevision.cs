@@ -8,7 +8,7 @@ public interface IRevision
 {
     public string Revision { get; }
 
-    public IDictionary<int, IParser> Parsers { get; }
+    public IReadOnlyDictionary<int, IParser> Parsers { get; }
 
-    public IDictionary<Type, ISerializer> Serializers { get; }
+    public IReadOnlyDictionary<Type, ISerializer> Serializers { get; }
 }
