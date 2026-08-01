@@ -11,6 +11,6 @@ internal class SelectInitialRoomEventMessageComposerSerializer(int header)
         SelectInitialRoomEventMessageComposer message
     )
     {
-        //
+        packet.WriteShort(message.Status).WriteInteger(message.RoomId);
     }
 }

@@ -13,6 +13,15 @@ public interface IPlayerGrain : IGrainWithIntegerKey
 {
     public Task SetFigureAsync(string figure, AvatarGenderType gender, CancellationToken ct);
     public Task SetNameAsync(string name, CancellationToken ct);
+
+    /// <summary>Whether the new-user flow has already been completed by this player.</summary>
+    public Task<bool> IsNuxCompletedAsync(CancellationToken ct);
+
+    /// <summary>
+    /// Stamps the new-user flow as done, so the client stops being sent the
+    /// <c>AVATAR_NAME_CHANGE</c> login action. Idempotent: a second call keeps the first stamp.
+    /// </summary>
+    public Task MarkNuxCompletedAsync(CancellationToken ct);
     public Task SetMottoAsync(string text, CancellationToken ct);
 
     /// <summary>Persists the player's preferred chat-bubble style (SetChatStylePreference, header

@@ -17,6 +17,11 @@ internal sealed class AvatarMap : IRevisionMap
             MessageEvent.ChangeUserNameMessageEvent,
             new ChangeUserNameMessageParser()
         );
+        // Same parser, second id: the onboarding dialog claims names on 879 (see Headers.cs).
+        builder.MapParser(
+            MessageEvent.ClaimNewUserNameMessageEvent,
+            new ChangeUserNameMessageParser()
+        );
         builder.MapParser(MessageEvent.CheckUserNameMessageEvent, new CheckUserNameMessageParser());
         builder.MapParser(MessageEvent.GetWardrobeMessageEvent, new GetWardrobeMessageParser());
         builder.MapParser(

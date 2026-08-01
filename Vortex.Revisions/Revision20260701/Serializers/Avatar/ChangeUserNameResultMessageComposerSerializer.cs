@@ -11,6 +11,14 @@ internal class ChangeUserNameResultMessageComposerSerializer(int header)
         ChangeUserNameResultMessageComposer message
     )
     {
-        //
+        packet
+            .WriteInteger(message.ResultCode)
+            .WriteString(message.Name)
+            .WriteInteger(message.NameSuggestions.Length);
+
+        foreach (string suggestion in message.NameSuggestions)
+        {
+            packet.WriteString(suggestion);
+        }
     }
 }

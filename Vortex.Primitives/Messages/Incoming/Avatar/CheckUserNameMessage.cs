@@ -2,4 +2,10 @@ using Vortex.Primitives.Networking;
 
 namespace Vortex.Primitives.Messages.Incoming.Avatar;
 
-public record CheckUserNameMessage : IMessageEvent { }
+/// <summary>
+/// Asks whether a name is free. Sent by the onboarding name dialog 500ms after the last keystroke.
+/// </summary>
+public record CheckUserNameMessage : IMessageEvent
+{
+    public required string Name { get; init; }
+}

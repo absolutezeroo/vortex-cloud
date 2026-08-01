@@ -25,6 +25,9 @@ public sealed class PlayerLiveState
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime LastUpdated { get; set; } = DateTime.UtcNow;
 
+    /// <summary>Null until the new-user flow has been completed; see PlayerEntity.NuxCompletedAt.</summary>
+    public DateTime? NuxCompletedAt { get; set; } = null;
+
     public int ClubLevel { get; set; } = 0;
     public DateTime ClubExpiresAt { get; set; } = DateTime.MinValue;
     public int ClubTotalMonths { get; set; } = 0;

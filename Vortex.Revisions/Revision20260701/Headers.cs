@@ -350,6 +350,12 @@ internal static class MessageEvent
     public const int RemoveJukeboxDiskEvent = 2003; // AS3-verified (direct read, both revisions): PlayListEditorWidgetHandler RWPLAM_REMOVE_FROM_PLAYLIST -> _SafeCls_3444
     public const int ChangeUserNameInRoomMessageEvent = 3652; // UNRESOLVED: no distinct AS3 backing found - NameChangeController::changeName() has only one send call (_SafeCls_2633/_SafeCls_3913), already correctly claimed by ChangeUserNameMessageEvent below; likely a duplicate Vortex constant with no separate real message
     public const int ChangeUserNameMessageEvent = 1703; // AS3-verified (ghost fix): NameChangeController::changeName()
+
+    // The onboarding name dialog claims a name with a DIFFERENT composer than the paid rename:
+    // NameChangeDialog::claimName() sends _SafeCls_3401, registry@879, where
+    // NameChangeController::changeName() sends _SafeCls_3913, registry@1703 above. Same payload
+    // (one string), two ids -- so both have to be mapped or the onboarding name is never claimed.
+    public const int ClaimNewUserNameMessageEvent = 879; // AS3-verified (direct read): registry _SafeCls_2046.as `_composers[879] = _SafeCls_3401`
     public const int CheckUserNameMessageEvent = 413; // AS3-verified (ghost fix): AvatarEditorMessageHandler::checkName()
     public const int GetWardrobeMessageEvent = 2210; // AS3-verified (ghost fix): AvatarEditorMessageHandler::getWardrobe()
     public const int SaveWardrobeOutfitMessageEvent = 116; // AS3-verified (name-only): AvatarEditorMessageHandler::saveWardrobeOutfit()
@@ -781,7 +787,12 @@ internal static class MessageComposer
     public const int Game2UserBlockedMessageComposer = 1145;
     public const int Game2UserLeftGameMessageComposer = 606;
     public const int ChangeUserNameResultMessageComposer = 1621;
-    public const int CheckUserNameResultMessageComposer = 2802;
+
+    // Was 2802, which the WIN63 registry assigns to Game2WeeklyFriendsLeaderboardEvent -- the check
+    // result went out under a leaderboard header and no client ever routed it. The real id is 382:
+    // registry _SafeCls_2046.as `_events[382] = _SafeCls_3600`, the parser NameChangeDialog and
+    // NameChangeController both listen on.
+    public const int CheckUserNameResultMessageComposer = 382;
     public const int FigureUpdateComposer = 132;
     public const int WardrobeMessageComposer = 1484; // AS3-verified (ghost fix): onWardrobe @ AvatarEditorMessageHandler
 

@@ -123,11 +123,38 @@ public class SSOTicketMessageHandler(
 
             SecurityLevelType securityLevel = SecurityLevelPolicy.Resolve(permissions);
 
+            // The client's new-user flow is driven entirely by these actions: 0 asks it to run the
+            // look-and-name onboarding, 1 to pick a starter room. Both are read once, here — an
+            // empty array means the player goes straight to the hotel view.
+            // (WIN63 HabboLandingView.as::isOnboardingRequired(), and OnBoardingHcFlow's
+            // AVATAR_NAME_CHANGE / NEW_ROOM_SELECT constants.)
+            bool nuxCompleted = await _grainFactory
+                .GetPlayerGrain(PlayerId.Parse(playerId))
+                .IsNuxCompletedAsync(ct)
+                .ConfigureAwait(false);
+
+            int currentHomeRoomId = await _grainFactory
+                .GetPlayerNavigatorGrain(playerId)
+                .GetHomeRoomIdAsync(ct)
+                .ConfigureAwait(false);
+
+            List<short> suggestedLoginActions = [];
+
+            if (!nuxCompleted)
+            {
+                suggestedLoginActions.Add(SuggestedLoginAction.AvatarNameChange);
+            }
+
+            if (currentHomeRoomId <= 0)
+            {
+                suggestedLoginActions.Add(SuggestedLoginAction.NewRoomSelect);
+            }
+
             await ctx.SendComposerAsync(
                     new AuthenticationOKMessage
                     {
                         AccountId = playerId,
-                        SuggestedLoginActions = [],
+                        SuggestedLoginActions = [.. suggestedLoginActions],
                         IdentityId = playerId,
                     },
                     ct
@@ -139,10 +166,7 @@ public class SSOTicketMessageHandler(
                 .ConfigureAwait(false);
             await ctx.SendComposerAsync(new AvatarEffectsMessageComposer { Effects = effects }, ct)
                 .ConfigureAwait(false);
-            int homeRoomId = await _grainFactory
-                .GetPlayerNavigatorGrain(playerId)
-                .GetHomeRoomIdAsync(ct)
-                .ConfigureAwait(false);
+            int homeRoomId = currentHomeRoomId;
 
             await ctx.SendComposerAsync(
                     new NavigatorSettingsMessageComposer
