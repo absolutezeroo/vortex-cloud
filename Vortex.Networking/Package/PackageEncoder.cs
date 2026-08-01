@@ -4,15 +4,20 @@ using Microsoft.Extensions.Logging;
 using SuperSocket.ProtoBase;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Networking.Revisions;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Networking.Package;
 
-public sealed class PackageEncoder(IRevisionManager revisionManager, ILogger<PackageEncoder> logger)
-    : IPackageEncoder<OutgoingPackage>
+public sealed class PackageEncoder(
+    IRevisionManager revisionManager,
+    ILogger<PackageEncoder> logger,
+    IVortexMetrics metrics
+) : IPackageEncoder<OutgoingPackage>
 {
     private readonly IRevisionManager _revisionManager = revisionManager;
     private readonly ILogger<PackageEncoder> _logger = logger;
+    private readonly IVortexMetrics _metrics = metrics;
 
     public int Encode(IBufferWriter<byte> writer, OutgoingPackage pack)
     {
@@ -46,7 +51,15 @@ public sealed class PackageEncoder(IRevisionManager revisionManager, ILogger<Pac
                         composerType.Name,
                         pack.Session.SessionKey
                     );
+
+                    // The packet silently vanishes here: SuperSocket writes nothing when Encode
+                    // returns 0, so this counter is the only trace that it ever happened.
+                    _metrics.PacketDropped("serializer_not_found");
                 }
+            }
+            else
+            {
+                _metrics.PacketDropped("revision_not_found");
             }
         }
         catch (Exception ex)
@@ -57,6 +70,8 @@ public sealed class PackageEncoder(IRevisionManager revisionManager, ILogger<Pac
                 pack.Composer.GetType().Name,
                 pack.Session.SessionKey
             );
+
+            _metrics.PacketDropped("serialize_exception");
         }
 
         return 0;

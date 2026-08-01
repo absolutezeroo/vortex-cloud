@@ -31,14 +31,14 @@ public static class ServiceCollectionExtensions
             {
                 DatabaseConfig dbConfig = sp.GetRequiredService<IOptions<DatabaseConfig>>().Value;
                 string connectionString = dbConfig.ConnectionString;
-                bool loggingEnabled = dbConfig.LoggingEnabled;
 
                 options.UseMySql(
                     connectionString,
-                    ServerVersion.AutoDetect(connectionString),
+                    ResolveServerVersion(dbConfig, connectionString),
                     options =>
                     {
                         options.MigrationsAssembly("Vortex.Database");
+                        options.EnableRetryOnFailure(maxRetryCount: 3);
                     }
                 );
             }
@@ -46,6 +46,14 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    private static ServerVersion ResolveServerVersion(
+        DatabaseConfig dbConfig,
+        string connectionString
+    ) =>
+        string.IsNullOrWhiteSpace(dbConfig.MySqlServerVersion)
+            ? ServerVersion.AutoDetect(connectionString)
+            : ServerVersion.Parse(dbConfig.MySqlServerVersion);
 
     public static IServiceCollection AddPluginTablePrefix<TContext>(
         this IServiceCollection services
@@ -100,16 +108,16 @@ public static class ServiceCollectionExtensions
                 IHostServices host = sp.GetRequiredService<IHostServices>();
                 DatabaseConfig dbConfig = host.GetRequiredService<IOptions<DatabaseConfig>>().Value;
                 string connectionString = dbConfig.ConnectionString;
-                bool loggingEnabled = dbConfig.LoggingEnabled;
 
                 options.UseMySql(
                     connectionString,
-                    ServerVersion.AutoDetect(connectionString),
+                    ResolveServerVersion(dbConfig, connectionString),
                     builder =>
                     {
                         builder.MigrationsHistoryTable(
                             $"__EFMigrationsHistory_{prefix().TrimEnd('_')}"
                         );
+                        builder.EnableRetryOnFailure(maxRetryCount: 3);
                     }
                 );
             }

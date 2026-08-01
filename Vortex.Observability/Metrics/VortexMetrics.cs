@@ -22,6 +22,7 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
     private readonly Counter<long> _packetReceived;
     private readonly Histogram<double> _packetDuration;
     private readonly Counter<long> _packetFailed;
+    private readonly Counter<long> _packetDropped;
     private readonly ILiveStatsAggregator _liveStats;
 
     public VortexMetrics(
@@ -48,6 +49,11 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
             "Vortex.packet.failed",
             unit: "{packet}",
             description: "Packets whose dispatch threw an exception."
+        );
+        _packetDropped = _meter.CreateCounter<long>(
+            "Vortex.packet.dropped",
+            unit: "{packet}",
+            description: "Outgoing packets that could not be encoded and were never sent."
         );
     }
 
@@ -84,6 +90,14 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
         }
 
         _liveStats.RecordPacketFailed(operation, actorId, roomId);
+    }
+
+    public void PacketDropped(string reason)
+    {
+        if (_enabled)
+        {
+            _packetDropped.Add(1, new KeyValuePair<string, object?>("reason", reason));
+        }
     }
 
     private static KeyValuePair<string, object?> Tag(string operation) =>

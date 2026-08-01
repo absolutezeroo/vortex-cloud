@@ -56,13 +56,27 @@ public static class WalletPurchaseExtensions
         {
             if (debitRequests.Count > 0)
             {
-                await wallet.CreditBackAsync(debitRequests, ct).ConfigureAwait(false);
-
                 logger.LogError(
                     ex,
-                    "Purchase grant failed after wallet debit; refunded {RequestCount} debited amount(s).",
+                    "Purchase grant failed after wallet debit; refunding {RequestCount} debited amount(s).",
                     debitRequests.Count
                 );
+
+                // The compensation must not be subject to the token of the operation it is
+                // compensating for: cancellation is the most common reason grantAsync throws
+                // (client disconnect, host shutdown, timeout), and using `ct` here would make
+                // the refund fail in exactly that case, leaving the player permanently debited.
+                try
+                {
+                    await wallet.CreditBackAsync(debitRequests, CancellationToken.None).ConfigureAwait(false);
+                }
+                catch (Exception refundEx)
+                {
+                    logger.LogCritical(
+                        refundEx,
+                        "REFUND FAILED after a failed grant - player may be permanently debited."
+                    );
+                }
             }
 
             throw;

@@ -62,65 +62,90 @@ internal sealed class PlayerWalletGrain(
             && normalizedRequests.Count > 0
         )
         {
-            await using VortexDbContext dbCtx = await _dbCtxFactory
+            // A fresh DbContext is created per attempt (rather than shared across retries) so that a
+            // transient failure retried by the MySQL execution strategy never resubmits state left
+            // half-applied by a rolled-back attempt.
+            await using VortexDbContext strategyProbe = await _dbCtxFactory
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(true);
-            await using IDbContextTransaction tx = await dbCtx
-                .Database.BeginTransactionAsync(ct)
-                .ConfigureAwait(true);
+            IExecutionStrategy strategy = strategyProbe.Database.CreateExecutionStrategy();
 
-            List<WalletCurrencyUpdateSnapshot> updates = new List<WalletCurrencyUpdateSnapshot>(
-                normalizedRequests.Count
-            );
-
-            foreach (WalletDebitRequest request in normalizedRequests)
-            {
-                try
+            (
+                WalletDebitFailure? failure,
+                List<WalletCurrencyUpdateSnapshot> updates
+            ) = await strategy
+                .ExecuteAsync(async () =>
                 {
-                    WalletCurrencyUpdateSnapshot update = await ProcessDebitRequestAsync(
-                        dbCtx,
-                        request,
-                        ct
+                    await using VortexDbContext dbCtx = await _dbCtxFactory
+                        .CreateDbContextAsync(ct)
+                        .ConfigureAwait(true);
+                    await using IDbContextTransaction tx = await dbCtx
+                        .Database.BeginTransactionAsync(ct)
+                        .ConfigureAwait(true);
+
+                    List<WalletCurrencyUpdateSnapshot> attemptUpdates = new List<WalletCurrencyUpdateSnapshot>(
+                        normalizedRequests.Count
                     );
 
-                    if (update.ChangedBy != request.Amount)
+                    foreach (WalletDebitRequest request in normalizedRequests)
                     {
-                        // Specific type (CA2201): a bare Exception cannot be caught selectively, and
-                        // this is a wallet invariant breach — the amount actually debited did not
-                        // match what was asked for — not an arbitrary failure.
-                        throw new InvalidOperationException(
-                            $"Wallet debit changed {update.ChangedBy} but {request.Amount} was "
-                                + $"requested for {request.CurrencyKind.CurrencyType}."
-                        );
+                        try
+                        {
+                            WalletCurrencyUpdateSnapshot update = await ProcessDebitRequestAsync(
+                                dbCtx,
+                                request,
+                                ct
+                            );
+
+                            if (update.ChangedBy != request.Amount)
+                            {
+                                // Specific type (CA2201): a bare Exception cannot be caught selectively, and
+                                // this is a wallet invariant breach — the amount actually debited did not
+                                // match what was asked for — not an arbitrary failure.
+                                throw new InvalidOperationException(
+                                    $"Wallet debit changed {update.ChangedBy} but {request.Amount} was "
+                                        + $"requested for {request.CurrencyKind.CurrencyType}."
+                                );
+                            }
+
+                            attemptUpdates.Add(update);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(
+                                ex,
+                                "Wallet debit failed for player {PlayerId} ({Currency} x{Amount})",
+                                this.GetPrimaryKeyLong(),
+                                request.CurrencyKind.CurrencyType,
+                                request.Amount
+                            );
+
+                            await tx.RollbackAsync(ct);
+
+                            return (
+                                new WalletDebitFailure
+                                {
+                                    CurrencyKind = request.CurrencyKind,
+                                    Amount = request.Amount,
+                                },
+                                attemptUpdates
+                            );
+                        }
                     }
 
-                    updates.Add(update);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(
-                        ex,
-                        "Wallet debit failed for player {PlayerId} ({Currency} x{Amount})",
-                        this.GetPrimaryKeyLong(),
-                        request.CurrencyKind.CurrencyType,
-                        request.Amount
-                    );
+                    await dbCtx.SaveChangesAsync(ct);
+                    await tx.CommitAsync(ct);
 
-                    await tx.RollbackAsync(ct);
-                    await RollbackUpdatesAsync(updates, ct);
+                    return ((WalletDebitFailure?)null, attemptUpdates);
+                })
+                .ConfigureAwait(true);
 
-                    return WalletDebitResult.InsufficientBalance(
-                        new WalletDebitFailure
-                        {
-                            CurrencyKind = request.CurrencyKind,
-                            Amount = request.Amount,
-                        }
-                    );
-                }
+            if (failure is not null)
+            {
+                await RollbackUpdatesAsync(updates, ct);
+
+                return WalletDebitResult.InsufficientBalance(failure);
             }
-
-            await dbCtx.SaveChangesAsync(ct);
-            await tx.CommitAsync(ct);
 
             IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(
                 (int)this.GetPrimaryKeyLong()

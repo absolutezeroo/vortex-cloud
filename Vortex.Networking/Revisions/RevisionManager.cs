@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Vortex.Primitives.Networking.Revisions;
@@ -8,7 +10,9 @@ public sealed class RevisionManager(ILogger<RevisionManager> logger) : IRevision
 {
     private readonly ILogger<RevisionManager> _logger = logger;
 
-    public IDictionary<string, IRevision> Revisions { get; } = new Dictionary<string, IRevision>();
+    public IDictionary<string, IRevision> Revisions { get; } =
+        new ConcurrentDictionary<string, IRevision>();
+
     public string DefaultRevisionId { get; private set; } = string.Empty;
 
     public IRevision? GetRevision(string revisionId) =>
@@ -16,10 +20,7 @@ public sealed class RevisionManager(ILogger<RevisionManager> logger) : IRevision
 
     public void RegisterRevision(IRevision revision)
     {
-        if (revision is null)
-        {
-            return;
-        }
+        ArgumentNullException.ThrowIfNull(revision);
 
         _logger.LogInformation("Revision Registered: {Revision}", revision.Revision);
 

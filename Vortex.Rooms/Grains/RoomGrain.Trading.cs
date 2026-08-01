@@ -425,50 +425,57 @@ public sealed partial class RoomGrain
         int oneOwner = session.UserOneId.Value;
         int twoOwner = session.UserTwoId.Value;
 
-        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
+        // A fresh DbContext is created per attempt (rather than shared across retries) so that a
+        // transient failure retried by the MySQL execution strategy never resubmits entities left
+        // half-tracked by a rolled-back attempt.
+        await using VortexDbContext strategyProbe = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(true);
+        IExecutionStrategy strategy = strategyProbe.Database.CreateExecutionStrategy();
 
-        try
-        {
-            await using IDbContextTransaction tx = await dbCtx
-                .Database.BeginTransactionAsync(ct)
-                .ConfigureAwait(true);
-
-            List<FurnitureEntity> oneRows = await dbCtx
-                .Furnitures.Where(f => oneIds.Contains(f.Id))
-                .ToListAsync(ct)
-                .ConfigureAwait(true);
-            List<FurnitureEntity> twoRows = await dbCtx
-                .Furnitures.Where(f => twoIds.Contains(f.Id))
-                .ToListAsync(ct)
-                .ConfigureAwait(true);
-
-            if (
-                !IsOfferPersistable(oneRows, oneIds.Count, oneOwner)
-                || !IsOfferPersistable(twoRows, twoIds.Count, twoOwner)
-            )
+        return await strategy
+            .ExecuteAsync(async () =>
             {
-                return false;
-            }
+                await using VortexDbContext dbCtx = await _dbCtxFactory
+                    .CreateDbContextAsync(ct)
+                    .ConfigureAwait(true);
+                await using IDbContextTransaction tx = await dbCtx
+                    .Database.BeginTransactionAsync(ct)
+                    .ConfigureAwait(true);
 
-            foreach (FurnitureEntity row in oneRows)
-            {
-                row.PlayerEntityId = twoOwner;
-            }
+                List<FurnitureEntity> oneRows = await dbCtx
+                    .Furnitures.Where(f => oneIds.Contains(f.Id))
+                    .ToListAsync(ct)
+                    .ConfigureAwait(true);
+                List<FurnitureEntity> twoRows = await dbCtx
+                    .Furnitures.Where(f => twoIds.Contains(f.Id))
+                    .ToListAsync(ct)
+                    .ConfigureAwait(true);
 
-            foreach (FurnitureEntity row in twoRows)
-            {
-                row.PlayerEntityId = oneOwner;
-            }
+                if (
+                    !IsOfferPersistable(oneRows, oneIds.Count, oneOwner)
+                    || !IsOfferPersistable(twoRows, twoIds.Count, twoOwner)
+                )
+                {
+                    return false;
+                }
 
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
-            await tx.CommitAsync(ct).ConfigureAwait(true);
+                foreach (FurnitureEntity row in oneRows)
+                {
+                    row.PlayerEntityId = twoOwner;
+                }
 
-            return true;
-        }
-        finally
-        {
-            await dbCtx.DisposeAsync().ConfigureAwait(true);
-        }
+                foreach (FurnitureEntity row in twoRows)
+                {
+                    row.PlayerEntityId = oneOwner;
+                }
+
+                await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+                await tx.CommitAsync(ct).ConfigureAwait(true);
+
+                return true;
+            })
+            .ConfigureAwait(true);
     }
 
     private static bool IsOfferPersistable(

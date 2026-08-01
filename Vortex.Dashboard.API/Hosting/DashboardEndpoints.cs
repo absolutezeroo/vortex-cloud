@@ -200,9 +200,12 @@ internal static partial class DashboardEndpoints
                                 methods = ["GET"];
                             }
 
-                            string?[] capabilities = endpoint
+                            // OfType<string>() drops null policies *and* yields a non-nullable element
+                            // type, matching the ApiRouteDescriptor.Capabilities: string[] parameter.
+                            string[] capabilities = endpoint
                                 .Metadata.OfType<IAuthorizeData>()
                                 .Select(auth => auth.Policy)
+                                .OfType<string>()
                                 .Where(policy => !string.IsNullOrWhiteSpace(policy))
                                 .Distinct()
                                 .OrderBy(policy => policy)

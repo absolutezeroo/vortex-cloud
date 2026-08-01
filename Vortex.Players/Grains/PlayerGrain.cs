@@ -67,8 +67,6 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
 
         await playerPresence.OnFigureUpdatedAsync(await GetSummaryAsync(ct), ct);
 
-        await WriteToDatabaseAsync(ct);
-
         await _events
             .PublishAsync(new PlayerFigureChangedEvent(_state.PlayerId, figure), ct)
             .ConfigureAwait(true);

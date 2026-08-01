@@ -17,4 +17,6 @@ public interface IVortexMetrics
     );
 
     void PacketFailed(string operation, long? actorId = null, int? roomId = null);
+
+    void PacketDropped(string reason);
 }

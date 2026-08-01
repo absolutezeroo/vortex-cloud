@@ -335,7 +335,7 @@ internal sealed class RentableSpaceGrain(
         List<AvailableCurrencySnapshot> currencies = await db
             .CurrencyTypes.Where(c => c.Enabled && c.DeletedAt == null)
             .OrderBy(c => c.Id)
-            .Select(c => new AvailableCurrencySnapshot { Id = c.Id, Name = c.Name })
+            .Select(c => new AvailableCurrencySnapshot { Id = c.Id, Name = c.Name ?? string.Empty })
             .ToListAsync(ct);
 
         return new RentableSpaceConfigSnapshot

@@ -16,12 +16,12 @@ public sealed class PackageHandler(
     IRevisionManager revisionManager,
     MessageSystem messageSystem,
     ILogger<PackageHandler> logger,
-    IVortexContextAccessor? contextAccessor = null,
-    IErrorGroupingSink? errorSink = null
+    IVortexContextAccessor contextAccessor,
+    IErrorGroupingSink errorSink
 ) : IPackageHandler<IClientPacket>
 {
-    private readonly IVortexContextAccessor? _contextAccessor = contextAccessor;
-    private readonly IErrorGroupingSink? _errorSink = errorSink;
+    private readonly IVortexContextAccessor _contextAccessor = contextAccessor;
+    private readonly IErrorGroupingSink _errorSink = errorSink;
     private readonly ILogger<PackageHandler> _logger = logger;
     private readonly MessageSystem _messageSystem = messageSystem;
     private readonly IRevisionManager _revisionManager = revisionManager;
@@ -51,7 +51,9 @@ public sealed class PackageHandler(
         {
             IRevision revision =
                 _revisionManager.GetRevision(ctx.RevisionId)
-                ?? throw new ArgumentNullException("No revision set");
+                ?? throw new InvalidOperationException(
+                    $"No revision registered for revision id '{ctx.RevisionId}'."
+                );
 
             if (revision.Parsers.TryGetValue(packet.Header, out IParser? parser))
             {
@@ -79,21 +81,18 @@ public sealed class PackageHandler(
                 ctx.SessionKey
             );
 
-            IVortexContext? context = _contextAccessor?.Current;
+            IVortexContext? context = _contextAccessor.Current;
 
-            if (_errorSink is not null)
-            {
-                _errorSink.Record(
-                    ex,
-                    "package-handler",
-                    $"packet:{packet.Header}",
-                    context?.PlayerId,
-                    context?.RoomId,
-                    context?.CorrelationId.Value,
-                    context?.SessionKey,
-                    ctx.RemoteIpAddress
-                );
-            }
+            _errorSink.Record(
+                ex,
+                "package-handler",
+                $"packet:{packet.Header}",
+                context?.PlayerId,
+                context?.RoomId,
+                context?.CorrelationId.Value,
+                context?.SessionKey,
+                ctx.RemoteIpAddress
+            );
         }
     }
 }

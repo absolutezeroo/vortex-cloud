@@ -22,6 +22,7 @@ using Vortex.Networking.Ws;
 using Vortex.Primitives.Messages.Outgoing.Handshake;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Networking.Revisions;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Networking;
@@ -32,7 +33,10 @@ public sealed class NetworkManager(
     IRevisionManager revisionManager,
     MessageSystem messageSystem,
     ILoggerFactory loggerFactory,
-    IGrainFactory grainFactory
+    IGrainFactory grainFactory,
+    IVortexContextAccessor contextAccessor,
+    IErrorGroupingSink errorSink,
+    IVortexMetrics metrics
 ) : INetworkManager
 {
     private readonly NetworkingConfig _config = config.Value;
@@ -40,9 +44,13 @@ public sealed class NetworkManager(
     private readonly ILogger<NetworkManager> _logger = loggerFactory.CreateLogger<NetworkManager>();
     private readonly ILoggerFactory _loggerFactory = loggerFactory;
     private readonly MessageSystem _messageSystem = messageSystem;
+    private readonly IVortexContextAccessor _contextAccessor = contextAccessor;
+    private readonly IErrorGroupingSink _errorSink = errorSink;
+    private readonly IVortexMetrics _metrics = metrics;
     private readonly IPackageEncoder<OutgoingPackage> _packageEncoder = new PackageEncoder(
         revisionManager,
-        loggerFactory.CreateLogger<PackageEncoder>()
+        loggerFactory.CreateLogger<PackageEncoder>(),
+        metrics
     );
     private readonly IRevisionManager _revisionManager = revisionManager;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
@@ -123,7 +131,6 @@ public sealed class NetworkManager(
         builder.UseSession<SessionContext>();
         builder.UsePipelineFilter<TcpFilter>();
         builder.UseSessionGateway();
-        //builder.UsePingPong();
 
         _tcpHost = builder.Build();
     }
@@ -140,7 +147,9 @@ public sealed class NetworkManager(
         PackageHandler packageHandler = new(
             _revisionManager,
             _messageSystem,
-            _loggerFactory.CreateLogger<PackageHandler>()
+            _loggerFactory.CreateLogger<PackageHandler>(),
+            _contextAccessor,
+            _errorSink
         );
         WsPackageHandler wsPackageHandler = new(
             decoder,
@@ -302,6 +311,13 @@ public sealed class NetworkManager(
         services.AddSingleton(_messageSystem);
         services.AddSingleton(_loggerFactory);
         services.AddSingleton(_grainFactory);
+        // Forwarded from the parent container so PackageHandler/PackageEncoder resolve these as
+        // required dependencies in the TCP host's own child container too, instead of silently
+        // getting null (see NET-01): a missing observability sink must be a startup error, not an
+        // invisible gap in the dashboard's error grouping.
+        services.AddSingleton(_contextAccessor);
+        services.AddSingleton(_errorSink);
+        services.AddSingleton(_metrics);
         services.AddSingleton<IPackageEncoder<OutgoingPackage>, PackageEncoder>();
         services.AddSingleton<IPackageHandler<IClientPacket>, PackageHandler>();
         services.AddSingleton<IClientPacketDecoder>(_ => new ClientPacketDecoder(

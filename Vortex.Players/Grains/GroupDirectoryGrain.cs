@@ -94,8 +94,6 @@ internal sealed class GroupDirectoryGrain(
     {
         int ownerId = owner.Value;
 
-        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
-
         int creationCost = await grainFactory
             .GetServerConfigGrain()
             .GetIntAsync(
@@ -104,21 +102,32 @@ internal sealed class GroupDirectoryGrain(
             )
             .ConfigureAwait(true);
 
-        RoomEntity? room = await dbCtx.Rooms.FirstOrDefaultAsync(
-            r => r.Id == baseRoomId && r.DeletedAt == null,
-            ct
-        );
-
-        // Must own the room, and the room must not already be a guild base.
-        if (room is null || room.PlayerEntityId != ownerId || room.GroupEntityId != null)
+        // Preflight check on its own short-lived context, purely to fail fast (and avoid debiting
+        // the wallet) before ever publishing the cancellable event below. The authoritative check
+        // happens again inside the retryable transaction further down.
+        await using (
+            VortexDbContext preflightCtx = await dbCtxFactory.CreateDbContextAsync(ct)
+        )
         {
-            return null;
-        }
+            RoomEntity? preflightRoom = await preflightCtx
+                .Rooms.AsNoTracking()
+                .FirstOrDefaultAsync(r => r.Id == baseRoomId && r.DeletedAt == null, ct);
 
-        PlayerEntity? ownerEntity = await dbCtx.Players.FindAsync([ownerId], ct);
-        if (ownerEntity is null)
-        {
-            return null;
+            // Must own the room, and the room must not already be a guild base.
+            if (
+                preflightRoom is null
+                || preflightRoom.PlayerEntityId != ownerId
+                || preflightRoom.GroupEntityId != null
+            )
+            {
+                return null;
+            }
+
+            bool ownerExists = await preflightCtx.Players.AnyAsync(p => p.Id == ownerId, ct);
+            if (!ownerExists)
+            {
+                return null;
+            }
         }
 
         EventContext creatingContext = await cancellableEvents
@@ -140,6 +149,12 @@ internal sealed class GroupDirectoryGrain(
             return null;
         }
 
+        // A fresh DbContext is created per attempt (rather than shared across retries) so that a
+        // transient failure retried by the MySQL execution strategy never resubmits entities left
+        // half-tracked by a rolled-back attempt.
+        await using VortexDbContext strategyProbe = await dbCtxFactory.CreateDbContextAsync(ct);
+        IExecutionStrategy strategy = strategyProbe.Database.CreateExecutionStrategy();
+
         // Charge the creation cost through the shared debit-then-grant executor, exactly like every
         // other catalog purchase: the wallet writes the economy ledger entry, emits
         // CurrencyChangedEvent and pushes the new balance, and if the insert below throws (most
@@ -154,48 +169,77 @@ internal sealed class GroupDirectoryGrain(
                         Amount = creationCost,
                     },
                 ],
-                async token =>
-                {
-                    // The group row and the room back-link must land together: a committed group
-                    // whose room never got linked would permanently burn that room as a guild base.
-                    await using IDbContextTransaction tx = await dbCtx
-                        .Database.BeginTransactionAsync(token)
-                        .ConfigureAwait(true);
+                token =>
+                    strategy.ExecuteAsync(async () =>
+                    {
+                        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(
+                            token
+                        );
 
-                    GroupEntity created = GroupFactory.Create(
-                        name,
-                        BuildBadgeCode(badgeParts),
-                        baseRoomId,
-                        ownerId,
-                        GroupType.Open,
-                        primaryColorId.ToString(),
-                        secondaryColorId.ToString(),
-                        string.IsNullOrEmpty(description) ? null : description
-                    );
-                    created.RoomEntity = room;
-                    created.OwnerPlayerEntity = ownerEntity;
+                        RoomEntity? room = await dbCtx.Rooms.FirstOrDefaultAsync(
+                            r => r.Id == baseRoomId && r.DeletedAt == null,
+                            token
+                        );
 
-                    dbCtx.Groups.Add(created);
-                    await dbCtx.SaveChangesAsync(token).ConfigureAwait(true);
-
-                    // Link the room back to the group and enrol the owner as an admin member.
-                    room.GroupEntityId = created.Id;
-                    dbCtx.GroupMembers.Add(
-                        new GroupMemberEntity
+                        if (room is null || room.PlayerEntityId != ownerId || room.GroupEntityId != null)
                         {
-                            GroupEntityId = created.Id,
-                            PlayerEntityId = ownerId,
-                            Rank = GroupMemberRank.Admin,
-                            GroupEntity = created,
-                            PlayerEntity = ownerEntity,
+                            throw new InvalidOperationException(
+                                $"Room {baseRoomId} is no longer a valid guild base for player {ownerId}."
+                            );
                         }
-                    );
 
-                    await dbCtx.SaveChangesAsync(token).ConfigureAwait(true);
-                    await tx.CommitAsync(token).ConfigureAwait(true);
+                        PlayerEntity? ownerEntity = await dbCtx.Players.FindAsync(
+                            [ownerId],
+                            token
+                        );
 
-                    return created.Id;
-                },
+                        if (ownerEntity is null)
+                        {
+                            throw new InvalidOperationException(
+                                $"Player {ownerId} no longer exists."
+                            );
+                        }
+
+                        // The group row and the room back-link must land together: a committed group
+                        // whose room never got linked would permanently burn that room as a guild base.
+                        await using IDbContextTransaction tx = await dbCtx
+                            .Database.BeginTransactionAsync(token)
+                            .ConfigureAwait(true);
+
+                        GroupEntity created = GroupFactory.Create(
+                            name,
+                            BuildBadgeCode(badgeParts),
+                            baseRoomId,
+                            ownerId,
+                            GroupType.Open,
+                            primaryColorId.ToString(),
+                            secondaryColorId.ToString(),
+                            string.IsNullOrEmpty(description) ? null : description
+                        );
+                        created.RoomEntity = room;
+                        created.OwnerPlayerEntity = ownerEntity;
+
+                        dbCtx.Groups.Add(created);
+                        await dbCtx.SaveChangesAsync(token).ConfigureAwait(true);
+
+                        // Link the room back to the group and enrol the owner as an admin member.
+                        room.GroupEntityId = created.Id;
+                        dbCtx.GroupMembers.Add(
+                            new GroupMemberEntity
+                            {
+                                GroupEntityId = created.Id,
+                                PlayerEntityId = ownerId,
+                                Rank = GroupMemberRank.Admin,
+                                GroupEntity = created,
+                                PlayerEntity = ownerEntity,
+                            }
+                        );
+
+                        await dbCtx.SaveChangesAsync(token).ConfigureAwait(true);
+                        await tx.CommitAsync(token).ConfigureAwait(true);
+
+                        return created.Id;
+                    }),
                 logger,
                 ct
             )

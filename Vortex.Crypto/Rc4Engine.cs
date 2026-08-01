@@ -47,9 +47,14 @@ public sealed class Rc4Engine : IRc4Engine
         ArgumentNullException.ThrowIfNull(outputData);
         ArgumentOutOfRangeException.ThrowIfNegative(length);
 
-        if (inputOffset < 0 || outputOffset < 0)
+        if (inputOffset < 0)
         {
-            throw new ArgumentOutOfRangeException("Offsets must be non-negative.");
+            throw new ArgumentOutOfRangeException(nameof(inputOffset), "Offset must be non-negative.");
+        }
+
+        if (outputOffset < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(outputOffset), "Offset must be non-negative.");
         }
 
         if (inputData.Length - inputOffset < length)
