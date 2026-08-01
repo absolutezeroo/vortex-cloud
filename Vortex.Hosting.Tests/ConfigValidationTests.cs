@@ -411,25 +411,46 @@ public sealed class ConfigValidationTests
 
     // ── Orleans ──────────────────────────────────────────────────────────────
 
+    private static OrleansHostConfigValidator OrleansValidator(string connectionString = "server=x") =>
+        new(Options.Create(new DatabaseConfig { ConnectionString = connectionString }));
+
     [Fact]
     public void TheDefaultOrleansEndpoint_Passes() =>
-        new OrleansHostConfigValidator()
-            .Validate(null, new OrleansHostConfig())
-            .Succeeded.Should()
-            .BeTrue();
+        OrleansValidator().Validate(null, new OrleansHostConfig()).Succeeded.Should().BeTrue();
 
     [Fact]
     public void ANonLiteralAdvertisedIp_IsRefused() =>
-        new OrleansHostConfigValidator()
+        OrleansValidator()
             .Validate(null, new OrleansHostConfig { AdvertisedIp = "silo.internal" })
             .Failed.Should()
             .BeTrue();
 
     [Fact]
     public void ACollidingSiloAndGatewayPort_IsRefused() =>
-        new OrleansHostConfigValidator()
+        OrleansValidator()
             .Validate(null, new OrleansHostConfig { SiloPort = 11111, GatewayPort = 11111 })
             .Failed.Should()
+            .BeTrue();
+
+    [Fact]
+    public void AnUnknownClusteringProvider_IsRefused() =>
+        OrleansValidator()
+            .Validate(null, new OrleansHostConfig { ClusteringProvider = "zookeeper" })
+            .Failed.Should()
+            .BeTrue();
+
+    [Fact]
+    public void AdoNetClusteringWithoutAConnectionString_IsRefused() =>
+        OrleansValidator(connectionString: string.Empty)
+            .Validate(null, new OrleansHostConfig { ClusteringProvider = "adonet" })
+            .Failed.Should()
+            .BeTrue();
+
+    [Fact]
+    public void AdoNetClusteringWithAConnectionString_Passes() =>
+        OrleansValidator()
+            .Validate(null, new OrleansHostConfig { ClusteringProvider = "adonet" })
+            .Succeeded.Should()
             .BeTrue();
 
     // ── Plugins ──────────────────────────────────────────────────────────────

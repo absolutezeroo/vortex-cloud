@@ -33,6 +33,13 @@
     <PackageVersion Include="Microsoft.Orleans.Core.Abstractions" Version="10.2.1" />
     <PackageVersion Include="Microsoft.Orleans.Sdk" Version="10.2.1" />
     <PackageVersion Include="Microsoft.Orleans.TestingHost" Version="10.2.1" />
+    <!-- ORL-02: optional persistent clustering/storage, selected via Vortex:Orleans config; the
+         defaults (localhost/memory) stay unchanged and these packages are inert until opted into. -->
+    <PackageVersion Include="Microsoft.Orleans.Clustering.AdoNet" Version="10.2.1" />
+    <PackageVersion Include="Microsoft.Orleans.Persistence.AdoNet" Version="10.2.1" />
+    <!-- Matches the version Pomelo.EntityFrameworkCore.MySql 9.0.0 already resolves transitively;
+         pinned explicitly because Vortex.Main references its DbProviderFactory directly. -->
+    <PackageVersion Include="MySqlConnector" Version="2.4.0" />
     <!-- Transitive pin: Microsoft.Orleans.Sdk 10.2.1's code generator requires Roslyn >= 5.0.0,
          while Microsoft.EntityFrameworkCore.Design 9.0.8 pulls Roslyn 4.8.0. Central Package
          Management's transitive pinning needs an explicit version to reconcile the two. -->

@@ -20,4 +20,27 @@ public sealed class OrleansHostConfig
     ///     deployment, and configure a persistent clustering/storage provider otherwise.
     /// </summary>
     public bool AllowUnclusteredOutsideDevelopment { get; init; }
+
+    /// <summary>
+    ///     "localhost" (default, unchanged) or "adonet" for multi-silo clustering backed by the same
+    ///     MySQL database as <c>Vortex:Database:ConnectionString</c>. Selecting "adonet" requires
+    ///     Orleans's official clustering SQL scripts (https://aka.ms/orleans-sql-scripts) to already
+    ///     be applied to that database — this is a deployment prerequisite this process cannot apply
+    ///     for you, the same way EF migrations must already be applied before startup.
+    /// </summary>
+    public string ClusteringProvider { get; init; } = "localhost";
+
+    /// <summary>
+    ///     "memory" (default, unchanged) or "adonet" to persist PubSubStore (the only grain storage
+    ///     actually used — see ORL-01) so in-flight stream messages survive a silo restart. Same SQL
+    ///     script prerequisite as <see cref="ClusteringProvider"/>.
+    /// </summary>
+    public string GrainStorageProvider { get; init; } = "memory";
+
+    /// <summary>
+    ///     ADO.NET provider invariant name for "adonet" mode. Defaults to the driver this project
+    ///     already ships (MySqlConnector, via Pomelo.EntityFrameworkCore.MySql); override only if
+    ///     pointing Orleans at a different ADO.NET provider/database engine.
+    /// </summary>
+    public string Invariant { get; init; } = "MySqlConnector";
 }

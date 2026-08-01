@@ -1,10 +1,13 @@
 using System;
+using System.Data.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using MySqlConnector;
 using Orleans.Configuration;
 using Orleans.Hosting;
+using Vortex.Database.Configuration;
 using Vortex.Main.Configuration;
 using Vortex.Primitives.Orleans;
 
@@ -33,7 +36,14 @@ public static class HostApplicationBuilderExtensions
                 .Get<OrleansHostConfig>()
             ?? new OrleansHostConfig();
 
-        if (!builder.Environment.IsDevelopment())
+        bool usesAdoNet =
+            hostConfig.ClusteringProvider == "adonet" || hostConfig.GrainStorageProvider == "adonet";
+
+        bool unclustered =
+            hostConfig.ClusteringProvider == "localhost"
+            && hostConfig.GrainStorageProvider == "memory";
+
+        if (!builder.Environment.IsDevelopment() && unclustered)
         {
             if (!hostConfig.AllowUnclusteredOutsideDevelopment)
             {
@@ -41,7 +51,9 @@ public static class HostApplicationBuilderExtensions
                     "Refusing to start: Orleans would run with single-node localhost clustering and "
                         + "in-memory grain storage/streams outside Development. State does not survive "
                         + "a restart and this cannot scale beyond one silo. Configure a persistent "
-                        + "clustering/storage provider, or set "
+                        + $"clustering/storage provider via '{OrleansHostConfig.SECTION_NAME}:"
+                        + $"{nameof(OrleansHostConfig.ClusteringProvider)}'/"
+                        + $"'{nameof(OrleansHostConfig.GrainStorageProvider)}' (= \"adonet\"), or set "
                         + $"'{OrleansHostConfig.SECTION_NAME}:{nameof(OrleansHostConfig.AllowUnclusteredOutsideDevelopment)}' "
                         + "to true to explicitly accept this for a single-node deployment."
                 );
@@ -54,6 +66,20 @@ public static class HostApplicationBuilderExtensions
                     + "storage provider before relying on this in production."
             );
         }
+
+        if (usesAdoNet)
+        {
+            // MySqlConnector isn't registered as a DbProviderFactory by default (unlike the EF Core
+            // path, which references it directly) - Orleans's ADO.NET providers resolve their driver
+            // by invariant name through DbProviderFactories.
+            DbProviderFactories.RegisterFactory(hostConfig.Invariant, MySqlConnectorFactory.Instance);
+        }
+
+        string databaseConnectionString =
+            builder
+                .Configuration.GetSection(DatabaseConfig.SECTION_NAME)
+                .Get<DatabaseConfig>()
+                ?.ConnectionString ?? string.Empty;
 
         builder.UseOrleans(
             (System.Action<ISiloBuilder>)(
@@ -70,12 +96,39 @@ public static class HostApplicationBuilderExtensions
                         listenOnAnyHostAddress: true
                     );
 
+                    if (hostConfig.ClusteringProvider == "adonet")
+                    {
+                        silo.UseAdoNetClustering(options =>
+                        {
+                            options.Invariant = hostConfig.Invariant;
+                            options.ConnectionString = databaseConnectionString;
+                        });
+                    }
+                    else
+                    {
+                        silo.UseLocalhostClustering();
+                    }
+
                     // PLAYER_STORE/ROOM_STORE were never wired to a [PersistentState] grain — every
                     // grain in this codebase persists through EF Core instead, so only PubSubStore
                     // (required by the stream providers below) is actually used.
-                    silo.UseLocalhostClustering()
-                        .AddMemoryGrainStorage(OrleansStorageNames.PUB_SUB_STORE)
-                        .AddMemoryStreams(OrleansStreamProviders.DEFAULT_STREAM_PROVIDER)
+                    if (hostConfig.GrainStorageProvider == "adonet")
+                    {
+                        silo.AddAdoNetGrainStorage(
+                            OrleansStorageNames.PUB_SUB_STORE,
+                            options =>
+                            {
+                                options.Invariant = hostConfig.Invariant;
+                                options.ConnectionString = databaseConnectionString;
+                            }
+                        );
+                    }
+                    else
+                    {
+                        silo.AddMemoryGrainStorage(OrleansStorageNames.PUB_SUB_STORE);
+                    }
+
+                    silo.AddMemoryStreams(OrleansStreamProviders.DEFAULT_STREAM_PROVIDER)
                         .AddMemoryStreams(OrleansStreamProviders.ROOM_STREAM_PROVIDER);
                 }
             )
