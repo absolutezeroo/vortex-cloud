@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Avatar;
 
 internal class CheckUserNameMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new CheckUserNameMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new CheckUserNameMessage { Name = packet.PopString() };
 }

@@ -1,5 +1,7 @@
+using Vortex.Primitives.Messages.Outgoing.Nux;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Revision20260701.Parsers.Nux;
+using Vortex.Revisions.Revision20260701.Serializers.Nux;
 
 namespace Vortex.Revisions.Revision20260701.Maps;
 
@@ -18,6 +20,13 @@ internal sealed class NuxMap : IRevisionMap
         builder.MapParser(
             MessageEvent.SelectInitialRoomEvent,
             new SelectInitialRoomMessageParser()
+        );
+
+        builder.MapSerializer(
+            typeof(SelectInitialRoomEventMessageComposer),
+            new SelectInitialRoomEventMessageComposerSerializer(
+                MessageComposer.SelectInitialRoomComposer
+            )
         );
     }
 }

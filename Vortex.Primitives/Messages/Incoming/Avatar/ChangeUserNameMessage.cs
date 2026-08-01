@@ -2,4 +2,10 @@ using Vortex.Primitives.Networking;
 
 namespace Vortex.Primitives.Messages.Incoming.Avatar;
 
-public record ChangeUserNameMessage : IMessageEvent { }
+/// <summary>
+/// Claims a name. Sent when the onboarding editor submits, after the check has passed.
+/// </summary>
+public record ChangeUserNameMessage : IMessageEvent
+{
+    public required string Name { get; init; }
+}

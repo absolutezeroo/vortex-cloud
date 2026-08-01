@@ -85,6 +85,12 @@ public class PlayerEntity : VortexEntity
     [Column("trading_locked_until")]
     public DateTime? TradingLockedUntil { get; set; }
 
+    /// <summary>Null = the new-user flow has not been completed yet. Drives the
+    /// <c>AVATAR_NAME_CHANGE</c> suggested login action: the client shows its look-and-name
+    /// onboarding on every login until this is stamped.</summary>
+    [Column("nux_completed_at")]
+    public DateTime? NuxCompletedAt { get; set; }
+
     [InverseProperty("PlayerEntity")]
     public List<PlayerBadgeEntity>? PlayerBadges { get; set; }
 

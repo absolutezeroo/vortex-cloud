@@ -134,6 +134,28 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         await playerPresence.OnPlayerUpdatedAsync(await GetSummaryAsync(ct), ct);
     }
 
+    public Task<bool> IsNuxCompletedAsync(CancellationToken ct) =>
+        Task.FromResult(_state.NuxCompletedAt is not null);
+
+    public async Task MarkNuxCompletedAsync(CancellationToken ct)
+    {
+        if (_state.NuxCompletedAt is not null)
+        {
+            return;
+        }
+
+        _state.NuxCompletedAt = DateTime.UtcNow;
+
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+
+        await dbCtx
+            .Players.Where(x => x.Id == (int)_state.PlayerId)
+            .ExecuteUpdateAsync(
+                up => up.SetProperty(p => p.NuxCompletedAt, _state.NuxCompletedAt),
+                ct
+            );
+    }
+
     public async Task SetMottoAsync(string text, CancellationToken ct)
     {
         _state.Motto = text;
@@ -821,6 +843,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         _state.RespectGivenToday = entity.RespectGivenToday;
         _state.RespectResetDate = entity.RespectResetDate;
         _state.CreatedAt = entity.CreatedAt;
+        _state.NuxCompletedAt = entity.NuxCompletedAt;
         _state.LastUpdated = entity.UpdatedAt;
 
         _state.FavouriteGroupId = entity.FavouriteGroupId ?? 0;

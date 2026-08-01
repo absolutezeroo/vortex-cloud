@@ -364,6 +364,16 @@ public sealed class GroupDirectoryGrainCreationTests
             throw new NotSupportedException();
         }
 
+        public Task<bool> IsNuxCompletedAsync(CancellationToken ct)
+        {
+            throw new NotSupportedException();
+        }
+
+        public Task MarkNuxCompletedAsync(CancellationToken ct)
+        {
+            throw new NotSupportedException();
+        }
+
         public Task SetMottoAsync(string text, CancellationToken ct)
         {
             throw new NotSupportedException();

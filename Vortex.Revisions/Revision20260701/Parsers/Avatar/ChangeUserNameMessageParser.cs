@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Avatar;
 
 internal class ChangeUserNameMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new ChangeUserNameMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new ChangeUserNameMessage { Name = packet.PopString() };
 }
