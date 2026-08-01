@@ -24,4 +24,20 @@ public sealed class AuthenticationConfig
     /// Default: 30 seconds — tight enough to prevent replay, long enough for slow connections.
     /// </summary>
     public int TicketTtlSeconds { get; init; } = 30;
+
+    /// <summary>
+    /// When true, a non-locked ticket is deleted on its first successful use instead of having its
+    /// expiry pushed forward. Default false so behavior is unchanged out of the box: some CMS
+    /// integrations rely on reusing the same ticket across reconnects, and turning this on would
+    /// break them until they're updated to mint a fresh ticket per connection attempt.
+    /// </summary>
+    public bool TicketSingleUse { get; init; }
+
+    /// <summary>
+    /// Optional absolute cap (seconds since a ticket's <c>CreatedAt</c>) on how far the sliding
+    /// expiry refresh may push a ticket's validity. Unset (default) preserves today's behavior,
+    /// where each successful use extends the ticket indefinitely into the future. Ignored when
+    /// <see cref="TicketSingleUse"/> is true.
+    /// </summary>
+    public int? TicketAbsoluteLifetimeSeconds { get; init; }
 }

@@ -23,6 +23,8 @@ public sealed class AuthenticationService(
     private readonly IEventPublisher _events = events;
     private readonly string _ipHashSecret = options.Value.IpHashSecret;
     private readonly int _ticketTtlSeconds = options.Value.TicketTtlSeconds;
+    private readonly bool _ticketSingleUse = options.Value.TicketSingleUse;
+    private readonly int? _ticketAbsoluteLifetimeSeconds = options.Value.TicketAbsoluteLifetimeSeconds;
 
     public async Task<int> GetPlayerIdFromTicketAsync(
         string ticket,
@@ -78,11 +80,40 @@ public sealed class AuthenticationService(
                 return 0;
             }
 
+            // `IsLocked` tickets are persistent/CMS-managed and intentionally never touched here
+            // (no slide, no single-use deletion, no expiry) — they are a separate mechanism from the
+            // one-ticket-per-login-attempt flow this method otherwise implements.
             if (!entity.IsLocked)
             {
-                // Refresh the expiry so the client can reconnect after a disconnect without a
-                // new ticket, while keeping the replay window bounded.
-                entity.ExpiresAt = _ticketTtlSeconds > 0 ? now.AddSeconds(_ticketTtlSeconds) : null;
+                if (_ticketSingleUse)
+                {
+                    // Consumed on first successful use: an observed ticket (proxy logs, browser
+                    // history, unencrypted transport, Referer) can no longer be replayed at all,
+                    // rather than being able to extend its own validity indefinitely.
+                    dbCtx.SecurityTickets.Remove(entity);
+                }
+                else
+                {
+                    // Refresh the expiry so the client can reconnect after a disconnect without a
+                    // new ticket, while keeping the replay window bounded per use. Left default
+                    // (TicketSingleUse = false) for compatibility with CMS integrations that reuse
+                    // one ticket across reconnects.
+                    DateTime slidExpiry = _ticketTtlSeconds > 0
+                        ? now.AddSeconds(_ticketTtlSeconds)
+                        : DateTime.MaxValue;
+
+                    if (_ticketAbsoluteLifetimeSeconds is int absoluteSeconds)
+                    {
+                        DateTime absoluteCap = entity.CreatedAt.AddSeconds(absoluteSeconds);
+
+                        if (slidExpiry > absoluteCap)
+                        {
+                            slidExpiry = absoluteCap;
+                        }
+                    }
+
+                    entity.ExpiresAt = slidExpiry == DateTime.MaxValue ? null : slidExpiry;
+                }
 
                 await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
             }

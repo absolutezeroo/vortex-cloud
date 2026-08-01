@@ -56,6 +56,15 @@ public sealed class AuthenticationConfigValidator(IHostEnvironment environment)
             );
         }
 
+        if (options.TicketAbsoluteLifetimeSeconds is < 1)
+        {
+            failures.Add(
+                $"'{AuthenticationConfig.SECTION_NAME}:{nameof(AuthenticationConfig.TicketAbsoluteLifetimeSeconds)}' "
+                    + $"must be a positive number of seconds when set (got {options.TicketAbsoluteLifetimeSeconds}). "
+                    + "Leave it unset to disable the cap."
+            );
+        }
+
         return failures.Count > 0
             ? ValidateOptionsResult.Fail(failures)
             : ValidateOptionsResult.Success;

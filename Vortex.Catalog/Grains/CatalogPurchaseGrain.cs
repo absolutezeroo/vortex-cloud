@@ -74,11 +74,9 @@ public sealed partial class CatalogPurchaseGrain(
                 debitRequests,
                 async innerCt =>
                 {
-                    await _grainFactory
-                        .GetInventoryGrain((int)this.GetPrimaryKeyLong())
-                        .GrantCatalogOfferAsync(offer, extraParam, quantity, innerCt)
-                        .ConfigureAwait(true);
-
+                    // Ordered least-to-most reversible: a failure tracking a stat is harmless to
+                    // compensate, but a failure *after* the inventory grant would leave the item
+                    // granted for free once the wallet refunds. See SEC-06.
                     if (creditCost > 0)
                     {
                         await _grainFactory
@@ -87,17 +85,9 @@ public sealed partial class CatalogPurchaseGrain(
                             .ConfigureAwait(true);
                     }
 
-                    await _events
-                        .PublishAsync(
-                            new CatalogPurchasedEvent(
-                                (int)this.GetPrimaryKeyLong(),
-                                catalogType.ToString(),
-                                offerId,
-                                quantity,
-                                creditCost
-                            ),
-                            innerCt
-                        )
+                    await _grainFactory
+                        .GetInventoryGrain((int)this.GetPrimaryKeyLong())
+                        .GrantCatalogOfferAsync(offer, extraParam, quantity, innerCt)
                         .ConfigureAwait(true);
 
                     return offer;
@@ -111,6 +101,22 @@ public sealed partial class CatalogPurchaseGrain(
         {
             throw CreateInsufficientBalanceException(result.Failure);
         }
+
+        // Published after the purchase has fully succeeded and is out of the compensated scope: it
+        // is a notification, not a purchase step, so a failing subscriber must never be able to
+        // trigger a refund of an already-completed sale (SEC-06).
+        await _events
+            .PublishAsync(
+                new CatalogPurchasedEvent(
+                    (int)this.GetPrimaryKeyLong(),
+                    catalogType.ToString(),
+                    offerId,
+                    quantity,
+                    creditCost
+                ),
+                ct
+            )
+            .ConfigureAwait(true);
 
         return result.Reward!;
     }

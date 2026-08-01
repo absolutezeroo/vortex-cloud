@@ -63,15 +63,10 @@ public sealed partial class CatalogPurchaseGrain
                 debitRequests,
                 async innerCt =>
                 {
-                    // The single line that differs from a normal purchase. Everything around it --
-                    // the debit, the automatic refund when this delegate throws, the spend tracking,
-                    // the audit trail -- stays identical on purpose: each one of those was a hole
-                    // while this path hand-rolled its own debit.
-                    await _grainFactory
-                        .GetInventoryGrain(receiverId.Value)
-                        .GrantCatalogOfferAsync(offer, extraParam, 1, innerCt)
-                        .ConfigureAwait(true);
-
+                    // Ordered least-to-most reversible, and the notification events moved outside
+                    // this compensated scope entirely (see SEC-06): a failure tracking a stat is
+                    // harmless to compensate, but a failure *after* the inventory grant would leave
+                    // the recipient's gift delivered for free once the wallet refunds the buyer.
                     if (creditCost > 0)
                     {
                         await _grainFactory
@@ -80,32 +75,9 @@ public sealed partial class CatalogPurchaseGrain
                             .ConfigureAwait(true);
                     }
 
-                    await _events
-                        .PublishAsync(
-                            new CatalogPurchasedEvent(
-                                buyerId,
-                                catalogType.ToString(),
-                                offerId,
-                                1,
-                                creditCost
-                            ),
-                            innerCt
-                        )
-                        .ConfigureAwait(true);
-
-                    // Emitted on top of the purchase event rather than instead of it: the buyer's
-                    // spend belongs in the same series as every other purchase, and a gift also has
-                    // to answer "to whom".
-                    await _events
-                        .PublishAsync(
-                            new CatalogGiftPurchasedEvent(
-                                buyerId,
-                                receiverId.Value,
-                                offerId,
-                                creditCost
-                            ),
-                            innerCt
-                        )
+                    await _grainFactory
+                        .GetInventoryGrain(receiverId.Value)
+                        .GrantCatalogOfferAsync(offer, extraParam, 1, innerCt)
                         .ConfigureAwait(true);
 
                     return offer;
@@ -119,6 +91,22 @@ public sealed partial class CatalogPurchaseGrain
         {
             throw CreateInsufficientBalanceException(result.Failure);
         }
+
+        await _events
+            .PublishAsync(
+                new CatalogPurchasedEvent(buyerId, catalogType.ToString(), offerId, 1, creditCost),
+                ct
+            )
+            .ConfigureAwait(true);
+
+        // Emitted on top of the purchase event rather than instead of it: the buyer's spend belongs
+        // in the same series as every other purchase, and a gift also has to answer "to whom".
+        await _events
+            .PublishAsync(
+                new CatalogGiftPurchasedEvent(buyerId, receiverId.Value, offerId, creditCost),
+                ct
+            )
+            .ConfigureAwait(true);
 
         return result.Reward!;
     }
