@@ -4,6 +4,7 @@ using Vortex.Furniture.Configuration;
 using Vortex.Furniture.Providers;
 using Vortex.Primitives.Furniture;
 using Vortex.Primitives.Furniture.Providers;
+using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Plugins;
 
 namespace Vortex.Furniture;
@@ -19,6 +20,9 @@ public sealed class FurnitureModule : IHostPluginModule
         );
 
         services.AddSingleton<IFurnitureDefinitionProvider, FurnitureDefinitionProvider>();
+        services.AddSingleton<IReferenceDataProvider>(sp =>
+            (IReferenceDataProvider)sp.GetRequiredService<IFurnitureDefinitionProvider>()
+        );
         services.AddSingleton<IFurnitureAdminService, FurnitureAdminService>();
         services.AddSingleton<IStuffDataFactory, StuffDataFactory>();
     }

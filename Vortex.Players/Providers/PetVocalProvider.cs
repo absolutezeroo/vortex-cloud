@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Pets;
+using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Pets.Providers;
 
 namespace Vortex.Players.Providers;
@@ -19,8 +20,10 @@ namespace Vortex.Players.Providers;
 public sealed class PetVocalProvider(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<IPetVocalProvider> logger
-) : IPetVocalProvider
+) : IPetVocalProvider, IReferenceDataProvider
 {
+    public int LoadStage => 0;
+
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<IPetVocalProvider> _logger = logger;
 

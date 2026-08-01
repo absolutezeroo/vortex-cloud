@@ -31,4 +31,18 @@ public sealed class RevisionManager(ILogger<RevisionManager> logger) : IRevision
             DefaultRevisionId = revision.Revision;
         }
     }
+
+    public void SetDefault(string revisionId)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(revisionId);
+
+        if (!Revisions.ContainsKey(revisionId))
+        {
+            throw new InvalidOperationException(
+                $"Cannot set '{revisionId}' as the default revision: no revision with that id is registered."
+            );
+        }
+
+        DefaultRevisionId = revisionId;
+    }
 }

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Pets;
+using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Pets.Providers;
 using Vortex.Primitives.Pets.Snapshots;
 
@@ -15,8 +16,10 @@ namespace Vortex.Players.Providers;
 public sealed class PetPaletteProvider(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<IPetPaletteProvider> logger
-) : IPetPaletteProvider
+) : IPetPaletteProvider, IReferenceDataProvider
 {
+    public int LoadStage => 0;
+
     private ImmutableDictionary<int, ImmutableArray<PetPaletteEntry>> _byType = ImmutableDictionary<
         int,
         ImmutableArray<PetPaletteEntry>

@@ -11,6 +11,7 @@ using Vortex.Database.Entities.Navigator;
 using Vortex.Database.Entities.Room;
 using Vortex.Primitives.Navigator;
 using Vortex.Primitives.Navigator.Enums;
+using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Orleans.Snapshots.Navigator;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Players;
@@ -20,8 +21,10 @@ namespace Vortex.Navigator;
 public sealed class NavigatorProvider(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<NavigatorProvider> logger
-) : INavigatorProvider
+) : INavigatorProvider, IReferenceDataProvider
 {
+    public int LoadStage => 0;
+
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<NavigatorProvider> _logger = logger;
 

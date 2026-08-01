@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Catalog;
+using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Players.Providers;
 using Vortex.Primitives.Players.Snapshots;
 using Vortex.Primitives.Players.Wallet;
@@ -15,8 +16,10 @@ namespace Vortex.Players.Providers;
 public sealed class CurrencyTypeProvider(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<ICurrencyTypeProvider> logger
-) : ICurrencyTypeProvider
+) : ICurrencyTypeProvider, IReferenceDataProvider
 {
+    public int LoadStage => 0;
+
     private sealed record State(
         ImmutableDictionary<int, CurrencyTypeSnapshot> ById,
         ImmutableDictionary<CurrencyKind, int> IdByKind

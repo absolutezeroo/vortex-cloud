@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Marketplace;
+using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Marketplace.Providers;
 using Vortex.Primitives.Marketplace.Snapshots;
 
@@ -13,13 +14,15 @@ namespace Vortex.Marketplace.Providers;
 public sealed class MarketplaceSettingsProvider(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<MarketplaceSettingsProvider> logger
-) : IMarketplaceSettingsProvider
+) : IMarketplaceSettingsProvider, IReferenceDataProvider
 {
     private static readonly MarketplaceSettingsSnapshot Defaults = new()
     {
         CommissionPercent = 1,
         OfferDurationSeconds = 259200,
     };
+
+    public int LoadStage => 0;
 
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<MarketplaceSettingsProvider> _logger = logger;

@@ -8,16 +8,19 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Catalog;
 using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Providers;
+using Vortex.Primitives.Hosting;
 
 namespace Vortex.Catalog.Providers;
 
 public sealed class CatalogClubOfferProvider(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<ICatalogClubOfferProvider> logger
-) : ICatalogClubOfferProvider
+) : ICatalogClubOfferProvider, IReferenceDataProvider
 {
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<ICatalogClubOfferProvider> _logger = logger;
+
+    public int LoadStage => 0;
 
     private IReadOnlyList<ClubOffer> _offers = [];
 

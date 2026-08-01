@@ -5,6 +5,7 @@ using Vortex.Players.MysteryBox;
 using Vortex.Players.Providers;
 using Vortex.Players.Quests;
 using Vortex.Primitives.Groups.Providers;
+using Vortex.Primitives.Hosting;
 using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.Pets.Providers;
 using Vortex.Primitives.Players;
@@ -29,11 +30,29 @@ public sealed class PlayerModule : IHostPluginModule
         );
 
         services.AddSingleton<ICurrencyTypeProvider, CurrencyTypeProvider>();
+        services.AddSingleton<IReferenceDataProvider>(sp =>
+            (IReferenceDataProvider)sp.GetRequiredService<ICurrencyTypeProvider>()
+        );
         services.AddSingleton<IGroupBadgePartProvider, GroupBadgePartProvider>();
+        services.AddSingleton<IReferenceDataProvider>(sp =>
+            (IReferenceDataProvider)sp.GetRequiredService<IGroupBadgePartProvider>()
+        );
         services.AddSingleton<IPetPaletteProvider, PetPaletteProvider>();
+        services.AddSingleton<IReferenceDataProvider>(sp =>
+            (IReferenceDataProvider)sp.GetRequiredService<IPetPaletteProvider>()
+        );
         services.AddSingleton<IPetCommandProvider, PetCommandProvider>();
+        services.AddSingleton<IReferenceDataProvider>(sp =>
+            (IReferenceDataProvider)sp.GetRequiredService<IPetCommandProvider>()
+        );
         services.AddSingleton<IPetLevelProvider, PetLevelProvider>();
+        services.AddSingleton<IReferenceDataProvider>(sp =>
+            (IReferenceDataProvider)sp.GetRequiredService<IPetLevelProvider>()
+        );
         services.AddSingleton<IPetVocalProvider, PetVocalProvider>();
+        services.AddSingleton<IReferenceDataProvider>(sp =>
+            (IReferenceDataProvider)sp.GetRequiredService<IPetVocalProvider>()
+        );
         services.AddSingleton<IBuildersClubService, BuildersClubService>();
         services.AddSingleton<IQuestAdminService, QuestAdminService>();
         services.AddSingleton<IMysteryBoxAdminService, MysteryBoxAdminService>();

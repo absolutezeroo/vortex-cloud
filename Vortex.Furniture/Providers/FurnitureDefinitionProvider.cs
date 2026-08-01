@@ -12,6 +12,7 @@ using Vortex.Database.Entities.Furniture;
 using Vortex.Furniture.Configuration;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Furniture.Snapshots;
+using Vortex.Primitives.Hosting;
 
 namespace Vortex.Furniture.Providers;
 
@@ -19,11 +20,15 @@ public sealed class FurnitureDefinitionProvider(
     IOptions<FurnitureConfig> config,
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<IFurnitureDefinitionProvider> logger
-) : IFurnitureDefinitionProvider
+) : IFurnitureDefinitionProvider, IReferenceDataProvider
 {
     private readonly FurnitureConfig _config = config.Value;
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<IFurnitureDefinitionProvider> _logger = logger;
+
+    // Stage 0: CatalogSnapshotProvider<T> and CatalogClubGiftProvider read furniture definitions
+    // during their own reload (see stage 1), so this must finish first.
+    public int LoadStage => 0;
 
     private ImmutableDictionary<int, FurnitureDefinitionSnapshot> _definitionsById =
         ImmutableDictionary<int, FurnitureDefinitionSnapshot>.Empty;

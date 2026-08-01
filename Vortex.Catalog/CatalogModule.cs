@@ -9,6 +9,7 @@ using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Catalog.Providers;
 using Vortex.Primitives.Catalog.Tags;
 using Vortex.Primitives.Furniture.Providers;
+using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Plugins;
 
 namespace Vortex.Catalog;
@@ -24,7 +25,13 @@ public sealed class CatalogModule : IHostPluginModule
         services.AddSingleton<ITargetedOfferAdminService, TargetedOfferAdminService>();
         services.AddSingleton<ILtdScheduleService, LtdScheduleService>();
         services.AddSingleton<ICatalogClubOfferProvider, CatalogClubOfferProvider>();
+        services.AddSingleton<IReferenceDataProvider>(sp =>
+            (IReferenceDataProvider)sp.GetRequiredService<ICatalogClubOfferProvider>()
+        );
         services.AddSingleton<ICatalogClubGiftProvider, CatalogClubGiftProvider>();
+        services.AddSingleton<IReferenceDataProvider>(sp =>
+            (IReferenceDataProvider)sp.GetRequiredService<ICatalogClubGiftProvider>()
+        );
         services.AddSingleton<ICatalogSnapshotProvider<NormalCatalog>>(
             sp => new CatalogSnapshotProvider<NormalCatalog>(
                 sp.GetRequiredService<IDbContextFactory<VortexDbContext>>(),
@@ -33,6 +40,9 @@ public sealed class CatalogModule : IHostPluginModule
                 CatalogType.Normal
             )
         );
+        services.AddSingleton<IReferenceDataProvider>(sp =>
+            (IReferenceDataProvider)sp.GetRequiredService<ICatalogSnapshotProvider<NormalCatalog>>()
+        );
         services.AddSingleton<ICatalogSnapshotProvider<BuildersClubCatalog>>(
             sp => new CatalogSnapshotProvider<BuildersClubCatalog>(
                 sp.GetRequiredService<IDbContextFactory<VortexDbContext>>(),
@@ -40,6 +50,10 @@ public sealed class CatalogModule : IHostPluginModule
                 sp.GetRequiredService<IFurnitureDefinitionProvider>(),
                 CatalogType.BuildersClub
             )
+        );
+        services.AddSingleton<IReferenceDataProvider>(sp =>
+            (IReferenceDataProvider)
+                sp.GetRequiredService<ICatalogSnapshotProvider<BuildersClubCatalog>>()
         );
     }
 }

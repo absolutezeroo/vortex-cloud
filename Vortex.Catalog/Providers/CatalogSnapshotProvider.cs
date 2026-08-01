@@ -12,6 +12,7 @@ using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Catalog.Providers;
 using Vortex.Primitives.Catalog.Snapshots;
 using Vortex.Primitives.Furniture.Providers;
+using Vortex.Primitives.Hosting;
 
 namespace Vortex.Catalog.Providers;
 
@@ -20,13 +21,17 @@ public sealed class CatalogSnapshotProvider<TTag>(
     ILogger<ICatalogSnapshotProvider<TTag>> logger,
     IFurnitureDefinitionProvider furnitureProvider,
     CatalogType catalogType
-) : ICatalogSnapshotProvider<TTag>
+) : ICatalogSnapshotProvider<TTag>, IReferenceDataProvider
     where TTag : ICatalogTag
 {
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<ICatalogSnapshotProvider<TTag>> _logger = logger;
     private readonly IFurnitureDefinitionProvider _furnitureProvider = furnitureProvider;
     private CatalogSnapshot _current = CatalogSnapshot.Empty;
+
+    // Stage 1: reads furniture definitions while building snapshots, so it must reload after
+    // IFurnitureDefinitionProvider (stage 0).
+    public int LoadStage => 1;
 
     public CatalogType CatalogType => catalogType;
     public CatalogSnapshot Current => _current;

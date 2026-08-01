@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Navigator;
 using Vortex.Primitives.Plugins;
 
@@ -13,5 +14,8 @@ public sealed class NavigatorModule : IHostPluginModule
     {
         services.AddSingleton<INavigatorService, NavigatorService>();
         services.AddSingleton<INavigatorProvider, NavigatorProvider>();
+        services.AddSingleton<IReferenceDataProvider>(sp =>
+            (IReferenceDataProvider)sp.GetRequiredService<INavigatorProvider>()
+        );
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Vortex.Marketplace.Providers;
+using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Marketplace.Providers;
 using Vortex.Primitives.Plugins;
 
@@ -13,5 +14,8 @@ public sealed class MarketplaceModule : IHostPluginModule
     public void ConfigureServices(IServiceCollection services, HostApplicationBuilder builder)
     {
         services.AddSingleton<IMarketplaceSettingsProvider, MarketplaceSettingsProvider>();
+        services.AddSingleton<IReferenceDataProvider>(sp =>
+            (IReferenceDataProvider)sp.GetRequiredService<IMarketplaceSettingsProvider>()
+        );
     }
 }

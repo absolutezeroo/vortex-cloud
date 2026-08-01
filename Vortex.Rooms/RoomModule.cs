@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Plugins;
 using Vortex.Primitives.Rooms;
@@ -24,6 +25,9 @@ public sealed class RoomModule : IHostPluginModule
         services.AddSingleton<IRoomAvatarProvider, RoomAvatarProvider>();
         services.AddSingleton<IRoomItemsProvider, RoomItemsProvider>();
         services.AddSingleton<IRoomModelProvider, RoomModelProvider>();
+        services.AddSingleton<IReferenceDataProvider>(sp =>
+            (IReferenceDataProvider)sp.GetRequiredService<IRoomModelProvider>()
+        );
         services.AddSingleton<IRoomObjectLogicProvider, RoomObjectLogicProvider>();
         services.AddSingleton<IRoomWiredVariablesProvider, RoomWiredVariablesProvider>();
 

@@ -11,6 +11,7 @@ using Vortex.Primitives.Catalog.Providers;
 using Vortex.Primitives.Catalog.Snapshots;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Providers;
+using Vortex.Primitives.Hosting;
 
 namespace Vortex.Catalog.Providers;
 
@@ -18,11 +19,14 @@ public sealed class CatalogClubGiftProvider(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<ICatalogClubGiftProvider> logger,
     IFurnitureDefinitionProvider furnitureProvider
-) : ICatalogClubGiftProvider
+) : ICatalogClubGiftProvider, IReferenceDataProvider
 {
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<ICatalogClubGiftProvider> _logger = logger;
     private readonly IFurnitureDefinitionProvider _furnitureProvider = furnitureProvider;
+
+    // Stage 1: reads furniture definitions, must reload after IFurnitureDefinitionProvider.
+    public int LoadStage => 1;
 
     private IReadOnlyList<CatalogOfferSnapshot> _offers = [];
 

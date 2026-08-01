@@ -9,14 +9,17 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Groups;
 using Vortex.Primitives.Groups.Providers;
 using Vortex.Primitives.Groups.Snapshots;
+using Vortex.Primitives.Hosting;
 
 namespace Vortex.Players.Providers;
 
 public sealed class GroupBadgePartProvider(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<IGroupBadgePartProvider> logger
-) : IGroupBadgePartProvider
+) : IGroupBadgePartProvider, IReferenceDataProvider
 {
+    public int LoadStage => 0;
+
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<IGroupBadgePartProvider> _logger = logger;
 

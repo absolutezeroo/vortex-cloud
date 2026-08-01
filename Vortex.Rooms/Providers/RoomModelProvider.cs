@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Providers;
 using Vortex.Primitives.Rooms.Snapshots.Mapping;
@@ -18,8 +19,10 @@ namespace Vortex.Rooms.Providers;
 public sealed class RoomModelProvider(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     ILogger<IRoomModelProvider> logger
-) : IRoomModelProvider
+) : IRoomModelProvider, IReferenceDataProvider
 {
+    public int LoadStage => 0;
+
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<IRoomModelProvider> _logger = logger;
 
