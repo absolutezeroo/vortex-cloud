@@ -21,9 +21,14 @@ public sealed record RegisterRequest(string? Email, string? Password, string? Pa
         && (PasswordRepeated is null || Password == PasswordRepeated);
 }
 
+/// <remarks>
+/// <see cref="Name"/> is optional: the client posts this route with an empty name right after
+/// registering, and <c>WebApiPlayerService.CreateAvatarAsync</c> assigns a placeholder that the
+/// client's onboarding step replaces. Everything else about the request is unchanged.
+/// </remarks>
 public sealed record CreateAvatarRequest(string? Name, string? Figure, string? Gender)
 {
-    public bool IsValid => !string.IsNullOrWhiteSpace(Name);
+    public bool IsValid => true;
 }
 
 public sealed record SelectAvatarRequest(string? UniqueId)

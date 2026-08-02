@@ -54,6 +54,19 @@ public sealed class WebApiPlayerService(
     {
         await using VortexDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
 
+        // A blank name means the caller is registering: the client posts to this route straight
+        // after /api/public/registration/new, and the avatar is named later by the onboarding step
+        // that AuthenticationOK asks for (AVATAR_NAME_CHANGE is sent for as long as the player has
+        // no NuxCompletedAt, and ChangeUserNameMessageHandler is what sets it). The player row still
+        // has to exist before then — there is no ticket, and so no connection, without one — so it
+        // is given a placeholder. Player.Name is uniquely indexed, so the placeholder embeds a GUID
+        // rather than a counter: it cannot collide with another registration racing it, nor with a
+        // name a player picks.
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            name = $"New user {Guid.NewGuid():N}"[..24];
+        }
+
         int count = await db
             .Players.AsNoTracking()
             .CountAsync(p => p.PlayerAccountEntityId == accountId && p.DeletedAt == null, ct)
