@@ -102,4 +102,30 @@ public sealed class CrackableStuffDataTests
         crackable.Target.Should().Be(6);
         read.GetLegacyString().Should().Be("3");
     }
+
+    [Fact]
+    public void FromStuffData_ProducesACrackableSnapshotCarryingBothCounters()
+    {
+        // The read path was covered, the write path was not: FromStuffData had no
+        // ICrackableStuffData branch and fell through to its "unknown stuff data type" throw. The
+        // seed left every crackable definition on another format, so nothing ever reached this
+        // switch with crackable data and the gap stayed invisible -- repairing the seed alone would
+        // have turned a harmless warning into an exception on the room's item-serialization path.
+        IStuffData data = Factory.CreateStuffData(StuffDataType.CrackableKey);
+        ICrackableStuffData crackable = data.Should().BeAssignableTo<ICrackableStuffData>().Subject;
+
+        crackable.SetTarget(6);
+        crackable.AddHit();
+        crackable.AddHit();
+
+        CrackableStuffSnapshot snapshot = Factory
+            .FromStuffData(data)
+            .Should()
+            .BeOfType<CrackableStuffSnapshot>()
+            .Subject;
+
+        snapshot.Hits.Should().Be(2);
+        snapshot.Target.Should().Be(6);
+        snapshot.Data.Should().Be(data.GetLegacyString());
+    }
 }

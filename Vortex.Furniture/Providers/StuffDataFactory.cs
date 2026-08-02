@@ -136,6 +136,15 @@ public sealed class StuffDataFactory : IStuffDataFactory
                     kv => kv.Value.ToImmutableArray()
                 ),
             },
+            ICrackableStuffData crackable => new CrackableStuffSnapshot
+            {
+                StuffBitmask = bitmask,
+                UniqueNumber = uniqueNumber,
+                UniqueSeries = uniqueSeries,
+                Data = crackable.GetLegacyString(),
+                Hits = crackable.Hits,
+                Target = crackable.Target,
+            },
             IEmptyStuffData empty => new EmptyStuffSnapshot
             {
                 StuffBitmask = bitmask,

@@ -38,7 +38,11 @@ UPDATE furniture_definitions SET logic = 'furniture_crackable', stuff_data_type 
         'wonderland_c25_crackableb',
         'wonderland_c25_redcrackableb'
     )
-      AND logic <> 'furniture_crackable';
+-- Guarded on the outcome, not on the logic column alone. Testing only `logic <> 'furniture_crackable'`
+-- skips a definition that already carries the logic but was left on another stuff data format, and
+-- that row can then never be repaired by re-running the seed -- which is exactly how a crackable ends
+-- up running the crackable logic with no counters to write to.
+      AND (logic <> 'furniture_crackable' OR stuff_data_type <> 7);
 
 -- How many hits each takes. Nothing in furnidata carries this -- the client only renders the
 -- counters the server sends -- so it lives with the binding.
