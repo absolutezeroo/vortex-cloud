@@ -38,6 +38,21 @@ public interface IRoomObjectContext
     public TFacet RoomAs<TFacet>()
         where TFacet : IAddressable;
 
+    /// <summary>Finding the other objects in the room.</summary>
+    public IRoomLookup Lookup { get; }
+
+    /// <summary>Tile arithmetic, walkability and tile contents.</summary>
+    public IRoomMapAccess Map { get; }
+
+    /// <summary>The wired team-game subsystem.</summary>
+    public IRoomGameAccess Game { get; }
+
+    /// <summary>The Freeze minigame.</summary>
+    public IRoomFreezeAccess Freeze { get; }
+
+    /// <summary>Placement validation and the wired engine's room-level knobs.</summary>
+    public IRoomFurniAccess Furni { get; }
+
     public RoomObjectId ObjectId { get; }
     public IRoomObject RoomObject { get; }
 

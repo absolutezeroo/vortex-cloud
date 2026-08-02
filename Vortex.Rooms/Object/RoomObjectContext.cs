@@ -31,6 +31,14 @@ public abstract class RoomObjectContext<TObject, TLogic, TSelf>(
     public TFacet RoomAs<TFacet>()
         where TFacet : IAddressable => (TFacet)(object)_roomGrain;
 
+    // The room's in-process capabilities. RoomGrain implements all five explicitly, so these are
+    // the same activation seen through five narrow, non-grain contracts.
+    public IRoomLookup Lookup => _roomGrain;
+    public IRoomMapAccess Map => _roomGrain;
+    public IRoomGameAccess Game => _roomGrain;
+    public IRoomFreezeAccess Freeze => _roomGrain;
+    public IRoomFurniAccess Furni => _roomGrain;
+
     public RoomObjectId ObjectId => _roomObject.ObjectId;
     public TObject RoomObject => _roomObject;
 

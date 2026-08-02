@@ -1,0 +1,168 @@
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Vortex.Primitives.Action;
+using Vortex.Primitives.Players;
+using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Enums.Games;
+using Vortex.Primitives.Rooms.Object;
+using Vortex.Primitives.Rooms.Object.Avatars;
+using Vortex.Primitives.Rooms.Object.Furniture;
+using Vortex.Primitives.Rooms.Wired.Variable;
+
+namespace Vortex.Rooms.Grains;
+
+/// <summary>
+/// The in-process capabilities the room offers to the object logic running inside its turn.
+/// <para>
+/// Every member is an explicit interface implementation. That is deliberate: it keeps these off
+/// <c>RoomGrain</c>'s own surface (which is already large), and it is what lets the game and freeze
+/// subsystems each keep a <c>StartGameAsync</c>/<c>EndGameAsync</c> of their own without colliding.
+/// </para>
+/// <para>
+/// None of these interfaces derives from a grain interface, so Orleans generates no proxy for them
+/// and a call through one stays an ordinary method call on this activation.
+/// </para>
+/// </summary>
+public sealed partial class RoomGrain
+    : IRoomLookup,
+        IRoomMapAccess,
+        IRoomGameAccess,
+        IRoomFreezeAccess,
+        IRoomFurniAccess
+{
+    private static readonly IReadOnlySet<RoomObjectId> EmptyStack = new HashSet<RoomObjectId>();
+
+    IRoomItem? IRoomLookup.FindItem(RoomObjectId objectId) =>
+        _state.ItemsById.TryGetValue(objectId, out IRoomItem? item) ? item : null;
+
+    IRoomAvatar? IRoomLookup.FindAvatar(RoomObjectId objectId) =>
+        _state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar) ? avatar : null;
+
+    IRoomAvatar? IRoomLookup.FindAvatar(PlayerId playerId) =>
+        _state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId)
+        && _state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar)
+            ? avatar
+            : null;
+
+    IReadOnlyCollection<IRoomItem> IRoomLookup.Items => _state.ItemsById.Values;
+
+    IReadOnlyCollection<IRoomAvatar> IRoomLookup.Avatars => _state.AvatarsByObjectId.Values;
+
+    int IRoomLookup.AvatarCount => _state.AvatarsByPlayerId.Count;
+
+    int IRoomMapAccess.Width => MapModule.Width;
+
+    int IRoomMapAccess.Height => MapModule.Height;
+
+    int IRoomMapAccess.TileCount => _state.TileFloorStacks.Length;
+
+    int IRoomMapAccess.ToIdx(int x, int y) => MapModule.ToIdx(x, y);
+
+    (int x, int y) IRoomMapAccess.GetTileXY(int idx) => MapModule.GetTileXY(idx);
+
+    int IRoomMapAccess.GetDistanceBetween(int a, int b) => MapModule.GetDistanceBetween(a, b);
+
+    (int dx, int dy) IRoomMapAccess.GetDirectionOffset(Rotation dir) =>
+        MapModule.GetDirectionOffset(dir);
+
+    bool IRoomMapAccess.TryGetTileInFront(int index, Rotation direction, out int nextIndex) =>
+        MapModule.TryGetTileInFront(index, direction, out nextIndex);
+
+    bool IRoomMapAccess.CanAvatarWalk(
+        IRoomAvatar avatar,
+        int tileIdx,
+        bool isGoal,
+        bool isDiagonalCheck
+    ) => MapModule.CanAvatarWalk(avatar, tileIdx, isGoal, isDiagonalCheck);
+
+    IReadOnlySet<RoomObjectId> IRoomMapAccess.FloorStackAt(int tileIndex) =>
+        tileIndex >= 0 && tileIndex < _state.TileFloorStacks.Length
+            ? _state.TileFloorStacks[tileIndex]
+            : EmptyStack;
+
+    IReadOnlySet<RoomObjectId> IRoomMapAccess.AvatarStackAt(int tileIndex) =>
+        tileIndex >= 0 && tileIndex < _state.TileAvatarStacks.Length
+            ? _state.TileAvatarStacks[tileIndex]
+            : EmptyStack;
+
+    GameTeamColor IRoomGameAccess.GetTeam(PlayerId playerId) => GameSystem.GetTeam(playerId);
+
+    int IRoomGameAccess.GetTeamScore(GameTeamColor team) => GameSystem.GetTeamScore(team);
+
+    IReadOnlyList<PlayerId> IRoomGameAccess.GetPlayersInTeam(GameTeamColor team) =>
+        GameSystem.GetPlayersInTeam(team);
+
+    Task IRoomGameAccess.StartGameAsync(CancellationToken ct) => GameSystem.StartGameAsync(ct);
+
+    Task IRoomGameAccess.EndGameAsync(CancellationToken ct) => GameSystem.EndGameAsync(ct);
+
+    Task IRoomGameAccess.JoinTeamAsync(
+        PlayerId playerId,
+        GameTeamColor team,
+        CancellationToken ct
+    ) => GameSystem.JoinTeamAsync(playerId, team, ct);
+
+    Task IRoomGameAccess.LeaveTeamAsync(PlayerId playerId, CancellationToken ct) =>
+        GameSystem.LeaveTeamAsync(playerId, ct);
+
+    Task<bool> IRoomGameAccess.TryGiveScoreToTeamAsync(
+        RoomObjectId box,
+        GameTeamColor team,
+        int amount,
+        int cap,
+        CancellationToken ct
+    ) => GameSystem.TryGiveScoreToTeamAsync(box, team, amount, cap, ct);
+
+    Task<bool> IRoomGameAccess.TryGiveScoreToPlayerTeamAsync(
+        RoomObjectId box,
+        PlayerId playerId,
+        int amount,
+        int cap,
+        CancellationToken ct
+    ) => GameSystem.TryGiveScoreToPlayerTeamAsync(box, playerId, amount, cap, ct);
+
+    Task IRoomFreezeAccess.StartGameAsync(CancellationToken ct) => FreezeSystem.StartGameAsync(ct);
+
+    Task<GameTeamColor> IRoomFreezeAccess.EndGameAsync(CancellationToken ct) =>
+        FreezeSystem.EndGameAsync(ct);
+
+    Task IRoomFreezeAccess.ThrowBallAsync(
+        PlayerId playerId,
+        int targetX,
+        int targetY,
+        CancellationToken ct
+    ) => FreezeSystem.ThrowBallAsync(playerId, targetX, targetY, ct);
+
+    Task IRoomFreezeAccess.OnBlockWalkOnAsync(
+        PlayerId playerId,
+        int x,
+        int y,
+        CancellationToken ct
+    ) => FreezeSystem.OnBlockWalkOnAsync(playerId, x, y, ct);
+
+    Task IRoomFreezeAccess.OnExitWalkOnAsync(PlayerId playerId, CancellationToken ct) =>
+        FreezeSystem.OnExitWalkOnAsync(playerId, ct);
+
+    Task IRoomFreezeAccess.OnGateWalkOnAsync(
+        PlayerId playerId,
+        GameTeamColor team,
+        CancellationToken ct
+    ) => FreezeSystem.OnGateWalkOnAsync(playerId, team, ct);
+
+    Task<bool> IRoomFurniAccess.ValidateFloorItemPlacementAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        int x,
+        int y,
+        Rotation rot
+    ) => FurniModule.ValidateFloorItemPlacementAsync(ctx, itemId, x, y, rot);
+
+    IWiredVariable? IRoomFurniAccess.GetVariableById(WiredVariableId id) =>
+        WiredSystem.GetVariableById(id);
+
+    void IRoomFurniAccess.ScheduleFlashRevert(RoomObjectId objectId) =>
+        WiredSystem.ScheduleFlashRevert(objectId);
+
+    void IRoomFurniAccess.ResetTimers() => WiredSystem.ResetTimers();
+}
