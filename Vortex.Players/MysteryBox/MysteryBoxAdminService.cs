@@ -1,34 +1,27 @@
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Orleans;
-using Vortex.Database.Context;
-using Vortex.Database.Entities.MysteryBox;
-using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.MysteryBox.Admin;
 using Vortex.Primitives.Orleans;
-using Vortex.Primitives.Players;
 
 namespace Vortex.Players.MysteryBox;
 
 /// <summary>
 /// Box-specific admin writes: handing a player a key or a box, and rebuilding the box definition
-/// cache. A plain singleton (not a grain) opening a short-lived <see cref="VortexDbContext"/> per
-/// call: these rows aren't grain-owned and admin writes are low-frequency. The live definitions come
-/// from the kept-alive <c>MysteryBoxManagerGrain</c> cache, which is only rebuilt via its
-/// <c>ReloadAsync</c>, so every write reloads it afterwards — the "DB write not reflected in live
-/// state" bug class called out in AGENTS.md.
+/// cache. A plain singleton (not a grain), and one that touches no database of its own — keys and
+/// furniture are both grain-owned, so every write here goes through the grain that owns the row and
+/// pushes the player's tracker. Writing either directly would leave a connected player's toolbar
+/// showing stale state, the "DB write not reflected in live state" bug class called out in
+/// AGENTS.md.
 ///
 /// The prizes are not here: they are a shared prize pool, edited through
 /// <see cref="Vortex.Primitives.Prizes.IPrizePoolAdminService"/>.
 /// </summary>
 internal sealed class MysteryBoxAdminService(
-    IDbContextFactory<VortexDbContext> dbContextFactory,
     IGrainFactory grainFactory,
     ILogger<MysteryBoxAdminService> logger
 ) : IMysteryBoxAdminService
