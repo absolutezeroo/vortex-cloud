@@ -272,6 +272,16 @@ list as mandatory, not advisory.
 - Required context files:
   - `docs/walkthroughs/add-a-dashboard-page.md` (full walkthrough, server + front end)
   - an existing pair such as `DashboardEndpoints.Quests.cs` + `DashboardApiService.Quests.cs`
+- Any page that shows or selects furniture, a player, or a group MUST use the existing surfaces --
+  this has been missed on every new page so far and is not a detail, it is the difference between a
+  usable page and an unusable one:
+  - **Show the real artwork**, never a bare id: the read API adds
+    `furnitureIconUrl = BuildFurniIconUrl(name)` (see `DashboardApiService.Catalog.cs`) and the page
+    renders it with `<AssetImage src={...} />`. Same for avatars and guild badges via
+    `DashboardAssetUrls`.
+  - **Never make an operator type an id**: use `<PickerModal kind="furniture" />` (or `kind="user"`),
+    backed by `/api/v1/directory/furniture`. A number input alone means looking the id up elsewhere
+    first.
 - Forbidden changes:
   - no direct DB writes from `DashboardOperationsService`; route through an `I<Domain>AdminService`
   - no admin write that skips reloading the manager-grain cache it feeds

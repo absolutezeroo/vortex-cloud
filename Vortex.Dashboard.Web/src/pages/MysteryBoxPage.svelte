@@ -15,6 +15,7 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import PickerModal from '../components/PickerModal.svelte';
+  import AssetImage from '../components/AssetImage.svelte';
   import { apiGet, apiPost } from '../lib/api.js';
   import { formatNumber } from '../lib/format.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
@@ -60,6 +61,9 @@
   let newPrize = emptyPrizeForm();
   let editPrizeId = null;
   let editPrize = null;
+
+  // Furniture is picked the same way players are: an operator knows the box, not its id.
+  let furniPicker = null;
 
   // Both grants target a picked player, not a typed name: the shared PickerModal searches the live
   // directory, so the operation carries an unambiguous id and a rename or a typo cannot misfire it.
@@ -439,6 +443,11 @@
           <div class="catalog-card">
             <div class="offer-head">
               <span class="catalog-row-main">
+                <AssetImage
+                  src={definition.furnitureIconUrl}
+                  alt={definition.name}
+                  size={32}
+                />
                 <strong>{definition.name}</strong>
                 <small class="muted">#{definition.id} — sprite {definition.spriteId}</small>
               </span>
@@ -500,7 +509,21 @@
         {#if FURNITURE_TYPES.includes(newPrize.productType)}
           <div class="op-field">
             <label for="new-prize-furni">{$t('mysteryBox.furnitureDefinitionId')}</label>
-            <input id="new-prize-furni" type="number" min="1" bind:value={newPrize.furnitureDefinitionId} />
+            <div class="op-pick">
+              <input
+                id="new-prize-furni"
+                type="number"
+                min="1"
+                bind:value={newPrize.furnitureDefinitionId}
+              />
+              <button
+                type="button"
+                class="ghost-button"
+                on:click={() =>
+                  (furniPicker = (item) => (newPrize.furnitureDefinitionId = item.id))}
+                >{$t('mysteryBox.pick')}</button
+              >
+            </div>
           </div>
         {:else}
           <div class="op-field">
@@ -550,6 +573,11 @@
               <div class="catalog-card">
                 <div class="offer-head">
                   <span class="catalog-row-main">
+                    <AssetImage
+                      src={prize.furnitureIconUrl}
+                      alt={prize.furnitureName ?? ''}
+                      size={32}
+                    />
                     <strong>{prizeTarget(prize)}</strong>
                     <small class="muted">#{prize.id} — {prize.productType}{prize.color ? ` · ${prize.color}` : ''}</small>
                   </span>
@@ -602,7 +630,22 @@
                     {#if FURNITURE_TYPES.includes(editPrize.productType)}
                       <div class="op-field">
                         <label for={`edit-prize-furni-${prize.id}`}>{$t('mysteryBox.furnitureDefinitionId')}</label>
-                        <input id={`edit-prize-furni-${prize.id}`} type="number" min="1" bind:value={editPrize.furnitureDefinitionId} />
+                        <div class="op-pick">
+                          <input
+                            id={`edit-prize-furni-${prize.id}`}
+                            type="number"
+                            min="1"
+                            bind:value={editPrize.furnitureDefinitionId}
+                          />
+                          <button
+                            type="button"
+                            class="ghost-button"
+                            on:click={() =>
+                              (furniPicker = (item) =>
+                                (editPrize.furnitureDefinitionId = item.id))}
+                            >{$t('mysteryBox.pick')}</button
+                          >
+                        </div>
                       </div>
                     {:else}
                       <div class="op-field">
@@ -755,6 +798,19 @@
       </div>
     </section>
   {/if}
+{/if}
+
+{#if furniPicker}
+  <PickerModal
+    kind="furniture"
+    title={$t('mysteryBox.pickFurniture')}
+    onSelect={(item) => {
+      furniPicker(item);
+      furniPicker = null;
+    }}
+    onClose={() => (furniPicker = null)}
+    canSelect={canManage}
+  />
 {/if}
 
 {#if picker}

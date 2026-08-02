@@ -61,6 +61,18 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
+                var definitionRows = definitions
+                    .Select(d => new
+                    {
+                        d.Id,
+                        d.Name,
+                        d.SpriteId,
+                        d.TotalStates,
+                        // An operator recognises the box, not definition id 4312.
+                        furnitureIconUrl = BuildFurniIconUrl(d.Name),
+                    })
+                    .ToList();
+
                 // Only the two box pools: this page edits the mystery box, and a seasonal crackable
                 // pool showing up in its prize table would read as a box prize that never drops.
                 string[] boxPoolCodes = [PrizePoolCodes.MysteryBox, PrizePoolCodes.MysteryTrophy];
@@ -91,6 +103,24 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
+                var prizeRows = prizes
+                    .Select(p => new
+                    {
+                        p.Id,
+                        p.pool,
+                        p.Color,
+                        p.productType,
+                        p.furnitureDefinitionId,
+                        p.ExtraParam,
+                        p.Weight,
+                        p.Enabled,
+                        p.furnitureName,
+                        furnitureIconUrl = p.furnitureName is null
+                            ? null
+                            : BuildFurniIconUrl(p.furnitureName),
+                    })
+                    .ToList();
+
                 // The odds an operator actually cares about are per pool and per colour, and they are
                 // only meaningful relative to the entries that can be drawn together — so the share is
                 // computed here rather than left to the page to guess.
@@ -110,8 +140,8 @@ internal sealed partial class DashboardApiService
 
                 return new
                 {
-                    definitions = new { count = definitions.Count, items = definitions },
-                    prizes = new { count = prizes.Count, items = prizes },
+                    definitions = new { count = definitionRows.Count, items = definitionRows },
+                    prizes = new { count = prizeRows.Count, items = prizeRows },
                     pools,
                     colors = MysteryBoxColors.All,
                     productTypes = new[]

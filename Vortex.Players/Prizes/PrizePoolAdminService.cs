@@ -243,6 +243,138 @@ internal sealed class PrizePoolAdminService(
         return PrizeAdminResult.Ok(entryId);
     }
 
+    public async Task<PrizeAdminResult> CreateBindingAsync(
+        PrizeBindingSpec spec,
+        CancellationToken ct
+    )
+    {
+        await using VortexDbContext db = await dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        (PrizePoolEntity? pool, string? error) = await ResolveBindingPoolAsync(db, spec, ct)
+            .ConfigureAwait(false);
+
+        if (pool is null)
+        {
+            return PrizeAdminResult.Fail(error!);
+        }
+
+        // One binding per definition: two would make which pool a furniture draws from depend on
+        // row order, which is exactly the kind of thing nobody notices until the wrong prize drops.
+        if (
+            await db
+                .PrizePoolBindings.AnyAsync(
+                    b => b.FurnitureDefinitionEntityId == spec.FurnitureDefinitionId,
+                    ct
+                )
+                .ConfigureAwait(false)
+        )
+        {
+            return PrizeAdminResult.Fail("binding_already_exists");
+        }
+
+        PrizePoolBindingEntity entity = new()
+        {
+            FurnitureDefinitionEntityId = spec.FurnitureDefinitionId,
+            PrizePoolEntityId = pool.Id,
+            HitsRequired = Math.Max(1, spec.HitsRequired),
+            Enabled = spec.Enabled,
+        };
+
+        db.PrizePoolBindings.Add(entity);
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        await ReloadAsync(ct).ConfigureAwait(false);
+
+        return PrizeAdminResult.Ok(entity.Id);
+    }
+
+    public async Task<PrizeAdminResult> UpdateBindingAsync(
+        int bindingId,
+        PrizeBindingSpec spec,
+        CancellationToken ct
+    )
+    {
+        await using VortexDbContext db = await dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        PrizePoolBindingEntity? entity = await db
+            .PrizePoolBindings.FirstOrDefaultAsync(b => b.Id == bindingId, ct)
+            .ConfigureAwait(false);
+
+        if (entity is null)
+        {
+            return PrizeAdminResult.Fail("binding_not_found");
+        }
+
+        (PrizePoolEntity? pool, string? error) = await ResolveBindingPoolAsync(db, spec, ct)
+            .ConfigureAwait(false);
+
+        if (pool is null)
+        {
+            return PrizeAdminResult.Fail(error!);
+        }
+
+        entity.PrizePoolEntityId = pool.Id;
+        entity.HitsRequired = Math.Max(1, spec.HitsRequired);
+        entity.Enabled = spec.Enabled;
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        await ReloadAsync(ct).ConfigureAwait(false);
+
+        return PrizeAdminResult.Ok(entity.Id);
+    }
+
+    public async Task<PrizeAdminResult> DeleteBindingAsync(int bindingId, CancellationToken ct)
+    {
+        await using VortexDbContext db = await dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        PrizePoolBindingEntity? entity = await db
+            .PrizePoolBindings.FirstOrDefaultAsync(b => b.Id == bindingId, ct)
+            .ConfigureAwait(false);
+
+        if (entity is null)
+        {
+            return PrizeAdminResult.Fail("binding_not_found");
+        }
+
+        db.PrizePoolBindings.Remove(entity);
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        await ReloadAsync(ct).ConfigureAwait(false);
+
+        return PrizeAdminResult.Ok(bindingId);
+    }
+
+    private static async Task<(PrizePoolEntity? Pool, string? Error)> ResolveBindingPoolAsync(
+        VortexDbContext db,
+        PrizeBindingSpec spec,
+        CancellationToken ct
+    )
+    {
+        if (spec.FurnitureDefinitionId <= 0)
+        {
+            return (null, "furniture_definition_required");
+        }
+
+        if (
+            !await db
+                .FurnitureDefinitions.AnyAsync(f => f.Id == spec.FurnitureDefinitionId, ct)
+                .ConfigureAwait(false)
+        )
+        {
+            return (null, "furniture_definition_not_found");
+        }
+
+        PrizePoolEntity? pool = await db
+            .PrizePools.FirstOrDefaultAsync(p => p.Code == NormalizeCode(spec.PoolCode), ct)
+            .ConfigureAwait(false);
+
+        return pool is null ? (null, "pool_not_found") : (pool, null);
+    }
+
     public async Task<PrizeAdminResult> ReloadCacheAsync(CancellationToken ct)
     {
         await ReloadAsync(ct).ConfigureAwait(false);

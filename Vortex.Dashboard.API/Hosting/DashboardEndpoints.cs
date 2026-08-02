@@ -150,6 +150,7 @@ internal static partial class DashboardEndpoints
         MapTargetedOfferReads(app);
         MapQuestReads(app);
         MapMysteryBoxReads(app);
+        MapPrizePoolReads(app);
         MapConfigReads(app);
     }
 
@@ -164,6 +165,7 @@ internal static partial class DashboardEndpoints
         MapTargetedOfferOperations(app);
         MapQuestOperations(app);
         MapMysteryBoxOperations(app);
+        MapPrizePoolOperations(app);
         MapConfigOperations(app);
     }
 

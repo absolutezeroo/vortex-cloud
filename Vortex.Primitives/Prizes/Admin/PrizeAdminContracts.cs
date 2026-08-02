@@ -39,3 +39,14 @@ public sealed record PrizeEntrySpec(
     int Weight,
     bool Enabled
 );
+
+/// <summary>
+/// Create/update spec for a furniture binding. <paramref name="HitsRequired"/> is how many hits the
+/// furniture takes before it pays out; one is a single-click reward box.
+/// </summary>
+public sealed record PrizeBindingSpec(
+    int FurnitureDefinitionId,
+    string PoolCode,
+    int HitsRequired,
+    bool Enabled
+);

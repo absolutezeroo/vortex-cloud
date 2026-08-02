@@ -32,6 +32,17 @@ public interface IPrizePoolAdminService
 
     public Task<PrizeAdminResult> DeleteEntryAsync(int entryId, CancellationToken ct);
 
+    /// <summary>Points a furniture definition at the pool it draws from.</summary>
+    public Task<PrizeAdminResult> CreateBindingAsync(PrizeBindingSpec spec, CancellationToken ct);
+
+    public Task<PrizeAdminResult> UpdateBindingAsync(
+        int bindingId,
+        PrizeBindingSpec spec,
+        CancellationToken ct
+    );
+
+    public Task<PrizeAdminResult> DeleteBindingAsync(int bindingId, CancellationToken ct);
+
     /// <summary>Rebuilds the live cache without changing anything.</summary>
     public Task<PrizeAdminResult> ReloadCacheAsync(CancellationToken ct);
 }

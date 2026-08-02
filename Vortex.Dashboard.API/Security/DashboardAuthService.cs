@@ -44,6 +44,8 @@ internal sealed class DashboardAuthService(
         Capabilities.Dashboard.OpsTargetedOffersManage,
         Capabilities.Dashboard.QuestsRead,
         Capabilities.Dashboard.OpsQuestsManage,
+        Capabilities.Dashboard.PrizePoolsRead,
+        Capabilities.Dashboard.OpsPrizePoolsManage,
         Capabilities.Dashboard.MysteryBoxRead,
         Capabilities.Dashboard.OpsMysteryBoxManage,
         Capabilities.Dashboard.ConfigRead,
