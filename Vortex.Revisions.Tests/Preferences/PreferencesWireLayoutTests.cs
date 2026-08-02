@@ -35,16 +35,21 @@ public sealed class PreferencesWireLayoutTests
     }
 
     [Fact]
-    public void SetSoundSettingsParser_ReadsTraxFurniGenericOrder()
+    public void SetSoundSettingsParser_ReadsGenericFurniTraxOrder()
     {
-        // HabboSoundManagerFlash10::storeVolumeSetting() -> (trax, furni, generic).
+        // The wire order is (generic, furni, trax), not the (trax, furni, generic) the AS3
+        // constructor signature suggests: _SafeCls_2171 takes (trax, furni, generic) but pushes
+        // them back to front, so generic goes out first. This test asserted the signature order
+        // until 2026-08-02, which is the same mistake the parser itself had -- the two agreed with
+        // each other and both were wrong, so the suite stayed green while music and interface
+        // volumes were stored swapped.
         ClientPacket packet = BuildClientPacket(
             SetSoundSettingsEvent,
             sp =>
             {
-                sp.WriteInteger(10); // trax
-                sp.WriteInteger(20); // furni
                 sp.WriteInteger(30); // generic
+                sp.WriteInteger(20); // furni
+                sp.WriteInteger(10); // trax
             }
         );
 
