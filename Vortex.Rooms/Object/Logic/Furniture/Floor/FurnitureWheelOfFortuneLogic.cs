@@ -13,7 +13,12 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor;
 /// The spin result must be picked server-side — trusting a client-supplied outcome would let a
 /// modified client always land on a favorable state.
 /// </summary>
-[RoomObjectLogic("wheel_of_fortune")]
+// Registered under the client's logic name, not the furniture's classname. The logic string travels
+// to the client (VortexFurniDefinitionMessageComposer writes it), which resolves it against
+// RoomObjectLogicEnum -- and that enum knows "furniture_habbowheel". "wheel_of_fortune" is the
+// classname in furnidata, so a definition carrying it as its logic matched this class server-side
+// while the client fell back to default logic and animated nothing.
+[RoomObjectLogic("furniture_habbowheel")]
 public class FurnitureWheelOfFortuneLogic(
     IStuffDataFactory stuffDataFactory,
     IRoomFloorItemContext ctx

@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Orleans;
+using Vortex.Database.Context;
 using Vortex.Players.Grains;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
@@ -119,6 +122,11 @@ public sealed class PlayerPrizeGrainTests
         {
             Grain = GrainActivationContext.CreateWithIntegerKey<PlayerPrizeGrain>(
                 PLAYER_ID,
+                new TestDbContextFactory(
+                    new DbContextOptionsBuilder<VortexDbContext>()
+                        .UseInMemoryDatabase($"prize-grant-{Guid.NewGuid()}")
+                        .Options
+                ),
                 BuildGrainFactory(),
                 BuildDefinitionProvider(),
                 BuildEventPublisher(),
@@ -159,6 +167,12 @@ public sealed class PlayerPrizeGrainTests
                     ? (FurnitureDefinitionSnapshot?)null
                     : null
             );
+
+        private sealed class TestDbContextFactory(DbContextOptions<VortexDbContext> options)
+            : IDbContextFactory<VortexDbContext>
+        {
+            public VortexDbContext CreateDbContext() => new VortexDbContext(options);
+        }
 
         private IEventPublisher BuildEventPublisher() =>
             FakeProxy.Create<IEventPublisher>(call =>

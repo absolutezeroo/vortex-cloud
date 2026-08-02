@@ -25,4 +25,16 @@ public interface IPlayerPrizeGrain : IGrainWithIntegerKey
         string source,
         CancellationToken ct
     );
+
+    /// <summary>
+    /// Same, but only the first time this player draws from <paramref name="poolId"/>. Returns null
+    /// when they already have — which is what lets a welcome gift stay in the room after paying out
+    /// instead of being consumed like a box.
+    /// </summary>
+    public Task<PrizeAward?> GrantOnceAsync(
+        PrizeEntrySnapshot entry,
+        int poolId,
+        string source,
+        CancellationToken ct
+    );
 }

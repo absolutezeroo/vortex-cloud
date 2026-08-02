@@ -10,4 +10,8 @@ public static class PrizeSources
     public const string MysteryBox = "mystery-box";
 
     public const string Crackable = "crackable";
+
+    public const string RewardBox = "reward-box";
+
+    public const string WelcomeGift = "welcome-gift";
 }

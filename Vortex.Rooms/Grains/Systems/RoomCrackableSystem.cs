@@ -115,6 +115,53 @@ public sealed class RoomCrackableSystem(RoomGrain roomGrain)
             .ConfigureAwait(true);
     }
 
+    public async Task ClaimWelcomeGiftAsync(
+        ActionContext ctx,
+        RoomObjectId objectId,
+        CancellationToken ct
+    )
+    {
+        if (!_roomGrain._state.ItemsById.TryGetValue(objectId, out IRoomItem? item))
+        {
+            return;
+        }
+
+        PrizeBindingSnapshot? binding = await _roomGrain
+            ._grainFactory.GetPrizePoolManagerGrain()
+            .GetBindingAsync(item.Definition.Id, ct)
+            .ConfigureAwait(true);
+
+        if (binding is null)
+        {
+            _roomGrain._logger.LogWarning(
+                "Welcome gift {ObjectId} (definition {DefinitionId}) in room {RoomId} is bound to no prize pool, so it can never pay out.",
+                objectId.Value,
+                item.Definition.Id,
+                _roomGrain._state.RoomId.Value
+            );
+
+            return;
+        }
+
+        PrizeEntrySnapshot? prize = await _roomGrain
+            ._grainFactory.GetPrizePoolManagerGrain()
+            .PickAsync(binding.PoolCode, string.Empty, ct)
+            .ConfigureAwait(true);
+
+        if (prize is null)
+        {
+            return;
+        }
+
+        // Nothing is consumed here: the gift stays for the next player, and the grain's
+        // once-per-player claim is what stops this one taking it again. A null award means they
+        // already have -- a quiet no-op, which is what the client expects from a second click.
+        await _roomGrain
+            ._grainFactory.GetPlayerPrizeGrain(ctx.PlayerId)
+            .GrantOnceAsync(prize, binding.PoolId, PrizeSources.WelcomeGift, ct)
+            .ConfigureAwait(true);
+    }
+
     /// <summary>Removes the cracked furniture from the room and the database. Returns false when the
     /// delete did not happen, so the caller can avoid handing out a prize for it.</summary>
     private async Task<bool> ConsumeAsync(ActionContext ctx, IRoomItem item, CancellationToken ct)

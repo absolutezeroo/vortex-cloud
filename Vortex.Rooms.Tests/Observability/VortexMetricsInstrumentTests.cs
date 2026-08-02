@@ -7,6 +7,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Vortex.Observability.Configuration;
+using Vortex.Observability.Diagnostics;
 using Vortex.Observability.Metrics;
 using Vortex.Observability.Runtime;
 using Vortex.Primitives.Networking;
@@ -22,13 +23,14 @@ namespace Vortex.Rooms.Tests.Observability;
 /// only tags they carry are the bounded ones (a room id in a tag would blow up the exporter's
 /// cardinality), and that <see cref="ObservabilityConfig.MetricsEnabled"/> genuinely silences them.
 /// </summary>
+[Collection(MeterCollection.NAME)]
 public sealed class VortexMetricsInstrumentTests
 {
     [Fact]
     public void RoomTickStepCompleted_RecordsUnderTheStepName()
     {
         using MeasurementRecorder recorder = new MeasurementRecorder();
-        using VortexMetrics metrics = CreateMetrics(enabled: true);
+        using VortexMetrics metrics = CreateMetrics(recorder.Factory, enabled: true);
 
         metrics.RoomTickStepCompleted("wired", 12.5);
         metrics.RoomTickStepCompleted("pets", 3.0);
@@ -47,7 +49,7 @@ public sealed class VortexMetricsInstrumentTests
     public void RoomTickCompleted_RecordsWithoutAnyTag()
     {
         using MeasurementRecorder recorder = new MeasurementRecorder();
-        using VortexMetrics metrics = CreateMetrics(enabled: true);
+        using VortexMetrics metrics = CreateMetrics(recorder.Factory, enabled: true);
 
         metrics.RoomTickCompleted(41.0);
 
@@ -63,7 +65,7 @@ public sealed class VortexMetricsInstrumentTests
     public void RoomDirectoryCallCompleted_RecordsUnderTheMethodName()
     {
         using MeasurementRecorder recorder = new MeasurementRecorder();
-        using VortexMetrics metrics = CreateMetrics(enabled: true);
+        using VortexMetrics metrics = CreateMetrics(recorder.Factory, enabled: true);
 
         metrics.RoomDirectoryCallCompleted("GetActiveRoomsAsync", 7.5);
 
@@ -79,7 +81,7 @@ public sealed class VortexMetricsInstrumentTests
     public void WhenMetricsAreDisabled_NothingIsRecordedAndEnabledIsFalse()
     {
         using MeasurementRecorder recorder = new MeasurementRecorder();
-        using VortexMetrics metrics = CreateMetrics(enabled: false);
+        using VortexMetrics metrics = CreateMetrics(recorder.Factory, enabled: false);
 
         metrics.Enabled.Should().BeFalse();
 
@@ -98,7 +100,7 @@ public sealed class VortexMetricsInstrumentTests
     public void MeasureRoomDirectoryCall_WhenDisabled_ProducesAScopeThatRecordsNothing()
     {
         using MeasurementRecorder recorder = new MeasurementRecorder();
-        using VortexMetrics metrics = CreateMetrics(enabled: false);
+        using VortexMetrics metrics = CreateMetrics(recorder.Factory, enabled: false);
 
         using (metrics.MeasureRoomDirectoryCall("GetActiveRoomsAsync")) { }
 
@@ -111,7 +113,7 @@ public sealed class VortexMetricsInstrumentTests
     public void MeasureRoomDirectoryCall_WhenEnabled_RecordsOnDispose()
     {
         using MeasurementRecorder recorder = new MeasurementRecorder();
-        using VortexMetrics metrics = CreateMetrics(enabled: true);
+        using VortexMetrics metrics = CreateMetrics(recorder.Factory, enabled: true);
 
         using (metrics.MeasureRoomDirectoryCall("UpsertActiveRoomAsync"))
         {
@@ -137,7 +139,7 @@ public sealed class VortexMetricsInstrumentTests
 
         using MeasurementRecorder recorder = new MeasurementRecorder();
         using ConnectionMetrics connections = new ConnectionMetrics(
-            MeterFactory(),
+            recorder.Factory,
             sessions,
             Options.Create(new ObservabilityConfig { MetricsEnabled = true })
         );
@@ -161,7 +163,7 @@ public sealed class VortexMetricsInstrumentTests
     {
         using MeasurementRecorder recorder = new MeasurementRecorder();
         using ConnectionMetrics connections = new ConnectionMetrics(
-            MeterFactory(),
+            recorder.Factory,
             new FakeSessionGateway(activeSessions: 7, onlinePlayers: 4),
             Options.Create(new ObservabilityConfig { MetricsEnabled = false })
         );
@@ -172,9 +174,9 @@ public sealed class VortexMetricsInstrumentTests
         recorder.ValuesFor("Vortex.players.online").Should().BeEmpty();
     }
 
-    private static VortexMetrics CreateMetrics(bool enabled) =>
+    private static VortexMetrics CreateMetrics(IMeterFactory factory, bool enabled) =>
         new VortexMetrics(
-            MeterFactory(),
+            factory,
             new NoopLiveStats(),
             Options.Create(new ObservabilityConfig { MetricsEnabled = enabled })
         );
@@ -198,11 +200,29 @@ public sealed class VortexMetricsInstrumentTests
             KeyValuePair<string, object?>[] Tags
         )> _seen = [];
 
+        /// <summary>
+        /// The factory whose meter this recorder listens to. Tests must build the metrics under test
+        /// from it, so that the instruments they create are the ones observed.
+        /// </summary>
+        public IMeterFactory Factory { get; } = MeterFactory();
+
+        private readonly Meter _meter;
+
         public MeasurementRecorder()
         {
+            // Filtering by meter *name* listened to the whole process: every test class builds its
+            // own factory but they all name the meter the same, so a room test recording a directory
+            // call landed in whatever metrics test happened to be running beside it. xunit runs
+            // classes in parallel, so which test failed moved around -- classic phantom flake.
+            // Each factory caches one meter per name, so the instance is the isolation that was
+            // already there and simply was not used.
+            // Name *and* version: a factory caches one meter per full identity, so asking for the
+            // name alone hands back a different instance than the one the metrics under test use.
+            _meter = Factory.Create(VortexTelemetry.Name, VortexTelemetry.Version);
+
             _listener.InstrumentPublished = (instrument, listener) =>
             {
-                if (instrument.Meter.Name == VortexMeterNames.VORTEX)
+                if (ReferenceEquals(instrument.Meter, _meter))
                 {
                     listener.EnableMeasurementEvents(instrument);
                 }

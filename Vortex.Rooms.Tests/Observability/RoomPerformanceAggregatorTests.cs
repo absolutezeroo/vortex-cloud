@@ -18,6 +18,7 @@ namespace Vortex.Rooms.Tests.Observability;
 /// so these tests drive it the way production does: record through <see cref="VortexMetrics"/> and
 /// assert the aggregator saw it, rather than calling the aggregator directly.
 /// </summary>
+[Collection(MeterCollection.NAME)]
 public sealed class RoomPerformanceAggregatorTests
 {
     [Fact]

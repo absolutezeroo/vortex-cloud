@@ -231,6 +231,8 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<PrizePoolBindingEntity> PrizePoolBindings { get; init; } = null!;
 
+    public DbSet<PlayerPrizeClaimEntity> PlayerPrizeClaims { get; init; } = null!;
+
     public DbSet<PlayerMysteryBoxKeyEntity> PlayerMysteryBoxKeys { get; init; } = null!;
 
     protected override void OnModelCreating(ModelBuilder mb)
@@ -376,6 +378,20 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
             .HasOne(b => b.PrizePoolEntity)
             .WithMany()
             .HasForeignKey(b => b.PrizePoolEntityId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Claims cascade both ways: a deleted player takes their claims with them, and retiring a
+        // pool clears the "already taken" marks so re-running the same event is possible.
+        mb.Entity<PlayerPrizeClaimEntity>()
+            .HasOne(c => c.PlayerEntity)
+            .WithMany()
+            .HasForeignKey(c => c.PlayerEntityId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        mb.Entity<PlayerPrizeClaimEntity>()
+            .HasOne(c => c.PrizePoolEntity)
+            .WithMany()
+            .HasForeignKey(c => c.PrizePoolEntityId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Keys cascade with their player.

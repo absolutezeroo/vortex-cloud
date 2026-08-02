@@ -9,4 +9,10 @@ public sealed partial class RoomGrain
 {
     public Task HitCrackableAsync(ActionContext ctx, RoomObjectId objectId, CancellationToken ct) =>
         CrackableSystem.HitCrackableAsync(ctx, objectId, ct);
+
+    public Task ClaimWelcomeGiftAsync(
+        ActionContext ctx,
+        RoomObjectId objectId,
+        CancellationToken ct
+    ) => CrackableSystem.ClaimWelcomeGiftAsync(ctx, objectId, ct);
 }

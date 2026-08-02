@@ -2,8 +2,11 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Orleans;
+using Vortex.Database.Context;
+using Vortex.Database.Entities.Prizes;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Providers;
@@ -26,12 +29,14 @@ namespace Vortex.Players.Grains;
 /// furniture's stuff data, which no other prize has.
 /// </summary>
 internal sealed class PlayerPrizeGrain(
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
     IFurnitureDefinitionProvider furnitureDefinitionProvider,
     IEventPublisher events,
     ILogger<PlayerPrizeGrain> logger
 ) : Grain, IPlayerPrizeGrain
 {
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IFurnitureDefinitionProvider _furnitureDefinitionProvider =
         furnitureDefinitionProvider;
@@ -96,6 +101,62 @@ internal sealed class PlayerPrizeGrain(
             .ConfigureAwait(true);
 
         return award;
+    }
+
+    public async Task<PrizeAward?> GrantOnceAsync(
+        PrizeEntrySnapshot entry,
+        int poolId,
+        string source,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            await using VortexDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(true);
+
+            // Read-then-write is safe here without a transaction: this grain is the only writer for
+            // this player and Orleans runs its turns one at a time, so two clicks queue rather than
+            // interleave. The unique index still backs it up across silos.
+            bool alreadyClaimed = await dbCtx
+                .PlayerPrizeClaims.AsNoTracking()
+                .AnyAsync(c => c.PlayerEntityId == OwnerId && c.PrizePoolEntityId == poolId, ct)
+                .ConfigureAwait(true);
+
+            if (alreadyClaimed)
+            {
+                return null;
+            }
+
+            PrizeAward? award = await GrantAsync(entry, source, ct).ConfigureAwait(true);
+
+            if (award is null)
+            {
+                // Nothing was handed over, so nothing is claimed: the player keeps their one shot
+                // rather than losing it to a broken prize row.
+                return null;
+            }
+
+            dbCtx.PlayerPrizeClaims.Add(
+                new PlayerPrizeClaimEntity { PlayerEntityId = OwnerId, PrizePoolEntityId = poolId }
+            );
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+            return award;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to record the once-per-player claim on pool {PoolId} for player {PlayerId}",
+                poolId,
+                OwnerId
+            );
+
+            return null;
+        }
     }
 
     private PrizeAward? LogUngrantablePrize(PrizeEntrySnapshot entry)

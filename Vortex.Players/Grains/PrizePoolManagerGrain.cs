@@ -173,6 +173,7 @@ internal sealed class PrizePoolManagerGrain(
                 bindings[row.FurnitureDefinitionEntityId] = new PrizeBindingSnapshot
                 {
                     PoolCode = boundPool.Code,
+                    PoolId = boundPool.Id,
                     // A binding at zero would make the furniture pay out on activation, before
                     // anyone touched it; one hit is the floor.
                     HitsRequired = Math.Max(1, row.HitsRequired),

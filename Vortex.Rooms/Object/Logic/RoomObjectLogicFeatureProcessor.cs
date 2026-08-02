@@ -30,22 +30,23 @@ internal class RoomObjectLogicFeatureProcessor(IRoomObjectLogicProvider roomObje
                 continue;
             }
 
-            RoomObjectLogicAttribute? attribute =
-                concrete.GetCustomAttribute<RoomObjectLogicAttribute>(false);
-
-            if (attribute is null)
-            {
-                continue;
-            }
-
-            batch.Add(
-                _roomObjectLogicFactory.RegisterLogic(
-                    attribute.Key,
-                    sp,
-                    (sp, ctx) =>
-                        (IRoomObjectLogic)ActivatorUtilities.CreateInstance(sp, concrete, ctx)
+            foreach (
+                RoomObjectLogicAttribute attribute in concrete.GetCustomAttributes<RoomObjectLogicAttribute>(
+                    false
                 )
-            );
+            )
+            {
+                Type logicType = concrete;
+
+                batch.Add(
+                    _roomObjectLogicFactory.RegisterLogic(
+                        attribute.Key,
+                        sp,
+                        (sp, ctx) =>
+                            (IRoomObjectLogic)ActivatorUtilities.CreateInstance(sp, logicType, ctx)
+                    )
+                );
+            }
         }
 
         return Task.FromResult<IDisposable>(batch);
