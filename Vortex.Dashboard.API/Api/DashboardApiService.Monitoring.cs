@@ -52,6 +52,13 @@ internal sealed partial class DashboardApiService
         };
     }
 
+    /// <summary>
+    /// Room tick and room-directory latency over the live stats window. Synchronous and lock-only —
+    /// the samples are already in memory, read off the same meter the Prometheus endpoint exports, so
+    /// there is nothing to await and no database involved.
+    /// </summary>
+    public RoomPerformanceSnapshot RoomPerformance() => _roomPerformance.GetSnapshot();
+
     public Task<InfrastructureHealthSnapshot> InfrastructureAsync(CancellationToken ct) =>
         _infrastructureHealth.GetStatusAsync(ct);
 

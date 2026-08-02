@@ -52,6 +52,12 @@ public sealed class ObservabilityModule : IHostPluginModule
         // scrape and it has no work of its own to start.
         services.AddHostedService<ConnectionMetrics>();
 
+        // Reads the room instruments back off the meter for the dashboard. Registered as a singleton
+        // *and* as the hosted service that starts it, so the dashboard resolves the same instance
+        // that is actually listening rather than a second, silent one.
+        services.TryAddSingleton<RoomPerformanceAggregator>();
+        services.AddHostedService(sp => sp.GetRequiredService<RoomPerformanceAggregator>());
+
         services.TryAddSingleton<ClientPerformanceMetrics>();
         services.TryAddSingleton<IPerformanceLogSink>(sp =>
             sp.GetRequiredService<ClientPerformanceMetrics>()

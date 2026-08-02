@@ -18,6 +18,7 @@ import MarketplacePage from '../pages/MarketplacePage.svelte';
 import SubscriptionsPage from '../pages/SubscriptionsPage.svelte';
 import RoomsPage from '../pages/RoomsPage.svelte';
 import PacketsPage from '../pages/PacketsPage.svelte';
+import PerformancePage from '../pages/PerformancePage.svelte';
 import IncidentsPage from '../pages/IncidentsPage.svelte';
 import AuditPage from '../pages/AuditPage.svelte';
 import ModerationPage from '../pages/ModerationPage.svelte';
@@ -53,6 +54,7 @@ export const NAV = [
   { path: '/overview', labelKey: 'nav.overview', shortKey: 'nav.overviewShort', group: 'Live', caps: ROUTE_PERMISSIONS.overview, component: OverviewPage },
   { path: '/infrastructure', labelKey: 'nav.infrastructure', shortKey: 'nav.infrastructureShort', group: 'Live', caps: ROUTE_PERMISSIONS.infrastructure, component: InfrastructurePage },
   { path: '/packets', labelKey: 'nav.packets', shortKey: 'nav.packetsShort', group: 'Live', caps: ROUTE_PERMISSIONS.packets, component: PacketsPage },
+  { path: '/performance', labelKey: 'nav.performance', shortKey: 'nav.performanceShort', group: 'Live', caps: ROUTE_PERMISSIONS.performance, component: PerformancePage },
   { path: '/incidents', labelKey: 'nav.incidents', shortKey: 'nav.incidentsShort', group: 'Live', caps: ROUTE_PERMISSIONS.incidents, component: IncidentsPage },
   { path: '/investigation', labelKey: 'nav.investigation', shortKey: 'nav.investigationShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.investigation, component: InvestigationPage },
   { path: '/rooms', labelKey: 'nav.rooms', shortKey: 'nav.roomsShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.rooms, component: RoomsPage },
