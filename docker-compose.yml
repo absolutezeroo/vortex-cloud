@@ -1,0 +1,162 @@
+# =================================================================================================
+# Local development stack for Vortex Cloud.
+#
+# THIS IS NOT A PRODUCTION DEPLOYMENT. Every credential below is a development value committed to
+# the repository, so it is public by definition: the MySQL passwords, the RSA handshake keypair and
+# the IP-hash secret. Read "Real secrets outside development" in README.md before running this
+# anywhere reachable from a network you do not control.
+# =================================================================================================
+
+name: vortex-cloud
+
+services:
+  # -----------------------------------------------------------------------------------------------
+  # MySQL 8
+  # -----------------------------------------------------------------------------------------------
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      # Development credentials, public on purpose — see the header of this file.
+      MYSQL_ROOT_PASSWORD: vortex-dev-root
+      MYSQL_DATABASE: vortex
+      MYSQL_USER: vortex
+      MYSQL_PASSWORD: vortex-dev
+    healthcheck:
+      # Authenticating as the *application* user proves more than a bare ping: it only succeeds once
+      # the entrypoint has finished creating MYSQL_DATABASE and MYSQL_USER. Going over TCP to
+      # 127.0.0.1 rather than the unix socket also excludes the temporary `--skip-networking` server
+      # the image runs during initialisation, which would otherwise answer while the database is
+      # still half-built.
+      test:
+        [
+          "CMD-SHELL",
+          "mysql -h 127.0.0.1 -u vortex -pvortex-dev -e 'SELECT 1' vortex >/dev/null 2>&1",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    volumes:
+      # Named volume so the schema and its data survive `docker compose down` (only
+      # `docker compose down -v` destroys them).
+      - vortex-mysql-data:/var/lib/mysql
+    ports:
+      # Host 3307, not 3306: a developer machine running this repository usually already has a local
+      # MySQL on the default port. Migrations can be applied from the host through this mapping.
+      - "3307:3306"
+
+  # -----------------------------------------------------------------------------------------------
+  # Vortex.Main
+  # -----------------------------------------------------------------------------------------------
+  vortex:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        # NOT optional, and not merely a convenience for the retry policy.
+        # Vortex.Database/Extensions/ServiceCollectionExtensions.cs still resolves the server
+        # version with `ServerVersion.AutoDetect(connectionString)` whenever
+        # 'Vortex:Database:MySqlServerVersion' is unset (it is unset by default, and left unset
+        # here). AutoDetect opens a real MySQL connection *while the DI container is being
+        # configured* — before the host is built, and outside the scope of
+        # EnableRetryOnFailure. A not-yet-ready database is therefore a hard startup failure,
+        # not a retried transient. `service_healthy` is what prevents it.
+        condition: service_healthy
+    ports:
+      - "30000:30000" # game client, raw TCP
+      - "30001:30001" # game client, WebSocket
+      - "8080:8080" # Vortex web API (Swagger UI at /swagger)
+      - "9000:9000" # operator dashboard (SPA + API, Swagger UI at /swagger)
+      # Orleans silo (11111) and gateway (3000) are intentionally not published: one in-process
+      # silo, nothing outside the container has any business talking to them.
+    environment:
+      # ---------------------------------------------------------------------------------------
+      # Host environment
+      # ---------------------------------------------------------------------------------------
+      # Development is a deliberate choice for this stack, not laziness. Outside Development,
+      # Vortex.Main/Extensions/HostApplicationBuilderExtensions.cs refuses to start when Orleans
+      # would run with localhost clustering plus in-memory grain storage — which is exactly what a
+      # single-container stack does. Running this compose file as Production would require a real
+      # ADO.NET clustering/storage provider, and that is a deployment decision, not a dev default.
+      DOTNET_ENVIRONMENT: Development
+
+      # ---------------------------------------------------------------------------------------
+      # Configuration via environment
+      # ---------------------------------------------------------------------------------------
+      # Vortex.Main/Program.cs calls AddEnvironmentVariables(prefix: "VORTEX__"). The prefix is
+      # stripped and the remaining "__" separators become ":", so
+      #   VORTEX__Vortex__Database__ConnectionString  ->  "Vortex:Database:ConnectionString"
+      # and these values override anything in the image's appsettings.json.
+      VORTEX__Vortex__Database__ConnectionString: "Server=mysql;Port=3306;Database=vortex;User Id=vortex;Password=vortex-dev;"
+
+      # --- HTTP listeners --------------------------------------------------------------------
+      # A container-local bind is a bind to nowhere: published ports are forwarded to the
+      # container's external interface, so anything listening only on 127.0.0.1 inside the
+      # container is unreachable from the host.
+      VORTEX__Vortex__WebApi__Host: "0.0.0.0"
+      VORTEX__Vortex__Observability__DashboardHost: "0.0.0.0"
+
+      # --- ListenerSecurity opt-in (DEVELOPMENT ONLY) -----------------------------------------
+      # Vortex.Primitives/Hosting/ListenerSecurity.cs classifies 0.0.0.0 / :: / * / + as NON-local
+      # (see IsLocalHost) and refuses to start any HTTP listener bound to a non-local address with
+      # HTTPS disabled — both surfaces carry credentials and a session cookie in cleartext. The two
+      # binds above therefore trip that guard, once in the options validator and once in the web
+      # host itself.
+      #
+      # The guard is not bypassed or weakened here: these are the exact opt-in keys the code reads,
+      # 'Vortex:WebApi:AllowInsecureRemoteHttp'
+      #   (Vortex.WebApi/Configuration/WebApiConfig.cs -> AllowInsecureRemoteHttp) and
+      # 'Vortex:Observability:DashboardAllowInsecureRemoteHttp'
+      #   (Vortex.Observability/Configuration/ObservabilityConfig.cs ->
+      #    DashboardAllowInsecureRemoteHttp).
+      # Setting them downgrades the refusal to a logged warning, which is still emitted at startup.
+      #
+      # This is acceptable ONLY because the published ports are meant to be reached from localhost
+      # on the developer's machine. Do not carry these two lines into any environment where the
+      # ports are reachable from a network: enable HTTPS on the listeners, or bind them back to a
+      # local address and put a TLS-terminating reverse proxy in front.
+      VORTEX__Vortex__WebApi__AllowInsecureRemoteHttp: "true"
+      VORTEX__Vortex__Observability__DashboardAllowInsecureRemoteHttp: "true"
+
+      # --- Game sockets (SuperSocket) ---------------------------------------------------------
+      # Same wildcard-bind requirement as above, but note the missing VORTEX__ prefix: it is not a
+      # typo. Vortex.Networking/NetworkManager.cs builds the TCP and WebSocket listeners with
+      # SuperSocketHostBuilder.Create(), which bottoms out in Host.CreateDefaultBuilder(args) — a
+      # separate generic host with its own configuration root. The prefix registered in
+      # Vortex.Main/Program.cs does not reach it; CreateDefaultBuilder reads appsettings.json from
+      # the working directory plus UNPREFIXED environment variables.
+      # SuperSocket's RegisterBasicServices hands ConfigureServerOptions the "serverOptions"
+      # section, and NetworkManager then selects "TcpServer" / "WebSocketServer" inside it — hence
+      # the full key "serverOptions:TcpServer:listeners:0:ip".
+      # ListenerSecurity does not police these two: it guards the HTTP surfaces only.
+      serverOptions__TcpServer__listeners__0__ip: "0.0.0.0"
+      serverOptions__WebSocketServer__listeners__0__ip: "0.0.0.0"
+
+      # --- RSA handshake keypair (DEVELOPMENT ONLY) -------------------------------------------
+      # Vortex.Crypto/Configuration/CryptoConfigValidator.cs rejects the CHANGE_ME placeholders
+      # shipped in appsettings.json, so the stack cannot start without a real keypair. Below is a
+      # throwaway 1024-bit keypair with public exponent 3, generated for this compose file and
+      # committed here on purpose: it is public, it protects nothing, and the client has to be
+      # configured with the same modulus for the handshake to succeed.
+      # KeySize is the public exponent, PublicKey the modulus, PrivateKey the private exponent —
+      # all hexadecimal (see Vortex.Crypto/RsaService.cs).
+      # Generate your own with: openssl genrsa -3 1024
+      VORTEX__Vortex__Crypto__KeySize: "3"
+      VORTEX__Vortex__Crypto__PublicKey: "c01389982ad84c9e716dd76edc7238fe5a6411798ea25809fab540d58b6ede11d9c9813d60d6b3ffb43154b72c74f77ab3f223d11b67eaa4cb234389ea8cbed717f5cffcbc8e2b68df7ca8bccbad0af151478e26d2967f11494f86da97333dd536b6d10e4e2b16d18e4d9fdb6c4beffc47ba4cc219fedfc953fff17d19f0dd37"
+      VORTEX__Vortex__Crypto__PrivateKey: "800d066571e58869a0f3e4f492f6d0a991980ba65f16e55bfc78d5e3b249e9613bdbab7e408f22aa7820e324c84dfa51cd4c17e0bceff1c33217825bf1b329e39251a0059220eb6215942e2335f1cd0c53e01074cce53fcac6b8ef1fab661bf97f7c5672cc74f616a32cf43052a9afabda7005669aace59d83462952d23c634b"
+
+      # --- Auth (DEVELOPMENT ONLY) -------------------------------------------------------------
+      # HMAC key for the IP addresses hashed into auth events. Only a placeholder check applies in
+      # Development (Vortex.Authentication/Configuration/AuthenticationConfigValidator.cs enforces
+      # it outside Development), but a value that is at least distinct from the repo defaults keeps
+      # the dev hashes from colliding with anyone else's.
+      VORTEX__Vortex__Authentication__IpHashSecret: "vortex-compose-dev-ip-hash-secret"
+
+volumes:
+  vortex-mysql-data:

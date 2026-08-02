@@ -15,6 +15,11 @@
 *.ps1          text eol=lf
 .githooks/*    text eol=lf
 
+# Container artefacts are consumed by a Linux shell inside the image; CRLF would leave a stray
+# carriage return at the end of every continued RUN line.
+Dockerfile     text eol=lf
+.dockerignore  text eol=lf
+
 # Keep Windows endings for Windows-specific stuff
 *.sln          text eol=crlf
 *.bat          text eol=crlf

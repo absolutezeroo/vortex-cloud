@@ -1,0 +1,57 @@
+# Everything here is excluded from the build context. Keeping it tight is not only about image
+# size: a stale bin/ or obj/ copied into the container makes the in-container build pick up
+# host-built artefacts for a different RID and fail in confusing ways.
+
+# --- build output --------------------------------------------------------------------------------
+**/bin/
+**/obj/
+**/TestResults/
+
+# --- version control and IDE state ----------------------------------------------------------------
+.git/
+.gitattributes
+.gitignore
+.github/
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# --- local-only configuration and secrets ---------------------------------------------------------
+# appsettings.Development.json is gitignored and holds the developer's real connection string and
+# RSA keypair. It must never be baked into an image: configuration comes from VORTEX__ environment
+# variables instead (see docker-compose.yml).
+appsettings.Development.json
+appsettings.Production.json
+**/appsettings.Development.json
+**/appsettings.Production.json
+**/secrets.json
+.env
+.env.*
+
+# --- runtime state --------------------------------------------------------------------------------
+logs/
+plugins/
+assets/
+
+# --- container artefacts themselves ---------------------------------------------------------------
+Dockerfile
+.dockerignore
+docker-compose.yml
+docker-compose.*.yml
+
+# --- front end -------------------------------------------------------------------------------------
+# The dashboard SPA is committed pre-built under Vortex.Dashboard.API/Assets and embedded as a
+# resource by the .NET build, so the Vite sources and node_modules are never needed to compile.
+**/node_modules/
+Vortex.Dashboard.Web/dist/
+
+# --- not needed to compile --------------------------------------------------------------------------
+# docs/ and tools/ contain no project referenced by Vortex.Main; tools/catalog_converter alone
+# carries tens of megabytes of sample SQL/JSON. Only `dotnet publish` runs in the image — the
+# VortexCloudQualityGate / VortexCloudAiGovernanceCheck targets (which do read docs/patterns) are
+# run on a developer machine or in CI, never here.
+docs/
+tools/

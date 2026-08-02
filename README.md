@@ -59,6 +59,145 @@ dotnet --version
 - `appsettings.Development.json` is local-only and gitignored.
 - The bootstrap script creates `appsettings.Development.json` from `appsettings.json` if missing.
 
+## Démarrage par conteneur (Container Startup)
+`Dockerfile`, `.dockerignore` and `docker-compose.yml` at the repository root build and run
+`Vortex.Main` plus a MySQL 8 instance. They are build/run artefacts only — no application code
+depends on them, and running the emulator from the SDK as described above is unaffected.
+
+### `docker compose up`
+
+```bash
+docker compose build
+docker compose up
+```
+
+The `vortex` service waits on `depends_on: mysql: condition: service_healthy`. This is required,
+not cosmetic: `Vortex.Database/Extensions/ServiceCollectionExtensions.cs` resolves the server
+version with `ServerVersion.AutoDetect(connectionString)` whenever
+`Vortex:Database:MySqlServerVersion` is unset (the default). `AutoDetect` opens a real MySQL
+connection *during DI configuration*, before the host is built and outside the reach of
+`EnableRetryOnFailure`, so a database that is not yet accepting connections is a hard startup
+failure rather than a retried transient.
+
+**The schema is not created for you.** Migrations are never applied at host startup — see
+[Applying migrations](#applying-migrations) below. On a fresh volume, start the stack, apply the
+migrations once, then restart `vortex`.
+
+### What is exposed, on which ports
+
+| Host port | Container | Service |
+| --- | --- | --- |
+| 30000 | `vortex` | Game client, raw TCP socket (SuperSocket) |
+| 30001 | `vortex` | Game client, WebSocket socket (SuperSocket) |
+| 8080 | `vortex` | Vortex web API — Swagger UI at `http://localhost:8080/swagger` |
+| 9000 | `vortex` | Operator dashboard SPA + API — `http://localhost:9000`, Swagger at `/swagger` |
+| 3307 | `mysql` | MySQL 8 (3307 on the host to avoid a local MySQL already on 3306) |
+
+The Orleans silo (11111) and gateway (3000) ports are deliberately not published: the stack runs a
+single in-process silo.
+
+MySQL data lives in the named volume `vortex-mysql-data`, so `docker compose down` keeps the
+schema and `docker compose down -v` destroys it.
+
+### The `ListenerSecurity` guard, and why the compose file opts in
+
+`Vortex.Primitives/Hosting/ListenerSecurity.cs` refuses to start an HTTP listener bound to a
+non-local address with HTTPS disabled, because both HTTP surfaces carry credentials and a session
+cookie. Its `IsLocalHost` treats `0.0.0.0`, `::`, `*` and `+` as **not** local — they accept
+traffic on every interface, which is precisely the remote-exposure case.
+
+Inside a container, a listener bound to `127.0.0.1` is unreachable: published ports are forwarded
+to the container's external interface. The listeners must bind `0.0.0.0`, so the guard fires.
+
+The compose file does not bypass or modify the guard. It sets the two opt-in keys the code already
+reads:
+
+| Configuration key | Declared in | Environment variable in `docker-compose.yml` |
+| --- | --- | --- |
+| `Vortex:WebApi:AllowInsecureRemoteHttp` | `Vortex.WebApi/Configuration/WebApiConfig.cs` | `VORTEX__Vortex__WebApi__AllowInsecureRemoteHttp` |
+| `Vortex:Observability:DashboardAllowInsecureRemoteHttp` | `Vortex.Observability/Configuration/ObservabilityConfig.cs` | `VORTEX__Vortex__Observability__DashboardAllowInsecureRemoteHttp` |
+
+With those set, `ValidateListener` returns `AllowedWithWarning` instead of `Refused`, and the
+warning is still logged on every start.
+
+**This is a local development setting only.** It is acceptable here because the published ports
+are meant to be reached from `localhost` on the developer's machine. Anywhere the ports are
+reachable from a network, remove those two variables and either enable HTTPS on the listeners or
+bind them to a local address behind a TLS-terminating reverse proxy.
+
+Note that the two game sockets are configured through *unprefixed* variables
+(`serverOptions__TcpServer__listeners__0__ip`, `serverOptions__WebSocketServer__listeners__0__ip`).
+`Vortex.Networking/NetworkManager.cs` builds them with `SuperSocketHostBuilder.Create()`, which
+bottoms out in `Host.CreateDefaultBuilder(args)` — a separate generic host with its own
+configuration root. The `VORTEX__` prefix registered in `Vortex.Main/Program.cs` does not reach it;
+`CreateDefaultBuilder` reads unprefixed environment variables. `ListenerSecurity` does not police
+these two — it guards the HTTP surfaces only.
+
+### Applying migrations
+Migrations are **not** applied automatically when the host starts; when to migrate is an operations
+decision. Apply them explicitly against the running `mysql` service.
+
+The runtime image is intentionally SDK-free, so run the EF tooling from a throwaway SDK container
+joined to the compose network, with the repository mounted:
+
+```bash
+docker compose up -d mysql
+
+docker run --rm \
+  --network vortex-cloud_default \
+  -v "$PWD:/src" -w /src/Vortex.Database \
+  -e Vortex__Database__ConnectionString="Server=mysql;Port=3306;Database=vortex;User Id=vortex;Password=vortex-dev;" \
+  -e Vortex__Database__ServerVersion="8.0-mysql" \
+  mcr.microsoft.com/dotnet/sdk:10.0 \
+  sh -c 'dotnet tool install --global dotnet-ef && export PATH="$PATH:/root/.dotnet/tools" && dotnet ef database update'
+```
+
+PowerShell: replace `$PWD` with `${PWD}` and the line continuations with backticks.
+
+Details that matter:
+- `dotnet ef` is not in `.config/dotnet-tools.json`, hence the `dotnet tool install` in the command.
+- The working directory must be a project directory: `VortexDbContextFactory` reads
+  `appsettings.json` from `Directory.GetCurrentDirectory()/..`, i.e. the repository root.
+- Both variables are **unprefixed**. That factory builds its own configuration with a plain
+  `AddEnvironmentVariables()`, so `VORTEX__…` would be ignored, and it reads
+  `Vortex:Database:ServerVersion` (not `MySqlServerVersion`, which is the runtime host's key).
+  Pinning the version skips `AutoDetect`.
+
+From the host instead of a container, the same thing works against the published port:
+
+```bash
+cd Vortex.Database
+Vortex__Database__ConnectionString="Server=127.0.0.1;Port=3307;Database=vortex;User Id=vortex;Password=vortex-dev;" \
+Vortex__Database__ServerVersion="8.0-mysql" \
+dotnet ef database update
+```
+
+### Real secrets outside development
+Every credential in `docker-compose.yml` is a development value committed to the repository, so it
+is public: the MySQL passwords, the RSA handshake keypair and the IP-hash secret. The compose file
+is a local dev stack, not a deployment.
+
+To run this anywhere else:
+- Move every `VORTEX__…` value out of the compose file. It reaches the host through
+  `AddEnvironmentVariables(prefix: "VORTEX__")` in `Vortex.Main/Program.cs`, so any mechanism that
+  sets process environment variables works: an untracked `.env` file referenced with
+  `env_file:` (`.env` is already in `.dockerignore`), Docker/Swarm secrets read into the variable
+  at entrypoint, or the orchestrator's own secret store (Kubernetes `Secret` via `envFrom`, ECS
+  task-definition secrets, systemd `EnvironmentFile=`).
+- Generate a fresh RSA keypair — `openssl genrsa -3 1024` — and configure the client with the
+  matching modulus. `CryptoConfigValidator` rejects the `CHANGE_ME` placeholders, so a
+  half-configured host fails at startup rather than at the first handshake.
+- Set a real `Vortex:Authentication:IpHashSecret`. Outside Development the validator refuses the
+  repository defaults, since a known HMAC key makes the hashed IPs in auth events reversible.
+- Drop `DOTNET_ENVIRONMENT: Development`. Outside Development,
+  `Vortex.Main/Extensions/HostApplicationBuilderExtensions.cs` refuses to start Orleans with
+  localhost clustering plus in-memory grain storage, which is what this single-container stack
+  uses. A real deployment needs `Vortex:Orleans:ClusteringProvider` and
+  `Vortex:Orleans:GrainStorageProvider` set to `adonet` — or an explicit
+  `AllowUnclusteredOutsideDevelopment` if a single node with non-durable Orleans state is genuinely
+  what you want.
+- Drop the two `AllowInsecureRemoteHttp` opt-ins and terminate TLS in front of the listeners.
+
 ## Quality Model (Two-Phase)
 - Fast local commit check:
   - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudFastCheck`
