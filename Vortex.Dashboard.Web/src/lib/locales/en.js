@@ -378,6 +378,7 @@ export default {
     startedUtc: 'Started UTC',
   },
   pickerModal: {
+    loadMore: 'Load more',
     catalogFurniture: 'Catalog furniture',
     players: 'Players',
     close: 'Close',

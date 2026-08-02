@@ -1133,6 +1133,12 @@ internal sealed partial class DashboardApiService
                 string term = (query["q"] ?? string.Empty).Trim();
                 int limit = ParseLimit(query["limit"], 50, 200);
 
+                // The picker used to stop at the first page with no way to ask for more, so a hotel
+                // with thousands of definitions could only ever reach the first fifty by name.
+                int offset = int.TryParse(query["offset"], out int parsedOffset)
+                    ? Math.Max(0, parsedOffset)
+                    : 0;
+
                 IQueryable<FurnitureDefinitionEntity> definitions =
                     db.FurnitureDefinitions.AsNoTracking();
 
@@ -1150,8 +1156,11 @@ internal sealed partial class DashboardApiService
                     }
                 }
 
+                int total = await definitions.CountAsync(ct).ConfigureAwait(false);
+
                 var rows = await definitions
                     .OrderBy(f => f.Name)
+                    .Skip(offset)
                     .Take(limit)
                     .Select(f => new
                     {
@@ -1183,7 +1192,15 @@ internal sealed partial class DashboardApiService
                     })
                     .ToList();
 
-                return new { count = items.Count, items };
+                // hasMore rather than a page count: the picker appends, it never jumps.
+                return new
+                {
+                    count = items.Count,
+                    total,
+                    offset,
+                    hasMore = offset + items.Count < total,
+                    items,
+                };
             },
             ct
         );

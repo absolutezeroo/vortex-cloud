@@ -304,13 +304,17 @@
               {#each poolEntries as entry (entry.id)}
                 <tr>
                   <td>
-                    <AssetImage
-                      src={entry.furnitureIconUrl}
-                      alt={entry.furnitureName ?? ''}
-                      size={32}
-                    />
-                    <strong class="truncate">{entryTarget(entry)}</strong>
-                    <span class="muted">{entry.productType}</span>
+                    <span class="cell-row">
+                      <AssetImage
+                        src={entry.furnitureIconUrl}
+                        alt={entry.furnitureName ?? ''}
+                        size={32}
+                      />
+                      <span class="cell-text">
+                        <strong class="truncate">{entryTarget(entry)}</strong>
+                        <span class="muted">{entry.productType}</span>
+                      </span>
+                    </span>
                     {#if !entry.enabled}
                       <span class="status-badge status-badge--warn"
                         >{$t('prizePools.enabled')}</span
@@ -440,15 +444,19 @@
             {#each bindings as binding (binding.id)}
               <tr>
                 <td>
-                  <AssetImage
-                    src={binding.furnitureIconUrl}
-                    alt={binding.furnitureName ?? ''}
-                    size={32}
-                  />
-                  <strong class="truncate"
-                    >{binding.furnitureName ?? `#${binding.furnitureDefinitionId}`}</strong
-                  >
-                  <span class="muted">{binding.furnitureLogic ?? '—'}</span>
+                  <span class="cell-row">
+                    <AssetImage
+                      src={binding.furnitureIconUrl}
+                      alt={binding.furnitureName ?? ''}
+                      size={32}
+                    />
+                    <span class="cell-text">
+                      <strong class="truncate"
+                        >{binding.furnitureName ?? `#${binding.furnitureDefinitionId}`}</strong
+                      >
+                      <span class="muted">{binding.furnitureLogic ?? '—'}</span>
+                    </span>
+                  </span>
                 </td>
                 <td><span class="status-badge">{binding.pool}</span></td>
                 <td>{formatNumber(binding.hitsRequired)}</td>
@@ -565,6 +573,22 @@
   .panel > .op-grid,
   .panel > .inline-list {
     margin-bottom: 18px;
+  }
+
+
+  /* Icon and label sit on one line. AssetImage and the label are both block-level here, so without
+     this they stack and the row grows to two lines for no reason. */
+  .cell-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .cell-row .cell-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
   }
 
   .panel > .op-actions {

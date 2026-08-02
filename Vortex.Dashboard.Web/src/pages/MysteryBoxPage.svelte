@@ -443,12 +443,14 @@
           <div class="catalog-card">
             <div class="offer-head">
               <span class="catalog-row-main">
-                <AssetImage
-                  src={definition.furnitureIconUrl}
-                  alt={definition.name}
-                  size={32}
-                />
-                <strong>{definition.name}</strong>
+                <span class="cell-row">
+                  <AssetImage
+                    src={definition.furnitureIconUrl}
+                    alt={definition.name}
+                    size={32}
+                  />
+                  <strong>{definition.name}</strong>
+                </span>
                 <small class="muted">#{definition.id} — sprite {definition.spriteId}</small>
               </span>
               {#if definition.totalStates < 25}
@@ -573,12 +575,14 @@
               <div class="catalog-card">
                 <div class="offer-head">
                   <span class="catalog-row-main">
-                    <AssetImage
-                      src={prize.furnitureIconUrl}
-                      alt={prize.furnitureName ?? ''}
-                      size={32}
-                    />
-                    <strong>{prizeTarget(prize)}</strong>
+                    <span class="cell-row">
+                      <AssetImage
+                        src={prize.furnitureIconUrl}
+                        alt={prize.furnitureName ?? ''}
+                        size={32}
+                      />
+                      <strong>{prizeTarget(prize)}</strong>
+                    </span>
                     <small class="muted">#{prize.id} — {prize.productType}{prize.color ? ` · ${prize.color}` : ''}</small>
                   </span>
                   <span class="cost-chip">{$t('mysteryBox.weight')} {prize.weight}</span>
@@ -898,6 +902,21 @@
     flex-wrap: wrap;
     gap: 6px;
     margin-top: 8px;
+  }
+
+  /* Icon and label sit on one line. AssetImage and the label are both block-level here, so without
+     this they stack and the row grows to two lines for no reason. */
+  .cell-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .cell-row .cell-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
   }
 
   .stat-grid {

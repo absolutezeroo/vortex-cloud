@@ -377,6 +377,7 @@ export default {
     startedUtc: 'Démarré (UTC)',
   },
   pickerModal: {
+    loadMore: 'Charger plus',
     catalogFurniture: 'Mobilier du catalogue',
     players: 'Joueurs',
     close: 'Fermer',

@@ -17,6 +17,9 @@
 
   let query = '';
   let rows = [];
+  let hasMore = false;
+  let loadingMore = false;
+  const PAGE_SIZE = 60;
   let loading = false;
   let error = '';
   let forbidden = false;
@@ -43,10 +46,15 @@
     error = '';
     forbidden = false;
     rows = [];
+    hasMore = false;
 
     try {
-      const data = await apiGet(`${endpoint}?q=${encodeURIComponent(query.trim())}&limit=60`);
+      const data = await apiGet(
+        `${endpoint}?q=${encodeURIComponent(query.trim())}&limit=${PAGE_SIZE}&offset=0`
+      );
       rows = data.items || [];
+      // The players endpoint does not page; absent hasMore simply means "that is everything".
+      hasMore = Boolean(data.hasMore);
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -58,6 +66,27 @@
       rows = [];
     } finally {
       loading = false;
+    }
+  }
+
+  // Appends rather than replacing: the list is browsed by scrolling, so a page jump would lose the
+  // rows the operator already scrolled past.
+  async function loadMore() {
+    if (loadingMore || !hasMore) return;
+
+    loadingMore = true;
+
+    try {
+      const data = await apiGet(
+        `${endpoint}?q=${encodeURIComponent(query.trim())}&limit=${PAGE_SIZE}&offset=${rows.length}`
+      );
+      rows = [...rows, ...(data.items || [])];
+      hasMore = Boolean(data.hasMore);
+    } catch (err) {
+      error = err.message;
+      hasMore = false;
+    } finally {
+      loadingMore = false;
     }
   }
 
@@ -128,6 +157,11 @@
       {:else}
         {#if !loading}<p class="empty-state">{$t('pickerModal.noResults')}</p>{/if}
       {/each}
+      {#if hasMore}
+        <button type="button" class="ghost-button" on:click={loadMore} disabled={loadingMore}>
+          {loadingMore ? $t('common.loading') : $t('pickerModal.loadMore')}
+        </button>
+      {/if}
     </div>
   </section>
 </div>
