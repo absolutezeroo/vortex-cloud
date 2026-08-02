@@ -68,7 +68,7 @@ public abstract class FurnitureWiredLogic(
     {
         // A real flash: light the box now, and let the wired system revert it to unlit after
         // WiredFlashDurationMs. A plain toggle would leave the box lit every other fire.
-        _roomGrain.WiredSystem.ScheduleFlashRevert(_ctx.ObjectId);
+        _ctx.Furni.ScheduleFlashRevert(_ctx.ObjectId);
 
         return SetFlashStateAsync(1);
     }
@@ -293,7 +293,7 @@ public abstract class FurnitureWiredLogic(
                 }
                 catch (Exception ex)
                 {
-                    _roomGrain._logger.LogWarning(
+                    _logger.LogWarning(
                         ex,
                         "Malformed FurniSources[{Index}] in wired update for item {ItemId}; keeping default source.",
                         index,
@@ -327,7 +327,7 @@ public abstract class FurnitureWiredLogic(
                 }
                 catch (Exception ex)
                 {
-                    _roomGrain._logger.LogWarning(
+                    _logger.LogWarning(
                         ex,
                         "Malformed PlayerSources[{Index}] in wired update for item {ItemId}; keeping default source.",
                         index,
@@ -361,7 +361,7 @@ public abstract class FurnitureWiredLogic(
                 }
                 catch (Exception ex)
                 {
-                    _roomGrain._logger.LogWarning(
+                    _logger.LogWarning(
                         ex,
                         "Failed to rehydrate definition-specific {Type} at index {Index} from wired update for item {ItemId}.",
                         specType,
@@ -396,7 +396,7 @@ public abstract class FurnitureWiredLogic(
                 }
                 catch (Exception ex)
                 {
-                    _roomGrain._logger.LogWarning(
+                    _logger.LogWarning(
                         ex,
                         "Failed to rehydrate type-specific {Type} at index {Index} from wired update for item {ItemId}.",
                         specType,
@@ -431,7 +431,7 @@ public abstract class FurnitureWiredLogic(
         }
         catch (Exception ex)
         {
-            _roomGrain._logger.LogWarning(
+            _logger.LogWarning(
                 ex,
                 "Failed to apply wired update for item {ItemId}.",
                 _ctx.ObjectId
@@ -493,7 +493,7 @@ public abstract class FurnitureWiredLogic(
                 }
                 else
                 {
-                    _roomGrain._logger.LogWarning(
+                    _logger.LogWarning(
                         "Malformed persisted {SlotKind}[{Index}] ({Type}) for wired item {ItemId}; falling back to a fresh instance.",
                         slotKind,
                         index,
@@ -531,7 +531,7 @@ public abstract class FurnitureWiredLogic(
         List<IWiredParamRule> fixedRules = GetIntParamRules();
         IWiredParamRule? tailRule = GetIntParamTailRule();
         int min = fixedRules.Count;
-        int max = Math.Max(min, _roomGrain._roomConfig.WiredMaxIntParams);
+        int max = Math.Max(min, _ctx.WiredLimits.WiredMaxIntParams);
 
         if (proposed.Count > max)
         {
@@ -602,6 +602,20 @@ public abstract class FurnitureWiredLogic(
         return true;
     }
 
+    /// <summary>
+    /// Hydration-time repair of this box's persisted int params, so a list that
+    /// <see cref="TryNormalizeIntParams"/> would reject still comes up usable instead of leaving
+    /// every <c>GetIntParam</c> in the leaf throwing on each fire. See
+    /// <see cref="WiredIntParamRepair"/>.
+    /// </summary>
+    protected List<int> RepairIntParams(List<int> persisted) =>
+        WiredIntParamRepair.Repair(
+            GetIntParamRules(),
+            GetIntParamTailRule(),
+            _ctx.WiredLimits.WiredMaxIntParams,
+            persisted
+        );
+
     protected virtual bool GetValidStuffIds(List<int> proposed, out List<int> stuffIds)
     {
         stuffIds = [];
@@ -610,7 +624,7 @@ public abstract class FurnitureWiredLogic(
 
         foreach (int id in proposed)
         {
-            if (!_roomGrain._state.ItemsById.TryGetValue(id, out IRoomItem? item))
+            if (!_ctx.Lookup.TryFindItem(id, out IRoomItem? item))
             {
                 continue;
             }
@@ -619,7 +633,7 @@ public abstract class FurnitureWiredLogic(
 
             count++;
 
-            if (count >= _roomGrain._roomConfig.WiredSelectedItemsLimit)
+            if (count >= _ctx.WiredLimits.WiredSelectedItemsLimit)
             {
                 break;
             }
@@ -643,7 +657,7 @@ public abstract class FurnitureWiredLogic(
             try
             {
                 WiredVariableId variableId = WiredVariableId.Parse(id);
-                IWiredVariable? variable = _roomGrain.WiredSystem.GetVariableById(variableId);
+                IWiredVariable? variable = _ctx.Furni.GetVariableById(variableId);
 
                 if (variable is null)
                 {
@@ -661,7 +675,7 @@ public abstract class FurnitureWiredLogic(
             }
             catch (Exception ex)
             {
-                _roomGrain._logger.LogWarning(
+                _logger.LogWarning(
                     ex,
                     "Malformed variable id {VariableId} for wired item {ItemId}; skipping it.",
                     id,
@@ -717,13 +731,12 @@ public abstract class FurnitureWiredLogic(
             return Task.CompletedTask;
         });
 
-        if (TryNormalizeIntParams(_wiredData.IntParams, out List<int> normalizedIntParams))
+        List<int> repairedIntParams = RepairIntParams(_wiredData.IntParams);
+
+        if (!_wiredData.IntParams.SequenceEqual(repairedIntParams))
         {
-            if (!_wiredData.IntParams.SequenceEqual(normalizedIntParams))
-            {
-                _wiredData.IntParams = normalizedIntParams;
-                _wiredData.MarkDirty();
-            }
+            _wiredData.IntParams = repairedIntParams;
+            _wiredData.MarkDirty();
         }
 
         if (GetValidStuffIds(_wiredData.StuffIds, out List<int> stuffIds))
@@ -774,7 +787,7 @@ public abstract class FurnitureWiredLogic(
         return new WiredDataSnapshot
         {
             WiredType = WiredType,
-            FurniLimit = _roomGrain._roomConfig.WiredSelectedItemsLimit,
+            FurniLimit = _ctx.WiredLimits.WiredSelectedItemsLimit,
             StuffIds = GetValidStuffIds(_wiredData.StuffIds, out List<int> validStuffIds)
                 ? validStuffIds
                 : [],
@@ -796,7 +809,7 @@ public abstract class FurnitureWiredLogic(
             Code = WiredCode,
             AdvancedMode = SupportsAdvancedMode(),
             AmountFurniSelections = [],
-            AllowWallFurni = _roomGrain._roomConfig.WiredAllowWallFurni,
+            AllowWallFurni = _ctx.WiredLimits.WiredAllowWallFurni,
             AllowedFurniSources = GetAllowedFurniSources(),
             AllowedPlayerSources = GetAllowedPlayerSources(),
             DefaultFurniSources = GetDefaultFurniSources(),
@@ -813,7 +826,7 @@ public abstract class FurnitureWiredLogic(
         await base.OnAttachAsync(ct);
 
         await OnWiredStackChangedAsync(
-            ActionContext.CreateForSystem(_roomGrain.RoomId),
+            ActionContext.CreateForSystem(_ctx.RoomId),
             [_ctx.GetTileIdx()],
             ct
         );
@@ -824,7 +837,7 @@ public abstract class FurnitureWiredLogic(
         await base.OnDetachAsync(ct);
 
         await OnWiredStackChangedAsync(
-            ActionContext.CreateForSystem(_roomGrain.RoomId),
+            ActionContext.CreateForSystem(_ctx.RoomId),
             [_ctx.GetTileIdx()],
             ct
         );
