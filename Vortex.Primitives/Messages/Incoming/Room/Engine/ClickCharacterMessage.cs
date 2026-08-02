@@ -1,8 +1,10 @@
 using Vortex.Primitives.Networking;
+using Vortex.Primitives.Rooms.Object;
 
 namespace Vortex.Primitives.Messages.Incoming.Room.Engine;
 
 public record ClickCharacterMessage : IMessageEvent
 {
-    public required int UserId { get; init; }
+    /// <summary>Room object id of the clicked avatar — not the player's web id.</summary>
+    public required RoomObjectId ObjectId { get; init; }
 }

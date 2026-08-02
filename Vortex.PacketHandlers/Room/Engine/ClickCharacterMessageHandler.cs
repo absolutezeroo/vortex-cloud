@@ -26,7 +26,7 @@ public class ClickCharacterMessageHandler(IGrainFactory grainFactory)
 
         IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
         await roomGrain
-            .ClickCharacterAsync(ctx.AsActionContext(), message.UserId, ct)
+            .ClickCharacterAsync(ctx.AsActionContext(), message.ObjectId, ct)
             .ConfigureAwait(false);
     }
 }

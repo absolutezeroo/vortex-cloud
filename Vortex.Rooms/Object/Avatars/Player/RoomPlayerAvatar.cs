@@ -3,6 +3,7 @@ using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Logic.Avatars;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
@@ -62,6 +63,29 @@ public sealed class RoomPlayerAvatar
         _snapshot = null;
 
         return true;
+    }
+
+    /// <summary>Sitting cancels the dance, like it does on Habbo — the dance is dropped before the
+    /// status goes on so <see cref="SetDance"/> isn't blocked by its own sit guard.</summary>
+    public override void Sit(bool flag = true, Altitude? height = null, Rotation? rot = null)
+    {
+        if (flag)
+        {
+            SetDance(AvatarDanceType.None);
+        }
+
+        base.Sit(flag, height, rot);
+    }
+
+    /// <inheritdoc cref="Sit"/>
+    public override void Lay(bool flag = true, Altitude? height = null, Rotation? rot = null)
+    {
+        if (flag)
+        {
+            SetDance(AvatarDanceType.None);
+        }
+
+        base.Lay(flag, height, rot);
     }
 
     public bool SetDance(AvatarDanceType danceType = AvatarDanceType.None)

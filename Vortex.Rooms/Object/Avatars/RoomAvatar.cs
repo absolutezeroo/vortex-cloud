@@ -118,13 +118,12 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
         MarkDirty();
     }
 
-    public void Sit(bool flag = true, Altitude? height = null, Rotation? rot = null)
+    public virtual void Sit(bool flag = true, Altitude? height = null, Rotation? rot = null)
     {
         Altitude finalHeight = height ?? Altitude.FromValue(0.5);
 
         if (flag)
         {
-            // remove dance
             RemoveStatus(AvatarStatusType.Lay);
 
             rot ??= Rotation;
@@ -143,13 +142,12 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
         }
     }
 
-    public void Lay(bool flag = true, Altitude? height = null, Rotation? rot = null)
+    public virtual void Lay(bool flag = true, Altitude? height = null, Rotation? rot = null)
     {
         Altitude finalHeight = height ?? Altitude.FromValue(0.5);
 
         if (flag)
         {
-            // remove dance
             RemoveStatus(AvatarStatusType.Sit);
 
             rot ??= Rotation;
@@ -175,8 +173,7 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
         MarkDirty();
     }
 
-    public bool HasStatus(params AvatarStatusType[] types) =>
-        types.Any(x => Statuses.ContainsKey(x));
+    public bool HasStatus(params AvatarStatusType[] types) => types.Any(Statuses.ContainsKey);
 
     public void RemoveStatus(params AvatarStatusType[] types)
     {

@@ -38,6 +38,9 @@ public sealed partial class RoomMapModule
                 canSit = floorItem.Logic.CanSit();
                 canLay = floorItem.Logic.CanLay();
 
+                AvatarDanceType previousDanceType =
+                    (avatar as IRoomPlayer)?.DanceType ?? AvatarDanceType.None;
+
                 if (canSit)
                 {
                     avatar.Sit(true, floorItem.Logic.GetPostureOffset(), floorItem.Rotation);
@@ -45,6 +48,11 @@ public sealed partial class RoomMapModule
                 else if (canLay)
                 {
                     avatar.Lay(true, floorItem.Logic.GetPostureOffset(), floorItem.Rotation);
+                }
+
+                if (canSit || canLay)
+                {
+                    _roomGrain.AvatarModule.BroadcastDanceIfCleared(avatar, previousDanceType);
                 }
 
                 await floorItem.Logic.OnInvokeAsync((IRoomAvatarContext)avatar.Logic.Context, ct);

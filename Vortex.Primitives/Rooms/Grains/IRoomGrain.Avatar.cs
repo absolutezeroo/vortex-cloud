@@ -59,7 +59,13 @@ public partial interface IRoomGrain
         CancellationToken ct
     );
 
-    public Task<bool> SetAvatarPostureAsync(ActionContext ctx, CancellationToken ct);
+    /// <summary>Puts the acting player's avatar into the posture the client asked for; sitting also
+    /// cancels any dance, as it does on Habbo.</summary>
+    public Task<bool> SetAvatarPostureAsync(
+        ActionContext ctx,
+        AvatarPostureType postureType,
+        CancellationToken ct
+    );
 
     public Task<bool> SetAvatarSignAsync(ActionContext ctx, int signId, CancellationToken ct);
 

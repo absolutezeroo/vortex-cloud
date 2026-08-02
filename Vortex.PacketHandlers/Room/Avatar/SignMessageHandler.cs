@@ -10,6 +10,9 @@ namespace Vortex.PacketHandlers.Room.Avatar;
 
 public class SignMessageHandler(IGrainFactory grainFactory) : IMessageHandler<SignMessage>
 {
+    /// <summary>Highest sign the client has artwork for (0-10 numbers, 11-17 the specials).</summary>
+    private const int MaxSignId = 17;
+
     private readonly IGrainFactory _grainFactory = grainFactory;
 
     public async ValueTask HandleAsync(
@@ -18,7 +21,15 @@ public class SignMessageHandler(IGrainFactory grainFactory) : IMessageHandler<Si
         CancellationToken ct
     )
     {
-        if (ctx is null || ctx.PlayerId <= 0 || ctx.RoomId <= 0 || message.SignId < 0)
+        // 0-17 is the full sign set the client can render; anything else would leave the avatar
+        // stuck showing a status the client cannot draw.
+        if (
+            ctx is null
+            || ctx.PlayerId <= 0
+            || ctx.RoomId <= 0
+            || message.SignId < 0
+            || message.SignId > MaxSignId
+        )
         {
             return;
         }

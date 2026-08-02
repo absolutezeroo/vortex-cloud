@@ -64,12 +64,18 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
                     await ProcessAvatarAsync(avatar, now, ct);
                 }
 
-                if (!avatar.IsDirty)
+                if (avatar.IsDirty)
                 {
-                    continue;
+                    _dirtySnapshots.Add(avatar.GetSnapshot());
                 }
 
-                _dirtySnapshots.Add(avatar.GetSnapshot());
+                // A sign is a one-shot: it has been on the wire by now (either in the update above or
+                // in the immediate broadcast the sign handler sent), so drop it. Without this the
+                // avatar holds the sign up forever.
+                if (avatar.HasStatus(AvatarStatusType.Sign))
+                {
+                    avatar.RemoveStatus(AvatarStatusType.Sign);
+                }
             }
             catch (Exception ex)
             {

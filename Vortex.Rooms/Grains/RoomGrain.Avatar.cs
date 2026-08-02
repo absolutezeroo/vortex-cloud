@@ -296,13 +296,17 @@ public sealed partial class RoomGrain
         }
     }
 
-    public async Task<bool> SetAvatarPostureAsync(ActionContext ctx, CancellationToken ct)
+    public async Task<bool> SetAvatarPostureAsync(
+        ActionContext ctx,
+        AvatarPostureType postureType,
+        CancellationToken ct
+    )
     {
         try
         {
             if (
                 !_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out RoomObjectId objectId)
-                || !await AvatarModule.SetAvatarPostureAsync(objectId, ct)
+                || !await AvatarModule.SetAvatarPostureAsync(objectId, postureType, ct)
             )
             {
                 return false;
@@ -314,7 +318,7 @@ public sealed partial class RoomGrain
         {
             _logger.LogError(
                 ex,
-                $"Failed to set posture for player {ctx.PlayerId} in room {_state.RoomId}."
+                $"Failed to set posture:{postureType} for player {ctx.PlayerId} in room {_state.RoomId}."
             );
 
             return false;

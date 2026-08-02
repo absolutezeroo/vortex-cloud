@@ -466,6 +466,38 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
         return Task.FromResult(true);
     }
 
+    /// <summary>
+    /// Sitting or laying cancels a dance on the avatar itself, but the room only ever learns about a
+    /// dance through <see cref="DanceMessageComposer"/> — without this the other clients keep
+    /// rendering the dance once the avatar stands back up. Call it after any posture change with the
+    /// dance the avatar had beforehand.
+    /// </summary>
+    public void BroadcastDanceIfCleared(IRoomAvatar avatar, AvatarDanceType previousDanceType)
+    {
+        if (
+            previousDanceType == AvatarDanceType.None
+            || avatar is not IRoomPlayer player
+            || player.DanceType == previousDanceType
+        )
+        {
+            return;
+        }
+
+        _roomGrain
+            .SendComposerToRoomAsync(
+                new DanceMessageComposer
+                {
+                    ObjectId = avatar.ObjectId,
+                    DanceType = player.DanceType,
+                }
+            )
+            .LogAndForget(
+                _roomGrain._logger,
+                "Failed to publish avatar update for room {RoomId}",
+                _roomGrain._state.RoomId
+            );
+    }
+
     public Task<bool> SetAvatarEffectAsync(
         RoomObjectId objectId,
         int effectId,
@@ -536,7 +568,11 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
         return Task.FromResult(true);
     }
 
-    public Task<bool> SetAvatarPostureAsync(RoomObjectId objectId, CancellationToken ct)
+    public Task<bool> SetAvatarPostureAsync(
+        RoomObjectId objectId,
+        AvatarPostureType postureType,
+        CancellationToken ct
+    )
     {
         if (
             objectId <= 0
@@ -549,8 +585,24 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
             return Task.FromResult(false);
         }
 
-        bool isSitting = avatar.HasStatus(AvatarStatusType.Sit);
-        avatar.Sit(!isSitting);
+        // The client sends the posture it wants (stand/sit), so honour it instead of toggling —
+        // a toggle desyncs as soon as the client and the room disagree on the current posture.
+        AvatarDanceType previousDanceType =
+            (avatar as IRoomPlayer)?.DanceType ?? AvatarDanceType.None;
+
+        switch (postureType)
+        {
+            case AvatarPostureType.Sit:
+                avatar.Sit(true);
+                break;
+            case AvatarPostureType.Stand:
+                avatar.Sit(false);
+                break;
+            default:
+                return Task.FromResult(false);
+        }
+
+        BroadcastDanceIfCleared(avatar, previousDanceType);
 
         _roomGrain
             .SendComposerToRoomAsync(
