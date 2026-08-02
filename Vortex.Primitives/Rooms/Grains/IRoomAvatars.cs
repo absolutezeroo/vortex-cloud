@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Players;
@@ -10,7 +11,9 @@ using Vortex.Primitives.Rooms.Snapshots.Avatars;
 
 namespace Vortex.Primitives.Rooms.Grains;
 
-public partial interface IRoomGrain
+/// <summary>Avatars present in the room: their lifecycle, movement, posture and chat.</summary>
+[Alias("Vortex.Primitives.Rooms.Grains.IRoomAvatars")]
+public interface IRoomAvatars : IGrainWithIntegerKey
 {
     public Task<bool> CreateAvatarFromPlayerAsync(
         ActionContext ctx,

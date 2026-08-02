@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Pets.Snapshots;
 using Vortex.Primitives.Rooms.Enums;
@@ -8,7 +9,9 @@ using Vortex.Primitives.Rooms.Object;
 
 namespace Vortex.Primitives.Rooms.Grains;
 
-public partial interface IRoomGrain
+/// <summary>Pets placed in the room: placement, care, commands, riding and breeding.</summary>
+[Alias("Vortex.Primitives.Rooms.Grains.IRoomPets")]
+public interface IRoomPets : IGrainWithIntegerKey
 {
     public Task<PetSnapshot?> PlacePetAsync(
         ActionContext ctx,

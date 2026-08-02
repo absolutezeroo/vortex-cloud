@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Players;
@@ -8,7 +9,9 @@ using Vortex.Primitives.Rooms.Enums;
 
 namespace Vortex.Primitives.Rooms.Grains;
 
-public partial interface IRoomGrain
+/// <summary>The room's own configuration: settings, rights lists, tags, rating and deletion.</summary>
+[Alias("Vortex.Primitives.Rooms.Grains.IRoomSettings")]
+public interface IRoomSettings : IGrainWithIntegerKey
 {
     Task<RoomSnapshot?> GetRoomSettingsAsync(PlayerId actor, CancellationToken ct);
 

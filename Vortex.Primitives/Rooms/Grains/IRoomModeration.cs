@@ -1,11 +1,14 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Players;
 
 namespace Vortex.Primitives.Rooms.Grains;
 
-public partial interface IRoomGrain
+/// <summary>In-room moderation actions taken against a present player.</summary>
+[Alias("Vortex.Primitives.Rooms.Grains.IRoomModeration")]
+public interface IRoomModeration : IGrainWithIntegerKey
 {
     public Task<bool> KickUserAsync(
         ActionContext actorCtx,

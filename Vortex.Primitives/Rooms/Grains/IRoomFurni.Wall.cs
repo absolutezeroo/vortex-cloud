@@ -9,7 +9,7 @@ using Vortex.Primitives.Rooms.Snapshots.Furniture;
 
 namespace Vortex.Primitives.Rooms.Grains;
 
-public partial interface IRoomGrain
+public partial interface IRoomFurni
 {
     public Task<bool> PlaceWallItemAsync(
         ActionContext ctx,

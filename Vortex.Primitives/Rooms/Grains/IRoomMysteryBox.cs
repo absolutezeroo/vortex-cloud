@@ -1,12 +1,15 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Object;
 
 namespace Vortex.Primitives.Rooms.Grains;
 
-public partial interface IRoomGrain
+/// <summary>Mystery boxes and mystery trophies placed in the room.</summary>
+[Alias("Vortex.Primitives.Rooms.Grains.IRoomMysteryBox")]
+public interface IRoomMysteryBox : IGrainWithIntegerKey
 {
     /// <summary>
     /// Handles a click on a mystery box. The box's owner and any holder of a key in the box's colour

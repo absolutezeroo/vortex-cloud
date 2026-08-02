@@ -4,7 +4,7 @@ using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 
 namespace Vortex.Primitives.Rooms.Grains;
 
-public partial interface IRoomGrain
+public partial interface IRoomWired
 {
     public Task<WiredRoomLogsComposer> GetWiredRoomLogsPageAsync(
         int page,

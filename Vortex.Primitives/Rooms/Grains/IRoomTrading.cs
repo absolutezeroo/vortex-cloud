@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Primitives.Players;
 
 namespace Vortex.Primitives.Rooms.Grains;
 
-public partial interface IRoomGrain
+/// <summary>The room-scoped trade session state machine between two present players.</summary>
+[Alias("Vortex.Primitives.Rooms.Grains.IRoomTrading")]
+public interface IRoomTrading : IGrainWithIntegerKey
 {
     /// <summary>Opens a trade between <paramref name="requesterId"/> and the avatar identified by
     /// <paramref name="otherRoomObjectId"/> (a room-object id, as the client sends it). Gated on the

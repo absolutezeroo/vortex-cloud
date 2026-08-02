@@ -1,13 +1,17 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
 
 namespace Vortex.Primitives.Rooms.Grains;
 
-public partial interface IRoomGrain
+/// <summary>Who may do what in the room: effective controller level and the guild-derived rights
+/// that feed it.</summary>
+[Alias("Vortex.Primitives.Rooms.Grains.IRoomSecurity")]
+public interface IRoomSecurity : IGrainWithIntegerKey
 {
     /// <summary>
     /// Resolves <paramref name="ctx"/>'s effective rights in this room (owner/explicit

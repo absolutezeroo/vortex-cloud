@@ -5,7 +5,7 @@ using Vortex.Primitives.Rooms.Snapshots.Wired.Variables;
 
 namespace Vortex.Primitives.Rooms.Grains;
 
-public partial interface IRoomGrain
+public partial interface IRoomWired
 {
     public Task<(
         WiredVariableSnapshot Variable,

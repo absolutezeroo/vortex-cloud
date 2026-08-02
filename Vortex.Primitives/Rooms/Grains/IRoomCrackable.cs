@@ -1,11 +1,14 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Rooms.Object;
 
 namespace Vortex.Primitives.Rooms.Grains;
 
-public partial interface IRoomGrain
+/// <summary>Crackable furniture placed in the room.</summary>
+[Alias("Vortex.Primitives.Rooms.Grains.IRoomCrackable")]
+public interface IRoomCrackable : IGrainWithIntegerKey
 {
     /// <summary>
     /// Lands one hit on a crackable furniture. Below its target this only advances the counters the

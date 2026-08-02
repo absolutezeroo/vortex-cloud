@@ -1,11 +1,14 @@
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Primitives.Players;
 
 namespace Vortex.Primitives.Rooms.Grains;
 
-public partial interface IRoomGrain
+/// <summary>Pending doorbell rings against a locked door, and who is entitled to answer them.</summary>
+[Alias("Vortex.Primitives.Rooms.Grains.IRoomDoorbell")]
+public interface IRoomDoorbell : IGrainWithIntegerKey
 {
     /// <summary>Registers a ring against a locked door and notifies the ringer plus every
     /// present owner/rights-holder. Returns false if the player is already ringing (no-op).</summary>

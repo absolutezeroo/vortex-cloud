@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Object;
@@ -9,7 +10,11 @@ using Vortex.Primitives.Rooms.Snapshots.Furniture;
 
 namespace Vortex.Primitives.Rooms.Grains;
 
-public partial interface IRoomGrain
+/// <summary>Furniture placed in the room. Split across this file and the
+/// <c>IRoomFurni.Floor</c>/<c>.Wall</c>/<c>.Edit</c> parts, which keep the same
+/// per-family layout the implementation uses.</summary>
+[Alias("Vortex.Primitives.Rooms.Grains.IRoomFurni")]
+public partial interface IRoomFurni : IGrainWithIntegerKey
 {
     public Task<bool> AddItemAsync(IRoomItem item, CancellationToken ct);
     public Task<bool> RemoveItemByIdAsync(

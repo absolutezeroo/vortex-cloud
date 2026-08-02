@@ -14,7 +14,7 @@ using Vortex.Primitives.Rooms.Wired.Variable;
 
 namespace Vortex.Primitives.Rooms.Grains;
 
-public partial interface IRoomGrain
+public partial interface IRoomFurni
 {
     public Task<bool> PlaceFloorItemAsync(
         ActionContext ctx,

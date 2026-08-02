@@ -7,7 +7,7 @@ using Vortex.Primitives.Players;
 
 namespace Vortex.Primitives.Rooms.Grains;
 
-public partial interface IRoomGrain
+public partial interface IRoomFurni
 {
     /// <summary>
     /// Applies a staff furni-editor edit to one placed item and broadcasts the result to the room.

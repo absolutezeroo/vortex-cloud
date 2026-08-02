@@ -1,32 +1,33 @@
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Threading;
-using System.Threading.Tasks;
 using Orleans;
-using Orleans.Concurrency;
-using Vortex.Primitives.Networking;
-using Vortex.Primitives.Orleans.Snapshots.Room;
-using Vortex.Primitives.Rooms.Events;
 
 namespace Vortex.Primitives.Rooms.Grains;
 
-public partial interface IRoomGrain : IGrainWithIntegerKey
-{
-    public Task DeactivateRoomAsync();
-    public Task DelayRoomDeactivationAsync();
-    public Task EnsureRoomActiveAsync(CancellationToken ct);
-
-    // Pure reads: they never mutate _state, so letting them interleave with the room tick (and each
-    // other) keeps them off the queue behind a 50ms tick instead of serializing on it.
-    [AlwaysInterleave]
-    public Task<RoomSnapshot> GetSnapshotAsync();
-
-    [AlwaysInterleave]
-    public Task<RoomSummarySnapshot> GetSummaryAsync();
-    public Task<int> GetRoomPopulationAsync();
-
-    [AlwaysInterleave]
-    public Task<ImmutableArray<KeyValuePair<string, string>>> GetRoomPropertiesAsync();
-    public Task PublishRoomEventAsync(RoomEvent evt, CancellationToken ct);
-    public Task SendComposerToRoomAsync(IComposer composer);
-}
+/// <summary>
+/// The full room-grain surface, as the aggregate of every room facet.
+/// <para>
+/// Each facet (<see cref="IRoomCore"/>, <see cref="IRoomAvatars"/>, ...) is a grain interface in its
+/// own right and is implemented by the same <c>RoomGrain</c> class, so Orleans resolves every one of
+/// them to the same activation for a given room id. Requesting a facet is therefore free: it is the
+/// same grain, reached through a narrower contract.
+/// </para>
+/// <para>
+/// Prefer depending on the narrowest facet a call site actually needs. This aggregate exists so that
+/// existing callers keep compiling unchanged and so that <c>GetRoomGrain</c> can keep handing out one
+/// reference that can do everything.
+/// </para>
+/// </summary>
+[Alias("Vortex.Primitives.Rooms.Grains.IRoomGrain")]
+public interface IRoomGrain
+    : IRoomCore,
+        IRoomAvatars,
+        IRoomMap,
+        IRoomFurni,
+        IRoomPets,
+        IRoomSecurity,
+        IRoomSettings,
+        IRoomModeration,
+        IRoomTrading,
+        IRoomMysteryBox,
+        IRoomDoorbell,
+        IRoomCrackable,
+        IRoomWired { }
