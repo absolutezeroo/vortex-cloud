@@ -11,6 +11,7 @@ using Vortex.Players.Configuration;
 using Vortex.Players.Grains.Modules;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Networking;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans.Observers;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Rooms.Snapshots;
@@ -25,6 +26,7 @@ internal sealed partial class PlayerPresenceGrain
     internal readonly IEventPublisher _events;
     internal readonly IGrainFactory _grainFactory;
     private readonly ILogger<PlayerPresenceGrain> _logger;
+    internal readonly IVortexMetrics _metrics;
     internal readonly PlayerPresenceConfig _config;
 
     private readonly PlayerInventoryModule _inventoryModule;
@@ -41,12 +43,14 @@ internal sealed partial class PlayerPresenceGrain
         IGrainFactory grainFactory,
         IEventPublisher events,
         ILogger<PlayerPresenceGrain> logger,
+        IVortexMetrics metrics,
         IOptions<PlayerPresenceConfig> config
     )
     {
         _grainFactory = grainFactory;
         _events = events;
         _logger = logger;
+        _metrics = metrics;
         _config = config.Value;
 
         _state = new PlayerPresenceLiveState();

@@ -47,6 +47,11 @@ public sealed class ObservabilityModule : IHostPluginModule
         services.TryAddSingleton<IVortexMetrics, VortexMetrics>();
         services.TryAddSingleton<ClubMetrics>();
         services.AddHostedService<ClubMetricsRefreshService>();
+
+        // Hosted only so the container instantiates it — its gauges observe the session gateway on
+        // scrape and it has no work of its own to start.
+        services.AddHostedService<ConnectionMetrics>();
+
         services.TryAddSingleton<ClientPerformanceMetrics>();
         services.TryAddSingleton<IPerformanceLogSink>(sp =>
             sp.GetRequiredService<ClientPerformanceMetrics>()

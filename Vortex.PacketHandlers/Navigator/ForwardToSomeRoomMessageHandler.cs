@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Messages.Incoming.Navigator;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
+using Vortex.Primitives.Rooms.Grains;
 
 namespace Vortex.PacketHandlers.Navigator;
 
@@ -15,7 +17,7 @@ namespace Vortex.PacketHandlers.Navigator;
 /// is a generic "put me somewhere" link, so every ForwardData value falls back to a random currently
 /// populated room -- no attempt is made to special-case individual ForwardData strings without a
 /// verified client reference.</summary>
-public class ForwardToSomeRoomMessageHandler(IGrainFactory grainFactory)
+public class ForwardToSomeRoomMessageHandler(IGrainFactory grainFactory, IVortexMetrics metrics)
     : IMessageHandler<ForwardToSomeRoomMessage>
 {
     public async ValueTask HandleAsync(
@@ -29,10 +31,15 @@ public class ForwardToSomeRoomMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        ImmutableArray<RoomSummarySnapshot> activeRooms = await grainFactory
-            .GetRoomDirectoryGrain()
-            .GetActiveRoomsAsync()
-            .ConfigureAwait(false);
+        ImmutableArray<RoomSummarySnapshot> activeRooms;
+
+        using (metrics.MeasureRoomDirectoryCall(nameof(IRoomDirectoryGrain.GetActiveRoomsAsync)))
+        {
+            activeRooms = await grainFactory
+                .GetRoomDirectoryGrain()
+                .GetActiveRoomsAsync()
+                .ConfigureAwait(false);
+        }
 
         if (activeRooms.IsEmpty)
         {

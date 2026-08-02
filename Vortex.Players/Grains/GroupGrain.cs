@@ -17,6 +17,7 @@ using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Groups.Grains;
 using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Messages.Outgoing.Users;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Players;
@@ -29,7 +30,8 @@ namespace Vortex.Players.Grains;
 internal sealed class GroupGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IEventPublisher events,
-    ILogger<GroupGrain> logger
+    ILogger<GroupGrain> logger,
+    IVortexMetrics metrics
 ) : Grain, IGroupGrain
 {
     // RoleType values mirror the client member enum.
@@ -1059,10 +1061,17 @@ internal sealed class GroupGrain(
     {
         try
         {
-            ImmutableArray<RoomSummarySnapshot> activeRooms = await this
-                .GrainFactory.GetRoomDirectoryGrain()
-                .GetActiveRoomsAsync()
-                .ConfigureAwait(true);
+            ImmutableArray<RoomSummarySnapshot> activeRooms;
+
+            using (
+                metrics.MeasureRoomDirectoryCall(nameof(IRoomDirectoryGrain.GetActiveRoomsAsync))
+            )
+            {
+                activeRooms = await this
+                    .GrainFactory.GetRoomDirectoryGrain()
+                    .GetActiveRoomsAsync()
+                    .ConfigureAwait(true);
+            }
 
             if (!activeRooms.Any(r => r.RoomId.Value == roomId))
             {

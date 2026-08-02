@@ -10,6 +10,7 @@ using Vortex.Database.Context;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.MysteryBox;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Pets.Providers;
 using Vortex.Primitives.Players;
@@ -187,6 +188,9 @@ public sealed class RoomGrainMysteryBoxAbandonTests
                 BuildGrainFactory(),
                 FakeProxy.Create<IEventPublisher>(_ => null),
                 FakeProxy.Create<IPermissionService>(_ => null),
+                // Reports Enabled = false (the proxy's default for a bool), so the grain's timing is
+                // switched off here rather than measured against a stub.
+                FakeProxy.Create<IVortexMetrics>(_ => null),
                 FakeProxy.Create<IRoomModerationStore>(_ => null),
                 FakeProxy.Create<IPetLevelProvider>(_ => null),
                 FakeProxy.Create<IPetCommandProvider>(_ => null),

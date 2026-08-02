@@ -27,6 +27,7 @@ internal static class WebApiAppConfigurator
         AddRateLimiting(services, config);
         AddHttpsRedirection(services, config);
         AddSwagger(services);
+        MetricsScrapingEndpoint.ConfigureServices(services, config);
     }
 
     public static void ConfigurePipeline(WebApplication app, WebApiConfig config)
@@ -59,6 +60,10 @@ internal static class WebApiAppConfigurator
 
         app.UseCors(CorsPolicyName);
         app.UseRateLimiter();
+
+        // After the shared hardening above (security headers, HTTPS redirection, CORS) so a scrape is
+        // treated exactly like every other request on this listener, plus its own guard.
+        MetricsScrapingEndpoint.ConfigurePipeline(app, config);
     }
 
     private static void AddCors(IServiceCollection services, WebApiConfig config)

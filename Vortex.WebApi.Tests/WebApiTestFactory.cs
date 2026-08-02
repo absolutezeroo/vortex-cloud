@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -30,7 +31,16 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
 
     private readonly WebApplication _app;
 
-    public WebApiTestFactory()
+    /// <param name="configure">
+    /// Mutates the config before the app is built, for tests that need a non-default listener
+    /// feature (the metrics scraping endpoint, for one) switched on.
+    /// </param>
+    /// <param name="remoteIp">
+    /// Source address stamped on every request. <see cref="TestServer"/> leaves
+    /// <c>Connection.RemoteIpAddress</c> null, which no real Kestrel request ever is, and endpoints
+    /// that gate on loopback need it to be something.
+    /// </param>
+    public WebApiTestFactory(Action<WebApiConfig>? configure = null, IPAddress? remoteIp = null)
     {
         WebApiConfig config = new WebApiConfig
         {
@@ -43,6 +53,8 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
             WindowSeconds = 60,
             QueueLimit = 0,
         };
+
+        configure?.Invoke(config);
 
         Sessions = new WebApiSessionStore();
 
@@ -66,6 +78,16 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
         WebApiAppConfigurator.ConfigureServices(builder.Services, config);
 
         _app = builder.Build();
+
+        IPAddress caller = remoteIp ?? IPAddress.Loopback;
+        _app.Use(
+            async (ctx, next) =>
+            {
+                ctx.Connection.RemoteIpAddress = caller;
+
+                await next().ConfigureAwait(false);
+            }
+        );
 
         WebApiAppConfigurator.ConfigurePipeline(_app, config);
         WebApiEndpoints.Map(_app);

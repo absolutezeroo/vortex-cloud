@@ -68,10 +68,18 @@ internal sealed partial class DashboardApiService
                 .DetectAsync(ct)
                 .ConfigureAwait(false);
             LiveStatsSnapshot live = await _liveStats.GetSnapshotAsync().ConfigureAwait(false);
-            ImmutableArray<RoomSummarySnapshot> activeRooms = await _grainFactory
-                .GetRoomDirectoryGrain()
-                .GetActiveRoomsAsync()
-                .ConfigureAwait(false);
+            ImmutableArray<RoomSummarySnapshot> activeRooms;
+
+            using (
+                _metrics.MeasureRoomDirectoryCall(nameof(IRoomDirectoryGrain.GetActiveRoomsAsync))
+            )
+            {
+                activeRooms = await _grainFactory
+                    .GetRoomDirectoryGrain()
+                    .GetActiveRoomsAsync()
+                    .ConfigureAwait(false);
+            }
+
             DateTime since = DateTime.UtcNow.AddHours(-1);
 
             var byCategory = await db

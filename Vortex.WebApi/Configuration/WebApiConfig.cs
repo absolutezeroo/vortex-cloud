@@ -46,6 +46,27 @@ public sealed class WebApiConfig
     /// <summary>Trusted proxy networks in CIDR form (e.g. <c>10.0.0.0/8</c>).</summary>
     public string[] KnownNetworks { get; set; } = Array.Empty<string>();
 
+    /// <summary>
+    /// Exposes the Prometheus scraping endpoint (Vortex instruments + Orleans' own runtime counters)
+    /// on this listener. Off by default, and deliberately stricter than <c>/health</c> next to it:
+    /// health answers with three booleans, whereas a scrape hands over the whole internal telemetry
+    /// surface — online population, active rooms, per-step room-tick timings, packet volumes — which
+    /// is reconnaissance material. See <see cref="MetricsToken"/> for who may read it.
+    /// </summary>
+    public bool MetricsEnabled { get; set; } = false;
+
+    /// <summary>Path the scraping endpoint is served on.</summary>
+    public string MetricsPath { get; set; } = "/metrics";
+
+    /// <summary>
+    /// Bearer token a scrape must present. When empty the endpoint answers loopback callers only,
+    /// which is the safe default for a scraper running on the same box; set a token to let a remote
+    /// Prometheus in. This is the one place the metrics endpoint is stricter than <c>/health</c>,
+    /// whose listener-level controls (disabled by default, localhost-bound, cleartext off-box
+    /// refused) it otherwise inherits unchanged.
+    /// </summary>
+    public string MetricsToken { get; set; } = string.Empty;
+
     public int MaxAvatarsPerAccount { get; set; } = 5;
 
     public string DefaultFigure { get; set; } =

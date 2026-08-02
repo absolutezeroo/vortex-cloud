@@ -10,12 +10,14 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Messages.Outgoing.Roomsettings;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Orleans.Snapshots.Room.Settings;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Grains;
 
 namespace Vortex.Rooms.Grains;
 
@@ -124,10 +126,15 @@ public sealed partial class RoomGrain
                 LastUpdatedUtc = DateTime.UtcNow,
             };
 
-            await _grainFactory
-                .GetRoomDirectoryGrain()
-                .UpsertActiveRoomAsync(_state.RoomSnapshot)
-                .ConfigureAwait(true);
+            using (
+                _metrics.MeasureRoomDirectoryCall(nameof(IRoomDirectoryGrain.UpsertActiveRoomAsync))
+            )
+            {
+                await _grainFactory
+                    .GetRoomDirectoryGrain()
+                    .UpsertActiveRoomAsync(_state.RoomSnapshot)
+                    .ConfigureAwait(true);
+            }
 
             await _grainFactory
                 .GetPlayerPresenceGrain(actor)
@@ -182,7 +189,12 @@ public sealed partial class RoomGrain
                     .ConfigureAwait(true);
             }
 
-            await _grainFactory.GetRoomDirectoryGrain().RemoveActiveRoomAsync(_state.RoomId);
+            using (
+                _metrics.MeasureRoomDirectoryCall(nameof(IRoomDirectoryGrain.RemoveActiveRoomAsync))
+            )
+            {
+                await _grainFactory.GetRoomDirectoryGrain().RemoveActiveRoomAsync(_state.RoomId);
+            }
 
             await DeactivateRoomAsync().ConfigureAwait(true);
 

@@ -19,6 +19,7 @@ using Vortex.Logging;
 using Vortex.Primitives;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Networking;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Orleans.Snapshots.Room.Settings;
@@ -53,6 +54,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     internal readonly ILogger<IRoomGrain> _logger;
     internal readonly IRoomObjectLogicProvider _logicProvider;
     internal readonly IRoomModerationStore _moderationStore;
+    internal readonly IVortexMetrics _metrics;
     internal readonly IPermissionService _permissionService;
     internal readonly IPetLevelProvider _petLevelProvider;
     internal readonly IPetCommandProvider _petCommandProvider;
@@ -100,6 +102,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         IGrainFactory grainFactory,
         IEventPublisher events,
         IPermissionService permissionService,
+        IVortexMetrics metrics,
         IRoomModerationStore moderationStore,
         IPetLevelProvider petLevelProvider,
         IPetCommandProvider petCommandProvider,
@@ -118,6 +121,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         _grainFactory = grainFactory;
         _events = events;
         _permissionService = permissionService;
+        _metrics = metrics;
         _moderationStore = moderationStore;
         _petLevelProvider = petLevelProvider;
         _petCommandProvider = petCommandProvider;
@@ -199,7 +203,14 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
     public async Task<int> GetRoomPopulationAsync()
     {
-        return await _grainFactory.GetRoomDirectoryGrain().GetRoomPopulationAsync(_state.RoomId);
+        using (
+            _metrics.MeasureRoomDirectoryCall(nameof(IRoomDirectoryGrain.GetRoomPopulationAsync))
+        )
+        {
+            return await _grainFactory
+                .GetRoomDirectoryGrain()
+                .GetRoomPopulationAsync(_state.RoomId);
+        }
     }
 
     public Task<ImmutableArray<KeyValuePair<string, string>>> GetRoomPropertiesAsync() =>
@@ -233,7 +244,10 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         await HydrateRoomStateAsync(ct);
         await HydrateModerationStateAsync(ct);
 
-        await _grainFactory.GetRoomDirectoryGrain().UpsertActiveRoomAsync(_state.RoomSnapshot);
+        using (_metrics.MeasureRoomDirectoryCall(nameof(IRoomDirectoryGrain.UpsertActiveRoomAsync)))
+        {
+            await _grainFactory.GetRoomDirectoryGrain().UpsertActiveRoomAsync(_state.RoomSnapshot);
+        }
 
         IStreamProvider? provider = this.GetStreamProvider(
             OrleansStreamProviders.ROOM_STREAM_PROVIDER
@@ -249,6 +263,11 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         this.RegisterGrainTimer<object?>(
             async (state, ct) =>
             {
+                // Read once: at 20 ticks a second per room, a disabled metrics stack must cost this
+                // boolean and nothing else -- no timestamps taken, no elapsed time computed.
+                bool measured = _metrics.Enabled;
+                long tickStartedAt = measured ? Stopwatch.GetTimestamp() : 0L;
+
                 long now = NowMs();
 
                 // Each step is isolated. Run bare, one throw -- a single malformed wired item, one
@@ -271,6 +290,13 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                 );
                 await RunTickStepAsync("flush-tiles", () => FlushDirtyTilesAsync(ct));
                 await RunTickStepAsync("flush-items", () => FlushDirtyItemsAsync(ct));
+
+                if (measured)
+                {
+                    _metrics.RoomTickCompleted(
+                        Stopwatch.GetElapsedTime(tickStartedAt).TotalMilliseconds
+                    );
+                }
             },
             null,
             TimeSpan.FromMilliseconds(_roomConfig.RoomTickMs),
@@ -285,6 +311,9 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     /// </summary>
     private async Task RunTickStepAsync(string step, Func<Task> stepAsync)
     {
+        bool measured = _metrics.Enabled;
+        long startedAt = measured ? Stopwatch.GetTimestamp() : 0L;
+
         try
         {
             await stepAsync().ConfigureAwait(true);
@@ -293,7 +322,8 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         }
         catch (OperationCanceledException)
         {
-            // The grain is going away; not a step failure.
+            // The grain is going away; not a step failure, and not a duration worth recording -- the
+            // step was cut short rather than finished.
             throw;
         }
         catch (Exception ex)
@@ -316,6 +346,16 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                 );
             }
         }
+
+        // A step that threw is still a step that consumed tick budget, so it is timed like any other;
+        // only the cancellation path above escapes, and it does so by rethrowing.
+        if (measured)
+        {
+            _metrics.RoomTickStepCompleted(
+                step,
+                Stopwatch.GetElapsedTime(startedAt).TotalMilliseconds
+            );
+        }
     }
 
     public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken ct)
@@ -325,7 +365,12 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
             await FlushDirtyItemsAsync(ct);
             await PetSystem.FlushDirtyPetsAsync(ct);
 
-            await _grainFactory.GetRoomDirectoryGrain().RemoveActiveRoomAsync(_state.RoomId);
+            using (
+                _metrics.MeasureRoomDirectoryCall(nameof(IRoomDirectoryGrain.RemoveActiveRoomAsync))
+            )
+            {
+                await _grainFactory.GetRoomDirectoryGrain().RemoveActiveRoomAsync(_state.RoomId);
+            }
         }
         catch (Exception ex)
         {

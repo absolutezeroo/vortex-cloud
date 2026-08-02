@@ -124,6 +124,19 @@ services:
       VORTEX__Vortex__WebApi__AllowInsecureRemoteHttp: "true"
       VORTEX__Vortex__Observability__DashboardAllowInsecureRemoteHttp: "true"
 
+      # --- Prometheus scraping endpoint (DEVELOPMENT ONLY) -------------------------------------
+      # Vortex.WebApi/Hosting/MetricsScrapingEndpoint.cs serves /metrics next to /health. With no
+      # token configured it answers loopback callers only — and inside a container that is not the
+      # same thing as "the developer's machine": a request forwarded through a published port
+      # arrives from the bridge network's gateway (172.x), never from 127.0.0.1. Scraping this
+      # stack from the host therefore requires the token path, which is the endpoint working as
+      # designed rather than an exception to it.
+      #
+      # Development credential, public on purpose — same as everything else in this file. A real
+      # deployment generates its own and hands it to Prometheus' bearer_token_file.
+      VORTEX__Vortex__WebApi__MetricsEnabled: "true"
+      VORTEX__Vortex__WebApi__MetricsToken: "vortex-compose-dev-scrape-token"
+
       # --- Game sockets (SuperSocket) ---------------------------------------------------------
       # Same wildcard-bind requirement as above, but note the missing VORTEX__ prefix: it is not a
       # typo. Vortex.Networking/NetworkManager.cs builds the TCP and WebSocket listeners with

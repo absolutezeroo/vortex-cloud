@@ -10,6 +10,7 @@ using Vortex.Primitives.Events;
 using Vortex.Primitives.Messages.Outgoing.Room.Permissions;
 using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 using Vortex.Primitives.Networking;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Orleans.Snapshots.Room;
@@ -62,9 +63,12 @@ internal sealed partial class PlayerPresenceGrain
         _state.PendingRoomApproved = false;
         _state.ActiveRoomSinceUtc = DateTime.UtcNow;
 
-        await _grainFactory
-            .GetRoomDirectoryGrain()
-            .AddPlayerToRoomAsync((int)this.GetPrimaryKeyLong(), next, ct);
+        using (_metrics.MeasureRoomDirectoryCall(nameof(IRoomDirectoryGrain.AddPlayerToRoomAsync)))
+        {
+            await _grainFactory
+                .GetRoomDirectoryGrain()
+                .AddPlayerToRoomAsync((int)this.GetPrimaryKeyLong(), next, ct);
+        }
 
         IStreamProvider? provider = this.GetStreamProvider(
             OrleansStreamProviders.ROOM_STREAM_PROVIDER
@@ -157,13 +161,18 @@ internal sealed partial class PlayerPresenceGrain
         _state.ActiveRoomId = -1;
         _state.ActiveRoomSinceUtc = leftAt;
 
-        await _grainFactory
-            .GetRoomDirectoryGrain()
-            .RemovePlayerFromRoomAsync(
-                (PlayerId)this.GetPrimaryKeyLong(),
-                prev,
-                CancellationToken.None
-            );
+        using (
+            _metrics.MeasureRoomDirectoryCall(nameof(IRoomDirectoryGrain.RemovePlayerFromRoomAsync))
+        )
+        {
+            await _grainFactory
+                .GetRoomDirectoryGrain()
+                .RemovePlayerFromRoomAsync(
+                    (PlayerId)this.GetPrimaryKeyLong(),
+                    prev,
+                    CancellationToken.None
+                );
+        }
 
         if (_roomOutboundSub is not null)
         {

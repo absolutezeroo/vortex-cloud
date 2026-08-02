@@ -23,7 +23,12 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
     private readonly Histogram<double> _packetDuration;
     private readonly Counter<long> _packetFailed;
     private readonly Counter<long> _packetDropped;
+    private readonly Histogram<double> _roomTickStepDuration;
+    private readonly Histogram<double> _roomTickDuration;
+    private readonly Histogram<double> _roomDirectoryCallDuration;
     private readonly ILiveStatsAggregator _liveStats;
+
+    public bool Enabled => _enabled;
 
     public VortexMetrics(
         IMeterFactory meterFactory,
@@ -54,6 +59,22 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
             "Vortex.packet.dropped",
             unit: "{packet}",
             description: "Outgoing packets that could not be encoded and were never sent."
+        );
+        _roomTickStepDuration = _meter.CreateHistogram<double>(
+            "Vortex.room.tick.step.duration",
+            unit: "ms",
+            description: "Wall time of one step of a room tick, by step name."
+        );
+        _roomTickDuration = _meter.CreateHistogram<double>(
+            "Vortex.room.tick.duration",
+            unit: "ms",
+            description: "Wall time of a whole room tick, all steps included."
+        );
+        _roomDirectoryCallDuration = _meter.CreateHistogram<double>(
+            "Vortex.room.directory.call.duration",
+            unit: "ms",
+            description: "Round-trip time of a call to the room directory grain, by method, "
+                + "measured at the call site."
         );
     }
 
@@ -97,6 +118,36 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
         if (_enabled)
         {
             _packetDropped.Add(1, new KeyValuePair<string, object?>("reason", reason));
+        }
+    }
+
+    public void RoomTickStepCompleted(string step, double elapsedMilliseconds)
+    {
+        if (_enabled)
+        {
+            _roomTickStepDuration.Record(
+                elapsedMilliseconds,
+                new KeyValuePair<string, object?>("step", step)
+            );
+        }
+    }
+
+    public void RoomTickCompleted(double elapsedMilliseconds)
+    {
+        if (_enabled)
+        {
+            _roomTickDuration.Record(elapsedMilliseconds);
+        }
+    }
+
+    public void RoomDirectoryCallCompleted(string method, double elapsedMilliseconds)
+    {
+        if (_enabled)
+        {
+            _roomDirectoryCallDuration.Record(
+                elapsedMilliseconds,
+                new KeyValuePair<string, object?>("method", method)
+            );
         }
     }
 

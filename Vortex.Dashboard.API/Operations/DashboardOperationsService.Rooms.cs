@@ -17,6 +17,7 @@ using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Rooms;
+using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
 
 namespace Vortex.Dashboard.API.Operations;
@@ -25,10 +26,15 @@ internal sealed partial class DashboardOperationsService
 {
     public async Task<ImmutableArray<RoomSummaryDto>> GetActiveRoomsAsync()
     {
-        ImmutableArray<RoomSummarySnapshot> rooms = await _grainFactory
-            .GetRoomDirectoryGrain()
-            .GetActiveRoomsAsync()
-            .ConfigureAwait(false);
+        ImmutableArray<RoomSummarySnapshot> rooms;
+
+        using (_metrics.MeasureRoomDirectoryCall(nameof(IRoomDirectoryGrain.GetActiveRoomsAsync)))
+        {
+            rooms = await _grainFactory
+                .GetRoomDirectoryGrain()
+                .GetActiveRoomsAsync()
+                .ConfigureAwait(false);
+        }
 
         return
         [

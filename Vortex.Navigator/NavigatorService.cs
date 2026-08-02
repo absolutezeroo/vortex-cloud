@@ -7,11 +7,13 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Primitives.Navigator;
 using Vortex.Primitives.Navigator.Enums;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Navigator;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms;
+using Vortex.Primitives.Rooms.Grains;
 
 namespace Vortex.Navigator;
 
@@ -19,13 +21,15 @@ public sealed class NavigatorService(
     ILogger<INavigatorService> logger,
     INavigatorProvider navigatorProvider,
     IRoomService roomService,
-    IGrainFactory grainFactory
+    IGrainFactory grainFactory,
+    IVortexMetrics metrics
 ) : INavigatorService
 {
     private readonly ILogger<INavigatorService> _logger = logger;
     private readonly INavigatorProvider _navigatorProvider = navigatorProvider;
     private readonly IRoomService _roomService = roomService;
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly IVortexMetrics _metrics = metrics;
 
     public async Task<ImmutableArray<NavigatorTopLevelContextSnapshot>> GetTopLevelContextAsync() =>
         await _navigatorProvider.GetTopLevelContextsAsync().ConfigureAwait(false);
@@ -39,10 +43,16 @@ public sealed class NavigatorService(
     {
         ImmutableArray<NavigatorFlatCategorySnapshot> categories =
             _navigatorProvider.GetFlatCategories();
-        ImmutableArray<RoomSummarySnapshot> activeRooms = await _grainFactory
-            .GetRoomDirectoryGrain()
-            .GetActiveRoomsAsync()
-            .ConfigureAwait(false);
+        ImmutableArray<RoomSummarySnapshot> activeRooms;
+
+        using (_metrics.MeasureRoomDirectoryCall(nameof(IRoomDirectoryGrain.GetActiveRoomsAsync)))
+        {
+            activeRooms = await _grainFactory
+                .GetRoomDirectoryGrain()
+                .GetActiveRoomsAsync()
+                .ConfigureAwait(false);
+        }
+
         Dictionary<RoomId, RoomSummarySnapshot> activeById = activeRooms.ToDictionary(x =>
             x.RoomId
         );
@@ -130,10 +140,15 @@ public sealed class NavigatorService(
             )
             .ConfigureAwait(false);
 
-        ImmutableArray<RoomSummarySnapshot> activeRooms = await _grainFactory
-            .GetRoomDirectoryGrain()
-            .GetActiveRoomsAsync()
-            .ConfigureAwait(false);
+        ImmutableArray<RoomSummarySnapshot> activeRooms;
+
+        using (_metrics.MeasureRoomDirectoryCall(nameof(IRoomDirectoryGrain.GetActiveRoomsAsync)))
+        {
+            activeRooms = await _grainFactory
+                .GetRoomDirectoryGrain()
+                .GetActiveRoomsAsync()
+                .ConfigureAwait(false);
+        }
 
         Dictionary<RoomId, RoomSummarySnapshot> activeById = activeRooms.ToDictionary(x =>
             x.RoomId

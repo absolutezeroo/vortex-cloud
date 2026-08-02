@@ -14,6 +14,8 @@ namespace Vortex.WebApi.Configuration;
 public sealed class WebApiConfigValidator(IHostEnvironment environment)
     : IValidateOptions<WebApiConfig>
 {
+    private const int MinimumMetricsTokenLength = 24;
+
     public ValidateOptionsResult Validate(string? name, WebApiConfig options)
     {
         // A disabled API opens no socket, so none of this can bite.
@@ -81,6 +83,29 @@ public sealed class WebApiConfigValidator(IHostEnvironment environment)
                     + $"X-Forwarded-Proto. Populate "
                     + $"'{WebApiConfig.SECTION_NAME}:{nameof(WebApiConfig.KnownProxies)}' or "
                     + $"'{WebApiConfig.SECTION_NAME}:{nameof(WebApiConfig.KnownNetworks)}'."
+            );
+        }
+
+        if (options.MetricsEnabled && !options.MetricsPath.StartsWith('/'))
+        {
+            failures.Add(
+                $"'{WebApiConfig.SECTION_NAME}:{nameof(WebApiConfig.MetricsPath)}' must be an "
+                    + $"absolute path starting with '/' (got '{options.MetricsPath}')."
+            );
+        }
+
+        // A short token is worse than no token: it reads as protection while staying guessable,
+        // whereas an empty one at least restricts the endpoint to loopback.
+        if (
+            options.MetricsEnabled
+            && options.MetricsToken.Length > 0
+            && options.MetricsToken.Length < MinimumMetricsTokenLength
+        )
+        {
+            failures.Add(
+                $"'{WebApiConfig.SECTION_NAME}:{nameof(WebApiConfig.MetricsToken)}' must be at least "
+                    + $"{MinimumMetricsTokenLength} characters, or empty to restrict the metrics "
+                    + "endpoint to loopback callers."
             );
         }
 

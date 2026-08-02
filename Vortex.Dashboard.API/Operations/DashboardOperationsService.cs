@@ -44,6 +44,7 @@ internal sealed partial class DashboardOperationsService(
     IFurnitureAdminService furnitureAdmin,
     IAuditSink auditSink,
     IVortexContextAccessor context,
+    IVortexMetrics metrics,
     ILogger<DashboardOperationsService> logger
 )
 {
@@ -67,6 +68,7 @@ internal sealed partial class DashboardOperationsService(
     private readonly IFurnitureAdminService _furnitureAdmin = furnitureAdmin;
     private readonly IAuditSink _auditSink = auditSink;
     private readonly IVortexContextAccessor _context = context;
+    private readonly IVortexMetrics _metrics = metrics;
     private readonly ILogger<DashboardOperationsService> _logger = logger;
     private readonly SemaphoreSlim _staffActorLock = new(1, 1);
     private PlayerId? _staffActorPlayerId;

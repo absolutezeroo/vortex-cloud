@@ -38,6 +38,7 @@ internal sealed partial class DashboardApiService(
     ClubMetrics clubMetrics,
     ClientPerformanceMetrics clientPerformanceMetrics,
     DashboardAssetUrls assetUrls,
+    IVortexMetrics metrics,
     IOptions<ObservabilityConfig> options
 )
 {
@@ -50,6 +51,7 @@ internal sealed partial class DashboardApiService(
     private readonly IInfrastructureHealthService _infrastructureHealth = infrastructureHealth;
     private readonly ClubMetrics _clubMetrics = clubMetrics;
     private readonly ClientPerformanceMetrics _clientPerformanceMetrics = clientPerformanceMetrics;
+    private readonly IVortexMetrics _metrics = metrics;
     private readonly ObservabilityConfig _config = options.Value;
 
     private static readonly TimeSpan TotalsCacheTtl = TimeSpan.FromSeconds(30);

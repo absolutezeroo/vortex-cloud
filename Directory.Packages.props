@@ -49,6 +49,18 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="5.6.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="5.6.0" />
     <PackageVersion Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
+    <!-- OBS-03: metrics scraping. The Vortex meter and Orleans' own "Microsoft.Orleans" meter are
+         plain System.Diagnostics.Metrics instruments; OpenTelemetry only subscribes to them and
+         renders the Prometheus text format on the web API listener. The Prometheus exporter has no
+         stable release upstream (the OpenTelemetry spec section it implements is still
+         experimental), so a -beta version is the newest there is, not a choice to run pre-release
+         code where a stable one exists. -->
+    <PackageVersion Include="OpenTelemetry" Version="1.17.0" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.17.0" />
+    <PackageVersion
+      Include="OpenTelemetry.Exporter.Prometheus.AspNetCore"
+      Version="1.17.0-beta.1"
+    />
     <PackageVersion Include="SuperSocket.Server" Version="2.1.0" />
     <PackageVersion Include="SuperSocket.Server.Abstractions" Version="2.1.0" />
     <PackageVersion Include="SuperSocket.ProtoBase" Version="2.1.0" />
