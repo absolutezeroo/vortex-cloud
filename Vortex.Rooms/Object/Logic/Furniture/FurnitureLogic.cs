@@ -24,7 +24,19 @@ public abstract class FurnitureLogic<TObject, TSelf, TContext>
     protected readonly IStuffDataFactory _stuffDataFactory;
 
     protected virtual StuffPersistanceType _stuffPersistanceType => StuffPersistanceType.Persistent;
-    protected virtual StuffDataType _stuffDataType => StuffDataType.LegacyKey;
+
+    /// <summary>
+    /// The stuff data format this furniture stores its state in, from its definition.
+    /// <para>
+    /// This used to be a hardcoded <see cref="StuffDataType.LegacyKey"/> that nothing ever
+    /// overrode, so a definition's <c>stuff_data_type</c> decided the format everywhere except in
+    /// the room: the inventory built a crackable's data from the column while the room handed the
+    /// same furniture a legacy bag, and the crackable logic then found no counters to write to.
+    /// Note how close this reads to <see cref="_stuffPersistanceType"/> above -- overriding that one
+    /// and believing the format had been set with it is exactly how the two came apart.
+    /// </para>
+    /// </summary>
+    protected virtual StuffDataType _stuffDataType => _ctx.Definition.StuffDataType;
 
     public IStuffData StuffData { get; private set; }
 
