@@ -33,7 +33,7 @@ public class WiredSelectorEntitiesByName(
             .Select(n => n.Trim().ToLower())
             .ToHashSet();
 
-        foreach (IRoomAvatar avatar in _roomGrain._state.AvatarsByObjectId.Values)
+        foreach (IRoomAvatar avatar in _ctx.Lookup.Avatars)
         {
             if (avatar is not IRoomPlayer roomPlayer || !names.Contains(roomPlayer.Name.ToLower()))
             {

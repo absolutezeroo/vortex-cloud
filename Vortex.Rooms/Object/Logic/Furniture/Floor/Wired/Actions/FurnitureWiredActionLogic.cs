@@ -39,7 +39,7 @@ public abstract class FurnitureWiredActionLogic(
         }
         catch (Exception ex)
         {
-            _roomGrain._logger.LogWarning(
+            _logger.LogWarning(
                 ex,
                 "Malformed action delay param for wired item {ItemId}; keeping current default.",
                 _ctx.ObjectId

@@ -40,7 +40,7 @@ public class WiredSelectorSelectedItems(
         {
             try
             {
-                if (!_roomGrain._state.ItemsById.TryGetValue(id, out IRoomItem? item))
+                if (!_ctx.Lookup.TryFindItem(id, out IRoomItem? item))
                 {
                     continue;
                 }

@@ -46,7 +46,7 @@ public class WiredAddonAnimationTime(
         }
         catch (Exception ex)
         {
-            _roomGrain._logger.LogWarning(
+            _logger.LogWarning(
                 ex,
                 "Malformed animation-time param for wired item {ItemId}; keeping current default.",
                 _ctx.ObjectId

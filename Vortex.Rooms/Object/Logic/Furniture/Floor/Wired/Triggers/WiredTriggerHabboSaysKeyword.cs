@@ -42,7 +42,7 @@ public class WiredTriggerHabboSaysKeyword(
 
         bool onlyOwner = _wiredData.IntParams.Count > 0 && _wiredData.GetIntParam<bool>(0);
 
-        if (onlyOwner && evt.PlayerId != _roomGrain._state.RoomSnapshot.OwnerId)
+        if (onlyOwner && evt.PlayerId != _ctx.OwnerId)
         {
             return Task.FromResult(false);
         }

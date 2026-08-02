@@ -50,7 +50,7 @@ public class WiredSelectorItemsWithVariable(
             new WiredVariableAllInRoomSnapshot()
             {
                 ContextType = WiredContextType.AllVariablesInRoom,
-                AllVariablesHash = _roomGrain._state.AllVariablesHash,
+                AllVariablesHash = _ctx.Furni.AllVariablesHash,
             },
         ];
 
@@ -69,7 +69,7 @@ public class WiredSelectorItemsWithVariable(
                 return output;
 
             var variableId = WiredVariableId.Parse(_wiredData.VariableIds[0]);
-            var variable = _roomGrain.WiredSystem.GetVariableById(variableId);
+            var variable = _ctx.Furni.GetVariableById(variableId);
 
             if(variable)
             {
@@ -79,7 +79,7 @@ public class WiredSelectorItemsWithVariable(
                 {
                     case 2:
                         {
-                            var refVariable = _roomGrain.WiredSystem.GetVariableById(WiredVariableId.Parse(_wiredData.VariableIds[1]));
+                            var refVariable = _ctx.Furni.GetVariableById(WiredVariableId.Parse(_wiredData.VariableIds[1]));
                         }
                     break;
                     case 1:
@@ -87,7 +87,7 @@ public class WiredSelectorItemsWithVariable(
 
                 if(_wiredData.GetIntParam<int>(1) == 2)
                 {
-                    var refVariable = _roomGrain.WiredSystem.GetVariableById(WiredVariableId.Parse(_wiredData.VariableIds[1]));
+                    var refVariable = _ctx.Furni.GetVariableById(WiredVariableId.Parse(_wiredData.VariableIds[1]));
 
                     if(refVariable is not null)
                     {
@@ -132,8 +132,8 @@ public class WiredSelectorItemsWithVariable(
         {
             try
             {
-                _roomGrain.WiredSystem.GetVariableById()
-                if (!_roomGrain._state.ItemsById.TryGetValue(id, out var item))
+                _ctx.Furni.GetVariableById()
+                if (!_ctx.Lookup.TryFindItem(id, out var item))
                     continue;
 
                 allowedDefinitionIds.Add(item.Definition.Id);
@@ -144,7 +144,7 @@ public class WiredSelectorItemsWithVariable(
             }
         }
 
-        foreach (var item in _roomGrain._state.ItemsById.Values)
+        foreach (var item in _ctx.Lookup.Items)
         {
             if (allowedDefinitionIds.Contains(item.Definition.Id))
                 output.SelectedFurniIds.Add((int)item.ObjectId);

@@ -50,13 +50,7 @@ public class WiredActionGiveScoreToTeam(
 
         if (points != 0 && team != GameTeamColor.None)
         {
-            await _roomGrain.GameSystem.TryGiveScoreToTeamAsync(
-                _ctx.ObjectId,
-                team,
-                points,
-                cap,
-                ct
-            );
+            await _ctx.Game.TryGiveScoreToTeamAsync(_ctx.ObjectId, team, points, cap, ct);
         }
 
         return true;

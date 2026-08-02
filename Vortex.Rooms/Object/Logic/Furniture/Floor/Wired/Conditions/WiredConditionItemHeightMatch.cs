@@ -43,7 +43,7 @@ public class WiredConditionItemHeightMatch(
         foreach (int furniId in GetStuffIds())
         {
             if (
-                !_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+                !_ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
                 || item is not IRoomFloorItem floor
             )
             {

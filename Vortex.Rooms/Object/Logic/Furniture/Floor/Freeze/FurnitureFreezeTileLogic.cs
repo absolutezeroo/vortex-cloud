@@ -26,10 +26,5 @@ public sealed class FurnitureFreezeTileLogic(
     public override bool CanWalk() => true;
 
     public override Task OnUseAsync(ActionContext ctx, int param, CancellationToken ct) =>
-        _roomGrain.FreezeSystem.ThrowBallAsync(
-            ctx.PlayerId,
-            _ctx.RoomObject.X,
-            _ctx.RoomObject.Y,
-            ct
-        );
+        _ctx.Freeze.ThrowBallAsync(ctx.PlayerId, _ctx.RoomObject.X, _ctx.RoomObject.Y, ct);
 }

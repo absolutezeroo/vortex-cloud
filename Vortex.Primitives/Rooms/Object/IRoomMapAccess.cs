@@ -41,6 +41,9 @@ public interface IRoomMapAccess
         bool isDiagonalCheck = false
     );
 
+    /// <summary>Flags on a tile. <see cref="RoomTileFlags.None"/> when out of range.</summary>
+    RoomTileFlags TileFlagsAt(int tileIndex);
+
     /// <summary>Floor items stacked on a tile. Empty when the index is out of range.</summary>
     IReadOnlySet<RoomObjectId> FloorStackAt(int tileIndex);
 

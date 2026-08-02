@@ -57,7 +57,7 @@ public abstract class FurnitureWiredConditionLogic(
         }
         catch (Exception ex)
         {
-            _roomGrain._logger.LogWarning(
+            _logger.LogWarning(
                 ex,
                 "Malformed condition params for wired item {ItemId}; keeping current defaults.",
                 _ctx.ObjectId

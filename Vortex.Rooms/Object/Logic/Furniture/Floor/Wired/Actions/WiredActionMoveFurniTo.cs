@@ -43,7 +43,7 @@ public class WiredActionMoveFurniTo(
         int direction = _wiredData.IntParams.Count > 0 ? _wiredData.GetIntParam<int>(0) : 0;
         int tiles = _wiredData.IntParams.Count > 1 ? _wiredData.GetIntParam<int>(1) : 1;
 
-        (int dx, int dy) = _roomGrain.MapModule.GetDirectionOffset((Rotation)direction);
+        (int dx, int dy) = _ctx.Map.GetDirectionOffset((Rotation)direction);
 
         if ((dx == 0 && dy == 0) || tiles <= 0)
         {
@@ -55,7 +55,7 @@ public class WiredActionMoveFurniTo(
         foreach (int furniId in selection.SelectedFurniIds)
         {
             if (
-                !_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+                !_ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
                 || item is not IRoomFloorItem floorItem
             )
             {
@@ -66,7 +66,7 @@ public class WiredActionMoveFurniTo(
             int targetY = floorItem.Y + (dy * tiles);
 
             if (
-                await _roomGrain.FurniModule.ValidateFloorItemPlacementAsync(
+                await _ctx.Furni.ValidateFloorItemPlacementAsync(
                     ActionContext.Wired,
                     floorItem.ObjectId,
                     targetX,
@@ -77,7 +77,7 @@ public class WiredActionMoveFurniTo(
             {
                 await ctx.ProcessFloorItemMovementAsync(
                     floorItem,
-                    _roomGrain.MapModule.ToIdx(targetX, targetY),
+                    _ctx.Map.ToIdx(targetX, targetY),
                     null,
                     floorItem.Rotation
                 );

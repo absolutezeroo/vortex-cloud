@@ -3,7 +3,7 @@ using Vortex.Primitives.Rooms.Object;
 
 namespace Vortex.Rooms.Configuration;
 
-public class RoomConfig
+public class RoomConfig : IWiredLimits
 {
     public const string SECTION_NAME = "Vortex:Rooms";
 

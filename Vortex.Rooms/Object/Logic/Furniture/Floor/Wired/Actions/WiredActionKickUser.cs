@@ -7,6 +7,7 @@ using Vortex.Primitives.Messages.Outgoing.Room.Chat;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object;
+using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
 using Vortex.Primitives.Rooms.Wired;
@@ -49,10 +50,7 @@ public class WiredActionKickUser(
             // which is a bare stub today.)
             if (
                 !string.IsNullOrWhiteSpace(message)
-                && _roomGrain._state.AvatarsByPlayerId.TryGetValue(
-                    playerId,
-                    out RoomObjectId objectId
-                )
+                && _ctx.Lookup.TryFindAvatarByPlayer(playerId, out IRoomAvatar? avatar)
             )
             {
                 await _grainFactory
@@ -60,7 +58,7 @@ public class WiredActionKickUser(
                     .SendComposerAsync(
                         new WhisperMessageComposer
                         {
-                            ObjectId = objectId,
+                            ObjectId = avatar.ObjectId,
                             Text = message,
                             Gesture = default,
                             StyleId = 0,
@@ -70,7 +68,7 @@ public class WiredActionKickUser(
                     );
             }
 
-            await _roomGrain.KickUserFromWiredAsync(playerId, ct);
+            await _ctx.Furni.KickUserFromWiredAsync(playerId, ct);
         }
 
         return true;

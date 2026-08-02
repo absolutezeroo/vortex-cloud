@@ -7,6 +7,7 @@ using Vortex.Primitives.Messages.Outgoing.Room.Chat;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object;
+using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
 using Vortex.Primitives.Rooms.Wired;
@@ -67,12 +68,7 @@ public class WiredActionShowMessage(
         {
             try
             {
-                if (
-                    !_roomGrain._state.AvatarsByPlayerId.TryGetValue(
-                        playerId,
-                        out RoomObjectId objectId
-                    )
-                )
+                if (!_ctx.Lookup.TryFindAvatarByPlayer(playerId, out IRoomAvatar? avatar))
                 {
                     continue;
                 }
@@ -82,7 +78,7 @@ public class WiredActionShowMessage(
                     await ctx.SendComposerToRoomAsync(
                         new ChatMessageComposer
                         {
-                            ObjectId = objectId,
+                            ObjectId = avatar.ObjectId,
                             Text = text,
                             Gesture = default,
                             StyleId = styleId,
@@ -98,7 +94,7 @@ public class WiredActionShowMessage(
                         .SendComposerAsync(
                             new WhisperMessageComposer
                             {
-                                ObjectId = objectId,
+                                ObjectId = avatar.ObjectId,
                                 Text = text,
                                 Gesture = default,
                                 StyleId = styleId,

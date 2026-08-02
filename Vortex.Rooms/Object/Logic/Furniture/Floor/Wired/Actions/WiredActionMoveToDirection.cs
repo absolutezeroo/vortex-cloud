@@ -72,7 +72,7 @@ public class WiredActionMoveToDirection(
         foreach (int furniId in selection.SelectedFurniIds)
         {
             if (
-                !_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+                !_ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
                 || item is not IRoomFloorItem floorItem
             )
             {
@@ -114,24 +114,22 @@ public class WiredActionMoveToDirection(
         bool blockOnCollide
     )
     {
-        int currentIdx = _roomGrain.MapModule.ToIdx(floorItem.X, floorItem.Y);
+        int currentIdx = _ctx.Map.ToIdx(floorItem.X, floorItem.Y);
 
-        if (!_roomGrain.MapModule.TryGetTileInFront(currentIdx, direction, out int nextIdx))
+        if (!_ctx.Map.TryGetTileInFront(currentIdx, direction, out int nextIdx))
         {
             return false;
         }
 
-        if (
-            blockOnCollide && _roomGrain._state.TileFlags[nextIdx].Has(RoomTileFlags.AvatarOccupied)
-        )
+        if (blockOnCollide && _ctx.Map.TileFlagsAt(nextIdx).Has(RoomTileFlags.AvatarOccupied))
         {
             return false;
         }
 
-        (int nextX, int nextY) = _roomGrain.MapModule.GetTileXY(nextIdx);
+        (int nextX, int nextY) = _ctx.Map.GetTileXY(nextIdx);
 
         if (
-            !await _roomGrain.FurniModule.ValidateFloorItemPlacementAsync(
+            !await _ctx.Furni.ValidateFloorItemPlacementAsync(
                 ActionContext.Wired,
                 floorItem.ObjectId,
                 nextX,

@@ -48,7 +48,7 @@ public class WiredSelectorEntitiesByType(
                 ? _wiredData.GetIntParam<int>(0)
                 : (int)RoomObjectType.Player;
 
-        foreach (IRoomAvatar avatar in _roomGrain._state.AvatarsByObjectId.Values)
+        foreach (IRoomAvatar avatar in _ctx.Lookup.Avatars)
         {
             if ((int)avatar.AvatarType != requiredType || avatar is not IRoomPlayer player)
             {

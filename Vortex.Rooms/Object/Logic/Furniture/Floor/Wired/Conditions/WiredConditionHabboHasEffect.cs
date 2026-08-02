@@ -34,11 +34,7 @@ public class WiredConditionHabboHasEffect(
         int effectId = _wiredData.IntParams.Count > 0 ? _wiredData.GetIntParam<int>(0) : 0;
         bool result = false;
 
-        if (
-            triggerer > 0
-            && _roomGrain._state.AvatarsByPlayerId.TryGetValue(triggerer, out RoomObjectId objectId)
-            && _roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar)
-        )
+        if (triggerer > 0 && _ctx.Lookup.TryFindAvatarByPlayer(triggerer, out IRoomAvatar? avatar))
         {
             result = avatar.CurrentEffectId == effectId;
         }

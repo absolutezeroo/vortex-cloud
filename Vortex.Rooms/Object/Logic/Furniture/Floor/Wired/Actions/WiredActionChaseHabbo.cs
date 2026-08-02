@@ -45,7 +45,7 @@ public class WiredActionChaseHabbo(
             try
             {
                 if (
-                    !_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+                    !_ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
                     || item is not IRoomFloorItem floorItem
                 )
                 {
@@ -56,17 +56,17 @@ public class WiredActionChaseHabbo(
                 int bestTileIdx = -1;
                 int bestDistance = int.MaxValue;
                 int targetIdx = -1;
-                int floorIdx = _roomGrain.MapModule.ToIdx(floorItem.X, floorItem.Y);
+                int floorIdx = _ctx.Map.ToIdx(floorItem.X, floorItem.Y);
 
-                foreach (IRoomAvatar avatar in _roomGrain._state.AvatarsByObjectId.Values)
+                foreach (IRoomAvatar avatar in _ctx.Lookup.Avatars)
                 {
                     if (avatar is not IRoomPlayer player)
                     {
                         continue;
                     }
 
-                    int playerIdx = _roomGrain.MapModule.ToIdx(player.X, player.Y);
-                    int distance = _roomGrain.MapModule.GetDistanceBetween(floorIdx, playerIdx);
+                    int playerIdx = _ctx.Map.ToIdx(player.X, player.Y);
+                    int distance = _ctx.Map.GetDistanceBetween(floorIdx, playerIdx);
 
                     if (distance <= 1)
                     {
@@ -78,16 +78,13 @@ public class WiredActionChaseHabbo(
                                     ObjectId = floorItem.ObjectId,
                                     CausedBy = ActionContext.CreateForPlayer(
                                         player.PlayerId,
-                                        _roomGrain.RoomId
+                                        _ctx.RoomId
                                     ),
-                                    RoomId = _roomGrain.RoomId,
+                                    RoomId = _ctx.RoomId,
                                 },
                                 ct
                             )
-                            .LogAndForget(
-                                _roomGrain._logger,
-                                "Failed to publish room item collision event."
-                            );
+                            .LogAndForget(_logger, "Failed to publish room item collision event.");
 
                         break;
                     }
@@ -118,8 +115,8 @@ public class WiredActionChaseHabbo(
                     Rotation direction = RotationExtensions.CARDINAL[Random.Shared.Next(0, 4)];
 
                     if (
-                        _roomGrain.MapModule.TryGetTileInFront(
-                            _roomGrain.MapModule.ToIdx(floorItem.X, floorItem.Y),
+                        _ctx.Map.TryGetTileInFront(
+                            _ctx.Map.ToIdx(floorItem.X, floorItem.Y),
                             direction,
                             out int nextIdx
                         )
@@ -134,10 +131,10 @@ public class WiredActionChaseHabbo(
                     continue;
                 }
 
-                (int targetX, int targetY) = _roomGrain.MapModule.GetTileXY(targetIdx);
+                (int targetX, int targetY) = _ctx.Map.GetTileXY(targetIdx);
 
                 if (
-                    await _roomGrain.FurniModule.ValidateFloorItemPlacementAsync(
+                    await _ctx.Furni.ValidateFloorItemPlacementAsync(
                         ActionContext.Wired,
                         floorItem.ObjectId,
                         targetX,
@@ -165,11 +162,11 @@ public class WiredActionChaseHabbo(
 
     private int GetTargetTileIdx(int fromIdx, int toIdx)
     {
-        int fx = fromIdx % _roomGrain.MapModule.Width;
-        int fy = fromIdx / _roomGrain.MapModule.Width;
+        int fx = fromIdx % _ctx.Map.Width;
+        int fy = fromIdx / _ctx.Map.Width;
 
-        int tx = toIdx % _roomGrain.MapModule.Width;
-        int ty = toIdx / _roomGrain.MapModule.Width;
+        int tx = toIdx % _ctx.Map.Width;
+        int ty = toIdx / _ctx.Map.Width;
 
         int dx = tx - fx;
         int dy = ty - fy;
@@ -189,12 +186,12 @@ public class WiredActionChaseHabbo(
 
         if (dy > 0)
         {
-            return fromIdx + _roomGrain.MapModule.Width;
+            return fromIdx + _ctx.Map.Width;
         }
 
         if (dy < 0)
         {
-            return fromIdx - _roomGrain.MapModule.Width;
+            return fromIdx - _ctx.Map.Width;
         }
 
         return fromIdx;

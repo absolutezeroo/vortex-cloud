@@ -46,7 +46,7 @@ public class WiredActionControlClock(
         foreach (int furniId in selection.SelectedFurniIds)
         {
             if (
-                !_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+                !_ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
                 || item.Logic is not IWiredCounter counter
             )
             {
@@ -75,11 +75,11 @@ public class WiredActionControlClock(
         // game (GAME_ENDS). Both are idempotent, so pause/resume leave the game state untouched.
         if (control == ControlStart)
         {
-            await _roomGrain.GameSystem.StartGameAsync(ct);
+            await _ctx.Game.StartGameAsync(ct);
         }
         else if (control is ControlStop or ControlReset)
         {
-            await _roomGrain.GameSystem.EndGameAsync(ct);
+            await _ctx.Game.EndGameAsync(ct);
         }
 
         return true;

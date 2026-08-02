@@ -34,7 +34,7 @@ public abstract class FurnitureFreezeGateLogic(
 
         if (ctx.RoomObject is IRoomPlayer player)
         {
-            await _roomGrain.FreezeSystem.OnGateWalkOnAsync(player.PlayerId, TeamColor, ct);
+            await _ctx.Freeze.OnGateWalkOnAsync(player.PlayerId, TeamColor, ct);
         }
     }
 }

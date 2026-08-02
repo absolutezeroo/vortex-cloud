@@ -82,11 +82,11 @@ public class WiredActionTeleportToFurni(
         foreach (int furniId in selection.SelectedFurniIds)
         {
             if (
-                _roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+                _ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
                 && item is IRoomFloorItem floor
             )
             {
-                tileIdx = _roomGrain.MapModule.ToIdx(floor.X, floor.Y);
+                tileIdx = _ctx.Map.ToIdx(floor.X, floor.Y);
                 return true;
             }
         }
@@ -99,7 +99,6 @@ public class WiredActionTeleportToFurni(
     {
         avatar = null;
 
-        return _roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId)
-            && _roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out avatar);
+        return _ctx.Lookup.TryFindAvatarByPlayer(playerId, out avatar);
     }
 }

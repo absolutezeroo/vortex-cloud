@@ -62,7 +62,7 @@ public class WiredActionRelativeMoveFurni(
             try
             {
                 if (
-                    !_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+                    !_ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
                     || item is not IRoomFloorItem floorItem
                 )
                 {
@@ -73,7 +73,7 @@ public class WiredActionRelativeMoveFurni(
                 int targetY = floorItem.Y + dy;
 
                 if (
-                    await _roomGrain.FurniModule.ValidateFloorItemPlacementAsync(
+                    await _ctx.Furni.ValidateFloorItemPlacementAsync(
                         ActionContext.Wired,
                         floorItem.ObjectId,
                         targetX,
@@ -84,7 +84,7 @@ public class WiredActionRelativeMoveFurni(
                 {
                     await ctx.ProcessFloorItemMovementAsync(
                         floorItem,
-                        _roomGrain.MapModule.ToIdx(targetX, targetY),
+                        _ctx.Map.ToIdx(targetX, targetY),
                         null,
                         floorItem.Rotation
                     );

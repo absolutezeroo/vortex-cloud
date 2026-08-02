@@ -66,7 +66,7 @@ public class WiredSelectorEntitiesInTeam(
 
             foreach (GameTeamColor color in wanted)
             {
-                foreach (PlayerId playerId in _roomGrain.GameSystem.GetPlayersInTeam(color))
+                foreach (PlayerId playerId in _ctx.Game.GetPlayersInTeam(color))
                 {
                     output.SelectedPlayerIds.Add(playerId);
                 }

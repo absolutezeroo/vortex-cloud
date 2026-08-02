@@ -35,23 +35,23 @@ public class WiredConditionItemHasHabbo(
         foreach (int furniId in GetStuffIds())
         {
             if (
-                !_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+                !_ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
                 || item is not IRoomFloorItem floor
             )
             {
                 continue;
             }
 
-            int idx = _roomGrain.MapModule.ToIdx(floor.X, floor.Y);
+            int idx = _ctx.Map.ToIdx(floor.X, floor.Y);
 
-            if (idx < 0 || idx >= _roomGrain._state.TileAvatarStacks.Length)
+            if (idx < 0 || idx >= _ctx.Map.TileCount)
             {
                 continue;
             }
 
             considered++;
 
-            if (_roomGrain._state.TileAvatarStacks[idx].Count > 0)
+            if (_ctx.Map.AvatarStackAt(idx).Count > 0)
             {
                 occupied++;
             }

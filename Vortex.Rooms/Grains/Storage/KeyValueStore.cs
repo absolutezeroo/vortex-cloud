@@ -6,7 +6,7 @@ using Vortex.Primitives.Rooms.Wired.Variable;
 
 namespace Vortex.Rooms.Grains.Storage;
 
-public sealed class KeyValueStore : IWiredVariableStore
+public sealed class KeyValueStore : IWiredVariableStore, IWiredKeyValueStore
 {
     public Dictionary<string, WiredVariableValue> Store { get; set; } = [];
 

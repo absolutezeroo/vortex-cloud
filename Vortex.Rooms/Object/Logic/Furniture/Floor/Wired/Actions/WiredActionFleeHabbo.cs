@@ -45,26 +45,26 @@ public class WiredActionFleeHabbo(
             try
             {
                 if (
-                    !_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+                    !_ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
                     || item is not IRoomFloorItem floorItem
                 )
                 {
                     continue;
                 }
 
-                int floorIdx = _roomGrain.MapModule.ToIdx(floorItem.X, floorItem.Y);
+                int floorIdx = _ctx.Map.ToIdx(floorItem.X, floorItem.Y);
                 int nearestIdx = -1;
                 int bestDistance = int.MaxValue;
 
-                foreach (IRoomAvatar avatar in _roomGrain._state.AvatarsByObjectId.Values)
+                foreach (IRoomAvatar avatar in _ctx.Lookup.Avatars)
                 {
                     if (avatar is not IRoomPlayer player)
                     {
                         continue;
                     }
 
-                    int playerIdx = _roomGrain.MapModule.ToIdx(player.X, player.Y);
-                    int distance = _roomGrain.MapModule.GetDistanceBetween(floorIdx, playerIdx);
+                    int playerIdx = _ctx.Map.ToIdx(player.X, player.Y);
+                    int distance = _ctx.Map.GetDistanceBetween(floorIdx, playerIdx);
 
                     if (distance > 3)
                     {
@@ -88,13 +88,7 @@ public class WiredActionFleeHabbo(
                 {
                     Rotation direction = RotationExtensions.CARDINAL[Random.Shared.Next(0, 4)];
 
-                    if (
-                        !_roomGrain.MapModule.TryGetTileInFront(
-                            floorIdx,
-                            direction,
-                            out int nextIdx
-                        )
-                    )
+                    if (!_ctx.Map.TryGetTileInFront(floorIdx, direction, out int nextIdx))
                     {
                         continue;
                     }
@@ -107,10 +101,10 @@ public class WiredActionFleeHabbo(
                     continue;
                 }
 
-                (int targetX, int targetY) = _roomGrain.MapModule.GetTileXY(targetIdx);
+                (int targetX, int targetY) = _ctx.Map.GetTileXY(targetIdx);
 
                 if (
-                    await _roomGrain.FurniModule.ValidateFloorItemPlacementAsync(
+                    await _ctx.Furni.ValidateFloorItemPlacementAsync(
                         ActionContext.Wired,
                         floorItem.ObjectId,
                         targetX,
@@ -138,7 +132,7 @@ public class WiredActionFleeHabbo(
 
     private int GetAwayTileIdx(int fromIdx, int threatIdx)
     {
-        int width = _roomGrain.MapModule.Width;
+        int width = _ctx.Map.Width;
         int fx = fromIdx % width;
         int fy = fromIdx / width;
 

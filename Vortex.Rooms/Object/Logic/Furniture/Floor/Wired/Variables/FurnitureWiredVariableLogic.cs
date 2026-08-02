@@ -54,7 +54,7 @@ public abstract class FurnitureWiredVariableLogic
     {
         value = WiredVariableValue.Default;
 
-        if (!CanBind(key) || !TryGetStore(key, out KeyValueStore? store) || store is null)
+        if (!CanBind(key) || !TryGetStore(key, out IWiredKeyValueStore? store) || store is null)
         {
             return false;
         }
@@ -73,7 +73,7 @@ public abstract class FurnitureWiredVariableLogic
         if (
             !snapshot.Flags.Has(WiredVariableFlags.CanCreateAndDelete)
             || !CanBind(key)
-            || !TryGetStore(key, out KeyValueStore? store)
+            || !TryGetStore(key, out IWiredKeyValueStore? store)
             || store is null
             || (store.ContainsKey(key) && !replace)
         )
@@ -90,7 +90,11 @@ public abstract class FurnitureWiredVariableLogic
         WiredVariableValue value
     )
     {
-        if (!TryGetStore(key, out KeyValueStore? store) || store is null || !store.ContainsKey(key))
+        if (
+            !TryGetStore(key, out IWiredKeyValueStore? store)
+            || store is null
+            || !store.ContainsKey(key)
+        )
         {
             return Task.FromResult(false);
         }
@@ -100,7 +104,7 @@ public abstract class FurnitureWiredVariableLogic
 
     public virtual bool RemoveValue(WiredVariableKey key)
     {
-        if (!TryGetStore(key, out KeyValueStore? store) || store is null)
+        if (!TryGetStore(key, out IWiredKeyValueStore? store) || store is null)
         {
             return false;
         }
@@ -148,7 +152,7 @@ public abstract class FurnitureWiredVariableLogic
         }
     }
 
-    private bool TryGetStore(WiredVariableKey key, out KeyValueStore? store)
+    private bool TryGetStore(WiredVariableKey key, out IWiredKeyValueStore? store)
     {
         if (_storage is not null)
         {
@@ -157,7 +161,7 @@ public abstract class FurnitureWiredVariableLogic
             return true;
         }
 
-        return _roomGrain.WiredSystem.TryGetStoreForKey(key, out store);
+        return _ctx.Furni.TryGetVariableStore(key, out store);
     }
 
     public WiredVariableSnapshot GetVarSnapshot() => _varSnapshot ??= BuildVarSnapshot();

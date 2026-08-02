@@ -60,7 +60,7 @@ public class WiredActionMoveFurniToFurni(
     private bool TryResolveFurniTile(int furniId, out int x, out int y)
     {
         if (
-            _roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+            _ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
             && item is IRoomFloorItem floorItem
         )
         {
@@ -80,7 +80,7 @@ public class WiredActionMoveFurniToFurni(
     )
     {
         if (
-            !_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+            !_ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
             || item is not IRoomFloorItem floorItem
         )
         {
@@ -88,7 +88,7 @@ public class WiredActionMoveFurniToFurni(
         }
 
         if (
-            await _roomGrain.FurniModule.ValidateFloorItemPlacementAsync(
+            await _ctx.Furni.ValidateFloorItemPlacementAsync(
                 ActionContext.Wired,
                 floorItem.ObjectId,
                 targetX,
@@ -99,7 +99,7 @@ public class WiredActionMoveFurniToFurni(
         {
             await ctx.ProcessFloorItemMovementAsync(
                 floorItem,
-                _roomGrain.MapModule.ToIdx(targetX, targetY),
+                _ctx.Map.ToIdx(targetX, targetY),
                 null,
                 floorItem.Rotation
             );

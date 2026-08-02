@@ -63,7 +63,7 @@ public class WiredActionSetFurniAltitude(
             try
             {
                 if (
-                    !_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+                    !_ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
                     || item is not IRoomFloorItem floorItem
                 )
                 {
@@ -90,7 +90,7 @@ public class WiredActionSetFurniAltitude(
 
                 await ctx.ProcessFloorItemMovementAsync(
                     floorItem,
-                    _roomGrain.MapModule.ToIdx(floorItem.X, floorItem.Y),
+                    _ctx.Map.ToIdx(floorItem.X, floorItem.Y),
                     Altitude.FromInt(target),
                     floorItem.Rotation
                 );

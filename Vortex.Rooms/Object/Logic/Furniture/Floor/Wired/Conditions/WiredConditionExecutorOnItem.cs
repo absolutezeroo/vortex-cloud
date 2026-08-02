@@ -30,19 +30,18 @@ public class WiredConditionExecutorOnItem(
 
         if (
             triggerer > 0
-            && _roomGrain._state.AvatarsByPlayerId.TryGetValue(triggerer, out RoomObjectId objectId)
-            && _roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar)
+            && _ctx.Lookup.TryFindAvatarByPlayer(triggerer, out IRoomAvatar? avatar)
             && avatar is IRoomPlayer player
         )
         {
-            int playerIdx = _roomGrain.MapModule.ToIdx(player.X, player.Y);
+            int playerIdx = _ctx.Map.ToIdx(player.X, player.Y);
 
             foreach (int furniId in GetStuffIds())
             {
                 if (
-                    _roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+                    _ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
                     && item is IRoomFloorItem floor
-                    && _roomGrain.MapModule.ToIdx(floor.X, floor.Y) == playerIdx
+                    && _ctx.Map.ToIdx(floor.X, floor.Y) == playerIdx
                 )
                 {
                     result = true;

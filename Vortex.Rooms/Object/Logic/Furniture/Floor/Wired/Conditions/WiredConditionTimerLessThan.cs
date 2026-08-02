@@ -27,7 +27,7 @@ public class WiredConditionTimerLessThan(
     public override bool Evaluate(IWiredProcessingContext ctx)
     {
         int threshold = _wiredData.IntParams.Count > 0 ? _wiredData.GetIntParam<int>(0) : 0;
-        long elapsedSeconds = (_roomGrain.NowMs() - _roomGrain._state.EpochMs) / 1000;
+        long elapsedSeconds = (_ctx.NowMs() - _ctx.EpochMs) / 1000;
 
         bool result = elapsedSeconds < threshold;
 

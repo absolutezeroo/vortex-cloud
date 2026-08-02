@@ -42,7 +42,7 @@ public class WiredAddonCarryUsers(
         }
         catch (Exception ex)
         {
-            _roomGrain._logger.LogWarning(
+            _logger.LogWarning(
                 ex,
                 "Malformed carry-user-type param for wired item {ItemId}; keeping current default.",
                 _ctx.ObjectId

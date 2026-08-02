@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans.Runtime;
 using Vortex.Primitives.Networking;
+using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Events;
 using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Object.Logic;
@@ -52,6 +53,18 @@ public interface IRoomObjectContext
 
     /// <summary>Placement validation and the wired engine's room-level knobs.</summary>
     public IRoomFurniAccess Furni { get; }
+
+    /// <summary>The room clock, in milliseconds. Monotonic within an activation.</summary>
+    public long NowMs();
+
+    /// <summary>The room clock reading the current session started from.</summary>
+    public long EpochMs { get; }
+
+    /// <summary>The room's owner.</summary>
+    public PlayerId OwnerId { get; }
+
+    /// <summary>The wired tuning knobs from the room's configuration.</summary>
+    public IWiredLimits WiredLimits { get; }
 
     public RoomObjectId ObjectId { get; }
     public IRoomObject RoomObject { get; }

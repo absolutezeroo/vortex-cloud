@@ -60,17 +60,19 @@ public class WiredSelectorItemsOnItem(
             try
             {
                 if (
-                    !_roomGrain._state.ItemsById.TryGetValue(id, out IRoomItem? item)
+                    !_ctx.Lookup.TryFindItem(id, out IRoomItem? item)
                     || item is not IRoomFloorItem floorItem
                 )
                 {
                     continue;
                 }
 
-                int tileIdx = _roomGrain.MapModule.ToIdx(floorItem.X, floorItem.Y);
-                IEnumerable<IRoomItem> floorStack = _roomGrain
-                    ._state.TileFloorStacks[tileIdx]
-                    .Select(x => _roomGrain._state.ItemsById[(int)x]);
+                int tileIdx = _ctx.Map.ToIdx(floorItem.X, floorItem.Y);
+                IEnumerable<IRoomItem> floorStack = _ctx
+                    .Map.FloorStackAt(tileIdx)
+                    .Select(_ctx.Lookup.FindItem)
+                    .Where(x => x is not null)
+                    .Select(x => x!);
 
                 switch (_wiredData.GetIntParam<WiredFurniSelectionType>(0))
                 {
@@ -126,7 +128,7 @@ public class WiredSelectorItemsOnItem(
             }
             catch (Exception ex)
             {
-                _roomGrain._logger.LogWarning(
+                _logger.LogWarning(
                     ex,
                     "Failed to select items-on-item for furni {FurniId} on wired item {ItemId}.",
                     id,

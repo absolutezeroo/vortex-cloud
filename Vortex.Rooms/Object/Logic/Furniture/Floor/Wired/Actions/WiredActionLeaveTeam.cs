@@ -38,7 +38,7 @@ public class WiredActionLeaveTeam(
         {
             try
             {
-                await _roomGrain.GameSystem.LeaveTeamAsync(playerId, ct);
+                await _ctx.Game.LeaveTeamAsync(playerId, ct);
             }
             catch
             {

@@ -43,11 +43,11 @@ public class WiredSelectorEntitiesOnItem(
         foreach (int furniId in input.SelectedFurniIds)
         {
             if (
-                _roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+                _ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
                 && item is IRoomFloorItem floorItem
             )
             {
-                AddPlayersOnTile(_roomGrain.MapModule.ToIdx(floorItem.X, floorItem.Y), output);
+                AddPlayersOnTile(_ctx.Map.ToIdx(floorItem.X, floorItem.Y), output);
             }
         }
 

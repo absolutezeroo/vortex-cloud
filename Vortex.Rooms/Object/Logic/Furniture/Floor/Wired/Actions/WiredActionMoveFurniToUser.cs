@@ -56,13 +56,7 @@ public class WiredActionMoveFurniToUser(
     {
         foreach (int playerId in selection.SelectedPlayerIds)
         {
-            if (
-                _roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId)
-                && _roomGrain._state.AvatarsByObjectId.TryGetValue(
-                    objectId,
-                    out IRoomAvatar? avatar
-                )
-            )
+            if (_ctx.Lookup.TryFindAvatarByPlayer(playerId, out IRoomAvatar? avatar))
             {
                 (x, y) = (avatar.X, avatar.Y);
                 return true;
@@ -81,7 +75,7 @@ public class WiredActionMoveFurniToUser(
     )
     {
         if (
-            !_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+            !_ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
             || item is not IRoomFloorItem floorItem
         )
         {
@@ -89,7 +83,7 @@ public class WiredActionMoveFurniToUser(
         }
 
         if (
-            await _roomGrain.FurniModule.ValidateFloorItemPlacementAsync(
+            await _ctx.Furni.ValidateFloorItemPlacementAsync(
                 ActionContext.Wired,
                 floorItem.ObjectId,
                 targetX,
@@ -100,7 +94,7 @@ public class WiredActionMoveFurniToUser(
         {
             await ctx.ProcessFloorItemMovementAsync(
                 floorItem,
-                _roomGrain.MapModule.ToIdx(targetX, targetY),
+                _ctx.Map.ToIdx(targetX, targetY),
                 null,
                 floorItem.Rotation
             );

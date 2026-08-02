@@ -54,7 +54,7 @@ public class WiredActionAdjustClock(
         foreach (int furniId in selection.SelectedFurniIds)
         {
             if (
-                !_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+                !_ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
                 || item.Logic is not IWiredCounter counter
             )
             {

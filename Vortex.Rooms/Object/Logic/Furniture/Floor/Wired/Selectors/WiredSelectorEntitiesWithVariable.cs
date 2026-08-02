@@ -46,7 +46,7 @@ public class WiredSelectorEntitiesWithVariable(
         {
             try
             {
-                if (!_roomGrain._state.ItemsById.TryGetValue(id, out IRoomItem? item))
+                if (!_ctx.Lookup.TryFindItem(id, out IRoomItem? item))
                 {
                     continue;
                 }
@@ -59,7 +59,7 @@ public class WiredSelectorEntitiesWithVariable(
             }
         }
 
-        foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
+        foreach (IRoomItem item in _ctx.Lookup.Items)
         {
             if (allowedDefinitionIds.Contains(item.Definition.Id))
             {

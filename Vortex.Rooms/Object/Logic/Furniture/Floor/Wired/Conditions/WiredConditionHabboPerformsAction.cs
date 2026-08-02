@@ -38,8 +38,7 @@ public class WiredConditionHabboPerformsAction(
         if (
             _wiredData.IntParams.Count > 0
             && triggerer > 0
-            && _roomGrain._state.AvatarsByPlayerId.TryGetValue(triggerer, out RoomObjectId objectId)
-            && _roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar)
+            && _ctx.Lookup.TryFindAvatarByPlayer(triggerer, out IRoomAvatar? avatar)
             && avatar is IRoomPlayer player
         )
         {

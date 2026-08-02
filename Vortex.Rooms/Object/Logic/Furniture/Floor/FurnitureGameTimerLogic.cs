@@ -111,8 +111,8 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
         {
             _gameActive = false;
 
-            await _roomGrain.GameSystem.EndGameAsync(ct);
-            await _roomGrain.FreezeSystem.EndGameAsync(ct);
+            await _ctx.Game.EndGameAsync(ct);
+            await _ctx.Freeze.EndGameAsync(ct);
         }
     }
 
@@ -122,8 +122,8 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
         {
             StartCountdown();
 
-            await _roomGrain.GameSystem.StartGameAsync(ct);
-            await _roomGrain.FreezeSystem.StartGameAsync(ct);
+            await _ctx.Game.StartGameAsync(ct);
+            await _ctx.Freeze.StartGameAsync(ct);
 
             return;
         }
@@ -204,8 +204,8 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
         {
             _gameActive = false;
 
-            await _roomGrain.GameSystem.EndGameAsync(ct);
-            await _roomGrain.FreezeSystem.EndGameAsync(ct);
+            await _ctx.Game.EndGameAsync(ct);
+            await _ctx.Freeze.EndGameAsync(ct);
 
             IncreaseTimer();
         }
@@ -289,7 +289,7 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
         StuffData.SetState(_clock.RemainingSeconds.ToString(CultureInfo.InvariantCulture));
 
         _ctx.RefreshStuffDataAsync()
-            .LogAndForget(_roomGrain._logger, "Failed to refresh game timer stuff data.");
+            .LogAndForget(_logger, "Failed to refresh game timer stuff data.");
     }
 
     private static int[] ParseSteps(string? customParams)

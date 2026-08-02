@@ -65,7 +65,6 @@ public class WiredConditionExecutorMatches(
     {
         avatar = null;
 
-        return _roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId)
-            && _roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out avatar);
+        return _ctx.Lookup.TryFindAvatarByPlayer(playerId, out avatar);
     }
 }

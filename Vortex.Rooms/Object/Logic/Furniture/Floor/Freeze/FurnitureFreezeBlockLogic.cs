@@ -41,7 +41,7 @@ public sealed class FurnitureFreezeBlockLogic(
 
         if (ctx.RoomObject is IRoomPlayer player)
         {
-            await _roomGrain.FreezeSystem.OnBlockWalkOnAsync(
+            await _ctx.Freeze.OnBlockWalkOnAsync(
                 player.PlayerId,
                 _ctx.RoomObject.X,
                 _ctx.RoomObject.Y,

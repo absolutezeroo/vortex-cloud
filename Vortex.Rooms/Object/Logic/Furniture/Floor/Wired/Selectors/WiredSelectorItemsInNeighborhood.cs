@@ -67,7 +67,7 @@ public class WiredSelectorItemsInNeighborhood(
     /// players standing on it, reusing the whole spiral/mask computation unchanged.</summary>
     protected virtual void CollectFromTile(int tileId, WiredSelectionSet output)
     {
-        foreach (RoomObjectId itemId in _roomGrain._state.TileFloorStacks[tileId])
+        foreach (RoomObjectId itemId in _ctx.Map.FloorStackAt(tileId))
         {
             output.SelectedFurniIds.Add(itemId);
         }
@@ -86,7 +86,7 @@ public class WiredSelectorItemsInNeighborhood(
             try
             {
                 if (
-                    !_roomGrain._state.ItemsById.TryGetValue(id, out IRoomItem? item)
+                    !_ctx.Lookup.TryFindItem(id, out IRoomItem? item)
                     || item is not IRoomFloorItem floorItem
                 )
                 {
@@ -98,9 +98,9 @@ public class WiredSelectorItemsInNeighborhood(
                         floorItem.Y,
                         _wiredData.GetIntParam<int>(1),
                         _wiredData.GetIntParam<int>(2),
-                        _roomGrain._roomConfig.WiredNeighborhoodRadius,
-                        _roomGrain.MapModule.Width,
-                        _roomGrain.MapModule.Height,
+                        _ctx.WiredLimits.WiredNeighborhoodRadius,
+                        _ctx.Map.Width,
+                        _ctx.Map.Height,
                         [.. _wiredData.IntParams[3..]]
                     )
                     .ToList();
@@ -113,7 +113,7 @@ public class WiredSelectorItemsInNeighborhood(
                     }
                     catch (Exception ex)
                     {
-                        _roomGrain._logger.LogWarning(
+                        _logger.LogWarning(
                             ex,
                             "Failed to read tile {TileId} floor stack while selecting furni-neighborhood around furni {FurniId} for wired item {ItemId}.",
                             tileId,
@@ -125,7 +125,7 @@ public class WiredSelectorItemsInNeighborhood(
             }
             catch (Exception ex)
             {
-                _roomGrain._logger.LogWarning(
+                _logger.LogWarning(
                     ex,
                     "Failed to select furni-neighborhood around furni {FurniId} for wired item {ItemId}.",
                     id,
@@ -138,13 +138,7 @@ public class WiredSelectorItemsInNeighborhood(
         {
             try
             {
-                if (
-                    !_roomGrain._state.AvatarsByPlayerId.TryGetValue(id, out RoomObjectId objectId)
-                    || !_roomGrain._state.AvatarsByObjectId.TryGetValue(
-                        objectId,
-                        out IRoomAvatar? avatar
-                    )
-                )
+                if (!_ctx.Lookup.TryFindAvatarByPlayer(id, out IRoomAvatar? avatar))
                 {
                     continue;
                 }
@@ -154,9 +148,9 @@ public class WiredSelectorItemsInNeighborhood(
                         avatar.Y,
                         _wiredData.GetIntParam<int>(1),
                         _wiredData.GetIntParam<int>(2),
-                        _roomGrain._roomConfig.WiredNeighborhoodRadius,
-                        _roomGrain.MapModule.Width,
-                        _roomGrain.MapModule.Height,
+                        _ctx.WiredLimits.WiredNeighborhoodRadius,
+                        _ctx.Map.Width,
+                        _ctx.Map.Height,
                         [.. _wiredData.IntParams[3..]]
                     )
                     .ToList();
@@ -169,7 +163,7 @@ public class WiredSelectorItemsInNeighborhood(
                     }
                     catch (Exception ex)
                     {
-                        _roomGrain._logger.LogWarning(
+                        _logger.LogWarning(
                             ex,
                             "Failed to read tile {TileId} floor stack while selecting player-neighborhood around player {PlayerId} for wired item {ItemId}.",
                             tileId,
@@ -181,7 +175,7 @@ public class WiredSelectorItemsInNeighborhood(
             }
             catch (Exception ex)
             {
-                _roomGrain._logger.LogWarning(
+                _logger.LogWarning(
                     ex,
                     "Failed to select player-neighborhood around player {PlayerId} for wired item {ItemId}.",
                     id,

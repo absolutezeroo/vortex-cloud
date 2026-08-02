@@ -61,7 +61,7 @@ public class WiredActionGiveVariable(
             new WiredVariableAllInRoomSnapshot()
             {
                 ContextType = WiredContextType.AllVariablesInRoom,
-                AllVariablesHash = _roomGrain._state.AllVariablesHash,
+                AllVariablesHash = _ctx.Furni.AllVariablesHash,
             },
         ];
 
@@ -75,7 +75,7 @@ public class WiredActionGiveVariable(
             try
             {
                 WiredVariableId id = WiredVariableId.Parse(variableId);
-                IWiredVariable? variable = _roomGrain.WiredSystem.GetVariableById(id);
+                IWiredVariable? variable = _ctx.Furni.GetVariableById(id);
 
                 if (variable is null)
                 {

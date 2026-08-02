@@ -56,13 +56,7 @@ public class WiredActionGiveEffect(
 
         foreach (int playerId in selection.SelectedPlayerIds)
         {
-            if (
-                _roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId)
-                && _roomGrain._state.AvatarsByObjectId.TryGetValue(
-                    objectId,
-                    out IRoomAvatar? avatar
-                )
-            )
+            if (_ctx.Lookup.TryFindAvatarByPlayer(playerId, out IRoomAvatar? avatar))
             {
                 // Store it on the avatar (transient) so late joiners re-sync it and the "is wearing
                 // effect" condition can read it; a re-entry restores the player's inventory selection.
@@ -71,7 +65,7 @@ public class WiredActionGiveEffect(
                 await ctx.SendComposerToRoomAsync(
                     new AvatarEffectMessageComposer
                     {
-                        UserId = objectId,
+                        UserId = avatar.ObjectId,
                         EffectId = effectId,
                         DelayMilliseconds = 0,
                     }

@@ -42,7 +42,7 @@ public class WiredSelectorItemsWithAltitude(
         Altitude altitude = Altitude.FromInt(_wiredData.GetIntParam<int>(0));
         WiredSelectionSet output = new WiredSelectionSet();
 
-        foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
+        foreach (IRoomItem item in _ctx.Lookup.Items)
         {
             if (item is not IRoomFloorItem floorItem)
             {

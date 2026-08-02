@@ -26,7 +26,7 @@ public class WiredActionResetTimers(
 
     public override Task<bool> ExecuteAsync(IWiredExecutionContext ctx, CancellationToken ct)
     {
-        _roomGrain.WiredSystem.ResetTimers();
+        _ctx.Furni.ResetTimers();
 
         return Task.FromResult(true);
     }

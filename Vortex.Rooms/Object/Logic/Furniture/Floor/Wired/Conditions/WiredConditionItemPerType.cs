@@ -28,7 +28,7 @@ public class WiredConditionItemPerType(
 
         foreach (int furniId in GetStuffIds())
         {
-            if (_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item))
+            if (_ctx.Lookup.TryFindItem(furniId, out IRoomItem? item))
             {
                 configuredSprites.Add(item.Definition.SpriteId);
             }
@@ -37,7 +37,7 @@ public class WiredConditionItemPerType(
         bool result =
             configuredSprites.Count > 0
             && ctx.Selected.SelectedFurniIds.Any(triggeredId =>
-                _roomGrain._state.ItemsById.TryGetValue(triggeredId, out IRoomItem? triggered)
+                _ctx.Lookup.TryFindItem(triggeredId, out IRoomItem? triggered)
                 && configuredSprites.Contains(triggered.Definition.SpriteId)
             );
 

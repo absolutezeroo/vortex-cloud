@@ -57,7 +57,7 @@ public class WiredActionMoveRotateFurni(
             try
             {
                 if (
-                    !_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+                    !_ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
                     || item is not IRoomFloorItem floorItem
                 )
                 {
@@ -68,8 +68,8 @@ public class WiredActionMoveRotateFurni(
                 Rotation moveRotation = GetMoveRotation(floorItem.Rotation, _rotationType);
 
                 if (
-                    !_roomGrain.MapModule.TryGetTileInFront(
-                        _roomGrain.MapModule.ToIdx(floorItem.X, floorItem.Y),
+                    !_ctx.Map.TryGetTileInFront(
+                        _ctx.Map.ToIdx(floorItem.X, floorItem.Y),
                         moveDirection,
                         out int nextIdx
                     )
@@ -78,10 +78,10 @@ public class WiredActionMoveRotateFurni(
                     continue;
                 }
 
-                (int targetX, int targetY) = _roomGrain.MapModule.GetTileXY(nextIdx);
+                (int targetX, int targetY) = _ctx.Map.GetTileXY(nextIdx);
 
                 if (
-                    !await _roomGrain.FurniModule.ValidateFloorItemPlacementAsync(
+                    !await _ctx.Furni.ValidateFloorItemPlacementAsync(
                         actionCtx,
                         furniId,
                         targetX,
@@ -97,7 +97,7 @@ public class WiredActionMoveRotateFurni(
             }
             catch (Exception ex)
             {
-                _roomGrain._logger.LogWarning(
+                _logger.LogWarning(
                     ex,
                     "Failed to move/rotate furni {FurniId} via wired action on item {ItemId}.",
                     furniId,
@@ -121,7 +121,7 @@ public class WiredActionMoveRotateFurni(
         }
         catch (Exception ex)
         {
-            _roomGrain._logger.LogWarning(
+            _logger.LogWarning(
                 ex,
                 "Malformed move/rotate params for wired item {ItemId}; keeping current defaults.",
                 _ctx.ObjectId

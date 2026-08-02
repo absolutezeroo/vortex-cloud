@@ -7,6 +7,7 @@ using Vortex.Primitives;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Logic;
 using Vortex.Primitives.Rooms.Providers;
+using Vortex.Rooms.Object;
 using Vortex.Rooms.Object.Logic;
 using Vortex.Runtime;
 
@@ -62,6 +63,17 @@ public sealed class RoomObjectLogicProvider(
             sp = new CompositeServiceProvider(sp, _host);
         }
 
-        return reg.Factory(sp, ctx);
+        IRoomObjectLogic logic = reg.Factory(sp, ctx);
+
+        if (logic is RoomObjectLogicBase withLogger)
+        {
+            withLogger.AttachLogger(
+                sp.GetService(typeof(ILoggerFactory)) is ILoggerFactory factory
+                    ? factory.CreateLogger(logic.GetType())
+                    : _logger
+            );
+        }
+
+        return logic;
     }
 }

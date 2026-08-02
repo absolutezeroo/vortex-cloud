@@ -93,11 +93,11 @@ public class WiredActionMoveUser(
         Rotation direction
     )
     {
-        int fromIdx = _roomGrain.MapModule.ToIdx(avatar.X, avatar.Y);
+        int fromIdx = _ctx.Map.ToIdx(avatar.X, avatar.Y);
 
         if (
-            _roomGrain.MapModule.TryGetTileInFront(fromIdx, direction, out int destIdx)
-            && _roomGrain.MapModule.CanAvatarWalk(avatar, destIdx)
+            _ctx.Map.TryGetTileInFront(fromIdx, direction, out int destIdx)
+            && _ctx.Map.CanAvatarWalk(avatar, destIdx)
         )
         {
             await ctx.ProcessUserMovementAsync(avatar, destIdx, SlideAvatarMoveType.Move);
@@ -108,7 +108,6 @@ public class WiredActionMoveUser(
     {
         avatar = null;
 
-        return _roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId)
-            && _roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out avatar);
+        return _ctx.Lookup.TryFindAvatarByPlayer(playerId, out avatar);
     }
 }

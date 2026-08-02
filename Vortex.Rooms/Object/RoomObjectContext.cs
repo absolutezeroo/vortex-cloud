@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans.Runtime;
 using Vortex.Primitives.Networking;
+using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Events;
 using Vortex.Primitives.Rooms.Grains;
@@ -38,6 +39,14 @@ public abstract class RoomObjectContext<TObject, TLogic, TSelf>(
     public IRoomGameAccess Game => _roomGrain;
     public IRoomFreezeAccess Freeze => _roomGrain;
     public IRoomFurniAccess Furni => _roomGrain;
+
+    public long NowMs() => _roomGrain.NowMs();
+
+    public long EpochMs => _roomGrain._state.EpochMs;
+
+    public PlayerId OwnerId => _roomGrain._state.RoomSnapshot.OwnerId;
+
+    public IWiredLimits WiredLimits => _roomGrain._roomConfig;
 
     public RoomObjectId ObjectId => _roomObject.ObjectId;
     public TObject RoomObject => _roomObject;

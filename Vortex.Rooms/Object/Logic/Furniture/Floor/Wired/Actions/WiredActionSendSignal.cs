@@ -85,11 +85,11 @@ public class WiredActionSendSignal(
                     return true;
                 }
 
-                await _roomGrain.PublishRoomEventAsync(
+                await _ctx.PublishRoomEventAsync(
                     new SignalRoomEvent
                     {
-                        RoomId = _roomGrain.RoomId,
-                        CausedBy = ActionContext.CreateForWired(_roomGrain.RoomId),
+                        RoomId = _ctx.RoomId,
+                        CausedBy = ActionContext.CreateForWired(_ctx.RoomId),
                         FurniIds = furniGroup,
                         PlayerIds = userGroup,
                     },

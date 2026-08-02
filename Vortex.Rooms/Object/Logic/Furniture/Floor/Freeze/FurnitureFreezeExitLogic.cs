@@ -25,7 +25,7 @@ public sealed class FurnitureFreezeExitLogic(
 
         if (ctx.RoomObject is IRoomPlayer player)
         {
-            await _roomGrain.FreezeSystem.OnExitWalkOnAsync(player.PlayerId, ct);
+            await _ctx.Freeze.OnExitWalkOnAsync(player.PlayerId, ct);
         }
     }
 }

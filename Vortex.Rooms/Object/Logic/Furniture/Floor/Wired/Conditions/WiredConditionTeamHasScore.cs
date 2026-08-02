@@ -56,7 +56,7 @@ public class WiredConditionTeamHasScore(
         {
             PlayerId triggerer = ctx.Event.CausedBy.PlayerId;
 
-            team = triggerer > 0 ? _roomGrain.GameSystem.GetTeam(triggerer) : GameTeamColor.None;
+            team = triggerer > 0 ? _ctx.Game.GetTeam(triggerer) : GameTeamColor.None;
 
             if (team == GameTeamColor.None)
             {
@@ -64,7 +64,7 @@ public class WiredConditionTeamHasScore(
             }
         }
 
-        int score = _roomGrain.GameSystem.GetTeamScore(team);
+        int score = _ctx.Game.GetTeamScore(team);
         int threshold = _wiredData.GetIntParam<int>(1);
 
         bool result = _wiredData.GetIntParam<int>(2) switch

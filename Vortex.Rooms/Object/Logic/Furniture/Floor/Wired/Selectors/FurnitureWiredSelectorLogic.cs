@@ -39,7 +39,7 @@ public abstract class FurnitureWiredSelectorLogic(
         }
         catch (Exception ex)
         {
-            _roomGrain._logger.LogWarning(
+            _logger.LogWarning(
                 ex,
                 "Malformed selector params for wired item {ItemId}; keeping current defaults.",
                 _ctx.ObjectId
@@ -57,15 +57,15 @@ public abstract class FurnitureWiredSelectorLogic(
     /// are added — a selection set is addressed by player id, so pets and bots have nothing to add.</summary>
     protected void AddPlayersOnTile(int tileId, WiredSelectionSet output)
     {
-        if (tileId < 0 || tileId >= _roomGrain._state.TileAvatarStacks.Length)
+        if (tileId < 0 || tileId >= _ctx.Map.TileCount)
         {
             return;
         }
 
-        foreach (RoomObjectId avatarId in _roomGrain._state.TileAvatarStacks[tileId])
+        foreach (RoomObjectId avatarId in _ctx.Map.AvatarStackAt(tileId))
         {
             if (
-                _roomGrain._state.AvatarsByObjectId.TryGetValue(avatarId, out IRoomAvatar? avatar)
+                _ctx.Lookup.TryFindAvatar(avatarId, out IRoomAvatar? avatar)
                 && avatar is IRoomPlayer player
             )
             {

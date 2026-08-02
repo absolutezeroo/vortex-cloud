@@ -49,7 +49,7 @@ public class WiredSelectorItemsInArea(
         {
             try
             {
-                HashSet<RoomObjectId> itemIds = _roomGrain._state.TileFloorStacks[tileId];
+                IReadOnlySet<RoomObjectId> itemIds = _ctx.Map.FloorStackAt(tileId);
 
                 foreach (RoomObjectId itemId in itemIds)
                 {
@@ -58,7 +58,7 @@ public class WiredSelectorItemsInArea(
             }
             catch (Exception ex)
             {
-                _roomGrain._logger.LogWarning(
+                _logger.LogWarning(
                     ex,
                     "Failed to read tile {TileId} floor stack while selecting items-in-area for wired item {ItemId}.",
                     tileId,
@@ -80,8 +80,8 @@ public class WiredSelectorItemsInArea(
         int rootY = _wiredData.GetIntParam<int>(1);
         int areaW = _wiredData.GetIntParam<int>(2);
         int areaH = _wiredData.GetIntParam<int>(3);
-        int mapW = _roomGrain.MapModule.Width;
-        int mapH = _roomGrain.MapModule.Height;
+        int mapW = _ctx.Map.Width;
+        int mapH = _ctx.Map.Height;
         int size = 0;
         bool filled = false;
 
@@ -89,7 +89,7 @@ public class WiredSelectorItemsInArea(
         {
             for (int dx = 0; dx < areaW; dx++)
             {
-                if (size >= _roomGrain._roomConfig.WiredSelectorMaxAreaSize)
+                if (size >= _ctx.WiredLimits.WiredSelectorMaxAreaSize)
                 {
                     filled = true;
 
@@ -129,7 +129,7 @@ public class WiredSelectorItemsInArea(
             {
                 for (int x = 0; x < mapW; x++)
                 {
-                    if (size >= _roomGrain._roomConfig.WiredSelectorMaxAreaSize)
+                    if (size >= _ctx.WiredLimits.WiredSelectorMaxAreaSize)
                     {
                         filled = true;
 

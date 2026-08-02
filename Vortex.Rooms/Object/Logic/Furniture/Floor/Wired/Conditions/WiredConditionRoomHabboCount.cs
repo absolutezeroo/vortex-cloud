@@ -27,7 +27,7 @@ public class WiredConditionRoomHabboCount(
 
     public override bool Evaluate(IWiredProcessingContext ctx)
     {
-        int userCount = _roomGrain._state.AvatarsByPlayerId.Count;
+        int userCount = _ctx.Lookup.AvatarCount;
         int min = _wiredData.IntParams.Count > 0 ? _wiredData.GetIntParam<int>(0) : 0;
         int max = _wiredData.IntParams.Count > 1 ? _wiredData.GetIntParam<int>(1) : int.MaxValue;
 

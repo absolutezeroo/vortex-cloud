@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Action;
@@ -9,6 +10,7 @@ using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Wired.Variable;
+using Vortex.Rooms.Grains.Storage;
 
 namespace Vortex.Rooms.Grains;
 
@@ -39,11 +41,34 @@ public sealed partial class RoomGrain
     IRoomAvatar? IRoomLookup.FindAvatar(RoomObjectId objectId) =>
         _state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar) ? avatar : null;
 
-    IRoomAvatar? IRoomLookup.FindAvatar(PlayerId playerId) =>
+    IRoomAvatar? IRoomLookup.FindAvatarByPlayer(PlayerId playerId) =>
         _state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId)
         && _state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar)
             ? avatar
             : null;
+
+    bool IRoomLookup.TryFindItem(RoomObjectId objectId, [NotNullWhen(true)] out IRoomItem? item) =>
+        _state.ItemsById.TryGetValue(objectId, out item);
+
+    bool IRoomLookup.TryFindAvatar(
+        RoomObjectId objectId,
+        [NotNullWhen(true)] out IRoomAvatar? avatar
+    ) => _state.AvatarsByObjectId.TryGetValue(objectId, out avatar);
+
+    bool IRoomLookup.TryFindAvatarByPlayer(
+        PlayerId playerId,
+        [NotNullWhen(true)] out IRoomAvatar? avatar
+    )
+    {
+        if (_state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId))
+        {
+            return _state.AvatarsByObjectId.TryGetValue(objectId, out avatar);
+        }
+
+        avatar = null;
+
+        return false;
+    }
 
     IReadOnlyCollection<IRoomItem> IRoomLookup.Items => _state.ItemsById.Values;
 
@@ -75,6 +100,11 @@ public sealed partial class RoomGrain
         bool isGoal,
         bool isDiagonalCheck
     ) => MapModule.CanAvatarWalk(avatar, tileIdx, isGoal, isDiagonalCheck);
+
+    RoomTileFlags IRoomMapAccess.TileFlagsAt(int tileIndex) =>
+        tileIndex >= 0 && tileIndex < _state.TileFlags.Length
+            ? _state.TileFlags[tileIndex]
+            : RoomTileFlags.None;
 
     IReadOnlySet<RoomObjectId> IRoomMapAccess.FloorStackAt(int tileIndex) =>
         tileIndex >= 0 && tileIndex < _state.TileFloorStacks.Length
@@ -165,4 +195,19 @@ public sealed partial class RoomGrain
         WiredSystem.ScheduleFlashRevert(objectId);
 
     void IRoomFurniAccess.ResetTimers() => WiredSystem.ResetTimers();
+
+    WiredVariableHash IRoomFurniAccess.AllVariablesHash => _state.AllVariablesHash;
+
+    bool IRoomFurniAccess.TryGetVariableStore(WiredVariableKey key, out IWiredKeyValueStore? store)
+    {
+        bool found = WiredSystem.TryGetStoreForKey(key, out KeyValueStore? concrete);
+        store = concrete;
+
+        return found;
+    }
+
+    Task<bool> IRoomFurniAccess.KickUserFromWiredAsync(
+        PlayerId targetPlayerId,
+        CancellationToken ct
+    ) => KickUserFromWiredAsync(targetPlayerId, ct);
 }

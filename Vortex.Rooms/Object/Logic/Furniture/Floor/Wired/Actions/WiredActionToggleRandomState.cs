@@ -40,7 +40,7 @@ public class WiredActionToggleRandomState(
         {
             try
             {
-                if (!_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item))
+                if (!_ctx.Lookup.TryFindItem(furniId, out IRoomItem? item))
                 {
                     continue;
                 }

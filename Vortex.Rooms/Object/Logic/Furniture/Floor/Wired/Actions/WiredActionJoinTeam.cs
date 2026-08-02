@@ -64,7 +64,7 @@ public class WiredActionJoinTeam(
         {
             try
             {
-                await _roomGrain.GameSystem.JoinTeamAsync(playerId, chosenTeam, ct);
+                await _ctx.Game.JoinTeamAsync(playerId, chosenTeam, ct);
             }
             catch
             {

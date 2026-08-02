@@ -37,8 +37,7 @@ public class WiredConditionEntityDirection(
         if (
             mask != 0
             && triggerer > 0
-            && _roomGrain._state.AvatarsByPlayerId.TryGetValue(triggerer, out RoomObjectId objectId)
-            && _roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar)
+            && _ctx.Lookup.TryFindAvatarByPlayer(triggerer, out IRoomAvatar? avatar)
         )
         {
             result = (mask & (1 << (int)avatar.Rotation)) != 0;

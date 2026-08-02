@@ -65,7 +65,7 @@ public class WiredConditionTeamHasRank(
         {
             PlayerId triggerer = ctx.Event.CausedBy.PlayerId;
 
-            team = triggerer > 0 ? _roomGrain.GameSystem.GetTeam(triggerer) : GameTeamColor.None;
+            team = triggerer > 0 ? _ctx.Game.GetTeam(triggerer) : GameTeamColor.None;
 
             // Nobody, or somebody with no team: there is no placement to compare against.
             if (team == GameTeamColor.None)
@@ -75,12 +75,12 @@ public class WiredConditionTeamHasRank(
         }
 
         int requiredPlacement = _wiredData.GetIntParam<int>(1) + 1;
-        int score = _roomGrain.GameSystem.GetTeamScore(team);
+        int score = _ctx.Game.GetTeamScore(team);
         int placement = 1;
 
         foreach (GameTeamColor other in Teams)
         {
-            if (other != team && _roomGrain.GameSystem.GetTeamScore(other) > score)
+            if (other != team && _ctx.Game.GetTeamScore(other) > score)
             {
                 placement++;
             }

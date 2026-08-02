@@ -56,7 +56,7 @@ public class WiredActionGiveScore(
         {
             try
             {
-                await _roomGrain.GameSystem.TryGiveScoreToPlayerTeamAsync(
+                await _ctx.Game.TryGiveScoreToPlayerTeamAsync(
                     _ctx.ObjectId,
                     playerId,
                     points,

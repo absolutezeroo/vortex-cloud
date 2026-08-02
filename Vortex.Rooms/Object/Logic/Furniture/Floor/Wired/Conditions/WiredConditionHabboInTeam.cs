@@ -46,7 +46,7 @@ public class WiredConditionHabboInTeam(
         if (_wiredData.IntParams.Count > 0 && triggerer > 0)
         {
             GameTeamColor required = _wiredData.GetIntParam<GameTeamColor>(0);
-            GameTeamColor actual = _roomGrain.GameSystem.GetTeam(triggerer);
+            GameTeamColor actual = _ctx.Game.GetTeam(triggerer);
 
             // "Any team" (None) asks whether the triggerer is on a team at all, not whether they are
             // on the "none" team — reading it as a plain equality would invert the check.

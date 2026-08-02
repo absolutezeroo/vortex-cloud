@@ -36,16 +36,16 @@ public class WiredConditionItemHasItems(
         foreach (int furniId in GetStuffIds())
         {
             if (
-                !_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+                !_ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
                 || item is not IRoomFloorItem floor
             )
             {
                 continue;
             }
 
-            int idx = _roomGrain.MapModule.ToIdx(floor.X, floor.Y);
+            int idx = _ctx.Map.ToIdx(floor.X, floor.Y);
 
-            if (idx < 0 || idx >= _roomGrain._state.TileFloorStacks.Length)
+            if (idx < 0 || idx >= _ctx.Map.TileCount)
             {
                 continue;
             }
@@ -53,11 +53,11 @@ public class WiredConditionItemHasItems(
             considered++;
             bool hasStacked = false;
 
-            foreach (RoomObjectId otherId in _roomGrain._state.TileFloorStacks[idx])
+            foreach (RoomObjectId otherId in _ctx.Map.FloorStackAt(idx))
             {
                 if (
                     otherId != floor.ObjectId
-                    && _roomGrain._state.ItemsById.TryGetValue(otherId, out IRoomItem? other)
+                    && _ctx.Lookup.TryFindItem(otherId, out IRoomItem? other)
                     && other is IRoomFloorItem otherFloor
                     && otherFloor.Z > floor.Z
                 )

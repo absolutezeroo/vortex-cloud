@@ -4,18 +4,17 @@ using Vortex.Primitives.Action;
 using Vortex.Primitives.Rooms.Events.RoomObject;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Logic;
-using Vortex.Rooms.Grains;
 
 namespace Vortex.Rooms.Object;
 
 public abstract class RoomObjectLogic<TObject, TSelf, TContext>(TContext ctx)
-    : IRoomObjectLogic<TObject, TSelf, TContext>
+    : RoomObjectLogicBase,
+        IRoomObjectLogic<TObject, TSelf, TContext>
     where TObject : IRoomObject<TObject, TSelf, TContext>
     where TContext : IRoomObjectContext<TObject, TSelf, TContext>
     where TSelf : IRoomObjectLogic<TObject, TSelf, TContext>
 {
     protected readonly TContext _ctx = ctx;
-    protected readonly RoomGrain _roomGrain = (RoomGrain)ctx.Room;
 
     public TContext Context => _ctx;
 

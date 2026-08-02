@@ -104,8 +104,7 @@ public abstract class FurnitureLogic<TObject, TSelf, TContext>
 
         if (refresh)
         {
-            _ctx.RefreshStuffDataAsync()
-                .LogAndForget(_roomGrain._logger, "Failed to refresh stuff data.");
+            _ctx.RefreshStuffDataAsync().LogAndForget(_logger, "Failed to refresh stuff data.");
         }
 
         await OnStateChangedAsync(CancellationToken.None);
