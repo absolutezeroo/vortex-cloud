@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans.Runtime;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Events;
@@ -22,7 +23,13 @@ public abstract class RoomObjectContext<TObject, TLogic, TSelf>(
     protected readonly TObject _roomObject = roomObject;
 
     public RoomId RoomId => _roomGrain._state.RoomId;
-    public IRoomGrain Room => _roomGrain;
+    public IRoomCore Room => _roomGrain;
+
+    // RoomGrain implements every facet, and this is the live activation the caller already runs in,
+    // so the cast is free and the resulting call is a direct in-process one. See the remarks on
+    // IRoomObjectContext.RoomAs for why this is not AsReference.
+    public TFacet RoomAs<TFacet>()
+        where TFacet : IAddressable => (TFacet)(object)_roomGrain;
 
     public RoomObjectId ObjectId => _roomObject.ObjectId;
     public TObject RoomObject => _roomObject;

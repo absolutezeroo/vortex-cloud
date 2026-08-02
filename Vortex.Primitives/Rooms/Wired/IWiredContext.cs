@@ -1,14 +1,12 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Snapshots.Wired;
 
 namespace Vortex.Primitives.Rooms.Wired;
 
 public interface IWiredContext
 {
-    public IRoomGrain Room { get; }
     public IWiredPolicy Policy { get; }
     public IWiredSelectionSet Selected { get; }
     public IWiredSelectionSet SelectorPool { get; }

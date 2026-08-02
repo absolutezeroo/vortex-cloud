@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans.Runtime;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Events;
 using Vortex.Primitives.Rooms.Grains;
@@ -18,7 +19,24 @@ public interface IRoomObjectContext<out TObject, out TLogic, out TSelf> : IRoomO
 public interface IRoomObjectContext
 {
     public RoomId RoomId { get; }
-    public IRoomGrain Room { get; }
+
+    /// <summary>The room this object lives in, as its core facet. Room-object logic overwhelmingly
+    /// only needs this much; anything wider goes through <see cref="RoomAs{TFacet}"/> so the extra
+    /// reach is visible at the call site.</summary>
+    public IRoomCore Room { get; }
+
+    /// <summary>
+    /// The same room, viewed through another facet -- for the handful of furniture whose behaviour
+    /// is owned by a specific room subsystem (crackables, mystery boxes, monsterplant seeds).
+    /// </summary>
+    /// <remarks>
+    /// This is the very activation the caller is already running inside, not a new grain, so the
+    /// call it returns stays an ordinary in-process call. It deliberately does not hand back an
+    /// Orleans grain reference: <c>RoomGrain</c> is not <c>[Reentrant]</c>, so a reference-routed
+    /// call from inside the room's own turn would queue behind that turn and deadlock.
+    /// </remarks>
+    public TFacet RoomAs<TFacet>()
+        where TFacet : IAddressable;
 
     public RoomObjectId ObjectId { get; }
     public IRoomObject RoomObject { get; }

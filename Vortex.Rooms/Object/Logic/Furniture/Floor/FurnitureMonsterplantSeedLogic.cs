@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
 
@@ -18,6 +19,8 @@ public class FurnitureMonsterplantSeedLogic(
 
     public override async Task OnUseAsync(ActionContext ctx, int param, CancellationToken ct)
     {
-        await _ctx.Room.PlantMonsterplantSeedAsync(ctx, _ctx.ObjectId, ct).ConfigureAwait(false);
+        await _ctx.RoomAs<IRoomPets>()
+            .PlantMonsterplantSeedAsync(ctx, _ctx.ObjectId, ct)
+            .ConfigureAwait(false);
     }
 }

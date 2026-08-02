@@ -12,9 +12,10 @@ namespace Vortex.Rooms.Wired;
 
 public abstract class WiredContext(RoomGrain roomGrain) : IWiredContext
 {
+    // Not exposed on IWiredContext. Wired boxes run inside the room's own activation, so handing
+    // them the room grain would be handing them the whole room through a back door; everything they
+    // legitimately need is a method on this context.
     protected RoomGrain _roomGrain = roomGrain;
-
-    public IRoomGrain Room => _roomGrain;
 
     public IWiredPolicy Policy { get; init; } = new WiredPolicy();
     public IWiredSelectionSet Selected { get; init; } = new WiredSelectionSet();

@@ -4,6 +4,7 @@ using Vortex.Primitives.Action;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
 
@@ -28,6 +29,8 @@ public class FurnitureCrackableLogic(IStuffDataFactory stuffDataFactory, IRoomFl
 
     public override async Task OnUseAsync(ActionContext ctx, int param, CancellationToken ct)
     {
-        await _ctx.Room.HitCrackableAsync(ctx, _ctx.ObjectId, ct).ConfigureAwait(false);
+        await _ctx.RoomAs<IRoomCrackable>()
+            .HitCrackableAsync(ctx, _ctx.ObjectId, ct)
+            .ConfigureAwait(false);
     }
 }
