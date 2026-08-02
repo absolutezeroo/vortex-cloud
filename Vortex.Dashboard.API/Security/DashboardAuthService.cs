@@ -48,6 +48,7 @@ internal sealed class DashboardAuthService(
         Capabilities.Dashboard.OpsMysteryBoxManage,
         Capabilities.Dashboard.ConfigRead,
         Capabilities.Dashboard.OpsConfigManage,
+        Capabilities.Dashboard.PerformanceRead,
     ];
 
     public async Task<DashboardLoginResult> LoginAsync(

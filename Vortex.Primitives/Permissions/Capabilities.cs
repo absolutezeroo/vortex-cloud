@@ -106,6 +106,7 @@ public static class Capabilities
         public const string OpsMysteryBoxManage = "dashboard.ops.mystery_box.manage";
         public const string ConfigRead = "dashboard.config.read";
         public const string OpsConfigManage = "dashboard.ops.config.manage";
+        public const string PerformanceRead = "dashboard.performance.read";
     }
 
     /// <summary>Every declared capability, for validation and dashboard enumeration.</summary>
@@ -158,5 +159,6 @@ public static class Capabilities
             Dashboard.OpsMysteryBoxManage,
             Dashboard.ConfigRead,
             Dashboard.OpsConfigManage,
+            Dashboard.PerformanceRead,
         };
 }

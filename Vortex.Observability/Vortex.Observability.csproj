@@ -8,6 +8,11 @@
     <PackageReference Include="Microsoft.Orleans.Sdk" />
   </ItemGroup>
   <ItemGroup>
+    <!-- The aggregator's instrument names are a telemetry detail, not public API. The tests assert
+         on them, so they are shared rather than promoted to public. -->
+    <InternalsVisibleTo Include="Vortex.Rooms.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Vortex.Database\Vortex.Database.csproj" />
     <ProjectReference Include="..\Vortex.Events\Vortex.Events.csproj" />
     <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />

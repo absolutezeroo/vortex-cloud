@@ -57,5 +57,13 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.OverviewRead,
             TagMonitoring
         );
+        MapReadGet(
+            app,
+            ApiMonitoring + "/room-performance",
+            "/api/room-performance",
+            (DashboardApiService api) => Results.Ok(api.RoomPerformance()),
+            Capabilities.Dashboard.PerformanceRead,
+            TagMonitoring
+        );
     }
 }

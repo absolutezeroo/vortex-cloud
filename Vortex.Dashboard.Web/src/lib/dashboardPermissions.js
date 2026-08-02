@@ -29,6 +29,7 @@ export const CAPABILITIES = {
   opsMysteryBoxManage: 'dashboard.ops.mystery_box.manage',
   configRead: 'dashboard.config.read',
   opsManageConfig: 'dashboard.ops.config.manage',
+  performanceRead: 'dashboard.performance.read',
 };
 
 export const ROUTE_PERMISSIONS = {
@@ -36,6 +37,7 @@ export const ROUTE_PERMISSIONS = {
   infrastructure: [CAPABILITIES.overviewRead],
   incidents: [CAPABILITIES.overviewRead],
   packets: [CAPABILITIES.overviewRead],
+  performance: [CAPABILITIES.performanceRead],
   economy: [CAPABILITIES.economyRead],
   investigation: [CAPABILITIES.auditRead],
   rooms: [CAPABILITIES.auditRead],

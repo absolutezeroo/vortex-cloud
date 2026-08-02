@@ -89,6 +89,7 @@ internal sealed class DashboardWebHost(
         Capabilities.Dashboard.OpsMysteryBoxManage,
         Capabilities.Dashboard.ConfigRead,
         Capabilities.Dashboard.OpsConfigManage,
+        Capabilities.Dashboard.PerformanceRead,
     ];
 
     private readonly ObservabilityConfig _config = options.Value;
