@@ -3,10 +3,10 @@ namespace Vortex.Revisions.Revision20260701;
 internal static class MessageEvent
 {
     // NEW since last revision
-    public const int ClaimNftClaimsMessageEvent = 29;
-    public const int GetNftClaimsMessageEvent = 3744;
-    public const int GetNftStoreOffersMessageEvent = 3998;
-    public const int NftStorePurchaseMessageEvent = 306;
+    public const int ClaimNftClaimsMessageEvent = 2898; // AS3-verified (direct read): RewardClaimsTab::onClaimClicked() -> send(new _SafeCls_2878()) (no args) @2898; was 29, which has no entry in the WIN63 registry at all
+    public const int GetNftClaimsMessageEvent = 3153; // AS3-verified (direct read): RewardClaimsTab::processNextRequest() -> send(new _SafeCls_3644(walletAddress)) @3153, answered by onNftClaimsMessage; corrects a collision (was 3744 = GuildBaseSearch)
+    public const int GetNftStoreOffersMessageEvent = 1809; // AS3-verified (direct read): ShopTab::requestNftStoreOffers() -> send(new _SafeCls_3050()) (no args) @1809; was 3998, which has no entry in the WIN63 registry at all
+    public const int NftStorePurchaseMessageEvent = 3196; // AS3-verified (direct read): HabboCatalog sends _SafeCls_1740(offerId:String, wallet:String) @3196, the composer behind ShopTab::onClickBuy() -> showPurchaseConfirmation(NftStorePurchaseOffer); corrects a collision (was 306 = DeselectFavouriteHabboGroup)
     public const int GetRecyclerPrizesMessageEvent = 2516;
     public const int GetRecyclerStatusMessageEvent = 1246;
     public const int RecycleItemsMessageEvent = 2956;
@@ -16,14 +16,14 @@ internal static class MessageEvent
     public const int GetCustomFilterMessageEvent = 3812;
     public const int RemoveFromCustomFilterMessageEvent = 209;
     public const int WiredGetRoomLogsEvent = 706;
-    public const int BlockListInitEvent = 2610;
-    public const int BlockUserMessageEvent = 2371;
-    public const int ReplenishRespectMessageEvent = 3323;
-    public const int RespectUserMessageEvent = 3377;
-    public const int UnblockUserMessageEvent = 1231;
-    public const int AddNftToTradeEvent = 1543;
-    public const int GetNftTradeInventoryEvent = 469;
-    public const int RemoveNftFromTradeEvent = 1919;
+    public const int BlockListInitEvent = 798; // AS3-verified (direct read): BlockedUsersManager.as:54 -> send(new _SafeCls_3511()) (no args) @798; was 2610, which has no entry in the WIN63 registry at all
+    public const int BlockUserMessageEvent = 483; // AS3-verified (direct read): BlockedUsersManager.as:94 -> send(new _SafeCls_2856(userId)) @483; was 2371, which has no entry in the WIN63 registry at all
+    public const int ReplenishRespectMessageEvent = 426; // AS3-verified (direct read): SessionDataManager.as:889 -> send(new _SafeCls_1865()) (no args) @426; was 3323, which has no entry in the WIN63 registry at all
+    public const int RespectUserMessageEvent = 3770; // AS3-verified (direct read): SessionDataManager.as:882 -> send(new _SafeCls_1969(userId)) @3770. Its old value 3377 is Game2GetAccountGameStatus, whose name survives unobfuscated in the WIN63 registry - see that constant below, restored to 3377
+    public const int UnblockUserMessageEvent = 2512; // AS3-verified (direct read): BlockedUsersManager.as:99 -> send(new _SafeCls_2552(userId)) @2512; was 1231, which the WIN63 registry uses on the *incoming* side only (no composer at 1231)
+    public const int AddNftToTradeEvent = 2481; // AS3-verified (direct read): TradingModel::requestAddNftsToTrading() -> send(new _SafeCls_2741(Vector.<int>)) @2481; was 1543, which has no entry in the WIN63 registry at all
+    public const int GetNftTradeInventoryEvent = 9015; // UNRESOLVED: 469 has no entry in the WIN63 registry. The only NFT-inventory request in the client is CollectiblesModel::requestNftAssets() -> _SafeCls_3488 @1646, already held by NftTransferAssetsMessageEvent, so this looks like a duplicate constant - placeholder pending a proper retrace
+    public const int RemoveNftFromTradeEvent = 9014; // UNRESOLVED: 1919 is PickupObject in the WIN63 registry and no remove-NFT-from-trade composer exists anywhere in the 701 client (TradingModel only has requestAddNftsToTrading) - placeholder pending a proper retrace
     public const int WiredGetUserPermanentVariablesEvent = 3777; // AS3-verified (direct read): VariableManagementDetailView fetch call -> connection.send(new _SafeCls_2724(entityType,entityId)) @3777; corrects a wrong guess (was 2127, no AS3 backing)
     public const int WiredGetVariableOwnersPageEvent = 2221;
     public const int ClaimDailyTaskEvent = 4101;
@@ -288,7 +288,7 @@ internal static class MessageEvent
     public const int TogglePetBreedingPermissionMessageEvent = 144;
     public const int TogglePetRidingPermissionMessageEvent = 3713;
     public const int UseFurnitureMessageEvent = 3353;
-    public const int UseWallItemMessageEvent = 1540; // UNRESOLVED: no distinct AS3 backing found - room engine modifyWallItemData() sends the only composer for this action (_SafeCls_2502/_SafeCls_2735 @3498), already held by SetItemDataMessageEvent; likely a duplicate Vortex constant with no separate real message
+    public const int UseWallItemMessageEvent = 3590; // AS3-verified (direct read): RoomObjectEventHandler (_SafeCls_1821.as:2570) branches on the object category - category 10 (floor) sends _SafeCls_3952/_SafeCls_3726, category 20 (wall) sends _SafeCls_3754(objectId, param) @3590. Supersedes the earlier "no distinct AS3 backing" note, which had confused it with modifyWallItemData()/SetItemData @3498
     public const int CreditVaultStatusMessageEvent = 1645;
     public const int IncomeRewardClaimMessageEvent = 809;
     public const int IncomeRewardStatusMessageEvent = 3417;
@@ -320,7 +320,7 @@ internal static class MessageEvent
     public const int SignMessageEvent = 211;
     public const int Game2CheckGameDirectoryStatusMessageEvent = 1115;
 
-    public const int Game2GetAccountGameStatusMessageEvent = 9013; // UNRESOLVED: collided with RespectUserMessageEvent after the WIN63-202607011411 client header remap; Game2GetAccountGameStatusMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
+    public const int Game2GetAccountGameStatusMessageEvent = 3377; // AS3-verified (direct read): the WIN63 registry keeps this name unobfuscated - `_composers[3377] = Game2GetAccountGameStatusMessageComposer`. The earlier pass resolved the 3377 collision the wrong way round and parked this constant at 9013; RespectUser is 3770 (SessionDataManager.as:882), so 3377 goes back to its real owner
 
     public const int Game2LeaveGameMessageEvent = 2698; // UNRESOLVED: not found - a dedicated "leave game" composer distinct from the room-exit/game-end flows already ported elsewhere could not be located in either official AS3 revision
     public const int Game2QuickJoinGameMessageEvent = 2000; // UNRESOLVED: no distinct AS3 backing found - HabboGameManager::startQuickSnowWarGame()/SnowWarEngine::startQuickServerGame() both send the same _SafeCls_2129, already correctly claimed by Game2StartSnowWarMessageEvent below; likely a duplicate Vortex constant with no separate real message
@@ -581,28 +581,35 @@ internal static class MessageComposer
     public const int IncomeRewardNotificationMessageComposer = 1914;
     public const int GetCustomFilterResultMessageComposer = 1426;
     public const int ModifyCustomFilterResultMessageComposer = 1488;
-    public const int FurniListRemoveMultipleComposer = 149;
+    public const int FurniListRemoveMultipleComposer = 1268; // AS3-verified (direct read): _SafeStr_4546[1268] = _SafeCls_3469 (parser _SafeCls_3854: `stripIds:Vector.<int>`), consumed by the inventory controller; was 149, which has no entry in the WIN63 registry at all
     public const int LtdRaffleEnteredMessageComposer = 1221;
     public const int LtdRaffleResultMessageComposer = 3526;
     public const int WiredSetUserPermanentVariableResultComposer = 1643; // AS3-verified (direct read): _SafeCls_2757 (parser _SafeCls_4203) -> success:Boolean; corrects a collision (was 3354, a Game2/Snowwar PlayerData broadcast)
     public const int WiredUserPermanentVariablesComposer = 1557; // AS3-verified (direct read): _SafeCls_3146 (parser _SafeCls_4091) -> WiredUserPermanentVariablesList; corrects a collision (was 2883, an empty no-arg composer unrelated to variables)
     public const int WiredUserVariablesListComposer = 749; // AS3-verified (direct read): _SafeCls_2492 -> WiredUserVariablesPage; corrects a collision (was 3041)
-    public const int NftClaimResultMessageComposer = 1780;
-    public const int NftClaimsMessageComposer = 2053;
-    public const int NftStoreOffersMessageComposer = 3585;
+    public const int NftClaimResultMessageComposer = 3601; // AS3-verified (direct read): RewardClaimsTab::onNftClaimResultMessage(_SafeCls_2853) -> _SafeStr_4546[3601]; was 1780, which has no entry in the WIN63 registry at all
+    public const int NftClaimsMessageComposer = 108; // AS3-verified (direct read): RewardClaimsTab::onNftClaimsMessage(_SafeCls_3876) -> _SafeStr_4546[108]; was 2053, which has no entry in the WIN63 registry at all
+    public const int NftStoreOffersMessageComposer = 3272; // AS3-verified (direct read): ShopTab::onNftStoreOffers(_SafeCls_3611) -> _SafeStr_4546[3272]; corrects a collision (was 3585 = IssueInfoMessageComposer, declared further down)
     public const int NftStorePurchaseMessageComposer = 3171;
     public const int RedeemNftLootBoxResultMessageComposer = 2262;
     public const int RedeemNftLootBoxStateMessageComposer = 2857;
     public const int NftEmeraldConvertResultMessageComposer = 3159;
     public const int TradeNftAssetInventoryMessageComposer = 3854;
     public const int TradeNftAssetsMessageComposer = 2159;
-    public const int BlockListMessageComposer = 214;
-    public const int BlockUserUpdateMessageComposer = 219;
-    public const int DailyTasksActiveListMessageComposer = 2507;
-    public const int DailyTasksTasksAddedMessageComposer = 1762;
+    public const int BlockListMessageComposer = 505; // AS3-verified (direct read): _SafeStr_4546[505] = _SafeCls_2982, whose only consumer is BlockedUsersManager.as; was 214, which has no entry in the WIN63 registry at all
+    public const int BlockUserUpdateMessageComposer = 1825; // AS3-verified (direct read): _SafeStr_4546[1825] = _SafeCls_2460, consumed by BlockedUsersManager.as / RoomUsersHandler.as; was 219, which has no entry in the WIN63 registry at all
+
+    // AS3-verified (direct read): the three events DailyTasksController.as registers in its
+    // constructor, resolved in WIN63's own registry _SafeCls_2046.as — 1824 = _SafeCls_3179
+    // (onActiveDailyTasks, line 1295), 2506 = _SafeCls_2859 (onTasksAdded, line 1414), 1065 =
+    // _SafeCls_3449 (onTaskUpdated, line 1177). The previous 2507/1762 were inherited from the
+    // pre-Vortex header table: 1762 is really CfhTopicsInit, which this file already declares
+    // correctly further down, so the two constants collided on the same wire id.
+    public const int DailyTasksActiveListMessageComposer = 1824;
+    public const int DailyTasksTasksAddedMessageComposer = 2506;
     public const int DailyTasksTaskUpdateMessageComposer = 1065;
-    public const int UserPurchasableChatStyleChangedMessageComposer = 2894;
-    public const int UserPurchasableChatStylesMessageComposer = 2255;
+    public const int UserPurchasableChatStyleChangedMessageComposer = 3971; // AS3-verified (direct read): _SafeStr_4546[3971] = _SafeCls_2210, consumed by SessionDataManager.as; was 2894, which has no entry in the WIN63 registry at all
+    public const int UserPurchasableChatStylesMessageComposer = 3774; // AS3-verified (direct read): _SafeStr_4546[3774] = _SafeCls_2023, consumed by SessionDataManager.as; was 2255, which has no entry in the WIN63 registry at all
     public const int BanInfoMessageComposer = 2557;
     public const int MyCfhReportStatusMessageComposer = 2474;
     public const int WiredRoomLogsComposer = 1910; // AS3-verified (direct read): _SafeCls_3729 -> WiredLogPage; corrects a collision (was 3761)
@@ -713,7 +720,7 @@ internal static class MessageComposer
     public const int Game2GameRejoinMessageComposer = 1376; // AS3-verified (ghost fix): onRejoinGame
     public const int Game2StageStartingMessageComposer = 3295; // AS3-verified (ghost fix): onGameStageStarting @ HabboHelp
     public const int AreaHideMessageComposer = 1131; // AS3-verified (ghost fix): onAreaHide
-    public const int CustomStackingHeightUpdateMessageComposer = 2552;
+    public const int CustomStackingHeightUpdateMessageComposer = 9201; // UNRESOLVED: 2552 is the wired FurniAction event in the WIN63 registry (_SafeStr_4546[2552] = _SafeCls_3816, in incoming/userdefinedroomevents, consumed by habbo/roomevents), so this constant was shipping stacking-height updates on a wired header. No (furniId:int, height:int) event exists in the 701 client - the only stacking data it reads is the packed HeightMapUpdate - so the message may have no client counterpart at all. Parked in the 92xx band (the outgoing-side twin of the 9xxx placeholders in MessageEvent) pending a proper retrace
 
     public const int CustomUserNotificationMessageComposer = 169; // AS3-verified: onCustomUserNotificationMessage @ AvatarInfoWidgetHandler
 
