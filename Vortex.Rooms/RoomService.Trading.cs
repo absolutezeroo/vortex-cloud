@@ -19,7 +19,7 @@ internal sealed partial class RoomService
         }
 
         await _grainFactory
-            .GetRoomGrain(ctx.RoomId)
+            .GetRoomTrading(ctx.RoomId)
             .OpenTradeAsync(ctx.PlayerId, otherRoomObjectId, ct)
             .ConfigureAwait(false);
     }
@@ -36,7 +36,7 @@ internal sealed partial class RoomService
         }
 
         await _grainFactory
-            .GetRoomGrain(ctx.RoomId)
+            .GetRoomTrading(ctx.RoomId)
             .AddTradeItemsAsync(ctx.PlayerId, itemIds, ct)
             .ConfigureAwait(false);
     }
@@ -49,7 +49,7 @@ internal sealed partial class RoomService
         }
 
         await _grainFactory
-            .GetRoomGrain(ctx.RoomId)
+            .GetRoomTrading(ctx.RoomId)
             .RemoveTradeItemAsync(ctx.PlayerId, itemId, ct)
             .ConfigureAwait(false);
     }
@@ -62,7 +62,7 @@ internal sealed partial class RoomService
         }
 
         await _grainFactory
-            .GetRoomGrain(ctx.RoomId)
+            .GetRoomTrading(ctx.RoomId)
             .SetTradeAcceptAsync(ctx.PlayerId, accepted, ct)
             .ConfigureAwait(false);
     }
@@ -75,7 +75,7 @@ internal sealed partial class RoomService
         }
 
         await _grainFactory
-            .GetRoomGrain(ctx.RoomId)
+            .GetRoomTrading(ctx.RoomId)
             .ConfirmTradeAsync(ctx.PlayerId, confirm, ct)
             .ConfigureAwait(false);
     }
@@ -88,7 +88,7 @@ internal sealed partial class RoomService
         }
 
         await _grainFactory
-            .GetRoomGrain(ctx.RoomId)
+            .GetRoomTrading(ctx.RoomId)
             .CloseTradeAsync(ctx.PlayerId, ct)
             .ConfigureAwait(false);
     }

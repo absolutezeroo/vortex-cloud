@@ -203,7 +203,7 @@ internal sealed partial class DashboardOperationsService
                     );
 
                     bool ok = await _grainFactory
-                        .GetRoomGrain(activeRoom.RoomId)
+                        .GetRoomModeration(activeRoom.RoomId)
                         .MuteUserAsync(actorCtx, target, request.DurationSeconds, c)
                         .ConfigureAwait(false);
 

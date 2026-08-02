@@ -25,7 +25,7 @@ public class WiredGetRoomStatsMessageHandler(IGrainFactory grainFactory)
         }
 
         WiredRoomStatsEventMessageComposer stats = await _grainFactory
-            .GetRoomGrain(ctx.RoomId)
+            .GetRoomWired(ctx.RoomId)
             .GetWiredRoomStatsAsync(ct)
             .ConfigureAwait(false);
 

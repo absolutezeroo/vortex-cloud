@@ -42,7 +42,7 @@ public class PurchaseRoomAdMessageMessageHandler(
             return;
         }
 
-        IRoomGrain roomGrain = grainFactory.GetRoomGrain(message.FlatId);
+        IRoomSecurity roomGrain = grainFactory.GetRoomSecurity(message.FlatId);
         ActionContext actionCtx = ActionContext.CreateForPlayer(ctx.PlayerId, message.FlatId);
         RoomControllerType controllerLevel = await roomGrain
             .GetControllerLevelAsync(actionCtx, ct)

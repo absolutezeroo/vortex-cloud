@@ -419,7 +419,7 @@ internal sealed class PlayerEffectGrain(
         }
 
         await _grainFactory
-            .GetRoomGrain(room.RoomId)
+            .GetRoomAvatars(room.RoomId)
             .SetAvatarEffectAsync(
                 ActionContext.CreateForPlayer(PlayerId.Parse(OwnerId), room.RoomId),
                 0,

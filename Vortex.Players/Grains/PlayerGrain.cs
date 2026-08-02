@@ -260,7 +260,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         try
         {
             await _grainFactory
-                .GetRoomGrain(activeRoom.RoomId)
+                .GetRoomSecurity(activeRoom.RoomId)
                 .UpdateAvatarFavouriteGroupAsync(
                     _state.PlayerId,
                     _state.FavouriteGroupId,

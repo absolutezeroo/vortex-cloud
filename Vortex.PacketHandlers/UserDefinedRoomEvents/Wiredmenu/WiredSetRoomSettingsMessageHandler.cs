@@ -26,7 +26,7 @@ public class WiredSetRoomSettingsMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        IRoomGrain room = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomWired room = _grainFactory.GetRoomWired(ctx.RoomId);
 
         WiredRoomSettingsEventMessageComposer? settings = await room.SetWiredRoomSettingsAsync(
                 new PlayerId(ctx.PlayerId),

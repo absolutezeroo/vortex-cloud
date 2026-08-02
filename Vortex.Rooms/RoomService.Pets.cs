@@ -23,7 +23,7 @@ internal sealed partial class RoomService
             return;
         }
 
-        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomPets roomGrain = _grainFactory.GetRoomPets(ctx.RoomId);
 
         await roomGrain.PlacePetAsync(ctx, petId, x, y, direction, ct).ConfigureAwait(false);
     }
@@ -42,7 +42,7 @@ internal sealed partial class RoomService
             return;
         }
 
-        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomPets roomGrain = _grainFactory.GetRoomPets(ctx.RoomId);
 
         await roomGrain.MovePetAsync(ctx, petId, x, y, direction, ct).ConfigureAwait(false);
     }
@@ -54,7 +54,7 @@ internal sealed partial class RoomService
             return;
         }
 
-        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomPets roomGrain = _grainFactory.GetRoomPets(ctx.RoomId);
 
         await roomGrain.PickUpPetAsync(ctx, petId, ct).ConfigureAwait(false);
     }

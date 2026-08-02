@@ -31,7 +31,7 @@ public class ShoutMessageHandler : IMessageHandler<ShoutMessage>
             return;
         }
 
-        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomAvatars roomGrain = _grainFactory.GetRoomAvatars(ctx.RoomId);
         await roomGrain
             .SendChatFromPlayerAsync(
                 ctx.PlayerId,

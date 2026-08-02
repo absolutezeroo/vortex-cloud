@@ -32,7 +32,7 @@ public class AvatarEffectSelectedMessageHandler(IGrainFactory grainFactory)
         if (ctx.RoomId > 0)
         {
             await _grainFactory
-                .GetRoomGrain(ctx.RoomId)
+                .GetRoomAvatars(ctx.RoomId)
                 .SetAvatarEffectAsync(ctx.AsActionContext(), applied, ct)
                 .ConfigureAwait(false);
         }

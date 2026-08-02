@@ -26,7 +26,7 @@ public class WiredGetVariableOwnersPageMessageHandler(IGrainFactory grainFactory
         }
 
         WiredVariableOwnersPageSnapshot page = await _grainFactory
-            .GetRoomGrain(ctx.RoomId)
+            .GetRoomWired(ctx.RoomId)
             .GetVariableOwnersPageAsync(
                 message.VariableId,
                 message.Page,

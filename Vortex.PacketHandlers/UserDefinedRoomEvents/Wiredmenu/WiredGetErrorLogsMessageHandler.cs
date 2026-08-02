@@ -26,7 +26,7 @@ public class WiredGetErrorLogsMessageHandler(IGrainFactory grainFactory)
         }
 
         List<WiredErrorLogEntry> entries = await _grainFactory
-            .GetRoomGrain(ctx.RoomId)
+            .GetRoomWired(ctx.RoomId)
             .GetWiredErrorLogsAsync(ct)
             .ConfigureAwait(false);
 

@@ -25,7 +25,7 @@ public class GetFlatControllersMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        IRoomGrain roomGrain = grainFactory.GetRoomGrain(message.RoomId);
+        IRoomSettings roomGrain = grainFactory.GetRoomSettings(message.RoomId);
         ImmutableArray<RoomControllerSnapshot> controllers = await roomGrain
             .GetControllersAsync(ct)
             .ConfigureAwait(false);

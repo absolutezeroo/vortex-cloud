@@ -29,7 +29,7 @@ public class RemoveRightsMessageHandler(IGrainFactory grainFactory)
 
         ImmutableArray<PlayerId> targets = [.. message.TargetUserIds.Select(id => (PlayerId)id)];
 
-        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomSettings roomGrain = _grainFactory.GetRoomSettings(ctx.RoomId);
         await roomGrain.RemoveRightsAsync(ctx.PlayerId, targets, ct).ConfigureAwait(false);
     }
 }

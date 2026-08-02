@@ -17,8 +17,55 @@ namespace Vortex.Primitives.Orleans;
 
 public static class GrainFactoryExtensions
 {
+    /// <summary>The whole room surface. Prefer one of the <c>GetRoom*</c> facet accessors below;
+    /// this is for the few call sites that genuinely span most of the room.</summary>
     public static IRoomGrain GetRoomGrain(this IGrainFactory factory, RoomId roomId) =>
         factory.GetGrain<IRoomGrain>((long)roomId.Value);
+
+    // Facets of the room grain. Every one of these resolves to the same RoomGrain activation as
+    // GetRoomGrain for the same room id -- RoomGrain is the only implementation of all of them, so
+    // asking for a facet is not a different grain, just a narrower view of the same one. Take the
+    // narrowest facet a call site actually needs: it makes the dependency legible and keeps the
+    // blast radius of a room-interface change proportional to what really uses it.
+
+    public static IRoomCore GetRoomCore(this IGrainFactory factory, RoomId roomId) =>
+        factory.GetGrain<IRoomCore>((long)roomId.Value);
+
+    public static IRoomAvatars GetRoomAvatars(this IGrainFactory factory, RoomId roomId) =>
+        factory.GetGrain<IRoomAvatars>((long)roomId.Value);
+
+    public static IRoomMap GetRoomMap(this IGrainFactory factory, RoomId roomId) =>
+        factory.GetGrain<IRoomMap>((long)roomId.Value);
+
+    public static IRoomFurni GetRoomFurni(this IGrainFactory factory, RoomId roomId) =>
+        factory.GetGrain<IRoomFurni>((long)roomId.Value);
+
+    public static IRoomPets GetRoomPets(this IGrainFactory factory, RoomId roomId) =>
+        factory.GetGrain<IRoomPets>((long)roomId.Value);
+
+    public static IRoomSecurity GetRoomSecurity(this IGrainFactory factory, RoomId roomId) =>
+        factory.GetGrain<IRoomSecurity>((long)roomId.Value);
+
+    public static IRoomSettings GetRoomSettings(this IGrainFactory factory, RoomId roomId) =>
+        factory.GetGrain<IRoomSettings>((long)roomId.Value);
+
+    public static IRoomModeration GetRoomModeration(this IGrainFactory factory, RoomId roomId) =>
+        factory.GetGrain<IRoomModeration>((long)roomId.Value);
+
+    public static IRoomTrading GetRoomTrading(this IGrainFactory factory, RoomId roomId) =>
+        factory.GetGrain<IRoomTrading>((long)roomId.Value);
+
+    public static IRoomMysteryBox GetRoomMysteryBox(this IGrainFactory factory, RoomId roomId) =>
+        factory.GetGrain<IRoomMysteryBox>((long)roomId.Value);
+
+    public static IRoomDoorbell GetRoomDoorbell(this IGrainFactory factory, RoomId roomId) =>
+        factory.GetGrain<IRoomDoorbell>((long)roomId.Value);
+
+    public static IRoomCrackable GetRoomCrackable(this IGrainFactory factory, RoomId roomId) =>
+        factory.GetGrain<IRoomCrackable>((long)roomId.Value);
+
+    public static IRoomWired GetRoomWired(this IGrainFactory factory, RoomId roomId) =>
+        factory.GetGrain<IRoomWired>((long)roomId.Value);
 
     public static IRoomPersistenceGrain GetRoomPersistenceGrain(
         this IGrainFactory factory,

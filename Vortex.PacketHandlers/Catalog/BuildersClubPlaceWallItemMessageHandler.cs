@@ -62,7 +62,7 @@ public class BuildersClubPlaceWallItemMessageHandler(
             return;
         }
 
-        IRoomGrain roomGrain = grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomFurni roomGrain = grainFactory.GetRoomFurni(ctx.RoomId);
 
         bool placed = await roomGrain
             .PlaceWallItemAsync(ctx.AsActionContext(), item, x, y, z, wallOffset, rot, ct)

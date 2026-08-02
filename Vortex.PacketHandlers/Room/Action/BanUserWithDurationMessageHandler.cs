@@ -62,7 +62,7 @@ public class BanUserWithDurationMessageHandler(
             return;
         }
 
-        IRoomGrain roomGrain = grainFactory.GetRoomGrain(actorRoomId);
+        IRoomModeration roomGrain = grainFactory.GetRoomModeration(actorRoomId);
         bool applied = await roomGrain
             .BanUserAsync(actorCtx, message.UserId, durationSeconds, ct)
             .ConfigureAwait(false);

@@ -43,7 +43,7 @@ public class WhisperMessageHandler : IMessageHandler<WhisperMessage>
             return;
         }
 
-        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomAvatars roomGrain = _grainFactory.GetRoomAvatars(ctx.RoomId);
 
         await roomGrain
             .SendChatFromPlayerAsync(

@@ -27,7 +27,7 @@ public class RequestRoomPropertySetMessageHandler(IGrainFactory grainFactory)
         }
 
         RoomSnapshot snapshot = await grainFactory
-            .GetRoomGrain(message.RoomId)
+            .GetRoomCore(message.RoomId)
             .GetSnapshotAsync()
             .ConfigureAwait(false);
 

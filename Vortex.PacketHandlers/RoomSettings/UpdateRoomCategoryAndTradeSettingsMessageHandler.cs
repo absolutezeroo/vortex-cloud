@@ -22,7 +22,7 @@ public class UpdateRoomCategoryAndTradeSettingsMessageHandler(IGrainFactory grai
             return;
         }
 
-        IRoomGrain roomGrain = grainFactory.GetRoomGrain(message.RoomId);
+        IRoomSettings roomGrain = grainFactory.GetRoomSettings(message.RoomId);
 
         await roomGrain
             .UpdateCategoryAndTradeAsync(ctx.PlayerId, message.CategoryId, message.TradeType, ct)

@@ -147,7 +147,7 @@ public class RoomDirectoryGrain(
         foreach (RoomActiveSnapshot room in rooms)
         {
             int population = _roomPopulations.TryGetValue(room.RoomId, out int pop) ? pop : 0;
-            IRoomGrain roomGrain = _grainFactory.GetRoomGrain(room.RoomId);
+            IRoomCore roomGrain = _grainFactory.GetRoomCore(room.RoomId);
 
             pending.Add(
                 population > 0

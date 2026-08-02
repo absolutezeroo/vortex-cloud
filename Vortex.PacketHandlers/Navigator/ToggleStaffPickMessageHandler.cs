@@ -34,7 +34,7 @@ public class ToggleStaffPickMessageHandler(
             return;
         }
 
-        IRoomGrain roomGrain = grainFactory.GetRoomGrain(message.RoomId);
+        IRoomSettings roomGrain = grainFactory.GetRoomSettings(message.RoomId);
 
         await roomGrain.SetStaffPickAsync(message.IsStaffPicked, ct).ConfigureAwait(false);
     }

@@ -34,7 +34,7 @@ public class SignMessageHandler(IGrainFactory grainFactory) : IMessageHandler<Si
             return;
         }
 
-        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomAvatars roomGrain = _grainFactory.GetRoomAvatars(ctx.RoomId);
         await roomGrain
             .SetAvatarSignAsync(ctx.AsActionContext(), message.SignId, ct)
             .ConfigureAwait(false);

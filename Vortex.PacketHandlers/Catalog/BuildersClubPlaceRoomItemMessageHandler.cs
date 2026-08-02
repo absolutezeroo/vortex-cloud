@@ -17,7 +17,7 @@ namespace Vortex.PacketHandlers.Catalog;
 /// Free direct-to-room placement for Builders Club subscribers -- no currency debit, gated by an
 /// active subscription and the subscription's furni-count limit (checked atomically inside
 /// IInventoryGrain.GrantSingleFurnitureIfUnderLimitAsync). Reuses the exact same room-security-gated
-/// IRoomGrain.PlaceFloorItemAsync the normal inventory-placement path uses, so ownership/rights
+/// IRoomFurni.PlaceFloorItemAsync the normal inventory-placement path uses, so ownership/rights
 /// enforcement isn't duplicated here.
 /// </summary>
 public class BuildersClubPlaceRoomItemMessageHandler(
@@ -55,7 +55,7 @@ public class BuildersClubPlaceRoomItemMessageHandler(
             return;
         }
 
-        IRoomGrain roomGrain = grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomFurni roomGrain = grainFactory.GetRoomFurni(ctx.RoomId);
 
         bool placed = await roomGrain
             .PlaceFloorItemAsync(

@@ -25,7 +25,7 @@ internal sealed partial class PlayerPresenceGrain
                 }
             );
 
-            IRoomGrain room = _grainFactory.GetRoomGrain(_state.ActiveRoomId);
+            IRoomAvatars room = _grainFactory.GetRoomAvatars(_state.ActiveRoomId);
 
             await room.UpdateAvatarWithPlayerAsync(snapshot, ct);
         }

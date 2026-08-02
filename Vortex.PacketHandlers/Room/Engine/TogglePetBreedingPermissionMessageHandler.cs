@@ -24,7 +24,7 @@ public class TogglePetBreedingPermissionMessageHandler(IGrainFactory grainFactor
             return;
         }
 
-        IRoomGrain room = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomPets room = _grainFactory.GetRoomPets(ctx.RoomId);
 
         await room.TogglePetBreedingPermissionAsync(ctx.AsActionContext(), message.PetId, ct)
             .ConfigureAwait(false);

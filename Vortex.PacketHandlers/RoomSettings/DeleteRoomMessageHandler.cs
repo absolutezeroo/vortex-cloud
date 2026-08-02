@@ -22,7 +22,7 @@ public class DeleteRoomMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        IRoomGrain roomGrain = grainFactory.GetRoomGrain(message.RoomId);
+        IRoomSettings roomGrain = grainFactory.GetRoomSettings(message.RoomId);
         await roomGrain.DeleteRoomAsync(ctx.PlayerId, ct).ConfigureAwait(false);
     }
 }

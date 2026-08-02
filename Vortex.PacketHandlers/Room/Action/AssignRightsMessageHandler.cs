@@ -24,7 +24,7 @@ public class AssignRightsMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomSettings roomGrain = _grainFactory.GetRoomSettings(ctx.RoomId);
         await roomGrain
             .AssignRightsAsync(ctx.PlayerId, message.TargetUserId, ct)
             .ConfigureAwait(false);

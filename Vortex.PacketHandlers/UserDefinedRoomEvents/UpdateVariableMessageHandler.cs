@@ -26,7 +26,7 @@ public class UpdateVariableMessageHandler(IGrainFactory grainFactory)
 
         if (
             !await _grainFactory
-                .GetRoomGrain(ctx.RoomId)
+                .GetRoomFurni(ctx.RoomId)
                 .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message, ct)
                 .ConfigureAwait(false)
         )

@@ -74,7 +74,7 @@ internal sealed partial class PlayerPresenceGrain
 
         _roomOutboundSub = await stream.SubscribeAsync(this);
 
-        IRoomGrain room = _grainFactory.GetRoomGrain(roomId);
+        IRoomAvatars room = _grainFactory.GetRoomAvatars(roomId);
 
         PlayerSummarySnapshot playerSnapshot = await _grainFactory
             .GetPlayerGrain((PlayerId)this.GetPrimaryKeyLong())
@@ -125,7 +125,7 @@ internal sealed partial class PlayerPresenceGrain
             RoomId = prev,
         };
 
-        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(prev);
+        IRoomAvatars roomGrain = _grainFactory.GetRoomAvatars(prev);
 
         // The room call is best-effort: if it fails or is cancelled (this also runs from
         // OnDeactivateAsync, whose token is cancelled once the grace period elapses), the player must

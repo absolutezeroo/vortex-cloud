@@ -21,7 +21,7 @@ public class RateFlatMessageHandler(IGrainFactory grainFactory) : IMessageHandle
             return;
         }
 
-        IRoomGrain roomGrain = grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomSettings roomGrain = grainFactory.GetRoomSettings(ctx.RoomId);
 
         await roomGrain.RateRoomAsync(ctx.PlayerId, message.Points, ct).ConfigureAwait(false);
     }

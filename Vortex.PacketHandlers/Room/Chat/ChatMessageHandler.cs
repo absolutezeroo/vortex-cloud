@@ -24,7 +24,7 @@ public class ChatMessageHandler(IGrainFactory grainFactory) : IMessageHandler<Ch
             return;
         }
 
-        IRoomGrain roomChatGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomAvatars roomChatGrain = _grainFactory.GetRoomAvatars(ctx.RoomId);
 
         await roomChatGrain
             .SendChatFromPlayerAsync(

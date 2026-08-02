@@ -50,9 +50,15 @@ public class GetRoomEntryDataMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        IRoomGrain room = _grainFactory.GetRoomGrain(roomId);
+        // The entry payload genuinely spans three facets of the room, so it takes one reference to
+        // each rather than the whole IRoomGrain. All three resolve to the same activation.
+        IRoomFurni roomFurni = _grainFactory.GetRoomFurni(roomId);
+        IRoomAvatars roomAvatars = _grainFactory.GetRoomAvatars(roomId);
+
         ActionContext actionCtx = ActionContext.CreateForPlayer(ctx.PlayerId, roomId);
-        RoomControllerType controllerLevel = await room.GetControllerLevelAsync(actionCtx, ct)
+        RoomControllerType controllerLevel = await _grainFactory
+            .GetRoomSecurity(roomId)
+            .GetControllerLevelAsync(actionCtx, ct)
             .ConfigureAwait(false);
         // Moderator outranks Owner in this ladder, so an equality test excluded staff from the
         // owner-facing entry data while PlayerPresenceGrain already sent them YouAreOwner. The two
@@ -60,17 +66,17 @@ public class GetRoomEntryDataMessageHandler(IGrainFactory grainFactory)
         bool isOwner = controllerLevel >= RoomControllerType.Owner;
         bool hasRights = controllerLevel >= RoomControllerType.Rights;
 
-        ImmutableDictionary<PlayerId, string> ownersSnapshot = await room.GetAllOwnersAsync(ct)
+        ImmutableDictionary<PlayerId, string> ownersSnapshot = await roomFurni
+            .GetAllOwnersAsync(ct)
             .ConfigureAwait(false);
-        ImmutableArray<RoomFloorItemSnapshot> floorSnapshot =
-            await room.GetAllFloorItemSnapshotsAsync(ct).ConfigureAwait(false);
-        ImmutableArray<RoomWallItemSnapshot> wallSnapshot = await room.GetAllWallItemSnapshotsAsync(
-                ct
-            )
+        ImmutableArray<RoomFloorItemSnapshot> floorSnapshot = await roomFurni
+            .GetAllFloorItemSnapshotsAsync(ct)
             .ConfigureAwait(false);
-        ImmutableArray<RoomAvatarSnapshot> avatarSnapshots = await room.GetAllAvatarSnapshotsAsync(
-                ct
-            )
+        ImmutableArray<RoomWallItemSnapshot> wallSnapshot = await roomFurni
+            .GetAllWallItemSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+        ImmutableArray<RoomAvatarSnapshot> avatarSnapshots = await roomAvatars
+            .GetAllAvatarSnapshotsAsync(ct)
             .ConfigureAwait(false);
 
         IComposer[] danceComposers = avatarSnapshots

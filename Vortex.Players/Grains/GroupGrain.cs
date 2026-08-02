@@ -1070,7 +1070,7 @@ internal sealed class GroupGrain(
             }
 
             await this
-                .GrainFactory.GetRoomGrain(new RoomId(roomId))
+                .GrainFactory.GetRoomSecurity(new RoomId(roomId))
                 .RefreshGroupMembershipAsync(affectedPlayerIds, ct)
                 .ConfigureAwait(true);
         }

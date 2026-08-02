@@ -26,7 +26,7 @@ public class WiredClearErrorLogsMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        IRoomGrain room = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomWired room = _grainFactory.GetRoomWired(ctx.RoomId);
 
         await room.ClearWiredErrorLogsAsync(ct).ConfigureAwait(false);
 

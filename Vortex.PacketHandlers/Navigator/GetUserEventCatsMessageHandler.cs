@@ -47,7 +47,7 @@ public class GetUserEventCatsMessageHandler(
 
         if (ctx.RoomId > 0)
         {
-            IRoomGrain roomGrain = grainFactory.GetRoomGrain(ctx.RoomId);
+            IRoomCore roomGrain = grainFactory.GetRoomCore(ctx.RoomId);
             RoomSnapshot snapshot = await roomGrain.GetSnapshotAsync().ConfigureAwait(false);
 
             if (snapshot.OwnerId == ctx.PlayerId)

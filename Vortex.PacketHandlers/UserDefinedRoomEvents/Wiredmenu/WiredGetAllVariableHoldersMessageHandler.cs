@@ -29,7 +29,7 @@ public class WiredGetAllVariableHoldersMessageHandler(IGrainFactory grainFactory
 
         (WiredVariableSnapshot Variable, List<(int ObjectId, int Value)> Holders)? result =
             await _grainFactory
-                .GetRoomGrain(ctx.RoomId)
+                .GetRoomWired(ctx.RoomId)
                 .GetVariableHoldersByNameAsync(message.VariableId, ct)
                 .ConfigureAwait(false);
 

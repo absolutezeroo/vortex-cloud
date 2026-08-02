@@ -49,7 +49,7 @@ internal sealed partial class DashboardOperationsService
     )
     {
         ImmutableArray<RoomAvatarSnapshot> avatars = await _grainFactory
-            .GetRoomGrain(new RoomId(roomId))
+            .GetRoomAvatars(new RoomId(roomId))
             .GetAllAvatarSnapshotsAsync(ct)
             .ConfigureAwait(false);
 
@@ -73,7 +73,7 @@ internal sealed partial class DashboardOperationsService
             targetPlayerId: null,
             roomId: request.RoomId,
             detail: new { },
-            work: _ => _grainFactory.GetRoomGrain(new RoomId(request.RoomId)).DeactivateRoomAsync(),
+            work: _ => _grainFactory.GetRoomCore(new RoomId(request.RoomId)).DeactivateRoomAsync(),
             ct,
             AuditCategory.Moderation
         );
@@ -97,7 +97,7 @@ internal sealed partial class DashboardOperationsService
                 ActionContext actorCtx = ActionContext.CreateForPlayer(staffActor, roomId);
 
                 bool ok = await _grainFactory
-                    .GetRoomGrain(roomId)
+                    .GetRoomModeration(roomId)
                     .KickUserAsync(actorCtx, new PlayerId(request.PlayerId), c)
                     .ConfigureAwait(false);
 

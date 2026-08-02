@@ -26,7 +26,7 @@ public class WiredGetAllVariablesHashMessageHandler(IGrainFactory grainFactory)
         }
 
         WiredVariablesSnapshot variables = await _grainFactory
-            .GetRoomGrain(ctx.RoomId)
+            .GetRoomFurni(ctx.RoomId)
             .GetWiredVariablesSnapshotAsync(ct)
             .ConfigureAwait(false);
 

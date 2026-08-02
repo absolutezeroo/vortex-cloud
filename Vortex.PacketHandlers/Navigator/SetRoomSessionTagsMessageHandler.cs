@@ -22,7 +22,7 @@ public class SetRoomSessionTagsMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        IRoomGrain roomGrain = grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomSettings roomGrain = grainFactory.GetRoomSettings(ctx.RoomId);
 
         await roomGrain
             .SetRoomTagsAsync(ctx.PlayerId, message.Tag1, message.Tag2, ct)

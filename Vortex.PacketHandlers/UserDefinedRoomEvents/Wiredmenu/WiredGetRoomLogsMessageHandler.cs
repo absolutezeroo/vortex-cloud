@@ -25,7 +25,7 @@ public class WiredGetRoomLogsMessageHandler(IGrainFactory grainFactory)
         }
 
         WiredRoomLogsComposer page = await _grainFactory
-            .GetRoomGrain(ctx.RoomId)
+            .GetRoomWired(ctx.RoomId)
             .GetWiredRoomLogsPageAsync(
                 message.Page,
                 message.PageSize,

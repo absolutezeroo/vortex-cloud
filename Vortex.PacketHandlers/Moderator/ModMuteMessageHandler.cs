@@ -62,7 +62,7 @@ public class ModMuteMessageHandler(
                 .ConfigureAwait(false);
 
             ActionContext actorCtx = ctx.AsActionContext() with { RoomId = targetRoomId };
-            IRoomGrain roomGrain = grainFactory.GetRoomGrain(targetRoomId);
+            IRoomModeration roomGrain = grainFactory.GetRoomModeration(targetRoomId);
             int durationSeconds = (int)TimeSpan.FromMinutes(muteMinutes).TotalSeconds;
 
             success = await roomGrain

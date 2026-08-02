@@ -23,7 +23,7 @@ public class LookToMessageHandler(IGrainFactory grainFactory) : IMessageHandler<
             return;
         }
 
-        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomAvatars roomGrain = _grainFactory.GetRoomAvatars(ctx.RoomId);
         await roomGrain
             .LookToAvatarAsync(ctx.AsActionContext(), message.X, message.Y, ct)
             .ConfigureAwait(false);

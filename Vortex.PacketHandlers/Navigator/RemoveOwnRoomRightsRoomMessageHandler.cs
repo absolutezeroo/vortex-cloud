@@ -24,7 +24,7 @@ public class RemoveOwnRoomRightsRoomMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(message.RoomId);
+        IRoomSettings roomGrain = _grainFactory.GetRoomSettings(message.RoomId);
         await roomGrain.RemoveOwnRightsAsync(ctx.PlayerId, ct).ConfigureAwait(false);
     }
 }

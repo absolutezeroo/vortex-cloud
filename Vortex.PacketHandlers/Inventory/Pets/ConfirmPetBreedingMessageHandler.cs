@@ -24,7 +24,7 @@ public class ConfirmPetBreedingMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        IRoomGrain room = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomPets room = _grainFactory.GetRoomPets(ctx.RoomId);
 
         await room.ConfirmPetBreedingAsync(ctx.AsActionContext(), message.PetId, ct)
             .ConfigureAwait(false);

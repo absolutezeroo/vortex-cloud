@@ -47,7 +47,7 @@ internal sealed partial class RoomService
                 return;
             }
 
-            IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+            IRoomFurni roomGrain = _grainFactory.GetRoomFurni(ctx.RoomId);
 
             if (
                 !await roomGrain
@@ -86,7 +86,7 @@ internal sealed partial class RoomService
             return;
         }
 
-        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomFurni roomGrain = _grainFactory.GetRoomFurni(ctx.RoomId);
 
         if (
             await roomGrain

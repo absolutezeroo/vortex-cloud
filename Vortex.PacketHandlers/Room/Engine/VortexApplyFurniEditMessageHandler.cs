@@ -47,7 +47,7 @@ public class VortexApplyFurniEditMessageHandler(
             return;
         }
 
-        IRoomGrain roomGrain = grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomFurni roomGrain = grainFactory.GetRoomFurni(ctx.RoomId);
 
         // The two lookups the grain cannot do itself. Resolved before the call so a bad username or
         // a bad definition id fails without the grain having mutated anything.
@@ -109,7 +109,7 @@ public class VortexApplyFurniEditMessageHandler(
     /// than what was stored.
     /// </summary>
     private async Task RespondAsync(
-        IRoomGrain roomGrain,
+        IRoomFurni roomGrain,
         MessageContext ctx,
         VortexApplyFurniEditMessage message,
         string error,

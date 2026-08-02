@@ -49,7 +49,7 @@ public class KickUserMessageHandler(
             return;
         }
 
-        IRoomGrain roomGrain = grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomModeration roomGrain = grainFactory.GetRoomModeration(ctx.RoomId);
         bool applied = await roomGrain
             .KickUserAsync(actorCtx, message.UserId, ct)
             .ConfigureAwait(false);

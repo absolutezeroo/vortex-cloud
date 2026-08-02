@@ -29,7 +29,7 @@ public class WiredGetVariablesForObjectMessageHandler(IGrainFactory grainFactory
         }
 
         List<(WiredVariableId id, WiredVariableValue value)> variables = await _grainFactory
-            .GetRoomGrain(ctx.RoomId)
+            .GetRoomFurni(ctx.RoomId)
             .GetAllVariablesForBindingAsync(
                 new WiredVariableBinding()
                 {

@@ -28,7 +28,7 @@ public class RespectUserMessageHandler(IGrainFactory grainFactory, IConfiguratio
         int dailyLimit = _configuration.GetValue("Vortex:Rooms:DailyRespectLimit", 3);
 
         await _grainFactory
-            .GetRoomGrain(ctx.RoomId)
+            .GetRoomAvatars(ctx.RoomId)
             .RespectPlayerAsync(ctx.AsActionContext(), message.UserId, dailyLimit, ct)
             .ConfigureAwait(false);
     }

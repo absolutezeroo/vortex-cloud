@@ -497,7 +497,7 @@ internal sealed class RentableSpaceGrain(
                 // RoomEntityId zeroed via the grain's dirty-flush pipeline.
                 if (_roomId.HasValue)
                 {
-                    IRoomGrain roomGrain = grainFactory.GetRoomGrain(new RoomId(_roomId.Value));
+                    IRoomFurni roomGrain = grainFactory.GetRoomFurni(new RoomId(_roomId.Value));
 
                     await Task.WhenAll(
                         taggedIds.Select(id =>
@@ -600,7 +600,7 @@ internal sealed class RentableSpaceGrain(
         try
         {
             await grainFactory
-                .GetRoomGrain(new RoomId(_roomId.Value))
+                .GetRoomFurni(new RoomId(_roomId.Value))
                 .SetFloorItemStateAsync(new RoomObjectId(FurnitureId), state, ct);
         }
         catch (Exception ex)

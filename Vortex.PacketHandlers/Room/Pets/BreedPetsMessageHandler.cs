@@ -23,7 +23,7 @@ public class BreedPetsMessageHandler(IGrainFactory grainFactory) : IMessageHandl
             return;
         }
 
-        IRoomGrain room = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomPets room = _grainFactory.GetRoomPets(ctx.RoomId);
 
         await room.BreedPetsAsync(ctx.AsActionContext(), message.PetOneId, message.PetTwoId, ct)
             .ConfigureAwait(false);

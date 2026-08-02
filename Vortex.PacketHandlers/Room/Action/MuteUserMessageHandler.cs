@@ -57,7 +57,7 @@ public class MuteUserMessageHandler(
             return;
         }
 
-        IRoomGrain roomGrain = grainFactory.GetRoomGrain(actorRoomId);
+        IRoomModeration roomGrain = grainFactory.GetRoomModeration(actorRoomId);
         int durationSeconds = (int)Math.Ceiling(TimeSpan.FromMinutes(message.Minutes).TotalSeconds);
 
         bool applied = await roomGrain

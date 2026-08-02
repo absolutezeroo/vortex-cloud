@@ -24,7 +24,7 @@ public class GetRoomSettingsMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        IRoomGrain roomGrain = grainFactory.GetRoomGrain(message.RoomId);
+        IRoomSettings roomGrain = grainFactory.GetRoomSettings(message.RoomId);
         RoomSnapshot? snapshot = await roomGrain
             .GetRoomSettingsAsync(ctx.PlayerId, ct)
             .ConfigureAwait(false);

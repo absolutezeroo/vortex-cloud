@@ -28,7 +28,7 @@ internal static class RoomForwardHelper
         CancellationToken ct
     )
     {
-        IRoomGrain roomGrain = grainFactory.GetRoomGrain(roomId);
+        IRoomCore roomGrain = grainFactory.GetRoomCore(roomId);
         RoomSnapshot snapshot = await roomGrain.GetSnapshotAsync().ConfigureAwait(false);
 
         // Drives the "you are a member" affordances on the room card; only worth a grain call when

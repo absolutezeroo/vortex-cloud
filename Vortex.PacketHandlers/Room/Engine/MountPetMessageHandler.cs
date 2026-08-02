@@ -23,7 +23,7 @@ public class MountPetMessageHandler(IGrainFactory grainFactory) : IMessageHandle
             return;
         }
 
-        IRoomGrain room = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomPets room = _grainFactory.GetRoomPets(ctx.RoomId);
 
         await room.MountPetAsync(ctx.AsActionContext(), message.PetId, message.Mount, ct)
             .ConfigureAwait(false);

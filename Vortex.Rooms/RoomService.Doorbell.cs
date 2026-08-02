@@ -29,14 +29,17 @@ internal sealed partial class RoomService
             return;
         }
 
-        IRoomGrain room = _grainFactory.GetRoomGrain(actorCtx.RoomId);
-        RoomControllerType controllerLevel = await room.GetControllerLevelAsync(actorCtx, ct)
+        RoomControllerType controllerLevel = await _grainFactory
+            .GetRoomSecurity(actorCtx.RoomId)
+            .GetControllerLevelAsync(actorCtx, ct)
             .ConfigureAwait(false);
 
         if (controllerLevel < RoomControllerType.Rights)
         {
             return;
         }
+
+        IRoomDoorbell room = _grainFactory.GetRoomDoorbell(actorCtx.RoomId);
 
         bool wasRinging = await room.TryRemoveDoorbellRingAsync(targetPlayerId, ct)
             .ConfigureAwait(false);

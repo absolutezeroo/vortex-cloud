@@ -48,7 +48,7 @@ public class VortexGetFurniEditorDataMessageHandler(
             return;
         }
 
-        IRoomGrain roomGrain = grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomFurni roomGrain = grainFactory.GetRoomFurni(ctx.RoomId);
 
         RoomItemSnapshot? item = await roomGrain
             .GetItemSnapshotByIdAsync(message.ObjectId, ct)

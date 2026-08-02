@@ -26,7 +26,7 @@ public class AvatarExpressionMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomAvatars roomGrain = _grainFactory.GetRoomAvatars(ctx.RoomId);
 
         AvatarExpressionType expression = (AvatarExpressionType)message.ExpressionId;
 

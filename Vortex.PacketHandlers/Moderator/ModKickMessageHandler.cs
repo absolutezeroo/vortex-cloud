@@ -51,7 +51,7 @@ public class ModKickMessageHandler(
         )
         {
             ActionContext actorCtx = ctx.AsActionContext() with { RoomId = targetRoomId };
-            IRoomGrain roomGrain = grainFactory.GetRoomGrain(targetRoomId);
+            IRoomModeration roomGrain = grainFactory.GetRoomModeration(targetRoomId);
 
             success = await roomGrain
                 .KickUserAsync(actorCtx, message.UserId, ct)

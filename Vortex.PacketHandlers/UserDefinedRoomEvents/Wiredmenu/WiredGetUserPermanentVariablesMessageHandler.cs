@@ -27,7 +27,7 @@ public class WiredGetUserPermanentVariablesMessageHandler(IGrainFactory grainFac
         }
 
         WiredPermanentVariablesSnapshot snapshot = await _grainFactory
-            .GetRoomGrain(ctx.RoomId)
+            .GetRoomWired(ctx.RoomId)
             .GetPermanentVariablesForEntityAsync(
                 (WiredVariableTargetType)message.EntityType,
                 message.EntityId,

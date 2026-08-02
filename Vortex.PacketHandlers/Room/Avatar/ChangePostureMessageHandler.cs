@@ -24,7 +24,7 @@ public class ChangePostureMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomAvatars roomGrain = _grainFactory.GetRoomAvatars(ctx.RoomId);
         await roomGrain
             .SetAvatarPostureAsync(ctx.AsActionContext(), message.PostureType, ct)
             .ConfigureAwait(false);

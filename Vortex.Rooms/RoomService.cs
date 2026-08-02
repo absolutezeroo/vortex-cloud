@@ -84,6 +84,10 @@ internal sealed partial class RoomService(
         await playerPresence.ClearActiveRoomAsync(ct).ConfigureAwait(false);
         await playerPresence.SetPendingRoomAsync(roomId, true).ConfigureAwait(false);
 
+        // Room entry is the one flow that legitimately spans the room: core activation, the
+        // security gate, the avatar list and the doorbell all take part. This is what the
+        // IRoomGrain aggregate is for -- narrowing it here would mean four references, not less
+        // coupling.
         IRoomGrain room = _grainFactory.GetRoomGrain(roomId);
 
         await playerPresence
@@ -145,6 +149,8 @@ internal sealed partial class RoomService(
     )
     {
         IPlayerPresenceGrain playerPresence = _grainFactory.GetPlayerPresenceGrain(playerId);
+        // Builds the whole entry payload -- core, security, avatars, map and furni. Deliberately
+        // the aggregate; see EnterRoomAsync above.
         IRoomGrain room = _grainFactory.GetRoomGrain(roomId);
 
         RoomSnapshot snapshot = await room.GetSnapshotAsync().ConfigureAwait(false);
@@ -282,7 +288,7 @@ internal sealed partial class RoomService(
             // Covers cancelling a doorbell ring: the requester never became Active while
             // waiting, so ClearActiveRoomAsync below is a no-op for that case.
             await _grainFactory
-                .GetRoomGrain(pendingRoom.RoomId)
+                .GetRoomDoorbell(pendingRoom.RoomId)
                 .TryRemoveDoorbellRingAsync(playerId, ct)
                 .ConfigureAwait(false);
             await playerPresence.SetPendingRoomAsync(RoomId.Invalid, false).ConfigureAwait(false);
@@ -307,10 +313,14 @@ internal sealed partial class RoomService(
             return;
         }
 
-        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
-
-        await roomGrain.ClickTileAsync(ctx, targetX, targetY, ct).ConfigureAwait(false);
-        await roomGrain.WalkAvatarToAsync(ctx, targetX, targetY, ct).ConfigureAwait(false);
+        await _grainFactory
+            .GetRoomMap(ctx.RoomId)
+            .ClickTileAsync(ctx, targetX, targetY, ct)
+            .ConfigureAwait(false);
+        await _grainFactory
+            .GetRoomAvatars(ctx.RoomId)
+            .WalkAvatarToAsync(ctx, targetX, targetY, ct)
+            .ConfigureAwait(false);
     }
 
     public async Task PickupItemInRoomAsync(
@@ -325,7 +335,7 @@ internal sealed partial class RoomService(
             return;
         }
 
-        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomFurni roomGrain = _grainFactory.GetRoomFurni(ctx.RoomId);
 
         await roomGrain.RemoveItemByIdAsync(ctx, itemId, ct).ConfigureAwait(false);
     }
@@ -342,7 +352,7 @@ internal sealed partial class RoomService(
             return;
         }
 
-        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomFurni roomGrain = _grainFactory.GetRoomFurni(ctx.RoomId);
 
         await roomGrain.UseItemByIdAsync(ctx, itemId, ct, param).ConfigureAwait(false);
     }
@@ -359,7 +369,7 @@ internal sealed partial class RoomService(
             return;
         }
 
-        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomFurni roomGrain = _grainFactory.GetRoomFurni(ctx.RoomId);
 
         await roomGrain.ClickItemByIdAsync(ctx, itemId, ct, param).ConfigureAwait(false);
     }

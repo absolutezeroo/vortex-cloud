@@ -24,7 +24,7 @@ internal sealed partial class RoomService
         }
 
         await _grainFactory
-            .GetRoomGrain(ctx.RoomId)
+            .GetRoomMysteryBox(ctx.RoomId)
             .CancelMysteryBoxWaitAsync(ctx, boxOwnerId, ct)
             .ConfigureAwait(false);
     }
@@ -42,7 +42,7 @@ internal sealed partial class RoomService
         }
 
         await _grainFactory
-            .GetRoomGrain(ctx.RoomId)
+            .GetRoomMysteryBox(ctx.RoomId)
             .OpenMysteryTrophyAsync(ctx, objectId, inscription, ct)
             .ConfigureAwait(false);
     }

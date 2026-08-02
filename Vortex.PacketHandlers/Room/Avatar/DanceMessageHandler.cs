@@ -26,7 +26,7 @@ public class DanceMessageHandler(IGrainFactory grainFactory) : IMessageHandler<D
 
         if (
             !await _grainFactory
-                .GetRoomGrain(ctx.RoomId)
+                .GetRoomAvatars(ctx.RoomId)
                 .SetAvatarDanceAsync(ctx.AsActionContext(), (AvatarDanceType)message.DanceId, ct)
                 .ConfigureAwait(false)
         )

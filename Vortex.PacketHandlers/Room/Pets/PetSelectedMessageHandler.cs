@@ -31,7 +31,7 @@ public class PetSelectedMessageHandler(
             return;
         }
 
-        IRoomGrain room = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomPets room = _grainFactory.GetRoomPets(ctx.RoomId);
         PetSnapshot? pet = await room.GetPlacedPetSnapshotAsync(message.PetId, ct)
             .ConfigureAwait(false);
 

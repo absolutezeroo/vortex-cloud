@@ -65,7 +65,7 @@ public class GetCfhChatlogMessageHandler(
         if (evidence.Value.RoomId is int roomId && roomId > 0)
         {
             RoomSnapshot roomSnapshot = await grainFactory
-                .GetRoomGrain(roomId)
+                .GetRoomCore(roomId)
                 .GetSnapshotAsync()
                 .ConfigureAwait(false);
             roomName = roomSnapshot.Name;

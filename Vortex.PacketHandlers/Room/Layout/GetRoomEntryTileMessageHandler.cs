@@ -26,7 +26,7 @@ public class GetRoomEntryTileMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        IRoomGrain room = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomMap room = _grainFactory.GetRoomMap(ctx.RoomId);
         RoomMapSnapshot map = await room.GetMapSnapshotAsync(ct).ConfigureAwait(false);
 
         await _grainFactory

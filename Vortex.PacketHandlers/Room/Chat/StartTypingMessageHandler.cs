@@ -24,7 +24,7 @@ public class StartTypingMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        IRoomGrain roomGrain = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomAvatars roomGrain = _grainFactory.GetRoomAvatars(ctx.RoomId);
         await roomGrain.SetAvatarTypingAsync(ctx.AsActionContext(), true, ct).ConfigureAwait(false);
     }
 }

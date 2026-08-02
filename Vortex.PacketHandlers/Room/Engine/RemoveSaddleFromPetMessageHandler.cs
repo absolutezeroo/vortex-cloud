@@ -24,7 +24,7 @@ public class RemoveSaddleFromPetMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        IRoomGrain room = _grainFactory.GetRoomGrain(ctx.RoomId);
+        IRoomPets room = _grainFactory.GetRoomPets(ctx.RoomId);
 
         await room.RemoveSaddleFromPetAsync(ctx.AsActionContext(), message.PetId, ct)
             .ConfigureAwait(false);
