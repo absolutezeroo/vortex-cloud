@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.MysteryBox;
+using Vortex.Primitives.Prizes;
 
 namespace Vortex.Dashboard.API.Api;
 
@@ -60,23 +61,30 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
+                // Only the two box pools: this page edits the mystery box, and a seasonal crackable
+                // pool showing up in its prize table would read as a box prize that never drops.
+                string[] boxPoolCodes = [PrizePoolCodes.MysteryBox, PrizePoolCodes.MysteryTrophy];
+
                 var prizes = await db
-                    .MysteryBoxPrizes.AsNoTracking()
-                    .OrderBy(p => p.Pool)
-                    .ThenByDescending(p => p.Weight)
-                    .ThenBy(p => p.Id)
-                    .Select(p => new
+                    .PrizePoolEntries.AsNoTracking()
+                    .Where(e =>
+                        e.PrizePoolEntity != null && boxPoolCodes.Contains(e.PrizePoolEntity.Code)
+                    )
+                    .OrderBy(e => e.PrizePoolEntity!.Code)
+                    .ThenByDescending(e => e.Weight)
+                    .ThenBy(e => e.Id)
+                    .Select(e => new
                     {
-                        p.Id,
-                        pool = p.Pool.ToString(),
-                        p.Color,
-                        productType = p.ProductType.ToString(),
-                        furnitureDefinitionId = p.FurnitureDefinitionEntityId,
-                        p.ExtraParam,
-                        p.Weight,
-                        p.Enabled,
+                        e.Id,
+                        pool = e.PrizePoolEntity!.Code,
+                        Color = e.Variant,
+                        productType = e.ProductType.ToString(),
+                        furnitureDefinitionId = e.FurnitureDefinitionEntityId,
+                        e.ExtraParam,
+                        e.Weight,
+                        e.Enabled,
                         furnitureName = db
-                            .FurnitureDefinitions.Where(f => f.Id == p.FurnitureDefinitionEntityId)
+                            .FurnitureDefinitions.Where(f => f.Id == e.FurnitureDefinitionEntityId)
                             .Select(f => f.Name)
                             .FirstOrDefault(),
                     })

@@ -1,6 +1,6 @@
 using Orleans;
 
-namespace Vortex.Primitives.MysteryBox.Snapshots;
+namespace Vortex.Primitives.Prizes.Snapshots;
 
 /// <summary>
 /// A prize that has actually been granted, in the shape the reward window needs:
@@ -8,7 +8,7 @@ namespace Vortex.Primitives.MysteryBox.Snapshots;
 /// <see cref="ClassId"/> the sprite id (floor/wall) or effect id the client draws.
 /// </summary>
 [GenerateSerializer, Immutable]
-public sealed record MysteryBoxPrizeAward
+public sealed record PrizeAward
 {
     [Id(0)]
     public required string ContentType { get; init; }

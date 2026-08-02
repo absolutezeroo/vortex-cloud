@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Primitives.MysteryBox.Snapshots;
+using Vortex.Primitives.Prizes.Snapshots;
 
 namespace Vortex.Primitives.MysteryBox.Grains;
 
@@ -35,13 +36,4 @@ public interface IPlayerMysteryBoxGrain : IGrainWithIntegerKey
     /// anyway.
     /// </summary>
     public Task<bool> TryConsumeKeyAsync(string color, CancellationToken ct);
-
-    /// <summary>
-    /// Grants <paramref name="prize"/> to the player and returns what the reward window should draw,
-    /// or null when the prize could not be granted (unknown definition, malformed parameters).
-    /// </summary>
-    public Task<MysteryBoxPrizeAward?> GrantPrizeAsync(
-        MysteryBoxPrizeSnapshot prize,
-        CancellationToken ct
-    );
 }

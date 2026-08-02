@@ -27,9 +27,14 @@
   // extraParam instead, so the form swaps which field it asks for.
   const FURNITURE_TYPES = ['Floor', 'Wall'];
 
+  // Prizes live in the shared prize pools every reward furniture draws from, so a pool travels as
+  // its code rather than as a mystery-box-only enum name. These two are seeded and drawn by code.
+  const POOL_BOX = 'mystery-box';
+  const POOL_TROPHY = 'mystery-trophy';
+
   function emptyPrizeForm() {
     return {
-      pool: 'Box',
+      pool: POOL_BOX,
       color: '',
       productType: 'Floor',
       furnitureDefinitionId: '',
@@ -81,8 +86,8 @@
   let pendingError = '';
 
   $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsMysteryBoxManage);
-  $: boxPrizes = prizes.filter((p) => p.pool === 'Box');
-  $: trophyPrizes = prizes.filter((p) => p.pool === 'Trophy');
+  $: boxPrizes = prizes.filter((p) => p.pool === POOL_BOX);
+  $: trophyPrizes = prizes.filter((p) => p.pool === POOL_TROPHY);
 
   // Share of a pool, computed against the entries a draw actually competes with: same pool, and a
   // colourless prize competes with the colour-specific ones for that colour only.
@@ -469,11 +474,11 @@
         <div class="op-field">
           <label for="new-prize-pool">{$t('mysteryBox.pool')}</label>
           <select id="new-prize-pool" bind:value={newPrize.pool}>
-            <option value="Box">{$t('mysteryBox.poolBox')}</option>
-            <option value="Trophy">{$t('mysteryBox.poolTrophy')}</option>
+            <option value={POOL_BOX}>{$t('mysteryBox.poolBox')}</option>
+            <option value={POOL_TROPHY}>{$t('mysteryBox.poolTrophy')}</option>
           </select>
         </div>
-        {#if newPrize.pool === 'Box'}
+        {#if newPrize.pool === POOL_BOX}
           <div class="op-field">
             <label for="new-prize-color">{$t('mysteryBox.color')}</label>
             <select id="new-prize-color" bind:value={newPrize.color}>
@@ -524,7 +529,7 @@
       <div class="chip-row">
         {#each pools as pool (`${pool.pool}:${pool.color}`)}
           <span class="op-chip">
-            {pool.pool === 'Box' ? $t('mysteryBox.poolBox') : $t('mysteryBox.poolTrophy')}
+            {pool.pool === POOL_BOX ? $t('mysteryBox.poolBox') : $t('mysteryBox.poolTrophy')}
             {pool.color ? ` · ${pool.color}` : ''} — {$t('mysteryBox.poolSummary', {
               entries: pool.entries,
               weight: pool.totalWeight,
@@ -571,11 +576,11 @@
                     <div class="op-field">
                       <label for={`edit-prize-pool-${prize.id}`}>{$t('mysteryBox.pool')}</label>
                       <select id={`edit-prize-pool-${prize.id}`} bind:value={editPrize.pool}>
-                        <option value="Box">{$t('mysteryBox.poolBox')}</option>
-                        <option value="Trophy">{$t('mysteryBox.poolTrophy')}</option>
+                        <option value={POOL_BOX}>{$t('mysteryBox.poolBox')}</option>
+                        <option value={POOL_TROPHY}>{$t('mysteryBox.poolTrophy')}</option>
                       </select>
                     </div>
-                    {#if editPrize.pool === 'Box'}
+                    {#if editPrize.pool === POOL_BOX}
                       <div class="op-field">
                         <label for={`edit-prize-color-${prize.id}`}>{$t('mysteryBox.color')}</label>
                         <select id={`edit-prize-color-${prize.id}`} bind:value={editPrize.color}>

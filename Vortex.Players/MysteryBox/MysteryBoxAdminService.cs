@@ -17,11 +17,15 @@ using Vortex.Primitives.Players;
 namespace Vortex.Players.MysteryBox;
 
 /// <summary>
-/// CRUD for the mystery box reference tables. A plain singleton (not a grain) opening a short-lived
-/// <see cref="VortexDbContext"/> per call: these rows aren't grain-owned and admin writes are
-/// low-frequency. The live pools come from the kept-alive <c>MysteryBoxManagerGrain</c> cache, which
-/// is only rebuilt via its <c>ReloadAsync</c>, so every write reloads it afterwards — the "DB write
-/// not reflected in live state" bug class called out in AGENTS.md.
+/// Box-specific admin writes: handing a player a key or a box, and rebuilding the box definition
+/// cache. A plain singleton (not a grain) opening a short-lived <see cref="VortexDbContext"/> per
+/// call: these rows aren't grain-owned and admin writes are low-frequency. The live definitions come
+/// from the kept-alive <c>MysteryBoxManagerGrain</c> cache, which is only rebuilt via its
+/// <c>ReloadAsync</c>, so every write reloads it afterwards — the "DB write not reflected in live
+/// state" bug class called out in AGENTS.md.
+///
+/// The prizes are not here: they are a shared prize pool, edited through
+/// <see cref="Vortex.Primitives.Prizes.IPrizePoolAdminService"/>.
 /// </summary>
 internal sealed class MysteryBoxAdminService(
     IDbContextFactory<VortexDbContext> dbContextFactory,
@@ -29,108 +33,6 @@ internal sealed class MysteryBoxAdminService(
     ILogger<MysteryBoxAdminService> logger
 ) : IMysteryBoxAdminService
 {
-    /// <summary>Prize types the client's reward window can draw. Anything else would award silently
-    /// into a blank dialog, so it is refused at the admin boundary rather than at draw time.</summary>
-    private static readonly ProductType[] DrawableProductTypes =
-    [
-        ProductType.Floor,
-        ProductType.Wall,
-        ProductType.Effect,
-        ProductType.HabboClub,
-    ];
-
-    public async Task<MysteryBoxAdminResult> CreatePrizeAsync(
-        MysteryBoxPrizeSpec spec,
-        CancellationToken ct
-    )
-    {
-        await using VortexDbContext db = await dbContextFactory
-            .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
-
-        if (await ValidatePrizeAsync(db, spec, ct).ConfigureAwait(false) is { } error)
-        {
-            return MysteryBoxAdminResult.Fail(error);
-        }
-
-        MysteryBoxPrizeEntity entity = new()
-        {
-            Pool = spec.Pool,
-            Color = MysteryBoxColors.Normalize(spec.Color),
-            ProductType = spec.ProductType,
-            FurnitureDefinitionEntityId = spec.FurnitureDefinitionId,
-            ExtraParam = (spec.ExtraParam ?? string.Empty).Trim(),
-            Weight = Math.Max(1, spec.Weight),
-            Enabled = spec.Enabled,
-        };
-
-        db.MysteryBoxPrizes.Add(entity);
-        await db.SaveChangesAsync(ct).ConfigureAwait(false);
-        await ReloadAsync(ct).ConfigureAwait(false);
-
-        return MysteryBoxAdminResult.Ok(entity.Id);
-    }
-
-    public async Task<MysteryBoxAdminResult> UpdatePrizeAsync(
-        int prizeId,
-        MysteryBoxPrizeSpec spec,
-        CancellationToken ct
-    )
-    {
-        await using VortexDbContext db = await dbContextFactory
-            .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
-
-        MysteryBoxPrizeEntity? entity = await db
-            .MysteryBoxPrizes.FirstOrDefaultAsync(p => p.Id == prizeId, ct)
-            .ConfigureAwait(false);
-
-        if (entity is null)
-        {
-            return MysteryBoxAdminResult.Fail("prize_not_found");
-        }
-
-        if (await ValidatePrizeAsync(db, spec, ct).ConfigureAwait(false) is { } error)
-        {
-            return MysteryBoxAdminResult.Fail(error);
-        }
-
-        entity.Pool = spec.Pool;
-        entity.Color = MysteryBoxColors.Normalize(spec.Color);
-        entity.ProductType = spec.ProductType;
-        entity.FurnitureDefinitionEntityId = spec.FurnitureDefinitionId;
-        entity.ExtraParam = (spec.ExtraParam ?? string.Empty).Trim();
-        entity.Weight = Math.Max(1, spec.Weight);
-        entity.Enabled = spec.Enabled;
-
-        await db.SaveChangesAsync(ct).ConfigureAwait(false);
-        await ReloadAsync(ct).ConfigureAwait(false);
-
-        return MysteryBoxAdminResult.Ok(entity.Id);
-    }
-
-    public async Task<MysteryBoxAdminResult> DeletePrizeAsync(int prizeId, CancellationToken ct)
-    {
-        await using VortexDbContext db = await dbContextFactory
-            .CreateDbContextAsync(ct)
-            .ConfigureAwait(false);
-
-        MysteryBoxPrizeEntity? entity = await db
-            .MysteryBoxPrizes.FirstOrDefaultAsync(p => p.Id == prizeId, ct)
-            .ConfigureAwait(false);
-
-        if (entity is null)
-        {
-            return MysteryBoxAdminResult.Fail("prize_not_found");
-        }
-
-        db.MysteryBoxPrizes.Remove(entity);
-        await db.SaveChangesAsync(ct).ConfigureAwait(false);
-        await ReloadAsync(ct).ConfigureAwait(false);
-
-        return MysteryBoxAdminResult.Ok(prizeId);
-    }
-
     public async Task<MysteryBoxAdminResult> GrantKeyAsync(
         int playerId,
         string color,
@@ -225,63 +127,6 @@ internal sealed class MysteryBoxAdminService(
         return MysteryBoxAdminResult.Ok(0);
     }
 
-    private static async Task<string?> ValidatePrizeAsync(
-        VortexDbContext db,
-        MysteryBoxPrizeSpec spec,
-        CancellationToken ct
-    )
-    {
-        if (!DrawableProductTypes.Contains(spec.ProductType))
-        {
-            return "product_type_not_drawable";
-        }
-
-        if (spec.Weight <= 0)
-        {
-            return "weight_must_be_positive";
-        }
-
-        // A colour is optional (empty = any), but a typo'd one would silently make the prize
-        // undrawable, so reject anything that is neither empty nor renderable.
-        if (
-            !string.IsNullOrWhiteSpace(spec.Color)
-            && MysteryBoxColors.Normalize(spec.Color).Length == 0
-        )
-        {
-            return "invalid_color";
-        }
-
-        if (spec.ProductType is ProductType.Floor or ProductType.Wall)
-        {
-            if (spec.FurnitureDefinitionId <= 0)
-            {
-                return "furniture_definition_required";
-            }
-
-            if (
-                !await db
-                    .FurnitureDefinitions.AnyAsync(f => f.Id == spec.FurnitureDefinitionId, ct)
-                    .ConfigureAwait(false)
-            )
-            {
-                return "furniture_definition_not_found";
-            }
-
-            return null;
-        }
-
-        // Effect and club prizes carry their target in ExtraParam; an empty one would award nothing
-        // and close the winner's reward window on an error.
-        if (string.IsNullOrWhiteSpace(spec.ExtraParam))
-        {
-            return "extra_param_required";
-        }
-
-        string head = spec.ExtraParam.Split(':')[0];
-
-        return int.TryParse(head, out int value) && value > 0 ? null : "extra_param_invalid";
-    }
-
     private async Task ReloadAsync(CancellationToken ct)
     {
         try
@@ -295,7 +140,7 @@ internal sealed class MysteryBoxAdminService(
             // called out in AGENTS.md.
             logger.LogError(
                 ex,
-                "Mystery box cache reload failed after an admin write committed -- live definitions and prize pools are now stale until the next reload or restart"
+                "Mystery box cache reload failed after an admin write committed -- live box definitions are now stale until the next reload or restart"
             );
             throw;
         }

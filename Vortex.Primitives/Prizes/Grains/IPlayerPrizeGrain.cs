@@ -1,0 +1,28 @@
+using System.Threading;
+using System.Threading.Tasks;
+using Orleans;
+using Vortex.Primitives.Prizes.Snapshots;
+
+namespace Vortex.Primitives.Prizes.Grains;
+
+/// <summary>
+/// Hands a drawn prize to one player. Per-player so grants serialize on the player's own grain turn
+/// — two furniture opening at once cannot interleave a club extension with an effect grant.
+///
+/// Every reward furniture ends here: the trigger decides <em>when</em> and the pool decides
+/// <em>what</em>, but the granting and its audit trail are the same everywhere.
+/// </summary>
+public interface IPlayerPrizeGrain : IGrainWithIntegerKey
+{
+    /// <summary>
+    /// Grants <paramref name="entry"/> and returns what the reward window should draw, or null when
+    /// nothing could be granted (unknown definition, malformed parameters, a product type the client
+    /// cannot render). <paramref name="source"/> names the trigger for the audit trail — the pool
+    /// alone does not say whether a prize came from a box, a crackable or a staff grant.
+    /// </summary>
+    public Task<PrizeAward?> GrantAsync(
+        PrizeEntrySnapshot entry,
+        string source,
+        CancellationToken ct
+    );
+}

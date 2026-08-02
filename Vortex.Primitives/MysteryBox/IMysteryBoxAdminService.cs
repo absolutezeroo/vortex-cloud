@@ -5,20 +5,15 @@ using Vortex.Primitives.MysteryBox.Admin;
 namespace Vortex.Primitives.MysteryBox;
 
 /// <summary>
-/// CRUD for <c>mystery_box_prizes</c> plus the staff box/key grants, used by the dashboard's mystery
-/// box surface. Every write reloads the <see cref="Grains.IMysteryBoxManagerGrain"/> cache so the
-/// live pools never drift from the database — see the implementation.
+/// The staff box/key grants used by the dashboard's mystery box surface. Every write reloads the
+/// <see cref="Grains.IMysteryBoxManagerGrain"/> cache so the live box definitions never drift from
+/// the database — see the implementation.
+///
+/// Prize editing is not here: prizes are a shared pool, edited through
+/// <see cref="Prizes.IPrizePoolAdminService"/>.
 /// </summary>
 public interface IMysteryBoxAdminService
 {
-    Task<MysteryBoxAdminResult> CreatePrizeAsync(MysteryBoxPrizeSpec spec, CancellationToken ct);
-    Task<MysteryBoxAdminResult> UpdatePrizeAsync(
-        int prizeId,
-        MysteryBoxPrizeSpec spec,
-        CancellationToken ct
-    );
-    Task<MysteryBoxAdminResult> DeletePrizeAsync(int prizeId, CancellationToken ct);
-
     /// <summary>Hands a key to a player. Keys are not furniture, so this is the only staff route
     /// into a player's key inventory.</summary>
     Task<MysteryBoxAdminResult> GrantKeyAsync(

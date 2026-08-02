@@ -17,14 +17,8 @@ public sealed record MysteryBoxOpenedEvent(
     string Color
 ) : IEvent;
 
-/// <summary>One participant's prize from an opened box. Raised once per participant.</summary>
-public sealed record MysteryBoxPrizeAwardedEvent(
-    int PlayerId,
-    int PrizeId,
-    string Color,
-    string ContentType,
-    int ClassId
-) : IEvent;
+// What each participant won is not here: prizes are drawn from shared pools, so the payout is
+// recorded once by PrizeAwardedEvent for every reward furniture rather than once per furniture type.
 
 /// <summary>A mystery trophy was inscribed and exchanged for a real trophy.</summary>
 public sealed record MysteryTrophyOpenedEvent(

@@ -113,40 +113,8 @@ public sealed class MysteryBoxOpenedAuditHandler(IAuditSink audit, IItemForensic
     }
 }
 
-/// <summary>Records what each participant actually won, so a disputed prize can be checked against
-/// the pool the server drew from.</summary>
-public sealed class MysteryBoxPrizeAwardedAuditHandler(IAuditSink audit)
-    : IEventHandler<MysteryBoxPrizeAwardedEvent>
-{
-    public ValueTask HandleAsync(
-        MysteryBoxPrizeAwardedEvent e,
-        EventContext ctx,
-        CancellationToken ct
-    )
-    {
-        audit.Emit(
-            new AuditEvent
-            {
-                Category = AuditCategory.Item,
-                Action = "mysterybox.prize.awarded",
-                Severity = AuditSeverity.Notice,
-                Result = AuditResult.Success,
-                TargetPlayerId = e.PlayerId,
-                Data = JsonSerializer.Serialize(
-                    new
-                    {
-                        prizeId = e.PrizeId,
-                        color = e.Color,
-                        contentType = e.ContentType,
-                        classId = e.ClassId,
-                    }
-                ),
-            }
-        );
-
-        return ValueTask.CompletedTask;
-    }
-}
+// What a participant won is recorded by PrizeAwardedAuditHandler under "prize.awarded": the prize
+// comes from a shared pool, so the payout trail is shared with every other reward furniture.
 
 /// <summary>Records a mystery trophy exchanged for a real one, and the destruction of the trophy
 /// furniture that paid for it.</summary>

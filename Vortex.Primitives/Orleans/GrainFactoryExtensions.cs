@@ -7,6 +7,7 @@ using Vortex.Primitives.Marketplace.Grains;
 using Vortex.Primitives.MysteryBox.Grains;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Grains;
+using Vortex.Primitives.Prizes.Grains;
 using Vortex.Primitives.Quests.Grains;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Grains;
@@ -180,6 +181,19 @@ public static class GrainFactoryExtensions
         this IGrainFactory factory,
         long playerId
     ) => factory.GetGrain<IPlayerQuestGrain>(playerId);
+
+    public static IPrizePoolManagerGrain GetPrizePoolManagerGrain(this IGrainFactory factory) =>
+        factory.GetGrain<IPrizePoolManagerGrain>(SingletonGrainId.GLOBAL);
+
+    public static IPlayerPrizeGrain GetPlayerPrizeGrain(
+        this IGrainFactory factory,
+        PlayerId playerId
+    ) => factory.GetGrain<IPlayerPrizeGrain>(playerId.Value);
+
+    public static IPlayerPrizeGrain GetPlayerPrizeGrain(
+        this IGrainFactory factory,
+        long playerId
+    ) => factory.GetGrain<IPlayerPrizeGrain>(playerId);
 
     public static IMysteryBoxManagerGrain GetMysteryBoxManagerGrain(this IGrainFactory factory) =>
         factory.GetGrain<IMysteryBoxManagerGrain>(SingletonGrainId.GLOBAL);

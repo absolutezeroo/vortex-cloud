@@ -3,30 +3,26 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Primitives.Furniture.Enums;
-using Vortex.Primitives.MysteryBox;
 
-namespace Vortex.Database.Entities.MysteryBox;
+namespace Vortex.Database.Entities.Prizes;
 
 /// <summary>
-/// One entry of a prize pool. <see cref="Pool"/> separates the mystery box pool from the mystery
-/// trophy pool; <see cref="Color"/> (empty = any) further narrows a box prize to a single box
-/// colour. <see cref="Weight"/> is the relative draw chance, so tuning the odds is a database edit
-/// rather than a redeploy.
+/// One weighted entry of a <see cref="PrizePoolEntity"/>. <see cref="Weight"/> is the relative draw
+/// chance, so tuning the odds is a database edit rather than a redeploy.
 /// </summary>
-[Table("mystery_box_prizes")]
-[Index(nameof(Pool), nameof(Enabled))]
-public class MysteryBoxPrizeEntity : VortexEntity
+[Table("prize_pool_entries")]
+[Index(nameof(PrizePoolEntityId), nameof(Enabled))]
+public class PrizePoolEntryEntity : VortexEntity
 {
-    [Column("pool")]
-    [DefaultValue(MysteryBoxPrizePool.Box)]
-    [DatabaseGenerated(DatabaseGeneratedOption.None)]
-    public required MysteryBoxPrizePool Pool { get; set; }
+    [Column("pool_id")]
+    public required int PrizePoolEntityId { get; set; }
 
-    /// <summary>Box colour this prize is restricted to; empty means it can drop from any colour.</summary>
-    [Column("color")]
+    /// <summary>Variant this entry is restricted to; empty means it can drop from any variant of the
+    /// pool. Box colour for the mystery box pool, and whatever the pool declares elsewhere.</summary>
+    [Column("variant")]
     [MaxLength(32)]
     [DefaultValue("")]
-    public string Color { get; set; } = string.Empty;
+    public string Variant { get; set; } = string.Empty;
 
     /// <summary>What is granted. Only <see cref="ProductType.Floor"/>, <see cref="ProductType.Wall"/>,
     /// <see cref="ProductType.Effect"/> and <see cref="ProductType.HabboClub"/> can be drawn by the
@@ -55,4 +51,7 @@ public class MysteryBoxPrizeEntity : VortexEntity
     [Column("enabled")]
     [DefaultValue(true)]
     public bool Enabled { get; set; } = true;
+
+    [ForeignKey(nameof(PrizePoolEntityId))]
+    public PrizePoolEntity? PrizePoolEntity { get; set; }
 }

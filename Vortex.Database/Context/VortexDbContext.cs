@@ -13,6 +13,7 @@ using Vortex.Database.Entities.Navigator;
 using Vortex.Database.Entities.Permissions;
 using Vortex.Database.Entities.Pets;
 using Vortex.Database.Entities.Players;
+using Vortex.Database.Entities.Prizes;
 using Vortex.Database.Entities.Quests;
 using Vortex.Database.Entities.Room;
 using Vortex.Database.Entities.Security;
@@ -224,7 +225,9 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<PlayerQuestEntity> PlayerQuests { get; init; } = null!;
 
-    public DbSet<MysteryBoxPrizeEntity> MysteryBoxPrizes { get; init; } = null!;
+    public DbSet<PrizePoolEntity> PrizePools { get; init; } = null!;
+
+    public DbSet<PrizePoolEntryEntity> PrizePoolEntries { get; init; } = null!;
 
     public DbSet<PlayerMysteryBoxKeyEntity> PlayerMysteryBoxKeys { get; init; } = null!;
 
@@ -355,8 +358,16 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
             .HasForeignKey(p => p.TargetedOfferEntityId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Prize rows carry a plain definition id (no FK) because effect and club prizes legitimately
-        // leave it at 0. Keys cascade with their player.
+        // Prize entries carry a plain definition id (no FK) because effect and club prizes
+        // legitimately leave it at 0. They do cascade with their pool: an entry outliving the pool
+        // it is weighted against can never be drawn again.
+        mb.Entity<PrizePoolEntryEntity>()
+            .HasOne(e => e.PrizePoolEntity)
+            .WithMany()
+            .HasForeignKey(e => e.PrizePoolEntityId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Keys cascade with their player.
         mb.Entity<PlayerMysteryBoxKeyEntity>()
             .HasOne(k => k.PlayerEntity)
             .WithMany()

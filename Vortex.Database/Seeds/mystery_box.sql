@@ -18,26 +18,44 @@ UPDATE furniture_definitions SET logic = 'furniture_mysterytrophy'
 UPDATE furniture_definitions SET total_states = 25
     WHERE name = 'mystery_box' AND total_states < 25;
 
+-- The prizes live in the shared prize pools every reward furniture draws from. The two pools below
+-- are created by the AddPrizePools migration; recreate them here as well so a hotel that seeds onto
+-- an already-migrated database is never left drawing from a pool that does not exist.
+INSERT INTO prize_pools (code, name, variants, enabled, notes)
+    SELECT 'mystery-box', 'Mystery box',
+           'purple,blue,green,yellow,lilac,orange,turquoise,red', 1,
+           'Drawn when a box and a matching key are opened together.'
+    WHERE NOT EXISTS (SELECT 1 FROM (SELECT * FROM prize_pools) p WHERE p.code = 'mystery-box');
+
+INSERT INTO prize_pools (code, name, variants, enabled, notes)
+    SELECT 'mystery-trophy', 'Mystery trophy', '', 1,
+           'Drawn when a mystery trophy is inscribed and opened.'
+    WHERE NOT EXISTS (SELECT 1 FROM (SELECT * FROM prize_pools) p WHERE p.code = 'mystery-trophy');
+
 -- Box pool: any colour, floor furni, equal odds. Nothing here is a rare — the point is that the pool
 -- is non-empty out of the box; an operator retunes it with plain UPDATEs.
-INSERT INTO mystery_box_prizes (pool, color, product_type, furniture_definition_id, extra_param, weight, enabled)
-    SELECT 0, '', 0, d.id, '', 10, 1 FROM furniture_definitions d
+INSERT INTO prize_pool_entries (pool_id, variant, product_type, furniture_definition_id, extra_param, weight, enabled)
+    SELECT pool.id, '', 0, d.id, '', 10, 1
+    FROM furniture_definitions d
+    JOIN prize_pools pool ON pool.code = 'mystery-box'
     WHERE d.name IN ('present_gen1', 'chair_norja', 'table_norja_med', 'sofa_silo', 'shelves_norja')
       AND NOT EXISTS (
-          SELECT 1 FROM (SELECT * FROM mystery_box_prizes) p
-          WHERE p.pool = 0 AND p.furniture_definition_id = d.id
+          SELECT 1 FROM (SELECT * FROM prize_pool_entries) e
+          WHERE e.pool_id = pool.id AND e.furniture_definition_id = d.id
       );
 
 -- Trophy pool: the world cup trophies the furnidata description promises ("gold silver bronze"),
 -- weighted so bronze is the common outcome.
-INSERT INTO mystery_box_prizes (pool, color, product_type, furniture_definition_id, extra_param, weight, enabled)
-    SELECT 1, '', 0, d.id, '', w.weight, 1 FROM furniture_definitions d
+INSERT INTO prize_pool_entries (pool_id, variant, product_type, furniture_definition_id, extra_param, weight, enabled)
+    SELECT pool.id, '', 0, d.id, '', w.weight, 1
+    FROM furniture_definitions d
+    JOIN prize_pools pool ON pool.code = 'mystery-trophy'
     JOIN (
         SELECT 'fball_trophybrasil_gold' AS name, 1 AS weight
         UNION ALL SELECT 'fball_trophybrasil_silver', 3
         UNION ALL SELECT 'fball_trophybrasil_bronze', 6
     ) w ON w.name = d.name
     WHERE NOT EXISTS (
-        SELECT 1 FROM (SELECT * FROM mystery_box_prizes) p
-        WHERE p.pool = 1 AND p.furniture_definition_id = d.id
+        SELECT 1 FROM (SELECT * FROM prize_pool_entries) e
+        WHERE e.pool_id = pool.id AND e.furniture_definition_id = d.id
     );

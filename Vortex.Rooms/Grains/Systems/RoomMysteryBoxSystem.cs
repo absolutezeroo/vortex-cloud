@@ -13,6 +13,8 @@ using Vortex.Primitives.MysteryBox.Grains;
 using Vortex.Primitives.MysteryBox.Snapshots;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
+using Vortex.Primitives.Prizes;
+using Vortex.Primitives.Prizes.Snapshots;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;
 
@@ -195,9 +197,9 @@ public sealed class RoomMysteryBoxSystem(RoomGrain roomGrain)
             return;
         }
 
-        MysteryBoxPrizeSnapshot? prize = await _roomGrain
-            ._grainFactory.GetMysteryBoxManagerGrain()
-            .PickPrizeAsync(MysteryBoxPrizePool.Trophy, string.Empty, ct)
+        PrizeEntrySnapshot? prize = await _roomGrain
+            ._grainFactory.GetPrizePoolManagerGrain()
+            .PickAsync(PrizePoolCodes.MysteryTrophy, string.Empty, ct)
             .ConfigureAwait(true);
 
         if (prize is null)
@@ -471,16 +473,16 @@ public sealed class RoomMysteryBoxSystem(RoomGrain roomGrain)
         CancellationToken ct
     )
     {
-        MysteryBoxPrizeSnapshot? prize = await _roomGrain
-            ._grainFactory.GetMysteryBoxManagerGrain()
-            .PickPrizeAsync(MysteryBoxPrizePool.Box, color, ct)
+        PrizeEntrySnapshot? prize = await _roomGrain
+            ._grainFactory.GetPrizePoolManagerGrain()
+            .PickAsync(PrizePoolCodes.MysteryBox, color, ct)
             .ConfigureAwait(true);
 
-        MysteryBoxPrizeAward? award = prize is null
+        PrizeAward? award = prize is null
             ? null
             : await _roomGrain
-                ._grainFactory.GetPlayerMysteryBoxGrain(playerId)
-                .GrantPrizeAsync(prize, ct)
+                ._grainFactory.GetPlayerPrizeGrain(playerId)
+                .GrantAsync(prize, PrizeSources.MysteryBox, ct)
                 .ConfigureAwait(true);
 
         if (award is null)
@@ -499,19 +501,7 @@ public sealed class RoomMysteryBoxSystem(RoomGrain roomGrain)
             return;
         }
 
-        await _roomGrain
-            ._events.PublishAsync(
-                new MysteryBoxPrizeAwardedEvent(
-                    playerId.Value,
-                    prize!.Id,
-                    color,
-                    award.ContentType,
-                    award.ClassId
-                ),
-                ct
-            )
-            .ConfigureAwait(true);
-
+        // The payout audit is raised by the grant grain, so it cannot be forgotten here.
         await SendMysteryBoxComposerAsync(
                 playerId,
                 new GotMysteryBoxPrizeMessageComposer

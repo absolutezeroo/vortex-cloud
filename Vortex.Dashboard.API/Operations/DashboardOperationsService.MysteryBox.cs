@@ -2,8 +2,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Furniture.Enums;
-using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.MysteryBox.Admin;
+using Vortex.Primitives.Prizes.Admin;
 
 namespace Vortex.Dashboard.API.Operations;
 
@@ -36,24 +36,18 @@ internal sealed partial class DashboardOperationsService
             },
             work: async c =>
             {
-                if (
-                    !TryParsePrizeSpec(
-                        request.Pool,
-                        request.ProductType,
-                        out (MysteryBoxPrizePool Pool, ProductType ProductType) parsed
-                    )
-                )
+                if (!TryParseProductType(request.ProductType, out ProductType productType))
                 {
                     throw new InvalidOperationException("invalid_request");
                 }
 
                 Throw(
-                    await _mysteryBoxAdmin
-                        .CreatePrizeAsync(
-                            new MysteryBoxPrizeSpec(
-                                parsed.Pool,
+                    await _prizePoolAdmin
+                        .CreateEntryAsync(
+                            new PrizeEntrySpec(
+                                request.Pool,
                                 request.Color,
-                                parsed.ProductType,
+                                productType,
                                 request.FurnitureDefinitionId,
                                 request.ExtraParam,
                                 request.Weight,
@@ -88,25 +82,19 @@ internal sealed partial class DashboardOperationsService
             },
             work: async c =>
             {
-                if (
-                    !TryParsePrizeSpec(
-                        request.Pool,
-                        request.ProductType,
-                        out (MysteryBoxPrizePool Pool, ProductType ProductType) parsed
-                    )
-                )
+                if (!TryParseProductType(request.ProductType, out ProductType productType))
                 {
                     throw new InvalidOperationException("invalid_request");
                 }
 
                 Throw(
-                    await _mysteryBoxAdmin
-                        .UpdatePrizeAsync(
+                    await _prizePoolAdmin
+                        .UpdateEntryAsync(
                             request.PrizeId,
-                            new MysteryBoxPrizeSpec(
-                                parsed.Pool,
+                            new PrizeEntrySpec(
+                                request.Pool,
                                 request.Color,
-                                parsed.ProductType,
+                                productType,
                                 request.FurnitureDefinitionId,
                                 request.ExtraParam,
                                 request.Weight,
@@ -134,9 +122,7 @@ internal sealed partial class DashboardOperationsService
             detail: new { request.PrizeId },
             work: async c =>
                 Throw(
-                    await _mysteryBoxAdmin
-                        .DeletePrizeAsync(request.PrizeId, c)
-                        .ConfigureAwait(false)
+                    await _prizePoolAdmin.DeleteEntryAsync(request.PrizeId, c).ConfigureAwait(false)
                 ),
             ct
         );
@@ -202,37 +188,31 @@ internal sealed partial class DashboardOperationsService
             roomId: null,
             detail: new { },
             work: async c =>
-                Throw(await _mysteryBoxAdmin.ReloadCacheAsync(c).ConfigureAwait(false)),
+            {
+                // Two caches back this page since the prizes moved to a shared pool: the box
+                // definitions and the pool entries. Reloading one and not the other would leave the
+                // operator's "reload" button half working, which is worse than not having it.
+                Throw(await _mysteryBoxAdmin.ReloadCacheAsync(c).ConfigureAwait(false));
+                Throw(await _prizePoolAdmin.ReloadCacheAsync(c).ConfigureAwait(false));
+            },
             ct
         );
 
-    /// <summary>The pool and product type arrive as strings from the browser; a value outside the
-    /// enums must fail the request rather than default to Box/Floor and quietly file the prize in the
-    /// wrong pool.</summary>
-    private static bool TryParsePrizeSpec(
-        string pool,
-        string productType,
-        out (MysteryBoxPrizePool Pool, ProductType ProductType) parsed
-    )
-    {
-        parsed = default;
-
-        if (!Enum.TryParse(pool, ignoreCase: true, out MysteryBoxPrizePool parsedPool))
-        {
-            return false;
-        }
-
-        if (!Enum.TryParse(productType, ignoreCase: true, out ProductType parsedProductType))
-        {
-            return false;
-        }
-
-        parsed = (parsedPool, parsedProductType);
-
-        return true;
-    }
+    /// <summary>The product type arrives as a string from the browser; a value outside the enum must
+    /// fail the request rather than default to Floor and quietly grant the wrong kind of prize. The
+    /// pool travels as its code and is resolved (and rejected when unknown) by the admin service.</summary>
+    private static bool TryParseProductType(string productType, out ProductType parsed) =>
+        Enum.TryParse(productType, ignoreCase: true, out parsed);
 
     private static void Throw(MysteryBoxAdminResult result)
+    {
+        if (!result.Success)
+        {
+            throw new InvalidOperationException(result.ErrorCode);
+        }
+    }
+
+    private static void Throw(PrizeAdminResult result)
     {
         if (!result.Success)
         {

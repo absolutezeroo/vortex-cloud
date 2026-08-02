@@ -8,19 +8,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
-using Vortex.Database.Entities.MysteryBox;
-using Vortex.Primitives.Furniture.Enums;
-using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.MysteryBox.Grains;
-using Vortex.Primitives.MysteryBox.Snapshots;
 
 namespace Vortex.Players.Grains;
 
 /// <summary>
-/// Caches the mystery box reference data for the lifetime of the kept-alive singleton. Box colours
-/// are read on every room click and every tracker push, and the prize pools on every open, so
-/// re-querying them per event would put two table scans on the hot path for data that changes only
-/// when an admin edits it.
+/// Caches which furniture definitions run the mystery box logic, for the lifetime of the kept-alive
+/// singleton. Box definitions are read on every room click and every tracker push, so re-querying
+/// them per event would put a table scan on the hot path for data that changes only when an admin
+/// edits it.
+///
+/// The prizes themselves are not here: they live in <see cref="Vortex.Primitives.Prizes.Grains.IPrizePoolManagerGrain"/>
+/// under the pool code <c>mystery-box</c>, shared with every other furniture that hands out a
+/// weighted reward.
 /// </summary>
 [KeepAlive]
 internal sealed class MysteryBoxManagerGrain(
@@ -31,23 +31,11 @@ internal sealed class MysteryBoxManagerGrain(
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly ILogger<MysteryBoxManagerGrain> _logger = logger;
 
-    /// <summary>Prize types the client's reward window can actually draw; anything else would show a
-    /// blank dialog, so such rows are dropped at load time with a warning rather than silently
-    /// handed out.</summary>
-    private static readonly ProductType[] DrawableProductTypes =
-    [
-        ProductType.Floor,
-        ProductType.Wall,
-        ProductType.Effect,
-        ProductType.HabboClub,
-    ];
-
     /// <summary>The client only offers the open dialog on furniture carrying this logic name
     /// (RoomObjectLogicEnum), so it is also what makes a definition a mystery box server-side.</summary>
     private const string BoxLogicName = "furniture_mysterybox";
 
     private ImmutableArray<int> _boxDefinitionIds = [];
-    private ImmutableArray<MysteryBoxPrizeSnapshot> _prizes = [];
     private HashSet<int> _boxDefinitionIdSet = [];
     private bool _loaded;
 
@@ -69,28 +57,6 @@ internal sealed class MysteryBoxManagerGrain(
         await EnsureLoadedAsync(ct).ConfigureAwait(true);
 
         return _boxDefinitionIdSet.Contains(definitionId);
-    }
-
-    public async Task<MysteryBoxPrizeSnapshot?> PickPrizeAsync(
-        MysteryBoxPrizePool pool,
-        string color,
-        CancellationToken ct
-    )
-    {
-        await EnsureLoadedAsync(ct).ConfigureAwait(true);
-
-        MysteryBoxPrizeSnapshot? prize = MysteryBoxPrizePicker.Pick(_prizes, pool, color);
-
-        if (prize is null)
-        {
-            _logger.LogWarning(
-                "Mystery box prize pool {Pool} has no enabled entry for colour '{Color}'; nothing can be awarded.",
-                pool,
-                color
-            );
-        }
-
-        return prize;
     }
 
     public Task ReloadAsync(CancellationToken ct) => LoadAsync(ct);
@@ -118,53 +84,13 @@ internal sealed class MysteryBoxManagerGrain(
                 .ToListAsync(ct)
                 .ConfigureAwait(true);
 
-            List<MysteryBoxPrizeEntity> prizeRows = await dbCtx
-                .MysteryBoxPrizes.AsNoTracking()
-                .Where(p => p.Enabled && p.Weight > 0 && p.DeletedAt == null)
-                .OrderBy(p => p.Id)
-                .ToListAsync(ct)
-                .ConfigureAwait(true);
-
-            List<MysteryBoxPrizeSnapshot> prizes = [];
-
-            foreach (MysteryBoxPrizeEntity row in prizeRows)
-            {
-                if (!DrawableProductTypes.Contains(row.ProductType))
-                {
-                    _logger.LogWarning(
-                        "Mystery box prize {Id} has product type {ProductType}, which the reward window cannot draw; skipping it.",
-                        row.Id,
-                        row.ProductType
-                    );
-
-                    continue;
-                }
-
-                prizes.Add(
-                    new MysteryBoxPrizeSnapshot
-                    {
-                        Id = row.Id,
-                        Pool = row.Pool,
-                        // An unrenderable colour on a prize would make it undrawable forever; treat
-                        // it as "any colour" instead, matching the empty-string default.
-                        Color = MysteryBoxColors.Normalize(row.Color),
-                        ProductType = row.ProductType,
-                        FurnitureDefinitionId = row.FurnitureDefinitionEntityId,
-                        ExtraParam = row.ExtraParam,
-                        Weight = row.Weight,
-                    }
-                );
-            }
-
             _boxDefinitionIds = [.. boxDefinitionIds];
             _boxDefinitionIdSet = [.. boxDefinitionIds];
-            _prizes = [.. prizes];
             _loaded = true;
 
             _logger.LogInformation(
-                "Loaded {BoxCount} mystery box furniture definitions and {PrizeCount} prizes into cache.",
-                _boxDefinitionIds.Length,
-                _prizes.Length
+                "Loaded {BoxCount} mystery box furniture definitions into cache.",
+                _boxDefinitionIds.Length
             );
         }
         catch (Exception ex)
