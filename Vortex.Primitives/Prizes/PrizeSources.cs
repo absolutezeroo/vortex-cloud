@@ -8,4 +8,6 @@ namespace Vortex.Primitives.Prizes;
 public static class PrizeSources
 {
     public const string MysteryBox = "mystery-box";
+
+    public const string Crackable = "crackable";
 }

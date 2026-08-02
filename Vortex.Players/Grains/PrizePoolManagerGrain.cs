@@ -42,6 +42,7 @@ internal sealed class PrizePoolManagerGrain(
     ];
 
     private ImmutableArray<PrizeEntrySnapshot> _entries = [];
+    private Dictionary<int, PrizeBindingSnapshot> _bindingsByDefinitionId = [];
     private bool _loaded;
 
     public override async Task OnActivateAsync(CancellationToken ct)
@@ -70,6 +71,16 @@ internal sealed class PrizePoolManagerGrain(
         }
 
         return entry;
+    }
+
+    public async Task<PrizeBindingSnapshot?> GetBindingAsync(
+        int furnitureDefinitionId,
+        CancellationToken ct
+    )
+    {
+        await EnsureLoadedAsync(ct).ConfigureAwait(true);
+
+        return _bindingsByDefinitionId.GetValueOrDefault(furnitureDefinitionId);
     }
 
     public Task ReloadAsync(CancellationToken ct) => LoadAsync(ct);
@@ -144,13 +155,39 @@ internal sealed class PrizePoolManagerGrain(
                 );
             }
 
+            List<PrizePoolBindingEntity> bindingRows = await dbCtx
+                .PrizePoolBindings.AsNoTracking()
+                .Where(b => b.Enabled && b.DeletedAt == null)
+                .ToListAsync(ct)
+                .ConfigureAwait(true);
+
+            Dictionary<int, PrizeBindingSnapshot> bindings = [];
+
+            foreach (PrizePoolBindingEntity row in bindingRows)
+            {
+                if (!poolsById.TryGetValue(row.PrizePoolEntityId, out PrizePoolEntity? boundPool))
+                {
+                    continue;
+                }
+
+                bindings[row.FurnitureDefinitionEntityId] = new PrizeBindingSnapshot
+                {
+                    PoolCode = boundPool.Code,
+                    // A binding at zero would make the furniture pay out on activation, before
+                    // anyone touched it; one hit is the floor.
+                    HitsRequired = Math.Max(1, row.HitsRequired),
+                };
+            }
+
             _entries = [.. entries];
+            _bindingsByDefinitionId = bindings;
             _loaded = true;
 
             _logger.LogInformation(
-                "Loaded {PoolCount} prize pools and {EntryCount} entries into cache.",
+                "Loaded {PoolCount} prize pools, {EntryCount} entries and {BindingCount} furniture bindings into cache.",
                 pools.Count,
-                _entries.Length
+                _entries.Length,
+                _bindingsByDefinitionId.Count
             );
         }
         catch (Exception ex)

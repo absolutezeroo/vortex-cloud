@@ -229,6 +229,8 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<PrizePoolEntryEntity> PrizePoolEntries { get; init; } = null!;
 
+    public DbSet<PrizePoolBindingEntity> PrizePoolBindings { get; init; } = null!;
+
     public DbSet<PlayerMysteryBoxKeyEntity> PlayerMysteryBoxKeys { get; init; } = null!;
 
     protected override void OnModelCreating(ModelBuilder mb)
@@ -365,6 +367,15 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
             .HasOne(e => e.PrizePoolEntity)
             .WithMany()
             .HasForeignKey(e => e.PrizePoolEntityId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // A binding to a deleted pool would leave the furniture drawing from nothing, so it goes
+        // with it. The definition side carries no FK: a hotel may bind an id its furnidata has not
+        // shipped yet, which the manager grain simply never matches.
+        mb.Entity<PrizePoolBindingEntity>()
+            .HasOne(b => b.PrizePoolEntity)
+            .WithMany()
+            .HasForeignKey(b => b.PrizePoolEntityId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Keys cascade with their player.

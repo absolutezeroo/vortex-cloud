@@ -24,6 +24,15 @@ public interface IPrizePoolManagerGrain : IGrainWithStringKey
         CancellationToken ct
     );
 
+    /// <summary>
+    /// The pool a furniture definition draws from, or null when it is bound to none — which is what
+    /// makes a crackable that nobody configured inert rather than free furniture.
+    /// </summary>
+    public Task<PrizeBindingSnapshot?> GetBindingAsync(
+        int furnitureDefinitionId,
+        CancellationToken ct
+    );
+
     /// <summary>Re-reads the tables into the cache, so admin edits go live without a restart.</summary>
     public Task ReloadAsync(CancellationToken ct);
 }

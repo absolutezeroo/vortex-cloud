@@ -34,7 +34,8 @@ public sealed class StuffDataFactory : IStuffDataFactory
             StuffDataType.EmptyKey => new EmptyStuffData(),
             StuffDataType.NumberKey => new NumberStuffData(),
             StuffDataType.HighscoreKey => new HighscoreStuffData(),
-            StuffDataType.CrackableKey or _ => new LegacyStuffData(),
+            StuffDataType.CrackableKey => new CrackableStuffData(),
+            _ => new LegacyStuffData(),
         };
     }
 
@@ -68,9 +69,10 @@ public sealed class StuffDataFactory : IStuffDataFactory
                 StuffDataType.HighscoreKey => stuffElement.Deserialize<HighscoreStuffData>(
                     ReadOptions
                 )!,
-                StuffDataType.CrackableKey or _ => stuffElement.Deserialize<LegacyStuffData>(
+                StuffDataType.CrackableKey => stuffElement.Deserialize<CrackableStuffData>(
                     ReadOptions
                 )!,
+                _ => stuffElement.Deserialize<LegacyStuffData>(ReadOptions)!,
             };
         }
 

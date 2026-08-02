@@ -34,6 +34,14 @@ internal class StuffDataSnapshotSerializer
                 }
 
                 break;
+            // Field order is the contract with the client's crackable parser, which reads the state
+            // string, then the hits landed, then the target.
+            case CrackableStuffSnapshot crackable:
+                packet
+                    .WriteString(crackable.Data)
+                    .WriteInteger(crackable.Hits)
+                    .WriteInteger(crackable.Target);
+                break;
             case LegacyStuffSnapshot legacy:
                 packet.WriteString(legacy.Data);
                 break;
