@@ -378,15 +378,6 @@ public sealed partial class RoomPetSystem
 
     private PetSnapshot ApplyNeedDecay(PetSnapshot pet, PetMotionState motion, long now)
     {
-        long elapsedMs = now - motion.LastStatDecayAtMs;
-
-        if (elapsedMs <= 0)
-        {
-            return pet;
-        }
-
-        double elapsedMinutes = elapsedMs / 60_000.0;
-
         int nutritionCap = _roomGrain._petLevelProvider.GetNutritionCapForLevel(
             pet.Type,
             pet.Level
@@ -396,9 +387,13 @@ public sealed partial class RoomPetSystem
         int newNutrition = pet.Nutrition;
         int newEnergy = pet.Energy;
 
-        int nutritionLoss = (int)(
-            elapsedMinutes * _roomGrain._roomConfig.Pet.NutritionDecayPerMinute
+        int nutritionLoss = RoomPetRuntime.TakeWholeNeedPoints(
+            motion.LastNutritionDecayAtMs,
+            now,
+            _roomGrain._roomConfig.Pet.NutritionDecayPerMinute,
+            out long nextNutritionClockMs
         );
+        motion.LastNutritionDecayAtMs = nextNutritionClockMs;
 
         if (nutritionLoss > 0)
         {
@@ -410,12 +405,13 @@ public sealed partial class RoomPetSystem
             double nestMultiplier = IsOnNestTile(pet)
                 ? _roomGrain._roomConfig.Pet.NestEnergyMultiplier
                 : 1.0;
-            int energyGain = (int)(
-                elapsedMinutes
-                * _roomGrain._roomConfig.Pet.EnergyDecayPerMinute
-                * 2
-                * nestMultiplier
+            int energyGain = RoomPetRuntime.TakeWholeNeedPoints(
+                motion.LastEnergyDecayAtMs,
+                now,
+                _roomGrain._roomConfig.Pet.EnergyDecayPerMinute * 2 * nestMultiplier,
+                out long nextEnergyClockMs
             );
+            motion.LastEnergyDecayAtMs = nextEnergyClockMs;
 
             if (energyGain > 0)
             {
@@ -431,16 +427,20 @@ public sealed partial class RoomPetSystem
         }
         else
         {
-            int energyLoss = (int)(
-                elapsedMinutes * _roomGrain._roomConfig.Pet.EnergyDecayPerMinute
+            int energyLoss = RoomPetRuntime.TakeWholeNeedPoints(
+                motion.LastEnergyDecayAtMs,
+                now,
+                _roomGrain._roomConfig.Pet.EnergyDecayPerMinute,
+                out long nextEnergyClockMs
             );
+            motion.LastEnergyDecayAtMs = nextEnergyClockMs;
 
             if (energyLoss > 0)
             {
                 newEnergy = Math.Clamp(pet.Energy - energyLoss, 0, energyCap);
             }
 
-            if (newEnergy == 0 && !motion.IsSleeping)
+            if (newEnergy == 0)
             {
                 motion.IsSleeping = true;
                 motion.SleepPostureSent = false;
@@ -448,13 +448,6 @@ public sealed partial class RoomPetSystem
                 motion.ClearMovement();
             }
         }
-
-        if (nutritionLoss == 0 && newEnergy == pet.Energy)
-        {
-            return pet;
-        }
-
-        motion.LastStatDecayAtMs = now;
 
         if (newNutrition == pet.Nutrition && newEnergy == pet.Energy)
         {

@@ -168,6 +168,52 @@ internal static class RoomPetRuntime
     public static bool HasBreedingPermission(PetSnapshot pet) =>
         pet.Type != MonsterplantPetType && pet.CanBreed;
 
+    /// <summary>
+    /// Takes the whole points a need has accrued since its own clock, and moves that clock forward
+    /// by only the time those points cost -- never to <paramref name="now" />, so the leftover
+    /// fraction carries into the next tick.
+    /// </summary>
+    /// <remarks>
+    /// Nutrition and energy each need their own clock. Sharing one and resetting it to now the
+    /// moment either need ticked let the faster need starve the slower one: nutrition at 1.0/min
+    /// reset the accumulator every minute, so energy at 0.5/min never reached a whole point. Pets
+    /// never tired, never got thirsty and never fell asleep.
+    /// </remarks>
+    public static int TakeWholeNeedPoints(
+        long clockMs,
+        long now,
+        double perMinute,
+        out long nextClockMs
+    )
+    {
+        nextClockMs = clockMs;
+
+        if (perMinute <= 0)
+        {
+            nextClockMs = now;
+
+            return 0;
+        }
+
+        long elapsedMs = now - clockMs;
+
+        if (elapsedMs <= 0)
+        {
+            return 0;
+        }
+
+        int points = (int)(elapsedMs / 60_000.0 * perMinute);
+
+        if (points <= 0)
+        {
+            return 0;
+        }
+
+        nextClockMs = clockMs + (long)(points / perMinute * 60_000.0);
+
+        return points;
+    }
+
     private static string ToFigureString(PetSnapshot pet) =>
         pet.Type == MonsterplantPetType
             ? $"{pet.Type} {pet.Level} {pet.Color} 0"

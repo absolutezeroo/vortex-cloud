@@ -272,7 +272,8 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
         motion = new PetMotionState
         {
             NextWanderAtMs = ScheduleNextWanderAt(now),
-            LastStatDecayAtMs = now,
+            LastNutritionDecayAtMs = now,
+            LastEnergyDecayAtMs = now,
             IsSleeping = pet.Energy <= 0,
         };
         _motionByPetId[pet.PetId] = motion;
@@ -530,7 +531,8 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
         public int NextTileId { get; set; } = -1;
         public long PendingStopAtMs { get; set; }
         public long NextWanderAtMs { get; set; }
-        public long LastStatDecayAtMs { get; set; } = -1;
+        public long LastNutritionDecayAtMs { get; set; } = -1;
+        public long LastEnergyDecayAtMs { get; set; } = -1;
         public bool IsStatsDirty { get; set; }
         public bool IsSleeping { get; set; }
         public bool SleepPostureSent { get; set; }
