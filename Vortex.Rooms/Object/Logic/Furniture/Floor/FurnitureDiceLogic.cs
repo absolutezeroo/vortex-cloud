@@ -15,7 +15,10 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor;
 /// be picked server-side — trusting a client-supplied face would let a modified client always throw
 /// a favorable result.
 /// </summary>
+// "dice" is the Arcturus interaction_type the catalogue shipped with; "furniture_dice" is what
+// the assets and the client actually call it. Both are kept: the dumps in the wild use either.
 [RoomObjectLogic("dice")]
+[RoomObjectLogic("furniture_dice")]
 public class FurnitureDiceLogic(IStuffDataFactory stuffDataFactory, IRoomFloorItemContext ctx)
     : FurnitureFloorLogic(stuffDataFactory, ctx)
 {

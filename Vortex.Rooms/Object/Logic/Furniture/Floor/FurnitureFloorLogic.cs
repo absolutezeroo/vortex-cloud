@@ -11,7 +11,28 @@ using Vortex.Primitives.Rooms.Object.Logic.Furniture;
 
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor;
 
+/// <summary>
+/// The plain floor furni: stackable, optionally sittable, and toggling through its states on use.
+/// </summary>
+/// <remarks>
+/// The client names carried here are what the assets declare for the overwhelming majority of the
+/// catalogue — <c>furniture_multistate</c> alone covers ~34 000 definitions, <c>furniture_basic</c>
+/// another ~5 800. Their behaviour is already exactly this class (<see cref="OnUseAsync"/> advances
+/// the state, walkability comes from the definition), so they were resolving correctly by accident,
+/// through the provider's fallback. Naming them makes that explicit and, more usefully, keeps the
+/// "logic not found" warning meaningful: it now only fires for behaviour Vortex genuinely lacks.
+/// <para>
+/// <c>furniture_muItistate</c> is not a typo here — it is a typo in the shipped assets, with a
+/// capital i in place of the l, on seven definitions. The client's own factory does not match it
+/// either, so those furni fall back on both sides; accepting it server-side costs nothing and
+/// records why the odd spelling exists.
+/// </para>
+/// </remarks>
 [RoomObjectLogic("default_floor")]
+[RoomObjectLogic("furniture_basic")]
+[RoomObjectLogic("furniture_multistate")]
+[RoomObjectLogic("furniture_muItistate")]
+[RoomObjectLogic("furniture_static")]
 public class FurnitureFloorLogic(IStuffDataFactory stuffDataFactory, IRoomFloorItemContext ctx)
     : FurnitureLogic<IRoomFloorItem, IFurnitureFloorLogic, IRoomFloorItemContext>(
         stuffDataFactory,

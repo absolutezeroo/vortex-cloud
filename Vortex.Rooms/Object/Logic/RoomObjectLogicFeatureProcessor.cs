@@ -41,6 +41,7 @@ internal class RoomObjectLogicFeatureProcessor(IRoomObjectLogicProvider roomObje
                 batch.Add(
                     _roomObjectLogicFactory.RegisterLogic(
                         attribute.Key,
+                        logicType,
                         sp,
                         (sp, ctx) =>
                             (IRoomObjectLogic)ActivatorUtilities.CreateInstance(sp, logicType, ctx)

@@ -111,33 +111,86 @@ def get_logic(interaction_type: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Asset-derived logic overrides
+# Asset-derived logic binding
 # ---------------------------------------------------------------------------
 # items_base has no logic column: it carries an `interaction_type`, which get_logic copies verbatim.
-# That lines up with a registered Vortex logic for most furni, but not for guild furniture -- the
-# dump says `guild_furni` / `guild_gate` / `none`, none of which is registered, so those furni fell
-# back to `default_floor` and lost their colours with their behaviour (the stuff-data format follows
-# the logic). The shipped `.nitro` assets know the real binding; scan_asset_logic.py reads it out of
-# them into the file below. Regenerate with:
+# Almost none of those strings is a registered Vortex logic -- on the dump this converter was built
+# for, 53 782 of 55 279 definitions resolved to nothing and fell through to the family default, so
+# vending machines, beds, teleports and pressure plates imported inert.
+#
+# The shipped `.nitro` assets carry the real binding. scan_asset_logic.py reads it out of them, and
+# also lists which logic names Vortex actually registers. Regenerate both with:
 #
 #     python scan_asset_logic.py <furni-pack-dir>
 #
-# Deliberately narrow: only the logic families needing a non-default stuff-data format are
-# overridden. Repointing everything at client logic names would break the wired furni, whose Vortex
-# logic names match Arcturus on purpose (`wf_act_*`, `wf_cnd_*`, ...).
-LOGIC_OVERRIDES_FILE = BASE_DIR / "data" / "furni_logic_overrides.json"
+# THE RULE: keep the dump's interaction_type when it is already a registered Vortex logic, otherwise
+# take the asset's. Never the reverse. The client's names are not a superset of ours -- it calls a
+# gate `furniture_multistate` because Flash derives blocking from the visualization, while Vortex
+# resolves walkability server-side. Preferring the asset unconditionally overwrites 744 working
+# definitions, 375 of them gates that would stop blocking, plus every wired furni, whose Vortex logic
+# names mirror Arcturus on purpose (`wf_act_*`, `wf_cnd_*`, ...).
+#
+# SECOND RULE: the client has no logic for behaviour that is purely server-side. A vending machine, a
+# bed, a teleport and a pressure plate all look plain to it, so their assets say `furniture_basic` or
+# `furniture_multistate`. Taking that would replace the only surviving record that the furni is meant
+# to do something -- 598 vending machines, 145 teleports, 140 switches, 136 pressure plates, 80 beds
+# -- with a name meaning "ordinary furni". So a plain asset logic only ever replaces "none".
+ASSET_LOGIC_FILE = BASE_DIR / "data" / "asset_logic.json"
+VORTEX_LOGICS_FILE = BASE_DIR / "data" / "vortex_logics.json"
+
+# Client logics that mean "an ordinary furni, possibly with states" -- exactly what the family
+# default already does.
+PLAIN_ASSET_LOGICS = frozenset(
+    {
+        "furniture_basic",
+        "furniture_multistate",
+        # Not a typo on our side: the shipped assets misspell it with a capital i on seven furni.
+        "furniture_muItistate",
+        "furniture_static",
+    }
+)
+
+# Client logic name -> stuff_data_type, derived from the StuffData class each client logic casts to.
+# Ids are the client's own (0 legacy, 1 map, 2 string array, 3 vote, 4 empty, 5 number, 6 high score,
+# 7 crackable), which match Vortex's StuffDataType one for one.
+#
+# furniture_crackable is absent on purpose: it reads its state through the generic model controller,
+# so it names no StuffData class, and it also needs a prize_pool_bindings row for its hit count.
+# Setting the format alone would produce half-configured crackables; crackable.sql handles them with
+# their bindings.
+STUFF_DATA_TYPE_BY_LOGIC: dict[str, int] = {
+    "furniture_bb": 1,
+    "furniture_bg": 1,
+    "furniture_coinschest": 1,
+    "furniture_furnichest": 1,
+    "furniture_mannequin": 1,
+    "furniture_present": 1,
+    "furniture_achievement_resolution": 2,
+    "furniture_badge_display": 2,
+    "furniture_group_forum_terminal": 2,
+    "furniture_guild_customized": 2,
+    "furniture_guild_gate": 2,
+    "furniture_hween_lovelock": 2,
+    "furniture_lovelock": 2,
+    "furniture_wildwest_wanted": 2,
+    "furniture_vote_counter": 3,
+    "furniture_vote_majority": 3,
+    "furniture_area_hide": 5,
+    "furniture_background_color": 5,
+}
 
 
-def load_logic_overrides() -> dict[str, dict]:
-    if not LOGIC_OVERRIDES_FILE.exists():
+def load_json_data(path: Path, what: str) -> dict:
+    if not path.exists():
         print(
-            f"  [WARN] {LOGIC_OVERRIDES_FILE.name} not found -- guild furni will import with the raw\n"
-            f"         interaction_type and render uncoloured. Run scan_asset_logic.py to generate it.",
+            f"  [WARN] {path.name} not found -- {what}. Definitions will import with the raw\n"
+            f"         interaction_type and mostly resolve to the family default, which is the bug\n"
+            f"         this file exists to fix. Run scan_asset_logic.py to generate it.",
             file=sys.stderr,
         )
         return {}
 
-    return json.loads(LOGIC_OVERRIDES_FILE.read_text(encoding="utf-8"))
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 # ---------------------------------------------------------------------------
@@ -342,8 +395,9 @@ def convert_items_base(src: Path, dst: Path) -> tuple[dict[int, dict], dict[int,
         "extra_data", "created_at", "updated_at", "deleted_at", "stuff_data_type",
     ]
 
-    logic_overrides = load_logic_overrides()
-    overridden = 0
+    asset_logic = load_json_data(ASSET_LOGIC_FILE, "asset logic bindings are missing")
+    vortex_logics = load_json_data(VORTEX_LOGICS_FILE, "the Vortex logic registry is missing")
+    rebound = 0
 
     lines: list[str] = [
         "-- furniture_definitions converted from Arcturus items_base",
@@ -393,14 +447,19 @@ def convert_items_base(src: Path, dst: Path) -> tuple[dict[int, dict], dict[int,
         logic        = get_logic(interaction_type)
         extra_data   = str(customparams).strip() if customparams else None
 
-        # 0 = StuffDataType.LegacyKey, the entity default.
-        stuff_data_type = 0
+        # Keep a logic the server actually registers; otherwise take what the asset declares.
+        # See THE RULE above -- doing this the other way round breaks gates and wired furni.
+        if logic not in vortex_logics:
+            from_asset = asset_logic.get(str(item_name or ""))
+            plain = from_asset in PLAIN_ASSET_LOGICS
+            keep_intent = plain and logic != "none"
 
-        override = logic_overrides.get(str(item_name or ""))
-        if override:
-            logic = override["logic"]
-            stuff_data_type = override["stuff_data_type"]
-            overridden += 1
+            if from_asset and from_asset != logic and not keep_intent:
+                logic = from_asset
+                rebound += 1
+
+        # 0 = StuffDataType.LegacyKey, the entity default.
+        stuff_data_type = STUFF_DATA_TYPE_BY_LOGIC.get(logic, 0)
 
         ib_id_int  = int(ib_id)
         sprite_int = int(sprite_id) if sprite_id is not None else 0
@@ -453,7 +512,7 @@ def convert_items_base(src: Path, dst: Path) -> tuple[dict[int, dict], dict[int,
     dst.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(
         f"  -> {dst.name}: {written} definitions written, {dupes} duplicates remapped, "
-        f"{overridden} logic bindings taken from the assets"
+        f"{rebound} logic bindings taken from the assets"
     )
     return lookup, id_remap
 

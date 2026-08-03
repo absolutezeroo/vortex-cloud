@@ -9,7 +9,9 @@ using Vortex.Primitives.Rooms.Object.Logic;
 
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor;
 
+// Arcturus name plus the client/asset name -- see FurnitureDiceLogic for why both are carried.
 [RoomObjectLogic("monsterplant_seed")]
+[RoomObjectLogic("furniture_monsterplant_seed")]
 public class FurnitureMonsterplantSeedLogic(
     IStuffDataFactory stuffDataFactory,
     IRoomFloorItemContext ctx

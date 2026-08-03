@@ -13,7 +13,9 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor;
 /// state), not a fact worth remembering across room reactivations — so unlike most floor items,
 /// this stays <see cref="StuffPersistanceType.RoomActive"/> instead of persisting to <c>ExtraData</c>.
 /// </summary>
+// Arcturus name plus the client/asset name -- see FurnitureDiceLogic for why both are carried.
 [RoomObjectLogic("fireworks")]
+[RoomObjectLogic("furniture_fireworks")]
 public class FurnitureFireworksLogic(IStuffDataFactory stuffDataFactory, IRoomFloorItemContext ctx)
     : FurnitureFloorLogic(stuffDataFactory, ctx)
 {
