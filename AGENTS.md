@@ -36,10 +36,10 @@ Activate the relevant skill checklist before editing code in that domain:
   - Enforce: explicit mandatory fields, no placeholder payloads when source data exists.
 - `revision-protocol` (cross-repo)
   - Trigger: changes referencing `Revision<id>` packet mappings for a revision other than the
-    embedded default `Revision20260112`.
+    embedded default `Revision20260701`.
   - Enforce: edit plugin revision tree in `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`.
-  - Note: `Revision20260112` itself is embedded in core and is edited directly under
-    `Vortex.Revisions/Revision20260112/**` in `vortex-cloud` — this rule does not apply to it.
+  - Note: `Revision20260701` itself is embedded in core and is edited directly under
+    `Vortex.Revisions/Revision20260701/**` in `vortex-cloud` — this rule does not apply to it.
 
 ## Priority order
 1. Build and quality checks in repo files (`Directory.Build.props`, `Directory.Build.targets`, `.editorconfig`)
@@ -78,14 +78,14 @@ Default output format:
 - Avoid dead code, unused allocations, and broad catch blocks that hide errors (see **Orleans grain development rules** for specifics).
 - For revision compatibility work, prefer restoring/adding missing incoming message contracts in `Vortex.Primitives/Messages/Incoming/**` before mutating serializer/composer payload behavior.
 - Do not alter serializer/composer behavior by replacing real payload writes with placeholder constants (for example, unconditional `WriteInteger(0)`) unless explicitly requested.
-- `Vortex.Revisions/Revision20260112/**` (including its `Parsers/` and `Serializers/` trees) is the
+- `Vortex.Revisions/Revision20260701/**` (including its `Parsers/` and `Serializers/` trees) is the
   **default revision embedded in core** so the emulator can run standalone without a plugin. Editing
   it in `vortex-cloud` is expected and correct — see the "Packet addition checklist" below.
 - Any **additional/custom** protocol revision (a different client version added via the plugin
   system) belongs in the plugin repo instead:
   - `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`
   - Do not hallucinate new `Revision<id>/Parsers` or `Revision<id>/Serializers` trees into
-    `vortex-cloud` for revisions other than the embedded `Revision20260112` default.
+    `vortex-cloud` for revisions other than the embedded `Revision20260701` default.
 
 ## Orleans grain development rules
 These rules exist because every one of these mistakes has shipped and caused real issues.
@@ -189,19 +189,19 @@ updated in the *same* method that persists the change, and hydrated from DB on g
 - Grain lifetime remains Orleans-managed by default; use `[KeepAlive]` only for explicitly justified directory/manager grains.
 
 ## Packet addition checklist (revision work)
-When adding packet mappings in `Vortex.Revisions/Revision20260112`:
-1. Update `Vortex.Revisions/Revision20260112/Headers.cs`:
+When adding packet mappings in `Vortex.Revisions/Revision20260701`:
+1. Update `Vortex.Revisions/Revision20260701/Headers.cs`:
    - add/update incoming `MessageEvent` id constants
    - add/update outgoing `MessageComposer` id constants
 2. Add parser class under:
-   - `Vortex.Revisions/Revision20260112/Parsers/<Domain>/*MessageParser.cs`
+   - `Vortex.Revisions/Revision20260701/Parsers/<Domain>/*MessageParser.cs`
 3. Add serializer class under:
-   - `Vortex.Revisions/Revision20260112/Serializers/<Domain>/*MessageComposerSerializer.cs`
+   - `Vortex.Revisions/Revision20260701/Serializers/<Domain>/*MessageComposerSerializer.cs`
 4. Register mappings in:
-   - `Vortex.Revisions/Revision20260112/Revision20260112.cs`
+   - `Vortex.Revisions/Revision20260701/Revision20260701.cs`
    - incoming: `Parsers` dictionary with `MessageEvent` key
    - outgoing: `Serializers` dictionary with composer type + `MessageComposer` id
-5. Ensure the required `using` directives are present in `Revision20260112.cs` for new parser/serializer namespaces.
+5. Ensure the required `using` directives are present in `Revision20260701.cs` for new parser/serializer namespaces.
 
 ## Task recipes
 

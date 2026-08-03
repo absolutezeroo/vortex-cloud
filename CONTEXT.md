@@ -24,14 +24,14 @@
 - Keep database querying and persistence access out of packet handlers.
 - Keep grain lifecycle/state logic within grain modules; do not bypass grain boundaries with direct cross-layer shortcuts.
 - Keep plugin lifecycle operations inside `Vortex.Plugins`; do not duplicate plugin loading logic in unrelated modules.
-- `Vortex.Revisions/Revision20260112/**` is the default revision embedded in core (so the emulator
+- `Vortex.Revisions/Revision20260701/**` is the default revision embedded in core (so the emulator
   runs standalone without a plugin) — its `Parsers/` and `Serializers/` trees legitimately live in
   `vortex-cloud` and are edited there.
 - Protocol revision parser/serializer trees for any **other/additional** revision (added via the
   plugin system) are owned by the plugin repo at:
   - `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`
   - Do not create new `Revision<id>/Parsers` or `Revision<id>/Serializers` trees in `vortex-cloud`
-    for revisions other than the embedded `Revision20260112` default.
+    for revisions other than the embedded `Revision20260701` default.
 - Extended profile flow boundary:
   - `Vortex.PacketHandlers/Users/*ExtendedProfile*Handler.cs` orchestrates lookup + response mapping only.
   - `Vortex.Players/Grains/PlayerDirectoryGrain.cs` owns username/id lookup semantics and cache coherence.

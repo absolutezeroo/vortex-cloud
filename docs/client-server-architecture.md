@@ -3,7 +3,7 @@
 How **Vortex Cloud** (`vortex-emulator`, the server) and **vortex-client** (the client, package name `com.sulake.habbo` — "habbo-client-clean") work together.
 
 **Server:** Vortex Cloud — .NET 10, Microsoft Orleans (virtual actors), SuperSocket networking, EF Core (Pomelo MySQL)
-**Client:** vortex-client — ActionScript 3 / Flash Player, protocol revision `WIN63-202601121721-391685409`
+**Client:** vortex-client — ActionScript 3 / Flash Player, protocol revision `WIN63-202607011411-782849652`
 **Protocol:** Binary TCP **and** WebSocket with the classic length+header framing, optional RC4 encryption
 
 > This document replaces an earlier draft that assumed a Java/Netty "Arcturus"-style server. That draft's protocol details, packet IDs, and bug list did not apply to this project's actual server and have been discarded rather than patched. Every fact below is sourced from `vortex-emulator` and `vortex-client` directly (file paths cited throughout), plus the emulator's own status docs (`ROADMAP.md`, `TODO.md`, `CONSOLIDATION.md`, `DATA-MODEL.md`, `PETS-DESIGN.md`, `docs/walkthroughs/request-lifecycle.md`).
@@ -81,7 +81,7 @@ The **client** (vortex-client) is a Flash-based rendering and input layer. It pr
 │  │  ├─ Vortex.Crypto            DH + RSA + RC4              │  │
 │  │  ├─ Vortex.Pipeline/Messages Generic envelope dispatch    │  │
 │  │  ├─ Vortex.Revisions         Protocol def (Headers,       │  │
-│  │  │   /Revision20260112      Parsers/, Serializers/)      │  │
+│  │  │   /Revision20260701      Parsers/, Serializers/)      │  │
 │  │  ├─ Vortex.PacketHandlers    Orchestration-only handlers  │  │
 │  │  ├─ Vortex.Rooms             RoomGrain (modules+systems)  │  │
 │  │  ├─ Vortex.Players           PlayerGrain, PlayerPresence, │  │
@@ -128,7 +128,7 @@ Everything under a domain project (`Vortex.Rooms`, `Vortex.Catalog`, `Vortex.Pla
 3. Domain plugin modules registered via `AddHostPlugin<TModule>`: `ObservabilityModule, AuthenticationModule, FurnitureModule, CatalogModule, PlayerModule, InventoryModule, MarketplaceModule, DashboardApiModule, NavigatorModule, RoomModule, PacketHandlersModule, WebApiModule`. Each module's assembly gets scanned later for message handlers.
 4. `AddHostedService<VortexEmulator>()` — registered **last**, so it starts after `PluginBootstrapper` (which does the assembly scanning) and any hot-reload service.
 
-`VortexEmulator.StartAsync` (`Vortex.Main/VortexEmulator.cs`): registers the embedded `Revision20260112` with `IRevisionManager`, sequentially reloads every static-data provider (furniture definitions, catalog/club-offer/club-gift snapshots, currency types, group badge parts, pet palettes/commands/levels, navigator contexts, room models), and only then calls `INetworkManager.StartAsync` — so TCP/WS sockets don't open until the revision and all data providers are warm.
+`VortexEmulator.StartAsync` (`Vortex.Main/VortexEmulator.cs`): registers the embedded `Revision20260701` with `IRevisionManager`, sequentially reloads every static-data provider (furniture definitions, catalog/club-offer/club-gift snapshots, currency types, group badge parts, pet palettes/commands/levels, navigator contexts, room models), and only then calls `INetworkManager.StartAsync` — so TCP/WS sockets don't open until the revision and all data providers are warm.
 
 ### Phase 2: Transport
 
@@ -292,7 +292,7 @@ There is no separate password-based login packet — authentication is **exclusi
 
 ### How Packets Map to Code
 
-Packet IDs and their handling code are defined in exactly **one place**: `Vortex.Revisions/Revision20260112/Headers.cs`, two `internal static class`es of `public const int` fields —
+Packet IDs and their handling code are defined in exactly **one place**: `Vortex.Revisions/Revision20260701/Headers.cs`, two `internal static class`es of `public const int` fields —
 
 ```csharp
 // Headers.cs
@@ -315,9 +315,9 @@ internal static class MessageComposer   // server → client (outgoing from the 
 }
 ```
 
-`Vortex.Revisions/Revision20260112/Revision20260112.cs` (3480 lines) builds the actual `IRevision` from these constants: `Parsers` is `IDictionary<int, IParser>` keyed by the `MessageEvent` ids; `Serializers` is `IDictionary<Type, ISerializer>` keyed by the **composer's CLR type** (each serializer's constructor is handed its header id from `MessageComposer`). Both dictionaries are hand-built object initializers, grouped into `#region`s by domain (Room, Catalog, Inventory, Navigator, FriendList, Moderator, Handshake, Game, Wired, ...).
+`Vortex.Revisions/Revision20260701/Revision20260701.cs` (3480 lines) builds the actual `IRevision` from these constants: `Parsers` is `IDictionary<int, IParser>` keyed by the `MessageEvent` ids; `Serializers` is `IDictionary<Type, ISerializer>` keyed by the **composer's CLR type** (each serializer's constructor is handed its header id from `MessageComposer`). Both dictionaries are hand-built object initializers, grouped into `#region`s by domain (Room, Catalog, Inventory, Navigator, FriendList, Moderator, Handshake, Game, Wired, ...).
 
-`Vortex.Networking/Revisions/RevisionManager.cs` (`IRevisionManager`) holds a `Dictionary<string, IRevision>` keyed by the revision's build string (`"WIN63-202601121721-391685409"` for the embedded default). This is the plugin extension point: additional client revisions can be registered by a separate plugin without touching core code — see `CONTEXT.md`'s note that `Revision<id>/Parsers|Serializers` trees for *other* revisions belong in a plugin repo, not in `vortex-cloud` itself.
+`Vortex.Networking/Revisions/RevisionManager.cs` (`IRevisionManager`) holds a `Dictionary<string, IRevision>` keyed by the revision's build string (`"WIN63-202607011411-782849652"` for the embedded default). This is the plugin extension point: additional client revisions can be registered by a separate plugin without touching core code — see `CONTEXT.md`'s note that `Revision<id>/Parsers|Serializers` trees for *other* revisions belong in a plugin repo, not in `vortex-cloud` itself.
 
 ### Client — `HabboMessages.as` (~1,996 lines)
 
@@ -370,20 +370,20 @@ Handlers are **orchestration-only** — guard the context, resolve one grain, de
 
 ### Field Read/Write Convention
 
-Parsers and serializers under `Vortex.Revisions/Revision20260112/{Parsers,Serializers}/**` use the same `Pop*`/`Write*` idiom as the classic protocol shape:
+Parsers and serializers under `Vortex.Revisions/Revision20260701/{Parsers,Serializers}/**` use the same `Pop*`/`Write*` idiom as the classic protocol shape:
 
 ```csharp
-// Vortex.Revisions/Revision20260112/Parsers/Room/Engine/MoveAvatarMessageParser.cs
+// Vortex.Revisions/Revision20260701/Parsers/Room/Engine/MoveAvatarMessageParser.cs
 public IMessageEvent Parse(IClientPacket packet) =>
     new MoveAvatarMessage { TargetX = packet.PopInt(), TargetY = packet.PopInt() };
 
-// Vortex.Revisions/Revision20260112/Parsers/Room/Chat/ChatMessageParser.cs
+// Vortex.Revisions/Revision20260701/Parsers/Room/Chat/ChatMessageParser.cs
 public IMessageEvent Parse(IClientPacket packet) =>
     new ChatMessage { Text = packet.PopString(), StyleId = packet.PopInt(), TrackingId = packet.PopInt() };
 ```
 
 ```csharp
-// Vortex.Revisions/Revision20260112/Serializers/Room/Chat/ChatMessageComposerSerializer.cs (shape)
+// Vortex.Revisions/Revision20260701/Serializers/Room/Chat/ChatMessageComposerSerializer.cs (shape)
 packet.WriteInteger(message.ObjectId).WriteString(message.Text).WriteInteger(message.Gesture)...
 ```
 
@@ -735,7 +735,7 @@ Does not exist as a system. `Inventory/Achievements/GetAchievementsMessageHandle
 
 ## 21. Packet Alignment Audit
 
-This section replaces the old draft's fabricated Arcturus-vs-client numbers with a real diff, generated by parsing `Vortex.Revisions/Revision20260112/Headers.cs` (`MessageEvent`/`MessageComposer` constants) against `vortex-client/src/com/sulake/habbo/communication/HabboMessages.as` (`_composers`/`_events` registration maps), matched by numeric header id per direction.
+This section replaces the old draft's fabricated Arcturus-vs-client numbers with a real diff, generated by parsing `Vortex.Revisions/Revision20260701/Headers.cs` (`MessageEvent`/`MessageComposer` constants) against `vortex-client/src/com/sulake/habbo/communication/HabboMessages.as` (`_composers`/`_events` registration maps), matched by numeric header id per direction.
 
 ### Summary
 
@@ -1014,8 +1014,8 @@ RoomGrain's timer callback
 | `Vortex.Messages/MessageSystem.cs` | Incoming packet publish entry point |
 | `Vortex.Messages/Registry/MessageRegistry.cs` | Handler/behavior registry + dispatch (parallel execution) |
 | `Vortex.Plugins/PluginBootstrapper.cs` | Assembly scan that registers all `IMessageHandler<T>`s |
-| `Vortex.Revisions/Revision20260112/Headers.cs` | The packet ID registry (`MessageEvent`/`MessageComposer`) |
-| `Vortex.Revisions/Revision20260112/Revision20260112.cs` | Parser/serializer dictionaries for the embedded revision |
+| `Vortex.Revisions/Revision20260701/Headers.cs` | The packet ID registry (`MessageEvent`/`MessageComposer`) |
+| `Vortex.Revisions/Revision20260701/Revision20260701.cs` | Parser/serializer dictionaries for the embedded revision |
 | `Vortex.Authentication/AuthenticationService.cs` | SSO ticket → player id resolution |
 | `Vortex.Rooms/Grains/RoomGrain.cs` (+ 9 partials) | Room grain: state, modules, systems, tick timer |
 | `Vortex.Rooms/Grains/Systems/RoomPathingSystem.cs` | A* pathfinding |
@@ -1055,7 +1055,7 @@ RoomGrain's timer callback
 
 ## Appendix B: Packet ID Quick Reference
 
-All values below are read directly from `Vortex.Revisions/Revision20260112/Headers.cs` — grep it yourself for anything not listed here rather than assuming a value.
+All values below are read directly from `Vortex.Revisions/Revision20260701/Headers.cs` — grep it yourself for anything not listed here rather than assuming a value.
 
 ### Handshake Sequence
 

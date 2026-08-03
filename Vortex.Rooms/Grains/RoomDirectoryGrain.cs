@@ -28,7 +28,7 @@ public class RoomDirectoryGrain(
     private readonly IGrainFactory _grainFactory = grainFactory;
 
     private readonly Dictionary<RoomId, RoomActiveSnapshot> _activeRooms = [];
-    private readonly Dictionary<RoomId, List<PlayerId>> _roomPlayers = [];
+    private readonly Dictionary<RoomId, HashSet<PlayerId>> _roomPlayers = [];
     private readonly Dictionary<RoomId, int> _roomPopulations = [];
 
     public override Task OnActivateAsync(CancellationToken ct)
@@ -65,23 +65,24 @@ public class RoomDirectoryGrain(
 
     public Task RemoveActiveRoomAsync(RoomId roomId)
     {
+        // The occupancy maps have to go with it. This grain is [KeepAlive], so anything left behind
+        // here is kept for the lifetime of the silo — one stale entry per room ever opened.
         _activeRooms.Remove(roomId);
+        _roomPlayers.Remove(roomId);
+        _roomPopulations.Remove(roomId);
 
         return Task.CompletedTask;
     }
 
     public async Task AddPlayerToRoomAsync(PlayerId playerId, RoomId roomId, CancellationToken ct)
     {
-        if (!_roomPlayers.TryGetValue(roomId, out List<PlayerId>? playerIds))
+        if (!_roomPlayers.TryGetValue(roomId, out HashSet<PlayerId>? playerIds))
         {
             playerIds = [];
             _roomPlayers[roomId] = playerIds;
         }
 
-        if (!playerIds.Contains(playerId))
-        {
-            playerIds.Add(playerId);
-        }
+        playerIds.Add(playerId);
 
         await UpdatePopulationAsync(roomId);
     }
@@ -92,7 +93,7 @@ public class RoomDirectoryGrain(
         CancellationToken ct
     )
     {
-        if (!_roomPlayers.TryGetValue(roomId, out List<PlayerId>? players))
+        if (!_roomPlayers.TryGetValue(roomId, out HashSet<PlayerId>? players))
         {
             return;
         }
@@ -131,7 +132,7 @@ public class RoomDirectoryGrain(
 
     private Task UpdatePopulationAsync(RoomId roomId)
     {
-        _roomPopulations[roomId] = _roomPlayers.TryGetValue(roomId, out List<PlayerId>? players)
+        _roomPopulations[roomId] = _roomPlayers.TryGetValue(roomId, out HashSet<PlayerId>? players)
             ? players.Count
             : 0;
 

@@ -87,6 +87,17 @@ public sealed class OrleansHostConfigValidator(IOptions<DatabaseConfig> database
             );
         }
 
+        // Orleans's own floor is CollectionQuantum (one minute by default); below it the silo throws
+        // during startup with a message that never mentions this setting.
+        if (options.GrainCollectionAge < TimeSpan.FromMinutes(1))
+        {
+            failures.Add(
+                $"'{OrleansHostConfig.SECTION_NAME}:{nameof(OrleansHostConfig.GrainCollectionAge)}' "
+                    + $"must be at least one minute (got {options.GrainCollectionAge}); Orleans "
+                    + "cannot collect grains more often than its collection quantum."
+            );
+        }
+
         if (options.SiloPort == options.GatewayPort)
         {
             failures.Add(

@@ -92,7 +92,7 @@ public static class HostApplicationBuilderExtensions
                 {
                     silo.Configure<GrainCollectionOptions>(options =>
                     {
-                        options.CollectionAge = TimeSpan.FromMinutes(2);
+                        options.CollectionAge = hostConfig.GrainCollectionAge;
                     });
                     silo.ConfigureEndpoints(
                         hostConfig.AdvertisedIp,

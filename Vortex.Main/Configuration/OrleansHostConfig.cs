@@ -1,3 +1,5 @@
+using System;
+
 namespace Vortex.Main.Configuration;
 
 /// <summary>
@@ -11,6 +13,14 @@ public sealed class OrleansHostConfig
     public string AdvertisedIp { get; init; } = "127.0.0.1";
     public int SiloPort { get; init; } = 11111;
     public int GatewayPort { get; init; } = 3000;
+
+    /// <summary>
+    ///     How long a grain may sit idle before Orleans deactivates it, as <c>hh:mm:ss</c>. The
+    ///     default matches the value this was hardcoded to. Raising it keeps hot rooms and players
+    ///     resident (fewer rehydration round-trips to MySQL) at the cost of silo memory; Orleans
+    ///     refuses anything below its one-minute collection quantum.
+    /// </summary>
+    public TimeSpan GrainCollectionAge { get; init; } = TimeSpan.FromMinutes(2);
 
     /// <summary>
     ///     Single-node localhost clustering with in-memory grain storage/streams loses all

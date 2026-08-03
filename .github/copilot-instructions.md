@@ -26,12 +26,12 @@ Include in every request:
 - Keep plugin lifecycle logic centralized in `Vortex.Plugins`.
 - Keep packet handlers in `Vortex.PacketHandlers` and domain logic in domain modules.
 - Respect Orleans grain boundaries and avoid bypassing grain orchestration.
-- `Vortex.Revisions/Revision20260112/**` is the embedded default revision and stays in `vortex-cloud`
+- `Vortex.Revisions/Revision20260701/**` is the embedded default revision and stays in `vortex-cloud`
   (`Parsers/`/`Serializers/` there are expected, not a violation).
 - For any other/additional protocol revision, target the plugin repo path instead:
   - `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`
   - Do not generate new `Revision<id>/Parsers` or `Revision<id>/Serializers` in `vortex-cloud` for
-    revisions other than the embedded `Revision20260112` default.
+    revisions other than the embedded `Revision20260701` default.
 - A new dashboard capability string lives in six files (`Capabilities.cs` const + `All`,
   `DashboardWebHost.DashboardCapabilities`, `DashboardAuthService.DashboardCapabilities`,
   `dashboardPermissions.js`, `routes.js`, `locales/en.js` + `fr.js`). Nothing cross-checks them —

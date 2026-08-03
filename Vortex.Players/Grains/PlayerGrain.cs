@@ -168,8 +168,6 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
 
         await playerPresence.OnPlayerUpdatedAsync(await GetSummaryAsync(ct), ct);
 
-        await WriteToDatabaseAsync(ct);
-
         await _events
             .PublishAsync(new PlayerMottoChangedEvent(_state.PlayerId, text), ct)
             .ConfigureAwait(true);

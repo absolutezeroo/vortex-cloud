@@ -454,6 +454,20 @@ public sealed class ConfigValidationTests
             .Succeeded.Should()
             .BeTrue();
 
+    [Fact]
+    public void AGrainCollectionAgeBelowTheQuantum_IsRefused() =>
+        OrleansValidator()
+            .Validate(null, new OrleansHostConfig { GrainCollectionAge = TimeSpan.FromSeconds(30) })
+            .Failed.Should()
+            .BeTrue();
+
+    [Fact]
+    public void ALongerGrainCollectionAge_Passes() =>
+        OrleansValidator()
+            .Validate(null, new OrleansHostConfig { GrainCollectionAge = TimeSpan.FromMinutes(30) })
+            .Succeeded.Should()
+            .BeTrue();
+
     // ── Plugins ──────────────────────────────────────────────────────────────
 
     [Fact]
