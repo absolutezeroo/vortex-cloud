@@ -111,6 +111,36 @@ def get_logic(interaction_type: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Asset-derived logic overrides
+# ---------------------------------------------------------------------------
+# items_base has no logic column: it carries an `interaction_type`, which get_logic copies verbatim.
+# That lines up with a registered Vortex logic for most furni, but not for guild furniture -- the
+# dump says `guild_furni` / `guild_gate` / `none`, none of which is registered, so those furni fell
+# back to `default_floor` and lost their colours with their behaviour (the stuff-data format follows
+# the logic). The shipped `.nitro` assets know the real binding; scan_asset_logic.py reads it out of
+# them into the file below. Regenerate with:
+#
+#     python scan_asset_logic.py <furni-pack-dir>
+#
+# Deliberately narrow: only the logic families needing a non-default stuff-data format are
+# overridden. Repointing everything at client logic names would break the wired furni, whose Vortex
+# logic names match Arcturus on purpose (`wf_act_*`, `wf_cnd_*`, ...).
+LOGIC_OVERRIDES_FILE = BASE_DIR / "data" / "furni_logic_overrides.json"
+
+
+def load_logic_overrides() -> dict[str, dict]:
+    if not LOGIC_OVERRIDES_FILE.exists():
+        print(
+            f"  [WARN] {LOGIC_OVERRIDES_FILE.name} not found -- guild furni will import with the raw\n"
+            f"         interaction_type and render uncoloured. Run scan_asset_logic.py to generate it.",
+            file=sys.stderr,
+        )
+        return {}
+
+    return json.loads(LOGIC_OVERRIDES_FILE.read_text(encoding="utf-8"))
+
+
+# ---------------------------------------------------------------------------
 # XML helpers
 # ---------------------------------------------------------------------------
 def xml_escape(s: str) -> str:
@@ -309,8 +339,11 @@ def convert_items_base(src: Path, dst: Path) -> tuple[dict[int, dict], dict[int,
         "id", "sprite_id", "name", "type", "category", "logic", "total_states",
         "width", "length", "stack_height", "can_stack", "can_walk", "can_sit", "can_lay",
         "can_recycle", "can_trade", "can_group", "can_sell", "usage_policy",
-        "extra_data", "created_at", "updated_at", "deleted_at",
+        "extra_data", "created_at", "updated_at", "deleted_at", "stuff_data_type",
     ]
+
+    logic_overrides = load_logic_overrides()
+    overridden = 0
 
     lines: list[str] = [
         "-- furniture_definitions converted from Arcturus items_base",
@@ -360,6 +393,15 @@ def convert_items_base(src: Path, dst: Path) -> tuple[dict[int, dict], dict[int,
         logic        = get_logic(interaction_type)
         extra_data   = str(customparams).strip() if customparams else None
 
+        # 0 = StuffDataType.LegacyKey, the entity default.
+        stuff_data_type = 0
+
+        override = logic_overrides.get(str(item_name or ""))
+        if override:
+            logic = override["logic"]
+            stuff_data_type = override["stuff_data_type"]
+            overridden += 1
+
         ib_id_int  = int(ib_id)
         sprite_int = int(sprite_id) if sprite_id is not None else 0
 
@@ -402,13 +444,17 @@ def convert_items_base(src: Path, dst: Path) -> tuple[dict[int, dict], dict[int,
             # (FurnitureLogic falls back to the stored policy when total_states > 0).
             f"1, "
             f"{sql_str(extra_data if extra_data else None)}, "
-            f"NOW(), NOW(), NULL)"
+            f"NOW(), NOW(), NULL, "
+            f"{sql_str(stuff_data_type)})"
         )
         written += 1
 
     write_bulk_inserts(lines, "furniture_definitions", COLS, value_rows, ignore=True)
     dst.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"  -> {dst.name}: {written} definitions written, {dupes} duplicates remapped")
+    print(
+        f"  -> {dst.name}: {written} definitions written, {dupes} duplicates remapped, "
+        f"{overridden} logic bindings taken from the assets"
+    )
     return lookup, id_remap
 
 
