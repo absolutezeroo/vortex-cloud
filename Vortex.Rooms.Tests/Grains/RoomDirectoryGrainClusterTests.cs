@@ -2,44 +2,26 @@ using System;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
-using Orleans.Hosting;
-using Orleans.TestingHost;
+using Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Grains;
-using Vortex.Rooms.Configuration;
 using Xunit;
 
 namespace Vortex.Rooms.Tests.Grains;
 
 /// <summary>
-/// Proof of concept for testing a real Orleans grain end-to-end inside an in-process silo
-/// (as opposed to the hand-constructed grain tests in Vortex.Rooms.Tests/Groups), so activation,
-/// DI wiring, and grain-reference calls are exercised the same way production hosting exercises
-/// them. <see cref="RoomDirectoryGrain"/> was picked because it has no database dependency.
+/// The directory grain end-to-end inside a real silo, so activation, DI wiring, and grain-reference
+/// calls are exercised the way production hosting exercises them (as opposed to the
+/// hand-constructed grain tests in Vortex.Rooms.Tests/Groups). It was the first grain covered this
+/// way because it has no database dependency.
 /// </summary>
-public sealed class RoomDirectoryGrainClusterTests : IAsyncLifetime
+[Collection(VortexClusterCollection.Name)]
+public sealed class RoomDirectoryGrainClusterTests(VortexClusterFixture cluster)
 {
-    private TestCluster _cluster = null!;
-
-    public async Task InitializeAsync()
-    {
-        TestClusterBuilder builder = new TestClusterBuilder(1);
-        builder.AddSiloBuilderConfigurator<SiloConfigurator>();
-        _cluster = builder.Build();
-
-        await _cluster.DeployAsync().ConfigureAwait(true);
-    }
-
-    public async Task DisposeAsync()
-    {
-        await _cluster.StopAllSilosAsync().ConfigureAwait(true);
-
-        _cluster.Dispose();
-    }
+    private readonly VortexClusterFixture _cluster = cluster;
 
     [Fact]
     public async Task UpsertActiveRoomAsync_ThenGetActiveRoomsAsync_ReturnsUpsertedRoom()
@@ -120,17 +102,5 @@ public sealed class RoomDirectoryGrainClusterTests : IAsyncLifetime
             .ConfigureAwait(true);
 
         rooms.Should().BeEmpty();
-    }
-
-    private sealed class SiloConfigurator : ISiloConfigurator
-    {
-        public void Configure(ISiloBuilder siloBuilder)
-        {
-            siloBuilder.ConfigureServices(services =>
-            {
-                services.AddLogging();
-                services.AddOptions<RoomConfig>();
-            });
-        }
     }
 }
