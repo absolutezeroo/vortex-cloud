@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -167,6 +168,43 @@ internal static class RoomPetRuntime
 
     public static bool HasBreedingPermission(PetSnapshot pet) =>
         pet.Type != MonsterplantPetType && pet.CanBreed;
+
+    /// <summary>
+    /// Whether a pet reads as tired: it should stop wandering and go nap on a nest. Monsterplants
+    /// are excluded -- they are rooted, and their energy means watering, not sleep.
+    /// </summary>
+    public static bool IsTired(PetSnapshot pet, int tiredEnergyThreshold) =>
+        pet.Type != MonsterplantPetType && pet.Energy <= tiredEnergyThreshold;
+
+    /// <summary>
+    /// The nearest candidate tile by walking distance, or null when there is none. Ties keep the
+    /// first candidate, so a room with two equidistant nests picks the same one every tick rather
+    /// than dithering between them.
+    /// </summary>
+    public static (int X, int Y)? PickNearestTile(
+        int fromX,
+        int fromY,
+        IEnumerable<(int X, int Y)> candidates
+    )
+    {
+        (int X, int Y)? best = null;
+        int bestDist = int.MaxValue;
+
+        foreach ((int X, int Y) candidate in candidates)
+        {
+            int dist = Math.Abs(fromX - candidate.X) + Math.Abs(fromY - candidate.Y);
+
+            if (dist >= bestDist)
+            {
+                continue;
+            }
+
+            bestDist = dist;
+            best = candidate;
+        }
+
+        return best;
+    }
 
     /// <summary>
     /// Takes the whole points a need has accrued since its own clock, and moves that clock forward

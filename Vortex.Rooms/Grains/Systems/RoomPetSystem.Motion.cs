@@ -120,12 +120,24 @@ public sealed partial class RoomPetSystem
                 return await ToAvatarSnapshotAsync(petAfterFeed, ct).ConfigureAwait(false);
             }
 
+            if (motion.IsHeadingToNest)
+            {
+                motion.IsHeadingToNest = false;
+
+                // Only curl up if the walk actually ended on the nest -- a path cut short by a
+                // blocked tile leaves the pet standing wherever it stopped, and it should retry.
+                if (IsOnNestTile(pet))
+                {
+                    StartNestNap(motion, now);
+                }
+            }
+
             return await ToAvatarSnapshotAsync(pet, ct).ConfigureAwait(false);
         }
 
         if (motion.TilePath.Count == 0 && now >= motion.NextWanderAtMs)
         {
-            if (!TryDirectPetToFood(pet, motion, now))
+            if (!TryDirectPetToFood(pet, motion, now) && !TryDirectPetToNest(pet, motion, now))
             {
                 TryStartWander(pet, motion, now);
             }
@@ -532,6 +544,77 @@ public sealed partial class RoomPetSystem
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// A tired pet walks to the nearest reachable nest and naps there.
+    /// </summary>
+    /// <remarks>
+    /// Nothing used to take a pet to its nest. It slept where it stood, only once energy had hit
+    /// zero, and <see cref="IsOnNestTile" />'s recovery bonus applied only if it happened to be
+    /// standing on a nest at that moment.
+    /// </remarks>
+    private bool TryDirectPetToNest(PetSnapshot pet, PetMotionState motion, long now)
+    {
+        if (!RoomPetRuntime.IsTired(pet, _roomGrain._roomConfig.Pet.TiredEnergyThreshold))
+        {
+            return false;
+        }
+
+        if (IsOnNestTile(pet))
+        {
+            StartNestNap(motion, now);
+
+            return true;
+        }
+
+        (int X, int Y)? nest = RoomPetRuntime.PickNearestTile(
+            pet.X,
+            pet.Y,
+            _roomGrain
+                ._state.ItemsById.Values.Where(item =>
+                    item.Definition.LogicName == _roomGrain._roomConfig.Pet.NestLogicName
+                )
+                .Select(item => (item.X, item.Y))
+        );
+
+        if (nest is null)
+        {
+            return false;
+        }
+
+        (int nestX, int nestY) = nest.Value;
+
+        IReadOnlyList<(int X, int Y)> path = _roomGrain.PathingSystem.FindPath(
+            (pet.X, pet.Y),
+            (nestX, nestY),
+            tileId => CanPetOccupyTile(pet.PetId, tileId),
+            (currentTileId, nextTileId, isGoal) =>
+                CanPetWalkBetween(pet.PetId, currentTileId, nextTileId, isGoal)
+        );
+
+        if (path.Count < 2)
+        {
+            return false;
+        }
+
+        motion.TilePath.Clear();
+        motion.TilePath.AddRange(
+            path.Skip(1).Select(pos => _roomGrain.MapModule.ToIdx(pos.X, pos.Y))
+        );
+        motion.IsHeadingToNest = true;
+        motion.NextWanderAtMs = ScheduleNextWanderAt(now);
+
+        return true;
+    }
+
+    private void StartNestNap(PetMotionState motion, long now)
+    {
+        motion.ClearMovement();
+        motion.IsSleeping = true;
+        motion.SleepPostureSent = false;
+        motion.PendingSleepVocal = true;
+        motion.NextWanderAtMs = ScheduleNextWanderAt(now);
     }
 
     private bool TryDirectPetToFood(PetSnapshot pet, PetMotionState motion, long now)

@@ -247,9 +247,9 @@ public sealed partial class RoomPetSystem
         bool isHungry = pet.Nutrition < _roomGrain._roomConfig.Pet.HungerThreshold;
         bool isThirsty =
             pet.Energy < _roomGrain._roomConfig.Pet.ThirstThreshold
-            && pet.Energy > _roomGrain._roomConfig.Pet.SleepWakeEnergyThreshold;
+            && pet.Energy > _roomGrain._roomConfig.Pet.TiredEnergyThreshold;
         bool isTired =
-            pet.Energy > 0 && pet.Energy <= _roomGrain._roomConfig.Pet.SleepWakeEnergyThreshold;
+            pet.Energy > 0 && pet.Energy <= _roomGrain._roomConfig.Pet.TiredEnergyThreshold;
 
         if (isHungry)
         {

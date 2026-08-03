@@ -537,6 +537,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
         public bool IsSleeping { get; set; }
         public bool SleepPostureSent { get; set; }
         public RoomObjectId? FeedTargetId { get; set; }
+        public bool IsHeadingToNest { get; set; }
         public long NextVocalAtMs { get; set; } = -1;
         public bool PendingSleepVocal { get; set; }
         public bool PendingWakeVocal { get; set; }
@@ -547,6 +548,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
             NextTileId = -1;
             PendingStopAtMs = 0;
             FeedTargetId = null;
+            IsHeadingToNest = false;
         }
     }
 }
