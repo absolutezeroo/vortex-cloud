@@ -24,6 +24,7 @@ using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
+using Vortex.Rooms.Object.Logic.Furniture.Floor;
 
 namespace Vortex.Rooms.Grains.Systems;
 
@@ -533,11 +534,7 @@ public sealed partial class RoomPetSystem
     {
         foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
         {
-            if (
-                item.X == pet.X
-                && item.Y == pet.Y
-                && item.Definition.LogicName == _roomGrain._roomConfig.Pet.NestLogicName
-            )
+            if (item.X == pet.X && item.Y == pet.Y && item.Logic is FurniturePetNestLogic)
             {
                 return true;
             }
@@ -572,9 +569,7 @@ public sealed partial class RoomPetSystem
             pet.X,
             pet.Y,
             _roomGrain
-                ._state.ItemsById.Values.Where(item =>
-                    item.Definition.LogicName == _roomGrain._roomConfig.Pet.NestLogicName
-                )
+                ._state.ItemsById.Values.Where(item => item.Logic is FurniturePetNestLogic)
                 .Select(item => (item.X, item.Y))
         );
 
@@ -637,9 +632,8 @@ public sealed partial class RoomPetSystem
 
         foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
         {
-            string logicName = item.Definition.LogicName;
-            bool isFood = needsFood && logicName == _roomGrain._roomConfig.Pet.FoodLogicName;
-            bool isDrink = needsDrink && logicName == _roomGrain._roomConfig.Pet.DrinkLogicName;
+            bool isFood = needsFood && item.Logic is FurniturePetProductLogic;
+            bool isDrink = needsDrink && item.Logic is FurniturePetDrinkLogic;
 
             if (!isFood && !isDrink)
             {
@@ -704,7 +698,7 @@ public sealed partial class RoomPetSystem
             return string.Empty;
         }
 
-        bool isDrink = item.Definition.LogicName == _roomGrain._roomConfig.Pet.DrinkLogicName;
+        bool isDrink = item.Logic is FurniturePetDrinkLogic;
 
         ActionContext ctx = ActionContext.CreateForPlayer(pet.OwnerId, _roomGrain.RoomId);
         PetFeedResult result = await FeedPetAsync(ctx, pet.PetId, feedItemId, ct)

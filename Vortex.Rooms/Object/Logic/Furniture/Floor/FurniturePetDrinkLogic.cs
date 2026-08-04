@@ -7,7 +7,10 @@ using Vortex.Primitives.Rooms.Object.Logic;
 
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor;
 
+// The dump spells the same behaviour two ways: "pet_drink" on the waterbowl family, "petdrink" on
+// the water_bowl1 one. Both are bowls; dropping either leaves those definitions inert.
 [RoomObjectLogic("pet_drink")]
+[RoomObjectLogic("petdrink")]
 public class FurniturePetDrinkLogic(IStuffDataFactory stuffDataFactory, IRoomFloorItemContext ctx)
     : FurnitureFloorLogic(stuffDataFactory, ctx)
 {
