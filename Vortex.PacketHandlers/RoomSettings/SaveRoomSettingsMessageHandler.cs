@@ -52,6 +52,12 @@ public class SaveRoomSettingsMessageHandler(IGrainFactory grainFactory)
                     WhoCanKick = message.WhoCanKick,
                     WhoCanBan = message.WhoCanBan,
                     ChatFloodSensitivity = message.ChatFloodSensitivity,
+                    LeaveOnDoorTile = message.LeaveOnDoorTileEnabled,
+                    IdleSleepEnabled = message.IdleSleepEnabled,
+                    IdleSleepTimeoutSeconds = message.IdleSleepTimeoutSeconds,
+                    IdleAutokickEnabled = message.IdleAutokickEnabled,
+                    IdleAutokickTimeoutSeconds = message.IdleAutokickTimeoutSeconds,
+                    MuteAllPets = message.MuteAllPets,
                 },
                 ct
             )

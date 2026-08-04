@@ -400,10 +400,13 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                 Name = entity.Name ?? string.Empty,
                 Description = entity.Description ?? string.Empty,
                 OwnerId = entity.PlayerEntityId,
-                // The client renders whatever this carries: RoomInfoViewCtrl shows
-                // owner_name_cont whenever ShowOwner is set and OwnerId > 0, so an empty
-                // string here is a blank owner line in the room-info card.
                 OwnerName = entity.PlayerEntity?.Name ?? string.Empty,
+                LeaveOnDoorTile = entity.LeaveOnDoorTile,
+                IdleSleepEnabled = entity.IdleSleepEnabled,
+                IdleSleepTimeoutSeconds = entity.IdleSleepTimeoutSeconds,
+                IdleAutokickEnabled = entity.IdleAutokickEnabled,
+                IdleAutokickTimeoutSeconds = entity.IdleAutokickTimeoutSeconds,
+                MuteAllPets = entity.MuteAllPets,
                 Population = 0,
                 DoorMode = entity.DoorMode,
                 PlayersMax = entity.PlayersMax,

@@ -32,10 +32,38 @@ internal sealed class PreferencesMap : IRevisionMap
         builder.MapParser(MessageEvent.SetSoundSettingsEvent, new SetSoundSettingsMessageParser());
         builder.MapParser(MessageEvent.SetUIFlagsMessageEvent, new SetUIFlagsMessageParser());
 
+        // The personal word filter. Distinct from the ROOM filter in RoomSettingsMap: this one is
+        // per player, and its three headers had placeholder values with nothing behind them.
+        builder.MapParser(
+            MessageEvent.GetCustomFilterMessageEvent,
+            new GetCustomFilterMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.AddToCustomFilterMessageEvent,
+            new AddToCustomFilterMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.RemoveFromCustomFilterMessageEvent,
+            new RemoveFromCustomFilterMessageParser()
+        );
+
         builder.MapSerializer(
             typeof(AccountPreferencesEventMessageComposer),
             new AccountPreferencesEventMessageComposerSerializer(
                 MessageComposer.AccountPreferencesComposer
+            )
+        );
+
+        builder.MapSerializer(
+            typeof(GetCustomFilterResultMessageComposer),
+            new GetCustomFilterResultMessageComposerSerializer(
+                MessageComposer.GetCustomFilterResultMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(ModifyCustomFilterResultMessageComposer),
+            new ModifyCustomFilterResultMessageComposerSerializer(
+                MessageComposer.ModifyCustomFilterResultMessageComposer
             )
         );
     }

@@ -27,9 +27,6 @@ public record SaveRoomSettingsMessage : IMessageEvent
     public ModSettingType WhoCanKick { get; init; }
     public ModSettingType WhoCanBan { get; init; }
     public ChatFloodSensitivityType ChatFloodSensitivity { get; init; }
-
-    // The client sends these back but nothing persists them yet: the room table has no column for
-    // any of the four, so the serializer answers with stock defaults and they do not round-trip.
     public bool LeaveOnDoorTileEnabled { get; init; }
     public bool IdleSleepEnabled { get; init; }
     public int IdleSleepTimeoutSeconds { get; init; }

@@ -86,9 +86,13 @@ public sealed partial class RoomGrain
             entity.MuteType = update.WhoCanMute;
             entity.KickType = update.WhoCanKick;
             entity.BanType = update.WhoCanBan;
-            // Mode, bubble, speed and distance are deliberately left alone: this revision's dialog
-            // no longer sends them, so writing them here would reset the stored values on every save.
             entity.ChatFloodType = update.ChatFloodSensitivity;
+            entity.LeaveOnDoorTile = update.LeaveOnDoorTile;
+            entity.IdleSleepEnabled = update.IdleSleepEnabled;
+            entity.IdleSleepTimeoutSeconds = update.IdleSleepTimeoutSeconds;
+            entity.IdleAutokickEnabled = update.IdleAutokickEnabled;
+            entity.IdleAutokickTimeoutSeconds = update.IdleAutokickTimeoutSeconds;
+            entity.MuteAllPets = update.MuteAllPets;
 
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
@@ -121,6 +125,12 @@ public sealed partial class RoomGrain
                     FullHearRange = entity.ChatDistance,
                     FloodSensitivity = entity.ChatFloodType,
                 },
+                LeaveOnDoorTile = entity.LeaveOnDoorTile,
+                IdleSleepEnabled = entity.IdleSleepEnabled,
+                IdleSleepTimeoutSeconds = entity.IdleSleepTimeoutSeconds,
+                IdleAutokickEnabled = entity.IdleAutokickEnabled,
+                IdleAutokickTimeoutSeconds = entity.IdleAutokickTimeoutSeconds,
+                MuteAllPets = entity.MuteAllPets,
                 LastUpdatedUtc = DateTime.UtcNow,
             };
 

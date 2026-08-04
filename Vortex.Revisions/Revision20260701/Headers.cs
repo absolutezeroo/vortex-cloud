@@ -12,9 +12,9 @@ internal static class MessageEvent
     public const int RecycleItemsMessageEvent = 2956;
     public const int AppealCfhMessageEvent = 1077;
     public const int GetCfhMyReportStatus = 275;
-    public const int AddToCustomFilterMessageEvent = 936;
-    public const int GetCustomFilterMessageEvent = 3812;
-    public const int RemoveFromCustomFilterMessageEvent = 209;
+    public const int AddToCustomFilterMessageEvent = 2656; // AS3-verified (direct read): WIN63 registry _SafeCls_2046.as _composers[2656] = _SafeCls_2763(String word); WordFilterSettingsView is the only consumer. The previous value was a placeholder with no handler behind it
+    public const int GetCustomFilterMessageEvent = 801; // AS3-verified (direct read): WIN63 registry _SafeCls_2046.as _composers[801] = _SafeCls_2412 (no payload); WordFilterSettingsView is the only consumer. The previous value was a placeholder with no handler behind it
+    public const int RemoveFromCustomFilterMessageEvent = 2209; // AS3-verified (direct read): WIN63 registry _SafeCls_2046.as _composers[2209] = _SafeCls_2506(String word); WordFilterSettingsView is the only consumer. The previous value was a placeholder with no handler behind it
     public const int WiredGetRoomLogsEvent = 706;
     public const int BlockListInitEvent = 798; // AS3-verified (direct read): BlockedUsersManager.as:54 -> send(new _SafeCls_3511()) (no args) @798; was 2610, which has no entry in the WIN63 registry at all
     public const int BlockUserMessageEvent = 483; // AS3-verified (direct read): BlockedUsersManager.as:94 -> send(new _SafeCls_2856(userId)) @483; was 2371, which has no entry in the WIN63 registry at all
@@ -579,8 +579,8 @@ internal static class MessageComposer
 {
     // NEW since last revision
     public const int IncomeRewardNotificationMessageComposer = 1914;
-    public const int GetCustomFilterResultMessageComposer = 1426;
-    public const int ModifyCustomFilterResultMessageComposer = 1488;
+    public const int GetCustomFilterResultMessageComposer = 2231; // AS3-verified (direct read): WIN63 registry _SafeCls_2046.as _SafeStr_4546[2231] = _SafeCls_3579; WordFilterSettingsView is the only consumer. The previous value was a placeholder with no handler behind it
+    public const int ModifyCustomFilterResultMessageComposer = 3622; // AS3-verified (direct read): WIN63 registry _SafeCls_2046.as _SafeStr_4546[3622] = _SafeCls_3793; WordFilterSettingsView is the only consumer. The previous value was a placeholder with no handler behind it
     public const int FurniListRemoveMultipleComposer = 1268; // AS3-verified (direct read): _SafeStr_4546[1268] = _SafeCls_3469 (parser _SafeCls_3854: `stripIds:Vector.<int>`), consumed by the inventory controller; was 149, which has no entry in the WIN63 registry at all
     public const int LtdRaffleEnteredMessageComposer = 1221;
     public const int LtdRaffleResultMessageComposer = 3526;

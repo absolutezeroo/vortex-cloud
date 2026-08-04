@@ -211,6 +211,8 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<PlayerAccountPreferencesEntity> PlayerAccountPreferences { get; init; } = null!;
 
+    public DbSet<PlayerWordFilterEntity> PlayerWordFilters { get; init; } = null!;
+
     public DbSet<PlayerWardrobeOutfitEntity> PlayerWardrobeOutfits { get; init; } = null!;
 
     public DbSet<ServerConfigEntity> ServerConfig { get; init; } = null!;

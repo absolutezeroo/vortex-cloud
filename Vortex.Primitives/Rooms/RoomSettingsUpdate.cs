@@ -55,11 +55,24 @@ public sealed record RoomSettingsUpdate
     [Id(15)]
     public required ModSettingType WhoCanBan { get; init; }
 
-    /// <summary>
-    /// The only chat setting the room-settings dialog still carries. Mode, bubble width, scroll
-    /// speed and hear range left the packet in this revision, so they are absent here too and the
-    /// grain must leave their stored values untouched rather than resetting them to a default.
-    /// </summary>
     [Id(20)]
     public required ChatFloodSensitivityType ChatFloodSensitivity { get; init; }
+
+    [Id(21)]
+    public bool LeaveOnDoorTile { get; init; }
+
+    [Id(22)]
+    public bool IdleSleepEnabled { get; init; } = true;
+
+    [Id(23)]
+    public int IdleSleepTimeoutSeconds { get; init; } = 300;
+
+    [Id(24)]
+    public bool IdleAutokickEnabled { get; init; }
+
+    [Id(25)]
+    public int IdleAutokickTimeoutSeconds { get; init; } = 1800;
+
+    [Id(26)]
+    public bool MuteAllPets { get; init; }
 }

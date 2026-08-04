@@ -30,4 +30,24 @@ public sealed record RoomSnapshot : RoomInfoSnapshot
 
     [Id(7)]
     public required int MaxVisitorsLimit { get; init; }
+
+    // The four 701 toggles. Not `required`: every existing construction site predates them, and the
+    // defaults here are the ones the serializer used to write as constants.
+    [Id(8)]
+    public bool LeaveOnDoorTile { get; init; }
+
+    [Id(9)]
+    public bool IdleSleepEnabled { get; init; } = true;
+
+    [Id(10)]
+    public int IdleSleepTimeoutSeconds { get; init; } = 300;
+
+    [Id(11)]
+    public bool IdleAutokickEnabled { get; init; }
+
+    [Id(12)]
+    public int IdleAutokickTimeoutSeconds { get; init; } = 1800;
+
+    [Id(13)]
+    public bool MuteAllPets { get; init; }
 }

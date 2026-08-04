@@ -15,20 +15,6 @@ namespace Vortex.Revisions.Revision20260701.Serializers.RoomSettings;
 internal class RoomSettingsDataEventMessageComposerSerializer(int header)
     : AbstractSerializer<RoomSettingsDataEventMessageComposer>(header)
 {
-    /// <summary>
-    /// The four idle/door/pet toggles this revision added have no column behind them yet, so they
-    /// travel as Habbo's stock defaults: the dialog renders and saves, but these boxes do not
-    /// round-trip. Persisting them means new <c>RoomEntity</c> columns — see
-    /// <see cref="Primitives.Messages.Incoming.RoomSettings.SaveRoomSettingsMessage"/>, which
-    /// already parses the values the client sends back.
-    /// </summary>
-    private const bool DefaultLeaveOnDoorTileEnabled = false;
-    private const bool DefaultIdleSleepEnabled = true;
-    private const int DefaultIdleSleepTimeoutSeconds = 300;
-    private const bool DefaultIdleAutokickEnabled = false;
-    private const int DefaultIdleAutokickTimeoutSeconds = 1800;
-    private const bool DefaultMuteAllPets = false;
-
     protected override void Serialize(
         IServerPacket packet,
         RoomSettingsDataEventMessageComposer message
@@ -61,13 +47,15 @@ internal class RoomSettingsDataEventMessageComposerSerializer(int header)
             .WriteInteger((int)s.FloorThickness)
             .WriteInteger((int)s.ChatSettings.FloodSensitivity);
 
+        // The four toggles this revision added. They travelled as constants until 2026-08-03,
+        // when RoomEntity gained a column for each - the dialog now round-trips.
         packet
-            .WriteBoolean(DefaultLeaveOnDoorTileEnabled)
-            .WriteBoolean(DefaultIdleSleepEnabled)
-            .WriteInteger(DefaultIdleSleepTimeoutSeconds)
-            .WriteBoolean(DefaultIdleAutokickEnabled)
-            .WriteInteger(DefaultIdleAutokickTimeoutSeconds)
-            .WriteBoolean(DefaultMuteAllPets);
+            .WriteBoolean(s.LeaveOnDoorTile)
+            .WriteBoolean(s.IdleSleepEnabled)
+            .WriteInteger(s.IdleSleepTimeoutSeconds)
+            .WriteBoolean(s.IdleAutokickEnabled)
+            .WriteInteger(s.IdleAutokickTimeoutSeconds)
+            .WriteBoolean(s.MuteAllPets);
 
         packet
             .WriteInteger((int)s.ModSettings.WhoCanMute)

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Vortex.Database.Context;
 
@@ -11,9 +12,11 @@ using Vortex.Database.Context;
 namespace Vortex.Database.Migrations
 {
     [DbContext(typeof(VortexDbContext))]
-    partial class VortexDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260804072424_PersistRoomIdleAndDoorTileSettings")]
+    partial class PersistRoomIdleAndDoorTileSettings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5457,51 +5460,6 @@ namespace Vortex.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("player_wired_preferences");
-                });
-
-            modelBuilder.Entity("Vortex.Database.Entities.Players.PlayerWordFilterEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("created_at");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<int>("PlayerEntityId")
-                        .HasColumnType("int")
-                        .HasColumnName("player_id");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("updated_at");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
-
-                    b.Property<string>("Word")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("varchar(64)")
-                        .HasColumnName("word");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlayerEntityId", "Word")
-                        .IsUnique();
-
-                    b.ToTable("player_word_filters");
                 });
 
             modelBuilder.Entity("Vortex.Database.Entities.Prizes.PlayerPrizeClaimEntity", b =>

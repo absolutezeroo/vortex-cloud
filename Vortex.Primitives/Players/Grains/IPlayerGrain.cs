@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
@@ -126,6 +127,15 @@ public interface IPlayerGrain : IGrainWithIntegerKey
 
     /// <summary>Persists whether free-flow (bubble) chat is disabled (SetChatPreferences, header 1149).</summary>
     public Task SetFreeFlowChatDisabledAsync(bool disabled, CancellationToken ct);
+
+    /// <summary>The player's personal chat word filter, in insertion order (GetCustomFilter, header 801).</summary>
+    public Task<ImmutableArray<string>> GetWordFilterAsync(CancellationToken ct);
+
+    /// <summary>Adds a word and answers whether the filter now contains it (AddToCustomFilter, header 2656).</summary>
+    public Task<bool> AddWordFilterAsync(string word, CancellationToken ct);
+
+    /// <summary>Removes a word and answers whether it was there to remove (RemoveFromCustomFilter, header 2209).</summary>
+    public Task<bool> RemoveWordFilterAsync(string word, CancellationToken ct);
 
     /// <summary>Persists whether incoming room invites are ignored (SetIgnoreRoomInvites, header 1332).</summary>
     public Task SetRoomInvitesIgnoredAsync(bool ignored, CancellationToken ct);

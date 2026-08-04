@@ -98,6 +98,30 @@ public class RoomEntity : VortexEntity
     [DefaultValue(false)]
     public required bool AllowPetsEat { get; set; }
 
+    [Column("leave_on_door_tile")]
+    [DefaultValue(false)]
+    public bool LeaveOnDoorTile { get; set; }
+
+    [Column("idle_sleep_enabled")]
+    [DefaultValue(true)]
+    public bool IdleSleepEnabled { get; set; } = true;
+
+    [Column("idle_sleep_timeout_seconds")]
+    [DefaultValue(300)]
+    public int IdleSleepTimeoutSeconds { get; set; } = 300;
+
+    [Column("idle_autokick_enabled")]
+    [DefaultValue(false)]
+    public bool IdleAutokickEnabled { get; set; }
+
+    [Column("idle_autokick_timeout_seconds")]
+    [DefaultValue(1800)]
+    public int IdleAutokickTimeoutSeconds { get; set; } = 1800;
+
+    [Column("mute_all_pets")]
+    [DefaultValue(false)]
+    public bool MuteAllPets { get; set; }
+
     [Column("trade_type")]
     [DefaultValue(RoomTradeModeType.Disabled)]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
