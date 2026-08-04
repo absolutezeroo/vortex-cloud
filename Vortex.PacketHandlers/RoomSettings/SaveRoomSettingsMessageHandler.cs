@@ -51,10 +51,6 @@ public class SaveRoomSettingsMessageHandler(IGrainFactory grainFactory)
                     WhoCanMute = message.WhoCanMute,
                     WhoCanKick = message.WhoCanKick,
                     WhoCanBan = message.WhoCanBan,
-                    ChatMode = message.ChatMode,
-                    ChatBubbleSize = message.ChatBubbleSize,
-                    ChatScrollSpeed = message.ChatScrollUpFrequency,
-                    ChatFullHearRange = message.ChatFullHearRange,
                     ChatFloodSensitivity = message.ChatFloodSensitivity,
                 },
                 ct

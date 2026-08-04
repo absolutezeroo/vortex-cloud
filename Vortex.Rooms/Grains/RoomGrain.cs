@@ -388,6 +388,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                 await dbCtx
                     .Rooms.AsNoTracking()
                     .Include(e => e.GroupEntity)
+                    .Include(e => e.PlayerEntity)
                     .SingleOrDefaultAsync(e => e.Id == _state.RoomId.Value, ct)
                 ?? throw new VortexException(VortexErrorCodeEnum.RoomNotFound);
 
@@ -399,10 +400,14 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                 Name = entity.Name ?? string.Empty,
                 Description = entity.Description ?? string.Empty,
                 OwnerId = entity.PlayerEntityId,
-                OwnerName = string.Empty,
+                // The client renders whatever this carries: RoomInfoViewCtrl shows
+                // owner_name_cont whenever ShowOwner is set and OwnerId > 0, so an empty
+                // string here is a blank owner line in the room-info card.
+                OwnerName = entity.PlayerEntity?.Name ?? string.Empty,
                 Population = 0,
                 DoorMode = entity.DoorMode,
                 PlayersMax = entity.PlayersMax,
+                MaxVisitorsLimit = _roomConfig.MaxVisitorsLimit,
                 TradeType = entity.TradeType,
                 Score = entity.Score,
                 Ranking = 0,

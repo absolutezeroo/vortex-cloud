@@ -1,6 +1,8 @@
+using Vortex.Primitives.Messages.Outgoing.Roomsettings;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Configuration;
 using Vortex.Revisions.Revision20260701.Parsers.RoomSettings;
+using Vortex.Revisions.Revision20260701.Serializers.RoomSettings;
 
 namespace Vortex.Revisions.Revision20260701.Maps;
 
@@ -43,6 +45,35 @@ internal sealed class RoomSettingsMap : IRevisionMap
         builder.MapParser(
             MessageEvent.UpdateRoomFilterMessageEvent,
             new UpdateRoomFilterMessageParser()
+        );
+
+        // This map registered parsers only, so every room-settings composer the server built was
+        // dropped for want of a serializer — the settings dialog never received a single byte.
+        // The remaining composers in this domain are still empty-bodied stubs; registering those
+        // would put truncated packets on the wire, so they stay unmapped until they are written.
+        builder.MapSerializer(
+            typeof(RoomSettingsDataEventMessageComposer),
+            new RoomSettingsDataEventMessageComposerSerializer(
+                MessageComposer.RoomSettingsDataComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(RoomSettingsSavedEventMessageComposer),
+            new RoomSettingsSavedEventMessageComposerSerializer(
+                MessageComposer.RoomSettingsSavedComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(FlatControllersEventMessageComposer),
+            new FlatControllersEventMessageComposerSerializer(
+                MessageComposer.FlatControllersComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(BannedUsersFromRoomEventMessageComposer),
+            new BannedUsersFromRoomEventMessageComposerSerializer(
+                MessageComposer.BannedUsersFromRoomComposer
+            )
         );
     }
 }

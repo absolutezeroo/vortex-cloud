@@ -27,4 +27,7 @@ public sealed record RoomSnapshot : RoomInfoSnapshot
 
     [Id(6)]
     public required RoomThicknessType FloorThickness { get; init; }
+
+    [Id(7)]
+    public required int MaxVisitorsLimit { get; init; }
 }

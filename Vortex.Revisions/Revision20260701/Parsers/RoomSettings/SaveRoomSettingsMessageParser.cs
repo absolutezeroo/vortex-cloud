@@ -32,12 +32,13 @@ internal class SaveRoomSettingsMessageParser(int maxTags) : IParser
             WhoCanMute = (ModSettingType)packet.PopInt(),
             WhoCanKick = (ModSettingType)packet.PopInt(),
             WhoCanBan = (ModSettingType)packet.PopInt(),
-            ChatMode = (ChatModeType)packet.PopInt(),
-            ChatBubbleSize = (ChatBubbleWidthType)packet.PopInt(),
-            ChatScrollUpFrequency = (ChatScrollSpeedType)packet.PopInt(),
-            ChatFullHearRange = packet.PopInt(),
             ChatFloodSensitivity = (ChatFloodSensitivityType)packet.PopInt(),
-            AllowNavigatorDynCats = packet.PopBoolean(),
+            LeaveOnDoorTileEnabled = packet.PopBoolean(),
+            IdleSleepEnabled = packet.PopBoolean(),
+            IdleSleepTimeoutSeconds = packet.PopInt(),
+            IdleAutokickEnabled = packet.PopBoolean(),
+            IdleAutokickTimeoutSeconds = packet.PopInt(),
+            MuteAllPets = packet.PopBoolean(),
         };
     }
 

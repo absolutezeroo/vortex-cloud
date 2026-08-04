@@ -86,10 +86,8 @@ public sealed partial class RoomGrain
             entity.MuteType = update.WhoCanMute;
             entity.KickType = update.WhoCanKick;
             entity.BanType = update.WhoCanBan;
-            entity.ChatModeType = update.ChatMode;
-            entity.ChatBubbleType = update.ChatBubbleSize;
-            entity.ChatSpeedType = update.ChatScrollSpeed;
-            entity.ChatDistance = update.ChatFullHearRange;
+            // Mode, bubble, speed and distance are deliberately left alone: this revision's dialog
+            // no longer sends them, so writing them here would reset the stored values on every save.
             entity.ChatFloodType = update.ChatFloodSensitivity;
 
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);

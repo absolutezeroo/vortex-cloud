@@ -55,18 +55,11 @@ public sealed record RoomSettingsUpdate
     [Id(15)]
     public required ModSettingType WhoCanBan { get; init; }
 
-    [Id(16)]
-    public required ChatModeType ChatMode { get; init; }
-
-    [Id(17)]
-    public required ChatBubbleWidthType ChatBubbleSize { get; init; }
-
-    [Id(18)]
-    public required ChatScrollSpeedType ChatScrollSpeed { get; init; }
-
-    [Id(19)]
-    public required int ChatFullHearRange { get; init; }
-
+    /// <summary>
+    /// The only chat setting the room-settings dialog still carries. Mode, bubble width, scroll
+    /// speed and hear range left the packet in this revision, so they are absent here too and the
+    /// grain must leave their stored values untouched rather than resetting them to a default.
+    /// </summary>
     [Id(20)]
     public required ChatFloodSensitivityType ChatFloodSensitivity { get; init; }
 }
