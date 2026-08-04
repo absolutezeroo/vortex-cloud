@@ -103,8 +103,7 @@ public sealed partial class RoomPetSystem
             if (motion.FeedTargetId is RoomObjectId feedId)
             {
                 motion.FeedTargetId = null;
-                string eatPosture = await AutoFeedPetAtBowlAsync(pet, feedId, ct)
-                    .ConfigureAwait(false);
+                bool ate = await AutoFeedPetAtBowlAsync(pet, feedId, ct).ConfigureAwait(false);
                 PetSnapshot petAfterFeed = _roomGrain._state.PetsById.TryGetValue(
                     pet.PetId,
                     out PetSnapshot? fed
@@ -112,9 +111,14 @@ public sealed partial class RoomPetSystem
                     ? fed
                     : pet;
 
-                if (!string.IsNullOrEmpty(eatPosture))
+                if (ate)
                 {
-                    return await ToAvatarSnapshotAsync(petAfterFeed, $"/{eatPosture}/", ct)
+                    return await ToAvatarSnapshotAsync(
+                            petAfterFeed,
+                            RoomPetRuntime.EatStatus(petAfterFeed.Z),
+                            RoomPetRuntime.EatPosture,
+                            ct
+                        )
                         .ConfigureAwait(false);
                 }
 
@@ -682,7 +686,7 @@ public sealed partial class RoomPetSystem
         return true;
     }
 
-    private async Task<string> AutoFeedPetAtBowlAsync(
+    private async Task<bool> AutoFeedPetAtBowlAsync(
         PetSnapshot pet,
         RoomObjectId feedItemId,
         CancellationToken ct
@@ -690,12 +694,12 @@ public sealed partial class RoomPetSystem
     {
         if (!_roomGrain._state.ItemsById.TryGetValue(feedItemId, out IRoomItem? item))
         {
-            return string.Empty;
+            return false;
         }
 
         if (item.X != pet.X || item.Y != pet.Y)
         {
-            return string.Empty;
+            return false;
         }
 
         bool isDrink = item.Logic is FurniturePetDrinkLogic;
@@ -706,16 +710,18 @@ public sealed partial class RoomPetSystem
 
         if (!result.Success)
         {
-            return string.Empty;
+            return false;
         }
 
         if (_roomGrain._state.PetsById.TryGetValue(pet.PetId, out PetSnapshot? updated))
         {
+            // The vocal still tells food from water even though the posture cannot: a pet has one
+            // animation for both.
             string eatVocal = isDrink ? "DRINKING" : "EATING";
             await BroadcastPetVocalAsync(updated, eatVocal).ConfigureAwait(false);
         }
 
-        return isDrink ? "drk" : "eat";
+        return true;
     }
 
     private async Task UpdateFoodItemInLiveStateAsync(

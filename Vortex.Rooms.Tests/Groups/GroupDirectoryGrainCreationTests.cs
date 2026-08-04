@@ -336,6 +336,17 @@ public sealed class GroupDirectoryGrainCreationTests
 
     private sealed class FakePlayerGrain : IPlayerGrain
     {
+        // Chat word filters arrived on IPlayerGrain after this fake was written. Nothing in these
+        // tests touches them; they are here so the project compiles.
+        public Task<ImmutableArray<string>> GetWordFilterAsync(CancellationToken ct) =>
+            Task.FromResult(ImmutableArray<string>.Empty);
+
+        public Task<bool> AddWordFilterAsync(string word, CancellationToken ct) =>
+            Task.FromResult(false);
+
+        public Task<bool> RemoveWordFilterAsync(string word, CancellationToken ct) =>
+            Task.FromResult(false);
+
         public int TrackCreditSpendCalls { get; private set; }
 
         public Task TrackCreditSpendAsync(int credits, CancellationToken ct)

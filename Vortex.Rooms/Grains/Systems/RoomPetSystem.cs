@@ -14,6 +14,7 @@ using Vortex.Primitives;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Messages.Outgoing.Inventory.Pets;
 using Vortex.Primitives.Messages.Outgoing.Notifications;
+using Vortex.Primitives.Messages.Outgoing.Room.Action;
 using Vortex.Primitives.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Messages.Outgoing.Room.Pets;
 using Vortex.Primitives.Messages.Outgoing.Users;
@@ -124,6 +125,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
                 {
                     motion.PendingWakeVocal = false;
                     motion.NextVocalAtMs = ScheduleNextVocalAt(now);
+                    await SendPetSleepAsync(current, sleeping: false).ConfigureAwait(false);
                     await BroadcastPetVocalAsync(current, "GENERIC_HAPPY").ConfigureAwait(false);
                 }
                 else if (motion.NextVocalAtMs < 0)
@@ -142,11 +144,13 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
                     motion.SleepPostureSent = true;
                     RoomPetAvatarSnapshot sleepSnapshot = await ToAvatarSnapshotAsync(
                             current,
-                            "/lay/",
+                            RoomPetRuntime.LayStatus(current.Z),
+                            RoomPetRuntime.LayPosture,
                             ct
                         )
                         .ConfigureAwait(false);
                     dirtySnapshots.Add(sleepSnapshot);
+                    await SendPetSleepAsync(current, sleeping: true).ConfigureAwait(false);
                 }
                 else if (!motion.IsSleeping)
                 {
@@ -366,6 +370,23 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
             .ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Draws (or clears) the Zzz over a sleeping pet.
+    /// </summary>
+    /// <remarks>
+    /// The Zzz is not a posture and does not travel in the status string: the client keeps it in its
+    /// own <c>figure_sleep</c> flag, set only by this message. Nothing in the emulator sent it, for
+    /// pets or for idle players, so no pet has ever shown one.
+    /// </remarks>
+    private Task SendPetSleepAsync(PetSnapshot pet, bool sleeping) =>
+        _roomGrain.SendComposerToRoomAsync(
+            new SleepMessageComposer
+            {
+                UserId = RoomPetRuntime.ToRoomObjectId(pet.PetId).Value,
+                IsSleeping = sleeping,
+            }
+        );
+
     private async Task SendPetUpdatedAsync(PetSnapshot pet, CancellationToken ct)
     {
         RoomPetAvatarSnapshot snapshot = await ToAvatarSnapshotAsync(pet, ct).ConfigureAwait(false);
@@ -448,7 +469,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
         CancellationToken ct
     )
     {
-        return await ToAvatarSnapshotAsync(pet, string.Empty, string.Empty, ct)
+        return await ToAvatarSnapshotAsync(pet, string.Empty, RoomPetRuntime.StandPosture, ct)
             .ConfigureAwait(false);
     }
 
@@ -458,7 +479,8 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
         CancellationToken ct
     )
     {
-        return await ToAvatarSnapshotAsync(pet, status, string.Empty, ct).ConfigureAwait(false);
+        return await ToAvatarSnapshotAsync(pet, status, RoomPetRuntime.StandPosture, ct)
+            .ConfigureAwait(false);
     }
 
     private async Task<RoomPetAvatarSnapshot> ToAvatarSnapshotAsync(

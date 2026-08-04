@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -61,7 +62,7 @@ internal static class RoomPetRuntime
         PetSnapshot pet,
         string ownerName,
         string status = "",
-        string posture = ""
+        string posture = StandPosture
     ) =>
         new()
         {
@@ -168,6 +169,41 @@ internal static class RoomPetRuntime
 
     public static bool HasBreedingPermission(PetSnapshot pet) =>
         pet.Type != MonsterplantPetType && pet.CanBreed;
+
+    /// <summary>
+    /// What a pet is doing when it is doing nothing. The pet asset's own default animation id, and
+    /// what the client falls back to for any posture it does not recognise.
+    /// </summary>
+    public const string StandPosture = "std";
+
+    /// <summary>The posture a pet takes to sleep. One of the ids the pet's own asset declares.</summary>
+    public const string LayPosture = "lay";
+
+    /// <summary>
+    /// The posture a pet takes at a bowl. Drinking uses it too: no pet asset declares a `drk`
+    /// posture -- the dog ships std, beg, bnd, ded, eat, jmp, lay, pla, rdy, scr, sit, snf, spk, mv
+    /// -- and an unknown posture silently resolves to the default, which is standing. Arcturus sends
+    /// EAT at the water bowl for the same reason.
+    /// </summary>
+    public const string EatPosture = "eat";
+
+    /// <summary>
+    /// A status segment the client will actually keep.
+    /// </summary>
+    /// <remarks>
+    /// The client drops any segment that carries no value: it splits on a space and only records the
+    /// action when there are two pieces (<c>if (pieces.length >= 2)</c> in the nitro parser, which is
+    /// what this revision speaks). So a bare <c>/lay/</c> or <c>/eat/</c> never becomes a posture at
+    /// all, and the pet stays standing -- no lying down, no Zzz, no eating. Arcturus never sends one
+    /// either: it passes the tile's stack height. The height doubles as the value the client reads
+    /// back for <c>lay</c> and <c>sit</c>, so it has to be the real one, formatted invariantly.
+    /// </remarks>
+    public static string StatusWithHeight(string posture, double height) =>
+        $"/{posture} {height.ToString("0.##", CultureInfo.InvariantCulture)}/";
+
+    public static string LayStatus(double height) => StatusWithHeight(LayPosture, height);
+
+    public static string EatStatus(double height) => StatusWithHeight(EatPosture, height);
 
     /// <summary>
     /// Whether a bowl still has something in it, from the point of view of a pet deciding to walk
