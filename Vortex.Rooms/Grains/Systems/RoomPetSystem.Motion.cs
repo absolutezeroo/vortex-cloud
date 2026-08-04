@@ -640,7 +640,7 @@ public sealed partial class RoomPetSystem
                 continue;
             }
 
-            if (item.Logic.GetState() <= 0)
+            if (!RoomPetRuntime.HasServingsLeft(item.Definition.TotalStates, item.Logic.GetState()))
             {
                 continue;
             }

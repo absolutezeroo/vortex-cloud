@@ -25,7 +25,9 @@ public class FurniturePetProductLogic(IStuffDataFactory stuffDataFactory, IRoomF
 
     public override async Task OnPlaceAsync(ActionContext ctx, CancellationToken ct)
     {
-        if (_ctx.Definition.TotalStates > 0 && GetState() == 0)
+        // > 1: see FurniturePetDrinkLogic. A one-state bowl cannot show a fill level, so filling it
+        // to "state 0" only marked it empty.
+        if (_ctx.Definition.TotalStates > 1 && GetState() == 0)
         {
             int fullState = _ctx.Definition.TotalStates - 1;
             StuffData.SetState(fullState.ToString());

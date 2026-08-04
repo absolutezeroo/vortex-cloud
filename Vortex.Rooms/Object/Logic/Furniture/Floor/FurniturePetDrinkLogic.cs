@@ -28,7 +28,12 @@ public class FurniturePetDrinkLogic(IStuffDataFactory stuffDataFactory, IRoomFlo
 
     public override async Task OnPlaceAsync(ActionContext ctx, CancellationToken ct)
     {
-        if (_ctx.Definition.TotalStates > 0 && GetState() == 0)
+        // > 1, not > 0: a one-state bowl has no frame above 0, so the old test filled it to state 0
+        // -- empty -- and stamped "0" into ExtraData. The room then skipped it forever, and feeding
+        // read that 0 as "no servings left" and binned the bowl on first use. Leaving its data alone
+        // lets the servings come from the pet_food row instead. That is the waterbowl_basic and
+        // water_bowl1 families, fifteen bowls between them.
+        if (_ctx.Definition.TotalStates > 1 && GetState() == 0)
         {
             int fullState = _ctx.Definition.TotalStates - 1;
             StuffData.SetState(fullState.ToString());

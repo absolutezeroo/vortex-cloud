@@ -170,6 +170,17 @@ internal static class RoomPetRuntime
         pet.Type != MonsterplantPetType && pet.CanBreed;
 
     /// <summary>
+    /// Whether a bowl still has something in it, from the point of view of a pet deciding to walk
+    /// over. State doubles as the serving counter, counting down to an empty frame.
+    /// </summary>
+    /// <remarks>
+    /// A furni with one state has no frame to count down through: its only valid state is 0, which
+    /// would otherwise read as empty and make the fifteen one-state bowls invisible to every pet.
+    /// Those carry their servings in the pet_food row instead.
+    /// </remarks>
+    public static bool HasServingsLeft(int totalStates, int state) => totalStates <= 1 || state > 0;
+
+    /// <summary>
     /// Whether a pet reads as tired: it should stop wandering and go nap on a nest. Monsterplants
     /// are excluded -- they are rooted, and their energy means watering, not sleep.
     /// </summary>
