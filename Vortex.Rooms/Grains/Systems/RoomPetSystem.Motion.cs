@@ -483,6 +483,19 @@ public sealed partial class RoomPetSystem
             }
         }
 
+        // Water is its own need, on its own clock. It used to be read off energy, which meant one
+        // bar answered both "wants a drink" and "wants a nap", and a pet that drank stopped being
+        // sleepy. Habbo counts the two apart.
+        int thirstLoss = RoomPetRuntime.TakeWholeNeedPoints(
+            motion.LastThirstDecayAtMs,
+            now,
+            Tuning.ThirstDecayPerMinute,
+            out long nextThirstClockMs
+        );
+        motion.LastThirstDecayAtMs = nextThirstClockMs;
+
+        int newThirst = thirstLoss > 0 ? Math.Clamp(pet.Thirst - thirstLoss, 0, 100) : pet.Thirst;
+
         // Mood runs on its own clock too, draining while the pet is up and paying back while it
         // rests, so a pet left alone slowly sulks and a nap cheers it up.
         int happinessCap = _roomGrain._roomConfig.Pet.HappinessCap;
@@ -509,6 +522,7 @@ public sealed partial class RoomPetSystem
             newNutrition == pet.Nutrition
             && newEnergy == pet.Energy
             && newHappiness == pet.Happiness
+            && newThirst == pet.Thirst
         )
         {
             return pet;
@@ -521,6 +535,7 @@ public sealed partial class RoomPetSystem
             Nutrition = newNutrition,
             Energy = newEnergy,
             Happiness = newHappiness,
+            Thirst = newThirst,
         };
         _roomGrain._state.PetsById[pet.PetId] = updated;
 
@@ -548,6 +563,10 @@ public sealed partial class RoomPetSystem
         entity.Energy = Math.Max(
             0,
             entity.Energy - (int)(elapsedMinutes * Tuning.EnergyDecayPerMinute)
+        );
+        entity.Thirst = Math.Max(
+            0,
+            entity.Thirst - (int)(elapsedMinutes * Tuning.ThirstDecayPerMinute)
         );
         // Mood ages with the rest of it, or a pet left for a week comes back starving and delighted.
         entity.Happiness = Math.Max(
@@ -582,6 +601,7 @@ public sealed partial class RoomPetSystem
         entity.Level = live.Level;
         entity.Respect = live.Respect;
         entity.Happiness = live.Happiness;
+        entity.Thirst = live.Thirst;
         entity.RespectTodayCount = live.RespectTodayCount;
         entity.RespectLastResetDate = live.RespectLastResetDate;
         entity.CanBreed = live.CanBreed;
@@ -789,7 +809,7 @@ public sealed partial class RoomPetSystem
         }
 
         bool needsFood = ordered || pet.Nutrition < Tuning.HungerThreshold;
-        bool needsDrink = ordered || pet.Energy < Tuning.ThirstThreshold;
+        bool needsDrink = ordered || pet.Thirst < Tuning.ThirstThreshold;
 
         if (!needsFood && !needsDrink)
         {

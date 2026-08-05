@@ -12,6 +12,9 @@ public class PetConfig
     public double NutritionDecayPerMinute { get; init; } = 1.0;
     public double EnergyDecayPerMinute { get; init; } = 0.5;
 
+    /// <summary>Water drains on its own clock, a little slower than food.</summary>
+    public double ThirstDecayPerMinute { get; init; } = 0.75;
+
     /// <summary>
     /// Mood drains on its own clock while the pet is up, and comes back while it rests. Two a minute
     /// awake is what Habbo does (one every thirty seconds); resting pays it back twice as fast, so a

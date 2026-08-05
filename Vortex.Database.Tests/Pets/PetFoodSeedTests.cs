@@ -72,6 +72,7 @@ public sealed class PetFoodSeedTests
         int PetType,
         int Nutrition,
         int Energy,
+        int Thirst,
         int MaxUses
     );
 
@@ -81,7 +82,7 @@ public sealed class PetFoodSeedTests
     {
         MatchCollection matches = Regex.Matches(
             SeedScripts.Read("pet_food.sql"),
-            @"^\s*\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+), NOW\(\), NOW\(\)\)",
+            @"^\s*\((\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+), NOW\(\), NOW\(\)\)",
             RegexOptions.Multiline
         );
 
@@ -92,7 +93,8 @@ public sealed class PetFoodSeedTests
                 int.Parse(m.Groups[2].Value),
                 int.Parse(m.Groups[3].Value),
                 int.Parse(m.Groups[4].Value),
-                int.Parse(m.Groups[5].Value)
+                int.Parse(m.Groups[5].Value),
+                int.Parse(m.Groups[6].Value)
             )),
         ];
     }
@@ -111,7 +113,7 @@ public sealed class PetFoodSeedTests
             .Should()
             .NotBeEmpty($"pet type {petType} is sold, so something has to feed it");
 
-        Rows.Where(r => r.PetType == petType && r.Energy > 0)
+        Rows.Where(r => r.PetType == petType && r.Thirst > 0)
             .Should()
             .NotBeEmpty($"pet type {petType} is sold, so something has to water it");
     }
@@ -191,13 +193,37 @@ public sealed class PetFoodSeedTests
             .And.OnlyContain(r => r.MaxUses > 0);
     }
 
+    /// <summary>
+    /// Habbo counts four needs. A bowl is food or water, never both: food fills the belly and gives a
+    /// little energy back, water slakes thirst and nothing else. Thirst used to be read off energy,
+    /// which is why drinking also cancelled a pet's need for a nap.
+    /// </summary>
     [Fact]
-    public void EveryRowRestoresExactlyOneNeed()
+    public void EveryRowIsEitherFoodOrWater()
     {
         Rows.Should()
             .OnlyContain(
-                r => (r.Nutrition > 0) ^ (r.Energy > 0),
-                "feeding refuses a row that restores neither, and a bowl is either food or drink"
+                r => (r.Nutrition > 0) ^ (r.Thirst > 0),
+                "feeding refuses a row that restores nothing"
+            );
+    }
+
+    [Fact]
+    public void WaterSlakesThirstAndLeavesEnergyAlone()
+    {
+        Rows.Where(r => r.Thirst > 0)
+            .Should()
+            .OnlyContain(r => r.Energy == 0 && r.Nutrition == 0, "a drink is only a drink");
+    }
+
+    [Fact]
+    public void FoodGivesSomeEnergyBack()
+    {
+        Rows.Where(r => r.Nutrition > 0)
+            .Should()
+            .OnlyContain(
+                r => r.Energy > 0,
+                "Habbo: after a pet has eaten its energy goes up and it can be trained again"
             );
     }
 

@@ -20,6 +20,11 @@ public class PetFoodEntity : VortexEntity
     [Column("energy")]
     public required int Energy { get; set; }
 
+    /// <summary>Water. Habbo keeps thirst apart from energy, so a drink slakes it and a nap
+    /// does not.</summary>
+    [Column("thirst")]
+    public int Thirst { get; set; }
+
     [Column("max_uses")]
     public required int MaxUses { get; set; }
 

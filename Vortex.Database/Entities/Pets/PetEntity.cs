@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -52,6 +52,14 @@ public class PetEntity : VortexEntity
 
     [Column("nutrition")]
     public required int Nutrition { get; set; }
+
+    /// <summary>
+    /// Water, 0-100. Its own need: Habbo counts hunger, thirst, energy and happiness separately,
+    /// and folding thirst into energy made drinking and sleeping the same bar.
+    /// </summary>
+    [Column("thirst")]
+    [DefaultValue(100)]
+    public int Thirst { get; set; } = 100;
 
     [Column("respect")]
     [DefaultValue(0)]

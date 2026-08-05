@@ -24,6 +24,7 @@ public sealed record PetTuning
 {
     public const string NutritionDecayPerMinuteKey = "pets.nutrition_decay_per_minute";
     public const string EnergyDecayPerMinuteKey = "pets.energy_decay_per_minute";
+    public const string ThirstDecayPerMinuteKey = "pets.thirst_decay_per_minute";
     public const string HappinessDecayPerMinuteKey = "pets.happiness_decay_per_minute";
     public const string HappinessRestGainPerMinuteKey = "pets.happiness_rest_gain_per_minute";
     public const string TiredEnergyThresholdKey = "pets.tired_energy_threshold";
@@ -39,6 +40,7 @@ public sealed record PetTuning
 
     public required double NutritionDecayPerMinute { get; init; }
     public required double EnergyDecayPerMinute { get; init; }
+    public required double ThirstDecayPerMinute { get; init; }
     public required double HappinessDecayPerMinute { get; init; }
     public required double HappinessRestGainPerMinute { get; init; }
     public required int TiredEnergyThreshold { get; init; }
@@ -58,6 +60,7 @@ public sealed record PetTuning
         {
             NutritionDecayPerMinute = config.NutritionDecayPerMinute,
             EnergyDecayPerMinute = config.EnergyDecayPerMinute,
+            ThirstDecayPerMinute = config.ThirstDecayPerMinute,
             HappinessDecayPerMinute = config.HappinessDecayPerMinute,
             HappinessRestGainPerMinute = config.HappinessRestGainPerMinute,
             TiredEnergyThreshold = config.TiredEnergyThreshold,
@@ -80,6 +83,9 @@ public sealed record PetTuning
                 .ConfigureAwait(false),
             EnergyDecayPerMinute = await config
                 .GetDoubleAsync(EnergyDecayPerMinuteKey, defaults.EnergyDecayPerMinute)
+                .ConfigureAwait(false),
+            ThirstDecayPerMinute = await config
+                .GetDoubleAsync(ThirstDecayPerMinuteKey, defaults.ThirstDecayPerMinute)
                 .ConfigureAwait(false),
             HappinessDecayPerMinute = await config
                 .GetDoubleAsync(HappinessDecayPerMinuteKey, defaults.HappinessDecayPerMinute)

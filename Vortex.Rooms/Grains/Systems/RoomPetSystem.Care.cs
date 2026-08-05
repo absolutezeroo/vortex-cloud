@@ -242,8 +242,7 @@ public sealed partial class RoomPetSystem
         }
 
         bool isHungry = pet.Nutrition < Tuning.HungerThreshold;
-        bool isThirsty =
-            pet.Energy < Tuning.ThirstThreshold && pet.Energy > Tuning.TiredEnergyThreshold;
+        bool isThirsty = pet.Thirst < Tuning.ThirstThreshold;
         bool isTired = pet.Energy > 0 && pet.Energy <= Tuning.TiredEnergyThreshold;
 
         if (isHungry)

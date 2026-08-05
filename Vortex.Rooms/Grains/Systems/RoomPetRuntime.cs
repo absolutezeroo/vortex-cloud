@@ -27,6 +27,9 @@ internal static class RoomPetRuntime
     private const int MonsterplantPetType = 16;
     private const int MonsterplantMaxLevel = 7;
 
+    /// <summary>Thirst runs 0-100 like the other needs.</summary>
+    public const int ThirstCap = 100;
+
     public static PetSnapshot ToSnapshot(PetEntity entity) =>
         new()
         {
@@ -42,6 +45,7 @@ internal static class RoomPetRuntime
             Experience = entity.Experience,
             Energy = entity.Energy,
             Nutrition = entity.Nutrition,
+            Thirst = entity.Thirst,
             Respect = entity.Respect,
             Happiness = entity.Happiness,
             CreatedAt = entity.CreatedAt,
@@ -377,7 +381,10 @@ internal static class RoomPetRuntime
             )
             .ConfigureAwait(false);
 
-        if (petFood is null || (petFood.Nutrition <= 0 && petFood.Energy <= 0))
+        if (
+            petFood is null
+            || (petFood.Nutrition <= 0 && petFood.Energy <= 0 && petFood.Thirst <= 0)
+        )
         {
             return PetFeedResult.Failed(foodItemId);
         }
@@ -390,6 +397,9 @@ internal static class RoomPetRuntime
         pet.Direction = (int)food.Rotation;
         pet.Nutrition = Math.Min(pet.Nutrition + petFood.Nutrition, nutritionCap);
         pet.Energy = Math.Min(pet.Energy + petFood.Energy, energyCap);
+        // Water slakes thirst and nothing else. It used to top up energy, which is why a pet that
+        // drank stopped wanting a nap.
+        pet.Thirst = Math.Min(pet.Thirst + petFood.Thirst, ThirstCap);
 
         int currentUses = int.TryParse(food.ExtraData, out int parsed) ? parsed : petFood.MaxUses;
         int usesRemaining = Math.Max(0, currentUses - 1);

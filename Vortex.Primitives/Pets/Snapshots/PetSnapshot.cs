@@ -105,6 +105,13 @@ public sealed record PetSnapshot
     public DateTime CreatedAt { get; init; }
 
     /// <summary>
+    /// Water, 0-100. Habbo counts hunger, thirst, energy and happiness separately; thirst used to be
+    /// read off energy, which made one bar mean both "wants a drink" and "wants a nap".
+    /// </summary>
+    [Id(29)]
+    public int Thirst { get; init; } = 100;
+
+    /// <summary>
     /// Age in whole days, counting the day it was created as day one: a pet bought this morning is
     /// one day old, not zero. The panel showed 0 for every pet in the hotel, because the field was
     /// left at its default and nothing ever filled it in.
