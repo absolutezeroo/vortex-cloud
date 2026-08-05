@@ -181,6 +181,16 @@ internal static class RoomPetRuntime
     /// <summary>The posture a pet takes to sleep. One of the ids the pet's own asset declares.</summary>
     public const string LayPosture = "lay";
 
+    /// <summary>Playing with a toy. Declared by the pet assets as `pla`.</summary>
+    public const string PlayPosture = "pla";
+
+    /// <summary>
+    /// The two commands that are an errand rather than a pose: the pet has to walk somewhere for
+    /// them to mean anything. Ids are the client's own, from <c>pet.command.&lt;id&gt;</c>.
+    /// </summary>
+    public const int NestCommandId = 13;
+    public const int EatCommandId = 43;
+
     /// <summary>
     /// The posture a pet takes at a bowl. Drinking uses it too: no pet asset declares a `drk`
     /// posture -- the dog ships std, beg, bnd, ded, eat, jmp, lay, pla, rdy, scr, sit, snf, spk, mv
@@ -206,6 +216,15 @@ internal static class RoomPetRuntime
     public static string LayStatus(double height) => StatusWithHeight(LayPosture, height);
 
     public static string EatStatus(double height) => StatusWithHeight(EatPosture, height);
+
+    public static string PlayStatus(double height) => StatusWithHeight(PlayPosture, height);
+
+    /// <summary>
+    /// Whether a pet is bored enough to go and find a toy. Monsterplants are excluded: they are
+    /// rooted, and nothing about them plays.
+    /// </summary>
+    public static bool IsBored(PetSnapshot pet, int boredHappinessThreshold) =>
+        pet.Type != MonsterplantPetType && pet.Happiness <= boredHappinessThreshold;
 
     /// <summary>
     /// Whether a bowl still has something in it, from the point of view of a pet deciding to walk

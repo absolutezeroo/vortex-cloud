@@ -171,10 +171,7 @@ public sealed partial class RoomPetSystem
         if (_motionByPetId.TryGetValue(petId, out PetMotionState? motion))
         {
             motion.IsStatsDirty = true;
-            if (
-                motion.IsSleeping
-                && updated.Energy >= _roomGrain._roomConfig.Pet.SleepWakeEnergyThreshold
-            )
+            if (motion.IsSleeping && updated.Energy >= Tuning.SleepWakeEnergyThreshold)
             {
                 motion.IsSleeping = false;
                 motion.SleepPostureSent = false;
@@ -244,12 +241,10 @@ public sealed partial class RoomPetSystem
             return "SLEEPING";
         }
 
-        bool isHungry = pet.Nutrition < _roomGrain._roomConfig.Pet.HungerThreshold;
+        bool isHungry = pet.Nutrition < Tuning.HungerThreshold;
         bool isThirsty =
-            pet.Energy < _roomGrain._roomConfig.Pet.ThirstThreshold
-            && pet.Energy > _roomGrain._roomConfig.Pet.TiredEnergyThreshold;
-        bool isTired =
-            pet.Energy > 0 && pet.Energy <= _roomGrain._roomConfig.Pet.TiredEnergyThreshold;
+            pet.Energy < Tuning.ThirstThreshold && pet.Energy > Tuning.TiredEnergyThreshold;
+        bool isTired = pet.Energy > 0 && pet.Energy <= Tuning.TiredEnergyThreshold;
 
         if (isHungry)
         {
@@ -322,7 +317,7 @@ public sealed partial class RoomPetSystem
 
         // Obeying pleases it. This is the only thing that lifts mood other than resting.
         int newHappiness = Math.Clamp(
-            pet.Happiness + _roomGrain._roomConfig.Pet.CommandHappinessReward,
+            pet.Happiness + Tuning.CommandHappinessReward,
             0,
             _roomGrain._roomConfig.Pet.HappinessCap
         );
@@ -341,6 +336,21 @@ public sealed partial class RoomPetSystem
             {
                 motion.IsSleeping = true;
                 motion.SleepPostureSent = false;
+            }
+        }
+
+        // Two commands are errands, not poses: the pet has to walk somewhere for them to mean
+        // anything. Ordered, so it goes whether or not it is tired or hungry enough to have gone on
+        // its own.
+        if (motion is not null)
+        {
+            if (commandId == RoomPetRuntime.NestCommandId)
+            {
+                TryDirectPetToNest(updated, motion, _roomGrain.NowMs(), ordered: true);
+            }
+            else if (commandId == RoomPetRuntime.EatCommandId)
+            {
+                TryDirectPetToFood(updated, motion, _roomGrain.NowMs(), ordered: true);
             }
         }
 

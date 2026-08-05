@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,6 +43,19 @@ internal sealed class ServerConfigGrain(
     public Task<int> GetIntAsync(string key, int fallback) =>
         Task.FromResult(
             _cache.TryGetValue(key, out string? value) && int.TryParse(value, out int parsed)
+                ? parsed
+                : fallback
+        );
+
+    public Task<double> GetDoubleAsync(string key, double fallback) =>
+        Task.FromResult(
+            _cache.TryGetValue(key, out string? value)
+            && double.TryParse(
+                value,
+                NumberStyles.Float,
+                CultureInfo.InvariantCulture,
+                out double parsed
+            )
                 ? parsed
                 : fallback
         );

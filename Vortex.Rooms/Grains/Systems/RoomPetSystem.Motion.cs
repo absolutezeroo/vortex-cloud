@@ -136,13 +136,30 @@ public sealed partial class RoomPetSystem
                     StartNestNap(motion, now);
                 }
             }
+            else if (motion.IsHeadingToToy)
+            {
+                motion.IsHeadingToToy = false;
+
+                RoomPetAvatarSnapshot? played = await PlayWithToyAsync(pet, ct)
+                    .ConfigureAwait(false);
+
+                if (played is not null)
+                {
+                    return played;
+                }
+            }
 
             return await ToAvatarSnapshotAsync(pet, ct).ConfigureAwait(false);
         }
 
         if (motion.TilePath.Count == 0 && now >= motion.NextWanderAtMs)
         {
-            if (!TryDirectPetToFood(pet, motion, now) && !TryDirectPetToNest(pet, motion, now))
+            // Needs first, then sleep, then boredom: a starving pet should not stop to play.
+            if (
+                !TryDirectPetToFood(pet, motion, now)
+                && !TryDirectPetToNest(pet, motion, now)
+                && !TryDirectPetToToy(pet, motion, now)
+            )
             {
                 TryStartWander(pet, motion, now);
             }
@@ -407,7 +424,7 @@ public sealed partial class RoomPetSystem
         int nutritionLoss = RoomPetRuntime.TakeWholeNeedPoints(
             motion.LastNutritionDecayAtMs,
             now,
-            _roomGrain._roomConfig.Pet.NutritionDecayPerMinute,
+            Tuning.NutritionDecayPerMinute,
             out long nextNutritionClockMs
         );
         motion.LastNutritionDecayAtMs = nextNutritionClockMs;
@@ -425,7 +442,7 @@ public sealed partial class RoomPetSystem
             int energyGain = RoomPetRuntime.TakeWholeNeedPoints(
                 motion.LastEnergyDecayAtMs,
                 now,
-                _roomGrain._roomConfig.Pet.EnergyDecayPerMinute * 2 * nestMultiplier,
+                Tuning.EnergyDecayPerMinute * 2 * nestMultiplier,
                 out long nextEnergyClockMs
             );
             motion.LastEnergyDecayAtMs = nextEnergyClockMs;
@@ -435,7 +452,7 @@ public sealed partial class RoomPetSystem
                 newEnergy = Math.Clamp(pet.Energy + energyGain, 0, energyCap);
             }
 
-            if (newEnergy >= _roomGrain._roomConfig.Pet.SleepWakeEnergyThreshold)
+            if (newEnergy >= Tuning.SleepWakeEnergyThreshold)
             {
                 motion.IsSleeping = false;
                 motion.SleepPostureSent = false;
@@ -447,7 +464,7 @@ public sealed partial class RoomPetSystem
             int energyLoss = RoomPetRuntime.TakeWholeNeedPoints(
                 motion.LastEnergyDecayAtMs,
                 now,
-                _roomGrain._roomConfig.Pet.EnergyDecayPerMinute,
+                Tuning.EnergyDecayPerMinute,
                 out long nextEnergyClockMs
             );
             motion.LastEnergyDecayAtMs = nextEnergyClockMs;
@@ -472,9 +489,7 @@ public sealed partial class RoomPetSystem
         int happinessStep = RoomPetRuntime.TakeWholeNeedPoints(
             motion.LastHappinessDecayAtMs,
             now,
-            motion.IsSleeping
-                ? _roomGrain._roomConfig.Pet.HappinessRestGainPerMinute
-                : _roomGrain._roomConfig.Pet.HappinessDecayPerMinute,
+            motion.IsSleeping ? Tuning.HappinessRestGainPerMinute : Tuning.HappinessDecayPerMinute,
             out long nextHappinessClockMs
         );
         motion.LastHappinessDecayAtMs = nextHappinessClockMs;
@@ -528,18 +543,16 @@ public sealed partial class RoomPetSystem
         double elapsedMinutes = elapsedMs / 60_000.0;
         entity.Nutrition = Math.Max(
             0,
-            entity.Nutrition
-                - (int)(elapsedMinutes * _roomGrain._roomConfig.Pet.NutritionDecayPerMinute)
+            entity.Nutrition - (int)(elapsedMinutes * Tuning.NutritionDecayPerMinute)
         );
         entity.Energy = Math.Max(
             0,
-            entity.Energy - (int)(elapsedMinutes * _roomGrain._roomConfig.Pet.EnergyDecayPerMinute)
+            entity.Energy - (int)(elapsedMinutes * Tuning.EnergyDecayPerMinute)
         );
         // Mood ages with the rest of it, or a pet left for a week comes back starving and delighted.
         entity.Happiness = Math.Max(
             0,
-            entity.Happiness
-                - (int)(elapsedMinutes * _roomGrain._roomConfig.Pet.HappinessDecayPerMinute)
+            entity.Happiness - (int)(elapsedMinutes * Tuning.HappinessDecayPerMinute)
         );
     }
 
@@ -595,9 +608,15 @@ public sealed partial class RoomPetSystem
     /// zero, and <see cref="IsOnNestTile" />'s recovery bonus applied only if it happened to be
     /// standing on a nest at that moment.
     /// </remarks>
-    private bool TryDirectPetToNest(PetSnapshot pet, PetMotionState motion, long now)
+    private bool TryDirectPetToNest(
+        PetSnapshot pet,
+        PetMotionState motion,
+        long now,
+        bool ordered = false
+    )
     {
-        if (!RoomPetRuntime.IsTired(pet, _roomGrain._roomConfig.Pet.TiredEnergyThreshold))
+        // An ordered pet goes whether or not it feels like it -- that is what being told means.
+        if (!ordered && !RoomPetRuntime.IsTired(pet, Tuning.TiredEnergyThreshold))
         {
             return false;
         }
@@ -647,6 +666,107 @@ public sealed partial class RoomPetSystem
         return true;
     }
 
+    /// <summary>
+    /// A bored pet goes and plays with the nearest toy. Habbo's own guides name toys as what cheers
+    /// a pet up; nothing in the hotel had ever driven one, because no toy furni carried a logic.
+    /// </summary>
+    private bool TryDirectPetToToy(PetSnapshot pet, PetMotionState motion, long now)
+    {
+        if (!RoomPetRuntime.IsBored(pet, Tuning.BoredHappinessThreshold))
+        {
+            return false;
+        }
+
+        (int X, int Y)? toy = RoomPetRuntime.PickNearestTile(
+            pet.X,
+            pet.Y,
+            _roomGrain
+                ._state.ItemsById.Values.Where(item => item.Logic is FurniturePetToyLogic)
+                .Select(item => (item.X, item.Y))
+        );
+
+        if (toy is null)
+        {
+            return false;
+        }
+
+        (int toyX, int toyY) = toy.Value;
+
+        if (pet.X == toyX && pet.Y == toyY)
+        {
+            // Already standing on it -- play where it is rather than pathing nowhere.
+            motion.IsHeadingToToy = true;
+            motion.PendingStopAtMs = _roomGrain.AlignToNextBoundary(
+                now,
+                _roomGrain._roomConfig.Pet.TickMs
+            );
+
+            return true;
+        }
+
+        IReadOnlyList<(int X, int Y)> path = _roomGrain.PathingSystem.FindPath(
+            (pet.X, pet.Y),
+            (toyX, toyY),
+            tileId => CanPetOccupyTile(pet.PetId, tileId),
+            (currentTileId, nextTileId, isGoal) =>
+                CanPetWalkBetween(pet.PetId, currentTileId, nextTileId, isGoal)
+        );
+
+        if (path.Count < 2)
+        {
+            return false;
+        }
+
+        motion.TilePath.Clear();
+        motion.TilePath.AddRange(
+            path.Skip(1).Select(pos => _roomGrain.MapModule.ToIdx(pos.X, pos.Y))
+        );
+        motion.IsHeadingToToy = true;
+        motion.NextWanderAtMs = ScheduleNextWanderAt(now);
+
+        return true;
+    }
+
+    /// <summary>Pays out the toy: mood up, and the pet visibly plays.</summary>
+    private async Task<RoomPetAvatarSnapshot?> PlayWithToyAsync(
+        PetSnapshot pet,
+        CancellationToken ct
+    )
+    {
+        if (!_roomGrain._state.ItemsById.Values.Any(item => IsToyUnder(item, pet)))
+        {
+            return null;
+        }
+
+        PetSnapshot updated = pet with
+        {
+            Happiness = Math.Clamp(
+                pet.Happiness + Tuning.ToyHappinessReward,
+                0,
+                _roomGrain._roomConfig.Pet.HappinessCap
+            ),
+        };
+        _roomGrain._state.PetsById[pet.PetId] = updated;
+
+        if (_motionByPetId.TryGetValue(pet.PetId, out PetMotionState? motion))
+        {
+            motion.IsStatsDirty = true;
+        }
+
+        await BroadcastPetVocalAsync(updated, "PLAYFUL").ConfigureAwait(false);
+
+        return await ToAvatarSnapshotAsync(
+                updated,
+                RoomPetRuntime.PlayStatus(updated.Z),
+                RoomPetRuntime.PlayPosture,
+                ct
+            )
+            .ConfigureAwait(false);
+    }
+
+    private static bool IsToyUnder(IRoomItem item, PetSnapshot pet) =>
+        item.X == pet.X && item.Y == pet.Y && item.Logic is FurniturePetToyLogic;
+
     private void StartNestNap(PetMotionState motion, long now)
     {
         motion.ClearMovement();
@@ -656,15 +776,20 @@ public sealed partial class RoomPetSystem
         motion.NextWanderAtMs = ScheduleNextWanderAt(now);
     }
 
-    private bool TryDirectPetToFood(PetSnapshot pet, PetMotionState motion, long now)
+    private bool TryDirectPetToFood(
+        PetSnapshot pet,
+        PetMotionState motion,
+        long now,
+        bool ordered = false
+    )
     {
         if (pet.Type == MonsterplantPetType || !_roomGrain._state.RoomSnapshot.AllowPetsEat)
         {
             return false;
         }
 
-        bool needsFood = pet.Nutrition < _roomGrain._roomConfig.Pet.HungerThreshold;
-        bool needsDrink = pet.Energy < _roomGrain._roomConfig.Pet.ThirstThreshold;
+        bool needsFood = ordered || pet.Nutrition < Tuning.HungerThreshold;
+        bool needsDrink = ordered || pet.Energy < Tuning.ThirstThreshold;
 
         if (!needsFood && !needsDrink)
         {

@@ -273,6 +273,9 @@ public sealed class GroupDirectoryGrainCreationTests
 
         public Task<bool> GetBoolAsync(string key, bool fallback) => Task.FromResult(fallback);
 
+        public Task<double> GetDoubleAsync(string key, double fallback) =>
+            Task.FromResult(fallback);
+
         public Task<ImmutableDictionary<string, string>> GetAllAsync() =>
             Task.FromResult(ImmutableDictionary<string, string>.Empty);
 

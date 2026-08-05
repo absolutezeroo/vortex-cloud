@@ -1,97 +1,60 @@
--- ---------------------------------------------------------------------------
--- pet_commands seed
+-- Pet commands, rebuilt 2026-08-03 on the client's own command ids.
 --
--- Command IDs (client key: pet.command.{id}):
---   0 = Sit          (level 0)  posture=sit   energy=5   xp=3
---   1 = Stand        (level 0)  posture=std   energy=5   xp=3
---   2 = Lay Down     (level 0)  posture=lay   energy=5   xp=3
---   3 = Speak        (level 0)  posture=spk   energy=5   xp=3
---   4 = Free         (level 0)  posture=      energy=0   xp=2
---   5 = Sleep        (level 2)  posture=lay   energy=0   xp=1
---   6 = Jump         (level 4)  posture=jmp   energy=10  xp=5
---   7 = Roll Over    (level 6)  posture=rll   energy=10  xp=5
---   8 = Play Dead    (level 8)  posture=ded   energy=10  xp=5
---   9 = Back Flip    (level 10) posture=flp   energy=15  xp=8
+-- The previous seed numbered its rows 0=Sit, 1=Stand, 2=Lay Down ... while pet_command_names is
+-- lifted verbatim from the client's text bundle, where 0=Free, 1=Sit, 2=Down, 8=Stand. Both tables
+-- are read with the same id -- PetCommandProvider resolves the spoken word to a name id and then
+-- looks up the config by that id -- so the two schemes collided: telling a pet to Sit made it
+-- stand, Free made it sit, and Nest matched no row at all and was silently ignored.
 --
--- Pet types 0-13  : standard pets — full command set (0-9)
--- Pet type  14    : monster/exotic — basic commands only (0-4)
--- Pet type  15    : horse — riding commands (0-4) + jump (5)
--- Pet types 16-28 : exotic/special — basic commands only (0-4)
--- ---------------------------------------------------------------------------
+-- Postures are restricted to the ids a pet asset actually declares. Decoding dog.nitro gives
+-- std, beg, bnd, ded, eat, jmp, lay, pla, rdy, scr, sit, snf, spk, mv -- the previous seed used
+-- `rll` for Roll Over and `flp` for Back Flip, which resolve to nothing, so the client fell back to
+-- standing and the trick was invisible.
+--
+-- Only commands whose behaviour the room can actually carry out are seeded. An unseeded command
+-- resolves to nothing and the pet answers UNKNOWN_COMMAND, which is honest; a seeded command that
+-- does the wrong thing is not. Follow, Stay, Silent and the rest wait for the behaviour to exist.
+--
+-- Re-running is harmless: the delete scopes to the rows this file owns.
+
+DELETE FROM `pet_commands`;
 
 INSERT INTO `pet_commands`
     (`pet_type`, `command`, `level_required`, `posture`, `energy_cost`, `xp_reward`, `created_at`, `updated_at`)
-SELECT pet_type, command, level_required, posture, energy_cost, xp_reward, NOW(), NOW()
+SELECT t.pet_type, c.command, c.level_required, c.posture, c.energy_cost, c.xp_reward, NOW(), NOW()
 FROM (
-    SELECT t.pet_type, c.command, c.level_required, c.posture, c.energy_cost, c.xp_reward
-    FROM (
-        SELECT 0 AS command, 0 AS level_required, 'sit' AS posture, 5 AS energy_cost, 3 AS xp_reward UNION ALL
-        SELECT 1, 0,  'std',  5,  3 UNION ALL
-        SELECT 2, 0,  'lay',  5,  3 UNION ALL
-        SELECT 3, 0,  'spk',  5,  3 UNION ALL
-        SELECT 4, 0,  '',     0,  2 UNION ALL
-        SELECT 5, 2,  'lay',  0,  1 UNION ALL
-        SELECT 6, 4,  'jmp', 10,  5 UNION ALL
-        SELECT 7, 6,  'rll', 10,  5 UNION ALL
-        SELECT 8, 8,  'ded', 10,  5 UNION ALL
-        SELECT 9, 10, 'flp', 15,  8
-    ) c
-    CROSS JOIN (
-        SELECT 0 AS pet_type UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL
-        SELECT 4             UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL
-        SELECT 8             UNION ALL SELECT 9 UNION ALL SELECT 10 UNION ALL SELECT 11 UNION ALL
-        SELECT 12            UNION ALL SELECT 13
-    ) t
-    WHERE c.command <= 9
+    -- command, level, posture, energy, xp
+    SELECT  0 AS command, 0 AS level_required, ''    AS posture, 0 AS energy_cost, 1 AS xp_reward UNION ALL -- Free
+    SELECT  1, 0, 'sit',  5, 3 UNION ALL -- Sit
+    SELECT  2, 0, 'lay',  5, 3 UNION ALL -- Down
+    SELECT  4, 1, 'beg',  5, 3 UNION ALL -- Beg
+    SELECT  5, 4, 'ded', 10, 5 UNION ALL -- Play dead
+    SELECT  8, 0, 'std',  5, 3 UNION ALL -- Stand
+    SELECT  9, 3, 'jmp', 10, 5 UNION ALL -- Jump
+    SELECT 10, 2, 'spk',  5, 3 UNION ALL -- Speak
+    SELECT 11, 3, 'pla', 10, 5 UNION ALL -- Play
+    SELECT 13, 2, 'lay',  0, 1 UNION ALL -- Nest: the room walks it to its nest
+    SELECT 43, 2, 'eat',  0, 1           -- Eat: the room walks it to a bowl
+) c
+CROSS JOIN (
+    -- Every pet type the catalogue sells, minus the monsterplant, which is rooted and obeys nothing.
+    SELECT  0 AS pet_type UNION ALL SELECT  1 UNION ALL SELECT  2 UNION ALL SELECT  3 UNION ALL
+    SELECT  4 UNION ALL SELECT  5 UNION ALL SELECT  6 UNION ALL SELECT  7 UNION ALL
+    SELECT  8 UNION ALL SELECT  9 UNION ALL SELECT 10 UNION ALL SELECT 11 UNION ALL
+    SELECT 12 UNION ALL SELECT 13 UNION ALL SELECT 14 UNION ALL SELECT 15 UNION ALL
+    SELECT 17 UNION ALL SELECT 18 UNION ALL SELECT 19 UNION ALL SELECT 20 UNION ALL
+    SELECT 21 UNION ALL SELECT 22 UNION ALL SELECT 23 UNION ALL SELECT 24 UNION ALL
+    SELECT 25 UNION ALL SELECT 28 UNION ALL SELECT 29 UNION ALL SELECT 30 UNION ALL
+    SELECT 31 UNION ALL SELECT 32 UNION ALL SELECT 35 UNION ALL SELECT 36
+) t;
 
-    UNION ALL
+-- ─── Pet toys the catalogue left on `default` ────────────────────────────────
+-- Habbo's guides name toys as what cheers a pet up. None of these carried a logic, so no pet has
+-- ever been able to play with one. Arcturus calls them pet_toy and pet_trampoline.
+UPDATE `furniture_definitions`
+SET `logic` = 'pet_toy'
+WHERE `name` IN ('pet_toy_ball', 'pet_ufo_toy', 'pet_puppy_toy');
 
-    -- Pet type 14 — exotic (basic only: 0-4)
-    SELECT t.pet_type, c.command, c.level_required, c.posture, c.energy_cost, c.xp_reward
-    FROM (
-        SELECT 0 AS command, 0 AS level_required, 'sit' AS posture, 5 AS energy_cost, 3 AS xp_reward UNION ALL
-        SELECT 1, 0, 'std', 5,  3 UNION ALL
-        SELECT 2, 0, 'lay', 5,  3 UNION ALL
-        SELECT 3, 0, 'spk', 5,  3 UNION ALL
-        SELECT 4, 0, '',    0,  2
-    ) c
-    CROSS JOIN (SELECT 14 AS pet_type) t
-
-    UNION ALL
-
-    -- Pet type 15 — horse (0-4 + jump as command 5)
-    SELECT t.pet_type, c.command, c.level_required, c.posture, c.energy_cost, c.xp_reward
-    FROM (
-        SELECT 0 AS command, 0 AS level_required, 'sit' AS posture, 5 AS energy_cost, 3 AS xp_reward UNION ALL
-        SELECT 1, 0, 'std', 5,  3 UNION ALL
-        SELECT 2, 0, 'lay', 5,  3 UNION ALL
-        SELECT 3, 0, 'spk', 5,  3 UNION ALL
-        SELECT 4, 0, '',    0,  2 UNION ALL
-        SELECT 5, 2, 'jmp', 10, 5
-    ) c
-    CROSS JOIN (SELECT 15 AS pet_type) t
-
-    UNION ALL
-
-    -- Pet types 16-28 — special/exotic (basic only: 0-4)
-    SELECT t.pet_type, c.command, c.level_required, c.posture, c.energy_cost, c.xp_reward
-    FROM (
-        SELECT 0 AS command, 0 AS level_required, 'sit' AS posture, 5 AS energy_cost, 3 AS xp_reward UNION ALL
-        SELECT 1, 0, 'std', 5,  3 UNION ALL
-        SELECT 2, 0, 'lay', 5,  3 UNION ALL
-        SELECT 3, 0, 'spk', 5,  3 UNION ALL
-        SELECT 4, 0, '',    0,  2
-    ) c
-    CROSS JOIN (
-        SELECT 16 AS pet_type UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL SELECT 19 UNION ALL
-        SELECT 20             UNION ALL SELECT 21 UNION ALL SELECT 22 UNION ALL SELECT 23 UNION ALL
-        SELECT 24             UNION ALL SELECT 25 UNION ALL SELECT 26 UNION ALL SELECT 27 UNION ALL
-        SELECT 28
-    ) t
-) AS src
-ON DUPLICATE KEY UPDATE
-    level_required = src.level_required,
-    posture        = src.posture,
-    energy_cost    = src.energy_cost,
-    xp_reward      = src.xp_reward,
-    updated_at     = NOW();
+UPDATE `furniture_definitions`
+SET `logic` = 'pet_trampoline'
+WHERE `name` IN ('pet_toy_trampoline');

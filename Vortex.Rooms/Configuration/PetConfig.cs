@@ -50,6 +50,13 @@ public class PetConfig
 
     /// <summary>Obeying pleases a pet. Habbo pays 5 to 25 depending on how fun the trick is.</summary>
     public int CommandHappinessReward { get; init; } = 5;
+
+    /// <summary>What a toy is worth. Habbo's guides say toys are what cheer a pet up; 25 is the
+    /// figure Arcturus pays for a ball or a trampoline.</summary>
+    public int ToyHappinessReward { get; init; } = 25;
+
+    /// <summary>Below this, a pet goes looking for a toy rather than wandering aimlessly.</summary>
+    public int BoredHappinessThreshold { get; init; } = 50;
     public int SupplementEnergyBoost { get; init; } = 30;
     public int SupplementXpReward { get; init; } = 5;
 }

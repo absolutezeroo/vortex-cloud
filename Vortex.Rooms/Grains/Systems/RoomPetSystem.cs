@@ -25,6 +25,7 @@ using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
+using Vortex.Rooms.Configuration;
 
 namespace Vortex.Rooms.Grains.Systems;
 
@@ -45,6 +46,46 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
 
     private readonly RoomGrain _roomGrain = roomGrain;
     private long _nextPetFlushAtMs = -1;
+
+    private PetTuning? _tuning;
+    private long _nextTuningRefreshAtMs = -1;
+
+    /// <summary>
+    /// The live tunables. Read once per flush interval rather than per tick -- the decay maths runs
+    /// twice a second per room and cannot afford a grain call -- and never null once the tick has
+    /// started, because <see cref="RefreshTuningAsync" /> runs before the loop.
+    /// </summary>
+    private PetTuning Tuning => _tuning ??= PetTuning.FromDefaults(_roomGrain._roomConfig.Pet);
+
+    private async Task RefreshTuningAsync(long now)
+    {
+        if (_tuning is not null && now < _nextTuningRefreshAtMs)
+        {
+            return;
+        }
+
+        _nextTuningRefreshAtMs = now + _roomGrain._roomConfig.Pet.StatFlushIntervalMs;
+
+        try
+        {
+            _tuning = await PetTuning
+                .LoadAsync(
+                    _roomGrain._grainFactory.GetServerConfigGrain(),
+                    _roomGrain._roomConfig.Pet
+                )
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            // A config read that fails must not stop pets moving; the compiled defaults stand in.
+            _tuning ??= PetTuning.FromDefaults(_roomGrain._roomConfig.Pet);
+            _roomGrain._logger.LogError(
+                ex,
+                "Failed to refresh pet tuning in room {RoomId}",
+                _roomGrain.RoomId
+            );
+        }
+    }
 
     public async Task EnsurePetsLoadedAsync(CancellationToken ct)
     {
@@ -96,6 +137,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
         }
 
         await EnsureRoomReadyForPetPlacementAsync(ct).ConfigureAwait(false);
+        await RefreshTuningAsync(now).ConfigureAwait(false);
 
         List<RoomAvatarSnapshot> dirtySnapshots = [];
 
@@ -289,18 +331,15 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
 
     private long ScheduleNextWanderAt(long now)
     {
-        int minMs = Math.Max(
-            _roomGrain._roomConfig.Pet.TickMs,
-            _roomGrain._roomConfig.Pet.WanderIdleMinMs
-        );
-        int maxMs = Math.Max(minMs, _roomGrain._roomConfig.Pet.WanderIdleMaxMs);
+        int minMs = Math.Max(_roomGrain._roomConfig.Pet.TickMs, Tuning.WanderIdleMinMs);
+        int maxMs = Math.Max(minMs, Tuning.WanderIdleMaxMs);
 
         return now + Random.Shared.Next(minMs, maxMs + 1);
     }
 
     private long ScheduleNextVocalAt(long now)
     {
-        int intervalMs = _roomGrain._roomConfig.Pet.VocalIntervalMs;
+        int intervalMs = Tuning.VocalIntervalMs;
         int minMs = intervalMs * 3 / 4;
         int maxMs = intervalMs * 5 / 4;
 
@@ -563,6 +602,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
         public bool SleepPostureSent { get; set; }
         public RoomObjectId? FeedTargetId { get; set; }
         public bool IsHeadingToNest { get; set; }
+        public bool IsHeadingToToy { get; set; }
         public long NextVocalAtMs { get; set; } = -1;
         public bool PendingSleepVocal { get; set; }
         public bool PendingWakeVocal { get; set; }
@@ -574,6 +614,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
             PendingStopAtMs = 0;
             FeedTargetId = null;
             IsHeadingToNest = false;
+            IsHeadingToToy = false;
         }
     }
 }

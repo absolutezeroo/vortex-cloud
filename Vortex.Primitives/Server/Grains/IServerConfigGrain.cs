@@ -22,6 +22,12 @@ public interface IServerConfigGrain : IGrainWithStringKey
     /// <summary>Value parsed as a bool, or <paramref name="fallback"/> if unset/unparseable.</summary>
     Task<bool> GetBoolAsync(string key, bool fallback);
 
+    /// <summary>
+    /// Value parsed as a double, or <paramref name="fallback"/> if unset/unparseable. Parsed
+    /// invariantly, so a rate typed as "0.5" reads the same whatever locale the host runs under.
+    /// </summary>
+    Task<double> GetDoubleAsync(string key, double fallback);
+
     /// <summary>Upserts a config value (write-through: DB then cache, so reads are instantly live).</summary>
     Task SetValueAsync(string key, string value, string? description);
 
