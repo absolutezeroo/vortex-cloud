@@ -24,7 +24,7 @@ public sealed record PetInfoMessageComposer : IComposer
     public int MaxEnergy { get; init; } = 100;
 
     [Id(5)]
-    public int MaxNutrition { get; init; } = 100;
+    public int MaxHappiness { get; init; } = 100;
 
     [Id(6)]
     public int Age { get; init; }

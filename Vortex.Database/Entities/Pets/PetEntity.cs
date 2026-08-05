@@ -57,6 +57,14 @@ public class PetEntity : VortexEntity
     [DefaultValue(0)]
     public required int Respect { get; set; }
 
+    /// <summary>
+    /// Mood, 0-100. Distinct from nutrition and energy: it drains on its own clock, recovers while
+    /// the pet rests, and rises when the pet is played with or obeys a command.
+    /// </summary>
+    [Column("happiness")]
+    [DefaultValue(100)]
+    public int Happiness { get; set; } = 100;
+
     [Column("respect_today_count")]
     [DefaultValue(0)]
     public int RespectTodayCount { get; set; }

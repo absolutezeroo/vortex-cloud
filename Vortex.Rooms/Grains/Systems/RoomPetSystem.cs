@@ -249,6 +249,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
             entity.Experience = snapshot.Experience;
             entity.Level = snapshot.Level;
             entity.Respect = snapshot.Respect;
+            entity.Happiness = snapshot.Happiness;
             entity.RespectTodayCount = snapshot.RespectTodayCount;
             entity.RespectLastResetDate = snapshot.RespectLastResetDate;
             entity.CanBreed = snapshot.CanBreed;
@@ -278,6 +279,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
             NextWanderAtMs = ScheduleNextWanderAt(now),
             LastNutritionDecayAtMs = now,
             LastEnergyDecayAtMs = now,
+            LastHappinessDecayAtMs = now,
             IsSleeping = pet.Energy <= 0,
         };
         _motionByPetId[pet.PetId] = motion;
@@ -555,6 +557,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
         public long NextWanderAtMs { get; set; }
         public long LastNutritionDecayAtMs { get; set; } = -1;
         public long LastEnergyDecayAtMs { get; set; } = -1;
+        public long LastHappinessDecayAtMs { get; set; } = -1;
         public bool IsStatsDirty { get; set; }
         public bool IsSleeping { get; set; }
         public bool SleepPostureSent { get; set; }

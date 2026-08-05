@@ -11,6 +11,15 @@ public class PetConfig
     public int EnergyCap { get; init; } = 100;
     public double NutritionDecayPerMinute { get; init; } = 1.0;
     public double EnergyDecayPerMinute { get; init; } = 0.5;
+
+    /// <summary>
+    /// Mood drains on its own clock while the pet is up, and comes back while it rests. Two a minute
+    /// awake is what Habbo does (one every thirty seconds); resting pays it back twice as fast, so a
+    /// nap is worth taking.
+    /// </summary>
+    public double HappinessDecayPerMinute { get; init; } = 2.0;
+    public double HappinessRestGainPerMinute { get; init; } = 4.0;
+    public int HappinessCap { get; init; } = 100;
     public int StatFlushIntervalMs { get; init; } = 60_000;
 
     /// <summary>Energy at which a sleeping pet has rested enough to get back up.</summary>
@@ -38,6 +47,9 @@ public class PetConfig
     public int RespectMinimumAccountAgeDays { get; init; }
     public int RespectXpReward { get; init; } = 5;
     public int CommandXpReward { get; init; } = 3;
+
+    /// <summary>Obeying pleases a pet. Habbo pays 5 to 25 depending on how fun the trick is.</summary>
+    public int CommandHappinessReward { get; init; } = 5;
     public int SupplementEnergyBoost { get; init; } = 30;
     public int SupplementXpReward { get; init; } = 5;
 }

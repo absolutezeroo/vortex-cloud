@@ -43,6 +43,8 @@ internal static class RoomPetRuntime
             Energy = entity.Energy,
             Nutrition = entity.Nutrition,
             Respect = entity.Respect,
+            Happiness = entity.Happiness,
+            CreatedAt = entity.CreatedAt,
             RespectTodayCount = entity.RespectTodayCount,
             RespectLastResetDate = entity.RespectLastResetDate,
             ParentOneId = entity.ParentOneId,

@@ -66,6 +66,7 @@ public class GetPetInfoMessageHandler(IGrainFactory grainFactory)
                 {
                     Pet = pet,
                     OwnerName = ownerName,
+                    Age = pet.AgeInDays(DateTime.UtcNow),
                     CanBreed = !isPlant && pet.CanBreed,
                     CanHarvest = isPlant && pet.Level >= 7,
                     CanRevive = isPlant && pet.Energy == 0,

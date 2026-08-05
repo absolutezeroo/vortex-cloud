@@ -319,7 +319,14 @@ public sealed partial class RoomPetSystem
         }
 
         int newEnergy = pet.Energy - cmd.EnergyCost;
-        PetSnapshot withEnergy = pet with { Energy = newEnergy };
+
+        // Obeying pleases it. This is the only thing that lifts mood other than resting.
+        int newHappiness = Math.Clamp(
+            pet.Happiness + _roomGrain._roomConfig.Pet.CommandHappinessReward,
+            0,
+            _roomGrain._roomConfig.Pet.HappinessCap
+        );
+        PetSnapshot withEnergy = pet with { Energy = newEnergy, Happiness = newHappiness };
         _roomGrain._state.PetsById[petId] = withEnergy;
 
         PetSnapshot updated = await GrantXpAndLevelUpAsync(withEnergy, cmd.XpReward, ct)
@@ -339,9 +346,11 @@ public sealed partial class RoomPetSystem
 
         if (!string.IsNullOrEmpty(cmd.Posture))
         {
+            // With the height, or the client drops the segment and the trick is never seen.
             RoomPetAvatarSnapshot postureSnapshot = await ToAvatarSnapshotAsync(
                     updated,
-                    $"/{cmd.Posture}/",
+                    RoomPetRuntime.StatusWithHeight(cmd.Posture, updated.Z),
+                    cmd.Posture,
                     ct
                 )
                 .ConfigureAwait(false);

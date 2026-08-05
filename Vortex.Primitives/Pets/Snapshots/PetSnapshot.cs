@@ -91,4 +91,24 @@ public sealed record PetSnapshot
     /// <summary>Who is on its back right now. Runtime only -- nobody is riding after a restart.</summary>
     [Id(26)]
     public PlayerId? RiderId { get; init; }
+
+    /// <summary>
+    /// Mood, 0-100. Its own stat: it drains slowly whatever else the pet is doing, comes back while
+    /// the pet rests, and jumps when the pet is played with. The info panel's happiness bar reads
+    /// this and nothing else.
+    /// </summary>
+    [Id(27)]
+    public int Happiness { get; init; } = 100;
+
+    /// <summary>When the pet was created -- the info panel shows its age in days.</summary>
+    [Id(28)]
+    public DateTime CreatedAt { get; init; }
+
+    /// <summary>
+    /// Age in whole days, counting the day it was created as day one: a pet bought this morning is
+    /// one day old, not zero. The panel showed 0 for every pet in the hotel, because the field was
+    /// left at its default and nothing ever filled it in.
+    /// </summary>
+    public int AgeInDays(DateTime nowUtc) =>
+        Math.Max(1, (int)Math.Floor((nowUtc - CreatedAt).TotalDays) + 1);
 }

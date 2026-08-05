@@ -466,14 +466,47 @@ public sealed partial class RoomPetSystem
             }
         }
 
-        if (newNutrition == pet.Nutrition && newEnergy == pet.Energy)
+        // Mood runs on its own clock too, draining while the pet is up and paying back while it
+        // rests, so a pet left alone slowly sulks and a nap cheers it up.
+        int happinessCap = _roomGrain._roomConfig.Pet.HappinessCap;
+        int happinessStep = RoomPetRuntime.TakeWholeNeedPoints(
+            motion.LastHappinessDecayAtMs,
+            now,
+            motion.IsSleeping
+                ? _roomGrain._roomConfig.Pet.HappinessRestGainPerMinute
+                : _roomGrain._roomConfig.Pet.HappinessDecayPerMinute,
+            out long nextHappinessClockMs
+        );
+        motion.LastHappinessDecayAtMs = nextHappinessClockMs;
+
+        int newHappiness = pet.Happiness;
+
+        if (happinessStep > 0)
+        {
+            newHappiness = Math.Clamp(
+                motion.IsSleeping ? pet.Happiness + happinessStep : pet.Happiness - happinessStep,
+                0,
+                happinessCap
+            );
+        }
+
+        if (
+            newNutrition == pet.Nutrition
+            && newEnergy == pet.Energy
+            && newHappiness == pet.Happiness
+        )
         {
             return pet;
         }
 
         motion.IsStatsDirty = true;
 
-        PetSnapshot updated = pet with { Nutrition = newNutrition, Energy = newEnergy };
+        PetSnapshot updated = pet with
+        {
+            Nutrition = newNutrition,
+            Energy = newEnergy,
+            Happiness = newHappiness,
+        };
         _roomGrain._state.PetsById[pet.PetId] = updated;
 
         return updated;
@@ -502,6 +535,12 @@ public sealed partial class RoomPetSystem
             0,
             entity.Energy - (int)(elapsedMinutes * _roomGrain._roomConfig.Pet.EnergyDecayPerMinute)
         );
+        // Mood ages with the rest of it, or a pet left for a week comes back starving and delighted.
+        entity.Happiness = Math.Max(
+            0,
+            entity.Happiness
+                - (int)(elapsedMinutes * _roomGrain._roomConfig.Pet.HappinessDecayPerMinute)
+        );
     }
 
     private async Task SyncLiveStatsToPetEntityAsync(
@@ -529,6 +568,7 @@ public sealed partial class RoomPetSystem
         entity.Experience = live.Experience;
         entity.Level = live.Level;
         entity.Respect = live.Respect;
+        entity.Happiness = live.Happiness;
         entity.RespectTodayCount = live.RespectTodayCount;
         entity.RespectLastResetDate = live.RespectLastResetDate;
         entity.CanBreed = live.CanBreed;
