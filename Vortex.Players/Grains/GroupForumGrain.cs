@@ -41,6 +41,40 @@ internal sealed class GroupForumGrain(
 
     private int GroupId => (int)this.GetPrimaryKeyLong();
 
+    public async Task<int> GetThreadAuthorAsync(int threadId, CancellationToken ct)
+    {
+        if (threadId <= 0)
+        {
+            return 0;
+        }
+
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+
+        // Scoped to this grain's group on purpose: the report packet carries a client-supplied group
+        // id, and without the filter a crafted one would read any thread in the hotel.
+        return await dbCtx
+            .GroupForumThreads.AsNoTracking()
+            .Where(t => t.Id == threadId && t.GroupEntityId == GroupId)
+            .Select(t => t.PlayerEntityId)
+            .FirstOrDefaultAsync(ct);
+    }
+
+    public async Task<int> GetPostAuthorAsync(int postId, CancellationToken ct)
+    {
+        if (postId <= 0)
+        {
+            return 0;
+        }
+
+        await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);
+
+        return await dbCtx
+            .GroupForumPosts.AsNoTracking()
+            .Where(p => p.Id == postId && p.GroupEntityId == GroupId)
+            .Select(p => p.PlayerEntityId)
+            .FirstOrDefaultAsync(ct);
+    }
+
     public async Task<ForumSnapshot?> GetForumAsync(PlayerId viewer, CancellationToken ct)
     {
         await using VortexDbContext dbCtx = await dbCtxFactory.CreateDbContextAsync(ct);

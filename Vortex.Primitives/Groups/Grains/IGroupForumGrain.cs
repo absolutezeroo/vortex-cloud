@@ -68,6 +68,16 @@ public interface IGroupForumGrain : IGrainWithIntegerKey
     );
 
     /// <summary>Updates the forum permission settings (and enables the forum). Owner only.</summary>
+    /// <summary>
+    /// Who wrote a thread, or 0 if it does not belong to this group. The forum-report packets carry
+    /// only the thread and post ids, but a CFH ticket has to name a reported player, so the author
+    /// is resolved here rather than guessed at the handler.
+    /// </summary>
+    Task<int> GetThreadAuthorAsync(int threadId, CancellationToken ct);
+
+    /// <summary>Who wrote a single post, or 0 if it does not belong to this group.</summary>
+    Task<int> GetPostAuthorAsync(int postId, CancellationToken ct);
+
     Task<ForumSnapshot?> UpdateSettingsAsync(
         PlayerId actor,
         int readPermission,
