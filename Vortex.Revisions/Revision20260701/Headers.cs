@@ -217,24 +217,28 @@ internal static class MessageEvent
     public const int DefaultSanctionMessageEvent = 2375; // AS3-verified (direct read, both revisions): ModActionCtrl::onDefaultSanctionButton() -> connection.send(new _SafeCls_2494(...)) @2375 (slot freed by correcting MakeOfferMessageEvent above)
     public const int GetCfhChatlogMessageEvent = 1580; // AS3-verified (direct read, both revisions): IssueHandler CFH ChatlogCtrl construction (type=3) -> connection.send(new _SafeCls_2471(issueId)) @1580 (old _SafeCls_3765@757)
     public const int GetModeratorRoomInfoMessageEvent = 1504; // AS3-verified (direct read, both revisions): RoomToolCtrl::show() -> connection.send(new _SafeCls_2915(flatId)) @1504 (old _SafeCls_3268@3513)
-    public const int GetModeratorUserInfoMessageEvent = 1948; // UNRESOLVED: no distinct AS3 backing found - UserInfoCtrl::load()/ModerationMessageHandler::onModeratorActionResult() both send the same _SafeCls_2825/_SafeCls_2387, already correctly claimed by ModeratorActionMessageEvent@3230; likely a duplicate Vortex constant with no separate real message
-    public const int GetRoomChatlogMessageEvent = 1346; // AS3-verified (old-revision trace): _SafeCls_3359 -> onChatlog() still exists in current revision at 1346
-    public const int GetRoomVisitsMessageEvent = 903; // AS3-verified (direct read, both revisions): RoomVisitsCtrl constructor -> connection.send(new _SafeCls_2383(roomId)) @903 (old _SafeCls_3716@101)
-    public const int GetUserChatlogMessageEvent = 1686; // AS3-verified (old-revision trace): _SafeCls_3430 -> onChatlogButton() still exists in current revision at 1686
+
+    // Re-derived from the WIN63-202607011411 composer registry (_composers[3230] = _SafeCls_2387):
+    // the client has exactly one "load moderator user info" request, sent both by UserInfoCtrl::load()
+    // and by ModerationMessageHandler::onModeratorActionResult(). The old 1948 was a phantom - that id
+    // is absent from _composers entirely, so this handler could never fire.
+    public const int GetModeratorUserInfoMessageEvent = 3230;
+    public const int GetRoomChatlogMessageEvent = 1346; // AS3-verified (direct read): _composers[1346] = _SafeCls_2601(roomType, roomId), constructed by RoomToolCtrl/StartPanelCtrl - note roomType comes FIRST on the wire
+    public const int GetRoomVisitsMessageEvent = 903; // AS3-verified (direct read): _composers[903] = _SafeCls_2383, sent by RoomVisitsCtrl with the USER id (not a room id) - the response is a per-user room-visit list
+    public const int GetUserChatlogMessageEvent = 1686; // AS3-verified (direct read): _composers[1686] = _SafeCls_2670(userId), constructed by UserInfoCtrl
     public const int ModAlertMessageEvent = 2183; // AS3-verified (direct read, both revisions): ModActionCtrl::onCustomSanctionButton() case 0 (trackAction('sendCaution'), alertPermission) -> connection.send(new _SafeCls_3481(...)) @2183
-    public const int ModBanMessageEvent = 2507;
-    public const int ModerateRoomMessageEvent = 2939;
-    public const int ModeratorActionMessageEvent = 3230; // AS3-verified (ghost fix): ModerationMessageHandler::onModeratorActionResult()
+    public const int ModBanMessageEvent = 2507; // AS3-verified (direct read): ModActionCtrl::onCustomSanctionButton() case 2 (trackAction('ban'), banPermission) -> _SafeCls_3959 @2507
+    public const int ModerateRoomMessageEvent = 2939; // AS3-verified (direct read): RoomToolCtrl::act() -> _SafeCls_2501(flatId, lockDoor, changeName, kickUsers) @2939
 
     public const int ModKickMessageEvent = 1401; // AS3-verified (direct read, both revisions): ModActionCtrl::onCustomSanctionButton() case 3 (trackAction('kick'), kickPermission) -> connection.send(new _SafeCls_3834(...)) @1401
 
     public const int ModMessageMessageEvent = 2579; // AS3-verified (old-revision trace): still exists in current revision at 2579
     public const int ModMuteMessageEvent = 2862; // AS3-verified (direct read, both revisions): ModActionCtrl::onCustomSanctionButton() case 1 (trackAction('mute')) -> connection.send(new _SafeCls_2569(...)) @2862
 
-    public const int ModToolPreferencesEvent = 9009; // UNRESOLVED: collided with GetExtendedProfileMessageEvent after the WIN63-202607011411 client header remap; ModToolPreferencesEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
+    public const int ModToolPreferencesEvent = 1415; // AS3-verified (direct read): _composers[1415] = _SafeCls_3647(windowX, windowY, windowWidth, windowHeight), sent by IssueHandler when a mod-tool window moves or resizes. Replaces the 9009 placeholder, which no client ever sent.
 
-    public const int ModToolSanctionEvent = 2476; // AS3-verified (old-revision trace): _SafeCls_3432 -> requestSanctionDataForAccount() still exists in current revision at 2476
-    public const int ModTradingLockMessageEvent = 3495;
+    public const int ModToolSanctionEvent = 2476; // AS3-verified (direct read): _composers[2476] = _SafeCls_3255(issueId, accountId, categoryId), sent by IssueManager::requestSanctionData/requestSanctionDataForAccount
+    public const int ModTradingLockMessageEvent = 3495; // AS3-verified (direct read): ModActionCtrl::onCustomSanctionButton() case 4 (trackAction('trading_lock')) -> _SafeCls_3651(userId, message, durationMinutes, topicId, [issueId]) @3495
     public const int PickIssuesMessageEvent = 3400;
     public const int ReleaseIssuesMessageEvent = 3977; // AS3-verified (old-revision trace): _SafeCls_2791 -> sendRelease() still exists in current revision at 3977
     public const int ClientHelloMessageEvent = 4000;
@@ -897,7 +901,8 @@ internal static class MessageComposer
     public const int ModeratorActionResultMessageComposer = 2960; // AS3-verified (ghost fix): onModeratorActionResult @ ModerationMessageHandler
     public const int ModeratorCautionComposer = 2619;
     public const int ModeratorInitMessageComposer = 757; // AS3-verified (ghost fix): onModeratorInit @ ModerationMessageHandler
-    public const int ModeratorMessageComposer = 3885;
+    public const int ModeratorMessageComposer = 3885; // AS3-verified (direct read): _SafeStr_4546[3885] = _SafeCls_2629, parser reads (message, url)
+    public const int ModeratorRoomInfoComposer = 251; // AS3-verified (direct read): _SafeStr_4546[251] = _SafeCls_2831 -> onRoomInfo @ ModerationMessageHandler
     public const int ModeratorToolPreferencesComposer = 1898; // AS3-verified (ghost fix): onModeratorToolPreferences @ ModerationMessageHandler
     public const int ModeratorUserInfoComposer = 2589; // AS3-verified (ghost fix): onUserInfo @ ModerationMessageHandler
     public const int RoomChatlogComposer = 2886; // AS3-verified (ghost fix): onRoomChatlog @ ModerationMessageHandler

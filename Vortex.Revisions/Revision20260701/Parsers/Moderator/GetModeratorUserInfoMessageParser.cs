@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Moderator;
 
 internal class GetModeratorUserInfoMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new GetModeratorUserInfoMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new GetModeratorUserInfoMessage { UserId = packet.PopInt() };
 }

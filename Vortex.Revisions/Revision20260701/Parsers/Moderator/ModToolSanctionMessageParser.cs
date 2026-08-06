@@ -6,5 +6,17 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Moderator;
 
 internal class ModToolSanctionMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new ModToolSanctionMessage();
+    public IMessageEvent Parse(IClientPacket packet)
+    {
+        int issueId = packet.PopInt();
+        int accountId = packet.PopInt();
+        int categoryId = packet.PopInt();
+
+        return new ModToolSanctionMessage
+        {
+            IssueId = issueId,
+            AccountId = accountId,
+            CategoryId = categoryId,
+        };
+    }
 }

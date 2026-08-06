@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Moderator;
 
 internal class GetRoomVisitsMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new GetRoomVisitsMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new GetRoomVisitsMessage { UserId = packet.PopInt() };
 }

@@ -17,7 +17,6 @@ namespace Vortex.PacketHandlers.Moderator;
 public class ModTradingLockMessageHandler(
     IGrainFactory grainFactory,
     IPermissionService permissionService,
-    ISanctionPresetService sanctionPresets,
     IEventPublisher events,
     ILogger<ModTradingLockMessageHandler> logger
 ) : IMessageHandler<ModTradingLockMessage>
@@ -53,22 +52,20 @@ public class ModTradingLockMessageHandler(
                 .ConfigureAwait(false)
         )
         {
-            SanctionPresetSnapshot? preset = await sanctionPresets
-                .ResolveAsync(SanctionPresetKind.TradingLock, message.LockDurationTypeId, ct)
-                .ConfigureAwait(false);
-
-            if (preset is null)
+            // The client sends the length itself (actionLengthHours * 60) rather than an index into
+            // the server's preset table, so there is nothing to resolve here. A non-positive value
+            // is refused rather than silently promoted to a permanent lock.
+            if (message.DurationMinutes <= 0)
             {
                 logger.LogWarning(
-                    "No SanctionPresetEntity configured for TradingLock preset index {LockDurationTypeId}; lock rejected.",
-                    message.LockDurationTypeId
+                    "ModTradingLock for {UserId} carried a non-positive duration ({DurationMinutes} min); lock rejected.",
+                    message.UserId,
+                    message.DurationMinutes
                 );
             }
             else
             {
-                DateTime lockedUntil = preset.Value.DurationSeconds is null
-                    ? SanctionDuration.Permanent
-                    : DateTime.UtcNow.AddSeconds(preset.Value.DurationSeconds.Value);
+                DateTime lockedUntil = DateTime.UtcNow.AddMinutes(message.DurationMinutes);
 
                 IPlayerGrain targetGrain = grainFactory.GetPlayerGrain(message.UserId);
 
