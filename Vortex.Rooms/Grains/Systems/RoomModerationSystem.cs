@@ -1,7 +1,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Vortex.Database.Context;
+using Vortex.Database.Entities.Room;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Navigator.Enums;
@@ -386,5 +389,129 @@ public sealed class RoomModerationSystem(RoomGrain roomGrain)
 
             return false;
         }
+    }
+
+    /// <summary>
+    /// Applies the room-tool checkboxes on behalf of a staff member who is not in the room and is
+    /// not its owner. Authorization has already happened at the handler; this deliberately does not
+    /// consult <see cref="CanModerateAsync"/>, whose whole job is to answer "may this <i>occupant</i>
+    /// do this here", which is the wrong question for a hotel moderator.
+    /// </summary>
+    public async Task<bool> ApplyStaffRoomActionsAsync(
+        PlayerId actorPlayerId,
+        bool unlockDoor,
+        bool resetNameAndDescription,
+        bool kickUsers,
+        CancellationToken ct
+    )
+    {
+        if (actorPlayerId <= 0 || (!unlockDoor && !resetNameAndDescription && !kickUsers))
+        {
+            return false;
+        }
+
+        bool applied = false;
+
+        try
+        {
+            if (unlockDoor || resetNameAndDescription)
+            {
+                applied = await PersistStaffRoomActionsAsync(
+                        unlockDoor,
+                        resetNameAndDescription,
+                        ct
+                    )
+                    .ConfigureAwait(true);
+            }
+
+            if (kickUsers)
+            {
+                // Snapshot the ids first: KickUserInternalAsync mutates AvatarsByPlayerId, so
+                // iterating it live would throw partway through and leave the room half-emptied.
+                PlayerId[] occupants = [.. _roomGrain._state.AvatarsByPlayerId.Keys];
+
+                foreach (PlayerId occupant in occupants)
+                {
+                    applied |= await KickUserInternalAsync(
+                            ActionContext.CreateForWired(_roomGrain._state.RoomId),
+                            occupant,
+                            ct
+                        )
+                        .ConfigureAwait(true);
+                }
+            }
+
+            await _roomGrain
+                ._events.PublishAsync(
+                    new RoomModeratedByStaffEvent(
+                        actorPlayerId,
+                        _roomGrain._state.RoomId.Value,
+                        unlockDoor,
+                        resetNameAndDescription,
+                        kickUsers
+                    ),
+                    ct
+                )
+                .ConfigureAwait(true);
+
+            return applied;
+        }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to apply staff room actions from {ActorPlayerId} to room {RoomId}.",
+                actorPlayerId,
+                _roomGrain._state.RoomId
+            );
+
+            return false;
+        }
+    }
+
+    private async Task<bool> PersistStaffRoomActionsAsync(
+        bool unlockDoor,
+        bool resetNameAndDescription,
+        CancellationToken ct
+    )
+    {
+        await using VortexDbContext dbCtx = await _roomGrain
+            ._dbCtxFactory.CreateDbContextAsync(ct)
+            .ConfigureAwait(true);
+
+        RoomEntity? entity = await dbCtx
+            .Rooms.FirstOrDefaultAsync(r => r.Id == _roomGrain._state.RoomId.Value, ct)
+            .ConfigureAwait(true);
+
+        if (entity is null)
+        {
+            return false;
+        }
+
+        if (unlockDoor)
+        {
+            entity.DoorMode = RoomDoorModeType.Open;
+            entity.Password = null;
+        }
+
+        if (resetNameAndDescription)
+        {
+            entity.Name = _roomGrain._roomConfig.ModeratedRoomNamePlaceholder;
+            entity.Description = string.Empty;
+        }
+
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+        // The live snapshot has to follow, or the navigator keeps advertising the old name until the
+        // grain is next deactivated.
+        _roomGrain._state.RoomSnapshot = _roomGrain._state.RoomSnapshot with
+        {
+            Name = entity.Name,
+            Description = entity.Description ?? string.Empty,
+            DoorMode = entity.DoorMode,
+            Password = entity.Password ?? string.Empty,
+        };
+
+        return true;
     }
 }

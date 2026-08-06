@@ -350,6 +350,21 @@ public sealed class GroupDirectoryGrainCreationTests
         public Task<bool> RemoveWordFilterAsync(string word, CancellationToken ct) =>
             Task.FromResult(false);
 
+        // Same story for the mod-tool surface: unused here, present so the project compiles.
+        public Task<PlayerModeratorInfoSnapshot> GetModeratorInfoAsync(CancellationToken ct) =>
+            throw new NotSupportedException();
+
+        public Task MarkLoggedInAsync(CancellationToken ct) => Task.CompletedTask;
+
+        public Task<PlayerModToolPreferencesSnapshot> GetModToolPreferencesAsync(
+            CancellationToken ct
+        ) => throw new NotSupportedException();
+
+        public Task SetModToolPreferencesAsync(
+            PlayerModToolPreferencesSnapshot preferences,
+            CancellationToken ct
+        ) => Task.CompletedTask;
+
         public int TrackCreditSpendCalls { get; private set; }
 
         public Task TrackCreditSpendAsync(int credits, CancellationToken ct)

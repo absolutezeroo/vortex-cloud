@@ -907,6 +907,7 @@ internal static class MessageComposer
     public const int ModeratorUserInfoComposer = 2589; // AS3-verified (ghost fix): onUserInfo @ ModerationMessageHandler
     public const int RoomChatlogComposer = 2886; // AS3-verified (ghost fix): onRoomChatlog @ ModerationMessageHandler
     public const int RoomVisitsComposer = 497; // AS3-verified (ghost fix): onRoomVisits @ ModerationMessageHandler
+    public const int SanctionInfoMessageComposer = 1634; // AS3-verified (direct read): _SafeStr_4546[1634] = _SafeCls_2679 -> onSanctions @ ModerationMessageHandler
     public const int UserBannedMessageComposer = 3621;
     public const int UserChatlogComposer = 3732; // AS3-verified (ghost fix): onUserChatlog @ ModerationMessageHandler
 

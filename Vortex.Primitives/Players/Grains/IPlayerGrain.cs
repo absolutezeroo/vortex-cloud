@@ -104,6 +104,20 @@ public interface IPlayerGrain : IGrainWithIntegerKey
     /// <summary>Null if not currently banned, else the account's active ban expiry (far-future = permanent).</summary>
     public Task<DateTime?> GetActiveBanExpiryAsync(CancellationToken ct);
 
+    /// <summary>The account facts behind the staff mod tool's user card — including the email
+    /// address and sanction counts, so callers must have checked a moderation capability first.</summary>
+    public Task<PlayerModeratorInfoSnapshot> GetModeratorInfoAsync(CancellationToken ct);
+
+    /// <summary>Stamps <c>last_login_at</c>. Called once per successful SSO handshake.</summary>
+    public Task MarkLoggedInAsync(CancellationToken ct);
+
+    public Task<PlayerModToolPreferencesSnapshot> GetModToolPreferencesAsync(CancellationToken ct);
+
+    public Task SetModToolPreferencesAsync(
+        PlayerModToolPreferencesSnapshot preferences,
+        CancellationToken ct
+    );
+
     public Task<PlayerWiredPreferencesSnapshot> GetWiredPreferencesAsync(CancellationToken ct);
 
     public Task SetWiredPreferencesAsync(

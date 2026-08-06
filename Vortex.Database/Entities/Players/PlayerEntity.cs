@@ -52,6 +52,12 @@ public class PlayerEntity : VortexEntity
     [Column("room_chat_style_id")]
     public int? RoomChatStyleId { get; set; }
 
+    /// <summary>Stamped on every successful SSO login. Null for an account that has never logged in
+    /// since the column was introduced. The staff mod tool's user card is the only reader — it shows
+    /// "minutes since last login", which is meaningless without a persisted timestamp.</summary>
+    [Column("last_login_at")]
+    public DateTime? LastLoginAt { get; set; }
+
     /// <summary>Denormalised total achievement score (sum of completed levels' score points),
     /// surfaced on the profile without activating the achievement grain. Kept in sync by
     /// <c>PlayerAchievementGrain</c> on progression.</summary>

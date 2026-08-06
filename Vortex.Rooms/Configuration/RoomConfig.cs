@@ -26,6 +26,10 @@ public class RoomConfig : IWiredLimits
     public int MaxTileHeightsPerFlush { get; init; } = 200;
     public int MaxPathNodes { get; init; } = 4096;
 
+    /// <summary>What a room's name becomes when a moderator wipes an offensive one from the room
+    /// tool. Kept configurable so a hotel can localise it; the description is blanked outright.</summary>
+    public string ModeratedRoomNamePlaceholder { get; init; } = "Inappropriate room name";
+
     public int WiredMaxDepth { get; init; } = 20;
     public int WiredMaxScheduledPerTick { get; init; } = 64;
     public int WiredMaxEventsPerTick { get; init; } = 64;

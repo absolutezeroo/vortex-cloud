@@ -36,6 +36,18 @@ public sealed record ModerationActionDeniedEvent(
     string Action
 ) : IEvent;
 
+/// <summary>
+/// A staff member applied the room-tool actions to a room they do not own. Audited as one event
+/// rather than three: the client sends the checkboxes together and they are meaningful together.
+/// </summary>
+public sealed record RoomModeratedByStaffEvent(
+    int ActorPlayerId,
+    int RoomId,
+    bool DoorUnlocked,
+    bool NameReset,
+    bool UsersKicked
+) : IEvent;
+
 /// <summary>A staff member suspended a player's account (null BannedUntil clears the ban).</summary>
 public sealed record PlayerAccountBannedEvent(
     int ActorPlayerId,

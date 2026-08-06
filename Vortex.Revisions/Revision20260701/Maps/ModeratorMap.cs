@@ -121,6 +121,10 @@ internal sealed class ModeratorMap : IRevisionMap
             new RoomVisitsEventMessageComposerSerializer(MessageComposer.RoomVisitsComposer)
         );
         builder.MapSerializer(
+            typeof(SanctionInfoMessageComposer),
+            new SanctionInfoMessageComposerSerializer(MessageComposer.SanctionInfoMessageComposer)
+        );
+        builder.MapSerializer(
             typeof(UserBannedMessageComposer),
             new UserBannedMessageComposerSerializer(MessageComposer.UserBannedMessageComposer)
         );

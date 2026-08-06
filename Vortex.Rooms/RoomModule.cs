@@ -37,6 +37,7 @@ public sealed class RoomModule : IHostPluginModule
         services.AddSingleton<IRoomService, RoomService>();
         services.AddSingleton<IRoomModerationStore, RoomModerationStore>();
         services.AddSingleton<IModeratorChatlogService, ModeratorChatlogService>();
+        services.AddSingleton<IModeratorRoomVisitService, ModeratorRoomVisitService>();
         services.AddSingleton<ICfhTicketService, CfhTicketService>();
         services.AddSingleton<IRoomAdvertisementService, RoomAdvertisementService>();
 

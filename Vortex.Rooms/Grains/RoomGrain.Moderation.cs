@@ -44,4 +44,19 @@ public sealed partial class RoomGrain
         PlayerId targetPlayerId,
         CancellationToken ct
     ) => ModerationSystem.UnbanUserAsync(actorCtx, targetPlayerId, ct);
+
+    public Task<bool> ApplyStaffRoomActionsAsync(
+        PlayerId actorPlayerId,
+        bool unlockDoor,
+        bool resetNameAndDescription,
+        bool kickUsers,
+        CancellationToken ct
+    ) =>
+        ModerationSystem.ApplyStaffRoomActionsAsync(
+            actorPlayerId,
+            unlockDoor,
+            resetNameAndDescription,
+            kickUsers,
+            ct
+        );
 }

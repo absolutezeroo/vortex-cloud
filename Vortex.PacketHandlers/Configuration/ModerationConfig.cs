@@ -25,4 +25,9 @@ public static class ModerationConfig
     /// <summary>Max chat lines per room for GetUserChatlogMessageHandler.</summary>
     public const string UserChatlogMessagesPerRoomKey = "moderation.user_chatlog_messages_per_room";
     public const int UserChatlogMessagesPerRoomDefault = 50;
+
+    /// <summary>Max visit rows returned for GetRoomVisitsMessageHandler. The client's list has no
+    /// date column, so a window much wider than a session is not useful to a moderator anyway.</summary>
+    public const string RoomVisitLimitKey = "moderation.room_visit_limit";
+    public const int RoomVisitLimitDefault = 50;
 }

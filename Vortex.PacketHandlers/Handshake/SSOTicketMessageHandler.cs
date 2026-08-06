@@ -128,6 +128,13 @@ public class SSOTicketMessageHandler(
             // empty array means the player goes straight to the hotel view.
             // (WIN63 HabboLandingView.as::isOnboardingRequired(), and OnBoardingHcFlow's
             // AVATAR_NAME_CHANGE / NEW_ROOM_SELECT constants.)
+            // Stamped before anything else that can fail: the mod tool's "minutes since last login"
+            // is only meaningful if every successful handshake records one.
+            await _grainFactory
+                .GetPlayerGrain(PlayerId.Parse(playerId))
+                .MarkLoggedInAsync(ct)
+                .ConfigureAwait(false);
+
             bool nuxCompleted = await _grainFactory
                 .GetPlayerGrain(PlayerId.Parse(playerId))
                 .IsNuxCompletedAsync(ct)
@@ -465,6 +472,28 @@ public class SSOTicketMessageHandler(
             .ConfigureAwait(false);
         await ctx.SendComposerAsync(new CfhTopicsInitMessageComposer { Categories = catalog }, ct)
             .ConfigureAwait(false);
+
+        // Restore where they left the window. Skipped when never positioned — a rectangle of zeroes
+        // would collapse the tool to nothing on open.
+        PlayerModToolPreferencesSnapshot modToolPreferences = await _grainFactory
+            .GetPlayerGrain(ctx.PlayerId)
+            .GetModToolPreferencesAsync(ct)
+            .ConfigureAwait(false);
+
+        if (modToolPreferences.IsSet)
+        {
+            await ctx.SendComposerAsync(
+                    new ModeratorToolPreferencesEventMessageComposer
+                    {
+                        WindowX = modToolPreferences.WindowX,
+                        WindowY = modToolPreferences.WindowY,
+                        WindowWidth = modToolPreferences.WindowWidth,
+                        WindowHeight = modToolPreferences.WindowHeight,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
+        }
     }
 
     private async Task CloseSessionSafelyAsync(MessageContext ctx)

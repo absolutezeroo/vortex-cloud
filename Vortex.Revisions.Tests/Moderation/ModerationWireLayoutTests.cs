@@ -27,6 +27,7 @@ public sealed class ModerationWireLayoutTests
     private const int ModToolPreferencesEvent = 1415;
     private const int ModTradingLockMessageEvent = 3495;
     private const int ModMessageMessageEvent = 2579;
+    private const int ModToolSanctionEvent = 2476;
 
     private static readonly Rev Revision = new(Options.Create(new ProtocolLimitsConfig()));
 
@@ -65,6 +66,7 @@ public sealed class ModerationWireLayoutTests
             typeof(RoomVisitsEventMessageComposer),
             typeof(UserBannedMessageComposer),
             typeof(UserChatlogEventMessageComposer),
+            typeof(SanctionInfoMessageComposer),
         ];
 
         Revision.Serializers.Keys.Should().Contain(composers);
@@ -498,6 +500,56 @@ public sealed class ModerationWireLayoutTests
         body.PopInt().Should().Be(640);
         body.PopInt().Should().Be(480);
         body.End.Should().BeTrue("the layout must consume the whole packet");
+    }
+
+    [Fact]
+    public void SanctionInfoSerializer_KeepsThePaddingIntBeforeTheAvatarOnlyFlag()
+    {
+        // _SafeCls_3512 reads name, hours, an int it never exposes, then avatarOnly. Dropping that
+        // unused int would shift the flag and both trailing strings by four bytes.
+        ClientPacket body = SerializeAndReadBody(
+            typeof(SanctionInfoMessageComposer),
+            new SanctionInfoMessageComposer
+            {
+                IssueId = 42,
+                AccountId = -1,
+                SanctionName = "Ban 1 day",
+                SanctionLengthInHours = 24,
+                AvatarOnly = true,
+                TradeLockInfo = "+ trade lock",
+                MachineBanInfo = string.Empty,
+            }
+        );
+
+        body.PopInt().Should().Be(42);
+        body.PopInt().Should().Be(-1);
+        body.PopString().Should().Be("Ban 1 day");
+        body.PopInt().Should().Be(24);
+        body.PopInt().Should().Be(0); // padding the client reads and discards
+        body.PopBoolean().Should().BeTrue();
+        body.PopString().Should().Be("+ trade lock");
+        body.PopString().Should().BeEmpty();
+        body.End.Should().BeTrue("the layout must consume the whole packet");
+    }
+
+    [Fact]
+    public void ModToolSanctionParser_ReadsTheIssueAccountAndCategory()
+    {
+        ClientPacket packet = BuildClientPacket(
+            ModToolSanctionEvent,
+            sp => sp.WriteInteger(-1).WriteInteger(77).WriteInteger(4)
+        );
+
+        ModToolSanctionMessage message = Revision
+            .Parsers[ModToolSanctionEvent]
+            .Parse(packet)
+            .Should()
+            .BeOfType<ModToolSanctionMessage>()
+            .Subject;
+
+        message.IssueId.Should().Be(-1);
+        message.AccountId.Should().Be(77);
+        message.CategoryId.Should().Be(4);
     }
 
     [Fact]
