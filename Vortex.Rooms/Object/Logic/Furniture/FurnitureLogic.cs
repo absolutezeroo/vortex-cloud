@@ -106,6 +106,13 @@ public abstract class FurnitureLogic<TObject, TSelf, TContext>
     {
         StuffData.SetState(state.ToString());
 
+        await PersistStuffDataAsync(refresh);
+
+        await OnStateChangedAsync(CancellationToken.None);
+    }
+
+    public virtual Task PersistStuffDataAsync(bool refresh = true)
+    {
         if (_stuffPersistanceType == StuffPersistanceType.Persistent)
         {
             _ctx.RoomObject.ExtraData.UpdateSection(
@@ -119,7 +126,7 @@ public abstract class FurnitureLogic<TObject, TSelf, TContext>
             _ctx.RefreshStuffDataAsync().LogAndForget(_logger, "Failed to refresh stuff data.");
         }
 
-        await OnStateChangedAsync(CancellationToken.None);
+        return Task.CompletedTask;
     }
 
     public override Task OnAttachAsync(CancellationToken ct) =>

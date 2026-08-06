@@ -21,6 +21,16 @@ public interface IFurnitureLogic : IRoomObjectLogic, IRollableObject
 {
     new IRoomItemContext Context { get; }
     public IStuffData StuffData { get; }
+
+    /// <summary>
+    /// Persists whatever the caller just wrote into <see cref="StuffData"/> and pushes the refresh
+    /// to the room — the same two steps <see cref="SetStateAsync"/> performs, split out for the
+    /// furniture whose data is not a state at all: a mannequin's outfit, a sticky note's text.
+    /// Mutating <see cref="StuffData"/> without calling this leaves the change in memory only, so
+    /// it survives until the grain deactivates and then silently disappears.
+    /// </summary>
+    public Task PersistStuffDataAsync(bool refresh = true);
+
     public FurnitureUsageType GetUsagePolicy();
     public bool CanToggle();
     public Altitude GetStackHeight();
