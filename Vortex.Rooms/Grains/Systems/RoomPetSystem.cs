@@ -181,6 +181,48 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
                         .ConfigureAwait(false);
                 }
 
+                // A bout of play holds the pet where it is until it is over, then puts the toy back
+                // to its resting frame.
+                if (motion.PlayingWithToyId is not null)
+                {
+                    if (now >= motion.ToyPlayEndsAtMs)
+                    {
+                        RoomPetAvatarSnapshot? finished = await FinishToyPlayAsync(
+                                current,
+                                motion,
+                                ct
+                            )
+                            .ConfigureAwait(false);
+
+                        if (finished is not null)
+                        {
+                            dirtySnapshots.Add(finished);
+                        }
+                    }
+
+                    continue;
+                }
+
+                // Walking onto a toy is enough -- the pet does not have to have set out for it. The
+                // cooldown inside makes this safe to ask on every tick.
+                if (!motion.IsSleeping)
+                {
+                    RoomPetAvatarSnapshot? started = await StartToyPlayAsync(
+                            current,
+                            motion,
+                            now,
+                            ct
+                        )
+                        .ConfigureAwait(false);
+
+                    if (started is not null)
+                    {
+                        dirtySnapshots.Add(started);
+
+                        continue;
+                    }
+                }
+
                 if (motion.IsSleeping && !motion.SleepPostureSent)
                 {
                     motion.SleepPostureSent = true;
@@ -606,6 +648,9 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
         public RoomObjectId? FeedTargetId { get; set; }
         public bool IsHeadingToNest { get; set; }
         public bool IsHeadingToToy { get; set; }
+        public RoomObjectId? PlayingWithToyId { get; set; }
+        public long ToyPlayEndsAtMs { get; set; }
+        public long NextToyPlayAtMs { get; set; }
         public long NextVocalAtMs { get; set; } = -1;
         public bool PendingSleepVocal { get; set; }
         public bool PendingWakeVocal { get; set; }

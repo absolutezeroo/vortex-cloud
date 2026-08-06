@@ -34,6 +34,10 @@ public sealed record PetTuning
     public const string CommandHappinessRewardKey = "pets.command_happiness_reward";
     public const string ToyHappinessRewardKey = "pets.toy_happiness_reward";
     public const string BoredHappinessThresholdKey = "pets.bored_happiness_threshold";
+    public const string ToyPlayDurationMsKey = "pets.toy_play_duration_ms";
+    public const string ToyPlayCooldownMsKey = "pets.toy_play_cooldown_ms";
+    public const string PlayEnergyThresholdKey = "pets.play_energy_threshold";
+    public const string ToyPlayChancePercentKey = "pets.toy_play_chance_percent";
     public const string WanderIdleMinMsKey = "pets.wander_idle_min_ms";
     public const string WanderIdleMaxMsKey = "pets.wander_idle_max_ms";
     public const string VocalIntervalMsKey = "pets.vocal_interval_ms";
@@ -50,6 +54,10 @@ public sealed record PetTuning
     public required int CommandHappinessReward { get; init; }
     public required int ToyHappinessReward { get; init; }
     public required int BoredHappinessThreshold { get; init; }
+    public required int ToyPlayDurationMs { get; init; }
+    public required int ToyPlayCooldownMs { get; init; }
+    public required int PlayEnergyThreshold { get; init; }
+    public required int ToyPlayChancePercent { get; init; }
     public required int WanderIdleMinMs { get; init; }
     public required int WanderIdleMaxMs { get; init; }
     public required int VocalIntervalMs { get; init; }
@@ -70,6 +78,10 @@ public sealed record PetTuning
             CommandHappinessReward = config.CommandHappinessReward,
             ToyHappinessReward = config.ToyHappinessReward,
             BoredHappinessThreshold = config.BoredHappinessThreshold,
+            ToyPlayDurationMs = config.ToyPlayDurationMs,
+            ToyPlayCooldownMs = config.ToyPlayCooldownMs,
+            PlayEnergyThreshold = config.PlayEnergyThreshold,
+            ToyPlayChancePercent = config.ToyPlayChancePercent,
             WanderIdleMinMs = config.WanderIdleMinMs,
             WanderIdleMaxMs = config.WanderIdleMaxMs,
             VocalIntervalMs = config.VocalIntervalMs,
@@ -113,6 +125,18 @@ public sealed record PetTuning
                 .ConfigureAwait(false),
             BoredHappinessThreshold = await config
                 .GetIntAsync(BoredHappinessThresholdKey, defaults.BoredHappinessThreshold)
+                .ConfigureAwait(false),
+            ToyPlayDurationMs = await config
+                .GetIntAsync(ToyPlayDurationMsKey, defaults.ToyPlayDurationMs)
+                .ConfigureAwait(false),
+            ToyPlayCooldownMs = await config
+                .GetIntAsync(ToyPlayCooldownMsKey, defaults.ToyPlayCooldownMs)
+                .ConfigureAwait(false),
+            PlayEnergyThreshold = await config
+                .GetIntAsync(PlayEnergyThresholdKey, defaults.PlayEnergyThreshold)
+                .ConfigureAwait(false),
+            ToyPlayChancePercent = await config
+                .GetIntAsync(ToyPlayChancePercentKey, defaults.ToyPlayChancePercent)
                 .ConfigureAwait(false),
             WanderIdleMinMs = await config
                 .GetIntAsync(WanderIdleMinMsKey, defaults.WanderIdleMinMs)

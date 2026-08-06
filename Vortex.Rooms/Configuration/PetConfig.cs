@@ -60,6 +60,24 @@ public class PetConfig
 
     /// <summary>Below this, a pet goes looking for a toy rather than wandering aimlessly.</summary>
     public int BoredHappinessThreshold { get; init; } = 50;
+
+    /// <summary>How long a pet stays on the toy, playing, before it gets up again.</summary>
+    public int ToyPlayDurationMs { get; init; } = 4000;
+
+    /// <summary>
+    /// How long before the same pet can be paid for a toy again. Without it, a pet that happened to
+    /// wander back and forth across a ball would top its mood up for free.
+    /// </summary>
+    public int ToyPlayCooldownMs { get; init; } = 60_000;
+
+    /// <summary>A pet below this has no energy to play. Habbo refuses at 35 or under.</summary>
+    public int PlayEnergyThreshold { get; init; } = 35;
+
+    /// <summary>
+    /// The chance, each time a pet decides what to do next, that it goes to play for no reason at
+    /// all. Boredom is why it must; this is why it sometimes does anyway.
+    /// </summary>
+    public int ToyPlayChancePercent { get; init; } = 15;
     public int SupplementEnergyBoost { get; init; } = 30;
     public int SupplementXpReward { get; init; } = 5;
 }

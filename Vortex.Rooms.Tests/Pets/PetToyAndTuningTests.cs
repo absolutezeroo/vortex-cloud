@@ -63,6 +63,43 @@ public sealed class PetToyAndTuningTests
     }
 
     /// <summary>
+    /// Boredom is why a pet must go to a toy; the whim is why it sometimes goes anyway. Without the
+    /// second, a pet only ever played when it was miserable, which reads as a machine.
+    /// </summary>
+    [Fact]
+    public void APetSometimesPlaysOnAWhim()
+    {
+        PetConfig config = new();
+
+        config.ToyPlayChancePercent.Should().BeInRange(1, 99);
+    }
+
+    /// <summary>
+    /// The cooldown is what stops a pet pacing back and forth across a ball from topping its mood up
+    /// for free, and it has to outlast the bout itself.
+    /// </summary>
+    [Fact]
+    public void TheToyCooldownOutlastsTheBout()
+    {
+        PetConfig config = new();
+
+        config.ToyPlayCooldownMs.Should().BeGreaterThan(config.ToyPlayDurationMs);
+    }
+
+    [Fact]
+    public void AnExhaustedPetHasNoEnergyToPlay()
+    {
+        PetConfig config = new();
+
+        config
+            .PlayEnergyThreshold.Should()
+            .BeGreaterThan(
+                config.TiredEnergyThreshold,
+                "a pet on its way to bed should not be diverted by a ball"
+            );
+    }
+
+    /// <summary>
     /// The tunables fall back to the compiled defaults, so a hotel that has never touched the
     /// dashboard behaves exactly as it did before they became editable -- and a cleared key reads
     /// the default rather than zero, which would freeze every need.
@@ -96,6 +133,10 @@ public sealed class PetToyAndTuningTests
             PetTuning.CommandHappinessRewardKey,
             PetTuning.ToyHappinessRewardKey,
             PetTuning.BoredHappinessThresholdKey,
+            PetTuning.ToyPlayDurationMsKey,
+            PetTuning.ToyPlayCooldownMsKey,
+            PetTuning.PlayEnergyThresholdKey,
+            PetTuning.ToyPlayChancePercentKey,
             PetTuning.WanderIdleMinMsKey,
             PetTuning.WanderIdleMaxMsKey,
             PetTuning.VocalIntervalMsKey,

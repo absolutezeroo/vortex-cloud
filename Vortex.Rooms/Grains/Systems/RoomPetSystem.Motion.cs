@@ -140,7 +140,7 @@ public sealed partial class RoomPetSystem
             {
                 motion.IsHeadingToToy = false;
 
-                RoomPetAvatarSnapshot? played = await PlayWithToyAsync(pet, ct)
+                RoomPetAvatarSnapshot? played = await StartToyPlayAsync(pet, motion, now, ct)
                     .ConfigureAwait(false);
 
                 if (played is not null)
@@ -692,7 +692,17 @@ public sealed partial class RoomPetSystem
     /// </summary>
     private bool TryDirectPetToToy(PetSnapshot pet, PetMotionState motion, long now)
     {
-        if (!RoomPetRuntime.IsBored(pet, Tuning.BoredHappinessThreshold))
+        if (!CanPlayWithAToy(pet, motion, now))
+        {
+            return false;
+        }
+
+        // Boredom is the reason it must go; the whim is why it sometimes goes anyway. A pet that
+        // only ever played when miserable would look like a machine.
+        bool bored = RoomPetRuntime.IsBored(pet, Tuning.BoredHappinessThreshold);
+        bool onAWhim = Random.Shared.Next(100) < Tuning.ToyPlayChancePercent;
+
+        if (!bored && !onAWhim)
         {
             return false;
         }
@@ -747,13 +757,32 @@ public sealed partial class RoomPetSystem
         return true;
     }
 
-    /// <summary>Pays out the toy: mood up, and the pet visibly plays.</summary>
-    private async Task<RoomPetAvatarSnapshot?> PlayWithToyAsync(
+    /// <summary>
+    /// Whether a pet is in any state to play: not exhausted, and not still inside the cooldown that
+    /// stops a pet pacing across a ball from topping its mood up for free.
+    /// </summary>
+    private bool CanPlayWithAToy(PetSnapshot pet, PetMotionState motion, long now) =>
+        pet.Type != MonsterplantPetType
+        && pet.Energy > Tuning.PlayEnergyThreshold
+        && now >= motion.NextToyPlayAtMs
+        && motion.PlayingWithToyId is null;
+
+    /// <summary>
+    /// Starts a bout of play on the toy under the pet, whatever brought it there -- it may have set
+    /// out for the toy, or simply wandered across one.
+    /// </summary>
+    private async Task<RoomPetAvatarSnapshot?> StartToyPlayAsync(
         PetSnapshot pet,
+        PetMotionState motion,
+        long now,
         CancellationToken ct
     )
     {
-        if (!_roomGrain._state.ItemsById.Values.Any(item => IsToyUnder(item, pet)))
+        IRoomItem? toy = _roomGrain._state.ItemsById.Values.FirstOrDefault(item =>
+            IsToyUnder(item, pet)
+        );
+
+        if (toy is null || !CanPlayWithAToy(pet, motion, now))
         {
             return null;
         }
@@ -768,11 +797,14 @@ public sealed partial class RoomPetSystem
         };
         _roomGrain._state.PetsById[pet.PetId] = updated;
 
-        if (_motionByPetId.TryGetValue(pet.PetId, out PetMotionState? motion))
-        {
-            motion.IsStatsDirty = true;
-        }
+        motion.ClearMovement();
+        motion.IsStatsDirty = true;
+        motion.PlayingWithToyId = toy.ObjectId;
+        motion.ToyPlayEndsAtMs = now + Tuning.ToyPlayDurationMs;
+        motion.NextToyPlayAtMs = motion.ToyPlayEndsAtMs + Tuning.ToyPlayCooldownMs;
+        motion.NextWanderAtMs = motion.ToyPlayEndsAtMs;
 
+        await SetToyInUseAsync(toy, inUse: true).ConfigureAwait(false);
         await BroadcastPetVocalAsync(updated, "PLAYFUL").ConfigureAwait(false);
 
         return await ToAvatarSnapshotAsync(
@@ -782,6 +814,43 @@ public sealed partial class RoomPetSystem
                 ct
             )
             .ConfigureAwait(false);
+    }
+
+    /// <summary>Ends the bout: the toy goes back to its resting frame and the pet gets up.</summary>
+    private async Task<RoomPetAvatarSnapshot?> FinishToyPlayAsync(
+        PetSnapshot pet,
+        PetMotionState motion,
+        CancellationToken ct
+    )
+    {
+        if (
+            motion.PlayingWithToyId is not RoomObjectId toyId
+            || !_roomGrain._state.ItemsById.TryGetValue(toyId, out IRoomItem? toy)
+        )
+        {
+            motion.PlayingWithToyId = null;
+
+            return null;
+        }
+
+        motion.PlayingWithToyId = null;
+        await SetToyInUseAsync(toy, inUse: false).ConfigureAwait(false);
+
+        return await ToAvatarSnapshotAsync(pet, ct).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Paints the toy. Arcturus flips the same extra data to "1" while a pet is on it and back to
+    /// "0" afterwards, which is what animates the furni.
+    /// </summary>
+    private Task SetToyInUseAsync(IRoomItem toy, bool inUse)
+    {
+        string state = inUse ? "1" : "0";
+
+        toy.Logic.StuffData.SetState(state);
+        toy.SetExtraData(state);
+
+        return _roomGrain.SendComposerToRoomAsync(toy.GetRefreshStuffDataComposer());
     }
 
     private static bool IsToyUnder(IRoomItem item, PetSnapshot pet) =>
