@@ -306,5 +306,17 @@ internal sealed class UsersMap : IRevisionMap
             typeof(ScrSendUserInfoMessageComposer),
             new ScrSendUserInfoMessageSerializer(MessageComposer.ScrSendUserInfoComposer)
         );
+        builder.MapSerializer(
+            typeof(RespectNotificationMessageComposer),
+            new RespectNotificationMessageComposerSerializer(
+                MessageComposer.RespectNotificationMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(PetRespectNotificationEventMessageComposer),
+            new PetRespectNotificationEventMessageComposerSerializer(
+                MessageComposer.PetRespectNotificationComposer
+            )
+        );
     }
 }

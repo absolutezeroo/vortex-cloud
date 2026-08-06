@@ -230,6 +230,7 @@ public sealed partial class RoomPetSystem
                 PetColor = pet.Color,
                 PetRace = pet.Race,
                 PetLevel = pet.Level,
+                PetRarityLevel = pet.RarityLevel,
             }
         );
     }

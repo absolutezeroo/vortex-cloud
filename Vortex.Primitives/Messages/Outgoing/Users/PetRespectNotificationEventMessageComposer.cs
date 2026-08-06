@@ -32,4 +32,9 @@ public sealed record PetRespectNotificationEventMessageComposer : IComposer
 
     [Id(8)]
     public required int PetLevel { get; init; }
+
+    /// <summary>Closes the pet block. The client reads it unconditionally right after the level, so
+    /// omitting it leaves the packet four bytes short of what the parser consumes.</summary>
+    [Id(9)]
+    public int PetRarityLevel { get; init; } = 1;
 }

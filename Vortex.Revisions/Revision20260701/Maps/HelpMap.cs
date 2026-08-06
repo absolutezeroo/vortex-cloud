@@ -1,5 +1,7 @@
+using Vortex.Primitives.Messages.Outgoing.Help;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Revision20260701.Parsers.Help;
+using Vortex.Revisions.Revision20260701.Serializers.Help;
 
 namespace Vortex.Revisions.Revision20260701.Maps;
 
@@ -103,5 +105,18 @@ internal sealed class HelpMap : IRevisionMap
             new GuideSessionResolvedMessageParser()
         );
         builder.MapParser(MessageEvent.PostQuizAnswersEvent, new PostQuizAnswersMessageParser());
+
+        builder.MapSerializer(
+            typeof(CallForHelpReplyMessageComposer),
+            new CallForHelpReplyMessageComposerSerializer(
+                MessageComposer.CallForHelpReplyMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(IssueCloseNotificationMessageComposer),
+            new IssueCloseNotificationMessageComposerSerializer(
+                MessageComposer.IssueCloseNotificationMessageComposer
+            )
+        );
     }
 }

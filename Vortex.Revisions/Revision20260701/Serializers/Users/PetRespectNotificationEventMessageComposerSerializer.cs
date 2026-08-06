@@ -21,6 +21,7 @@ internal class PetRespectNotificationEventMessageComposerSerializer(int header)
             .WriteString(message.PetColor)
             .WriteInteger(message.PetRace)
             .WriteInteger(0) // customPartCount
-            .WriteInteger(message.PetLevel);
+            .WriteInteger(message.PetLevel)
+            .WriteInteger(message.PetRarityLevel);
     }
 }
