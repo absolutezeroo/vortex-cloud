@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Help;
 
 internal class ChatReviewGuideDecidesOnOfferMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new ChatReviewGuideDecidesOnOfferMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new ChatReviewGuideDecidesOnOfferMessage { Accepted = packet.PopBoolean() };
 }

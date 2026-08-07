@@ -1,11 +1,20 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Messages.Registry;
+using Vortex.Primitives.Help;
+using Vortex.Primitives.Help.Grains;
 using Vortex.Primitives.Messages.Incoming.Help;
+using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Help;
 
-public class ChatReviewGuideDetachedMessageHandler : IMessageHandler<ChatReviewGuideDetachedMessage>
+/// <summary>
+/// A guardian closing the review window. The others are not left waiting on a vote that is never
+/// coming — dropping out can be what completes the review.
+/// </summary>
+public class ChatReviewGuideDetachedMessageHandler(IGrainFactory grainFactory)
+    : IMessageHandler<ChatReviewGuideDetachedMessage>
 {
     public async ValueTask HandleAsync(
         ChatReviewGuideDetachedMessage message,
@@ -13,6 +22,16 @@ public class ChatReviewGuideDetachedMessageHandler : IMessageHandler<ChatReviewG
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        if (ctx.PlayerId <= 0)
+        {
+            return;
+        }
+
+        ChatReviewOutcome outcome = await grainFactory
+            .GetGuideDirectoryGrain()
+            .ChatReviewDetachAsync(ctx.PlayerId, ct)
+            .ConfigureAwait(false);
+
+        await ChatReviewDispatch.DeliverAsync(grainFactory, outcome, ct).ConfigureAwait(false);
     }
 }

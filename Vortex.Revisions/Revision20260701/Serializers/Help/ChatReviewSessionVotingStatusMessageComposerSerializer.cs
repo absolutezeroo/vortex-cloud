@@ -11,6 +11,11 @@ internal class ChatReviewSessionVotingStatusMessageComposerSerializer(int header
         ChatReviewSessionVotingStatusMessageComposer message
     )
     {
-        //
+        packet.WriteInteger(message.Statuses.Length);
+
+        foreach (int status in message.Statuses)
+        {
+            packet.WriteInteger(status);
+        }
     }
 }

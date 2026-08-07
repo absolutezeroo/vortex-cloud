@@ -167,6 +167,30 @@ internal sealed class HelpMap : IRevisionMap
             )
         );
         builder.MapSerializer(
+            typeof(ChatReviewSessionOfferedToGuideMessageComposer),
+            new ChatReviewSessionOfferedToGuideMessageComposerSerializer(
+                MessageComposer.ChatReviewSessionOfferedToGuideMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(ChatReviewSessionStartedMessageComposer),
+            new ChatReviewSessionStartedMessageComposerSerializer(
+                MessageComposer.ChatReviewSessionStartedMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(ChatReviewSessionVotingStatusMessageComposer),
+            new ChatReviewSessionVotingStatusMessageComposerSerializer(
+                MessageComposer.ChatReviewSessionVotingStatusMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(ChatReviewSessionResultsMessageComposer),
+            new ChatReviewSessionResultsMessageComposerSerializer(
+                MessageComposer.ChatReviewSessionResultsMessageComposer
+            )
+        );
+        builder.MapSerializer(
             typeof(GuideOnDutyStatusMessageComposer),
             new GuideOnDutyStatusMessageComposerSerializer(
                 MessageComposer.GuideOnDutyStatusMessageComposer

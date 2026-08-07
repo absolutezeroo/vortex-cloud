@@ -9,8 +9,5 @@ internal class ChatReviewSessionOfferedToGuideMessageComposerSerializer(int head
     protected override void Serialize(
         IServerPacket packet,
         ChatReviewSessionOfferedToGuideMessageComposer message
-    )
-    {
-        //
-    }
+    ) => packet.WriteInteger(message.AcceptanceTimeoutSeconds);
 }

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
@@ -36,6 +38,8 @@ internal sealed class GuideDirectoryGrain : Grain, IGuideDirectoryGrain
     private readonly Dictionary<int, PendingRequest> _pendingByRequester = [];
     private readonly Dictionary<int, int> _requesterByOfferedGuide = [];
     private readonly Dictionary<int, GuideSessionSnapshot> _sessionsByPlayer = [];
+    private readonly Dictionary<int, ChatReview> _reviewsByReporter = [];
+    private readonly Dictionary<int, int> _reporterByGuardian = [];
 
     private readonly record struct DutyRoles(bool Guide, bool Helper, bool Guardian);
 
@@ -43,6 +47,17 @@ internal sealed class GuideDirectoryGrain : Grain, IGuideDirectoryGrain
     {
         /// <summary>Guides who have already turned this down, so it is never offered back to them.</summary>
         public HashSet<int> Declined { get; } = [];
+    }
+
+    private sealed record ChatReview(int ReporterId, string ChatRecord)
+    {
+        /// <summary>Offered to them; they have not answered yet.</summary>
+        public HashSet<int> Offered { get; } = [];
+
+        /// <summary>Took it, and owes a vote.</summary>
+        public HashSet<int> Accepted { get; } = [];
+
+        public Dictionary<int, int> Votes { get; } = [];
     }
 
     public Task<GuideDutySnapshot> SetDutyAsync(
@@ -213,6 +228,174 @@ internal sealed class GuideDirectoryGrain : Grain, IGuideDirectoryGrain
         _sessionsByPlayer.Remove(partnerId);
 
         return Task.FromResult(partnerId);
+    }
+
+    public Task<ChatReviewOutcome> CreateChatReviewAsync(
+        int reporterId,
+        string chatRecord,
+        CancellationToken ct
+    )
+    {
+        if (reporterId <= 0 || _reviewsByReporter.ContainsKey(reporterId))
+        {
+            return Task.FromResult(new ChatReviewOutcome());
+        }
+
+        ChatReview review = new(reporterId, chatRecord);
+
+        foreach ((int playerId, DutyRoles roles) in _onDuty)
+        {
+            // The reporter is skipped even if they are a guardian on duty: nobody judges the chat
+            // they themselves reported.
+            if (
+                roles.Guardian
+                && playerId != reporterId
+                && !_reporterByGuardian.ContainsKey(playerId)
+            )
+            {
+                review.Offered.Add(playerId);
+                _reporterByGuardian[playerId] = reporterId;
+            }
+        }
+
+        if (review.Offered.Count == 0)
+        {
+            return Task.FromResult(new ChatReviewOutcome());
+        }
+
+        _reviewsByReporter[reporterId] = review;
+
+        return Task.FromResult(
+            new ChatReviewOutcome { OfferedTo = [.. review.Offered], ChatRecord = chatRecord }
+        );
+    }
+
+    public Task<ChatReviewOutcome> ChatReviewDecideAsync(
+        int guardianId,
+        bool accepted,
+        CancellationToken ct
+    )
+    {
+        if (
+            !TryFindReview(guardianId, out ChatReview? review) || !review.Offered.Remove(guardianId)
+        )
+        {
+            return Task.FromResult(new ChatReviewOutcome());
+        }
+
+        if (!accepted)
+        {
+            _reporterByGuardian.Remove(guardianId);
+
+            // Everyone else may already have voted, so a decline can be what completes it.
+            return Task.FromResult(TryResolve(review));
+        }
+
+        review.Accepted.Add(guardianId);
+
+        return Task.FromResult(
+            new ChatReviewOutcome
+            {
+                Participants = [.. review.Accepted],
+                ChatRecord = review.ChatRecord,
+            }
+        );
+    }
+
+    public Task<ChatReviewOutcome> ChatReviewVoteAsync(
+        int guardianId,
+        int vote,
+        CancellationToken ct
+    )
+    {
+        if (
+            !TryFindReview(guardianId, out ChatReview? review)
+            || !review.Accepted.Contains(guardianId)
+        )
+        {
+            return Task.FromResult(new ChatReviewOutcome());
+        }
+
+        // Last vote wins rather than first: the client lets a guardian change their mind before the
+        // others finish, and rejecting the change would show them a verdict they no longer hold.
+        review.Votes[guardianId] = vote;
+
+        return Task.FromResult(TryResolve(review));
+    }
+
+    public Task<ChatReviewOutcome> ChatReviewDetachAsync(int guardianId, CancellationToken ct)
+    {
+        if (!TryFindReview(guardianId, out ChatReview? review))
+        {
+            return Task.FromResult(new ChatReviewOutcome());
+        }
+
+        review.Offered.Remove(guardianId);
+        review.Accepted.Remove(guardianId);
+        review.Votes.Remove(guardianId);
+        _reporterByGuardian.Remove(guardianId);
+
+        return Task.FromResult(TryResolve(review));
+    }
+
+    /// <summary>
+    /// Closes the review once nobody still owes a vote, and hands back the verdict.
+    /// </summary>
+    /// <remarks>
+    /// "Owes a vote" is everyone who accepted and has not voted, plus everyone still deciding. A
+    /// guardian who accepts and then goes quiet therefore holds the review open — which is what the
+    /// acceptance and voting timeouts the client counts down are for, and they are not enforced
+    /// here yet.
+    /// </remarks>
+    private ChatReviewOutcome TryResolve(ChatReview review)
+    {
+        bool outstanding = review.Offered.Count > 0 || review.Accepted.Count > review.Votes.Count;
+
+        if (outstanding)
+        {
+            return new ChatReviewOutcome
+            {
+                Participants = [.. review.Accepted],
+                ChatRecord = review.ChatRecord,
+            };
+        }
+
+        _reviewsByReporter.Remove(review.ReporterId);
+
+        foreach (int guardianId in review.Accepted)
+        {
+            _reporterByGuardian.Remove(guardianId);
+        }
+
+        if (review.Votes.Count == 0)
+        {
+            // Everyone walked away. There is no verdict to report and nothing to send.
+            return new ChatReviewOutcome();
+        }
+
+        int abusive = review.Votes.Values.Count(v => v != 0);
+        int acceptable = review.Votes.Count - abusive;
+
+        return new ChatReviewOutcome
+        {
+            Participants = [.. review.Votes.Keys],
+            Result = new ChatReviewResultSnapshot
+            {
+                // A tie reads as "not abusive": condemning a chat needs a majority, not the absence
+                // of one.
+                WinningVote = abusive > acceptable ? 1 : 0,
+                Votes = [.. review.Votes.Values],
+                VotesByGuardian = review.Votes.ToImmutableDictionary(),
+            },
+        };
+    }
+
+    private bool TryFindReview(int guardianId, out ChatReview review)
+    {
+        review = null!;
+
+        return _reporterByGuardian.TryGetValue(guardianId, out int reporterId)
+            && _reviewsByReporter.TryGetValue(reporterId, out review!);
     }
 
     private int PartnerOf(int playerId)

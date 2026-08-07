@@ -77,4 +77,33 @@ public interface IGuideDirectoryGrain : IGrainWithStringKey
     /// person who has walked away.
     /// </remarks>
     Task<int> EndSessionAsync(int playerId, CancellationToken ct);
+
+    /// <summary>
+    /// Opens a chat review and offers it to every guardian on duty at once.
+    /// </summary>
+    /// <remarks>
+    /// All of them, unlike a help request, and that difference is the point: a help request wants
+    /// one person to take ownership, a chat review wants several opinions on the same excerpt. The
+    /// verdict is theirs collectively.
+    /// </remarks>
+    Task<ChatReviewOutcome> CreateChatReviewAsync(
+        int reporterId,
+        string chatRecord,
+        CancellationToken ct
+    );
+
+    /// <summary>A guardian taking the review they were offered, or passing on it.</summary>
+    Task<ChatReviewOutcome> ChatReviewDecideAsync(
+        int guardianId,
+        bool accepted,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// A guardian's verdict. The review resolves once everyone who accepted it has voted.
+    /// </summary>
+    Task<ChatReviewOutcome> ChatReviewVoteAsync(int guardianId, int vote, CancellationToken ct);
+
+    /// <summary>A guardian walking away from a review they were holding.</summary>
+    Task<ChatReviewOutcome> ChatReviewDetachAsync(int guardianId, CancellationToken ct);
 }

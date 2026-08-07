@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Help;
 
 internal class ChatReviewGuideVoteMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new ChatReviewGuideVoteMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new ChatReviewGuideVoteMessage { Vote = packet.PopInt() };
 }

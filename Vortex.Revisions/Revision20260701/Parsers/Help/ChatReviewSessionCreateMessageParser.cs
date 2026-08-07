@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Help;
 
 internal class ChatReviewSessionCreateMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new ChatReviewSessionCreateMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new ChatReviewSessionCreateMessage { Message = packet.PopString() };
 }

@@ -9,8 +9,5 @@ internal class ChatReviewSessionStartedMessageComposerSerializer(int header)
     protected override void Serialize(
         IServerPacket packet,
         ChatReviewSessionStartedMessageComposer message
-    )
-    {
-        //
-    }
+    ) => packet.WriteInteger(message.VotingTimeoutSeconds).WriteString(message.ChatRecord);
 }
