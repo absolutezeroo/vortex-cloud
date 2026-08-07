@@ -2,4 +2,8 @@ using Vortex.Primitives.Networking;
 
 namespace Vortex.Primitives.Messages.Incoming.Help;
 
-public record GuideSessionMessageMessage : IMessageEvent { }
+/// <summary>A line of chat inside a guide session.</summary>
+public record GuideSessionMessageMessage : IMessageEvent
+{
+    public required string Message { get; init; }
+}

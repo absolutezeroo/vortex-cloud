@@ -3,8 +3,10 @@ using Vortex.Primitives.Networking;
 
 namespace Vortex.Primitives.Messages.Outgoing.Help;
 
+/// <summary>The other side has started or stopped typing.</summary>
 [GenerateSerializer, Immutable]
 public sealed record GuideSessionPartnerIsTypingMessageComposer : IComposer
 {
-    // TODO: add properties if/when identified
+    [Id(0)]
+    public required bool IsTyping { get; init; }
 }

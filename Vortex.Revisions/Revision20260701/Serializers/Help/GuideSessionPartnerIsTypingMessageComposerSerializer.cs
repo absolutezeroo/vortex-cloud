@@ -9,8 +9,5 @@ internal class GuideSessionPartnerIsTypingMessageComposerSerializer(int header)
     protected override void Serialize(
         IServerPacket packet,
         GuideSessionPartnerIsTypingMessageComposer message
-    )
-    {
-        //
-    }
+    ) => packet.WriteBoolean(message.IsTyping);
 }

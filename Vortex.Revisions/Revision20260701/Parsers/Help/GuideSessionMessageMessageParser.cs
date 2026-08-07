@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Help;
 
 internal class GuideSessionMessageMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new GuideSessionMessageMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new GuideSessionMessageMessage { Message = packet.PopString() };
 }

@@ -183,6 +183,48 @@ internal sealed class GuideDirectoryGrain : Grain, IGuideDirectoryGrain
     public Task<GuideSessionSnapshot?> GetSessionAsync(int playerId, CancellationToken ct) =>
         Task.FromResult(_sessionsByPlayer.GetValueOrDefault(playerId));
 
+    public Task<int> GetPartnerAsync(int playerId, CancellationToken ct) =>
+        Task.FromResult(PartnerOf(playerId));
+
+    public Task<int> EndSessionAsync(int playerId, CancellationToken ct)
+    {
+        // A request that never found a guide is cleared too: a requester who walks away before
+        // anyone accepted would otherwise leave their offer sitting in front of a guide.
+        if (_pendingByRequester.Remove(playerId))
+        {
+            foreach ((int guideId, int requesterId) in _requesterByOfferedGuide)
+            {
+                if (requesterId == playerId)
+                {
+                    _requesterByOfferedGuide.Remove(guideId);
+                    break;
+                }
+            }
+        }
+
+        int partnerId = PartnerOf(playerId);
+
+        if (partnerId == 0)
+        {
+            return Task.FromResult(0);
+        }
+
+        _sessionsByPlayer.Remove(playerId);
+        _sessionsByPlayer.Remove(partnerId);
+
+        return Task.FromResult(partnerId);
+    }
+
+    private int PartnerOf(int playerId)
+    {
+        if (!_sessionsByPlayer.TryGetValue(playerId, out GuideSessionSnapshot? session))
+        {
+            return 0;
+        }
+
+        return session.RequesterId == playerId ? session.GuideId : session.RequesterId;
+    }
+
     /// <summary>
     /// The first guide who covers this queue and is free to take it. Skips the requester -- nobody
     /// guides themselves -- anyone already in a session, anyone already holding an offer, and

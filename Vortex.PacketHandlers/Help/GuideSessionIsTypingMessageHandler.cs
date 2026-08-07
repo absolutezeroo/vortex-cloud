@@ -1,11 +1,20 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Messages.Registry;
+using Vortex.Primitives.Help.Grains;
 using Vortex.Primitives.Messages.Incoming.Help;
+using Vortex.Primitives.Messages.Outgoing.Help;
+using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Help;
 
-public class GuideSessionIsTypingMessageHandler : IMessageHandler<GuideSessionIsTypingMessage>
+/// <summary>
+/// Passes the typing indicator to the other side only. Unlike the chat there is no echo: the sender
+/// knows perfectly well that they are typing.
+/// </summary>
+public class GuideSessionIsTypingMessageHandler(IGrainFactory grainFactory)
+    : IMessageHandler<GuideSessionIsTypingMessage>
 {
     public async ValueTask HandleAsync(
         GuideSessionIsTypingMessage message,
@@ -13,6 +22,26 @@ public class GuideSessionIsTypingMessageHandler : IMessageHandler<GuideSessionIs
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        if (ctx.PlayerId <= 0)
+        {
+            return;
+        }
+
+        int partnerId = await grainFactory
+            .GetGuideDirectoryGrain()
+            .GetPartnerAsync(ctx.PlayerId, ct)
+            .ConfigureAwait(false);
+
+        if (partnerId <= 0)
+        {
+            return;
+        }
+
+        await grainFactory
+            .GetPlayerPresenceGrain(partnerId)
+            .SendComposerAsync(
+                new GuideSessionPartnerIsTypingMessageComposer { IsTyping = message.IsTyping }
+            )
+            .ConfigureAwait(false);
     }
 }

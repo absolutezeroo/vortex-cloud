@@ -9,8 +9,5 @@ internal class GuideSessionEndedMessageComposerSerializer(int header)
     protected override void Serialize(
         IServerPacket packet,
         GuideSessionEndedMessageComposer message
-    )
-    {
-        //
-    }
+    ) => packet.WriteInteger(message.EndReason);
 }

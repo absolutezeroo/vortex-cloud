@@ -61,4 +61,20 @@ public interface IGuideDirectoryGrain : IGrainWithStringKey
 
     /// <summary>The session this player is in, either side of it, or null.</summary>
     Task<GuideSessionSnapshot?> GetSessionAsync(int playerId, CancellationToken ct);
+
+    /// <summary>
+    /// The other person in this player's session, or 0 when they are not in one. What both the chat
+    /// and the typing indicator need, and the only thing they need: neither has anything to store.
+    /// </summary>
+    Task<int> GetPartnerAsync(int playerId, CancellationToken ct);
+
+    /// <summary>
+    /// Ends this player's session and returns who else was in it, so they can be told.
+    /// </summary>
+    /// <remarks>
+    /// Also clears any request that never found a guide, which is what a requester cancelling
+    /// before anyone accepted is doing — otherwise the offer would sit in front of a guide for a
+    /// person who has walked away.
+    /// </remarks>
+    Task<int> EndSessionAsync(int playerId, CancellationToken ct);
 }

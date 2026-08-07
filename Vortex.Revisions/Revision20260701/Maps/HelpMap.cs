@@ -137,6 +137,24 @@ internal sealed class HelpMap : IRevisionMap
             )
         );
         builder.MapSerializer(
+            typeof(GuideSessionMessageMessageComposer),
+            new GuideSessionMessageMessageComposerSerializer(
+                MessageComposer.GuideSessionMessageMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(GuideSessionPartnerIsTypingMessageComposer),
+            new GuideSessionPartnerIsTypingMessageComposerSerializer(
+                MessageComposer.GuideSessionPartnerIsTypingMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(GuideSessionEndedMessageComposer),
+            new GuideSessionEndedMessageComposerSerializer(
+                MessageComposer.GuideSessionEndedMessageComposer
+            )
+        );
+        builder.MapSerializer(
             typeof(GuideOnDutyStatusMessageComposer),
             new GuideOnDutyStatusMessageComposerSerializer(
                 MessageComposer.GuideOnDutyStatusMessageComposer
