@@ -92,7 +92,7 @@ internal static class MessageEvent
     public const int GuideSessionInviteRequesterMessageEvent = 3336; // AS3-verified (direct read, both revisions): GuideSessionController::onGuideOngoingEvent() invite_button -> _SafeCls_3297
     public const int GuideSessionIsTypingMessageEvent = 296; // AS3-verified (old-revision trace): GuideSessionController::onTypingTimer() still exists in current revision at 296
     public const int GuideSessionMessageMessageEvent = 1561; // AS3-verified (direct read, both revisions): GuideSessionController::onInput() -> _SafeCls_2721
-    public const int GuideSessionOnDutyUpdateMessageEvent = 958;
+    public const int GuideSessionOnDutyUpdateMessageEvent = 958; // AS3-verified 2026-08-07: _composers[958] -> _SafeCls_3169, sent by GuideSessionController::showGuideTool() as (onDuty, tour_requests, help_requests, chat_reviews)
     public const int GuideSessionReportMessageEvent = 9106; // UNRESOLVED: collided with the AS3-verified GuideSessionIsTypingMessageEvent (296); this constant's own value had zero backing - flagged for a future retrace
     public const int GuideSessionRequesterCancelsMessageEvent = 2847; // AS3-verified (old-revision trace): onUserPendingEvent() still exists in current revision at 2847
     public const int GuideSessionResolvedMessageEvent = 3831; // AS3-verified (direct read, both revisions): GuideSessionController::onGuideOngoingEvent() close_link -> _SafeCls_3979
@@ -708,7 +708,7 @@ internal static class MessageComposer
     public const int ChatReviewSessionVotingStatusMessageComposer = 1881; // AS3-verified (ghost fix): onChatReviewSessionVotingStatus @ GuideSessionController
     public const int GuideOnDutyStatusMessageComposer = 1923;
     public const int GuideReportingStatusMessageComposer = 3725; // AS3-verified (ghost fix): onGuideReportingStatus @ HabboHelp
-    public const int GuideSessionAttachedMessageComposer = 3274;
+    public const int GuideSessionAttachedMessageComposer = 3274; // AS3-verified 2026-08-07: _SafeStr_4546[3274] -> _SafeCls_2443, bound to onGuideSessionAttached @ GuideSessionController. Payload is asGuide:bool, helpRequestType:int, helpRequestDescription:string, roleSpecificWaitTime:int
     public const int GuideSessionDetachedMessageComposer = 2755; // AS3-verified (ghost fix): onGuideSessionDetached @ GuideSessionController
     public const int GuideSessionEndedMessageComposer = 2126; // AS3-verified (ghost fix): onGuideSessionEnded @ GuideSessionController
     public const int GuideSessionErrorMessageComposer = 2377; // AS3-verified (ghost fix): onGuideSessionError @ GuideSessionController
@@ -716,7 +716,7 @@ internal static class MessageComposer
     public const int GuideSessionMessageMessageComposer = 485; // AS3-verified (ghost fix): onGuideSessionMessage @ GuideSessionController
     public const int GuideSessionPartnerIsTypingMessageComposer = 3656; // AS3-verified (ghost fix): onGuideSessionPartnerIsTyping @ GuideSessionController
     public const int GuideSessionRequesterRoomMessageComposer = 2022; // AS3-verified (ghost fix): onGuideSessionRequesterRoom @ GuideSessionController
-    public const int GuideSessionStartedMessageComposer = 3649;
+    public const int GuideSessionStartedMessageComposer = 3649; // AS3-verified 2026-08-07: _SafeStr_4546[3649] -> _SafeCls_3061, bound to onGuideSessionStarted @ GuideSessionController
     public const int IssueCloseNotificationMessageComposer = 3943; // AS3-verified (ghost fix): onIssueClose @ CallForHelpManager
     public const int QuizDataMessageComposer = 3999; // AS3-verified (ghost fix): onQuizData @ HabboWayQuizController
     public const int QuizResultsMessageComposer = 548; // AS3-verified (ghost fix): onQuizResults @ HabboWayQuizController
