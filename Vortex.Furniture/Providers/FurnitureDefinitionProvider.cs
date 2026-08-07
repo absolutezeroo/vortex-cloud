@@ -33,8 +33,18 @@ public sealed class FurnitureDefinitionProvider(
     private ImmutableDictionary<int, FurnitureDefinitionSnapshot> _definitionsById =
         ImmutableDictionary<int, FurnitureDefinitionSnapshot>.Empty;
 
+    // Classnames are not unique in this catalogue -- tile_stackmagic and roomdimmer each appear
+    // twice -- so the index keeps the first of a duplicate rather than throwing the whole reload.
+    private ImmutableDictionary<string, FurnitureDefinitionSnapshot> _definitionsByName =
+        ImmutableDictionary<string, FurnitureDefinitionSnapshot>.Empty;
+
     public FurnitureDefinitionSnapshot? TryGetDefinition(int id) =>
         _definitionsById.TryGetValue(id, out FurnitureDefinitionSnapshot? definition)
+            ? definition
+            : null;
+
+    public FurnitureDefinitionSnapshot? TryGetDefinitionByName(string name) =>
+        _definitionsByName.TryGetValue(name, out FurnitureDefinitionSnapshot? definition)
             ? definition
             : null;
 
@@ -77,6 +87,7 @@ public sealed class FurnitureDefinitionProvider(
                 .ToList();
 
             _definitionsById = defs.ToImmutableDictionary(p => p.Id);
+            _definitionsByName = defs.DistinctBy(p => p.Name).ToImmutableDictionary(p => p.Name);
 
             _logger.LogInformation(
                 "Loaded {TotalDefCount} furniture definitions",

@@ -11,6 +11,23 @@ namespace Vortex.Primitives.Inventory.Grains;
 
 public partial interface IInventoryGrain
 {
+    /// <summary>
+    /// Puts a bought offer into a present furniture in this player's inventory instead of granting
+    /// it outright. Returns false when the wrapping names no furniture this hotel ships, so the
+    /// caller can still deliver the gift unwrapped rather than lose a paid purchase.
+    /// </summary>
+    public Task<bool> GrantWrappedGiftAsync(
+        CatalogOfferSnapshot offer,
+        string extraParam,
+        GiftWrappingSpec wrapping,
+        string purchaserName,
+        string purchaserFigure,
+        CancellationToken ct
+    );
+}
+
+public partial interface IInventoryGrain
+{
     public Task<bool> AddFurnitureAsync(IFurnitureItem item, CancellationToken ct);
     public Task<bool> AddFurnitureFromRoomItemSnapshotAsync(
         RoomItemSnapshot snapshot,

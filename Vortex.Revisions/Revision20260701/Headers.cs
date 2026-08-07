@@ -403,7 +403,7 @@ internal static class MessageEvent
     public const int SetMannequinFigureEvent = 2301; // AS3-verified (old-revision trace): _SafeCls_3486 -> saveOutfit() still exists in current revision at 2301
     public const int SetMannequinNameEvent = 606; // AS3-verified (old-revision trace): MannequinWidget::saveOutfitName() still exists in current revision at 606
     public const int SetRandomStateMessageEvent = 1942; // AS3-verified (direct read, both revisions): room engine changeRoomObjectState() param5==true branch (floor item, param3==10) -> connection.send(new _SafeCls_3726(objectId,state)) @1942 (old _SafeCls_3310@938)
-    public const int SetRoomBackgroundColorDataEvent = 1647; // UNRESOLVED: not found - no matching "set background color" composer located near the room engine's other per-furni-type state composers in either official AS3 revision
+    public const int SetRoomBackgroundColorDataEvent = 1647; // AS3-verified 2026-08-07: _composers[1647] in the WIN63-202607011411 registry, sent by BackgroundColorFurniWidget's apply button as (objectId, hue, saturation, lightness). The earlier search missed it because the widget sends it directly rather than through RoomSession, so it sits with no send* method near the other room-engine composers
     public const int SetYoutubeDisplayPlaylistMessageEvent = 1672; // AS3-verified (old-revision trace): _SafeCls_2471 -> selectPlaylist() still exists in current revision at 1672
     public const int SpinWheelOfFortuneMessageEvent = 3625; // AS3-verified (direct read, both revisions): useObject() ROFCAE_USE_HABBOWHEEL -> _SafeCls_3425
     public const int ThrowDiceMessageEvent = 1673; // AS3-verified (direct read, both revisions): useObject() ROFCAE_DICE_ACTIVATE -> _SafeCls_3154

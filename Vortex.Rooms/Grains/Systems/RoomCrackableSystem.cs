@@ -85,7 +85,7 @@ public sealed class RoomCrackableSystem(RoomGrain roomGrain)
 
         // Consume first: if the grant then fails the room is out one crackable, but the reverse order
         // would let a repeated click on a furniture that is still there mint prizes.
-        if (!await ConsumeAsync(ctx, item, ct).ConfigureAwait(true))
+        if (!await _roomGrain.ConsumeItemAsync(ctx, item, ct).ConfigureAwait(true))
         {
             return;
         }
@@ -160,41 +160,5 @@ public sealed class RoomCrackableSystem(RoomGrain roomGrain)
             ._grainFactory.GetPlayerPrizeGrain(ctx.PlayerId)
             .GrantOnceAsync(prize, binding.PoolId, PrizeSources.WelcomeGift, ct)
             .ConfigureAwait(true);
-    }
-
-    /// <summary>Removes the cracked furniture from the room and the database. Returns false when the
-    /// delete did not happen, so the caller can avoid handing out a prize for it.</summary>
-    private async Task<bool> ConsumeAsync(ActionContext ctx, IRoomItem item, CancellationToken ct)
-    {
-        try
-        {
-            await using VortexDbContext dbCtx = await _roomGrain
-                ._dbCtxFactory.CreateDbContextAsync(ct)
-                .ConfigureAwait(true);
-
-            FurnitureEntity entity = new() { Id = item.ObjectId.Value };
-            dbCtx.Attach(entity);
-            entity.DeletedAt = DateTime.UtcNow;
-            dbCtx.Entry(entity).Property(f => f.DeletedAt).IsModified = true;
-
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
-        }
-        catch (Exception ex)
-        {
-            _roomGrain._logger.LogError(
-                ex,
-                "Failed to delete cracked furniture {ObjectId} in room {RoomId}",
-                item.ObjectId.Value,
-                _roomGrain._state.RoomId.Value
-            );
-
-            return false;
-        }
-
-        await _roomGrain
-            .ObjectModule.RemoveObjectAsync(ctx, item, ct, item.OwnerId)
-            .ConfigureAwait(true);
-
-        return true;
     }
 }

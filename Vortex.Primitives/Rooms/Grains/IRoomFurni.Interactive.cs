@@ -62,6 +62,46 @@ public partial interface IRoomFurni
         CancellationToken ct
     );
 
+    /// <summary>
+    /// Tints the room from a background toner. Room rights, not ownership: the toner colours
+    /// everyone's view, so it belongs to whoever may build here.
+    /// </summary>
+    public Task<bool> SetBackgroundColorAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        int hue,
+        int saturation,
+        int lightness,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Cashes in a credit furni and consumes it. Returns how many credits it was worth, for the
+    /// caller to pay out, or zero when the item is absent, is not the actor's own, or names no
+    /// value.
+    /// </summary>
+    public Task<int> RedeemCreditFurniAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Unwraps a present and consumes it. Returns what was inside, for the caller to grant, or null
+    /// when the item is absent, is not a present, is not the actor's own, or holds nothing the
+    /// server can resolve.
+    /// </summary>
+    /// <remarks>
+    /// Consuming and granting are split across two grains on purpose, in that order: the wrapping is
+    /// gone before anything is handed out, so a failure downstream costs the player their gift once
+    /// rather than letting a repeated click on a present that is still there mint copies of it.
+    /// </remarks>
+    public Task<PresentContentsSnapshot?> OpenPresentAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        CancellationToken ct
+    );
+
     /// <summary>Reads a moodlight for its dialog. Null when the item is absent, is not a moodlight,
     /// or the actor lacks room rights.</summary>
     public Task<RoomDimmerStateSnapshot?> GetDimmerStateAsync(

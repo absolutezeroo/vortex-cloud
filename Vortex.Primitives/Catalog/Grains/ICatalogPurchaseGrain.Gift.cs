@@ -25,6 +25,19 @@ public partial interface ICatalogPurchaseGrain
         int offerId,
         string extraParam,
         PlayerId receiverId,
+        GiftWrappingSpec wrapping,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Hands the grain's player what a present they just unwrapped was holding. No payment and no
+    /// club gate: the offer was bought, gated and charged when it was wrapped, and re-checking here
+    /// would let a since-retired offer trap its own gift inside a box forever.
+    /// </summary>
+    /// <returns>The offer that was granted, or null when it no longer exists in the catalogue.</returns>
+    public Task<CatalogOfferSnapshot?> GrantPresentContentsAsync(
+        int offerId,
+        string extraParam,
         CancellationToken ct
     );
 }

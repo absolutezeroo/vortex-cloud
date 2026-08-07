@@ -1,5 +1,13 @@
 using Vortex.Primitives.Networking;
+using Vortex.Primitives.Rooms.Object;
 
 namespace Vortex.Primitives.Messages.Incoming.Room.Furniture;
 
-public record CreditFurniRedeemMessage : IMessageEvent { }
+/// <summary>
+/// Cashing in a credit furni. The client sends only which one — what it is worth is read from the
+/// definition, never from the packet.
+/// </summary>
+public record CreditFurniRedeemMessage : IMessageEvent
+{
+    public required RoomObjectId ObjectId { get; init; }
+}

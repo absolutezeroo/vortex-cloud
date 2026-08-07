@@ -53,6 +53,14 @@ public class PurchaseFromCatalogAsGiftMessageHandler(IGrainFactory grainFactory)
                     message.OfferCode,
                     message.ExtraParam ?? string.Empty,
                     receiverId.Value,
+                    new GiftWrappingSpec
+                    {
+                        StuffTypeId = message.BoxStuffTypeId,
+                        BoxTypeId = message.BoxTypeId,
+                        RibbonTypeId = message.RibbonTypeId,
+                        Message = message.Message ?? string.Empty,
+                        ShowPurchaserName = message.ShowPurchaserName,
+                    },
                     ct
                 )
                 .ConfigureAwait(false);

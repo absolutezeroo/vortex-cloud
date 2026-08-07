@@ -38,6 +38,21 @@ public sealed class CatalogGiftPurchaseTests
     private const int RECEIVER_ID = 22;
     private const int OFFER_ID = 900;
 
+    /// <summary>
+    /// Stuff type 0 names no <c>present_gen*</c> furniture, so wrapping cannot be built and the
+    /// purchase falls back to granting the offer outright. That is deliberate here: these tests are
+    /// about the economy guarantees — club gate, discount, spend tracking, refund — and the fallback
+    /// keeps them asserting on the recipient's inventory rather than on the contents of a box.
+    /// </summary>
+    private static readonly GiftWrappingSpec NoWrapping = new()
+    {
+        StuffTypeId = 0,
+        BoxTypeId = 0,
+        RibbonTypeId = 0,
+        Message = string.Empty,
+        ShowPurchaserName = false,
+    };
+
     [Fact]
     public async Task PurchaseOfferAsGiftAsync_GrantsToReceiverAndChargesBuyer()
     {
@@ -49,6 +64,7 @@ public sealed class CatalogGiftPurchaseTests
                 OFFER_ID,
                 string.Empty,
                 new PlayerId(RECEIVER_ID),
+                NoWrapping,
                 CancellationToken.None
             )
             .ConfigureAwait(true);
@@ -72,6 +88,7 @@ public sealed class CatalogGiftPurchaseTests
                 OFFER_ID,
                 string.Empty,
                 new PlayerId(RECEIVER_ID),
+                NoWrapping,
                 CancellationToken.None
             );
 
@@ -98,6 +115,7 @@ public sealed class CatalogGiftPurchaseTests
                 OFFER_ID,
                 string.Empty,
                 new PlayerId(RECEIVER_ID),
+                NoWrapping,
                 CancellationToken.None
             )
             .ConfigureAwait(true);
@@ -117,6 +135,7 @@ public sealed class CatalogGiftPurchaseTests
                 OFFER_ID,
                 string.Empty,
                 new PlayerId(RECEIVER_ID),
+                NoWrapping,
                 CancellationToken.None
             );
 
@@ -135,6 +154,7 @@ public sealed class CatalogGiftPurchaseTests
                 OFFER_ID,
                 string.Empty,
                 new PlayerId(RECEIVER_ID),
+                NoWrapping,
                 CancellationToken.None
             );
 
@@ -153,6 +173,7 @@ public sealed class CatalogGiftPurchaseTests
                 OFFER_ID,
                 string.Empty,
                 new PlayerId(RECEIVER_ID),
+                NoWrapping,
                 CancellationToken.None
             )
             .ConfigureAwait(true);
@@ -179,6 +200,7 @@ public sealed class CatalogGiftPurchaseTests
                 OFFER_ID,
                 string.Empty,
                 new PlayerId(RECEIVER_ID),
+                NoWrapping,
                 CancellationToken.None
             );
 

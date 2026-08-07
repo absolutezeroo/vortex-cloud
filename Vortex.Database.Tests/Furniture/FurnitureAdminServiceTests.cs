@@ -242,6 +242,8 @@ public sealed class FurnitureAdminServiceTests
 
         public FurnitureDefinitionSnapshot? TryGetDefinition(int id) => null;
 
+        public FurnitureDefinitionSnapshot? TryGetDefinitionByName(string name) => null;
+
         public Task ReloadAsync(CancellationToken ct)
         {
             ReloadCount++;

@@ -1,7 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Vortex.Database.Context;
+using Vortex.Database.Entities.Furniture;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Furniture;
 using Vortex.Primitives.Furniture.StuffData;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;
@@ -163,6 +168,47 @@ public sealed partial class RoomGrain
         return true;
     }
 
+    /// <summary>
+    /// Removes furniture that has been used up — a cracked egg, an opened present — from the room
+    /// and the database. Returns false when the delete did not happen, so the caller can avoid
+    /// handing out what it was about to.
+    /// </summary>
+    internal async Task<bool> ConsumeItemAsync(
+        ActionContext ctx,
+        IRoomItem item,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            await using VortexDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(true);
+
+            FurnitureEntity entity = new() { Id = item.ObjectId.Value };
+            dbCtx.Attach(entity);
+            entity.DeletedAt = DateTime.UtcNow;
+            dbCtx.Entry(entity).Property(f => f.DeletedAt).IsModified = true;
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to delete consumed furniture {ObjectId} in room {RoomId}",
+                item.ObjectId.Value,
+                _state.RoomId.Value
+            );
+
+            return false;
+        }
+
+        await ObjectModule.RemoveObjectAsync(ctx, item, ct, item.OwnerId).ConfigureAwait(true);
+
+        return true;
+    }
+
     private void RecomputeFootprint(IRoomFloorItem floor)
     {
         if (
@@ -183,6 +229,99 @@ public sealed partial class RoomGrain
         {
             MapModule.ComputeTile(idx);
         }
+    }
+
+    public async Task<bool> SetBackgroundColorAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        int hue,
+        int saturation,
+        int lightness,
+        CancellationToken ct
+    )
+    {
+        IRoomItem? item = await FindManipulableItemAsync(ctx, itemId).ConfigureAwait(true);
+
+        if (item?.Logic is not FurnitureBackgroundColorLogic toner)
+        {
+            return false;
+        }
+
+        await toner.SetColorAsync(hue, saturation, lightness).ConfigureAwait(true);
+
+        return true;
+    }
+
+    public async Task<int> RedeemCreditFurniAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        CancellationToken ct
+    )
+    {
+        // Ownership, like the present: a credit furni is money, and room rights would let whoever
+        // holds them cash in every coin a visitor put down.
+        if (
+            !_state.ItemsById.TryGetValue(itemId, out IRoomItem? item)
+            || item.OwnerId != ctx.PlayerId
+        )
+        {
+            return 0;
+        }
+
+        if (!CreditFurniValue.TryParse(item.Definition.Name, out int credits))
+        {
+            _logger.LogWarning(
+                "Credit furni {ObjectId} (definition {DefinitionId}, '{Name}') in room {RoomId} names no value; it cannot be redeemed.",
+                itemId.Value,
+                item.Definition.Id,
+                item.Definition.Name,
+                _state.RoomId.Value
+            );
+
+            return 0;
+        }
+
+        // Consumed before the credits exist, for the reason the crackable is: the reverse order
+        // turns one coin still standing on the floor into as many payouts as it can be clicked.
+        return await ConsumeItemAsync(ctx, item, ct).ConfigureAwait(true) ? credits : 0;
+    }
+
+    public async Task<PresentContentsSnapshot?> OpenPresentAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        CancellationToken ct
+    )
+    {
+        // Ownership, not room rights, and the one place in this file that differs: a mannequin is
+        // furniture the room shares, a present is somebody's post. Room rights would let anyone with
+        // build rights open every gift dropped in their room.
+        if (
+            !_state.ItemsById.TryGetValue(itemId, out IRoomItem? item)
+            || item.OwnerId != ctx.PlayerId
+            || item.Logic is not FurniturePresentLogic present
+        )
+        {
+            return null;
+        }
+
+        PresentContentsSnapshot? contents = present.ReadContents();
+
+        if (contents is null)
+        {
+            // An empty wrapping is left standing rather than eaten. It is either a present from
+            // before gifts were wrapped or one placed by the furni editor, and consuming it would
+            // destroy furniture to hand back nothing.
+            _logger.LogWarning(
+                "Present {ObjectId} (definition {DefinitionId}) in room {RoomId} carries no contents section; it cannot be opened.",
+                itemId.Value,
+                item.Definition.Id,
+                _state.RoomId.Value
+            );
+
+            return null;
+        }
+
+        return await ConsumeItemAsync(ctx, item, ct).ConfigureAwait(true) ? contents : null;
     }
 
     public async Task<RoomDimmerStateSnapshot?> GetDimmerStateAsync(

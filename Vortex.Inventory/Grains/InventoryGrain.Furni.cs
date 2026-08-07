@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
@@ -652,6 +654,123 @@ public sealed partial class InventoryGrain
     public Task EnsureFurnitureReadyAsync(CancellationToken ct)
     {
         return _furniModule.EnsureFurnitureReadyAsync(ct);
+    }
+
+    /// <summary>
+    /// Puts a bought offer in a box instead of in the recipient's hands: one present furniture whose
+    /// private section names the offer, to be granted for real when they unwrap it.
+    /// </summary>
+    /// <returns>False when the chosen wrapping names no furniture this hotel ships, so the caller
+    /// can fall back to handing the offer over unwrapped rather than swallowing a paid purchase.</returns>
+    public async Task<bool> GrantWrappedGiftAsync(
+        CatalogOfferSnapshot offer,
+        string extraParam,
+        GiftWrappingSpec wrapping,
+        string purchaserName,
+        string purchaserFigure,
+        CancellationToken ct
+    )
+    {
+        FurnitureDefinitionSnapshot? present = ResolvePresentDefinition(wrapping.StuffTypeId);
+
+        if (present is null)
+        {
+            _logger.LogWarning(
+                "Gift wrapping stuff type {StuffType} resolves to no present definition; the gift will be granted unwrapped.",
+                wrapping.StuffTypeId
+            );
+
+            return false;
+        }
+
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
+
+        try
+        {
+            dbCtx.Add(
+                new FurnitureEntity
+                {
+                    PlayerEntityId = (int)this.GetPrimaryKeyLong(),
+                    FurnitureDefinitionEntityId = present.Id,
+                    ExtraData = BuildPresentExtraData(
+                        offer,
+                        extraParam,
+                        wrapping,
+                        purchaserName,
+                        purchaserFigure
+                    ),
+                }
+            );
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+        }
+        finally
+        {
+            await dbCtx.DisposeAsync().ConfigureAwait(true);
+        }
+
+        await _furniModule.ReloadAsync(ct).ConfigureAwait(true);
+
+        return true;
+    }
+
+    /// <summary>
+    /// The wrapping's furniture. Stuff type 1 is the plain <c>present_gen</c> and 2-7 are its
+    /// numbered variants — the client offers seven and names them by index, not by classname.
+    /// </summary>
+    private FurnitureDefinitionSnapshot? ResolvePresentDefinition(int stuffTypeId)
+    {
+        int index = Math.Clamp(stuffTypeId, 1, 7) - 1;
+        string name = index == 0 ? "present_gen" : $"present_gen{index}";
+
+        return _furnitureDefinitionProvider.TryGetDefinitionByName(name);
+    }
+
+    /// <summary>
+    /// Both halves of a present in one blob: the "stuff" section every client in the room can read,
+    /// and the private section only the server does.
+    /// </summary>
+    private static string BuildPresentExtraData(
+        CatalogOfferSnapshot offer,
+        string extraParam,
+        GiftWrappingSpec wrapping,
+        string purchaserName,
+        string purchaserFigure
+    )
+    {
+        ExtraData extraData = new(null);
+
+        // Key names are the client's, from FurniturePresentLogic.setObjectVariables. An anonymous
+        // gift omits the sender entirely rather than sending an empty string, because the widget
+        // draws whatever it is given.
+        Dictionary<string, string> data = new()
+        {
+            ["MESSAGE"] = wrapping.Message,
+            ["PRODUCT_CODE"] =
+                offer.Products.Length > 0
+                    ? offer.Products[0].FurniDefinitionId.ToString(CultureInfo.InvariantCulture)
+                    : string.Empty,
+            ["TRUSTED_SENDER"] = "false",
+        };
+
+        if (wrapping.ShowPurchaserName)
+        {
+            data["PURCHASER_NAME"] = purchaserName;
+            data["PURCHASER_FIGURE"] = purchaserFigure;
+        }
+
+        extraData.UpdateSection(ExtraDataSectionType.STUFF, new { Data = data });
+        extraData.UpdateSection(
+            ExtraDataSectionType.PRESENT,
+            new PresentContentsSnapshot
+            {
+                OfferId = offer.Id,
+                ExtraParam = extraParam,
+                Wrapping = FurniturePresentWrapping.Pack(wrapping.BoxTypeId, wrapping.RibbonTypeId),
+            }
+        );
+
+        return extraData.GetJsonString();
     }
 
     /// <summary>
