@@ -3,12 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
+using Vortex.PacketHandlers.Preferences;
 using Vortex.Primitives.Messages.Incoming.Users;
-using Vortex.Primitives.Messages.Outgoing.Preferences;
 using Vortex.Primitives.Messages.Outgoing.Users;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
-using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Players.Grains;
 
 namespace Vortex.PacketHandlers.Users;
@@ -38,37 +37,8 @@ public class ScrGetUserInfoMessageHandler(IGrainFactory grainFactory)
         await ctx.SendComposerAsync(BuildScrSendUserInfo(message.ProductName, sub), ct)
             .ConfigureAwait(false);
 
-        PlayerWiredPreferencesSnapshot wiredPrefs = await player
-            .GetWiredPreferencesAsync(ct)
-            .ConfigureAwait(false);
-
-        // Reflect the player's saved chat-bubble style so the settings UI shows their selection
-        // (in-memory read on the already-activated grain — no extra DB query).
-        int preferedChatStyle = await player.GetChatStylePreferenceAsync(ct).ConfigureAwait(false);
-
-        PlayerAccountPreferencesSnapshot accountPrefs = await player
-            .GetAccountPreferencesAsync(ct)
-            .ConfigureAwait(false);
-
         await ctx.SendComposerAsync(
-                new AccountPreferencesEventMessageComposer
-                {
-                    UIVolume = accountPrefs.UiVolume,
-                    FurniVolume = accountPrefs.FurniVolume,
-                    TraxVolume = accountPrefs.TraxVolume,
-                    FreeFlowChatDisabled = accountPrefs.FreeFlowChatDisabled,
-                    RoomInvitesIgnored = accountPrefs.RoomInvitesIgnored,
-                    RoomCameraFollowDisabled = accountPrefs.RoomCameraFollowDisabled,
-                    UIFlags = (UIFlags)accountPrefs.UiFlags,
-                    PreferedChatStyle = preferedChatStyle,
-                    WiredMenuButton = wiredPrefs.WiredMenuButton,
-                    WiredInspectButton = wiredPrefs.WiredInspectButton,
-                    PlayTestMode = wiredPrefs.PlayTestMode,
-                    VariableSyntaxMode = 1,
-                    WiredWhisperDisabled = wiredPrefs.WiredWhisperDisabled,
-                    ShowAllNotifications = wiredPrefs.ShowAllNotifications,
-                    UiStyle = wiredPrefs.UiStyle,
-                },
+                await AccountPreferences.BuildAsync(player, ct).ConfigureAwait(false),
                 ct
             )
             .ConfigureAwait(false);
