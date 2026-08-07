@@ -21,6 +21,14 @@ public class InfoRetrieveMessageHandler(IGrainFactory grainFactory)
         CancellationToken ct
     )
     {
+        // The client only asks for this after a successful SSO, but nothing on the wire enforces
+        // that order: arriving first, it would activate the player grain on the unbound session's
+        // -1 and throw "the specified player could not be found" out of the pipeline.
+        if (ctx.PlayerId <= 0)
+        {
+            return;
+        }
+
         IPlayerGrain player = _grainFactory.GetPlayerGrain(ctx.PlayerId);
         PlayerSummarySnapshot snapshot = await player.GetSummaryAsync(ct).ConfigureAwait(false);
 
