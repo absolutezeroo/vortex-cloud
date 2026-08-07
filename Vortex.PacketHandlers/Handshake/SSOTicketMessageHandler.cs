@@ -227,7 +227,8 @@ public class SSOTicketMessageHandler(
                 )
             )
             {
-                await SendModeratorBootstrapAsync(ctx, permissions, ct).ConfigureAwait(false);
+                await SendModeratorBootstrapAsync(ctx, playerId, permissions, ct)
+                    .ConfigureAwait(false);
             }
 
             // Vortex-specific: tells the client whether to offer the in-client furni editor's
@@ -439,6 +440,7 @@ public class SSOTicketMessageHandler(
     /// server just sends them to whoever has moderation rights.</summary>
     private async Task SendModeratorBootstrapAsync(
         MessageContext ctx,
+        int playerId,
         PermissionSet permissions,
         CancellationToken ct
     )
@@ -475,8 +477,10 @@ public class SSOTicketMessageHandler(
 
         // Restore where they left the window. Skipped when never positioned — a rectangle of zeroes
         // would collapse the tool to nothing on open.
+        // Uses the ticket's player id, never ctx.PlayerId: the MessageContext for this packet was
+        // built before the handler bound the session to a player, so ctx.PlayerId is still -1 here.
         PlayerModToolPreferencesSnapshot modToolPreferences = await _grainFactory
-            .GetPlayerGrain(ctx.PlayerId)
+            .GetPlayerGrain(PlayerId.Parse(playerId))
             .GetModToolPreferencesAsync(ct)
             .ConfigureAwait(false);
 
