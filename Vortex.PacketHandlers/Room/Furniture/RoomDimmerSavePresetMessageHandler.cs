@@ -1,11 +1,19 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Messages.Incoming.Room.Furniture;
+using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Rooms.Snapshots.Furniture;
 
 namespace Vortex.PacketHandlers.Room.Furniture;
 
-public class RoomDimmerSavePresetMessageHandler : IMessageHandler<RoomDimmerSavePresetMessage>
+/// <summary>
+/// Stores one of the moodlight's three presets, and switches to it when the dialog's apply button
+/// is what sent this.
+/// </summary>
+public class RoomDimmerSavePresetMessageHandler(IGrainFactory grainFactory)
+    : IMessageHandler<RoomDimmerSavePresetMessage>
 {
     public async ValueTask HandleAsync(
         RoomDimmerSavePresetMessage message,
@@ -13,6 +21,30 @@ public class RoomDimmerSavePresetMessageHandler : IMessageHandler<RoomDimmerSave
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        if (ctx.PlayerId <= 0 || ctx.RoomId <= 0)
+        {
+            return;
+        }
+
+        RoomDimmerStateSnapshot? state = await grainFactory
+            .GetRoomFurni(ctx.RoomId)
+            .SaveDimmerPresetAsync(
+                ctx.AsActionContext(),
+                message.ObjectId,
+                message.PresetNumber,
+                message.EffectId,
+                message.ColorHex,
+                message.Brightness,
+                message.Apply,
+                ct
+            )
+            .ConfigureAwait(false);
+
+        if (state is null)
+        {
+            return;
+        }
+
+        await ctx.SendComposerAsync(DimmerPresets.Compose(state), ct).ConfigureAwait(false);
     }
 }

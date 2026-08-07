@@ -55,5 +55,6 @@ public sealed class RoomFloorItem
             ExtraData = ExtraData.GetJsonString(),
             UsagePolicy = Logic.GetUsagePolicy(),
             StackHeight = GetStackHeight(),
+            Extra = Logic.GetExtra(),
         };
 }

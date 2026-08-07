@@ -69,6 +69,8 @@ public class FurnitureFloorLogic(IStuffDataFactory stuffDataFactory, IRoomFloorI
 
     public override Altitude GetStackHeight() => _ctx.Definition.StackHeight;
 
+    public virtual int GetExtra() => 0;
+
     public override Task OnStateChangedAsync(CancellationToken ct)
     {
         _ctx.RefreshTile();
