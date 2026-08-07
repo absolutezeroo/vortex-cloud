@@ -6,5 +6,12 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Help;
 
 internal class GuideSessionOnDutyUpdateMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new GuideSessionOnDutyUpdateMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new GuideSessionOnDutyUpdateMessage
+        {
+            OnDuty = packet.PopBoolean(),
+            HandlesGuideRequests = packet.PopBoolean(),
+            HandlesHelperRequests = packet.PopBoolean(),
+            HandlesGuardianRequests = packet.PopBoolean(),
+        };
 }

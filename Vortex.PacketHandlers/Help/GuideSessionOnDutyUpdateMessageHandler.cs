@@ -1,11 +1,20 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Messages.Registry;
+using Vortex.Primitives.Help;
+using Vortex.Primitives.Help.Grains;
 using Vortex.Primitives.Messages.Incoming.Help;
+using Vortex.Primitives.Messages.Outgoing.Help;
+using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Help;
 
-public class GuideSessionOnDutyUpdateMessageHandler
+/// <summary>
+/// Puts a guide on or off duty. The reply is what the guide tool draws its whole header from, so it
+/// is sent on every change including the one that takes them off duty.
+/// </summary>
+public class GuideSessionOnDutyUpdateMessageHandler(IGrainFactory grainFactory)
     : IMessageHandler<GuideSessionOnDutyUpdateMessage>
 {
     public async ValueTask HandleAsync(
@@ -14,6 +23,33 @@ public class GuideSessionOnDutyUpdateMessageHandler
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        if (ctx.PlayerId <= 0)
+        {
+            return;
+        }
+
+        GuideDutySnapshot duty = await grainFactory
+            .GetGuideDirectoryGrain()
+            .SetDutyAsync(
+                ctx.PlayerId,
+                message.OnDuty,
+                message.HandlesGuideRequests,
+                message.HandlesHelperRequests,
+                message.HandlesGuardianRequests,
+                ct
+            )
+            .ConfigureAwait(false);
+
+        await ctx.SendComposerAsync(
+                new GuideOnDutyStatusMessageComposer
+                {
+                    OnDuty = duty.OnDuty,
+                    GuidesOnDuty = duty.GuidesOnDuty,
+                    HelpersOnDuty = duty.HelpersOnDuty,
+                    GuardiansOnDuty = duty.GuardiansOnDuty,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
 }

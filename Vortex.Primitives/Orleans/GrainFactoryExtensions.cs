@@ -2,6 +2,7 @@ using Orleans;
 using Vortex.Primitives.Catalog.Grains;
 using Vortex.Primitives.FriendList.Grains;
 using Vortex.Primitives.Groups.Grains;
+using Vortex.Primitives.Help.Grains;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Marketplace.Grains;
 using Vortex.Primitives.MysteryBox.Grains;
@@ -231,6 +232,9 @@ public static class GrainFactoryExtensions
 
     public static IPrizePoolManagerGrain GetPrizePoolManagerGrain(this IGrainFactory factory) =>
         factory.GetGrain<IPrizePoolManagerGrain>(SingletonGrainId.GLOBAL);
+
+    public static IGuideDirectoryGrain GetGuideDirectoryGrain(this IGrainFactory factory) =>
+        factory.GetGrain<IGuideDirectoryGrain>(SingletonGrainId.GLOBAL);
 
     public static IPlayerPrizeGrain GetPlayerPrizeGrain(
         this IGrainFactory factory,

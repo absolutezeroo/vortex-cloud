@@ -119,6 +119,12 @@ internal sealed class HelpMap : IRevisionMap
             )
         );
         builder.MapSerializer(
+            typeof(GuideOnDutyStatusMessageComposer),
+            new GuideOnDutyStatusMessageComposerSerializer(
+                MessageComposer.GuideOnDutyStatusMessageComposer
+            )
+        );
+        builder.MapSerializer(
             typeof(CallForHelpPendingCallsMessageComposer),
             new CallForHelpPendingCallsMessageComposerSerializer(
                 MessageComposer.CallForHelpPendingCallsMessageComposer
