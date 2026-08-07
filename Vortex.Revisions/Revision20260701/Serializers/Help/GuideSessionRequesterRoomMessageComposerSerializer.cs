@@ -9,8 +9,5 @@ internal class GuideSessionRequesterRoomMessageComposerSerializer(int header)
     protected override void Serialize(
         IServerPacket packet,
         GuideSessionRequesterRoomMessageComposer message
-    )
-    {
-        //
-    }
+    ) => packet.WriteInteger(message.RequesterRoomId);
 }

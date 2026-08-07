@@ -62,3 +62,10 @@ public sealed record PlayerTradingLockedEvent(
     int TargetPlayerId,
     DateTime? LockedUntil
 ) : IEvent;
+
+/// <summary>
+/// A player rated the guide session they had just been through. Arrives after the session is over —
+/// the client only shows the form once it has been told the session ended — so there is no session
+/// left to attach it to, and the rating stands on its own.
+/// </summary>
+public sealed record GuideSessionRatedEvent(int PlayerId, bool WasHelpful) : IEvent;

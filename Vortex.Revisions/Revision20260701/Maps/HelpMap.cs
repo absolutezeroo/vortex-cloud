@@ -155,6 +155,18 @@ internal sealed class HelpMap : IRevisionMap
             )
         );
         builder.MapSerializer(
+            typeof(GuideSessionRequesterRoomMessageComposer),
+            new GuideSessionRequesterRoomMessageComposerSerializer(
+                MessageComposer.GuideSessionRequesterRoomMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(GuideSessionInvitedToGuideRoomMessageComposer),
+            new GuideSessionInvitedToGuideRoomMessageComposerSerializer(
+                MessageComposer.GuideSessionInvitedToGuideRoomMessageComposer
+            )
+        );
+        builder.MapSerializer(
             typeof(GuideOnDutyStatusMessageComposer),
             new GuideOnDutyStatusMessageComposerSerializer(
                 MessageComposer.GuideOnDutyStatusMessageComposer
