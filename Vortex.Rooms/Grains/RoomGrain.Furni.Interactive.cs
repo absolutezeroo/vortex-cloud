@@ -15,6 +15,7 @@ using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
+using Vortex.Primitives.Rooms.Object.Furniture.Wall;
 using Vortex.Primitives.Rooms.Snapshots.Furniture;
 using Vortex.Rooms.Object.Logic.Furniture.Floor;
 using Vortex.Rooms.Object.Logic.Furniture.Wall;
@@ -233,6 +234,51 @@ public sealed partial class RoomGrain
         {
             MapModule.ComputeTile(idx);
         }
+    }
+
+    /// <summary>
+    /// The wall furniture a bin button may destroy. Stickies and photos are consumable by design —
+    /// nobody expects a note back — and <c>postit</c> is the same furniture under the name the
+    /// Arcturus dump left on two definitions, which no side registers as a logic.
+    /// </summary>
+    private static readonly string[] DisposableWallLogics =
+    [
+        "furniture_stickie",
+        "furniture_external_image_wallitem",
+        "postit",
+    ];
+
+    public async Task<bool> DeleteDisposableWallItemAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        CancellationToken ct
+    )
+    {
+        IRoomItem? item = await FindManipulableItemAsync(ctx, itemId).ConfigureAwait(true);
+
+        // Rights rather than ownership, like writing on the note in the first place: a room owner
+        // expects to be able to clear a sticky a visitor left on their wall. What keeps that safe is
+        // the family check below, not the actor check.
+        if (item is not IRoomWallItem)
+        {
+            return false;
+        }
+
+        if (Array.IndexOf(DisposableWallLogics, item.Definition.LogicName) < 0)
+        {
+            _logger.LogWarning(
+                "Player {PlayerId} tried to bin {ObjectId} (definition {DefinitionId}, logic '{Logic}') in room {RoomId}; only stickies and photos are disposable.",
+                ctx.PlayerId.Value,
+                itemId.Value,
+                item.Definition.Id,
+                item.Definition.LogicName,
+                _state.RoomId.Value
+            );
+
+            return false;
+        }
+
+        return await ConsumeItemAsync(ctx, item, ct).ConfigureAwait(true);
     }
 
     public async Task<bool> EnterOneWayDoorAsync(

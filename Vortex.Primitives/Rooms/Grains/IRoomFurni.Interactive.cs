@@ -63,6 +63,22 @@ public partial interface IRoomFurni
     );
 
     /// <summary>
+    /// Throws away a wall item that is meant to be thrown away — a sticky note or a photo.
+    /// </summary>
+    /// <remarks>
+    /// Deliberately not "delete any wall item the packet names". The client only offers this on its
+    /// sticky and photo widgets, but the packet is one integer and a crafted one would otherwise let
+    /// anybody with build rights destroy a visitor's wall furniture with no way to get it back.
+    /// Everything else is picked up, which returns it to its owner.
+    /// </remarks>
+    /// <returns>False if the item is absent, is not disposable, or the actor lacks room rights.</returns>
+    public Task<bool> DeleteDisposableWallItemAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        CancellationToken ct
+    );
+
+    /// <summary>
     /// Walks the actor through a one-way gate: onto the tile behind it, facing the way they came
     /// out. Does nothing unless they are standing on the gate's own tile and the tile behind it can
     /// be walked onto.
