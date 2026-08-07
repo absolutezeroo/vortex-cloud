@@ -11,6 +11,10 @@ internal class GuideSessionAttachedMessageComposerSerializer(int header)
         GuideSessionAttachedMessageComposer message
     )
     {
-        //
+        packet
+            .WriteBoolean(message.AsGuide)
+            .WriteInteger(message.HelpRequestType)
+            .WriteString(message.HelpRequestDescription)
+            .WriteInteger(message.RoleSpecificWaitTime);
     }
 }

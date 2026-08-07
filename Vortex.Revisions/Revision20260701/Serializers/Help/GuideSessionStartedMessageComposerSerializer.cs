@@ -11,6 +11,13 @@ internal class GuideSessionStartedMessageComposerSerializer(int header)
         GuideSessionStartedMessageComposer message
     )
     {
-        //
+        // Requester first, then guide -- both as id, name, figure.
+        packet
+            .WriteInteger(message.RequesterId)
+            .WriteString(message.RequesterName)
+            .WriteString(message.RequesterFigure)
+            .WriteInteger(message.GuideId)
+            .WriteString(message.GuideName)
+            .WriteString(message.GuideFigure);
     }
 }

@@ -9,8 +9,5 @@ internal class GuideSessionErrorMessageComposerSerializer(int header)
     protected override void Serialize(
         IServerPacket packet,
         GuideSessionErrorMessageComposer message
-    )
-    {
-        //
-    }
+    ) => packet.WriteInteger(message.ErrorCode);
 }

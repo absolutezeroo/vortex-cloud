@@ -22,9 +22,28 @@ namespace Vortex.Players.Grains;
 [KeepAlive]
 internal sealed class GuideDirectoryGrain : Grain, IGuideDirectoryGrain
 {
+    /// <summary>
+    /// The client's own entry points: <c>createHelpRequest(0)</c> and <c>(2)</c> are tour requests
+    /// and go to guides, <c>(1)</c> is a help request and goes to helpers. Chat reviews never come
+    /// through here — they have their own packet.
+    /// </summary>
+    private const int HelpRequestTypeHelper = 1;
+
+    /// <summary>The client subtracts one before switching, so this is its "rejected" branch.</summary>
+    private const int ErrorNoGuideAvailable = 1;
+
     private readonly Dictionary<int, DutyRoles> _onDuty = [];
+    private readonly Dictionary<int, PendingRequest> _pendingByRequester = [];
+    private readonly Dictionary<int, int> _requesterByOfferedGuide = [];
+    private readonly Dictionary<int, GuideSessionSnapshot> _sessionsByPlayer = [];
 
     private readonly record struct DutyRoles(bool Guide, bool Helper, bool Guardian);
+
+    private sealed record PendingRequest(int HelpRequestType, string Description)
+    {
+        /// <summary>Guides who have already turned this down, so it is never offered back to them.</summary>
+        public HashSet<int> Declined { get; } = [];
+    }
 
     public Task<GuideDutySnapshot> SetDutyAsync(
         int playerId,
@@ -68,6 +87,150 @@ internal sealed class GuideDirectoryGrain : Grain, IGuideDirectoryGrain
 
         return Task.CompletedTask;
     }
+
+    public Task<GuideRequestOutcome> CreateRequestAsync(
+        int requesterId,
+        int helpRequestType,
+        string description,
+        CancellationToken ct
+    )
+    {
+        if (requesterId <= 0)
+        {
+            return Task.FromResult(Failed(requesterId));
+        }
+
+        // One request per player. Without this a client that resends -- or a player who reopens the
+        // dialog -- puts a second copy of the same request in front of a second guide, and the two
+        // sessions then race to attach to one person.
+        if (
+            _pendingByRequester.ContainsKey(requesterId)
+            || _sessionsByPlayer.ContainsKey(requesterId)
+        )
+        {
+            return Task.FromResult(Failed(requesterId));
+        }
+
+        PendingRequest request = new(helpRequestType, description);
+
+        int guideId = FindAvailableGuide(request, requesterId);
+
+        if (guideId == 0)
+        {
+            return Task.FromResult(Failed(requesterId));
+        }
+
+        _pendingByRequester[requesterId] = request;
+        _requesterByOfferedGuide[guideId] = requesterId;
+
+        return Task.FromResult(Offered(requesterId, guideId, request));
+    }
+
+    public Task<GuideRequestOutcome> GuideDecidesAsync(
+        int guideId,
+        bool accepted,
+        CancellationToken ct
+    )
+    {
+        if (!_requesterByOfferedGuide.Remove(guideId, out int requesterId))
+        {
+            // Nothing was in front of them. A late answer to a request that has since gone
+            // elsewhere lands here, and must not disturb whoever holds it now.
+            return Task.FromResult(new GuideRequestOutcome());
+        }
+
+        if (!_pendingByRequester.TryGetValue(requesterId, out PendingRequest? request))
+        {
+            return Task.FromResult(new GuideRequestOutcome());
+        }
+
+        if (accepted)
+        {
+            _pendingByRequester.Remove(requesterId);
+
+            GuideSessionSnapshot session = new()
+            {
+                RequesterId = requesterId,
+                GuideId = guideId,
+                HelpRequestType = request.HelpRequestType,
+                Description = request.Description,
+            };
+
+            _sessionsByPlayer[requesterId] = session;
+            _sessionsByPlayer[guideId] = session;
+
+            return Task.FromResult(
+                new GuideRequestOutcome { RequesterId = requesterId, Session = session }
+            );
+        }
+
+        request.Declined.Add(guideId);
+
+        int nextGuideId = FindAvailableGuide(request, requesterId);
+
+        if (nextGuideId == 0)
+        {
+            _pendingByRequester.Remove(requesterId);
+
+            return Task.FromResult(Failed(requesterId));
+        }
+
+        _requesterByOfferedGuide[nextGuideId] = requesterId;
+
+        return Task.FromResult(Offered(requesterId, nextGuideId, request));
+    }
+
+    public Task<GuideSessionSnapshot?> GetSessionAsync(int playerId, CancellationToken ct) =>
+        Task.FromResult(_sessionsByPlayer.GetValueOrDefault(playerId));
+
+    /// <summary>
+    /// The first guide who covers this queue and is free to take it. Skips the requester -- nobody
+    /// guides themselves -- anyone already in a session, anyone already holding an offer, and
+    /// anyone who has turned this same request down.
+    /// </summary>
+    private int FindAvailableGuide(PendingRequest request, int requesterId)
+    {
+        bool wantsHelper = request.HelpRequestType == HelpRequestTypeHelper;
+
+        foreach ((int playerId, DutyRoles roles) in _onDuty)
+        {
+            if (playerId == requesterId || request.Declined.Contains(playerId))
+            {
+                continue;
+            }
+
+            if (
+                _sessionsByPlayer.ContainsKey(playerId)
+                || _requesterByOfferedGuide.ContainsKey(playerId)
+            )
+            {
+                continue;
+            }
+
+            if (wantsHelper ? roles.Helper : roles.Guide)
+            {
+                return playerId;
+            }
+        }
+
+        return 0;
+    }
+
+    private static GuideRequestOutcome Offered(
+        int requesterId,
+        int guideId,
+        PendingRequest request
+    ) =>
+        new()
+        {
+            RequesterId = requesterId,
+            OfferedGuideId = guideId,
+            HelpRequestType = request.HelpRequestType,
+            Description = request.Description,
+        };
+
+    private static GuideRequestOutcome Failed(int requesterId) =>
+        new() { RequesterId = requesterId, ErrorCode = ErrorNoGuideAvailable };
 
     /// <summary>
     /// The counts overlap on purpose: one person covering all three queues is counted in all three,

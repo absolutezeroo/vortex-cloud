@@ -37,4 +37,28 @@ public interface IGuideDirectoryGrain : IGrainWithStringKey
     /// who is no longer there to answer.
     /// </summary>
     Task ClearDutyAsync(int playerId, CancellationToken ct);
+
+    /// <summary>
+    /// Files a help request and offers it to one on-duty guide.
+    /// </summary>
+    /// <remarks>
+    /// One at a time, not broadcast to everyone on duty: whoever answered first would win a race
+    /// and the rest would be left dismissing a request already taken. The offer moves on when it is
+    /// declined.
+    /// </remarks>
+    Task<GuideRequestOutcome> CreateRequestAsync(
+        int requesterId,
+        int helpRequestType,
+        string description,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// A guide's answer to the request in front of them. Accepting pairs them; declining passes it
+    /// to the next guide who has not already seen it, and fails the request when there is none.
+    /// </summary>
+    Task<GuideRequestOutcome> GuideDecidesAsync(int guideId, bool accepted, CancellationToken ct);
+
+    /// <summary>The session this player is in, either side of it, or null.</summary>
+    Task<GuideSessionSnapshot?> GetSessionAsync(int playerId, CancellationToken ct);
 }

@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Help;
 
 internal class GuideSessionGuideDecidesMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new GuideSessionGuideDecidesMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new GuideSessionGuideDecidesMessage { Accepted = packet.PopBoolean() };
 }
