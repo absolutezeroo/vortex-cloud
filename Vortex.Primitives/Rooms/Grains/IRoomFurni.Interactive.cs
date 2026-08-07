@@ -63,6 +63,19 @@ public partial interface IRoomFurni
     );
 
     /// <summary>
+    /// Walks the actor through a one-way gate: onto the tile behind it, facing the way they came
+    /// out. Does nothing unless they are standing on the gate's own tile and the tile behind it can
+    /// be walked onto.
+    /// </summary>
+    /// <returns>False if the item is absent, is not a gate, the actor is not on it, or the far side
+    /// is blocked.</returns>
+    public Task<bool> EnterOneWayDoorAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        CancellationToken ct
+    );
+
+    /// <summary>
     /// Tints the room from a background toner. Room rights, not ownership: the toner colours
     /// everyone's view, so it belongs to whoever may build here.
     /// </summary>

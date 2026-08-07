@@ -8,7 +8,11 @@ using Vortex.Database.Entities.Furniture;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Furniture;
 using Vortex.Primitives.Furniture.StuffData;
+using Vortex.Primitives.Messages.Outgoing.Room.Engine;
+using Vortex.Primitives.Messages.Outgoing.Room.Furniture;
+using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
+using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Snapshots.Furniture;
@@ -229,6 +233,88 @@ public sealed partial class RoomGrain
         {
             MapModule.ComputeTile(idx);
         }
+    }
+
+    public async Task<bool> EnterOneWayDoorAsync(
+        ActionContext ctx,
+        RoomObjectId itemId,
+        CancellationToken ct
+    )
+    {
+        if (
+            !_state.ItemsById.TryGetValue(itemId, out IRoomItem? item)
+            || item is not IRoomFloorItem gate
+            || gate.Logic is not FurnitureOneWayDoorLogic
+            || !_state.AvatarsByPlayerId.TryGetValue(ctx.PlayerId, out RoomObjectId avatarObjectId)
+            || !_state.AvatarsByObjectId.TryGetValue(avatarObjectId, out IRoomAvatar? avatar)
+        )
+        {
+            return false;
+        }
+
+        // All four definitions are can_walk 0, so nobody can be standing on the gate itself: the
+        // player waits on the tile behind it and comes out in front. "Behind" and "in front" are the
+        // gate's own rotation, which is why turning one round reverses which way it lets people
+        // through — the whole point of a one-way gate.
+        (int dx, int dy) = gate.Rotation.ToDelta();
+
+        if (avatar.X != gate.X - dx || avatar.Y != gate.Y - dy)
+        {
+            return false;
+        }
+
+        int exitIdx = MapModule.ToIdx(gate.X + dx, gate.Y + dy);
+
+        if (!MapModule.InBounds(exitIdx))
+        {
+            return false;
+        }
+
+        RoomTileFlags exitFlags = _state.TileFlags[exitIdx];
+
+        if (
+            !exitFlags.Has(RoomTileFlags.Walkable)
+            || exitFlags.Has(RoomTileFlags.Disabled)
+            || exitFlags.Has(RoomTileFlags.AvatarOccupied)
+        )
+        {
+            return false;
+        }
+
+        // Open, move, close. The status is pushed rather than written through SetStateAsync on
+        // purpose: a gate is open only for the instant somebody is inside it, and persisting that
+        // would leave one stuck open across a reload if the server stopped mid-pass.
+        await SendComposerToRoomAsync(
+                new OneWayDoorStatusMessageComposer
+                {
+                    FurniId = itemId.Value,
+                    Status = FurnitureOneWayDoorLogic.StatusOpen,
+                }
+            )
+            .ConfigureAwait(true);
+
+        MapModule.RollAvatar(avatar, exitIdx, _state.TileHeights[exitIdx]);
+
+        Rotation facing = gate.Rotation;
+
+        avatar.SetBodyRotation(facing);
+        avatar.SetHeadRotation(facing);
+
+        await SendComposerToRoomAsync(
+                new UserUpdateMessageComposer { Avatars = [avatar.GetSnapshot()] }
+            )
+            .ConfigureAwait(true);
+
+        await SendComposerToRoomAsync(
+                new OneWayDoorStatusMessageComposer
+                {
+                    FurniId = itemId.Value,
+                    Status = FurnitureOneWayDoorLogic.StatusClosed,
+                }
+            )
+            .ConfigureAwait(true);
+
+        return true;
     }
 
     public async Task<bool> SetBackgroundColorAsync(

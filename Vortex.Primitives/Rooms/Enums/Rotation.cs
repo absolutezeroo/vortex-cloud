@@ -76,6 +76,23 @@ public static class RotationExtensions
     public static Rotation FromPoints(int fromX, int fromY, int toX, int toY) =>
         FromDelta(toX - fromX, toY - fromY);
 
+    /// <summary>
+    /// The one-tile step this rotation points at — the inverse of <see cref="FromDelta"/>, for the
+    /// furniture that has to reason about what is in front of it or behind it.
+    /// </summary>
+    public static (int Dx, int Dy) ToDelta(this Rotation rot) =>
+        rot switch
+        {
+            Rotation.North => (0, -1),
+            Rotation.NorthEast => (1, -1),
+            Rotation.East => (1, 0),
+            Rotation.SouthEast => (1, 1),
+            Rotation.South => (0, 1),
+            Rotation.SouthWest => (-1, 1),
+            Rotation.West => (-1, 0),
+            _ => (-1, -1),
+        };
+
     public static Rotation ToSitRotation(this Rotation rot) => (int)rot % 2 > 0 ? rot - 1 : rot;
 
     public static Rotation Rotate(this Rotation rot, int delta) =>
