@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -22,8 +23,10 @@ namespace Vortex.Players.Grains;
 /// somebody who is not there.
 /// </remarks>
 [KeepAlive]
-internal sealed class GuideDirectoryGrain : Grain, IGuideDirectoryGrain
+internal sealed class GuideDirectoryGrain(IGrainFactory grainFactory) : Grain, IGuideDirectoryGrain
 {
+    private readonly IGrainFactory _grainFactory = grainFactory;
+
     /// <summary>
     /// The client's own entry points: <c>createHelpRequest(0)</c> and <c>(2)</c> are tour requests
     /// and go to guides, <c>(1)</c> is a help request and goes to helpers. Chat reviews never come
@@ -33,6 +36,11 @@ internal sealed class GuideDirectoryGrain : Grain, IGuideDirectoryGrain
 
     /// <summary>The client subtracts one before switching, so this is its "rejected" branch.</summary>
     private const int ErrorNoGuideAvailable = 1;
+
+    /// <summary>How long a guardian has to answer an offer, and how long to vote once they have
+    /// opened the excerpt. Both match the countdowns their client is told to run.</summary>
+    private const long AcceptanceTimeoutMs = 30_000;
+    private const long VotingTimeoutMs = 120_000;
 
     private readonly Dictionary<int, DutyRoles> _onDuty = [];
     private readonly Dictionary<int, PendingRequest> _pendingByRequester = [];
@@ -49,13 +57,14 @@ internal sealed class GuideDirectoryGrain : Grain, IGuideDirectoryGrain
         public HashSet<int> Declined { get; } = [];
     }
 
-    private sealed record ChatReview(int ReporterId, string ChatRecord)
+    private sealed record ChatReview(int ReporterId, string ChatRecord, long OfferedAtMs)
     {
         /// <summary>Offered to them; they have not answered yet.</summary>
         public HashSet<int> Offered { get; } = [];
 
-        /// <summary>Took it, and owes a vote.</summary>
-        public HashSet<int> Accepted { get; } = [];
+        /// <summary>Took it, and owes a vote. The value is when they took it, so a guardian who
+        /// accepts late still gets their full time to read the excerpt.</summary>
+        public Dictionary<int, long> Accepted { get; } = [];
 
         public Dictionary<int, int> Votes { get; } = [];
     }
@@ -230,18 +239,20 @@ internal sealed class GuideDirectoryGrain : Grain, IGuideDirectoryGrain
         return Task.FromResult(partnerId);
     }
 
-    public Task<ChatReviewOutcome> CreateChatReviewAsync(
+    public async Task<ChatReviewOutcome> CreateChatReviewAsync(
         int reporterId,
         string chatRecord,
         CancellationToken ct
     )
     {
+        long nowMs = NowMs();
+
         if (reporterId <= 0 || _reviewsByReporter.ContainsKey(reporterId))
         {
-            return Task.FromResult(new ChatReviewOutcome());
+            return new ChatReviewOutcome();
         }
 
-        ChatReview review = new(reporterId, chatRecord);
+        ChatReview review = new(reporterId, chatRecord, nowMs);
 
         foreach ((int playerId, DutyRoles roles) in _onDuty)
         {
@@ -260,27 +271,29 @@ internal sealed class GuideDirectoryGrain : Grain, IGuideDirectoryGrain
 
         if (review.Offered.Count == 0)
         {
-            return Task.FromResult(new ChatReviewOutcome());
+            return new ChatReviewOutcome();
         }
 
         _reviewsByReporter[reporterId] = review;
 
-        return Task.FromResult(
+        return await SendAsync(
             new ChatReviewOutcome { OfferedTo = [.. review.Offered], ChatRecord = chatRecord }
         );
     }
 
-    public Task<ChatReviewOutcome> ChatReviewDecideAsync(
+    public async Task<ChatReviewOutcome> ChatReviewDecideAsync(
         int guardianId,
         bool accepted,
         CancellationToken ct
     )
     {
+        long nowMs = NowMs();
+
         if (
             !TryFindReview(guardianId, out ChatReview? review) || !review.Offered.Remove(guardianId)
         )
         {
-            return Task.FromResult(new ChatReviewOutcome());
+            return new ChatReviewOutcome();
         }
 
         if (!accepted)
@@ -288,21 +301,26 @@ internal sealed class GuideDirectoryGrain : Grain, IGuideDirectoryGrain
             _reporterByGuardian.Remove(guardianId);
 
             // Everyone else may already have voted, so a decline can be what completes it.
-            return Task.FromResult(TryResolve(review));
+            return await SendAsync(TryResolve(review));
         }
 
-        review.Accepted.Add(guardianId);
+        review.Accepted[guardianId] = nowMs;
 
-        return Task.FromResult(
+        // The excerpt is theirs only now that they have taken it.
+        await ChatReviewDispatch
+            .SendRecordAsync(_grainFactory, guardianId, review.ChatRecord)
+            .ConfigureAwait(true);
+
+        return await SendAsync(
             new ChatReviewOutcome
             {
-                Participants = [.. review.Accepted],
+                Participants = [.. review.Accepted.Keys],
                 ChatRecord = review.ChatRecord,
             }
         );
     }
 
-    public Task<ChatReviewOutcome> ChatReviewVoteAsync(
+    public async Task<ChatReviewOutcome> ChatReviewVoteAsync(
         int guardianId,
         int vote,
         CancellationToken ct
@@ -310,24 +328,24 @@ internal sealed class GuideDirectoryGrain : Grain, IGuideDirectoryGrain
     {
         if (
             !TryFindReview(guardianId, out ChatReview? review)
-            || !review.Accepted.Contains(guardianId)
+            || !review.Accepted.ContainsKey(guardianId)
         )
         {
-            return Task.FromResult(new ChatReviewOutcome());
+            return new ChatReviewOutcome();
         }
 
         // Last vote wins rather than first: the client lets a guardian change their mind before the
         // others finish, and rejecting the change would show them a verdict they no longer hold.
         review.Votes[guardianId] = vote;
 
-        return Task.FromResult(TryResolve(review));
+        return await SendAsync(TryResolve(review));
     }
 
-    public Task<ChatReviewOutcome> ChatReviewDetachAsync(int guardianId, CancellationToken ct)
+    public async Task<ChatReviewOutcome> ChatReviewDetachAsync(int guardianId, CancellationToken ct)
     {
         if (!TryFindReview(guardianId, out ChatReview? review))
         {
-            return Task.FromResult(new ChatReviewOutcome());
+            return new ChatReviewOutcome();
         }
 
         review.Offered.Remove(guardianId);
@@ -335,7 +353,7 @@ internal sealed class GuideDirectoryGrain : Grain, IGuideDirectoryGrain
         review.Votes.Remove(guardianId);
         _reporterByGuardian.Remove(guardianId);
 
-        return Task.FromResult(TryResolve(review));
+        return await SendAsync(TryResolve(review));
     }
 
     /// <summary>
@@ -355,14 +373,14 @@ internal sealed class GuideDirectoryGrain : Grain, IGuideDirectoryGrain
         {
             return new ChatReviewOutcome
             {
-                Participants = [.. review.Accepted],
+                Participants = [.. review.Accepted.Keys],
                 ChatRecord = review.ChatRecord,
             };
         }
 
         _reviewsByReporter.Remove(review.ReporterId);
 
-        foreach (int guardianId in review.Accepted)
+        foreach (int guardianId in review.Accepted.Keys)
         {
             _reporterByGuardian.Remove(guardianId);
         }
@@ -388,6 +406,100 @@ internal sealed class GuideDirectoryGrain : Grain, IGuideDirectoryGrain
                 VotesByGuardian = review.Votes.ToImmutableDictionary(),
             },
         };
+    }
+
+    /// <summary>
+    /// Gives up on guardians who stopped answering, then closes any review that no longer has
+    /// anybody to wait for.
+    /// </summary>
+    /// <remarks>
+    /// Takes the time rather than reading it, so a test can move the clock instead of sleeping. Two
+    /// separate deadlines: one to answer the offer at all, and a longer one to vote once the excerpt
+    /// has been opened -- a guardian who has taken it is reading, and deserves more than one who
+    /// never responded.
+    /// </remarks>
+    /// <summary>
+    /// Sends an outcome and hands it back, so every caller both acts and reports through one line.
+    /// </summary>
+    private async Task<ChatReviewOutcome> SendAsync(ChatReviewOutcome outcome)
+    {
+        await ChatReviewDispatch
+            .DeliverAsync(_grainFactory, outcome, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        return outcome;
+    }
+
+    internal List<ChatReviewOutcome> SweepChatReviewTimeouts(long nowMs)
+    {
+        List<ChatReviewOutcome> resolved = [];
+
+        foreach (ChatReview review in _reviewsByReporter.Values.ToList())
+        {
+            bool changed = false;
+
+            foreach (int guardianId in review.Offered.ToList())
+            {
+                if (nowMs - review.OfferedAtMs >= AcceptanceTimeoutMs)
+                {
+                    review.Offered.Remove(guardianId);
+                    _reporterByGuardian.Remove(guardianId);
+                    changed = true;
+                }
+            }
+
+            foreach ((int guardianId, long acceptedAtMs) in review.Accepted.ToList())
+            {
+                if (review.Votes.ContainsKey(guardianId) || nowMs - acceptedAtMs < VotingTimeoutMs)
+                {
+                    continue;
+                }
+
+                // Silence is not a vote. They are dropped rather than counted, so a guardian who
+                // wandered off cannot tip a verdict by doing nothing.
+                review.Accepted.Remove(guardianId);
+                _reporterByGuardian.Remove(guardianId);
+                changed = true;
+            }
+
+            if (!changed)
+            {
+                continue;
+            }
+
+            ChatReviewOutcome outcome = TryResolve(review);
+
+            if (!outcome.Nothing)
+            {
+                resolved.Add(outcome);
+            }
+        }
+
+        return resolved;
+    }
+
+    private static long NowMs() => Environment.TickCount64;
+
+    public override Task OnActivateAsync(CancellationToken ct)
+    {
+        // Slow on purpose. Nothing here is time-critical -- the deadlines are tens of seconds -- and
+        // a hotel with no review open must not pay for a tick that finds nothing.
+        this.RegisterGrainTimer<object?>(
+            async (_, timerCt) =>
+            {
+                foreach (ChatReviewOutcome outcome in SweepChatReviewTimeouts(NowMs()))
+                {
+                    await ChatReviewDispatch
+                        .DeliverAsync(_grainFactory, outcome, timerCt)
+                        .ConfigureAwait(true);
+                }
+            },
+            null,
+            TimeSpan.FromSeconds(5),
+            TimeSpan.FromSeconds(5)
+        );
+
+        return base.OnActivateAsync(ct);
     }
 
     private bool TryFindReview(int guardianId, out ChatReview review)

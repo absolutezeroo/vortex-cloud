@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Orleans;
 using Vortex.Players.Grains;
 using Vortex.Primitives.Help;
 using Vortex.Tests.Support;
@@ -15,8 +16,7 @@ namespace Vortex.Players.Tests.Help;
 /// </summary>
 public sealed class GuideDutyRosterTests
 {
-    private static GuideDirectoryGrain NewRoster() =>
-        GrainActivationContext.CreateWithIntegerKey<GuideDirectoryGrain>(0);
+    private static GuideDirectoryGrain NewRoster() => GuideRosterHarness.New();
 
     [Fact]
     public async Task OneGuideCoveringEveryQueueIsCountedInEveryQueue()

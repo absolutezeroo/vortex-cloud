@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Orleans;
 using Vortex.Players.Grains;
 using Vortex.Primitives.Help;
 using Vortex.Tests.Support;
@@ -22,8 +23,7 @@ public sealed class GuideMatchingTests
     private const int TourRequest = 0;
     private const int HelpRequest = 1;
 
-    private static GuideDirectoryGrain NewRoster() =>
-        GrainActivationContext.CreateWithIntegerKey<GuideDirectoryGrain>(0);
+    private static GuideDirectoryGrain NewRoster() => GuideRosterHarness.New();
 
     private static Task OnDutyAsync(
         GuideDirectoryGrain roster,

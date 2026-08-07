@@ -6,15 +6,21 @@ using Vortex.Primitives.Help;
 using Vortex.Primitives.Messages.Outgoing.Help;
 using Vortex.Primitives.Orleans;
 
-namespace Vortex.PacketHandlers.Help;
+namespace Vortex.Players.Grains;
 
 /// <summary>
 /// Turns a chat-review outcome into packets for everyone it touches.
 /// </summary>
 /// <remarks>
-/// Every one of the four packets goes to somebody other than the sender, and the results packet is
-/// composed once per recipient rather than once for the group: it carries the reader's own vote
-/// beside the verdict, so there is no single packet that is correct for two people.
+/// Every one of the four packets goes to somebody other than whoever caused it, and the results
+/// packet is composed once per recipient rather than once for the group: it carries the reader's own
+/// vote beside the verdict, so there is no single packet correct for two people.
+/// <para>
+/// It lives beside the grain rather than in the handlers because the grain is not the only caller
+/// any more -- a review can also end because nobody answered, and that has no packet and no handler
+/// behind it. Two senders for one set of outcomes is how the timeout path and the click path drift
+/// apart.
+/// </para>
 /// </remarks>
 internal static class ChatReviewDispatch
 {

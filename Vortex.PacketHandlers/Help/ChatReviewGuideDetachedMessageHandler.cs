@@ -2,7 +2,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Help;
 using Vortex.Primitives.Help.Grains;
 using Vortex.Primitives.Messages.Incoming.Help;
 using Vortex.Primitives.Orleans;
@@ -27,11 +26,9 @@ public class ChatReviewGuideDetachedMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        ChatReviewOutcome outcome = await grainFactory
+        await grainFactory
             .GetGuideDirectoryGrain()
             .ChatReviewDetachAsync(ctx.PlayerId, ct)
             .ConfigureAwait(false);
-
-        await ChatReviewDispatch.DeliverAsync(grainFactory, outcome, ct).ConfigureAwait(false);
     }
 }

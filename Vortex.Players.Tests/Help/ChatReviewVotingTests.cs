@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Orleans;
 using Vortex.Players.Grains;
 using Vortex.Primitives.Help;
 using Vortex.Tests.Support;
@@ -24,8 +25,7 @@ public sealed class ChatReviewVotingTests
     private const int VoteAcceptable = 0;
     private const int VoteAbusive = 1;
 
-    private static GuideDirectoryGrain NewRoster() =>
-        GrainActivationContext.CreateWithIntegerKey<GuideDirectoryGrain>(0);
+    private static GuideDirectoryGrain NewRoster() => GuideRosterHarness.New();
 
     private static Task GuardianOnDutyAsync(GuideDirectoryGrain roster, int playerId) =>
         roster.SetDutyAsync(playerId, true, false, false, true, CancellationToken.None);
