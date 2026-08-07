@@ -52,4 +52,22 @@ public interface ICfhTicketService
     Task<ImmutableArray<CfhIssueQueueEntrySnapshot>> GetOpenQueueAsync(
         CancellationToken ct = default
     );
+
+    /// <summary>
+    /// The reports this player filed that are still open, newest first — their own view, not the
+    /// staff queue. The client asks for these before it will let them file another, so this is what
+    /// stops one upset player putting the same complaint in the queue six times.
+    /// </summary>
+    Task<ImmutableArray<CfhPendingCallSnapshot>> GetPendingForReporterAsync(
+        int reporterPlayerId,
+        CancellationToken ct = default
+    );
+
+    /// <summary>
+    /// Withdraws this player's own still-open reports, which is what their client offers when it
+    /// shows them the pending ones. Only their own, and only ones no moderator has picked up:
+    /// a report already in a moderator's hands is that moderator's to close.
+    /// </summary>
+    /// <returns>How many were withdrawn.</returns>
+    Task<int> DeletePendingForReporterAsync(int reporterPlayerId, CancellationToken ct = default);
 }

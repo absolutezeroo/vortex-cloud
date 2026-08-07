@@ -118,5 +118,17 @@ internal sealed class HelpMap : IRevisionMap
                 MessageComposer.IssueCloseNotificationMessageComposer
             )
         );
+        builder.MapSerializer(
+            typeof(CallForHelpPendingCallsMessageComposer),
+            new CallForHelpPendingCallsMessageComposerSerializer(
+                MessageComposer.CallForHelpPendingCallsMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(CallForHelpPendingCallsDeletedMessageComposer),
+            new CallForHelpPendingCallsDeletedMessageComposerSerializer(
+                MessageComposer.CallForHelpPendingCallsDeletedMessageComposer
+            )
+        );
     }
 }

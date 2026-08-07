@@ -1,4 +1,5 @@
 using Vortex.Primitives.Messages.Outgoing.Help;
+using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Help;
@@ -11,6 +12,11 @@ internal class CallForHelpPendingCallsMessageComposerSerializer(int header)
         CallForHelpPendingCallsMessageComposer message
     )
     {
-        //
+        packet.WriteInteger(message.Calls.Length);
+
+        foreach (CfhPendingCallSnapshot call in message.Calls)
+        {
+            packet.WriteString(call.CallId).WriteString(call.TimeStamp).WriteString(call.Message);
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -337,5 +338,89 @@ internal sealed class CfhTicketService(IDbContextFactory<VortexDbContext> dbCont
                 r.Message
             ))
             .ToImmutableArray();
+    }
+
+    public async Task<ImmutableArray<CfhPendingCallSnapshot>> GetPendingForReporterAsync(
+        int reporterPlayerId,
+        CancellationToken ct = default
+    )
+    {
+        if (reporterPlayerId <= 0)
+        {
+            return [];
+        }
+
+        await using VortexDbContext dbCtx = await _dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        var rows = await dbCtx
+            .CfhTickets.AsNoTracking()
+            .Where(t =>
+                t.ReporterPlayerEntityId == reporterPlayerId
+                && t.State != CfhTicketState.Closed
+                && t.DeletedAt == null
+            )
+            .OrderByDescending(t => t.CreatedAt)
+            .Select(t => new
+            {
+                t.Id,
+                t.CreatedAt,
+                t.Message,
+            })
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+
+        return rows.Select(r => new CfhPendingCallSnapshot
+            {
+                CallId = r.Id.ToString(CultureInfo.InvariantCulture),
+                // Round-trip format: the client only ever prints this back, and a culture-dependent
+                // one would read differently depending on the server's locale.
+                TimeStamp = r.CreatedAt.ToString("s", CultureInfo.InvariantCulture),
+                Message = r.Message ?? string.Empty,
+            })
+            .ToImmutableArray();
+    }
+
+    public async Task<int> DeletePendingForReporterAsync(
+        int reporterPlayerId,
+        CancellationToken ct = default
+    )
+    {
+        if (reporterPlayerId <= 0)
+        {
+            return 0;
+        }
+
+        await using VortexDbContext dbCtx = await _dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        List<CfhTicketEntity> pending = await dbCtx
+            .CfhTickets.Where(t =>
+                t.ReporterPlayerEntityId == reporterPlayerId
+                && t.State == CfhTicketState.Open
+                && t.DeletedAt == null
+            )
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+
+        if (pending.Count == 0)
+        {
+            return 0;
+        }
+
+        System.DateTime now = System.DateTime.UtcNow;
+
+        foreach (CfhTicketEntity ticket in pending)
+        {
+            // Soft-deleted rather than closed: a withdrawn report is not a moderation outcome, and
+            // counting it as one would skew every "tickets handled" figure the dashboard draws.
+            ticket.DeletedAt = now;
+        }
+
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        return pending.Count;
     }
 }

@@ -697,7 +697,8 @@ internal static class MessageComposer
     public const int VoucherRedeemErrorMessageComposer = 133;
     public const int VoucherRedeemOkMessageComposer = 1771;
     public const int CallForHelpDisabledNotifyMessageComposer = 421; // AS3-verified (ghost fix): onCallForHelpDisabledNotify @ HabboHelp
-    public const int CallForHelpPendingCallsMessageComposer = 678;
+    public const int CallForHelpPendingCallsMessageComposer = 2987; // AS3-verified 2026-08-07: _SafeStr_4546[2987] -> the event class HabboHelp binds to onPendingCallsForHelp. Was 678, which the client maps to a class referenced nowhere else in the SWF -- so the packet was going out on a header nothing listens to
+    public const int CallForHelpPendingCallsDeletedMessageComposer = 2440; // AS3-verified 2026-08-07: _SafeStr_4546[2440] -> onPendingCallsForHelpDeleted @ HabboHelp. Had no header at all; the composer existed and could never be registered
     public const int CallForHelpReplyMessageComposer = 2807; // AS3-verified (ghost fix): onCallForHelpReply @ CallForHelpManager
     public const int CallForHelpResultMessageComposer = 2631; // AS3-verified (name-only): onCallForHelpResult @ CallForHelpManager
     public const int ChatReviewSessionDetachedMessageComposer = 645; // AS3-verified (ghost fix): onChatReviewSessionDetached @ GuideSessionController
