@@ -1025,14 +1025,20 @@ internal static class MessageComposer
     public const int YouAreNotControllerMessageComposer = 456;
     public const int YouAreOwnerMessageComposer = 1986;
 
-    // Avatar-effect inventory acks. Activated/Added/Expired/AvatarEffects are confirmed against the
-    // WIN63-202607011411 registry (_SafeCls_2046.as) and the ported client parsers. The room-apply
-    // broadcast now lives on 2624 (AvatarEffectMessageComposer above), so 3629 is free — the Selected
-    // ack stays on 1333 (the client currently registers no handler for it, so it is harmless either way).
+    // Avatar-effect inventory acks, all five confirmed against the WIN63-202607011411 registry
+    // (_SafeCls_2046.as).
+    //
+    // Selected was 1333 on the reasoning that "the client registers no handler for it, so it is
+    // harmless either way". It does register one: AvatarEditorMessageHandler binds _SafeCls_3136 to
+    // onAvatarEffectSelected, and the registry puts _SafeCls_3136 at 3629. The four others are bound
+    // in the inventory handler, which is where that search stopped — the odd one out lives with the
+    // avatar editor because selecting an effect is an editor action, not an inventory one. 1333
+    // appears nowhere in the registry, so the ack PlayerEffectGrain sends on every effect change was
+    // going out on a header nothing listens to.
     public const int AvatarEffectActivatedMessageComposer = 3814;
     public const int AvatarEffectAddedMessageComposer = 1577;
     public const int AvatarEffectExpiredMessageComposer = 2236;
-    public const int AvatarEffectSelectedMessageComposer = 1333;
+    public const int AvatarEffectSelectedMessageComposer = 3629; // AS3-verified 2026-08-08: _SafeStr_4546[3629] -> _SafeCls_3136, payload one int (the effect type), which is what the composer already writes
     public const int AvatarEffectsMessageComposer = 2405;
 
     public const int TalentLevelUpMessageComposer = 1564; // AS3-verified (ghost fix): onTalentLevelUp @ TalentLevelUpController
