@@ -23,6 +23,7 @@ public interface IRoomGrain
         IRoomMap,
         IRoomFurni,
         IRoomPets,
+        IRoomBots,
         IRoomSecurity,
         IRoomSettings,
         IRoomModeration,

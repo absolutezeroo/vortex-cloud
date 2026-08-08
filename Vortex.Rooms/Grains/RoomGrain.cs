@@ -80,6 +80,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
     public readonly RoomPathingSystem PathingSystem;
     public readonly RoomPetSystem PetSystem;
+    public readonly RoomBotSystem BotSystem;
     public readonly RoomRollerSystem RollerSystem;
     public readonly RoomSecurityModule SecurityModule;
     public readonly RoomWiredSystem WiredSystem;
@@ -140,6 +141,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
         AvatarTickSystem = new RoomAvatarTickSystem(this);
         PetSystem = new RoomPetSystem(this);
+        BotSystem = new RoomBotSystem(this);
         RollerSystem = new RoomRollerSystem(this);
         WiredSystem = new RoomWiredSystem(this);
         ChatSystem = new RoomChatSystem(this);

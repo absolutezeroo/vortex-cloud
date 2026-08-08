@@ -1,6 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Object;
 
 namespace Vortex.Primitives.Bots;
 
@@ -25,4 +26,17 @@ public sealed record BotSnapshot
 
     [Id(5)]
     public required AvatarGenderType Gender { get; init; }
+
+    /// <summary>Zero while the bot is in the owner's hand; only meaningful once placed.</summary>
+    [Id(6)]
+    public int X { get; init; }
+
+    [Id(7)]
+    public int Y { get; init; }
+
+    [Id(8)]
+    public Altitude Z { get; init; }
+
+    [Id(9)]
+    public Rotation Rotation { get; init; }
 }

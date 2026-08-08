@@ -44,6 +44,9 @@ public static class GrainFactoryExtensions
     public static IRoomPets GetRoomPets(this IGrainFactory factory, RoomId roomId) =>
         factory.GetGrain<IRoomPets>((long)roomId.Value);
 
+    public static IRoomBots GetRoomBots(this IGrainFactory factory, RoomId roomId) =>
+        factory.GetGrain<IRoomBots>((long)roomId.Value);
+
     public static IRoomSecurity GetRoomSecurity(this IGrainFactory factory, RoomId roomId) =>
         factory.GetGrain<IRoomSecurity>((long)roomId.Value);
 

@@ -1,0 +1,26 @@
+using System.Collections.Immutable;
+using System.Threading;
+using System.Threading.Tasks;
+using Vortex.Primitives.Action;
+using Vortex.Primitives.Bots;
+using Vortex.Primitives.Rooms.Snapshots.Avatars;
+
+namespace Vortex.Rooms.Grains;
+
+public sealed partial class RoomGrain
+{
+    public Task<BotSnapshot?> PlaceBotAsync(
+        ActionContext ctx,
+        int botId,
+        int x,
+        int y,
+        CancellationToken ct
+    ) => BotSystem.PlaceBotAsync(ctx, botId, x, y, ct);
+
+    public Task<bool> RemoveBotAsync(ActionContext ctx, int botId, CancellationToken ct) =>
+        BotSystem.RemoveBotAsync(ctx, botId, ct);
+
+    public Task<ImmutableArray<RoomAvatarSnapshot>> GetPlacedBotAvatarSnapshotsAsync(
+        CancellationToken ct
+    ) => BotSystem.GetPlacedBotAvatarSnapshotsAsync(ct);
+}

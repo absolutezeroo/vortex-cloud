@@ -429,7 +429,10 @@ public sealed partial class RoomGrain
         ImmutableArray<RoomAvatarSnapshot> pets = await PetSystem
             .GetPlacedPetAvatarSnapshotsAsync(ct)
             .ConfigureAwait(true);
+        ImmutableArray<RoomAvatarSnapshot> bots = await BotSystem
+            .GetPlacedBotAvatarSnapshotsAsync(ct)
+            .ConfigureAwait(true);
 
-        return avatars.Concat(pets).ToImmutableArray();
+        return [.. avatars, .. pets, .. bots];
     }
 }

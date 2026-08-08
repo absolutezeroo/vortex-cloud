@@ -1,11 +1,13 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Messages.Incoming.Room.Engine;
+using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Room.Engine;
 
-public class PlaceBotMessageHandler : IMessageHandler<PlaceBotMessage>
+public class PlaceBotMessageHandler(IGrainFactory grainFactory) : IMessageHandler<PlaceBotMessage>
 {
     public async ValueTask HandleAsync(
         PlaceBotMessage message,
@@ -13,6 +15,14 @@ public class PlaceBotMessageHandler : IMessageHandler<PlaceBotMessage>
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        if (ctx.PlayerId <= 0 || ctx.RoomId <= 0 || message.BotId <= 0)
+        {
+            return;
+        }
+
+        await grainFactory
+            .GetRoomBots(ctx.RoomId)
+            .PlaceBotAsync(ctx.AsActionContext(), message.BotId, message.X, message.Y, ct)
+            .ConfigureAwait(false);
     }
 }
