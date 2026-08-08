@@ -536,6 +536,27 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         return mod == 0 ? now : now + (offset - mod);
     }
 
+    /// <summary>
+    /// The first tick boundary strictly after <paramref name="now"/>, on the same epoch grid a tick
+    /// clock walks.
+    /// <para>
+    /// Every tick system used to catch up by stepping — <c>while (now >= next) next += tick</c> —
+    /// which is exact and cheap for the millisecond drift a running room sees. It is neither when
+    /// the gap is large: a room that was paused, a host that slept, a clock that jumped, and the
+    /// step count becomes millions, spent inside the grain's single turn with the whole room
+    /// waiting behind it. Arriving at the same answer in one step removes that cliff without
+    /// changing where the boundaries fall.
+    /// </para>
+    /// </summary>
+    internal long AdvanceBoundaryPast(long now, int tickMs)
+    {
+        long aligned = AlignToNextBoundary(now, tickMs);
+
+        // AlignToNextBoundary answers "now" when now is itself a boundary; a clock has to move past
+        // the boundary it just fired, or the same tick runs again.
+        return aligned == now ? now + tickMs : aligned;
+    }
+
     private async Task HydrateModerationStateAsync(CancellationToken ct)
     {
         IReadOnlyList<RoomMuteRecord> activeMutes = await _moderationStore.GetActiveMutesAsync(

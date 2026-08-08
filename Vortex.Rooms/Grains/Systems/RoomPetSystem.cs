@@ -124,10 +124,10 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
             return;
         }
 
-        while (now >= _roomGrain._state.NextPetBoundaryMs)
-        {
-            _roomGrain._state.NextPetBoundaryMs += _roomGrain._roomConfig.Pet.TickMs;
-        }
+        _roomGrain._state.NextPetBoundaryMs = _roomGrain.AdvanceBoundaryPast(
+            now,
+            _roomGrain._roomConfig.Pet.TickMs
+        );
 
         await EnsurePetsLoadedAsync(ct).ConfigureAwait(false);
 

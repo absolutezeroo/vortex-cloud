@@ -32,10 +32,10 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
             return;
         }
 
-        while (now >= _roomGrain._state.NextAvatarBoundaryMs)
-        {
-            _roomGrain._state.NextAvatarBoundaryMs += _roomGrain._roomConfig.AvatarTickMs;
-        }
+        _roomGrain._state.NextAvatarBoundaryMs = _roomGrain.AdvanceBoundaryPast(
+            now,
+            _roomGrain._roomConfig.AvatarTickMs
+        );
 
         _dirtySnapshots.Clear();
 

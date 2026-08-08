@@ -38,11 +38,7 @@ public sealed partial class RoomBotSystem
             return;
         }
 
-        // Snap forward rather than stepping. Catching up one tick at a time is fine for the
-        // millisecond drift this normally sees, but a room that was paused — or a clock that jumped
-        // — turns that into a loop of millions of iterations while holding the grain's only turn.
-        _roomGrain._state.NextBotBoundaryMs =
-            now - ((now - _roomGrain._state.NextBotBoundaryMs) % BotTickMs) + BotTickMs;
+        _roomGrain._state.NextBotBoundaryMs = _roomGrain.AdvanceBoundaryPast(now, BotTickMs);
 
         await EnsureBotsLoadedAsync(ct).ConfigureAwait(true);
 

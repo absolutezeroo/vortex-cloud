@@ -137,10 +137,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             return;
         }
 
-        while (now >= _roomGrain._state.NextWiredBoundaryMs)
-        {
-            _roomGrain._state.NextWiredBoundaryMs += _tickMs;
-        }
+        _roomGrain._state.NextWiredBoundaryMs = _roomGrain.AdvanceBoundaryPast(now, _tickMs);
 
         _currentTickMs = now;
 

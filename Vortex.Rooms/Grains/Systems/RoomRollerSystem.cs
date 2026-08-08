@@ -39,10 +39,10 @@ public sealed class RoomRollerSystem(RoomGrain roomGrain) : IRoomEventListener
             return Task.CompletedTask;
         }
 
-        while (now >= _roomGrain._state.NextRollerBoundaryMs)
-        {
-            _roomGrain._state.NextRollerBoundaryMs += _roomGrain._roomConfig.RollerTickMs;
-        }
+        _roomGrain._state.NextRollerBoundaryMs = _roomGrain.AdvanceBoundaryPast(
+            now,
+            _roomGrain._roomConfig.RollerTickMs
+        );
 
         ComputeRollers();
 
