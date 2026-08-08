@@ -15,6 +15,7 @@ using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Events.Player;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
+using Vortex.Rooms.Object.Avatars.Player;
 
 namespace Vortex.Rooms.Grains.Systems;
 
@@ -23,10 +24,10 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
     private readonly RoomGrain _roomGrain = roomGrain;
     private static readonly int MaxChatMessageLength = 100;
 
-    // Per-player last-accepted-line timestamp, for the room's configured flood sensitivity
-    // (SEC-03). Lives only for this room activation; bounded by how many distinct players have
-    // spoken in the room since it last activated.
-    private readonly Dictionary<PlayerId, long> _lastChatAtMs = new();
+    // Per-player burst state for the room's configured flood sensitivity (SEC-03): when the player
+    // last spoke, and how many lines they have already spent out of their allowance. Lives only for
+    // this room activation; bounded by how many distinct players have spoken since it activated.
+    private readonly Dictionary<PlayerId, (long LastMs, int Burst)> _floodStateByPlayer = new();
 
     public async Task SendChatFromPlayerAsync(
         PlayerId playerId,
@@ -66,7 +67,7 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
             return;
         }
 
-        if (IsFloodGated(playerId, out int floodSecondsRemaining))
+        if (IsFloodGated(playerId, avatar, out int floodSecondsRemaining))
         {
             await _roomGrain
                 ._grainFactory.GetPlayerPresenceGrain(playerId)
@@ -295,8 +296,26 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
         return false;
     }
 
-    private bool IsFloodGated(PlayerId playerId, out int secondsRemaining)
+    /// <summary>
+    /// Whether this line should be refused as flooding.
+    /// <para>
+    /// The allowance is what makes this flood control rather than a rate limit. Refusing every line
+    /// that arrives inside the interval blocks the second half of any sentence somebody types
+    /// quickly — the player sees the chat swallow their words, not a protection working.
+    /// </para>
+    /// </summary>
+    internal bool IsFloodGated(PlayerId playerId, IRoomAvatar avatar, out int secondsRemaining)
     {
+        secondsRemaining = 0;
+
+        // Staff are exempt. Someone answering a room full of people, or pasting a rule, is doing
+        // the job the flood limit exists to protect — and being gated mid-sentence while moderating
+        // is worse than the flood.
+        if (avatar is RoomPlayerAvatar { IsModerator: true })
+        {
+            return false;
+        }
+
         int[] intervals = _roomGrain._roomConfig.ChatFloodIntervalSeconds;
         int sensitivityIndex = (int)_roomGrain._state.RoomSnapshot.ChatSettings.FloodSensitivity;
         int intervalSeconds =
@@ -307,20 +326,41 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
 
         long nowMs = Environment.TickCount64;
 
-        if (intervalSeconds > 0 && _lastChatAtMs.TryGetValue(playerId, out long lastMs))
+        if (intervalSeconds <= 0)
         {
-            long requiredMs = intervalSeconds * 1000L;
-            long elapsedMs = nowMs - lastMs;
-
-            if (elapsedMs < requiredMs)
-            {
-                secondsRemaining = (int)Math.Ceiling((requiredMs - elapsedMs) / 1000.0);
-                return true;
-            }
+            return false;
         }
 
-        _lastChatAtMs[playerId] = nowMs;
-        secondsRemaining = 0;
-        return false;
+        int allowance = Math.Max(1, _roomGrain._roomConfig.ChatFloodAllowance);
+        long requiredMs = intervalSeconds * 1000L;
+
+        if (!_floodStateByPlayer.TryGetValue(playerId, out (long LastMs, int Burst) state))
+        {
+            _floodStateByPlayer[playerId] = (nowMs, 1);
+            return false;
+        }
+
+        long elapsedMs = nowMs - state.LastMs;
+
+        // A gap at or beyond the interval means they paused; the burst starts over rather than
+        // decaying, so a player is never carrying a penalty from a conversation minutes ago.
+        if (elapsedMs >= requiredMs)
+        {
+            _floodStateByPlayer[playerId] = (nowMs, 1);
+            return false;
+        }
+
+        if (state.Burst < allowance)
+        {
+            // Inside the window but still within budget. The timestamp deliberately does not move:
+            // the window is measured from the first line of the burst, otherwise a player typing
+            // just under the interval forever would never exhaust anything.
+            _floodStateByPlayer[playerId] = (state.LastMs, state.Burst + 1);
+            return false;
+        }
+
+        secondsRemaining = (int)Math.Ceiling((requiredMs - elapsedMs) / 1000.0);
+
+        return true;
     }
 }

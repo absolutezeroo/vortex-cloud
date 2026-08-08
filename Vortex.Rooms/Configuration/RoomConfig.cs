@@ -71,4 +71,12 @@ public class RoomConfig : IWiredLimits
     /// its slot sends <c>FloodControlMessageComposer</c> with the remaining wait instead of being
     /// spoken. These are starting defaults, not a tuned game-balance decision - adjust freely.</summary>
     public int[] ChatFloodIntervalSeconds { get; init; } = [4, 2, 1];
+
+    /// <summary>
+    /// How many lines a player may send faster than <see cref="ChatFloodIntervalSeconds"/> before
+    /// the room starts refusing them. Habbo lets a burst through and only then gates: a limit of
+    /// one — which is what no allowance at all amounts to — blocks the second line of any sentence
+    /// somebody types quickly, and reads as the chat being broken rather than protected.
+    /// </summary>
+    public int ChatFloodAllowance { get; init; } = 5;
 }
