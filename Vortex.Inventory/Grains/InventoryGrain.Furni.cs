@@ -15,6 +15,7 @@ using Vortex.Furniture;
 using Vortex.Inventory.Furniture;
 using Vortex.Logging;
 using Vortex.Primitives;
+using Vortex.Primitives.Bots;
 using Vortex.Primitives.Catalog.Snapshots;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
@@ -24,6 +25,7 @@ using Vortex.Primitives.Groups;
 using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Inventory.Furniture;
 using Vortex.Primitives.Inventory.Snapshots;
+using Vortex.Primitives.Messages.Outgoing.Inventory.Bots;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Pets;
 using Vortex.Primitives.Pets.Snapshots;
@@ -139,6 +141,7 @@ public sealed partial class InventoryGrain
         List<FurnitureEntity> furniEntities = new();
         List<string> badgeCodes = new();
         List<PetCreateRequest> petRequests = new();
+        List<BotCreateRequest> botRequests = new();
         List<(int EffectId, int SubType, int Duration)> effectGrants = new();
 
         // Guild furni is bought from the guild pages with the guild id in extraParam; the badge and
@@ -217,6 +220,41 @@ public sealed partial class InventoryGrain
                         effectGrants.Add((effectId, subType, duration));
                     }
                 }
+
+                continue;
+            }
+
+            if (product.ProductType is ProductType.Robot)
+            {
+                // The look is the product's, the name is the buyer's — the same split as a pet, so
+                // a hotel decides what its bots look like and the player only names one.
+                string[] botParts = (product.ExtraParam ?? string.Empty).Split(';');
+                string figure = botParts.Length > 0 ? botParts[0].Trim() : string.Empty;
+
+                if (string.IsNullOrWhiteSpace(figure))
+                {
+                    _logger.LogWarning(
+                        "Catalog product {ProductId} is a Robot but carries no figure in its extra param; skipping the grant.",
+                        product.Id
+                    );
+
+                    continue;
+                }
+
+                string typedName = extraParam.Split('\n')[0].Trim();
+
+                botRequests.Add(
+                    new BotCreateRequest
+                    {
+                        Name = string.IsNullOrWhiteSpace(typedName) ? "Bot" : typedName,
+                        Figure = figure,
+                        Gender =
+                            botParts.Length > 1
+                            && botParts[1].Trim().Equals("f", StringComparison.OrdinalIgnoreCase)
+                                ? AvatarGenderType.Female
+                                : AvatarGenderType.Male,
+                    }
+                );
 
                 continue;
             }
@@ -352,6 +390,30 @@ public sealed partial class InventoryGrain
                 PetSnapshot pet = await CreatePetAsync(req, ct).ConfigureAwait(true);
 
                 await petPresence.OnPetAddedToInventoryAsync(pet, ct).ConfigureAwait(true);
+            }
+        }
+
+        if (botRequests.Count > 0)
+        {
+            IPlayerPresenceGrain botPresence = _grainFactory.GetPlayerPresenceGrain(
+                this.GetPrimaryKeyLong()
+            );
+
+            foreach (BotCreateRequest req in botRequests)
+            {
+                BotSnapshot bot = await CreateBotAsync(req, ct).ConfigureAwait(true);
+
+                // Opens the inventory on top of adding the row: the player just bought this, so
+                // showing them where it went is the point.
+                await botPresence
+                    .SendComposerAsync(
+                        new BotAddedToInventoryEventMessageComposer
+                        {
+                            Bot = bot,
+                            OpenInventory = true,
+                        }
+                    )
+                    .ConfigureAwait(true);
             }
         }
 

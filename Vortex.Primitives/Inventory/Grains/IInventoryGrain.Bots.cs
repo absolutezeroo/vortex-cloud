@@ -9,4 +9,7 @@ public partial interface IInventoryGrain
 {
     /// <summary>Bots the player owns and has not placed in a room.</summary>
     public Task<ImmutableArray<BotSnapshot>> GetAllBotSnapshotsAsync(CancellationToken ct);
+
+    /// <summary>Mints a bot into the player's hand. Used by the catalog on a Robot purchase.</summary>
+    public Task<BotSnapshot> CreateBotAsync(BotCreateRequest request, CancellationToken ct);
 }

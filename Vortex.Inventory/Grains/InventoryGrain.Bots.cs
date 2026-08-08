@@ -51,6 +51,48 @@ public sealed partial class InventoryGrain
         }
     }
 
+    public async Task<BotSnapshot> CreateBotAsync(BotCreateRequest request, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            throw new ArgumentException("Bot name is required.", nameof(request));
+        }
+
+        VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct).ConfigureAwait(true);
+
+        try
+        {
+            BotEntity entity = new()
+            {
+                OwnerPlayerEntityId = (int)this.GetPrimaryKeyLong(),
+                RoomEntityId = null,
+                Name = request.Name.Trim(),
+                Motto = request.Motto,
+                Figure = request.Figure,
+                Gender = request.Gender,
+            };
+
+            dbCtx.Bots.Add(entity);
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+            return ToSnapshot(entity);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to create bot for player {PlayerId}",
+                this.GetPrimaryKeyLong()
+            );
+            throw;
+        }
+        finally
+        {
+            await dbCtx.DisposeAsync().ConfigureAwait(true);
+        }
+    }
+
     internal static BotSnapshot ToSnapshot(BotEntity entity) =>
         new()
         {
