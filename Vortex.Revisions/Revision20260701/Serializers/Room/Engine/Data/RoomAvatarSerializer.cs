@@ -29,6 +29,10 @@ internal class RoomAvatarSerializer
         {
             SerializePetAvatar(packet, pet);
         }
+        else if (item is RoomBotAvatarSnapshot bot)
+        {
+            SerializeBotAvatar(packet, bot);
+        }
     }
 
     public static void SerializePlayerAvatar(
@@ -43,7 +47,8 @@ internal class RoomAvatarSerializer
             .WriteString(snapshot.GroupName)
             .WriteString(snapshot.SwimFigure)
             .WriteInteger(snapshot.ActivityPoints)
-            .WriteBoolean(snapshot.IsModerator);
+            .WriteBoolean(snapshot.IsModerator)
+            .WriteInteger(snapshot.BadgesRank);
     }
 
     public static void SerializePetAvatar(IServerPacket packet, RoomPetAvatarSnapshot snapshot)
@@ -61,5 +66,21 @@ internal class RoomAvatarSerializer
             .WriteBoolean(snapshot.HasBreedingPermission)
             .WriteInteger(snapshot.PetLevel)
             .WriteString(snapshot.PetPosture);
+    }
+
+    public static void SerializeBotAvatar(IServerPacket packet, RoomBotAvatarSnapshot snapshot)
+    {
+        packet
+            .WriteString(AvatarGenderTypeExtensions.ToLegacyString(snapshot.Gender))
+            .WriteInteger(snapshot.OwnerId)
+            .WriteString(snapshot.OwnerName)
+            .WriteInteger(snapshot.SkillIds.Length);
+
+        // Shorts, not ints. The client only enters this loop when the count is above zero, but it
+        // reads the count either way, so it is always written.
+        foreach (short skillId in snapshot.SkillIds)
+        {
+            packet.WriteShort(skillId);
+        }
     }
 }

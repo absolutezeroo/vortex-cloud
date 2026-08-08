@@ -30,8 +30,9 @@ public sealed record RoomPlayerAvatarSnapshot : RoomAvatarSnapshot
     [Id(19)]
     public required bool IsModerator { get; init; }
 
-    // Carried in-memory so the room-entry re-sync can rebuild AvatarEffectMessageComposer for late joiners
-    // (mirrors how DanceType drives DanceMessageComposer). Not written into the Users wire payload.
     [Id(20)]
     public int CurrentEffectId { get; init; }
+
+    [Id(21)]
+    public int BadgesRank { get; init; }
 }

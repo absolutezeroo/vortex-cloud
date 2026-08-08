@@ -1,0 +1,200 @@
+using System;
+using System.Collections.Immutable;
+using FluentAssertions;
+using Microsoft.Extensions.Options;
+using Vortex.Primitives.Messages.Outgoing.Room.Engine;
+using Vortex.Primitives.Packets;
+using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Snapshots.Avatars;
+using Vortex.Revisions.Configuration;
+using Xunit;
+using Rev = Vortex.Revisions.Revision20260701.Revision20260701;
+
+namespace Vortex.Revisions.Tests.Room;
+
+/// <summary>
+///     The Users payload packs every avatar in the room back to back with no length prefix between
+///     them, so a block that is one field short does not degrade — it shifts everything after it.
+///     The player block was missing its trailing badge rank, which means the client was reading the
+///     next avatar's id as the previous one's rank and mis-framing the rest of the room; the last
+///     avatar in the list read past the end of the buffer entirely.
+/// </summary>
+public sealed class RoomAvatarWireTests
+{
+    private static readonly Rev Revision = new(Options.Create(new ProtocolLimitsConfig()));
+
+    /// <summary>Goes through the registered composer rather than the internal writer, so the test
+    /// exercises exactly what a connected client would receive.</summary>
+    private static ClientPacket Serialize(params RoomAvatarSnapshot[] avatars)
+    {
+        UsersMessageComposer composer = new() { Avatars = [.. avatars] };
+
+        byte[] bytes = Revision
+            .Serializers[typeof(UsersMessageComposer)]
+            .Serialize(composer)
+            .ToArray();
+
+        byte[] body = new byte[bytes.Length - 6];
+        Array.Copy(bytes, 6, body, 0, body.Length);
+
+        ClientPacket packet = new(0, body);
+
+        packet.PopInt(); // avatar count
+
+        return packet;
+    }
+
+    private static RoomPlayerAvatarSnapshot NewPlayer(int id) =>
+        new()
+        {
+            AvatarType = RoomObjectType.Player,
+            WebId = id,
+            Name = $"Player{id}",
+            Motto = "hi",
+            Figure = "hd-180-1",
+            ObjectId = id,
+            X = 1,
+            Y = 2,
+            Z = default,
+            BodyRotation = Rotation.North,
+            HeadRotation = Rotation.North,
+            Status = "/",
+            Gender = AvatarGenderType.Male,
+            DanceType = AvatarDanceType.None,
+            GroupId = 0,
+            GroupStatus = 0,
+            GroupName = string.Empty,
+            SwimFigure = string.Empty,
+            ActivityPoints = 5,
+            IsModerator = false,
+            BadgesRank = 3,
+        };
+
+    private static void SkipCommonHead(ClientPacket body)
+    {
+        body.PopInt(); // webId
+        body.PopString(); // name
+        body.PopString(); // motto
+        body.PopString(); // figure
+        body.PopInt(); // objectId
+        body.PopInt(); // x
+        body.PopInt(); // y
+        body.PopString(); // z
+        body.PopInt(); // bodyRotation
+        body.PopInt(); // avatarType
+    }
+
+    [Fact]
+    public void PlayerBlock_EndsWithTheBadgeRank()
+    {
+        ClientPacket body = Serialize(NewPlayer(1));
+
+        SkipCommonHead(body);
+
+        body.PopString().Should().Be("M");
+        body.PopInt().Should().Be(0); // groupId
+        body.PopInt().Should().Be(0); // groupStatus
+        body.PopString().Should().BeEmpty(); // groupName
+        body.PopString().Should().BeEmpty(); // swimFigure
+        body.PopInt().Should().Be(5); // achievementScore
+        body.PopBoolean().Should().BeFalse(); // isModerator
+        body.PopInt()
+            .Should()
+            .Be(3, "the client reads a badge rank right after the moderator flag");
+
+        body.End.Should().BeTrue("the block must consume exactly what the client reads");
+    }
+
+    [Fact]
+    public void TwoPlayersInARow_StayAlignedWithEachOther()
+    {
+        // The real failure mode: with a short block, the second avatar's id is eaten by the first.
+        ClientPacket body = Serialize(NewPlayer(1), NewPlayer(2));
+
+        SkipCommonHead(body);
+
+        body.PopString();
+        body.PopInt();
+        body.PopInt();
+        body.PopString();
+        body.PopString();
+        body.PopInt();
+        body.PopBoolean();
+        body.PopInt();
+
+        body.PopInt().Should().Be(2, "the second avatar must start exactly where the first ended");
+    }
+
+    [Fact]
+    public void BotBlock_WritesGenderOwnerAndSkillsAsShorts()
+    {
+        RoomBotAvatarSnapshot bot = new()
+        {
+            AvatarType = RoomObjectType.Bot,
+            WebId = 7,
+            Name = "Bartender",
+            Motto = "what will it be",
+            Figure = "hd-180-1",
+            ObjectId = 900,
+            X = 3,
+            Y = 4,
+            Z = default,
+            BodyRotation = Rotation.South,
+            HeadRotation = Rotation.South,
+            Status = "/",
+            Gender = AvatarGenderType.Female,
+            OwnerId = 42,
+            OwnerName = "Frank",
+            SkillIds = [1, 5],
+        };
+
+        ClientPacket body = Serialize(bot);
+
+        SkipCommonHead(body);
+
+        body.PopString().Should().Be("F");
+        body.PopInt().Should().Be(42);
+        body.PopString().Should().Be("Frank");
+        body.PopInt().Should().Be(2);
+        body.PopShort().Should().Be(1);
+        body.PopShort().Should().Be(5);
+
+        body.End.Should().BeTrue("the block must consume exactly what the client reads");
+    }
+
+    [Fact]
+    public void BotBlock_StillWritesTheCountWhenTheBotHasNoSkills()
+    {
+        RoomBotAvatarSnapshot bot = new()
+        {
+            AvatarType = RoomObjectType.Bot,
+            WebId = 7,
+            Name = "Bartender",
+            Motto = string.Empty,
+            Figure = "hd-180-1",
+            ObjectId = 900,
+            X = 0,
+            Y = 0,
+            Z = default,
+            BodyRotation = Rotation.North,
+            HeadRotation = Rotation.North,
+            Status = "/",
+            Gender = AvatarGenderType.Male,
+            OwnerId = 42,
+            OwnerName = "Frank",
+        };
+
+        ClientPacket body = Serialize(bot);
+
+        SkipCommonHead(body);
+
+        body.PopString();
+        body.PopInt();
+        body.PopString();
+        body.PopInt()
+            .Should()
+            .Be(0, "the count is read unconditionally, the loop is what is guarded");
+
+        body.End.Should().BeTrue("the block must consume exactly what the client reads");
+    }
+}
