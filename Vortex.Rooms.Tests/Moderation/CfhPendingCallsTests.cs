@@ -28,7 +28,7 @@ public sealed class CfhPendingCallsTests
 
         await using (VortexDbContext db = new(options))
         {
-            db.CfhTickets.AddRange(
+            await db.CfhTickets.AddRangeAsync(
                 NewTicket(1, REPORTER, CfhTicketState.Open, "oldest", DaysAgo(3)),
                 NewTicket(2, REPORTER, CfhTicketState.Picked, "picked up", DaysAgo(1)),
                 NewTicket(3, REPORTER, CfhTicketState.Closed, "already dealt with", DaysAgo(2)),
@@ -77,7 +77,7 @@ public sealed class CfhPendingCallsTests
 
         await using (VortexDbContext db = new(options))
         {
-            db.CfhTickets.AddRange(
+            await db.CfhTickets.AddRangeAsync(
                 NewTicket(1, REPORTER, CfhTicketState.Open, "withdrawable", DaysAgo(1)),
                 NewTicket(2, REPORTER, CfhTicketState.Picked, "in staff hands", DaysAgo(1)),
                 NewTicket(3, OTHER_REPORTER, CfhTicketState.Open, "not theirs", DaysAgo(1))
