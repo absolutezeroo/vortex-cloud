@@ -11,6 +11,11 @@ internal class BotSkillListUpdateMessageComposerSerializer(int header)
         BotSkillListUpdateMessageComposer message
     )
     {
-        //
+        packet.WriteInteger(message.BotId).WriteInteger(message.Skills.Length);
+
+        foreach (BotSkillEntry skill in message.Skills)
+        {
+            packet.WriteInteger(skill.CommandId).WriteString(skill.Data);
+        }
     }
 }

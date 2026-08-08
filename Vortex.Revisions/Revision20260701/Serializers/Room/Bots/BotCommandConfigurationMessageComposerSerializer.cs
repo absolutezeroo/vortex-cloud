@@ -9,8 +9,9 @@ internal class BotCommandConfigurationMessageComposerSerializer(int header)
     protected override void Serialize(
         IServerPacket packet,
         BotCommandConfigurationMessageComposer message
-    )
-    {
-        //
-    }
+    ) =>
+        packet
+            .WriteInteger(message.BotId)
+            .WriteInteger(message.CommandId)
+            .WriteString(message.Data);
 }

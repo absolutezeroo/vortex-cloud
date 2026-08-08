@@ -6,5 +6,17 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Room.Bots;
 
 internal class CommandBotMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new CommandBotMessage();
+    public IMessageEvent Parse(IClientPacket packet)
+    {
+        int botId = packet.PopInt();
+        int commandId = packet.PopInt();
+        string data = packet.PopString();
+
+        return new CommandBotMessage
+        {
+            BotId = botId,
+            CommandId = commandId,
+            Data = data,
+        };
+    }
 }

@@ -155,7 +155,7 @@ internal static class MessageEvent
     public const int SelectInitialRoomEvent = 3267; // AS3-verified (direct read, both revisions): RoomPicker::onButtonSelect() -> connection.send(new _SafeCls_3967(roomType)) registry@3267 (old _SafeCls_3549@1176 moved)
     public const int GetInterstitialMessageEvent = 1369; // AS3-verified (old-revision trace): AdManager::showInterstitial() still exists in current revision at 1369
     public const int InterstitialShownMessageEvent = 1408;
-    public const int CommandBotEvent = 3813; // AS3-verified (old-revision trace): _SafeCls_3593 -> procedure() still exists in current revision at 3813
+    public const int CommandBotEvent = 3813; // AS3-verified (direct read): _composers[3813] = _SafeCls_2928(botId, commandId, data), sent by the bot-skill configuration views
     public const int GetBotCommandConfigurationDataEvent = 2311; // AS3-verified (direct read, both revisions): BotSkillConfigurationViewBase::open() -> _SafeCls_3415
     public const int GetBadgePointLimitsEvent = 981; // UNRESOLVED: not found - only the incoming response handler (onBadgePointLimits @ inventory handler, receiving _SafeCls_3204) was located; the client-side request trigger (if any) could not be found in either official AS3 revision
     public const int GetBadgesEvent = 770;

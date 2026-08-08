@@ -152,6 +152,81 @@ public sealed class RoomBotSystemTests
         bot.RoomEntityId.Should().Be(ROOM_ID, "the bot must still be standing where it was");
     }
 
+    [Fact]
+    public async Task ConfiguringASkill_StoresItAndReadsItBack()
+    {
+        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+
+        bool set = await harness
+            .Grain.SetBotSkillAsync(
+                harness.ContextFor(Owner),
+                7,
+                2,
+                "hello;bye",
+                CancellationToken.None
+            )
+            .ConfigureAwait(true);
+
+        set.Should().BeTrue();
+
+        string? data = await harness
+            .Grain.GetBotSkillAsync(7, 2, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        data.Should().Be("hello;bye", "the command's own encoding is stored verbatim");
+    }
+
+    [Fact]
+    public async Task AnUnconfiguredSkill_ReadsBackEmptyRatherThanNull()
+    {
+        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+
+        string? data = await harness
+            .Grain.GetBotSkillAsync(7, 2, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        data.Should().BeEmpty("the dialog opens either way and needs something to render");
+    }
+
+    [Fact]
+    public async Task ABotInAnotherRoom_ReadsBackNullSoTheDialogStaysShut()
+    {
+        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+
+        string? data = await harness
+            .Grain.GetBotSkillAsync(999, 2, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        data.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task AVisitorWithRoomRights_StillCannotReprogramSomebodyElsesBot()
+    {
+        // Rights let a visitor's bot be cleared away, not made to say what they typed.
+        Harness harness = await Harness
+            .CreateAsync(placedBotId: 7, canManipulate: true)
+            .ConfigureAwait(true);
+
+        bool set = await harness
+            .Grain.SetBotSkillAsync(
+                harness.ContextFor(Stranger),
+                7,
+                2,
+                "mine now",
+                CancellationToken.None
+            )
+            .ConfigureAwait(true);
+
+        set.Should().BeFalse();
+
+        string? data = await harness
+            .Grain.GetBotSkillAsync(7, 2, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        data.Should().BeEmpty("the owner's bot must be untouched");
+    }
+
     private sealed class Harness
     {
         private readonly DbContextOptions<VortexDbContext> _options;

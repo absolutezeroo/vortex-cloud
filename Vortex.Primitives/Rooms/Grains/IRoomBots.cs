@@ -30,4 +30,21 @@ public interface IRoomBots : IGrainWithIntegerKey
     public Task<ImmutableArray<RoomAvatarSnapshot>> GetPlacedBotAvatarSnapshotsAsync(
         CancellationToken ct
     );
+
+    /// <summary>
+    /// Stores one skill's configuration on a bot. The data is the command's own encoding — a
+    /// chatter's phrase list, a wander flag — and is kept verbatim rather than interpreted, so a
+    /// skill the server has never heard of still round-trips.
+    /// </summary>
+    /// <returns>False if the bot is not here or the actor may not configure it.</returns>
+    public Task<bool> SetBotSkillAsync(
+        ActionContext ctx,
+        int botId,
+        int commandId,
+        string data,
+        CancellationToken ct
+    );
+
+    /// <summary>What a bot is set to for one skill, or null if it is not in this room.</summary>
+    public Task<string?> GetBotSkillAsync(int botId, int commandId, CancellationToken ct);
 }

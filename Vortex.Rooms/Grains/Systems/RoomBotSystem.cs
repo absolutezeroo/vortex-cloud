@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,7 @@ using Vortex.Database.Entities.Room;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Bots;
 using Vortex.Primitives.Messages.Outgoing.Inventory.Bots;
+using Vortex.Primitives.Messages.Outgoing.Room.Bots;
 using Vortex.Primitives.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
@@ -236,6 +239,132 @@ public sealed class RoomBotSystem(RoomGrain roomGrain)
         await EnsureBotsLoadedAsync(ct).ConfigureAwait(true);
 
         return [.. _botsById.Values.OrderBy(b => b.BotId).Select(ToAvatarSnapshot)];
+    }
+
+    public async Task<bool> SetBotSkillAsync(
+        ActionContext ctx,
+        int botId,
+        int commandId,
+        string data,
+        CancellationToken ct
+    )
+    {
+        await EnsureBotsLoadedAsync(ct).ConfigureAwait(true);
+
+        if (!_botsById.TryGetValue(botId, out BotSnapshot? placed))
+        {
+            return false;
+        }
+
+        // Only the bot's owner configures it. Room rights let a visitor's bot be cleared away, not
+        // reprogrammed — someone else's bot saying what you typed is a different problem entirely.
+        if (placed.OwnerId != ctx.PlayerId)
+        {
+            return false;
+        }
+
+        await using VortexDbContext dbCtx = await _roomGrain
+            ._dbCtxFactory.CreateDbContextAsync(ct)
+            .ConfigureAwait(true);
+
+        BotEntity? bot = await dbCtx
+            .Bots.SingleOrDefaultAsync(
+                b => b.Id == botId && b.RoomEntityId == _roomGrain.RoomId.Value,
+                ct
+            )
+            .ConfigureAwait(true);
+
+        if (bot is null)
+        {
+            return false;
+        }
+
+        Dictionary<string, string> skills = ReadSkills(bot);
+        skills[commandId.ToString(CultureInfo.InvariantCulture)] = data;
+
+        bot.SkillsJson = JsonSerializer.Serialize(skills);
+
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+        await _roomGrain
+            ._grainFactory.GetPlayerPresenceGrain(ctx.PlayerId)
+            .SendComposerAsync(
+                new BotSkillListUpdateMessageComposer
+                {
+                    BotId = botId,
+                    Skills =
+                    [
+                        .. skills.Select(pair => new BotSkillEntry
+                        {
+                            CommandId = int.Parse(pair.Key, CultureInfo.InvariantCulture),
+                            Data = pair.Value,
+                        }),
+                    ],
+                }
+            )
+            .ConfigureAwait(true);
+
+        return true;
+    }
+
+    public async Task<string?> GetBotSkillAsync(int botId, int commandId, CancellationToken ct)
+    {
+        await EnsureBotsLoadedAsync(ct).ConfigureAwait(true);
+
+        if (!_botsById.ContainsKey(botId))
+        {
+            return null;
+        }
+
+        await using VortexDbContext dbCtx = await _roomGrain
+            ._dbCtxFactory.CreateDbContextAsync(ct)
+            .ConfigureAwait(true);
+
+        BotEntity? bot = await dbCtx
+            .Bots.AsNoTracking()
+            .SingleOrDefaultAsync(
+                b => b.Id == botId && b.RoomEntityId == _roomGrain.RoomId.Value,
+                ct
+            )
+            .ConfigureAwait(true);
+
+        if (bot is null)
+        {
+            return null;
+        }
+
+        // An unconfigured skill is empty, not absent: the dialog opens either way and wants
+        // something to render.
+        return ReadSkills(bot)
+            .GetValueOrDefault(commandId.ToString(CultureInfo.InvariantCulture), string.Empty);
+    }
+
+    /// <summary>
+    /// Tolerates a malformed blob rather than throwing: the column is free text as far as the
+    /// database is concerned, and losing one bot's settings is better than failing every read.
+    /// </summary>
+    private Dictionary<string, string> ReadSkills(BotEntity bot)
+    {
+        if (string.IsNullOrWhiteSpace(bot.SkillsJson))
+        {
+            return [];
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<Dictionary<string, string>>(bot.SkillsJson) ?? [];
+        }
+        catch (JsonException ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Bot {BotId} in room {RoomId} has unreadable skills_json; treating it as unconfigured.",
+                bot.Id,
+                _roomGrain._state.RoomId.Value
+            );
+
+            return [];
+        }
     }
 
     private bool TryResolveDropTile(int x, int y, out int resolvedX, out int resolvedY) =>

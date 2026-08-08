@@ -2,4 +2,9 @@ using Vortex.Primitives.Networking;
 
 namespace Vortex.Primitives.Messages.Incoming.Room.Bots;
 
-public record GetBotCommandConfigurationDataMessage : IMessageEvent { }
+/// <summary>Opening a skill's configuration dialog: what is this bot currently set to?</summary>
+public record GetBotCommandConfigurationDataMessage : IMessageEvent
+{
+    public required int BotId { get; init; }
+    public required int CommandId { get; init; }
+}

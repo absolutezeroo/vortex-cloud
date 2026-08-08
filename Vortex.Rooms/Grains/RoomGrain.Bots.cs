@@ -23,4 +23,15 @@ public sealed partial class RoomGrain
     public Task<ImmutableArray<RoomAvatarSnapshot>> GetPlacedBotAvatarSnapshotsAsync(
         CancellationToken ct
     ) => BotSystem.GetPlacedBotAvatarSnapshotsAsync(ct);
+
+    public Task<bool> SetBotSkillAsync(
+        ActionContext ctx,
+        int botId,
+        int commandId,
+        string data,
+        CancellationToken ct
+    ) => BotSystem.SetBotSkillAsync(ctx, botId, commandId, data, ct);
+
+    public Task<string?> GetBotSkillAsync(int botId, int commandId, CancellationToken ct) =>
+        BotSystem.GetBotSkillAsync(botId, commandId, ct);
 }

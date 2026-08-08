@@ -9,8 +9,5 @@ internal class BotForceOpenContextMenuMessageComposerSerializer(int header)
     protected override void Serialize(
         IServerPacket packet,
         BotForceOpenContextMenuMessageComposer message
-    )
-    {
-        //
-    }
+    ) => packet.WriteInteger(message.BotId);
 }

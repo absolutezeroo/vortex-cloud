@@ -54,6 +54,16 @@ public class BotEntity : VortexEntity
     [Column("rotation")]
     public Rotation Rotation { get; set; }
 
+    /// <summary>
+    /// The bot's configured skills as a JSON object of commandId → data. Write-once-per-edit and
+    /// never queried relationally — the room reads the whole set when it draws the bot and the
+    /// configuration dialog reads one entry — so a blob is simpler than a child table, the same
+    /// call made for <c>CfhTicketEntity.EvidenceJson</c>.
+    /// </summary>
+    [Column("skills_json")]
+    [MaxLength(4000)]
+    public string? SkillsJson { get; set; }
+
     [ForeignKey(nameof(OwnerPlayerEntityId))]
     public PlayerEntity? OwnerPlayerEntity { get; set; }
 
