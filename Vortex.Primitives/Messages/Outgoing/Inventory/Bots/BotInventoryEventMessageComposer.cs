@@ -1,11 +1,14 @@
+using System.Collections.Immutable;
 using Orleans;
+using Vortex.Primitives.Bots;
 using Vortex.Primitives.Networking;
 
 namespace Vortex.Primitives.Messages.Outgoing.Inventory.Bots;
 
-/// <summary>
-/// The bot feature (BotEntity/grain/ownership) doesn't exist in this codebase yet -- no player can
-/// own a bot, so an empty inventory is the correct, truthful response rather than a stub.
-/// </summary>
+/// <summary>Every bot the player owns and has not placed in a room.</summary>
 [GenerateSerializer, Immutable]
-public sealed record BotInventoryEventMessageComposer : IComposer { }
+public sealed record BotInventoryEventMessageComposer : IComposer
+{
+    [Id(0)]
+    public ImmutableArray<BotSnapshot> Bots { get; init; } = ImmutableArray<BotSnapshot>.Empty;
+}

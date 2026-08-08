@@ -9,8 +9,5 @@ internal class BotRemovedFromInventoryEventMessageComposerSerializer(int header)
     protected override void Serialize(
         IServerPacket packet,
         BotRemovedFromInventoryEventMessageComposer message
-    )
-    {
-        //
-    }
+    ) => packet.WriteInteger(message.BotId);
 }

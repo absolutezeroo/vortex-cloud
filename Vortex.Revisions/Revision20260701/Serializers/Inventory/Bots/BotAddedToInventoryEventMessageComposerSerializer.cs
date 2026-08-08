@@ -11,6 +11,8 @@ internal class BotAddedToInventoryEventMessageComposerSerializer(int header)
         BotAddedToInventoryEventMessageComposer message
     )
     {
-        //
+        BotSerialization.WriteBot(packet, message.Bot);
+
+        packet.WriteBoolean(message.OpenInventory);
     }
 }

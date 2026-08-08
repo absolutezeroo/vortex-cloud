@@ -1,7 +1,9 @@
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
+using Vortex.Primitives.Bots;
 using Vortex.Primitives.Messages.Incoming.Inventory.Bots;
 using Vortex.Primitives.Messages.Outgoing.Inventory.Bots;
 using Vortex.Primitives.Orleans;
@@ -22,9 +24,12 @@ public class GetBotInventoryMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        await grainFactory
-            .GetPlayerPresenceGrain(ctx.PlayerId)
-            .SendComposerAsync(new BotInventoryEventMessageComposer())
+        ImmutableArray<BotSnapshot> bots = await grainFactory
+            .GetInventoryGrain(ctx.PlayerId)
+            .GetAllBotSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+
+        await ctx.SendComposerAsync(new BotInventoryEventMessageComposer { Bots = bots }, ct)
             .ConfigureAwait(false);
     }
 }

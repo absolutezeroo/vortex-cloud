@@ -1,3 +1,4 @@
+using Vortex.Primitives.Bots;
 using Vortex.Primitives.Messages.Outgoing.Inventory.Bots;
 using Vortex.Primitives.Packets;
 
@@ -11,6 +12,11 @@ internal class BotInventoryEventMessageComposerSerializer(int header)
         BotInventoryEventMessageComposer message
     )
     {
-        packet.WriteInteger(0);
+        packet.WriteInteger(message.Bots.Length);
+
+        foreach (BotSnapshot bot in message.Bots)
+        {
+            BotSerialization.WriteBot(packet, bot);
+        }
     }
 }
