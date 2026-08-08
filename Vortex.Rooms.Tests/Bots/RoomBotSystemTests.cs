@@ -17,6 +17,7 @@ using Vortex.Primitives.Action;
 using Vortex.Primitives.Bots;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Messages.Outgoing.Room.Chat;
+using Vortex.Primitives.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Observability;
@@ -280,6 +281,61 @@ public sealed class RoomBotSystemTests
         await harness.Grain.ProcessBotsForTestAsync(ChatterCertainlyDueMs).ConfigureAwait(true);
 
         harness.BroadcastToRoom.OfType<ChatMessageComposer>().Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task ABotWithNoWanderConfigured_StaysPut()
+    {
+        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+
+        harness.BroadcastToRoom.Clear();
+
+        await harness.Grain.ProcessBotsForTestAsync(0).ConfigureAwait(true);
+        await harness.Grain.ProcessBotsForTestAsync(ChatterCertainlyDueMs).ConfigureAwait(true);
+
+        harness
+            .BroadcastToRoom.OfType<UserUpdateMessageComposer>()
+            .Should()
+            .BeEmpty("wandering is opt-in, an unconfigured bot is furniture that talks");
+    }
+
+    [Fact]
+    public async Task ReconfiguringASkill_DropsTheCachedPlanRatherThanFinishingTheOldOne()
+    {
+        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+
+        await harness
+            .Grain.SetBotSkillAsync(
+                harness.ContextFor(Owner),
+                7,
+                2,
+                "first",
+                CancellationToken.None
+            )
+            .ConfigureAwait(true);
+
+        await harness.Grain.ProcessBotsForTestAsync(0).ConfigureAwait(true);
+
+        await harness
+            .Grain.SetBotSkillAsync(
+                harness.ContextFor(Owner),
+                7,
+                2,
+                "second",
+                CancellationToken.None
+            )
+            .ConfigureAwait(true);
+
+        harness.BroadcastToRoom.Clear();
+
+        await harness.Grain.ProcessBotsForTestAsync(ChatterCertainlyDueMs).ConfigureAwait(true);
+        await harness.Grain.ProcessBotsForTestAsync(ChatterCertainlyDueMs * 2).ConfigureAwait(true);
+
+        harness
+            .BroadcastToRoom.OfType<ChatMessageComposer>()
+            .Select(chat => chat.Text)
+            .Should()
+            .NotContain("first", "a reconfigured bot must stop saying its old lines");
     }
 
     private sealed class Harness

@@ -9,6 +9,8 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
 using Vortex.Primitives.Bots;
 using Vortex.Primitives.Messages.Outgoing.Room.Chat;
+using Vortex.Primitives.Messages.Outgoing.Room.Engine;
+using Vortex.Primitives.Rooms.Snapshots.Avatars;
 
 namespace Vortex.Rooms.Grains.Systems;
 
@@ -29,6 +31,9 @@ public sealed partial class RoomBotSystem
     /// <summary>Phrase lists as loaded, so a talking bot is not a database read per tick.</summary>
     private readonly Dictionary<int, string[]> _chatterByBotId = [];
 
+    /// <summary>Raw skills as loaded, shared with the motion half so both read one cache.</summary>
+    private readonly Dictionary<int, Dictionary<string, string>> _skillsByBotId = [];
+
     private bool _chatterLoaded;
 
     public async Task ProcessBotsAsync(long now, CancellationToken ct)
@@ -48,6 +53,15 @@ public sealed partial class RoomBotSystem
         }
 
         await EnsureChatterLoadedAsync(ct).ConfigureAwait(true);
+
+        List<RoomAvatarSnapshot> moved = StepWanderingBots(now);
+
+        if (moved.Count > 0)
+        {
+            await _roomGrain
+                .SendComposerToRoomAsync(new UserUpdateMessageComposer { Avatars = [.. moved] })
+                .ConfigureAwait(true);
+        }
 
         foreach (BotSnapshot bot in _botsById.Values.OrderBy(b => b.BotId).ToArray())
         {
@@ -115,14 +129,17 @@ public sealed partial class RoomBotSystem
             .ConfigureAwait(true);
 
         _chatterByBotId.Clear();
+        _skillsByBotId.Clear();
 
         foreach (BotEntity bot in bots)
         {
-            string phrases = ReadSkills(bot)
-                .GetValueOrDefault(
-                    ChatterCommandId.ToString(CultureInfo.InvariantCulture),
-                    string.Empty
-                );
+            Dictionary<string, string> skills = ReadSkills(bot);
+            _skillsByBotId[bot.Id] = skills;
+
+            string phrases = skills.GetValueOrDefault(
+                ChatterCommandId.ToString(CultureInfo.InvariantCulture),
+                string.Empty
+            );
 
             _chatterByBotId[bot.Id] =
             [
@@ -140,7 +157,10 @@ public sealed partial class RoomBotSystem
     private void InvalidateChatter(int botId)
     {
         _ = _chatterByBotId.Remove(botId);
+        _ = _skillsByBotId.Remove(botId);
         _ = _nextChatterAtMsByBotId.Remove(botId);
+        _ = _pathByBotId.Remove(botId);
+        _ = _nextWanderAtMsByBotId.Remove(botId);
         _chatterLoaded = false;
     }
 }
