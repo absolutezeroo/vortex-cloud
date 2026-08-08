@@ -31,13 +31,19 @@ namespace Vortex.Rooms.Grains.Systems;
 /// straight through to the database rather than riding a dirty-set.
 /// </para>
 /// </summary>
-public sealed class RoomBotSystem(RoomGrain roomGrain)
+public sealed partial class RoomBotSystem(RoomGrain roomGrain)
 {
     /// <summary>
     /// Keeps bot object ids clear of both furniture and pets, which take the million above this one.
     /// Two occupants sharing an object id would have the client drawing one over the other.
     /// </summary>
     private const int BotRoomObjectIdOffset = 2_000_000;
+
+    /// <summary>Bots only speak, so this ticks far slower than the avatar or pet clocks.</summary>
+    private const int BotTickMs = 1_000;
+
+    private const int ChatterMinIntervalMs = 12_000;
+    private const int ChatterMaxIntervalMs = 40_000;
 
     private readonly RoomGrain _roomGrain = roomGrain;
 
@@ -210,6 +216,7 @@ public sealed class RoomBotSystem(RoomGrain roomGrain)
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         _botsById.Remove(botId);
+        InvalidateChatter(botId);
 
         await _roomGrain
             .SendComposerToRoomAsync(
@@ -283,6 +290,9 @@ public sealed class RoomBotSystem(RoomGrain roomGrain)
         skills[commandId.ToString(CultureInfo.InvariantCulture)] = data;
 
         bot.SkillsJson = JsonSerializer.Serialize(skills);
+
+        // The tick reads a cached phrase list; without this the bot keeps saying the old lines.
+        InvalidateChatter(botId);
 
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 

@@ -239,6 +239,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
             _state.EpochMs = now;
             _state.NextAvatarBoundaryMs = AlignToNextBoundary(now, _roomConfig.AvatarTickMs);
             _state.NextPetBoundaryMs = AlignToNextBoundary(now, _roomConfig.Pet.TickMs);
+            _state.NextBotBoundaryMs = now;
             _state.NextRollerBoundaryMs = AlignToNextBoundary(now, _roomConfig.RollerTickMs);
             _state.NextWiredBoundaryMs = AlignToNextBoundary(now, _roomConfig.WiredTickMs);
         }
@@ -281,6 +282,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                     () => AvatarTickSystem.ProcessAvatarsAsync(now, ct)
                 );
                 await RunTickStepAsync("pets", () => PetSystem.ProcessPetsAsync(now, ct));
+                await RunTickStepAsync("bots", () => BotSystem.ProcessBotsAsync(now, ct));
                 await RunTickStepAsync("wired", () => WiredSystem.ProcessWiredAsync(now, ct));
                 await RunTickStepAsync("rollers", () => RollerSystem.ProcessRollersAsync(now, ct));
                 await RunTickStepAsync("game-timer", () => GameTimerSystem.ProcessAsync(now, ct));

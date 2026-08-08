@@ -16,6 +16,7 @@ using Vortex.Primitives;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Bots;
 using Vortex.Primitives.Events;
+using Vortex.Primitives.Messages.Outgoing.Room.Chat;
 using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Observability;
@@ -49,6 +50,9 @@ namespace Vortex.Rooms.Tests.Bots;
 public sealed class RoomBotSystemTests
 {
     private const int ROOM_ID = 55;
+
+    /// <summary>Past the widest chatter interval, so a scheduled bot has certainly come round.</summary>
+    private const long ChatterCertainlyDueMs = 120_000;
     private static readonly PlayerId Owner = new(101);
     private static readonly PlayerId Stranger = new(202);
 
@@ -225,6 +229,57 @@ public sealed class RoomBotSystemTests
             .ConfigureAwait(true);
 
         data.Should().BeEmpty("the owner's bot must be untouched");
+    }
+
+    [Fact]
+    public async Task AConfiguredBot_SaysOneOfItsPhrasesOnceItsTurnComesRound()
+    {
+        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+
+        await harness
+            .Grain.SetBotSkillAsync(
+                harness.ContextFor(Owner),
+                7,
+                2,
+                "hello;welcome",
+                CancellationToken.None
+            )
+            .ConfigureAwait(true);
+
+        harness.BroadcastToRoom.Clear();
+
+        // The first tick schedules rather than speaks, so a room full of bots does not greet a
+        // visitor in chorus the moment it activates.
+        await harness.Grain.ProcessBotsForTestAsync(0).ConfigureAwait(true);
+
+        harness
+            .BroadcastToRoom.Should()
+            .BeEmpty("first sight of a bot schedules it, it does not make it talk");
+
+        // Far enough ahead that any scheduled slot has come round.
+        await harness.Grain.ProcessBotsForTestAsync(ChatterCertainlyDueMs).ConfigureAwait(true);
+
+        ChatMessageComposer spoken = harness
+            .BroadcastToRoom.OfType<ChatMessageComposer>()
+            .Should()
+            .ContainSingle()
+            .Which;
+
+        spoken.Text.Should().BeOneOf("hello", "welcome");
+        spoken.ObjectId.Should().Be(RoomBotSystem.ToRoomObjectId(7));
+    }
+
+    [Fact]
+    public async Task ABotWithNoChatterConfigured_StaysQuiet()
+    {
+        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+
+        harness.BroadcastToRoom.Clear();
+
+        await harness.Grain.ProcessBotsForTestAsync(0).ConfigureAwait(true);
+        await harness.Grain.ProcessBotsForTestAsync(ChatterCertainlyDueMs).ConfigureAwait(true);
+
+        harness.BroadcastToRoom.OfType<ChatMessageComposer>().Should().BeEmpty();
     }
 
     private sealed class Harness

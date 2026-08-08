@@ -34,4 +34,8 @@ public sealed partial class RoomGrain
 
     public Task<string?> GetBotSkillAsync(int botId, int commandId, CancellationToken ct) =>
         BotSystem.GetBotSkillAsync(botId, commandId, ct);
+
+    /// <summary>Drives one bot tick from a test; the real one rides the room clock.</summary>
+    internal Task ProcessBotsForTestAsync(long nowMs) =>
+        BotSystem.ProcessBotsAsync(nowMs, CancellationToken.None);
 }
