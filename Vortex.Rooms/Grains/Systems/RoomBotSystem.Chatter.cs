@@ -20,21 +20,15 @@ namespace Vortex.Rooms.Grains.Systems;
 /// </summary>
 public sealed partial class RoomBotSystem
 {
-    /// <summary>The chatter skill's id, from the client's own BotChatterMarkovConfiguration.</summary>
-    private const int ChatterCommandId = 2;
-
-    /// <summary>How the client packs a phrase list into one string.</summary>
-    private const char ChatterSeparator = ';';
-
     private readonly Dictionary<int, long> _nextChatterAtMsByBotId = [];
 
-    /// <summary>Phrase lists as loaded, so a talking bot is not a database read per tick.</summary>
-    private readonly Dictionary<int, string[]> _chatterByBotId = [];
+    /// <summary>Chatter settings as loaded, so a talking bot is not a database read per tick.</summary>
+    private readonly Dictionary<int, BotChatterConfiguration> _chatterByBotId = [];
 
     /// <summary>Raw skills as loaded, shared with the motion half so both read one cache.</summary>
     private readonly Dictionary<int, Dictionary<string, string>> _skillsByBotId = [];
 
-    private bool _chatterLoaded;
+    private bool _skillsLoaded;
 
     public async Task ProcessBotsAsync(long now, CancellationToken ct)
     {
@@ -52,7 +46,7 @@ public sealed partial class RoomBotSystem
             return;
         }
 
-        await EnsureChatterLoadedAsync(ct).ConfigureAwait(true);
+        await EnsureSkillsLoadedAsync(ct).ConfigureAwait(true);
 
         List<RoomAvatarSnapshot> moved = StepWanderingBots(now);
 
@@ -66,8 +60,9 @@ public sealed partial class RoomBotSystem
         foreach (BotSnapshot bot in _botsById.Values.OrderBy(b => b.BotId).ToArray())
         {
             if (
-                !_chatterByBotId.TryGetValue(bot.BotId, out string[]? phrases)
-                || phrases.Length == 0
+                !_chatterByBotId.TryGetValue(bot.BotId, out BotChatterConfiguration? chatter)
+                || !chatter.AutoChat
+                || chatter.Phrases.Length == 0
             )
             {
                 continue;
@@ -77,7 +72,7 @@ public sealed partial class RoomBotSystem
             // does not greet every visitor in chorus the moment it activates.
             if (!_nextChatterAtMsByBotId.TryGetValue(bot.BotId, out long dueAt))
             {
-                _nextChatterAtMsByBotId[bot.BotId] = ScheduleNextChatterAt(now);
+                _nextChatterAtMsByBotId[bot.BotId] = ScheduleNextChatterAt(now, chatter);
                 continue;
             }
 
@@ -86,14 +81,14 @@ public sealed partial class RoomBotSystem
                 continue;
             }
 
-            _nextChatterAtMsByBotId[bot.BotId] = ScheduleNextChatterAt(now);
+            _nextChatterAtMsByBotId[bot.BotId] = ScheduleNextChatterAt(now, chatter);
 
             await _roomGrain
                 .SendComposerToRoomAsync(
                     new ChatMessageComposer
                     {
                         ObjectId = ToRoomObjectId(bot.BotId),
-                        Text = phrases[Random.Shared.Next(phrases.Length)],
+                        Text = chatter.Phrases[Random.Shared.Next(chatter.Phrases.Length)],
                         Gesture = default,
                         StyleId = 0,
                         Links = [],
@@ -105,15 +100,19 @@ public sealed partial class RoomBotSystem
     }
 
     /// <summary>
-    /// Spread out rather than fixed: bots on the same interval would fall into lockstep and speak
-    /// as one, which reads as a bug even though each is behaving.
+    /// The owner's delay, jittered by up to a quarter of itself. Bots sharing a delay would fall
+    /// into lockstep and speak as one, which reads as a bug even though each is behaving.
     /// </summary>
-    private static long ScheduleNextChatterAt(long now) =>
-        now + Random.Shared.Next(ChatterMinIntervalMs, ChatterMaxIntervalMs + 1);
-
-    private async Task EnsureChatterLoadedAsync(CancellationToken ct)
+    private static long ScheduleNextChatterAt(long now, BotChatterConfiguration chatter)
     {
-        if (_chatterLoaded)
+        long delayMs = chatter.DelaySeconds * 1_000L;
+
+        return now + delayMs + Random.Shared.Next((int)(delayMs / 4) + 1);
+    }
+
+    private async Task EnsureSkillsLoadedAsync(CancellationToken ct)
+    {
+        if (_skillsLoaded)
         {
             return;
         }
@@ -136,31 +135,25 @@ public sealed partial class RoomBotSystem
             Dictionary<string, string> skills = ReadSkills(bot);
             _skillsByBotId[bot.Id] = skills;
 
-            string phrases = skills.GetValueOrDefault(
-                ChatterCommandId.ToString(CultureInfo.InvariantCulture),
-                string.Empty
+            _chatterByBotId[bot.Id] = BotChatterConfiguration.Parse(
+                skills.GetValueOrDefault(
+                    BotSkillId.Chatter.ToString(CultureInfo.InvariantCulture),
+                    string.Empty
+                )
             );
-
-            _chatterByBotId[bot.Id] =
-            [
-                .. phrases
-                    .Split(ChatterSeparator, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(phrase => phrase.Trim())
-                    .Where(phrase => phrase.Length > 0),
-            ];
         }
 
-        _chatterLoaded = true;
+        _skillsLoaded = true;
     }
 
-    /// <summary>Drops a bot's cached chatter so the next tick reloads it.</summary>
-    private void InvalidateChatter(int botId)
+    /// <summary>Drops a bot's cached chatter, flags and plan so the next tick reloads them.</summary>
+    private void InvalidateBotCaches(int botId)
     {
         _ = _chatterByBotId.Remove(botId);
         _ = _skillsByBotId.Remove(botId);
         _ = _nextChatterAtMsByBotId.Remove(botId);
         _ = _pathByBotId.Remove(botId);
         _ = _nextWanderAtMsByBotId.Remove(botId);
-        _chatterLoaded = false;
+        _skillsLoaded = false;
     }
 }

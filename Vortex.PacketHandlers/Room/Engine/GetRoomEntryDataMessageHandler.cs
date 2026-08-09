@@ -79,14 +79,25 @@ public class GetRoomEntryDataMessageHandler(IGrainFactory grainFactory)
             .GetAllAvatarSnapshotsAsync(ct)
             .ConfigureAwait(false);
 
-        IComposer[] danceComposers = avatarSnapshots
-            .OfType<RoomPlayerAvatarSnapshot>()
-            .Where(x => x.DanceType != AvatarDanceType.None)
-            .Select(x =>
-                (IComposer)
-                    new DanceMessageComposer { ObjectId = x.ObjectId, DanceType = x.DanceType }
-            )
-            .ToArray();
+        // Bots dance too, and their dance is as absent from the Users payload as a player's, so
+        // both kinds are replayed here rather than only the ones with an account.
+        IComposer[] danceComposers =
+        [
+            .. avatarSnapshots
+                .OfType<RoomPlayerAvatarSnapshot>()
+                .Where(x => x.DanceType != AvatarDanceType.None)
+                .Select(x =>
+                    (IComposer)
+                        new DanceMessageComposer { ObjectId = x.ObjectId, DanceType = x.DanceType }
+                ),
+            .. avatarSnapshots
+                .OfType<RoomBotAvatarSnapshot>()
+                .Where(x => x.DanceType != AvatarDanceType.None)
+                .Select(x =>
+                    (IComposer)
+                        new DanceMessageComposer { ObjectId = x.ObjectId, DanceType = x.DanceType }
+                ),
+        ];
 
         // Re-sync worn avatar effects the same way as dances: the effect is not in the Users wire payload,
         // so replay one AvatarEffectMessageComposer per occupant currently wearing an effect.

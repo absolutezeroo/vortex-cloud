@@ -346,7 +346,9 @@ internal sealed class RoomMap : IRevisionMap
             new BotErrorMessageComposerSerializer(MessageComposer.BotErrorComposer)
         );
         builder.MapSerializer(
-            typeof(BotForceOpenContextMenuMessageComposerSerializer),
+            // The composer, not its serializer: the map is keyed by what a caller sends, and keying
+            // it by the serializer left this one unreachable.
+            typeof(BotForceOpenContextMenuMessageComposer),
             new BotForceOpenContextMenuMessageComposerSerializer(
                 MessageComposer.BotForceOpenContextMenuComposer
             )

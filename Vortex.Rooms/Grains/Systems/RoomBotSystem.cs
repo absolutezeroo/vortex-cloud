@@ -39,11 +39,8 @@ public sealed partial class RoomBotSystem(RoomGrain roomGrain)
     /// </summary>
     private const int BotRoomObjectIdOffset = 2_000_000;
 
-    /// <summary>Bots only speak, so this ticks far slower than the avatar or pet clocks.</summary>
+    /// <summary>Bots only speak and stroll, so this ticks slower than the avatar or pet clocks.</summary>
     private const int BotTickMs = 1_000;
-
-    private const int ChatterMinIntervalMs = 12_000;
-    private const int ChatterMaxIntervalMs = 40_000;
 
     private readonly RoomGrain _roomGrain = roomGrain;
 
@@ -152,6 +149,11 @@ public sealed partial class RoomBotSystem(RoomGrain roomGrain)
         BotSnapshot snapshot = ToSnapshot(bot);
         _botsById[bot.Id] = snapshot;
 
+        // Its skills came with it from wherever it last stood, and the avatar about to be drawn
+        // reads them.
+        InvalidateBotCaches(bot.Id);
+        await EnsureSkillsLoadedAsync(ct).ConfigureAwait(true);
+
         // The bot left the hand, so the owner's inventory has to lose the row or it will show a bot
         // that is standing in front of them.
         await _roomGrain
@@ -225,7 +227,7 @@ public sealed partial class RoomBotSystem(RoomGrain roomGrain)
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         _botsById.Remove(botId);
-        InvalidateChatter(botId);
+        InvalidateBotCaches(botId);
 
         await _roomGrain
             .SendComposerToRoomAsync(
@@ -253,6 +255,10 @@ public sealed partial class RoomBotSystem(RoomGrain roomGrain)
     )
     {
         await EnsureBotsLoadedAsync(ct).ConfigureAwait(true);
+
+        // The drawn avatar carries the bot's skills and whether it is dancing, both of which live
+        // in the skill blob rather than on the row.
+        await EnsureSkillsLoadedAsync(ct).ConfigureAwait(true);
 
         ImmutableArray<RoomAvatarSnapshot>.Builder avatars =
             ImmutableArray.CreateBuilder<RoomAvatarSnapshot>(_botsById.Count);
@@ -327,14 +333,53 @@ public sealed partial class RoomBotSystem(RoomGrain roomGrain)
         }
 
         Dictionary<string, string> skills = ReadSkills(bot);
-        skills[commandId.ToString(CultureInfo.InvariantCulture)] = data;
+
+        if (!TryApplySkill(ctx, bot, commandId, data, skills))
+        {
+            // Refused rather than failed. The client draws nothing for a refusal and this revision
+            // has no bot-error dialog to open, so the owner simply sees the bot unchanged.
+            return false;
+        }
 
         bot.SkillsJson = JsonSerializer.Serialize(skills);
 
-        // The tick reads a cached phrase list; without this the bot keeps saying the old lines.
-        InvalidateChatter(botId);
-
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+        // The tick reads cached phrases and flags; without this the bot keeps to its old ones.
+        InvalidateBotCaches(botId);
+
+        // Name and figure live on the row rather than in the skill blob, so the live snapshot has
+        // to be rebuilt from it or the room keeps drawing the bot it loaded.
+        BotSnapshot updated = ToSnapshot(bot) with
+        {
+            X = placed.X,
+            Y = placed.Y,
+            Z = placed.Z,
+        };
+        _botsById[botId] = updated;
+
+        switch (commandId)
+        {
+            case BotSkillId.DressUp:
+            case BotSkillId.ChangeName:
+                BroadcastLook(updated);
+                break;
+
+            case BotSkillId.Dance:
+                BroadcastDance(
+                    botId,
+                    IsFlagOn(
+                        skills.GetValueOrDefault(
+                            BotSkillId.Dance.ToString(CultureInfo.InvariantCulture),
+                            string.Empty
+                        )
+                    )
+                );
+                break;
+
+            default:
+                break;
+        }
 
         await _roomGrain
             ._grainFactory.GetPlayerPresenceGrain(ctx.PlayerId)
@@ -342,14 +387,7 @@ public sealed partial class RoomBotSystem(RoomGrain roomGrain)
                 new BotSkillListUpdateMessageComposer
                 {
                     BotId = botId,
-                    Skills =
-                    [
-                        .. skills.Select(pair => new BotSkillEntry
-                        {
-                            CommandId = int.Parse(pair.Key, CultureInfo.InvariantCulture),
-                            Data = pair.Value,
-                        }),
-                    ],
+                    Skills = BuildSkillEntries(skills),
                 }
             )
             .ConfigureAwait(true);
@@ -444,9 +482,16 @@ public sealed partial class RoomBotSystem(RoomGrain roomGrain)
             && !flags.Has(RoomTileFlags.AvatarOccupied);
     }
 
-    private static RoomBotAvatarSnapshot ToAvatarSnapshot(BotSnapshot bot, string ownerName = "") =>
+    /// <summary>
+    /// The avatar block the client draws a bot from. Its skill ids are what put buttons on the
+    /// bot's menu — the menu reads them straight off this block — so a bot serialised without them
+    /// has no menu at all beyond being picked up.
+    /// </summary>
+    private RoomBotAvatarSnapshot ToAvatarSnapshot(BotSnapshot bot, string ownerName = "") =>
         new()
         {
+            SkillIds = SupportedSkillIds,
+            DanceType = IsDancing(bot.BotId) ? AvatarDanceType.Dance : AvatarDanceType.None,
             AvatarType = RoomObjectType.Bot,
             WebId = bot.BotId,
             Name = bot.Name,

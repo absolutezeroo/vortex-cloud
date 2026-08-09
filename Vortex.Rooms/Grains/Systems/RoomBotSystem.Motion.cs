@@ -19,9 +19,6 @@ namespace Vortex.Rooms.Grains.Systems;
 /// </summary>
 public sealed partial class RoomBotSystem
 {
-    /// <summary>The wander skill's id, alongside the chatter skill at 2.</summary>
-    private const int WanderCommandId = 0;
-
     /// <summary>How far a bot will pick a destination from where it stands.</summary>
     private const int WanderRadius = 5;
 
@@ -177,12 +174,16 @@ public sealed partial class RoomBotSystem
     private static long ScheduleNextWanderAt(long now) =>
         now + Random.Shared.Next(WanderIdleMinMs, WanderIdleMaxMs + 1);
 
-    /// <summary>Any non-empty configuration turns wandering on; the value itself is the client's.</summary>
+    /// <summary>
+    /// The walk button is a toggle and the client sends empty data on every click, so the state is
+    /// the server's to keep: <see cref="ToggleFlag"/> writes the flag this reads.
+    /// </summary>
     private bool IsWanderEnabled(int botId) =>
         _skillsByBotId.TryGetValue(botId, out Dictionary<string, string>? skills)
-        && skills.TryGetValue(
-            WanderCommandId.ToString(CultureInfo.InvariantCulture),
-            out string? value
-        )
-        && !string.IsNullOrWhiteSpace(value);
+        && IsFlagOn(
+            skills.GetValueOrDefault(
+                BotSkillId.RandomWalk.ToString(CultureInfo.InvariantCulture),
+                string.Empty
+            )
+        );
 }
