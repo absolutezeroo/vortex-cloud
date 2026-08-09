@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Vortex.Logging;
 using Vortex.Logging.Extensions;
 using Vortex.Primitives;
+using Vortex.Primitives.Messages.Outgoing.Room.Action;
 using Vortex.Primitives.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
@@ -76,6 +77,8 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
                 {
                     avatar.RemoveStatus(AvatarStatusType.Sign);
                 }
+
+                ExpireHandItem(avatar, now);
             }
             catch (Exception ex)
             {
@@ -100,6 +103,32 @@ public sealed class RoomAvatarTickSystem(RoomGrain roomGrain)
             .LogAndForget(
                 _roomGrain._logger,
                 "Failed to publish avatar tick update for room {RoomId}",
+                _roomGrain.RoomId
+            );
+    }
+
+    /// <summary>
+    /// Takes a held item out of the hand once its time is up. Habbo hand items are shown for a
+    /// while and then gone; without this one drink would be held for the rest of the session.
+    /// </summary>
+    private void ExpireHandItem(IRoomAvatar avatar, long now)
+    {
+        if (avatar.CarryItemId == 0 || now < avatar.CarryItemUntilMs)
+        {
+            return;
+        }
+
+        avatar.SetCarryItem(0, 0);
+
+        // The item is not in the avatar block, so an emptied hand has to be said out loud or the
+        // client keeps drawing what it was last told about.
+        _roomGrain
+            .SendComposerToRoomAsync(
+                new CarryObjectMessageComposer { UserId = avatar.ObjectId.Value, ItemType = 0 }
+            )
+            .LogAndForget(
+                _roomGrain._logger,
+                "Failed to clear a hand item in room {RoomId}",
                 _roomGrain.RoomId
             );
     }

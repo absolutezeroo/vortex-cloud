@@ -142,6 +142,7 @@ public sealed class RoomPlayerAvatar
             ActivityPoints = ActivityPoints,
             IsModerator = IsModerator,
             CurrentEffectId = CurrentEffectId,
+            CarryItemId = CarryItemId,
         };
     }
 }

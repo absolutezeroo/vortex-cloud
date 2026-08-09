@@ -13,6 +13,7 @@ using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
 using Vortex.Rooms.Grains.Systems;
+using Vortex.Rooms.Tests.Support;
 using Xunit;
 
 namespace Vortex.Rooms.Tests.Bots;
@@ -35,7 +36,7 @@ public sealed class RoomBotCommandTests
     [Fact]
     public async Task TeleportingABot_PutsItThereAtOnceAndTellsTheRoom()
     {
-        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
 
         harness.BroadcastToRoom.Clear();
 
@@ -61,7 +62,7 @@ public sealed class RoomBotCommandTests
     [Fact]
     public async Task TeleportingOntoATileThatWillNotTakeIt_IsRefusedAndLeavesItWhereItWas()
     {
-        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
 
         harness.BlockTile(9, 9);
 
@@ -80,7 +81,7 @@ public sealed class RoomBotCommandTests
     [Fact]
     public async Task ABotSentSomewhere_WalksThereAndThenForgetsTheOrder()
     {
-        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
 
         bool ordered = await harness
             .BotSystem.WalkToAsync(BotId, 8, 8, CancellationToken.None)
@@ -108,7 +109,7 @@ public sealed class RoomBotCommandTests
     [Fact]
     public async Task AnOrderOutranksWandering()
     {
-        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
 
         await harness.EnableWanderAsync().ConfigureAwait(true);
 
@@ -134,7 +135,7 @@ public sealed class RoomBotCommandTests
     [Fact]
     public async Task AFollowingBot_ClosesOnItsTargetAndStopsBesideThem()
     {
-        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
 
         harness.PutPlayerInRoom(Walker, 10, 10);
 
@@ -154,7 +155,7 @@ public sealed class RoomBotCommandTests
     [Fact]
     public async Task ABotToldToStopFollowing_StaysWhereItIs()
     {
-        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
 
         harness.PutPlayerInRoom(Walker, 10, 10);
 
@@ -179,7 +180,7 @@ public sealed class RoomBotCommandTests
     [Fact]
     public async Task AFollowingBotWhoseTargetIsNotInTheRoom_WaitsRatherThanWalkingOff()
     {
-        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
 
         // Never put the player in the room: the order stands, but there is nothing to walk towards.
         await harness
@@ -196,7 +197,7 @@ public sealed class RoomBotCommandTests
     [Fact]
     public async Task AWiredLookChange_IsWrittenDownAndRedrawn()
     {
-        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
 
         harness.BroadcastToRoom.Clear();
 
@@ -223,7 +224,7 @@ public sealed class RoomBotCommandTests
     [Fact]
     public async Task AnEmptyLook_IsRefusedRatherThanLeavingTheBotInvisible()
     {
-        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
 
         bool changed = await harness
             .BotSystem.SetFigureAsync(BotId, "   ", CancellationToken.None)
@@ -234,13 +235,13 @@ public sealed class RoomBotCommandTests
         await using VortexDbContext dbCtx = harness.NewDbContext();
         BotEntity bot = await dbCtx.Bots.SingleAsync(b => b.Id == BotId).ConfigureAwait(true);
 
-        bot.Figure.Should().Be(BotHarness.OriginalFigure);
+        bot.Figure.Should().Be(RoomHarness.OriginalFigure);
     }
 
     [Fact]
     public async Task OrdersAimedAtABotThatIsNotHere_AreRefusedRatherThanThrowing()
     {
-        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
 
         (
             await harness

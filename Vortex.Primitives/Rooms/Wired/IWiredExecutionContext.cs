@@ -75,4 +75,10 @@ public interface IWiredExecutionContext : IWiredContext
 
     /// <summary>Dresses the named bot in a look captured when the wired was configured.</summary>
     public Task<bool> ProcessBotFigureAsync(string botName, string figure);
+
+    /// <summary>Sends the named bot walking over to a player, for the length of one errand.</summary>
+    public Task<bool> ProcessBotWalkToPlayerAsync(string botName, PlayerId target);
+
+    /// <summary>Puts a hand item in a player's hand for the room's configured while.</summary>
+    public Task<bool> ProcessGiveHandItemAsync(PlayerId playerId, int handItemId);
 }

@@ -18,6 +18,13 @@ public class RoomConfig : IWiredLimits
     public int RoomDeactivationDelayMs { get; init; } = 1800000;
     public int RoomTickMs { get; init; } = 50;
     public int AvatarTickMs { get; init; } = 500;
+
+    /// <summary>
+    /// How long a hand item stays in the hand. Habbo shows one for about half a minute and then
+    /// takes it away; it is a display timer rather than a rule about the item, which is why it sits
+    /// with the room's other clocks.
+    /// </summary>
+    public int HandItemDurationMs { get; init; } = 30_000;
     public PetConfig Pet { get; init; } = new();
     public int RollerTickMs { get; init; } = 2000;
     public int WiredTickMs { get; init; } = 50;

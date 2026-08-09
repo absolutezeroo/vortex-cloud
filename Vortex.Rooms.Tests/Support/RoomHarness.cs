@@ -22,6 +22,7 @@ using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Orleans.Snapshots.Room.Settings;
 using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Pets.Providers;
+using Vortex.Primitives.Pets.Snapshots;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Rooms;
@@ -37,17 +38,18 @@ using Vortex.Primitives.Rooms.Snapshots.Mapping;
 using Vortex.Rooms.Configuration;
 using Vortex.Rooms.Grains;
 using Vortex.Rooms.Grains.Systems;
+using Vortex.Rooms.Object.Avatars.Player;
 using Vortex.Rooms.Wired.Logs;
 using Vortex.Tests.Support;
 
-namespace Vortex.Rooms.Tests.Bots;
+namespace Vortex.Rooms.Tests.Support;
 
 /// <summary>
-/// A room grain built outside a silo with one bot standing in it, an open floor to walk on, and the
-/// room broadcast swapped for a recorder. Shared by the bot tests because standing a room up is
-/// most of the work in any of them.
+/// A room grain built outside a silo: an open floor to walk on, one bot standing in it, the room
+/// broadcast swapped for a recorder and room events collected. Shared, because standing a room up
+/// is most of the work in any test that needs one.
 /// </summary>
-internal sealed class BotHarness
+internal sealed class RoomHarness
 {
     public const int RoomIdValue = 55;
     public const int PlacedBotId = 7;
@@ -72,7 +74,7 @@ internal sealed class BotHarness
 
     private long _now;
 
-    private BotHarness(DbContextOptions<VortexDbContext> options, bool canManipulate)
+    private RoomHarness(DbContextOptions<VortexDbContext> options, bool canManipulate)
     {
         _options = options;
 
@@ -91,7 +93,7 @@ internal sealed class BotHarness
             BuildPermissionService(),
             FakeProxy.Create<IVortexMetrics>(_ => null),
             FakeProxy.Create<IRoomModerationStore>(_ => null),
-            FakeProxy.Create<IPetLevelProvider>(_ => null),
+            BuildPetLevelProvider(),
             FakeProxy.Create<IPetCommandProvider>(_ => null),
             FakeProxy.Create<IPetVocalProvider>(_ => null),
             new RoomWiredLogChannel()
@@ -185,6 +187,11 @@ internal sealed class BotHarness
         });
 
         Grain.EventModule.Register(new EventRecorder(RoomEvents));
+
+        // The simulated clock starts where the room's own does. Anything the room stamps for itself
+        // — a hand item's expiry, say — is measured against that clock, so a test ticking from zero
+        // would be permanently in its past.
+        _now = Grain.NowMs();
     }
 
     public RoomGrain Grain { get; }
@@ -203,7 +210,7 @@ internal sealed class BotHarness
     /// </summary>
     public List<RoomEvent> RoomEvents { get; } = [];
 
-    public static async Task<BotHarness> CreateAsync(
+    public static async Task<RoomHarness> CreateAsync(
         int placedBotId = PlacedBotId,
         bool canManipulate = true
     )
@@ -231,13 +238,41 @@ internal sealed class BotHarness
             await seed.SaveChangesAsync().ConfigureAwait(true);
         }
 
-        return new BotHarness(options, canManipulate);
+        return new RoomHarness(options, canManipulate);
     }
 
     public VortexDbContext NewDbContext() => new(_options);
 
     public ActionContext ContextFor(PlayerId playerId) =>
         new(ActionOrigin.Player, default, playerId, new RoomId(RoomIdValue));
+
+    /// <summary>How long the test room holds a hand item, so a test can tick past it.</summary>
+    public const int HandItemDurationMs = 30_000;
+
+    /// <summary>
+    /// Runs the avatar tick, which is a different clock from the bot one — hand items expire on it.
+    /// </summary>
+    public async Task TickAvatarsAsync(int ticks = 1)
+    {
+        for (int tick = 0; tick < ticks; tick++)
+        {
+            _now += Grain._roomConfig.AvatarTickMs;
+
+            await Grain
+                .AvatarTickSystem.ProcessAvatarsAsync(_now, CancellationToken.None)
+                .ConfigureAwait(true);
+        }
+    }
+
+    /// <summary>Jumps the avatar clock past a duration and ticks once, which is what expiry needs.</summary>
+    public async Task TickAvatarsPastAsync(long durationMs)
+    {
+        _now += durationMs + Grain._roomConfig.AvatarTickMs;
+
+        await Grain
+            .AvatarTickSystem.ProcessAvatarsAsync(_now, CancellationToken.None)
+            .ConfigureAwait(true);
+    }
 
     /// <summary>Runs the bot tick, each call standing for one second of room time.</summary>
     public async Task TickAsync(int ticks = 1)
@@ -280,6 +315,62 @@ internal sealed class BotHarness
     public void PutOwnerInRoomWearing(string figure, AvatarGenderType gender) =>
         PutPlayerInRoom(Owner, 0, 0, figure, gender);
 
+    /// <summary>
+    /// A real avatar rather than a stub, for the tests that need one to carry state — holding
+    /// something, being walked about — rather than merely to stand somewhere.
+    /// </summary>
+    public RoomPlayerAvatar PutRealPlayerInRoom(PlayerId playerId, int x, int y)
+    {
+        RoomObjectId objectId = new(playerId.Value);
+
+        RoomPlayerAvatar avatar = new() { ObjectId = objectId, PlayerId = playerId };
+        avatar.SetPosition(x, y);
+
+        Grain._state.AvatarsByPlayerId[playerId] = objectId;
+        Grain._state.AvatarsByObjectId[objectId] = avatar;
+
+        return avatar;
+    }
+
+    /// <summary>
+    /// A pet standing on a tile. Placed straight into the room's live state rather than through the
+    /// pet system, because what is under test is what happens to it, not how it got there.
+    /// </summary>
+    public async Task PutPetInRoomAsync(
+        int petId,
+        int x,
+        int y,
+        int thirst = 100,
+        int nutrition = 100
+    )
+    {
+        // Load first, on an empty table: the pet system clears its cache the first time it is
+        // asked, so a pet placed before that would be wiped by the very call under test.
+        await Grain.PetSystem.EnsurePetsLoadedAsync(CancellationToken.None).ConfigureAwait(true);
+
+        Grain._state.PetsById[petId] = new PetSnapshot
+        {
+            PetId = petId,
+            OwnerId = Owner,
+            RoomId = RoomIdValue,
+            Name = "Rex",
+            Type = 0,
+            Race = 0,
+            Color = "FFFFFF",
+            Gender = AvatarGenderType.Male,
+            Level = 1,
+            Experience = 0,
+            Energy = 100,
+            Nutrition = nutrition,
+            Respect = 0,
+            X = x,
+            Y = y,
+            Z = 0,
+            Direction = Rotation.South,
+            Thirst = thirst,
+        };
+    }
+
     /// <summary>An avatar standing on a tile, which is what a following bot walks towards.</summary>
     public void PutPlayerInRoom(
         PlayerId playerId,
@@ -304,6 +395,18 @@ internal sealed class BotHarness
             }
         );
     }
+
+    /// <summary>
+    /// Caps at Habbo's full-bar hundred. The default stub answers zero, which silently clamps every
+    /// fed pet back to empty and makes feeding look broken when it is not.
+    /// </summary>
+    private static IPetLevelProvider BuildPetLevelProvider() =>
+        FakeProxy.Create<IPetLevelProvider>(call =>
+            call.Method.Name.StartsWith("Get", StringComparison.Ordinal)
+            && call.Method.ReturnType == typeof(int)
+                ? 100
+                : null
+        );
 
     /// <summary>
     /// A staff-capability-free player, so the manipulate check falls through to the room's own

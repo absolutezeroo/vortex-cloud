@@ -397,6 +397,32 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
             bot => _roomGrain.BotSystem.SetFigureAsync(bot.BotId, figure, CancellationToken.None)
         );
 
+    public Task<bool> ProcessBotWalkToPlayerAsync(string botName, PlayerId target)
+    {
+        if (
+            !_roomGrain._state.AvatarsByPlayerId.TryGetValue(target, out RoomObjectId objectId)
+            || !_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar)
+        )
+        {
+            return Task.FromResult(false);
+        }
+
+        return WithBotAsync(
+            botName,
+            "walk over",
+            bot =>
+                _roomGrain.BotSystem.WalkToAsync(
+                    bot.BotId,
+                    avatar.X,
+                    avatar.Y,
+                    CancellationToken.None
+                )
+        );
+    }
+
+    public Task<bool> ProcessGiveHandItemAsync(PlayerId playerId, int handItemId) =>
+        Task.FromResult(_roomGrain.HandItemModule.Give(playerId, handItemId));
+
     /// <summary>
     /// Runs something against the bot going by a name. A stack naming a bot that is not here is
     /// ordinary rather than exceptional — somebody picked it up — so it answers false and says

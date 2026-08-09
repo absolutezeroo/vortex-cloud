@@ -5,6 +5,7 @@ using FluentAssertions;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Events.Bots;
 using Vortex.Rooms.Grains.Systems;
+using Vortex.Rooms.Tests.Support;
 using Xunit;
 
 namespace Vortex.Rooms.Tests.Bots;
@@ -24,7 +25,7 @@ public sealed class RoomBotTriggerEventTests
     [Fact]
     public async Task AWalkingBot_AnnouncesEveryTileItArrivesOn()
     {
-        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
 
         await harness
             .BotSystem.WalkToAsync(BotId, 8, 8, CancellationToken.None)
@@ -40,7 +41,7 @@ public sealed class RoomBotTriggerEventTests
         arrivals
             .Should()
             .OnlyContain(
-                evt => evt.BotName == BotHarness.BotName && evt.BotId == BotId,
+                evt => evt.BotName == RoomHarness.BotName && evt.BotId == BotId,
                 "the trigger matches on the name typed into its form"
             );
 
@@ -58,7 +59,7 @@ public sealed class RoomBotTriggerEventTests
     [Fact]
     public async Task ABotThatIsNotWalking_AnnouncesNothing()
     {
-        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
 
         harness.RoomEvents.Clear();
 
@@ -72,7 +73,7 @@ public sealed class RoomBotTriggerEventTests
     [Fact]
     public async Task ABotArrivingBesideSomebody_AnnouncesWhoItReached()
     {
-        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
 
         harness.PutPlayerInRoom(Bystander, 8, 8);
 
@@ -91,14 +92,14 @@ public sealed class RoomBotTriggerEventTests
             .And.Subject.Last();
 
         met.ReachedPlayerId.Should().Be(Bystander);
-        met.BotName.Should().Be(BotHarness.BotName);
+        met.BotName.Should().Be(RoomHarness.BotName);
         met.CausedBy.PlayerId.Should().Be(Bystander, "the stack goes on to act on who was reached");
     }
 
     [Fact]
     public async Task ABotWalkingNowhereNearAnybody_AnnouncesNoMeeting()
     {
-        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
 
         // The far corner from the bot's own tile, so it never passes anybody on the way.
         harness.PutPlayerInRoom(Bystander, 11, 11);

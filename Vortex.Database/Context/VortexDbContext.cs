@@ -201,6 +201,8 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<PetFoodEntity> PetFood { get; init; } = null!;
 
+    public DbSet<HandItemEntity> HandItems { get; init; } = null!;
+
     public DbSet<PetPaletteEntity> PetPalettes { get; init; } = null!;
 
     public DbSet<PetVocalEntity> PetVocals { get; init; } = null!;

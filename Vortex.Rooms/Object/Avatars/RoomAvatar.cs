@@ -42,6 +42,15 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
 
     public int CurrentEffectId { get; private set; } = 0;
 
+    /// <summary>What the avatar is holding, or zero for empty-handed.</summary>
+    public int CarryItemId { get; private set; } = 0;
+
+    /// <summary>
+    /// Room-clock time the held item falls out of the hand. Habbo hand items are not kept: they
+    /// are shown for a while and then gone, which is why nothing about them is persisted.
+    /// </summary>
+    public long CarryItemUntilMs { get; private set; } = 0;
+
     private int _goalTries = 0;
 
     protected RoomAvatarSnapshot? _snapshot;
@@ -196,6 +205,31 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
         {
             MarkDirty();
         }
+    }
+
+    /// <summary>
+    /// Puts something in the avatar's hand until <paramref name="untilMs"/> on the room clock, or
+    /// empties it when the item is zero. Returns true only when something changed, so handing
+    /// somebody what they are already holding costs no broadcast.
+    /// </summary>
+    public bool SetCarryItem(int itemId, long untilMs)
+    {
+        itemId = itemId < 0 ? 0 : itemId;
+
+        if (CarryItemId == itemId)
+        {
+            // Re-handing the same item is a refill rather than a no-op: the point of giving
+            // somebody another drink is that they hold it longer.
+            CarryItemUntilMs = itemId == 0 ? 0 : untilMs;
+
+            return false;
+        }
+
+        CarryItemId = itemId;
+        CarryItemUntilMs = itemId == 0 ? 0 : untilMs;
+        _snapshot = null;
+
+        return true;
     }
 
     public bool SetEffect(int effectId)

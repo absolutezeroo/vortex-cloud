@@ -48,6 +48,31 @@ public interface IRoomAvatars : IGrainWithIntegerKey
 
     /// <summary>Sets the acting player's worn avatar effect (0 = none) and broadcasts it to the room.</summary>
     public Task<bool> SetAvatarEffectAsync(ActionContext ctx, int effectId, CancellationToken ct);
+
+    /// <summary>
+    /// Puts a hand item in the acting player's hand for a while. Nothing is persisted: a hand item
+    /// is shown and then gone, so a player who reconnects is empty-handed.
+    /// </summary>
+    public Task<bool> GiveCarryItemAsync(PlayerId playerId, int itemId, CancellationToken ct);
+
+    /// <summary>Empties the acting player's hand. False when it was already empty.</summary>
+    public Task<bool> DropCarryItemAsync(ActionContext ctx, CancellationToken ct);
+
+    /// <summary>
+    /// Hands what the acting player is holding to somebody standing beside them. Refused across a
+    /// room, and refused when their hand is empty.
+    /// </summary>
+    public Task<bool> PassCarryItemAsync(
+        ActionContext ctx,
+        PlayerId targetPlayerId,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Gives what the acting player is holding to one of the room's pets, which consumes it. False
+    /// when the pet is out of reach, or the item is nothing a pet will take.
+    /// </summary>
+    public Task<bool> PassCarryItemToPetAsync(ActionContext ctx, int petId, CancellationToken ct);
     public Task SendChatFromPlayerAsync(
         PlayerId playerId,
         string text,

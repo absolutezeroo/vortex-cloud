@@ -1,11 +1,16 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Messages.Registry;
+using Vortex.Primitives.Action;
 using Vortex.Primitives.Messages.Incoming.Room.Avatar;
+using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Players;
 
 namespace Vortex.PacketHandlers.Room.Avatar;
 
-public class PassCarryItemMessageHandler : IMessageHandler<PassCarryItemMessage>
+public class PassCarryItemMessageHandler(IGrainFactory grainFactory)
+    : IMessageHandler<PassCarryItemMessage>
 {
     public async ValueTask HandleAsync(
         PassCarryItemMessage message,
@@ -13,6 +18,14 @@ public class PassCarryItemMessageHandler : IMessageHandler<PassCarryItemMessage>
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        if (ctx.PlayerId <= 0 || ctx.RoomId <= 0 || message.TargetPlayerId <= 0)
+        {
+            return;
+        }
+
+        await grainFactory
+            .GetRoomAvatars(ctx.RoomId)
+            .PassCarryItemAsync(ctx.AsActionContext(), new PlayerId(message.TargetPlayerId), ct)
+            .ConfigureAwait(false);
     }
 }

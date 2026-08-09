@@ -35,4 +35,9 @@ public sealed record RoomPlayerAvatarSnapshot : RoomAvatarSnapshot
 
     [Id(21)]
     public int BadgesRank { get; init; }
+
+    /// <summary>What the avatar is holding; zero for empty-handed. Rides its own composer rather
+    /// than the avatar block, so a room replays it for whoever has just walked in.</summary>
+    [Id(22)]
+    public int CarryItemId { get; init; }
 }

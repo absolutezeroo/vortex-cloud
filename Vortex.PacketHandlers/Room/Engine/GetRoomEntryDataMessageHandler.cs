@@ -115,6 +115,21 @@ public class GetRoomEntryDataMessageHandler(IGrainFactory grainFactory)
             )
             .ToArray();
 
+        // A hand item is no more part of the Users payload than a dance is, so whoever is holding
+        // something has to be replayed for the person walking in.
+        IComposer[] handItemComposers = avatarSnapshots
+            .OfType<RoomPlayerAvatarSnapshot>()
+            .Where(x => x.CarryItemId != 0)
+            .Select(x =>
+                (IComposer)
+                    new CarryObjectMessageComposer
+                    {
+                        UserId = x.ObjectId.Value,
+                        ItemType = x.CarryItemId,
+                    }
+            )
+            .ToArray();
+
         await playerPresence
             .SendComposerAsync(
                 new ObjectsMessageComposer
@@ -153,6 +168,11 @@ public class GetRoomEntryDataMessageHandler(IGrainFactory grainFactory)
         if (effectComposers.Length > 0)
         {
             await playerPresence.SendComposerAsync(effectComposers).ConfigureAwait(false);
+        }
+
+        if (handItemComposers.Length > 0)
+        {
+            await playerPresence.SendComposerAsync(handItemComposers).ConfigureAwait(false);
         }
 
         await playerPresence.SetActiveRoomAsync(roomId, ct).ConfigureAwait(false);

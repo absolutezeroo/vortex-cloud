@@ -67,6 +67,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     internal readonly IRoomWiredVariablesProvider _wiredVariablesProvider;
     public readonly RoomActionModule ActionModule;
     public readonly RoomAvatarModule AvatarModule;
+    public readonly RoomHandItemModule HandItemModule;
     public readonly RoomAvatarTickSystem AvatarTickSystem;
     public readonly RoomChatSystem ChatSystem;
     public readonly RoomGameSystem GameSystem;
@@ -136,6 +137,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         MapModule = new RoomMapModule(this);
         ObjectModule = new RoomObjectModule(this);
         AvatarModule = new RoomAvatarModule(this);
+        HandItemModule = new RoomHandItemModule(this);
         FurniModule = new RoomFurniModule(this);
         ActionModule = new RoomActionModule(this);
 

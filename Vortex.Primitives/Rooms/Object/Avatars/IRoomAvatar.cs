@@ -43,8 +43,21 @@ public interface IRoomAvatar : IRoomObject
     /// and re-synced to late joiners at room entry.</summary>
     public int CurrentEffectId { get; }
 
+    /// <summary>
+    /// What the avatar is holding (0 = empty-handed). Broadcast via <c>CarryObjectMessageComposer</c>
+    /// and re-synced to late joiners at room entry, the same way an effect is; unlike an effect it
+    /// is never persisted, because a hand item is shown for a while and then gone.
+    /// </summary>
+    public int CarryItemId { get; }
+
+    /// <summary>Room-clock time the held item leaves the hand.</summary>
+    public long CarryItemUntilMs { get; }
+
     public bool SetGoalTileId(int tileId);
     public bool SetEffect(int effectId);
+
+    /// <summary>Puts something in the hand until a room-clock time, or empties it when zero.</summary>
+    public bool SetCarryItem(int itemId, long untilMs);
     public void SetHeight(Altitude z);
     public void SetBodyRotation(Rotation rot);
     public void SetHeadRotation(Rotation rot);

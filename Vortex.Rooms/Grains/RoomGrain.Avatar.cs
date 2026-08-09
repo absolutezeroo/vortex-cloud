@@ -210,6 +210,21 @@ public sealed partial class RoomGrain
         }
     }
 
+    public Task<bool> GiveCarryItemAsync(PlayerId playerId, int itemId, CancellationToken ct) =>
+        Task.FromResult(HandItemModule.Give(playerId, itemId));
+
+    public Task<bool> DropCarryItemAsync(ActionContext ctx, CancellationToken ct) =>
+        Task.FromResult(HandItemModule.Drop(ctx.PlayerId));
+
+    public Task<bool> PassCarryItemAsync(
+        ActionContext ctx,
+        PlayerId targetPlayerId,
+        CancellationToken ct
+    ) => Task.FromResult(HandItemModule.Pass(ctx.PlayerId, targetPlayerId));
+
+    public Task<bool> PassCarryItemToPetAsync(ActionContext ctx, int petId, CancellationToken ct) =>
+        PetSystem.ConsumeHandItemAsync(ctx, petId, ct);
+
     public async Task<bool> SetAvatarEffectAsync(
         ActionContext ctx,
         int effectId,
