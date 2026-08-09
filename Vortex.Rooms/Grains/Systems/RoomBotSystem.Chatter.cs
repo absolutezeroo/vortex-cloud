@@ -52,7 +52,7 @@ public sealed partial class RoomBotSystem
 
         await EnsureSkillsLoadedAsync(ct).ConfigureAwait(true);
 
-        List<RoomAvatarSnapshot> moved = StepWanderingBots(now);
+        List<RoomAvatarSnapshot> moved = StepBots(now);
 
         if (moved.Count > 0)
         {

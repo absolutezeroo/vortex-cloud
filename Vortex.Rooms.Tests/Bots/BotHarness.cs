@@ -1,0 +1,352 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
+using Orleans;
+using Orleans.Streams;
+using Vortex.Database.Context;
+using Vortex.Database.Entities.Room;
+using Vortex.Primitives;
+using Vortex.Primitives.Action;
+using Vortex.Primitives.Bots;
+using Vortex.Primitives.Events;
+using Vortex.Primitives.Navigator.Enums;
+using Vortex.Primitives.Networking;
+using Vortex.Primitives.Observability;
+using Vortex.Primitives.Orleans.Snapshots.Room;
+using Vortex.Primitives.Orleans.Snapshots.Room.Settings;
+using Vortex.Primitives.Permissions;
+using Vortex.Primitives.Pets.Providers;
+using Vortex.Primitives.Players;
+using Vortex.Primitives.Players.Grains;
+using Vortex.Primitives.Rooms;
+using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Grains;
+using Vortex.Primitives.Rooms.Object;
+using Vortex.Primitives.Rooms.Object.Avatars;
+using Vortex.Primitives.Rooms.Providers;
+using Vortex.Primitives.Rooms.Snapshots;
+using Vortex.Primitives.Rooms.Snapshots.Avatars;
+using Vortex.Primitives.Rooms.Snapshots.Mapping;
+using Vortex.Rooms.Configuration;
+using Vortex.Rooms.Grains;
+using Vortex.Rooms.Grains.Systems;
+using Vortex.Rooms.Wired.Logs;
+using Vortex.Tests.Support;
+
+namespace Vortex.Rooms.Tests.Bots;
+
+/// <summary>
+/// A room grain built outside a silo with one bot standing in it, an open floor to walk on, and the
+/// room broadcast swapped for a recorder. Shared by the bot tests because standing a room up is
+/// most of the work in any of them.
+/// </summary>
+internal sealed class BotHarness
+{
+    public const int RoomIdValue = 55;
+    public const int PlacedBotId = 7;
+    public const string OwnerName = "Owner";
+    public const string OriginalFigure = "hd-180-1";
+    public const string BotName = "Bartender";
+
+    /// <summary>Where the seeded bot stands, clear of the walls it might otherwise path into.</summary>
+    public const int BotStartX = 3;
+    public const int BotStartY = 4;
+
+    /// <summary>Wider than the wander radius, so a bot in the middle has somewhere to go.</summary>
+    private const int MapSize = 12;
+
+    /// <summary>The room's bot tick, which is what a simulated tick has to advance past.</summary>
+    private const long TickMs = 1_000;
+
+    public static readonly PlayerId Owner = new(101);
+    public static readonly PlayerId Stranger = new(202);
+
+    private readonly DbContextOptions<VortexDbContext> _options;
+
+    private long _now;
+
+    private BotHarness(DbContextOptions<VortexDbContext> options, bool canManipulate)
+    {
+        _options = options;
+
+        Grain = GrainActivationContext.CreateWithIntegerKey<RoomGrain>(
+            RoomIdValue,
+            new SingleOptionsFactory(options),
+            Options.Create(new RoomConfig()),
+            NullLogger<IRoomGrain>.Instance,
+            FakeProxy.Create<IRoomModelProvider>(_ => null),
+            FakeProxy.Create<IRoomItemsProvider>(_ => null),
+            FakeProxy.Create<IRoomObjectLogicProvider>(_ => null),
+            FakeProxy.Create<IRoomAvatarProvider>(_ => null),
+            FakeProxy.Create<IRoomWiredVariablesProvider>(_ => null),
+            BuildGrainFactory(),
+            FakeProxy.Create<IEventPublisher>(_ => null),
+            BuildPermissionService(),
+            FakeProxy.Create<IVortexMetrics>(_ => null),
+            FakeProxy.Create<IRoomModerationStore>(_ => null),
+            FakeProxy.Create<IPetLevelProvider>(_ => null),
+            FakeProxy.Create<IPetCommandProvider>(_ => null),
+            FakeProxy.Create<IPetVocalProvider>(_ => null),
+            new RoomWiredLogChannel()
+        );
+
+        // The security module reads the room's own snapshot to decide who owns the place, so a
+        // grain built outside a silo needs one before any rights question can be asked.
+        Grain._state.RoomSnapshot = new RoomSnapshot
+        {
+            RoomId = new RoomId(RoomIdValue),
+            Name = "Test room",
+            Description = string.Empty,
+            OwnerId = Owner,
+            OwnerName = OwnerName,
+            Population = 0,
+            LastUpdatedUtc = DateTime.UnixEpoch,
+            DoorMode = RoomDoorModeType.Open,
+            PlayersMax = 25,
+            TradeType = RoomTradeModeType.Disabled,
+            Score = 0,
+            Ranking = 0,
+            CategoryId = -1,
+            Tags = [],
+            AllowBlocking = false,
+            AllowPets = true,
+            AllowPetsEat = false,
+            PaintWall = 0,
+            PaintFloor = 0,
+            PaintLandscape = 0,
+            StaffPick = false,
+            Password = string.Empty,
+            ModSettings = new ModSettingsSnapshot
+            {
+                WhoCanMute = ModSettingType.Owner,
+                WhoCanKick = ModSettingType.Owner,
+                WhoCanBan = ModSettingType.Owner,
+            },
+            ChatSettings = new ChatSettingsSnapshot
+            {
+                ChatMode = ChatModeType.FreeFlow,
+                BubbleWidth = ChatBubbleWidthType.Normal,
+                ScrollSpeed = ChatScrollSpeedType.Normal,
+                FullHearRange = 50,
+                FloodSensitivity = ChatFloodSensitivityType.Normal,
+            },
+            WorldType = string.Empty,
+            HideWalls = false,
+            WallThickness = RoomThicknessType.Normal,
+            FloorThickness = RoomThicknessType.Normal,
+            MaxVisitorsLimit = 25,
+        };
+
+        // A room with no model has no tiles, and a bot with nowhere to step cannot be seen to walk.
+        // An open square is the smallest map that lets walking be observed at all.
+        Grain._state.Model = new RoomModelSnapshot
+        {
+            Id = 1,
+            Name = "test",
+            Model = "test",
+            DoorX = 0,
+            DoorY = 0,
+            DoorRotation = Rotation.South,
+            Width = MapSize,
+            Height = MapSize,
+            Size = MapSize * MapSize,
+            BaseHeights = [.. Enumerable.Repeat(Altitude.Zero, MapSize * MapSize)],
+            BaseFlags = [.. Enumerable.Repeat(RoomTileFlags.Walkable, MapSize * MapSize)],
+        };
+
+        Grain._state.TileHeights = [.. Enumerable.Repeat(Altitude.Zero, MapSize * MapSize)];
+        Grain._state.TileFlags = [.. Enumerable.Repeat(RoomTileFlags.Walkable, MapSize * MapSize)];
+
+        if (canManipulate)
+        {
+            // Build rights in this room, which is what lets somebody clear up furniture — and now
+            // bots — that is not theirs.
+            Grain._state.PlayerIdsWithRights.Add(Stranger);
+        }
+
+        // The room broadcast normally rides an Orleans stream, which does not exist outside a silo.
+        // Swapping it for a recorder keeps the code under test unchanged and makes what the room was
+        // told an assertable thing rather than a crash.
+        Grain._roomOutbound = FakeProxy.Create<IAsyncStream<RoomOutbound>>(call =>
+        {
+            if (call.Method.Name == nameof(IAsyncStream<RoomOutbound>.OnNextAsync))
+            {
+                BroadcastToRoom.Add(((RoomOutbound)call.Args![0]!).Composer);
+            }
+
+            return null;
+        });
+    }
+
+    public RoomGrain Grain { get; }
+
+    public RoomBotSystem BotSystem => Grain.BotSystem;
+
+    /// <summary>Who the grain pushed an inventory composer at — the point of the ownership tests.</summary>
+    public List<PlayerId> ComposersSentTo { get; } = [];
+
+    /// <summary>What the whole room was told, in order.</summary>
+    public List<IComposer> BroadcastToRoom { get; } = [];
+
+    public static async Task<BotHarness> CreateAsync(
+        int placedBotId = PlacedBotId,
+        bool canManipulate = true
+    )
+    {
+        DbContextOptions<VortexDbContext> options = new DbContextOptionsBuilder<VortexDbContext>()
+            .UseInMemoryDatabase($"room-bots-{Guid.NewGuid():N}")
+            .Options;
+
+        await using (VortexDbContext seed = new(options))
+        {
+            seed.Bots.Add(
+                new BotEntity
+                {
+                    Id = placedBotId,
+                    OwnerPlayerEntityId = Owner.Value,
+                    RoomEntityId = RoomIdValue,
+                    Name = BotName,
+                    Figure = OriginalFigure,
+                    Gender = AvatarGenderType.Male,
+                    X = BotStartX,
+                    Y = BotStartY,
+                }
+            );
+
+            await seed.SaveChangesAsync().ConfigureAwait(true);
+        }
+
+        return new BotHarness(options, canManipulate);
+    }
+
+    public VortexDbContext NewDbContext() => new(_options);
+
+    public ActionContext ContextFor(PlayerId playerId) =>
+        new(ActionOrigin.Player, default, playerId, new RoomId(RoomIdValue));
+
+    /// <summary>Runs the bot tick, each call standing for one second of room time.</summary>
+    public async Task TickAsync(int ticks = 1)
+    {
+        for (int tick = 0; tick < ticks; tick++)
+        {
+            _now += TickMs;
+
+            await Grain.ProcessBotsForTestAsync(_now).ConfigureAwait(true);
+        }
+    }
+
+    /// <summary>The bot as the room would draw it, which is where its position is observable.</summary>
+    public async Task<RoomBotAvatarSnapshot> ReadBotAvatarAsync()
+    {
+        ImmutableArray<RoomAvatarSnapshot> avatars = await Grain
+            .GetPlacedBotAvatarSnapshotsAsync(CancellationToken.None)
+            .ConfigureAwait(true);
+
+        return avatars.OfType<RoomBotAvatarSnapshot>().Single();
+    }
+
+    public Task EnableWanderAsync() =>
+        Grain.SetBotSkillAsync(
+            ContextFor(Owner),
+            PlacedBotId,
+            BotSkillId.RandomWalk,
+            string.Empty,
+            CancellationToken.None
+        );
+
+    /// <summary>Closes a tile, which is what furniture standing on one amounts to for a bot.</summary>
+    public void BlockTile(int x, int y) =>
+        Grain._state.TileFlags[Grain.MapModule.ToIdx(x, y)] = RoomTileFlags.Closed;
+
+    /// <summary>
+    /// Stands the owner in the room wearing a given look. Dressing a bot up reads the avatar on
+    /// screen rather than the stored figure, so there has to be one to read.
+    /// </summary>
+    public void PutOwnerInRoomWearing(string figure, AvatarGenderType gender) =>
+        PutPlayerInRoom(Owner, 0, 0, figure, gender);
+
+    /// <summary>An avatar standing on a tile, which is what a following bot walks towards.</summary>
+    public void PutPlayerInRoom(
+        PlayerId playerId,
+        int x,
+        int y,
+        string figure = "hd-1-1",
+        AvatarGenderType gender = AvatarGenderType.Male
+    )
+    {
+        RoomObjectId objectId = new(playerId.Value);
+
+        Grain._state.AvatarsByPlayerId[playerId] = objectId;
+        Grain._state.AvatarsByObjectId[objectId] = FakeProxy.Create<IRoomPlayer>(call =>
+            call.Method.Name switch
+            {
+                $"get_{nameof(IRoomAvatar.Figure)}" => figure,
+                $"get_{nameof(IRoomPlayer.Gender)}" => gender,
+                $"get_{nameof(IRoomAvatar.X)}" => x,
+                $"get_{nameof(IRoomAvatar.Y)}" => y,
+                $"get_{nameof(IRoomAvatar.ObjectId)}" => objectId,
+                _ => null,
+            }
+        );
+    }
+
+    /// <summary>
+    /// A staff-capability-free player, so the manipulate check falls through to the room's own
+    /// rights list — which is what the tests vary.
+    /// </summary>
+    private static IPermissionService BuildPermissionService() =>
+        FakeProxy.Create<IPermissionService>(call =>
+            call.Method.Name == nameof(IPermissionService.ResolveForPlayerAsync)
+                ? Task.FromResult(new PermissionSet([], []))
+                : null
+        );
+
+    private IGrainFactory BuildGrainFactory() =>
+        FakeProxy.Create<IGrainFactory>(call =>
+        {
+            if (!call.Method.IsGenericMethod)
+            {
+                return null;
+            }
+
+            // The bot avatar carries its owner's name, which the room resolves through the
+            // directory when it is not already cached.
+            if (call.Method.GetGenericArguments()[0] == typeof(IPlayerDirectoryGrain))
+            {
+                return FakeProxy.Create<IPlayerDirectoryGrain>(inner =>
+                    inner.Method.Name == nameof(IPlayerDirectoryGrain.GetPlayerNameAsync)
+                        ? Task.FromResult(OwnerName)
+                        : null
+                );
+            }
+
+            if (call.Method.GetGenericArguments()[0] != typeof(IPlayerPresenceGrain))
+            {
+                return null;
+            }
+
+            PlayerId target = new((int)(long)call.Args![0]!);
+
+            return FakeProxy.Create<IPlayerPresenceGrain>(inner =>
+            {
+                if (inner.Method.Name == nameof(IPlayerPresenceGrain.SendComposerAsync))
+                {
+                    ComposersSentTo.Add(target);
+                }
+
+                return null;
+            });
+        });
+
+    private sealed class SingleOptionsFactory(DbContextOptions<VortexDbContext> options)
+        : IDbContextFactory<VortexDbContext>
+    {
+        public VortexDbContext CreateDbContext() => new(options);
+    }
+}

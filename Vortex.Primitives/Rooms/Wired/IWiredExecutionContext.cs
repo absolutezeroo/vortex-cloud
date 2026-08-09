@@ -63,4 +63,16 @@ public interface IWiredExecutionContext : IWiredContext
         WiredBotChatType chatType,
         PlayerId? whisperTo
     );
+
+    /// <summary>
+    /// Sends the named bot to a tile, either at once or on foot. Walking is a standing order the
+    /// room tick works through rather than something that finishes here.
+    /// </summary>
+    public Task<bool> ProcessBotMovementAsync(string botName, int tileIdx, bool instant);
+
+    /// <summary>Starts the named bot following a player, or stops it when the target is null.</summary>
+    public Task<bool> ProcessBotFollowAsync(string botName, PlayerId? target);
+
+    /// <summary>Dresses the named bot in a look captured when the wired was configured.</summary>
+    public Task<bool> ProcessBotFigureAsync(string botName, string figure);
 }

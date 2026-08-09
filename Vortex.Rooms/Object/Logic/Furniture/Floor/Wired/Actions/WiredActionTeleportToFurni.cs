@@ -77,24 +77,6 @@ public class WiredActionTeleportToFurni(
         return true;
     }
 
-    private bool TryResolveDestinationTile(IWiredSelectionSet selection, out int tileIdx)
-    {
-        foreach (int furniId in selection.SelectedFurniIds)
-        {
-            if (
-                _ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
-                && item is IRoomFloorItem floor
-            )
-            {
-                tileIdx = _ctx.Map.ToIdx(floor.X, floor.Y);
-                return true;
-            }
-        }
-
-        tileIdx = 0;
-        return false;
-    }
-
     private bool TryResolveAvatar(int playerId, [NotNullWhen(true)] out IRoomAvatar? avatar)
     {
         avatar = null;

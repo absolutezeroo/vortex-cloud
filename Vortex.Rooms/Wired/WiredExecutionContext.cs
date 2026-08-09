@@ -344,12 +344,65 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
     /// setup form asks for it — the builder types a name into the box — and an unknown name is a
     /// stack pointing at a bot that has been picked up, which is ordinary rather than an error.
     /// </summary>
-    public async Task<bool> ProcessBotChatAsync(
+    public Task<bool> ProcessBotChatAsync(
         string botName,
         string text,
         WiredBotChatType chatType,
         PlayerId? whisperTo
-    )
+    ) =>
+        WithBotAsync(
+            botName,
+            "speak",
+            bot =>
+                _roomGrain.BotSystem.SayAsync(
+                    bot.BotId,
+                    text,
+                    chatType,
+                    whisperTo,
+                    CancellationToken.None
+                )
+        );
+
+    public Task<bool> ProcessBotMovementAsync(string botName, int tileIdx, bool instant)
+    {
+        if (!_roomGrain.MapModule.InBounds(tileIdx))
+        {
+            return Task.FromResult(false);
+        }
+
+        (int x, int y) = _roomGrain.MapModule.GetTileXY(tileIdx);
+
+        return WithBotAsync(
+            botName,
+            "move",
+            bot =>
+                instant
+                    ? _roomGrain.BotSystem.TeleportAsync(bot.BotId, x, y, CancellationToken.None)
+                    : _roomGrain.BotSystem.WalkToAsync(bot.BotId, x, y, CancellationToken.None)
+        );
+    }
+
+    public Task<bool> ProcessBotFollowAsync(string botName, PlayerId? target) =>
+        WithBotAsync(
+            botName,
+            "follow",
+            bot =>
+                _roomGrain.BotSystem.SetFollowTargetAsync(bot.BotId, target, CancellationToken.None)
+        );
+
+    public Task<bool> ProcessBotFigureAsync(string botName, string figure) =>
+        WithBotAsync(
+            botName,
+            "change look",
+            bot => _roomGrain.BotSystem.SetFigureAsync(bot.BotId, figure, CancellationToken.None)
+        );
+
+    /// <summary>
+    /// Runs something against the bot going by a name. A stack naming a bot that is not here is
+    /// ordinary rather than exceptional — somebody picked it up — so it answers false and says
+    /// nothing.
+    /// </summary>
+    private async Task<bool> WithBotAsync(string botName, string what, Func<BotSnapshot, Task> act)
     {
         try
         {
@@ -362,9 +415,7 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
                 return false;
             }
 
-            await _roomGrain
-                .BotSystem.SayAsync(bot.BotId, text, chatType, whisperTo, CancellationToken.None)
-                .ConfigureAwait(true);
+            await act(bot).ConfigureAwait(true);
 
             return true;
         }
@@ -372,8 +423,9 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
         {
             _roomGrain._logger.LogWarning(
                 ex,
-                "Failed to make bot {BotName} speak in room {RoomId}.",
+                "Failed to make bot {BotName} {What} in room {RoomId}.",
                 botName,
+                what,
                 _roomGrain.RoomId
             );
 

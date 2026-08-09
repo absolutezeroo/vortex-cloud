@@ -229,6 +229,10 @@ public sealed partial class RoomBotSystem(RoomGrain roomGrain)
         _botsById.Remove(botId);
         InvalidateBotCaches(botId);
 
+        // Orders die with the bot rather than waiting for it to be put down again somewhere else.
+        _ = _orderedGoalTileByBotId.Remove(botId);
+        _ = _followTargetByBotId.Remove(botId);
+
         await _roomGrain
             .SendComposerToRoomAsync(
                 new UserRemoveMessageComposer { ObjectId = ToRoomObjectId(botId) }

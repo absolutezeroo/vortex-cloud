@@ -54,8 +54,6 @@ namespace Vortex.Rooms.Tests.Bots;
 /// </summary>
 public sealed class RoomBotSystemTests
 {
-    private const int ROOM_ID = 55;
-
     /// <summary>Past the widest chatter interval, so a scheduled bot has certainly come round.</summary>
     private const long ChatterCertainlyDueMs = 120_000;
 
@@ -65,10 +63,6 @@ public sealed class RoomBotSystemTests
     /// </summary>
     private static string Chatter(params string[] phrases) =>
         string.Join('\r', phrases) + ";#;true;#;10;#;false";
-
-    private static readonly PlayerId Owner = new(101);
-    private static readonly PlayerId Stranger = new(202);
-    private const string OwnerName = "Owner";
 
     [Fact]
     public void BotObjectIds_CannotCollideWithPetObjectIds()
@@ -83,7 +77,7 @@ public sealed class RoomBotSystemTests
     [Fact]
     public async Task PlacedBots_BecomeAvatarsCarryingTheirOwnerAndObjectId()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         ImmutableArray<RoomAvatarSnapshot> avatars = await harness
             .Grain.GetPlacedBotAvatarSnapshotsAsync(CancellationToken.None)
@@ -97,8 +91,9 @@ public sealed class RoomBotSystemTests
             .Subject;
 
         bot.WebId.Should().Be(7);
-        bot.OwnerId.Should().Be(Owner.Value);
-        bot.OwnerName.Should().Be(OwnerName, "the client shows the owner on the bot's menu");
+        bot.OwnerId.Should().Be(BotHarness.Owner.Value);
+        bot.OwnerName.Should()
+            .Be(BotHarness.OwnerName, "the client shows the owner on the bot's menu");
         bot.AvatarType.Should().Be(RoomObjectType.Bot);
         bot.ObjectId.Should().Be(RoomBotSystem.ToRoomObjectId(7));
     }
@@ -106,10 +101,10 @@ public sealed class RoomBotSystemTests
     [Fact]
     public async Task RemovingABotThatIsNotHere_DoesNothing()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         bool removed = await harness
-            .Grain.RemoveBotAsync(harness.ContextFor(Owner), 999, CancellationToken.None)
+            .Grain.RemoveBotAsync(harness.ContextFor(BotHarness.Owner), 999, CancellationToken.None)
             .ConfigureAwait(true);
 
         removed.Should().BeFalse();
@@ -120,28 +115,30 @@ public sealed class RoomBotSystemTests
     public async Task RemovingABot_ReturnsItToItsOwnersHandNotTheRemovers()
     {
         // The room owner clearing up after a visitor must not end up owning the visitor's bot.
-        Harness harness = await Harness
-            .CreateAsync(placedBotId: 7, canManipulate: true)
-            .ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync(canManipulate: true).ConfigureAwait(true);
 
         bool removed = await harness
-            .Grain.RemoveBotAsync(harness.ContextFor(Stranger), 7, CancellationToken.None)
+            .Grain.RemoveBotAsync(
+                harness.ContextFor(BotHarness.Stranger),
+                7,
+                CancellationToken.None
+            )
             .ConfigureAwait(true);
 
         removed.Should().BeTrue();
         harness
             .ComposersSentTo.Should()
-            .Contain(Owner, "the bot goes back to the hand it came from");
-        harness.ComposersSentTo.Should().NotContain(Stranger);
+            .Contain(BotHarness.Owner, "the bot goes back to the hand it came from");
+        harness.ComposersSentTo.Should().NotContain(BotHarness.Stranger);
     }
 
     [Fact]
     public async Task RemovingABot_ClearsItsRoomSoTheOwnerSeesItInTheirInventoryAgain()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         await harness
-            .Grain.RemoveBotAsync(harness.ContextFor(Owner), 7, CancellationToken.None)
+            .Grain.RemoveBotAsync(harness.ContextFor(BotHarness.Owner), 7, CancellationToken.None)
             .ConfigureAwait(true);
 
         await using VortexDbContext dbCtx = harness.NewDbContext();
@@ -154,12 +151,16 @@ public sealed class RoomBotSystemTests
     [Fact]
     public async Task AStrangerWithoutRights_CannotPickUpSomebodyElsesBot()
     {
-        Harness harness = await Harness
-            .CreateAsync(placedBotId: 7, canManipulate: false)
+        BotHarness harness = await BotHarness
+            .CreateAsync(canManipulate: false)
             .ConfigureAwait(true);
 
         bool removed = await harness
-            .Grain.RemoveBotAsync(harness.ContextFor(Stranger), 7, CancellationToken.None)
+            .Grain.RemoveBotAsync(
+                harness.ContextFor(BotHarness.Stranger),
+                7,
+                CancellationToken.None
+            )
             .ConfigureAwait(true);
 
         removed.Should().BeFalse();
@@ -168,19 +169,20 @@ public sealed class RoomBotSystemTests
 
         BotEntity bot = await dbCtx.Bots.SingleAsync(b => b.Id == 7).ConfigureAwait(true);
 
-        bot.RoomEntityId.Should().Be(ROOM_ID, "the bot must still be standing where it was");
+        bot.RoomEntityId.Should()
+            .Be(BotHarness.RoomIdValue, "the bot must still be standing where it was");
     }
 
     [Fact]
     public async Task ConfiguringASkill_StoresItAndReadsItBack()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         string configured = Chatter("hello", "bye");
 
         bool set = await harness
             .Grain.SetBotSkillAsync(
-                harness.ContextFor(Owner),
+                harness.ContextFor(BotHarness.Owner),
                 7,
                 2,
                 configured,
@@ -200,7 +202,7 @@ public sealed class RoomBotSystemTests
     [Fact]
     public async Task AnUnconfiguredSkill_ReadsBackEmptyRatherThanNull()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         string? data = await harness
             .Grain.GetBotSkillAsync(7, 2, CancellationToken.None)
@@ -212,7 +214,7 @@ public sealed class RoomBotSystemTests
     [Fact]
     public async Task ABotInAnotherRoom_ReadsBackNullSoTheDialogStaysShut()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         string? data = await harness
             .Grain.GetBotSkillAsync(999, 2, CancellationToken.None)
@@ -225,13 +227,11 @@ public sealed class RoomBotSystemTests
     public async Task AVisitorWithRoomRights_StillCannotReprogramSomebodyElsesBot()
     {
         // Rights let a visitor's bot be cleared away, not made to say what they typed.
-        Harness harness = await Harness
-            .CreateAsync(placedBotId: 7, canManipulate: true)
-            .ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync(canManipulate: true).ConfigureAwait(true);
 
         bool set = await harness
             .Grain.SetBotSkillAsync(
-                harness.ContextFor(Stranger),
+                harness.ContextFor(BotHarness.Stranger),
                 7,
                 2,
                 "mine now",
@@ -251,11 +251,11 @@ public sealed class RoomBotSystemTests
     [Fact]
     public async Task AConfiguredBot_SaysOneOfItsPhrasesOnceItsTurnComesRound()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         await harness
             .Grain.SetBotSkillAsync(
-                harness.ContextFor(Owner),
+                harness.ContextFor(BotHarness.Owner),
                 7,
                 2,
                 Chatter("hello", "welcome"),
@@ -289,7 +289,7 @@ public sealed class RoomBotSystemTests
     [Fact]
     public async Task ABotWithNoChatterConfigured_StaysQuiet()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         harness.BroadcastToRoom.Clear();
 
@@ -302,7 +302,7 @@ public sealed class RoomBotSystemTests
     [Fact]
     public async Task ABotWithNoWanderConfigured_StaysPut()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         harness.BroadcastToRoom.Clear();
 
@@ -318,11 +318,11 @@ public sealed class RoomBotSystemTests
     [Fact]
     public async Task ReconfiguringASkill_DropsTheCachedPlanRatherThanFinishingTheOldOne()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         await harness
             .Grain.SetBotSkillAsync(
-                harness.ContextFor(Owner),
+                harness.ContextFor(BotHarness.Owner),
                 7,
                 2,
                 Chatter("first"),
@@ -334,7 +334,7 @@ public sealed class RoomBotSystemTests
 
         await harness
             .Grain.SetBotSkillAsync(
-                harness.ContextFor(Owner),
+                harness.ContextFor(BotHarness.Owner),
                 7,
                 2,
                 Chatter("second"),
@@ -359,7 +359,7 @@ public sealed class RoomBotSystemTests
     {
         // The client builds the bot's menu from the ids on the avatar block. Serialising none of
         // them leaves the owner a menu with nothing on it but "pick up".
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         ImmutableArray<RoomAvatarSnapshot> avatars = await harness
             .Grain.GetPlacedBotAvatarSnapshotsAsync(CancellationToken.None)
@@ -388,11 +388,11 @@ public sealed class RoomBotSystemTests
     {
         // The client sends empty data on every click and shows no state of its own, so the second
         // click has to switch wandering back off here or it never stops.
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         await harness
             .Grain.SetBotSkillAsync(
-                harness.ContextFor(Owner),
+                harness.ContextFor(BotHarness.Owner),
                 7,
                 BotSkillId.RandomWalk,
                 string.Empty,
@@ -412,7 +412,7 @@ public sealed class RoomBotSystemTests
 
         await harness
             .Grain.SetBotSkillAsync(
-                harness.ContextFor(Owner),
+                harness.ContextFor(BotHarness.Owner),
                 7,
                 BotSkillId.RandomWalk,
                 string.Empty,
@@ -434,13 +434,13 @@ public sealed class RoomBotSystemTests
     [Fact]
     public async Task TheDanceButton_TellsTheRoomAndSurvivesARedraw()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         harness.BroadcastToRoom.Clear();
 
         await harness
             .Grain.SetBotSkillAsync(
-                harness.ContextFor(Owner),
+                harness.ContextFor(BotHarness.Owner),
                 7,
                 BotSkillId.Dance,
                 string.Empty,
@@ -471,13 +471,13 @@ public sealed class RoomBotSystemTests
     [Fact]
     public async Task ClickingDanceTwice_StopsTheBotDancing()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         for (int click = 0; click < 2; click++)
         {
             await harness
                 .Grain.SetBotSkillAsync(
-                    harness.ContextFor(Owner),
+                    harness.ContextFor(BotHarness.Owner),
                     7,
                     BotSkillId.Dance,
                     string.Empty,
@@ -496,13 +496,13 @@ public sealed class RoomBotSystemTests
     [Fact]
     public async Task RenamingABot_WritesTheNameAndRedrawsIt()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         harness.BroadcastToRoom.Clear();
 
         bool set = await harness
             .Grain.SetBotSkillAsync(
-                harness.ContextFor(Owner),
+                harness.ContextFor(BotHarness.Owner),
                 7,
                 BotSkillId.ChangeName,
                 "  Doorman  ",
@@ -528,11 +528,11 @@ public sealed class RoomBotSystemTests
     [InlineData("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")]
     public async Task AnUnusableName_IsRefusedAndLeavesTheBotAlone(string name)
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         bool set = await harness
             .Grain.SetBotSkillAsync(
-                harness.ContextFor(Owner),
+                harness.ContextFor(BotHarness.Owner),
                 7,
                 BotSkillId.ChangeName,
                 name,
@@ -553,11 +553,11 @@ public sealed class RoomBotSystemTests
     {
         // The look is taken off the owner's avatar as it stands in this room. With no avatar to
         // read, writing anything at all would leave the bot with no appearance.
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         bool set = await harness
             .Grain.SetBotSkillAsync(
-                harness.ContextFor(Owner),
+                harness.ContextFor(BotHarness.Owner),
                 7,
                 BotSkillId.DressUp,
                 string.Empty,
@@ -576,14 +576,14 @@ public sealed class RoomBotSystemTests
     [Fact]
     public async Task DressingUpABot_GivesItTheLookItsOwnerIsWearingInTheRoom()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         harness.PutOwnerInRoomWearing("hr-100.ch-210-66", AvatarGenderType.Female);
         harness.BroadcastToRoom.Clear();
 
         bool set = await harness
             .Grain.SetBotSkillAsync(
-                harness.ContextFor(Owner),
+                harness.ContextFor(BotHarness.Owner),
                 7,
                 BotSkillId.DressUp,
                 string.Empty,
@@ -610,11 +610,11 @@ public sealed class RoomBotSystemTests
     [Fact]
     public async Task ABotWhoseOwnerTurnedAutoChatOff_StaysQuietThoughItHasPhrases()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         await harness
             .Grain.SetBotSkillAsync(
-                harness.ContextFor(Owner),
+                harness.ContextFor(BotHarness.Owner),
                 7,
                 BotSkillId.Chatter,
                 "hello;#;false;#;10;#;false",
@@ -636,11 +636,11 @@ public sealed class RoomBotSystemTests
     [Fact]
     public async Task ABotDoesNotReciteItsOwnSettings()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         await harness
             .Grain.SetBotSkillAsync(
-                harness.ContextFor(Owner),
+                harness.ContextFor(BotHarness.Owner),
                 7,
                 BotSkillId.Chatter,
                 Chatter("hello"),
@@ -674,11 +674,11 @@ public sealed class RoomBotSystemTests
     {
         // Wired addresses bots by name, and a builder typing one into a box will not match its
         // case or its spacing.
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         await harness
             .Grain.SetBotSkillAsync(
-                harness.ContextFor(Owner),
+                harness.ContextFor(BotHarness.Owner),
                 7,
                 BotSkillId.ChangeName,
                 "Frank",
@@ -697,7 +697,7 @@ public sealed class RoomBotSystemTests
     [Fact]
     public async Task AWiredStackNamingABotThatIsNotHere_FindsNothingRatherThanGuessing()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         BotSnapshot? found = await harness
             .Grain.BotSystem.FindBotByNameAsync("Nobody", CancellationToken.None)
@@ -709,7 +709,7 @@ public sealed class RoomBotSystemTests
     [Fact]
     public async Task AWiredShout_GoesToTheRoomAsTheBotRatherThanAsChat()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         harness.BroadcastToRoom.Clear();
 
@@ -738,7 +738,7 @@ public sealed class RoomBotSystemTests
     {
         // Whispering to nobody must not fall back to the room: the builder asked for one listener,
         // and saying it aloud to everybody is the opposite of what they configured.
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         harness.BroadcastToRoom.Clear();
 
@@ -759,7 +759,7 @@ public sealed class RoomBotSystemTests
     [Fact]
     public async Task AWiredWhisper_ReachesOnlyTheListener()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         harness.BroadcastToRoom.Clear();
 
@@ -768,19 +768,19 @@ public sealed class RoomBotSystemTests
                 7,
                 "psst",
                 WiredBotChatType.Whisper,
-                Stranger,
+                BotHarness.Stranger,
                 CancellationToken.None
             )
             .ConfigureAwait(true);
 
-        harness.ComposersSentTo.Should().ContainSingle().Which.Should().Be(Stranger);
+        harness.ComposersSentTo.Should().ContainSingle().Which.Should().Be(BotHarness.Stranger);
         harness.BroadcastToRoom.Should().BeEmpty("a whisper is not room chat");
     }
 
     [Fact]
     public async Task AWiredStackNamingABotThatIsNotHere_SaysNothing()
     {
-        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+        BotHarness harness = await BotHarness.CreateAsync().ConfigureAwait(true);
 
         harness.BroadcastToRoom.Clear();
 
@@ -795,244 +795,5 @@ public sealed class RoomBotSystemTests
             .ConfigureAwait(true);
 
         harness.BroadcastToRoom.Should().BeEmpty();
-    }
-
-    private sealed class Harness
-    {
-        /// <summary>Wider than the wander radius, so a bot in the middle has somewhere to go.</summary>
-        private const int MapSize = 12;
-
-        private readonly DbContextOptions<VortexDbContext> _options;
-
-        private Harness(DbContextOptions<VortexDbContext> options, bool canManipulate)
-        {
-            _options = options;
-
-            Grain = GrainActivationContext.CreateWithIntegerKey<RoomGrain>(
-                ROOM_ID,
-                new SingleOptionsFactory(options),
-                Options.Create(new RoomConfig()),
-                NullLogger<IRoomGrain>.Instance,
-                FakeProxy.Create<IRoomModelProvider>(_ => null),
-                FakeProxy.Create<IRoomItemsProvider>(_ => null),
-                FakeProxy.Create<IRoomObjectLogicProvider>(_ => null),
-                FakeProxy.Create<IRoomAvatarProvider>(_ => null),
-                FakeProxy.Create<IRoomWiredVariablesProvider>(_ => null),
-                BuildGrainFactory(),
-                FakeProxy.Create<IEventPublisher>(_ => null),
-                BuildPermissionService(),
-                FakeProxy.Create<IVortexMetrics>(_ => null),
-                FakeProxy.Create<IRoomModerationStore>(_ => null),
-                FakeProxy.Create<IPetLevelProvider>(_ => null),
-                FakeProxy.Create<IPetCommandProvider>(_ => null),
-                FakeProxy.Create<IPetVocalProvider>(_ => null),
-                new RoomWiredLogChannel()
-            );
-
-            // The security module reads the room's own snapshot to decide who owns the place, so a
-            // grain built outside a silo needs one before any rights question can be asked.
-            Grain._state.RoomSnapshot = new RoomSnapshot
-            {
-                RoomId = new RoomId(ROOM_ID),
-                Name = "Test room",
-                Description = string.Empty,
-                OwnerId = Owner,
-                OwnerName = "Owner",
-                Population = 0,
-                LastUpdatedUtc = DateTime.UnixEpoch,
-                DoorMode = RoomDoorModeType.Open,
-                PlayersMax = 25,
-                TradeType = RoomTradeModeType.Disabled,
-                Score = 0,
-                Ranking = 0,
-                CategoryId = -1,
-                Tags = [],
-                AllowBlocking = false,
-                AllowPets = true,
-                AllowPetsEat = false,
-                PaintWall = 0,
-                PaintFloor = 0,
-                PaintLandscape = 0,
-                StaffPick = false,
-                Password = string.Empty,
-                ModSettings = new ModSettingsSnapshot
-                {
-                    WhoCanMute = ModSettingType.Owner,
-                    WhoCanKick = ModSettingType.Owner,
-                    WhoCanBan = ModSettingType.Owner,
-                },
-                ChatSettings = new ChatSettingsSnapshot
-                {
-                    ChatMode = ChatModeType.FreeFlow,
-                    BubbleWidth = ChatBubbleWidthType.Normal,
-                    ScrollSpeed = ChatScrollSpeedType.Normal,
-                    FullHearRange = 50,
-                    FloodSensitivity = ChatFloodSensitivityType.Normal,
-                },
-                WorldType = string.Empty,
-                HideWalls = false,
-                WallThickness = RoomThicknessType.Normal,
-                FloorThickness = RoomThicknessType.Normal,
-                MaxVisitorsLimit = 25,
-            };
-
-            // A room with no model has no tiles, and a bot with nowhere to step cannot be seen to
-            // walk. An open square is the smallest map that lets wandering be observed at all.
-            Grain._state.Model = new RoomModelSnapshot
-            {
-                Id = 1,
-                Name = "test",
-                Model = "test",
-                DoorX = 0,
-                DoorY = 0,
-                DoorRotation = Rotation.South,
-                Width = MapSize,
-                Height = MapSize,
-                Size = MapSize * MapSize,
-                BaseHeights = [.. Enumerable.Repeat(Altitude.Zero, MapSize * MapSize)],
-                BaseFlags = [.. Enumerable.Repeat(RoomTileFlags.Walkable, MapSize * MapSize)],
-            };
-
-            Grain._state.TileHeights = [.. Enumerable.Repeat(Altitude.Zero, MapSize * MapSize)];
-            Grain._state.TileFlags =
-            [
-                .. Enumerable.Repeat(RoomTileFlags.Walkable, MapSize * MapSize),
-            ];
-
-            if (canManipulate)
-            {
-                // Build rights in this room, which is what lets somebody clear up furniture — and
-                // now bots — that is not theirs.
-                Grain._state.PlayerIdsWithRights.Add(Stranger);
-            }
-
-            // The room broadcast normally rides an Orleans stream, which does not exist outside a
-            // silo. Swapping it for a recorder keeps the code under test unchanged and makes what
-            // the room was told an assertable thing rather than a crash.
-            Grain._roomOutbound = FakeProxy.Create<IAsyncStream<RoomOutbound>>(call =>
-            {
-                if (call.Method.Name == nameof(IAsyncStream<RoomOutbound>.OnNextAsync))
-                {
-                    BroadcastToRoom.Add(((RoomOutbound)call.Args![0]!).Composer);
-                }
-
-                return null;
-            });
-        }
-
-        public RoomGrain Grain { get; }
-
-        /// <summary>Who the grain pushed an inventory composer at — the point of the ownership test.</summary>
-        public List<PlayerId> ComposersSentTo { get; } = [];
-
-        /// <summary>What the whole room was told, in order.</summary>
-        public List<IComposer> BroadcastToRoom { get; } = [];
-
-        public static async Task<Harness> CreateAsync(int placedBotId, bool canManipulate = true)
-        {
-            DbContextOptions<VortexDbContext> options =
-                new DbContextOptionsBuilder<VortexDbContext>()
-                    .UseInMemoryDatabase($"room-bots-{Guid.NewGuid():N}")
-                    .Options;
-
-            await using (VortexDbContext seed = new(options))
-            {
-                seed.Bots.Add(
-                    new BotEntity
-                    {
-                        Id = placedBotId,
-                        OwnerPlayerEntityId = Owner.Value,
-                        RoomEntityId = ROOM_ID,
-                        Name = "Bartender",
-                        Figure = "hd-180-1",
-                        Gender = AvatarGenderType.Male,
-                        X = 3,
-                        Y = 4,
-                    }
-                );
-
-                await seed.SaveChangesAsync().ConfigureAwait(true);
-            }
-
-            return new Harness(options, canManipulate);
-        }
-
-        public VortexDbContext NewDbContext() => new(_options);
-
-        /// <summary>
-        /// Stands the owner in the room wearing a given look. Dressing a bot up reads the avatar on
-        /// screen rather than the stored figure, so there has to be one to read.
-        /// </summary>
-        public void PutOwnerInRoomWearing(string figure, AvatarGenderType gender)
-        {
-            RoomObjectId objectId = new(1);
-
-            Grain._state.AvatarsByPlayerId[Owner] = objectId;
-            Grain._state.AvatarsByObjectId[objectId] = FakeProxy.Create<IRoomPlayer>(call =>
-                call.Method.Name switch
-                {
-                    $"get_{nameof(IRoomAvatar.Figure)}" => figure,
-                    $"get_{nameof(IRoomPlayer.Gender)}" => gender,
-                    _ => null,
-                }
-            );
-        }
-
-        public ActionContext ContextFor(PlayerId playerId) =>
-            new(ActionOrigin.Player, default, playerId, new RoomId(ROOM_ID));
-
-        /// <summary>
-        /// A staff-capability-free player, so the manipulate check falls through to the room's own
-        /// rights list — which is what the tests vary.
-        /// </summary>
-        private static IPermissionService BuildPermissionService() =>
-            FakeProxy.Create<IPermissionService>(call =>
-                call.Method.Name == nameof(IPermissionService.ResolveForPlayerAsync)
-                    ? Task.FromResult(new PermissionSet([], []))
-                    : null
-            );
-
-        private IGrainFactory BuildGrainFactory() =>
-            FakeProxy.Create<IGrainFactory>(call =>
-            {
-                if (!call.Method.IsGenericMethod)
-                {
-                    return null;
-                }
-
-                // The bot avatar carries its owner's name, which the room resolves through the
-                // directory when it is not already cached.
-                if (call.Method.GetGenericArguments()[0] == typeof(IPlayerDirectoryGrain))
-                {
-                    return FakeProxy.Create<IPlayerDirectoryGrain>(inner =>
-                        inner.Method.Name == nameof(IPlayerDirectoryGrain.GetPlayerNameAsync)
-                            ? Task.FromResult(OwnerName)
-                            : null
-                    );
-                }
-
-                if (call.Method.GetGenericArguments()[0] != typeof(IPlayerPresenceGrain))
-                {
-                    return null;
-                }
-
-                PlayerId target = new((int)(long)call.Args![0]!);
-
-                return FakeProxy.Create<IPlayerPresenceGrain>(inner =>
-                {
-                    if (inner.Method.Name == nameof(IPlayerPresenceGrain.SendComposerAsync))
-                    {
-                        ComposersSentTo.Add(target);
-                    }
-
-                    return null;
-                });
-            });
-
-        private sealed class SingleOptionsFactory(DbContextOptions<VortexDbContext> options)
-            : IDbContextFactory<VortexDbContext>
-        {
-            public VortexDbContext CreateDbContext() => new(options);
-        }
     }
 }
