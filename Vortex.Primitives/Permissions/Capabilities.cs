@@ -110,6 +110,31 @@ public static class Capabilities
         public const string ConfigRead = "dashboard.config.read";
         public const string OpsConfigManage = "dashboard.ops.config.manage";
         public const string PerformanceRead = "dashboard.performance.read";
+
+        /// <summary>Achievement definitions, their level ladders and hotel-wide progression.</summary>
+        public const string AchievementsRead = "dashboard.achievements.read";
+
+        /// <summary>Room actors that are neither players nor furni: bots and hand items.</summary>
+        public const string BotsRead = "dashboard.bots.read";
+
+        /// <summary>The navigator's own configuration (top-level contexts, categories, quick
+        /// links) — the rows that decide what the client's navigator left pane offers.</summary>
+        public const string NavigatorRead = "dashboard.navigator.read";
+
+        /// <summary>Edit that navigator configuration. Separate from <see cref="NavigatorRead"/>
+        /// because a bad row is hotel-wide and immediately visible to every player.</summary>
+        public const string OpsNavigatorManage = "dashboard.ops.navigator.manage";
+
+        /// <summary>Social graph and guild forums: friendships, requests, private-message volume,
+        /// thread/post activity.</summary>
+        public const string SocialRead = "dashboard.social.read";
+
+        /// <summary>The staff roster itself: roles, the capabilities each role grants, who holds
+        /// them, and the sanction preset ladder.</summary>
+        public const string StaffRead = "dashboard.staff.read";
+
+        /// <summary>NFT collections, mintable items and collector scores.</summary>
+        public const string CollectiblesRead = "dashboard.collectibles.read";
     }
 
     /// <summary>Every declared capability, for validation and dashboard enumeration.</summary>
@@ -165,5 +190,12 @@ public static class Capabilities
             Dashboard.ConfigRead,
             Dashboard.OpsConfigManage,
             Dashboard.PerformanceRead,
+            Dashboard.AchievementsRead,
+            Dashboard.BotsRead,
+            Dashboard.NavigatorRead,
+            Dashboard.OpsNavigatorManage,
+            Dashboard.SocialRead,
+            Dashboard.StaffRead,
+            Dashboard.CollectiblesRead,
         };
 }

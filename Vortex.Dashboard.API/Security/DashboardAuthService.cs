@@ -51,6 +51,13 @@ internal sealed class DashboardAuthService(
         Capabilities.Dashboard.ConfigRead,
         Capabilities.Dashboard.OpsConfigManage,
         Capabilities.Dashboard.PerformanceRead,
+        Capabilities.Dashboard.AchievementsRead,
+        Capabilities.Dashboard.BotsRead,
+        Capabilities.Dashboard.NavigatorRead,
+        Capabilities.Dashboard.OpsNavigatorManage,
+        Capabilities.Dashboard.SocialRead,
+        Capabilities.Dashboard.StaffRead,
+        Capabilities.Dashboard.CollectiblesRead,
     ];
 
     public async Task<DashboardLoginResult> LoginAsync(

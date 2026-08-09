@@ -43,6 +43,9 @@ import PrizePoolsPage from '../pages/PrizePoolsPage.svelte';
 import QuestsPage from '../pages/QuestsPage.svelte';
 import QuestsStatsPage from '../pages/QuestsStatsPage.svelte';
 import ConfigPage from '../pages/ConfigPage.svelte';
+import AchievementsPage from '../pages/AchievementsPage.svelte';
+import BotsPage from '../pages/BotsPage.svelte';
+import NavigatorConfigPage from '../pages/NavigatorConfigPage.svelte';
 
 // Display + permission metadata for the navigation sidebar. Order is the nav order within each
 // group. `group` buckets items in the sidebar (see AppShell.svelte) — Live: auto-refreshing health
@@ -60,6 +63,7 @@ export const NAV = [
   { path: '/investigation', labelKey: 'nav.investigation', shortKey: 'nav.investigationShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.investigation, component: InvestigationPage },
   { path: '/rooms', labelKey: 'nav.rooms', shortKey: 'nav.roomsShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.rooms, component: RoomsPage },
   { path: '/audit', labelKey: 'nav.audit', shortKey: 'nav.auditShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.audit, component: AuditPage },
+  { path: '/bots', labelKey: 'nav.bots', shortKey: 'nav.botsShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.bots, component: BotsPage },
   { path: '/moderation', labelKey: 'nav.moderation', shortKey: 'nav.moderationShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.moderation, component: ModerationPage },
   { path: '/economy', labelKey: 'nav.economy', shortKey: 'nav.economyShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: EconomyPage },
   { path: '/economy-trends', labelKey: 'nav.economyTrends', shortKey: 'nav.economyTrendsShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: EconomyTrendsPage },
@@ -72,6 +76,7 @@ export const NAV = [
   { path: '/targeted-offers-stats', labelKey: 'nav.targetedOffersStats', shortKey: 'nav.targetedOffersStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.targetedOffersStats, component: TargetedOffersStatsPage },
   { path: '/quests-stats', labelKey: 'nav.questsStats', shortKey: 'nav.questsStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.questsStats, component: QuestsStatsPage },
   { path: '/wired-stats', labelKey: 'nav.wiredStats', shortKey: 'nav.wiredStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.wiredStats, component: WiredStatsPage },
+  { path: '/achievements', labelKey: 'nav.achievements', shortKey: 'nav.achievementsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.achievements, component: AchievementsPage },
   { path: '/operations', labelKey: 'nav.operations', shortKey: 'nav.operationsShort', group: 'Act', caps: ROUTE_PERMISSIONS.operations, component: OperationsPage },
   { path: '/moderation-actions', labelKey: 'nav.moderationActions', shortKey: 'nav.moderationActionsShort', group: 'Act', caps: ROUTE_PERMISSIONS.moderationActions, component: ModerationActionsPage },
   { path: '/cfh', labelKey: 'nav.cfh', shortKey: 'nav.cfhShort', group: 'Act', caps: ROUTE_PERMISSIONS.cfh, component: CfhQueuePage },
@@ -83,6 +88,7 @@ export const NAV = [
   { path: '/mystery-box', labelKey: 'nav.mysteryBox', shortKey: 'nav.mysteryBoxShort', group: 'Act', caps: ROUTE_PERMISSIONS.mysteryBox, component: MysteryBoxPage },
   { path: '/prize-pools', labelKey: 'nav.prizePools', shortKey: 'nav.prizePoolsShort', group: 'Act', caps: ROUTE_PERMISSIONS.prizePools, component: PrizePoolsPage },
   { path: '/furniture-definitions', labelKey: 'nav.furnitureDefinitions', shortKey: 'nav.furnitureDefinitionsShort', group: 'Act', caps: ROUTE_PERMISSIONS.furnitureDefinitions, component: FurnitureDefinitionsPage },
+  { path: '/navigator-config', labelKey: 'nav.navigatorConfig', shortKey: 'nav.navigatorConfigShort', group: 'Act', caps: ROUTE_PERMISSIONS.navigatorConfig, component: NavigatorConfigPage },
   { path: '/config', labelKey: 'nav.config', shortKey: 'nav.configShort', group: 'Act', caps: ROUTE_PERMISSIONS.config, component: ConfigPage },
   { path: '/api-explorer', labelKey: 'nav.apiExplorer', shortKey: 'nav.apiExplorerShort', group: 'Dev', caps: ROUTE_PERMISSIONS.apiExplorer, component: ApiExplorerPage },
 ];

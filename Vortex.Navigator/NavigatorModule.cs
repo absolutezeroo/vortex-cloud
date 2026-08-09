@@ -17,5 +17,6 @@ public sealed class NavigatorModule : IHostPluginModule
         services.AddSingleton<IReferenceDataProvider>(sp =>
             (IReferenceDataProvider)sp.GetRequiredService<INavigatorProvider>()
         );
+        services.AddSingleton<INavigatorAdminService, NavigatorAdminService>();
     }
 }

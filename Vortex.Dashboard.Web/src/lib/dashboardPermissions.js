@@ -32,6 +32,13 @@ export const CAPABILITIES = {
   configRead: 'dashboard.config.read',
   opsManageConfig: 'dashboard.ops.config.manage',
   performanceRead: 'dashboard.performance.read',
+  achievementsRead: 'dashboard.achievements.read',
+  botsRead: 'dashboard.bots.read',
+  navigatorRead: 'dashboard.navigator.read',
+  opsNavigatorManage: 'dashboard.ops.navigator.manage',
+  socialRead: 'dashboard.social.read',
+  staffRead: 'dashboard.staff.read',
+  collectiblesRead: 'dashboard.collectibles.read',
 };
 
 export const ROUTE_PERMISSIONS = {
@@ -67,6 +74,14 @@ export const ROUTE_PERMISSIONS = {
   mysteryBox: [CAPABILITIES.mysteryBoxRead],
   questsStats: [CAPABILITIES.questsRead],
   config: [CAPABILITIES.configRead],
+  achievements: [CAPABILITIES.achievementsRead],
+  bots: [CAPABILITIES.botsRead],
+  navigatorConfig: [CAPABILITIES.navigatorRead],
+  social: [CAPABILITIES.socialRead],
+  staff: [CAPABILITIES.staffRead],
+  collectibles: [CAPABILITIES.collectiblesRead],
+  playerRewards: [CAPABILITIES.playersRead],
+  economyExtras: [CAPABILITIES.economyRead],
   apiExplorer: [CAPABILITIES.overviewRead],
   operations: [
     CAPABILITIES.opsGrantCurrency,

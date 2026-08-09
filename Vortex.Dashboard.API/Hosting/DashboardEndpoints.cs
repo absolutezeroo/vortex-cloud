@@ -152,6 +152,9 @@ internal static partial class DashboardEndpoints
         MapMysteryBoxReads(app);
         MapPrizePoolReads(app);
         MapConfigReads(app);
+        MapAchievementReads(app);
+        MapBotReads(app);
+        MapNavigatorReads(app);
     }
 
     public static void MapOperations(WebApplication app)
@@ -167,6 +170,7 @@ internal static partial class DashboardEndpoints
         MapMysteryBoxOperations(app);
         MapPrizePoolOperations(app);
         MapConfigOperations(app);
+        MapNavigatorOperations(app);
     }
 
     public static void MapMeta(WebApplication app)

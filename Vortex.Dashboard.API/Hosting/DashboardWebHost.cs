@@ -92,6 +92,13 @@ internal sealed class DashboardWebHost(
         Capabilities.Dashboard.ConfigRead,
         Capabilities.Dashboard.OpsConfigManage,
         Capabilities.Dashboard.PerformanceRead,
+        Capabilities.Dashboard.AchievementsRead,
+        Capabilities.Dashboard.BotsRead,
+        Capabilities.Dashboard.NavigatorRead,
+        Capabilities.Dashboard.OpsNavigatorManage,
+        Capabilities.Dashboard.SocialRead,
+        Capabilities.Dashboard.StaffRead,
+        Capabilities.Dashboard.CollectiblesRead,
     ];
 
     private readonly ObservabilityConfig _config = options.Value;
