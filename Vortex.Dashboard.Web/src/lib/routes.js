@@ -46,6 +46,11 @@ import ConfigPage from '../pages/ConfigPage.svelte';
 import AchievementsPage from '../pages/AchievementsPage.svelte';
 import BotsPage from '../pages/BotsPage.svelte';
 import NavigatorConfigPage from '../pages/NavigatorConfigPage.svelte';
+import SocialPage from '../pages/SocialPage.svelte';
+import StaffPage from '../pages/StaffPage.svelte';
+import EconomyExtrasPage from '../pages/EconomyExtrasPage.svelte';
+import PlayerRewardsPage from '../pages/PlayerRewardsPage.svelte';
+import CollectiblesPage from '../pages/CollectiblesPage.svelte';
 
 // Display + permission metadata for the navigation sidebar. Order is the nav order within each
 // group. `group` buckets items in the sidebar (see AppShell.svelte) — Live: auto-refreshing health
@@ -69,6 +74,9 @@ export const NAV = [
   { path: '/economy-trends', labelKey: 'nav.economyTrends', shortKey: 'nav.economyTrendsShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: EconomyTrendsPage },
   { path: '/marketplace', labelKey: 'nav.marketplace', shortKey: 'nav.marketplaceShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: MarketplacePage },
   { path: '/subscriptions', labelKey: 'nav.subscriptions', shortKey: 'nav.subscriptionsShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: SubscriptionsPage },
+  { path: '/economy-extras', labelKey: 'nav.economyExtras', shortKey: 'nav.economyExtrasShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.economyExtras, component: EconomyExtrasPage },
+  { path: '/player-rewards', labelKey: 'nav.playerRewards', shortKey: 'nav.playerRewardsShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.playerRewards, component: PlayerRewardsPage },
+  { path: '/staff', labelKey: 'nav.staff', shortKey: 'nav.staffShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.staff, component: StaffPage },
   { path: '/groups-stats', labelKey: 'nav.groupsStats', shortKey: 'nav.groupsStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.groupsStats, component: GroupsStatsPage },
   { path: '/pets-stats', labelKey: 'nav.petsStats', shortKey: 'nav.petsStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.petsStats, component: PetsStatsPage },
   { path: '/cfh-stats', labelKey: 'nav.cfhStats', shortKey: 'nav.cfhStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.cfhStats, component: CfhStatsPage },
@@ -77,6 +85,8 @@ export const NAV = [
   { path: '/quests-stats', labelKey: 'nav.questsStats', shortKey: 'nav.questsStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.questsStats, component: QuestsStatsPage },
   { path: '/wired-stats', labelKey: 'nav.wiredStats', shortKey: 'nav.wiredStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.wiredStats, component: WiredStatsPage },
   { path: '/achievements', labelKey: 'nav.achievements', shortKey: 'nav.achievementsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.achievements, component: AchievementsPage },
+  { path: '/social', labelKey: 'nav.social', shortKey: 'nav.socialShort', group: 'Stats', caps: ROUTE_PERMISSIONS.social, component: SocialPage },
+  { path: '/collectibles', labelKey: 'nav.collectibles', shortKey: 'nav.collectiblesShort', group: 'Stats', caps: ROUTE_PERMISSIONS.collectibles, component: CollectiblesPage },
   { path: '/operations', labelKey: 'nav.operations', shortKey: 'nav.operationsShort', group: 'Act', caps: ROUTE_PERMISSIONS.operations, component: OperationsPage },
   { path: '/moderation-actions', labelKey: 'nav.moderationActions', shortKey: 'nav.moderationActionsShort', group: 'Act', caps: ROUTE_PERMISSIONS.moderationActions, component: ModerationActionsPage },
   { path: '/cfh', labelKey: 'nav.cfh', shortKey: 'nav.cfhShort', group: 'Act', caps: ROUTE_PERMISSIONS.cfh, component: CfhQueuePage },

@@ -17,6 +17,9 @@
   let error = '';
   let forbidden = false;
   let trend = [];
+  // What the hotel contains, as opposed to how it is behaving. Fetched once (it moves on the scale
+  // of an admin edit, not of a tick) and never on the 10s health poll.
+  let inventory = null;
   const maxTrendSamples = 20;
 
   function addTrendSample(snapshot) {
@@ -62,8 +65,18 @@
     }
   }
 
+  async function loadInventory() {
+    try {
+      inventory = await apiGet('/api/v1/monitoring/inventory');
+    } catch {
+      // The inventory is a secondary panel: a failure here must not blank the health page.
+      inventory = null;
+    }
+  }
+
   onMount(() => {
     void refresh();
+    void loadInventory();
     const interval = setInterval(refresh, 10000);
     return () => clearInterval(interval);
   });
@@ -162,7 +175,68 @@
   </div>
 </section>
 
+{#if inventory}
+  <section class="panel">
+    <div class="panel-head">
+      <h2>{$t('overview.inventoryTitle')}</h2>
+      <small class="muted">{$t('overview.inventoryHint')}</small>
+    </div>
+    <div class="inventory-grid">
+      {#each inventory.groups || [] as group}
+        <div class="inventory-group">
+          <h3>{$t(`overview.inventoryGroup.${group.key}`)}</h3>
+          <ul>
+            {#each group.rows as row}
+              <li class:empty={row.empty}>
+                {#if row.route}
+                  <a href={`#${row.route}`}>{$t(`overview.inventoryRow.${row.key}`)}</a>
+                {:else}
+                  <span>{$t(`overview.inventoryRow.${row.key}`)}</span>
+                {/if}
+                <span class="num-cell">{formatNumber(row.count)}</span>
+              </li>
+            {/each}
+          </ul>
+        </div>
+      {/each}
+    </div>
+  </section>
+{/if}
+
 <style>
+  .inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .inventory-group h3 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.7;
+    margin: 0 0 6px;
+  }
+
+  .inventory-group ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .inventory-group li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 3px 0;
+    font-size: 0.88rem;
+  }
+
+  /* A zero is the signal, not noise: a subsystem with no rows is unseeded or unreachable. */
+  .inventory-group li.empty {
+    opacity: 0.55;
+  }
+
   /* Numeric columns line up on the condensed counter face, like the rest of the dashboard. */
   .num-cell {
     font-family: var(--numerals);

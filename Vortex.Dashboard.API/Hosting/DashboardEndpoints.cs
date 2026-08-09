@@ -155,6 +155,7 @@ internal static partial class DashboardEndpoints
         MapAchievementReads(app);
         MapBotReads(app);
         MapNavigatorReads(app);
+        MapInsightReads(app);
     }
 
     public static void MapOperations(WebApplication app)
