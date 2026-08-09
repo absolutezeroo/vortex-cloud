@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Entities.Achievements;
 using Vortex.Database.Entities.Audit;
 using Vortex.Database.Entities.Catalog;
+using Vortex.Database.Entities.Collectibles;
 using Vortex.Database.Entities.Errors;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Groups;
@@ -202,6 +203,12 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
     public DbSet<PetFoodEntity> PetFood { get; init; } = null!;
 
     public DbSet<HandItemEntity> HandItems { get; init; } = null!;
+
+    public DbSet<NftCollectionEntity> NftCollections { get; init; } = null!;
+
+    public DbSet<NftCollectionItemEntity> NftCollectionItems { get; init; } = null!;
+
+    public DbSet<PlayerCollectorStatsEntity> PlayerCollectorStats { get; init; } = null!;
 
     public DbSet<PetPaletteEntity> PetPalettes { get; init; } = null!;
 

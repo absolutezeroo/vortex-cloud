@@ -9,8 +9,9 @@ internal class NftCollectionsScoreMessageComposerSerializer(int header)
     protected override void Serialize(
         IServerPacket packet,
         NftCollectionsScoreMessageComposer message
-    )
-    {
-        //
-    }
+    ) =>
+        packet
+            .WriteInteger(message.Score)
+            .WriteInteger(message.HighestScore)
+            .WriteInteger(message.Level);
 }

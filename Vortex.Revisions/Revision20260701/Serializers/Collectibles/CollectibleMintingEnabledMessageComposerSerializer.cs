@@ -9,8 +9,5 @@ internal class CollectibleMintingEnabledMessageComposerSerializer(int header)
     protected override void Serialize(
         IServerPacket packet,
         CollectibleMintingEnabledMessageComposer message
-    )
-    {
-        //
-    }
+    ) => packet.WriteBoolean(message.Enabled);
 }

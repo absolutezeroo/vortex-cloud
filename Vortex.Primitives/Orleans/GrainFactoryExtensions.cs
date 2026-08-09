@@ -1,5 +1,6 @@
 using Orleans;
 using Vortex.Primitives.Catalog.Grains;
+using Vortex.Primitives.Collectibles.Grains;
 using Vortex.Primitives.FriendList.Grains;
 using Vortex.Primitives.Groups.Grains;
 using Vortex.Primitives.Help.Grains;
@@ -251,6 +252,9 @@ public static class GrainFactoryExtensions
 
     public static IMysteryBoxManagerGrain GetMysteryBoxManagerGrain(this IGrainFactory factory) =>
         factory.GetGrain<IMysteryBoxManagerGrain>(SingletonGrainId.GLOBAL);
+
+    public static INftCollectionsGrain GetNftCollectionsGrain(this IGrainFactory factory) =>
+        factory.GetGrain<INftCollectionsGrain>(SingletonGrainId.GLOBAL);
 
     public static IPlayerMysteryBoxGrain GetPlayerMysteryBoxGrain(
         this IGrainFactory factory,
