@@ -163,7 +163,16 @@ public sealed partial class RoomBotSystem(RoomGrain roomGrain)
 
         await _roomGrain
             .SendComposerToRoomAsync(
-                new UsersMessageComposer { Avatars = [ToAvatarSnapshot(snapshot)] }
+                new UsersMessageComposer
+                {
+                    Avatars =
+                    [
+                        ToAvatarSnapshot(
+                            snapshot,
+                            await GetOwnerNameAsync(snapshot.OwnerId, ct).ConfigureAwait(true)
+                        ),
+                    ],
+                }
             )
             .ConfigureAwait(true);
 
@@ -245,7 +254,38 @@ public sealed partial class RoomBotSystem(RoomGrain roomGrain)
     {
         await EnsureBotsLoadedAsync(ct).ConfigureAwait(true);
 
-        return [.. _botsById.Values.OrderBy(b => b.BotId).Select(ToAvatarSnapshot)];
+        ImmutableArray<RoomAvatarSnapshot>.Builder avatars =
+            ImmutableArray.CreateBuilder<RoomAvatarSnapshot>(_botsById.Count);
+
+        foreach (BotSnapshot bot in _botsById.Values.OrderBy(b => b.BotId))
+        {
+            avatars.Add(
+                ToAvatarSnapshot(bot, await GetOwnerNameAsync(bot.OwnerId, ct).ConfigureAwait(true))
+            );
+        }
+
+        return avatars.ToImmutable();
+    }
+
+    /// <summary>
+    /// The bot's owner name, which the client shows on its menu. Cached on the room alongside the
+    /// pets' — a bot standing in a room would otherwise cost a directory lookup on every redraw.
+    /// </summary>
+    private async Task<string> GetOwnerNameAsync(PlayerId ownerId, CancellationToken ct)
+    {
+        if (_roomGrain._state.OwnerNamesById.TryGetValue(ownerId, out string? cached))
+        {
+            return cached;
+        }
+
+        string ownerName = await _roomGrain
+            ._grainFactory.GetPlayerDirectoryGrain()
+            .GetPlayerNameAsync(ownerId, ct)
+            .ConfigureAwait(true);
+
+        _roomGrain._state.OwnerNamesById[ownerId] = ownerName;
+
+        return ownerName;
     }
 
     public async Task<bool> SetBotSkillAsync(
@@ -404,7 +444,7 @@ public sealed partial class RoomBotSystem(RoomGrain roomGrain)
             && !flags.Has(RoomTileFlags.AvatarOccupied);
     }
 
-    private static RoomBotAvatarSnapshot ToAvatarSnapshot(BotSnapshot bot) =>
+    private static RoomBotAvatarSnapshot ToAvatarSnapshot(BotSnapshot bot, string ownerName = "") =>
         new()
         {
             AvatarType = RoomObjectType.Bot,
@@ -421,7 +461,7 @@ public sealed partial class RoomBotSystem(RoomGrain roomGrain)
             Status = "/",
             Gender = bot.Gender,
             OwnerId = bot.OwnerId.Value,
-            OwnerName = string.Empty,
+            OwnerName = ownerName,
         };
 
     private static BotSnapshot ToSnapshot(BotEntity entity) =>

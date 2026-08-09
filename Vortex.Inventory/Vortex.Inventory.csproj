@@ -11,4 +11,8 @@
     <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
     <ProjectReference Include="..\Vortex.Players\Vortex.Players.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Vortex.Database.Tests" />
+  </ItemGroup>
 </Project>

@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Vortex.Catalog\Vortex.Catalog.csproj" />
     <ProjectReference Include="..\Vortex.Database\Vortex.Database.csproj" />
+    <ProjectReference Include="..\Vortex.Inventory\Vortex.Inventory.csproj" />
     <ProjectReference Include="..\Vortex.Furniture\Vortex.Furniture.csproj" />
     <ProjectReference Include="..\Vortex.Tests.Support\Vortex.Tests.Support.csproj" />
   </ItemGroup>

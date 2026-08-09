@@ -56,6 +56,7 @@ public sealed class RoomBotSystemTests
     private const long ChatterCertainlyDueMs = 120_000;
     private static readonly PlayerId Owner = new(101);
     private static readonly PlayerId Stranger = new(202);
+    private const string OwnerName = "Owner";
 
     [Fact]
     public void BotObjectIds_CannotCollideWithPetObjectIds()
@@ -85,6 +86,7 @@ public sealed class RoomBotSystemTests
 
         bot.WebId.Should().Be(7);
         bot.OwnerId.Should().Be(Owner.Value);
+        bot.OwnerName.Should().Be(OwnerName, "the client shows the owner on the bot's menu");
         bot.AvatarType.Should().Be(RoomObjectType.Bot);
         bot.ObjectId.Should().Be(RoomBotSystem.ToRoomObjectId(7));
     }
@@ -491,10 +493,23 @@ public sealed class RoomBotSystemTests
         private IGrainFactory BuildGrainFactory() =>
             FakeProxy.Create<IGrainFactory>(call =>
             {
-                if (
-                    !call.Method.IsGenericMethod
-                    || call.Method.GetGenericArguments()[0] != typeof(IPlayerPresenceGrain)
-                )
+                if (!call.Method.IsGenericMethod)
+                {
+                    return null;
+                }
+
+                // The bot avatar carries its owner's name, which the room resolves through the
+                // directory when it is not already cached.
+                if (call.Method.GetGenericArguments()[0] == typeof(IPlayerDirectoryGrain))
+                {
+                    return FakeProxy.Create<IPlayerDirectoryGrain>(inner =>
+                        inner.Method.Name == nameof(IPlayerDirectoryGrain.GetPlayerNameAsync)
+                            ? Task.FromResult(OwnerName)
+                            : null
+                    );
+                }
+
+                if (call.Method.GetGenericArguments()[0] != typeof(IPlayerPresenceGrain))
                 {
                     return null;
                 }
