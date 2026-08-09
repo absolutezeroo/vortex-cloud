@@ -167,14 +167,58 @@ internal static class RoomPetRuntime
     /// </summary>
     public static bool CanBreed(PetSnapshot pet) => pet.Type != MonsterplantPetType && pet.CanBreed;
 
+    /// <summary>
+    /// A grown plant offers its seed once. <c>CanBreed</c> is that charge: harvesting spends it and
+    /// a rebreed potion restores it, which is why the button disappears in between rather than
+    /// staying and doing nothing.
+    /// </summary>
     public static bool CanHarvest(PetSnapshot pet) =>
-        pet.Type == MonsterplantPetType && pet.Level >= MonsterplantMaxLevel;
+        pet is { Type: MonsterplantPetType, Level: >= MonsterplantMaxLevel }
+        && pet.Energy > 0
+        && pet.CanBreed;
 
     public static bool CanRevive(PetSnapshot pet) =>
         pet.Type == MonsterplantPetType && pet.Energy == 0;
 
     public static bool HasBreedingPermission(PetSnapshot pet) =>
         pet.Type != MonsterplantPetType && pet.CanBreed;
+
+    /// <summary>
+    /// Whether a pet is a monsterplant. Named once because half the pet rules fork on it — a plant
+    /// is watered rather than scratched, never sleeps, never plays and cannot be bred at a nest.
+    /// </summary>
+    public static bool IsPlant(PetSnapshot pet) => pet.Type == MonsterplantPetType;
+
+    /// <summary>
+    /// A monsterplant's well-being, read off the watering stamp rather than accumulated: the client
+    /// counts the same window down from the same stamp, so deriving it keeps the two in step even
+    /// after the room has been unloaded for hours.
+    /// </summary>
+    public static int PlantWellBeing(
+        DateTime wateredAt,
+        DateTime now,
+        int energyCap,
+        int wellBeingSeconds
+    )
+    {
+        if (wellBeingSeconds <= 0)
+        {
+            return energyCap;
+        }
+
+        double remaining = 1.0 - ((now - wateredAt).TotalSeconds / wellBeingSeconds);
+
+        return (int)Math.Round(energyCap * Math.Clamp(remaining, 0.0, 1.0));
+    }
+
+    /// <summary>
+    /// The growth stage banked seconds add up to. Stage 1 is a fresh sprout, so the seconds only
+    /// start counting from there.
+    /// </summary>
+    public static int PlantLevelFor(int grownSeconds, int growthSeconds, int maxLevel) =>
+        growthSeconds <= 0
+            ? maxLevel
+            : Math.Clamp(1 + (Math.Max(0, grownSeconds) / growthSeconds), 1, maxLevel);
 
     /// <summary>
     /// What a pet is doing when it is doing nothing. The pet asset's own default animation id, and

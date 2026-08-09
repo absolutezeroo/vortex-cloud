@@ -88,4 +88,29 @@ public interface IRoomPets : IGrainWithIntegerKey
         RoomObjectId seedItemId,
         CancellationToken ct
     );
+
+    /// <summary>
+    /// A furniture used on a pet (the client's "use product" flow). Food and the monsterplant
+    /// potions share one packet; the product's own category decides which it is.
+    /// </summary>
+    public Task<bool> UsePetProductAsync(
+        ActionContext ctx,
+        int petId,
+        RoomObjectId productItemId,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Waters a monsterplant: the client's "treat" button, which arrives on the same packet as
+    /// respect (576) and resets the well-being clock the client counts down from.
+    /// </summary>
+    public Task<PetSnapshot?> TreatPlantAsync(ActionContext ctx, int petId, CancellationToken ct);
+
+    /// <summary>Harvests a full-grown monsterplant, handing its owner a seed and spending the
+    /// plant's charge until a rebreed potion restores it.</summary>
+    public Task<bool> HarvestPlantAsync(ActionContext ctx, int petId, CancellationToken ct);
+
+    /// <summary>Composts a withered monsterplant. Destructive and irreversible, which is why the
+    /// client asks for confirmation first.</summary>
+    public Task<bool> CompostPlantAsync(ActionContext ctx, int petId, CancellationToken ct);
 }

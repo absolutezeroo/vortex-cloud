@@ -25,6 +25,23 @@ public class PetConfig
     public int HappinessCap { get; init; } = 100;
     public int StatFlushIntervalMs { get; init; } = 60_000;
 
+    /// <summary>
+    /// How long a monsterplant's well-being takes to drain from full to nothing without being
+    /// treated. 24 hours is not a guess: the client's own pet-info view counts down from
+    /// <c>MaxWellBeingSeconds</c>, and it is sent 86 400.
+    /// </summary>
+    public int PlantWellBeingSeconds { get; init; } = 86_400;
+
+    /// <summary>
+    /// How long a watered plant takes to put on one growth stage. Nothing publishes Habbo's own
+    /// figure, so this is the knob an operator will want first -- seven stages at twelve hours is
+    /// three days from seed to full size.
+    /// </summary>
+    public int PlantGrowthSeconds { get; init; } = 43_200;
+
+    /// <summary>Growth stages a fertilizer skips at once.</summary>
+    public int PlantFertilizerLevels { get; init; } = 1;
+
     /// <summary>Energy at which a sleeping pet has rested enough to get back up.</summary>
     public int SleepWakeEnergyThreshold { get; init; } = 40;
 

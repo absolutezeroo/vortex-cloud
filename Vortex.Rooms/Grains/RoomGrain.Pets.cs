@@ -380,4 +380,90 @@ public sealed partial class RoomGrain
             return null;
         }
     }
+
+    public async Task<bool> UsePetProductAsync(
+        ActionContext ctx,
+        int petId,
+        RoomObjectId productItemId,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            return await PetSystem.UsePetProductAsync(ctx, petId, productItemId, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to use product {ItemId} on pet {PetId} in room {RoomId}",
+                productItemId,
+                petId,
+                _state.RoomId
+            );
+
+            return false;
+        }
+    }
+
+    public async Task<PetSnapshot?> TreatPlantAsync(
+        ActionContext ctx,
+        int petId,
+        CancellationToken ct
+    )
+    {
+        try
+        {
+            return await PetSystem.TreatPlantAsync(ctx, petId, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to treat monsterplant {PetId} in room {RoomId}",
+                petId,
+                _state.RoomId
+            );
+
+            return null;
+        }
+    }
+
+    public async Task<bool> HarvestPlantAsync(ActionContext ctx, int petId, CancellationToken ct)
+    {
+        try
+        {
+            return await PetSystem.HarvestPlantAsync(ctx, petId, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to harvest monsterplant {PetId} in room {RoomId}",
+                petId,
+                _state.RoomId
+            );
+
+            return false;
+        }
+    }
+
+    public async Task<bool> CompostPlantAsync(ActionContext ctx, int petId, CancellationToken ct)
+    {
+        try
+        {
+            return await PetSystem.CompostPlantAsync(ctx, petId, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to compost monsterplant {PetId} in room {RoomId}",
+                petId,
+                _state.RoomId
+            );
+
+            return false;
+        }
+    }
 }

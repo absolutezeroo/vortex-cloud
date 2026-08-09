@@ -299,6 +299,8 @@ internal sealed class RoomMap : IRevisionMap
         builder.MapParser(MessageEvent.GetPetInfoMessageEvent, new GetPetInfoMessageParser());
         builder.MapParser(MessageEvent.PetSelectedMessageEvent, new PetSelectedMessageParser());
         builder.MapParser(MessageEvent.RespectPetMessageEvent, new RespectPetMessageParser());
+        builder.MapParser(MessageEvent.HarvestPetMessageEvent, new HarvestPetMessageParser());
+        builder.MapParser(MessageEvent.CompostPlantMessageEvent, new CompostPlantMessageParser());
 
         // Room Session
         builder.MapParser(MessageEvent.ChangeQueueMessageEvent, new ChangeQueueMessageParser());

@@ -44,6 +44,14 @@ public sealed partial class RoomPetSystem
             return null;
         }
 
+        // One packet, two buttons: the client sends the same composer for "respect" on an animal and
+        // "treat" on a monsterplant, so the pet's type is what tells them apart. A plant is watered,
+        // and none of the respect rules below (daily cap, account age) apply to it.
+        if (RoomPetRuntime.IsPlant(pet))
+        {
+            return await TreatPlantAsync(ctx, petId, ct).ConfigureAwait(false);
+        }
+
         int minimumAgeDays = _roomGrain._roomConfig.Pet.RespectMinimumAccountAgeDays;
 
         if (minimumAgeDays > 0)

@@ -37,6 +37,10 @@ internal static class MessageEvent
     public const int CustomizePetWithFurniEvent = 2099; // AS3-verified (old-revision trace): _SafeCls_3494 -> useProductForPet() still exists in current revision at 2099
     public const int GetPetInfoMessageEvent = 3899; // AS3-verified (old-revision trace): _SafeCls_3258 -> requestPetInfo() still exists in current revision at 3899
     public const int PetSelectedMessageEvent = 2757; // AS3-verified (old-revision trace): _SafeCls_2740 -> handleGetPetInfoMessage() still exists in current revision at 2757
+    // AS3-verified: _composers[576] = _SafeCls_1909, and the client sends that one composer for
+    // BOTH buttons -- SessionDataManager.givePetRespect() and InfoStandWidgetHandler's
+    // RWUAM_TREAT_PET. One int, the pet id; the server tells the two apart by the pet's type,
+    // because a monsterplant is watered where an animal is scratched.
     public const int RespectPetMessageEvent = 576;
     public const int ForwardToACompetitionRoomMessageEvent = 431; // AS3-verified (old-revision trace): _SafeCls_2507 -> extraLinkClicked() still exists in current revision at 431
 

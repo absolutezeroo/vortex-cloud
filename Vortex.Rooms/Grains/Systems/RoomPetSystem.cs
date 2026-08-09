@@ -152,6 +152,21 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
 
                 if (pet.Type == MonsterplantPetType)
                 {
+                    // A plant does not walk, sleep, play or eat, but it does dry out and grow --
+                    // see RoomPetSystem.Plants.cs. Skipping it entirely is what left it an immortal
+                    // level-1 decoration.
+                    RoomPetAvatarSnapshot? plantUpdate = await ProcessPlantTickAsync(
+                            current,
+                            motion,
+                            ct
+                        )
+                        .ConfigureAwait(false);
+
+                    if (plantUpdate is not null)
+                    {
+                        dirtySnapshots.Add(plantUpdate);
+                    }
+
                     continue;
                 }
 
@@ -338,6 +353,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
             entity.RespectTodayCount = snapshot.RespectTodayCount;
             entity.RespectLastResetDate = snapshot.RespectLastResetDate;
             entity.CanBreed = snapshot.CanBreed;
+            entity.LastWateredAt = snapshot.LastWateredAt;
             entity.X = snapshot.X;
             entity.Y = snapshot.Y;
             entity.Z = snapshot.Z;
@@ -642,6 +658,7 @@ public sealed partial class RoomPetSystem(RoomGrain roomGrain)
         public long LastEnergyDecayAtMs { get; set; } = -1;
         public long LastThirstDecayAtMs { get; set; } = -1;
         public long LastHappinessDecayAtMs { get; set; } = -1;
+        public long LastPlantTickAtMs { get; set; } = -1;
         public bool IsStatsDirty { get; set; }
         public bool IsSleeping { get; set; }
         public bool SleepPostureSent { get; set; }

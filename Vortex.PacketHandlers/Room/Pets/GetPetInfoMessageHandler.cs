@@ -68,7 +68,8 @@ public class GetPetInfoMessageHandler(IGrainFactory grainFactory)
                     OwnerName = ownerName,
                     Age = pet.AgeInDays(DateTime.UtcNow),
                     CanBreed = !isPlant && pet.CanBreed,
-                    CanHarvest = isPlant && pet.Level >= 7,
+                    // Spent seed charge => no harvest button, see RoomPetRuntime.CanHarvest.
+                    CanHarvest = isPlant && pet.Level >= 7 && pet.Energy > 0 && pet.CanBreed,
                     CanRevive = isPlant && pet.Energy == 0,
                     HasBreedingPermission = !isPlant && pet.CanBreed,
                     RarityLevel = pet.RarityLevel,

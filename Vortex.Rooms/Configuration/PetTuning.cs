@@ -41,6 +41,9 @@ public sealed record PetTuning
     public const string WanderIdleMinMsKey = "pets.wander_idle_min_ms";
     public const string WanderIdleMaxMsKey = "pets.wander_idle_max_ms";
     public const string VocalIntervalMsKey = "pets.vocal_interval_ms";
+    public const string PlantWellBeingSecondsKey = "pets.plant_wellbeing_seconds";
+    public const string PlantGrowthSecondsKey = "pets.plant_growth_seconds";
+    public const string PlantFertilizerLevelsKey = "pets.plant_fertilizer_levels";
 
     public required double NutritionDecayPerMinute { get; init; }
     public required double EnergyDecayPerMinute { get; init; }
@@ -61,6 +64,9 @@ public sealed record PetTuning
     public required int WanderIdleMinMs { get; init; }
     public required int WanderIdleMaxMs { get; init; }
     public required int VocalIntervalMs { get; init; }
+    public required int PlantWellBeingSeconds { get; init; }
+    public required int PlantGrowthSeconds { get; init; }
+    public required int PlantFertilizerLevels { get; init; }
 
     /// <summary>The compiled defaults, used before the first read and whenever a key is unset.</summary>
     public static PetTuning FromDefaults(PetConfig config) =>
@@ -85,6 +91,9 @@ public sealed record PetTuning
             WanderIdleMinMs = config.WanderIdleMinMs,
             WanderIdleMaxMs = config.WanderIdleMaxMs,
             VocalIntervalMs = config.VocalIntervalMs,
+            PlantWellBeingSeconds = config.PlantWellBeingSeconds,
+            PlantGrowthSeconds = config.PlantGrowthSeconds,
+            PlantFertilizerLevels = config.PlantFertilizerLevels,
         };
 
     public static async Task<PetTuning> LoadAsync(IServerConfigGrain config, PetConfig defaults) =>
@@ -146,6 +155,15 @@ public sealed record PetTuning
                 .ConfigureAwait(false),
             VocalIntervalMs = await config
                 .GetIntAsync(VocalIntervalMsKey, defaults.VocalIntervalMs)
+                .ConfigureAwait(false),
+            PlantWellBeingSeconds = await config
+                .GetIntAsync(PlantWellBeingSecondsKey, defaults.PlantWellBeingSeconds)
+                .ConfigureAwait(false),
+            PlantGrowthSeconds = await config
+                .GetIntAsync(PlantGrowthSecondsKey, defaults.PlantGrowthSeconds)
+                .ConfigureAwait(false),
+            PlantFertilizerLevels = await config
+                .GetIntAsync(PlantFertilizerLevelsKey, defaults.PlantFertilizerLevels)
                 .ConfigureAwait(false),
         };
 }
