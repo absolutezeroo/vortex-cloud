@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Furniture.Snapshots.StuffData;
 using Vortex.Primitives.Networking;
+using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object;
@@ -51,4 +52,15 @@ public interface IWiredExecutionContext : IWiredContext
     );
     public ActionContext AsActionContext();
     public Task SendComposerToRoomAsync(IComposer composer);
+
+    /// <summary>
+    /// Makes the named bot say something. False when no bot in the room answers to that name, which
+    /// is what a stack pointing at a bot somebody has since picked up looks like.
+    /// </summary>
+    public Task<bool> ProcessBotChatAsync(
+        string botName,
+        string text,
+        WiredBotChatType chatType,
+        PlayerId? whisperTo
+    );
 }

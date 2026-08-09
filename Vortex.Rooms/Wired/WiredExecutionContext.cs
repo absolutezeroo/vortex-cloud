@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Bots;
 using Vortex.Primitives.Furniture.Snapshots.StuffData;
 using Vortex.Primitives.Networking;
+using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object;
@@ -335,4 +338,46 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
 
     public Task SendComposerToRoomAsync(IComposer composer) =>
         _roomGrain.SendComposerToRoomAsync(composer);
+
+    /// <summary>
+    /// Makes the named bot speak. Named rather than addressed by id because that is how the client's
+    /// setup form asks for it — the builder types a name into the box — and an unknown name is a
+    /// stack pointing at a bot that has been picked up, which is ordinary rather than an error.
+    /// </summary>
+    public async Task<bool> ProcessBotChatAsync(
+        string botName,
+        string text,
+        WiredBotChatType chatType,
+        PlayerId? whisperTo
+    )
+    {
+        try
+        {
+            BotSnapshot? bot = await _roomGrain
+                .BotSystem.FindBotByNameAsync(botName, CancellationToken.None)
+                .ConfigureAwait(true);
+
+            if (bot is null)
+            {
+                return false;
+            }
+
+            await _roomGrain
+                .BotSystem.SayAsync(bot.BotId, text, chatType, whisperTo, CancellationToken.None)
+                .ConfigureAwait(true);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _roomGrain._logger.LogWarning(
+                ex,
+                "Failed to make bot {BotName} speak in room {RoomId}.",
+                botName,
+                _roomGrain.RoomId
+            );
+
+            return false;
+        }
+    }
 }

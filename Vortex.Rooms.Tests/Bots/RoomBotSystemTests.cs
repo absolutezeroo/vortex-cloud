@@ -30,6 +30,7 @@ using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
@@ -663,6 +664,137 @@ public sealed class RoomBotSystemTests
             .Select(chat => chat.Text)
             .Should()
             .AllBe("hello", "the trailing fields are settings, not lines to say");
+    }
+
+    [Theory]
+    [InlineData("Frank")]
+    [InlineData("frank")]
+    [InlineData("  Frank  ")]
+    public async Task WiredFindsABotByTheNameTypedIntoItsForm(string typed)
+    {
+        // Wired addresses bots by name, and a builder typing one into a box will not match its
+        // case or its spacing.
+        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+
+        await harness
+            .Grain.SetBotSkillAsync(
+                harness.ContextFor(Owner),
+                7,
+                BotSkillId.ChangeName,
+                "Frank",
+                CancellationToken.None
+            )
+            .ConfigureAwait(true);
+
+        BotSnapshot? found = await harness
+            .Grain.BotSystem.FindBotByNameAsync(typed, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        found.Should().NotBeNull();
+        found!.BotId.Should().Be(7);
+    }
+
+    [Fact]
+    public async Task AWiredStackNamingABotThatIsNotHere_FindsNothingRatherThanGuessing()
+    {
+        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+
+        BotSnapshot? found = await harness
+            .Grain.BotSystem.FindBotByNameAsync("Nobody", CancellationToken.None)
+            .ConfigureAwait(true);
+
+        found.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task AWiredShout_GoesToTheRoomAsTheBotRatherThanAsChat()
+    {
+        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+
+        harness.BroadcastToRoom.Clear();
+
+        await harness
+            .Grain.BotSystem.SayAsync(
+                7,
+                "everybody out",
+                WiredBotChatType.Shout,
+                null,
+                CancellationToken.None
+            )
+            .ConfigureAwait(true);
+
+        ShoutMessageComposer shout = harness
+            .BroadcastToRoom.OfType<ShoutMessageComposer>()
+            .Should()
+            .ContainSingle()
+            .Which;
+
+        shout.Text.Should().Be("everybody out");
+        shout.ObjectId.Should().Be(RoomBotSystem.ToRoomObjectId(7));
+    }
+
+    [Fact]
+    public async Task AWiredWhisperWithNobodyToHearIt_IsDroppedRatherThanSaidAloud()
+    {
+        // Whispering to nobody must not fall back to the room: the builder asked for one listener,
+        // and saying it aloud to everybody is the opposite of what they configured.
+        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+
+        harness.BroadcastToRoom.Clear();
+
+        await harness
+            .Grain.BotSystem.SayAsync(
+                7,
+                "psst",
+                WiredBotChatType.Whisper,
+                null,
+                CancellationToken.None
+            )
+            .ConfigureAwait(true);
+
+        harness.BroadcastToRoom.Should().BeEmpty();
+        harness.ComposersSentTo.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task AWiredWhisper_ReachesOnlyTheListener()
+    {
+        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+
+        harness.BroadcastToRoom.Clear();
+
+        await harness
+            .Grain.BotSystem.SayAsync(
+                7,
+                "psst",
+                WiredBotChatType.Whisper,
+                Stranger,
+                CancellationToken.None
+            )
+            .ConfigureAwait(true);
+
+        harness.ComposersSentTo.Should().ContainSingle().Which.Should().Be(Stranger);
+        harness.BroadcastToRoom.Should().BeEmpty("a whisper is not room chat");
+    }
+
+    [Fact]
+    public async Task AWiredStackNamingABotThatIsNotHere_SaysNothing()
+    {
+        Harness harness = await Harness.CreateAsync(placedBotId: 7).ConfigureAwait(true);
+
+        harness.BroadcastToRoom.Clear();
+
+        await harness
+            .Grain.BotSystem.SayAsync(
+                999,
+                "hello",
+                WiredBotChatType.Say,
+                null,
+                CancellationToken.None
+            )
+            .ConfigureAwait(true);
+
+        harness.BroadcastToRoom.Should().BeEmpty();
     }
 
     private sealed class Harness
