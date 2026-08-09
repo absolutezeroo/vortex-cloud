@@ -26,6 +26,7 @@ using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Events;
 using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
@@ -182,6 +183,8 @@ internal sealed class BotHarness
 
             return null;
         });
+
+        Grain.EventModule.Register(new EventRecorder(RoomEvents));
     }
 
     public RoomGrain Grain { get; }
@@ -193,6 +196,12 @@ internal sealed class BotHarness
 
     /// <summary>What the whole room was told, in order.</summary>
     public List<IComposer> BroadcastToRoom { get; } = [];
+
+    /// <summary>
+    /// Room events as they were published. Wired triggers read these, so this is where a test can
+    /// see that something fired without standing the whole wired engine up.
+    /// </summary>
+    public List<RoomEvent> RoomEvents { get; } = [];
 
     public static async Task<BotHarness> CreateAsync(
         int placedBotId = PlacedBotId,
@@ -348,5 +357,16 @@ internal sealed class BotHarness
         : IDbContextFactory<VortexDbContext>
     {
         public VortexDbContext CreateDbContext() => new(options);
+    }
+
+    /// <summary>Stands in for the wired system, which is the real listener in a live room.</summary>
+    private sealed class EventRecorder(List<RoomEvent> events) : IRoomEventListener
+    {
+        public Task OnRoomEventAsync(RoomEvent evt, CancellationToken ct)
+        {
+            events.Add(evt);
+
+            return Task.CompletedTask;
+        }
     }
 }

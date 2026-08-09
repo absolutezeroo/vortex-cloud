@@ -2,10 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
+using Vortex.Logging.Extensions;
 using Vortex.Primitives;
+using Vortex.Primitives.Action;
 using Vortex.Primitives.Bots;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Events.Bots;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
@@ -55,13 +59,86 @@ public sealed partial class RoomBotSystem
             BotSnapshot? stepped =
                 StepFollowingBot(bot) ?? StepOrderedBot(bot) ?? StepWanderingBot(bot, now);
 
-            if (stepped is not null)
+            if (stepped is null)
             {
-                moved.Add(ToAvatarSnapshot(stepped));
+                continue;
             }
+
+            moved.Add(ToAvatarSnapshot(stepped));
+            PublishArrival(stepped);
         }
 
         return moved;
+    }
+
+    /// <summary>
+    /// Tells the room where a bot has just arrived, which is what the two bot triggers listen for.
+    /// Published per step rather than per tick, so a bot standing still fires nothing.
+    /// </summary>
+    private void PublishArrival(BotSnapshot bot)
+    {
+        int tileIdx = _roomGrain.MapModule.ToIdx(bot.X, bot.Y);
+
+        _roomGrain
+            .PublishRoomEventAsync(
+                new BotReachedTileEvent
+                {
+                    RoomId = _roomGrain.RoomId,
+                    BotId = bot.BotId,
+                    BotName = bot.Name,
+                    ObjectId = ToRoomObjectId(bot.BotId),
+                    TileIdx = tileIdx,
+                },
+                CancellationToken.None
+            )
+            .LogAndForget(
+                _roomGrain._logger,
+                "Failed to publish bot arrival in room {RoomId}",
+                _roomGrain._state.RoomId
+            );
+
+        foreach (PlayerId reached in PlayersBeside(bot))
+        {
+            _roomGrain
+                .PublishRoomEventAsync(
+                    new BotReachedAvatarEvent
+                    {
+                        RoomId = _roomGrain.RoomId,
+                        // The person reached is the cause, so a stack can go on to act on them as
+                        // its triggered user.
+                        CausedBy = ActionContext.CreateForPlayer(reached, _roomGrain.RoomId),
+                        BotId = bot.BotId,
+                        BotName = bot.Name,
+                        ObjectId = ToRoomObjectId(bot.BotId),
+                        ReachedPlayerId = reached,
+                    },
+                    CancellationToken.None
+                )
+                .LogAndForget(
+                    _roomGrain._logger,
+                    "Failed to publish bot meeting in room {RoomId}",
+                    _roomGrain._state.RoomId
+                );
+        }
+    }
+
+    /// <summary>Whoever the bot is now standing next to, itself included in neither sense.</summary>
+    private List<PlayerId> PlayersBeside(BotSnapshot bot)
+    {
+        List<PlayerId> beside = [];
+
+        foreach ((PlayerId playerId, RoomObjectId objectId) in _roomGrain._state.AvatarsByPlayerId)
+        {
+            if (
+                _roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar)
+                && IsAdjacentTo(bot, avatar.X, avatar.Y)
+            )
+            {
+                beside.Add(playerId);
+            }
+        }
+
+        return beside;
     }
 
     /// <summary>
