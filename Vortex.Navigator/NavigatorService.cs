@@ -46,6 +46,13 @@ public sealed class NavigatorService(
 
     public async Task<ImmutableArray<NavigatorSearchResultBlockSnapshot>> GetCategoryBlocksAsync(
         CancellationToken ct
+    ) =>
+        await GetCategoryBlocksAsync(await GetLimitsAsync().ConfigureAwait(false), ct)
+            .ConfigureAwait(false);
+
+    private async Task<ImmutableArray<NavigatorSearchResultBlockSnapshot>> GetCategoryBlocksAsync(
+        NavigatorLimits limits,
+        CancellationToken ct
     )
     {
         ImmutableArray<NavigatorFlatCategorySnapshot> categories =
@@ -56,19 +63,11 @@ public sealed class NavigatorService(
             return [];
         }
 
-        int limit = await _grainFactory
-            .GetServerConfigGrain()
-            .GetIntAsync(
-                NavigatorConfig.CategoryResultLimitKey,
-                NavigatorConfig.CategoryResultLimitDefault
-            )
-            .ConfigureAwait(false);
-
         // The per-category queries are independent, so issue them together rather than walking the
         // category list one round trip at a time.
         List<RoomInfoSnapshot>[] roomsPerCategory = await Task.WhenAll(
                 categories.Select(cat =>
-                    _navigatorProvider.GetRoomsByCategoryAsync(cat.Id, limit, ct)
+                    _navigatorProvider.GetRoomsByCategoryAsync(cat.Id, limits.Category, ct)
                 )
             )
             .ConfigureAwait(false);
@@ -83,9 +82,12 @@ public sealed class NavigatorService(
             blocks.Add(
                 new NavigatorSearchResultBlockSnapshot
                 {
-                    SearchCode = NavigatorSearchCodes.Categories,
+                    // Each category gets its own code so the client can collapse them
+                    // independently and so "show more" drills into that one category. A shared
+                    // "categories" code made collapsing one collapse the lot.
+                    SearchCode = NavigatorSearchCodes.FlatCategoryCode(categories[i].Id),
                     Text = ToCategoryHeader(categories[i]),
-                    ActionAllowed = NavigatorActionAllowedType.Collapsed,
+                    ActionAllowed = NavigatorActionAllowedType.Expanded,
                     Localization = string.Empty,
                     ForceClosed = false,
                     ViewMode = NavigatorViewModeType.Rows,
@@ -110,6 +112,7 @@ public sealed class NavigatorService(
                 filterType,
                 filterValue,
                 playerId,
+                await GetLimitsAsync().ConfigureAwait(false),
                 ct
             )
             .ConfigureAwait(false);
@@ -285,7 +288,7 @@ public sealed class NavigatorService(
         return new CategoriesWithVisitorCountSnapshot(byCategory);
     }
 
-    private async Task<List<RoomInfoSnapshot>> FetchRoomsAsync(
+    public async Task<ImmutableArray<NavigatorSearchResultBlockSnapshot>> GetSearchBlocksAsync(
         string searchCode,
         NavigatorSearchFilterType filterType,
         string filterValue,
@@ -293,14 +296,195 @@ public sealed class NavigatorService(
         CancellationToken ct
     )
     {
-        IServerConfigGrain config = _grainFactory.GetServerConfigGrain();
+        NavigatorLimits limits = await GetLimitsAsync().ConfigureAwait(false);
 
-        int limit = await config
-            .GetIntAsync(
-                NavigatorConfig.SearchResultLimitKey,
-                NavigatorConfig.SearchResultLimitDefault
+        // A filter turns any view into one flat list of matches -- the player asked a question, not
+        // for the tab's overview.
+        if (string.IsNullOrWhiteSpace(filterValue))
+        {
+            if (searchCode == NavigatorSearchCodes.Categories)
+            {
+                return await GetCategoryBlocksAsync(limits, ct).ConfigureAwait(false);
+            }
+
+            ImmutableArray<NavigatorQuickLinkSnapshot> quickLinks = await ResolveQuickLinksAsync(
+                    searchCode
+                )
+                .ConfigureAwait(false);
+
+            if (quickLinks.Length > 0)
+            {
+                return await BuildOverviewBlocksAsync(quickLinks, playerId, limits, ct)
+                    .ConfigureAwait(false);
+            }
+        }
+
+        return
+        [
+            await BuildBlockAsync(
+                    searchCode,
+                    searchCode,
+                    filterType,
+                    filterValue,
+                    // A single block is the end of a drill-down, so the client offers "back" rather
+                    // than "show more".
+                    NavigatorActionAllowedType.Back,
+                    playerId,
+                    limits,
+                    ct
+                )
+                .ConfigureAwait(false),
+        ];
+    }
+
+    /// <summary>
+    /// The quick links configured under a top-level context, which are what its overview is made of.
+    /// Empty for anything that is not a tab.
+    /// </summary>
+    private async Task<ImmutableArray<NavigatorQuickLinkSnapshot>> ResolveQuickLinksAsync(
+        string searchCode
+    )
+    {
+        ImmutableArray<NavigatorTopLevelContextSnapshot> contexts = await _navigatorProvider
+            .GetTopLevelContextsAsync()
+            .ConfigureAwait(false);
+
+        foreach (NavigatorTopLevelContextSnapshot context in contexts)
+        {
+            if (
+                string.Equals(context.SearchCode, searchCode, StringComparison.Ordinal)
+                && context.QuickLinks.Length > 0
+            )
+            {
+                return context.QuickLinks;
+            }
+        }
+
+        return [];
+    }
+
+    /// <summary>
+    /// One block per quick link. Each keeps the quick link's own search code so the client localizes
+    /// its header and so "show more" drills into that one search, and each is expandable/collapsible
+    /// rather than a dead end.
+    /// </summary>
+    private async Task<ImmutableArray<NavigatorSearchResultBlockSnapshot>> BuildOverviewBlocksAsync(
+        ImmutableArray<NavigatorQuickLinkSnapshot> quickLinks,
+        PlayerId playerId,
+        NavigatorLimits limits,
+        CancellationToken ct
+    )
+    {
+        List<NavigatorSearchResultBlockSnapshot> blocks = new(quickLinks.Length);
+
+        foreach (NavigatorQuickLinkSnapshot quickLink in quickLinks)
+        {
+            // "All categories" is itself a set of blocks, so it expands in place instead of
+            // collapsing into one nameless list.
+            if (
+                quickLink.SearchCode == NavigatorSearchCodes.Categories
+                && string.IsNullOrWhiteSpace(quickLink.Filter)
+            )
+            {
+                blocks.AddRange(await GetCategoryBlocksAsync(limits, ct).ConfigureAwait(false));
+                continue;
+            }
+
+            blocks.Add(
+                await BuildBlockAsync(
+                        quickLink.SearchCode,
+                        quickLink.SearchCode,
+                        NavigatorSearchFilterType.Anything,
+                        quickLink.Filter,
+                        NavigatorActionAllowedType.Expanded,
+                        playerId,
+                        limits,
+                        ct
+                    )
+                    .ConfigureAwait(false)
+            );
+        }
+
+        return [.. blocks];
+    }
+
+    private async Task<NavigatorSearchResultBlockSnapshot> BuildBlockAsync(
+        string searchCode,
+        string viewModeKey,
+        NavigatorSearchFilterType filterType,
+        string filterValue,
+        NavigatorActionAllowedType actionAllowed,
+        PlayerId playerId,
+        NavigatorLimits limits,
+        CancellationToken ct
+    )
+    {
+        List<RoomInfoSnapshot> rooms = await FetchRoomsAsync(
+                searchCode,
+                filterType,
+                filterValue,
+                playerId,
+                limits,
+                ct
             )
             .ConfigureAwait(false);
+
+        int viewMode = await _grainFactory
+            .GetPlayerNavigatorGrain(playerId)
+            .GetViewModeAsync(viewModeKey, ct)
+            .ConfigureAwait(false);
+
+        Dictionary<RoomId, RoomSummarySnapshot> activeById =
+            rooms.Count == 0 ? [] : await GetActiveRoomsByIdAsync().ConfigureAwait(false);
+
+        return new NavigatorSearchResultBlockSnapshot
+        {
+            SearchCode = searchCode,
+            // Empty text makes the client localize the search code itself.
+            Text = string.Empty,
+            ActionAllowed = actionAllowed,
+            Localization = string.Empty,
+            ForceClosed = false,
+            ViewMode = (NavigatorViewModeType)viewMode,
+            Results = ToSearchResults(rooms, activeById),
+        };
+    }
+
+    private async Task<NavigatorLimits> GetLimitsAsync()
+    {
+        IServerConfigGrain config = _grainFactory.GetServerConfigGrain();
+
+        // Read once per request rather than once per block: an overview builds up to a dozen blocks
+        // and each was re-asking the config grain for the same three numbers.
+        return new NavigatorLimits(
+            await config
+                .GetIntAsync(
+                    NavigatorConfig.SearchResultLimitKey,
+                    NavigatorConfig.SearchResultLimitDefault
+                )
+                .ConfigureAwait(false),
+            await config
+                .GetIntAsync(
+                    NavigatorConfig.CategoryResultLimitKey,
+                    NavigatorConfig.CategoryResultLimitDefault
+                )
+                .ConfigureAwait(false),
+            await config
+                .GetIntAsync(NavigatorConfig.HistoryLimitKey, NavigatorConfig.HistoryLimitDefault)
+                .ConfigureAwait(false)
+        );
+    }
+
+    private async Task<List<RoomInfoSnapshot>> FetchRoomsAsync(
+        string searchCode,
+        NavigatorSearchFilterType filterType,
+        string filterValue,
+        PlayerId playerId,
+        NavigatorLimits limits,
+        CancellationToken ct
+    )
+    {
+        int limit = limits.Search;
 
         // Explicit filter overrides searchCode routing
         if (
@@ -355,14 +539,11 @@ public sealed class NavigatorService(
                 .ConfigureAwait(false),
             NavigatorQueryType.WithFriends => await GetRoomsWithFriendsAsync(playerId, ct)
                 .ConfigureAwait(false),
-            NavigatorQueryType.History => await GetVisitedRoomsAsync(playerId, false, config, ct)
+            NavigatorQueryType.History => await _navigatorProvider
+                .GetVisitedRoomsAsync(playerId, false, limits.History, ct)
                 .ConfigureAwait(false),
-            NavigatorQueryType.FrequentHistory => await GetVisitedRoomsAsync(
-                    playerId,
-                    true,
-                    config,
-                    ct
-                )
+            NavigatorQueryType.FrequentHistory => await _navigatorProvider
+                .GetVisitedRoomsAsync(playerId, true, limits.History, ct)
                 .ConfigureAwait(false),
             NavigatorQueryType.WithRights => await _navigatorProvider
                 .GetRoomsWithRightsAsync(playerId, limit, ct)
@@ -412,22 +593,6 @@ public sealed class NavigatorService(
             NavigatorQueryType.Competition => [],
             _ => await _navigatorProvider.GetAllRoomsAsync(limit, ct).ConfigureAwait(false),
         };
-    }
-
-    private async Task<List<RoomInfoSnapshot>> GetVisitedRoomsAsync(
-        PlayerId playerId,
-        bool byFrequency,
-        IServerConfigGrain config,
-        CancellationToken ct
-    )
-    {
-        int limit = await config
-            .GetIntAsync(NavigatorConfig.HistoryLimitKey, NavigatorConfig.HistoryLimitDefault)
-            .ConfigureAwait(false);
-
-        return await _navigatorProvider
-            .GetVisitedRoomsAsync(playerId, byFrequency, limit, ct)
-            .ConfigureAwait(false);
     }
 
     /// <summary>
@@ -613,4 +778,7 @@ public sealed class NavigatorService(
             yield return searchCode[(separator + 1)..];
         }
     }
+
+    /// <summary>The three result caps, resolved once per request instead of once per block.</summary>
+    private sealed record NavigatorLimits(int Search, int Category, int History);
 }

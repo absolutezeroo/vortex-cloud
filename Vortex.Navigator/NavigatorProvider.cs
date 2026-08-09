@@ -60,13 +60,23 @@ public sealed class NavigatorProvider(
             return builtIn;
         }
 
-        // Event-category codes carry their id in the code itself, so there is one per row rather
-        // than a fixed name to look up.
+        // Category codes carry their id in the code itself, so there is one per row rather than a
+        // fixed name to look up.
+        if (
+            searchCode.StartsWith(
+                NavigatorSearchCodes.EventCategoryPrefix,
+                StringComparison.Ordinal
+            )
+        )
+        {
+            return NavigatorQueryType.EventCategory;
+        }
+
         return searchCode.StartsWith(
-            NavigatorSearchCodes.EventCategoryPrefix,
+            NavigatorSearchCodes.FlatCategoryPrefix,
             StringComparison.Ordinal
         )
-            ? NavigatorQueryType.EventCategory
+            ? NavigatorQueryType.ByFlatCategory
             : NavigatorQueryType.AllRooms;
     }
 

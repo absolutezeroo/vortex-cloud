@@ -1,24 +1,19 @@
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
-using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Messages.Incoming.NewNavigator;
 using Vortex.Primitives.Messages.Outgoing.NewNavigator;
 using Vortex.Primitives.Navigator;
 using Vortex.Primitives.Navigator.Enums;
-using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Navigator;
 
 namespace Vortex.PacketHandlers.NewNavigator;
 
-public class NewNavigatorSearchMessageHandler(
-    INavigatorService navigatorService,
-    IGrainFactory grainFactory
-) : IMessageHandler<NewNavigatorSearchMessage>
+public class NewNavigatorSearchMessageHandler(INavigatorService navigatorService)
+    : IMessageHandler<NewNavigatorSearchMessage>
 {
     private readonly INavigatorService _navigatorService = navigatorService;
-    private readonly IGrainFactory _grainFactory = grainFactory;
 
     public async ValueTask HandleAsync(
         NewNavigatorSearchMessage message,
@@ -33,45 +28,18 @@ public class NewNavigatorSearchMessageHandler(
             filterRaw
         );
 
-        string filteringDataOut = NavigatorSearchFilter.Format(filterType, filterValue);
-
-        ImmutableArray<NavigatorSearchResultBlockSnapshot> blocks;
-
-        if (searchCode == "categories" && string.IsNullOrEmpty(filterValue))
-        {
-            blocks = await _navigatorService.GetCategoryBlocksAsync(ct).ConfigureAwait(false);
-        }
-        else
-        {
-            ImmutableArray<NavigatorSearchResultSnapshot> searchResults = await _navigatorService
-                .GetSearchResultsAsync(searchCode, filterType, filterValue, ctx.PlayerId, ct)
-                .ConfigureAwait(false);
-
-            int viewMode = await _grainFactory
-                .GetPlayerNavigatorGrain(ctx.PlayerId)
-                .GetViewModeAsync(searchCode, ct)
-                .ConfigureAwait(false);
-
-            blocks =
-            [
-                new NavigatorSearchResultBlockSnapshot
-                {
-                    SearchCode = searchCode,
-                    Text = string.Empty,
-                    ActionAllowed = NavigatorActionAllowedType.Back,
-                    Localization = string.Empty,
-                    ForceClosed = false,
-                    ViewMode = (NavigatorViewModeType)viewMode,
-                    Results = searchResults,
-                },
-            ];
-        }
+        // The service decides how many blocks the answer has: a tab expands into one block per
+        // quick link, everything else is a single block. This used to always wrap one flat room
+        // list, so every tab rendered as a single list.
+        ImmutableArray<NavigatorSearchResultBlockSnapshot> blocks = await _navigatorService
+            .GetSearchBlocksAsync(searchCode, filterType, filterValue, ctx.PlayerId, ct)
+            .ConfigureAwait(false);
 
         await ctx.SendComposerAsync(
                 new NavigatorSearchResultBlocksMessageComposer
                 {
                     SearchCodeOriginal = searchCode,
-                    FilteringData = filteringDataOut,
+                    FilteringData = NavigatorSearchFilter.Format(filterType, filterValue),
                     Blocks = blocks,
                 },
                 ct

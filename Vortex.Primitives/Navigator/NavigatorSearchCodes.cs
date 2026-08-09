@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using Vortex.Primitives.Navigator.Enums;
 
 namespace Vortex.Primitives.Navigator;
@@ -28,7 +29,9 @@ public static class NavigatorSearchCodes
 {
     public const string HotelView = "hotel_view";
     public const string MyWorldView = "myworld_view";
-    public const string OfficialRoot = "official-root";
+    public const string OfficialView = "official_view";
+    public const string RoomAdsView = "roomads_view";
+
     public const string Categories = "categories";
     public const string Competition = "competition";
     public const string Favourites = "favorites";
@@ -48,7 +51,19 @@ public static class NavigatorSearchCodes
     public const string TopPromotions = "top_promotions";
     public const string WithFriends = "with_friends";
     public const string WithRights = "with_rights";
+
     public const string EventCategoryPrefix = "eventcategory__";
+    public const string FlatCategoryPrefix = "category__";
+
+    public static string FlatCategoryCode(int categoryId) =>
+        FlatCategoryPrefix + categoryId.ToString(CultureInfo.InvariantCulture);
+
+    public static readonly ImmutableHashSet<string> TopLevelViews = ImmutableHashSet.Create(
+        HotelView,
+        MyWorldView,
+        OfficialView,
+        RoomAdsView
+    );
 
     public static readonly ImmutableDictionary<string, NavigatorQueryType> QueryTypeBySearchCode =
         ImmutableDictionary.CreateRange([
@@ -65,8 +80,9 @@ public static class NavigatorSearchCodes
             KeyValuePair.Create(MyRooms, NavigatorQueryType.MyRooms),
             KeyValuePair.Create(MyWorldView, NavigatorQueryType.MyRooms),
             KeyValuePair.Create(Official, NavigatorQueryType.StaffPicks),
-            KeyValuePair.Create(OfficialRoot, NavigatorQueryType.StaffPicks),
+            KeyValuePair.Create(OfficialView, NavigatorQueryType.StaffPicks),
             KeyValuePair.Create(Popular, NavigatorQueryType.Popular),
+            KeyValuePair.Create(RoomAdsView, NavigatorQueryType.RoomAds),
             KeyValuePair.Create(Recommended, NavigatorQueryType.Recommended),
             KeyValuePair.Create(RoomAds, NavigatorQueryType.RoomAds),
             KeyValuePair.Create(StaffPicks, NavigatorQueryType.StaffPicks),

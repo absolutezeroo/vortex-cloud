@@ -217,6 +217,142 @@ public sealed class NavigatorSearchRoutingTests
         recorder.RequestedRoomIds.Should().BeEquivalentTo([55, 66]);
     }
 
+    /// <summary>
+    /// A tab is an overview. "My World" is my rooms AND my favourites AND my history AND the rooms I
+    /// hold rights in AND my guild bases -- one collapsible block each. Answering it with a single
+    /// block is what made every tab show one list.
+    /// </summary>
+    [Fact]
+    public async Task TopLevelView_ReturnsOneBlockPerQuickLink()
+    {
+        Recorder recorder = new()
+        {
+            QuickLinks =
+            [
+                NavigatorSearchCodes.MyRooms,
+                NavigatorSearchCodes.Favourites,
+                NavigatorSearchCodes.History,
+                NavigatorSearchCodes.WithRights,
+                NavigatorSearchCodes.MyGuildBases,
+            ],
+        };
+
+        ImmutableArray<NavigatorSearchResultBlockSnapshot> blocks = await BlocksAsync(
+                recorder,
+                NavigatorSearchCodes.MyWorldView
+            )
+            .ConfigureAwait(true);
+
+        blocks
+            .Select(b => b.SearchCode)
+            .Should()
+            .Equal(
+                NavigatorSearchCodes.MyRooms,
+                NavigatorSearchCodes.Favourites,
+                NavigatorSearchCodes.History,
+                NavigatorSearchCodes.WithRights,
+                NavigatorSearchCodes.MyGuildBases
+            );
+
+        // Each block ran its own query rather than five copies of one.
+        recorder
+            .Calls.Should()
+            .Contain([
+                nameof(INavigatorProvider.GetRoomsByOwnerAsync),
+                nameof(INavigatorProvider.GetFavoriteRoomsAsync),
+                nameof(INavigatorProvider.GetVisitedRoomsAsync),
+                nameof(INavigatorProvider.GetRoomsWithRightsAsync),
+                nameof(INavigatorProvider.GetMyGuildBaseRoomsAsync),
+            ]);
+    }
+
+    /// <summary>An overview block offers "show more" (Expanded); a drill-down offers "back". Getting
+    /// this wrong leaves the player with no way into or out of a block.</summary>
+    [Fact]
+    public async Task OverviewBlocksAreExpandable_AndADrillDownOffersBack()
+    {
+        Recorder overviewRecorder = new() { QuickLinks = [NavigatorSearchCodes.MyRooms] };
+
+        ImmutableArray<NavigatorSearchResultBlockSnapshot> overview = await BlocksAsync(
+                overviewRecorder,
+                NavigatorSearchCodes.MyWorldView
+            )
+            .ConfigureAwait(true);
+
+        ImmutableArray<NavigatorSearchResultBlockSnapshot> drillDown = await BlocksAsync(
+                new Recorder(),
+                NavigatorSearchCodes.MyRooms
+            )
+            .ConfigureAwait(true);
+
+        overview.Should().ContainSingle();
+        overview[0].ActionAllowed.Should().Be(NavigatorActionAllowedType.Expanded);
+
+        drillDown.Should().ContainSingle();
+        drillDown[0].ActionAllowed.Should().Be(NavigatorActionAllowedType.Back);
+    }
+
+    /// <summary>Typing a filter is a question, not a tab: the overview collapses to one list of
+    /// matches.</summary>
+    [Fact]
+    public async Task TopLevelViewWithAFilter_CollapsesToASingleSearchBlock()
+    {
+        Recorder recorder = new()
+        {
+            QuickLinks = [NavigatorSearchCodes.MyRooms, NavigatorSearchCodes.Favourites],
+        };
+
+        ImmutableArray<NavigatorSearchResultBlockSnapshot> blocks = await BlocksAsync(
+                recorder,
+                NavigatorSearchCodes.MyWorldView,
+                filterValue: "lounge"
+            )
+            .ConfigureAwait(true);
+
+        blocks.Should().ContainSingle();
+        recorder.Calls.Should().Contain(nameof(INavigatorProvider.SearchRoomsAsync));
+    }
+
+    /// <summary>"All categories" is itself a set of blocks, so it expands in place instead of
+    /// collapsing into one nameless list.</summary>
+    [Fact]
+    public async Task CategoriesQuickLink_ExpandsIntoOneBlockPerCategory()
+    {
+        Recorder recorder = new()
+        {
+            QuickLinks = [NavigatorSearchCodes.Popular, NavigatorSearchCodes.Categories],
+        };
+
+        ImmutableArray<NavigatorSearchResultBlockSnapshot> blocks = await BlocksAsync(
+                recorder,
+                NavigatorSearchCodes.HotelView
+            )
+            .ConfigureAwait(true);
+
+        blocks
+            .Select(b => b.SearchCode)
+            .Should()
+            .Equal(NavigatorSearchCodes.Popular, NavigatorSearchCodes.FlatCategoryCode(3));
+
+        // A category block carries its own header text, and a per-category code so collapsing one
+        // does not collapse them all.
+        blocks[1].Text.Should().Be("${navigator.flatcategory.global.PARTY}");
+    }
+
+    private static Task<ImmutableArray<NavigatorSearchResultBlockSnapshot>> BlocksAsync(
+        Recorder recorder,
+        string searchCode,
+        string filterValue = ""
+    ) =>
+        BuildService(recorder, [], [])
+            .GetSearchBlocksAsync(
+                searchCode,
+                NavigatorSearchFilterType.Anything,
+                filterValue,
+                Player,
+                CancellationToken.None
+            );
+
     private static Task<ImmutableArray<NavigatorSearchResultSnapshot>> SearchAsync(
         Recorder recorder,
         string searchCode,
@@ -313,7 +449,9 @@ public sealed class NavigatorSearchRoutingTests
                 );
             }
 
-            return null;
+            // Anything else (the per-player navigator grain and its view modes) answers with its
+            // type's default, which is what an untouched preference is anyway.
+            return FakeProxy.CreateFor(grainType, _ => null);
         });
     }
 
@@ -347,6 +485,10 @@ public sealed class NavigatorSearchRoutingTests
         public int? CategoryId { get; private set; }
         public IReadOnlyCollection<int>? RequestedRoomIds { get; private set; }
 
+        /// <summary>Quick links configured under every top-level context this fake knows about.
+        /// Empty means "no navigator configuration", the unseeded-hotel case.</summary>
+        public IReadOnlyList<string> QuickLinks { get; init; } = [];
+
         public INavigatorProvider AsProvider() =>
             FakeProxy.Create<INavigatorProvider>(call =>
             {
@@ -357,6 +499,9 @@ public sealed class NavigatorSearchRoutingTests
 
                     case nameof(INavigatorProvider.GetFlatCategories):
                         return CategoryReferenceData;
+
+                    case nameof(INavigatorProvider.GetTopLevelContextsAsync):
+                        return Task.FromResult(BuildContexts());
                 }
 
                 Calls.Add(call.Method.Name);
@@ -381,6 +526,34 @@ public sealed class NavigatorSearchRoutingTests
                     : null;
             });
 
+        private ImmutableArray<NavigatorTopLevelContextSnapshot> BuildContexts() =>
+            QuickLinks.Count == 0
+                ? []
+                :
+                [
+                    .. NavigatorSearchCodes.TopLevelViews.Select(
+                        view => new NavigatorTopLevelContextSnapshot
+                        {
+                            SearchCode = view,
+                            QueryType = Resolve(view),
+                            QuickLinks =
+                            [
+                                .. QuickLinks.Select(
+                                    (code, index) =>
+                                        new NavigatorQuickLinkSnapshot
+                                        {
+                                            Id = index + 1,
+                                            SearchCode = code,
+                                            Filter = string.Empty,
+                                            Localization = string.Empty,
+                                            QueryType = Resolve(code),
+                                        }
+                                ),
+                            ],
+                        }
+                    ),
+                ];
+
         /// <summary>Mirrors the provider's own fallback so the routing under test is exercised with
         /// the resolution an unconfigured hotel actually gets.</summary>
         private static NavigatorQueryType Resolve(string searchCode) =>
@@ -394,6 +567,11 @@ public sealed class NavigatorSearchRoutingTests
                 StringComparison.Ordinal
             )
                 ? NavigatorQueryType.EventCategory
+            : searchCode.StartsWith(
+                NavigatorSearchCodes.FlatCategoryPrefix,
+                StringComparison.Ordinal
+            )
+                ? NavigatorQueryType.ByFlatCategory
             : NavigatorQueryType.AllRooms;
 
         private static readonly ImmutableArray<NavigatorFlatCategorySnapshot> CategoryReferenceData =

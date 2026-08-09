@@ -26,6 +26,24 @@ public interface INavigatorService
         CancellationToken ct
     );
 
+    /// <summary>
+    /// The full answer to a navigator search: one block for a plain search or a drill-down, one
+    /// block per quick link when the search code is a top-level context (a tab).
+    /// </summary>
+    /// <remarks>
+    /// A tab is an overview, not a query. "My World" is my rooms *and* my favourites *and* my visit
+    /// history *and* the rooms I hold rights in *and* my guild bases, each as its own collapsible
+    /// block — which is why the client tracks collapsed state per block search code and offers a
+    /// "show more" that re-searches that one code.
+    /// </remarks>
+    Task<ImmutableArray<NavigatorSearchResultBlockSnapshot>> GetSearchBlocksAsync(
+        string searchCode,
+        NavigatorSearchFilterType filterType,
+        string filterValue,
+        PlayerId playerId,
+        CancellationToken ct
+    );
+
     /// <summary>The public/official rooms list, one entry per staff-picked room with its live
     /// population folded in.</summary>
     Task<ImmutableArray<OfficialRoomEntrySnapshot>> GetOfficialRoomEntriesAsync(
