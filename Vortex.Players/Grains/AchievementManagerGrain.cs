@@ -65,6 +65,8 @@ internal sealed class AchievementManagerGrain(
         return _defaultCategory;
     }
 
+    public Task ReloadAsync(CancellationToken ct) => LoadAsync(ct);
+
     private async Task EnsureLoadedAsync(CancellationToken ct)
     {
         if (!_loaded)

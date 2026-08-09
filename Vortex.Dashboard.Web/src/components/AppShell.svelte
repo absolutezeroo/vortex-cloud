@@ -30,6 +30,18 @@
     Users,
     Wrench,
     Lock,
+    Trophy,
+    Bot,
+    Compass,
+    MessagesSquare,
+    ShieldCheck,
+    Award,
+    Gem,
+    Flag,
+    Gift,
+    SlidersHorizontal,
+    Gauge,
+    PencilLine,
   } from '@lucide/svelte';
   import { identity } from '../lib/session.js';
   import { NAV, hasRouteAccess } from '../lib/routes.js';
@@ -40,8 +52,9 @@
   export let logout;
   export let logoutBusy = false;
 
-  // Keep in sync with the `group` field on NAV entries (routes.js).
-  const GROUP_ORDER = ['Live', 'Investigate', 'Stats', 'Act', 'Dev'];
+  // Keep in sync with the `group` field on NAV entries (routes.js). Groups are domains, not tool
+  // kinds: an operator looks for "the quest thing", not for "the editing thing".
+  const GROUP_ORDER = ['Live', 'Players', 'Rooms', 'Economy', 'Content', 'Social', 'System'];
 
   const routeIcons = {
     '/overview': Activity,
@@ -69,6 +82,22 @@
     '/cfh-stats': BarChart3,
     '/catalog-purchases': ShoppingBag,
     '/wired-stats': Cable,
+    '/achievements': Trophy,
+    '/bots': Bot,
+    '/navigator-config': Compass,
+    '/social': MessagesSquare,
+    '/staff': ShieldCheck,
+    '/economy-extras': Store,
+    '/player-rewards': Award,
+    '/collectibles': Gem,
+    '/quests': Flag,
+    '/quests-stats': Flag,
+    '/mystery-box': Package,
+    '/prize-pools': Gift,
+    '/targeted-offers': Ticket,
+    '/targeted-offers-stats': BarChart3,
+    '/config': SlidersHorizontal,
+    '/performance': Gauge,
   };
 
   let query = '';
@@ -81,10 +110,19 @@
   function loadCollapsedGroups() {
     try {
       const raw = localStorage.getItem(COLLAPSE_STORAGE_KEY);
-      return raw ? new Set(JSON.parse(raw)) : new Set();
+
+      if (raw) {
+        return new Set(JSON.parse(raw));
+      }
     } catch {
-      return new Set();
+      // Ignore storage failures (private browsing, quota) -- fall through to the default below.
     }
+
+    // First visit: everything folded except the group the current route belongs to. Forty entries
+    // open at once is the state that made the sidebar unreadable; one open group is a menu.
+    const active = NAV.find((item) => item.path === window.location.hash.slice(1));
+
+    return new Set(GROUP_ORDER.filter((group) => group !== (active?.group ?? 'Live')));
   }
 
   let collapsedGroups = loadCollapsedGroups();
@@ -125,11 +163,26 @@
   }));
   $: groupLabels = {
     Live: $t('nav.groupLive'),
-    Investigate: $t('nav.groupInvestigate'),
-    Stats: $t('nav.groupStats'),
-    Act: $t('nav.groupAct'),
-    Dev: $t('nav.groupDev'),
+    Players: $t('nav.groupPlayers'),
+    Rooms: $t('nav.groupRooms'),
+    Economy: $t('nav.groupEconomy'),
+    Content: $t('nav.groupContent'),
+    Social: $t('nav.groupSocial'),
+    System: $t('nav.groupSystem'),
   };
+
+  // Navigating into a folded group -- a deep link, a search result, the access-denied redirect --
+  // opens it. A page whose own nav entry stays hidden reads as a dead end.
+  $: revealActiveGroup($location);
+
+  function revealActiveGroup(path) {
+    const active = NAV.find((item) => item.path === path);
+
+    if (active && collapsedGroups.has(active.group)) {
+      collapsedGroups.delete(active.group);
+      collapsedGroups = collapsedGroups;
+    }
+  }
   $: filteredItems = filterItems(items, query);
   $: groups = GROUP_ORDER.map((name) => ({
     id: name,
@@ -198,6 +251,7 @@
         >
           <svelte:component this={collapsed ? ChevronRight : ChevronDown} size={13} strokeWidth={2.2} aria-hidden="true" />
           <span>{group.name}</span>
+          <span class="nav-group-count">{group.items.length}</span>
         </button>
         {#if !collapsed}
           {#each group.items as item}
@@ -219,7 +273,14 @@
                     <Lock size={13} />
                   </span>
                 {/if}
-                <span>{item.label}</span>
+                <span>
+                  {item.label}
+                  {#if item.writes}
+                    <span class="nav-writes" title={$t('nav.writesHint')} aria-label={$t('nav.writesHint')}>
+                      <PencilLine size={11} strokeWidth={2.2} />
+                    </span>
+                  {/if}
+                </span>
                 <small>{item.short}</small>
               </span>
             </a>
@@ -346,6 +407,25 @@
 
   .sidebar nav > .nav-group-label:first-child {
     margin-top: 0;
+  }
+
+  .nav-group-count {
+    margin-left: auto;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--surface-strong);
+    font-size: 0.62rem;
+    line-height: 1.5;
+  }
+
+  /* Marks a section that can change server state -- the distinction the old "Act" group carried,
+     kept now that grouping is by domain. */
+  .nav-writes {
+    display: inline-flex;
+    vertical-align: -1px;
+    margin-left: 4px;
+    color: var(--accent);
+    opacity: 0.75;
   }
 
   .nav-empty {

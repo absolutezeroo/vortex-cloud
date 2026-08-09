@@ -39,6 +39,8 @@ export const CAPABILITIES = {
   socialRead: 'dashboard.social.read',
   staffRead: 'dashboard.staff.read',
   collectiblesRead: 'dashboard.collectibles.read',
+  opsStaffManage: 'dashboard.ops.staff.manage',
+  opsContentManage: 'dashboard.ops.content.manage',
 };
 
 export const ROUTE_PERMISSIONS = {

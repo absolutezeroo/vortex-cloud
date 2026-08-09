@@ -170,6 +170,43 @@ public sealed class ObservabilityConfig
     public string GroupBadgeUrlTemplate { get; init; } = string.Empty;
 
     /// <summary>
+    /// URL template for an <b>achievement/player badge</b> image, with <c>{badge}</c> replaced by the
+    /// badge code — e.g.
+    /// <c>http://vortex-assets.local/c_images/album1584/{badge}.gif</c>. Deliberately separate from
+    /// <see cref="GroupBadgeUrlTemplate"/>: a guild badge is composed on the fly by the imaging server
+    /// from its parts, while these are static files shipped with the client. Empty hides the badge
+    /// (the code is still shown). When set, the host origin is added to the dashboard CSP
+    /// <c>img-src</c>.
+    /// </summary>
+    public string BadgeImageUrlTemplate { get; init; } = string.Empty;
+
+    /// <summary>
+    /// URL template for a <b>hand item</b>, with <c>{figure}</c> and <c>{item}</c> replaced — e.g.
+    /// <c>http://vortex-assets.local/habbo-imaging/avatarimage?figure={figure}&amp;action=crr={item}</c>.
+    /// Hand items ship no icon of their own: the only picture the client ever draws of one is an
+    /// avatar holding it, which is exactly what this renders. Empty hides the preview.
+    /// </summary>
+    public string HandItemImageUrlTemplate { get; init; } = string.Empty;
+
+    /// <summary>
+    /// URL template for an <b>avatar effect</b>, with <c>{figure}</c> and <c>{effect}</c> replaced —
+    /// e.g.
+    /// <c>http://vortex-assets.local/habbo-imaging/avatarimage?figure={figure}&amp;effect={effect}</c>.
+    /// Effects ship no icon either: like a hand item, the only picture of one is an avatar wearing
+    /// it, which the imaging server renders. Empty hides the preview.
+    /// </summary>
+    public string AvatarEffectImageUrlTemplate { get; init; } = string.Empty;
+
+    /// <summary>
+    /// URL template for a <b>quest</b> image, with <c>{version}</c> replaced by the quest's
+    /// <c>image_version</c> — e.g.
+    /// <c>http://vortex-assets.local/c_images/Quests/{version}.png</c>. That column is exactly the
+    /// asset's filename, which is why a quest with an empty one shows no picture in the client
+    /// either. Empty hides the preview.
+    /// </summary>
+    public string QuestImageUrlTemplate { get; init; } = string.Empty;
+
+    /// <summary>
     /// Optional local filesystem root of the asset host (e.g. <c>C:\Laragon\www\vortex-assets</c>),
     /// used ONLY to enumerate available images for dashboard pickers (e.g. the targeted-offer promo
     /// image gallery, so operators pick a real image instead of typing a filename blind). Empty

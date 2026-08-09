@@ -4,10 +4,18 @@
   // thousands, an effect nobody ever activated, a chat style owned by nobody.
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api.js';
+  import { createWriteOps } from '../lib/writeOps.js';
+  import { hasDashboardCapability } from '../lib/permissions.js';
+  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
+  import { identity } from '../lib/session.js';
+  import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
+  import OpResult from '../components/OpResult.svelte';
+
   import { formatNumber, formatDate, formatDuration } from '../lib/format.js';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer } from '../lib/session.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import AssetImage from '../components/AssetImage.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import PickerModal from '../components/PickerModal.svelte';
@@ -23,6 +31,32 @@
   let detail = null;
   let detailLoading = false;
   let picking = false;
+
+  const ops = createWriteOps(async () => {
+    await refresh();
+    if (player) await loadPlayer(player);
+  });
+
+  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsContentManage);
+
+  let badgeCode = '';
+
+  // Same reasoning for a badge code: it is granted before anyone holds it, so the preview is built
+  // from the template. A code that names no file falls back, exactly as the client would show
+  // nothing.
+  $: badgePreviewUrl =
+    badgeCode.trim() && data?.badgeImageTemplate
+      ? data.badgeImageTemplate.replace('{badge}', encodeURIComponent(badgeCode.trim()))
+      : null;
+  let effectId = 0;
+
+  // Built from the template rather than looked up: the id being granted is usually one nobody owns
+  // yet, so there would be nothing to look up. An avatar wearing it is the only picture of an effect.
+  $: effectPreviewUrl =
+    effectId && data?.effectImageTemplate
+      ? data.effectImageTemplate.replace('{effect}', String(Number(effectId)))
+      : null;
+  let effectDuration = 0;
 
   async function refresh() {
     loading = true;
@@ -132,7 +166,12 @@
           <tbody>
             {#each data.topBadges || [] as row}
               <tr>
-                <td><code>{row.badgeCode}</code></td>
+                <td>
+                  <span class="badge-cell">
+                    <AssetImage src={row.badgeUrl} alt={row.badgeCode} size={32} fallbackIcon={Award} />
+                    <code>{row.badgeCode}</code>
+                  </span>
+                </td>
                 <td>{formatNumber(row.holders)}</td>
                 <td>{formatNumber(row.equipped)}</td>
               </tr>
@@ -159,7 +198,12 @@
           <tbody>
             {#each data.topEffects || [] as row}
               <tr>
-                <td>{row.effectId}</td>
+                <td>
+                  <span class="badge-cell">
+                    <AssetImage src={row.imageUrl} alt="" size={44} fallbackIcon={Sparkles} />
+                    <span>{row.effectId}</span>
+                  </span>
+                </td>
                 <td>{formatNumber(row.owners)}</td>
                 <td>{formatNumber(row.activated)}</td>
                 <td>{formatNumber(row.selected)}</td>
@@ -248,7 +292,17 @@
                 <tbody>
                   {#each detail.badges as badge}
                     <tr>
-                      <td><code>{badge.badgeCode}</code></td>
+                      <td>
+                        <span class="badge-cell">
+                          <AssetImage
+                            src={badge.badgeUrl}
+                            alt={badge.badgeCode}
+                            size={28}
+                            fallbackIcon={Award}
+                          />
+                          <code>{badge.badgeCode}</code>
+                        </span>
+                      </td>
                       <td>{badge.slotId ?? '—'}</td>
                       <td>{formatDate(badge.createdAt)}</td>
                     </tr>
@@ -277,7 +331,12 @@
                 <tbody>
                   {#each detail.effects as effect}
                     <tr>
-                      <td>{effect.effectId}{effect.subType ? `.${effect.subType}` : ''}</td>
+                      <td>
+                        <span class="badge-cell">
+                          <AssetImage src={effect.imageUrl} alt="" size={44} fallbackIcon={Sparkles} />
+                          <span>{effect.effectId}{effect.subType ? `.${effect.subType}` : ''}</span>
+                        </span>
+                      </td>
                       <td>{effect.totalDuration ? formatDuration(effect.totalDuration) : '—'}</td>
                       <td>{effect.activatedAt ? formatDate(effect.activatedAt) : '—'}</td>
                       <td>{effect.isSelected ? $t('common.yes') : $t('common.no')}</td>
@@ -319,6 +378,92 @@
   </section>
 {/if}
 
+{#if canManage && player}
+  <section class="panel" style="margin-top: 12px;">
+    <div class="panel-head"><h2>{$t('playerRewards.grantTitle', { name: player.name })}</h2></div>
+    <p class="muted">{$t('playerRewards.grantHint')}</p>
+
+    <form
+      class="inline-form"
+      on:submit|preventDefault={() =>
+        ops.ask(
+          '/api/v1/operations/content/badges/grant',
+          { playerId: player.id, badgeCode },
+          $t('playerRewards.grantBadge'),
+          $t('playerRewards.grantBadgeSummary', { code: badgeCode, name: player.name })
+        )}
+    >
+      <label>
+        {$t('playerRewards.colBadge')}
+        <span class="badge-cell">
+          <input bind:value={badgeCode} placeholder="ACH_RoomEntry1" list="known-badges" />
+          <AssetImage src={badgePreviewUrl} alt={badgeCode} size={32} fallbackIcon={Award} />
+        </span>
+      </label>
+      <datalist id="known-badges">
+        {#each data?.topBadges || [] as known}<option value={known.badgeCode}></option>{/each}
+      </datalist>
+      <button type="submit" disabled={!badgeCode.trim()}>{$t('playerRewards.grantBadge')}</button>
+      <button
+        type="button"
+        class="ghost-button danger"
+        disabled={!badgeCode.trim()}
+        on:click={() =>
+          ops.ask(
+            '/api/v1/operations/content/badges/revoke',
+            { playerId: player.id, badgeCode },
+            $t('playerRewards.revokeBadge'),
+            $t('playerRewards.revokeBadgeSummary', { code: badgeCode, name: player.name })
+          )}
+      >
+        {$t('playerRewards.revokeBadge')}
+      </button>
+    </form>
+
+    <form
+      class="inline-form"
+      on:submit|preventDefault={() =>
+        ops.ask(
+          '/api/v1/operations/content/effects/grant',
+          { playerId: player.id, effectId: Number(effectId), durationSeconds: Number(effectDuration) || 0 },
+          $t('playerRewards.grantEffect'),
+          $t('playerRewards.grantEffectSummary', { id: effectId, name: player.name })
+        )}
+    >
+      <label>
+        {$t('playerRewards.colEffect')}
+        <span class="badge-cell">
+          <input type="number" bind:value={effectId} min="1" />
+          <AssetImage src={effectPreviewUrl} alt="" size={44} fallbackIcon={Sparkles} />
+        </span>
+      </label>
+      <label>
+        {$t('playerRewards.durationSeconds')}
+        <input type="number" bind:value={effectDuration} min="0" placeholder={$t('common.permanent')} />
+      </label>
+      <button type="submit" disabled={!effectId}>{$t('playerRewards.grantEffect')}</button>
+      <button
+        type="button"
+        class="ghost-button danger"
+        disabled={!effectId}
+        on:click={() =>
+          ops.ask(
+            '/api/v1/operations/content/effects/revoke',
+            { playerId: player.id, effectId: Number(effectId), durationSeconds: 0 },
+            $t('playerRewards.revokeEffect'),
+            $t('playerRewards.revokeEffectSummary', { id: effectId, name: player.name })
+          )}
+      >
+        {$t('playerRewards.revokeEffect')}
+      </button>
+    </form>
+
+    {#if $ops.result}
+      <OpResult result={$ops.result} />
+    {/if}
+  </section>
+{/if}
+
 {#if picking}
   <PickerModal
     kind="user"
@@ -331,7 +476,41 @@
   />
 {/if}
 
+<ConfirmReasonModal
+  open={Boolean($ops.pending)}
+  title={$ops.pending?.title ?? ''}
+  summary={$ops.pending?.summary ?? ''}
+  confirmLabel={$ops.pending?.title ?? $t('common.confirm')}
+  busy={$ops.busy}
+  error={$ops.error}
+  on:confirm={(e) => ops.confirm(e.detail)}
+  on:cancel={() => ops.cancel()}
+/>
+
 <style>
+  .badge-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .inline-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .inline-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.8rem;
+  }
+
+
+
   .subhead {
     margin: 14px 0 8px;
     font-size: 0.95rem;

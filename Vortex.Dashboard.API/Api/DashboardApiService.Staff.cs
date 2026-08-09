@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,6 +22,56 @@ namespace Vortex.Dashboard.API.Api;
 /// </summary>
 internal sealed partial class DashboardApiService
 {
+    /// <summary>
+    /// Account search for the role-assignment form. Roles hang off the <b>account</b>, not the
+    /// player, so the ordinary player picker cannot drive this: it hands back a player id, and two
+    /// players can share one account. Matches on email or on any of the account's player names.
+    /// </summary>
+    public Task<object> StaffAccountSearchAsync(NameValueCollection query, CancellationToken ct) =>
+        QueryAsync<object>(
+            async db =>
+            {
+                string term = (query["q"] ?? string.Empty).Trim();
+                int limit = ParseLimit(query["limit"], 20, 50);
+
+                IQueryable<Database.Entities.Players.PlayerAccountEntity> accounts = db
+                    .PlayerAccounts.AsNoTracking()
+                    .Where(a => a.DeletedAt == null);
+
+                if (term.Length > 0)
+                {
+                    accounts = accounts.Where(a =>
+                        a.Email.Contains(term)
+                        || db.Players.Any(p =>
+                            p.PlayerAccountEntityId == a.Id && p.Name.Contains(term)
+                        )
+                    );
+                }
+
+                var rows = await accounts
+                    .OrderBy(a => a.Email)
+                    .Take(limit)
+                    .Select(a => new
+                    {
+                        a.Id,
+                        a.Email,
+                        playerNames = db
+                            .Players.Where(p => p.PlayerAccountEntityId == a.Id)
+                            .Select(p => p.Name)
+                            .ToList(),
+                        roleIds = db
+                            .PlayerAccountRoles.Where(r => r.PlayerAccountEntityId == a.Id)
+                            .Select(r => r.RoleEntityId)
+                            .ToList(),
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                return new { count = rows.Count, items = rows };
+            },
+            ct
+        );
+
     public Task<object> StaffAsync(CancellationToken ct) =>
         QueryAsync<object>(
             async db =>
@@ -114,7 +165,7 @@ internal sealed partial class DashboardApiService
                     .Distinct()
                     .ToList();
 
-                var accounts = await db
+                var accountRows = await db
                     .PlayerAccounts.AsNoTracking()
                     .Where(a => staffAccountIds.Contains(a.Id))
                     .Select(a => new
@@ -122,13 +173,36 @@ internal sealed partial class DashboardApiService
                         a.Id,
                         a.Email,
                         a.CreatedAt,
-                        playerNames = db
+                        players = db
                             .Players.Where(p => p.PlayerAccountEntityId == a.Id)
-                            .Select(p => p.Name)
+                            .Select(p => new
+                            {
+                                p.Id,
+                                p.Name,
+                                p.Figure,
+                            })
                             .ToList(),
                     })
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
+
+                // An operator recognises a staff member by their habbo, not by the email they signed
+                // up with, so the account carries its avatars.
+                var accounts = accountRows
+                    .Select(a => new
+                    {
+                        a.Id,
+                        a.Email,
+                        a.CreatedAt,
+                        playerNames = a.players.ConvertAll(p => p.Name),
+                        players = a.players.ConvertAll(p => new
+                        {
+                            p.Id,
+                            p.Name,
+                            avatarUrl = _assetUrls.AvatarImage(p.Figure),
+                        }),
+                    })
+                    .ToList();
 
                 Dictionary<int, string> roleNameById = roles.ToDictionary(r => r.Id, r => r.Name);
 
@@ -139,6 +213,7 @@ internal sealed partial class DashboardApiService
                         a.Email,
                         a.CreatedAt,
                         a.playerNames,
+                        a.players,
                         roles = holders
                             .Where(h => h.PlayerAccountEntityId == a.Id)
                             .Select(h =>
@@ -192,6 +267,20 @@ internal sealed partial class DashboardApiService
                     presets,
                     ungrantedCapabilities = ungranted,
                     wildcardExists,
+                    // Every declared capability, grouped by its namespace, so the role editor offers
+                    // the real set instead of a free-text box that can store a key granting nothing.
+                    allCapabilities = Capabilities
+                        .All.Where(c =>
+                            !string.Equals(c, Capabilities.Wildcard, StringComparison.Ordinal)
+                        )
+                        .OrderBy(c => c, StringComparer.Ordinal)
+                        .GroupBy(c => c.Split('.')[0])
+                        .Select(g => new { area = g.Key, capabilities = g.ToList() })
+                        .ToList(),
+                    wildcard = Capabilities.Wildcard,
+                    presetKinds = Enum.GetValues<SanctionPresetKind>()
+                        .Select(k => new { value = (int)k, label = k.ToString() })
+                        .ToList(),
                 };
             },
             ct

@@ -1,10 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Vortex.Players.Configuration;
+using Vortex.Players.Content;
 using Vortex.Players.MysteryBox;
 using Vortex.Players.Prizes;
 using Vortex.Players.Providers;
 using Vortex.Players.Quests;
+using Vortex.Primitives.Content;
 using Vortex.Primitives.Groups.Providers;
 using Vortex.Primitives.Hosting;
 using Vortex.Primitives.MysteryBox;
@@ -59,6 +61,7 @@ public sealed class PlayerModule : IHostPluginModule
         services.AddSingleton<IQuestAdminService, QuestAdminService>();
         services.AddSingleton<IMysteryBoxAdminService, MysteryBoxAdminService>();
         services.AddSingleton<IPrizePoolAdminService, PrizePoolAdminService>();
+        services.AddSingleton<IContentAdminService, ContentAdminService>();
         services.AddHostedService<BuildersClubTierSeederService>();
     }
 }

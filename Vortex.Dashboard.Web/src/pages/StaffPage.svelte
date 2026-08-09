@@ -1,22 +1,53 @@
 <script>
-  // Who can do what. The two cross-checks are the point of the page: a role granting a capability
-  // string that no longer exists grants nothing at all, and a declared capability no role grants is
-  // a feature nobody in the hotel can reach.
+  // Who can do what — and now, who gets to do what. The two cross-checks are still the point of the
+  // read half: a role granting a capability string the code no longer declares grants nothing, and a
+  // declared capability no role grants is a feature nobody can reach. The write half closes the
+  // loop: the capability editor only offers keys that exist, so the first failure cannot be created
+  // here at all.
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api.js';
+  import { apiGet, apiPost } from '../lib/api.js';
   import { formatNumber, formatDate, formatDuration } from '../lib/format.js';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
+  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
+  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
+  import { rememberReason } from '../lib/reasonHistory.js';
+  import { identity } from '../lib/session.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import AssetImage from '../components/AssetImage.svelte';
+  import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import EmptyState from '../components/EmptyState.svelte';
+  import OpResult from '../components/OpResult.svelte';
   import StatCard from '../components/StatCard.svelte';
-  import { ShieldCheck, KeyRound, Users, Gavel } from '@lucide/svelte';
-  import { t } from '../lib/i18n.js';
+  import { ShieldCheck, KeyRound, Users, Gavel, User } from '@lucide/svelte';
+  import { t, translate } from '../lib/i18n.js';
 
   let loading = false;
   let forbidden = false;
   let error = '';
   let data = null;
+  let result = null;
   let expanded = null;
+
+  // One modal drives every write, so the audited reason cannot be skipped on any of the small forms.
+  let pending = null;
+  let pendingBusy = false;
+  let pendingError = '';
+
+  let roleForm = { key: '', name: '' };
+  let roleDraft = null; // { id, key, name }
+  let capabilityDraft = null; // { roleId, selected: Set }
+  let presetForm = emptyPreset();
+  let presetDraft = null;
+
+  let accountQuery = '';
+  let accountResults = [];
+  let accountSearching = false;
+  let assignRoleId = 0;
+
+  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsStaffManage);
+
+  function emptyPreset() {
+    return { kind: 0, presetIndex: 0, name: '', durationSeconds: null, message: '' };
+  }
 
   async function refresh() {
     loading = true;
@@ -39,6 +70,100 @@
     }
   }
 
+  async function searchAccounts() {
+    accountSearching = true;
+
+    try {
+      const params = new URLSearchParams();
+      if (accountQuery.trim()) params.set('q', accountQuery.trim());
+      const response = await apiGet(`/api/v1/staff/accounts?${params}`);
+      accountResults = response.items || [];
+    } catch (err) {
+      error = err.message;
+    } finally {
+      accountSearching = false;
+    }
+  }
+
+  function ask(endpoint, body, title, summary) {
+    pendingError = '';
+    pending = { endpoint, body, title, summary };
+  }
+
+  async function confirm(reason) {
+    if (!pending) return;
+
+    pendingBusy = true;
+    pendingError = '';
+
+    try {
+      const response = await apiPost(pending.endpoint, { ...pending.body, reason });
+      result = response;
+
+      if (response.ok) {
+        rememberReason(reason);
+        pending = null;
+        roleDraft = null;
+        capabilityDraft = null;
+        presetDraft = null;
+        roleForm = { key: '', name: '' };
+        presetForm = emptyPreset();
+        await refresh();
+        if (accountResults.length > 0) await searchAccounts();
+      } else {
+        pendingError = response.error || translate('staff.operationFailed');
+      }
+    } catch (err) {
+      pendingError = err.message;
+    } finally {
+      pendingBusy = false;
+    }
+  }
+
+  function startCapabilityEdit(role) {
+    expanded = role.id;
+    capabilityDraft = { roleId: role.id, selected: new Set(role.capabilities) };
+  }
+
+  function toggleCapability(key) {
+    if (!capabilityDraft) return;
+
+    if (capabilityDraft.selected.has(key)) {
+      capabilityDraft.selected.delete(key);
+    } else {
+      capabilityDraft.selected.add(key);
+    }
+
+    capabilityDraft = capabilityDraft;
+  }
+
+  function toggleArea(group, on) {
+    if (!capabilityDraft) return;
+
+    for (const key of group.capabilities) {
+      if (on) capabilityDraft.selected.add(key);
+      else capabilityDraft.selected.delete(key);
+    }
+
+    capabilityDraft = capabilityDraft;
+  }
+
+  function saveCapabilities(role) {
+    ask(
+      '/api/v1/operations/staff/roles/capabilities',
+      { roleId: role.id, capabilities: [...capabilityDraft.selected] },
+      $t('staff.saveCapabilities'),
+      $t('staff.saveCapabilitiesSummary', {
+        role: role.name,
+        count: capabilityDraft.selected.size,
+      })
+    );
+  }
+
+  function roleName(id) {
+    return (data?.roles || []).find((r) => r.id === id)?.name ?? `#${id}`;
+  }
+
   onMount(() => {
     void refresh();
   });
@@ -49,6 +174,9 @@
   <p class="muted">{$t('staff.description')}</p>
   <div class="toolbar">
     <button type="button" on:click={refresh} disabled={loading}>{$t('common.refresh')}</button>
+    {#if !canManage}
+      <span class="muted">{$t('staff.readOnly')}</span>
+    {/if}
   </div>
 
   {#if loading}
@@ -57,6 +185,10 @@
     <AccessDeniedNotice message={$t('staff.accessDenied')} />
   {:else if error}
     <p class="empty-state danger">{error}</p>
+  {/if}
+
+  {#if result}
+    <OpResult {result} />
   {/if}
 </section>
 
@@ -94,16 +226,17 @@
             <th>{$t('staff.colCapabilities')}</th>
             <th>{$t('staff.colHolders')}</th>
             <th>{$t('staff.colIssues')}</th>
+            {#if canManage}<th></th>{/if}
           </tr>
         </thead>
         <tbody>
           {#each data.roles || [] as role}
-            <tr
-              on:click={() => (expanded = expanded === role.id ? null : role.id)}
-              style="cursor: pointer;"
-              class:selected={expanded === role.id}
-            >
-              <td>{role.name}</td>
+            <tr class:selected={expanded === role.id}>
+              <td>
+                <button type="button" class="link-cell" on:click={() => (expanded = expanded === role.id ? null : role.id)}>
+                  {role.name}
+                </button>
+              </td>
               <td><code>{role.key}</code></td>
               <td>
                 {formatNumber(role.capabilityCount)}
@@ -121,32 +254,161 @@
                   <span class="status-badge status-badge--ok">{$t('staff.ok')}</span>
                 {/if}
               </td>
+              {#if canManage}
+                <td class="row-actions">
+                  <button type="button" class="ghost-button" on:click={() => startCapabilityEdit(role)}>
+                    {$t('staff.editCapabilities')}
+                  </button>
+                  <button type="button" class="ghost-button" on:click={() => (roleDraft = { ...role })}>
+                    {$t('staff.rename')}
+                  </button>
+                  <button
+                    type="button"
+                    class="ghost-button danger"
+                    on:click={() =>
+                      ask(
+                        '/api/v1/operations/staff/roles/delete',
+                        { roleId: role.id },
+                        $t('staff.deleteRole'),
+                        $t('staff.deleteRoleSummary', { role: role.name })
+                      )}
+                  >
+                    {$t('staff.delete')}
+                  </button>
+                </td>
+              {/if}
             </tr>
+
+            {#if roleDraft?.id === role.id}
+              <tr>
+                <td colspan={canManage ? 6 : 5}>
+                  <form
+                    class="inline-form"
+                    on:submit|preventDefault={() =>
+                      ask(
+                        '/api/v1/operations/staff/roles/update',
+                        { roleId: role.id, key: roleDraft.key, name: roleDraft.name },
+                        $t('staff.updateRole'),
+                        $t('staff.updateRoleSummary', { role: roleDraft.name })
+                      )}
+                  >
+                    <label>
+                      {$t('staff.colKey')}
+                      <input bind:value={roleDraft.key} required />
+                    </label>
+                    <label>
+                      {$t('staff.colRole')}
+                      <input bind:value={roleDraft.name} required />
+                    </label>
+                    <button type="submit">{$t('staff.save')}</button>
+                    <button type="button" class="ghost-button" on:click={() => (roleDraft = null)}>
+                      {$t('staff.cancel')}
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            {/if}
+
             {#if expanded === role.id}
               <tr>
-                <td colspan="5">
+                <td colspan={canManage ? 6 : 5}>
                   {#if role.unknownCapabilities.length > 0}
                     <p class="empty-state danger">
                       {$t('staff.unknownExplained')}
                       {#each role.unknownCapabilities as cap}<code class="chip">{cap}</code>{/each}
                     </p>
                   {/if}
-                  <div class="cap-list">
-                    {#each role.capabilities as cap}
-                      <code class="chip">{cap}</code>
-                    {:else}
-                      <span class="muted">{$t('staff.noCapabilities')}</span>
+
+                  {#if canManage && capabilityDraft?.roleId === role.id}
+                    <p class="muted">{$t('staff.capabilityEditorHint')}</p>
+                    <label class="wildcard-row">
+                      <input
+                        type="checkbox"
+                        checked={capabilityDraft.selected.has(data.wildcard)}
+                        on:change={() => toggleCapability(data.wildcard)}
+                      />
+                      <code>{data.wildcard}</code>
+                      <span class="muted">{$t('staff.wildcardHint')}</span>
+                    </label>
+                    {#each data.allCapabilities || [] as group}
+                      <div class="cap-area">
+                        <div class="cap-area-head">
+                          <strong>{group.area}</strong>
+                          <button type="button" class="ghost-button" on:click={() => toggleArea(group, true)}>
+                            {$t('staff.selectAll')}
+                          </button>
+                          <button type="button" class="ghost-button" on:click={() => toggleArea(group, false)}>
+                            {$t('staff.selectNone')}
+                          </button>
+                        </div>
+                        <div class="cap-grid">
+                          {#each group.capabilities as cap}
+                            <label class="cap-check">
+                              <input
+                                type="checkbox"
+                                checked={capabilityDraft.selected.has(cap)}
+                                on:change={() => toggleCapability(cap)}
+                              />
+                              <code>{cap}</code>
+                            </label>
+                          {/each}
+                        </div>
+                      </div>
                     {/each}
-                  </div>
+                    <div class="editor-actions">
+                      <button type="button" on:click={() => saveCapabilities(role)}>
+                        {$t('staff.saveCapabilities')}
+                      </button>
+                      <button type="button" class="ghost-button" on:click={() => (capabilityDraft = null)}>
+                        {$t('staff.cancel')}
+                      </button>
+                      <span class="muted">
+                        {$t('staff.selectedCount', { count: capabilityDraft.selected.size })}
+                      </span>
+                    </div>
+                  {:else}
+                    <div class="cap-list">
+                      {#each role.capabilities as cap}
+                        <code class="chip">{cap}</code>
+                      {:else}
+                        <span class="muted">{$t('staff.noCapabilities')}</span>
+                      {/each}
+                    </div>
+                  {/if}
                 </td>
               </tr>
             {/if}
           {:else}
-            <tr><td colspan="5" class="muted">{$t('staff.noRoles')}</td></tr>
+            <tr><td colspan={canManage ? 6 : 5} class="muted">{$t('staff.noRoles')}</td></tr>
           {/each}
         </tbody>
       </table>
     </div>
+
+    {#if canManage}
+      <form
+        class="inline-form"
+        on:submit|preventDefault={() =>
+          ask(
+            '/api/v1/operations/staff/roles',
+            { key: roleForm.key, name: roleForm.name },
+            $t('staff.addRole'),
+            $t('staff.addRoleSummary', { role: roleForm.name })
+          )}
+      >
+        <label>
+          {$t('staff.colKey')}
+          <input bind:value={roleForm.key} placeholder="moderator" />
+        </label>
+        <label>
+          {$t('staff.colRole')}
+          <input bind:value={roleForm.name} placeholder={$t('staff.rolePlaceholder')} />
+        </label>
+        <button type="submit" disabled={!roleForm.key.trim() || !roleForm.name.trim()}>
+          {$t('staff.addRole')}
+        </button>
+      </form>
+    {/if}
   </section>
 
   <section class="panel" style="margin-top: 12px;">
@@ -181,7 +443,16 @@
           {#each data.staff || [] as account}
             <tr>
               <td>{account.email}</td>
-              <td>{(account.playerNames || []).join(', ') || '—'}</td>
+              <td>
+                {#each account.players || [] as habbo}
+                  <span class="habbo-cell">
+                    <AssetImage src={habbo.avatarUrl} alt={habbo.name} size={28} fallbackIcon={User} />
+                    <span>{habbo.name}</span>
+                  </span>
+                {:else}
+                  <span class="muted">—</span>
+                {/each}
+              </td>
               <td>{(account.roles || []).join(', ')}</td>
               <td>{formatDate(account.createdAt)}</td>
             </tr>
@@ -191,6 +462,92 @@
         </tbody>
       </table>
     </div>
+
+    {#if canManage}
+      <h3 class="subhead">{$t('staff.assignTitle')}</h3>
+      <p class="muted">{$t('staff.assignDescription')}</p>
+      <form class="inline-form" on:submit|preventDefault={searchAccounts}>
+        <label>
+          {$t('staff.searchAccount')}
+          <input bind:value={accountQuery} placeholder={$t('staff.searchAccountPlaceholder')} />
+        </label>
+        <button type="submit" disabled={accountSearching}>{$t('staff.search')}</button>
+        <label>
+          {$t('staff.colRole')}
+          <select bind:value={assignRoleId}>
+            <option value={0}>{$t('staff.pickRole')}</option>
+            {#each data.roles || [] as role}
+              <option value={role.id}>{role.name}</option>
+            {/each}
+          </select>
+        </label>
+      </form>
+
+      {#if accountResults.length > 0}
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>{$t('staff.colEmail')}</th>
+                <th>{$t('staff.colPlayers')}</th>
+                <th>{$t('staff.colRoles')}</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {#each accountResults as account}
+                <tr>
+                  <td>{account.email}</td>
+                  <td>{(account.playerNames || []).join(', ') || '—'}</td>
+                  <td>
+                    {#each account.roleIds || [] as id}
+                      <span class="chip">
+                        {roleName(id)}
+                        <button
+                          type="button"
+                          class="chip-x"
+                          title={$t('staff.revoke')}
+                          on:click={() =>
+                            ask(
+                              '/api/v1/operations/staff/assignments/delete',
+                              { accountId: account.id, roleId: id },
+                              $t('staff.revoke'),
+                              $t('staff.revokeSummary', { role: roleName(id), email: account.email })
+                            )}
+                        >
+                          ×
+                        </button>
+                      </span>
+                    {:else}
+                      <span class="muted">—</span>
+                    {/each}
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      class="ghost-button"
+                      disabled={!assignRoleId || (account.roleIds || []).includes(assignRoleId)}
+                      on:click={() =>
+                        ask(
+                          '/api/v1/operations/staff/assignments',
+                          { accountId: account.id, roleId: assignRoleId },
+                          $t('staff.assign'),
+                          $t('staff.assignSummary', {
+                            role: roleName(assignRoleId),
+                            email: account.email,
+                          })
+                        )}
+                    >
+                      {$t('staff.assign')}
+                    </button>
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
+      {/if}
+    {/if}
   </section>
 
   <section class="panel" style="margin-top: 12px;">
@@ -205,6 +562,7 @@
             <th>{$t('staff.colPresetName')}</th>
             <th>{$t('staff.colDuration')}</th>
             <th>{$t('staff.colMessage')}</th>
+            {#if canManage}<th></th>{/if}
           </tr>
         </thead>
         <tbody>
@@ -213,23 +571,201 @@
               <td>{preset.kind}</td>
               <td>{preset.presetIndex}</td>
               <td>{preset.name}</td>
-              <td>
-                {preset.permanent ? $t('common.permanent') : formatDuration(preset.durationSeconds)}
-              </td>
+              <td>{preset.permanent ? $t('common.permanent') : formatDuration(preset.durationSeconds)}</td>
               <td class="truncate">{preset.message || '—'}</td>
+              {#if canManage}
+                <td class="row-actions">
+                  <button
+                    type="button"
+                    class="ghost-button"
+                    on:click={() =>
+                      (presetDraft = {
+                        id: preset.id,
+                        kind: (data.presetKinds || []).find((k) => k.label === preset.kind)?.value ?? 0,
+                        presetIndex: preset.presetIndex,
+                        name: preset.name,
+                        durationSeconds: preset.durationSeconds,
+                        message: preset.message || '',
+                      })}
+                  >
+                    {$t('staff.edit')}
+                  </button>
+                  <button
+                    type="button"
+                    class="ghost-button danger"
+                    on:click={() =>
+                      ask(
+                        '/api/v1/operations/staff/presets/delete',
+                        { presetId: preset.id },
+                        $t('staff.deletePreset'),
+                        $t('staff.deletePresetSummary', { name: preset.name })
+                      )}
+                  >
+                    {$t('staff.delete')}
+                  </button>
+                </td>
+              {/if}
             </tr>
+            {#if presetDraft?.id === preset.id}
+              <tr>
+                <td colspan={canManage ? 6 : 5}>
+                  <form
+                    class="inline-form"
+                    on:submit|preventDefault={() =>
+                      ask(
+                        '/api/v1/operations/staff/presets/update',
+                        {
+                          presetId: preset.id,
+                          kind: Number(presetDraft.kind),
+                          presetIndex: Number(presetDraft.presetIndex),
+                          name: presetDraft.name,
+                          durationSeconds: presetDraft.durationSeconds
+                            ? Number(presetDraft.durationSeconds)
+                            : null,
+                          message: presetDraft.message,
+                        },
+                        $t('staff.updatePreset'),
+                        $t('staff.updatePresetSummary', { name: presetDraft.name })
+                      )}
+                  >
+                    <label>
+                      {$t('staff.colKind')}
+                      <select bind:value={presetDraft.kind}>
+                        {#each data.presetKinds || [] as kind}
+                          <option value={kind.value}>{kind.label}</option>
+                        {/each}
+                      </select>
+                    </label>
+                    <label>
+                      {$t('staff.colIndex')}
+                      <input type="number" bind:value={presetDraft.presetIndex} min="0" />
+                    </label>
+                    <label>
+                      {$t('staff.colPresetName')}
+                      <input bind:value={presetDraft.name} required />
+                    </label>
+                    <label>
+                      {$t('staff.durationSeconds')}
+                      <input type="number" bind:value={presetDraft.durationSeconds} min="0" placeholder={$t('common.permanent')} />
+                    </label>
+                    <label>
+                      {$t('staff.colMessage')}
+                      <input bind:value={presetDraft.message} />
+                    </label>
+                    <button type="submit">{$t('staff.save')}</button>
+                    <button type="button" class="ghost-button" on:click={() => (presetDraft = null)}>
+                      {$t('staff.cancel')}
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            {/if}
           {:else}
-            <tr><td colspan="5" class="muted">{$t('staff.noPresets')}</td></tr>
+            <tr><td colspan={canManage ? 6 : 5} class="muted">{$t('staff.noPresets')}</td></tr>
           {/each}
         </tbody>
       </table>
     </div>
+
+    {#if canManage}
+      <form
+        class="inline-form"
+        on:submit|preventDefault={() =>
+          ask(
+            '/api/v1/operations/staff/presets',
+            {
+              kind: Number(presetForm.kind),
+              presetIndex: Number(presetForm.presetIndex),
+              name: presetForm.name,
+              durationSeconds: presetForm.durationSeconds ? Number(presetForm.durationSeconds) : null,
+              message: presetForm.message,
+            },
+            $t('staff.addPreset'),
+            $t('staff.addPresetSummary', { name: presetForm.name })
+          )}
+      >
+        <label>
+          {$t('staff.colKind')}
+          <select bind:value={presetForm.kind}>
+            {#each data.presetKinds || [] as kind}
+              <option value={kind.value}>{kind.label}</option>
+            {/each}
+          </select>
+        </label>
+        <label>
+          {$t('staff.colIndex')}
+          <input type="number" bind:value={presetForm.presetIndex} min="0" />
+        </label>
+        <label>
+          {$t('staff.colPresetName')}
+          <input bind:value={presetForm.name} />
+        </label>
+        <label>
+          {$t('staff.durationSeconds')}
+          <input type="number" bind:value={presetForm.durationSeconds} min="0" placeholder={$t('common.permanent')} />
+        </label>
+        <label>
+          {$t('staff.colMessage')}
+          <input bind:value={presetForm.message} />
+        </label>
+        <button type="submit" disabled={!presetForm.name.trim()}>{$t('staff.addPreset')}</button>
+      </form>
+    {/if}
   </section>
 {/if}
 
+<ConfirmReasonModal
+  open={Boolean(pending)}
+  title={pending?.title ?? ''}
+  summary={pending?.summary ?? ''}
+  confirmLabel={pending?.title ?? $t('common.confirm')}
+  busy={pendingBusy}
+  error={pendingError}
+  on:confirm={(e) => confirm(e.detail)}
+  on:cancel={() => (pending = null)}
+/>
+
 <style>
+  .habbo-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 8px;
+  }
+
   tr.selected {
     background: var(--surface-raised, rgba(255, 255, 255, 0.04));
+  }
+
+  .link-cell {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    text-decoration: underline dotted;
+  }
+
+  .row-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .inline-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .inline-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.8rem;
   }
 
   .cap-list {
@@ -239,9 +775,63 @@
   }
 
   .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     padding: 2px 6px;
     border-radius: 6px;
     background: var(--surface-raised, rgba(255, 255, 255, 0.06));
     font-size: 0.78rem;
+  }
+
+  .chip-x {
+    border: 0;
+    background: none;
+    color: var(--danger, #e06c6c);
+    cursor: pointer;
+    font-size: 0.9rem;
+    line-height: 1;
+    padding: 0 2px;
+  }
+
+  .cap-area {
+    margin-top: 10px;
+  }
+
+  .cap-area-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .cap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2px 12px;
+  }
+
+  .cap-check,
+  .wildcard-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+  }
+
+  .wildcard-row {
+    margin: 8px 0;
+  }
+
+  .editor-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .subhead {
+    margin: 16px 0 4px;
+    font-size: 0.95rem;
   }
 </style>

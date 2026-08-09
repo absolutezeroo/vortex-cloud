@@ -172,6 +172,8 @@ internal static partial class DashboardEndpoints
         MapPrizePoolOperations(app);
         MapConfigOperations(app);
         MapNavigatorOperations(app);
+        MapStaffOperations(app);
+        MapContentOperations(app);
     }
 
     public static void MapMeta(WebApplication app)

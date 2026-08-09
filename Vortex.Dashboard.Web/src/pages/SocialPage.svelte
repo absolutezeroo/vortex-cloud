@@ -8,10 +8,11 @@
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer } from '../lib/session.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import AssetImage from '../components/AssetImage.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import LineChart from '../components/LineChart.svelte';
   import StatCard from '../components/StatCard.svelte';
-  import { Users, MessageSquare, UserPlus, ShieldOff, MessagesSquare } from '@lucide/svelte';
+  import { Users, MessageSquare, UserPlus, ShieldOff, MessagesSquare, Shield } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
   const granularities = ['day', 'month', 'year'];
@@ -242,7 +243,12 @@
         <tbody>
           {#each data.forums.topGroups || [] as row}
             <tr>
-              <td>{row.groupName || `#${row.groupId}`}</td>
+              <td>
+                <span class="guild-cell">
+                  <AssetImage src={row.badgeUrl} alt="" size={28} fallbackIcon={Shield} />
+                  <span>{row.groupName || `#${row.groupId}`}</span>
+                </span>
+              </td>
               <td>{formatNumber(row.threads)}</td>
               <td>{formatNumber(row.postCount)}</td>
               <td>{row.lastPostAt ? formatDate(row.lastPostAt) : '—'}</td>
@@ -276,7 +282,12 @@
                 {row.subject}
                 {#if row.isPinned}<span class="status-badge status-badge--ok">{$t('social.pinned')}</span>{/if}
               </td>
-              <td>{row.groupName || `#${row.groupId}`}</td>
+              <td>
+                <span class="guild-cell">
+                  <AssetImage src={row.badgeUrl} alt="" size={24} fallbackIcon={Shield} />
+                  <span>{row.groupName || `#${row.groupId}`}</span>
+                </span>
+              </td>
               <td><EntityLink type="player" id={row.authorId} label={row.authorName} {openPlayer} /></td>
               <td>{row.state}</td>
               <td>{formatNumber(row.postCount)}</td>
@@ -290,3 +301,11 @@
     </div>
   </div>
 {/if}
+
+<style>
+  .guild-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+</style>

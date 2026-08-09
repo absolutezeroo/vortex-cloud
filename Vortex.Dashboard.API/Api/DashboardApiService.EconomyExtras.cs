@@ -146,6 +146,22 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
+                // A rentable space is a placed furni; showing "#412" makes the operator go and look
+                // the id up somewhere else, so the definition's name and icon come along.
+                List<int> rentedFurnitureIds = rentals.ConvertAll(r => r.FurnitureEntityId);
+
+                Dictionary<int, string> rentedFurnitureNames = await db
+                    .Furnitures.AsNoTracking()
+                    .Where(f => rentedFurnitureIds.Contains(f.Id))
+                    .Join(
+                        db.FurnitureDefinitions.AsNoTracking(),
+                        furniture => furniture.FurnitureDefinitionEntityId,
+                        definition => definition.Id,
+                        (furniture, definition) => new { furniture.Id, definition.Name }
+                    )
+                    .ToDictionaryAsync(x => x.Id, x => x.Name, ct)
+                    .ConfigureAwait(false);
+
                 Dictionary<int, string> renterNames = await LoadPlayerNamesAsync(
                         db,
                         NormalizeIds(rentals.Select(r => r.RenterPlayerEntityId)),
@@ -162,6 +178,13 @@ internal sealed partial class DashboardApiService
                     {
                         r.Id,
                         furnitureId = r.FurnitureEntityId,
+                        furnitureName = rentedFurnitureNames.GetValueOrDefault(r.FurnitureEntityId),
+                        iconUrl = rentedFurnitureNames.TryGetValue(
+                            r.FurnitureEntityId,
+                            out string? rentedName
+                        )
+                            ? BuildFurniIconUrl(rentedName)
+                            : null,
                         renterId = r.RenterPlayerEntityId,
                         renterName = r.RenterPlayerEntityId is { } renter
                             ? ResolvePlayerName(renterNames, renter)

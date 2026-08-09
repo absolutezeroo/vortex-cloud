@@ -52,55 +52,64 @@ import EconomyExtrasPage from '../pages/EconomyExtrasPage.svelte';
 import PlayerRewardsPage from '../pages/PlayerRewardsPage.svelte';
 import CollectiblesPage from '../pages/CollectiblesPage.svelte';
 
-// Display + permission metadata for the navigation sidebar. Order is the nav order within each
-// group. `group` buckets items in the sidebar (see AppShell.svelte) — Live: auto-refreshing health
-// signals; Investigate: lookup/forensics tools; Stats: read-only cross-domain analytics (no
-// per-record lookup, no mutation); Act: pages that can change server state; Dev: raw API access.
-// Keep this in sync with GROUP_ORDER in AppShell.svelte.
+// Display + permission metadata for the navigation sidebar. `group` buckets items in the sidebar
+// (see AppShell.svelte) and is the DOMAIN the page is about -- players, rooms, economy -- not the
+// kind of tool it is. Grouping by kind (investigate / stats / act) scattered every domain across
+// three places: the quest editor sat under "Act" while quest stats sat under "Stats", and finding
+// anything meant knowing which bucket a page had been filed under rather than what it was about.
+// `writes: true` marks a page that can change server state; the sidebar badges it, which is the
+// distinction the old grouping was really carrying.
+// Order within a group is the nav order. Keep GROUP_ORDER in AppShell.svelte in sync.
 // label/short are i18n keys (resolved via $t in AppShell.svelte), not display strings -- see
 // lib/locales/{en,fr}.js's `nav` namespace, which must have a matching entry for every key here.
 export const NAV = [
   { path: '/overview', labelKey: 'nav.overview', shortKey: 'nav.overviewShort', group: 'Live', caps: ROUTE_PERMISSIONS.overview, component: OverviewPage },
   { path: '/infrastructure', labelKey: 'nav.infrastructure', shortKey: 'nav.infrastructureShort', group: 'Live', caps: ROUTE_PERMISSIONS.infrastructure, component: InfrastructurePage },
-  { path: '/packets', labelKey: 'nav.packets', shortKey: 'nav.packetsShort', group: 'Live', caps: ROUTE_PERMISSIONS.packets, component: PacketsPage },
   { path: '/performance', labelKey: 'nav.performance', shortKey: 'nav.performanceShort', group: 'Live', caps: ROUTE_PERMISSIONS.performance, component: PerformancePage },
+  { path: '/packets', labelKey: 'nav.packets', shortKey: 'nav.packetsShort', group: 'Live', caps: ROUTE_PERMISSIONS.packets, component: PacketsPage },
   { path: '/incidents', labelKey: 'nav.incidents', shortKey: 'nav.incidentsShort', group: 'Live', caps: ROUTE_PERMISSIONS.incidents, component: IncidentsPage },
-  { path: '/investigation', labelKey: 'nav.investigation', shortKey: 'nav.investigationShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.investigation, component: InvestigationPage },
-  { path: '/rooms', labelKey: 'nav.rooms', shortKey: 'nav.roomsShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.rooms, component: RoomsPage },
-  { path: '/audit', labelKey: 'nav.audit', shortKey: 'nav.auditShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.audit, component: AuditPage },
-  { path: '/bots', labelKey: 'nav.bots', shortKey: 'nav.botsShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.bots, component: BotsPage },
-  { path: '/moderation', labelKey: 'nav.moderation', shortKey: 'nav.moderationShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.moderation, component: ModerationPage },
-  { path: '/economy', labelKey: 'nav.economy', shortKey: 'nav.economyShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: EconomyPage },
-  { path: '/economy-trends', labelKey: 'nav.economyTrends', shortKey: 'nav.economyTrendsShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: EconomyTrendsPage },
-  { path: '/marketplace', labelKey: 'nav.marketplace', shortKey: 'nav.marketplaceShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: MarketplacePage },
-  { path: '/subscriptions', labelKey: 'nav.subscriptions', shortKey: 'nav.subscriptionsShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.economy, component: SubscriptionsPage },
-  { path: '/economy-extras', labelKey: 'nav.economyExtras', shortKey: 'nav.economyExtrasShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.economyExtras, component: EconomyExtrasPage },
-  { path: '/player-rewards', labelKey: 'nav.playerRewards', shortKey: 'nav.playerRewardsShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.playerRewards, component: PlayerRewardsPage },
-  { path: '/staff', labelKey: 'nav.staff', shortKey: 'nav.staffShort', group: 'Investigate', caps: ROUTE_PERMISSIONS.staff, component: StaffPage },
-  { path: '/groups-stats', labelKey: 'nav.groupsStats', shortKey: 'nav.groupsStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.groupsStats, component: GroupsStatsPage },
-  { path: '/pets-stats', labelKey: 'nav.petsStats', shortKey: 'nav.petsStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.petsStats, component: PetsStatsPage },
-  { path: '/cfh-stats', labelKey: 'nav.cfhStats', shortKey: 'nav.cfhStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.cfhStats, component: CfhStatsPage },
-  { path: '/catalog-purchases', labelKey: 'nav.catalogPurchases', shortKey: 'nav.catalogPurchasesShort', group: 'Stats', caps: ROUTE_PERMISSIONS.catalogPurchases, component: CatalogPurchasesStatsPage },
-  { path: '/targeted-offers-stats', labelKey: 'nav.targetedOffersStats', shortKey: 'nav.targetedOffersStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.targetedOffersStats, component: TargetedOffersStatsPage },
-  { path: '/quests-stats', labelKey: 'nav.questsStats', shortKey: 'nav.questsStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.questsStats, component: QuestsStatsPage },
-  { path: '/wired-stats', labelKey: 'nav.wiredStats', shortKey: 'nav.wiredStatsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.wiredStats, component: WiredStatsPage },
-  { path: '/achievements', labelKey: 'nav.achievements', shortKey: 'nav.achievementsShort', group: 'Stats', caps: ROUTE_PERMISSIONS.achievements, component: AchievementsPage },
-  { path: '/social', labelKey: 'nav.social', shortKey: 'nav.socialShort', group: 'Stats', caps: ROUTE_PERMISSIONS.social, component: SocialPage },
-  { path: '/collectibles', labelKey: 'nav.collectibles', shortKey: 'nav.collectiblesShort', group: 'Stats', caps: ROUTE_PERMISSIONS.collectibles, component: CollectiblesPage },
-  { path: '/operations', labelKey: 'nav.operations', shortKey: 'nav.operationsShort', group: 'Act', caps: ROUTE_PERMISSIONS.operations, component: OperationsPage },
-  { path: '/moderation-actions', labelKey: 'nav.moderationActions', shortKey: 'nav.moderationActionsShort', group: 'Act', caps: ROUTE_PERMISSIONS.moderationActions, component: ModerationActionsPage },
-  { path: '/cfh', labelKey: 'nav.cfh', shortKey: 'nav.cfhShort', group: 'Act', caps: ROUTE_PERMISSIONS.cfh, component: CfhQueuePage },
-  { path: '/room-control', labelKey: 'nav.roomControl', shortKey: 'nav.roomControlShort', group: 'Act', caps: ROUTE_PERMISSIONS.roomControl, component: RoomControlPage },
-  { path: '/vouchers', labelKey: 'nav.vouchers', shortKey: 'nav.vouchersShort', group: 'Act', caps: ROUTE_PERMISSIONS.vouchers, component: VouchersPage },
-  { path: '/catalog', labelKey: 'nav.catalog', shortKey: 'nav.catalogShort', group: 'Act', caps: ROUTE_PERMISSIONS.catalog, component: CatalogPage },
-  { path: '/targeted-offers', labelKey: 'nav.targetedOffers', shortKey: 'nav.targetedOffersShort', group: 'Act', caps: ROUTE_PERMISSIONS.targetedOffers, component: TargetedOffersPage },
-  { path: '/quests', labelKey: 'nav.quests', shortKey: 'nav.questsShort', group: 'Act', caps: ROUTE_PERMISSIONS.quests, component: QuestsPage },
-  { path: '/mystery-box', labelKey: 'nav.mysteryBox', shortKey: 'nav.mysteryBoxShort', group: 'Act', caps: ROUTE_PERMISSIONS.mysteryBox, component: MysteryBoxPage },
-  { path: '/prize-pools', labelKey: 'nav.prizePools', shortKey: 'nav.prizePoolsShort', group: 'Act', caps: ROUTE_PERMISSIONS.prizePools, component: PrizePoolsPage },
-  { path: '/furniture-definitions', labelKey: 'nav.furnitureDefinitions', shortKey: 'nav.furnitureDefinitionsShort', group: 'Act', caps: ROUTE_PERMISSIONS.furnitureDefinitions, component: FurnitureDefinitionsPage },
-  { path: '/navigator-config', labelKey: 'nav.navigatorConfig', shortKey: 'nav.navigatorConfigShort', group: 'Act', caps: ROUTE_PERMISSIONS.navigatorConfig, component: NavigatorConfigPage },
-  { path: '/config', labelKey: 'nav.config', shortKey: 'nav.configShort', group: 'Act', caps: ROUTE_PERMISSIONS.config, component: ConfigPage },
-  { path: '/api-explorer', labelKey: 'nav.apiExplorer', shortKey: 'nav.apiExplorerShort', group: 'Dev', caps: ROUTE_PERMISSIONS.apiExplorer, component: ApiExplorerPage },
+
+  { path: '/investigation', labelKey: 'nav.investigation', shortKey: 'nav.investigationShort', group: 'Players', caps: ROUTE_PERMISSIONS.investigation, component: InvestigationPage },
+  { path: '/operations', labelKey: 'nav.operations', shortKey: 'nav.operationsShort', group: 'Players', caps: ROUTE_PERMISSIONS.operations, component: OperationsPage, writes: true },
+  { path: '/player-rewards', labelKey: 'nav.playerRewards', shortKey: 'nav.playerRewardsShort', group: 'Players', caps: ROUTE_PERMISSIONS.playerRewards, component: PlayerRewardsPage, writes: true },
+  { path: '/subscriptions', labelKey: 'nav.subscriptions', shortKey: 'nav.subscriptionsShort', group: 'Players', caps: ROUTE_PERMISSIONS.economy, component: SubscriptionsPage },
+  { path: '/moderation', labelKey: 'nav.moderation', shortKey: 'nav.moderationShort', group: 'Players', caps: ROUTE_PERMISSIONS.moderation, component: ModerationPage },
+  { path: '/moderation-actions', labelKey: 'nav.moderationActions', shortKey: 'nav.moderationActionsShort', group: 'Players', caps: ROUTE_PERMISSIONS.moderationActions, component: ModerationActionsPage, writes: true },
+  { path: '/cfh', labelKey: 'nav.cfh', shortKey: 'nav.cfhShort', group: 'Players', caps: ROUTE_PERMISSIONS.cfh, component: CfhQueuePage, writes: true },
+  { path: '/cfh-stats', labelKey: 'nav.cfhStats', shortKey: 'nav.cfhStatsShort', group: 'Players', caps: ROUTE_PERMISSIONS.cfhStats, component: CfhStatsPage },
+  { path: '/staff', labelKey: 'nav.staff', shortKey: 'nav.staffShort', group: 'Players', caps: ROUTE_PERMISSIONS.staff, component: StaffPage, writes: true },
+
+  { path: '/rooms', labelKey: 'nav.rooms', shortKey: 'nav.roomsShort', group: 'Rooms', caps: ROUTE_PERMISSIONS.rooms, component: RoomsPage },
+  { path: '/room-control', labelKey: 'nav.roomControl', shortKey: 'nav.roomControlShort', group: 'Rooms', caps: ROUTE_PERMISSIONS.roomControl, component: RoomControlPage, writes: true },
+  { path: '/navigator-config', labelKey: 'nav.navigatorConfig', shortKey: 'nav.navigatorConfigShort', group: 'Rooms', caps: ROUTE_PERMISSIONS.navigatorConfig, component: NavigatorConfigPage, writes: true },
+  { path: '/bots', labelKey: 'nav.bots', shortKey: 'nav.botsShort', group: 'Rooms', caps: ROUTE_PERMISSIONS.bots, component: BotsPage, writes: true },
+  { path: '/pets-stats', labelKey: 'nav.petsStats', shortKey: 'nav.petsStatsShort', group: 'Rooms', caps: ROUTE_PERMISSIONS.petsStats, component: PetsStatsPage },
+  { path: '/wired-stats', labelKey: 'nav.wiredStats', shortKey: 'nav.wiredStatsShort', group: 'Rooms', caps: ROUTE_PERMISSIONS.wiredStats, component: WiredStatsPage },
+
+  { path: '/economy', labelKey: 'nav.economy', shortKey: 'nav.economyShort', group: 'Economy', caps: ROUTE_PERMISSIONS.economy, component: EconomyPage },
+  { path: '/economy-trends', labelKey: 'nav.economyTrends', shortKey: 'nav.economyTrendsShort', group: 'Economy', caps: ROUTE_PERMISSIONS.economy, component: EconomyTrendsPage },
+  { path: '/catalog', labelKey: 'nav.catalog', shortKey: 'nav.catalogShort', group: 'Economy', caps: ROUTE_PERMISSIONS.catalog, component: CatalogPage, writes: true },
+  { path: '/catalog-purchases', labelKey: 'nav.catalogPurchases', shortKey: 'nav.catalogPurchasesShort', group: 'Economy', caps: ROUTE_PERMISSIONS.catalogPurchases, component: CatalogPurchasesStatsPage },
+  { path: '/marketplace', labelKey: 'nav.marketplace', shortKey: 'nav.marketplaceShort', group: 'Economy', caps: ROUTE_PERMISSIONS.economy, component: MarketplacePage },
+  { path: '/targeted-offers', labelKey: 'nav.targetedOffers', shortKey: 'nav.targetedOffersShort', group: 'Economy', caps: ROUTE_PERMISSIONS.targetedOffers, component: TargetedOffersPage, writes: true },
+  { path: '/targeted-offers-stats', labelKey: 'nav.targetedOffersStats', shortKey: 'nav.targetedOffersStatsShort', group: 'Economy', caps: ROUTE_PERMISSIONS.targetedOffersStats, component: TargetedOffersStatsPage },
+  { path: '/vouchers', labelKey: 'nav.vouchers', shortKey: 'nav.vouchersShort', group: 'Economy', caps: ROUTE_PERMISSIONS.vouchers, component: VouchersPage, writes: true },
+  { path: '/economy-extras', labelKey: 'nav.economyExtras', shortKey: 'nav.economyExtrasShort', group: 'Economy', caps: ROUTE_PERMISSIONS.economyExtras, component: EconomyExtrasPage, writes: true },
+
+  { path: '/quests', labelKey: 'nav.quests', shortKey: 'nav.questsShort', group: 'Content', caps: ROUTE_PERMISSIONS.quests, component: QuestsPage, writes: true },
+  { path: '/quests-stats', labelKey: 'nav.questsStats', shortKey: 'nav.questsStatsShort', group: 'Content', caps: ROUTE_PERMISSIONS.questsStats, component: QuestsStatsPage },
+  { path: '/achievements', labelKey: 'nav.achievements', shortKey: 'nav.achievementsShort', group: 'Content', caps: ROUTE_PERMISSIONS.achievements, component: AchievementsPage, writes: true },
+  { path: '/mystery-box', labelKey: 'nav.mysteryBox', shortKey: 'nav.mysteryBoxShort', group: 'Content', caps: ROUTE_PERMISSIONS.mysteryBox, component: MysteryBoxPage, writes: true },
+  { path: '/prize-pools', labelKey: 'nav.prizePools', shortKey: 'nav.prizePoolsShort', group: 'Content', caps: ROUTE_PERMISSIONS.prizePools, component: PrizePoolsPage, writes: true },
+  { path: '/collectibles', labelKey: 'nav.collectibles', shortKey: 'nav.collectiblesShort', group: 'Content', caps: ROUTE_PERMISSIONS.collectibles, component: CollectiblesPage, writes: true },
+  { path: '/furniture-definitions', labelKey: 'nav.furnitureDefinitions', shortKey: 'nav.furnitureDefinitionsShort', group: 'Content', caps: ROUTE_PERMISSIONS.furnitureDefinitions, component: FurnitureDefinitionsPage, writes: true },
+
+  { path: '/groups-stats', labelKey: 'nav.groupsStats', shortKey: 'nav.groupsStatsShort', group: 'Social', caps: ROUTE_PERMISSIONS.groupsStats, component: GroupsStatsPage },
+  { path: '/social', labelKey: 'nav.social', shortKey: 'nav.socialShort', group: 'Social', caps: ROUTE_PERMISSIONS.social, component: SocialPage, writes: true },
+
+  { path: '/audit', labelKey: 'nav.audit', shortKey: 'nav.auditShort', group: 'System', caps: ROUTE_PERMISSIONS.audit, component: AuditPage },
+  { path: '/config', labelKey: 'nav.config', shortKey: 'nav.configShort', group: 'System', caps: ROUTE_PERMISSIONS.config, component: ConfigPage, writes: true },
+  { path: '/api-explorer', labelKey: 'nav.apiExplorer', shortKey: 'nav.apiExplorerShort', group: 'System', caps: ROUTE_PERMISSIONS.apiExplorer, component: ApiExplorerPage },
 ];
 
 const canSee = (caps) => () => hasDashboardCapability(get(identity), caps);

@@ -92,6 +92,7 @@ internal sealed partial class DashboardApiService
                         q.TotalSteps,
                         q.RewardType,
                         q.RewardAmount,
+                        q.ImageVersion,
                         q.SortOrder,
                         q.Easy,
                         q.Seasonal,
@@ -111,6 +112,9 @@ internal sealed partial class DashboardApiService
                 var items = rows.Select(q => new
                     {
                         q.Id,
+                        // image_version *is* the asset filename, so a quest with an empty one shows
+                        // no picture in the client either -- which is worth seeing here.
+                        imageUrl = _assetUrls.QuestImage(q.ImageVersion),
                         q.CampaignCode,
                         q.ChainCode,
                         q.LocalizationCode,
@@ -190,6 +194,7 @@ internal sealed partial class DashboardApiService
                     rewardKind = quest.RewardType < 0 ? "credits" : "activityPoints",
                     quest.CatalogPageName,
                     quest.ImageVersion,
+                    imageUrl = _assetUrls.QuestImage(quest.ImageVersion),
                     quest.SortOrder,
                     quest.Easy,
                     quest.Seasonal,

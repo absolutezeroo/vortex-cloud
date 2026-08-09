@@ -4,6 +4,13 @@
   // and nothing else in the hotel would ever say so.
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api.js';
+  import { createWriteOps } from '../lib/writeOps.js';
+  import { hasDashboardCapability } from '../lib/permissions.js';
+  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
+  import { identity } from '../lib/session.js';
+  import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
+  import OpResult from '../components/OpResult.svelte';
+
   import { formatNumber, formatDate } from '../lib/format.js';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer } from '../lib/session.js';
@@ -11,6 +18,7 @@
   import AssetImage from '../components/AssetImage.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import EntityLink from '../components/EntityLink.svelte';
+  import PickerModal from '../components/PickerModal.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { Gem, Boxes, TriangleAlert, Trophy } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
@@ -20,6 +28,40 @@
   let error = '';
   let data = null;
   let expanded = null;
+
+  const ops = createWriteOps(refresh);
+
+  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsContentManage);
+
+  const emptyCollection = () => ({
+    id: 0,
+    collectionCode: '',
+    name: '',
+    boostScore: 0,
+    status: 0,
+    rewardProductCode: '',
+    bonusProductCode: '',
+  });
+  const emptyItem = () => ({
+    id: 0,
+    productCode: '',
+    itemTypeId: '',
+    productTypeId: 0,
+    score: 1,
+    rarity: '',
+    sortOrder: 0,
+  });
+
+  let collectionForm = emptyCollection();
+  let itemForm = emptyItem();
+  let pickingFurniture = false;
+
+  // The product code is a furniture classname, so it is picked from the real catalogue rather than
+  // typed: a code that matches nothing is exactly what makes a collection uncompletable.
+  $: itemPreviewUrl =
+    (data?.collections || [])
+      .flatMap((c) => c.items || [])
+      .find((i) => i.productCode === itemForm.productCode)?.iconUrl ?? null;
 
   async function refresh() {
     loading = true;
@@ -98,6 +140,7 @@
               <th>{$t('collectibles.colBoost')}</th>
               <th>{$t('collectibles.colStatus')}</th>
               <th>{$t('collectibles.colReleased')}</th>
+              {#if canManage}<th></th>{/if}
             </tr>
           </thead>
           <tbody>
@@ -121,10 +164,34 @@
                 <td>{formatNumber(collection.boostScore)}</td>
                 <td>{collection.status}</td>
                 <td>{collection.releasedAt ? formatDate(collection.releasedAt) : '—'}</td>
+                {#if canManage}
+                  <td class="row-actions">
+                    <button
+                      type="button"
+                      class="ghost-button"
+                      on:click|stopPropagation={() => (collectionForm = { ...collection })}
+                    >
+                      {$t('collectibles.edit')}
+                    </button>
+                    <button
+                      type="button"
+                      class="ghost-button danger"
+                      on:click|stopPropagation={() =>
+                        ops.ask(
+                          '/api/v1/operations/content/collections/delete',
+                          { collectionId: collection.id },
+                          $t('collectibles.deleteCollection'),
+                          $t('collectibles.deleteCollectionSummary', { name: collection.name })
+                        )}
+                    >
+                      {$t('collectibles.delete')}
+                    </button>
+                  </td>
+                {/if}
               </tr>
               {#if expanded === collection.id}
                 <tr>
-                  <td colspan="7">
+                  <td colspan={canManage ? 8 : 7}>
                     <div class="table-wrap">
                       <table>
                         <thead>
@@ -133,6 +200,7 @@
                             <th>{$t('collectibles.colRarity')}</th>
                             <th>{$t('collectibles.colItemScore')}</th>
                             <th>{$t('collectibles.colResolved')}</th>
+                            {#if canManage}<th></th>{/if}
                           </tr>
                         </thead>
                         <tbody>
@@ -153,6 +221,26 @@
                                   <span class="status-badge status-badge--bad">{$t('collectibles.missingFurni')}</span>
                                 {/if}
                               </td>
+                              {#if canManage}
+                                <td class="row-actions">
+                                  <button type="button" class="ghost-button" on:click={() => (itemForm = { ...item })}>
+                                    {$t('collectibles.edit')}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    class="ghost-button danger"
+                                    on:click={() =>
+                                      ops.ask(
+                                        '/api/v1/operations/content/collections/items/delete',
+                                        { itemId: item.id },
+                                        $t('collectibles.deleteItem'),
+                                        $t('collectibles.deleteItemSummary', { code: item.productCode })
+                                      )}
+                                  >
+                                    {$t('collectibles.delete')}
+                                  </button>
+                                </td>
+                              {/if}
                             </tr>
                           {:else}
                             <tr><td colspan="4" class="muted">{$t('collectibles.noItems')}</td></tr>
@@ -169,6 +257,119 @@
       </div>
     {/if}
   </section>
+
+  {#if canManage}
+    <section class="panel" style="margin-top: 12px;">
+      <div class="panel-head"><h2>{$t('collectibles.editorTitle')}</h2></div>
+      <form
+        class="inline-form"
+        on:submit|preventDefault={() =>
+          ops.ask(
+            '/api/v1/operations/content/collections',
+            {
+              collectionId: Number(collectionForm.id) || 0,
+              collectionCode: collectionForm.collectionCode,
+              name: collectionForm.name,
+              boostScore: Number(collectionForm.boostScore) || 0,
+              status: Number(collectionForm.status) || 0,
+              rewardProductCode: collectionForm.rewardProductCode || null,
+              bonusProductCode: collectionForm.bonusProductCode || null,
+            },
+            collectionForm.id ? $t('collectibles.updateCollection') : $t('collectibles.addCollection'),
+            $t('collectibles.saveCollectionSummary', { name: collectionForm.name })
+          )}
+      >
+        <label>
+          {$t('collectibles.colCode')}
+          <input bind:value={collectionForm.collectionCode} />
+        </label>
+        <label>
+          {$t('collectibles.colCollection')}
+          <input bind:value={collectionForm.name} />
+        </label>
+        <label>
+          {$t('collectibles.colBoost')}
+          <input type="number" bind:value={collectionForm.boostScore} />
+        </label>
+        <label>
+          {$t('collectibles.colStatus')}
+          <input type="number" bind:value={collectionForm.status} />
+        </label>
+        <label>
+          {$t('collectibles.rewardProduct')}
+          <input bind:value={collectionForm.rewardProductCode} />
+        </label>
+        <label>
+          {$t('collectibles.bonusProduct')}
+          <input bind:value={collectionForm.bonusProductCode} />
+        </label>
+        <button type="submit" disabled={!collectionForm.collectionCode.trim() || !collectionForm.name.trim()}>
+          {collectionForm.id ? $t('collectibles.updateCollection') : $t('collectibles.addCollection')}
+        </button>
+        {#if collectionForm.id}
+          <button type="button" class="ghost-button" on:click={() => (collectionForm = emptyCollection())}>
+            {$t('collectibles.newCollection')}
+          </button>
+        {/if}
+      </form>
+
+      {#if expanded}
+        <h3 class="subhead">{$t('collectibles.itemEditorTitle')}</h3>
+        <form
+          class="inline-form"
+          on:submit|preventDefault={() =>
+            ops.ask(
+              '/api/v1/operations/content/collections/items',
+              {
+                itemId: Number(itemForm.id) || 0,
+                collectionId: expanded,
+                productCode: itemForm.productCode,
+                itemTypeId: itemForm.itemTypeId || '',
+                productTypeId: Number(itemForm.productTypeId) || 0,
+                score: Number(itemForm.score) || 0,
+                rarity: itemForm.rarity || '',
+                sortOrder: Number(itemForm.sortOrder) || 0,
+              },
+              $t('collectibles.saveItem'),
+              $t('collectibles.saveItemSummary', { code: itemForm.productCode })
+            )}
+        >
+          <label>
+            {$t('collectibles.colItem')}
+            <span class="cell">
+              <AssetImage src={itemPreviewUrl} alt={itemForm.productCode} size={32} />
+              <input bind:value={itemForm.productCode} placeholder="classname" />
+              <button type="button" class="ghost-button" on:click={() => (pickingFurniture = true)}>
+                {$t('collectibles.pickFurniture')}
+              </button>
+            </span>
+          </label>
+          <label>
+            {$t('collectibles.colRarity')}
+            <input bind:value={itemForm.rarity} />
+          </label>
+          <label>
+            {$t('collectibles.colItemScore')}
+            <input type="number" bind:value={itemForm.score} min="0" />
+          </label>
+          <label>
+            {$t('collectibles.sortOrder')}
+            <input type="number" bind:value={itemForm.sortOrder} />
+          </label>
+          <button type="submit" disabled={!itemForm.productCode.trim()}>{$t('collectibles.saveItem')}</button>
+          <button type="button" class="ghost-button" on:click={() => (itemForm = emptyItem())}>
+            {$t('collectibles.newItem')}
+          </button>
+        </form>
+      {:else}
+        <p class="muted">{$t('collectibles.pickToEditItems')}</p>
+      {/if}
+
+      {#if $ops.result}
+        <OpResult result={$ops.result} />
+      {/if}
+    </section>
+  {/if}
 
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('collectibles.leaderboardTitle')}</h2></div>
@@ -195,7 +396,57 @@
   </section>
 {/if}
 
+{#if pickingFurniture}
+  <PickerModal
+    kind="furniture"
+    title={$t('collectibles.pickFurniture')}
+    onSelect={(picked) => {
+      itemForm.productCode = picked.name;
+      pickingFurniture = false;
+    }}
+    onClose={() => (pickingFurniture = false)}
+  />
+{/if}
+
+<ConfirmReasonModal
+  open={Boolean($ops.pending)}
+  title={$ops.pending?.title ?? ''}
+  summary={$ops.pending?.summary ?? ''}
+  confirmLabel={$ops.pending?.title ?? $t('common.confirm')}
+  busy={$ops.busy}
+  error={$ops.error}
+  on:confirm={(e) => ops.confirm(e.detail)}
+  on:cancel={() => ops.cancel()}
+/>
+
 <style>
+  .inline-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .inline-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.8rem;
+  }
+
+
+  .row-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .subhead {
+    margin: 16px 0 4px;
+    font-size: 0.95rem;
+  }
+
   tr.selected {
     background: var(--surface-raised, rgba(255, 255, 255, 0.04));
   }

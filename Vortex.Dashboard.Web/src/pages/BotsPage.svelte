@@ -4,6 +4,13 @@
   // zero phrases, looks identical in `bots` and completely different here.
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api.js';
+  import { createWriteOps } from '../lib/writeOps.js';
+  import { hasDashboardCapability } from '../lib/permissions.js';
+  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
+  import { identity } from '../lib/session.js';
+  import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
+  import OpResult from '../components/OpResult.svelte';
+
   import { formatNumber } from '../lib/format.js';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer } from '../lib/session.js';
@@ -34,6 +41,21 @@
   let detail = null;
   let detailLoading = false;
   let pickingOwner = false;
+
+  const ops = createWriteOps(refresh);
+
+  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsContentManage);
+
+  const emptyHandItem = () => ({ handItemId: 0, name: '', nutrition: 0, thirst: 0 });
+  let handItemForm = emptyHandItem();
+
+  // The only picture of a hand item is an avatar holding it, and the id decides which. Built from
+  // the template so a brand-new id previews before its row exists.
+  $: handItemPreviewUrl =
+    handItemForm.handItemId && handItems?.imageTemplate
+      ? handItems.imageTemplate.replace('{item}', String(Number(handItemForm.handItemId)))
+      : null;
+  let botDraft = null;
 
   $: totalPages = list ? Math.max(1, Math.ceil((list.total || 0) / (list.limit || PAGE_SIZE))) : 1;
 
@@ -218,6 +240,7 @@
             <th>{$t('bots.colSkills')}</th>
             <th>{$t('bots.colPhrases')}</th>
             <th>{$t('bots.colAutoChat')}</th>
+            {#if canManage}<th></th>{/if}
           </tr>
         </thead>
         <tbody>
@@ -250,10 +273,39 @@
               </td>
               <td>{formatNumber(row.phraseCount)}</td>
               <td>{row.autoChat ? $t('common.yes') : $t('common.no')}</td>
+              {#if canManage}
+                <td class="row-actions">
+                  <button
+                    type="button"
+                    class="ghost-button"
+                    disabled={row.placed}
+                    title={row.placed ? $t('bots.placedLocked') : ''}
+                    on:click|stopPropagation={() =>
+                      (botDraft = { id: row.id, name: row.name, motto: row.motto, figure: row.figure })}
+                  >
+                    {$t('bots.edit')}
+                  </button>
+                  <button
+                    type="button"
+                    class="ghost-button danger"
+                    disabled={row.placed}
+                    title={row.placed ? $t('bots.placedLocked') : ''}
+                    on:click|stopPropagation={() =>
+                      ops.ask(
+                        '/api/v1/operations/content/bots/delete',
+                        { botId: row.id },
+                        $t('bots.deleteBot'),
+                        $t('bots.deleteBotSummary', { name: row.name })
+                      )}
+                  >
+                    {$t('bots.delete')}
+                  </button>
+                </td>
+              {/if}
             </tr>
             {#if selected === row.id}
               <tr>
-                <td colspan="7">
+                <td colspan={canManage ? 8 : 7}>
                   {#if detailLoading}
                     <p class="muted">{$t('common.loading')}</p>
                   {:else if detail}
@@ -278,11 +330,51 @@
               </tr>
             {/if}
           {:else}
-            <tr><td colspan="7" class="muted">{$t('bots.noBots')}</td></tr>
+            <tr><td colspan={canManage ? 8 : 7} class="muted">{$t('bots.noBots')}</td></tr>
           {/each}
         </tbody>
       </table>
     </div>
+
+    {#if canManage && botDraft}
+      <form
+        class="inline-form"
+        on:submit|preventDefault={() =>
+          ops.ask(
+            '/api/v1/operations/content/bots',
+            {
+              botId: botDraft.id,
+              name: botDraft.name,
+              motto: botDraft.motto || '',
+              figure: botDraft.figure || '',
+            },
+            $t('bots.updateBot'),
+            $t('bots.updateBotSummary', { name: botDraft.name })
+          )}
+      >
+        <label>
+          {$t('bots.colBot')}
+          <input bind:value={botDraft.name} required />
+        </label>
+        <label>
+          {$t('bots.motto')}
+          <input bind:value={botDraft.motto} />
+        </label>
+        <label>
+          {$t('bots.detailFigure')}
+          <input bind:value={botDraft.figure} />
+        </label>
+        <button type="submit">{$t('bots.save')}</button>
+        <button type="button" class="ghost-button" on:click={() => (botDraft = null)}>
+          {$t('bots.cancel')}
+        </button>
+      </form>
+      <p class="muted">{$t('bots.placedHint')}</p>
+    {/if}
+
+    {#if $ops.result}
+      <OpResult result={$ops.result} />
+    {/if}
 
     {#if totalPages > 1}
       <Pagination
@@ -319,6 +411,7 @@
               <th>{$t('bots.colHandItemName')}</th>
               <th>{$t('bots.colNutrition')}</th>
               <th>{$t('bots.colThirst')}</th>
+              {#if canManage}<th></th>{/if}
             </tr>
           </thead>
           <tbody>
@@ -326,19 +419,87 @@
               <tr>
                 <td>
                   <span class="bot-cell">
-                    <Hand size={14} strokeWidth={2} aria-hidden="true" />
+                    <AssetImage src={item.imageUrl} alt={item.name} size={40} fallbackIcon={Hand} />
                     {item.handItemId}
                   </span>
                 </td>
                 <td>{item.name}</td>
                 <td>{item.nutrition || '—'}</td>
                 <td>{item.thirst || '—'}</td>
+                {#if canManage}
+                  <td class="row-actions">
+                    <button type="button" class="ghost-button" on:click={() => (handItemForm = { ...item })}>
+                      {$t('bots.edit')}
+                    </button>
+                    <button
+                      type="button"
+                      class="ghost-button danger"
+                      on:click={() =>
+                        ops.ask(
+                          '/api/v1/operations/content/hand-items/delete',
+                          { id: item.id },
+                          $t('bots.deleteHandItem'),
+                          $t('bots.deleteHandItemSummary', { name: item.name })
+                        )}
+                    >
+                      {$t('bots.delete')}
+                    </button>
+                  </td>
+                {/if}
               </tr>
             {/each}
           </tbody>
         </table>
       </div>
     {/if}
+  </section>
+{/if}
+
+{#if canManage && handItems}
+  <section class="panel" style="margin-top: 12px;">
+    <div class="panel-head"><h2>{$t('bots.handItemEditorTitle')}</h2></div>
+    <p class="muted">{$t('bots.handItemEditorHint')}</p>
+    <form
+      class="inline-form"
+      on:submit|preventDefault={() =>
+        ops.ask(
+          '/api/v1/operations/content/hand-items',
+          {
+            handItemId: Number(handItemForm.handItemId),
+            name: handItemForm.name,
+            nutrition: Number(handItemForm.nutrition) || 0,
+            thirst: Number(handItemForm.thirst) || 0,
+          },
+          $t('bots.saveHandItem'),
+          $t('bots.saveHandItemSummary', { id: handItemForm.handItemId, name: handItemForm.name })
+        )}
+    >
+      <label>
+        {$t('bots.colHandItemId')}
+        <span class="bot-cell">
+          <input type="number" bind:value={handItemForm.handItemId} min="1" />
+          <AssetImage src={handItemPreviewUrl} alt="" size={40} fallbackIcon={Hand} />
+        </span>
+      </label>
+      <label>
+        {$t('bots.colHandItemName')}
+        <input bind:value={handItemForm.name} />
+      </label>
+      <label>
+        {$t('bots.colNutrition')}
+        <input type="number" bind:value={handItemForm.nutrition} min="0" />
+      </label>
+      <label>
+        {$t('bots.colThirst')}
+        <input type="number" bind:value={handItemForm.thirst} min="0" />
+      </label>
+      <button type="submit" disabled={!handItemForm.name.trim() || !handItemForm.handItemId}>
+        {$t('bots.saveHandItem')}
+      </button>
+      <button type="button" class="ghost-button" on:click={() => (handItemForm = emptyHandItem())}>
+        {$t('bots.clear')}
+      </button>
+    </form>
   </section>
 {/if}
 
@@ -355,7 +516,39 @@
   />
 {/if}
 
+<ConfirmReasonModal
+  open={Boolean($ops.pending)}
+  title={$ops.pending?.title ?? ''}
+  summary={$ops.pending?.summary ?? ''}
+  confirmLabel={$ops.pending?.title ?? $t('common.confirm')}
+  busy={$ops.busy}
+  error={$ops.error}
+  on:confirm={(e) => ops.confirm(e.detail)}
+  on:cancel={() => ops.cancel()}
+/>
+
 <style>
+  .inline-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .inline-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.8rem;
+  }
+
+  .row-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
   tr.selected {
     background: var(--surface-raised, rgba(255, 255, 255, 0.04));
   }

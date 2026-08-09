@@ -55,6 +55,87 @@ internal sealed class DashboardAssetUrls(IOptions<ObservabilityConfig> options)
         Build(_config.GroupBadgeUrlTemplate, "{badge}", badge);
 
     /// <summary>
+    /// Achievement/player badge image by badge code (<c>{badge}</c>) — the static file the client
+    /// ships, not the composed guild badge <see cref="GroupBadge"/> renders.
+    /// </summary>
+    public string? BadgeImage(string? badgeCode) =>
+        Build(_config.BadgeImageUrlTemplate, "{badge}", badgeCode);
+
+    /// <summary>
+    /// A hand item, drawn the only way the client ever draws one: an avatar holding it
+    /// (<c>{item}</c>). <paramref name="figure"/> is whichever avatar the caller wants to lend —
+    /// the dashboard uses a neutral default so the picture is about the item, not the model.
+    /// </summary>
+    public string? HandItemImage(int handItemId, string? figure = null)
+    {
+        string? withItem = Build(
+            _config.HandItemImageUrlTemplate,
+            "{item}",
+            handItemId.ToString(CultureInfo.InvariantCulture)
+        );
+
+        return withItem is null ? null : SubstituteFigure(withItem, figure);
+    }
+
+    /// <summary>
+    /// The effect template with the model already lent, so a form can preview an id <em>nobody owns
+    /// yet</em> — which is exactly the id being granted. Same trick as
+    /// <see cref="TargetedOfferImageTemplate"/>: the page substitutes the last placeholder itself.
+    /// </summary>
+    public string? EffectImageTemplate =>
+        string.IsNullOrWhiteSpace(_config.AvatarEffectImageUrlTemplate)
+            ? null
+            : SubstituteFigure(_config.AvatarEffectImageUrlTemplate, null);
+
+    /// <summary>Same, for a hand item id that has no row yet.</summary>
+    public string? HandItemImageTemplate =>
+        string.IsNullOrWhiteSpace(_config.HandItemImageUrlTemplate)
+            ? null
+            : SubstituteFigure(_config.HandItemImageUrlTemplate, null);
+
+    /// <summary>The badge template, so a code typed before it is granted still previews.</summary>
+    public string? BadgeImageTemplate =>
+        string.IsNullOrWhiteSpace(_config.BadgeImageUrlTemplate)
+            ? null
+            : _config.BadgeImageUrlTemplate;
+
+    /// <summary>Fills in <c>{figure}</c>, lending the neutral model when the caller has none.</summary>
+    private static string SubstituteFigure(string url, string? figure) =>
+        url.Replace(
+            "{figure}",
+            Uri.EscapeDataString(
+                string.IsNullOrWhiteSpace(figure) ? DefaultHandItemFigure : figure
+            ),
+            StringComparison.Ordinal
+        );
+
+    /// <summary>
+    /// An avatar effect, drawn the only way it can be: on an avatar wearing it (<c>{effect}</c>).
+    /// Pass the owner's own <paramref name="figure"/> where there is one — an effect on the player
+    /// it belongs to is what the operator is actually checking.
+    /// </summary>
+    public string? EffectImage(int effectId, string? figure = null)
+    {
+        string? withEffect = Build(
+            _config.AvatarEffectImageUrlTemplate,
+            "{effect}",
+            effectId.ToString(CultureInfo.InvariantCulture)
+        );
+
+        return withEffect is null ? null : SubstituteFigure(withEffect, figure);
+    }
+
+    /// <summary>Quest image by its <c>image_version</c> (<c>{version}</c>), which is the asset's own
+    /// filename — an empty version means the client shows no picture either.</summary>
+    public string? QuestImage(string? imageVersion) =>
+        Build(_config.QuestImageUrlTemplate, "{version}", imageVersion);
+
+    /// <summary>The model lent to hand-item previews: a plain avatar, so nothing about the figure
+    /// competes with the item being held.</summary>
+    private const string DefaultHandItemFigure =
+        "hd-180-1.ch-255-66.lg-280-110.sh-305-62.ha-1012-110.hr-828-61";
+
+    /// <summary>
     /// The raw targeted-offer image template (or null when unset) so the admin form can show the
     /// configured base and let the operator supply just a filename with a live preview, instead of
     /// pasting a whole URL. Storage stays a full URL on the wire — this only drives the form.
@@ -76,6 +157,10 @@ internal sealed class DashboardAssetUrls(IOptions<ObservabilityConfig> options)
             _config.TargetedOfferImageUrlTemplate,
             _config.AvatarImageUrlTemplate,
             _config.GroupBadgeUrlTemplate,
+            _config.BadgeImageUrlTemplate,
+            _config.HandItemImageUrlTemplate,
+            _config.QuestImageUrlTemplate,
+            _config.AvatarEffectImageUrlTemplate,
         }
             .Select(OriginOf)
             .Where(origin => origin is not null)
@@ -111,7 +196,10 @@ internal sealed class DashboardAssetUrls(IOptions<ObservabilityConfig> options)
             .Replace("{id}", "1", StringComparison.Ordinal)
             .Replace("{file}", "x", StringComparison.Ordinal)
             .Replace("{figure}", "x", StringComparison.Ordinal)
-            .Replace("{badge}", "x", StringComparison.Ordinal);
+            .Replace("{badge}", "x", StringComparison.Ordinal)
+            .Replace("{item}", "1", StringComparison.Ordinal)
+            .Replace("{version}", "x", StringComparison.Ordinal)
+            .Replace("{effect}", "1", StringComparison.Ordinal);
 
         return
             Uri.TryCreate(probe, UriKind.Absolute, out Uri? uri)

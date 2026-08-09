@@ -34,6 +34,7 @@ public sealed class AuthenticationModule : IHostPluginModule
         services.AddSingleton<IAccountAuthenticator, AccountAuthenticator>();
         services.AddSingleton<IPermissionService, PermissionService>();
         services.AddSingleton<ISanctionPresetService, SanctionPresetService>();
+        services.AddSingleton<IStaffAdminService, StaffAdminService>();
         services.AddHostedService<PermissionSeederService>();
         services.AddHostedService<SanctionPresetSeederService>();
         // Must run after SanctionPresetSeederService: it links CFH topics to Ban presets by

@@ -1,5 +1,6 @@
 <script>
   import OpResult from '../components/OpResult.svelte';
+  import AssetImage from '../components/AssetImage.svelte';
   import { onMount } from 'svelte';
   import {
     Award,
@@ -525,7 +526,9 @@
         {#each quests as quest (quest.id)}
           <div class="catalog-card">
             <div class="offer-head">
-              <span class="quest-icon"><Award size={20} strokeWidth={2} aria-hidden="true" /></span>
+              <span class="quest-icon">
+                <AssetImage src={quest.imageUrl} alt="" size={34} fallbackIcon={Award} />
+              </span>
               <span class="catalog-row-main">
                 <strong>{quest.localizationCode || quest.campaignCode}</strong>
                 <small class="muted">{quest.campaignCode}{quest.chainCode ? ` - ${quest.chainCode}` : ''} - #{quest.id} - {quest.questType}</small>

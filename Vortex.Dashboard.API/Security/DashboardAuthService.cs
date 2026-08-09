@@ -58,6 +58,8 @@ internal sealed class DashboardAuthService(
         Capabilities.Dashboard.SocialRead,
         Capabilities.Dashboard.StaffRead,
         Capabilities.Dashboard.CollectiblesRead,
+        Capabilities.Dashboard.OpsStaffManage,
+        Capabilities.Dashboard.OpsContentManage,
     ];
 
     public async Task<DashboardLoginResult> LoginAsync(

@@ -45,7 +45,7 @@ internal sealed partial class DashboardApiService
                     .CountAsync(ct)
                     .ConfigureAwait(false);
 
-                var topBadges = await db
+                var topBadgeRows = await db
                     .PlayerBadges.AsNoTracking()
                     .Where(b => b.DeletedAt == null)
                     .GroupBy(b => b.BadgeCode)
@@ -59,6 +59,16 @@ internal sealed partial class DashboardApiService
                     .Take(limit)
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
+
+                var topBadges = topBadgeRows
+                    .Select(b => new
+                    {
+                        b.badgeCode,
+                        badgeUrl = _assetUrls.BadgeImage(b.badgeCode),
+                        b.holders,
+                        b.equipped,
+                    })
+                    .ToList();
 
                 int totalEffects = await db
                     .PlayerEffects.AsNoTracking()
@@ -75,7 +85,7 @@ internal sealed partial class DashboardApiService
                     .CountAsync(e => e.DeletedAt == null && e.IsSelected, ct)
                     .ConfigureAwait(false);
 
-                var topEffects = await db
+                var topEffectRows = await db
                     .PlayerEffects.AsNoTracking()
                     .Where(e => e.DeletedAt == null)
                     .GroupBy(e => e.EffectId)
@@ -90,6 +100,17 @@ internal sealed partial class DashboardApiService
                     .Take(limit)
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
+
+                var topEffects = topEffectRows
+                    .Select(e => new
+                    {
+                        e.effectId,
+                        imageUrl = _assetUrls.EffectImage(e.effectId),
+                        e.owners,
+                        e.activated,
+                        e.selected,
+                    })
+                    .ToList();
 
                 var chatStyles = await db
                     .PlayerChatStyles.AsNoTracking()
@@ -156,6 +177,10 @@ internal sealed partial class DashboardApiService
                         wardrobeOutfits,
                         wardrobeUsers,
                     },
+                    // The forms below grant ids and codes that may not exist anywhere yet, so they
+                    // build their own preview URL from these rather than looking one up.
+                    effectImageTemplate = _assetUrls.EffectImageTemplate,
+                    badgeImageTemplate = _assetUrls.BadgeImageTemplate,
                     topBadges,
                     topEffects,
                     chatStyles,
@@ -178,19 +203,21 @@ internal sealed partial class DashboardApiService
         QueryAsync<object?>(
             async db =>
             {
-                string? name = await db
+                var player = await db
                     .Players.AsNoTracking()
                     .Where(p => p.Id == playerId)
-                    .Select(p => p.Name)
+                    .Select(p => new { p.Name, p.Figure })
                     .FirstOrDefaultAsync(ct)
                     .ConfigureAwait(false);
 
-                if (name is null)
+                if (player is null)
                 {
                     return null;
                 }
 
-                var badges = await db
+                string name = player.Name;
+
+                var badgeRows = await db
                     .PlayerBadges.AsNoTracking()
                     .Where(b => b.PlayerEntityId == playerId && b.DeletedAt == null)
                     .OrderBy(b => b.SlotId == null)
@@ -205,7 +232,18 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                var effects = await db
+                var badges = badgeRows
+                    .Select(b => new
+                    {
+                        b.Id,
+                        b.BadgeCode,
+                        badgeUrl = _assetUrls.BadgeImage(b.BadgeCode),
+                        b.SlotId,
+                        b.CreatedAt,
+                    })
+                    .ToList();
+
+                var effectRows = await db
                     .PlayerEffects.AsNoTracking()
                     .Where(e => e.PlayerEntityId == playerId && e.DeletedAt == null)
                     .OrderByDescending(e => e.IsSelected)
@@ -221,6 +259,21 @@ internal sealed partial class DashboardApiService
                     })
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
+
+                // Rendered on this player's own figure: an effect is only ever seen worn, and worn by
+                // them is what the operator is checking.
+                var effects = effectRows
+                    .Select(e => new
+                    {
+                        e.Id,
+                        e.EffectId,
+                        imageUrl = _assetUrls.EffectImage(e.EffectId, player.Figure),
+                        e.SubType,
+                        e.TotalDuration,
+                        e.ActivatedAt,
+                        e.IsSelected,
+                    })
+                    .ToList();
 
                 var chatStyles = await db
                     .PlayerOwnedChatStyles.AsNoTracking()
@@ -247,6 +300,7 @@ internal sealed partial class DashboardApiService
                 {
                     playerId,
                     playerName = name,
+                    avatarUrl = _assetUrls.AvatarImage(player.Figure),
                     badges,
                     effects,
                     chatStyles,

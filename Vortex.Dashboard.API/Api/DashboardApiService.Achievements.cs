@@ -157,11 +157,17 @@ internal sealed partial class DashboardApiService
                                     .Sum(p => p.Value),
                             badgesAwarded = progress?.LevelsAwarded ?? 0,
                             highestLevelReached = progress?.MaxLevelReached ?? 0,
+                            // The badge of the last rung stands for the whole ladder in the list,
+                            // the same picture the client puts on the achievement.
+                            badgeUrl = levelCount > 0
+                                ? _assetUrls.BadgeImage(ladder[levelCount - 1].BadgeCode)
+                                : null,
                             levels = ladder
                                 .Select(l => new
                                 {
                                     l.Level,
                                     l.BadgeCode,
+                                    badgeUrl = _assetUrls.BadgeImage(l.BadgeCode),
                                     l.ProgressRequirement,
                                     l.RewardAmount,
                                     l.RewardType,
@@ -467,6 +473,9 @@ internal sealed partial class DashboardApiService
                     byCategory,
                     untouched,
                     topPlayers,
+                    // The level editor previews a badge code before its rung exists, so it needs the
+                    // template rather than a resolved URL.
+                    badgeImageTemplate = _assetUrls.BadgeImageTemplate,
                 };
             },
             ct

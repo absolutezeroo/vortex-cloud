@@ -179,11 +179,19 @@ internal sealed partial class DashboardApiService
                     .ConfigureAwait(false);
 
                 List<int> groupIds = topForumRows.ConvertAll(g => g.groupId);
-                Dictionary<int, string> groupNames = await db
-                    .Groups.AsNoTracking()
-                    .Where(g => groupIds.Contains(g.Id))
-                    .ToDictionaryAsync(g => g.Id, g => g.Name, ct)
-                    .ConfigureAwait(false);
+                Dictionary<int, (string Name, string? Badge)> groupCards = (
+                    await db
+                        .Groups.AsNoTracking()
+                        .Where(g => groupIds.Contains(g.Id))
+                        .Select(g => new
+                        {
+                            g.Id,
+                            g.Name,
+                            g.Badge,
+                        })
+                        .ToListAsync(ct)
+                        .ConfigureAwait(false)
+                ).ToDictionary(g => g.Id, g => (g.Name, (string?)g.Badge));
 
                 var recentThreads = await db
                     .GroupForumThreads.AsNoTracking()
@@ -206,11 +214,19 @@ internal sealed partial class DashboardApiService
                     .ConfigureAwait(false);
 
                 List<int> recentGroupIds = recentThreads.ConvertAll(t => t.GroupEntityId);
-                Dictionary<int, string> recentGroupNames = await db
-                    .Groups.AsNoTracking()
-                    .Where(g => recentGroupIds.Contains(g.Id))
-                    .ToDictionaryAsync(g => g.Id, g => g.Name, ct)
-                    .ConfigureAwait(false);
+                Dictionary<int, (string Name, string? Badge)> recentGroupCards = (
+                    await db
+                        .Groups.AsNoTracking()
+                        .Where(g => recentGroupIds.Contains(g.Id))
+                        .Select(g => new
+                        {
+                            g.Id,
+                            g.Name,
+                            g.Badge,
+                        })
+                        .ToListAsync(ct)
+                        .ConfigureAwait(false)
+                ).ToDictionary(g => g.Id, g => (g.Name, (string?)g.Badge));
 
                 Dictionary<int, string> authorNames = await LoadPlayerNamesAsync(
                         db,
@@ -267,7 +283,10 @@ internal sealed partial class DashboardApiService
                             .Select(g => new
                             {
                                 g.groupId,
-                                groupName = groupNames.GetValueOrDefault(g.groupId),
+                                groupName = groupCards.GetValueOrDefault(g.groupId).Name,
+                                badgeUrl = _assetUrls.GroupBadge(
+                                    groupCards.GetValueOrDefault(g.groupId).Badge
+                                ),
                                 g.threads,
                                 g.postCount,
                                 g.lastPostAt,
@@ -278,7 +297,12 @@ internal sealed partial class DashboardApiService
                             {
                                 t.Id,
                                 groupId = t.GroupEntityId,
-                                groupName = recentGroupNames.GetValueOrDefault(t.GroupEntityId),
+                                groupName = recentGroupCards
+                                    .GetValueOrDefault(t.GroupEntityId)
+                                    .Name,
+                                badgeUrl = _assetUrls.GroupBadge(
+                                    recentGroupCards.GetValueOrDefault(t.GroupEntityId).Badge
+                                ),
                                 t.Subject,
                                 t.state,
                                 t.IsPinned,

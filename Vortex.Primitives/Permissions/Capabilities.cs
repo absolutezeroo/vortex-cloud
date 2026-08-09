@@ -135,6 +135,15 @@ public static class Capabilities
 
         /// <summary>NFT collections, mintable items and collector scores.</summary>
         public const string CollectiblesRead = "dashboard.collectibles.read";
+
+        /// <summary>Edit the staff roster itself: roles, what they grant, and who holds them. Held
+        /// apart from every other ops capability because it is the one that can grant capabilities —
+        /// including itself.</summary>
+        public const string OpsStaffManage = "dashboard.ops.staff.manage";
+
+        /// <summary>Author the content the other read surfaces describe: achievement ladders, bots
+        /// and hand items, player grants, the economy's smaller tables, and NFT collections.</summary>
+        public const string OpsContentManage = "dashboard.ops.content.manage";
     }
 
     /// <summary>Every declared capability, for validation and dashboard enumeration.</summary>
@@ -197,5 +206,7 @@ public static class Capabilities
             Dashboard.SocialRead,
             Dashboard.StaffRead,
             Dashboard.CollectiblesRead,
+            Dashboard.OpsStaffManage,
+            Dashboard.OpsContentManage,
         };
 }

@@ -10,6 +10,7 @@ using Vortex.Observability.Diagnostics;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Snapshots;
+using Vortex.Primitives.Content;
 using Vortex.Primitives.Furniture;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.MysteryBox;
@@ -18,6 +19,7 @@ using Vortex.Primitives.Networking;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
+using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Prizes;
@@ -41,6 +43,8 @@ internal sealed partial class DashboardOperationsService(
     ITargetedOfferAdminService targetedOfferAdmin,
     IQuestAdminService questAdmin,
     INavigatorAdminService navigatorAdmin,
+    IStaffAdminService staffAdmin,
+    IContentAdminService contentAdmin,
     IMysteryBoxAdminService mysteryBoxAdmin,
     IPrizePoolAdminService prizePoolAdmin,
     IFurnitureAdminService furnitureAdmin,
@@ -66,6 +70,8 @@ internal sealed partial class DashboardOperationsService(
     private readonly ITargetedOfferAdminService _targetedOfferAdmin = targetedOfferAdmin;
     private readonly IQuestAdminService _questAdmin = questAdmin;
     private readonly INavigatorAdminService _navigatorAdmin = navigatorAdmin;
+    private readonly IStaffAdminService _staffAdmin = staffAdmin;
+    private readonly IContentAdminService _contentAdmin = contentAdmin;
     private readonly IMysteryBoxAdminService _mysteryBoxAdmin = mysteryBoxAdmin;
     private readonly IPrizePoolAdminService _prizePoolAdmin = prizePoolAdmin;
     private readonly IFurnitureAdminService _furnitureAdmin = furnitureAdmin;

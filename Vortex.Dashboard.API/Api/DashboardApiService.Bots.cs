@@ -364,7 +364,7 @@ internal sealed partial class DashboardApiService
         QueryAsync<object>(
             async db =>
             {
-                var items = await db
+                var rows = await db
                     .HandItems.AsNoTracking()
                     .OrderBy(h => h.HandItemId)
                     .Select(h => new
@@ -379,10 +379,27 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
+                // A hand item has no icon of its own anywhere in the client: the only picture of one
+                // is an avatar holding it, which is what this renders.
+                var items = rows.Select(h => new
+                    {
+                        h.Id,
+                        h.HandItemId,
+                        h.Name,
+                        h.Nutrition,
+                        h.Thirst,
+                        h.consumable,
+                        imageUrl = _assetUrls.HandItemImage(h.HandItemId),
+                    })
+                    .ToList();
+
                 return new
                 {
                     count = items.Count,
                     consumableCount = items.Count(i => i.consumable),
+                    // Lets the editor preview an id that has no row yet -- which is every id being
+                    // added for the first time.
+                    imageTemplate = _assetUrls.HandItemImageTemplate,
                     items,
                 };
             },

@@ -21,4 +21,11 @@ public interface IAchievementManagerGrain : IGrainWithStringKey
 
     /// <summary>The category tab the client should open by default in the achievements window.</summary>
     public Task<string> GetDefaultCategoryAsync(CancellationToken ct);
+
+    /// <summary>
+    /// Rebuilds the cached definitions from the database. The cache is loaded once per activation
+    /// and never re-read, so an admin write that skips this stays invisible to every player until
+    /// the grain is deactivated.
+    /// </summary>
+    public Task ReloadAsync(CancellationToken ct);
 }
