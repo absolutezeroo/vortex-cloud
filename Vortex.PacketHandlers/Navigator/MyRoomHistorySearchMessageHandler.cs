@@ -17,7 +17,7 @@ public class MyRoomHistorySearchMessageHandler(
     IGrainFactory grainFactory
 ) : IMessageHandler<MyRoomHistorySearchMessage>
 {
-    private const string SearchCode = "history";
+    private const string SearchCode = NavigatorSearchCodes.History;
 
     private readonly INavigatorService _navigatorService = navigatorService;
     private readonly IGrainFactory _grainFactory = grainFactory;

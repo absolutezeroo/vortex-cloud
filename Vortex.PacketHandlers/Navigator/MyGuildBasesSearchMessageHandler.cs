@@ -17,7 +17,7 @@ public class MyGuildBasesSearchMessageHandler(
     IGrainFactory grainFactory
 ) : IMessageHandler<MyGuildBasesSearchMessage>
 {
-    private const string SearchCode = "my_groups";
+    private const string SearchCode = NavigatorSearchCodes.MyGuildBases;
 
     private readonly INavigatorService _navigatorService = navigatorService;
     private readonly IGrainFactory _grainFactory = grainFactory;

@@ -75,6 +75,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vortex.Authentication.Tests
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vortex.Pipeline.Tests", "Vortex.Pipeline.Tests\Vortex.Pipeline.Tests.csproj", "{8789349C-266A-4FE3-B5E2-EC8FBCFA1362}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vortex.Navigator.Tests", "Vortex.Navigator.Tests\Vortex.Navigator.Tests.csproj", "{B23426C4-BE04-4696-A087-C9253953BF5B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -517,6 +519,18 @@ Global
 		{8789349C-266A-4FE3-B5E2-EC8FBCFA1362}.Release|x64.Build.0 = Release|Any CPU
 		{8789349C-266A-4FE3-B5E2-EC8FBCFA1362}.Release|x86.ActiveCfg = Release|Any CPU
 		{8789349C-266A-4FE3-B5E2-EC8FBCFA1362}.Release|x86.Build.0 = Release|Any CPU
+		{B23426C4-BE04-4696-A087-C9253953BF5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B23426C4-BE04-4696-A087-C9253953BF5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B23426C4-BE04-4696-A087-C9253953BF5B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B23426C4-BE04-4696-A087-C9253953BF5B}.Debug|x64.Build.0 = Debug|Any CPU
+		{B23426C4-BE04-4696-A087-C9253953BF5B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B23426C4-BE04-4696-A087-C9253953BF5B}.Debug|x86.Build.0 = Debug|Any CPU
+		{B23426C4-BE04-4696-A087-C9253953BF5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B23426C4-BE04-4696-A087-C9253953BF5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B23426C4-BE04-4696-A087-C9253953BF5B}.Release|x64.ActiveCfg = Release|Any CPU
+		{B23426C4-BE04-4696-A087-C9253953BF5B}.Release|x64.Build.0 = Release|Any CPU
+		{B23426C4-BE04-4696-A087-C9253953BF5B}.Release|x86.ActiveCfg = Release|Any CPU
+		{B23426C4-BE04-4696-A087-C9253953BF5B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

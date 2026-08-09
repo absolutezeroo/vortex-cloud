@@ -190,6 +190,28 @@ public static class ConfigKeyCatalog
             "Max rooms a player may own",
             "Rooms"
         ),
+        // Navigator result caps. Keys/defaults mirror Vortex.Primitives NavigatorConfig.
+        new(
+            "navigator.search_result_limit",
+            "50",
+            ConfigValueKind.Int,
+            "Rooms returned by one navigator search",
+            "Navigator"
+        ),
+        new(
+            "navigator.category_result_limit",
+            "20",
+            ConfigValueKind.Int,
+            "Rooms returned per category block",
+            "Navigator"
+        ),
+        new(
+            "navigator.history_limit",
+            "25",
+            ConfigValueKind.Int,
+            "Rooms kept in the visited/most-visited lists",
+            "Navigator"
+        ),
         // Freeze minigame balance. Keys/defaults mirror Vortex.Rooms FreezeConfig / FreezeSettings
         // (duplicated here because Primitives can't reference that feature project).
         new("freeze.start_lives", "3", ConfigValueKind.Int, "Freeze: starting lives", "Freeze"),

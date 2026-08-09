@@ -17,7 +17,7 @@ public class RoomsWithHighestScoreSearchMessageHandler(
     IGrainFactory grainFactory
 ) : IMessageHandler<RoomsWithHighestScoreSearchMessage>
 {
-    private const string SearchCode = "highest_score";
+    private const string SearchCode = NavigatorSearchCodes.HighestScore;
 
     private readonly INavigatorService _navigatorService = navigatorService;
     private readonly IGrainFactory _grainFactory = grainFactory;

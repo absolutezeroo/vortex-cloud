@@ -17,7 +17,7 @@ public class PopularRoomsSearchMessageHandler(
     IGrainFactory grainFactory
 ) : IMessageHandler<PopularRoomsSearchMessage>
 {
-    private const string SearchCode = "popular";
+    private const string SearchCode = NavigatorSearchCodes.Popular;
 
     private readonly INavigatorService _navigatorService = navigatorService;
     private readonly IGrainFactory _grainFactory = grainFactory;

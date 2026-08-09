@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Messages.Incoming.NewNavigator;
+using Vortex.Primitives.Messages.Outgoing.Navigator;
 using Vortex.Primitives.Messages.Outgoing.NewNavigator;
 using Vortex.Primitives.Navigator;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Navigator;
 using Vortex.Primitives.Players.Grains;
+using Vortex.Primitives.Snapshots.Navigator;
 
 namespace Vortex.PacketHandlers.NewNavigator;
 
@@ -45,8 +47,20 @@ public class NewNavigatorInitMessageHandler(
             .GetWindowPreferencesAsync(ct)
             .ConfigureAwait(false);
 
+        CategoriesWithVisitorCountSnapshot categoryCounts = await _navigatorService
+            .GetCategoryVisitorCountsAsync(ct)
+            .ConfigureAwait(false);
+
         await ctx.SendComposerAsync(
                 new NavigatorMetaDataMessage { TopLevelContexts = topLevelContexts },
+                ct
+            )
+            .ConfigureAwait(false);
+
+        // The client caches this on init and reads it when rendering the category list; nothing ever
+        // sent it before, so every category showed as empty.
+        await ctx.SendComposerAsync(
+                new CategoriesWithVisitorCountMessageComposer { Categories = categoryCounts },
                 ct
             )
             .ConfigureAwait(false);

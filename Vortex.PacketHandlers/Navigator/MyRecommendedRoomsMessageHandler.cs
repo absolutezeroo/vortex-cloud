@@ -17,7 +17,7 @@ public class MyRecommendedRoomsMessageHandler(
     IGrainFactory grainFactory
 ) : IMessageHandler<MyRecommendedRoomsMessage>
 {
-    private const string SearchCode = "recommended";
+    private const string SearchCode = NavigatorSearchCodes.Recommended;
 
     private readonly INavigatorService _navigatorService = navigatorService;
     private readonly IGrainFactory _grainFactory = grainFactory;

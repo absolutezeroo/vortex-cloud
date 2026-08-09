@@ -37,40 +37,60 @@ public sealed class NavigatorProvider(
         Task.FromResult(_topLevelContexts);
 
     /// <summary>
-    /// Search codes the emulator's own handlers hardcode, so their routing must not depend on a
-    /// matching navigator config row existing. Without this the guild searches silently degrade to
-    /// <see cref="NavigatorQueryType.AllRooms"/> and return the whole hotel.
+    /// Navigator config rows win, because repointing a search code at a different query is exactly
+    /// what an operator configures them for. When a code has no row -- an unseeded hotel, or a code
+    /// the client sends that nobody thought to configure -- the built-in table in
+    /// <see cref="NavigatorSearchCodes"/> decides. Only a genuinely unknown code degrades to
+    /// <see cref="NavigatorQueryType.AllRooms"/>.
     /// </summary>
-    private static readonly ImmutableDictionary<
-        string,
-        NavigatorQueryType
-    > BuiltInQueryTypeBySearchCode = ImmutableDictionary.CreateRange([
-        KeyValuePair.Create("groups", NavigatorQueryType.GuildBases),
-        KeyValuePair.Create("my_groups", NavigatorQueryType.MyGroups),
-    ]);
+    public NavigatorQueryType ResolveQueryType(string searchCode)
+    {
+        if (_queryTypeBySearchCode.TryGetValue(searchCode, out NavigatorQueryType configured))
+        {
+            return configured;
+        }
 
-    public NavigatorQueryType ResolveQueryType(string searchCode) =>
-        _queryTypeBySearchCode.TryGetValue(searchCode, out NavigatorQueryType qt) ? qt
-        : BuiltInQueryTypeBySearchCode.TryGetValue(searchCode, out NavigatorQueryType builtIn)
-            ? builtIn
-        : NavigatorQueryType.AllRooms;
+        if (
+            NavigatorSearchCodes.QueryTypeBySearchCode.TryGetValue(
+                searchCode,
+                out NavigatorQueryType builtIn
+            )
+        )
+        {
+            return builtIn;
+        }
+
+        // Event-category codes carry their id in the code itself, so there is one per row rather
+        // than a fixed name to look up.
+        return searchCode.StartsWith(
+            NavigatorSearchCodes.EventCategoryPrefix,
+            StringComparison.Ordinal
+        )
+            ? NavigatorQueryType.EventCategory
+            : NavigatorQueryType.AllRooms;
+    }
 
     public ImmutableArray<NavigatorFlatCategorySnapshot> GetFlatCategories() => _flatCategories;
 
-    public async Task<List<RoomInfoSnapshot>> GetAllRoomsAsync(CancellationToken ct = default)
+    public async Task<List<RoomInfoSnapshot>> GetAllRoomsAsync(
+        int limit,
+        CancellationToken ct = default
+    )
     {
         await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
         return await BuildRoomQuery(dbCtx)
-            .OrderByDescending(x => x.UsersNow)
+            .OrderByPopularity()
+            .Take(limit)
             .ToRoomInfoSnapshotsAsync(ct)
             .ConfigureAwait(false);
     }
 
     public async Task<List<RoomInfoSnapshot>> GetRoomsByOwnerAsync(
         PlayerId playerId,
+        int limit,
         CancellationToken ct = default
     )
     {
@@ -80,12 +100,29 @@ public sealed class NavigatorProvider(
 
         return await BuildRoomQuery(dbCtx)
             .Where(x => x.PlayerEntityId == playerId.Value)
+            .OrderByPopularity()
+            .Take(limit)
             .ToRoomInfoSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<int> GetRoomCountByOwnerAsync(
+        PlayerId playerId,
+        CancellationToken ct = default
+    )
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        return await BuildRoomQuery(dbCtx)
+            .CountAsync(x => x.PlayerEntityId == playerId.Value, ct)
             .ConfigureAwait(false);
     }
 
     public async Task<List<RoomInfoSnapshot>> GetRoomsByCategoryAsync(
         int categoryId,
+        int limit,
         CancellationToken ct = default
     )
     {
@@ -95,11 +132,14 @@ public sealed class NavigatorProvider(
 
         return await BuildRoomQuery(dbCtx)
             .Where(x => x.NavigatorCategoryEntityId == categoryId)
+            .OrderByPopularity()
+            .Take(limit)
             .ToRoomInfoSnapshotsAsync(ct)
             .ConfigureAwait(false);
     }
 
     public async Task<List<RoomInfoSnapshot>> GetAdvertisedRoomsAsync(
+        int limit,
         CancellationToken ct = default
     )
     {
@@ -113,12 +153,39 @@ public sealed class NavigatorProvider(
             .Where(x =>
                 dbCtx.RoomAdvertisements.Any(a => a.RoomEntityId == x.Id && a.ExpiresAt > now)
             )
+            .OrderByPopularity()
+            .Take(limit)
+            .ToRoomInfoSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<List<RoomInfoSnapshot>> GetRoomsByEventCategoryAsync(
+        int eventCategoryId,
+        int limit,
+        CancellationToken ct = default
+    )
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        DateTime now = DateTime.UtcNow;
+
+        return await BuildRoomQuery(dbCtx)
+            .Where(x =>
+                dbCtx.RoomAdvertisements.Any(a =>
+                    a.RoomEntityId == x.Id && a.CategoryId == eventCategoryId && a.ExpiresAt > now
+                )
+            )
+            .OrderByPopularity()
+            .Take(limit)
             .ToRoomInfoSnapshotsAsync(ct)
             .ConfigureAwait(false);
     }
 
     public async Task<List<RoomInfoSnapshot>> GetRoomsByNameAsync(
         string name,
+        int limit,
         CancellationToken ct = default
     )
     {
@@ -130,12 +197,15 @@ public sealed class NavigatorProvider(
 
         return await BuildRoomQuery(dbCtx)
             .Where(x => x.Name.ToLower().Contains(lower))
+            .OrderByPopularity()
+            .Take(limit)
             .ToRoomInfoSnapshotsAsync(ct)
             .ConfigureAwait(false);
     }
 
     public async Task<List<RoomInfoSnapshot>> GetRoomsByOwnerNameAsync(
         string ownerName,
+        int limit,
         CancellationToken ct = default
     )
     {
@@ -147,12 +217,15 @@ public sealed class NavigatorProvider(
 
         return await BuildRoomQuery(dbCtx)
             .Where(x => x.PlayerEntity.Name.ToLower().Contains(lower))
+            .OrderByPopularity()
+            .Take(limit)
             .ToRoomInfoSnapshotsAsync(ct)
             .ConfigureAwait(false);
     }
 
     public async Task<List<RoomInfoSnapshot>> GetRoomsByTagAsync(
         string tag,
+        int limit,
         CancellationToken ct = default
     )
     {
@@ -162,12 +235,40 @@ public sealed class NavigatorProvider(
 
         return await BuildRoomQuery(dbCtx)
             .Where(x => x.Tag1 == tag || x.Tag2 == tag)
+            .OrderByPopularity()
+            .Take(limit)
+            .ToRoomInfoSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<List<RoomInfoSnapshot>> SearchRoomsAsync(
+        string text,
+        int limit,
+        CancellationToken ct = default
+    )
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        string lower = text.ToLowerInvariant();
+
+        return await BuildRoomQuery(dbCtx)
+            .Where(x =>
+                x.Name.ToLower().Contains(lower)
+                || x.PlayerEntity.Name.ToLower().Contains(lower)
+                || (x.Tag1 != null && x.Tag1.ToLower().Contains(lower))
+                || (x.Tag2 != null && x.Tag2.ToLower().Contains(lower))
+            )
+            .OrderByPopularity()
+            .Take(limit)
             .ToRoomInfoSnapshotsAsync(ct)
             .ConfigureAwait(false);
     }
 
     public async Task<List<RoomInfoSnapshot>> GetRoomsByGroupNameAsync(
         string groupName,
+        int limit,
         CancellationToken ct = default
     )
     {
@@ -183,7 +284,8 @@ public sealed class NavigatorProvider(
                 && x.GroupEntity!.DeletedAt == null
                 && x.GroupEntity.Name.ToLower().Contains(lower)
             )
-            .OrderByDescending(x => x.UsersNow)
+            .OrderByPopularity()
+            .Take(limit)
             .ToRoomInfoSnapshotsAsync(ct)
             .ConfigureAwait(false);
     }
@@ -221,7 +323,7 @@ public sealed class NavigatorProvider(
 
         DateTime now = DateTime.UtcNow;
 
-        IQueryable<Database.Entities.Room.RoomEntity> query = BuildRoomQuery(dbCtx)
+        IQueryable<RoomEntity> query = BuildRoomQuery(dbCtx)
             .Where(x =>
                 x.IsStaffPick
                 || dbCtx.RoomAdvertisements.Any(a => a.RoomEntityId == x.Id && a.ExpiresAt > now)
@@ -241,6 +343,32 @@ public sealed class NavigatorProvider(
         }
 
         return await query.ToRoomInfoSnapshotsAsync(ct).ConfigureAwait(false);
+    }
+
+    public async Task<
+        ImmutableDictionary<int, NavigatorCategoryVisitorCount>
+    > GetCategoryVisitorCountsAsync(CancellationToken ct = default)
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        List<CategoryVisitorRow> rows = await BuildRoomQuery(dbCtx)
+            .Where(x => x.NavigatorCategoryEntityId != null)
+            .GroupBy(x => x.NavigatorCategoryEntityId!.Value)
+            .Select(g => new CategoryVisitorRow
+            {
+                CategoryId = g.Key,
+                CurrentUserCount = g.Sum(x => x.UsersNow),
+                MaxUserCount = g.Sum(x => x.PlayersMax),
+            })
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+
+        return rows.ToImmutableDictionary(
+            x => x.CategoryId,
+            x => new NavigatorCategoryVisitorCount(x.CurrentUserCount, x.MaxUserCount)
+        );
     }
 
     public async Task<ImmutableArray<NavigatorEventCategorySnapshot>> GetEventCategoriesAsync(
@@ -264,6 +392,7 @@ public sealed class NavigatorProvider(
 
     public async Task<List<RoomInfoSnapshot>> GetFavoriteRoomsAsync(
         PlayerId playerId,
+        int limit,
         CancellationToken ct = default
     )
     {
@@ -277,11 +406,16 @@ public sealed class NavigatorProvider(
                     f.PlayerEntityId == playerId.Value && f.RoomEntityId == x.Id
                 )
             )
+            .OrderByPopularity()
+            .Take(limit)
             .ToRoomInfoSnapshotsAsync(ct)
             .ConfigureAwait(false);
     }
 
-    public async Task<List<RoomInfoSnapshot>> GetGuildBaseRoomsAsync(CancellationToken ct = default)
+    public async Task<List<RoomInfoSnapshot>> GetGuildBaseRoomsAsync(
+        int limit,
+        CancellationToken ct = default
+    )
     {
         await using VortexDbContext dbCtx = await _dbCtxFactory
             .CreateDbContextAsync(ct)
@@ -289,13 +423,15 @@ public sealed class NavigatorProvider(
 
         return await BuildRoomQuery(dbCtx)
             .Where(x => x.GroupEntityId != null)
-            .OrderByDescending(x => x.UsersNow)
+            .OrderByPopularity()
+            .Take(limit)
             .ToRoomInfoSnapshotsAsync(ct)
             .ConfigureAwait(false);
     }
 
     public async Task<List<RoomInfoSnapshot>> GetMyGuildBaseRoomsAsync(
         PlayerId playerId,
+        int limit,
         CancellationToken ct = default
     )
     {
@@ -312,7 +448,183 @@ public sealed class NavigatorProvider(
                     && m.DeletedAt == null
                 )
             )
-            .OrderByDescending(x => x.UsersNow)
+            .OrderByPopularity()
+            .Take(limit)
+            .ToRoomInfoSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<List<RoomInfoSnapshot>> GetVisitedRoomsAsync(
+        PlayerId playerId,
+        bool byFrequency,
+        int limit,
+        CancellationToken ct = default
+    )
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        // One row per visit, so collapse to one entry per room first and rank the groups. Ranking
+        // the raw log instead would return the same room `limit` times for a frequent visitor.
+        IQueryable<VisitedRoom> grouped = dbCtx
+            .RoomEntryLogs.AsNoTracking()
+            .Where(x => x.PlayerEntityId == playerId.Value && x.DeletedAt == null)
+            .GroupBy(x => x.RoomEntityId)
+            .Select(g => new VisitedRoom
+            {
+                RoomId = g.Key,
+                Visits = g.Count(),
+                LastVisitedAt = g.Max(x => x.CreatedAt),
+            });
+
+        List<int> roomIds = await (
+            byFrequency
+                ? grouped.OrderByDescending(x => x.Visits).ThenByDescending(x => x.LastVisitedAt)
+                : grouped.OrderByDescending(x => x.LastVisitedAt).ThenByDescending(x => x.Visits)
+        )
+            .Take(limit)
+            .Select(x => x.RoomId)
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+
+        return await LoadRoomsPreservingOrderAsync(dbCtx, roomIds, ct).ConfigureAwait(false);
+    }
+
+    public async Task<List<RoomInfoSnapshot>> GetRoomsWithRightsAsync(
+        PlayerId playerId,
+        int limit,
+        CancellationToken ct = default
+    )
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        return await BuildRoomQuery(dbCtx)
+            .Where(x =>
+                x.PlayerEntityId != playerId.Value
+                && dbCtx.RoomRights.Any(r =>
+                    r.RoomEntityId == x.Id
+                    && r.PlayerEntityId == playerId.Value
+                    && r.DeletedAt == null
+                )
+            )
+            .OrderByPopularity()
+            .Take(limit)
+            .ToRoomInfoSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<List<RoomInfoSnapshot>> GetFriendsRoomsAsync(
+        PlayerId playerId,
+        int limit,
+        CancellationToken ct = default
+    )
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        // messenger_friends rows are written in both directions on accept, so the player's own
+        // rows are the whole friend set -- no OR on the reverse column needed.
+        return await BuildRoomQuery(dbCtx)
+            .Where(x =>
+                dbCtx.MessengerFriends.Any(f =>
+                    f.PlayerEntityId == playerId.Value
+                    && f.FriendPlayerEntityId == x.PlayerEntityId
+                    && f.DeletedAt == null
+                )
+            )
+            .OrderByPopularity()
+            .Take(limit)
+            .ToRoomInfoSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<List<RoomInfoSnapshot>> GetRoomsByIdsAsync(
+        IReadOnlyCollection<int> roomIds,
+        CancellationToken ct = default
+    )
+    {
+        if (roomIds.Count == 0)
+        {
+            return [];
+        }
+
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        return await BuildRoomQuery(dbCtx)
+            .Where(x => roomIds.Contains(x.Id))
+            .OrderByPopularity()
+            .ToRoomInfoSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<List<RoomInfoSnapshot>> GetHighestScoreRoomsAsync(
+        int limit,
+        CancellationToken ct = default
+    )
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        return await BuildRoomQuery(dbCtx)
+            .OrderByDescending(x => x.Score)
+            .ThenByDescending(x => x.UsersNow)
+            .ThenBy(x => x.Id)
+            .Take(limit)
+            .ToRoomInfoSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<List<RoomInfoSnapshot>> GetStaffPickedRoomsAsync(
+        int limit,
+        CancellationToken ct = default
+    )
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        return await BuildRoomQuery(dbCtx)
+            .Where(x => x.IsStaffPick)
+            .OrderByPopularity()
+            .Take(limit)
+            .ToRoomInfoSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    public async Task<List<RoomInfoSnapshot>> GetRecommendedRoomsAsync(
+        PlayerId playerId,
+        int limit,
+        CancellationToken ct = default
+    )
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        // There is no recommendation engine and inventing one would be worse than being explicit:
+        // "recommended" here means editorially picked or well rated, minus what the player already
+        // knows about (their own rooms and their favourites). Staff picks rank first so a hotel
+        // that curates gets its curation honoured.
+        return await BuildRoomQuery(dbCtx)
+            .Where(x =>
+                x.PlayerEntityId != playerId.Value
+                && (x.IsStaffPick || x.Score > 0)
+                && !dbCtx.PlayerFavouriteRooms.Any(f =>
+                    f.PlayerEntityId == playerId.Value && f.RoomEntityId == x.Id
+                )
+            )
+            .OrderByDescending(x => x.IsStaffPick)
+            .ThenByDescending(x => x.Score)
+            .ThenByDescending(x => x.UsersNow)
+            .ThenBy(x => x.Id)
+            .Take(limit)
             .ToRoomInfoSnapshotsAsync(ct)
             .ConfigureAwait(false);
     }
@@ -340,6 +652,7 @@ public sealed class NavigatorProvider(
                 QuickLinks =
                 [
                     .. (x.QuickLinks ?? [])
+                        .Where(q => q.DeletedAt == null)
                         .OrderBy(q => q.OrderNum)
                         .Select(q => new NavigatorQuickLinkSnapshot
                         {
@@ -353,12 +666,16 @@ public sealed class NavigatorProvider(
             }),
         ];
 
+        // A quick link and its parent context can legitimately share a search code (the context row
+        // is the "all of this" entry), so collapse duplicates instead of letting ToImmutableDictionary
+        // throw and take the whole reference-data load down with it.
         _queryTypeBySearchCode = _topLevelContexts
             .SelectMany(ctx =>
                 ctx.QuickLinks.Select(ql => (ql.SearchCode, ql.QueryType))
                     .Append((ctx.SearchCode, ctx.QueryType))
             )
-            .ToImmutableDictionary(x => x.SearchCode, x => x.QueryType);
+            .GroupBy(x => x.SearchCode)
+            .ToImmutableDictionary(g => g.Key, g => g.First().QueryType);
 
         List<NavigatorFlatCategoryEntity> flatCatEntities = await dbCtx
             .NavigatorFlatCategories.AsNoTracking()
@@ -389,15 +706,66 @@ public sealed class NavigatorProvider(
         );
     }
 
-    private static IQueryable<Database.Entities.Room.RoomEntity> BuildRoomQuery(
-        VortexDbContext dbCtx
-    ) => dbCtx.Rooms.AsNoTracking().Where(x => x.DeletedAt == null);
+    /// <summary>Fetches rooms by id and restores <paramref name="orderedRoomIds"/>' order, which
+    /// the <c>WHERE id IN (...)</c> round trip does not preserve. Rooms that have since been
+    /// deleted simply drop out.</summary>
+    private static async Task<List<RoomInfoSnapshot>> LoadRoomsPreservingOrderAsync(
+        VortexDbContext dbCtx,
+        List<int> orderedRoomIds,
+        CancellationToken ct
+    )
+    {
+        if (orderedRoomIds.Count == 0)
+        {
+            return [];
+        }
+
+        List<RoomInfoSnapshot> rooms = await BuildRoomQuery(dbCtx)
+            .Where(x => orderedRoomIds.Contains(x.Id))
+            .ToRoomInfoSnapshotsAsync(ct)
+            .ConfigureAwait(false);
+
+        Dictionary<int, int> rankByRoomId = new(orderedRoomIds.Count);
+
+        for (int i = 0; i < orderedRoomIds.Count; i++)
+        {
+            rankByRoomId.TryAdd(orderedRoomIds[i], i);
+        }
+
+        return [.. rooms.OrderBy(x => rankByRoomId.GetValueOrDefault(x.RoomId, int.MaxValue))];
+    }
+
+    private static IQueryable<RoomEntity> BuildRoomQuery(VortexDbContext dbCtx) =>
+        dbCtx.Rooms.AsNoTracking().Where(x => x.DeletedAt == null);
+
+    /// <summary>Projection shape for the visit-log grouping. Plain settable properties: this type
+    /// only ever exists inside an EF expression tree.</summary>
+    private sealed class VisitedRoom
+    {
+        public int RoomId { get; set; }
+        public int Visits { get; set; }
+        public DateTime LastVisitedAt { get; set; }
+    }
+
+    /// <summary>Projection shape for the per-category population rollup.</summary>
+    private sealed class CategoryVisitorRow
+    {
+        public int CategoryId { get; set; }
+        public int CurrentUserCount { get; set; }
+        public int MaxUserCount { get; set; }
+    }
 }
 
 file static class RoomQueryExtensions
 {
+    /// <summary>Busiest first, with a stable tiebreak so a capped result set does not reshuffle
+    /// between two identical searches.</summary>
+    public static IOrderedQueryable<RoomEntity> OrderByPopularity(
+        this IQueryable<RoomEntity> query
+    ) => query.OrderByDescending(x => x.UsersNow).ThenByDescending(x => x.Score).ThenBy(x => x.Id);
+
     public static Task<List<RoomInfoSnapshot>> ToRoomInfoSnapshotsAsync(
-        this IQueryable<Database.Entities.Room.RoomEntity> query,
+        this IQueryable<RoomEntity> query,
         CancellationToken ct
     ) =>
         query

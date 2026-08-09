@@ -17,7 +17,7 @@ public class MyFrequentRoomHistorySearchMessageHandler(
     IGrainFactory grainFactory
 ) : IMessageHandler<MyFrequentRoomHistorySearchMessage>
 {
-    private const string SearchCode = "history_freq";
+    private const string SearchCode = NavigatorSearchCodes.HistoryFrequent;
 
     private readonly INavigatorService _navigatorService = navigatorService;
     private readonly IGrainFactory _grainFactory = grainFactory;

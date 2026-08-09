@@ -12,7 +12,7 @@ public class GuildBaseSearchMessageHandler(
     IGrainFactory grainFactory
 ) : IMessageHandler<GuildBaseSearchMessage>
 {
-    private const string SearchCode = "groups";
+    private const string SearchCode = NavigatorSearchCodes.GuildBases;
 
     public ValueTask HandleAsync(
         GuildBaseSearchMessage message,

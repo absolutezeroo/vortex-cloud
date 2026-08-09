@@ -12,7 +12,7 @@ public class RoomAdSearchMessageHandler(
     IGrainFactory grainFactory
 ) : IMessageHandler<RoomAdSearchMessage>
 {
-    private const string SearchCode = "new_ads";
+    private const string SearchCode = NavigatorSearchCodes.RoomAds;
 
     public ValueTask HandleAsync(
         RoomAdSearchMessage message,

@@ -17,7 +17,7 @@ public class MyFavouriteRoomsSearchMessageHandler(
     IGrainFactory grainFactory
 ) : IMessageHandler<MyFavouriteRoomsSearchMessage>
 {
-    private const string SearchCode = "myf";
+    private const string SearchCode = NavigatorSearchCodes.Favourites;
 
     private readonly INavigatorService _navigatorService = navigatorService;
     private readonly IGrainFactory _grainFactory = grainFactory;

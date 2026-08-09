@@ -17,7 +17,7 @@ public class RoomTextSearchMessageHandler(
     IGrainFactory grainFactory
 ) : IMessageHandler<RoomTextSearchMessage>
 {
-    private const string SearchCode = "query";
+    private const string SearchCode = NavigatorSearchCodes.TextSearch;
 
     private readonly INavigatorService _navigatorService = navigatorService;
     private readonly IGrainFactory _grainFactory = grainFactory;

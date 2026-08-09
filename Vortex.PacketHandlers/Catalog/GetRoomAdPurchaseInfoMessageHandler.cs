@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
+using Vortex.PacketHandlers.Configuration;
 using Vortex.Primitives.Messages.Incoming.Catalog;
 using Vortex.Primitives.Messages.Outgoing.Catalog;
 using Vortex.Primitives.Navigator;
@@ -38,8 +39,14 @@ public class GetRoomAdPurchaseInfoMessageHandler(
             .GetClubSubscriptionAsync(ct)
             .ConfigureAwait(false);
 
+        // A player cannot own more rooms than this, so it doubles as the cap on the dialog's list.
+        int maxRooms = await grainFactory
+            .GetServerConfigGrain()
+            .GetIntAsync(RoomsConfig.MaxRoomsPerPlayerKey, RoomsConfig.MaxRoomsPerPlayerDefault)
+            .ConfigureAwait(false);
+
         List<RoomInfoSnapshot> ownedRooms = await navigatorProvider
-            .GetRoomsByOwnerAsync(ctx.PlayerId, ct)
+            .GetRoomsByOwnerAsync(ctx.PlayerId, maxRooms, ct)
             .ConfigureAwait(false);
 
         RoomAdRoomEntry[] roomEntries = await Task.WhenAll(

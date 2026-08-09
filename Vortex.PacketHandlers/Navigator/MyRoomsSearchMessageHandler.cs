@@ -17,7 +17,7 @@ public class MyRoomsSearchMessageHandler(
     IGrainFactory grainFactory
 ) : IMessageHandler<MyRoomsSearchMessage>
 {
-    private const string SearchCode = "my";
+    private const string SearchCode = NavigatorSearchCodes.MyRooms;
 
     private readonly INavigatorService _navigatorService = navigatorService;
     private readonly IGrainFactory _grainFactory = grainFactory;

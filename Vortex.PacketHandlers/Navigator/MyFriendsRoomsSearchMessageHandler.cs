@@ -12,7 +12,7 @@ public class MyFriendsRoomsSearchMessageHandler(
     IGrainFactory grainFactory
 ) : IMessageHandler<MyFriendsRoomsSearchMessage>
 {
-    private const string SearchCode = "friends_rooms";
+    private const string SearchCode = NavigatorSearchCodes.FriendsRooms;
 
     public ValueTask HandleAsync(
         MyFriendsRoomsSearchMessage message,

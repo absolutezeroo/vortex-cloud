@@ -12,7 +12,7 @@ public class MyRoomRightsSearchMessageHandler(
     IGrainFactory grainFactory
 ) : IMessageHandler<MyRoomRightsSearchMessage>
 {
-    private const string SearchCode = "with_rights";
+    private const string SearchCode = NavigatorSearchCodes.WithRights;
 
     public ValueTask HandleAsync(
         MyRoomRightsSearchMessage message,

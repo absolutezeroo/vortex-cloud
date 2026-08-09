@@ -17,7 +17,7 @@ public class CompetitionRoomsSearchMessageHandler(
     IGrainFactory grainFactory
 ) : IMessageHandler<CompetitionRoomsSearchMessage>
 {
-    private const string SearchCode = "competition";
+    private const string SearchCode = NavigatorSearchCodes.Competition;
 
     private readonly INavigatorService _navigatorService = navigatorService;
     private readonly IGrainFactory _grainFactory = grainFactory;

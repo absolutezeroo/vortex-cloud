@@ -17,7 +17,7 @@ public class RoomsWhereMyFriendsAreSearchMessageHandler(
     IGrainFactory grainFactory
 ) : IMessageHandler<RoomsWhereMyFriendsAreSearchMessage>
 {
-    private const string SearchCode = "with_friends";
+    private const string SearchCode = NavigatorSearchCodes.WithFriends;
 
     private readonly INavigatorService _navigatorService = navigatorService;
     private readonly IGrainFactory _grainFactory = grainFactory;
