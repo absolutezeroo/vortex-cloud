@@ -58,7 +58,12 @@ public class GetExtendedProfileMessageHandler : IMessageHandler<GetExtendedProfi
                     FriendCount = snapshot.FriendCount,
                     IsFriend = snapshot.IsFriend,
                     IsFriendRequestSent = snapshot.IsFriendRequestSent,
-                    IsOnline = snapshot.IsOnline,
+                    // Hidden wins over online: the client's three icons come off this one byte,
+                    // and a hidden player who also reads as online would show the wrong one.
+                    OnlineStatus =
+                        snapshot.IsHidden ? OnlineStatusCodes.Hidden
+                        : snapshot.IsOnline ? OnlineStatusCodes.Online
+                        : OnlineStatusCodes.Offline,
                     Guilds = guilds,
                     LastAccessSinceInSeconds = snapshot.LastAccessSinceInSeconds,
                     OpenProfileWindow = snapshot.OpenProfileWindow,
@@ -68,6 +73,14 @@ public class GetExtendedProfileMessageHandler : IMessageHandler<GetExtendedProfi
                     StarGemCount = snapshot.StarGemCount,
                     BooleanField26 = snapshot.BooleanField26,
                     BooleanField27 = snapshot.BooleanField27,
+                    // Not persisted yet: `player_badges` stores neither an owner count nor a
+                    // rarity tier, so the badge panel reads zeroes. They are on the wire because
+                    // the client reads all four unconditionally - omitting them truncated the
+                    // packet, which is the worse failure.
+                    TotalBadges = 0,
+                    AchievementLevel = 0,
+                    BadgeRarityCounts = [],
+                    TotalBadgesRank = 0,
                 },
                 ct
             )

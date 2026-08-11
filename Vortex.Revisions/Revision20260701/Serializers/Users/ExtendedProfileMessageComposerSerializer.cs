@@ -20,7 +20,7 @@ internal class ExtendedProfileMessageComposerSerializer(int header)
             .WriteInteger(message.FriendCount)
             .WriteBoolean(message.IsFriend)
             .WriteBoolean(message.IsFriendRequestSent)
-            .WriteBoolean(message.IsOnline)
+            .WriteByte((byte)message.OnlineStatus)
             .WriteInteger(message.Guilds.Count);
 
         foreach (GuildInfoSnapshot guild in message.Guilds)
@@ -36,6 +36,20 @@ internal class ExtendedProfileMessageComposerSerializer(int header)
             .WriteInteger(message.IntegerField24)
             .WriteInteger(message.StarGemCount)
             .WriteBoolean(message.BooleanField26)
-            .WriteBoolean(message.BooleanField27);
+            .WriteBoolean(message.BooleanField27)
+            // The last four reads of WIN63's parser
+            // (unknowns/_SafePkg_1731/_SafeCls_2228.as), which this composer used to stop short
+            // of. The client reads them unconditionally, so leaving them off truncated the packet
+            // rather than merely hiding the badge panel.
+            .WriteInteger(message.TotalBadges)
+            .WriteInteger(message.AchievementLevel)
+            .WriteInteger(message.BadgeRarityCounts.Count);
+
+        foreach (BadgeRarityCount rarity in message.BadgeRarityCounts)
+        {
+            packet.WriteByte((byte)rarity.RarityId).WriteInteger(rarity.Count);
+        }
+
+        packet.WriteInteger(message.TotalBadgesRank);
     }
 }

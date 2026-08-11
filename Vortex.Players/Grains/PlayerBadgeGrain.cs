@@ -38,6 +38,10 @@ internal sealed class PlayerBadgeGrain(
                 .ToListAsync(ct)
                 .ConfigureAwait(true);
 
+            // OwnerCount and BadgeRarityId are left at 0: `player_badges` stores neither, so
+            // there is nothing to read them from yet. They are still on the wire because the
+            // client reads four fields per badge either way -- omitting them desynced the packet,
+            // which is a different and much worse failure than a badge with no rarity tier.
             return entities
                 .Select(b => new PlayerBadgeSnapshot
                 {
