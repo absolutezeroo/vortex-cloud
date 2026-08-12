@@ -1,11 +1,20 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Messages.Incoming.Quest;
+using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Quests;
 
 namespace Vortex.PacketHandlers.Quest;
 
-public class FriendRequestQuestCompleteMessageHandler
+/// <summary>
+/// The client reports its "ask for a friend" quest step: <c>HabboFriendList.askForAFriend()</c> sends
+/// this immediately after the friend request itself, with an empty body. It advances on the asking,
+/// not on the answer — a quest that should only count accepted friends uses
+/// <see cref="QuestTypes.FriendListSize"/> instead.
+/// </summary>
+public class FriendRequestQuestCompleteMessageHandler(IGrainFactory grainFactory)
     : IMessageHandler<FriendRequestQuestCompleteMessage>
 {
     public async ValueTask HandleAsync(
@@ -14,6 +23,14 @@ public class FriendRequestQuestCompleteMessageHandler
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        if (ctx.PlayerId <= 0)
+        {
+            return;
+        }
+
+        await grainFactory
+            .GetPlayerQuestGrain(ctx.PlayerId)
+            .ProgressAsync(QuestTypes.FriendRequestSent, 1, ct)
+            .ConfigureAwait(false);
     }
 }

@@ -13,9 +13,11 @@ using Vortex.Players.Quests;
 using Vortex.Primitives.Messages.Outgoing.Quest;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
+using Vortex.Primitives.Players.Snapshots;
 using Vortex.Primitives.Quests;
 using Vortex.Primitives.Quests.Grains;
 using Vortex.Primitives.Quests.Snapshots;
+using Vortex.Primitives.Server.Grains;
 
 namespace Vortex.Players.Grains;
 
@@ -38,6 +40,11 @@ internal sealed class PlayerQuestGrain(
     /// the main campaign list).</summary>
     private const string DailyCampaign = "daily";
 
+    /// <summary>Admin-editable knobs for the landing-view "players online" goal.</summary>
+    private const string ConcurrentUsersGoalEnabledKey = "quests.concurrent_users_goal.enabled";
+    private const string ConcurrentUsersGoalCountKey = "quests.concurrent_users_goal.user_count";
+    private const string ConcurrentUsersGoalBadgeKey = "quests.concurrent_users_goal.reward_badge";
+
     private int PlayerId => (int)this.GetPrimaryKeyLong();
 
     public async Task<QuestListSnapshot> GetQuestsAsync(bool openWindow, CancellationToken ct)
@@ -45,6 +52,146 @@ internal sealed class PlayerQuestGrain(
         ImmutableArray<QuestSnapshot> all = await BuildAllAsync(ct).ConfigureAwait(true);
 
         return new QuestListSnapshot { Quests = BuildListQuests(all), OpenWindow = openWindow };
+    }
+
+    public async Task SendConcurrentUsersGoalAsync(int onlineCount, CancellationToken ct)
+    {
+        (bool enabled, int goal, string badgeCode) = await ReadConcurrentGoalConfigAsync()
+            .ConfigureAwait(true);
+
+        bool rewarded = await HasBadgeAsync(badgeCode, ct).ConfigureAwait(true);
+
+        await SendConcurrentUsersGoalAsync(
+                ConcurrentUsersGoalRule.Resolve(enabled, goal, onlineCount, rewarded),
+                onlineCount,
+                goal
+            )
+            .ConfigureAwait(true);
+    }
+
+    public async Task ClaimConcurrentUsersRewardAsync(int onlineCount, CancellationToken ct)
+    {
+        (bool enabled, int goal, string badgeCode) = await ReadConcurrentGoalConfigAsync()
+            .ConfigureAwait(true);
+
+        bool rewarded = await HasBadgeAsync(badgeCode, ct).ConfigureAwait(true);
+
+        if (ConcurrentUsersGoalRule.CanClaim(enabled, goal, onlineCount, rewarded))
+        {
+            await _grainFactory
+                .GetInventoryGrain(PlayerId)
+                .GrantBadgeAsync(badgeCode, ct)
+                .ConfigureAwait(true);
+
+            rewarded = true;
+
+            _logger.LogInformation(
+                "Player {PlayerId} claimed the concurrent-users goal reward ({BadgeCode}) at {OnlineCount} online.",
+                PlayerId,
+                badgeCode,
+                onlineCount
+            );
+        }
+
+        // Answered either way: a refused claim (too few online, or a second click) must still leave
+        // the widget showing the truth rather than spinning on the button it just pressed.
+        await SendConcurrentUsersGoalAsync(
+                ConcurrentUsersGoalRule.Resolve(enabled, goal, onlineCount, rewarded),
+                onlineCount,
+                goal
+            )
+            .ConfigureAwait(true);
+    }
+
+    private Task SendConcurrentUsersGoalAsync(
+        ConcurrentUsersGoalState state,
+        int onlineCount,
+        int goal
+    ) =>
+        Presence.SendComposerAsync(
+            new ConcurrentUsersGoalProgressMessageComposer
+            {
+                State = state,
+                UserCount = onlineCount,
+                UserCountGoal = goal,
+            }
+        );
+
+    /// <summary>
+    /// The goal's admin-editable knobs. They live in the server-config grain rather than appsettings
+    /// so an operator can raise the target mid-event without a restart.
+    /// </summary>
+    private async Task<(bool Enabled, int Goal, string BadgeCode)> ReadConcurrentGoalConfigAsync()
+    {
+        IServerConfigGrain config = _grainFactory.GetServerConfigGrain();
+
+        bool enabled = await config
+            .GetBoolAsync(ConcurrentUsersGoalEnabledKey, false)
+            .ConfigureAwait(true);
+        int goal = await config.GetIntAsync(ConcurrentUsersGoalCountKey, 0).ConfigureAwait(true);
+        string badgeCode =
+            await config.GetValueAsync(ConcurrentUsersGoalBadgeKey).ConfigureAwait(true)
+            ?? string.Empty;
+
+        // No badge configured means there is nothing to hand out, so the goal is not really on --
+        // otherwise the button would claim a reward that does not exist and never flip to rewarded.
+        return (enabled && badgeCode.Length > 0, goal, badgeCode);
+    }
+
+    private async Task<bool> HasBadgeAsync(string badgeCode, CancellationToken ct)
+    {
+        if (badgeCode.Length == 0)
+        {
+            return false;
+        }
+
+        ImmutableArray<PlayerBadgeSnapshot> badges = await _grainFactory
+            .GetPlayerBadgeGrain(PlayerId)
+            .GetBadgesAsync(ct)
+            .ConfigureAwait(true);
+
+        return badges.Any(b => string.Equals(b.BadgeCode, badgeCode, StringComparison.Ordinal));
+    }
+
+    public async Task StartCampaignAsync(string campaignCode, CancellationToken ct)
+    {
+        ImmutableArray<QuestSnapshot> all = await BuildAllAsync(ct).ConfigureAwait(true);
+
+        // The window opens on the full list -- the client renders every campaign and highlights the
+        // one it asked for, so answering with the campaign alone would empty the rest of the window.
+        await Presence
+            .SendComposerAsync(
+                new QuestsMessageComposer { Quests = BuildListQuests(all), OpenWindow = true }
+            )
+            .ConfigureAwait(true);
+
+        List<QuestSnapshot> campaign =
+        [
+            .. all.Where(q =>
+                !q.Seasonal
+                && q.CampaignCode.Equals(campaignCode, StringComparison.OrdinalIgnoreCase)
+            ),
+        ];
+
+        if (campaign.Count == 0)
+        {
+            _logger.LogDebug(
+                "Player {PlayerId} asked to start campaign {CampaignCode}, which has no quests.",
+                PlayerId,
+                campaignCode
+            );
+
+            return;
+        }
+
+        // The tracker sets "open details for the next quest" just before sending this, so it wants
+        // the campaign's current quest pushed as well. Deliberately NOT accepted here: accepting is
+        // the player's own click, and auto-accepting would start a timer they never asked for.
+        QuestSnapshot current = SelectVisibleQuest(campaign.GroupBy(q => q.CampaignCode).First());
+
+        await Presence
+            .SendComposerAsync(new QuestMessageComposer { Quest = current })
+            .ConfigureAwait(true);
     }
 
     public async Task<QuestListSnapshot> GetSeasonalQuestsAsync(CancellationToken ct)

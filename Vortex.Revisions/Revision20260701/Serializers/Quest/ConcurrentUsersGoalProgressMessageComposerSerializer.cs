@@ -3,6 +3,7 @@ using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Quest;
 
+/// <summary>State, current count, target — the three ints the client's parser reads in that order.</summary>
 internal class ConcurrentUsersGoalProgressMessageComposerSerializer(int header)
     : AbstractSerializer<ConcurrentUsersGoalProgressMessageComposer>(header)
 {
@@ -11,6 +12,8 @@ internal class ConcurrentUsersGoalProgressMessageComposerSerializer(int header)
         ConcurrentUsersGoalProgressMessageComposer message
     )
     {
-        //
+        packet.WriteInteger((int)message.State);
+        packet.WriteInteger(message.UserCount);
+        packet.WriteInteger(message.UserCountGoal);
     }
 }

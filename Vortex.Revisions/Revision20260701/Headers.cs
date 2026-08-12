@@ -269,7 +269,7 @@ internal static class MessageEvent
     public const int GetSeasonalQuestsOnlyMessageEvent = 1236; // shape+AS3-verified: HabboQuestEngine::requestSeasonalQuests() (_SafeCls_1847)
     public const int OpenQuestTrackerMessageEvent = 588; // AS3-verified (old-revision trace): _SafeCls_2973 -> onNextQuest() still exists in current revision at 588
     public const int RejectQuestMessageEvent = 20; // AS3-verified (direct read, both revisions): QuestDetails::onCancelQuest() -> _SafeCls_3635
-    public const int StartCampaignMessageEvent = 3969; // UNRESOLVED: collided with MyFavouriteRoomsSearchMessageEvent after the WIN63-202607011411 client header remap; StartCampaignMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
+    public const int StartCampaignMessageEvent = 3969; // AS3-verified 2026-08-12 (direct read): _composers[3969] = outgoing.quest._SafeCls_3041, a one-string composer sent by QuestTracker with getDefaultCampaign() and by CitizenshipVipQuestsPromoExtension with its own campaign name. The earlier "collided with MyFavouriteRoomsSearchMessageEvent" note was wrong: 3969 belongs to the quest package.
     public const int GetHotLooksMessageEvent = 3834; // AS3-verified (ghost fix): HotLooksModel::requestHotLooks()
     public const int ClickFurniMessageEvent = 443;
     public const int CompostPlantMessageEvent = 1989;

@@ -1,12 +1,22 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Messages.Incoming.Quest;
+using Vortex.Primitives.Networking;
+using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Quest;
 
-public class GetConcurrentUsersGoalProgressMessageHandler
-    : IMessageHandler<GetConcurrentUsersGoalProgressMessage>
+/// <summary>
+/// The landing view polls this every 5 seconds while its "players online" widget is visible. The
+/// live count comes from the session gateway here rather than inside the grain: how many people are
+/// connected is a session-layer fact, and passing it in keeps the grain free of host concerns.
+/// </summary>
+public class GetConcurrentUsersGoalProgressMessageHandler(
+    IGrainFactory grainFactory,
+    ISessionGateway sessionGateway
+) : IMessageHandler<GetConcurrentUsersGoalProgressMessage>
 {
     public async ValueTask HandleAsync(
         GetConcurrentUsersGoalProgressMessage message,
@@ -14,6 +24,14 @@ public class GetConcurrentUsersGoalProgressMessageHandler
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        if (ctx.PlayerId <= 0)
+        {
+            return;
+        }
+
+        await grainFactory
+            .GetPlayerQuestGrain(ctx.PlayerId)
+            .SendConcurrentUsersGoalAsync(sessionGateway.GetOnlinePlayerIds().Count, ct)
+            .ConfigureAwait(false);
     }
 }

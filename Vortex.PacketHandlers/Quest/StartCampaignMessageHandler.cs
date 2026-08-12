@@ -1,11 +1,18 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Messages.Incoming.Quest;
+using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Quest;
 
-public class StartCampaignMessageHandler : IMessageHandler<StartCampaignMessage>
+/// <summary>
+/// "Open the quest window on this campaign." The grain owns the reply — it pushes the list and the
+/// campaign's current quest itself.
+/// </summary>
+public class StartCampaignMessageHandler(IGrainFactory grainFactory)
+    : IMessageHandler<StartCampaignMessage>
 {
     public async ValueTask HandleAsync(
         StartCampaignMessage message,
@@ -13,6 +20,14 @@ public class StartCampaignMessageHandler : IMessageHandler<StartCampaignMessage>
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        if (ctx.PlayerId <= 0 || string.IsNullOrWhiteSpace(message.CampaignCode))
+        {
+            return;
+        }
+
+        await grainFactory
+            .GetPlayerQuestGrain(ctx.PlayerId)
+            .StartCampaignAsync(message.CampaignCode, ct)
+            .ConfigureAwait(false);
     }
 }

@@ -13,6 +13,13 @@ public static class QuestTypes
     /// <summary>The player's friend list grew (an accepted friend request, both sides).</summary>
     public const string FriendListSize = "FriendListSize";
 
+    /// <summary>
+    /// The player sent a friend request. Distinct from <see cref="FriendListSize"/>, which needs the
+    /// other side to accept: this one advances on the asking alone, which is what the client's own
+    /// "ask for a friend" quest step reports.
+    /// </summary>
+    public const string FriendRequestSent = "FriendRequestSent";
+
     /// <summary>The player changed their avatar figure (look).</summary>
     public const string AvatarLooks = "AvatarLooks";
 
