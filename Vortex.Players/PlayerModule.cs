@@ -59,6 +59,13 @@ public sealed class PlayerModule : IHostPluginModule
         services.AddSingleton<IReferenceDataProvider>(sp =>
             (IReferenceDataProvider)sp.GetRequiredService<IPetVocalProvider>()
         );
+        services.AddSingleton<AccountLevelProvider>();
+        services.AddSingleton<IAccountLevelProvider>(sp =>
+            sp.GetRequiredService<AccountLevelProvider>()
+        );
+        services.AddSingleton<IReferenceDataProvider>(sp =>
+            sp.GetRequiredService<AccountLevelProvider>()
+        );
         services.AddSingleton<IBuildersClubService, BuildersClubService>();
         services.AddSingleton<IQuestAdminService, QuestAdminService>();
         services.AddSingleton<IPollAdminService, PollAdminService>();

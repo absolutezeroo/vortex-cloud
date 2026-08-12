@@ -241,6 +241,8 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<PlayerQuestEntity> PlayerQuests { get; init; } = null!;
 
+    public DbSet<AccountLevelEntity> AccountLevels { get; init; } = null!;
+
     public DbSet<DailyTaskEntity> DailyTasks { get; init; } = null!;
 
     public DbSet<DailyTaskRewardEntity> DailyTaskRewards { get; init; } = null!;

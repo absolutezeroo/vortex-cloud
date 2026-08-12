@@ -8,12 +8,14 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
+using Vortex.Players.Achievements;
 using Vortex.Players.Configuration;
 using Vortex.Players.Grains;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Grains;
+using Vortex.Primitives.Players.Providers;
 using Vortex.Primitives.Players.Wallet;
 using Vortex.Tests.Support;
 using Xunit;
@@ -87,7 +89,10 @@ public sealed class ClubPurchaseRefundTests
                 BuildGrainFactory(),
                 FakeProxy.Create<IEventPublisher>(_ => null),
                 NullLogger<PlayerGrain>.Instance,
-                Options.Create(new ClubConfig())
+                Options.Create(new ClubConfig()),
+                // The ladder is irrelevant to a club purchase; the floor level keeps the grain
+                // constructible without dragging reference data into this test.
+                FakeProxy.Create<IAccountLevelProvider>(_ => AccountLevelLadder.FloorLevel)
             );
         }
 

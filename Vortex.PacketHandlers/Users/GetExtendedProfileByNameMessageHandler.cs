@@ -41,7 +41,7 @@ public class GetExtendedProfileByNameMessageHandler
 
         PlayerExtendedProfileSnapshot snapshot = await _grainFactory
             .GetPlayerGrain(playerId.Value)
-            .GetExtendedProfileSnapshotAsync(ct)
+            .GetExtendedProfileSnapshotAsync(ctx.PlayerId, ct)
             .ConfigureAwait(false);
 
         // Guild membership lives in the group directory, not on the player grain, so the profile's
@@ -78,12 +78,12 @@ public class GetExtendedProfileByNameMessageHandler
                     StarGemCount = snapshot.StarGemCount,
                     BooleanField26 = snapshot.BooleanField26,
                     BooleanField27 = snapshot.BooleanField27,
-                    // Not persisted yet: `player_badges` stores neither an owner count nor a
-                    // rarity tier, so the badge panel reads zeroes. They are on the wire because
-                    // the client reads all four unconditionally - omitting them truncated the
-                    // packet, which is the worse failure.
-                    TotalBadges = 0,
-                    AchievementLevel = 0,
+                    // The two counts are real. The rarity breakdown and the rank are still zero:
+                    // `player_badges` stores neither a rarity tier nor an owner count, so there is
+                    // nothing to compute them from. They stay on the wire because the client reads
+                    // all four unconditionally - omitting them truncates the packet.
+                    TotalBadges = snapshot.TotalBadges,
+                    AchievementLevel = snapshot.AchievementLevel,
                     BadgeRarityCounts = [],
                     TotalBadgesRank = 0,
                 },

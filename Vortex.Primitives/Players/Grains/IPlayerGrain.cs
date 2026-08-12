@@ -58,7 +58,13 @@ public interface IPlayerGrain : IGrainWithIntegerKey
     /// </summary>
     public Task SetFavouriteGroupAsync(int groupId, CancellationToken ct);
 
+    /// <summary>
+    /// The profile of this player as seen by <paramref name="viewerId"/>. The viewer is a parameter
+    /// because "is this my friend" and "have I already asked" are relationships, not properties of
+    /// the player being looked at — they were hardcoded false for want of it.
+    /// </summary>
     public Task<PlayerExtendedProfileSnapshot> GetExtendedProfileSnapshotAsync(
+        PlayerId viewerId,
         CancellationToken ct
     );
 

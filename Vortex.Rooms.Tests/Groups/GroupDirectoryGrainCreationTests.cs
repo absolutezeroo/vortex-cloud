@@ -439,6 +439,7 @@ public sealed class GroupDirectoryGrainCreationTests
         }
 
         public Task<PlayerExtendedProfileSnapshot> GetExtendedProfileSnapshotAsync(
+            PlayerId viewerId,
             CancellationToken ct
         )
         {

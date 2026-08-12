@@ -64,4 +64,15 @@ public sealed record PlayerExtendedProfileSnapshot
 
     [Id(18)]
     public required bool BooleanField27 { get; init; }
+
+    /// <summary>How many badges the player owns.</summary>
+    [Id(23)]
+    public int TotalBadges { get; init; }
+
+    /// <summary>
+    /// How many achievement levels the player has cleared — the number the client shows beside the
+    /// score, distinct from <see cref="AccountLevel"/>, which is the profile's own ladder.
+    /// </summary>
+    [Id(24)]
+    public int AchievementLevel { get; init; }
 }

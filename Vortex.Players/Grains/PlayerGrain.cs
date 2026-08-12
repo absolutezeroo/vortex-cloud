@@ -21,6 +21,7 @@ using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Grains;
+using Vortex.Primitives.Players.Providers;
 using Vortex.Primitives.Players.Wallet;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Server.Grains;
@@ -34,6 +35,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
     private readonly IEventPublisher _events;
     private readonly IGrainFactory _grainFactory;
     private readonly ILogger<PlayerGrain> _logger;
+    private readonly IAccountLevelProvider _accountLevels;
 
     private readonly PlayerLiveState _state;
 
@@ -42,7 +44,8 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         IGrainFactory grainFactory,
         IEventPublisher events,
         ILogger<PlayerGrain> logger,
-        IOptions<ClubConfig> clubConfig
+        IOptions<ClubConfig> clubConfig,
+        IAccountLevelProvider accountLevels
     )
     {
         _dbCtxFactory = dbCtxFactory;
@@ -50,6 +53,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         _events = events;
         _logger = logger;
         _clubConfig = clubConfig.Value;
+        _accountLevels = accountLevels;
 
         _state = new PlayerLiveState { PlayerId = PlayerId.Parse((int)this.GetPrimaryKeyLong()) };
     }
@@ -278,32 +282,111 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         }
     }
 
-    public Task<PlayerExtendedProfileSnapshot> GetExtendedProfileSnapshotAsync(CancellationToken ct)
+    public async Task<PlayerExtendedProfileSnapshot> GetExtendedProfileSnapshotAsync(
+        PlayerId viewerId,
+        CancellationToken ct
+    )
     {
-        return Task.FromResult(
-            new PlayerExtendedProfileSnapshot
-            {
-                UserId = _state.PlayerId,
-                UserName = _state.Name,
-                Figure = _state.Figure,
-                Motto = _state.Motto,
-                CreationDate = _state.CreatedAt.ToString("yyyy-MM-dd"),
-                AchievementScore = _state.AchievementScore,
-                FriendCount = 0,
-                IsFriend = false,
-                IsFriendRequestSent = false,
-                IsOnline = true,
-                Guilds = [],
-                LastAccessSinceInSeconds = 0,
-                OpenProfileWindow = true,
-                IsHidden = false,
-                AccountLevel = 1,
-                IntegerField24 = 0,
-                StarGemCount = 0,
-                BooleanField26 = false,
-                BooleanField27 = false,
-            }
-        );
+        int playerId = _state.PlayerId;
+        int viewer = viewerId;
+
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(true);
+
+        // One context, five counts. Everything below was a constant until now, which is why a
+        // profile showed nobody as a friend and every account as level 1.
+        DateTime? lastLoginAt = await dbCtx
+            .Players.AsNoTracking()
+            .Where(p => p.Id == playerId)
+            .Select(p => p.LastLoginAt)
+            .FirstOrDefaultAsync(ct)
+            .ConfigureAwait(true);
+
+        int friendCount = await dbCtx
+            .MessengerFriends.AsNoTracking()
+            .CountAsync(f => f.PlayerEntityId == playerId, ct)
+            .ConfigureAwait(true);
+
+        // Looking at your own profile is not a friendship; without this the client would offer to
+        // befriend yourself.
+        bool isFriend =
+            viewer != playerId
+            && await dbCtx
+                .MessengerFriends.AsNoTracking()
+                .AnyAsync(f => f.PlayerEntityId == viewer && f.FriendPlayerEntityId == playerId, ct)
+                .ConfigureAwait(true);
+
+        // Only the viewer's own outgoing request counts: a request this player sent to the viewer
+        // is the viewer's to accept, not an "already asked" on this button.
+        bool requestSent =
+            !isFriend
+            && viewer != playerId
+            && await dbCtx
+                .MessengerRequests.AsNoTracking()
+                .AnyAsync(
+                    r => r.PlayerEntityId == viewer && r.RequestedPlayerEntityId == playerId,
+                    ct
+                )
+                .ConfigureAwait(true);
+
+        int totalBadges = await dbCtx
+            .PlayerBadges.AsNoTracking()
+            .CountAsync(b => b.PlayerEntityId == playerId, ct)
+            .ConfigureAwait(true);
+
+        // The client shows how many achievement levels have been cleared, so the levels sum rather
+        // than the number of achievements touched.
+        int achievementLevels = await dbCtx
+            .PlayerAchievements.AsNoTracking()
+            .Where(a => a.PlayerEntityId == playerId)
+            .SumAsync(a => a.Level, ct)
+            .ConfigureAwait(true);
+
+        return new PlayerExtendedProfileSnapshot
+        {
+            UserId = _state.PlayerId,
+            UserName = _state.Name,
+            Figure = _state.Figure,
+            Motto = _state.Motto,
+            CreationDate = _state.CreatedAt.ToString("yyyy-MM-dd"),
+            AchievementScore = _state.AchievementScore,
+            FriendCount = friendCount,
+            IsFriend = isFriend,
+            IsFriendRequestSent = requestSent,
+            IsOnline = true,
+            Guilds = [],
+            LastAccessSinceInSeconds = SecondsSince(lastLoginAt),
+            OpenProfileWindow = true,
+            IsHidden = false,
+            // Resolved from the achievement score against the configured ladder. This was the
+            // constant 1, which is why every profile in the hotel read "Level 1" no matter what
+            // the player had done.
+            AccountLevel = _accountLevels.ResolveLevel(_state.AchievementScore),
+            IntegerField24 = 0,
+            StarGemCount = 0,
+            BooleanField26 = false,
+            BooleanField27 = false,
+            TotalBadges = totalBadges,
+            AchievementLevel = achievementLevels,
+        };
+    }
+
+    /// <summary>
+    /// Seconds since the player last logged in, or 0 when they never have. The client renders it as
+    /// "last seen", so a player with no recorded login reads as "just now" rather than as a date in
+    /// 1970.
+    /// </summary>
+    private static int SecondsSince(DateTime? moment)
+    {
+        if (moment is not { } instant)
+        {
+            return 0;
+        }
+
+        double seconds = (DateTime.UtcNow - instant).TotalSeconds;
+
+        return seconds <= 0 ? 0 : (int)Math.Min(int.MaxValue, seconds);
     }
 
     public Task<ClubSubscriptionSnapshot> GetClubSubscriptionAsync(CancellationToken ct)
