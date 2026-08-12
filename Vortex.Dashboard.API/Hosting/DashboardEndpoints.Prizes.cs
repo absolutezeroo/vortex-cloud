@@ -45,10 +45,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null
-                || string.IsNullOrWhiteSpace(body.Code)
-                || string.IsNullOrWhiteSpace(body.Name)
-                || !HasReason(body.Reason)
+                string.IsNullOrWhiteSpace(body.Code) || string.IsNullOrWhiteSpace(body.Name)
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.CreatePrizePoolAsync(body, ctx.ActorEmail(), ct)
@@ -67,11 +64,9 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null
-                || body.PoolId <= 0
+                body.PoolId <= 0
                 || string.IsNullOrWhiteSpace(body.Code)
                 || string.IsNullOrWhiteSpace(body.Name)
-                || !HasReason(body.Reason)
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.UpdatePrizePoolAsync(body, ctx.ActorEmail(), ct)
@@ -90,7 +85,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null || body.PoolId <= 0 || !HasReason(body.Reason)
+                body.PoolId <= 0
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.DeletePrizePoolAsync(body, ctx.ActorEmail(), ct)
@@ -109,11 +104,9 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null
-                || string.IsNullOrWhiteSpace(body.PoolCode)
+                string.IsNullOrWhiteSpace(body.PoolCode)
                 || string.IsNullOrWhiteSpace(body.ProductType)
                 || body.Weight <= 0
-                || !HasReason(body.Reason)
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.CreatePrizeEntryAsync(body, ctx.ActorEmail(), ct)
@@ -132,12 +125,10 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null
-                || body.EntryId <= 0
+                body.EntryId <= 0
                 || string.IsNullOrWhiteSpace(body.PoolCode)
                 || string.IsNullOrWhiteSpace(body.ProductType)
                 || body.Weight <= 0
-                || !HasReason(body.Reason)
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.UpdatePrizeEntryAsync(body, ctx.ActorEmail(), ct)
@@ -156,7 +147,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null || body.EntryId <= 0 || !HasReason(body.Reason)
+                body.EntryId <= 0
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.DeletePrizeEntryAsync(body, ctx.ActorEmail(), ct)
@@ -175,11 +166,9 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null
-                || body.FurnitureDefinitionId <= 0
+                body.FurnitureDefinitionId <= 0
                 || string.IsNullOrWhiteSpace(body.PoolCode)
                 || body.HitsRequired <= 0
-                || !HasReason(body.Reason)
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.CreatePrizeBindingAsync(body, ctx.ActorEmail(), ct)
@@ -198,12 +187,10 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null
-                || body.BindingId <= 0
+                body.BindingId <= 0
                 || body.FurnitureDefinitionId <= 0
                 || string.IsNullOrWhiteSpace(body.PoolCode)
                 || body.HitsRequired <= 0
-                || !HasReason(body.Reason)
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.UpdatePrizeBindingAsync(body, ctx.ActorEmail(), ct)
@@ -222,7 +209,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null || body.BindingId <= 0 || !HasReason(body.Reason)
+                body.BindingId <= 0
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.DeletePrizeBindingAsync(body, ctx.ActorEmail(), ct)
@@ -241,12 +228,10 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null || !HasReason(body.Reason)
-                    ? Results.BadRequest(new { error = "invalid_request" })
-                    : Results.Ok(
-                        await ops.ReloadPrizePoolsAsync(body, ctx.ActorEmail(), ct)
-                            .ConfigureAwait(false)
-                    ),
+                Results.Ok(
+                    await ops.ReloadPrizePoolsAsync(body, ctx.ActorEmail(), ct)
+                        .ConfigureAwait(false)
+                ),
             Capabilities.Dashboard.OpsPrizePoolsManage,
             TagPrizePools
         );

@@ -85,6 +85,11 @@
   let offerDetailLoading = false;
   let offerDetailError = '';
 
+  let newProductOpen = false;
+  let newProduct = emptyProductForm();
+  let editProductId = null;
+  let editProductForm = null;
+
   // The edits carry their reason as a field of the form itself; the deletes collect it in the shared
   // ConfirmReasonModal beside every trash button. Two stores rather than one so staging an edit
   // cannot open the delete dialog (and vice versa); each form passes a `key` so its busy state,
@@ -216,7 +221,7 @@
   async function startEditOffer(offer) {
     editOfferId = offer.id;
     editOfferForm = null;
-    errors = { ...errors, updateOffer: '' };
+    ops.clear('updateOffer');
 
     try {
       const detail = await apiGet(`/api/targeted-offers/${offer.id}`);
@@ -239,10 +244,10 @@
       };
     } catch (err) {
       editOfferId = null;
-      errors = {
-        ...errors,
-        updateOffer: isPermissionDeniedError(err) ? translate('common.insufficientRights') : err.code || err.message,
-      };
+      ops.fail(
+        'updateOffer',
+        isPermissionDeniedError(err) ? translate('common.insufficientRights') : err.code || err.message,
+      );
     }
   }
 
@@ -264,6 +269,65 @@
         if (selectedOfferId === id) {
           await loadOfferDetail(id);
         }
+      },
+    );
+  }
+
+  function stageCreateProduct() {
+    if (!canManage || selectedOfferId === null) return;
+
+    stage(
+      'createProduct',
+      translate('targetedOffers.addProduct'),
+      '/api/operations/targeted-offers/products',
+      Boolean(newProduct.productCode.trim()) && reasonOk(newProduct.reason),
+      {
+        offerId: selectedOfferId,
+        productCode: newProduct.productCode.trim(),
+        furnitureDefinitionId: newProduct.furnitureDefinitionId ? Number(newProduct.furnitureDefinitionId) : null,
+        quantity: Number(newProduct.quantity) || 1,
+        reason: newProduct.reason.trim(),
+      },
+      translate('targetedOffers.addProductSummary', { id: selectedOfferId }),
+      async () => {
+        newProductOpen = false;
+        newProduct = emptyProductForm();
+        await loadOfferDetail(selectedOfferId);
+        await loadOffers();
+      },
+    );
+  }
+
+  function startEditProduct(product) {
+    editProductId = product.id;
+    editProductForm = {
+      productCode: product.productCode || '',
+      furnitureDefinitionId: product.furnitureDefinitionEntityId ?? '',
+      quantity: product.quantity,
+      reason: '',
+    };
+  }
+
+  function stageUpdateProduct() {
+    if (!canManage || !editProductForm || editProductId === null) return;
+
+    stage(
+      'updateProduct',
+      translate('targetedOffers.edit'),
+      '/api/operations/targeted-offers/products/update',
+      Boolean(editProductForm.productCode.trim()) && reasonOk(editProductForm.reason),
+      {
+        productId: editProductId,
+        productCode: editProductForm.productCode.trim(),
+        furnitureDefinitionId: editProductForm.furnitureDefinitionId ? Number(editProductForm.furnitureDefinitionId) : null,
+        quantity: Number(editProductForm.quantity) || 1,
+        reason: editProductForm.reason.trim(),
+      },
+      translate('targetedOffers.updateProductSummary', { id: editProductId }),
+      async () => {
+        editProductId = null;
+        editProductForm = null;
+        await loadOfferDetail(selectedOfferId);
       },
     );
   }

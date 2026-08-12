@@ -43,12 +43,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (
-                    body is null
-                    || string.IsNullOrWhiteSpace(body.Key)
-                    || body.Value is null
-                    || !HasReason(body.Reason)
-                )
+                if (string.IsNullOrWhiteSpace(body.Key) || body.Value is null)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }

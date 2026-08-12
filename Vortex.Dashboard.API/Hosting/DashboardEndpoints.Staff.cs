@@ -27,10 +27,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null
-                || string.IsNullOrWhiteSpace(body.Key)
-                || string.IsNullOrWhiteSpace(body.Name)
-                || !HasReason(body.Reason)
+                string.IsNullOrWhiteSpace(body.Key) || string.IsNullOrWhiteSpace(body.Name)
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.CreateRoleAsync(body, ctx.ActorEmail(), ct).ConfigureAwait(false)
@@ -48,11 +45,9 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null
-                || body.RoleId <= 0
+                body.RoleId <= 0
                 || string.IsNullOrWhiteSpace(body.Key)
                 || string.IsNullOrWhiteSpace(body.Name)
-                || !HasReason(body.Reason)
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.UpdateRoleAsync(body, ctx.ActorEmail(), ct).ConfigureAwait(false)
@@ -70,7 +65,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null || body.RoleId <= 0 || !HasReason(body.Reason)
+                body.RoleId <= 0
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.DeleteRoleAsync(body, ctx.ActorEmail(), ct).ConfigureAwait(false)
@@ -88,10 +83,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null
-                || body.RoleId <= 0
-                || body.Capabilities is null
-                || !HasReason(body.Reason)
+                body.RoleId <= 0 || body.Capabilities is null
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.SetRoleCapabilitiesAsync(body, ctx.ActorEmail(), ct)
@@ -110,7 +102,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null || body.AccountId <= 0 || body.RoleId <= 0 || !HasReason(body.Reason)
+                body.AccountId <= 0 || body.RoleId <= 0
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.AssignRoleAsync(body, ctx.ActorEmail(), ct).ConfigureAwait(false)
@@ -128,7 +120,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null || body.AccountId <= 0 || body.RoleId <= 0 || !HasReason(body.Reason)
+                body.AccountId <= 0 || body.RoleId <= 0
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.UnassignRoleAsync(body, ctx.ActorEmail(), ct)
@@ -147,10 +139,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null
-                || string.IsNullOrWhiteSpace(body.Name)
-                || body.PresetIndex < 0
-                || !HasReason(body.Reason)
+                string.IsNullOrWhiteSpace(body.Name) || body.PresetIndex < 0
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.CreateSanctionPresetAsync(body, ctx.ActorEmail(), ct)
@@ -169,11 +158,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null
-                || body.PresetId <= 0
-                || string.IsNullOrWhiteSpace(body.Name)
-                || body.PresetIndex < 0
-                || !HasReason(body.Reason)
+                body.PresetId <= 0 || string.IsNullOrWhiteSpace(body.Name) || body.PresetIndex < 0
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.UpdateSanctionPresetAsync(body, ctx.ActorEmail(), ct)
@@ -192,7 +177,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null || body.PresetId <= 0 || !HasReason(body.Reason)
+                body.PresetId <= 0
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.DeleteSanctionPresetAsync(body, ctx.ActorEmail(), ct)

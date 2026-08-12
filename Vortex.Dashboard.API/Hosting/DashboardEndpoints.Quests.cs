@@ -70,11 +70,9 @@ internal static partial class DashboardEndpoints
             ) =>
             {
                 if (
-                    body is null
-                    || string.IsNullOrWhiteSpace(body.CampaignCode)
+                    string.IsNullOrWhiteSpace(body.CampaignCode)
                     || string.IsNullOrWhiteSpace(body.LocalizationCode)
                     || string.IsNullOrWhiteSpace(body.QuestType)
-                    || !HasReason(body.Reason)
                 )
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
@@ -99,12 +97,10 @@ internal static partial class DashboardEndpoints
             ) =>
             {
                 if (
-                    body is null
-                    || body.QuestId <= 0
+                    body.QuestId <= 0
                     || string.IsNullOrWhiteSpace(body.CampaignCode)
                     || string.IsNullOrWhiteSpace(body.LocalizationCode)
                     || string.IsNullOrWhiteSpace(body.QuestType)
-                    || !HasReason(body.Reason)
                 )
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
@@ -128,7 +124,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (body is null || body.QuestId <= 0 || !HasReason(body.Reason))
+                if (body.QuestId <= 0)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }

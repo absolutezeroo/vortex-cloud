@@ -187,7 +187,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null || !HasReason(ReasonOf(body)) || !isValid(body)
+                !isValid(body)
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(await run(ops, body, ctx.ActorEmail(), ct).ConfigureAwait(false)),
             Capabilities.Dashboard.OpsContentManage,

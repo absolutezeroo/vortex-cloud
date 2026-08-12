@@ -1,4 +1,5 @@
 using System;
+using Vortex.Dashboard.API.Hosting;
 
 namespace Vortex.Dashboard.API.Operations;
 
@@ -23,7 +24,7 @@ public sealed record CreateTargetedOfferRequest(
     bool Active,
     int SortOrder,
     string Reason
-);
+) : IReasonedRequest;
 
 public sealed record UpdateTargetedOfferRequest(
     int OfferId,
@@ -42,9 +43,9 @@ public sealed record UpdateTargetedOfferRequest(
     bool Active,
     int SortOrder,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record DeleteTargetedOfferRequest(int OfferId, string Reason);
+public sealed record DeleteTargetedOfferRequest(int OfferId, string Reason) : IReasonedRequest;
 
 public sealed record CreateTargetedOfferProductRequest(
     int OfferId,
@@ -52,7 +53,7 @@ public sealed record CreateTargetedOfferProductRequest(
     int? FurnitureDefinitionId,
     int Quantity,
     string Reason
-);
+) : IReasonedRequest;
 
 public sealed record UpdateTargetedOfferProductRequest(
     int ProductId,
@@ -60,6 +61,7 @@ public sealed record UpdateTargetedOfferProductRequest(
     int? FurnitureDefinitionId,
     int Quantity,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record DeleteTargetedOfferProductRequest(int ProductId, string Reason);
+public sealed record DeleteTargetedOfferProductRequest(int ProductId, string Reason)
+    : IReasonedRequest;

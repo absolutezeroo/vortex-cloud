@@ -200,7 +200,7 @@
   async function startEditQuest(quest) {
     editQuestId = quest.id;
     editQuestForm = null;
-    errors = { ...errors, updateQuest: '' };
+    ops.clear('updateQuest');
 
     try {
       const detail = await apiGet(`/api/quests/${quest.id}`);
@@ -227,10 +227,10 @@
       };
     } catch (err) {
       editQuestId = null;
-      errors = {
-        ...errors,
-        updateQuest: isPermissionDeniedError(err) ? translate('common.insufficientRights') : err.code || err.message,
-      };
+      ops.fail(
+        'updateQuest',
+        isPermissionDeniedError(err) ? translate('common.insufficientRights') : err.code || err.message,
+      );
     }
   }
 
@@ -434,7 +434,7 @@
           <input id="new-quest-reason" bind:value={newQuest.reason} placeholder={$t('quests.reasonPlaceholder')} list="reason-history" />
         </div>
         <div class="op-actions">
-          <button type="button" on:click={stageCreateQuest} disabled={busy.createQuest}>{$t('quests.create')}</button>
+          <button type="button" on:click={stageCreateQuest} disabled={$ops.busyKeys.createQuest}>{$t('quests.create')}</button>
         </div>
         {#if $ops.errors.createQuest}<p class="empty-state danger">{$ops.errors.createQuest}</p>{/if}
         {#if $ops.results.createQuest}
@@ -609,7 +609,7 @@
                     <input id={`edit-quest-reason-${quest.id}`} bind:value={editQuestForm.reason} placeholder={$t('common.reasonPlaceholderChange')} list="reason-history" />
                   </div>
                   <div class="op-actions">
-                    <button type="button" on:click={stageUpdateQuest} disabled={busy.updateQuest}>{$t('quests.save')}</button>
+                    <button type="button" on:click={stageUpdateQuest} disabled={$ops.busyKeys.updateQuest}>{$t('quests.save')}</button>
                     <button class="ghost-button" type="button" on:click={() => { editQuestId = null; editQuestForm = null; }}>{$t('quests.cancel')}</button>
                   </div>
                   {#if $ops.errors.updateQuest}<p class="empty-state danger">{$ops.errors.updateQuest}</p>{/if}

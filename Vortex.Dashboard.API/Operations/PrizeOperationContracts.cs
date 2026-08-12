@@ -1,3 +1,5 @@
+using Vortex.Dashboard.API.Hosting;
+
 namespace Vortex.Dashboard.API.Operations;
 
 public sealed record CreatePrizePoolRequest(
@@ -7,7 +9,7 @@ public sealed record CreatePrizePoolRequest(
     string Notes,
     bool Enabled,
     string Reason
-);
+) : IReasonedRequest;
 
 public sealed record UpdatePrizePoolRequest(
     int PoolId,
@@ -17,9 +19,9 @@ public sealed record UpdatePrizePoolRequest(
     string Notes,
     bool Enabled,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record DeletePrizePoolRequest(int PoolId, string Reason);
+public sealed record DeletePrizePoolRequest(int PoolId, string Reason) : IReasonedRequest;
 
 public sealed record CreatePrizeEntryRequest(
     string PoolCode,
@@ -30,7 +32,7 @@ public sealed record CreatePrizeEntryRequest(
     int Weight,
     bool Enabled,
     string Reason
-);
+) : IReasonedRequest;
 
 public sealed record UpdatePrizeEntryRequest(
     int EntryId,
@@ -42,11 +44,11 @@ public sealed record UpdatePrizeEntryRequest(
     int Weight,
     bool Enabled,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record DeletePrizeEntryRequest(int EntryId, string Reason);
+public sealed record DeletePrizeEntryRequest(int EntryId, string Reason) : IReasonedRequest;
 
-public sealed record ReloadPrizePoolsRequest(string Reason);
+public sealed record ReloadPrizePoolsRequest(string Reason) : IReasonedRequest;
 
 public sealed record CreatePrizeBindingRequest(
     int FurnitureDefinitionId,
@@ -54,7 +56,7 @@ public sealed record CreatePrizeBindingRequest(
     int HitsRequired,
     bool Enabled,
     string Reason
-);
+) : IReasonedRequest;
 
 public sealed record UpdatePrizeBindingRequest(
     int BindingId,
@@ -63,6 +65,6 @@ public sealed record UpdatePrizeBindingRequest(
     int HitsRequired,
     bool Enabled,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record DeletePrizeBindingRequest(int BindingId, string Reason);
+public sealed record DeletePrizeBindingRequest(int BindingId, string Reason) : IReasonedRequest;

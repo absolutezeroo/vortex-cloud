@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Vortex.Dashboard.API.Hosting;
 
 namespace Vortex.Dashboard.API.Operations;
 
@@ -20,7 +21,7 @@ public sealed record CreatePollRequest(
     int? RoomId,
     int SortOrder,
     string Reason
-);
+) : IReasonedRequest;
 
 public sealed record UpdatePollRequest(
     int PollId,
@@ -36,9 +37,9 @@ public sealed record UpdatePollRequest(
     int? RoomId,
     int SortOrder,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record DeletePollRequest(int PollId, string Reason);
+public sealed record DeletePollRequest(int PollId, string Reason) : IReasonedRequest;
 
 /// <summary>
 /// A question and its full choice list. <c>Choices</c> replaces whatever the question had: answers
@@ -56,7 +57,7 @@ public sealed record CreatePollQuestionRequest(
     int QuestionAnswerType,
     IReadOnlyList<PollChoiceBody> Choices,
     string Reason
-);
+) : IReasonedRequest;
 
 public sealed record UpdatePollQuestionRequest(
     int QuestionId,
@@ -69,9 +70,9 @@ public sealed record UpdatePollQuestionRequest(
     int QuestionAnswerType,
     IReadOnlyList<PollChoiceBody> Choices,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record DeletePollQuestionRequest(int QuestionId, string Reason);
+public sealed record DeletePollQuestionRequest(int QuestionId, string Reason) : IReasonedRequest;
 
 /// <summary>
 /// One selectable answer. <c>Value</c> is what the client sends back and what the results are keyed

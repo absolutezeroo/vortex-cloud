@@ -43,9 +43,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null
-                || string.IsNullOrWhiteSpace(body.SearchCode)
-                || !HasReason(body.Reason)
+                string.IsNullOrWhiteSpace(body.SearchCode)
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.CreateNavigatorContextAsync(body, ctx.ActorEmail(), ct)
@@ -64,10 +62,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null
-                || body.ContextId <= 0
-                || string.IsNullOrWhiteSpace(body.SearchCode)
-                || !HasReason(body.Reason)
+                body.ContextId <= 0 || string.IsNullOrWhiteSpace(body.SearchCode)
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.UpdateNavigatorContextAsync(body, ctx.ActorEmail(), ct)
@@ -86,7 +81,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null || body.ContextId <= 0 || !HasReason(body.Reason)
+                body.ContextId <= 0
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.DeleteNavigatorContextAsync(body, ctx.ActorEmail(), ct)
@@ -105,10 +100,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null
-                || body.ContextId <= 0
-                || string.IsNullOrWhiteSpace(body.SearchCode)
-                || !HasReason(body.Reason)
+                body.ContextId <= 0 || string.IsNullOrWhiteSpace(body.SearchCode)
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.CreateNavigatorQuickLinkAsync(body, ctx.ActorEmail(), ct)
@@ -127,11 +119,9 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null
-                || body.QuickLinkId <= 0
+                body.QuickLinkId <= 0
                 || body.ContextId <= 0
                 || string.IsNullOrWhiteSpace(body.SearchCode)
-                || !HasReason(body.Reason)
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.UpdateNavigatorQuickLinkAsync(body, ctx.ActorEmail(), ct)
@@ -150,7 +140,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null || body.QuickLinkId <= 0 || !HasReason(body.Reason)
+                body.QuickLinkId <= 0
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.DeleteNavigatorQuickLinkAsync(body, ctx.ActorEmail(), ct)
@@ -169,7 +159,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null || string.IsNullOrWhiteSpace(body.Name) || !HasReason(body.Reason)
+                string.IsNullOrWhiteSpace(body.Name)
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.CreateNavigatorFlatCategoryAsync(body, ctx.ActorEmail(), ct)
@@ -188,10 +178,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null
-                || body.CategoryId <= 0
-                || string.IsNullOrWhiteSpace(body.Name)
-                || !HasReason(body.Reason)
+                body.CategoryId <= 0 || string.IsNullOrWhiteSpace(body.Name)
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.UpdateNavigatorFlatCategoryAsync(body, ctx.ActorEmail(), ct)
@@ -210,7 +197,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null || body.CategoryId <= 0 || !HasReason(body.Reason)
+                body.CategoryId <= 0
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.DeleteNavigatorFlatCategoryAsync(body, ctx.ActorEmail(), ct)
@@ -229,7 +216,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null || string.IsNullOrWhiteSpace(body.Name) || !HasReason(body.Reason)
+                string.IsNullOrWhiteSpace(body.Name)
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.CreateNavigatorEventCategoryAsync(body, ctx.ActorEmail(), ct)
@@ -248,10 +235,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null
-                || body.CategoryId <= 0
-                || string.IsNullOrWhiteSpace(body.Name)
-                || !HasReason(body.Reason)
+                body.CategoryId <= 0 || string.IsNullOrWhiteSpace(body.Name)
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.UpdateNavigatorEventCategoryAsync(body, ctx.ActorEmail(), ct)
@@ -270,7 +254,7 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null || body.CategoryId <= 0 || !HasReason(body.Reason)
+                body.CategoryId <= 0
                     ? Results.BadRequest(new { error = "invalid_request" })
                     : Results.Ok(
                         await ops.DeleteNavigatorEventCategoryAsync(body, ctx.ActorEmail(), ct)
@@ -289,12 +273,10 @@ internal static partial class DashboardEndpoints
                 DashboardOperationsService ops,
                 CancellationToken ct
             ) =>
-                body is null || !HasReason(body.Reason)
-                    ? Results.BadRequest(new { error = "invalid_request" })
-                    : Results.Ok(
-                        await ops.SeedNavigatorDefaultsAsync(body, ctx.ActorEmail(), ct)
-                            .ConfigureAwait(false)
-                    ),
+                Results.Ok(
+                    await ops.SeedNavigatorDefaultsAsync(body, ctx.ActorEmail(), ct)
+                        .ConfigureAwait(false)
+                ),
             Capabilities.Dashboard.OpsNavigatorManage,
             TagNavigator
         );

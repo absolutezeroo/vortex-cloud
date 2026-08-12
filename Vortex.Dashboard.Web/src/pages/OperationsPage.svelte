@@ -2,7 +2,7 @@
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { Coins, Zap, Package, UserX } from '@lucide/svelte';
-  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
+  import { hasDashboardCapability } from '../lib/permissions.js';
   import { createWriteOps } from '../lib/writeOps.js';
   import { OPERATION_CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { reasonOk, positive, nonNegative } from '../lib/validation.js';

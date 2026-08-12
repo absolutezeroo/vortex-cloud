@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Vortex.Dashboard.API.Hosting;
 
 namespace Vortex.Dashboard.API.Operations;
 
@@ -6,19 +7,20 @@ namespace Vortex.Dashboard.API.Operations;
 /// Request bodies for the staff/role operations, each carrying a mandatory audited <c>Reason</c>.
 /// <c>Capabilities</c> on the role update is the complete set — anything absent is revoked.
 /// </summary>
-public sealed record CreateRoleRequest(string Key, string Name, string Reason);
+public sealed record CreateRoleRequest(string Key, string Name, string Reason) : IReasonedRequest;
 
-public sealed record UpdateRoleRequest(int RoleId, string Key, string Name, string Reason);
+public sealed record UpdateRoleRequest(int RoleId, string Key, string Name, string Reason)
+    : IReasonedRequest;
 
-public sealed record DeleteRoleRequest(int RoleId, string Reason);
+public sealed record DeleteRoleRequest(int RoleId, string Reason) : IReasonedRequest;
 
 public sealed record SetRoleCapabilitiesRequest(
     int RoleId,
     IReadOnlyCollection<string> Capabilities,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record AssignRoleRequest(int AccountId, int RoleId, string Reason);
+public sealed record AssignRoleRequest(int AccountId, int RoleId, string Reason) : IReasonedRequest;
 
 public sealed record CreateSanctionPresetRequest(
     int Kind,
@@ -27,7 +29,7 @@ public sealed record CreateSanctionPresetRequest(
     int? DurationSeconds,
     string? Message,
     string Reason
-);
+) : IReasonedRequest;
 
 public sealed record UpdateSanctionPresetRequest(
     int PresetId,
@@ -37,6 +39,6 @@ public sealed record UpdateSanctionPresetRequest(
     int? DurationSeconds,
     string? Message,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record DeleteSanctionPresetRequest(int PresetId, string Reason);
+public sealed record DeleteSanctionPresetRequest(int PresetId, string Reason) : IReasonedRequest;

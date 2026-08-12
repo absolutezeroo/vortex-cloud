@@ -63,6 +63,8 @@ internal static partial class DashboardEndpoints
                 "/api/login",
                 async (HttpContext ctx, LoginRequest body, DashboardAuthService auth) =>
                 {
+                    // Mapped directly rather than through MapPost (it is anonymous and
+                    // rate-limited), so DashboardRequestValidationFilter does not cover it.
                     if (
                         body is null
                         || string.IsNullOrWhiteSpace(body.Email)
@@ -364,9 +366,6 @@ internal static partial class DashboardEndpoints
     }
 #pragma warning restore VSTHRD003
 
-    private static bool HasReason(string? reason) =>
-        !string.IsNullOrWhiteSpace(reason) && reason.Trim().Length >= 3;
-
     /// <summary>A permanent sanction needs no duration; a temporary one needs a positive duration.</summary>
     private static bool HasValidDuration(bool permanent, int? durationSeconds) =>
         permanent || durationSeconds is > 0;
@@ -384,6 +383,12 @@ internal static partial class DashboardEndpoints
         app.MapGet(legacyPath, handler).RequireAuthorization(capability).WithTags(tag);
     }
 
+    /// <summary>
+    /// Every dashboard write goes through here, so the two checks that used to open each endpoint's
+    /// own validation block — a body arrived, and it carries a usable reason — are applied once by
+    /// <see cref="DashboardRequestValidationFilter"/> instead of being remembered 47 times. Endpoints
+    /// keep their own field rules.
+    /// </summary>
     private static void MapPost(
         WebApplication app,
         string v1Path,
@@ -393,8 +398,14 @@ internal static partial class DashboardEndpoints
         string tag
     )
     {
-        app.MapPost(v1Path, handler).RequireAuthorization(capability).WithTags(tag);
-        app.MapPost(legacyPath, handler).RequireAuthorization(capability).WithTags(tag);
+        app.MapPost(v1Path, handler)
+            .RequireAuthorization(capability)
+            .WithTags(tag)
+            .AddEndpointFilter<DashboardRequestValidationFilter>();
+        app.MapPost(legacyPath, handler)
+            .RequireAuthorization(capability)
+            .WithTags(tag)
+            .AddEndpointFilter<DashboardRequestValidationFilter>();
     }
 
     private static string ResolveApiDomain(string route)

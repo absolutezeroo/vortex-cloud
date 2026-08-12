@@ -33,7 +33,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (body is null || body.PlayerId <= 0 || !HasReason(body.Reason))
+                if (body.PlayerId <= 0)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -56,12 +56,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (
-                    body is null
-                    || body.PlayerId <= 0
-                    || !HasReason(body.Reason)
-                    || !HasValidDuration(body.Permanent, body.DurationSeconds)
-                )
+                if (body.PlayerId <= 0 || !HasValidDuration(body.Permanent, body.DurationSeconds))
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -84,7 +79,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (body is null || body.PlayerId <= 0 || !HasReason(body.Reason))
+                if (body.PlayerId <= 0)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -107,12 +102,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (
-                    body is null
-                    || body.PlayerId <= 0
-                    || body.DurationSeconds <= 0
-                    || !HasReason(body.Reason)
-                )
+                if (body.PlayerId <= 0 || body.DurationSeconds <= 0)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -135,12 +125,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (
-                    body is null
-                    || body.PlayerId <= 0
-                    || !HasReason(body.Reason)
-                    || !HasValidDuration(body.Permanent, body.DurationSeconds)
-                )
+                if (body.PlayerId <= 0 || !HasValidDuration(body.Permanent, body.DurationSeconds))
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -163,7 +148,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (body is null || body.PlayerId <= 0 || !HasReason(body.Reason))
+                if (body.PlayerId <= 0)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -195,7 +180,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (body is null || body.IssueIds is null || body.IssueIds.Length == 0)
+                if (body.IssueIds is null || body.IssueIds.Length == 0)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -218,12 +203,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (
-                    body is null
-                    || body.IssueIds is null
-                    || body.IssueIds.Length == 0
-                    || body.Reason is < 1 or > 3
-                )
+                if (body.IssueIds is null || body.IssueIds.Length == 0 || body.Reason is < 1 or > 3)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -246,7 +226,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (body is null || body.IssueIds is null || body.IssueIds.Length == 0)
+                if (body.IssueIds is null || body.IssueIds.Length == 0)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }

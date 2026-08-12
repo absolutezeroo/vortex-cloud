@@ -55,7 +55,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (body is null || body.RoomId <= 0 || !HasReason(body.Reason))
+                if (body.RoomId <= 0)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -78,12 +78,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (
-                    body is null
-                    || body.RoomId <= 0
-                    || body.PlayerId <= 0
-                    || !HasReason(body.Reason)
-                )
+                if (body.RoomId <= 0 || body.PlayerId <= 0)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }

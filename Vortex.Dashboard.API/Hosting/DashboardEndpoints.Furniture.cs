@@ -46,7 +46,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (body is null || string.IsNullOrWhiteSpace(body.Name) || !HasReason(body.Reason))
+                if (string.IsNullOrWhiteSpace(body.Name))
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -70,12 +70,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (
-                    body is null
-                    || body.DefinitionId <= 0
-                    || string.IsNullOrWhiteSpace(body.Name)
-                    || !HasReason(body.Reason)
-                )
+                if (body.DefinitionId <= 0 || string.IsNullOrWhiteSpace(body.Name))
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -99,7 +94,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (body is null || body.DefinitionId <= 0 || !HasReason(body.Reason))
+                if (body.DefinitionId <= 0)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }

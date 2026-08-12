@@ -77,6 +77,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vortex.Pipeline.Tests", "Vo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vortex.Navigator.Tests", "Vortex.Navigator.Tests\Vortex.Navigator.Tests.csproj", "{B23426C4-BE04-4696-A087-C9253953BF5B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vortex.Dashboard.Tests", "Vortex.Dashboard.Tests\Vortex.Dashboard.Tests.csproj", "{5780EA4D-7493-4FA1-AC73-B6AB371D73B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -531,6 +533,18 @@ Global
 		{B23426C4-BE04-4696-A087-C9253953BF5B}.Release|x64.Build.0 = Release|Any CPU
 		{B23426C4-BE04-4696-A087-C9253953BF5B}.Release|x86.ActiveCfg = Release|Any CPU
 		{B23426C4-BE04-4696-A087-C9253953BF5B}.Release|x86.Build.0 = Release|Any CPU
+		{5780EA4D-7493-4FA1-AC73-B6AB371D73B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5780EA4D-7493-4FA1-AC73-B6AB371D73B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5780EA4D-7493-4FA1-AC73-B6AB371D73B6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5780EA4D-7493-4FA1-AC73-B6AB371D73B6}.Debug|x64.Build.0 = Debug|Any CPU
+		{5780EA4D-7493-4FA1-AC73-B6AB371D73B6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5780EA4D-7493-4FA1-AC73-B6AB371D73B6}.Debug|x86.Build.0 = Debug|Any CPU
+		{5780EA4D-7493-4FA1-AC73-B6AB371D73B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5780EA4D-7493-4FA1-AC73-B6AB371D73B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5780EA4D-7493-4FA1-AC73-B6AB371D73B6}.Release|x64.ActiveCfg = Release|Any CPU
+		{5780EA4D-7493-4FA1-AC73-B6AB371D73B6}.Release|x64.Build.0 = Release|Any CPU
+		{5780EA4D-7493-4FA1-AC73-B6AB371D73B6}.Release|x86.ActiveCfg = Release|Any CPU
+		{5780EA4D-7493-4FA1-AC73-B6AB371D73B6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

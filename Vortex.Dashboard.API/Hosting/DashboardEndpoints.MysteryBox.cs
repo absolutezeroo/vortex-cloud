@@ -61,11 +61,9 @@ internal static partial class DashboardEndpoints
             ) =>
             {
                 if (
-                    body is null
-                    || string.IsNullOrWhiteSpace(body.Pool)
+                    string.IsNullOrWhiteSpace(body.Pool)
                     || string.IsNullOrWhiteSpace(body.ProductType)
                     || body.Weight <= 0
-                    || !HasReason(body.Reason)
                 )
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
@@ -91,12 +89,10 @@ internal static partial class DashboardEndpoints
             ) =>
             {
                 if (
-                    body is null
-                    || body.PrizeId <= 0
+                    body.PrizeId <= 0
                     || string.IsNullOrWhiteSpace(body.Pool)
                     || string.IsNullOrWhiteSpace(body.ProductType)
                     || body.Weight <= 0
-                    || !HasReason(body.Reason)
                 )
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
@@ -121,7 +117,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (body is null || body.PrizeId <= 0 || !HasReason(body.Reason))
+                if (body.PrizeId <= 0)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -145,12 +141,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (
-                    body is null
-                    || body.PlayerId <= 0
-                    || string.IsNullOrWhiteSpace(body.Color)
-                    || !HasReason(body.Reason)
-                )
+                if (body.PlayerId <= 0 || string.IsNullOrWhiteSpace(body.Color))
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -175,11 +166,9 @@ internal static partial class DashboardEndpoints
             ) =>
             {
                 if (
-                    body is null
-                    || body.PlayerId <= 0
+                    body.PlayerId <= 0
                     || body.FurnitureDefinitionId <= 0
                     || string.IsNullOrWhiteSpace(body.Color)
-                    || !HasReason(body.Reason)
                 )
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
@@ -203,11 +192,6 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (body is null || !HasReason(body.Reason))
-                {
-                    return Results.BadRequest(new { error = "invalid_request" });
-                }
-
                 return Results.Ok(
                     await ops.ReloadMysteryBoxAsync(body, ctx.ActorEmail(), ct)
                         .ConfigureAwait(false)

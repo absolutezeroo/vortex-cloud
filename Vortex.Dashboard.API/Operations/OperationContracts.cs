@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Vortex.Dashboard.API.Hosting;
 using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.StuffData;
@@ -22,14 +23,15 @@ public sealed record OperationResult(bool Ok, string CorrelationId, string Messa
 }
 
 /// <summary>Grant credits to a player's wallet. <paramref name="Reason"/> is mandatory and audited.</summary>
-public sealed record GiveCreditsRequest(int PlayerId, int Amount, string Reason);
+public sealed record GiveCreditsRequest(int PlayerId, int Amount, string Reason) : IReasonedRequest;
 
 /// <summary>Set a runtime server-config value. <paramref name="Key"/> must be a known
 /// <c>ConfigKeyCatalog</c> key and <paramref name="Value"/> must parse for that key's kind.</summary>
-public sealed record SetConfigRequest(string Key, string Value, string Reason);
+public sealed record SetConfigRequest(string Key, string Value, string Reason) : IReasonedRequest;
 
 /// <summary>Grant activity points of a given type to a player.</summary>
-public sealed record GiveActivityPointsRequest(int PlayerId, int Type, int Amount, string Reason);
+public sealed record GiveActivityPointsRequest(int PlayerId, int Type, int Amount, string Reason)
+    : IReasonedRequest;
 
 /// <summary>Grant a furniture definition (optionally with extra data) to a player's inventory.</summary>
 public sealed record GiveFurnitureRequest(
@@ -37,10 +39,10 @@ public sealed record GiveFurnitureRequest(
     int DefinitionId,
     string? ExtraData,
     string Reason
-);
+) : IReasonedRequest;
 
 /// <summary>Force-disconnect a player by dropping their active session.</summary>
-public sealed record KickPlayerRequest(int PlayerId, string Reason);
+public sealed record KickPlayerRequest(int PlayerId, string Reason) : IReasonedRequest;
 
 /// <summary>
 /// Create a redeemable voucher code. <paramref name="CurrencyType"/> is 1=Credits, 2=Silver,
@@ -57,10 +59,10 @@ public sealed record CreateVoucherRequest(
     int? MaxRedemptions,
     DateTime? ExpiresAt,
     string Reason
-);
+) : IReasonedRequest;
 
 /// <summary>Deactivate a voucher code so it can no longer be redeemed.</summary>
-public sealed record DeactivateVoucherRequest(string Code, string Reason);
+public sealed record DeactivateVoucherRequest(string Code, string Reason) : IReasonedRequest;
 
 /// <summary>
 /// Suspend the player's linked account. Kept separate from <see cref="UnbanPlayerRequest"/> —
@@ -73,14 +75,15 @@ public sealed record BanPlayerRequest(
     bool Permanent,
     int? DurationSeconds,
     string Reason
-);
+) : IReasonedRequest;
 
 /// <summary>Lift an active account ban.</summary>
-public sealed record UnbanPlayerRequest(int PlayerId, string Reason);
+public sealed record UnbanPlayerRequest(int PlayerId, string Reason) : IReasonedRequest;
 
 /// <summary>Room-scoped mute. Only works while the target is currently present in a room — there is
 /// no account-wide chat mute in this codebase.</summary>
-public sealed record MutePlayerRequest(int PlayerId, int DurationSeconds, string Reason);
+public sealed record MutePlayerRequest(int PlayerId, int DurationSeconds, string Reason)
+    : IReasonedRequest;
 
 /// <summary>Lock the player's ability to trade. See <see cref="BanPlayerRequest"/> for the
 /// permanent/duration semantics and why lift is a separate request type.</summary>
@@ -89,10 +92,10 @@ public sealed record TradingLockRequest(
     bool Permanent,
     int? DurationSeconds,
     string Reason
-);
+) : IReasonedRequest;
 
 /// <summary>Lift an active trading lock.</summary>
-public sealed record TradingUnlockRequest(int PlayerId, string Reason);
+public sealed record TradingUnlockRequest(int PlayerId, string Reason) : IReasonedRequest;
 
 /// <summary>Pick up one or more open CFH tickets for handling.</summary>
 public sealed record PickCfhTicketsRequest(int[] IssueIds);
@@ -109,11 +112,12 @@ public sealed record ReleaseCfhTicketsRequest(int[] IssueIds);
 
 /// <summary>Force-deactivate an active room. Does not itself evict occupants — pair with
 /// <see cref="KickFromRoomRequest"/> per player if a hard clear is needed.</summary>
-public sealed record ForceCloseRoomRequest(int RoomId, string Reason);
+public sealed record ForceCloseRoomRequest(int RoomId, string Reason) : IReasonedRequest;
 
 /// <summary>Remove one player from a room they are currently in. One-time removal, not a ban —
 /// use <see cref="BanPlayerRequest"/> for account-wide sanctions.</summary>
-public sealed record KickFromRoomRequest(int RoomId, int PlayerId, string Reason);
+public sealed record KickFromRoomRequest(int RoomId, int PlayerId, string Reason)
+    : IReasonedRequest;
 
 /// <summary>Create a catalog page. <paramref name="CatalogType"/> is 0=Normal, 1=BuildersClub (see
 /// <c>Vortex.Primitives.Catalog.Enums.CatalogType</c>) and cannot be changed after creation — it
@@ -130,7 +134,7 @@ public sealed record CreateCatalogPageRequest(
     int SortOrder,
     bool Visible,
     string Reason
-);
+) : IReasonedRequest;
 
 public sealed record UpdateCatalogPageRequest(
     int PageId,
@@ -144,11 +148,11 @@ public sealed record UpdateCatalogPageRequest(
     int SortOrder,
     bool Visible,
     string Reason
-);
+) : IReasonedRequest;
 
 /// <summary>Blocked server-side if the page still has child pages or offers under it — delete those
 /// first rather than cascading a silent mass-delete.</summary>
-public sealed record DeleteCatalogPageRequest(int PageId, string Reason);
+public sealed record DeleteCatalogPageRequest(int PageId, string Reason) : IReasonedRequest;
 
 public sealed record CreateCatalogOfferRequest(
     int PageId,
@@ -162,7 +166,7 @@ public sealed record CreateCatalogOfferRequest(
     int DiscountPercent,
     bool Visible,
     string Reason
-);
+) : IReasonedRequest;
 
 public sealed record UpdateCatalogOfferRequest(
     int OfferId,
@@ -176,10 +180,10 @@ public sealed record UpdateCatalogOfferRequest(
     int DiscountPercent,
     bool Visible,
     string Reason
-);
+) : IReasonedRequest;
 
 /// <summary>Blocked server-side if the offer still has products under it.</summary>
-public sealed record DeleteCatalogOfferRequest(int OfferId, string Reason);
+public sealed record DeleteCatalogOfferRequest(int OfferId, string Reason) : IReasonedRequest;
 
 public sealed record CreateCatalogProductRequest(
     int OfferId,
@@ -191,7 +195,7 @@ public sealed record CreateCatalogProductRequest(
     int UniqueRemaining,
     bool BuildersClubEligible,
     string Reason
-);
+) : IReasonedRequest;
 
 public sealed record UpdateCatalogProductRequest(
     int ProductId,
@@ -203,9 +207,9 @@ public sealed record UpdateCatalogProductRequest(
     int UniqueRemaining,
     bool BuildersClubEligible,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record DeleteCatalogProductRequest(int ProductId, string Reason);
+public sealed record DeleteCatalogProductRequest(int ProductId, string Reason) : IReasonedRequest;
 
 public sealed record CreateFurnitureDefinitionRequest(
     int SpriteId,
@@ -229,7 +233,7 @@ public sealed record CreateFurnitureDefinitionRequest(
     string? ExtraData,
     StuffDataType StuffDataType,
     string Reason
-);
+) : IReasonedRequest;
 
 public sealed record UpdateFurnitureDefinitionRequest(
     int DefinitionId,
@@ -254,8 +258,9 @@ public sealed record UpdateFurnitureDefinitionRequest(
     string? ExtraData,
     StuffDataType StuffDataType,
     string Reason
-);
+) : IReasonedRequest;
 
 /// <summary>Blocked server-side if the definition is still referenced by placed/owned furniture
 /// instances or by a catalog product.</summary>
-public sealed record DeleteFurnitureDefinitionRequest(int DefinitionId, string Reason);
+public sealed record DeleteFurnitureDefinitionRequest(int DefinitionId, string Reason)
+    : IReasonedRequest;

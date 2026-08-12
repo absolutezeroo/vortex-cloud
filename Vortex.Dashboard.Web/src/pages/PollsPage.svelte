@@ -519,7 +519,7 @@
           <label for="new-poll-reason">{$t('common.reason')}</label>
           <input id="new-poll-reason" bind:value={newPoll.reason} />
         </div>
-        <button type="button" on:click={stageCreatePoll} disabled={busy.createPoll || !canManage}>
+        <button type="button" on:click={stageCreatePoll} disabled={$ops.busyKeys.createPoll || !canManage}>
           {$t('polls.create')}
         </button>
         <OpResult result={$ops.results.createPoll} error={$ops.errors.createPoll} />

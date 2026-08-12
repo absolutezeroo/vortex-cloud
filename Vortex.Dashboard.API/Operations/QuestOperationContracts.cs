@@ -1,4 +1,5 @@
 using System;
+using Vortex.Dashboard.API.Hosting;
 
 namespace Vortex.Dashboard.API.Operations;
 
@@ -26,7 +27,7 @@ public sealed record CreateQuestRequest(
     int SeasonalSeconds,
     DateTime? EndsAt,
     string Reason
-);
+) : IReasonedRequest;
 
 public sealed record UpdateQuestRequest(
     int QuestId,
@@ -48,6 +49,6 @@ public sealed record UpdateQuestRequest(
     int SeasonalSeconds,
     DateTime? EndsAt,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record DeleteQuestRequest(int QuestId, string Reason);
+public sealed record DeleteQuestRequest(int QuestId, string Reason) : IReasonedRequest;

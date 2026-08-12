@@ -1,3 +1,5 @@
+using Vortex.Dashboard.API.Hosting;
+
 namespace Vortex.Dashboard.API.Operations;
 
 /// <summary>
@@ -16,7 +18,7 @@ public sealed record CreateMysteryBoxPrizeRequest(
     int Weight,
     bool Enabled,
     string Reason
-);
+) : IReasonedRequest;
 
 public sealed record UpdateMysteryBoxPrizeRequest(
     int PrizeId,
@@ -28,17 +30,18 @@ public sealed record UpdateMysteryBoxPrizeRequest(
     int Weight,
     bool Enabled,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record DeleteMysteryBoxPrizeRequest(int PrizeId, string Reason);
+public sealed record DeleteMysteryBoxPrizeRequest(int PrizeId, string Reason) : IReasonedRequest;
 
-public sealed record GrantMysteryBoxKeyRequest(int PlayerId, string Color, string Reason);
+public sealed record GrantMysteryBoxKeyRequest(int PlayerId, string Color, string Reason)
+    : IReasonedRequest;
 
 public sealed record GrantMysteryBoxRequest(
     int PlayerId,
     int FurnitureDefinitionId,
     string Color,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record ReloadMysteryBoxRequest(string Reason);
+public sealed record ReloadMysteryBoxRequest(string Reason) : IReasonedRequest;

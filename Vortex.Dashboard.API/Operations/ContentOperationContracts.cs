@@ -1,3 +1,5 @@
+using Vortex.Dashboard.API.Hosting;
+
 namespace Vortex.Dashboard.API.Operations;
 
 /// <summary>
@@ -10,9 +12,9 @@ public sealed record AchievementRequest(
     string Category,
     int DisplayMethod,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record DeleteAchievementRequest(int AchievementId, string Reason);
+public sealed record DeleteAchievementRequest(int AchievementId, string Reason) : IReasonedRequest;
 
 public sealed record AchievementLevelRequest(
     int AchievementId,
@@ -23,9 +25,9 @@ public sealed record AchievementLevelRequest(
     int RewardType,
     int ScorePoints,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record DeleteAchievementLevelRequest(int LevelId, string Reason);
+public sealed record DeleteAchievementLevelRequest(int LevelId, string Reason) : IReasonedRequest;
 
 public sealed record HandItemRequest(
     int HandItemId,
@@ -33,13 +35,14 @@ public sealed record HandItemRequest(
     int Nutrition,
     int Thirst,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record DeleteHandItemRequest(int Id, string Reason);
+public sealed record DeleteHandItemRequest(int Id, string Reason) : IReasonedRequest;
 
-public sealed record BotRequest(int BotId, string Name, string Motto, string Figure, string Reason);
+public sealed record BotRequest(int BotId, string Name, string Motto, string Figure, string Reason)
+    : IReasonedRequest;
 
-public sealed record DeleteBotRequest(int BotId, string Reason);
+public sealed record DeleteBotRequest(int BotId, string Reason) : IReasonedRequest;
 
 public sealed record CollectionRequest(
     int CollectionId,
@@ -50,9 +53,9 @@ public sealed record CollectionRequest(
     string? RewardProductCode,
     string? BonusProductCode,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record DeleteCollectionRequest(int CollectionId, string Reason);
+public sealed record DeleteCollectionRequest(int CollectionId, string Reason) : IReasonedRequest;
 
 public sealed record CollectionItemRequest(
     int ItemId,
@@ -64,9 +67,9 @@ public sealed record CollectionItemRequest(
     string Rarity,
     int SortOrder,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record DeleteCollectionItemRequest(int ItemId, string Reason);
+public sealed record DeleteCollectionItemRequest(int ItemId, string Reason) : IReasonedRequest;
 
 public sealed record CurrencyRequest(
     int CurrencyId,
@@ -76,11 +79,12 @@ public sealed record CurrencyRequest(
     bool Enabled,
     int StartingAmount,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record BuildersClubTierRequest(int Level, int FurniLimit, string Reason);
+public sealed record BuildersClubTierRequest(int Level, int FurniLimit, string Reason)
+    : IReasonedRequest;
 
-public sealed record DeleteBuildersClubTierRequest(int TierId, string Reason);
+public sealed record DeleteBuildersClubTierRequest(int TierId, string Reason) : IReasonedRequest;
 
 public sealed record RentableTermsRequest(
     int FurnitureId,
@@ -89,15 +93,16 @@ public sealed record RentableTermsRequest(
     int RentDurationSeconds,
     bool RequiresHc,
     string Reason
-);
+) : IReasonedRequest;
 
-public sealed record DeleteRentableTermsRequest(int TermsId, string Reason);
+public sealed record DeleteRentableTermsRequest(int TermsId, string Reason) : IReasonedRequest;
 
-public sealed record BadgeGrantRequest(int PlayerId, string BadgeCode, string Reason);
+public sealed record BadgeGrantRequest(int PlayerId, string BadgeCode, string Reason)
+    : IReasonedRequest;
 
 public sealed record EffectGrantRequest(
     int PlayerId,
     int EffectId,
     int DurationSeconds,
     string Reason
-);
+) : IReasonedRequest;

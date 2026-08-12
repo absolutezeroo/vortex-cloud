@@ -70,11 +70,9 @@ internal static partial class DashboardEndpoints
             ) =>
             {
                 if (
-                    body is null
-                    || string.IsNullOrWhiteSpace(body.Code)
+                    string.IsNullOrWhiteSpace(body.Code)
                     || string.IsNullOrWhiteSpace(body.Headline)
                     || string.IsNullOrWhiteSpace(body.Summary)
-                    || !HasReason(body.Reason)
                 )
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
@@ -99,12 +97,10 @@ internal static partial class DashboardEndpoints
             ) =>
             {
                 if (
-                    body is null
-                    || body.PollId <= 0
+                    body.PollId <= 0
                     || string.IsNullOrWhiteSpace(body.Code)
                     || string.IsNullOrWhiteSpace(body.Headline)
                     || string.IsNullOrWhiteSpace(body.Summary)
-                    || !HasReason(body.Reason)
                 )
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
@@ -128,7 +124,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (body is null || body.PollId <= 0 || !HasReason(body.Reason))
+                if (body.PollId <= 0)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -151,12 +147,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (
-                    body is null
-                    || body.PollId <= 0
-                    || string.IsNullOrWhiteSpace(body.QuestionText)
-                    || !HasReason(body.Reason)
-                )
+                if (body.PollId <= 0 || string.IsNullOrWhiteSpace(body.QuestionText))
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -181,11 +172,9 @@ internal static partial class DashboardEndpoints
             ) =>
             {
                 if (
-                    body is null
-                    || body.QuestionId <= 0
+                    body.QuestionId <= 0
                     || body.PollId <= 0
                     || string.IsNullOrWhiteSpace(body.QuestionText)
-                    || !HasReason(body.Reason)
                 )
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
@@ -210,7 +199,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (body is null || body.QuestionId <= 0 || !HasReason(body.Reason))
+                if (body.QuestionId <= 0)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }

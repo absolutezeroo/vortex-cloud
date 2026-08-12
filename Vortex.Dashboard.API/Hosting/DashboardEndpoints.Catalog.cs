@@ -82,10 +82,8 @@ internal static partial class DashboardEndpoints
             ) =>
             {
                 if (
-                    body is null
-                    || string.IsNullOrWhiteSpace(body.Localization)
+                    string.IsNullOrWhiteSpace(body.Localization)
                     || string.IsNullOrWhiteSpace(body.Layout)
-                    || !HasReason(body.Reason)
                 )
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
@@ -111,11 +109,9 @@ internal static partial class DashboardEndpoints
             ) =>
             {
                 if (
-                    body is null
-                    || body.PageId <= 0
+                    body.PageId <= 0
                     || string.IsNullOrWhiteSpace(body.Localization)
                     || string.IsNullOrWhiteSpace(body.Layout)
-                    || !HasReason(body.Reason)
                 )
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
@@ -140,7 +136,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (body is null || body.PageId <= 0 || !HasReason(body.Reason))
+                if (body.PageId <= 0)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -165,12 +161,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (
-                    body is null
-                    || body.PageId <= 0
-                    || string.IsNullOrWhiteSpace(body.LocalizationId)
-                    || !HasReason(body.Reason)
-                )
+                if (body.PageId <= 0 || string.IsNullOrWhiteSpace(body.LocalizationId))
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -194,12 +185,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (
-                    body is null
-                    || body.OfferId <= 0
-                    || string.IsNullOrWhiteSpace(body.LocalizationId)
-                    || !HasReason(body.Reason)
-                )
+                if (body.OfferId <= 0 || string.IsNullOrWhiteSpace(body.LocalizationId))
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -223,7 +209,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (body is null || body.OfferId <= 0 || !HasReason(body.Reason))
+                if (body.OfferId <= 0)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -248,7 +234,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (body is null || body.OfferId <= 0 || !HasReason(body.Reason))
+                if (body.OfferId <= 0)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -272,7 +258,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (body is null || body.ProductId <= 0 || !HasReason(body.Reason))
+                if (body.ProductId <= 0)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
@@ -296,7 +282,7 @@ internal static partial class DashboardEndpoints
                 CancellationToken ct
             ) =>
             {
-                if (body is null || body.ProductId <= 0 || !HasReason(body.Reason))
+                if (body.ProductId <= 0)
                 {
                     return Results.BadRequest(new { error = "invalid_request" });
                 }
