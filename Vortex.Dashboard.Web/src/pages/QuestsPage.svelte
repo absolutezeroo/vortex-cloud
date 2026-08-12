@@ -1,5 +1,6 @@
 <script>
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
+  import Modal from '../components/Modal.svelte';
   import OpResult from '../components/OpResult.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import { onMount } from 'svelte';
@@ -92,10 +93,13 @@
   let error = '';
   let forbidden = false;
 
-  let newQuestOpen = false;
-  let newQuest = emptyQuestForm();
-  let editQuestId = null;
-  let editQuestForm = null;
+  // One modal serves both create and edit: the fields are the same nineteen either way, and the two
+  // used to be a copy-paste pair unfolding inside the panel. `id === null` is a create.
+  // Editing in place pushed the rest of the list off-screen and read as part of the row it belonged
+  // to, which is the case every design system reserves a dialog for -- a multi-field form with mixed
+  // input types. It also means the save commits straight away: a confirm dialog on top of a dialog
+  // is the one thing the same guidance rules out, and the modal is itself the deliberate step.
+  let questModal = null;
 
   // The edits carry their reason as a field of the form itself; the deletes collect it in the shared
   // ConfirmReasonModal. Two stores rather than one so staging an edit cannot open the delete dialog
@@ -131,15 +135,6 @@
       loading = false;
     }
   }
-
-  const stage = (id, title, endpoint, valid, body, summary, onSuccess) =>
-    ops.ask(endpoint, body, title, summary, {
-      key: id,
-      valid,
-      invalidMessage: translate('quests.fillFields'),
-      reason: body.reason,
-      onSuccess,
-    });
 
   // Create and update take the same field set; update additionally carries the questId. The reward
   // int and the datetime are folded here so both call sites stay identical.
@@ -177,79 +172,82 @@
     );
   }
 
-  function stageCreateQuest() {
+  function openCreateQuest() {
     if (!canManage) return;
 
-    stage(
-      'createQuest',
-      translate('quests.newQuest'),
-      '/api/operations/quests',
-      formValid(newQuest),
-      buildQuestBody(newQuest, null),
-      translate('quests.createQuestSummary', { name: newQuest.localizationCode.trim() || newQuest.campaignCode.trim() }),
-      async () => {
-        newQuestOpen = false;
-        newQuest = emptyQuestForm();
-        await loadQuests();
+    ops.clear('questForm');
+    questModal = { id: null, form: emptyQuestForm() };
+  }
+
+  function closeQuestModal() {
+    questModal = null;
+    ops.clear('questForm');
+  }
+
+  function saveQuest() {
+    if (!canManage || !questModal) return;
+
+    const { id, form } = questModal;
+    const staged = ops.ask(
+      id === null ? '/api/operations/quests' : '/api/operations/quests/update',
+      buildQuestBody(form, id),
+      id === null ? translate('quests.newQuest') : translate('quests.edit'),
+      '',
+      {
+        key: 'questForm',
+        valid: formValid(form),
+        invalidMessage: translate('quests.fillFields'),
+        reason: form.reason.trim(),
+        onSuccess: async () => {
+          questModal = null;
+          await loadQuests();
+        },
       },
     );
+
+    if (staged) void ops.confirm();
   }
 
   // List rows omit catalogPageName/imageVersion (only the detail endpoint carries them), so the edit
   // form is populated from a fresh detail fetch rather than the list row.
   async function startEditQuest(quest) {
-    editQuestId = quest.id;
-    editQuestForm = null;
-    ops.clear('updateQuest');
+    if (!canManage) return;
+
+    ops.clear('questForm');
 
     try {
       const detail = await apiGet(`/api/quests/${quest.id}`);
-      editQuestForm = {
-        campaignCode: detail.campaignCode || '',
-        chainCode: detail.chainCode || '',
-        localizationCode: detail.localizationCode || '',
-        questType: detail.questType || '',
-        totalSteps: detail.totalSteps ?? 1,
-        rewardKind: Number(detail.rewardType) < 0 ? 'credits' : 'activityPoints',
-        rewardPointType: Number(detail.rewardType) < 0 ? 0 : Number(detail.rewardType) || 0,
-        rewardAmount: detail.rewardAmount ?? 0,
-        targetType: detail.targetType || '',
-        targetValue: detail.targetValue || '',
-        enabled: detail.enabled ?? true,
-        catalogPageName: detail.catalogPageName || '',
-        imageVersion: detail.imageVersion || '',
-        sortOrder: detail.sortOrder ?? 0,
-        easy: detail.easy,
-        seasonal: detail.seasonal,
-        seasonalSeconds: detail.seasonalSeconds ?? 0,
-        endsAt: toDateTimeLocal(detail.endsAt),
-        reason: '',
+
+      questModal = {
+        id: quest.id,
+        form: {
+          campaignCode: detail.campaignCode || '',
+          chainCode: detail.chainCode || '',
+          localizationCode: detail.localizationCode || '',
+          questType: detail.questType || '',
+          totalSteps: detail.totalSteps ?? 1,
+          rewardKind: Number(detail.rewardType) < 0 ? 'credits' : 'activityPoints',
+          rewardPointType: Number(detail.rewardType) < 0 ? 0 : Number(detail.rewardType) || 0,
+          rewardAmount: detail.rewardAmount ?? 0,
+          targetType: detail.targetType || '',
+          targetValue: detail.targetValue || '',
+          enabled: detail.enabled ?? true,
+          catalogPageName: detail.catalogPageName || '',
+          imageVersion: detail.imageVersion || '',
+          sortOrder: detail.sortOrder ?? 0,
+          easy: detail.easy,
+          seasonal: detail.seasonal,
+          seasonalSeconds: detail.seasonalSeconds ?? 0,
+          endsAt: toDateTimeLocal(detail.endsAt),
+          reason: '',
+        },
       };
     } catch (err) {
-      editQuestId = null;
       ops.fail(
-        'updateQuest',
+        'questForm',
         isPermissionDeniedError(err) ? translate('common.insufficientRights') : err.code || err.message,
       );
     }
-  }
-
-  function stageUpdateQuest() {
-    if (!canManage || !editQuestForm || editQuestId === null) return;
-
-    stage(
-      'updateQuest',
-      translate('quests.edit'),
-      '/api/operations/quests/update',
-      formValid(editQuestForm),
-      buildQuestBody(editQuestForm, editQuestId),
-      translate('quests.updateQuestSummary', { id: editQuestId }),
-      async () => {
-        editQuestId = null;
-        editQuestForm = null;
-        await loadQuests();
-      },
-    );
   }
 
   // The reason comes from the shared modal; on a server refusal (quest_has_progress) createWriteOps
@@ -311,137 +309,11 @@
     <div class="panel-head">
       <h2><Award size={17} strokeWidth={2} aria-hidden="true" /> {$t('quests.questsHeading')}</h2>
       {#if canManage}
-        <button type="button" class="ghost-button" on:click={() => (newQuestOpen = !newQuestOpen)}>
-          <Plus size={14} strokeWidth={2} aria-hidden="true" /> {newQuestOpen ? $t('quests.cancel') : $t('quests.newQuest')}
+        <button type="button" class="ghost-button" on:click={openCreateQuest}>
+          <Plus size={14} strokeWidth={2} aria-hidden="true" /> {$t('quests.newQuest')}
         </button>
       {/if}
     </div>
-
-    {#if newQuestOpen}
-      <div class="catalog-card-detail">
-        <div class="op-field">
-          <label for="new-quest-campaign">{$t('quests.campaignCodeRequired')}</label>
-          <input id="new-quest-campaign" bind:value={newQuest.campaignCode} placeholder={$t('quests.campaignPlaceholder')} />
-        </div>
-        <div class="op-field">
-          <label for="new-quest-chain">{$t('quests.chainCode')}</label>
-          <input id="new-quest-chain" bind:value={newQuest.chainCode} />
-        </div>
-        <div class="op-field">
-          <label for="new-quest-localization">{$t('quests.localizationCodeRequired')}</label>
-          <input id="new-quest-localization" bind:value={newQuest.localizationCode} placeholder={$t('quests.localizationPlaceholder')} />
-        </div>
-        <div class="op-field">
-          <label for="new-quest-type">{$t('quests.questTypeRequired')}</label>
-          {#if questTypes.length > 0}
-            <select id="new-quest-type" bind:value={newQuest.questType}>
-              <option value="">{$t('quests.questTypeSelect')}</option>
-              {#if newQuest.questType && !questTypeNames.includes(newQuest.questType)}
-                <option value={newQuest.questType}>{$t('quests.questTypeLegacy', { name: newQuest.questType })}</option>
-              {/if}
-              {#each questTypes as questType (questType.name)}
-                <option value={questType.name}>{questType.wired ? questType.name : $t('quests.questTypeNoTrigger', { name: questType.name })}</option>
-              {/each}
-            </select>
-          {:else}
-            <input id="new-quest-type" bind:value={newQuest.questType} placeholder={$t('quests.questTypePlaceholder')} />
-          {/if}
-        </div>
-        <div class="op-field">
-          <label for="new-quest-steps">{$t('quests.totalSteps')}</label>
-          <input id="new-quest-steps" type="number" min="1" bind:value={newQuest.totalSteps} />
-          <small class="muted">{$t('quests.objectiveHint')}</small>
-        </div>
-
-        <fieldset class="op-subgroup">
-          <legend><Target size={13} strokeWidth={2} aria-hidden="true" /> {$t('quests.targetLegend')}</legend>
-          <div class="op-field">
-            <label for="new-quest-target-type">{$t('quests.targetType')}</label>
-            <input id="new-quest-target-type" bind:value={newQuest.targetType} placeholder={$t('quests.targetTypePlaceholder')} />
-          </div>
-          <div class="op-field">
-            <label for="new-quest-target-value">{$t('quests.targetValue')}</label>
-            <input id="new-quest-target-value" bind:value={newQuest.targetValue} placeholder={$t('quests.targetValuePlaceholder')} />
-          </div>
-          <small class="muted">{$t('quests.targetHint')}</small>
-        </fieldset>
-
-        <fieldset class="op-subgroup">
-          <legend><Gift size={13} strokeWidth={2} aria-hidden="true" /> {$t('quests.rewardLegend')}</legend>
-          <div class="op-field">
-            <label for="new-quest-reward-kind">{$t('quests.rewardKind')}</label>
-            <select id="new-quest-reward-kind" bind:value={newQuest.rewardKind}>
-              <option value="credits">{$t('quests.rewardKindCredits')}</option>
-              <option value="activityPoints">{$t('quests.rewardKindActivityPoints')}</option>
-            </select>
-          </div>
-          {#if newQuest.rewardKind === 'activityPoints'}
-            <div class="op-field">
-              <label for="new-quest-point-type">{$t('quests.rewardPointType')}</label>
-              <input id="new-quest-point-type" type="number" min="0" bind:value={newQuest.rewardPointType} />
-              <small class="muted">{$t('quests.rewardPointTypeHint')}</small>
-            </div>
-          {/if}
-          <div class="op-field">
-            <label for="new-quest-reward-amount">{$t('quests.rewardAmount')}</label>
-            <input id="new-quest-reward-amount" type="number" min="0" bind:value={newQuest.rewardAmount} />
-          </div>
-        </fieldset>
-
-        <fieldset class="op-subgroup">
-          <legend><Clock size={13} strokeWidth={2} aria-hidden="true" /> {$t('quests.timerLegend')}</legend>
-          <div class="op-field">
-            <label><input type="checkbox" bind:checked={newQuest.seasonal} /> {$t('quests.seasonalLabel')}</label>
-          </div>
-          {#if newQuest.seasonal}
-            <div class="op-field">
-              <label for="new-quest-seconds">{$t('quests.seasonalSeconds')}</label>
-              <input id="new-quest-seconds" type="number" min="0" bind:value={newQuest.seasonalSeconds} />
-              <div class="preset-row">
-                {#each seasonalPresets as preset}
-                  <button type="button" class="ghost-button preset" on:click={() => { newQuest.seasonalSeconds = preset.seconds; newQuest = newQuest; }}>{$t(preset.key)}</button>
-                {/each}
-              </div>
-            </div>
-            <div class="op-field">
-              <label for="new-quest-ends">{$t('quests.endsAt')}</label>
-              <input id="new-quest-ends" type="datetime-local" bind:value={newQuest.endsAt} />
-              <small class="muted">{$t('quests.timerHint')}</small>
-            </div>
-          {/if}
-        </fieldset>
-
-        <div class="op-field">
-          <label for="new-quest-catalog">{$t('quests.catalogPageName')}</label>
-          <input id="new-quest-catalog" bind:value={newQuest.catalogPageName} />
-        </div>
-        <div class="op-field">
-          <label for="new-quest-image">{$t('quests.imageVersion')}</label>
-          <input id="new-quest-image" bind:value={newQuest.imageVersion} />
-        </div>
-        <div class="op-field">
-          <label for="new-quest-sort">{$t('quests.sortOrder')}</label>
-          <input id="new-quest-sort" type="number" bind:value={newQuest.sortOrder} />
-        </div>
-        <div class="op-field">
-          <label><input type="checkbox" bind:checked={newQuest.enabled} /> {$t('quests.enabledLabel')}</label>
-        </div>
-        <div class="op-field">
-          <label><input type="checkbox" bind:checked={newQuest.easy} /> {$t('quests.easyLabel')}</label>
-        </div>
-        <div class="op-field">
-          <label for="new-quest-reason">{$t('common.reasonRequired')}</label>
-          <input id="new-quest-reason" bind:value={newQuest.reason} placeholder={$t('quests.reasonPlaceholder')} list="reason-history" />
-        </div>
-        <div class="op-actions">
-          <button type="button" on:click={stageCreateQuest} disabled={$ops.busyKeys.createQuest}>{$t('quests.create')}</button>
-        </div>
-        {#if $ops.errors.createQuest}<p class="empty-state danger">{$ops.errors.createQuest}</p>{/if}
-        {#if $ops.results.createQuest}
-          <OpResult result={$ops.results.createQuest} />
-        {/if}
-      </div>
-    {/if}
 
     {#if loading}
       <p class="muted">{$t('common.loading')}</p>
@@ -491,137 +363,6 @@
               {/if}
             </div>
 
-            {#if editQuestId === quest.id}
-              {#if editQuestForm}
-                <div class="catalog-card-detail">
-                  <div class="op-field">
-                    <label for={`edit-quest-campaign-${quest.id}`}>{$t('quests.campaignCodeRequired')}</label>
-                    <input id={`edit-quest-campaign-${quest.id}`} bind:value={editQuestForm.campaignCode} />
-                  </div>
-                  <div class="op-field">
-                    <label for={`edit-quest-chain-${quest.id}`}>{$t('quests.chainCode')}</label>
-                    <input id={`edit-quest-chain-${quest.id}`} bind:value={editQuestForm.chainCode} />
-                  </div>
-                  <div class="op-field">
-                    <label for={`edit-quest-localization-${quest.id}`}>{$t('quests.localizationCodeRequired')}</label>
-                    <input id={`edit-quest-localization-${quest.id}`} bind:value={editQuestForm.localizationCode} />
-                  </div>
-                  <div class="op-field">
-                    <label for={`edit-quest-type-${quest.id}`}>{$t('quests.questTypeRequired')}</label>
-                    {#if questTypes.length > 0}
-                      <select id={`edit-quest-type-${quest.id}`} bind:value={editQuestForm.questType}>
-                        <option value="">{$t('quests.questTypeSelect')}</option>
-                        {#if editQuestForm.questType && !questTypeNames.includes(editQuestForm.questType)}
-                          <option value={editQuestForm.questType}>{$t('quests.questTypeLegacy', { name: editQuestForm.questType })}</option>
-                        {/if}
-                        {#each questTypes as questType (questType.name)}
-                          <option value={questType.name}>{questType.wired ? questType.name : $t('quests.questTypeNoTrigger', { name: questType.name })}</option>
-                        {/each}
-                      </select>
-                    {:else}
-                      <input id={`edit-quest-type-${quest.id}`} bind:value={editQuestForm.questType} />
-                    {/if}
-                  </div>
-                  <div class="op-field">
-                    <label for={`edit-quest-steps-${quest.id}`}>{$t('quests.totalSteps')}</label>
-                    <input id={`edit-quest-steps-${quest.id}`} type="number" min="1" bind:value={editQuestForm.totalSteps} />
-                    <small class="muted">{$t('quests.objectiveHint')}</small>
-                  </div>
-
-                  <fieldset class="op-subgroup">
-                    <legend><Target size={13} strokeWidth={2} aria-hidden="true" /> {$t('quests.targetLegend')}</legend>
-                    <div class="op-field">
-                      <label for={`edit-quest-target-type-${quest.id}`}>{$t('quests.targetType')}</label>
-                      <input id={`edit-quest-target-type-${quest.id}`} bind:value={editQuestForm.targetType} placeholder={$t('quests.targetTypePlaceholder')} />
-                    </div>
-                    <div class="op-field">
-                      <label for={`edit-quest-target-value-${quest.id}`}>{$t('quests.targetValue')}</label>
-                      <input id={`edit-quest-target-value-${quest.id}`} bind:value={editQuestForm.targetValue} placeholder={$t('quests.targetValuePlaceholder')} />
-                    </div>
-                    <small class="muted">{$t('quests.targetHint')}</small>
-                  </fieldset>
-
-                  <fieldset class="op-subgroup">
-                    <legend><Gift size={13} strokeWidth={2} aria-hidden="true" /> {$t('quests.rewardLegend')}</legend>
-                    <div class="op-field">
-                      <label for={`edit-quest-reward-kind-${quest.id}`}>{$t('quests.rewardKind')}</label>
-                      <select id={`edit-quest-reward-kind-${quest.id}`} bind:value={editQuestForm.rewardKind}>
-                        <option value="credits">{$t('quests.rewardKindCredits')}</option>
-                        <option value="activityPoints">{$t('quests.rewardKindActivityPoints')}</option>
-                      </select>
-                    </div>
-                    {#if editQuestForm.rewardKind === 'activityPoints'}
-                      <div class="op-field">
-                        <label for={`edit-quest-point-type-${quest.id}`}>{$t('quests.rewardPointType')}</label>
-                        <input id={`edit-quest-point-type-${quest.id}`} type="number" min="0" bind:value={editQuestForm.rewardPointType} />
-                        <small class="muted">{$t('quests.rewardPointTypeHint')}</small>
-                      </div>
-                    {/if}
-                    <div class="op-field">
-                      <label for={`edit-quest-reward-amount-${quest.id}`}>{$t('quests.rewardAmount')}</label>
-                      <input id={`edit-quest-reward-amount-${quest.id}`} type="number" min="0" bind:value={editQuestForm.rewardAmount} />
-                    </div>
-                  </fieldset>
-
-                  <fieldset class="op-subgroup">
-                    <legend><Clock size={13} strokeWidth={2} aria-hidden="true" /> {$t('quests.timerLegend')}</legend>
-                    <div class="op-field">
-                      <label><input type="checkbox" bind:checked={editQuestForm.seasonal} /> {$t('quests.seasonalLabel')}</label>
-                    </div>
-                    {#if editQuestForm.seasonal}
-                      <div class="op-field">
-                        <label for={`edit-quest-seconds-${quest.id}`}>{$t('quests.seasonalSeconds')}</label>
-                        <input id={`edit-quest-seconds-${quest.id}`} type="number" min="0" bind:value={editQuestForm.seasonalSeconds} />
-                        <div class="preset-row">
-                          {#each seasonalPresets as preset}
-                            <button type="button" class="ghost-button preset" on:click={() => { editQuestForm.seasonalSeconds = preset.seconds; editQuestForm = editQuestForm; }}>{$t(preset.key)}</button>
-                          {/each}
-                        </div>
-                      </div>
-                      <div class="op-field">
-                        <label for={`edit-quest-ends-${quest.id}`}>{$t('quests.endsAt')}</label>
-                        <input id={`edit-quest-ends-${quest.id}`} type="datetime-local" bind:value={editQuestForm.endsAt} />
-                        <small class="muted">{$t('quests.timerHint')}</small>
-                      </div>
-                    {/if}
-                  </fieldset>
-
-                  <div class="op-field">
-                    <label for={`edit-quest-catalog-${quest.id}`}>{$t('quests.catalogPageName')}</label>
-                    <input id={`edit-quest-catalog-${quest.id}`} bind:value={editQuestForm.catalogPageName} />
-                  </div>
-                  <div class="op-field">
-                    <label for={`edit-quest-image-${quest.id}`}>{$t('quests.imageVersion')}</label>
-                    <input id={`edit-quest-image-${quest.id}`} bind:value={editQuestForm.imageVersion} />
-                  </div>
-                  <div class="op-field">
-                    <label for={`edit-quest-sort-${quest.id}`}>{$t('quests.sortOrder')}</label>
-                    <input id={`edit-quest-sort-${quest.id}`} type="number" bind:value={editQuestForm.sortOrder} />
-                  </div>
-                  <div class="op-field">
-                    <label><input type="checkbox" bind:checked={editQuestForm.enabled} /> {$t('quests.enabledLabel')}</label>
-                  </div>
-                  <div class="op-field">
-                    <label><input type="checkbox" bind:checked={editQuestForm.easy} /> {$t('quests.easyLabel')}</label>
-                  </div>
-                  <div class="op-field">
-                    <label for={`edit-quest-reason-${quest.id}`}>{$t('common.reasonRequired')}</label>
-                    <input id={`edit-quest-reason-${quest.id}`} bind:value={editQuestForm.reason} placeholder={$t('common.reasonPlaceholderChange')} list="reason-history" />
-                  </div>
-                  <div class="op-actions">
-                    <button type="button" on:click={stageUpdateQuest} disabled={$ops.busyKeys.updateQuest}>{$t('quests.save')}</button>
-                    <button class="ghost-button" type="button" on:click={() => { editQuestId = null; editQuestForm = null; }}>{$t('quests.cancel')}</button>
-                  </div>
-                  {#if $ops.errors.updateQuest}<p class="empty-state danger">{$ops.errors.updateQuest}</p>{/if}
-                  {#if $ops.results.updateQuest}
-                    <OpResult result={$ops.results.updateQuest} />
-                  {/if}
-                </div>
-              {:else if $ops.errors.updateQuest}
-                <div class="catalog-card-detail"><p class="empty-state danger">{$ops.errors.updateQuest}</p></div>
-              {/if}
-            {/if}
-
             {#if canManage}
               <div class="catalog-card-detail delete-bar">
                 <button type="button" class="ghost-button danger" on:click={() => openDeleteQuest(quest)}>
@@ -638,6 +379,140 @@
       <OpResult result={$deleteOps.results.deleteQuest} />
     {/if}
   </section>
+{/if}
+
+{#if questModal}
+  <Modal
+    title={questModal.id === null ? $t('quests.newQuest') : $t('quests.editQuest')}
+    eyebrow={$t('quests.questsHeading')}
+    width={720}
+    labelledBy="quest-form-title"
+    on:close={closeQuestModal}
+  >
+    <div class="op-field">
+      <label for="quest-campaign">{$t('quests.campaignCodeRequired')}</label>
+      <input id="quest-campaign" bind:value={questModal.form.campaignCode} placeholder={$t('quests.campaignPlaceholder')} />
+    </div>
+    <div class="op-field">
+      <label for="quest-chain">{$t('quests.chainCode')}</label>
+      <input id="quest-chain" bind:value={questModal.form.chainCode} />
+    </div>
+    <div class="op-field">
+      <label for="quest-localization">{$t('quests.localizationCodeRequired')}</label>
+      <input id="quest-localization" bind:value={questModal.form.localizationCode} placeholder={$t('quests.localizationPlaceholder')} />
+    </div>
+    <div class="op-field">
+      <label for="quest-type">{$t('quests.questTypeRequired')}</label>
+      {#if questTypes.length > 0}
+        <select id="quest-type" bind:value={questModal.form.questType}>
+          <option value="">{$t('quests.questTypeSelect')}</option>
+          {#if questModal.form.questType && !questTypeNames.includes(questModal.form.questType)}
+            <option value={questModal.form.questType}>{$t('quests.questTypeLegacy', { name: questModal.form.questType })}</option>
+          {/if}
+          {#each questTypes as questType (questType.name)}
+            <option value={questType.name}>{questType.wired ? questType.name : $t('quests.questTypeNoTrigger', { name: questType.name })}</option>
+          {/each}
+        </select>
+      {:else}
+        <input id="quest-type" bind:value={questModal.form.questType} placeholder={$t('quests.questTypePlaceholder')} />
+      {/if}
+    </div>
+    <div class="op-field">
+      <label for="quest-steps">{$t('quests.totalSteps')}</label>
+      <input id="quest-steps" type="number" min="1" bind:value={questModal.form.totalSteps} />
+      <small class="muted">{$t('quests.objectiveHint')}</small>
+    </div>
+
+    <fieldset class="op-subgroup">
+      <legend><Target size={13} strokeWidth={2} aria-hidden="true" /> {$t('quests.targetLegend')}</legend>
+      <div class="op-field">
+        <label for="quest-target-type">{$t('quests.targetType')}</label>
+        <input id="quest-target-type" bind:value={questModal.form.targetType} placeholder={$t('quests.targetTypePlaceholder')} />
+      </div>
+      <div class="op-field">
+        <label for="quest-target-value">{$t('quests.targetValue')}</label>
+        <input id="quest-target-value" bind:value={questModal.form.targetValue} placeholder={$t('quests.targetValuePlaceholder')} />
+      </div>
+      <small class="muted">{$t('quests.targetHint')}</small>
+    </fieldset>
+
+    <fieldset class="op-subgroup">
+      <legend><Gift size={13} strokeWidth={2} aria-hidden="true" /> {$t('quests.rewardLegend')}</legend>
+      <div class="op-field">
+        <label for="quest-reward-kind">{$t('quests.rewardKind')}</label>
+        <select id="quest-reward-kind" bind:value={questModal.form.rewardKind}>
+          <option value="credits">{$t('quests.rewardKindCredits')}</option>
+          <option value="activityPoints">{$t('quests.rewardKindActivityPoints')}</option>
+        </select>
+      </div>
+      {#if questModal.form.rewardKind === 'activityPoints'}
+        <div class="op-field">
+          <label for="quest-point-type">{$t('quests.rewardPointType')}</label>
+          <input id="quest-point-type" type="number" min="0" bind:value={questModal.form.rewardPointType} />
+          <small class="muted">{$t('quests.rewardPointTypeHint')}</small>
+        </div>
+      {/if}
+      <div class="op-field">
+        <label for="quest-reward-amount">{$t('quests.rewardAmount')}</label>
+        <input id="quest-reward-amount" type="number" min="0" bind:value={questModal.form.rewardAmount} />
+      </div>
+    </fieldset>
+
+    <fieldset class="op-subgroup">
+      <legend><Clock size={13} strokeWidth={2} aria-hidden="true" /> {$t('quests.timerLegend')}</legend>
+      <div class="op-field">
+        <label><input type="checkbox" bind:checked={questModal.form.seasonal} /> {$t('quests.seasonalLabel')}</label>
+      </div>
+      {#if questModal.form.seasonal}
+        <div class="op-field">
+          <label for="quest-seconds">{$t('quests.seasonalSeconds')}</label>
+          <input id="quest-seconds" type="number" min="0" bind:value={questModal.form.seasonalSeconds} />
+          <div class="preset-row">
+            {#each seasonalPresets as preset}
+              <button type="button" class="ghost-button preset" on:click={() => { questModal.form.seasonalSeconds = preset.seconds; questModal = questModal; }}>{$t(preset.key)}</button>
+            {/each}
+          </div>
+        </div>
+        <div class="op-field">
+          <label for="quest-ends">{$t('quests.endsAt')}</label>
+          <input id="quest-ends" type="datetime-local" bind:value={questModal.form.endsAt} />
+          <small class="muted">{$t('quests.timerHint')}</small>
+        </div>
+      {/if}
+    </fieldset>
+
+    <div class="op-field">
+      <label for="quest-catalog">{$t('quests.catalogPageName')}</label>
+      <input id="quest-catalog" bind:value={questModal.form.catalogPageName} />
+    </div>
+    <div class="op-field">
+      <label for="quest-image">{$t('quests.imageVersion')}</label>
+      <input id="quest-image" bind:value={questModal.form.imageVersion} />
+    </div>
+    <div class="op-field">
+      <label for="quest-sort">{$t('quests.sortOrder')}</label>
+      <input id="quest-sort" type="number" bind:value={questModal.form.sortOrder} />
+    </div>
+    <div class="op-field">
+      <label><input type="checkbox" bind:checked={questModal.form.enabled} /> {$t('quests.enabledLabel')}</label>
+    </div>
+    <div class="op-field">
+      <label><input type="checkbox" bind:checked={questModal.form.easy} /> {$t('quests.easyLabel')}</label>
+    </div>
+    <div class="op-field">
+      <label for="quest-reason">{$t('common.reasonRequired')}</label>
+      <input id="quest-reason" bind:value={questModal.form.reason} placeholder={$t('quests.reasonPlaceholder')} list="reason-history" />
+    </div>
+
+    {#if $ops.errors.questForm}<p class="empty-state danger">{$ops.errors.questForm}</p>{/if}
+
+    <svelte:fragment slot="actions">
+      <button type="button" on:click={saveQuest} disabled={$ops.busyKeys.questForm}>
+        {questModal.id === null ? $t('quests.create') : $t('quests.save')}
+      </button>
+      <button class="ghost-button" type="button" on:click={closeQuestModal}>{$t('quests.cancel')}</button>
+    </svelte:fragment>
+  </Modal>
 {/if}
 
 <ConfirmStagedModal {ops} eyebrow={$t('quests.confirmEyebrow')} />

@@ -62,6 +62,7 @@ public sealed class PlayerModule : IHostPluginModule
         services.AddSingleton<IBuildersClubService, BuildersClubService>();
         services.AddSingleton<IQuestAdminService, QuestAdminService>();
         services.AddSingleton<IPollAdminService, PollAdminService>();
+        services.AddSingleton<IQuestContentAdminService, QuestContentAdminService>();
         services.AddSingleton<IMysteryBoxAdminService, MysteryBoxAdminService>();
         services.AddSingleton<IPrizePoolAdminService, PrizePoolAdminService>();
         services.AddSingleton<IContentAdminService, ContentAdminService>();

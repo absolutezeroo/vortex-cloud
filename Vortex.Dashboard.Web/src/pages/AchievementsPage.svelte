@@ -18,6 +18,7 @@
   import AssetImage from '../components/AssetImage.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import EntityLink from '../components/EntityLink.svelte';
+  import Modal from '../components/Modal.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { Trophy, Award, Zap, ZapOff, Users } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
@@ -33,6 +34,8 @@
   let detailLoading = false;
 
   const ops = createWriteOps(async () => {
+    achievementForm = null;
+    levelForm = null;
     await refresh();
     if (selected) await reloadDetail(selected);
   });
@@ -49,14 +52,18 @@
     scorePoints: 0,
   });
 
-  let achievementForm = emptyAchievement();
-  let levelForm = emptyLevel();
+  // Both editors used to live in a panel pinned to the bottom of the page: you clicked a row at
+  // the top and the form that edited it sat several hundred pixels below, with nothing tying the
+  // two together. They are dialogs now -- a multi-field form with mixed inputs is the case a
+  // dialog is for, and it opens attached to the row you clicked.
+  let achievementForm = null;
+  let levelForm = null;
 
   // The badge file is named after the code, so the preview is the honest test of a typed one: a
   // wrong code shows the fallback here exactly as it would show nothing in the client. Built from
   // the template so a rung that does not exist yet still previews.
   $: badgePreviewUrl =
-    levelForm.badgeCode.trim() && stats?.badgeImageTemplate
+    levelForm?.badgeCode?.trim() && stats?.badgeImageTemplate
       ? stats.badgeImageTemplate.replace('{badge}', encodeURIComponent(levelForm.badgeCode.trim()))
       : null;
 
@@ -373,55 +380,130 @@
 
 {#if canManage && list}
   <section class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>{$t('achievements.editorTitle')}</h2></div>
-    <p class="muted">{$t('achievements.editorHint')}</p>
-
-    <form
-      class="inline-form"
-      on:submit|preventDefault={() =>
-        ops.ask(
-          '/api/v1/operations/content/achievements',
-          {
-            achievementId: Number(achievementForm.id) || 0,
-            name: achievementForm.name,
-            category: achievementForm.category,
-            displayMethod: Number(achievementForm.displayMethod) || 0,
-          },
-          achievementForm.id ? $t('achievements.updateAchievement') : $t('achievements.addAchievement'),
-          $t('achievements.saveSummary', { name: achievementForm.name })
-        )}
-    >
-      <label>
-        {$t('achievements.colName')}
-        <input bind:value={achievementForm.name} placeholder="RoomEntry" />
-      </label>
-      <label>
-        {$t('achievements.colCategory')}
-        <input bind:value={achievementForm.category} placeholder="explore" list="achievement-categories" />
-      </label>
-      <label>
-        {$t('achievements.displayMethod')}
-        <input type="number" bind:value={achievementForm.displayMethod} min="0" />
-      </label>
-      <button type="submit" disabled={!achievementForm.name.trim() || !achievementForm.category.trim()}>
-        {achievementForm.id ? $t('achievements.updateAchievement') : $t('achievements.addAchievement')}
-      </button>
-      {#if achievementForm.id}
+    <div class="panel-head">
+      <h2>{$t('achievements.editorTitle')}</h2>
+      <div class="head-actions">
         <button type="button" class="ghost-button" on:click={() => (achievementForm = emptyAchievement())}>
+          <Award size={14} strokeWidth={2} aria-hidden="true" />
           {$t('achievements.newAchievement')}
         </button>
-      {/if}
-    </form>
+        {#if selected}
+          <button type="button" class="ghost-button" on:click={() => (levelForm = emptyLevel())}>
+            <Trophy size={14} strokeWidth={2} aria-hidden="true" />
+            {$t('achievements.levelEditorTitle')}
+          </button>
+        {/if}
+      </div>
+    </div>
+    <p class="muted">{$t('achievements.editorHint')}</p>
+    {#if !selected}
+      <p class="muted">{$t('achievements.pickToEditLevels')}</p>
+    {/if}
 
-    <datalist id="achievement-categories">
-      {#each list.categories || [] as c}<option value={c}></option>{/each}
-    </datalist>
+    {#if $ops.result}
+      <OpResult result={$ops.result} />
+    {/if}
+  </section>
+{/if}
 
-    {#if selected}
-      <h3 class="subhead">{$t('achievements.levelEditorTitle')}</h3>
-      <form
-        class="inline-form"
-        on:submit|preventDefault={() =>
+<datalist id="achievement-categories">
+  {#each list?.categories || [] as c}<option value={c}></option>{/each}
+</datalist>
+
+{#if achievementForm}
+  <Modal
+    title={achievementForm.id ? $t('achievements.updateAchievement') : $t('achievements.addAchievement')}
+    eyebrow={$t('achievements.editorTitle')}
+    width={520}
+    labelledBy="achievement-form-title"
+    on:close={() => (achievementForm = null)}
+  >
+    <div class="op-field">
+      <label for="achievement-name">{$t('achievements.colName')}</label>
+      <input id="achievement-name" bind:value={achievementForm.name} placeholder="RoomEntry" />
+    </div>
+    <div class="op-field">
+      <label for="achievement-category">{$t('achievements.colCategory')}</label>
+      <input
+        id="achievement-category"
+        bind:value={achievementForm.category}
+        placeholder="explore"
+        list="achievement-categories"
+      />
+    </div>
+    <div class="op-field">
+      <label for="achievement-display">{$t('achievements.displayMethod')}</label>
+      <input id="achievement-display" type="number" bind:value={achievementForm.displayMethod} min="0" />
+    </div>
+
+    <svelte:fragment slot="actions">
+      <button
+        type="button"
+        disabled={!achievementForm.name.trim() || !achievementForm.category.trim()}
+        on:click={() =>
+          ops.ask(
+            '/api/v1/operations/content/achievements',
+            {
+              achievementId: Number(achievementForm.id) || 0,
+              name: achievementForm.name,
+              category: achievementForm.category,
+              displayMethod: Number(achievementForm.displayMethod) || 0,
+            },
+            achievementForm.id ? $t('achievements.updateAchievement') : $t('achievements.addAchievement'),
+            $t('achievements.saveSummary', { name: achievementForm.name })
+          )}
+      >
+        {achievementForm.id ? $t('achievements.updateAchievement') : $t('achievements.addAchievement')}
+      </button>
+      <button class="ghost-button" type="button" on:click={() => (achievementForm = null)}>
+        {$t('common.cancel')}
+      </button>
+    </svelte:fragment>
+  </Modal>
+{/if}
+
+{#if levelForm && selected}
+  <Modal
+    title={$t('achievements.levelEditorTitle')}
+    eyebrow={$t('achievements.editorTitle')}
+    width={520}
+    labelledBy="level-form-title"
+    on:close={() => (levelForm = null)}
+  >
+    <div class="op-field">
+      <label for="level-number">{$t('achievements.colLevel')}</label>
+      <input id="level-number" type="number" bind:value={levelForm.level} min="1" />
+    </div>
+    <div class="op-field">
+      <label for="level-badge">{$t('achievements.colBadgeCode')}</label>
+      <span class="badge-cell">
+        <input id="level-badge" bind:value={levelForm.badgeCode} placeholder="ACH_RoomEntry1" />
+        <AssetImage src={badgePreviewUrl} alt={levelForm.badgeCode} size={32} fallbackIcon={Award} />
+      </span>
+    </div>
+    <div class="op-field">
+      <label for="level-requirement">{$t('achievements.colRequirement')}</label>
+      <input id="level-requirement" type="number" bind:value={levelForm.progressRequirement} min="1" />
+    </div>
+    <div class="op-field">
+      <label for="level-reward-amount">{$t('achievements.rewardAmount')}</label>
+      <input id="level-reward-amount" type="number" bind:value={levelForm.rewardAmount} min="0" />
+    </div>
+    <div class="op-field">
+      <label for="level-reward-type">{$t('achievements.rewardType')}</label>
+      <input id="level-reward-type" type="number" bind:value={levelForm.rewardType} />
+      <small class="muted">{$t('achievements.rewardTypeHint')}</small>
+    </div>
+    <div class="op-field">
+      <label for="level-score">{$t('achievements.colLevelScore')}</label>
+      <input id="level-score" type="number" bind:value={levelForm.scorePoints} min="0" />
+    </div>
+
+    <svelte:fragment slot="actions">
+      <button
+        type="button"
+        disabled={!levelForm.badgeCode.trim()}
+        on:click={() =>
           ops.ask(
             '/api/v1/operations/content/achievements/levels',
             {
@@ -437,44 +519,13 @@
             $t('achievements.saveLevelSummary', { level: levelForm.level })
           )}
       >
-        <label>
-          {$t('achievements.colLevel')}
-          <input type="number" bind:value={levelForm.level} min="1" />
-        </label>
-        <label>
-          {$t('achievements.colBadgeCode')}
-          <span class="badge-cell">
-            <input bind:value={levelForm.badgeCode} placeholder="ACH_RoomEntry1" />
-            <AssetImage src={badgePreviewUrl} alt={levelForm.badgeCode} size={32} fallbackIcon={Award} />
-          </span>
-        </label>
-        <label>
-          {$t('achievements.colRequirement')}
-          <input type="number" bind:value={levelForm.progressRequirement} min="1" />
-        </label>
-        <label>
-          {$t('achievements.rewardAmount')}
-          <input type="number" bind:value={levelForm.rewardAmount} min="0" />
-        </label>
-        <label>
-          {$t('achievements.rewardType')}
-          <input type="number" bind:value={levelForm.rewardType} />
-        </label>
-        <label>
-          {$t('achievements.colLevelScore')}
-          <input type="number" bind:value={levelForm.scorePoints} min="0" />
-        </label>
-        <button type="submit" disabled={!levelForm.badgeCode.trim()}>{$t('achievements.saveLevel')}</button>
-      </form>
-      <p class="muted">{$t('achievements.rewardTypeHint')}</p>
-    {:else}
-      <p class="muted">{$t('achievements.pickToEditLevels')}</p>
-    {/if}
-
-    {#if $ops.result}
-      <OpResult result={$ops.result} />
-    {/if}
-  </section>
+        {$t('achievements.saveLevel')}
+      </button>
+      <button class="ghost-button" type="button" on:click={() => (levelForm = null)}>
+        {$t('common.cancel')}
+      </button>
+    </svelte:fragment>
+  </Modal>
 {/if}
 
 {#if stats}

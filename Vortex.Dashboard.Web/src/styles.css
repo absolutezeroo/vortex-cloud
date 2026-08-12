@@ -505,6 +505,13 @@ button {
 /* Neutral/secondary action — fully self-contained so it stays neutral (and its text stays
    readable on hover) even inside a panel. */
 .ghost-button {
+  /* Laid out as a row here rather than per-container: a ghost button is the icon+label button of
+     this app, and it turns up standalone as often as it does inside an action row. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
   border: 1px solid var(--line-strong);
   border-radius: 9px;
   background: var(--surface-strong);
@@ -814,11 +821,33 @@ table {
   white-space: nowrap;
 }
 
-/* A button in an action row that carries an icon beside its label. */
-.op-actions button {
+/* Nearly every button here is an icon followed by a label. Left as the default inline-block, that
+   is two inline boxes that wrap independently: inside a flex row the button shrinks to min-content
+   as soon as space is tight, and the label drops under the icon -- which is how "Cancel" ended up
+   sitting below its own plus sign. An inline-flex row that refuses to wrap or shrink fixes it
+   everywhere at once.
+   Listed by container rather than as a bare `button` so the two buttons that are not labels -- the
+   modal backdrop and the inline .entity-item links -- keep their own layout. */
+.op-actions button,
+.row-actions button,
+.head-actions button,
+.panel-head button,
+.toolbar button,
+.toolbar-grid button,
+.offer-actions button,
+.offer-head button,
+.inline-form button,
+.detail-actions button,
+.editor-actions button,
+.question-head button,
+.op-pick button,
+.tabs button {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* The panel title row wraps rather than squashing its buttons on a narrow window, and a title with

@@ -9,6 +9,8 @@
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import { apiGet } from '../lib/api.js';
   import { createWriteOps } from '../lib/writeOps.js';
+  import Tabs from '../components/Tabs.svelte';
+  import Pagination from '../components/Pagination.svelte';
   import { formatNumber } from '../lib/format.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
@@ -23,6 +25,40 @@
   let entries = [];
   let totals = [];
   let bindings = [];
+
+  let tab = 'pools';
+
+  // The bindings table is the one list here that grows with the hotel rather than with the operator:
+  // every crackable furni is a row, which is a four-figure scroll on a real database. Filter first --
+  // an operator arrives knowing which furni they are looking for -- and page what is left. Both are
+  // client-side because the whole set already arrived with the page.
+  const BINDINGS_PAGE_SIZE = 25;
+  let bindingQuery = '';
+  let bindingPool = '';
+  let bindingPage = 1;
+
+  $: filteredBindings = bindings.filter((b) => {
+    if (bindingPool && b.pool !== bindingPool) return false;
+    if (!bindingQuery.trim()) return true;
+
+    const needle = bindingQuery.trim().toLowerCase();
+
+    return (
+      (b.furnitureName ?? '').toLowerCase().includes(needle) ||
+      (b.furnitureLogic ?? '').toLowerCase().includes(needle) ||
+      String(b.furnitureDefinitionId).includes(needle)
+    );
+  });
+
+  $: bindingPageCount = Math.max(1, Math.ceil(filteredBindings.length / BINDINGS_PAGE_SIZE));
+  // Narrowing the filter can strand the operator past the last page; walk them back to it.
+  $: if (bindingPage > bindingPageCount) bindingPage = bindingPageCount;
+  $: pagedBindings = filteredBindings.slice(
+    (bindingPage - 1) * BINDINGS_PAGE_SIZE,
+    bindingPage * BINDINGS_PAGE_SIZE
+  );
+  $: bindingPools = [...new Set(bindings.map((b) => b.pool))].sort();
+
   let productTypes = [];
   let stats = null;
   let statsDays = 7;
@@ -177,6 +213,16 @@
   {/if}
   <OpResult result={$ops.result} />
 
+  <Tabs
+    bind:active={tab}
+    storageKey="prizePools"
+    tabs={[
+      { id: 'pools', label: $t('prizePools.tabPools'), icon: Dices, count: pools.length },
+      { id: 'bindings', label: $t('prizePools.tabBindings'), icon: Link2, count: bindings.length },
+    ]}
+  />
+
+  {#if tab === 'pools'}
   <section class="panel">
     <div class="panel-head">
       <h2>{$t('prizePools.poolsHeading')}</h2>
@@ -402,7 +448,9 @@
       {/if}
     </section>
   {/if}
+  {/if}
 
+  {#if tab === 'bindings'}
   <section class="panel">
     <div class="panel-head">
       <h2>
@@ -415,6 +463,27 @@
     {#if bindings.length === 0}
       <EmptyState message={$t('prizePools.noBindings')} />
     {:else}
+      <div class="toolbar-grid">
+        <label>
+          {$t('prizePools.searchBindings')}
+          <input
+            type="search"
+            bind:value={bindingQuery}
+            on:input={() => (bindingPage = 1)}
+            placeholder={$t('prizePools.searchBindingsPlaceholder')}
+          />
+        </label>
+        <label>
+          {$t('prizePools.pool')}
+          <select bind:value={bindingPool} on:change={() => (bindingPage = 1)}>
+            <option value="">{$t('prizePools.allPools')}</option>
+            {#each bindingPools as pool}
+              <option value={pool}>{pool}</option>
+            {/each}
+          </select>
+        </label>
+      </div>
+
       <div class="table-wrap">
         <table>
           <thead>
@@ -426,7 +495,7 @@
             </tr>
           </thead>
           <tbody>
-            {#each bindings as binding (binding.id)}
+            {#each pagedBindings as binding (binding.id)}
               <tr>
                 <td>
                   <span class="cell-row">
@@ -469,6 +538,22 @@
           </tbody>
         </table>
       </div>
+
+      {#if filteredBindings.length === 0}
+        <EmptyState message={$t('prizePools.noMatchingBindings')} />
+      {:else if bindingPageCount > 1}
+        <Pagination
+          page={bindingPage}
+          pageCount={bindingPageCount}
+          total={filteredBindings.length}
+          pageSize={BINDINGS_PAGE_SIZE}
+          label={$t('prizePools.bindingsLabel')}
+          prevLabel={$t('common.prev')}
+          nextLabel={$t('common.next')}
+          pageWord={$t('common.page')}
+          on:change={(e) => (bindingPage = e.detail)}
+        />
+      {/if}
     {/if}
 
     {#if canManage}
@@ -523,6 +608,7 @@
       </div>
     {/if}
   </section>
+  {/if}
 {/if}
 
 {#if picking}

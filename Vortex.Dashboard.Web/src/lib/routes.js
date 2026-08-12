@@ -67,6 +67,7 @@ export const NAV = [
 
   { path: '/quests', labelKey: 'nav.quests', shortKey: 'nav.questsShort', group: 'Content', caps: ROUTE_PERMISSIONS.quests, load: () => import('../pages/QuestsPage.svelte'), writes: true },
   { path: '/quests-stats', labelKey: 'nav.questsStats', shortKey: 'nav.questsStatsShort', group: 'Content', caps: ROUTE_PERMISSIONS.questsStats, load: () => import('../pages/QuestsStatsPage.svelte') },
+  { path: '/quest-content', labelKey: 'nav.questContent', shortKey: 'nav.questContentShort', group: 'Content', caps: ROUTE_PERMISSIONS.quests, load: () => import('../pages/QuestContentPage.svelte'), writes: true },
   { path: '/polls', labelKey: 'nav.polls', shortKey: 'nav.pollsShort', group: 'Content', caps: ROUTE_PERMISSIONS.polls, load: () => import('../pages/PollsPage.svelte'), writes: true },
   { path: '/achievements', labelKey: 'nav.achievements', shortKey: 'nav.achievementsShort', group: 'Content', caps: ROUTE_PERMISSIONS.achievements, load: () => import('../pages/AchievementsPage.svelte'), writes: true },
   { path: '/mystery-box', labelKey: 'nav.mysteryBox', shortKey: 'nav.mysteryBoxShort', group: 'Content', caps: ROUTE_PERMISSIONS.mysteryBox, load: () => import('../pages/MysteryBoxPage.svelte'), writes: true },

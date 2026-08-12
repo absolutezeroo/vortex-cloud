@@ -18,6 +18,7 @@
   import AssetImage from '../components/AssetImage.svelte';
   import { apiGet } from '../lib/api.js';
   import { createWriteOps } from '../lib/writeOps.js';
+  import Tabs from '../components/Tabs.svelte';
   import { formatNumber } from '../lib/format.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
@@ -85,6 +86,11 @@
   // audit trail can never be skipped by a stray Enter key. Each form passes its own `key` so its
   // result and error land next to it instead of in one banner at the top of the page.
   const ops = createWriteOps();
+
+  // Four jobs on one page: read the numbers, edit the box definitions, edit the prize table, hand a
+  // box or a key to a player. Stacked vertically they were roughly 4000px of scrolling to reach the
+  // last one; nothing here needs to be read against anything else, which is the case tabs are for.
+  let tab = 'overview';
 
   $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsMysteryBoxManage);
   $: boxPrizes = prizes.filter((p) => p.pool === POOL_BOX);
@@ -324,7 +330,18 @@
 {#if forbidden}
   <AccessDeniedNotice message={$t('mysteryBox.accessDenied')} />
 {:else}
-  {#if stats}
+  <Tabs
+    bind:active={tab}
+    storageKey="mysteryBox"
+    tabs={[
+      { id: 'overview', label: $t('mysteryBox.tabOverview'), icon: Sparkles },
+      { id: 'definitions', label: $t('mysteryBox.tabDefinitions'), icon: Package, count: definitions.length },
+      { id: 'prizes', label: $t('mysteryBox.tabPrizes'), icon: Gift, count: prizes.length },
+      ...(canManage ? [{ id: 'grants', label: $t('mysteryBox.tabGrants'), icon: Key }] : []),
+    ]}
+  />
+
+  {#if tab === 'overview' && stats}
     <section class="panel">
       <div class="panel-head">
         <h2><Sparkles size={17} strokeWidth={2} aria-hidden="true" /> {$t('mysteryBox.statsHeading')}</h2>
@@ -382,6 +399,7 @@
     </section>
   {/if}
 
+  {#if tab === 'definitions'}
   <section class="panel">
     <div class="panel-head">
       <h2><Package size={17} strokeWidth={2} aria-hidden="true" /> {$t('mysteryBox.definitionsHeading')}</h2>
@@ -425,6 +443,9 @@
     {/if}
   </section>
 
+  {/if}
+
+  {#if tab === 'prizes'}
   <section class="panel">
     <div class="panel-head">
       <h2><Gift size={17} strokeWidth={2} aria-hidden="true" /> {$t('mysteryBox.prizesHeading')}</h2>
@@ -642,7 +663,9 @@
     {#if $ops.errors.deletePrize}<p class="empty-state danger">{$ops.errors.deletePrize}</p>{/if}
   </section>
 
-  {#if canManage}
+  {/if}
+
+  {#if tab === 'grants' && canManage}
     <section class="panel">
       <div class="panel-head">
         <h2><Package size={17} strokeWidth={2} aria-hidden="true" /> {$t('mysteryBox.boxesHeading')}</h2>
