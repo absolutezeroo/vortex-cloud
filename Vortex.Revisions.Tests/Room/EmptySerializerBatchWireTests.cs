@@ -220,6 +220,39 @@ public sealed class EmptySerializerBatchWireTests
         packet.PopString().Should().Be("Server restarting");
     }
 
+    /// <summary>
+    ///     WIN63 unknowns/_SafePkg_1810/_SafeCls_2693.as (header 3059). This one hid behind a wrong
+    ///     map entry: the type was registered against the account-preferences serializer, which
+    ///     does write bytes, so the audit that finds empty bodies never flagged it. Repairing the
+    ///     pairing is what made it visible.
+    /// </summary>
+    [Fact]
+    public void UnseenItems_WritesCategoriesEachWithItsOwnItemCount()
+    {
+        ClientPacket packet = Body(
+            typeof(UnseenItemsEventMessageComposer),
+            new UnseenItemsEventMessageComposer
+            {
+                Categories =
+                [
+                    new UnseenItemCategory { CategoryId = 1, ItemIds = [10, 11] },
+                    new UnseenItemCategory { CategoryId = 3, ItemIds = [] },
+                ],
+            }
+        );
+
+        packet.PopInt().Should().Be(2);
+
+        packet.PopInt().Should().Be(1);
+        packet.PopInt().Should().Be(2);
+        packet.PopInt().Should().Be(10);
+        packet.PopInt().Should().Be(11);
+
+        packet.PopInt().Should().Be(3);
+        packet.PopInt().Should().Be(0);
+        packet.Remaining.Should().Be(0);
+    }
+
     /// <summary>WIN63 unknowns/_SafePkg_1810/_SafeCls_2688.as (header 2243).</summary>
     [Fact]
     public void NotificationDialog_WritesTypeThenCountedPairs()
