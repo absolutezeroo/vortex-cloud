@@ -18,6 +18,7 @@
   import EmptyState from '../components/EmptyState.svelte';
   import OpResult from '../components/OpResult.svelte';
   import StatCard from '../components/StatCard.svelte';
+  import Tabs from '../components/Tabs.svelte';
   import { Compass, LayoutList, FolderTree, CalendarRange } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
@@ -65,6 +66,11 @@
   let categoryForm = newCategory();
   let eventCategoryForm = newEventCategory();
   let editing = null; // { kind, id, draft }
+
+  // These sections are independent jobs that were stacked vertically, so reaching the last one
+  // meant scrolling past every other. Nothing here is read against anything else -- which is
+  // both what makes tabs right and what would have made them wrong.
+  let tab = 'contexts';
 
   async function refresh() {
     loading = true;
@@ -186,6 +192,17 @@
     </section>
   {/if}
 
+  <Tabs
+    bind:active={tab}
+    storageKey="navigatorConfig"
+    tabs={[
+      { id: 'contexts', label: $t('navigatorConfig.tabContexts'), icon: Compass, count: data?.contexts?.length },
+      { id: 'categories', label: $t('navigatorConfig.tabCategories'), icon: FolderTree, count: data?.flatCategories?.length },
+      { id: 'events', label: $t('navigatorConfig.tabEvents'), icon: CalendarRange, count: data?.eventCategories?.length },
+    ]}
+  />
+
+  {#if tab === 'contexts'}
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('navigatorConfig.tabsTitle')}</h2></div>
 
@@ -469,7 +486,9 @@
       </form>
     {/if}
   </section>
+  {/if}
 
+  {#if tab === 'categories'}
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('navigatorConfig.categoriesTitle')}</h2></div>
     <p class="muted">{$t('navigatorConfig.categoriesDescription')}</p>
@@ -602,7 +621,9 @@
       </form>
     {/if}
   </section>
+  {/if}
 
+  {#if tab === 'events'}
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('navigatorConfig.eventCategoriesTitle')}</h2></div>
     <p class="muted">{$t('navigatorConfig.eventCategoriesDescription')}</p>
@@ -712,6 +733,7 @@
       </form>
     {/if}
   </section>
+  {/if}
 {/if}
 
 <ConfirmReasonModal

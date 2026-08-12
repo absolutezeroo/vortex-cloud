@@ -17,6 +17,7 @@
   import AssetImage from '../components/AssetImage.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import StatCard from '../components/StatCard.svelte';
+  import Tabs from '../components/Tabs.svelte';
   import { Ticket, Store, Coins, Hammer } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
@@ -26,6 +27,11 @@
   let data = null;
 
   const ops = createWriteOps(refresh);
+
+  // These sections are independent jobs that were stacked vertically, so reaching the last one
+  // meant scrolling past every other. Nothing here is read against anything else -- which is
+  // both what makes tabs right and what would have made them wrong.
+  let tab = 'ltd';
 
   $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsContentManage);
 
@@ -127,6 +133,18 @@
     </StatCard>
   </div>
 
+  <Tabs
+    bind:active={tab}
+    storageKey="economyExtras"
+    tabs={[
+      { id: 'ltd', label: $t('economyExtras.tabLtd'), icon: Ticket },
+      { id: 'rentables', label: $t('economyExtras.tabRentables'), icon: Store },
+      { id: 'currencies', label: $t('economyExtras.tabCurrencies'), icon: Coins },
+      { id: 'builders', label: $t('economyExtras.tabBuilders'), icon: Hammer },
+    ]}
+  />
+
+  {#if tab === 'ltd'}
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('economyExtras.ltdTitle')}</h2></div>
     <div class="table-wrap">
@@ -178,7 +196,9 @@
       </table>
     </div>
   </section>
+  {/if}
 
+  {#if tab === 'rentables'}
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('economyExtras.rentableTitle')}</h2></div>
     <p class="muted">{$t('economyExtras.rentableDescription')}</p>
@@ -224,7 +244,9 @@
       </table>
     </div>
   </section>
+  {/if}
 
+  {#if tab === 'currencies'}
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('economyExtras.currenciesTitle')}</h2></div>
     <div class="table-wrap">
@@ -403,7 +425,9 @@
       {/if}
     </section>
   {/if}
+  {/if}
 
+  {#if tab === 'builders'}
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('economyExtras.buildersClubTitle')}</h2></div>
     <div class="table-wrap">
@@ -448,6 +472,7 @@
       </table>
     </div>
   </section>
+  {/if}
 {/if}
 
 <ConfirmReasonModal

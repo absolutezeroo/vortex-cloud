@@ -17,6 +17,7 @@
   import EmptyState from '../components/EmptyState.svelte';
   import OpResult from '../components/OpResult.svelte';
   import StatCard from '../components/StatCard.svelte';
+  import Tabs from '../components/Tabs.svelte';
   import { ShieldCheck, KeyRound, Users, Gavel, User } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
@@ -25,6 +26,11 @@
   let error = '';
   let data = null;
   let expanded = null;
+
+  // These sections are independent jobs that were stacked vertically, so reaching the last one
+  // meant scrolling past every other. Nothing here is read against anything else -- which is
+  // both what makes tabs right and what would have made them wrong.
+  let tab = 'roles';
 
   let roleForm = { key: '', name: '' };
   let roleDraft = null; // { id, key, name }
@@ -190,6 +196,17 @@
     </StatCard>
   </div>
 
+  <Tabs
+    bind:active={tab}
+    storageKey="staff"
+    tabs={[
+      { id: 'roles', label: $t('staff.tabRoles'), icon: ShieldCheck, count: data.roles?.length },
+      { id: 'people', label: $t('staff.tabPeople'), icon: Users, count: data.staff?.length },
+      { id: 'presets', label: $t('staff.tabPresets'), icon: Gavel, count: data.presets?.length },
+    ]}
+  />
+
+  {#if tab === 'roles'}
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('staff.rolesTitle')}</h2></div>
     <div class="table-wrap">
@@ -401,7 +418,9 @@
       </div>
     {/if}
   </section>
+  {/if}
 
+  {#if tab === 'people'}
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('staff.staffTitle')}</h2></div>
     <div class="table-wrap">
@@ -524,7 +543,9 @@
       {/if}
     {/if}
   </section>
+  {/if}
 
+  {#if tab === 'presets'}
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('staff.presetsTitle')}</h2></div>
     <p class="muted">{$t('staff.presetsDescription')}</p>
@@ -687,6 +708,7 @@
       </form>
     {/if}
   </section>
+  {/if}
 {/if}
 
 <ConfirmReasonModal

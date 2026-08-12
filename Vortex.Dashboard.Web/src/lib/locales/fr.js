@@ -1624,6 +1624,8 @@ export default {
     noProgress: "Aucun joueur n'a encore terminé un palier.",
   },
   bots: {
+    tabRoster: 'Effectif',
+    tabHandItems: 'Objets en main',
     edit: 'Modifier',
     delete: 'Supprimer',
     save: 'Enregistrer',
@@ -1702,6 +1704,9 @@ export default {
     colThirst: 'Soif',
   },
   navigatorConfig: {
+    tabContexts: 'Contextes',
+    tabCategories: 'Catégories',
+    tabEvents: 'Événements',
     title: 'Configuration du navigateur',
     description:
       "Les onglets que le client demande, les blocs qu'ils contiennent, et les deux tables de catégories. Un onglet affiche un bloc par quick link : un onglet sans bloc s'affiche vide, quelle que soit la santé de la liste des salles.",
@@ -1819,6 +1824,9 @@ export default {
     noPosts: 'Aucun message de forum.',
   },
   staff: {
+    tabRoles: 'Rôles',
+    tabPeople: 'Équipe',
+    tabPresets: 'Barèmes',
     operationFailed: "L'opération a échoué.",
     readOnly: "Lecture seule : vous n'avez pas la capacité de gestion du staff.",
     edit: 'Modifier',
@@ -1904,6 +1912,10 @@ export default {
     colMessage: 'Message',
   },
   economyExtras: {
+    tabLtd: 'Raretés',
+    tabRentables: 'Locations',
+    tabCurrencies: 'Devises',
+    tabBuilders: 'Club bâtisseurs',
     edit: 'Modifier',
     delete: 'Supprimer',
     editorTitle: 'Édition',

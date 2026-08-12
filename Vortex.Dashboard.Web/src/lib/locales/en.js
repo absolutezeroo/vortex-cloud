@@ -1622,6 +1622,8 @@ export default {
     noProgress: 'No player has completed a level yet.',
   },
   bots: {
+    tabRoster: 'Roster',
+    tabHandItems: 'Hand items',
     edit: 'Edit',
     delete: 'Delete',
     save: 'Save',
@@ -1700,6 +1702,9 @@ export default {
     colThirst: 'Thirst',
   },
   navigatorConfig: {
+    tabContexts: 'Contexts',
+    tabCategories: 'Categories',
+    tabEvents: 'Events',
     title: 'Navigator configuration',
     description:
       "The tabs the client asks for, the blocks inside them, and the two category tables. A tab renders one block per quick link, so a tab with no blocks renders blank however healthy the room list is.",
@@ -1816,6 +1821,9 @@ export default {
     noPosts: 'No forum post.',
   },
   staff: {
+    tabRoles: 'Roles',
+    tabPeople: 'People',
+    tabPresets: 'Presets',
     operationFailed: 'The operation failed.',
     readOnly: 'Read-only: you do not hold the staff management capability.',
     edit: 'Edit',
@@ -1901,6 +1909,10 @@ export default {
     colMessage: 'Message',
   },
   economyExtras: {
+    tabLtd: 'Rare drops',
+    tabRentables: 'Rentals',
+    tabCurrencies: 'Currencies',
+    tabBuilders: 'Builders club',
     edit: 'Edit',
     delete: 'Delete',
     editorTitle: 'Edit',

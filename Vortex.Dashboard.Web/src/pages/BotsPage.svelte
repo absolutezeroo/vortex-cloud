@@ -22,6 +22,7 @@
   import Pagination from '../components/Pagination.svelte';
   import PickerModal from '../components/PickerModal.svelte';
   import StatCard from '../components/StatCard.svelte';
+  import Tabs from '../components/Tabs.svelte';
   import { Bot, MessageSquare, MapPin, Users, Hand } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
@@ -38,6 +39,11 @@
   let stats = null;
   let handItems = null;
   let selected = null;
+
+  // These sections are independent jobs that were stacked vertically, so reaching the last one
+  // meant scrolling past every other. Nothing here is read against anything else -- which is
+  // both what makes tabs right and what would have made them wrong.
+  let tab = 'roster';
   let detail = null;
   let detailLoading = false;
   let pickingOwner = false;
@@ -227,6 +233,16 @@
 {/if}
 
 {#if list}
+  <Tabs
+    bind:active={tab}
+    storageKey="bots"
+    tabs={[
+      { id: 'roster', label: $t('bots.tabRoster'), icon: Bot, count: list?.items?.length },
+      { id: 'handItems', label: $t('bots.tabHandItems'), icon: Hand, count: handItems?.items?.length },
+    ]}
+  />
+
+  {#if tab === 'roster'}
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('bots.rosterTitle')}</h2></div>
     <div class="table-wrap">
@@ -391,9 +407,11 @@
       />
     {/if}
   </section>
+  {/if}
 {/if}
 
 {#if handItems}
+  {#if tab === 'handItems'}
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head">
       <h2>{$t('bots.handItemsTitle')}</h2>
@@ -501,6 +519,7 @@
       </button>
     </form>
   </section>
+  {/if}
 {/if}
 
 {#if pickingOwner}
