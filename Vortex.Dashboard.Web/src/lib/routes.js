@@ -70,6 +70,9 @@ export const NAV = [
   { path: '/quest-content', labelKey: 'nav.questContent', shortKey: 'nav.questContentShort', group: 'Content', caps: ROUTE_PERMISSIONS.quests, load: () => import('../pages/QuestContentPage.svelte'), writes: true },
   { path: '/polls', labelKey: 'nav.polls', shortKey: 'nav.pollsShort', group: 'Content', caps: ROUTE_PERMISSIONS.polls, load: () => import('../pages/PollsPage.svelte'), writes: true },
   { path: '/achievements', labelKey: 'nav.achievements', shortKey: 'nav.achievementsShort', group: 'Content', caps: ROUTE_PERMISSIONS.achievements, load: () => import('../pages/AchievementsPage.svelte'), writes: true },
+  // Same capability as /achievements: the statue is a view onto achievement progress, so a new one
+  // would only mean granting it to every role before anyone could open the page.
+  { path: '/achievement-resolutions', labelKey: 'nav.achievementResolutions', shortKey: 'nav.achievementResolutionsShort', group: 'Content', caps: ROUTE_PERMISSIONS.achievements, load: () => import('../pages/AchievementResolutionsPage.svelte') },
   { path: '/mystery-box', labelKey: 'nav.mysteryBox', shortKey: 'nav.mysteryBoxShort', group: 'Content', caps: ROUTE_PERMISSIONS.mysteryBox, load: () => import('../pages/MysteryBoxPage.svelte'), writes: true },
   { path: '/prize-pools', labelKey: 'nav.prizePools', shortKey: 'nav.prizePoolsShort', group: 'Content', caps: ROUTE_PERMISSIONS.prizePools, load: () => import('../pages/PrizePoolsPage.svelte'), writes: true },
   { path: '/collectibles', labelKey: 'nav.collectibles', shortKey: 'nav.collectiblesShort', group: 'Content', caps: ROUTE_PERMISSIONS.collectibles, load: () => import('../pages/CollectiblesPage.svelte'), writes: true },

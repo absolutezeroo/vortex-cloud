@@ -1,1 +1,0 @@
-import{F as e,I as t,k as n}from"./AccessDeniedNotice-CGi_mA_M.js";var r=new Set([`$$slots`,`$$events`,`$$legacy`]);function i(i,a){let o=e(a,r),s=[[`path`,{d:`M13 5h8`}],[`path`,{d:`M13 12h8`}],[`path`,{d:`M13 19h8`}],[`path`,{d:`m3 17 2 2 4-4`}],[`path`,{d:`m3 7 2 2 4-4`}]];n(i,t({name:`list-checks`},()=>o,{get iconNode(){return s}}))}export{i as t};
