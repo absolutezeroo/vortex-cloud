@@ -1,9 +1,11 @@
+using Vortex.Primitives.Messages.Outgoing.Game.Lobby;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Revision20260701.Parsers.Game.Arena;
 using Vortex.Revisions.Revision20260701.Parsers.Game.Directory;
 using Vortex.Revisions.Revision20260701.Parsers.Game.Ingame;
 using Vortex.Revisions.Revision20260701.Parsers.Game.Lobby;
 using Vortex.Revisions.Revision20260701.Parsers.Game.Score;
+using Vortex.Revisions.Revision20260701.Serializers.Game.Lobby;
 
 namespace Vortex.Revisions.Revision20260701.Maps;
 
@@ -71,6 +73,29 @@ internal sealed class GameMap : IRevisionMap
         builder.MapParser(
             MessageEvent.GetResolutionAchievementsMessageEvent,
             new GetResolutionAchievementsMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.ResetResolutionAchievementMessageEvent,
+            new ResetResolutionAchievementMessageParser()
+        );
+
+        builder.MapSerializer(
+            typeof(AchievementResolutionsMessageComposer),
+            new AchievementResolutionsMessageComposerSerializer(
+                MessageComposer.AchievementResolutionsMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(AchievementResolutionProgressMessageComposer),
+            new AchievementResolutionProgressMessageComposerSerializer(
+                MessageComposer.AchievementResolutionProgressMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(AchievementResolutionCompletedMessageComposer),
+            new AchievementResolutionCompletedMessageComposerSerializer(
+                MessageComposer.AchievementResolutionCompletedMessageComposer
+            )
         );
         // builder.MapParser(MessageEvent.GetUserGameAchievementsMessageEvent, new GetUserGameAchievementsMessageParser());
 

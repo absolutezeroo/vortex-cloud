@@ -7,13 +7,13 @@ using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Game.Lobby;
 
-public class GetResolutionAchievementsMessageHandler(IGrainFactory grainFactory)
-    : IMessageHandler<GetResolutionAchievementsMessage>
+public class ResetResolutionAchievementMessageHandler(IGrainFactory grainFactory)
+    : IMessageHandler<ResetResolutionAchievementMessage>
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
 
     public async ValueTask HandleAsync(
-        GetResolutionAchievementsMessage message,
+        ResetResolutionAchievementMessage message,
         MessageContext ctx,
         CancellationToken ct
     )
@@ -25,7 +25,7 @@ public class GetResolutionAchievementsMessageHandler(IGrainFactory grainFactory)
 
         await _grainFactory
             .GetPlayerAchievementResolutionGrain(ctx.PlayerId)
-            .OpenAsync(message.StuffId, message.AchievementId, ct)
+            .ResetAsync(message.StuffId, ct)
             .ConfigureAwait(false);
     }
 }

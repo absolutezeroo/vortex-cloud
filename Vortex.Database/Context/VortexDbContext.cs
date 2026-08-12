@@ -237,6 +237,11 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<PlayerAchievementEntity> PlayerAchievements { get; init; } = null!;
 
+    public DbSet<AchievementResolutionEntity> AchievementResolutions { get; init; } = null!;
+
+    public DbSet<PlayerAchievementResolutionEntity> PlayerAchievementResolutions { get; init; } =
+        null!;
+
     public DbSet<QuestEntity> Quests { get; init; } = null!;
 
     public DbSet<PlayerQuestEntity> PlayerQuests { get; init; } = null!;

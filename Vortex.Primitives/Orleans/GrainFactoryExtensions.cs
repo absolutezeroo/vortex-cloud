@@ -222,6 +222,16 @@ public static class GrainFactoryExtensions
         long playerId
     ) => factory.GetGrain<IPlayerAchievementGrain>(playerId);
 
+    public static IPlayerAchievementResolutionGrain GetPlayerAchievementResolutionGrain(
+        this IGrainFactory factory,
+        PlayerId playerId
+    ) => factory.GetGrain<IPlayerAchievementResolutionGrain>(playerId.Value);
+
+    public static IPlayerAchievementResolutionGrain GetPlayerAchievementResolutionGrain(
+        this IGrainFactory factory,
+        long playerId
+    ) => factory.GetGrain<IPlayerAchievementResolutionGrain>(playerId);
+
     public static IQuestManagerGrain GetQuestManagerGrain(this IGrainFactory factory) =>
         factory.GetGrain<IQuestManagerGrain>(SingletonGrainId.GLOBAL);
 

@@ -11,6 +11,8 @@ internal class AchievementResolutionCompletedMessageComposerSerializer(int heade
         AchievementResolutionCompletedMessageComposer message
     )
     {
-        //
+        // Stuff first, badge second. The client's own handler reads them in the other order when it
+        // forwards them to the view, which is a good way to get this backwards.
+        packet.WriteString(message.StuffCode).WriteString(message.BadgeCode);
     }
 }

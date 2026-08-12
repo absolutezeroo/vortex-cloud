@@ -413,7 +413,8 @@ internal static class MessageEvent
     public const int SetYoutubeDisplayPlaylistMessageEvent = 1672; // AS3-verified (old-revision trace): _SafeCls_2471 -> selectPlaylist() still exists in current revision at 1672
     public const int SpinWheelOfFortuneMessageEvent = 3625; // AS3-verified (direct read, both revisions): useObject() ROFCAE_USE_HABBOWHEEL -> _SafeCls_3425
     public const int ThrowDiceMessageEvent = 1673; // AS3-verified (direct read, both revisions): useObject() ROFCAE_DICE_ACTIVATE -> _SafeCls_3154
-    public const int GetResolutionAchievementsMessageEvent = 1760; // AS3-verified (old-revision trace): _SafeCls_3281 -> onLevelUp() still exists in current revision at 1760
+    public const int GetResolutionAchievementsMessageEvent = 1760; // AS3-verified 2026-08-13 (re-derived): _composers[1760] = _SafeCls_2562, sent by AchievementsResolutionController and by the room engine on ROWRE_ACHIEVEMENT_RESOLUTION_OPEN. Two ints (stuffId, achievementId), not an empty body
+    public const int ResetResolutionAchievementMessageEvent = 916; // AS3-verified 2026-08-13: _composers[916] = _SafeCls_3330, sent by AchievementsResolutionController::resetResolution. One int (stuffId). Had no header at all
     public const int CancelPetBreedingEvent = 3367; // AS3-verified (ghost fix): AvatarInfoWidget::cancelPetBreeding()
     public const int ConfirmPetBreedingEvent = 2872; // AS3-verified (ghost fix): AvatarInfoWidget::confirmPetBreeding()
     public const int GetPetInventoryEvent = 3891;

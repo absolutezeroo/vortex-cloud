@@ -11,6 +11,12 @@ internal class AchievementResolutionProgressMessageComposerSerializer(int header
         AchievementResolutionProgressMessageComposer message
     )
     {
-        //
+        packet
+            .WriteInteger(message.StuffId)
+            .WriteInteger(message.AchievementId)
+            .WriteString(message.RequiredLevelBadgeCode)
+            .WriteInteger(message.UserProgress)
+            .WriteInteger(message.TotalProgress)
+            .WriteInteger(message.SecondsLeft);
     }
 }

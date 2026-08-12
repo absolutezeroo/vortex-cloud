@@ -4,12 +4,8 @@ using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Parsers.Game.Lobby;
 
-internal class GetResolutionAchievementsMessageParser : IParser
+internal class ResetResolutionAchievementMessageParser : IParser
 {
     public IMessageEvent Parse(IClientPacket packet) =>
-        new GetResolutionAchievementsMessage
-        {
-            StuffId = packet.PopInt(),
-            AchievementId = packet.PopInt(),
-        };
+        new ResetResolutionAchievementMessage { StuffId = packet.PopInt() };
 }
