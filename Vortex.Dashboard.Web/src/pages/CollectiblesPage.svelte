@@ -420,32 +420,6 @@
 />
 
 <style>
-  .inline-form {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 10px;
-    margin-top: 10px;
-  }
-
-  .inline-form label {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 0.8rem;
-  }
-
-
-  .row-actions {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-
-  .subhead {
-    margin: 16px 0 4px;
-    font-size: 0.95rem;
-  }
 
   tr.selected {
     background: var(--surface-raised, rgba(255, 255, 255, 0.04));

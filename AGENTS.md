@@ -253,21 +253,23 @@ When adding packet mappings in `Vortex.Revisions/Revision20260701`:
   - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate`
 
 ### Add dashboard capability or admin page
-A dashboard capability string is duplicated across **six** files and nothing cross-checks them: a
-missing copy compiles, passes the gates, and fails only at runtime. Missing #2 below throws
-`InvalidOperationException: The AuthorizationPolicy named '<capability>' was not found` on the first
-request; missing #3 makes the page 403 for every operator. This has shipped four times — treat the
-list as mandatory, not advisory.
+A dashboard capability string is duplicated across **four** files. The server half is now
+self-checking: `Capabilities.Dashboard.All` is the one list, the policy builder and the login gate
+both read it, and `CapabilityDeclarationTests` fails the build if a declared `dashboard.*` constant
+is missing from it. The client half still has no cross-check — a capability missing from
+`dashboardPermissions.js` silently hides the page from every operator.
 - Required edits for every new capability:
-  1. `Vortex.Primitives/Permissions/Capabilities.cs` — the `const string` **and** the `All` array
-  2. `Vortex.Dashboard.API/Hosting/DashboardWebHost.cs` → `DashboardCapabilities` (builds one auth
-     policy per entry)
-  3. `Vortex.Dashboard.API/Security/DashboardAuthService.cs` → `DashboardCapabilities` (effective
-     capabilities granted at login)
-  4. `Vortex.Dashboard.Web/src/lib/dashboardPermissions.js` — `CAPABILITIES` **and**
+  1. `Vortex.Primitives/Permissions/Capabilities.cs` — the `const string` **and**
+     `Capabilities.Dashboard.All` (the test catches a miss; `Capabilities.All` picks it up from
+     there, and both `DashboardWebHost` and `DashboardAuthService` read it — do **not** reintroduce
+     a per-file copy, that duplication is what used to throw
+     `InvalidOperationException: The AuthorizationPolicy named '<capability>' was not found`)
+  2. `Vortex.Dashboard.Web/src/lib/dashboardPermissions.js` — `CAPABILITIES` **and**
      `ROUTE_PERMISSIONS`
-  5. `Vortex.Dashboard.Web/src/lib/routes.js` — component import and route row
-  6. `Vortex.Dashboard.Web/src/lib/locales/en.js` **and** `fr.js` — page block **and** `nav.*` labels
+  3. `Vortex.Dashboard.Web/src/lib/routes.js` — route row with a `load: () => import(...)` thunk
+     (pages are code-split; only the overview and access-denied fallback are imported eagerly, and
+     the import path must be a literal or Vite cannot split it)
+  4. `Vortex.Dashboard.Web/src/lib/locales/en.js` **and** `fr.js` — page block **and** `nav.*` labels
      (the two files must stay structurally identical; `en.js` is every other locale's fallback)
 - Required context files:
   - `docs/walkthroughs/add-a-dashboard-page.md` (full walkthrough, server + front end)

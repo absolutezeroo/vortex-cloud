@@ -1,4 +1,5 @@
 <script>
+  import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
   import { onMount } from 'svelte';
   import {
     ChartColumn,
@@ -918,25 +919,7 @@
   />
 {/if}
 
-{#if $ops.pending}
-  <div class="modal-layer">
-    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={() => ops.cancel()}></button>
-    <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
-      <header class="modal-header">
-        <div>
-          <p class="eyebrow">{$t('polls.confirmEyebrow')}</p>
-          <h2>{$ops.pending.title}</h2>
-        </div>
-      </header>
-      <p>{$ops.pending.summary}</p>
-      <p class="muted">{$t('polls.reasonLabel', { reason: $ops.pending.reason })}</p>
-      <div class="op-actions">
-        <button type="button" on:click={() => ops.confirm()}>{$t('common.confirm')}</button>
-        <button class="ghost-button" type="button" on:click={() => ops.cancel()}>{$t('polls.cancel')}</button>
-      </div>
-    </section>
-  </div>
-{/if}
+<ConfirmStagedModal {ops} eyebrow={$t('polls.confirmEyebrow')} />
 
 <ConfirmReasonModal
   open={Boolean($deleteOps.pending)}
@@ -965,19 +948,6 @@
 
   .poll-row:hover {
     background: var(--surface-hover);
-  }
-
-  .catalog-row-main {
-    display: grid;
-    gap: 2px;
-    min-width: 120px;
-    flex: 1 1 160px;
-  }
-
-  .catalog-row-main strong {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   .catalog-row-main small {
@@ -1034,24 +1004,6 @@
   .funnel small {
     color: var(--muted);
     font-weight: 500;
-  }
-
-  .catalog-list {
-    display: grid;
-    gap: 8px;
-    margin-top: 10px;
-  }
-
-  .catalog-card {
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--surface-strong);
-  }
-
-  .catalog-card-detail {
-    border-top: 1px solid var(--line);
-    padding: 12px;
   }
 
   .detail-actions,
@@ -1257,14 +1209,4 @@
     gap: 6px;
   }
 
-  .panel-head {
-    flex-wrap: wrap;
-    row-gap: 8px;
-  }
-
-  .panel-head h2 {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
 </style>

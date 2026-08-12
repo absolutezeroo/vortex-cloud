@@ -1,4 +1,5 @@
 <script>
+  import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
   import {
@@ -717,25 +718,7 @@
   </section>
 {/if}
 
-{#if $ops.pending}
-  <div class="modal-layer">
-    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={() => ops.cancel()}></button>
-    <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
-      <header class="modal-header">
-        <div>
-          <p class="eyebrow">{$t('targetedOffers.confirmEyebrow')}</p>
-          <h2>{$ops.pending.title}</h2>
-        </div>
-      </header>
-      <p>{$ops.pending.summary}</p>
-      <p class="muted">{$t('vouchers.reasonLabel', { reason: $ops.pending.reason })}</p>
-      <div class="op-actions">
-        <button type="button" on:click={() => ops.confirm()}>{$t('common.confirm')}</button>
-        <button class="ghost-button" type="button" on:click={() => ops.cancel()}>{$t('targetedOffers.cancel')}</button>
-      </div>
-    </section>
-  </div>
-{/if}
+<ConfirmStagedModal {ops} eyebrow={$t('targetedOffers.confirmEyebrow')} />
 
 <ConfirmReasonModal
   open={Boolean($deleteOps.pending)}
@@ -750,13 +733,6 @@
 />
 
 <style>
-  .head-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
   .active-toggle {
     display: inline-flex;
     align-items: center;
@@ -766,11 +742,6 @@
     white-space: nowrap;
   }
 
-  .ghost-button.danger {
-    color: var(--danger);
-    border-color: rgba(var(--danger-rgb), 0.4);
-  }
-
   .ghost-button.active {
     border-color: var(--accent);
     color: var(--ink);
@@ -778,30 +749,11 @@
   }
 
   .ghost-button,
-  .op-actions button {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-
   /* Offer card laid out as a column: a header line (thumbnail + title + actions) with the status
      chips on their own line beneath, instead of everything crammed into one wrapping row. */
-  .offer-head {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    flex-wrap: wrap;
-  }
-
   .offer-head .catalog-row-main {
     flex: 1 1 160px;
     min-width: 120px;
-  }
-
-  .offer-actions {
-    margin-left: auto;
-    flex-wrap: wrap;
   }
 
   .offer-meta {
@@ -824,18 +776,7 @@
     justify-content: flex-end;
   }
 
-  .panel-head {
-    flex-wrap: wrap;
-    row-gap: 8px;
-  }
-
   .panel-head h2,
-  .panel-head h3 {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
   .panel-head h3 {
     margin: 0;
     font-size: 0.95rem;
@@ -843,19 +784,6 @@
 
   .products-panel > .panel-head {
     margin-bottom: 10px;
-  }
-
-  .catalog-list {
-    display: grid;
-    gap: 8px;
-    margin-top: 10px;
-  }
-
-  .catalog-card {
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--surface-strong);
   }
 
   .catalog-row {
@@ -898,19 +826,6 @@
     image-rendering: crisp-edges;
   }
 
-  .catalog-row-main {
-    display: grid;
-    gap: 2px;
-    min-width: 120px;
-    flex: 1 1 160px;
-  }
-
-  .catalog-row-main strong {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   .catalog-row-meta {
     display: flex;
     align-items: center;
@@ -926,22 +841,4 @@
     box-sizing: border-box;
   }
 
-  .cost-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    border: 1px solid var(--warning-border);
-    background: var(--warning-bg);
-    color: var(--warning);
-    border-radius: 999px;
-    padding: 0 9px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    white-space: nowrap;
-  }
-
-  .catalog-card-detail {
-    border-top: 1px solid var(--line);
-    padding: 12px;
-  }
 </style>

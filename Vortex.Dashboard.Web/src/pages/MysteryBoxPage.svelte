@@ -804,27 +804,7 @@
     flex-wrap: wrap;
   }
 
-  .filter-field {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.85rem;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-
-  .ghost-button.danger {
-    color: var(--danger);
-    border-color: rgba(var(--danger-rgb), 0.4);
-  }
-
   .ghost-button,
-  .op-actions button {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-
   .field-label {
     font-size: 0.85rem;
     color: var(--muted);
@@ -901,54 +881,6 @@
     font-size: 1.25rem;
   }
 
-  .catalog-list {
-    display: grid;
-    gap: 8px;
-    margin-top: 10px;
-  }
-
-  .catalog-card {
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--surface-strong);
-  }
-
-  .catalog-row-main {
-    display: grid;
-    gap: 2px;
-    min-width: 120px;
-    flex: 1 1 160px;
-  }
-
-  .catalog-row-main strong {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .cost-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    border: 1px solid var(--warning-border);
-    background: var(--warning-bg);
-    color: var(--warning);
-    border-radius: 999px;
-    padding: 0 9px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    white-space: nowrap;
-  }
-
-  .offer-head {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    flex-wrap: wrap;
-  }
-
   .offer-actions {
     margin-left: auto;
   }
@@ -960,8 +892,4 @@
     color: var(--warning);
   }
 
-  .catalog-card-detail {
-    border-top: 1px solid var(--line);
-    padding: 12px;
-  }
 </style>

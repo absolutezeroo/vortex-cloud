@@ -1,4 +1,5 @@
 <script>
+  import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
   import { Eye, EyeOff, Image, Package, Pencil, Plus, Trash2 } from '@lucide/svelte';
@@ -493,42 +494,13 @@
   {/if}
 </section>
 
-{#if $ops.pending}
-  <div class="modal-layer">
-    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={() => ops.cancel()}></button>
-    <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
-      <header class="modal-header">
-        <div>
-          <p class="eyebrow">{$t('furnitureAdmin.confirmEyebrow')}</p>
-          <h2>{$ops.pending.title}</h2>
-        </div>
-      </header>
-      <p>{$ops.pending.summary}</p>
-      <p class="muted">{$t('vouchers.reasonLabel', { reason: $ops.pending.reason })}</p>
-      <div class="op-actions">
-        <button type="button" on:click={() => ops.confirm()}>{$t('common.confirm')}</button>
-        <button class="ghost-button" type="button" on:click={() => ops.cancel()}>{$t('furnitureAdmin.cancel')}</button>
-      </div>
-    </section>
-  </div>
-{/if}
+<ConfirmStagedModal {ops} eyebrow={$t('furnitureAdmin.confirmEyebrow')} />
 
 <style>
-  .panel-head h2 {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
   .ghost-button {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-  }
-
-  .ghost-button.danger {
-    color: var(--danger);
-    border-color: rgba(var(--danger-rgb), 0.4);
   }
 
   .form-grid {

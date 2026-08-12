@@ -252,10 +252,6 @@ button {
 
 .brand small,
 .muted,
-.eyebrow {
-  color: var(--muted);
-}
-
 .sidebar nav {
   display: grid;
   align-content: start;
@@ -376,6 +372,7 @@ button {
 
 .eyebrow {
   margin: 0 0 4px;
+  color: var(--muted);
   text-transform: uppercase;
   font-size: 0.74rem;
   font-weight: 700;
@@ -724,6 +721,149 @@ table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.88rem;
+}
+
+/* ---------------------------------------------------------------------------------------------
+   Shared page furniture. Each of these lived as an identical copy inside five to seven pages'
+   scoped <style> blocks -- Svelte scopes component styles, so "it already exists somewhere" never
+   applied and every new page grew its own. They are hotel-wide looks, not page details, so they
+   belong here; a page that genuinely differs still overrides them locally.
+   --------------------------------------------------------------------------------------------- */
+
+/* A row of small buttons at the end of a table row or card. */
+.row-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* A short form laid out on one line, its labels stacked over their inputs. */
+.inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.inline-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+}
+
+/* A heading inside a panel, under the panel's own title. */
+.subhead {
+  margin: 16px 0 4px;
+  font-size: 0.95rem;
+}
+
+/* Destructive secondary action: stays a ghost so it never competes with the gold primary. */
+.ghost-button.danger {
+  color: var(--danger);
+  border-color: rgba(var(--danger-rgb), 0.4);
+}
+
+/* The expandable record list: a stack of cards, each a summary row that opens a detail panel.
+   Catalogue, mystery box, polls, quests and targeted offers all draw their editor this way and each
+   carried an identical copy of these five rules. */
+.catalog-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.catalog-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface-strong);
+}
+
+.catalog-row-main {
+  display: grid;
+  gap: 2px;
+  min-width: 120px;
+  flex: 1 1 160px;
+}
+
+.catalog-row-main strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.catalog-card-detail {
+  border-top: 1px solid var(--line);
+  padding: 12px;
+}
+
+/* A price/reward badge sitting next to a record's name. */
+.cost-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--warning-border);
+  background: var(--warning-bg);
+  color: var(--warning);
+  border-radius: 999px;
+  padding: 0 9px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* A button in an action row that carries an icon beside its label. */
+.op-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* The panel title row wraps rather than squashing its buttons on a narrow window, and a title with
+   an icon in it lays that icon out beside the text. Four pages each declared both. */
+.panel-head {
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
+
+.panel-head h2,
+.panel-head h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Controls sitting in a panel title row, and a labelled checkbox/select among them. */
+.head-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* The summary row of a .catalog-card: identity on the left, actions pushed to the right. */
+.offer-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  flex-wrap: wrap;
+}
+
+.offer-actions {
+  margin-left: auto;
+  flex-wrap: wrap;
 }
 
 /* Wrap any table that can realistically overflow its panel (many columns, long free-text cells)

@@ -4,6 +4,7 @@
   // live preview; the bound `value` always stays the FULL URL that is stored on the wire. A pasted
   // full URL (http/https) is kept verbatim as a passthrough, and when no template is configured the
   // field degrades to a plain full-URL text input.
+  import Modal from './Modal.svelte';
   import { Image } from '@lucide/svelte';
   import AssetImage from './AssetImage.svelte';
   import { t } from '../lib/i18n.js';
@@ -94,46 +95,34 @@
 </div>
 
 {#if browseOpen}
-  <div class="modal-layer">
-    <button
-      class="modal-backdrop"
-      type="button"
-      aria-label="Close"
-      on:click={() => (browseOpen = false)}
-    ></button>
-    <section
-      class="modal-panel gallery-panel"
-      role="dialog"
-      aria-modal="true"
-      style="width: min(720px, 100%)"
-    >
-      <header class="modal-header">
-        <div>
-          <p class="eyebrow">{$t('targetedOffers.imagesCount', { count: images.length })}</p>
-          <h2>{$t('targetedOffers.pickImage')}</h2>
-        </div>
-      </header>
-      <div class="gallery-grid">
-        {#each images as image (image.file)}
-          <button
-            type="button"
-            class="gallery-item"
-            class:selected={v === image.url}
-            on:click={() => pick(image)}
-            title={image.file}
-          >
-            <AssetImage src={image.thumbUrl || image.url} alt={image.file} size={80} />
-            <span class="gallery-name">{image.file}</span>
-          </button>
-        {/each}
-      </div>
-      <div class="op-actions">
-        <button type="button" class="ghost-button" on:click={() => (browseOpen = false)}>
-          {$t('common.cancel')}
+  <Modal
+    title={$t('targetedOffers.pickImage')}
+    eyebrow={$t('targetedOffers.imagesCount', { count: images.length })}
+    width={720}
+    column
+    labelledBy="offer-image-picker-title"
+    on:close={() => (browseOpen = false)}
+  >
+    <div class="gallery-grid">
+      {#each images as image (image.file)}
+        <button
+          type="button"
+          class="gallery-item"
+          class:selected={v === image.url}
+          on:click={() => pick(image)}
+          title={image.file}
+        >
+          <AssetImage src={image.thumbUrl || image.url} alt={image.file} size={80} />
+          <span class="gallery-name">{image.file}</span>
         </button>
-      </div>
-    </section>
-  </div>
+      {/each}
+    </div>
+    <div class="op-actions">
+      <button type="button" class="ghost-button" on:click={() => (browseOpen = false)}>
+        {$t('common.cancel')}
+      </button>
+    </div>
+  </Modal>
 {/if}
 
 <style>
@@ -185,12 +174,6 @@
     gap: 8px;
     margin-top: 8px;
     flex-wrap: wrap;
-  }
-
-  .gallery-panel {
-    max-height: 80vh;
-    display: flex;
-    flex-direction: column;
   }
 
   .gallery-grid {

@@ -722,27 +722,6 @@
     text-decoration: underline dotted;
   }
 
-  .row-actions {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-
-  .inline-form {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 10px;
-    margin-top: 10px;
-  }
-
-  .inline-form label {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 0.8rem;
-  }
-
   .cap-list {
     display: flex;
     flex-wrap: wrap;
@@ -805,8 +784,4 @@
     margin-top: 12px;
   }
 
-  .subhead {
-    margin: 16px 0 4px;
-    font-size: 0.95rem;
-  }
 </style>

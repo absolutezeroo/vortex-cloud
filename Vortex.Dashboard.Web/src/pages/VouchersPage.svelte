@@ -1,4 +1,5 @@
 <script>
+  import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { apiGet } from '../lib/api.js';
@@ -249,22 +250,4 @@
   </section>
 </div>
 
-{#if $ops.pending}
-  <div class="modal-layer">
-    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={() => ops.cancel()}></button>
-    <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
-      <header class="modal-header">
-        <div>
-          <p class="eyebrow">{$t('vouchers.confirmEyebrow')}</p>
-          <h2>{$ops.pending.title}</h2>
-        </div>
-      </header>
-      <p>{$ops.pending.summary}</p>
-      <p class="muted">{$t('vouchers.reasonLabel', { reason: $ops.pending.reason })}</p>
-      <div class="op-actions">
-        <button type="button" on:click={() => ops.confirm()}>{$t('common.confirm')}</button>
-        <button class="ghost-button" type="button" on:click={() => ops.cancel()}>{$t('common.cancel')}</button>
-      </div>
-    </section>
-  </div>
-{/if}
+<ConfirmStagedModal {ops} eyebrow={$t('vouchers.confirmEyebrow')} />

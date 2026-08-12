@@ -1,4 +1,5 @@
 <script>
+  import Modal from './Modal.svelte';
   import { apiGet } from '../lib/api.js';
   import AccessDeniedNotice from './AccessDeniedNotice.svelte';
   import AssetImage from './AssetImage.svelte';
@@ -122,85 +123,84 @@
   void load();
 </script>
 
-<div class="modal-layer">
-  <button class="modal-backdrop" type="button" aria-label="Close" on:click={onClose}></button>
-  <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(620px, 100%)">
-    <header class="modal-header">
-      <div>
-        <p class="eyebrow">{$t(EYEBROW_KEYS[kind] ?? EYEBROW_KEYS.user)}</p>
-        <h2>{title}</h2>
-      </div>
-      <button class="ghost-button" type="button" on:click={onClose}>{$t('pickerModal.close')}</button>
-    </header>
+<Modal
+  title={title}
+  eyebrow={$t(EYEBROW_KEYS[kind] ?? EYEBROW_KEYS.user)}
+  width={620}
+  labelledBy="picker-modal-title"
+  on:close={onClose}
+>
+  <button slot="header" class="ghost-button" type="button" on:click={onClose}>
+    {$t('pickerModal.close')}
+  </button>
 
-    <form class="toolbar" on:submit|preventDefault={load}>
-      <input
-        bind:value={query}
-        placeholder={$t(SEARCH_PLACEHOLDER_KEYS[kind] ?? SEARCH_PLACEHOLDER_KEYS.user)}
-        disabled={!canSelect}
-      />
-      <button type="submit" disabled={!canSelect}>{$t('pickerModal.search')}</button>
-    </form>
+  <form class="toolbar" on:submit|preventDefault={load}>
+    <input
+      bind:value={query}
+      placeholder={$t(SEARCH_PLACEHOLDER_KEYS[kind] ?? SEARCH_PLACEHOLDER_KEYS.user)}
+      disabled={!canSelect}
+    />
+    <button type="submit" disabled={!canSelect}>{$t('pickerModal.search')}</button>
+  </form>
 
-    {#if forbidden}
-      <AccessDeniedNotice message={permissionMessage} />
-    {:else if error}
-      <p class="empty-state danger">{error}</p>
-    {:else if loading}
-      <p class="empty-state">{$t('pickerModal.loading')}</p>
-    {/if}
+  {#if forbidden}
+    <AccessDeniedNotice message={permissionMessage} />
+  {:else if error}
+    <p class="empty-state danger">{error}</p>
+  {:else if loading}
+    <p class="empty-state">{$t('pickerModal.loading')}</p>
+  {/if}
 
-    <div class="pick-list">
-      {#each rows as row}
-        {#if kind === 'furniture'}
-          <button type="button" class="pick-row" on:click={() => choose(row)}>
-            {#if row.iconUrl}
-              <img class="pick-icon" src={row.iconUrl} alt="" />
-            {:else}
-              <span class="pick-icon" aria-hidden="true">{row.spriteId}</span>
-            {/if}
-            <span class="pick-main">
-              <strong>{row.name}</strong>
-              <small>
-                #{row.id} - sprite {row.spriteId} - {row.type}{row.canTrade ? '' : ` - ${$t('pickerModal.noTrade')}`}
-              </small>
-            </span>
-          </button>
-        {:else if kind === 'room'}
-          <button type="button" class="pick-row" on:click={() => choose(row)}>
-            <span class="pick-icon" aria-hidden="true"><House size={18} /></span>
-            <span class="pick-dot" class:on={row.usersNow > 0} aria-hidden="true"></span>
-            <span class="pick-main">
-              <strong>{row.name}</strong>
-              <small>
-                #{row.id}{row.ownerName ? ` - ${row.ownerName}` : ''} - {$t('pickerModal.roomOccupancy', {
-                  users: row.usersNow,
-                  max: row.playersMax,
-                })}
-              </small>
-            </span>
-          </button>
-        {:else}
-          <button type="button" class="pick-row" on:click={() => choose(row)}>
-            <AssetImage src={row.avatarUrl} alt={row.name} size={38} fallbackIcon={User} />
-            <span class="pick-dot" class:on={row.online} aria-hidden="true"></span>
-            <span class="pick-main">
-              <strong>{row.name}</strong>
-              <small>#{row.id} - {row.online ? $t('pickerModal.online') : $t('pickerModal.offline')}</small>
-            </span>
-          </button>
-        {/if}
+  <div class="pick-list">
+    {#each rows as row}
+      {#if kind === 'furniture'}
+        <button type="button" class="pick-row" on:click={() => choose(row)}>
+          {#if row.iconUrl}
+            <img class="pick-icon" src={row.iconUrl} alt="" />
+          {:else}
+            <span class="pick-icon" aria-hidden="true">{row.spriteId}</span>
+          {/if}
+          <span class="pick-main">
+            <strong>{row.name}</strong>
+            <small>
+              #{row.id} - sprite {row.spriteId} - {row.type}{row.canTrade ? '' : ` - ${$t('pickerModal.noTrade')}`}
+            </small>
+          </span>
+        </button>
+      {:else if kind === 'room'}
+        <button type="button" class="pick-row" on:click={() => choose(row)}>
+          <span class="pick-icon" aria-hidden="true"><House size={18} /></span>
+          <span class="pick-dot" class:on={row.usersNow > 0} aria-hidden="true"></span>
+          <span class="pick-main">
+            <strong>{row.name}</strong>
+            <small>
+              #{row.id}{row.ownerName ? ` - ${row.ownerName}` : ''} - {$t('pickerModal.roomOccupancy', {
+                users: row.usersNow,
+                max: row.playersMax,
+              })}
+            </small>
+          </span>
+        </button>
       {:else}
-        {#if !loading}<p class="empty-state">{$t('pickerModal.noResults')}</p>{/if}
-      {/each}
-      {#if hasMore}
-        <button type="button" class="ghost-button" on:click={loadMore} disabled={loadingMore}>
-          {loadingMore ? $t('common.loading') : $t('pickerModal.loadMore')}
+        <button type="button" class="pick-row" on:click={() => choose(row)}>
+          <AssetImage src={row.avatarUrl} alt={row.name} size={38} fallbackIcon={User} />
+          <span class="pick-dot" class:on={row.online} aria-hidden="true"></span>
+          <span class="pick-main">
+            <strong>{row.name}</strong>
+            <small>#{row.id} - {row.online ? $t('pickerModal.online') : $t('pickerModal.offline')}</small>
+          </span>
         </button>
       {/if}
-    </div>
-  </section>
-</div>
+    {:else}
+      {#if !loading}<p class="empty-state">{$t('pickerModal.noResults')}</p>{/if}
+    {/each}
+    {#if hasMore}
+      <button type="button" class="ghost-button" on:click={loadMore} disabled={loadingMore}>
+        {loadingMore ? $t('common.loading') : $t('pickerModal.loadMore')}
+      </button>
+    {/if}
+  </div>
+</Modal>
 
 <style>
   .pick-list {

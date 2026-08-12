@@ -462,36 +462,10 @@
 />
 
 <style>
-  .inline-form {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 10px;
-    margin-top: 10px;
-  }
-
-  .inline-form label {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 0.8rem;
-  }
-
   .inline-form label.check {
     flex-direction: row;
     align-items: center;
     gap: 6px;
-  }
-
-  .row-actions {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-
-  .subhead {
-    margin: 16px 0 4px;
-    font-size: 0.95rem;
   }
 
   .cell {

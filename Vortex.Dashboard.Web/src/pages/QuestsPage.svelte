@@ -1,4 +1,5 @@
 <script>
+  import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
   import OpResult from '../components/OpResult.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import { onMount } from 'svelte';
@@ -639,25 +640,7 @@
   </section>
 {/if}
 
-{#if $ops.pending}
-  <div class="modal-layer">
-    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={() => ops.cancel()}></button>
-    <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
-      <header class="modal-header">
-        <div>
-          <p class="eyebrow">{$t('quests.confirmEyebrow')}</p>
-          <h2>{$ops.pending.title}</h2>
-        </div>
-      </header>
-      <p>{$ops.pending.summary}</p>
-      <p class="muted">{$t('quests.reasonLabel', { reason: $ops.pending.reason })}</p>
-      <div class="op-actions">
-        <button type="button" on:click={() => ops.confirm()}>{$t('common.confirm')}</button>
-        <button class="ghost-button" type="button" on:click={() => ops.cancel()}>{$t('quests.cancel')}</button>
-      </div>
-    </section>
-  </div>
-{/if}
+<ConfirmStagedModal {ops} eyebrow={$t('quests.confirmEyebrow')} />
 
 <ConfirmReasonModal
   open={Boolean($deleteOps.pending)}
@@ -672,44 +655,9 @@
 />
 
 <style>
-  .head-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .filter-field {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.85rem;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-
-  .ghost-button.danger {
-    color: var(--danger);
-    border-color: rgba(var(--danger-rgb), 0.4);
-  }
-
   .ghost-button,
-  .op-actions button {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-
   /* Quest card laid out as a column: a header line (icon + title + actions) with the reward/stat
      chips on their own line beneath. Mirrors the targeted-offer card. */
-  .offer-head {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    flex-wrap: wrap;
-  }
-
   .offer-head .catalog-row-main {
     flex: 1 1 160px;
     min-width: 120px;
@@ -725,11 +673,6 @@
     border-radius: 9px;
     background: var(--input-bg);
     color: var(--accent);
-  }
-
-  .offer-actions {
-    margin-left: auto;
-    flex-wrap: wrap;
   }
 
   .offer-meta {
@@ -750,17 +693,6 @@
   .delete-bar {
     display: flex;
     justify-content: flex-end;
-  }
-
-  .panel-head {
-    flex-wrap: wrap;
-    row-gap: 8px;
-  }
-
-  .panel-head h2 {
-    display: flex;
-    align-items: center;
-    gap: 8px;
   }
 
   .op-subgroup {
@@ -794,48 +726,4 @@
     font-size: 0.78rem;
   }
 
-  .catalog-list {
-    display: grid;
-    gap: 8px;
-    margin-top: 10px;
-  }
-
-  .catalog-card {
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--surface-strong);
-  }
-
-  .catalog-row-main {
-    display: grid;
-    gap: 2px;
-    min-width: 120px;
-    flex: 1 1 160px;
-  }
-
-  .catalog-row-main strong {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .cost-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    border: 1px solid var(--warning-border);
-    background: var(--warning-bg);
-    color: var(--warning);
-    border-radius: 999px;
-    padding: 0 9px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    white-space: nowrap;
-  }
-
-  .catalog-card-detail {
-    border-top: 1px solid var(--line);
-    padding: 12px;
-  }
 </style>

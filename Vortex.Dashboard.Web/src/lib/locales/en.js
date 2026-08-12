@@ -36,6 +36,7 @@ export default {
     resultFailed: 'Failed',
     // Default for createWriteOps' client-side validation; the six page namespaces that used to spell
     // this exact sentence out one by one now fall through to here.
+    reasonLabel: 'Reason: {reason}',
     fillFields: 'Fill the required fields (reason needs at least 3 characters).',
     signOut: 'Sign out',
     signingOut: 'Signing out...',

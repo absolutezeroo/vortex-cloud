@@ -494,21 +494,6 @@
     gap: 8px;
   }
 
-  .inline-form {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 10px;
-    margin-top: 10px;
-  }
-
-  .inline-form label {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 0.8rem;
-  }
-
 
 
   .subhead {

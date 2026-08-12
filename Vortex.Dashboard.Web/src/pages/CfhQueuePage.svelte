@@ -1,4 +1,5 @@
 <script>
+  import Modal from '../components/Modal.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
   import { apiGet, apiPost } from '../lib/api.js';
@@ -198,38 +199,36 @@
 </section>
 
 {#if banDraft}
-  <div class="modal-layer">
-    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={cancelBanDraft}></button>
-    <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
-      <header class="modal-header">
-        <div>
-          <p class="eyebrow">{$t('cfh.sanctionEyebrow')}</p>
-          <h2>{$t('cfh.banReportedPlayer')}</h2>
-        </div>
-      </header>
-      <p class="muted">{banDraft.playerName || $t('cfh.player')} (#{banDraft.playerId})</p>
-      <div class="op-checkbox-field">
-        <input id="cfh-ban-permanent" type="checkbox" bind:checked={banDraft.permanent} />
-        <label for="cfh-ban-permanent">{$t('common.permanent')}</label>
-      </div>
-      {#if !banDraft.permanent}
-        <div class="op-field">
-          <label for="cfh-ban-duration">{$t('cfh.durationSeconds')}</label>
-          <input id="cfh-ban-duration" type="number" min="1" bind:value={banDraft.durationSeconds} placeholder="86400" />
-        </div>
-      {/if}
+  <Modal
+    title={$t('cfh.banReportedPlayer')}
+    eyebrow={$t('cfh.sanctionEyebrow')}
+    width={460}
+    labelledBy="cfh-ban-title"
+    on:close={cancelBanDraft}
+  >
+    <p class="muted">{banDraft.playerName || $t('cfh.player')} (#{banDraft.playerId})</p>
+    <div class="op-checkbox-field">
+      <input id="cfh-ban-permanent" type="checkbox" bind:checked={banDraft.permanent} />
+      <label for="cfh-ban-permanent">{$t('common.permanent')}</label>
+    </div>
+    {#if !banDraft.permanent}
       <div class="op-field">
-        <label for="cfh-ban-reason">{$t('common.reasonRequired')}</label>
-        <input id="cfh-ban-reason" bind:value={banDraft.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
+        <label for="cfh-ban-duration">{$t('cfh.durationSeconds')}</label>
+        <input id="cfh-ban-duration" type="number" min="1" bind:value={banDraft.durationSeconds} placeholder="86400" />
       </div>
-      {#if $banOps.error}<p class="empty-state danger">{$banOps.error}</p>{/if}
-      {#if $banOps.result}
-        <OpResult result={$banOps.result} />
-      {/if}
-      <div class="op-actions">
-        <button type="button" on:click={confirmBanDraft} disabled={$banOps.busy}>{$t('cfh.confirmBan')}</button>
-        <button class="ghost-button" type="button" on:click={cancelBanDraft}>{$t('cfh.close')}</button>
-      </div>
-    </section>
-  </div>
+    {/if}
+    <div class="op-field">
+      <label for="cfh-ban-reason">{$t('common.reasonRequired')}</label>
+      <input id="cfh-ban-reason" bind:value={banDraft.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
+    </div>
+    {#if $banOps.error}<p class="empty-state danger">{$banOps.error}</p>{/if}
+    {#if $banOps.result}
+      <OpResult result={$banOps.result} />
+    {/if}
+
+    <svelte:fragment slot="actions">
+      <button type="button" on:click={confirmBanDraft} disabled={$banOps.busy}>{$t('cfh.confirmBan')}</button>
+      <button class="ghost-button" type="button" on:click={cancelBanDraft}>{$t('cfh.close')}</button>
+    </svelte:fragment>
+  </Modal>
 {/if}

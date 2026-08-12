@@ -1,4 +1,5 @@
 <script>
+  import Modal from './Modal.svelte';
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api.js';
   import { t, translate } from '../lib/i18n.js';
@@ -85,61 +86,55 @@
   });
 </script>
 
-<div class="modal-layer">
-  <button class="modal-backdrop" type="button" aria-label="Close" on:click={onClose}></button>
-  <section class="modal-panel icon-picker" role="dialog" aria-modal="true" style="width: min(720px, 100%)">
-    <header class="modal-header">
-      <div>
-        <p class="eyebrow">{$t('catalogIconPicker.eyebrow')}</p>
-        <h2>{title}</h2>
-      </div>
-      <button class="ghost-button" type="button" on:click={onClose}>{$t('pickerModal.close')}</button>
-    </header>
+<Modal
+  {title}
+  eyebrow={$t('catalogIconPicker.eyebrow')}
+  width={720}
+  column
+  labelledBy="catalog-icon-picker-title"
+  on:close={onClose}
+>
+  <button slot="header" class="ghost-button" type="button" on:click={onClose}>
+    {$t('pickerModal.close')}
+  </button>
 
-    {#if templateLoading}
-      <p class="empty-state">{$t('pickerModal.loading')}</p>
-    {:else if templateError}
-      <p class="empty-state danger">{templateError}</p>
-    {:else}
-      <p class="muted">
-        {$t('catalogIconPicker.foundSoFar', { found: foundCount, probed: probedCount, pending: probedCount - settledCount })}
-      </p>
+  {#if templateLoading}
+    <p class="empty-state">{$t('pickerModal.loading')}</p>
+  {:else if templateError}
+    <p class="empty-state danger">{templateError}</p>
+  {:else}
+    <p class="muted">
+      {$t('catalogIconPicker.foundSoFar', { found: foundCount, probed: probedCount, pending: probedCount - settledCount })}
+    </p>
 
-      <div class="icon-grid" bind:this={gridEl}>
-        {#each probeIds as id (id)}
-          {#if !failedIds.has(id)}
-            <button
-              type="button"
-              class="icon-cell"
-              class:pending={!loadedIds.has(id)}
-              disabled={!loadedIds.has(id)}
-              on:click={() => choose(id)}
-              title={`icon_${id}`}
-            >
-              <img
-                src={urlFor(id)}
-                alt=""
-                loading="lazy"
-                on:load={() => markLoaded(id)}
-                on:error={() => markFailed(id)}
-              />
-              <small>#{id}</small>
-            </button>
-          {/if}
-        {/each}
-        <div class="icon-grid-sentinel" use:observeSentinel aria-hidden="true"></div>
-      </div>
-    {/if}
-  </section>
-</div>
+    <div class="icon-grid" bind:this={gridEl}>
+      {#each probeIds as id (id)}
+        {#if !failedIds.has(id)}
+          <button
+            type="button"
+            class="icon-cell"
+            class:pending={!loadedIds.has(id)}
+            disabled={!loadedIds.has(id)}
+            on:click={() => choose(id)}
+            title={`icon_${id}`}
+          >
+            <img
+              src={urlFor(id)}
+              alt=""
+              loading="lazy"
+              on:load={() => markLoaded(id)}
+              on:error={() => markFailed(id)}
+            />
+            <small>#{id}</small>
+          </button>
+        {/if}
+      {/each}
+      <div class="icon-grid-sentinel" use:observeSentinel aria-hidden="true"></div>
+    </div>
+  {/if}
+</Modal>
 
 <style>
-  .icon-picker :global(.modal-panel) {
-    max-height: 82vh;
-    display: flex;
-    flex-direction: column;
-  }
-
   .icon-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));

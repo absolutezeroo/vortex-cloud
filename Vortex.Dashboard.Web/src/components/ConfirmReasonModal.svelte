@@ -3,6 +3,7 @@
   // with a title/summary, the operator types the reason inside the modal (no more reason input sitting
   // beside every button), and `confirm` fires with the trimmed reason. The caller keeps the modal
   // open on failure by passing `error` (e.g. offer_has_purchases) and clearing `busy`.
+  import Modal from './Modal.svelte';
   import { createEventDispatcher } from 'svelte';
   import { CircleX } from '@lucide/svelte';
   import { reasonOk } from '../lib/validation.js';
@@ -44,40 +45,37 @@
 </script>
 
 {#if open}
-  <div class="modal-layer">
-    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={cancel}></button>
-    <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
-      <header class="modal-header">
-        <div>
-          <p class="eyebrow">{$t('common.confirm')}</p>
-          <h2>{title}</h2>
-        </div>
-      </header>
-      {#if summary}<p>{summary}</p>{/if}
-      <!-- Optional richer detail than a summary sentence: the config editor shows the old/new value,
-           which is the thing the operator actually double-checks before confirming. -->
-      <slot />
-      <div class="op-field">
-        <label for="confirm-reason-input">{$t('common.reasonRequired')}</label>
-        <!-- svelte-ignore a11y-autofocus -->
-        <input
-          id="confirm-reason-input"
-          bind:value={reason}
-          placeholder={$t('common.reasonPlaceholderChange')}
-          list="reason-history"
-          autofocus
-          on:keydown={(e) => e.key === 'Enter' && confirm()}
-        />
-      </div>
-      {#if error}<p class="op-result danger"><CircleX size={16} strokeWidth={2} aria-hidden="true" /> {error}</p>{/if}
-      <div class="op-actions">
-        <button type="button" class:danger on:click={confirm} disabled={busy || !valid}>
-          {confirmLabel || $t('common.confirm')}
-        </button>
-        <button class="ghost-button" type="button" on:click={cancel}>{$t('common.cancel')}</button>
-      </div>
-    </section>
-  </div>
+  <Modal
+    {title}
+    eyebrow={$t('common.confirm')}
+    width={460}
+    labelledBy="confirm-reason-title"
+    on:close={cancel}
+  >
+    {#if summary}<p>{summary}</p>{/if}
+    <!-- Optional richer detail than a summary sentence: the config editor shows the old/new value,
+         which is the thing the operator actually double-checks before confirming. -->
+    <slot />
+    <div class="op-field">
+      <label for="confirm-reason-input">{$t('common.reasonRequired')}</label>
+      <!-- svelte-ignore a11y-autofocus -->
+      <input
+        id="confirm-reason-input"
+        bind:value={reason}
+        placeholder={$t('common.reasonPlaceholderChange')}
+        list="reason-history"
+        autofocus
+        on:keydown={(e) => e.key === 'Enter' && confirm()}
+      />
+    </div>
+    {#if error}<p class="op-result danger"><CircleX size={16} strokeWidth={2} aria-hidden="true" /> {error}</p>{/if}
+    <div class="op-actions">
+      <button type="button" class:danger on:click={confirm} disabled={busy || !valid}>
+        {confirmLabel || $t('common.confirm')}
+      </button>
+      <button class="ghost-button" type="button" on:click={cancel}>{$t('common.cancel')}</button>
+    </div>
+  </Modal>
 {/if}
 
 <style>

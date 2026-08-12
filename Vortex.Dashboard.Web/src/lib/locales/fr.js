@@ -34,6 +34,7 @@ export default {
     resultFailed: 'Échoué',
     // Défaut pour la validation côté client de createWriteOps ; les six espaces de noms qui
     // répétaient cette phrase mot pour mot retombent maintenant ici.
+    reasonLabel: 'Raison : {reason}',
     fillFields: 'Remplissez les champs requis (la raison doit faire au moins 3 caractères).',
     signOut: 'Déconnexion',
     signingOut: 'Déconnexion...',
