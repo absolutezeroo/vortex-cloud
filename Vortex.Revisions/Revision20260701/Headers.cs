@@ -37,6 +37,7 @@ internal static class MessageEvent
     public const int CustomizePetWithFurniEvent = 2099; // AS3-verified (old-revision trace): _SafeCls_3494 -> useProductForPet() still exists in current revision at 2099
     public const int GetPetInfoMessageEvent = 3899; // AS3-verified (old-revision trace): _SafeCls_3258 -> requestPetInfo() still exists in current revision at 3899
     public const int PetSelectedMessageEvent = 2757; // AS3-verified (old-revision trace): _SafeCls_2740 -> handleGetPetInfoMessage() still exists in current revision at 2757
+
     // AS3-verified: _composers[576] = _SafeCls_1909, and the client sends that one composer for
     // BOTH buttons -- SessionDataManager.givePetRespect() and InfoStandWidgetHandler's
     // RWUAM_TREAT_PET. One int, the pet id; the server tells the two apart by the pet's type,
@@ -84,6 +85,7 @@ internal static class MessageEvent
     public const int ChatReviewSessionCreateMessageEvent = 3970; // AS3-verified (direct read, both revisions): GuideSessionController::onReportWindowEvent() submit_button -> sendMessage(new _SafeCls_2981(message)) registry@3970 (old _SafeCls_2760@296)
     public const int DeletePendingCallsForHelpMessageEvent = 3423; // AS3-verified (old-revision trace): _SafeCls_2943 -> deletePendingCallsForHelp() still exists in current revision at 3423
     public const int GetCfhStatusMessageEvent = 3458; // AS3-verified (old-revision trace): _SafeCls_1917 -> requestSanctionInfo() still exists in current revision at 3458
+    public const int GetMyCfhReportStatusMessageEvent = 1834; // AS3-verified (direct read): _composers[1834] = _SafeCls_2121 in WIN63 habbo/communication/_SafeCls_2046.as, sent payload-free by HabboHelp::requestReportsStatus(). The reply (MyCfhReportStatusComposer) was already defined here; only the request header was missing, so the feature was half-built on this side
     public const int GetGuideReportingStatusMessageEvent = 2455; // AS3-verified (old-revision trace): _SafeCls_2092 -> queryForGuideReportingStatus() still exists in current revision at 2455
 
     public const int GetPendingCallsForHelpMessageEvent = 92; // AS3-verified: HabboHelp::queryForPendingCallsForHelp()
@@ -124,7 +126,7 @@ internal static class MessageEvent
     public const int GetIsOfferGiftableEvent = 2564; // AS3-verified (old-revision trace): _SafeCls_2064 -> checkGiftable() still exists in current revision at 2564
     public const int GetLimitedOfferAppearingNextEvent = 3682;
 
-    public const int GetNextTargetedOfferEvent = 9004; // reverted: false positive - 2497 legitimately belongs to PurchaseTargetedOfferEvent (shape+name confirmed, OfferController::purchaseTargetedOffer()). Real value for GetNextTargetedOfferEvent still unresolved
+    public const int GetNextTargetedOfferEvent = 848; // AS3-verified (direct read): _composers[848] = _SafeCls_2561 in WIN63 habbo/communication/_SafeCls_2046.as, and OfferController::productDataReady() is its only sender. Was 9004, a placeholder whose own comment flagged it unresolved -- the client asked on 848 and nothing here answered, so no targeted offer could ever arrive
 
     public const int GetProductOfferEvent = 1692;
     public const int GetRoomAdPurchaseInfoEvent = 366; // AS3-verified (old-revision trace): _SafeCls_2000 -> getRoomAdsPurchaseInfo() still exists in current revision at 366
@@ -322,7 +324,7 @@ internal static class MessageEvent
 
     public const int DanceMessageEvent = 48;
     public const int DropCarryItemMessageEvent = 1545; // AS3-verified (direct read, both revisions): InfoStandWidgetHandler RWUAM_DROP_CARRY_ITEM -> _SafeCls_2423
-    public const int LookToMessageEvent = 9103; // UNRESOLVED: pre-existing value collided with the AS3-verified ConfirmPetBreedingEvent (2872); LookToMessageEvent's own value was already a mismatch before this pass (best AS3 candidate: walkTo(), header 2364) - flagged for a future mismatch-fix pass
+    public const int LookToMessageEvent = 2508; // AS3-verified: the client registry maps _composers[2508] to the (x,y) composer RoomObjectEventHandler.setSelectedAvatar() sends when an avatar is selected without a click-user wired (WIN63 habbo/communication/_SafeCls_2046.as:819, LookToMessageComposer in win63_version). Was 9103, a placeholder whose own comment flagged it as unresolved; the parser here already read the right two ints, so only the header was wrong
     public const int PassCarryItemMessageEvent = 1101; // AS3-verified (direct read, both revisions): InfoStandWidgetHandler RWUAM_PASS_CARRY_ITEM -> _SafeCls_3124
     public const int PassCarryItemToPetMessageEvent = 1429; // AS3-verified (direct read, both revisions): InfoStandWidgetHandler RWUAM_GIVE_CARRY_ITEM_TO_PET -> _SafeCls_2543
     public const int SignMessageEvent = 211;

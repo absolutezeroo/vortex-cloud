@@ -13,7 +13,10 @@ internal class UserEventCatsMessageComposerSerializer(int header)
 
         foreach (NavigatorEventCategorySnapshot category in message.EventCategories)
         {
-            packet.WriteInteger(category.Id).WriteString(category.Name);
+            packet
+                .WriteInteger(category.Id)
+                .WriteString(category.Name)
+                .WriteBoolean(category.Visible);
         }
     }
 }

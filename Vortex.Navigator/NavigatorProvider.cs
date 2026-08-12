@@ -391,9 +391,14 @@ public sealed class NavigatorProvider(
 
         List<NavigatorEventCategorySnapshot> categories = await dbCtx
             .NavigatorEventCategories.AsNoTracking()
-            .Where(x => x.Visible && x.DeletedAt == null)
+            .Where(x => x.DeletedAt == null)
             .OrderBy(x => x.Id)
-            .Select(x => new NavigatorEventCategorySnapshot { Id = x.Id, Name = x.Name })
+            .Select(x => new NavigatorEventCategorySnapshot
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Visible = x.Visible,
+            })
             .ToListAsync(ct)
             .ConfigureAwait(false);
 
