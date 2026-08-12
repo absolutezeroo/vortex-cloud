@@ -33,6 +33,7 @@ internal sealed class QuestMap : IRevisionMap
             new GetConcurrentUsersRewardMessageParser()
         );
         builder.MapParser(MessageEvent.GetDailyTasksEvent, new GetDailyTasksMessageParser());
+        builder.MapParser(MessageEvent.ClaimDailyTaskEvent, new ClaimDailyTaskMessageParser());
         builder.MapParser(MessageEvent.GetDailyQuestMessageEvent, new GetDailyQuestMessageParser());
         builder.MapParser(MessageEvent.GetQuestsMessageEvent, new GetQuestsMessageParser());
         builder.MapParser(
@@ -96,6 +97,24 @@ internal sealed class QuestMap : IRevisionMap
             typeof(ConcurrentUsersGoalProgressMessageComposer),
             new ConcurrentUsersGoalProgressMessageComposerSerializer(
                 MessageComposer.ConcurrentUsersGoalProgressMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(DailyTasksActiveListMessageComposer),
+            new DailyTasksActiveListMessageComposerSerializer(
+                MessageComposer.DailyTasksActiveListMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(DailyTasksTasksAddedMessageComposer),
+            new DailyTasksTasksAddedMessageComposerSerializer(
+                MessageComposer.DailyTasksTasksAddedMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(DailyTasksTaskUpdateMessageComposer),
+            new DailyTasksTaskUpdateMessageComposerSerializer(
+                MessageComposer.DailyTasksTaskUpdateMessageComposer
             )
         );
     }

@@ -241,6 +241,12 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<PlayerQuestEntity> PlayerQuests { get; init; } = null!;
 
+    public DbSet<DailyTaskEntity> DailyTasks { get; init; } = null!;
+
+    public DbSet<DailyTaskRewardEntity> DailyTaskRewards { get; init; } = null!;
+
+    public DbSet<PlayerDailyTaskEntity> PlayerDailyTasks { get; init; } = null!;
+
     public DbSet<CommunityGoalEntity> CommunityGoals { get; init; } = null!;
 
     public DbSet<CommunityGoalLevelEntity> CommunityGoalLevels { get; init; } = null!;
@@ -367,6 +373,26 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
             .HasOne(p => p.QuestEntity)
             .WithMany()
             .HasForeignKey(p => p.QuestEntityId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // A daily task owns its rewards. Assignments cascade with the player and are Restrict against
+        // the definition, so editing the task catalogue never wipes what people already worked on.
+        mb.Entity<DailyTaskRewardEntity>()
+            .HasOne(r => r.DailyTaskEntity)
+            .WithMany()
+            .HasForeignKey(r => r.DailyTaskEntityId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        mb.Entity<PlayerDailyTaskEntity>()
+            .HasOne(a => a.PlayerEntity)
+            .WithMany()
+            .HasForeignKey(a => a.PlayerEntityId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        mb.Entity<PlayerDailyTaskEntity>()
+            .HasOne(a => a.DailyTaskEntity)
+            .WithMany()
+            .HasForeignKey(a => a.DailyTaskEntityId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // A goal owns its levels; contributions cascade with the player and are Restrict against the

@@ -1,0 +1,387 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Orleans;
+using Vortex.Database.Context;
+using Vortex.Database.Entities.Quests;
+using Vortex.Players.Quests;
+using Vortex.Primitives.Messages.Outgoing.Quest;
+using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Players.Grains;
+using Vortex.Primitives.Quests;
+using Vortex.Primitives.Quests.Grains;
+using Vortex.Primitives.Quests.Snapshots;
+
+namespace Vortex.Players.Grains;
+
+/// <summary>
+/// Per-player daily tasks. Draws the day's board on first read, advances it from the same domain
+/// events quests use, and hands over rewards on claim.
+/// </summary>
+internal sealed class PlayerDailyTaskGrain(
+    IGrainFactory grainFactory,
+    IDbContextFactory<VortexDbContext> dbCtxFactory,
+    ILogger<PlayerDailyTaskGrain> logger
+) : Grain, IPlayerDailyTaskGrain
+{
+    private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly ILogger<PlayerDailyTaskGrain> _logger = logger;
+
+    /// <summary>The reward kind granted as credits; anything else is an activity-point type.</summary>
+    private const string CreditsRewardType = "credits";
+
+    private int PlayerId => (int)this.GetPrimaryKeyLong();
+
+    private IPlayerPresenceGrain Presence => _grainFactory.GetPlayerPresenceGrain(PlayerId);
+
+    public async Task SendBoardAsync(int taskCount, int bonusCount, CancellationToken ct)
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(true);
+
+        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        List<PlayerDailyTaskEntity> assignments = await LoadAssignmentsAsync(dbCtx, today, ct)
+            .ConfigureAwait(true);
+
+        if (assignments.Count == 0)
+        {
+            assignments = await DrawBoardAsync(dbCtx, today, taskCount, bonusCount, ct)
+                .ConfigureAwait(true);
+        }
+
+        ImmutableArray<DailyTaskSnapshot> tasks = await BuildSnapshotsAsync(dbCtx, assignments, ct)
+            .ConfigureAwait(true);
+
+        await Presence
+            .SendComposerAsync(new DailyTasksActiveListMessageComposer { Tasks = tasks })
+            .ConfigureAwait(true);
+    }
+
+    public async Task ProgressAsync(string questTypeCode, int amount, CancellationToken ct)
+    {
+        if (amount <= 0 || string.IsNullOrWhiteSpace(questTypeCode))
+        {
+            return;
+        }
+
+        List<(int TaskId, int Repeats, DailyTaskStatus Status, int SecondsLeft)> changed = [];
+
+        try
+        {
+            await using VortexDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(true);
+
+            DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+            DateTime now = DateTime.UtcNow;
+
+            List<PlayerDailyTaskEntity> assignments = await dbCtx
+                .PlayerDailyTasks.Include(a => a.DailyTaskEntity)
+                .Where(a =>
+                    a.PlayerEntityId == PlayerId
+                    && a.AssignedOn == today
+                    && a.Status == DailyTaskStatus.Available
+                    && a.ExpiresAt > now
+                    && a.DailyTaskEntity != null
+                    && a.DailyTaskEntity.QuestTypeCode == questTypeCode
+                )
+                .ToListAsync(ct)
+                .ConfigureAwait(true);
+
+            if (assignments.Count == 0)
+            {
+                return;
+            }
+
+            foreach (PlayerDailyTaskEntity assignment in assignments)
+            {
+                int required = Math.Max(1, assignment.DailyTaskEntity!.RequiredRepeats);
+
+                assignment.Repeats = Math.Min(required, assignment.Repeats + amount);
+
+                if (assignment.Repeats >= required)
+                {
+                    assignment.Status = DailyTaskStatus.Completed;
+                }
+
+                changed.Add(
+                    (
+                        assignment.Id,
+                        assignment.Repeats,
+                        assignment.Status,
+                        SecondsLeft(assignment.ExpiresAt)
+                    )
+                );
+            }
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to progress daily tasks of type {QuestTypeCode} for player {PlayerId}.",
+                questTypeCode,
+                PlayerId
+            );
+
+            return;
+        }
+
+        foreach ((int taskId, int repeats, DailyTaskStatus status, int secondsLeft) in changed)
+        {
+            await Presence
+                .SendComposerAsync(
+                    new DailyTasksTaskUpdateMessageComposer
+                    {
+                        TaskId = taskId,
+                        Repeats = repeats,
+                        Status = status,
+                        SecondsLeft = secondsLeft,
+                    }
+                )
+                .ConfigureAwait(true);
+        }
+    }
+
+    public async Task ClaimAsync(int taskId, CancellationToken ct)
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(true);
+
+        PlayerDailyTaskEntity? assignment = await dbCtx
+            .PlayerDailyTasks.FirstOrDefaultAsync(
+                a => a.Id == taskId && a.PlayerEntityId == PlayerId,
+                ct
+            )
+            .ConfigureAwait(true);
+
+        // Only a completed task pays out, and only once. A second click, someone else's task id, or
+        // a task that lapsed before it was claimed all land here.
+        if (assignment is null || assignment.Status != DailyTaskStatus.Completed)
+        {
+            return;
+        }
+
+        List<DailyTaskRewardEntity> rewards = await dbCtx
+            .DailyTaskRewards.AsNoTracking()
+            .Where(r => r.DailyTaskEntityId == assignment.DailyTaskEntityId)
+            .ToListAsync(ct)
+            .ConfigureAwait(true);
+
+        assignment.Status = DailyTaskStatus.Claimed;
+        assignment.ClaimedAt = DateTime.UtcNow;
+
+        // The status is committed before the payout so a failure mid-grant cannot leave a task
+        // claimable twice.
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+        foreach (DailyTaskRewardEntity reward in rewards)
+        {
+            await GrantAsync(reward, ct).ConfigureAwait(true);
+        }
+
+        await Presence
+            .SendComposerAsync(
+                new DailyTasksTaskUpdateMessageComposer
+                {
+                    TaskId = assignment.Id,
+                    Repeats = assignment.Repeats,
+                    Status = assignment.Status,
+                    SecondsLeft = SecondsLeft(assignment.ExpiresAt),
+                }
+            )
+            .ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// Grants one reward. Currency is handed over through the wallet; a reward naming a product item
+    /// type is described to the client but not materialised — there is no furniture-granting path
+    /// wired to daily tasks yet, and silently dropping it without a trace would be worse.
+    /// </summary>
+    private async Task GrantAsync(DailyTaskRewardEntity reward, CancellationToken ct)
+    {
+        if (reward.Amount <= 0)
+        {
+            return;
+        }
+
+        IPlayerWalletGrain wallet = _grainFactory.GetPlayerWalletGrain((long)PlayerId);
+
+        if (
+            string.Equals(
+                reward.RewardTypeId,
+                CreditsRewardType,
+                StringComparison.OrdinalIgnoreCase
+            )
+        )
+        {
+            await wallet.GrantCreditsAsync(reward.Amount, ct).ConfigureAwait(true);
+
+            return;
+        }
+
+        if (int.TryParse(reward.RewardTypeId, out int activityPointType))
+        {
+            await wallet
+                .GrantActivityPointsAsync(activityPointType, reward.Amount, ct)
+                .ConfigureAwait(true);
+
+            return;
+        }
+
+        _logger.LogWarning(
+            "Daily-task reward {RewardTypeId} for player {PlayerId} is not a currency and was not granted; item rewards are not wired yet.",
+            reward.RewardTypeId,
+            PlayerId
+        );
+    }
+
+    private async Task<List<PlayerDailyTaskEntity>> LoadAssignmentsAsync(
+        VortexDbContext dbCtx,
+        DateOnly today,
+        CancellationToken ct
+    ) =>
+        await dbCtx
+            .PlayerDailyTasks.Include(a => a.DailyTaskEntity)
+            .Where(a => a.PlayerEntityId == PlayerId && a.AssignedOn == today)
+            .OrderBy(a => a.DailyTaskEntity!.IsBonus)
+            .ThenBy(a => a.DailyTaskEntity!.SortOrder)
+            .ThenBy(a => a.Id)
+            .ToListAsync(ct)
+            .ConfigureAwait(true);
+
+    private async Task<List<PlayerDailyTaskEntity>> DrawBoardAsync(
+        VortexDbContext dbCtx,
+        DateOnly today,
+        int taskCount,
+        int bonusCount,
+        CancellationToken ct
+    )
+    {
+        List<DailyTaskEntity> definitions = await dbCtx
+            .DailyTasks.AsNoTracking()
+            .Where(t => t.Enabled)
+            .OrderBy(t => t.SortOrder)
+            .ThenBy(t => t.Id)
+            .ToListAsync(ct)
+            .ConfigureAwait(true);
+
+        if (definitions.Count == 0)
+        {
+            return [];
+        }
+
+        List<int> ordinary = [.. definitions.Where(t => !t.IsBonus).Select(t => t.Id)];
+        List<int> bonus = [.. definitions.Where(t => t.IsBonus).Select(t => t.Id)];
+
+        List<int> drawn =
+        [
+            .. DailyTaskBoardDrawer.Draw(ordinary, PlayerId, today, taskCount),
+            .. DailyTaskBoardDrawer.Draw(bonus, PlayerId, today, bonusCount),
+        ];
+
+        if (drawn.Count == 0)
+        {
+            return [];
+        }
+
+        // The board lapses at the next UTC midnight, which is the same boundary the day key uses --
+        // otherwise a task drawn at 23:59 would live a full day into the next board.
+        DateTime expiresAt = today.AddDays(1).ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
+
+        foreach (int definitionId in drawn)
+        {
+            dbCtx.PlayerDailyTasks.Add(
+                new PlayerDailyTaskEntity
+                {
+                    PlayerEntityId = PlayerId,
+                    DailyTaskEntityId = definitionId,
+                    AssignedOn = today,
+                    Repeats = 0,
+                    Status = DailyTaskStatus.Available,
+                    ExpiresAt = expiresAt,
+                }
+            );
+        }
+
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+        return await LoadAssignmentsAsync(dbCtx, today, ct).ConfigureAwait(true);
+    }
+
+    private async Task<ImmutableArray<DailyTaskSnapshot>> BuildSnapshotsAsync(
+        VortexDbContext dbCtx,
+        List<PlayerDailyTaskEntity> assignments,
+        CancellationToken ct
+    )
+    {
+        if (assignments.Count == 0)
+        {
+            return ImmutableArray<DailyTaskSnapshot>.Empty;
+        }
+
+        List<int> definitionIds = [.. assignments.Select(a => a.DailyTaskEntityId).Distinct()];
+
+        // One query for every reward on the board rather than one per task.
+        ILookup<int, DailyTaskRewardEntity> rewardsByTask = (
+            await dbCtx
+                .DailyTaskRewards.AsNoTracking()
+                .Where(r => definitionIds.Contains(r.DailyTaskEntityId))
+                .OrderBy(r => r.Id)
+                .ToListAsync(ct)
+                .ConfigureAwait(true)
+        ).ToLookup(r => r.DailyTaskEntityId);
+
+        return
+        [
+            .. assignments
+                .Where(a => a.DailyTaskEntity is not null)
+                .Select(a => new DailyTaskSnapshot
+                {
+                    TaskId = a.Id,
+                    TaskCode = a.DailyTaskEntity!.TaskCode,
+                    QuestTypeCode = a.DailyTaskEntity.QuestTypeCode,
+                    IsBonus = a.DailyTaskEntity.IsBonus,
+                    ImageVersion = a.DailyTaskEntity.ImageVersion,
+                    CatalogName = a.DailyTaskEntity.CatalogName,
+                    RequiredRepeats = Math.Max(1, a.DailyTaskEntity.RequiredRepeats),
+                    Repeats = a.Repeats,
+                    Status = a.Status,
+                    SecondsLeft = SecondsLeft(a.ExpiresAt),
+                    Rewards =
+                    [
+                        .. rewardsByTask[a.DailyTaskEntityId]
+                            .Select(r => new DailyTaskRewardSnapshot
+                            {
+                                ProductItemTypeId = r.ProductItemTypeId,
+                                RewardTypeId = r.RewardTypeId,
+                                ExtraParams = r.ExtraParams,
+                                Amount = r.Amount,
+                            }),
+                    ],
+                }),
+        ];
+    }
+
+    /// <summary>
+    /// Seconds until the assignment lapses, negative once it has. The sign is the contract: the
+    /// client's own <c>isExpired</c> is "secondsLeft &lt; 0 and not still available", so clamping
+    /// this at zero would leave a lapsed task looking live forever.
+    /// </summary>
+    private static int SecondsLeft(DateTime expiresAt)
+    {
+        double seconds = (expiresAt - DateTime.UtcNow).TotalSeconds;
+
+        return (int)Math.Clamp(seconds, int.MinValue, int.MaxValue);
+    }
+}
