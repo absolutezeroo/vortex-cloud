@@ -1077,6 +1077,50 @@ internal sealed partial class DashboardApiService
     }
 
     /// <summary>
+    /// Room search for the shared picker: <c>?q=</c> matches a room name or an exact id, and an empty
+    /// term browses the most recently active rooms. Exists so a surface that pins something to a room
+    /// (a survey, for one) can hand back an id the operator never had to look up by hand.
+    /// </summary>
+    public Task<object> RoomsDirectoryAsync(NameValueCollection query, CancellationToken ct) =>
+        QueryAsync<object>(
+            async db =>
+            {
+                string term = (query["q"] ?? string.Empty).Trim();
+                int limit = ParseLimit(query["limit"], 50, 200);
+
+                IQueryable<RoomEntity> rooms = db.Rooms.AsNoTracking();
+
+                if (term.Length > 0)
+                {
+                    rooms = int.TryParse(term, out int id)
+                        ? rooms.Where(r => r.Name.Contains(term) || r.Id == id)
+                        : rooms.Where(r => r.Name.Contains(term));
+                }
+
+                var items = await rooms
+                    // Browsing shows the liveliest rooms first; a search still ranks by activity so
+                    // the busy "Lobby" beats an abandoned one of the same name.
+                    .OrderByDescending(r => r.UsersNow)
+                    .ThenByDescending(r => r.LastActive)
+                    .Take(limit)
+                    .Select(r => new
+                    {
+                        id = r.Id,
+                        name = r.Name,
+                        ownerName = r.PlayerEntity != null ? r.PlayerEntity.Name : null,
+                        usersNow = r.UsersNow,
+                        r.PlayersMax,
+                        r.LastActive,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                return new { count = items.Count, items };
+            },
+            ct
+        );
+
+    /// <summary>
     /// Batch avatar-head lookup: <c>?ids=1,2,3</c> → <c>{ items: [{ id, avatarUrl }] }</c>. Lets any
     /// dashboard surface that already shows a player id/name (audit, moderation, CFH, economy…) render
     /// the real Habbo avatar head without every one of those endpoints having to load <c>Figure</c>

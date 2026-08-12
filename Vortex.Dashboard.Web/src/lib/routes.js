@@ -40,6 +40,7 @@ import TargetedOffersPage from '../pages/TargetedOffersPage.svelte';
 import TargetedOffersStatsPage from '../pages/TargetedOffersStatsPage.svelte';
 import MysteryBoxPage from '../pages/MysteryBoxPage.svelte';
 import PrizePoolsPage from '../pages/PrizePoolsPage.svelte';
+import PollsPage from '../pages/PollsPage.svelte';
 import QuestsPage from '../pages/QuestsPage.svelte';
 import QuestsStatsPage from '../pages/QuestsStatsPage.svelte';
 import ConfigPage from '../pages/ConfigPage.svelte';
@@ -98,6 +99,7 @@ export const NAV = [
 
   { path: '/quests', labelKey: 'nav.quests', shortKey: 'nav.questsShort', group: 'Content', caps: ROUTE_PERMISSIONS.quests, component: QuestsPage, writes: true },
   { path: '/quests-stats', labelKey: 'nav.questsStats', shortKey: 'nav.questsStatsShort', group: 'Content', caps: ROUTE_PERMISSIONS.questsStats, component: QuestsStatsPage },
+  { path: '/polls', labelKey: 'nav.polls', shortKey: 'nav.pollsShort', group: 'Content', caps: ROUTE_PERMISSIONS.polls, component: PollsPage, writes: true },
   { path: '/achievements', labelKey: 'nav.achievements', shortKey: 'nav.achievementsShort', group: 'Content', caps: ROUTE_PERMISSIONS.achievements, component: AchievementsPage, writes: true },
   { path: '/mystery-box', labelKey: 'nav.mysteryBox', shortKey: 'nav.mysteryBoxShort', group: 'Content', caps: ROUTE_PERMISSIONS.mysteryBox, component: MysteryBoxPage, writes: true },
   { path: '/prize-pools', labelKey: 'nav.prizePools', shortKey: 'nav.prizePoolsShort', group: 'Content', caps: ROUTE_PERMISSIONS.prizePools, component: PrizePoolsPage, writes: true },

@@ -102,6 +102,11 @@ public static class Capabilities
         public const string OpsTargetedOffersManage = "dashboard.ops.targeted_offers.manage";
         public const string QuestsRead = "dashboard.quests.read";
         public const string OpsQuestsManage = "dashboard.ops.quests.manage";
+
+        /// <summary>Survey definitions, their question trees and the answers players gave.</summary>
+        public const string PollsRead = "dashboard.polls.read";
+        public const string OpsPollsManage = "dashboard.ops.polls.manage";
+
         public const string PrizePoolsRead = "dashboard.prize_pools.read";
         public const string OpsPrizePoolsManage = "dashboard.ops.prize_pools.manage";
 
@@ -192,6 +197,8 @@ public static class Capabilities
             Dashboard.OpsTargetedOffersManage,
             Dashboard.QuestsRead,
             Dashboard.OpsQuestsManage,
+            Dashboard.PollsRead,
+            Dashboard.OpsPollsManage,
             Dashboard.PrizePoolsRead,
             Dashboard.OpsPrizePoolsManage,
             Dashboard.MysteryBoxRead,

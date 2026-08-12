@@ -2,18 +2,24 @@
   import { apiGet } from '../lib/api.js';
   import AccessDeniedNotice from './AccessDeniedNotice.svelte';
   import AssetImage from './AssetImage.svelte';
-  import { User } from '@lucide/svelte';
+  import { House, User } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { t } from '../lib/i18n.js';
 
-  // kind: 'user' | 'furniture'
+  // kind: 'user' | 'furniture' | 'room'
   export let kind = 'user';
   export let title = 'Select';
   export let onSelect;
   export let onClose;
   export let canSelect = true;
 
-  const endpoint = kind === 'furniture' ? '/api/v1/directory/furniture' : '/api/v1/directory/players';
+  const ENDPOINTS = {
+    furniture: '/api/v1/directory/furniture',
+    room: '/api/v1/directory/rooms',
+    user: '/api/v1/directory/players',
+  };
+
+  const endpoint = ENDPOINTS[kind] ?? ENDPOINTS.user;
 
   let query = '';
   let rows = [];
@@ -32,7 +38,25 @@
     forbidden = false;
   }
 
-  $: permissionMessage = $t(kind === 'furniture' ? 'pickerModal.furnitureAccessDenied' : 'pickerModal.playersAccessDenied');
+  const ACCESS_DENIED_KEYS = {
+    furniture: 'pickerModal.furnitureAccessDenied',
+    room: 'pickerModal.roomsAccessDenied',
+    user: 'pickerModal.playersAccessDenied',
+  };
+
+  const EYEBROW_KEYS = {
+    furniture: 'pickerModal.catalogFurniture',
+    room: 'pickerModal.rooms',
+    user: 'pickerModal.players',
+  };
+
+  const SEARCH_PLACEHOLDER_KEYS = {
+    furniture: 'pickerModal.searchFurniturePlaceholder',
+    room: 'pickerModal.searchRoomPlaceholder',
+    user: 'pickerModal.searchPlayerPlaceholder',
+  };
+
+  $: permissionMessage = $t(ACCESS_DENIED_KEYS[kind] ?? ACCESS_DENIED_KEYS.user);
 
   async function load() {
     if (!canSelect) {
@@ -103,7 +127,7 @@
   <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(620px, 100%)">
     <header class="modal-header">
       <div>
-        <p class="eyebrow">{kind === 'furniture' ? $t('pickerModal.catalogFurniture') : $t('pickerModal.players')}</p>
+        <p class="eyebrow">{$t(EYEBROW_KEYS[kind] ?? EYEBROW_KEYS.user)}</p>
         <h2>{title}</h2>
       </div>
       <button class="ghost-button" type="button" on:click={onClose}>{$t('pickerModal.close')}</button>
@@ -112,9 +136,7 @@
     <form class="toolbar" on:submit|preventDefault={load}>
       <input
         bind:value={query}
-        placeholder={kind === 'furniture'
-          ? $t('pickerModal.searchFurniturePlaceholder')
-          : $t('pickerModal.searchPlayerPlaceholder')}
+        placeholder={$t(SEARCH_PLACEHOLDER_KEYS[kind] ?? SEARCH_PLACEHOLDER_KEYS.user)}
         disabled={!canSelect}
       />
       <button type="submit" disabled={!canSelect}>{$t('pickerModal.search')}</button>
@@ -141,6 +163,20 @@
               <strong>{row.name}</strong>
               <small>
                 #{row.id} - sprite {row.spriteId} - {row.type}{row.canTrade ? '' : ` - ${$t('pickerModal.noTrade')}`}
+              </small>
+            </span>
+          </button>
+        {:else if kind === 'room'}
+          <button type="button" class="pick-row" on:click={() => choose(row)}>
+            <span class="pick-icon" aria-hidden="true"><House size={18} /></span>
+            <span class="pick-dot" class:on={row.usersNow > 0} aria-hidden="true"></span>
+            <span class="pick-main">
+              <strong>{row.name}</strong>
+              <small>
+                #{row.id}{row.ownerName ? ` - ${row.ownerName}` : ''} - {$t('pickerModal.roomOccupancy', {
+                  users: row.usersNow,
+                  max: row.playersMax,
+                })}
               </small>
             </span>
           </button>

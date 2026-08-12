@@ -51,6 +51,17 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.PlayersRead,
             TagDirectory
         );
+        // Room search for the shared picker, so a surface that pins something to a room hands back
+        // an id the operator picked rather than typed.
+        MapReadGet(
+            app,
+            ApiDirectory + "/rooms",
+            "/api/rooms",
+            (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
+                OkAsync(api.RoomsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
+            Capabilities.Dashboard.AuditRead,
+            TagDirectory
+        );
         MapReadGet(
             app,
             ApiDirectory + "/furniture",
