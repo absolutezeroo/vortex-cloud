@@ -600,9 +600,9 @@ internal static class MessageComposer
     public const int NftClaimResultMessageComposer = 3601; // AS3-verified (direct read): RewardClaimsTab::onNftClaimResultMessage(_SafeCls_2853) -> _SafeStr_4546[3601]; was 1780, which has no entry in the WIN63 registry at all
     public const int NftClaimsMessageComposer = 108; // AS3-verified (direct read): RewardClaimsTab::onNftClaimsMessage(_SafeCls_3876) -> _SafeStr_4546[108]; was 2053, which has no entry in the WIN63 registry at all
     public const int NftStoreOffersMessageComposer = 3272; // AS3-verified (direct read): ShopTab::onNftStoreOffers(_SafeCls_3611) -> _SafeStr_4546[3272]; corrects a collision (was 3585 = IssueInfoMessageComposer, declared further down)
-    public const int NftStorePurchaseMessageComposer = 3171;
-    public const int RedeemNftLootBoxResultMessageComposer = 2262;
-    public const int RedeemNftLootBoxStateMessageComposer = 2857;
+    public const int NftStorePurchaseMessageComposer = 448; // AS3-verified (direct read): _SafeStr_4546[448] = _SafeCls_2220 (parser _SafeCls_2241 -> result:short), handled by HabboCatalog.as::onNftStorePurchase(); was 3171, which has no entry in the WIN63 registry at all
+    public const int RedeemNftLootBoxResultMessageComposer = 3332; // AS3-verified (direct read): _SafeStr_4546[3332] = _SafeCls_3299 (parser _SafeCls_3421 -> success/fail/notInStarDustWallet), handled by CollectiblesController.as::onRedeemLootBoxResultEvent(); was 2262, which has no entry in the WIN63 registry at all
+    public const int RedeemNftLootBoxStateMessageComposer = 3164; // AS3-verified (direct read): _SafeStr_4546[3164] = _SafeCls_3792 (parser _SafeCls_2605 -> state:short, openerAvatarId:int, reward), handled by CollectiblesController.as::onRedeemLootBoxStateEvent(); was 2857, which has no entry in the WIN63 registry at all
     public const int NftEmeraldConvertResultMessageComposer = 3159;
     public const int TradeNftAssetInventoryMessageComposer = 2247; // AS3-verified (direct read): _SafeStr_4546[2247] = _SafeCls_3840 (parser _SafeCls_3182 -> Vector.<CollectibleAsset> items), the answer to RequestNftAssets@1646, handled by inventory/_SafeCls_1951.as:166 onCollectibles(); was 3854, which has no entry in the WIN63 registry at all
     public const int TradeNftAssetsMessageComposer = 850; // AS3-verified (direct read): _SafeStr_4546[850] = _SafeCls_2441 (parser _SafeCls_2725 -> myItems/theirItems), handled by inventory/_SafeCls_1951.as:204 onTradeNfts(); was 2159, which has no entry in the WIN63 registry at all
