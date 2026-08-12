@@ -604,8 +604,8 @@ internal static class MessageComposer
     public const int RedeemNftLootBoxResultMessageComposer = 2262;
     public const int RedeemNftLootBoxStateMessageComposer = 2857;
     public const int NftEmeraldConvertResultMessageComposer = 3159;
-    public const int TradeNftAssetInventoryMessageComposer = 3854;
-    public const int TradeNftAssetsMessageComposer = 2159;
+    public const int TradeNftAssetInventoryMessageComposer = 2247; // AS3-verified (direct read): _SafeStr_4546[2247] = _SafeCls_3840 (parser _SafeCls_3182 -> Vector.<CollectibleAsset> items), the answer to RequestNftAssets@1646, handled by inventory/_SafeCls_1951.as:166 onCollectibles(); was 3854, which has no entry in the WIN63 registry at all
+    public const int TradeNftAssetsMessageComposer = 850; // AS3-verified (direct read): _SafeStr_4546[850] = _SafeCls_2441 (parser _SafeCls_2725 -> myItems/theirItems), handled by inventory/_SafeCls_1951.as:204 onTradeNfts(); was 2159, which has no entry in the WIN63 registry at all
     public const int BlockListMessageComposer = 505; // AS3-verified (direct read): _SafeStr_4546[505] = _SafeCls_2982, whose only consumer is BlockedUsersManager.as; was 214, which has no entry in the WIN63 registry at all
     public const int BlockUserUpdateMessageComposer = 1825; // AS3-verified (direct read): _SafeStr_4546[1825] = _SafeCls_2460, consumed by BlockedUsersManager.as / RoomUsersHandler.as; was 219, which has no entry in the WIN63 registry at all
 

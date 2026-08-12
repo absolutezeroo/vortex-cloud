@@ -1,11 +1,17 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Messages.Incoming.Quest;
+using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Quest;
 
-public class GetCommunityGoalProgressMessageHandler
+/// <summary>
+/// The landing view asks where the hotel stands on the community goal. The grain owns the reply —
+/// it resolves which goal is active and sends the widget state itself.
+/// </summary>
+public class GetCommunityGoalProgressMessageHandler(IGrainFactory grainFactory)
     : IMessageHandler<GetCommunityGoalProgressMessage>
 {
     public async ValueTask HandleAsync(
@@ -14,6 +20,14 @@ public class GetCommunityGoalProgressMessageHandler
         CancellationToken ct
     )
     {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
+        if (ctx.PlayerId <= 0)
+        {
+            return;
+        }
+
+        await grainFactory
+            .GetCommunityGoalGrain()
+            .SendProgressAsync(ctx.PlayerId, ct)
+            .ConfigureAwait(false);
     }
 }

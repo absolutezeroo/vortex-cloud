@@ -586,6 +586,14 @@ internal sealed class PlayerQuestGrain(
                         new QuestCompletedMessageComposer { Quest = snapshot, ShowDialog = true }
                     )
                     .ConfigureAwait(true);
+
+                // A finished quest feeds the community goal, if the active one is fed by this
+                // campaign. The goal grain decides that -- it owns which campaign counts, and
+                // ignores everything else.
+                await _grainFactory
+                    .GetCommunityGoalGrain()
+                    .ContributeAsync(PlayerId, snapshot.CampaignCode, amount: 1, ct)
+                    .ConfigureAwait(true);
             }
             else
             {

@@ -235,6 +235,9 @@ public static class GrainFactoryExtensions
         long playerId
     ) => factory.GetGrain<IPlayerQuestGrain>(playerId);
 
+    public static ICommunityGoalGrain GetCommunityGoalGrain(this IGrainFactory factory) =>
+        factory.GetGrain<ICommunityGoalGrain>(SingletonGrainId.GLOBAL);
+
     public static IPollManagerGrain GetPollManagerGrain(this IGrainFactory factory) =>
         factory.GetGrain<IPollManagerGrain>(SingletonGrainId.GLOBAL);
 

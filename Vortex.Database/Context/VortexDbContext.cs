@@ -241,6 +241,13 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<PlayerQuestEntity> PlayerQuests { get; init; } = null!;
 
+    public DbSet<CommunityGoalEntity> CommunityGoals { get; init; } = null!;
+
+    public DbSet<CommunityGoalLevelEntity> CommunityGoalLevels { get; init; } = null!;
+
+    public DbSet<PlayerCommunityGoalContributionEntity> PlayerCommunityGoalContributions { get; init; } =
+        null!;
+
     public DbSet<PollEntity> Polls { get; init; } = null!;
 
     public DbSet<PollQuestionEntity> PollQuestions { get; init; } = null!;
@@ -360,6 +367,26 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
             .HasOne(p => p.QuestEntity)
             .WithMany()
             .HasForeignKey(p => p.QuestEntityId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // A goal owns its levels; contributions cascade with the player and are Restrict against the
+        // goal so retiring a goal never silently destroys who contributed what.
+        mb.Entity<CommunityGoalLevelEntity>()
+            .HasOne(l => l.CommunityGoalEntity)
+            .WithMany()
+            .HasForeignKey(l => l.CommunityGoalEntityId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        mb.Entity<PlayerCommunityGoalContributionEntity>()
+            .HasOne(c => c.PlayerEntity)
+            .WithMany()
+            .HasForeignKey(c => c.PlayerEntityId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        mb.Entity<PlayerCommunityGoalContributionEntity>()
+            .HasOne(c => c.CommunityGoalEntity)
+            .WithMany()
+            .HasForeignKey(c => c.CommunityGoalEntityId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // A poll owns its questions and a question owns its choices, so editing a survey down to
