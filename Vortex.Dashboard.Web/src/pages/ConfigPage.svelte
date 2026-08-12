@@ -2,10 +2,11 @@
   import { onMount } from 'svelte';
   import OpResult from '../components/OpResult.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
-  import { apiGet, apiPost } from '../lib/api.js';
+  import { apiGet } from '../lib/api.js';
+  import { createWriteOps } from '../lib/writeOps.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { reasonOk } from '../lib/validation.js';
   import { identity } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
 
@@ -14,11 +15,14 @@
   let loading = true;
   let loadError = '';
 
-  let results = {};
-  let busy = {};
-  let pending = null;
-  let reason = '';
-  let reasonError = '';
+  // One store drives every row's save: the shared modal collects the reason, createWriteOps posts it
+  // and keys the busy state and the result to the setting being changed, so two rows saved in a row
+  // never show each other's outcome.
+  const ops = createWriteOps();
+
+  // What the modal is confirming, kept beside the store because the dialog shows the old and new
+  // value -- the thing an operator actually re-reads before committing a live config change.
+  let editing = null;
 
   $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsManageConfig);
 
@@ -70,57 +74,27 @@
     if (!canManage || !isDirty(item)) {
       return;
     }
-    reason = '';
-    reasonError = '';
-    pending = { key: item.key, value: editValues[item.key] ?? '', description: item.description };
-  }
 
-  function cancel() {
-    pending = null;
-  }
+    const value = editValues[item.key] ?? '';
 
-  async function confirm() {
-    if (!pending) {
-      return;
-    }
-    if (!reasonOk(reason)) {
-      reasonError = translate('config.reasonMissing');
-      return;
-    }
-
-    const { key, value } = pending;
-    pending = null;
-    busy = { ...busy, [key]: true };
-    results = { ...results, [key]: null };
-
-    try {
-      const result = await apiPost('/api/v1/operations/config', {
-        key,
-        value,
-        reason: reason.trim(),
-      });
-      results = { ...results, [key]: result };
-
-      // Reflect the new value locally on success so "overridden"/dirty state is accurate.
-      if (result?.ok) {
-        items = items.map((it) =>
-          it.key === key ? { ...it, currentValue: value, isOverridden: true } : it,
-        );
-      }
-    } catch (err) {
-      results = {
-        ...results,
-        [key]: {
-          ok: false,
-          correlationId: '',
-          message: isPermissionDeniedError(err)
-            ? translate('common.insufficientRightsAction')
-            : err.code || err.message,
+    editing = { key: item.key, value, description: item.description };
+    ops.ask(
+      '/api/v1/operations/config',
+      { key: item.key, value },
+      item.key,
+      '',
+      {
+        key: item.key,
+        // Reflect the new value locally on success so "overridden"/dirty state stays accurate
+        // without a full reload.
+        onSuccess: () => {
+          items = items.map((it) =>
+            it.key === item.key ? { ...it, currentValue: value, isOverridden: true } : it,
+          );
+          editing = null;
         },
-      };
-    } finally {
-      busy = { ...busy, [key]: false };
-    }
+      },
+    );
   }
 
   async function copy(value) {
@@ -178,14 +152,14 @@
               <button
                 type="button"
                 on:click={() => startSave(item)}
-                disabled={!canManage || busy[item.key] || !isDirty(item)}
+                disabled={!canManage || $ops.busyKeys[item.key] || !isDirty(item)}
               >
                 {$t('config.save')}
               </button>
             </div>
-            {#if results[item.key]}
+            {#if $ops.results[item.key]}
               <div class="config-result">
-                <OpResult result={results[item.key]} onCopy={copy} copyLabel={$t('common.copy')} />
+                <OpResult result={$ops.results[item.key]} onCopy={copy} copyLabel={$t('common.copy')} />
               </div>
             {/if}
           </div>
@@ -195,35 +169,21 @@
   {/each}
 {/if}
 
-{#if pending}
-  <div class="modal-layer">
-    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={cancel}></button>
-    <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
-      <header class="modal-header">
-        <div>
-          <p class="eyebrow">{$t('config.confirmEyebrow')}</p>
-          <h2>{pending.key}</h2>
-        </div>
-      </header>
-      <p class="muted small">{pending.description}</p>
-      <p>{$t('config.newValue')}: <code>{pending.value}</code></p>
-      <div class="op-field">
-        <label for="config-reason">{$t('common.reasonRequired')}</label>
-        <input
-          id="config-reason"
-          bind:value={reason}
-          placeholder={$t('config.reasonPlaceholder')}
-          list="reason-history"
-        />
-      </div>
-      {#if reasonError}<p class="empty-state danger">{reasonError}</p>{/if}
-      <div class="op-actions">
-        <button type="button" on:click={confirm}>{$t('common.confirm')}</button>
-        <button class="ghost-button" type="button" on:click={cancel}>{$t('common.cancel')}</button>
-      </div>
-    </section>
-  </div>
-{/if}
+<ConfirmReasonModal
+  open={Boolean($ops.pending)}
+  title={$ops.pending?.title ?? ''}
+  confirmLabel={$t('common.confirm')}
+  busy={$ops.busy}
+  error={$ops.error}
+  danger={false}
+  on:confirm={(e) => ops.confirm(e.detail)}
+  on:cancel={() => { ops.cancel(); editing = null; }}
+>
+  {#if editing}
+    <p class="muted small">{editing.description}</p>
+    <p>{$t('config.newValue')}: <code>{editing.value}</code></p>
+  {/if}
+</ConfirmReasonModal>
 
 <style>
   .config-list {

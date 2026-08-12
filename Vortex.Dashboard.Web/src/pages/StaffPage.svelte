@@ -5,12 +5,12 @@
   // loop: the capability editor only offers keys that exist, so the first failure cannot be created
   // here at all.
   import { onMount } from 'svelte';
-  import { apiGet, apiPost } from '../lib/api.js';
+  import { apiGet } from '../lib/api.js';
   import { formatNumber, formatDate, formatDuration } from '../lib/format.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { rememberReason } from '../lib/reasonHistory.js';
   import { identity } from '../lib/session.js';
+  import { createWriteOps } from '../lib/writeOps.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
@@ -18,25 +18,33 @@
   import OpResult from '../components/OpResult.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { ShieldCheck, KeyRound, Users, Gavel, User } from '@lucide/svelte';
-  import { t, translate } from '../lib/i18n.js';
+  import { t } from '../lib/i18n.js';
 
   let loading = false;
   let forbidden = false;
   let error = '';
   let data = null;
-  let result = null;
   let expanded = null;
-
-  // One modal drives every write, so the audited reason cannot be skipped on any of the small forms.
-  let pending = null;
-  let pendingBusy = false;
-  let pendingError = '';
 
   let roleForm = { key: '', name: '' };
   let roleDraft = null; // { id, key, name }
   let capabilityDraft = null; // { roleId, selected: Set }
   let presetForm = emptyPreset();
   let presetDraft = null;
+
+  // One modal drives every write, so the audited reason cannot be skipped on any of the small forms.
+  // createWriteOps owns that whole cycle (stage -> confirm with reason -> remember it -> refresh);
+  // the callback below is only the page's own "and clear the drafts" step.
+  const ops = createWriteOps(async () => {
+    roleDraft = null;
+    capabilityDraft = null;
+    presetDraft = null;
+    roleForm = { key: '', name: '' };
+    presetForm = emptyPreset();
+    await refresh();
+    if (accountResults.length > 0) await searchAccounts();
+  });
+
 
   let accountQuery = '';
   let accountResults = [];
@@ -85,40 +93,7 @@
     }
   }
 
-  function ask(endpoint, body, title, summary) {
-    pendingError = '';
-    pending = { endpoint, body, title, summary };
-  }
-
-  async function confirm(reason) {
-    if (!pending) return;
-
-    pendingBusy = true;
-    pendingError = '';
-
-    try {
-      const response = await apiPost(pending.endpoint, { ...pending.body, reason });
-      result = response;
-
-      if (response.ok) {
-        rememberReason(reason);
-        pending = null;
-        roleDraft = null;
-        capabilityDraft = null;
-        presetDraft = null;
-        roleForm = { key: '', name: '' };
-        presetForm = emptyPreset();
-        await refresh();
-        if (accountResults.length > 0) await searchAccounts();
-      } else {
-        pendingError = response.error || translate('staff.operationFailed');
-      }
-    } catch (err) {
-      pendingError = err.message;
-    } finally {
-      pendingBusy = false;
-    }
-  }
+  const ask = (endpoint, body, title, summary) => ops.ask(endpoint, body, title, summary);
 
   function startCapabilityEdit(role) {
     expanded = role.id;
@@ -187,8 +162,8 @@
     <p class="empty-state danger">{error}</p>
   {/if}
 
-  {#if result}
-    <OpResult {result} />
+  {#if $ops.result}
+    <OpResult result={$ops.result} />
   {/if}
 </section>
 
@@ -715,14 +690,14 @@
 {/if}
 
 <ConfirmReasonModal
-  open={Boolean(pending)}
-  title={pending?.title ?? ''}
-  summary={pending?.summary ?? ''}
-  confirmLabel={pending?.title ?? $t('common.confirm')}
-  busy={pendingBusy}
-  error={pendingError}
-  on:confirm={(e) => confirm(e.detail)}
-  on:cancel={() => (pending = null)}
+  open={Boolean($ops.pending)}
+  title={$ops.pending?.title ?? ''}
+  summary={$ops.pending?.summary ?? ''}
+  confirmLabel={$ops.pending?.title ?? $t('common.confirm')}
+  busy={$ops.busy}
+  error={$ops.error}
+  on:confirm={(e) => ops.confirm(e.detail)}
+  on:cancel={() => ops.cancel()}
 />
 
 <style>

@@ -7,11 +7,11 @@
   // Every mutation funnels through the same ConfirmReasonModal, so the audited reason cannot be
   // skipped by a stray Enter key on one of the many small forms.
   import { onMount } from 'svelte';
-  import { apiGet, apiPost } from '../lib/api.js';
+  import { apiGet } from '../lib/api.js';
+  import { createWriteOps } from '../lib/writeOps.js';
   import { formatNumber } from '../lib/format.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { rememberReason } from '../lib/reasonHistory.js';
   import { identity } from '../lib/session.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
@@ -19,16 +19,21 @@
   import OpResult from '../components/OpResult.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { Compass, LayoutList, FolderTree, CalendarRange } from '@lucide/svelte';
-  import { t, translate } from '../lib/i18n.js';
+  import { t } from '../lib/i18n.js';
 
   let loading = false;
   let forbidden = false;
   let error = '';
   let data = null;
-  let result = null;
-  let pending = null;
-  let pendingBusy = false;
-  let pendingError = '';
+  // Every write goes through createWriteOps: the modal collects the reason, the store posts it,
+  // remembers it and refreshes -- this callback is only the page's own "clear the drafts" step.
+  const ops = createWriteOps(async () => {
+    editing = null;
+    contextForm = newContext();
+    categoryForm = newCategory();
+    eventCategoryForm = newEventCategory();
+    await refresh();
+  });
 
   $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsNavigatorManage);
   $: queryTypes = data?.queryTypes || [];
@@ -85,39 +90,7 @@
     }
   }
 
-  // Every write goes through here: the modal collects the reason, this posts it and refreshes.
-  function ask(endpoint, body, title, summary) {
-    pendingError = '';
-    pending = { endpoint, body, title, summary };
-  }
-
-  async function confirm(reason) {
-    if (!pending) return;
-
-    pendingBusy = true;
-    pendingError = '';
-
-    try {
-      const response = await apiPost(pending.endpoint, { ...pending.body, reason });
-      result = response;
-
-      if (response.ok) {
-        rememberReason(reason);
-        pending = null;
-        editing = null;
-        contextForm = newContext();
-        categoryForm = newCategory();
-        eventCategoryForm = newEventCategory();
-        await refresh();
-      } else {
-        pendingError = response.error || translate('navigatorConfig.operationFailed');
-      }
-    } catch (err) {
-      pendingError = err.message;
-    } finally {
-      pendingBusy = false;
-    }
-  }
+  const ask = (endpoint, body, title, summary) => ops.ask(endpoint, body, title, summary);
 
   function startEdit(kind, row) {
     editing = { kind, id: row.id, draft: { ...row } };
@@ -171,8 +144,8 @@
     <p class="empty-state danger">{error}</p>
   {/if}
 
-  {#if result}
-    <OpResult {result} />
+  {#if $ops.result}
+    <OpResult result={$ops.result} />
   {/if}
 </section>
 
@@ -742,14 +715,14 @@
 {/if}
 
 <ConfirmReasonModal
-  open={Boolean(pending)}
-  title={pending?.title ?? ''}
-  summary={pending?.summary ?? ''}
-  confirmLabel={pending?.title ?? $t('common.confirm')}
-  busy={pendingBusy}
-  error={pendingError}
-  on:confirm={(e) => confirm(e.detail)}
-  on:cancel={() => (pending = null)}
+  open={Boolean($ops.pending)}
+  title={$ops.pending?.title ?? ''}
+  summary={$ops.pending?.summary ?? ''}
+  confirmLabel={$ops.pending?.title ?? $t('common.confirm')}
+  busy={$ops.busy}
+  error={$ops.error}
+  on:confirm={(e) => ops.confirm(e.detail)}
+  on:cancel={() => ops.cancel()}
 />
 
 <style>

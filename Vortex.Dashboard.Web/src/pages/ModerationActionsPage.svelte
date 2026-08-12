@@ -2,7 +2,7 @@
   import OpResult from '../components/OpResult.svelte';
   import { Ban, ShieldCheck, VolumeX, Lock, LockOpen } from '@lucide/svelte';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
-  import { apiPost } from '../lib/api.js';
+  import { createWriteOps } from '../lib/writeOps.js';
   import { MODERATION_OPERATION_CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { reasonOk, positive } from '../lib/validation.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
@@ -31,10 +31,10 @@
   };
   let tradingUnlock = { playerId: '', playerName: '', playerOnline: false, reason: '' };
 
-  let results = {};
-  let errors = {};
-  let busy = {};
-  let pending = null;
+  // Every write is staged here and confirmed in the dialog below before it is posted. createWriteOps
+  // owns that cycle -- posting, remembering the audited reason, and tracking each form's busy state,
+  // error and result under its own key -- so the page only describes what each button writes.
+  const ops = createWriteOps();
   let picker = null;
 
   const capabilityByAction = {
@@ -55,23 +55,17 @@
     picker = { kind: 'user', title: translate('operations.selectPlayerTitle'), onSelect: apply };
   }
 
-  function stage(id, title, endpoint, valid, body, summary) {
-    errors = { ...errors, [id]: '' };
-
-    if (!valid) {
-      errors = {
-        ...errors,
-        [id]: translate('moderationActions.fillFields'),
-      };
-      return;
-    }
-
-    pending = { id, title, endpoint, body, summary, reason: body.reason };
-  }
+  const stage = (id, title, endpoint, valid, body, summary) =>
+    ops.ask(endpoint, body, title, summary, {
+      key: id,
+      valid,
+      invalidMessage: translate('moderationActions.fillFields'),
+      reason: body.reason,
+    });
 
   function stageBan() {
     if (!canBan) {
-      errors = { ...errors, ban: translate('moderationActions.banAccessDenied') };
+      ops.fail('ban', translate('moderationActions.banAccessDenied'));
       return;
     }
 
@@ -98,7 +92,7 @@
 
   function stageUnban() {
     if (!canUnban) {
-      errors = { ...errors, unban: translate('moderationActions.unbanAccessDenied') };
+      ops.fail('unban', translate('moderationActions.unbanAccessDenied'));
       return;
     }
 
@@ -114,7 +108,7 @@
 
   function stageMute() {
     if (!canMute) {
-      errors = { ...errors, mute: translate('moderationActions.muteAccessDenied') };
+      ops.fail('mute', translate('moderationActions.muteAccessDenied'));
       return;
     }
 
@@ -134,7 +128,7 @@
 
   function stageTradingLock() {
     if (!canTradingLock) {
-      errors = { ...errors, tradingLock: translate('moderationActions.lockAccessDenied') };
+      ops.fail('tradingLock', translate('moderationActions.lockAccessDenied'));
       return;
     }
 
@@ -161,7 +155,7 @@
 
   function stageTradingUnlock() {
     if (!canTradingUnlock) {
-      errors = { ...errors, tradingUnlock: translate('moderationActions.unlockAccessDenied') };
+      ops.fail('tradingUnlock', translate('moderationActions.unlockAccessDenied'));
       return;
     }
 
@@ -173,34 +167,6 @@
       { playerId: Number(tradingUnlock.playerId), reason: tradingUnlock.reason.trim() },
       translate('moderationActions.liftLockSummary', { name: tradingUnlock.playerName || translate('moderationActions.player'), id: tradingUnlock.playerId }),
     );
-  }
-
-  function cancel() {
-    pending = null;
-  }
-
-  async function confirm() {
-    if (!pending) {
-      return;
-    }
-
-    const { id, endpoint, body } = pending;
-    pending = null;
-
-    busy = { ...busy, [id]: true };
-    errors = { ...errors, [id]: '' };
-    results = { ...results, [id]: null };
-
-    try {
-      results = { ...results, [id]: await apiPost(endpoint, body) };
-    } catch (err) {
-      errors = {
-        ...errors,
-        [id]: isPermissionDeniedError(err) ? translate('common.insufficientRightsAction') : err.code || err.message,
-      };
-    } finally {
-      busy = { ...busy, [id]: false };
-    }
   }
 
   async function copy(value) {
@@ -263,11 +229,11 @@
         <input id="ban-reason" bind:value={ban.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageBan} disabled={busy.ban}>{$t('common.run')}</button>
+        <button type="button" on:click={stageBan} disabled={$ops.busyKeys.ban}>{$t('common.run')}</button>
       </div>
-      {#if errors.ban}<p class="empty-state danger">{errors.ban}</p>{/if}
-      {#if results.ban}
-        <OpResult result={results.ban} onCopy={copy} copyLabel={$t('common.copy')} />
+      {#if $ops.errors.ban}<p class="empty-state danger">{$ops.errors.ban}</p>{/if}
+      {#if $ops.results.ban}
+        <OpResult result={$ops.results.ban} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
   </section>
@@ -305,11 +271,11 @@
         <input id="unban-reason" bind:value={unban.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageUnban} disabled={busy.unban}>{$t('common.run')}</button>
+        <button type="button" on:click={stageUnban} disabled={$ops.busyKeys.unban}>{$t('common.run')}</button>
       </div>
-      {#if errors.unban}<p class="empty-state danger">{errors.unban}</p>{/if}
-      {#if results.unban}
-        <OpResult result={results.unban} onCopy={copy} copyLabel={$t('common.copy')} />
+      {#if $ops.errors.unban}<p class="empty-state danger">{$ops.errors.unban}</p>{/if}
+      {#if $ops.results.unban}
+        <OpResult result={$ops.results.unban} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
   </section>
@@ -352,11 +318,11 @@
         <input id="mute-reason" bind:value={mute.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageMute} disabled={busy.mute}>{$t('common.run')}</button>
+        <button type="button" on:click={stageMute} disabled={$ops.busyKeys.mute}>{$t('common.run')}</button>
       </div>
-      {#if errors.mute}<p class="empty-state danger">{errors.mute}</p>{/if}
-      {#if results.mute}
-        <OpResult result={results.mute} onCopy={copy} copyLabel={$t('common.copy')} />
+      {#if $ops.errors.mute}<p class="empty-state danger">{$ops.errors.mute}</p>{/if}
+      {#if $ops.results.mute}
+        <OpResult result={$ops.results.mute} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
   </section>
@@ -410,11 +376,11 @@
         <input id="tradinglock-reason" bind:value={tradingLock.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageTradingLock} disabled={busy.tradingLock}>{$t('common.run')}</button>
+        <button type="button" on:click={stageTradingLock} disabled={$ops.busyKeys.tradingLock}>{$t('common.run')}</button>
       </div>
-      {#if errors.tradingLock}<p class="empty-state danger">{errors.tradingLock}</p>{/if}
-      {#if results.tradingLock}
-        <OpResult result={results.tradingLock} onCopy={copy} copyLabel={$t('common.copy')} />
+      {#if $ops.errors.tradingLock}<p class="empty-state danger">{$ops.errors.tradingLock}</p>{/if}
+      {#if $ops.results.tradingLock}
+        <OpResult result={$ops.results.tradingLock} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
   </section>
@@ -458,11 +424,11 @@
         <input id="tradingunlock-reason" bind:value={tradingUnlock.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageTradingUnlock} disabled={busy.tradingUnlock}>{$t('common.run')}</button>
+        <button type="button" on:click={stageTradingUnlock} disabled={$ops.busyKeys.tradingUnlock}>{$t('common.run')}</button>
       </div>
-      {#if errors.tradingUnlock}<p class="empty-state danger">{errors.tradingUnlock}</p>{/if}
-      {#if results.tradingUnlock}
-        <OpResult result={results.tradingUnlock} onCopy={copy} copyLabel={$t('common.copy')} />
+      {#if $ops.errors.tradingUnlock}<p class="empty-state danger">{$ops.errors.tradingUnlock}</p>{/if}
+      {#if $ops.results.tradingUnlock}
+        <OpResult result={$ops.results.tradingUnlock} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
   </section>
@@ -478,21 +444,21 @@
   />
 {/if}
 
-{#if pending}
+{#if $ops.pending}
   <div class="modal-layer">
-    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={cancel}></button>
+    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={() => ops.cancel()}></button>
     <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
       <header class="modal-header">
         <div>
           <p class="eyebrow">{$t('moderationActions.confirmSanction')}</p>
-          <h2>{pending.title}</h2>
+          <h2>{$ops.pending.title}</h2>
         </div>
       </header>
-      <p>{pending.summary}</p>
-      <p class="muted">{$t('vouchers.reasonLabel', { reason: pending.reason })}</p>
+      <p>{$ops.pending.summary}</p>
+      <p class="muted">{$t('vouchers.reasonLabel', { reason: $ops.pending.reason })}</p>
       <div class="op-actions">
-        <button type="button" on:click={confirm}>{$t('common.confirm')}</button>
-        <button class="ghost-button" type="button" on:click={cancel}>{$t('common.cancel')}</button>
+        <button type="button" on:click={() => ops.confirm()}>{$t('common.confirm')}</button>
+        <button class="ghost-button" type="button" on:click={() => ops.cancel()}>{$t('common.cancel')}</button>
       </div>
     </section>
   </div>

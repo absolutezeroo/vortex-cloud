@@ -1,13 +1,14 @@
 <script>
   import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
-  import { apiGet, apiPost } from '../lib/api.js';
+  import { apiGet } from '../lib/api.js';
+  import { createWriteOps } from '../lib/writeOps.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { formatDate, compactCorrelation } from '../lib/format.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { reasonOk } from '../lib/validation.js';
   import { ChevronDown, ChevronRight } from '@lucide/svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import { identity, openPlayer, openItem } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
@@ -23,10 +24,11 @@
   let occupantsLoading = false;
   let occupantsError = '';
 
-  // The one in-flight/last-confirmed action. Kept open on error so the operator sees why it
-  // failed; cleared on success (the room/occupant list refresh is the success feedback).
-  let pending = null;
-  let lastResult = null;
+  // The one in-flight/last-confirmed action, staged through the shared reason modal: it stays open
+  // on error so the operator sees why it failed and closes on success (the room/occupant list
+  // refresh is the success feedback). Each staged action carries its own refresh as `onSuccess`,
+  // since closing a room reloads the room list while a kick only reloads that room's occupants.
+  const ops = createWriteOps();
 
   $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsRoomsManage);
 
@@ -109,74 +111,27 @@
   }
 
   function stageClose(room) {
-    lastResult = null;
-    pending = {
-      kind: 'close',
-      roomId: roomId(room),
-      reasonInput: '',
-      busy: false,
-      error: '',
-      summary: translate('roomControl.deactivateSummary', { room: roomName(room), id: roomId(room) }),
-    };
+    ops.ask(
+      '/api/v1/operations/rooms/close',
+      { roomId: roomId(room) },
+      translate('roomControl.forceCloseRoom'),
+      translate('roomControl.deactivateSummary', { room: roomName(room), id: roomId(room) }),
+      { danger: true, onSuccess: refresh },
+    );
   }
 
   function stageKick(occupant, forRoomId) {
-    lastResult = null;
-    pending = {
-      kind: 'kick',
-      roomId: forRoomId,
-      playerId: occupantId(occupant),
-      reasonInput: '',
-      busy: false,
-      error: '',
-      summary: translate('roomControl.removeSummary', { occupant: occupantName(occupant), id: occupantId(occupant), roomId: forRoomId }),
-    };
-  }
-
-  function cancel() {
-    pending = null;
-  }
-
-  async function confirm() {
-    if (!pending) {
-      return;
-    }
-
-    if (!reasonOk(pending.reasonInput)) {
-      pending = { ...pending, error: translate('roomControl.reasonTooShort') };
-      return;
-    }
-
-    pending = { ...pending, busy: true, error: '' };
-
-    const { kind, roomId: rid, playerId, reasonInput } = pending;
-
-    try {
-      const result =
-        kind === 'close'
-          ? await apiPost('/api/v1/operations/rooms/close', { roomId: rid, reason: reasonInput.trim() })
-          : await apiPost('/api/v1/operations/rooms/kick', { roomId: rid, playerId, reason: reasonInput.trim() });
-
-      if (!result.ok) {
-        pending = { ...pending, busy: false, error: result.message };
-        return;
-      }
-
-      lastResult = result;
-      pending = null;
-
-      if (kind === 'close') {
-        await refresh();
-      } else {
-        await refreshOccupants(rid);
-      }
-    } catch (err) {
-      pending = {
-        ...pending,
-        busy: false,
-        error: isPermissionDeniedError(err) ? translate('common.insufficientRights') : err.code || err.message,
-      };
-    }
+    ops.ask(
+      '/api/v1/operations/rooms/kick',
+      { roomId: forRoomId, playerId: occupantId(occupant) },
+      translate('roomControl.kickFromRoom'),
+      translate('roomControl.removeSummary', {
+        occupant: occupantName(occupant),
+        id: occupantId(occupant),
+        roomId: forRoomId,
+      }),
+      { danger: true, onSuccess: () => refreshOccupants(forRoomId) },
+    );
   }
 
   onMount(() => {
@@ -201,8 +156,8 @@
     <p class="empty-state danger">{error}</p>
   {/if}
 
-  {#if lastResult}
-    <OpResult result={lastResult} />
+  {#if $ops.result}
+    <OpResult result={$ops.result} />
   {/if}
 
   <table>
@@ -272,26 +227,14 @@
   </table>
 </section>
 
-{#if pending}
-  <div class="modal-layer">
-    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={cancel}></button>
-    <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
-      <header class="modal-header">
-        <div>
-          <p class="eyebrow">{$t('roomControl.confirmEyebrow')}</p>
-          <h2>{pending.kind === 'close' ? $t('roomControl.forceCloseRoom') : $t('roomControl.kickFromRoom')}</h2>
-        </div>
-      </header>
-      <p>{pending.summary}</p>
-      <div class="op-field">
-        <label for="room-action-reason">{$t('common.reasonRequired')}</label>
-        <input id="room-action-reason" bind:value={pending.reasonInput} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
-      </div>
-      {#if pending.error}<p class="empty-state danger">{pending.error}</p>{/if}
-      <div class="op-actions">
-        <button type="button" on:click={confirm} disabled={pending.busy}>{$t('common.confirm')}</button>
-        <button class="ghost-button" type="button" on:click={cancel}>{$t('common.cancel')}</button>
-      </div>
-    </section>
-  </div>
-{/if}
+<ConfirmReasonModal
+  open={Boolean($ops.pending)}
+  title={$ops.pending?.title ?? ''}
+  summary={$ops.pending?.summary ?? ''}
+  confirmLabel={$ops.pending?.title ?? $t('common.confirm')}
+  busy={$ops.busy}
+  error={$ops.error}
+  danger={$ops.pending?.danger ?? false}
+  on:confirm={(e) => ops.confirm(e.detail)}
+  on:cancel={() => ops.cancel()}
+/>

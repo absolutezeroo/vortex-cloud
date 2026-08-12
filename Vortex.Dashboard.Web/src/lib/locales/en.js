@@ -34,6 +34,9 @@ export default {
     resultSuccess: 'Success',
     resultDenied: 'Denied',
     resultFailed: 'Failed',
+    // Default for createWriteOps' client-side validation; the six page namespaces that used to spell
+    // this exact sentence out one by one now fall through to here.
+    fillFields: 'Fill the required fields (reason needs at least 3 characters).',
     signOut: 'Sign out',
     signingOut: 'Signing out...',
     retry: 'Retry',
@@ -876,6 +879,7 @@ export default {
     retrying: 'Retrying...',
     retryNow: 'Retry now',
     autoRetry: 'Auto retry runs while this window is open.',
+    loadingPage: 'Loading page...',
   },
   config: {
     title: 'Server configuration',

@@ -16,54 +16,6 @@ internal sealed class DashboardAuthService(
     DashboardSessionStore sessions
 )
 {
-    private static readonly string[] DashboardCapabilities =
-    [
-        Capabilities.Dashboard.OverviewRead,
-        Capabilities.Dashboard.AuditRead,
-        Capabilities.Dashboard.EconomyRead,
-        Capabilities.Dashboard.PlayersRead,
-        Capabilities.Dashboard.FurnitureRead,
-        Capabilities.Dashboard.OpsGrantCurrency,
-        Capabilities.Dashboard.OpsGrantItem,
-        Capabilities.Dashboard.OpsKickPlayer,
-        Capabilities.Dashboard.OpsManageVouchers,
-        Capabilities.Dashboard.OpsBanAccount,
-        Capabilities.Dashboard.OpsMutePlayer,
-        Capabilities.Dashboard.OpsTradingLock,
-        Capabilities.Dashboard.OpsCfhManage,
-        Capabilities.Dashboard.OpsRoomsManage,
-        Capabilities.Dashboard.CatalogRead,
-        Capabilities.Dashboard.OpsCatalogManage,
-        Capabilities.Dashboard.OpsFurnitureManage,
-        Capabilities.Dashboard.GroupsRead,
-        Capabilities.Dashboard.PetsRead,
-        Capabilities.Dashboard.CfhRead,
-        Capabilities.Dashboard.CatalogPurchasesRead,
-        Capabilities.Dashboard.WiredRead,
-        Capabilities.Dashboard.TargetedOffersRead,
-        Capabilities.Dashboard.OpsTargetedOffersManage,
-        Capabilities.Dashboard.QuestsRead,
-        Capabilities.Dashboard.OpsQuestsManage,
-        Capabilities.Dashboard.PollsRead,
-        Capabilities.Dashboard.OpsPollsManage,
-        Capabilities.Dashboard.PrizePoolsRead,
-        Capabilities.Dashboard.OpsPrizePoolsManage,
-        Capabilities.Dashboard.MysteryBoxRead,
-        Capabilities.Dashboard.OpsMysteryBoxManage,
-        Capabilities.Dashboard.ConfigRead,
-        Capabilities.Dashboard.OpsConfigManage,
-        Capabilities.Dashboard.PerformanceRead,
-        Capabilities.Dashboard.AchievementsRead,
-        Capabilities.Dashboard.BotsRead,
-        Capabilities.Dashboard.NavigatorRead,
-        Capabilities.Dashboard.OpsNavigatorManage,
-        Capabilities.Dashboard.SocialRead,
-        Capabilities.Dashboard.StaffRead,
-        Capabilities.Dashboard.CollectiblesRead,
-        Capabilities.Dashboard.OpsStaffManage,
-        Capabilities.Dashboard.OpsContentManage,
-    ];
-
     public async Task<DashboardLoginResult> LoginAsync(
         string email,
         string password,
@@ -122,7 +74,7 @@ internal sealed class DashboardAuthService(
     public void Logout(string? sessionId) => sessions.Remove(sessionId);
 
     private static bool HasDashboardAccess(PermissionSet permissions) =>
-        permissions.IsSuperUser || permissions.HasAny(DashboardCapabilities);
+        permissions.IsSuperUser || permissions.HasAny(Capabilities.Dashboard.All);
 }
 
 internal enum DashboardLoginOutcome

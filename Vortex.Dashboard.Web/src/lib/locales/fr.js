@@ -32,6 +32,9 @@ export default {
     resultSuccess: 'Succès',
     resultDenied: 'Refusé',
     resultFailed: 'Échoué',
+    // Défaut pour la validation côté client de createWriteOps ; les six espaces de noms qui
+    // répétaient cette phrase mot pour mot retombent maintenant ici.
+    fillFields: 'Remplissez les champs requis (la raison doit faire au moins 3 caractères).',
     signOut: 'Déconnexion',
     signingOut: 'Déconnexion...',
     retry: 'Réessayer',
@@ -875,6 +878,7 @@ export default {
     retrying: 'Nouvelle tentative...',
     retryNow: 'Réessayer maintenant',
     autoRetry: 'Nouvelle tentative automatique tant que cette fenêtre est ouverte.',
+    loadingPage: 'Chargement de la page...',
   },
   config: {
     title: 'Configuration serveur',

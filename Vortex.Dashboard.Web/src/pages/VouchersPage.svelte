@@ -1,7 +1,8 @@
 <script>
   import OpResult from '../components/OpResult.svelte';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
-  import { apiGet, apiPost } from '../lib/api.js';
+  import { apiGet } from '../lib/api.js';
+  import { createWriteOps } from '../lib/writeOps.js';
   import { compactCorrelation, formatDate } from '../lib/format.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { reasonOk, positive, nonNegative } from '../lib/validation.js';
@@ -38,27 +39,24 @@
   let lookupError = '';
   let lookupLoading = false;
 
-  let results = {};
-  let errors = {};
-  let busy = {};
-  let pending = null;
+  // Every write is staged here and confirmed in the dialog below before it is posted. createWriteOps
+  // owns that cycle -- posting, remembering the audited reason, and tracking each form's busy state,
+  // error and result under its own key -- so the page only describes what each button writes.
+  const ops = createWriteOps();
 
   $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsManageVouchers);
 
   function reasonError(id, message) {
-    errors = { ...errors, [id]: message };
+    ops.fail(id, message);
   }
 
-  function stage(id, title, endpoint, valid, body, summary) {
-    errors = { ...errors, [id]: '' };
-
-    if (!valid) {
-      errors = { ...errors, [id]: translate('vouchers.fillFields') };
-      return;
-    }
-
-    pending = { id, title, endpoint, body, summary, reason: body.reason };
-  }
+  const stage = (id, title, endpoint, valid, body, summary) =>
+    ops.ask(endpoint, body, title, summary, {
+      key: id,
+      valid,
+      invalidMessage: translate('vouchers.fillFields'),
+      reason: body.reason,
+    });
 
   function stageCreate() {
     if (!canManage) {
@@ -107,34 +105,6 @@
       { code: deactivate.code.trim(), reason: deactivate.reason.trim() },
       translate('vouchers.deactivateSummary', { code: deactivate.code.trim() }),
     );
-  }
-
-  function cancel() {
-    pending = null;
-  }
-
-  async function confirm() {
-    if (!pending) {
-      return;
-    }
-
-    const { id, endpoint, body } = pending;
-    pending = null;
-
-    busy = { ...busy, [id]: true };
-    errors = { ...errors, [id]: '' };
-    results = { ...results, [id]: null };
-
-    try {
-      results = { ...results, [id]: await apiPost(endpoint, body) };
-    } catch (err) {
-      errors = {
-        ...errors,
-        [id]: isPermissionDeniedError(err) ? translate('common.insufficientRightsAction') : err.code || err.message,
-      };
-    } finally {
-      busy = { ...busy, [id]: false };
-    }
   }
 
   async function lookup() {
@@ -210,11 +180,11 @@
         <input id="voucher-reason" bind:value={create.reason} placeholder={$t('vouchers.reasonVoucher')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageCreate} disabled={busy.create}>{$t('common.run')}</button>
+        <button type="button" on:click={stageCreate} disabled={$ops.busyKeys.create}>{$t('common.run')}</button>
       </div>
-      {#if errors.create}<p class="empty-state danger">{errors.create}</p>{/if}
-      {#if results.create}
-        <OpResult result={results.create} onCopy={copy} copyLabel={$t('common.copy')} />
+      {#if $ops.errors.create}<p class="empty-state danger">{$ops.errors.create}</p>{/if}
+      {#if $ops.results.create}
+        <OpResult result={$ops.results.create} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
   </section>
@@ -233,11 +203,11 @@
         <input id="deactivate-reason" bind:value={deactivate.reason} placeholder={$t('vouchers.reasonDeactivate')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageDeactivate} disabled={busy.deactivate}>{$t('common.run')}</button>
+        <button type="button" on:click={stageDeactivate} disabled={$ops.busyKeys.deactivate}>{$t('common.run')}</button>
       </div>
-      {#if errors.deactivate}<p class="empty-state danger">{errors.deactivate}</p>{/if}
-      {#if results.deactivate}
-        <OpResult result={results.deactivate} onCopy={copy} copyLabel={$t('common.copy')} />
+      {#if $ops.errors.deactivate}<p class="empty-state danger">{$ops.errors.deactivate}</p>{/if}
+      {#if $ops.results.deactivate}
+        <OpResult result={$ops.results.deactivate} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
   </section>
@@ -279,21 +249,21 @@
   </section>
 </div>
 
-{#if pending}
+{#if $ops.pending}
   <div class="modal-layer">
-    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={cancel}></button>
+    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={() => ops.cancel()}></button>
     <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
       <header class="modal-header">
         <div>
           <p class="eyebrow">{$t('vouchers.confirmEyebrow')}</p>
-          <h2>{pending.title}</h2>
+          <h2>{$ops.pending.title}</h2>
         </div>
       </header>
-      <p>{pending.summary}</p>
-      <p class="muted">{$t('vouchers.reasonLabel', { reason: pending.reason })}</p>
+      <p>{$ops.pending.summary}</p>
+      <p class="muted">{$t('vouchers.reasonLabel', { reason: $ops.pending.reason })}</p>
       <div class="op-actions">
-        <button type="button" on:click={confirm}>{$t('common.confirm')}</button>
-        <button class="ghost-button" type="button" on:click={cancel}>{$t('common.cancel')}</button>
+        <button type="button" on:click={() => ops.confirm()}>{$t('common.confirm')}</button>
+        <button class="ghost-button" type="button" on:click={() => ops.cancel()}>{$t('common.cancel')}</button>
       </div>
     </section>
   </div>

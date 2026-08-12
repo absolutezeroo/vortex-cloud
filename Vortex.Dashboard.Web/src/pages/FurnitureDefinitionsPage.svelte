@@ -2,11 +2,11 @@
   import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
   import { Eye, EyeOff, Image, Package, Pencil, Plus, Trash2 } from '@lucide/svelte';
-  import { apiGet, apiPost } from '../lib/api.js';
+  import { apiGet } from '../lib/api.js';
+  import { createWriteOps } from '../lib/writeOps.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { reasonOk } from '../lib/validation.js';
-  import { rememberReason } from '../lib/reasonHistory.js';
   import {
     PRODUCT_TYPES,
     FURNITURE_CATEGORIES,
@@ -64,10 +64,10 @@
 
   let deleteReason = {};
 
-  let results = {};
-  let errors = {};
-  let busy = {};
-  let pending = null;
+  // Every write is staged here and confirmed in the dialog below before it is posted. createWriteOps
+  // owns that cycle -- posting, remembering the audited reason, and tracking each form's busy state,
+  // error and result under its own key -- so the page only describes what each button writes.
+  const ops = createWriteOps();
 
   $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsFurnitureManage);
   $: totalPages = Math.max(1, Math.ceil(total / limit));
@@ -133,52 +133,18 @@
     };
   }
 
-  function stage(id, title, endpoint, valid, body, summary, onSuccess) {
-    errors = { ...errors, [id]: '' };
-
-    if (!valid) {
-      errors = { ...errors, [id]: translate('furnitureAdmin.fillFields') };
-      return;
-    }
-
-    pending = { id, title, endpoint, body, summary, reason: body.reason, onSuccess };
-  }
-
-  function cancelPending() {
-    pending = null;
-  }
-
-  async function confirmPending() {
-    if (!pending) return;
-
-    const { id, endpoint, body, reason, onSuccess } = pending;
-    pending = null;
-
-    busy = { ...busy, [id]: true };
-    errors = { ...errors, [id]: '' };
-    results = { ...results, [id]: null };
-
-    try {
-      const result = await apiPost(endpoint, body);
-      results = { ...results, [id]: result };
-
-      if (result.ok) {
-        rememberReason(reason);
-        await onSuccess?.();
-      }
-    } catch (err) {
-      errors = {
-        ...errors,
-        [id]: isPermissionDeniedError(err) ? translate('common.insufficientRightsAction') : err.code || err.message,
-      };
-    } finally {
-      busy = { ...busy, [id]: false };
-    }
-  }
+  const stage = (id, title, endpoint, valid, body, summary, onSuccess) =>
+    ops.ask(endpoint, body, title, summary, {
+      key: id,
+      valid,
+      invalidMessage: translate('furnitureAdmin.fillFields'),
+      reason: body.reason,
+      onSuccess,
+    });
 
   function stageCreate() {
     if (!canManage) {
-      errors = { ...errors, create: translate('furnitureAdmin.createAccessDenied') };
+      ops.fail('create', translate('furnitureAdmin.createAccessDenied'));
       return;
     }
 
@@ -362,11 +328,11 @@
         <input id="new-furni-reason" bind:value={newForm.reason} placeholder={$t('furnitureAdmin.reasonNewPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageCreate} disabled={busy.create}>{$t('furnitureAdmin.create')}</button>
+        <button type="button" on:click={stageCreate} disabled={$ops.busyKeys.create}>{$t('furnitureAdmin.create')}</button>
       </div>
-      {#if errors.create}<p class="empty-state danger">{errors.create}</p>{/if}
-      {#if results.create}
-        <OpResult result={results.create} />
+      {#if $ops.errors.create}<p class="empty-state danger">{$ops.errors.create}</p>{/if}
+      {#if $ops.results.create}
+        <OpResult result={$ops.results.create} />
       {/if}
     </div>
   {/if}
@@ -490,12 +456,12 @@
                 <input id={`edit-furni-reason-${item.id}`} bind:value={editForm.reason} placeholder={$t('furnitureAdmin.reasonChangePlaceholder')} list="reason-history" />
               </div>
               <div class="op-actions">
-                <button type="button" on:click={stageUpdate} disabled={busy.update}>{$t('furnitureAdmin.save')}</button>
+                <button type="button" on:click={stageUpdate} disabled={$ops.busyKeys.update}>{$t('furnitureAdmin.save')}</button>
                 <button class="ghost-button" type="button" on:click={() => (editingId = null)}>{$t('furnitureAdmin.cancel')}</button>
               </div>
-              {#if errors.update}<p class="empty-state danger">{errors.update}</p>{/if}
-              {#if results.update}
-                <OpResult result={results.update} />
+              {#if $ops.errors.update}<p class="empty-state danger">{$ops.errors.update}</p>{/if}
+              {#if $ops.results.update}
+                <OpResult result={$ops.results.update} />
               {/if}
             </div>
           {/if}
@@ -511,9 +477,9 @@
         </div>
       {/each}
     </div>
-    {#if errors.delete}<p class="empty-state danger">{errors.delete}</p>{/if}
-    {#if results.delete}
-      <OpResult result={results.delete} />
+    {#if $ops.errors.delete}<p class="empty-state danger">{$ops.errors.delete}</p>{/if}
+    {#if $ops.results.delete}
+      <OpResult result={$ops.results.delete} />
     {/if}
 
     <Pagination
@@ -527,21 +493,21 @@
   {/if}
 </section>
 
-{#if pending}
+{#if $ops.pending}
   <div class="modal-layer">
-    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={cancelPending}></button>
+    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={() => ops.cancel()}></button>
     <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
       <header class="modal-header">
         <div>
           <p class="eyebrow">{$t('furnitureAdmin.confirmEyebrow')}</p>
-          <h2>{pending.title}</h2>
+          <h2>{$ops.pending.title}</h2>
         </div>
       </header>
-      <p>{pending.summary}</p>
-      <p class="muted">{$t('vouchers.reasonLabel', { reason: pending.reason })}</p>
+      <p>{$ops.pending.summary}</p>
+      <p class="muted">{$t('vouchers.reasonLabel', { reason: $ops.pending.reason })}</p>
       <div class="op-actions">
-        <button type="button" on:click={confirmPending}>{$t('common.confirm')}</button>
-        <button class="ghost-button" type="button" on:click={cancelPending}>{$t('furnitureAdmin.cancel')}</button>
+        <button type="button" on:click={() => ops.confirm()}>{$t('common.confirm')}</button>
+        <button class="ghost-button" type="button" on:click={() => ops.cancel()}>{$t('furnitureAdmin.cancel')}</button>
       </div>
     </section>
   </div>

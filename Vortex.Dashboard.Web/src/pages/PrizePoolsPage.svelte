@@ -7,7 +7,8 @@
   import PickerModal from '../components/PickerModal.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
-  import { apiGet, apiPost } from '../lib/api.js';
+  import { apiGet } from '../lib/api.js';
+  import { createWriteOps } from '../lib/writeOps.js';
   import { formatNumber } from '../lib/format.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
@@ -29,7 +30,6 @@
   let loading = false;
   let denied = false;
   let error = '';
-  let result = null;
 
   let selectedPoolId = null;
   let newPool = emptyPool();
@@ -40,9 +40,15 @@
   // picker is what every other page uses for this.
   let picking = null;
 
-  let pending = null;
-  let pendingBusy = false;
-  let pendingError = '';
+  // Every write is staged through the shared reason modal; createWriteOps posts it, remembers the
+  // reason (which the hand-rolled version here used to drop) and refreshes both reads.
+  const ops = createWriteOps(async () => {
+    newPool = emptyPool();
+    newEntry = emptyEntry();
+    newBinding = emptyBinding();
+    await load();
+    await loadStats();
+  });
 
   function emptyPool() {
     return { code: '', name: '', variants: '', notes: '', enabled: true };
@@ -126,29 +132,8 @@
     }
   }
 
-  function stage(title, summary, endpoint, body, danger = false) {
-    pendingError = '';
-    pending = { title, summary, endpoint, body, danger };
-  }
-
-  async function confirmPending(reason) {
-    if (!pending) return;
-    pendingBusy = true;
-    pendingError = '';
-    try {
-      result = await apiPost(pending.endpoint, { ...pending.body, reason });
-      pending = null;
-      newPool = emptyPool();
-      newEntry = emptyEntry();
-      newBinding = emptyBinding();
-      await load();
-      await loadStats();
-    } catch (e) {
-      pendingError = e?.message ?? String(e);
-    } finally {
-      pendingBusy = false;
-    }
-  }
+  const stage = (title, summary, endpoint, body, danger = false) =>
+    ops.ask(endpoint, body, title, summary, { danger });
 
   onMount(async () => {
     await load();
@@ -190,7 +175,7 @@
   {#if error}
     <EmptyState kind="error" message={error} />
   {/if}
-  <OpResult {result} />
+  <OpResult result={$ops.result} />
 
   <section class="panel">
     <div class="panel-head">
@@ -554,15 +539,15 @@
 {/if}
 
 <ConfirmReasonModal
-  open={Boolean(pending)}
-  title={pending?.title ?? ''}
-  summary={pending?.summary ?? ''}
-  confirmLabel={pending?.title ?? $t('prizePools.save')}
-  busy={pendingBusy}
-  error={pendingError}
-  danger={pending?.danger ?? false}
-  on:confirm={(e) => confirmPending(e.detail)}
-  on:cancel={() => (pending = null)}
+  open={Boolean($ops.pending)}
+  title={$ops.pending?.title ?? ''}
+  summary={$ops.pending?.summary ?? ''}
+  confirmLabel={$ops.pending?.title ?? $t('prizePools.save')}
+  busy={$ops.busy}
+  error={$ops.error}
+  danger={$ops.pending?.danger ?? false}
+  on:confirm={(e) => ops.confirm(e.detail)}
+  on:cancel={() => ops.cancel()}
 />
 
 <style>

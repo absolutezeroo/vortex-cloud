@@ -18,14 +18,14 @@
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import OpResult from '../components/OpResult.svelte';
   import PickerModal from '../components/PickerModal.svelte';
-  import { apiGet, apiPost } from '../lib/api.js';
+  import { apiGet } from '../lib/api.js';
+  import { createWriteOps } from '../lib/writeOps.js';
   import { formatDate, formatNumber } from '../lib/format.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { hasDashboardCapability, isPermissionDeniedError } from '../lib/permissions.js';
   import { identity } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
   import { reasonOk } from '../lib/validation.js';
-  import { rememberReason } from '../lib/reasonHistory.js';
 
   // The client's own question types. 1/2 take a choice list; 3/4 are free text. 5 and 6 exist in
   // the client enum but its survey dialog skips them outright, so the server rejects them too --
@@ -84,14 +84,16 @@
 
   let roomPickerFor = null;
 
-  let deleteTarget = null;
-  let deleteBusy = false;
-  let deleteError = '';
+  // Deletes get their own store: they collect the reason in the shared modal (the edits carry it in
+  // the form), so the two flows must be able to be staged independently without one modal's pending
+  // write opening the other's dialog.
+  const deleteOps = createWriteOps();
 
-  let opResults = {};
-  let errors = {};
-  let busy = {};
-  let pending = null;
+  // The edits carry their reason as a field of the form itself (the confirm step below only re-reads
+  // it back), so `ask` is given the reason instead of collecting it -- but the posting, the reason
+  // history and the per-form busy/error/result bookkeeping are the shared ones. Each form passes a
+  // `key` so its outcome renders next to it rather than in one banner for the whole page.
+  const ops = createWriteOps();
 
   $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsPollsManage);
   $: choiceTypeSelected = questionForm && CHOICE_TYPES.includes(Number(questionForm.questionType));
@@ -178,50 +180,14 @@
     }
   }
 
-  function stage(id, title, endpoint, valid, body, summary, onSuccess) {
-    errors = { ...errors, [id]: '' };
-
-    if (!valid) {
-      errors = { ...errors, [id]: translate('polls.fillFields') };
-      return;
-    }
-
-    pending = { id, title, endpoint, body, summary, reason: body.reason, onSuccess };
-  }
-
-  function cancelPending() {
-    pending = null;
-  }
-
-  async function confirmPending() {
-    if (!pending) return;
-
-    const { id, endpoint, body, reason, onSuccess } = pending;
-    pending = null;
-
-    busy = { ...busy, [id]: true };
-    errors = { ...errors, [id]: '' };
-    opResults = { ...opResults, [id]: null };
-
-    try {
-      const result = await apiPost(endpoint, body);
-      opResults = { ...opResults, [id]: result };
-
-      if (result.ok) {
-        rememberReason(reason);
-        await onSuccess?.();
-      }
-    } catch (err) {
-      errors = {
-        ...errors,
-        [id]: isPermissionDeniedError(err)
-          ? translate('common.insufficientRightsAction')
-          : err.code || err.message,
-      };
-    } finally {
-      busy = { ...busy, [id]: false };
-    }
-  }
+  const stage = (id, title, endpoint, valid, body, summary, onSuccess) =>
+    ops.ask(endpoint, body, title, summary, {
+      key: id,
+      valid,
+      invalidMessage: translate('polls.fillFields'),
+      reason: body.reason,
+      onSuccess,
+    });
 
   function pollBody(form, pollId) {
     const body = {
@@ -402,49 +368,34 @@
 
   // Deletes go straight through the shared reason modal rather than the two-step stage/confirm the
   // edits use: the modal already captures the reason and confirms, so staging would ask twice.
-  async function confirmDelete(reason) {
-    if (!deleteTarget || !canManage) return;
+  // poll_has_answers / question_has_answers are the two refusals an operator hits in practice, and
+  // both mean "disable it instead" -- createWriteOps keeps the modal open on them with the code
+  // visible rather than closing over the failure.
+  function askDelete(target) {
+    if (!canManage) return;
 
-    const target = deleteTarget;
     const isPoll = target.kind === 'poll';
 
-    deleteBusy = true;
-    deleteError = '';
+    deleteOps.ask(
+      isPoll ? '/api/operations/polls/delete' : '/api/operations/polls/questions/delete',
+      isPoll ? { pollId: target.id } : { questionId: target.id },
+      isPoll ? translate('polls.deletePoll') : translate('polls.deleteQuestion'),
+      target.label,
+      {
+        danger: true,
+        onSuccess: async () => {
+          if (isPoll) {
+            expandedId = null;
+            detail = null;
+            results = null;
+          } else {
+            await loadDetail(target.pollId);
+          }
 
-    try {
-      const result = await apiPost(
-        isPoll ? '/api/operations/polls/delete' : '/api/operations/polls/questions/delete',
-        isPoll ? { pollId: target.id, reason } : { questionId: target.id, reason },
-      );
-
-      opResults = { ...opResults, deleteTarget: result };
-
-      if (!result.ok) {
-        // Kept open with the error visible: poll_has_answers / question_has_answers are the two an
-        // operator hits in practice, and both mean "disable it instead".
-        deleteError = result.message || result.code || translate('polls.fillFields');
-        return;
-      }
-
-      rememberReason(reason);
-      deleteTarget = null;
-
-      if (isPoll) {
-        expandedId = null;
-        detail = null;
-        results = null;
-      } else {
-        await loadDetail(target.pollId);
-      }
-
-      await loadPolls();
-    } catch (err) {
-      deleteError = isPermissionDeniedError(err)
-        ? translate('common.insufficientRightsAction')
-        : err.code || err.message;
-    } finally {
-      deleteBusy = false;
-    }
+          await loadPolls();
+        },
+      },
+    );
   }
 
   function pickRoom(item) {
@@ -570,7 +521,7 @@
         <button type="button" on:click={stageCreatePoll} disabled={busy.createPoll || !canManage}>
           {$t('polls.create')}
         </button>
-        <OpResult result={opResults.createPoll} error={errors.createPoll} />
+        <OpResult result={$ops.results.createPoll} error={$ops.errors.createPoll} />
       </div>
     {/if}
 
@@ -631,7 +582,7 @@
                     <button
                       type="button"
                       class="ghost-button danger"
-                      on:click={() => (deleteTarget = { kind: 'poll', id: poll.id, pollId: poll.id, label: poll.code })}
+                      on:click={() => askDelete({ kind: 'poll', id: poll.id, pollId: poll.id, label: poll.code })}
                     >
                       <Trash2 size={13} strokeWidth={2} aria-hidden="true" /> {$t('polls.deletePoll')}
                     </button>
@@ -694,10 +645,10 @@
                     <label for="edit-poll-reason">{$t('common.reason')}</label>
                     <input id="edit-poll-reason" bind:value={editPollForm.reason} />
                   </div>
-                  <button type="button" on:click={() => stageUpdatePoll(poll.id)} disabled={busy[`updatePoll:${poll.id}`]}>
+                  <button type="button" on:click={() => stageUpdatePoll(poll.id)} disabled={$ops.busyKeys[`updatePoll:${poll.id}`]}>
                     {$t('polls.save')}
                   </button>
-                  <OpResult result={opResults[`updatePoll:${poll.id}`]} error={errors[`updatePoll:${poll.id}`]} />
+                  <OpResult result={$ops.results[`updatePoll:${poll.id}`]} error={$ops.errors[`updatePoll:${poll.id}`]} />
                 {/if}
 
                 <h3 class="section-title">
@@ -732,7 +683,7 @@
                             <button
                               type="button"
                               class="ghost-button danger"
-                              on:click={() => (deleteTarget = { kind: 'question', id: question.id, pollId: poll.id, label: question.questionText })}
+                              on:click={() => askDelete({ kind: 'question', id: question.id, pollId: poll.id, label: question.questionText })}
                             >
                               <Trash2 size={12} strokeWidth={2} aria-hidden="true" />
                             </button>
@@ -770,7 +721,7 @@
                               <button
                                 type="button"
                                 class="ghost-button danger"
-                                on:click={() => (deleteTarget = { kind: 'question', id: child.id, pollId: poll.id, label: child.questionText })}
+                                on:click={() => askDelete({ kind: 'question', id: child.id, pollId: poll.id, label: child.questionText })}
                               >
                                 <Trash2 size={12} strokeWidth={2} aria-hidden="true" />
                               </button>
@@ -872,8 +823,8 @@
                       </button>
                     </div>
                     <OpResult
-                      result={opResults[editingQuestionId ? `updateQuestion:${editingQuestionId}` : 'createQuestion']}
-                      error={errors[editingQuestionId ? `updateQuestion:${editingQuestionId}` : 'createQuestion']}
+                      result={$ops.results[editingQuestionId ? `updateQuestion:${editingQuestionId}` : 'createQuestion']}
+                      error={$ops.errors[editingQuestionId ? `updateQuestion:${editingQuestionId}` : 'createQuestion']}
                     />
                   </div>
                 {/if}
@@ -967,35 +918,36 @@
   />
 {/if}
 
-{#if pending}
+{#if $ops.pending}
   <div class="modal-layer">
-    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={cancelPending}></button>
+    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={() => ops.cancel()}></button>
     <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
       <header class="modal-header">
         <div>
           <p class="eyebrow">{$t('polls.confirmEyebrow')}</p>
-          <h2>{pending.title}</h2>
+          <h2>{$ops.pending.title}</h2>
         </div>
       </header>
-      <p>{pending.summary}</p>
-      <p class="muted">{$t('polls.reasonLabel', { reason: pending.reason })}</p>
+      <p>{$ops.pending.summary}</p>
+      <p class="muted">{$t('polls.reasonLabel', { reason: $ops.pending.reason })}</p>
       <div class="op-actions">
-        <button type="button" on:click={confirmPending}>{$t('common.confirm')}</button>
-        <button class="ghost-button" type="button" on:click={cancelPending}>{$t('polls.cancel')}</button>
+        <button type="button" on:click={() => ops.confirm()}>{$t('common.confirm')}</button>
+        <button class="ghost-button" type="button" on:click={() => ops.cancel()}>{$t('polls.cancel')}</button>
       </div>
     </section>
   </div>
 {/if}
 
 <ConfirmReasonModal
-  open={Boolean(deleteTarget)}
-  title={deleteTarget?.kind === 'poll' ? $t('polls.deletePoll') : $t('polls.deleteQuestion')}
-  summary={deleteTarget?.label ?? ''}
+  open={Boolean($deleteOps.pending)}
+  title={$deleteOps.pending?.title ?? ''}
+  summary={$deleteOps.pending?.summary ?? ''}
   confirmLabel={$t('common.confirm')}
-  busy={deleteBusy}
-  error={deleteError}
-  on:confirm={(e) => confirmDelete(e.detail)}
-  on:cancel={() => { deleteTarget = null; deleteError = ''; }}
+  busy={$deleteOps.busy}
+  error={$deleteOps.error}
+  danger={$deleteOps.pending?.danger ?? false}
+  on:confirm={(e) => deleteOps.confirm(e.detail)}
+  on:cancel={() => deleteOps.cancel()}
 />
 
 <style>

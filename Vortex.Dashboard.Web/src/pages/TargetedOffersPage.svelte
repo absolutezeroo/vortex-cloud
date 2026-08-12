@@ -15,11 +15,11 @@
     Trash2,
     Users,
   } from '@lucide/svelte';
-  import { apiGet, apiPost } from '../lib/api.js';
+  import { apiGet } from '../lib/api.js';
+  import { createWriteOps } from '../lib/writeOps.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { reasonOk } from '../lib/validation.js';
-  import { rememberReason } from '../lib/reasonHistory.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import OfferImageField from '../components/OfferImageField.svelte';
@@ -84,21 +84,12 @@
   let offerDetailLoading = false;
   let offerDetailError = '';
 
-  let newProductOpen = false;
-  let newProduct = emptyProductForm();
-  let editProductId = null;
-  let editProductForm = null;
-
-  // Deletes go through a shared reason modal (ConfirmReasonModal) instead of an inline reason input
-  // beside every trash button. deleteTarget describes the pending delete; the modal supplies the reason.
-  let deleteTarget = null;
-  let deleteBusy = false;
-  let deleteError = '';
-
-  let results = {};
-  let errors = {};
-  let busy = {};
-  let pending = null;
+  // The edits carry their reason as a field of the form itself; the deletes collect it in the shared
+  // ConfirmReasonModal beside every trash button. Two stores rather than one so staging an edit
+  // cannot open the delete dialog (and vice versa); each form passes a `key` so its busy state,
+  // error and OpResult land next to it instead of in one banner for the whole page.
+  const ops = createWriteOps();
+  const deleteOps = createWriteOps();
 
   $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsTargetedOffersManage);
 
@@ -168,48 +159,14 @@
     }
   }
 
-  function stage(id, title, endpoint, valid, body, summary, onSuccess) {
-    errors = { ...errors, [id]: '' };
-
-    if (!valid) {
-      errors = { ...errors, [id]: translate('targetedOffers.fillFields') };
-      return;
-    }
-
-    pending = { id, title, endpoint, body, summary, reason: body.reason, onSuccess };
-  }
-
-  function cancelPending() {
-    pending = null;
-  }
-
-  async function confirmPending() {
-    if (!pending) return;
-
-    const { id, endpoint, body, reason, onSuccess } = pending;
-    pending = null;
-
-    busy = { ...busy, [id]: true };
-    errors = { ...errors, [id]: '' };
-    results = { ...results, [id]: null };
-
-    try {
-      const result = await apiPost(endpoint, body);
-      results = { ...results, [id]: result };
-
-      if (result.ok) {
-        rememberReason(reason);
-        await onSuccess?.();
-      }
-    } catch (err) {
-      errors = {
-        ...errors,
-        [id]: isPermissionDeniedError(err) ? translate('common.insufficientRightsAction') : err.code || err.message,
-      };
-    } finally {
-      busy = { ...busy, [id]: false };
-    }
-  }
+  const stage = (id, title, endpoint, valid, body, summary, onSuccess) =>
+    ops.ask(endpoint, body, title, summary, {
+      key: id,
+      valid,
+      invalidMessage: translate('targetedOffers.fillFields'),
+      reason: body.reason,
+      onSuccess,
+    });
 
   // Both create and update take the same field set; update additionally carries the offerId. Field
   // order is irrelevant on the wire (System.Text.Json binds by name), so a single builder is safe.
@@ -310,134 +267,48 @@
     );
   }
 
+  // On a server refusal (offer_has_purchases and friends) createWriteOps keeps the modal open with
+  // the message, so the operator can react without re-opening it.
   function openDeleteOffer(offer) {
     if (!canManage) return;
-    deleteError = '';
-    deleteTarget = {
-      endpoint: '/api/operations/targeted-offers/delete',
-      body: { offerId: offer.id },
-      resultId: 'deleteOffer',
-      title: translate('targetedOffers.deleteOffer'),
-      summary: translate('targetedOffers.deleteOfferSummary', {
-        id: offer.id,
-        name: offer.identifier,
-      }),
-      onSuccess: async () => {
-        if (selectedOfferId === offer.id) {
-          selectedOfferId = null;
-          offerDetail = null;
-        }
-        await loadOffers();
-      },
-    };
-  }
 
-  function stageCreateProduct() {
-    if (!canManage || selectedOfferId === null) return;
-
-    stage(
-      'createProduct',
-      translate('targetedOffers.addProduct'),
-      '/api/operations/targeted-offers/products',
-      Boolean(newProduct.productCode.trim()) && reasonOk(newProduct.reason),
+    deleteOps.ask(
+      '/api/operations/targeted-offers/delete',
+      { offerId: offer.id },
+      translate('targetedOffers.deleteOffer'),
+      translate('targetedOffers.deleteOfferSummary', { id: offer.id, name: offer.identifier }),
       {
-        offerId: selectedOfferId,
-        productCode: newProduct.productCode.trim(),
-        furnitureDefinitionId: newProduct.furnitureDefinitionId ? Number(newProduct.furnitureDefinitionId) : null,
-        quantity: Number(newProduct.quantity) || 1,
-        reason: newProduct.reason.trim(),
-      },
-      translate('targetedOffers.addProductSummary', { id: selectedOfferId }),
-      async () => {
-        newProductOpen = false;
-        newProduct = emptyProductForm();
-        await loadOfferDetail(selectedOfferId);
-        await loadOffers();
-      },
-    );
-  }
+        key: 'deleteOffer',
+        danger: true,
+        onSuccess: async () => {
+          if (selectedOfferId === offer.id) {
+            selectedOfferId = null;
+            offerDetail = null;
+          }
 
-  function startEditProduct(product) {
-    editProductId = product.id;
-    editProductForm = {
-      productCode: product.productCode || '',
-      furnitureDefinitionId: product.furnitureDefinitionEntityId ?? '',
-      quantity: product.quantity,
-      reason: '',
-    };
-  }
-
-  function stageUpdateProduct() {
-    if (!canManage || !editProductForm || editProductId === null) return;
-
-    stage(
-      'updateProduct',
-      translate('targetedOffers.edit'),
-      '/api/operations/targeted-offers/products/update',
-      Boolean(editProductForm.productCode.trim()) && reasonOk(editProductForm.reason),
-      {
-        productId: editProductId,
-        productCode: editProductForm.productCode.trim(),
-        furnitureDefinitionId: editProductForm.furnitureDefinitionId ? Number(editProductForm.furnitureDefinitionId) : null,
-        quantity: Number(editProductForm.quantity) || 1,
-        reason: editProductForm.reason.trim(),
-      },
-      translate('targetedOffers.updateProductSummary', { id: editProductId }),
-      async () => {
-        editProductId = null;
-        editProductForm = null;
-        await loadOfferDetail(selectedOfferId);
+          await loadOffers();
+        },
       },
     );
   }
 
   function openDeleteProduct(product) {
     if (!canManage) return;
-    deleteError = '';
-    deleteTarget = {
-      endpoint: '/api/operations/targeted-offers/products/delete',
-      body: { productId: product.id },
-      resultId: 'deleteProduct',
-      title: translate('targetedOffers.deleteProduct'),
-      summary: translate('targetedOffers.deleteProductSummary', { id: product.id }),
-      onSuccess: async () => {
-        await loadOfferDetail(selectedOfferId);
-        await loadOffers();
+
+    deleteOps.ask(
+      '/api/operations/targeted-offers/products/delete',
+      { productId: product.id },
+      translate('targetedOffers.deleteProduct'),
+      translate('targetedOffers.deleteProductSummary', { id: product.id }),
+      {
+        key: 'deleteProduct',
+        danger: true,
+        onSuccess: async () => {
+          await loadOfferDetail(selectedOfferId);
+          await loadOffers();
+        },
       },
-    };
-  }
-
-  function cancelDelete() {
-    deleteTarget = null;
-    deleteError = '';
-  }
-
-  // The reason comes from the shared modal; on failure we keep the modal open and show the server's
-  // message (e.g. offer_has_purchases) so the operator can react without re-opening it.
-  async function confirmDelete(reason) {
-    if (!deleteTarget) return;
-    const target = deleteTarget;
-
-    deleteBusy = true;
-    deleteError = '';
-    try {
-      const result = await apiPost(target.endpoint, { ...target.body, reason });
-      results = { ...results, [target.resultId]: result };
-
-      if (result.ok) {
-        rememberReason(reason);
-        deleteTarget = null;
-        await target.onSuccess?.();
-      } else {
-        deleteError = result.message || translate('targetedOffers.fillFields');
-      }
-    } catch (err) {
-      deleteError = isPermissionDeniedError(err)
-        ? translate('common.insufficientRightsAction')
-        : err.code || err.message;
-    } finally {
-      deleteBusy = false;
-    }
+    );
   }
 
   // Form metadata is optional polish: if it fails to load the form still works with plain full-URL
@@ -569,11 +440,11 @@
           <input id="new-offer-reason" bind:value={newOffer.reason} placeholder={$t('targetedOffers.reasonOfferPlaceholder')} list="reason-history" />
         </div>
         <div class="op-actions">
-          <button type="button" on:click={stageCreateOffer} disabled={busy.createOffer}>{$t('targetedOffers.create')}</button>
+          <button type="button" on:click={stageCreateOffer} disabled={$ops.busyKeys.createOffer}>{$t('targetedOffers.create')}</button>
         </div>
-        {#if errors.createOffer}<p class="empty-state danger">{errors.createOffer}</p>{/if}
-        {#if results.createOffer}
-          <OpResult result={results.createOffer} />
+        {#if $ops.errors.createOffer}<p class="empty-state danger">{$ops.errors.createOffer}</p>{/if}
+        {#if $ops.results.createOffer}
+          <OpResult result={$ops.results.createOffer} />
         {/if}
       </div>
     {/if}
@@ -695,16 +566,16 @@
                     <input id={`edit-offer-reason-${offer.id}`} bind:value={editOfferForm.reason} placeholder={$t('common.reasonPlaceholderChange')} list="reason-history" />
                   </div>
                   <div class="op-actions">
-                    <button type="button" on:click={stageUpdateOffer} disabled={busy.updateOffer}>{$t('targetedOffers.save')}</button>
+                    <button type="button" on:click={stageUpdateOffer} disabled={$ops.busyKeys.updateOffer}>{$t('targetedOffers.save')}</button>
                     <button class="ghost-button" type="button" on:click={() => { editOfferId = null; editOfferForm = null; }}>{$t('targetedOffers.cancel')}</button>
                   </div>
-                  {#if errors.updateOffer}<p class="empty-state danger">{errors.updateOffer}</p>{/if}
-                  {#if results.updateOffer}
-                    <OpResult result={results.updateOffer} />
+                  {#if $ops.errors.updateOffer}<p class="empty-state danger">{$ops.errors.updateOffer}</p>{/if}
+                  {#if $ops.results.updateOffer}
+                    <OpResult result={$ops.results.updateOffer} />
                   {/if}
                 </div>
-              {:else if errors.updateOffer}
-                <div class="catalog-card-detail"><p class="empty-state danger">{errors.updateOffer}</p></div>
+              {:else if $ops.errors.updateOffer}
+                <div class="catalog-card-detail"><p class="empty-state danger">{$ops.errors.updateOffer}</p></div>
               {/if}
             {/if}
 
@@ -751,11 +622,11 @@
                         <input id="new-product-reason" bind:value={newProduct.reason} placeholder={$t('targetedOffers.reasonProductPlaceholder')} list="reason-history" />
                       </div>
                       <div class="op-actions">
-                        <button type="button" on:click={stageCreateProduct} disabled={busy.createProduct}>{$t('targetedOffers.create')}</button>
+                        <button type="button" on:click={stageCreateProduct} disabled={$ops.busyKeys.createProduct}>{$t('targetedOffers.create')}</button>
                       </div>
-                      {#if errors.createProduct}<p class="empty-state danger">{errors.createProduct}</p>{/if}
-                      {#if results.createProduct}
-                        <OpResult result={results.createProduct} />
+                      {#if $ops.errors.createProduct}<p class="empty-state danger">{$ops.errors.createProduct}</p>{/if}
+                      {#if $ops.results.createProduct}
+                        <OpResult result={$ops.results.createProduct} />
                       {/if}
                     </div>
                   {/if}
@@ -807,12 +678,12 @@
                                 <input id={`edit-product-reason-${product.id}`} bind:value={editProductForm.reason} placeholder={$t('common.reasonPlaceholderChange')} list="reason-history" />
                               </div>
                               <div class="op-actions">
-                                <button type="button" on:click={stageUpdateProduct} disabled={busy.updateProduct}>{$t('targetedOffers.save')}</button>
+                                <button type="button" on:click={stageUpdateProduct} disabled={$ops.busyKeys.updateProduct}>{$t('targetedOffers.save')}</button>
                                 <button class="ghost-button" type="button" on:click={() => { editProductId = null; editProductForm = null; }}>{$t('targetedOffers.cancel')}</button>
                               </div>
-                              {#if errors.updateProduct}<p class="empty-state danger">{errors.updateProduct}</p>{/if}
-                              {#if results.updateProduct}
-                                <OpResult result={results.updateProduct} />
+                              {#if $ops.errors.updateProduct}<p class="empty-state danger">{$ops.errors.updateProduct}</p>{/if}
+                              {#if $ops.results.updateProduct}
+                                <OpResult result={$ops.results.updateProduct} />
                               {/if}
                             </div>
                           {/if}
@@ -828,9 +699,9 @@
                       {/each}
                     </div>
                   {/if}
-                  {#if errors.deleteProduct}<p class="empty-state danger">{errors.deleteProduct}</p>{/if}
-                  {#if results.deleteProduct}
-                    <OpResult result={results.deleteProduct} />
+                  {#if $deleteOps.errors.deleteProduct}<p class="empty-state danger">{$deleteOps.errors.deleteProduct}</p>{/if}
+                  {#if $deleteOps.results.deleteProduct}
+                    <OpResult result={$deleteOps.results.deleteProduct} />
                   {/if}
                 {/if}
               </div>
@@ -839,42 +710,43 @@
         {/each}
       </div>
     {/if}
-    {#if errors.deleteOffer}<p class="empty-state danger">{errors.deleteOffer}</p>{/if}
-    {#if results.deleteOffer}
-      <OpResult result={results.deleteOffer} />
+    {#if $deleteOps.errors.deleteOffer}<p class="empty-state danger">{$deleteOps.errors.deleteOffer}</p>{/if}
+    {#if $deleteOps.results.deleteOffer}
+      <OpResult result={$deleteOps.results.deleteOffer} />
     {/if}
   </section>
 {/if}
 
-{#if pending}
+{#if $ops.pending}
   <div class="modal-layer">
-    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={cancelPending}></button>
+    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={() => ops.cancel()}></button>
     <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
       <header class="modal-header">
         <div>
           <p class="eyebrow">{$t('targetedOffers.confirmEyebrow')}</p>
-          <h2>{pending.title}</h2>
+          <h2>{$ops.pending.title}</h2>
         </div>
       </header>
-      <p>{pending.summary}</p>
-      <p class="muted">{$t('vouchers.reasonLabel', { reason: pending.reason })}</p>
+      <p>{$ops.pending.summary}</p>
+      <p class="muted">{$t('vouchers.reasonLabel', { reason: $ops.pending.reason })}</p>
       <div class="op-actions">
-        <button type="button" on:click={confirmPending}>{$t('common.confirm')}</button>
-        <button class="ghost-button" type="button" on:click={cancelPending}>{$t('targetedOffers.cancel')}</button>
+        <button type="button" on:click={() => ops.confirm()}>{$t('common.confirm')}</button>
+        <button class="ghost-button" type="button" on:click={() => ops.cancel()}>{$t('targetedOffers.cancel')}</button>
       </div>
     </section>
   </div>
 {/if}
 
 <ConfirmReasonModal
-  open={Boolean(deleteTarget)}
-  title={deleteTarget?.title ?? ''}
-  summary={deleteTarget?.summary ?? ''}
-  confirmLabel={deleteTarget?.title ?? $t('common.confirm')}
-  busy={deleteBusy}
-  error={deleteError}
-  on:confirm={(e) => confirmDelete(e.detail)}
-  on:cancel={cancelDelete}
+  open={Boolean($deleteOps.pending)}
+  title={$deleteOps.pending?.title ?? ''}
+  summary={$deleteOps.pending?.summary ?? ''}
+  confirmLabel={$deleteOps.pending?.title ?? $t('common.confirm')}
+  busy={$deleteOps.busy}
+  error={$deleteOps.error}
+  danger={$deleteOps.pending?.danger ?? false}
+  on:confirm={(e) => deleteOps.confirm(e.detail)}
+  on:cancel={() => deleteOps.cancel()}
 />
 
 <style>

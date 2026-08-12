@@ -54,6 +54,9 @@
         </div>
       </header>
       {#if summary}<p>{summary}</p>{/if}
+      <!-- Optional richer detail than a summary sentence: the config editor shows the old/new value,
+           which is the thing the operator actually double-checks before confirming. -->
+      <slot />
       <div class="op-field">
         <label for="confirm-reason-input">{$t('common.reasonRequired')}</label>
         <!-- svelte-ignore a11y-autofocus -->

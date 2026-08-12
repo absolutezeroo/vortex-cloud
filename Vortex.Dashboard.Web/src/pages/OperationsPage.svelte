@@ -2,7 +2,7 @@
   import OpResult from '../components/OpResult.svelte';
   import { Coins, Zap, Package, UserX } from '@lucide/svelte';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
-  import { apiPost } from '../lib/api.js';
+  import { createWriteOps } from '../lib/writeOps.js';
   import { OPERATION_CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { reasonOk, positive, nonNegative } from '../lib/validation.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
@@ -34,12 +34,10 @@
   let kick = { playerId: '', playerName: '', playerOnline: false, reason: '' };
 
   // Per-action UI state, keyed by action id.
-  let results = {};
-  let errors = {};
-  let busy = {};
-
-  // Confirmation gate: nothing is sent until the operator confirms.
-  let pending = null;
+  // Every write is staged here and confirmed in the dialog below before it is posted. createWriteOps
+  // owns that cycle -- posting, remembering the audited reason, and tracking each form's busy state,
+  // error and result under its own key -- so the page only describes what each button writes.
+  const ops = createWriteOps();
 
   // Active picker modal (user / furniture).
   let picker = null;
@@ -64,26 +62,17 @@
     picker = { kind: 'furniture', title: translate('operations.selectFurnitureTitle'), onSelect: apply };
   }
 
-  function stage(id, title, endpoint, valid, body, summary) {
-    errors = { ...errors, [id]: '' };
-
-    if (!valid) {
-      errors = {
-        ...errors,
-        [id]: translate('operations.fillFields'),
-      };
-      return;
-    }
-
-    pending = { id, title, endpoint, body, summary, reason: body.reason };
-  }
+  const stage = (id, title, endpoint, valid, body, summary) =>
+    ops.ask(endpoint, body, title, summary, {
+      key: id,
+      valid,
+      invalidMessage: translate('operations.fillFields'),
+      reason: body.reason,
+    });
 
   function stageCredits() {
     if (!canCredits) {
-      errors = {
-        ...errors,
-        credits: translate('operations.creditsAccessDenied'),
-      };
+      ops.fail('credits', translate('operations.creditsAccessDenied'));
       return;
     }
 
@@ -103,10 +92,7 @@
 
   function stageActivity() {
     if (!canActivity) {
-      errors = {
-        ...errors,
-        activity: translate('operations.activityAccessDenied'),
-      };
+      ops.fail('activity', translate('operations.activityAccessDenied'));
       return;
     }
 
@@ -130,10 +116,7 @@
 
   function stageItem() {
     if (!canItem) {
-      errors = {
-        ...errors,
-        item: translate('operations.itemAccessDenied'),
-      };
+      ops.fail('item', translate('operations.itemAccessDenied'));
       return;
     }
 
@@ -154,10 +137,7 @@
 
   function stageKick() {
     if (!canKick) {
-      errors = {
-        ...errors,
-        kick: translate('operations.kickAccessDenied'),
-      };
+      ops.fail('kick', translate('operations.kickAccessDenied'));
       return;
     }
 
@@ -169,34 +149,6 @@
       { playerId: Number(kick.playerId), reason: kick.reason.trim() },
       translate('operations.kickSummary', { name: kick.playerName || translate('operations.player'), id: kick.playerId }),
     );
-  }
-
-  function cancel() {
-    pending = null;
-  }
-
-  async function confirm() {
-    if (!pending) {
-      return;
-    }
-
-    const { id, endpoint, body } = pending;
-    pending = null;
-
-    busy = { ...busy, [id]: true };
-    errors = { ...errors, [id]: '' };
-    results = { ...results, [id]: null };
-
-    try {
-      results = { ...results, [id]: await apiPost(endpoint, body) };
-    } catch (err) {
-      errors = {
-        ...errors,
-        [id]: isPermissionDeniedError(err) ? translate('common.insufficientRightsAction') : err.code || err.message,
-      };
-    } finally {
-      busy = { ...busy, [id]: false };
-    }
   }
 
   async function copy(value) {
@@ -259,11 +211,11 @@
         <input id="credits-reason" bind:value={credits.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageCredits} disabled={busy.credits}>{$t('common.run')}</button>
+        <button type="button" on:click={stageCredits} disabled={$ops.busyKeys.credits}>{$t('common.run')}</button>
       </div>
-      {#if errors.credits}<p class="empty-state danger">{errors.credits}</p>{/if}
-      {#if results.credits}
-        <OpResult result={results.credits} onCopy={copy} copyLabel={$t('common.copy')} />
+      {#if $ops.errors.credits}<p class="empty-state danger">{$ops.errors.credits}</p>{/if}
+      {#if $ops.results.credits}
+        <OpResult result={$ops.results.credits} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
   </section>
@@ -315,11 +267,11 @@
         <input id="activity-reason" bind:value={activity.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageActivity} disabled={busy.activity}>{$t('common.run')}</button>
+        <button type="button" on:click={stageActivity} disabled={$ops.busyKeys.activity}>{$t('common.run')}</button>
       </div>
-      {#if errors.activity}<p class="empty-state danger">{errors.activity}</p>{/if}
-      {#if results.activity}
-        <OpResult result={results.activity} onCopy={copy} copyLabel={$t('common.copy')} />
+      {#if $ops.errors.activity}<p class="empty-state danger">{$ops.errors.activity}</p>{/if}
+      {#if $ops.results.activity}
+        <OpResult result={$ops.results.activity} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
   </section>
@@ -396,11 +348,11 @@
         <input id="item-reason" bind:value={item.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageItem} disabled={busy.item}>{$t('common.run')}</button>
+        <button type="button" on:click={stageItem} disabled={$ops.busyKeys.item}>{$t('common.run')}</button>
       </div>
-      {#if errors.item}<p class="empty-state danger">{errors.item}</p>{/if}
-      {#if results.item}
-        <OpResult result={results.item} onCopy={copy} copyLabel={$t('common.copy')} />
+      {#if $ops.errors.item}<p class="empty-state danger">{$ops.errors.item}</p>{/if}
+      {#if $ops.results.item}
+        <OpResult result={$ops.results.item} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
   </section>
@@ -439,11 +391,11 @@
         <input id="kick-reason" bind:value={kick.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageKick} disabled={busy.kick}>{$t('common.run')}</button>
+        <button type="button" on:click={stageKick} disabled={$ops.busyKeys.kick}>{$t('common.run')}</button>
       </div>
-      {#if errors.kick}<p class="empty-state danger">{errors.kick}</p>{/if}
-      {#if results.kick}
-        <OpResult result={results.kick} onCopy={copy} copyLabel={$t('common.copy')} />
+      {#if $ops.errors.kick}<p class="empty-state danger">{$ops.errors.kick}</p>{/if}
+      {#if $ops.results.kick}
+        <OpResult result={$ops.results.kick} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
   </section>
@@ -459,21 +411,21 @@
   />
 {/if}
 
-{#if pending}
+{#if $ops.pending}
   <div class="modal-layer">
-    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={cancel}></button>
+    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={() => ops.cancel()}></button>
     <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
       <header class="modal-header">
         <div>
           <p class="eyebrow">{$t('operations.confirmEyebrow')}</p>
-          <h2>{pending.title}</h2>
+          <h2>{$ops.pending.title}</h2>
         </div>
       </header>
-      <p>{pending.summary}</p>
-      <p class="muted">{$t('vouchers.reasonLabel', { reason: pending.reason })}</p>
+      <p>{$ops.pending.summary}</p>
+      <p class="muted">{$t('vouchers.reasonLabel', { reason: $ops.pending.reason })}</p>
       <div class="op-actions">
-        <button type="button" on:click={confirm}>{$t('common.confirm')}</button>
-        <button class="ghost-button" type="button" on:click={cancel}>{$t('common.cancel')}</button>
+        <button type="button" on:click={() => ops.confirm()}>{$t('common.confirm')}</button>
+        <button class="ghost-button" type="button" on:click={() => ops.cancel()}>{$t('common.cancel')}</button>
       </div>
     </section>
   </div>

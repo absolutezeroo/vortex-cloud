@@ -17,11 +17,11 @@
     Tag,
     Trash2,
   } from '@lucide/svelte';
-  import { apiGet, apiPost } from '../lib/api.js';
+  import { apiGet } from '../lib/api.js';
+  import { createWriteOps } from '../lib/writeOps.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { reasonOk, nonNegative } from '../lib/validation.js';
-  import { rememberReason } from '../lib/reasonHistory.js';
   import { PRODUCT_TYPES } from '../lib/furnitureEnums.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import PickerModal from '../components/PickerModal.svelte';
@@ -129,10 +129,10 @@
   let editProductId = null;
   let editProductForm = null;
 
-  let results = {};
-  let errors = {};
-  let busy = {};
-  let pending = null;
+  // Every write is staged here and confirmed in the dialog below before it is posted. createWriteOps
+  // owns that cycle -- posting, remembering the audited reason, and tracking each form's busy state,
+  // error and result under its own key -- so the page only describes what each button writes.
+  const ops = createWriteOps();
   let picker = null;
 
   $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsCatalogManage);
@@ -286,52 +286,18 @@
     drillToBreadcrumb(parentChain.length - 2);
   }
 
-  function stage(id, title, endpoint, valid, body, summary, onSuccess) {
-    errors = { ...errors, [id]: '' };
-
-    if (!valid) {
-      errors = { ...errors, [id]: translate('catalogAdmin.fillFields') };
-      return;
-    }
-
-    pending = { id, title, endpoint, body, summary, reason: body.reason, onSuccess };
-  }
-
-  function cancelPending() {
-    pending = null;
-  }
-
-  async function confirmPending() {
-    if (!pending) return;
-
-    const { id, endpoint, body, reason, onSuccess } = pending;
-    pending = null;
-
-    busy = { ...busy, [id]: true };
-    errors = { ...errors, [id]: '' };
-    results = { ...results, [id]: null };
-
-    try {
-      const result = await apiPost(endpoint, body);
-      results = { ...results, [id]: result };
-
-      if (result.ok) {
-        rememberReason(reason);
-        await onSuccess?.();
-      }
-    } catch (err) {
-      errors = {
-        ...errors,
-        [id]: isPermissionDeniedError(err) ? translate('common.insufficientRightsAction') : err.code || err.message,
-      };
-    } finally {
-      busy = { ...busy, [id]: false };
-    }
-  }
+  const stage = (id, title, endpoint, valid, body, summary, onSuccess) =>
+    ops.ask(endpoint, body, title, summary, {
+      key: id,
+      valid,
+      invalidMessage: translate('catalogAdmin.fillFields'),
+      reason: body.reason,
+      onSuccess,
+    });
 
   function stageCreatePage() {
     if (!canManage) {
-      errors = { ...errors, createPage: translate('common.insufficientRights') };
+      ops.fail('createPage', translate('common.insufficientRights'));
       return;
     }
 
@@ -805,12 +771,12 @@
             <input id="edit-page-reason" bind:value={editPageForm.reason} placeholder={$t('common.reasonPlaceholderChange')} list="reason-history" />
           </div>
           <div class="op-actions">
-            <button type="button" on:click={stageUpdatePage} disabled={busy.updatePage}>{$t('catalogAdmin.save')}</button>
+            <button type="button" on:click={stageUpdatePage} disabled={$ops.busyKeys.updatePage}>{$t('catalogAdmin.save')}</button>
             <button class="ghost-button" type="button" on:click={() => (editPageOpen = false)}>{$t('catalogAdmin.cancel')}</button>
           </div>
-          {#if errors.updatePage}<p class="empty-state danger">{errors.updatePage}</p>{/if}
-          {#if results.updatePage}
-            <OpResult result={results.updatePage} />
+          {#if $ops.errors.updatePage}<p class="empty-state danger">{$ops.errors.updatePage}</p>{/if}
+          {#if $ops.results.updatePage}
+            <OpResult result={$ops.results.updatePage} />
           {/if}
         </div>
       {/if}
@@ -827,9 +793,9 @@
             </div>
             <p class="muted">{$t('catalogAdmin.deletePageBlockedNote')}</p>
           </div>
-          {#if errors.deletePage}<p class="empty-state danger">{errors.deletePage}</p>{/if}
-          {#if results.deletePage}
-            <OpResult result={results.deletePage} />
+          {#if $ops.errors.deletePage}<p class="empty-state danger">{$ops.errors.deletePage}</p>{/if}
+          {#if $ops.results.deletePage}
+            <OpResult result={$ops.results.deletePage} />
           {/if}
         </div>
       {/if}
@@ -894,11 +860,11 @@
           <input id="new-page-reason" bind:value={newPage.reason} placeholder={$t('catalogAdmin.reasonPagePlaceholder')} list="reason-history" />
         </div>
         <div class="op-actions">
-          <button type="button" on:click={stageCreatePage} disabled={busy.createPage}>{$t('catalogAdmin.create')}</button>
+          <button type="button" on:click={stageCreatePage} disabled={$ops.busyKeys.createPage}>{$t('catalogAdmin.create')}</button>
         </div>
-        {#if errors.createPage}<p class="empty-state danger">{errors.createPage}</p>{/if}
-        {#if results.createPage}
-          <OpResult result={results.createPage} />
+        {#if $ops.errors.createPage}<p class="empty-state danger">{$ops.errors.createPage}</p>{/if}
+        {#if $ops.results.createPage}
+          <OpResult result={$ops.results.createPage} />
         {/if}
       </div>
     {/if}
@@ -993,11 +959,11 @@
             <input id="new-offer-reason" bind:value={newOffer.reason} placeholder={$t('catalogAdmin.reasonOfferPlaceholder')} list="reason-history" />
           </div>
           <div class="op-actions">
-            <button type="button" on:click={stageCreateOffer} disabled={busy.createOffer}>{$t('catalogAdmin.create')}</button>
+            <button type="button" on:click={stageCreateOffer} disabled={$ops.busyKeys.createOffer}>{$t('catalogAdmin.create')}</button>
           </div>
-          {#if errors.createOffer}<p class="empty-state danger">{errors.createOffer}</p>{/if}
-          {#if results.createOffer}
-            <OpResult result={results.createOffer} />
+          {#if $ops.errors.createOffer}<p class="empty-state danger">{$ops.errors.createOffer}</p>{/if}
+          {#if $ops.results.createOffer}
+            <OpResult result={$ops.results.createOffer} />
           {/if}
         </div>
       {/if}
@@ -1089,12 +1055,12 @@
                     <input id={`edit-offer-reason-${offer.id}`} bind:value={editOfferForm.reason} placeholder={$t('common.reasonPlaceholderChange')} list="reason-history" />
                   </div>
                   <div class="op-actions">
-                    <button type="button" on:click={stageUpdateOffer} disabled={busy.updateOffer}>{$t('catalogAdmin.save')}</button>
+                    <button type="button" on:click={stageUpdateOffer} disabled={$ops.busyKeys.updateOffer}>{$t('catalogAdmin.save')}</button>
                     <button class="ghost-button" type="button" on:click={() => (editOfferId = null)}>{$t('catalogAdmin.cancel')}</button>
                   </div>
-                  {#if errors.updateOffer}<p class="empty-state danger">{errors.updateOffer}</p>{/if}
-                  {#if results.updateOffer}
-                    <OpResult result={results.updateOffer} />
+                  {#if $ops.errors.updateOffer}<p class="empty-state danger">{$ops.errors.updateOffer}</p>{/if}
+                  {#if $ops.results.updateOffer}
+                    <OpResult result={$ops.results.updateOffer} />
                   {/if}
                 </div>
               {/if}
@@ -1177,11 +1143,11 @@
                           <input id="new-product-reason" bind:value={newProduct.reason} placeholder={$t('catalogAdmin.reasonProductPlaceholder')} list="reason-history" />
                         </div>
                         <div class="op-actions">
-                          <button type="button" on:click={stageCreateProduct} disabled={busy.createProduct}>{$t('catalogAdmin.create')}</button>
+                          <button type="button" on:click={stageCreateProduct} disabled={$ops.busyKeys.createProduct}>{$t('catalogAdmin.create')}</button>
                         </div>
-                        {#if errors.createProduct}<p class="empty-state danger">{errors.createProduct}</p>{/if}
-                        {#if results.createProduct}
-                          <OpResult result={results.createProduct} />
+                        {#if $ops.errors.createProduct}<p class="empty-state danger">{$ops.errors.createProduct}</p>{/if}
+                        {#if $ops.results.createProduct}
+                          <OpResult result={$ops.results.createProduct} />
                         {/if}
                       </div>
                     {/if}
@@ -1254,12 +1220,12 @@
                                   <input id={`edit-product-reason-${product.id}`} bind:value={editProductForm.reason} placeholder={$t('common.reasonPlaceholderChange')} list="reason-history" />
                                 </div>
                                 <div class="op-actions">
-                                  <button type="button" on:click={stageUpdateProduct} disabled={busy.updateProduct}>{$t('catalogAdmin.save')}</button>
+                                  <button type="button" on:click={stageUpdateProduct} disabled={$ops.busyKeys.updateProduct}>{$t('catalogAdmin.save')}</button>
                                   <button class="ghost-button" type="button" on:click={() => (editProductId = null)}>{$t('catalogAdmin.cancel')}</button>
                                 </div>
-                                {#if errors.updateProduct}<p class="empty-state danger">{errors.updateProduct}</p>{/if}
-                                {#if results.updateProduct}
-                                  <OpResult result={results.updateProduct} />
+                                {#if $ops.errors.updateProduct}<p class="empty-state danger">{$ops.errors.updateProduct}</p>{/if}
+                                {#if $ops.results.updateProduct}
+                                  <OpResult result={$ops.results.updateProduct} />
                                 {/if}
                               </div>
                             {/if}
@@ -1276,9 +1242,9 @@
                         {/each}
                       </div>
                     {/if}
-                    {#if errors.deleteProduct}<p class="empty-state danger">{errors.deleteProduct}</p>{/if}
-                    {#if results.deleteProduct}
-                      <OpResult result={results.deleteProduct} />
+                    {#if $ops.errors.deleteProduct}<p class="empty-state danger">{$ops.errors.deleteProduct}</p>{/if}
+                    {#if $ops.results.deleteProduct}
+                      <OpResult result={$ops.results.deleteProduct} />
                     {/if}
                   {/if}
                 </div>
@@ -1287,9 +1253,9 @@
           {/each}
         </div>
       {/if}
-      {#if errors.deleteOffer}<p class="empty-state danger">{errors.deleteOffer}</p>{/if}
-      {#if results.deleteOffer}
-        <OpResult result={results.deleteOffer} />
+      {#if $ops.errors.deleteOffer}<p class="empty-state danger">{$ops.errors.deleteOffer}</p>{/if}
+      {#if $ops.results.deleteOffer}
+        <OpResult result={$ops.results.deleteOffer} />
       {/if}
     </section>
   {/if}
@@ -1319,21 +1285,21 @@
   />
 {/if}
 
-{#if pending}
+{#if $ops.pending}
   <div class="modal-layer">
-    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={cancelPending}></button>
+    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={() => ops.cancel()}></button>
     <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
       <header class="modal-header">
         <div>
           <p class="eyebrow">{$t('catalogAdmin.confirmEyebrow')}</p>
-          <h2>{pending.title}</h2>
+          <h2>{$ops.pending.title}</h2>
         </div>
       </header>
-      <p>{pending.summary}</p>
-      <p class="muted">{$t('vouchers.reasonLabel', { reason: pending.reason })}</p>
+      <p>{$ops.pending.summary}</p>
+      <p class="muted">{$t('vouchers.reasonLabel', { reason: $ops.pending.reason })}</p>
       <div class="op-actions">
-        <button type="button" on:click={confirmPending}>{$t('common.confirm')}</button>
-        <button class="ghost-button" type="button" on:click={cancelPending}>{$t('catalogAdmin.cancel')}</button>
+        <button type="button" on:click={() => ops.confirm()}>{$t('common.confirm')}</button>
+        <button class="ghost-button" type="button" on:click={() => ops.cancel()}>{$t('catalogAdmin.cancel')}</button>
       </div>
     </section>
   </div>

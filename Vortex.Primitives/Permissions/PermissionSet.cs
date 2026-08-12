@@ -33,7 +33,15 @@ public sealed class PermissionSet
     public bool Has(string capability) =>
         _wildcard || (!string.IsNullOrEmpty(capability) && _capabilities.Contains(capability));
 
-    public bool HasAny(params string[] capabilities)
+    public bool HasAny(params string[] capabilities) =>
+        HasAny((IReadOnlyCollection<string>)capabilities);
+
+    /// <summary>
+    /// Overload for the declared capability sets (<see cref="Capabilities.Dashboard.All"/> and
+    /// friends), which are exposed as read-only collections rather than arrays so no caller can
+    /// mutate the canonical list.
+    /// </summary>
+    public bool HasAny(IReadOnlyCollection<string> capabilities)
     {
         if (_wildcard)
         {

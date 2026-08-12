@@ -2,6 +2,7 @@
   import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
   import { apiGet, apiPost } from '../lib/api.js';
+  import { createWriteOps } from '../lib/writeOps.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { formatDuration, compactCorrelation } from '../lib/format.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
@@ -27,10 +28,12 @@
   let rowError = {};
 
   // Inline "ban reported player" panel — opened per row, closed after confirm/cancel.
+  // The ban IS an audited sanction, unlike the queue moves above: it goes through the shared write
+  // store so its reason reaches the audit log and the reason-history datalist, and so a 403 mid-
+  // session reads the same here as everywhere else. The draft holds the form; the store holds the
+  // write.
   let banDraft = null;
-  let banResult = null;
-  let banBusy = false;
-  let banError = '';
+  const banOps = createWriteOps();
 
   $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsCfhManage);
   $: canBan = hasDashboardCapability($identity, CAPABILITIES.opsBanAccount);
@@ -56,60 +59,33 @@
     }
   }
 
-  async function pick(issueId) {
+  // pick / release / close are queue moves, not audited writes: the moderator's identity is already
+  // on the ticket and there is nothing to justify, which is why they do not go through the shared
+  // reason modal like the sanctions below do. They did each carry their own copy of this
+  // busy/refresh/report-the-403 dance -- it lives here once instead.
+  async function rowAction(issueId, endpoint, body) {
     rowBusy = { ...rowBusy, [issueId]: true };
     rowError = { ...rowError, [issueId]: '' };
 
     try {
-      await apiPost('/api/v1/operations/cfh/pick', { issueIds: [issueId] });
+      await apiPost(endpoint, { issueIds: [issueId], ...body });
       await refresh();
     } catch (err) {
       rowError = {
         ...rowError,
-        [issueId]: isPermissionDeniedError(err) ? translate('common.insufficientRights') : err.code || err.message,
+        [issueId]: isPermissionDeniedError(err)
+          ? translate('common.insufficientRights')
+          : err.code || err.message,
       };
     } finally {
       rowBusy = { ...rowBusy, [issueId]: false };
     }
   }
 
-  async function release(issueId) {
-    rowBusy = { ...rowBusy, [issueId]: true };
-    rowError = { ...rowError, [issueId]: '' };
-
-    try {
-      await apiPost('/api/v1/operations/cfh/release', { issueIds: [issueId] });
-      await refresh();
-    } catch (err) {
-      rowError = {
-        ...rowError,
-        [issueId]: isPermissionDeniedError(err) ? translate('common.insufficientRights') : err.code || err.message,
-      };
-    } finally {
-      rowBusy = { ...rowBusy, [issueId]: false };
-    }
-  }
-
-  async function close(issueId, reason, sanctioned) {
-    rowBusy = { ...rowBusy, [issueId]: true };
-    rowError = { ...rowError, [issueId]: '' };
-
-    try {
-      await apiPost('/api/v1/operations/cfh/close', {
-        issueIds: [issueId],
-        reason,
-        sanctioned,
-      });
-      await refresh();
-    } catch (err) {
-      rowError = {
-        ...rowError,
-        [issueId]: isPermissionDeniedError(err) ? translate('common.insufficientRights') : err.code || err.message,
-      };
-    } finally {
-      rowBusy = { ...rowBusy, [issueId]: false };
-    }
-  }
+  const pick = (issueId) => rowAction(issueId, '/api/v1/operations/cfh/pick');
+  const release = (issueId) => rowAction(issueId, '/api/v1/operations/cfh/release');
+  const close = (issueId, reason, sanctioned) =>
+    rowAction(issueId, '/api/v1/operations/cfh/close', { reason, sanctioned });
 
   function openBanDraft(entry) {
     banDraft = {
@@ -119,12 +95,12 @@
       durationSeconds: '',
       reason: '',
     };
-    banResult = null;
-    banError = '';
+    banOps.clear();
   }
 
   function cancelBanDraft() {
     banDraft = null;
+    banOps.clear();
   }
 
   async function confirmBanDraft() {
@@ -133,26 +109,24 @@
     }
 
     const validDuration = banDraft.permanent || positive(banDraft.durationSeconds);
+    const valid = positive(banDraft.playerId) && validDuration && reasonOk(banDraft.reason);
 
-    if (!positive(banDraft.playerId) || !validDuration || !reasonOk(banDraft.reason)) {
-      banError = translate('cfh.banValidation');
-      return;
-    }
-
-    banBusy = true;
-    banError = '';
-
-    try {
-      banResult = await apiPost('/api/v1/operations/players/ban', {
+    const staged = banOps.ask(
+      '/api/v1/operations/players/ban',
+      {
         playerId: Number(banDraft.playerId),
         permanent: banDraft.permanent,
         durationSeconds: banDraft.permanent ? null : Number(banDraft.durationSeconds),
-        reason: banDraft.reason.trim(),
-      });
-    } catch (err) {
-      banError = isPermissionDeniedError(err) ? translate('cfh.banAccessDenied') : err.code || err.message;
-    } finally {
-      banBusy = false;
+      },
+      translate('cfh.confirmBan'),
+      banDraft.playerName || '',
+      { valid, invalidMessage: translate('cfh.banValidation'), reason: banDraft.reason.trim() },
+    );
+
+    // The draft form is its own confirmation step, so the write commits straight away rather than
+    // opening a second dialog on top of it.
+    if (staged) {
+      await banOps.confirm();
     }
   }
 
@@ -248,12 +222,12 @@
         <label for="cfh-ban-reason">{$t('common.reasonRequired')}</label>
         <input id="cfh-ban-reason" bind:value={banDraft.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
-      {#if banError}<p class="empty-state danger">{banError}</p>{/if}
-      {#if banResult}
-        <OpResult result={banResult} />
+      {#if $banOps.error}<p class="empty-state danger">{$banOps.error}</p>{/if}
+      {#if $banOps.result}
+        <OpResult result={$banOps.result} />
       {/if}
       <div class="op-actions">
-        <button type="button" on:click={confirmBanDraft} disabled={banBusy}>{$t('cfh.confirmBan')}</button>
+        <button type="button" on:click={confirmBanDraft} disabled={$banOps.busy}>{$t('cfh.confirmBan')}</button>
         <button class="ghost-button" type="button" on:click={cancelBanDraft}>{$t('cfh.close')}</button>
       </div>
     </section>

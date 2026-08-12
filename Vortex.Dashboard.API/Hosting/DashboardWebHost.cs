@@ -56,55 +56,6 @@ internal sealed class DashboardWebHost(
     internal const string ALLOW_INSECURE_OPTION_PATH =
         $"{ObservabilityConfig.SECTION_NAME}:{nameof(ObservabilityConfig.DashboardAllowInsecureRemoteHttp)}";
 
-    // Capability policies are named after the capability string they require.
-    private static readonly string[] DashboardCapabilities =
-    [
-        Capabilities.Dashboard.OverviewRead,
-        Capabilities.Dashboard.AuditRead,
-        Capabilities.Dashboard.EconomyRead,
-        Capabilities.Dashboard.PlayersRead,
-        Capabilities.Dashboard.FurnitureRead,
-        Capabilities.Dashboard.OpsGrantCurrency,
-        Capabilities.Dashboard.OpsGrantItem,
-        Capabilities.Dashboard.OpsKickPlayer,
-        Capabilities.Dashboard.OpsManageVouchers,
-        Capabilities.Dashboard.OpsBanAccount,
-        Capabilities.Dashboard.OpsMutePlayer,
-        Capabilities.Dashboard.OpsTradingLock,
-        Capabilities.Dashboard.OpsCfhManage,
-        Capabilities.Dashboard.OpsRoomsManage,
-        Capabilities.Dashboard.CatalogRead,
-        Capabilities.Dashboard.OpsCatalogManage,
-        Capabilities.Dashboard.OpsFurnitureManage,
-        Capabilities.Dashboard.GroupsRead,
-        Capabilities.Dashboard.PetsRead,
-        Capabilities.Dashboard.CfhRead,
-        Capabilities.Dashboard.CatalogPurchasesRead,
-        Capabilities.Dashboard.WiredRead,
-        Capabilities.Dashboard.TargetedOffersRead,
-        Capabilities.Dashboard.OpsTargetedOffersManage,
-        Capabilities.Dashboard.QuestsRead,
-        Capabilities.Dashboard.OpsQuestsManage,
-        Capabilities.Dashboard.PollsRead,
-        Capabilities.Dashboard.OpsPollsManage,
-        Capabilities.Dashboard.PrizePoolsRead,
-        Capabilities.Dashboard.OpsPrizePoolsManage,
-        Capabilities.Dashboard.MysteryBoxRead,
-        Capabilities.Dashboard.OpsMysteryBoxManage,
-        Capabilities.Dashboard.ConfigRead,
-        Capabilities.Dashboard.OpsConfigManage,
-        Capabilities.Dashboard.PerformanceRead,
-        Capabilities.Dashboard.AchievementsRead,
-        Capabilities.Dashboard.BotsRead,
-        Capabilities.Dashboard.NavigatorRead,
-        Capabilities.Dashboard.OpsNavigatorManage,
-        Capabilities.Dashboard.SocialRead,
-        Capabilities.Dashboard.StaffRead,
-        Capabilities.Dashboard.CollectiblesRead,
-        Capabilities.Dashboard.OpsStaffManage,
-        Capabilities.Dashboard.OpsContentManage,
-    ];
-
     private readonly ObservabilityConfig _config = options.Value;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -269,8 +220,10 @@ internal sealed class DashboardWebHost(
 
         services.AddAuthorization(authorization =>
         {
-            // One policy per capability; a wildcard ("*") capability satisfies every policy.
-            foreach (string capability in DashboardCapabilities)
+            // One policy per capability, named after the capability string the endpoints declare;
+            // a wildcard ("*") capability satisfies every policy. Driven straight off the canonical
+            // list so a newly declared capability can never be missing a policy here.
+            foreach (string capability in Capabilities.Dashboard.All)
             {
                 authorization.AddPolicy(
                     capability,

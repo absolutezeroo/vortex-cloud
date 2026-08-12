@@ -16,12 +16,12 @@
     Trash2,
     Users,
   } from '@lucide/svelte';
-  import { apiGet, apiPost } from '../lib/api.js';
+  import { apiGet } from '../lib/api.js';
+  import { createWriteOps } from '../lib/writeOps.js';
   import { formatDate, formatDuration, formatNumber } from '../lib/format.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { reasonOk } from '../lib/validation.js';
-  import { rememberReason } from '../lib/reasonHistory.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import { identity } from '../lib/session.js';
@@ -96,16 +96,11 @@
   let editQuestId = null;
   let editQuestForm = null;
 
-  // Deletes go through the shared reason modal (ConfirmReasonModal); deleteTarget describes the
-  // pending delete and the modal supplies the reason.
-  let deleteTarget = null;
-  let deleteBusy = false;
-  let deleteError = '';
-
-  let results = {};
-  let errors = {};
-  let busy = {};
-  let pending = null;
+  // The edits carry their reason as a field of the form itself; the deletes collect it in the shared
+  // ConfirmReasonModal. Two stores rather than one so staging an edit cannot open the delete dialog
+  // (and vice versa) -- both post, remember the reason and track busy/error/result the same way.
+  const ops = createWriteOps();
+  const deleteOps = createWriteOps();
 
   $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsQuestsManage);
   $: questTypeNames = questTypes.map((it) => it.name);
@@ -136,48 +131,14 @@
     }
   }
 
-  function stage(id, title, endpoint, valid, body, summary, onSuccess) {
-    errors = { ...errors, [id]: '' };
-
-    if (!valid) {
-      errors = { ...errors, [id]: translate('quests.fillFields') };
-      return;
-    }
-
-    pending = { id, title, endpoint, body, summary, reason: body.reason, onSuccess };
-  }
-
-  function cancelPending() {
-    pending = null;
-  }
-
-  async function confirmPending() {
-    if (!pending) return;
-
-    const { id, endpoint, body, reason, onSuccess } = pending;
-    pending = null;
-
-    busy = { ...busy, [id]: true };
-    errors = { ...errors, [id]: '' };
-    results = { ...results, [id]: null };
-
-    try {
-      const result = await apiPost(endpoint, body);
-      results = { ...results, [id]: result };
-
-      if (result.ok) {
-        rememberReason(reason);
-        await onSuccess?.();
-      }
-    } catch (err) {
-      errors = {
-        ...errors,
-        [id]: isPermissionDeniedError(err) ? translate('common.insufficientRightsAction') : err.code || err.message,
-      };
-    } finally {
-      busy = { ...busy, [id]: false };
-    }
-  }
+  const stage = (id, title, endpoint, valid, body, summary, onSuccess) =>
+    ops.ask(endpoint, body, title, summary, {
+      key: id,
+      valid,
+      invalidMessage: translate('quests.fillFields'),
+      reason: body.reason,
+      onSuccess,
+    });
 
   // Create and update take the same field set; update additionally carries the questId. The reward
   // int and the datetime are folded here so both call sites stay identical.
@@ -290,55 +251,21 @@
     );
   }
 
+  // The reason comes from the shared modal; on a server refusal (quest_has_progress) createWriteOps
+  // keeps it open with the message so the operator can react without re-opening it.
   function openDeleteQuest(quest) {
     if (!canManage) return;
-    deleteError = '';
-    deleteTarget = {
-      endpoint: '/api/operations/quests/delete',
-      body: { questId: quest.id },
-      resultId: 'deleteQuest',
-      title: translate('quests.deleteQuest'),
-      summary: translate('quests.deleteQuestSummary', {
+
+    deleteOps.ask(
+      '/api/operations/quests/delete',
+      { questId: quest.id },
+      translate('quests.deleteQuest'),
+      translate('quests.deleteQuestSummary', {
         id: quest.id,
         name: quest.localizationCode || quest.campaignCode,
       }),
-      onSuccess: async () => {
-        await loadQuests();
-      },
-    };
-  }
-
-  function cancelDelete() {
-    deleteTarget = null;
-    deleteError = '';
-  }
-
-  // The reason comes from the shared modal; on failure we keep the modal open and show the server's
-  // message (e.g. quest_has_progress) so the operator can react without re-opening it.
-  async function confirmDelete(reason) {
-    if (!deleteTarget) return;
-    const target = deleteTarget;
-
-    deleteBusy = true;
-    deleteError = '';
-    try {
-      const result = await apiPost(target.endpoint, { ...target.body, reason });
-      results = { ...results, [target.resultId]: result };
-
-      if (result.ok) {
-        rememberReason(reason);
-        deleteTarget = null;
-        await target.onSuccess?.();
-      } else {
-        deleteError = result.message || translate('quests.fillFields');
-      }
-    } catch (err) {
-      deleteError = isPermissionDeniedError(err)
-        ? translate('common.insufficientRightsAction')
-        : err.code || err.message;
-    } finally {
-      deleteBusy = false;
-    }
+      { key: 'deleteQuest', danger: true, onSuccess: loadQuests },
+    );
   }
 
   // Best-effort: the type picker degrades to a free-text input if this fails, so errors are swallowed.
@@ -508,9 +435,9 @@
         <div class="op-actions">
           <button type="button" on:click={stageCreateQuest} disabled={busy.createQuest}>{$t('quests.create')}</button>
         </div>
-        {#if errors.createQuest}<p class="empty-state danger">{errors.createQuest}</p>{/if}
-        {#if results.createQuest}
-          <OpResult result={results.createQuest} />
+        {#if $ops.errors.createQuest}<p class="empty-state danger">{$ops.errors.createQuest}</p>{/if}
+        {#if $ops.results.createQuest}
+          <OpResult result={$ops.results.createQuest} />
         {/if}
       </div>
     {/if}
@@ -684,13 +611,13 @@
                     <button type="button" on:click={stageUpdateQuest} disabled={busy.updateQuest}>{$t('quests.save')}</button>
                     <button class="ghost-button" type="button" on:click={() => { editQuestId = null; editQuestForm = null; }}>{$t('quests.cancel')}</button>
                   </div>
-                  {#if errors.updateQuest}<p class="empty-state danger">{errors.updateQuest}</p>{/if}
-                  {#if results.updateQuest}
-                    <OpResult result={results.updateQuest} />
+                  {#if $ops.errors.updateQuest}<p class="empty-state danger">{$ops.errors.updateQuest}</p>{/if}
+                  {#if $ops.results.updateQuest}
+                    <OpResult result={$ops.results.updateQuest} />
                   {/if}
                 </div>
-              {:else if errors.updateQuest}
-                <div class="catalog-card-detail"><p class="empty-state danger">{errors.updateQuest}</p></div>
+              {:else if $ops.errors.updateQuest}
+                <div class="catalog-card-detail"><p class="empty-state danger">{$ops.errors.updateQuest}</p></div>
               {/if}
             {/if}
 
@@ -705,42 +632,43 @@
         {/each}
       </div>
     {/if}
-    {#if errors.deleteQuest}<p class="empty-state danger">{errors.deleteQuest}</p>{/if}
-    {#if results.deleteQuest}
-      <OpResult result={results.deleteQuest} />
+    {#if $deleteOps.errors.deleteQuest}<p class="empty-state danger">{$deleteOps.errors.deleteQuest}</p>{/if}
+    {#if $deleteOps.results.deleteQuest}
+      <OpResult result={$deleteOps.results.deleteQuest} />
     {/if}
   </section>
 {/if}
 
-{#if pending}
+{#if $ops.pending}
   <div class="modal-layer">
-    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={cancelPending}></button>
+    <button class="modal-backdrop" type="button" aria-label="Cancel" on:click={() => ops.cancel()}></button>
     <section class="modal-panel" role="dialog" aria-modal="true" style="width: min(460px, 100%)">
       <header class="modal-header">
         <div>
           <p class="eyebrow">{$t('quests.confirmEyebrow')}</p>
-          <h2>{pending.title}</h2>
+          <h2>{$ops.pending.title}</h2>
         </div>
       </header>
-      <p>{pending.summary}</p>
-      <p class="muted">{$t('quests.reasonLabel', { reason: pending.reason })}</p>
+      <p>{$ops.pending.summary}</p>
+      <p class="muted">{$t('quests.reasonLabel', { reason: $ops.pending.reason })}</p>
       <div class="op-actions">
-        <button type="button" on:click={confirmPending}>{$t('common.confirm')}</button>
-        <button class="ghost-button" type="button" on:click={cancelPending}>{$t('quests.cancel')}</button>
+        <button type="button" on:click={() => ops.confirm()}>{$t('common.confirm')}</button>
+        <button class="ghost-button" type="button" on:click={() => ops.cancel()}>{$t('quests.cancel')}</button>
       </div>
     </section>
   </div>
 {/if}
 
 <ConfirmReasonModal
-  open={Boolean(deleteTarget)}
-  title={deleteTarget?.title ?? ''}
-  summary={deleteTarget?.summary ?? ''}
-  confirmLabel={deleteTarget?.title ?? $t('common.confirm')}
-  busy={deleteBusy}
-  error={deleteError}
-  on:confirm={(e) => confirmDelete(e.detail)}
-  on:cancel={cancelDelete}
+  open={Boolean($deleteOps.pending)}
+  title={$deleteOps.pending?.title ?? ''}
+  summary={$deleteOps.pending?.summary ?? ''}
+  confirmLabel={$deleteOps.pending?.title ?? $t('common.confirm')}
+  busy={$deleteOps.busy}
+  error={$deleteOps.error}
+  danger={$deleteOps.pending?.danger ?? false}
+  on:confirm={(e) => deleteOps.confirm(e.detail)}
+  on:cancel={() => deleteOps.cancel()}
 />
 
 <style>

@@ -16,11 +16,11 @@
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import PickerModal from '../components/PickerModal.svelte';
   import AssetImage from '../components/AssetImage.svelte';
-  import { apiGet, apiPost } from '../lib/api.js';
+  import { apiGet } from '../lib/api.js';
+  import { createWriteOps } from '../lib/writeOps.js';
   import { formatNumber } from '../lib/format.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { rememberReason } from '../lib/reasonHistory.js';
   import { identity } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
 
@@ -81,13 +81,10 @@
     picker = { title: translate('mysteryBox.selectPlayerTitle'), onSelect: apply };
   }
 
-  let results = {};
-  let errors = {};
-  // The action awaiting its reason. Every write goes through the shared reason modal rather than a
-  // reason field per form, so the audit trail can never be skipped by a stray Enter key.
-  let pending = null;
-  let pendingBusy = false;
-  let pendingError = '';
+  // Every write goes through the shared reason modal rather than a reason field per form, so the
+  // audit trail can never be skipped by a stray Enter key. Each form passes its own `key` so its
+  // result and error land next to it instead of in one banner at the top of the page.
+  const ops = createWriteOps();
 
   $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsMysteryBoxManage);
   $: boxPrizes = prizes.filter((p) => p.pool === POOL_BOX);
@@ -154,53 +151,13 @@
     }
   }
 
-  function stage(id, title, endpoint, valid, body, summary, onSuccess) {
-    errors = { ...errors, [id]: '' };
-
-    if (!valid) {
-      errors = { ...errors, [id]: translate('mysteryBox.fillFields') };
-      return;
-    }
-
-    pendingError = '';
-    pending = { id, title, endpoint, body, summary, onSuccess };
-  }
-
-  async function confirmPending(reason) {
-    if (!pending) return;
-
-    const { id, endpoint, body, onSuccess } = pending;
-
-    pendingBusy = true;
-    pendingError = '';
-    errors = { ...errors, [id]: '' };
-
-    try {
-      const result = await apiPost(endpoint, { ...body, reason });
-      results = { ...results, [id]: result };
-
-      if (result.ok) {
-        rememberReason(reason);
-        pending = null;
-        await onSuccess?.();
-      } else {
-        // Keep the modal open on a named server refusal (invalid_color,
-        // definition_already_registered, …) so the operator can fix it in place.
-        pendingError = result.message || result.code || translate('mysteryBox.fillFields');
-      }
-    } catch (err) {
-      pendingError = isPermissionDeniedError(err)
-        ? translate('common.insufficientRightsAction')
-        : err.code || err.message;
-    } finally {
-      pendingBusy = false;
-    }
-  }
-
-  function cancelPending() {
-    pending = null;
-    pendingError = '';
-  }
+  const stage = (id, title, endpoint, valid, body, summary, onSuccess) =>
+    ops.ask(endpoint, body, title, summary, {
+      key: id,
+      valid,
+      invalidMessage: translate('mysteryBox.fillFields'),
+      onSuccess,
+    });
 
   function prizeBody(form) {
     const usesFurniture = FURNITURE_TYPES.includes(form.productType);
@@ -360,8 +317,8 @@
     </div>
   </div>
   <p class="muted">{$t('mysteryBox.description')}</p>
-  {#if errors.reload}<p class="empty-state danger">{errors.reload}</p>{/if}
-  {#if results.reload}<OpResult result={results.reload} />{/if}
+  {#if $ops.errors.reload}<p class="empty-state danger">{$ops.errors.reload}</p>{/if}
+  {#if $ops.results.reload}<OpResult result={$ops.results.reload} />{/if}
 </section>
 
 {#if forbidden}
@@ -545,8 +502,8 @@
         <div class="op-actions">
           <button type="button" on:click={stageCreatePrize}>{$t('mysteryBox.create')}</button>
         </div>
-        {#if errors.createPrize}<p class="empty-state danger">{errors.createPrize}</p>{/if}
-        {#if results.createPrize}<OpResult result={results.createPrize} />{/if}
+        {#if $ops.errors.createPrize}<p class="empty-state danger">{$ops.errors.createPrize}</p>{/if}
+        {#if $ops.results.createPrize}<OpResult result={$ops.results.createPrize} />{/if}
       </div>
     {/if}
 
@@ -671,7 +628,7 @@
                         {$t('mysteryBox.cancel')}
                       </button>
                     </div>
-                    {#if errors.updatePrize}<p class="empty-state danger">{errors.updatePrize}</p>{/if}
+                    {#if $ops.errors.updatePrize}<p class="empty-state danger">{$ops.errors.updatePrize}</p>{/if}
                   </div>
                 {/if}
               </div>
@@ -680,9 +637,9 @@
         {/if}
       {/each}
     {/if}
-    {#if results.updatePrize}<OpResult result={results.updatePrize} />{/if}
-    {#if results.deletePrize}<OpResult result={results.deletePrize} />{/if}
-    {#if errors.deletePrize}<p class="empty-state danger">{errors.deletePrize}</p>{/if}
+    {#if $ops.results.updatePrize}<OpResult result={$ops.results.updatePrize} />{/if}
+    {#if $ops.results.deletePrize}<OpResult result={$ops.results.deletePrize} />{/if}
+    {#if $ops.errors.deletePrize}<p class="empty-state danger">{$ops.errors.deletePrize}</p>{/if}
   </section>
 
   {#if canManage}
@@ -745,8 +702,8 @@
           <div class="op-actions">
             <button type="button" on:click={stageGrantBox}>{$t('mysteryBox.grantBox')}</button>
           </div>
-          {#if errors.grantBox}<p class="empty-state danger">{errors.grantBox}</p>{/if}
-          {#if results.grantBox}<OpResult result={results.grantBox} />{/if}
+          {#if $ops.errors.grantBox}<p class="empty-state danger">{$ops.errors.grantBox}</p>{/if}
+          {#if $ops.results.grantBox}<OpResult result={$ops.results.grantBox} />{/if}
         </div>
       {/if}
     </section>
@@ -797,8 +754,8 @@
         <div class="op-actions">
           <button type="button" on:click={stageGrantKey}>{$t('mysteryBox.grantKey')}</button>
         </div>
-        {#if errors.grantKey}<p class="empty-state danger">{errors.grantKey}</p>{/if}
-        {#if results.grantKey}<OpResult result={results.grantKey} />{/if}
+        {#if $ops.errors.grantKey}<p class="empty-state danger">{$ops.errors.grantKey}</p>{/if}
+        {#if $ops.results.grantKey}<OpResult result={$ops.results.grantKey} />{/if}
       </div>
     </section>
   {/if}
@@ -828,15 +785,15 @@
 {/if}
 
 <ConfirmReasonModal
-  open={Boolean(pending)}
-  title={pending?.title ?? ''}
-  summary={pending?.summary ?? ''}
-  confirmLabel={pending?.title ?? $t('common.confirm')}
-  busy={pendingBusy}
-  error={pendingError}
+  open={Boolean($ops.pending)}
+  title={$ops.pending?.title ?? ''}
+  summary={$ops.pending?.summary ?? ''}
+  confirmLabel={$ops.pending?.title ?? $t('common.confirm')}
+  busy={$ops.busy}
+  error={$ops.error}
   danger={false}
-  on:confirm={(e) => confirmPending(e.detail)}
-  on:cancel={cancelPending}
+  on:confirm={(e) => ops.confirm(e.detail)}
+  on:cancel={() => ops.cancel()}
 />
 
 <style>
