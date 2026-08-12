@@ -11,6 +11,9 @@ internal class RoomMessageNotificationMessageComposerSerializer(int header)
         RoomMessageNotificationMessageComposer message
     )
     {
-        //
+        packet
+            .WriteInteger(message.RoomId)
+            .WriteString(message.RoomName)
+            .WriteInteger(message.MessageCount);
     }
 }

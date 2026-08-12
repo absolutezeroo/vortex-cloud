@@ -8,6 +8,16 @@ internal class RoomQueueStatusMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, RoomQueueStatusMessageComposer message)
     {
-        //
+        packet.WriteInteger(message.FlatId).WriteInteger(message.QueueSets.Length);
+
+        foreach (RoomQueueSet set in message.QueueSets)
+        {
+            packet.WriteString(set.Name).WriteInteger(set.Target).WriteInteger(set.Queues.Length);
+
+            foreach (RoomQueueEntry queue in set.Queues)
+            {
+                packet.WriteString(queue.Name).WriteInteger(queue.Count);
+            }
+        }
     }
 }

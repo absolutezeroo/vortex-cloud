@@ -11,6 +11,11 @@ internal class NotificationDialogMessageComposerSerializer(int header)
         NotificationDialogMessageComposer message
     )
     {
-        //
+        packet.WriteString(message.Type).WriteInteger(message.Parameters.Length);
+
+        foreach (NotificationDialogParameter parameter in message.Parameters)
+        {
+            packet.WriteString(parameter.Key).WriteString(parameter.Value);
+        }
     }
 }

@@ -26,7 +26,10 @@ internal sealed class CampaignMap : IRevisionMap
         );
         builder.MapSerializer(
             typeof(CampaignCalendarDoorOpenedMessageComposer),
-            new CampaignCalendarDataMessageComposerSerializer(
+            // Was registered against CampaignCalendarDataMessageComposerSerializer, which throws an
+            // InvalidCastException the moment anything sends this message. It went unnoticed while
+            // both Serialize bodies were empty, because neither reached the cast.
+            new CampaignCalendarDoorOpenedMessageComposerSerializer(
                 MessageComposer.CampaignCalendarDoorOpenedMessageComposer
             )
         );

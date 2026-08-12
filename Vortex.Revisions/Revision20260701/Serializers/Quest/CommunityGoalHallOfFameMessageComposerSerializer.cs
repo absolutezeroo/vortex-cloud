@@ -11,6 +11,16 @@ internal class CommunityGoalHallOfFameMessageComposerSerializer(int header)
         CommunityGoalHallOfFameMessageComposer message
     )
     {
-        //
+        packet.WriteString(message.GoalCode).WriteInteger(message.Entries.Length);
+
+        foreach (CommunityGoalHallOfFameEntry entry in message.Entries)
+        {
+            packet
+                .WriteInteger(entry.UserId)
+                .WriteString(entry.UserName)
+                .WriteString(entry.Figure)
+                .WriteInteger(entry.Rank)
+                .WriteInteger(entry.CurrentScore);
+        }
     }
 }

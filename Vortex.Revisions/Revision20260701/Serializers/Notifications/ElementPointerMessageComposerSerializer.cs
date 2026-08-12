@@ -8,6 +8,6 @@ internal class ElementPointerMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, ElementPointerMessageComposer message)
     {
-        //
+        packet.WriteString(message.Key);
     }
 }

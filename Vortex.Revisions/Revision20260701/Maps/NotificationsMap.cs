@@ -88,9 +88,10 @@ internal sealed class NotificationsMap : IRevisionMap
         );
         builder.MapSerializer(
             typeof(UnseenItemsEventMessageComposer),
-            new AccountPreferencesEventMessageComposerSerializer(
-                MessageComposer.UnseenItemsComposer
-            )
+            // Same copy-paste as CampaignCalendarDoorOpened had: this was registered against
+            // AccountPreferencesEventMessageComposerSerializer, whose cast would throw. Nothing
+            // builds an UnseenItemsEventMessageComposer yet, so it never fired.
+            new UnseenItemsEventMessageComposerSerializer(MessageComposer.UnseenItemsComposer)
         );
     }
 }

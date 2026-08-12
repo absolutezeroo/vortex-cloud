@@ -11,6 +11,8 @@ internal class WiredMenuErrorEventMessageComposerSerializer(int header)
         WiredMenuErrorEventMessageComposer message
     )
     {
-        //
+        // A short, not an int. The client reads two bytes here and would decode the next
+        // message from the wrong offset if this were widened.
+        packet.WriteShort(message.ErrorCode);
     }
 }

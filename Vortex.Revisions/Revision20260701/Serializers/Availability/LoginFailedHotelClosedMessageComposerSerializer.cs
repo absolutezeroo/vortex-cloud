@@ -11,6 +11,6 @@ internal class LoginFailedHotelClosedMessageComposerSerializer(int header)
         LoginFailedHotelClosedMessageComposer message
     )
     {
-        //
+        packet.WriteInteger(message.OpenHour).WriteInteger(message.OpenMinute);
     }
 }

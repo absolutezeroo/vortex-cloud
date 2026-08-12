@@ -11,6 +11,6 @@ internal class ChangeEmailResultEventMessageComposerSerializer(int header)
         ChangeEmailResultEventMessageComposer message
     )
     {
-        //
+        packet.WriteInteger(message.Result);
     }
 }

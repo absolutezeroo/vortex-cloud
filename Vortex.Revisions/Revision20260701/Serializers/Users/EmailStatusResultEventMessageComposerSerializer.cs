@@ -11,6 +11,9 @@ internal class EmailStatusResultEventMessageComposerSerializer(int header)
         EmailStatusResultEventMessageComposer message
     )
     {
-        //
+        packet
+            .WriteString(message.Email)
+            .WriteBoolean(message.IsVerified)
+            .WriteBoolean(message.AllowChange);
     }
 }

@@ -8,6 +8,8 @@ internal class CatalogPublishedMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, CatalogPublishedMessageComposer message)
     {
-        //
+        packet
+            .WriteBoolean(message.InstantlyRefreshCatalogue)
+            .WriteString(message.NewFurniDataHash);
     }
 }

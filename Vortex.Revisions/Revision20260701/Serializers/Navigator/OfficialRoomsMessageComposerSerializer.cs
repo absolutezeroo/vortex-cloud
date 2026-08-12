@@ -52,7 +52,11 @@ internal class OfficialRoomsMessageComposerSerializer(int header)
         }
     }
 
-    private static void SerializeEntry(IServerPacket packet, OfficialRoomEntrySnapshot entry)
+    /// <summary>
+    /// Shared with GuestRoomSearchResult, which carries the same entry as its optional ad. Only the
+    /// guard in front of it differs between the two messages.
+    /// </summary>
+    internal static void SerializeEntry(IServerPacket packet, OfficialRoomEntrySnapshot entry)
     {
         // The type decides what the client reads next, so a "room" entry with no room attached
         // would leave it waiting on a block that never arrives. Demote it before announcing a type

@@ -8,6 +8,6 @@ internal class UniqueMachineIdMessageSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, UniqueMachineIdMessage message)
     {
-        //
+        packet.WriteString(message.MachineID);
     }
 }

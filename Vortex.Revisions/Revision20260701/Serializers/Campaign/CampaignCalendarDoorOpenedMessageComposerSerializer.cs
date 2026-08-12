@@ -11,6 +11,10 @@ internal class CampaignCalendarDoorOpenedMessageComposerSerializer(int header)
         CampaignCalendarDoorOpenedMessageComposer message
     )
     {
-        //
+        packet
+            .WriteBoolean(message.DoorOpened)
+            .WriteString(message.ProductName)
+            .WriteString(message.CustomImage)
+            .WriteString(message.FurnitureClassName);
     }
 }
