@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Messages.Outgoing.Room.Chat;
 using Vortex.Primitives.Messages.Outgoing.Roomsettings;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
@@ -148,6 +149,15 @@ public sealed partial class RoomGrain
                 .GetPlayerPresenceGrain(actor)
                 .SendComposerAsync(
                     new RoomSettingsSavedEventMessageComposer { RoomId = _state.RoomId }
+                )
+                .ConfigureAwait(true);
+
+            // Everyone standing in the room, not just the owner who saved: flood sensitivity is
+            // what the client throttles its own chat against, and it otherwise only arrives with
+            // GuestRoomData -- so a loosened setting used to take effect for the people already
+            // inside only once they left and came back.
+            await SendComposerToRoomAsync(
+                    new RoomChatSettingsMessageComposer { FloodSensitivity = entity.ChatFloodType }
                 )
                 .ConfigureAwait(true);
 

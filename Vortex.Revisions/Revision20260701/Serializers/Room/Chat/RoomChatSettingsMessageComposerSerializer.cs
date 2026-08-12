@@ -8,6 +8,8 @@ internal class RoomChatSettingsMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, RoomChatSettingsMessageComposer message)
     {
-        //
+        // One int, not the five GuestRoomData writes for the same settings object: this parser
+        // calls fromFloodSensitivity, which fills the other four fields with client-side defaults.
+        packet.WriteInteger((int)message.FloodSensitivity);
     }
 }

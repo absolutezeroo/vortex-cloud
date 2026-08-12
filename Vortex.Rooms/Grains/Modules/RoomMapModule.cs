@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -395,6 +396,37 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
         }
 
         _dirty = true;
+    }
+
+    /// <summary>
+    /// The tiles the floor-plan editor must treat as reserved. Read off the live flags rather than
+    /// recomputed from item footprints, so a two-by-two rug reserves all four of its tiles and a
+    /// rotated item reserves the tiles it actually covers — the room engine already worked that out
+    /// when the item was placed.
+    /// </summary>
+    public ImmutableArray<(int X, int Y)> GetOccupiedTiles()
+    {
+        int size = Size;
+
+        if (size <= 0 || Width <= 0)
+        {
+            return [];
+        }
+
+        ImmutableArray<(int X, int Y)>.Builder tiles = ImmutableArray.CreateBuilder<(
+            int X,
+            int Y
+        )>();
+
+        for (int idx = 0; idx < size; idx++)
+        {
+            if (GetTileFlagsOrBase(idx).Has(RoomTileFlags.FurnitureOccupied))
+            {
+                tiles.Add((GetX(idx), GetY(idx)));
+            }
+        }
+
+        return tiles.ToImmutable();
     }
 
     public RoomMapSnapshot GetMapSnapshot(CancellationToken ct)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Logging.Extensions;
@@ -28,6 +29,9 @@ public sealed partial class RoomGrain
 
     public Task<RoomMapSnapshot> GetMapSnapshotAsync(CancellationToken ct) =>
         Task.FromResult(MapModule.GetMapSnapshot(ct));
+
+    public Task<ImmutableArray<(int X, int Y)>> GetOccupiedTilesAsync(CancellationToken ct) =>
+        Task.FromResult(MapModule.GetOccupiedTiles());
 
     private Task FlushDirtyTilesAsync(CancellationToken ct)
     {

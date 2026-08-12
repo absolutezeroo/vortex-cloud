@@ -11,6 +11,13 @@ internal class RoomOccupiedTilesMessageComposerSerializer(int header)
         RoomOccupiedTilesMessageComposer message
     )
     {
-        //
+        // Ints, not the bytes the height map uses for the same coordinates: this parser calls
+        // readInteger twice per tile, and the room is capped at 64 tiles a side either way.
+        packet.WriteInteger(message.Tiles.Length);
+
+        foreach ((int X, int Y) tile in message.Tiles)
+        {
+            packet.WriteInteger(tile.X).WriteInteger(tile.Y);
+        }
     }
 }
