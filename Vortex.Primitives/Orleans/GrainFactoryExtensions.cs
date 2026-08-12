@@ -222,6 +222,11 @@ public static class GrainFactoryExtensions
         long playerId
     ) => factory.GetGrain<IPlayerAchievementGrain>(playerId);
 
+    public static IPlayerQuizGrain GetPlayerQuizGrain(
+        this IGrainFactory factory,
+        PlayerId playerId
+    ) => factory.GetGrain<IPlayerQuizGrain>(playerId.Value);
+
     public static IPlayerAchievementResolutionGrain GetPlayerAchievementResolutionGrain(
         this IGrainFactory factory,
         PlayerId playerId

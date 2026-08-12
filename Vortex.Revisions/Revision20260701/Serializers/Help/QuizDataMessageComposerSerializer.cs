@@ -8,6 +8,11 @@ internal class QuizDataMessageComposerSerializer(int header)
 {
     protected override void Serialize(IServerPacket packet, QuizDataMessageComposer message)
     {
-        //
+        packet.WriteString(message.QuizCode).WriteInteger(message.QuestionIds.Length);
+
+        foreach (int questionId in message.QuestionIds)
+        {
+            packet.WriteInteger(questionId);
+        }
     }
 }

@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Help;
 
 internal class GetQuizQuestionsMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new GetQuizQuestionsMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new GetQuizQuestionsMessage { QuizCode = packet.PopString() };
 }

@@ -16,4 +16,8 @@ public sealed class ProtocolLimitsConfig
     /// item cap is business policy enforced in the trade session; this only bounds the length-prefixed
     /// array so a hostile client can't force a huge allocation.</summary>
     public int MaxTradeItems { get; init; } = 1500;
+
+    /// <summary>Wire-safety ceiling on a submitted quiz. The real quizzes are ten and thirteen
+    /// questions; this only stops a hostile client declaring a length it will not send.</summary>
+    public int MaxQuizAnswers { get; init; } = 100;
 }

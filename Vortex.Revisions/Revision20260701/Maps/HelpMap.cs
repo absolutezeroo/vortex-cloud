@@ -1,5 +1,6 @@
 using Vortex.Primitives.Messages.Outgoing.Help;
 using Vortex.Primitives.Networking.Revisions;
+using Vortex.Revisions.Configuration;
 using Vortex.Revisions.Revision20260701.Parsers.Help;
 using Vortex.Revisions.Revision20260701.Serializers.Help;
 
@@ -7,6 +8,13 @@ namespace Vortex.Revisions.Revision20260701.Maps;
 
 internal sealed class HelpMap : IRevisionMap
 {
+    private readonly ProtocolLimitsConfig _protocolLimits;
+
+    public HelpMap(ProtocolLimitsConfig protocolLimits)
+    {
+        _protocolLimits = protocolLimits;
+    }
+
     public void RegisterInto(IRevisionMapBuilder builder)
     {
         builder.MapParser(
@@ -104,7 +112,19 @@ internal sealed class HelpMap : IRevisionMap
             MessageEvent.GuideSessionResolvedMessageEvent,
             new GuideSessionResolvedMessageParser()
         );
-        builder.MapParser(MessageEvent.PostQuizAnswersEvent, new PostQuizAnswersMessageParser());
+        builder.MapParser(
+            MessageEvent.PostQuizAnswersEvent,
+            new PostQuizAnswersMessageParser(_protocolLimits.MaxQuizAnswers)
+        );
+
+        builder.MapSerializer(
+            typeof(QuizDataMessageComposer),
+            new QuizDataMessageComposerSerializer(MessageComposer.QuizDataMessageComposer)
+        );
+        builder.MapSerializer(
+            typeof(QuizResultsMessageComposer),
+            new QuizResultsMessageComposerSerializer(MessageComposer.QuizResultsMessageComposer)
+        );
 
         builder.MapSerializer(
             typeof(CallForHelpReplyMessageComposer),

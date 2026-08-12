@@ -23,7 +23,7 @@ public sealed class Revision20260701(IOptions<ProtocolLimitsConfig> protocolLimi
             new GiftsMap(),
             new GroupForumsMap(),
             new HandshakeMap(),
-            new HelpMap(),
+            new HelpMap(protocolLimits.Value),
             new HotlooksMap(),
             new InventoryMap(protocolLimits.Value),
             new LandingViewMap(),
