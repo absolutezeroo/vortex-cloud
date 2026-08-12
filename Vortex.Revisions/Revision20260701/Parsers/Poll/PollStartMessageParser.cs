@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Poll;
 
 internal class PollStartMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new PollStartMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new PollStartMessage { PollId = packet.PopInt() };
 }

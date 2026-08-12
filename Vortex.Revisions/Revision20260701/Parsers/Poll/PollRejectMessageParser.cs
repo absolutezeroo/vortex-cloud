@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Poll;
 
 internal class PollRejectMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new PollRejectMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new PollRejectMessage { PollId = packet.PopInt() };
 }

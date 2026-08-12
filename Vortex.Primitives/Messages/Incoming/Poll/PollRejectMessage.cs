@@ -2,4 +2,8 @@ using Vortex.Primitives.Networking;
 
 namespace Vortex.Primitives.Messages.Incoming.Poll;
 
-public record PollRejectMessage : IMessageEvent { }
+/// <summary>The player declined the offer dialog.</summary>
+public record PollRejectMessage : IMessageEvent
+{
+    public required int PollId { get; init; }
+}
