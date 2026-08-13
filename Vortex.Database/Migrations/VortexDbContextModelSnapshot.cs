@@ -1768,6 +1768,95 @@ namespace Vortex.Database.Migrations
                     b.ToTable("nft_collection_items");
                 });
 
+            modelBuilder.Entity("Vortex.Database.Entities.Collectibles.NftStoreOfferEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int>("EmeraldPrice")
+                        .HasColumnType("int")
+                        .HasColumnName("emerald_price");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("enabled");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("is_featured");
+
+                    b.Property<bool>("IsLimited")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("is_limited");
+
+                    b.Property<string>("ItemTypeId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)")
+                        .HasColumnName("item_type_id");
+
+                    b.Property<int>("MintLimit")
+                        .HasColumnType("int")
+                        .HasColumnName("mint_limit");
+
+                    b.Property<string>("ProductCode")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)")
+                        .HasColumnName("product_code");
+
+                    b.Property<int>("ProductTypeId")
+                        .HasColumnType("int")
+                        .HasColumnName("product_type_id");
+
+                    b.Property<string>("Rarity")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("rarity");
+
+                    b.Property<int>("Score")
+                        .HasColumnType("int")
+                        .HasColumnName("score");
+
+                    b.Property<int>("SoldCount")
+                        .HasColumnType("int")
+                        .HasColumnName("sold_count");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int")
+                        .HasColumnName("sort_order");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductCode")
+                        .IsUnique();
+
+                    b.ToTable("nft_store_offers");
+                });
+
             modelBuilder.Entity("Vortex.Database.Entities.Collectibles.PlayerCollectorStatsEntity", b =>
                 {
                     b.Property<int>("Id")

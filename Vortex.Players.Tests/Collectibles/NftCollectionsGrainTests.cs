@@ -51,6 +51,52 @@ public sealed class NftCollectionsGrainTests
         collections.Should().BeEmpty();
     }
 
+    /// <summary>
+    ///     The client draws a collectible by reading <c>itemTypeId</c> with <c>parseInt</c> and
+    ///     looking that number up in its own furniture tables, so it has to be the sprite id. Sending
+    ///     the classname is not a visible failure — it draws whatever sprite the leading digits
+    ///     happen to name, which is how a dragon lamp came out as a post-it.
+    /// </summary>
+    [Fact]
+    public async Task AnItemIsIdentifiedByItsSpriteId_NotItsClassname()
+    {
+        Harness harness = await Harness.CreateAsync().ConfigureAwait(true);
+
+        ImmutableArray<NftCollectionSnapshot> collections = await harness
+            .Grain.GetCollectionsForPlayerAsync(Collector, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        CollectibleProductItemSnapshot sofa = collections
+            .Single()
+            .Items.Single(item => item.ProductCode == Sofa);
+
+        // The harness gives club_sofa sprite id 1 and makes it a floor item.
+        sofa.ItemTypeId.Should().Be("1");
+        sofa.ItemTypeId.Should().NotBe(Sofa);
+        sofa.ProductTypeId.Should().Be(CollectibleProductIdentity.Floor);
+    }
+
+    /// <summary>
+    ///     The two prizes go through the same resolution as the items. They used to be built with a
+    ///     hardcoded product type and the classname as the item type, so every prize in every
+    ///     collection was drawn from the wrong table with a nonsense id.
+    /// </summary>
+    [Fact]
+    public async Task APrizeIsResolvedTheSameWayAnItemIs()
+    {
+        Harness harness = await Harness.CreateAsync(rewardProductCode: Throne).ConfigureAwait(true);
+
+        ImmutableArray<NftCollectionSnapshot> collections = await harness
+            .Grain.GetCollectionsForPlayerAsync(Collector, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        CollectibleProductItemSnapshot reward = collections.Single().RewardItem!;
+
+        reward.ProductCode.Should().Be(Throne);
+        reward.ItemTypeId.Should().Be("2", "the harness gives throne sprite id 2");
+        reward.ProductTypeId.Should().Be(CollectibleProductIdentity.Floor);
+    }
+
     [Fact]
     public async Task ACollectionCountsOnlyWhatThePlayerOwns()
     {
@@ -200,7 +246,8 @@ public sealed class NftCollectionsGrainTests
 
         public static async Task<Harness> CreateAsync(
             bool withCollection = true,
-            int status = NftCollectionStatus.Visible
+            int status = NftCollectionStatus.Visible,
+            string? rewardProductCode = null
         )
         {
             DbContextOptions<VortexDbContext> options =
@@ -226,6 +273,7 @@ public sealed class NftCollectionsGrainTests
                             // Spelled out rather than left to default: the default is Draft, which
                             // players never see, so every other test here depends on this.
                             Status = status,
+                            RewardProductCode = rewardProductCode,
                         }
                     );
 

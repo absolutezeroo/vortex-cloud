@@ -101,6 +101,18 @@ internal static partial class DashboardEndpoints
             (ops, body, actor, ct) => ops.DeleteCollectionItemAsync(body, actor, ct),
             body => body.ItemId > 0
         );
+        Map<StoreOfferRequest>(
+            app,
+            "/store-offers",
+            (ops, body, actor, ct) => ops.SaveStoreOfferAsync(body, actor, ct),
+            body => !string.IsNullOrWhiteSpace(body.ProductCode) && body.EmeraldPrice >= 0
+        );
+        Map<DeleteStoreOfferRequest>(
+            app,
+            "/store-offers/delete",
+            (ops, body, actor, ct) => ops.DeleteStoreOfferAsync(body, actor, ct),
+            body => body.OfferId > 0
+        );
         Map<CurrencyRequest>(
             app,
             "/currencies",

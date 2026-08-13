@@ -1,36 +1,41 @@
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Collectibles;
 using Vortex.Primitives.Messages.Incoming.Collectibles;
 using Vortex.Primitives.Messages.Outgoing.Collectibles;
+using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Collectibles;
 
 /// <summary>
-/// The collectibles shop tab. Nothing is for sale here: the offers are minted against a chain this
-/// hotel does not have, the same reason minting itself answers disabled.
+/// What the Collectors Guild shop has for sale.
 /// </summary>
 /// <remarks>
-/// Answering with an empty list rather than not answering. The tab raises a waiting flag when it
-/// asks and clears it only on this reply, so a dropped request leaves it spinning for as long as it
-/// stays open — where an empty list makes it render nothing and mark itself ready, which is the
-/// truth.
+/// This used to answer an empty list on the grounds that an offer is minted against a chain the
+/// hotel does not have. That was wrong: an offer is a furniture classname, a price in emeralds and
+/// two flags, none of which needs a chain — the same reason collections work here. The shop is real
+/// and admin-filled; an empty list now means the shelf is empty rather than the feature is off.
 /// </remarks>
-public class GetNftStoreOffersMessageHandler : IMessageHandler<GetNftStoreOffersMessage>
+public class GetNftStoreOffersMessageHandler(IGrainFactory grainFactory)
+    : IMessageHandler<GetNftStoreOffersMessage>
 {
+    private readonly IGrainFactory _grainFactory = grainFactory;
+
     public async ValueTask HandleAsync(
         GetNftStoreOffersMessage message,
         MessageContext ctx,
         CancellationToken ct
-    ) =>
-        await ctx.SendComposerAsync(
-                new NftStoreOffersMessageComposer
-                {
-                    Offers = ImmutableArray<NftStoreOfferSnapshot>.Empty,
-                },
-                ct
-            )
+    )
+    {
+        ImmutableArray<NftStoreOfferSnapshot> offers = await _grainFactory
+            .GetNftStoreGrain()
+            .GetOffersAsync(ct)
             .ConfigureAwait(false);
+
+        await ctx.SendComposerAsync(new NftStoreOffersMessageComposer { Offers = offers }, ct)
+            .ConfigureAwait(false);
+    }
 }

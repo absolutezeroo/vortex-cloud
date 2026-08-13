@@ -112,6 +112,66 @@ internal sealed partial class DashboardApiService
                     })
                     .ToList();
 
+                // The shop is checked the same way a collection item is: an offer naming furniture
+                // that does not exist would take the buyer's emeralds and hand over nothing, so the
+                // grain refuses the sale — and this is the only place that would say so beforehand.
+                var offerRows = await db
+                    .NftStoreOffers.AsNoTracking()
+                    .OrderBy(o => o.SortOrder)
+                    .ThenBy(o => o.Id)
+                    .Select(o => new
+                    {
+                        o.Id,
+                        o.ProductCode,
+                        o.EmeraldPrice,
+                        o.IsFeatured,
+                        o.IsLimited,
+                        o.MintLimit,
+                        o.SoldCount,
+                        o.ItemTypeId,
+                        o.ProductTypeId,
+                        o.Score,
+                        o.Rarity,
+                        o.Enabled,
+                        o.SortOrder,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                List<string> offerCodes = offerRows.Select(o => o.ProductCode).Distinct().ToList();
+
+                HashSet<string> knownOfferFurniture = new(
+                    await db
+                        .FurnitureDefinitions.AsNoTracking()
+                        .Where(f => offerCodes.Contains(f.Name))
+                        .Select(f => f.Name)
+                        .ToListAsync(ct)
+                        .ConfigureAwait(false),
+                    StringComparer.Ordinal
+                );
+
+                var storeOffers = offerRows
+                    .Select(o => new
+                    {
+                        o.Id,
+                        o.ProductCode,
+                        o.EmeraldPrice,
+                        o.IsFeatured,
+                        o.IsLimited,
+                        o.MintLimit,
+                        o.SoldCount,
+                        o.ItemTypeId,
+                        o.ProductTypeId,
+                        o.Score,
+                        o.Rarity,
+                        o.Enabled,
+                        o.SortOrder,
+                        resolved = knownOfferFurniture.Contains(o.ProductCode),
+                        soldOut = o.MintLimit > 0 && o.SoldCount >= o.MintLimit,
+                        iconUrl = BuildFurniIconUrl(o.ProductCode),
+                    })
+                    .ToList();
+
                 var collectorRows = await db
                     .PlayerCollectorStats.AsNoTracking()
                     .OrderByDescending(s => s.HighestScore)
@@ -141,8 +201,13 @@ internal sealed partial class DashboardApiService
                         unresolvedItems = collectionItems.Sum(c => c.unresolvedItems),
                         completableCollections = collectionItems.Count(c => c.completable),
                         trackedPlayers,
+                        storeOffers = storeOffers.Count,
+                        storeOffersOnSale = storeOffers.Count(o =>
+                            o.Enabled && !o.soldOut && o.resolved
+                        ),
                     },
                     collections = collectionItems,
+                    storeOffers,
                     topCollectors = collectorRows
                         .Select(c => new
                         {

@@ -12,6 +12,7 @@ using Vortex.Primitives.Messages.Incoming.Handshake;
 using Vortex.Primitives.Messages.Outgoing.Availability;
 using Vortex.Primitives.Messages.Outgoing.Callforhelp;
 using Vortex.Primitives.Messages.Outgoing.Catalog;
+using Vortex.Primitives.Messages.Outgoing.Collectibles;
 using Vortex.Primitives.Messages.Outgoing.Handshake;
 using Vortex.Primitives.Messages.Outgoing.Inventory.Achievements;
 using Vortex.Primitives.Messages.Outgoing.Inventory.Avatareffect;
@@ -279,6 +280,35 @@ public class SSOTicketMessageHandler(
                 .ConfigureAwait(false);
             await ctx.SendComposerAsync(
                     new ActivityPointsMessageComposer { PointsByCategoryId = activityPoints },
+                    ct
+                )
+                .ConfigureAwait(false);
+
+            // Silver and emeralds go out here with the credits rather than being left to the
+            // client to ask for. It only asks once, while its inventory component is starting up,
+            // and it keeps the answer in the catalogue purse for the whole session -- so a player
+            // who opens the Collectors Guild before their inventory would read both as zero, with a
+            // wallet that actually holds thousands.
+            int silver = await wallet
+                .GetAmountForCurrencyAsync(
+                    new CurrencyKind { CurrencyType = CurrencyType.Silver },
+                    ct
+                )
+                .ConfigureAwait(false);
+            int emeralds = await wallet
+                .GetAmountForCurrencyAsync(
+                    new CurrencyKind { CurrencyType = CurrencyType.Emeralds },
+                    ct
+                )
+                .ConfigureAwait(false);
+
+            await ctx.SendComposerAsync(
+                    new SilverBalanceMessageComposer { SilverBalance = silver },
+                    ct
+                )
+                .ConfigureAwait(false);
+            await ctx.SendComposerAsync(
+                    new EmeraldBalanceMessageComposer { EmeraldBalance = emeralds },
                     ct
                 )
                 .ConfigureAwait(false);

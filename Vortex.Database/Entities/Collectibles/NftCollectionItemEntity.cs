@@ -19,11 +19,19 @@ public class NftCollectionItemEntity : VortexEntity
     [MaxLength(128)]
     public required string ProductCode { get; set; }
 
-    /// <summary>What the client shows it as; falls back to the product code when left empty.</summary>
+    /// <summary>
+    /// Unused for rendering, and deliberately so: the client reads the item type with
+    /// <c>parseInt</c> and needs the furniture's sprite id, which is derived from the definition at
+    /// send time rather than stored here. Storing a classname here is what once drew a dragon lamp
+    /// as a post-it. Kept only because product kinds that are not furniture — a badge, say — would
+    /// need somewhere to put their own identifier.
+    /// </summary>
     [Column("item_type_id")]
     [MaxLength(128)]
     public string ItemTypeId { get; set; } = string.Empty;
 
+    /// <summary>Also unused for rendering — see <see cref="ItemTypeId"/>. Which furniture table the
+    /// client searches follows from the definition being a wall or a floor item.</summary>
     [Column("product_type_id")]
     public int ProductTypeId { get; set; }
 

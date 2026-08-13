@@ -36,6 +36,17 @@ internal sealed class CollectiblesMap : IRevisionMap
             MessageEvent.TransferNftAssetsMessageEvent,
             new TransferNftAssetsMessageParser()
         );
+        builder.MapParser(
+            MessageEvent.NftStorePurchaseMessageEvent,
+            new NftStorePurchaseMessageParser()
+        );
+
+        builder.MapSerializer(
+            typeof(NftStorePurchaseMessageComposer),
+            new NftStorePurchaseMessageComposerSerializer(
+                MessageComposer.NftStorePurchaseMessageComposer
+            )
+        );
 
         builder.MapSerializer(
             typeof(NftStoreOffersMessageComposer),

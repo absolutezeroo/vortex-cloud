@@ -71,6 +71,24 @@ public sealed record CollectionItemRequest(
 
 public sealed record DeleteCollectionItemRequest(int ItemId, string Reason) : IReasonedRequest;
 
+public sealed record StoreOfferRequest(
+    int OfferId,
+    string ProductCode,
+    int EmeraldPrice,
+    bool IsFeatured,
+    bool IsLimited,
+    int MintLimit,
+    string ItemTypeId,
+    int ProductTypeId,
+    int Score,
+    string Rarity,
+    bool Enabled,
+    int SortOrder,
+    string Reason
+) : IReasonedRequest;
+
+public sealed record DeleteStoreOfferRequest(int OfferId, string Reason) : IReasonedRequest;
+
 public sealed record CurrencyRequest(
     int CurrencyId,
     string Name,

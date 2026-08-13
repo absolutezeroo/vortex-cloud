@@ -1,1 +1,0 @@
-import{F as e,I as t,k as n}from"./AccessDeniedNotice-DlEcD0d5.js";var r=new Set([`$$slots`,`$$events`,`$$legacy`]);function i(i,a){let o=e(a,r),s=[[`path`,{d:`M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0`}],[`circle`,{cx:`12`,cy:`12`,r:`3`}]];n(i,t({name:`eye`},()=>o,{get iconNode(){return s}}))}export{i as t};

@@ -68,6 +68,16 @@ public interface IContentAdminService
 
     Task<ContentAdminResult> DeleteCollectionItemAsync(int itemId, CancellationToken ct);
 
+    Task<ContentAdminResult> CreateStoreOfferAsync(NftStoreOfferSpec spec, CancellationToken ct);
+
+    Task<ContentAdminResult> UpdateStoreOfferAsync(
+        int offerId,
+        NftStoreOfferSpec spec,
+        CancellationToken ct
+    );
+
+    Task<ContentAdminResult> DeleteStoreOfferAsync(int offerId, CancellationToken ct);
+
     Task<ContentAdminResult> CreateCurrencyAsync(CurrencySpec spec, CancellationToken ct);
 
     Task<ContentAdminResult> UpdateCurrencyAsync(

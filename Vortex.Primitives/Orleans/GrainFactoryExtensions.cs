@@ -291,6 +291,9 @@ public static class GrainFactoryExtensions
     public static INftCollectionsGrain GetNftCollectionsGrain(this IGrainFactory factory) =>
         factory.GetGrain<INftCollectionsGrain>(SingletonGrainId.GLOBAL);
 
+    public static INftStoreGrain GetNftStoreGrain(this IGrainFactory factory) =>
+        factory.GetGrain<INftStoreGrain>(SingletonGrainId.GLOBAL);
+
     public static IPlayerMysteryBoxGrain GetPlayerMysteryBoxGrain(
         this IGrainFactory factory,
         PlayerId playerId

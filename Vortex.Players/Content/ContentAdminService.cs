@@ -368,6 +368,32 @@ internal sealed partial class ContentAdminService(
         return ContentAdminResult.Ok(collectionId);
     }
 
+    /// <summary>
+    /// The client resolves a collection item's furni with <c>parseInt(itemTypeId)</c>, which stops
+    /// at the first non-digit instead of failing — so a classname like <c>11_dragonlamp_skream</c>
+    /// is silently read as furni id 11 and the player is shown a Gothic Torch. The value has to be
+    /// the numeric furni id from furnidata (that lamp is 38631883), never the classname.
+    ///
+    /// Empty is allowed: the entity documents it as "falls back to the product code".
+    /// </summary>
+    private static bool IsValidItemTypeId(string? itemTypeId)
+    {
+        if (string.IsNullOrWhiteSpace(itemTypeId))
+        {
+            return true;
+        }
+
+        foreach (char c in itemTypeId.Trim())
+        {
+            if (!char.IsAsciiDigit(c))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public async Task<ContentAdminResult> CreateCollectionItemAsync(
         int collectionId,
         NftCollectionItemSpec spec,
@@ -377,6 +403,11 @@ internal sealed partial class ContentAdminService(
         if (string.IsNullOrWhiteSpace(spec.ProductCode))
         {
             return ContentAdminResult.Fail("product_code_required");
+        }
+
+        if (!IsValidItemTypeId(spec.ItemTypeId))
+        {
+            return ContentAdminResult.Fail("item_type_id_must_be_numeric");
         }
 
         await using VortexDbContext db = await dbContextFactory
@@ -415,6 +446,11 @@ internal sealed partial class ContentAdminService(
         if (string.IsNullOrWhiteSpace(spec.ProductCode))
         {
             return ContentAdminResult.Fail("product_code_required");
+        }
+
+        if (!IsValidItemTypeId(spec.ItemTypeId))
+        {
+            return ContentAdminResult.Fail("item_type_id_must_be_numeric");
         }
 
         await using VortexDbContext db = await dbContextFactory
@@ -466,6 +502,146 @@ internal sealed partial class ContentAdminService(
         await ReloadCollectionsAsync(ct).ConfigureAwait(false);
 
         return ContentAdminResult.Ok(itemId);
+    }
+
+    public async Task<ContentAdminResult> CreateStoreOfferAsync(
+        NftStoreOfferSpec spec,
+        CancellationToken ct
+    )
+    {
+        if (string.IsNullOrWhiteSpace(spec.ProductCode))
+        {
+            return ContentAdminResult.Fail("product_code_required");
+        }
+
+        string productCode = spec.ProductCode.Trim();
+
+        await using VortexDbContext db = await dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        if (
+            await db
+                .NftStoreOffers.AnyAsync(offer => offer.ProductCode == productCode, ct)
+                .ConfigureAwait(false)
+        )
+        {
+            // The client identifies an offer by its product code when it buys, so two rows sharing
+            // one code would make the purchase ambiguous.
+            return ContentAdminResult.Fail("product_code_taken");
+        }
+
+        NftStoreOfferEntity entity = new() { ProductCode = productCode };
+
+        Apply(entity, spec);
+        db.NftStoreOffers.Add(entity);
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        await ReloadStoreAsync(ct).ConfigureAwait(false);
+
+        return ContentAdminResult.Ok(entity.Id);
+    }
+
+    public async Task<ContentAdminResult> UpdateStoreOfferAsync(
+        int offerId,
+        NftStoreOfferSpec spec,
+        CancellationToken ct
+    )
+    {
+        if (string.IsNullOrWhiteSpace(spec.ProductCode))
+        {
+            return ContentAdminResult.Fail("product_code_required");
+        }
+
+        string productCode = spec.ProductCode.Trim();
+
+        await using VortexDbContext db = await dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        NftStoreOfferEntity? entity = await db
+            .NftStoreOffers.FirstOrDefaultAsync(offer => offer.Id == offerId, ct)
+            .ConfigureAwait(false);
+
+        if (entity is null)
+        {
+            return ContentAdminResult.Fail("offer_not_found");
+        }
+
+        if (
+            await db
+                .NftStoreOffers.AnyAsync(
+                    offer => offer.ProductCode == productCode && offer.Id != offerId,
+                    ct
+                )
+                .ConfigureAwait(false)
+        )
+        {
+            return ContentAdminResult.Fail("product_code_taken");
+        }
+
+        entity.ProductCode = productCode;
+        Apply(entity, spec);
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        await ReloadStoreAsync(ct).ConfigureAwait(false);
+
+        return ContentAdminResult.Ok(entity.Id);
+    }
+
+    public async Task<ContentAdminResult> DeleteStoreOfferAsync(int offerId, CancellationToken ct)
+    {
+        await using VortexDbContext db = await dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        NftStoreOfferEntity? entity = await db
+            .NftStoreOffers.FirstOrDefaultAsync(offer => offer.Id == offerId, ct)
+            .ConfigureAwait(false);
+
+        if (entity is null)
+        {
+            return ContentAdminResult.Fail("offer_not_found");
+        }
+
+        db.NftStoreOffers.Remove(entity);
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        await ReloadStoreAsync(ct).ConfigureAwait(false);
+
+        return ContentAdminResult.Ok(offerId);
+    }
+
+    /// <summary>Everything except the product code, which the two callers set themselves because
+    /// only they know whether it is allowed to change.</summary>
+    private static void Apply(NftStoreOfferEntity entity, NftStoreOfferSpec spec)
+    {
+        entity.EmeraldPrice = spec.EmeraldPrice;
+        entity.IsFeatured = spec.IsFeatured;
+        entity.IsLimited = spec.IsLimited;
+        entity.MintLimit = spec.MintLimit;
+        entity.ItemTypeId = spec.ItemTypeId?.Trim() ?? string.Empty;
+        entity.ProductTypeId = spec.ProductTypeId;
+        entity.Score = spec.Score;
+        entity.Rarity = spec.Rarity?.Trim() ?? string.Empty;
+        entity.Enabled = spec.Enabled;
+        entity.SortOrder = spec.SortOrder;
+    }
+
+    private async Task ReloadStoreAsync(CancellationToken ct)
+    {
+        try
+        {
+            await grainFactory.GetNftStoreGrain().ReloadAsync(ct).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "Collectibles shop cache reload failed after an admin write committed -- the live shop is stale until the next reload or restart"
+            );
+            throw;
+        }
     }
 
     private static string? ValidateAchievement(AchievementSpec spec) =>

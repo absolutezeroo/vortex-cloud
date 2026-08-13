@@ -11,6 +11,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Collectibles;
 using Vortex.Primitives.Collectibles;
 using Vortex.Primitives.Collectibles.Grains;
+using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Players;
 
 namespace Vortex.Players.Grains;
@@ -308,7 +309,39 @@ internal sealed class NftCollectionsGrain(
                 .ToArrayAsync(ct)
                 .ConfigureAwait(true);
 
-            _collections = [.. collections.Select(ToCached)];
+            // The client draws every collectible — the items and both prizes — by looking a sprite
+            // id up in its own furniture tables, so the picture comes from the definition rather
+            // than from anything stored on the collection. Gathered in one query for the whole set.
+            string[] codes =
+            [
+                .. collections
+                    .SelectMany(collection =>
+                        (collection.Items ?? [])
+                            .Select(item => item.ProductCode)
+                            .Concat([collection.BonusProductCode, collection.RewardProductCode])
+                    )
+                    .Where(code => !string.IsNullOrWhiteSpace(code))
+                    .Select(code => code!)
+                    .Distinct(StringComparer.OrdinalIgnoreCase),
+            ];
+
+            Dictionary<string, FurnitureIdentity> definitions = await dbCtx
+                .FurnitureDefinitions.AsNoTracking()
+                .Where(definition =>
+                    codes.Contains(definition.Name) && definition.DeletedAt == null
+                )
+                .ToDictionaryAsync(
+                    definition => definition.Name,
+                    definition => new FurnitureIdentity(
+                        definition.SpriteId,
+                        definition.ProductType
+                    ),
+                    StringComparer.OrdinalIgnoreCase,
+                    ct
+                )
+                .ConfigureAwait(true);
+
+            _collections = [.. collections.Select(entity => ToCached(entity, definitions))];
             _loaded = true;
 
             _logger.LogInformation(
@@ -325,7 +358,10 @@ internal sealed class NftCollectionsGrain(
         }
     }
 
-    private static CachedCollection ToCached(NftCollectionEntity entity)
+    private static CachedCollection ToCached(
+        NftCollectionEntity entity,
+        Dictionary<string, FurnitureIdentity> definitions
+    )
     {
         CachedItem[] items =
         [
@@ -334,14 +370,9 @@ internal sealed class NftCollectionsGrain(
                 .ThenBy(item => item.Id)
                 .Select(item => new CachedItem(
                     item.ProductCode,
-                    new CollectibleProductItemSnapshot
+                    ToProductItem(item.ProductCode, definitions) with
                     {
-                        ProductTypeId = item.ProductTypeId,
-                        ItemTypeId = string.IsNullOrWhiteSpace(item.ItemTypeId)
-                            ? item.ProductCode
-                            : item.ItemTypeId,
                         Score = item.Score,
-                        ProductCode = item.ProductCode,
                         Rarity = item.Rarity,
                     }
                 )),
@@ -353,8 +384,8 @@ internal sealed class NftCollectionsGrain(
             [.. items],
             items.Sum(item => item.Snapshot.Score) + entity.BoostScore,
             entity.BoostScore,
-            ToPrizeItem(entity.BonusProductCode),
-            ToPrizeItem(entity.RewardProductCode),
+            ToPrizeItem(entity.BonusProductCode, definitions),
+            ToPrizeItem(entity.RewardProductCode, definitions),
             ToUnixMs(entity.ReleasedAt),
             ToUnixMs(entity.SnapshotAt),
             entity.Status
@@ -362,16 +393,35 @@ internal sealed class NftCollectionsGrain(
     }
 
     /// <summary>A prize is drawn as an item like any other, so it is shaped like one.</summary>
-    private static CollectibleProductItemSnapshot? ToPrizeItem(string? productCode) =>
-        string.IsNullOrWhiteSpace(productCode)
-            ? null
-            : new CollectibleProductItemSnapshot
-            {
-                ProductTypeId = 0,
-                ItemTypeId = productCode,
-                Score = 0,
-                ProductCode = productCode,
-            };
+    private static CollectibleProductItemSnapshot? ToPrizeItem(
+        string? productCode,
+        Dictionary<string, FurnitureIdentity> definitions
+    ) => string.IsNullOrWhiteSpace(productCode) ? null : ToProductItem(productCode, definitions);
+
+    /// <summary>
+    /// One collectible as the client needs it. The picture is decided by the sprite id and the
+    /// table to look it up in, both taken from the furniture definition — see
+    /// <see cref="CollectibleProductIdentity"/> for why neither may be stored or typed.
+    /// </summary>
+    private static CollectibleProductItemSnapshot ToProductItem(
+        string productCode,
+        Dictionary<string, FurnitureIdentity> definitions
+    )
+    {
+        definitions.TryGetValue(productCode, out FurnitureIdentity definition);
+
+        return new CollectibleProductItemSnapshot
+        {
+            ProductTypeId = CollectibleProductIdentity.ForFurniture(definition.ProductType),
+            ItemTypeId = CollectibleProductIdentity.ItemTypeId(definition.SpriteId),
+            Score = 0,
+            ProductCode = productCode,
+        };
+    }
+
+    /// <summary>What a classname resolves to in the catalogue: the two things the client needs to
+    /// draw it.</summary>
+    private readonly record struct FurnitureIdentity(int SpriteId, ProductType ProductType);
 
     private static long ToUnixMs(DateTime? value) =>
         value is null

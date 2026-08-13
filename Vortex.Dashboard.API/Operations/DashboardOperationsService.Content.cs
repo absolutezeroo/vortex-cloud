@@ -251,6 +251,71 @@ internal sealed partial class DashboardOperationsService
             ct
         );
 
+    public Task<OperationResult> SaveStoreOfferAsync(
+        StoreOfferRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        ExecuteAsync(
+            request.OfferId > 0 ? "ops.content.storeoffer.update" : "ops.content.storeoffer.create",
+            actor,
+            request.Reason,
+            targetPlayerId: null,
+            roomId: null,
+            detail: new
+            {
+                request.OfferId,
+                request.ProductCode,
+                request.EmeraldPrice,
+            },
+            work: async c =>
+            {
+                NftStoreOfferSpec spec = new(
+                    request.ProductCode,
+                    request.EmeraldPrice,
+                    request.IsFeatured,
+                    request.IsLimited,
+                    request.MintLimit,
+                    request.ItemTypeId,
+                    request.ProductTypeId,
+                    request.Score,
+                    request.Rarity,
+                    request.Enabled,
+                    request.SortOrder
+                );
+
+                Throw(
+                    request.OfferId > 0
+                        ? await _contentAdmin
+                            .UpdateStoreOfferAsync(request.OfferId, spec, c)
+                            .ConfigureAwait(false)
+                        : await _contentAdmin.CreateStoreOfferAsync(spec, c).ConfigureAwait(false)
+                );
+            },
+            ct
+        );
+
+    public Task<OperationResult> DeleteStoreOfferAsync(
+        DeleteStoreOfferRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        ExecuteAsync(
+            "ops.content.storeoffer.delete",
+            actor,
+            request.Reason,
+            targetPlayerId: null,
+            roomId: null,
+            detail: new { request.OfferId },
+            work: async c =>
+                Throw(
+                    await _contentAdmin
+                        .DeleteStoreOfferAsync(request.OfferId, c)
+                        .ConfigureAwait(false)
+                ),
+            ct
+        );
+
     public Task<OperationResult> DeleteCollectionAsync(
         DeleteCollectionRequest request,
         string actor,

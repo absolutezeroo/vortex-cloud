@@ -56,6 +56,23 @@ public sealed record NftCollectionItemSpec(
     int SortOrder
 );
 
+/// <summary>One offer on the Collectors Guild shop. <paramref name="ProductCode"/> must name a real
+/// furniture classname: it is both what the buyer receives and how the client identifies the offer
+/// when it buys.</summary>
+public sealed record NftStoreOfferSpec(
+    string ProductCode,
+    int EmeraldPrice,
+    bool IsFeatured,
+    bool IsLimited,
+    int MintLimit,
+    string ItemTypeId,
+    int ProductTypeId,
+    int Score,
+    string Rarity,
+    bool Enabled,
+    int SortOrder
+);
+
 /// <summary>A currency the hotel offers.</summary>
 public sealed record CurrencySpec(
     string Name,

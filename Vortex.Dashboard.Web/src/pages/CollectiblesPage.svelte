@@ -20,8 +20,13 @@
   import EntityLink from '../components/EntityLink.svelte';
   import PickerModal from '../components/PickerModal.svelte';
   import StatCard from '../components/StatCard.svelte';
-  import { Gem, Boxes, TriangleAlert, Trophy } from '@lucide/svelte';
+  import Tabs from '../components/Tabs.svelte';
+  import { Gem, Boxes, TriangleAlert, Trophy, Store } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
+
+  // Three jobs on one page -- the collections, the shop and the collector standings -- and stacking
+  // them meant scrolling past two to reach the third.
+  let tab = 'collections';
 
   let loading = false;
   let forbidden = false;
@@ -77,6 +82,28 @@
   // the default grey, so typing a rarity of one's own invention is how an item ends up looking
   // broken for no visible reason.
   const RARITY_OPTIONS = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'legendary+'];
+
+  const emptyOffer = () => ({
+    id: 0,
+    productCode: '',
+    emeraldPrice: 0,
+    isFeatured: false,
+    isLimited: false,
+    mintLimit: 0,
+    itemTypeId: '',
+    productTypeId: 0,
+    score: 0,
+    rarity: '',
+    enabled: true,
+    sortOrder: 0,
+  });
+
+  let offerForm = emptyOffer();
+
+  // The shop's own icon, looked up in the listing: unlike the two prizes, an offer is a row, so its
+  // image is already on the page once it has been saved.
+  $: offerIconUrl =
+    (data?.storeOffers || []).find((o) => o.productCode === offerForm.productCode)?.iconUrl ?? null;
 
   const statusLabel = (value) =>
     $t(STATUS_OPTIONS.find((o) => o.value === Number(value))?.key ?? 'collectibles.statusUnknown');
@@ -149,6 +176,17 @@
     </StatCard>
   </div>
 
+  <Tabs
+    bind:active={tab}
+    storageKey="collectibles"
+    tabs={[
+      { id: 'collections', label: $t('collectibles.tabCollections'), icon: Gem, count: (data.collections || []).length },
+      { id: 'shop', label: $t('collectibles.tabShop'), icon: Store, count: (data.storeOffers || []).length },
+      { id: 'collectors', label: $t('collectibles.tabCollectors'), icon: Trophy, count: (data.topCollectors || []).length },
+    ]}
+  />
+
+  {#if tab === 'collections'}
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('collectibles.collectionsTitle')}</h2></div>
     {#if (data.collections || []).length === 0}
@@ -470,7 +508,178 @@
       {/if}
     </section>
   {/if}
+  {/if}
 
+  {#if tab === 'shop'}
+  <section class="panel" style="margin-top: 12px;">
+    <div class="panel-head"><h2>{$t('collectibles.shopTitle')}</h2></div>
+    <p class="muted">{$t('collectibles.shopDescription')}</p>
+    {#if (data.storeOffers || []).length === 0}
+      <EmptyState message={$t('collectibles.noOffers')} />
+    {:else}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>{$t('collectibles.colItem')}</th>
+              <th>{$t('collectibles.colPrice')}</th>
+              <th>{$t('collectibles.colItemScore')}</th>
+              <th>{$t('collectibles.colRarity')}</th>
+              <th>{$t('collectibles.colStock')}</th>
+              <th>{$t('collectibles.colOnSale')}</th>
+              {#if canManage}<th></th>{/if}
+            </tr>
+          </thead>
+          <tbody>
+            {#each data.storeOffers as offer}
+              <tr>
+                <td>
+                  <span class="cell">
+                    <AssetImage src={offer.iconUrl} alt={offer.productCode} size={32} />
+                    <code>{offer.productCode}</code>
+                    {#if offer.isFeatured}
+                      <span class="status-badge">{$t('collectibles.featured')}</span>
+                    {/if}
+                  </span>
+                </td>
+                <td>{formatNumber(offer.emeraldPrice)}</td>
+                <td>{formatNumber(offer.score)}</td>
+                <td>{offer.rarity || '—'}</td>
+                <td>
+                  {#if offer.mintLimit > 0}
+                    {formatNumber(offer.soldCount)} / {formatNumber(offer.mintLimit)}
+                  {:else}
+                    {formatNumber(offer.soldCount)} / ∞
+                  {/if}
+                </td>
+                <td>
+                  {#if !offer.resolved}
+                    <span class="status-badge status-badge--bad">{$t('collectibles.missingFurni')}</span>
+                  {:else if !offer.enabled}
+                    <span class="status-badge">{$t('collectibles.offerDisabled')}</span>
+                  {:else if offer.soldOut}
+                    <span class="status-badge status-badge--bad">{$t('collectibles.soldOut')}</span>
+                  {:else}
+                    <span class="status-badge status-badge--ok">{$t('collectibles.onSale')}</span>
+                  {/if}
+                </td>
+                {#if canManage}
+                  <td class="row-actions">
+                    <button type="button" class="ghost-button" on:click={() => (offerForm = { ...offer })}>
+                      {$t('collectibles.edit')}
+                    </button>
+                    <button
+                      type="button"
+                      class="ghost-button danger"
+                      on:click={() =>
+                        ops.ask(
+                          '/api/v1/operations/content/store-offers/delete',
+                          { offerId: offer.id },
+                          $t('collectibles.deleteOffer'),
+                          $t('collectibles.deleteOfferSummary', { code: offer.productCode })
+                        )}
+                    >
+                      {$t('collectibles.delete')}
+                    </button>
+                  </td>
+                {/if}
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    {/if}
+
+    {#if canManage}
+      <h3 class="subhead">{$t('collectibles.offerEditorTitle')}</h3>
+      <form
+        class="inline-form editor-form"
+        on:submit|preventDefault={() =>
+          ops.ask(
+            '/api/v1/operations/content/store-offers',
+            {
+              offerId: Number(offerForm.id) || 0,
+              productCode: offerForm.productCode,
+              emeraldPrice: Number(offerForm.emeraldPrice) || 0,
+              isFeatured: Boolean(offerForm.isFeatured),
+              isLimited: Boolean(offerForm.isLimited),
+              mintLimit: Number(offerForm.mintLimit) || 0,
+              itemTypeId: offerForm.itemTypeId || '',
+              productTypeId: Number(offerForm.productTypeId) || 0,
+              score: Number(offerForm.score) || 0,
+              rarity: offerForm.rarity || '',
+              enabled: Boolean(offerForm.enabled),
+              sortOrder: Number(offerForm.sortOrder) || 0,
+            },
+            offerForm.id ? $t('collectibles.updateOffer') : $t('collectibles.addOffer'),
+            $t('collectibles.saveOfferSummary', { code: offerForm.productCode })
+          )}
+      >
+        <label>
+          {$t('collectibles.colItem')}
+          <span class="cell">
+            <AssetImage src={offerIconUrl} alt={offerForm.productCode} size={32} />
+            <input bind:value={offerForm.productCode} placeholder="classname" readonly />
+            <button type="button" class="ghost-button" on:click={() => (picking = 'offer')}>
+              {$t('collectibles.pickFurniture')}
+            </button>
+          </span>
+          <small class="muted">{$t('collectibles.offerProductHelpLong')}</small>
+        </label>
+        <label>
+          {$t('collectibles.colPrice')}
+          <input type="number" min="0" bind:value={offerForm.emeraldPrice} />
+          <small class="muted">{$t('collectibles.priceHelp')}</small>
+        </label>
+        <label>
+          {$t('collectibles.colItemScore')}
+          <input type="number" min="0" bind:value={offerForm.score} />
+          <small class="muted">{$t('collectibles.offerScoreHelp')}</small>
+        </label>
+        <label>
+          {$t('collectibles.colRarity')}
+          <select bind:value={offerForm.rarity}>
+            <option value="">{$t('collectibles.rarityNone')}</option>
+            {#each RARITY_OPTIONS as rarity}
+              <option value={rarity}>{rarity}</option>
+            {/each}
+          </select>
+        </label>
+        <label>
+          {$t('collectibles.mintLimit')}
+          <input type="number" min="0" bind:value={offerForm.mintLimit} />
+          <small class="muted">{$t('collectibles.mintLimitHelp')}</small>
+        </label>
+        <label>
+          {$t('collectibles.sortOrder')}
+          <input type="number" bind:value={offerForm.sortOrder} />
+        </label>
+        <label class="check">
+          <input type="checkbox" bind:checked={offerForm.isFeatured} />
+          {$t('collectibles.featured')}
+        </label>
+        <label class="check">
+          <input type="checkbox" bind:checked={offerForm.isLimited} />
+          {$t('collectibles.limitedEdition')}
+        </label>
+        <label class="check">
+          <input type="checkbox" bind:checked={offerForm.enabled} />
+          {$t('collectibles.offerEnabled')}
+        </label>
+        <div class="form-actions">
+          <button type="submit" disabled={!offerForm.productCode.trim()}>
+            {offerForm.id ? $t('collectibles.updateOffer') : $t('collectibles.addOffer')}
+          </button>
+          <button type="button" class="ghost-button" on:click={() => (offerForm = emptyOffer())}>
+            {$t('collectibles.newOffer')}
+          </button>
+        </div>
+      </form>
+    {/if}
+  </section>
+  {/if}
+
+  {#if tab === 'collectors'}
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('collectibles.leaderboardTitle')}</h2></div>
     <div class="table-wrap">
@@ -494,6 +703,7 @@
       </table>
     </div>
   </section>
+  {/if}
 {/if}
 
 {#if picking}
@@ -507,6 +717,8 @@
       } else if (picking === 'bonus') {
         collectionForm.bonusProductCode = picked.name;
         bonusIconUrl = picked.iconUrl ?? null;
+      } else if (picking === 'offer') {
+        offerForm.productCode = picked.name;
       } else {
         itemForm.productCode = picked.name;
       }
@@ -577,5 +789,16 @@
   .editor-form .cell input {
     min-width: 0;
     flex: 1 1 110px;
+  }
+
+  /* A checkbox reads as a switch beside its wording, not as a field stacked under a caption. */
+  .editor-form label.check {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .editor-form label.check input {
+    width: auto;
   }
 </style>
