@@ -327,6 +327,11 @@ public sealed class GroupDirectoryGrainCreationTests
             return Task.CompletedTask;
         }
 
+        public Task GrantCurrencyAsync(CurrencyKind kind, int amount, CancellationToken ct)
+        {
+            return Task.CompletedTask;
+        }
+
         public Task GrantActivityPointsAsync(
             int activityPointType,
             int amount,

@@ -33,6 +33,16 @@ public sealed record SetConfigRequest(string Key, string Value, string Reason) :
 public sealed record GiveActivityPointsRequest(int PlayerId, int Type, int Amount, string Reason)
     : IReasonedRequest;
 
+/// <summary>Grant silver or emeralds to a player. <paramref name="Currency"/> is the
+/// <c>CurrencyType</c> name — credits and activity points have their own endpoints, which carry the
+/// extra handling those two need.</summary>
+public sealed record GiveCollectiblesCurrencyRequest(
+    int PlayerId,
+    string Currency,
+    int Amount,
+    string Reason
+) : IReasonedRequest;
+
 /// <summary>Grant a furniture definition (optionally with extra data) to a player's inventory.</summary>
 public sealed record GiveFurnitureRequest(
     int PlayerId,

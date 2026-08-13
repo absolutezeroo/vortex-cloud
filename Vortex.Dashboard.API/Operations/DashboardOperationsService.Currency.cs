@@ -16,6 +16,7 @@ using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums.Wallet;
+using Vortex.Primitives.Players.Wallet;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
 
@@ -65,6 +66,58 @@ internal sealed partial class DashboardOperationsService
                     .GrantActivityPointsAsync(request.Type, request.Amount, c),
             ct
         );
+
+    /// <summary>
+    /// Grants silver or emeralds — the two currencies that had no way in at all. They could be read
+    /// and spent (the catalogue prices offers in silver) but never credited, so both stayed at zero
+    /// for the life of an account.
+    /// </summary>
+    /// <param name="currency">Already validated by the endpoint, so this cannot be a currency the
+    /// operation refuses to touch.</param>
+    public Task<OperationResult> GiveCollectiblesCurrencyAsync(
+        GiveCollectiblesCurrencyRequest request,
+        CurrencyType currency,
+        string actor,
+        CancellationToken ct
+    ) =>
+        ExecuteAsync(
+            "ops.currency.collectibles.grant",
+            actor,
+            request.Reason,
+            targetPlayerId: request.PlayerId,
+            roomId: null,
+            detail: new { currency = currency.ToString(), request.Amount },
+            work: c =>
+                _grainFactory
+                    .GetPlayerWalletGrain(new PlayerId(request.PlayerId))
+                    .GrantCurrencyAsync(
+                        new CurrencyKind { CurrencyType = currency },
+                        request.Amount,
+                        c
+                    ),
+            ct
+        );
+
+    /// <summary>
+    /// Only the two collectibles currencies. Credits and activity points are reachable through the
+    /// same enum, but they have their own endpoints — routing them here would skip the
+    /// activity-point type that one of them requires.
+    /// </summary>
+    internal static bool TryParseCollectiblesCurrency(string? value, out CurrencyType currency)
+    {
+        switch (value?.Trim().ToLowerInvariant())
+        {
+            case "silver":
+                currency = CurrencyType.Silver;
+                return true;
+            case "emeralds":
+                currency = CurrencyType.Emeralds;
+                return true;
+            default:
+                currency = default;
+                return false;
+        }
+    }
 
     public Task<OperationResult> GiveFurnitureAsync(
         GiveFurnitureRequest request,

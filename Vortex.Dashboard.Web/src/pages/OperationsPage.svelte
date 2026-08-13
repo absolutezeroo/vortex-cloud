@@ -1,7 +1,7 @@
 ﻿<script>
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
   import OpResult from '../components/OpResult.svelte';
-  import { Coins, Zap, Package, UserX } from '@lucide/svelte';
+  import { Coins, Zap, Gem, Package, UserX } from '@lucide/svelte';
   import { hasDashboardCapability } from '../lib/permissions.js';
   import { createWriteOps } from '../lib/writeOps.js';
   import { OPERATION_CAPABILITIES } from '../lib/dashboardPermissions.js';
@@ -18,6 +18,16 @@
     playerName: '',
     playerOnline: false,
     type: '0',
+    amount: '',
+    reason: '',
+  };
+  // Silver and emeralds share one form: they are the same grant with a different currency, and two
+  // near-identical cards would only make the operator read both to find the right one.
+  let collectibles = {
+    playerId: '',
+    playerName: '',
+    playerOnline: false,
+    currency: 'silver',
     amount: '',
     reason: '',
   };
@@ -46,12 +56,14 @@
   const capabilityByAction = {
     credits: OPERATION_CAPABILITIES.credits,
     activity: OPERATION_CAPABILITIES.activity,
+    collectibles: OPERATION_CAPABILITIES.collectibles,
     item: OPERATION_CAPABILITIES.item,
     kick: OPERATION_CAPABILITIES.kick,
   };
 
   $: canCredits = hasDashboardCapability($identity, capabilityByAction.credits);
   $: canActivity = hasDashboardCapability($identity, capabilityByAction.activity);
+  $: canCollectibles = hasDashboardCapability($identity, capabilityByAction.collectibles);
   $: canItem = hasDashboardCapability($identity, capabilityByAction.item);
   $: canKick = hasDashboardCapability($identity, capabilityByAction.kick);
 
@@ -112,6 +124,36 @@
         reason: activity.reason.trim(),
       },
       translate('operations.activitySummary', { amount: activity.amount, type: activity.type, name: activity.playerName || translate('operations.player'), id: activity.playerId }),
+    );
+  }
+
+  function stageCollectibles() {
+    if (!canCollectibles) {
+      ops.fail('collectibles', translate('operations.collectiblesAccessDenied'));
+      return;
+    }
+
+    const currencyLabel = translate(
+      collectibles.currency === 'emeralds' ? 'operations.currencyEmeralds' : 'operations.currencySilver',
+    );
+
+    stage(
+      'collectibles',
+      translate('operations.giveCollectiblesCurrency'),
+      '/api/v1/operations/currency/collectibles',
+      positive(collectibles.playerId) && positive(collectibles.amount) && reasonOk(collectibles.reason),
+      {
+        playerId: Number(collectibles.playerId),
+        currency: collectibles.currency,
+        amount: Number(collectibles.amount),
+        reason: collectibles.reason.trim(),
+      },
+      translate('operations.collectiblesSummary', {
+        amount: collectibles.amount,
+        currency: currencyLabel,
+        name: collectibles.playerName || translate('operations.player'),
+        id: collectibles.playerId,
+      }),
     );
   }
 
@@ -273,6 +315,65 @@
       {#if $ops.errors.activity}<p class="empty-state danger">{$ops.errors.activity}</p>{/if}
       {#if $ops.results.activity}
         <OpResult result={$ops.results.activity} onCopy={copy} copyLabel={$t('common.copy')} />
+      {/if}
+    {/if}
+  </section>
+
+  <section class="panel op-panel" style="border-left-color: var(--ok);">
+    <div class="panel-head"><h2><Gem size={17} strokeWidth={2} /> {$t('operations.giveCollectiblesCurrency')}</h2></div>
+    {#if !canCollectibles}
+      <AccessDeniedNotice message={$t('operations.collectiblesAccessDenied')} />
+    {:else}
+      <div class="op-field">
+        <span class="op-label">{$t('common.playerRequired')}</span>
+        <div class="op-pick">
+          <button
+            class="ghost-button"
+            type="button"
+            on:click={() =>
+              pickUser(
+                (u) =>
+                  (collectibles = {
+                    ...collectibles,
+                    playerId: u.id,
+                    playerName: u.name,
+                    playerOnline: u.online,
+                  }),
+              )}
+          >
+            {$t('common.selectUser')}
+          </button>
+          {#if collectibles.playerId}
+            <span class="op-chip">
+              <span class="op-dot" class:on={collectibles.playerOnline}></span>
+              {collectibles.playerName} <small>#{collectibles.playerId}</small>
+            </span>
+          {:else}
+            <span class="muted">{$t('common.noUserSelected')}</span>
+          {/if}
+        </div>
+      </div>
+      <div class="op-field">
+        <label for="collectibles-currency">{$t('operations.collectiblesCurrency')}</label>
+        <select id="collectibles-currency" bind:value={collectibles.currency}>
+          <option value="silver">{$t('operations.currencySilver')}</option>
+          <option value="emeralds">{$t('operations.currencyEmeralds')}</option>
+        </select>
+      </div>
+      <div class="op-field">
+        <label for="collectibles-amount">{$t('operations.amount')}</label>
+        <input id="collectibles-amount" type="number" min="1" bind:value={collectibles.amount} placeholder="100" />
+      </div>
+      <div class="op-field">
+        <label for="collectibles-reason">{$t('common.reasonRequired')}</label>
+        <input id="collectibles-reason" bind:value={collectibles.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
+      </div>
+      <div class="op-actions">
+        <button type="button" on:click={stageCollectibles} disabled={$ops.busyKeys.collectibles}>{$t('common.run')}</button>
+      </div>
+      {#if $ops.errors.collectibles}<p class="empty-state danger">{$ops.errors.collectibles}</p>{/if}
+      {#if $ops.results.collectibles}
+        <OpResult result={$ops.results.collectibles} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
   </section>

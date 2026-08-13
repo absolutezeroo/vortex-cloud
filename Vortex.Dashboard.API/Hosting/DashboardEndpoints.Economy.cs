@@ -15,6 +15,7 @@ using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Security;
 using Vortex.Primitives.Permissions;
+using Vortex.Primitives.Players.Enums.Wallet;
 
 namespace Vortex.Dashboard.API.Hosting;
 
@@ -110,6 +111,37 @@ internal static partial class DashboardEndpoints
 
                 return Results.Ok(
                     await ops.GiveActivityPointsAsync(body, ctx.ActorEmail(), ct)
+                        .ConfigureAwait(false)
+                );
+            },
+            Capabilities.Dashboard.OpsGrantCurrency,
+            TagOperations
+        );
+        MapPost(
+            app,
+            ApiOperations + "/currency/collectibles",
+            "/api/ops/currency/collectibles",
+            async (
+                HttpContext ctx,
+                GiveCollectiblesCurrencyRequest body,
+                DashboardOperationsService ops,
+                CancellationToken ct
+            ) =>
+            {
+                if (
+                    body.PlayerId <= 0
+                    || body.Amount <= 0
+                    || !DashboardOperationsService.TryParseCollectiblesCurrency(
+                        body.Currency,
+                        out CurrencyType currency
+                    )
+                )
+                {
+                    return Results.BadRequest(new { error = "invalid_request" });
+                }
+
+                return Results.Ok(
+                    await ops.GiveCollectiblesCurrencyAsync(body, currency, ctx.ActorEmail(), ct)
                         .ConfigureAwait(false)
                 );
             },

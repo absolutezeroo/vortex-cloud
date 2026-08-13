@@ -22,8 +22,13 @@ internal static class MessageEvent
     public const int RespectUserMessageEvent = 3770; // AS3-verified (direct read): SessionDataManager.as:882 -> send(new _SafeCls_1969(userId)) @3770. Its old value 3377 is Game2GetAccountGameStatus, whose name survives unobfuscated in the WIN63 registry - see that constant below, restored to 3377
     public const int UnblockUserMessageEvent = 2512; // AS3-verified (direct read): BlockedUsersManager.as:99 -> send(new _SafeCls_2552(userId)) @2512; was 1231, which the WIN63 registry uses on the *incoming* side only (no composer at 1231)
     public const int AddNftToTradeEvent = 2481; // AS3-verified (direct read): TradingModel::requestAddNftsToTrading() -> send(new _SafeCls_2741(Vector.<int>)) @2481; was 1543, which has no entry in the WIN63 registry at all
-    public const int GetNftTradeInventoryEvent = 9015; // UNRESOLVED: 469 has no entry in the WIN63 registry. The only NFT-inventory request in the client is CollectiblesModel::requestNftAssets() -> _SafeCls_3488 @1646, already held by NftTransferAssetsMessageEvent, so this looks like a duplicate constant - placeholder pending a proper retrace
-    public const int RemoveNftFromTradeEvent = 9014; // UNRESOLVED: 1919 is PickupObject in the WIN63 registry and no remove-NFT-from-trade composer exists anywhere in the 701 client (TradingModel only has requestAddNftsToTrading) - placeholder pending a proper retrace
+
+    // GetNftTradeInventoryEvent and RemoveNftFromTradeEvent used to sit here on invented ids (9015,
+    // 9014) above the client's highest real header, so nothing could ever reach them. Both are gone
+    // rather than renumbered: the first is this same request under another name -- the client's only
+    // NFT-inventory call is CollectiblesModel::requestNftAssets(), which is
+    // GetNftAssetInventoryMessageEvent@1646 -- and the second has no composer anywhere in the 701
+    // client, whose TradingModel can add NFTs to a trade but never remove them individually.
     public const int WiredGetUserPermanentVariablesEvent = 3777; // AS3-verified (direct read): VariableManagementDetailView fetch call -> connection.send(new _SafeCls_2724(entityType,entityId)) @3777; corrects a wrong guess (was 2127, no AS3 backing)
     public const int WiredGetVariableOwnersPageEvent = 2221;
     public const int ClaimDailyTaskEvent = 4101;
@@ -494,7 +499,7 @@ internal static class MessageEvent
     public const int MintItemMessageEvent = 2815; // AS3-verified (old-revision trace): _SafeCls_3208 -> onCollectConfirmDialogConfirm() still exists in current revision at 2815
     public const int NftCollectiblesClaimBonusItemMessageEvent = 1977; // AS3-verified (direct read, both revisions): CollectionView::onClickClaim() PREVIEW_STATUS_BONUS -> _SafeCls_3818
     public const int NftCollectiblesClaimRewardItemMessageEvent = 1166; // AS3-verified (direct read, both revisions): CollectionView::onClickClaim() PREVIEW_STATUS_REWARD -> _SafeCls_3758
-    public const int NftTransferAssetsMessageEvent = 1646; // AS3-verified (ghost fix): CollectiblesModel::requestNftAssets(). Misnamed -- it only ASKS for the asset list; the transfer itself is TransferNftAssetsMessageEvent below
+    public const int GetNftAssetInventoryMessageEvent = 1646; // AS3-verified: CollectiblesModel::requestNftAssets(), answered by TradeNftAssetInventoryMessageComposer. Was called NftTransferAssetsMessageEvent, a permutation of the header below that transfers nothing -- the two names were swapped often enough that the handler carried the wrong documentation
     public const int TransferNftAssetsMessageEvent = 1749; // AS3-verified 2026-08-13: _composers[1749] = _SafeCls_2756, sent by TransferNftsTab with the selected wallet. Corroborated twice -- the modern client maps 1749 to NftTransferAssetsComposer, and the named win63_version tree's ctor takes one String. Had no header at all, so the confirm button did nothing
     public const int PurchaseMintTokenMessageEvent = 67; // AS3-verified (old-revision trace): _SafeCls_2316 -> purchaseMintTokens() still exists in current revision at 67
     public const int PeerUsersClassificationMessageEvent = 628; // AS3-verified (ghost fix): RoomSession::sendPeerUsersClassificationMessage()

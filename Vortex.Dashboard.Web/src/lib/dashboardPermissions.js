@@ -98,6 +98,7 @@ export const ROUTE_PERMISSIONS = {
 export const OPERATION_CAPABILITIES = {
   credits: CAPABILITIES.opsGrantCurrency,
   activity: CAPABILITIES.opsGrantCurrency,
+  collectibles: CAPABILITIES.opsGrantCurrency,
   item: CAPABILITIES.opsGrantItem,
   kick: CAPABILITIES.opsKickPlayer,
 };

@@ -154,6 +154,11 @@ public sealed class WalletPurchaseExtensionsTests
             return Task.CompletedTask;
         }
 
+        public Task GrantCurrencyAsync(CurrencyKind kind, int amount, CancellationToken ct)
+        {
+            return Task.CompletedTask;
+        }
+
         public Task GrantActivityPointsAsync(
             int activityPointType,
             int amount,

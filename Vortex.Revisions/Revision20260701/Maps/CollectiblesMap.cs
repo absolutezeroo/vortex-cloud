@@ -95,8 +95,8 @@ internal sealed class CollectiblesMap : IRevisionMap
             new NftCollectiblesClaimRewardItemMessageParser()
         );
         builder.MapParser(
-            MessageEvent.NftTransferAssetsMessageEvent,
-            new NftTransferAssetsMessageParser()
+            MessageEvent.GetNftAssetInventoryMessageEvent,
+            new GetNftAssetInventoryMessageParser()
         );
         builder.MapParser(
             MessageEvent.PurchaseMintTokenMessageEvent,
@@ -167,6 +167,12 @@ internal sealed class CollectiblesMap : IRevisionMap
             typeof(NftRewardItemClaimResultMessageComposer),
             new NftRewardItemClaimResultMessageComposerSerializer(
                 MessageComposer.NftRewardItemClaimResultMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(TradeNftAssetInventoryMessageComposer),
+            new TradeNftAssetInventoryMessageComposerSerializer(
+                MessageComposer.TradeNftAssetInventoryMessageComposer
             )
         );
         builder.MapSerializer(

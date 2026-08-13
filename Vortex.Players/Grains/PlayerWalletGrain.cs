@@ -337,7 +337,7 @@ internal sealed class PlayerWalletGrain(
         }
     }
 
-    private async Task GrantCurrencyAsync(CurrencyKind kind, int amount, CancellationToken ct)
+    public async Task GrantCurrencyAsync(CurrencyKind kind, int amount, CancellationToken ct)
     {
         if (amount <= 0)
         {
