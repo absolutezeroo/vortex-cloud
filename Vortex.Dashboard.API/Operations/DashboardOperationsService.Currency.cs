@@ -87,14 +87,27 @@ internal sealed partial class DashboardOperationsService
             targetPlayerId: request.PlayerId,
             roomId: null,
             detail: new { currency = currency.ToString(), request.Amount },
-            work: c =>
-                _grainFactory
+            work: async c =>
+            {
+                bool granted = await _grainFactory
                     .GetPlayerWalletGrain(new PlayerId(request.PlayerId))
                     .GrantCurrencyAsync(
                         new CurrencyKind { CurrencyType = currency },
                         request.Amount,
                         c
-                    ),
+                    )
+                    .ConfigureAwait(false);
+
+                if (!granted)
+                {
+                    // Reported as a rejection rather than swallowed. A currency with no enabled
+                    // currency_types row cannot be credited, and showing the operator a green
+                    // result for it is how a grant that did nothing looks like one that worked.
+                    throw new InvalidOperationException(
+                        $"currency_not_configured: {currency} has no enabled currency_types row"
+                    );
+                }
+            },
             ct
         );
 

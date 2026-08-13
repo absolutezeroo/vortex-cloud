@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -154,9 +154,9 @@ public sealed class WalletPurchaseExtensionsTests
             return Task.CompletedTask;
         }
 
-        public Task GrantCurrencyAsync(CurrencyKind kind, int amount, CancellationToken ct)
+        public Task<bool> GrantCurrencyAsync(CurrencyKind kind, int amount, CancellationToken ct)
         {
-            return Task.CompletedTask;
+            return Task.FromResult(true);
         }
 
         public Task GrantActivityPointsAsync(

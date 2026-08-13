@@ -315,33 +315,56 @@ internal sealed class PlayerWalletGrain(
         };
     }
 
-    public Task GrantCreditsAsync(int amount, CancellationToken ct) =>
-        GrantCurrencyAsync(new CurrencyKind { CurrencyType = CurrencyType.Credits }, amount, ct);
+    public async Task GrantCreditsAsync(int amount, CancellationToken ct) =>
+        await GrantCurrencyAsync(
+                new CurrencyKind { CurrencyType = CurrencyType.Credits },
+                amount,
+                ct
+            )
+            .ConfigureAwait(true);
 
-    public Task GrantActivityPointsAsync(int activityPointType, int amount, CancellationToken ct) =>
-        GrantCurrencyAsync(
-            new CurrencyKind
-            {
-                CurrencyType = CurrencyType.ActivityPoints,
-                ActivityPointType = activityPointType,
-            },
-            amount,
-            ct
-        );
+    public async Task GrantActivityPointsAsync(
+        int activityPointType,
+        int amount,
+        CancellationToken ct
+    ) =>
+        await GrantCurrencyAsync(
+                new CurrencyKind
+                {
+                    CurrencyType = CurrencyType.ActivityPoints,
+                    ActivityPointType = activityPointType,
+                },
+                amount,
+                ct
+            )
+            .ConfigureAwait(true);
 
     public async Task CreditBackAsync(List<WalletDebitRequest> requests, CancellationToken ct)
     {
         foreach (WalletDebitRequest request in requests)
         {
-            await GrantCurrencyAsync(request.CurrencyKind, request.Amount, ct).ConfigureAwait(true);
+            bool granted = await GrantCurrencyAsync(request.CurrencyKind, request.Amount, ct)
+                .ConfigureAwait(true);
+
+            if (!granted)
+            {
+                // A refund that does not land is money the player paid and never got back, so it is
+                // worth an error even though there is nothing sensible to do about it here.
+                _logger.LogError(
+                    "Refund of {Amount} {Currency} to player {PlayerId} did not land.",
+                    request.Amount,
+                    request.CurrencyKind.CurrencyType,
+                    this.GetPrimaryKeyLong()
+                );
+            }
         }
     }
 
-    public async Task GrantCurrencyAsync(CurrencyKind kind, int amount, CancellationToken ct)
+    public async Task<bool> GrantCurrencyAsync(CurrencyKind kind, int amount, CancellationToken ct)
     {
         if (amount <= 0)
         {
-            return;
+            return false;
         }
 
         await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
@@ -358,7 +381,15 @@ internal sealed class PlayerWalletGrain(
 
             if (entity is null)
             {
-                return;
+                _logger.LogWarning(
+                    "Wallet grant of {Amount} {Currency} for player {PlayerId} did not land: the "
+                        + "cached currency row no longer exists in the database.",
+                    amount,
+                    kind.CurrencyType,
+                    this.GetPrimaryKeyLong()
+                );
+
+                return false;
             }
         }
         else
@@ -371,7 +402,18 @@ internal sealed class PlayerWalletGrain(
 
             if (currencyType is null || !currencyType.Enabled)
             {
-                return;
+                // The most likely reason a grant does nothing: there is no currency_types row for
+                // this currency at all. Nothing above here could tell that apart from success
+                // before, so an operator granting emeralds saw a green result and no emeralds.
+                _logger.LogWarning(
+                    "Wallet grant of {Amount} {Currency} for player {PlayerId} did not land: that "
+                        + "currency has no enabled currency_types row.",
+                    amount,
+                    kind.CurrencyType,
+                    this.GetPrimaryKeyLong()
+                );
+
+                return false;
             }
 
             entity = new PlayerCurrencyEntity
@@ -421,6 +463,8 @@ internal sealed class PlayerWalletGrain(
             },
             ct
         );
+
+        return true;
     }
 
     private async Task HydrateAsync(CancellationToken ct)
