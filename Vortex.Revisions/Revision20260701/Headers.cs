@@ -158,9 +158,20 @@ internal static class MessageEvent
     public const int NavigatorSetSearchCodeViewModeMessageEvent = 3681;
     public const int NewNavigatorInitEvent = 1590;
     public const int NewNavigatorSearchEvent = 81;
-    public const int GetOccupiedTilesMessageEvent = 9111; // UNRESOLVED: collided with the AS3-verified GuideSessionResolvedMessageEvent (3831); this constant's own value had zero backing (only a wrong-side event candidate found) - flagged for a future retrace
-    public const int GetRoomEntryTileMessageEvent = 9101; // UNRESOLVED: pre-existing value collided with the AS3-verified SetChatPreferencesMessageEvent (1149); GetRoomEntryTileMessageEvent's own value was already a mismatch before this pass (best AS3 candidate: onEntryTileData @ BCFloorPlanEditor, header 2792) - flagged for a future mismatch-fix pass
-    public const int UpdateFloorPropertiesMessageEvent = 2937;
+
+    // The floor-plan editor's two opening requests, re-derived 2026-08-13. Both were placeholder
+    // values above the client's whole id range (its highest registry entry is 4101), so neither
+    // request could ever arrive and both handlers were unreachable.
+    //
+    // BCFloorPlanEditor sends exactly two body-less messages when it opens -- 3426 and 880 -- and
+    // listens for three answers: the height map, the entry tile and the occupied tiles. Which of
+    // the two ids asks for which cannot be told apart from the AS3: both composers are empty, both
+    // are sent back to back, and each answer is dispatched by its own header rather than by the
+    // request that prompted it. The pairing below is therefore an assumption, not a reading -- and
+    // a harmless one, because the editor receives both answers either way.
+    public const int GetOccupiedTilesMessageEvent = 3426;
+    public const int GetRoomEntryTileMessageEvent = 880;
+    public const int UpdateFloorPropertiesMessageEvent = 2937; // AS3-verified 2026-08-13: _composers[2937] = _SafeCls_2580, sent by BCFloorPlanEditor on save. Variable length -- one, six or seven fields
     public const int NewUserExperienceGetGiftsMessageEvent = 3490; // AS3-verified (old-revision trace): _SafeCls_2545 -> onSendGetGifts() still exists in current revision at 3490
     public const int NewUserExperienceScriptProceedEvent = 2048;
     public const int SelectInitialRoomEvent = 3267; // AS3-verified (direct read, both revisions): RoomPicker::onButtonSelect() -> connection.send(new _SafeCls_3967(roomType)) registry@3267 (old _SafeCls_3549@1176 moved)
