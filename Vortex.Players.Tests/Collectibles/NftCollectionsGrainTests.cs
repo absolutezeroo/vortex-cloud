@@ -30,6 +30,27 @@ public sealed class NftCollectionsGrainTests
     private const string Sofa = "club_sofa";
     private const string Throne = "throne";
 
+    /// <summary>
+    ///     The client parses a collection's status and never reads it, so withholding an
+    ///     unpublished collection is something only the server can do. Without this, "Draft" would
+    ///     be a word in the admin panel and nothing else.
+    /// </summary>
+    [Theory]
+    [InlineData(NftCollectionStatus.Draft)]
+    [InlineData(NftCollectionStatus.Archived)]
+    public async Task ACollectionPlayersShouldNotSee_IsNotSent(int status)
+    {
+        Harness harness = await Harness.CreateAsync(status: status).ConfigureAwait(true);
+
+        await harness.OwnAsync(Sofa).ConfigureAwait(true);
+
+        ImmutableArray<NftCollectionSnapshot> collections = await harness
+            .Grain.GetCollectionsForPlayerAsync(Collector, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        collections.Should().BeEmpty();
+    }
+
     [Fact]
     public async Task ACollectionCountsOnlyWhatThePlayerOwns()
     {
@@ -177,7 +198,10 @@ public sealed class NftCollectionsGrainTests
 
         public NftCollectionsGrain Grain { get; }
 
-        public static async Task<Harness> CreateAsync(bool withCollection = true)
+        public static async Task<Harness> CreateAsync(
+            bool withCollection = true,
+            int status = NftCollectionStatus.Visible
+        )
         {
             DbContextOptions<VortexDbContext> options =
                 new DbContextOptionsBuilder<VortexDbContext>()
@@ -199,6 +223,9 @@ public sealed class NftCollectionsGrainTests
                             CollectionCode = CollectionCode,
                             Name = "Summer",
                             BoostScore = 5,
+                            // Spelled out rather than left to default: the default is Draft, which
+                            // players never see, so every other test here depends on this.
+                            Status = status,
                         }
                     );
 

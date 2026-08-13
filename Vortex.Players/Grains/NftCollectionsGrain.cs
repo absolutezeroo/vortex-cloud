@@ -295,9 +295,14 @@ internal sealed class NftCollectionsGrain(
                 .CreateDbContextAsync(ct)
                 .ConfigureAwait(true);
 
+            // Drafts and archived collections are filtered here rather than at the send, so nothing
+            // downstream has to remember the rule. The client never reads the status it is given,
+            // so hiding an unpublished collection is only ever going to happen on this side.
             NftCollectionEntity[] collections = await dbCtx
                 .NftCollections.AsNoTracking()
-                .Where(collection => collection.DeletedAt == null)
+                .Where(collection =>
+                    collection.DeletedAt == null && collection.Status == NftCollectionStatus.Visible
+                )
                 .Include(collection => collection.Items!.Where(item => item.DeletedAt == null))
                 .OrderBy(collection => collection.Id)
                 .ToArrayAsync(ct)

@@ -54,7 +54,32 @@
 
   let collectionForm = emptyCollection();
   let itemForm = emptyItem();
-  let pickingFurniture = false;
+
+  // Which furniture picker is open, if any: the collection's two prizes and the collection item all
+  // pick from the same catalogue, so they share one modal rather than three.
+  let picking = null;
+
+  // The icons of the two prizes, remembered from the pick. They are not in `data` like the item
+  // icons are -- a prize is a classname on the collection, not a row in its item list -- so without
+  // this the admin picks a chair and sees only the word.
+  let rewardIconUrl = null;
+  let bonusIconUrl = null;
+
+  // Only the statuses mean something, and only on this side: the client parses the field and never
+  // reads it, so Draft is a collection the server withholds rather than one the client hides.
+  const STATUS_OPTIONS = [
+    { value: 0, key: 'collectibles.statusDraft' },
+    { value: 1, key: 'collectibles.statusVisible' },
+    { value: 2, key: 'collectibles.statusArchived' },
+  ];
+
+  // The client's own list, from its rarity colour table. Anything outside it still renders, but in
+  // the default grey, so typing a rarity of one's own invention is how an item ends up looking
+  // broken for no visible reason.
+  const RARITY_OPTIONS = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'legendary+'];
+
+  const statusLabel = (value) =>
+    $t(STATUS_OPTIONS.find((o) => o.value === Number(value))?.key ?? 'collectibles.statusUnknown');
 
   // The product code is a furniture classname, so it is picked from the real catalogue rather than
   // typed: a code that matches nothing is exactly what makes a collection uncompletable.
@@ -162,14 +187,27 @@
                 </td>
                 <td>{formatNumber(collection.totalScore)}</td>
                 <td>{formatNumber(collection.boostScore)}</td>
-                <td>{collection.status}</td>
+                <td>
+                  <span
+                    class="status-badge"
+                    class:status-badge--ok={Number(collection.status) === 1}
+                  >
+                    {statusLabel(collection.status)}
+                  </span>
+                </td>
                 <td>{collection.releasedAt ? formatDate(collection.releasedAt) : '—'}</td>
                 {#if canManage}
                   <td class="row-actions">
                     <button
                       type="button"
                       class="ghost-button"
-                      on:click|stopPropagation={() => (collectionForm = { ...collection })}
+                      on:click|stopPropagation={() => {
+                        collectionForm = { ...collection };
+                        // The prize icons are not in the listing, so they stay blank until the
+                        // admin picks again rather than showing the previous collection's.
+                        rewardIconUrl = null;
+                        bonusIconUrl = null;
+                      }}
                     >
                       {$t('collectibles.edit')}
                     </button>
@@ -262,7 +300,7 @@
     <section class="panel" style="margin-top: 12px;">
       <div class="panel-head"><h2>{$t('collectibles.editorTitle')}</h2></div>
       <form
-        class="inline-form"
+        class="inline-form editor-form"
         on:submit|preventDefault={() =>
           ops.ask(
             '/api/v1/operations/content/collections',
@@ -293,30 +331,83 @@
         </label>
         <label>
           {$t('collectibles.colStatus')}
-          <input type="number" bind:value={collectionForm.status} />
+          <select bind:value={collectionForm.status}>
+            {#each STATUS_OPTIONS as option}
+              <option value={option.value}>{$t(option.key)}</option>
+            {/each}
+          </select>
+          <small class="muted">{$t('collectibles.statusHelp')}</small>
         </label>
         <label>
           {$t('collectibles.rewardProduct')}
-          <input bind:value={collectionForm.rewardProductCode} />
+          <span class="cell">
+            <AssetImage src={rewardIconUrl} alt={collectionForm.rewardProductCode} size={32} />
+            <input bind:value={collectionForm.rewardProductCode} placeholder="classname" readonly />
+            <button type="button" class="ghost-button" on:click={() => (picking = 'reward')}>
+              {$t('collectibles.pickFurniture')}
+            </button>
+            {#if collectionForm.rewardProductCode}
+              <button
+                type="button"
+                class="ghost-button"
+                on:click={() => {
+                  collectionForm.rewardProductCode = '';
+                  rewardIconUrl = null;
+                }}
+              >
+                {$t('collectibles.clearPrize')}
+              </button>
+            {/if}
+          </span>
+          <small class="muted">{$t('collectibles.rewardProductHelp')}</small>
         </label>
         <label>
           {$t('collectibles.bonusProduct')}
-          <input bind:value={collectionForm.bonusProductCode} />
+          <span class="cell">
+            <AssetImage src={bonusIconUrl} alt={collectionForm.bonusProductCode} size={32} />
+            <input bind:value={collectionForm.bonusProductCode} placeholder="classname" readonly />
+            <button type="button" class="ghost-button" on:click={() => (picking = 'bonus')}>
+              {$t('collectibles.pickFurniture')}
+            </button>
+            {#if collectionForm.bonusProductCode}
+              <button
+                type="button"
+                class="ghost-button"
+                on:click={() => {
+                  collectionForm.bonusProductCode = '';
+                  bonusIconUrl = null;
+                }}
+              >
+                {$t('collectibles.clearPrize')}
+              </button>
+            {/if}
+          </span>
+          <small class="muted">{$t('collectibles.bonusProductHelp')}</small>
         </label>
-        <button type="submit" disabled={!collectionForm.collectionCode.trim() || !collectionForm.name.trim()}>
-          {collectionForm.id ? $t('collectibles.updateCollection') : $t('collectibles.addCollection')}
-        </button>
-        {#if collectionForm.id}
-          <button type="button" class="ghost-button" on:click={() => (collectionForm = emptyCollection())}>
-            {$t('collectibles.newCollection')}
+        <div class="form-actions">
+          <button type="submit" disabled={!collectionForm.collectionCode.trim() || !collectionForm.name.trim()}>
+            {collectionForm.id ? $t('collectibles.updateCollection') : $t('collectibles.addCollection')}
           </button>
-        {/if}
+          {#if collectionForm.id}
+            <button
+              type="button"
+              class="ghost-button"
+              on:click={() => {
+                collectionForm = emptyCollection();
+                rewardIconUrl = null;
+                bonusIconUrl = null;
+              }}
+            >
+              {$t('collectibles.newCollection')}
+            </button>
+          {/if}
+        </div>
       </form>
 
       {#if expanded}
         <h3 class="subhead">{$t('collectibles.itemEditorTitle')}</h3>
         <form
-          class="inline-form"
+          class="inline-form editor-form"
           on:submit|preventDefault={() =>
             ops.ask(
               '/api/v1/operations/content/collections/items',
@@ -338,15 +429,22 @@
             {$t('collectibles.colItem')}
             <span class="cell">
               <AssetImage src={itemPreviewUrl} alt={itemForm.productCode} size={32} />
-              <input bind:value={itemForm.productCode} placeholder="classname" />
-              <button type="button" class="ghost-button" on:click={() => (pickingFurniture = true)}>
+              <input bind:value={itemForm.productCode} placeholder="classname" readonly />
+              <button type="button" class="ghost-button" on:click={() => (picking = 'item')}>
                 {$t('collectibles.pickFurniture')}
               </button>
             </span>
+            <small class="muted">{$t('collectibles.itemProductHelp')}</small>
           </label>
           <label>
             {$t('collectibles.colRarity')}
-            <input bind:value={itemForm.rarity} />
+            <select bind:value={itemForm.rarity}>
+              <option value="">{$t('collectibles.rarityNone')}</option>
+              {#each RARITY_OPTIONS as rarity}
+                <option value={rarity}>{rarity}</option>
+              {/each}
+            </select>
+            <small class="muted">{$t('collectibles.rarityHelp')}</small>
           </label>
           <label>
             {$t('collectibles.colItemScore')}
@@ -356,10 +454,12 @@
             {$t('collectibles.sortOrder')}
             <input type="number" bind:value={itemForm.sortOrder} />
           </label>
-          <button type="submit" disabled={!itemForm.productCode.trim()}>{$t('collectibles.saveItem')}</button>
-          <button type="button" class="ghost-button" on:click={() => (itemForm = emptyItem())}>
-            {$t('collectibles.newItem')}
-          </button>
+          <div class="form-actions">
+            <button type="submit" disabled={!itemForm.productCode.trim()}>{$t('collectibles.saveItem')}</button>
+            <button type="button" class="ghost-button" on:click={() => (itemForm = emptyItem())}>
+              {$t('collectibles.newItem')}
+            </button>
+          </div>
         </form>
       {:else}
         <p class="muted">{$t('collectibles.pickToEditItems')}</p>
@@ -396,15 +496,24 @@
   </section>
 {/if}
 
-{#if pickingFurniture}
+{#if picking}
   <PickerModal
     kind="furniture"
     title={$t('collectibles.pickFurniture')}
     onSelect={(picked) => {
-      itemForm.productCode = picked.name;
-      pickingFurniture = false;
+      if (picking === 'reward') {
+        collectionForm.rewardProductCode = picked.name;
+        rewardIconUrl = picked.iconUrl ?? null;
+      } else if (picking === 'bonus') {
+        collectionForm.bonusProductCode = picked.name;
+        bonusIconUrl = picked.iconUrl ?? null;
+      } else {
+        itemForm.productCode = picked.name;
+      }
+
+      picking = null;
     }}
-    onClose={() => (pickingFurniture = false)}
+    onClose={() => (picking = null)}
   />
 {/if}
 
@@ -429,5 +538,44 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
+  }
+
+  /* These two editors carry a line of help under most fields, and the shared .inline-form aligns
+     its children on their bottom edge -- so hints of different lengths pushed each field to its own
+     height and the row read as broken. A grid gives every field its own cell and starts them all at
+     the top, which leaves the hints free to be as long as they need to be. */
+  .editor-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    align-items: start;
+    gap: 14px 12px;
+  }
+
+  .editor-form label {
+    gap: 6px;
+  }
+
+  .editor-form small {
+    line-height: 1.35;
+  }
+
+  /* The buttons are not a field: they take the whole width below the last row rather than sitting
+     in a cell of their own and stretching to a column's width. */
+  .editor-form .form-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* A picked value and its two buttons can outgrow a narrow column; let them wrap inside it. */
+  .editor-form .cell {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .editor-form .cell input {
+    min-width: 0;
+    flex: 1 1 110px;
   }
 </style>
