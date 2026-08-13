@@ -316,6 +316,63 @@ internal sealed partial class DashboardOperationsService
             ct
         );
 
+    public Task<OperationResult> SaveClaimAsync(
+        ClaimRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        ExecuteAsync(
+            "ops.content.claim.create",
+            actor,
+            request.Reason,
+            targetPlayerId: request.PlayerId,
+            roomId: null,
+            detail: new
+            {
+                request.PlayerId,
+                request.ProductCode,
+                request.ClaimLimit,
+            },
+            work: async c =>
+                Throw(
+                    await _contentAdmin
+                        .CreateClaimAsync(
+                            new NftClaimSpec(
+                                request.PlayerId,
+                                request.ProductCode,
+                                request.SetId,
+                                request.DefaultCollectionName,
+                                request.Collection,
+                                request.ClaimLimit,
+                                request.ValidFrom,
+                                request.ValidTo
+                            ),
+                            c
+                        )
+                        .ConfigureAwait(false)
+                ),
+            ct
+        );
+
+    public Task<OperationResult> DeleteClaimAsync(
+        DeleteClaimRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        ExecuteAsync(
+            "ops.content.claim.delete",
+            actor,
+            request.Reason,
+            targetPlayerId: null,
+            roomId: null,
+            detail: new { request.ClaimId },
+            work: async c =>
+                Throw(
+                    await _contentAdmin.DeleteClaimAsync(request.ClaimId, c).ConfigureAwait(false)
+                ),
+            ct
+        );
+
     public Task<OperationResult> DeleteCollectionAsync(
         DeleteCollectionRequest request,
         string actor,

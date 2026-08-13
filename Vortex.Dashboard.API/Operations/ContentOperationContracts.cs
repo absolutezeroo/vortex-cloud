@@ -1,3 +1,4 @@
+using System;
 using Vortex.Dashboard.API.Hosting;
 
 namespace Vortex.Dashboard.API.Operations;
@@ -88,6 +89,20 @@ public sealed record StoreOfferRequest(
 ) : IReasonedRequest;
 
 public sealed record DeleteStoreOfferRequest(int OfferId, string Reason) : IReasonedRequest;
+
+public sealed record ClaimRequest(
+    int PlayerId,
+    string ProductCode,
+    string SetId,
+    string DefaultCollectionName,
+    string Collection,
+    int ClaimLimit,
+    DateTime? ValidFrom,
+    DateTime? ValidTo,
+    string Reason
+) : IReasonedRequest;
+
+public sealed record DeleteClaimRequest(int ClaimId, string Reason) : IReasonedRequest;
 
 public sealed record CurrencyRequest(
     int CurrencyId,

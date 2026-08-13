@@ -644,6 +644,89 @@ internal sealed partial class ContentAdminService(
         }
     }
 
+    public async Task<ContentAdminResult> CreateClaimAsync(NftClaimSpec spec, CancellationToken ct)
+    {
+        if (spec.PlayerId <= 0 || string.IsNullOrWhiteSpace(spec.ProductCode))
+        {
+            return ContentAdminResult.Fail("player_and_product_required");
+        }
+
+        if (spec.ClaimLimit <= 0)
+        {
+            return ContentAdminResult.Fail("claim_limit_must_be_positive");
+        }
+
+        string productCode = spec.ProductCode.Trim();
+
+        await using VortexDbContext db = await dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        if (
+            !await db
+                .Players.AnyAsync(player => player.Id == spec.PlayerId, ct)
+                .ConfigureAwait(false)
+        )
+        {
+            return ContentAdminResult.Fail("player_not_found");
+        }
+
+        if (
+            !await db
+                .FurnitureDefinitions.AnyAsync(
+                    definition => definition.Name == productCode && definition.DeletedAt == null,
+                    ct
+                )
+                .ConfigureAwait(false)
+        )
+        {
+            // Refused here rather than at claim time: a reward naming furniture that does not exist
+            // would sit in the player's list forever and be skipped every time they claimed.
+            return ContentAdminResult.Fail("furniture_not_found");
+        }
+
+        NftClaimEntity entity = new()
+        {
+            PlayerEntityId = spec.PlayerId,
+            // The client only ever claims everything at once, so the code is an identifier rather
+            // than something an operator needs to choose.
+            ClaimCode = Guid.NewGuid().ToString("n")[..16],
+            ProductCode = productCode,
+            SetId = spec.SetId?.Trim() ?? string.Empty,
+            DefaultCollectionName = spec.DefaultCollectionName?.Trim() ?? string.Empty,
+            Collection = spec.Collection?.Trim() ?? string.Empty,
+            ClaimLimit = spec.ClaimLimit,
+            ValidFrom = spec.ValidFrom,
+            ValidTo = spec.ValidTo,
+        };
+
+        db.NftClaims.Add(entity);
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        return ContentAdminResult.Ok(entity.Id);
+    }
+
+    public async Task<ContentAdminResult> DeleteClaimAsync(int claimId, CancellationToken ct)
+    {
+        await using VortexDbContext db = await dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        NftClaimEntity? entity = await db
+            .NftClaims.FirstOrDefaultAsync(claim => claim.Id == claimId, ct)
+            .ConfigureAwait(false);
+
+        if (entity is null)
+        {
+            return ContentAdminResult.Fail("claim_not_found");
+        }
+
+        db.NftClaims.Remove(entity);
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        return ContentAdminResult.Ok(claimId);
+    }
+
     private static string? ValidateAchievement(AchievementSpec spec) =>
         string.IsNullOrWhiteSpace(spec.Name) ? "name_required"
         : string.IsNullOrWhiteSpace(spec.Category) ? "category_required"

@@ -1,3 +1,5 @@
+using System;
+
 namespace Vortex.Primitives.Content;
 
 /// <summary>Outcome of a content write, same shape as the other admin services.</summary>
@@ -71,6 +73,19 @@ public sealed record NftStoreOfferSpec(
     string Rarity,
     bool Enabled,
     int SortOrder
+);
+
+/// <summary>A Relic waiting for one player. <paramref name="SetId"/> is looked up by the client as
+/// <c>collectibles.set.&lt;setId&gt;</c>, so a value with no localization entry shows raw.</summary>
+public sealed record NftClaimSpec(
+    int PlayerId,
+    string ProductCode,
+    string SetId,
+    string DefaultCollectionName,
+    string Collection,
+    int ClaimLimit,
+    DateTime? ValidFrom,
+    DateTime? ValidTo
 );
 
 /// <summary>A currency the hotel offers.</summary>

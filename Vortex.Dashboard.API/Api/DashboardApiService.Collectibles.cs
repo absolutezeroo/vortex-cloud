@@ -172,6 +172,52 @@ internal sealed partial class DashboardApiService
                     })
                     .ToList();
 
+                // The Relics waiting to be collected. Only outstanding ones are listed: a claim the
+                // player has already taken in full is history, not a reward.
+                var claimRows = await db
+                    .NftClaims.AsNoTracking()
+                    .Where(c => c.ClaimedAmount < c.ClaimLimit)
+                    .OrderBy(c => c.Id)
+                    .Select(c => new
+                    {
+                        c.Id,
+                        c.PlayerEntityId,
+                        c.ProductCode,
+                        c.SetId,
+                        c.Collection,
+                        c.ClaimLimit,
+                        c.ClaimedAmount,
+                        c.ValidFrom,
+                        c.ValidTo,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                Dictionary<int, string> claimNames = await LoadPlayerNamesAsync(
+                        db,
+                        NormalizeIds(claimRows.Select(c => (int?)c.PlayerEntityId)),
+                        ct
+                    )
+                    .ConfigureAwait(false);
+
+                var claims = claimRows
+                    .Select(c => new
+                    {
+                        c.Id,
+                        playerId = c.PlayerEntityId,
+                        playerName = ResolvePlayerName(claimNames, c.PlayerEntityId),
+                        c.ProductCode,
+                        c.SetId,
+                        c.Collection,
+                        c.ClaimLimit,
+                        c.ClaimedAmount,
+                        remaining = c.ClaimLimit - c.ClaimedAmount,
+                        c.ValidFrom,
+                        c.ValidTo,
+                        iconUrl = BuildFurniIconUrl(c.ProductCode),
+                    })
+                    .ToList();
+
                 var collectorRows = await db
                     .PlayerCollectorStats.AsNoTracking()
                     .OrderByDescending(s => s.HighestScore)
@@ -208,6 +254,7 @@ internal sealed partial class DashboardApiService
                     },
                     collections = collectionItems,
                     storeOffers,
+                    claims,
                     topCollectors = collectorRows
                         .Select(c => new
                         {

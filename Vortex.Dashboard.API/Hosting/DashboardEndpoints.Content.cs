@@ -113,6 +113,21 @@ internal static partial class DashboardEndpoints
             (ops, body, actor, ct) => ops.DeleteStoreOfferAsync(body, actor, ct),
             body => body.OfferId > 0
         );
+        Map<ClaimRequest>(
+            app,
+            "/claims",
+            (ops, body, actor, ct) => ops.SaveClaimAsync(body, actor, ct),
+            body =>
+                body.PlayerId > 0
+                && !string.IsNullOrWhiteSpace(body.ProductCode)
+                && body.ClaimLimit > 0
+        );
+        Map<DeleteClaimRequest>(
+            app,
+            "/claims/delete",
+            (ops, body, actor, ct) => ops.DeleteClaimAsync(body, actor, ct),
+            body => body.ClaimId > 0
+        );
         Map<CurrencyRequest>(
             app,
             "/currencies",

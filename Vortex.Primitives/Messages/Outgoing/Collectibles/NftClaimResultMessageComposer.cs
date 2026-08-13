@@ -17,10 +17,12 @@ public sealed record NftClaimResultMessageComposer : IComposer
 }
 
 /// <summary>
-/// Deliberately minimal. Zero is the success code and the only one the client names; every failure
-/// code beyond "not zero" would be an invention, so this hotel sends exactly one refusal value.
+/// Zero is the success code, and the client keys everything on it: on success it announces the
+/// reward and <em>clears the list</em>. Every failure code beyond "not zero" would be an invention,
+/// so there is exactly one refusal value.
 /// </summary>
 public enum NftClaimStatus : short
 {
+    Succeeded = 0,
     Failed = 1,
 }

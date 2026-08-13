@@ -78,6 +78,10 @@ public interface IContentAdminService
 
     Task<ContentAdminResult> DeleteStoreOfferAsync(int offerId, CancellationToken ct);
 
+    Task<ContentAdminResult> CreateClaimAsync(NftClaimSpec spec, CancellationToken ct);
+
+    Task<ContentAdminResult> DeleteClaimAsync(int claimId, CancellationToken ct);
+
     Task<ContentAdminResult> CreateCurrencyAsync(CurrencySpec spec, CancellationToken ct);
 
     Task<ContentAdminResult> UpdateCurrencyAsync(
