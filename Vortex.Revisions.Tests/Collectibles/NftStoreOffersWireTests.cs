@@ -73,6 +73,7 @@ public sealed class NftStoreOffersWireTests
                             ProductTypeId = 1,
                             ItemTypeId = "s",
                             Score = 30,
+                            // Deliberately non-zero: the base struct must never write it.
                             Amount = 1,
                             PetFigureString = string.Empty,
                             FigureSetIds = ImmutableArray<int>.Empty,
@@ -93,12 +94,12 @@ public sealed class NftStoreOffersWireTests
         packet.PopInt().Should().Be(100);
         packet.PopInt().Should().Be(7);
 
-        // The nested product struct, whose amount lands between the score and the pet figure rather
-        // than at the end — the client reads it through a readAdditionalParams hook partway down.
+        // The nested product struct in its BASE shape: the client reads _SafeCls_2582 directly,
+        // whose readAdditionalParams hook is a no-op — the pet figure follows the score with no
+        // amount in between. Only the collections list's subclass reads an amount there.
         packet.PopShort().Should().Be(1);
         packet.PopString().Should().Be("s");
         packet.PopInt().Should().Be(30);
-        packet.PopInt().Should().Be(1);
         packet.PopString().Should().BeEmpty();
         packet.PopInt().Should().Be(0);
         packet.PopString().Should().Be("nft_chair");

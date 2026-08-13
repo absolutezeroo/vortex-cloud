@@ -28,8 +28,9 @@ internal class NftClaimsMessageComposerSerializer(int header)
                 .WriteString(claim.Wallet);
 
             // The claim item is the product struct plus two strings, because the client's class
-            // extends the product one: base fields first, in their own order, extras after.
-            CollectibleSerialization.WriteProductItem(packet, claim.ClaimItem.Product);
+            // extends the product one: base fields first, extras after. The BASE product struct —
+            // that class does not override the amount hook, so no amount is read anywhere in it.
+            CollectibleSerialization.WriteBaseProductItem(packet, claim.ClaimItem.Product);
 
             packet
                 .WriteString(claim.ClaimItem.SetId)

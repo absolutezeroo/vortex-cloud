@@ -27,7 +27,8 @@ public sealed record NftStoreOfferSnapshot
     [Id(5)]
     public required int MintedCount { get; init; }
 
-    /// <summary>The collectible itself, the same struct the collections list carries.</summary>
+    /// <summary>The collectible itself — the base product struct, read here without the amount
+    /// field the collections list adds to it.</summary>
     [Id(6)]
     public required CollectibleProductItemSnapshot ProductInfo { get; init; }
 }

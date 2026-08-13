@@ -100,6 +100,7 @@ public sealed class NftClaimsAndTransferWireTests
                                 ProductTypeId = 1,
                                 ItemTypeId = "s",
                                 Score = 7,
+                                // Deliberately non-zero: the base struct must never write it.
                                 Amount = 2,
                                 PetFigureString = string.Empty,
                                 FigureSetIds = ImmutableArray<int>.Empty,
@@ -128,12 +129,12 @@ public sealed class NftClaimsAndTransferWireTests
         packet.PopString().Should().Be("prod");
         packet.PopString().Should().Be("0xabc");
 
-        // The claim item is the product struct first -- the client's class extends it -- with the
-        // amount partway down, then the two strings that class adds.
+        // The claim item is the product struct first -- the client's class extends it -- then the
+        // two strings that class adds. It extends the BASE struct, whose readAdditionalParams hook
+        // is a no-op: no amount anywhere, the pet figure follows the score directly.
         packet.PopShort().Should().Be(1);
         packet.PopString().Should().Be("s");
         packet.PopInt().Should().Be(7);
-        packet.PopInt().Should().Be(2);
         packet.PopString().Should().BeEmpty();
         packet.PopInt().Should().Be(0);
         packet.PopString().Should().Be("prod");
@@ -145,15 +146,20 @@ public sealed class NftClaimsAndTransferWireTests
         packet.Remaining.Should().Be(0);
     }
 
+    /// <summary>
+    ///     Same trap as the transfer result, and this one was sprung: the client reads success as
+    ///     <c>resultCode == 0</c>, announces "claiming succeeded" and clears the list on it. The
+    ///     refusal this hotel sends has to be non-zero or every failed claim reads as a success.
+    /// </summary>
     [Fact]
-    public void ClaimResult_IsOneShort()
+    public void ClaimResult_RefusalIsNonZero()
     {
         ClientPacket packet = Body(
             typeof(NftClaimResultMessageComposer),
             new NftClaimResultMessageComposer { Status = NftClaimStatus.Failed }
         );
 
-        packet.PopShort().Should().Be(0);
+        packet.PopShort().Should().NotBe(0);
         packet.Remaining.Should().Be(0);
     }
 
@@ -171,6 +177,7 @@ public sealed class NftClaimsAndTransferWireTests
                     ProductTypeId = 3,
                     ItemTypeId = "i",
                     Score = 0,
+                    // Deliberately non-zero: the base struct must never write it.
                     Amount = 1,
                     PetFigureString = string.Empty,
                     FigureSetIds = ImmutableArray<int>.Empty,
@@ -182,8 +189,17 @@ public sealed class NftClaimsAndTransferWireTests
 
         packet.PopShort().Should().Be(1);
         packet.PopInt().Should().Be(42);
+
+        // The reward is the BASE product struct -- the client builds it directly from the base
+        // class, so no amount between the score and the pet figure.
         packet.PopShort().Should().Be(3);
         packet.PopString().Should().Be("i");
-        packet.Remaining.Should().BeGreaterThan(0);
+        packet.PopInt().Should().Be(0);
+        packet.PopString().Should().BeEmpty();
+        packet.PopInt().Should().Be(0);
+        packet.PopString().Should().Be("box_prize");
+        packet.PopString().Should().Be("common");
+
+        packet.Remaining.Should().Be(0);
     }
 }

@@ -22,9 +22,10 @@ internal class NftStoreOffersMessageComposerSerializer(int header)
                 .WriteInteger(offer.MintLimit)
                 .WriteInteger(offer.MintedCount);
 
-            // The same product struct the collections list carries, written by the one helper that
-            // knows the amount lands partway down it rather than at the end.
-            CollectibleSerialization.WriteProductItem(packet, offer.ProductInfo);
+            // The product struct in its BASE shape: the client reads this one directly through the
+            // base class, whose amount hook is a no-op — so no amount field, unlike the
+            // collections list.
+            CollectibleSerialization.WriteBaseProductItem(packet, offer.ProductInfo);
         }
     }
 }

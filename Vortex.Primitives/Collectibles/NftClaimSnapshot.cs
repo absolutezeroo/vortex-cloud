@@ -54,9 +54,10 @@ public sealed record NftClaimSnapshot
 }
 
 /// <summary>
-/// The item a claim would hand over: the ordinary collectible product struct with two extra strings
-/// after it. The client's class literally extends the product one, so the base fields come first
-/// and in their usual order — including the amount that sits partway down rather than at the end.
+/// The item a claim would hand over: the collectible product struct with two extra strings after
+/// it. The client's class literally extends the product one, so the base fields come first and in
+/// their usual order — but it extends the <em>base</em>, which reads no amount: unlike the
+/// collections list, there is no amount field anywhere in this struct.
 /// </summary>
 [GenerateSerializer, Immutable]
 public sealed record NftClaimItemSnapshot

@@ -14,6 +14,7 @@ internal class RedeemNftLootBoxStateMessageComposerSerializer(int header)
     {
         packet.WriteShort(message.State).WriteInteger(message.OpenerAvatarId);
 
-        CollectibleSerialization.WriteProductItem(packet, message.Reward);
+        // The reward is read as the BASE product struct — no amount, unlike the collections list.
+        CollectibleSerialization.WriteBaseProductItem(packet, message.Reward);
     }
 }
