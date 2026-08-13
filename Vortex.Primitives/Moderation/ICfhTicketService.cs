@@ -70,4 +70,15 @@ public interface ICfhTicketService
     /// </summary>
     /// <returns>How many were withdrawn.</returns>
     Task<int> DeletePendingForReporterAsync(int reporterPlayerId, CancellationToken ct = default);
+
+    /// <summary>
+    /// This player's own sanction history, newest first — what their client shows under "my
+    /// sanctions". Bans that have already expired are included: it is a record, not a list of what
+    /// is currently in force, and a player looking at an empty screen after serving one would read
+    /// it as never having been sanctioned.
+    /// </summary>
+    Task<ImmutableArray<PlayerSanctionSnapshot>> GetSanctionHistoryAsync(
+        int playerId,
+        CancellationToken ct = default
+    );
 }

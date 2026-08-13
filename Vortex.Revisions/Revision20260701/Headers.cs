@@ -99,7 +99,12 @@ internal static class MessageEvent
     public const int GuideSessionIsTypingMessageEvent = 296; // AS3-verified (old-revision trace): GuideSessionController::onTypingTimer() still exists in current revision at 296
     public const int GuideSessionMessageMessageEvent = 1561; // AS3-verified (direct read, both revisions): GuideSessionController::onInput() -> _SafeCls_2721
     public const int GuideSessionOnDutyUpdateMessageEvent = 958; // AS3-verified 2026-08-07: _composers[958] -> _SafeCls_3169, sent by GuideSessionController::showGuideTool() as (onDuty, tour_requests, help_requests, chat_reviews)
-    public const int GuideSessionReportMessageEvent = 9106; // UNRESOLVED: collided with the AS3-verified GuideSessionIsTypingMessageEvent (296); this constant's own value had zero backing - flagged for a future retrace
+
+    // GuideSessionReportMessageEvent is gone, not renumbered. WIN63 has no such message: the guide
+    // subsystem composes eighteen messages, every one of them already has a header here, and none
+    // of them is a report. The id it carried (9106) is not in the client's registry either, whose
+    // highest entry is 4101 -- so it was never a collision to resolve, it was a message that does
+    // not exist. Re-derived 2026-08-13.
     public const int GuideSessionRequesterCancelsMessageEvent = 2847; // AS3-verified (old-revision trace): onUserPendingEvent() still exists in current revision at 2847
     public const int GuideSessionResolvedMessageEvent = 3831; // AS3-verified (direct read, both revisions): GuideSessionController::onGuideOngoingEvent() close_link -> _SafeCls_3979
     public const int PostQuizAnswersEvent = 1387;

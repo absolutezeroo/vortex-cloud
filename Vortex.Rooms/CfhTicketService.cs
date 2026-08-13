@@ -423,4 +423,76 @@ internal sealed class CfhTicketService(IDbContextFactory<VortexDbContext> dbCont
 
         return pending.Count;
     }
+
+    public async Task<ImmutableArray<PlayerSanctionSnapshot>> GetSanctionHistoryAsync(
+        int playerId,
+        CancellationToken ct = default
+    )
+    {
+        await using VortexDbContext dbCtx = await _dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        // Bans hang off the account, not the character, so the player has to be resolved to one
+        // first. A player with no account row simply has no history rather than an error: the
+        // client's screen is "here is what you did", and it can honestly be empty.
+        int? accountId = await dbCtx
+            .Players.AsNoTracking()
+            .Where(p => p.Id == playerId)
+            .Select(p => p.PlayerAccountEntityId)
+            .FirstOrDefaultAsync(ct)
+            .ConfigureAwait(false);
+
+        if (accountId is null or 0)
+        {
+            return [];
+        }
+
+        var bans = await dbCtx
+            .AccountBans.AsNoTracking()
+            .Where(b => b.PlayerAccountEntityId == accountId)
+            .OrderByDescending(b => b.DateExpires)
+            .Select(b => new
+            {
+                b.DateExpires,
+                b.Reason,
+                b.CreatedAt,
+            })
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+
+        System.DateTime now = System.DateTime.UtcNow;
+
+        return
+        [
+            .. bans.Select(ban =>
+            {
+                bool active = ban.DateExpires > now;
+                double hoursLeft = (ban.DateExpires - now).TotalHours;
+                double duration = (ban.DateExpires - ban.CreatedAt).TotalHours;
+
+                return new PlayerSanctionSnapshot
+                {
+                    // The client only special-cases three names and falls through to a generic
+                    // timed ban for the rest, so a very long ban is reported as permanent rather
+                    // than as a number of hours nobody will ever count down.
+                    TypeName = duration >= PermanentBanHours ? "BAN_PERMANENT" : "BAN",
+                    Reason = ban.Reason ?? string.Empty,
+                    DurationHours = ToWholeHours(duration),
+                    HoursLeft = active ? ToWholeHours(hoursLeft) : 0,
+                    ExpiresAtUtc = ban.DateExpires,
+                    IsActive = active,
+                };
+            }),
+        ];
+    }
+
+    /// <summary>A ban this long is reported as permanent. Ten years, so no real sanction reaches it
+    /// by accident and the "forever" rows that use DateTime.MaxValue land on the right side.</summary>
+    private const double PermanentBanHours = 10 * 365 * 24;
+
+    private static int ToWholeHours(double hours) =>
+        hours <= 0 ? 0
+        : hours >= int.MaxValue ? int.MaxValue
+        : (int)System.Math.Ceiling(hours);
 }

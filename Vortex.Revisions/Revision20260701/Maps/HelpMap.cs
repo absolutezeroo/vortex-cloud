@@ -101,10 +101,6 @@ internal sealed class HelpMap : IRevisionMap
             new GuideSessionOnDutyUpdateMessageParser()
         );
         builder.MapParser(
-            MessageEvent.GuideSessionReportMessageEvent,
-            new GuideSessionReportMessageParser()
-        );
-        builder.MapParser(
             MessageEvent.GuideSessionRequesterCancelsMessageEvent,
             new GuideSessionRequesterCancelsMessageParser()
         );
@@ -117,6 +113,12 @@ internal sealed class HelpMap : IRevisionMap
             new PostQuizAnswersMessageParser(_protocolLimits.MaxQuizAnswers)
         );
 
+        builder.MapSerializer(
+            typeof(GuideReportingStatusMessageComposer),
+            new GuideReportingStatusMessageComposerSerializer(
+                MessageComposer.GuideReportingStatusMessageComposer
+            )
+        );
         builder.MapSerializer(
             typeof(QuizDataMessageComposer),
             new QuizDataMessageComposerSerializer(MessageComposer.QuizDataMessageComposer)
