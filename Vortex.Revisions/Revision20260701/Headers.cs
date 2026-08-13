@@ -45,9 +45,9 @@ internal static class MessageEvent
     public const int RespectPetMessageEvent = 576;
     public const int ForwardToACompetitionRoomMessageEvent = 431; // AS3-verified (old-revision trace): _SafeCls_2507 -> extraLinkClicked() still exists in current revision at 431
 
-    public const int ForwardToASubmittableRoomMessageEvent = 9001; // UNRESOLVED: collided with CommunityGoalVoteMessageEvent after the WIN63-202607011411 client header remap; ForwardToASubmittableRoomMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
+    public const int ForwardToASubmittableRoomMessageEvent = 1917; // AS3-verified 2026-08-13: _composers[1917] = _SafeCls_3253, sent with no arguments by the landing view's competition widget right after reenableRoomCompetitionWindow(). Corroborated by the named win63_version tree, where the class is ForwardToASubmittableRoomMessageComposer and its body is likewise empty. Was 9001, an invented value above the client's whole id range
 
-    public const int ForwardToRandomCompetitionRoomMessageEvent = 9002; // UNRESOLVED: collided with RoomsWhereMyFriendsAreSearchMessageEvent after the WIN63-202607011411 client header remap; ForwardToRandomCompetitionRoomMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
+    public const int ForwardToRandomCompetitionRoomMessageEvent = 3109; // AS3-verified 2026-08-13: _composers[3109] = _SafeCls_3352, sent with the goal code by the landing view element that tracks "click_gotocompetitionroom". The named win63_version tree agrees on the shape -- its ctor takes one String. Was 9002, invented
 
     public const int GetCurrentTimingCodeMessageEvent = 1503;
     public const int GetIsUserPartOfCompetitionMessageEvent = 2732; // UNRESOLVED: no distinct AS3 backing found - RoomCompetitionController::sendRoomCompetitionInit()/onRoomEnter() send the only composer for this check (_SafeCls_3605/_SafeCls_2954 @1477), already correctly held by RoomCompetitionInitMessageEvent; likely a duplicate Vortex constant with no separate real message
@@ -181,7 +181,7 @@ internal static class MessageEvent
     public const int GetBotCommandConfigurationDataEvent = 2311; // AS3-verified (direct read, both revisions): BotSkillConfigurationViewBase::open() -> _SafeCls_3415
     public const int GetBadgePointLimitsEvent = 981; // UNRESOLVED: not found - only the incoming response handler (onBadgePointLimits @ inventory handler, receiving _SafeCls_3204) was located; the client-side request trigger (if any) could not be found in either official AS3 revision
     public const int GetBadgesEvent = 770;
-    public const int GetIsBadgeRequestFulfilledEvent = 9112; // UNRESOLVED: collided with the AS3-verified ChatReviewGuideDecidesOnOfferMessageEvent (2545); this constant's own best AS3 candidate is 3258 (HabboLandingView::requestBadge()) but that value is already occupied - flagged for a future retrace
+    public const int GetIsBadgeRequestFulfilledEvent = 2236; // AS3-verified 2026-08-13: _composers[2236] = _SafeCls_3765, sent with the badge request code by the landing view's badge widget. 2236 is also an AvatarEffectExpired *composer* -- the two directions are separate id spaces, so that is not a collision. Was 9112, invented
     public const int RequestABadgeEvent = 3258;
     public const int SetActivatedBadgesEvent = 2764;
     public const int ResetUnseenItemIdsEvent = 3771; // AS3-verified (old-revision trace): _SafeCls_2563 -> sendResetItemsMessage() still exists in current revision at 3771

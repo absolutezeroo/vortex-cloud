@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Competition;
 
 internal class ForwardToRandomCompetitionRoomMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new ForwardToRandomCompetitionRoomMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new ForwardToRandomCompetitionRoomMessage { GoalCode = packet.PopString() };
 }
