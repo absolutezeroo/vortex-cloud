@@ -1,3 +1,4 @@
+using Vortex.Primitives.Collectibles;
 using Vortex.Primitives.Messages.Outgoing.Collectibles;
 using Vortex.Primitives.Packets;
 
@@ -11,6 +12,15 @@ internal class CollectibleMintTokenOffersMessageComposerSerializer(int header)
         CollectibleMintTokenOffersMessageComposer message
     )
     {
-        //
+        packet.WriteInteger(message.Offers.Length);
+
+        foreach (MintTokenOfferSnapshot offer in message.Offers)
+        {
+            packet
+                .WriteInteger(offer.OfferId)
+                .WriteString(offer.ProductCode)
+                .WriteInteger(offer.SilverPrice)
+                .WriteInteger(offer.AmountTokens);
+        }
     }
 }

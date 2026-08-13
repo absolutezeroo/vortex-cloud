@@ -9,25 +9,22 @@ using Vortex.Primitives.Messages.Outgoing.Collectibles;
 namespace Vortex.PacketHandlers.Collectibles;
 
 /// <summary>
-/// Mint-token bundles on sale. None.
+/// The claims waiting on a wallet. There are none and there cannot be: a claim is a token minted
+/// against a chain this hotel does not have.
 /// </summary>
 /// <remarks>
-/// Answering matters more than the answer. This handler used to return without sending anything,
-/// and the collectibles interface waits on every one of these -- so silence left it loading rather
-/// than showing that the feature is off.
+/// The empty list is the point. The request used to have no parser at all, so it was dropped before
+/// reaching any handler and the claims tab waited on an answer that was never coming.
 /// </remarks>
-public class GetMintTokenOffersMessageHandler : IMessageHandler<GetMintTokenOffersMessage>
+public class GetNftClaimsMessageHandler : IMessageHandler<GetNftClaimsMessage>
 {
     public async ValueTask HandleAsync(
-        GetMintTokenOffersMessage message,
+        GetNftClaimsMessage message,
         MessageContext ctx,
         CancellationToken ct
     ) =>
         await ctx.SendComposerAsync(
-                new CollectibleMintTokenOffersMessageComposer
-                {
-                    Offers = ImmutableArray<MintTokenOfferSnapshot>.Empty,
-                },
+                new NftClaimsMessageComposer { Claims = ImmutableArray<NftClaimSnapshot>.Empty },
                 ct
             )
             .ConfigureAwait(false);

@@ -494,7 +494,8 @@ internal static class MessageEvent
     public const int MintItemMessageEvent = 2815; // AS3-verified (old-revision trace): _SafeCls_3208 -> onCollectConfirmDialogConfirm() still exists in current revision at 2815
     public const int NftCollectiblesClaimBonusItemMessageEvent = 1977; // AS3-verified (direct read, both revisions): CollectionView::onClickClaim() PREVIEW_STATUS_BONUS -> _SafeCls_3818
     public const int NftCollectiblesClaimRewardItemMessageEvent = 1166; // AS3-verified (direct read, both revisions): CollectionView::onClickClaim() PREVIEW_STATUS_REWARD -> _SafeCls_3758
-    public const int NftTransferAssetsMessageEvent = 1646; // AS3-verified (ghost fix): CollectiblesModel::requestNftAssets()
+    public const int NftTransferAssetsMessageEvent = 1646; // AS3-verified (ghost fix): CollectiblesModel::requestNftAssets(). Misnamed -- it only ASKS for the asset list; the transfer itself is TransferNftAssetsMessageEvent below
+    public const int TransferNftAssetsMessageEvent = 1749; // AS3-verified 2026-08-13: _composers[1749] = _SafeCls_2756, sent by TransferNftsTab with the selected wallet. Corroborated twice -- the modern client maps 1749 to NftTransferAssetsComposer, and the named win63_version tree's ctor takes one String. Had no header at all, so the confirm button did nothing
     public const int PurchaseMintTokenMessageEvent = 67; // AS3-verified (old-revision trace): _SafeCls_2316 -> purchaseMintTokens() still exists in current revision at 67
     public const int PeerUsersClassificationMessageEvent = 628; // AS3-verified (ghost fix): RoomSession::sendPeerUsersClassificationMessage()
     public const int RoomUsersClassificationMessageEvent = 157; // AS3-verified (ghost fix): RoomSession::sendRoomUsersClassificationMessage()

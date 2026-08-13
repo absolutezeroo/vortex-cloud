@@ -1,28 +1,28 @@
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
+using Vortex.Primitives.Collectibles;
 using Vortex.Primitives.Messages.Incoming.Collectibles;
+using Vortex.Primitives.Messages.Outgoing.Collectibles;
 
 namespace Vortex.PacketHandlers.Collectibles;
 
 /// <summary>
-/// Buying a mint token.
-/// <para>
-/// Deliberately unanswered: minting is a blockchain errand and this hotel has no chain, no wallet
-/// and no token contract. The server says so once, through
-/// <c>GetCollectibleMintingEnabled</c>, and the client puts the whole minting half of the
-/// interface away — so anything still arriving here is a stray click rather than a question owed
-/// an answer. Inventing a reply would draw an interface backed by nothing.
-/// </para>
+/// Buying mint tokens. Nothing is sold, so the balance comes back unchanged -- the same composer the balance query uses, which is what the view re-reads.
 /// </summary>
+/// <remarks>
+/// Answering matters more than the answer. This handler used to return without sending anything,
+/// and the collectibles interface waits on every one of these -- so silence left it loading rather
+/// than showing that the feature is off.
+/// </remarks>
 public class PurchaseMintTokenMessageHandler : IMessageHandler<PurchaseMintTokenMessage>
 {
     public async ValueTask HandleAsync(
         PurchaseMintTokenMessage message,
         MessageContext ctx,
         CancellationToken ct
-    )
-    {
-        await ValueTask.CompletedTask.ConfigureAwait(false);
-    }
+    ) =>
+        await ctx.SendComposerAsync(new CollectibleMintTokenCountMessageComposer { Count = 0 }, ct)
+            .ConfigureAwait(false);
 }

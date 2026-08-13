@@ -3,11 +3,11 @@ using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Collectibles;
 
-internal class NftTransferFeeMessageComposerSerializer(int header)
-    : AbstractSerializer<NftTransferFeeMessageComposer>(header)
+internal class NftClaimResultMessageComposerSerializer(int header)
+    : AbstractSerializer<NftClaimResultMessageComposer>(header)
 {
     protected override void Serialize(
         IServerPacket packet,
-        NftTransferFeeMessageComposer message
-    ) => packet.WriteInteger(message.Fee);
+        NftClaimResultMessageComposer message
+    ) => packet.WriteShort((short)message.Status);
 }

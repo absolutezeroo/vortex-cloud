@@ -9,8 +9,9 @@ internal class NftBonusItemClaimResultMessageComposerSerializer(int header)
     protected override void Serialize(
         IServerPacket packet,
         NftBonusItemClaimResultMessageComposer message
-    )
-    {
-        //
-    }
+    ) =>
+        packet
+            .WriteString(message.CollectionId)
+            .WriteString(message.WalletAddress)
+            .WriteBoolean(message.Success);
 }

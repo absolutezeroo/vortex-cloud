@@ -24,6 +24,48 @@ internal sealed class CollectiblesMap : IRevisionMap
             new GetCollectibleMintTokensMessageParser()
         );
         builder.MapParser(
+            MessageEvent.GetNftStoreOffersMessageEvent,
+            new GetNftStoreOffersMessageParser()
+        );
+        builder.MapParser(MessageEvent.GetNftClaimsMessageEvent, new GetNftClaimsMessageParser());
+        builder.MapParser(
+            MessageEvent.ClaimNftClaimsMessageEvent,
+            new ClaimNftClaimsMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.TransferNftAssetsMessageEvent,
+            new TransferNftAssetsMessageParser()
+        );
+
+        builder.MapSerializer(
+            typeof(NftStoreOffersMessageComposer),
+            new NftStoreOffersMessageComposerSerializer(
+                MessageComposer.NftStoreOffersMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(NftClaimsMessageComposer),
+            new NftClaimsMessageComposerSerializer(MessageComposer.NftClaimsMessageComposer)
+        );
+        builder.MapSerializer(
+            typeof(NftClaimResultMessageComposer),
+            new NftClaimResultMessageComposerSerializer(
+                MessageComposer.NftClaimResultMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(RedeemNftLootBoxStateMessageComposer),
+            new RedeemNftLootBoxStateMessageComposerSerializer(
+                MessageComposer.RedeemNftLootBoxStateMessageComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(RedeemNftLootBoxResultMessageComposer),
+            new RedeemNftLootBoxResultMessageComposerSerializer(
+                MessageComposer.RedeemNftLootBoxResultMessageComposer
+            )
+        );
+        builder.MapParser(
             MessageEvent.GetCollectibleWalletAddressesMessageEvent,
             new GetCollectibleWalletAddressesMessageParser()
         );

@@ -3,11 +3,11 @@ using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Collectibles;
 
-internal class CollectibleMintableItemResultMessageComposerSerializer(int header)
-    : AbstractSerializer<CollectibleMintableItemResultMessageComposer>(header)
+internal class RedeemNftLootBoxResultMessageComposerSerializer(int header)
+    : AbstractSerializer<RedeemNftLootBoxResultMessageComposer>(header)
 {
     protected override void Serialize(
         IServerPacket packet,
-        CollectibleMintableItemResultMessageComposer message
+        RedeemNftLootBoxResultMessageComposer message
     ) => packet.WriteShort(message.Status);
 }

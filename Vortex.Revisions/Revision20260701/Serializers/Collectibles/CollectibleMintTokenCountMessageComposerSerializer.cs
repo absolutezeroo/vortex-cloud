@@ -9,8 +9,5 @@ internal class CollectibleMintTokenCountMessageComposerSerializer(int header)
     protected override void Serialize(
         IServerPacket packet,
         CollectibleMintTokenCountMessageComposer message
-    )
-    {
-        //
-    }
+    ) => packet.WriteInteger(message.Count);
 }
