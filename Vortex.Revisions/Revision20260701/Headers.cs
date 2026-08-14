@@ -649,9 +649,9 @@ internal static class MessageComposer
     public const int TreasureHuntFailMessageComposer = 3822;
     public const int TreasureHuntFirstWinnerMessageComposer = 1232;
     public const int TreasureHuntUpdateMessageComposer = 377;
-    public const int RecyclerFinishedMessageComposer = 281;
-    public const int RecyclerPrizesMessageComposer = 3783;
-    public const int RecyclerStatusMessageComposer = 1919;
+    public const int RecyclerFinishedMessageComposer = 3617; // AS3-verified (registry): _SafeCls_2046[3617] = _SafeCls_2078 (parser _SafeCls_2299 -> recyclerFinishedStatus:int, prizeId:int). Was 281, an id with no registry entry at all.
+    public const int RecyclerPrizesMessageComposer = 3367; // AS3-verified (registry): _SafeCls_2046[3367] = _SafeCls_2027 (parser _SafeCls_2243 -> prizeLevels:Vector.<PrizeLevelMessageData>). Was 3783, an id with no registry entry at all.
+    public const int RecyclerStatusMessageComposer = 2166; // AS3-verified (registry): _SafeCls_2046[2166] = _SafeCls_2004 (parser _SafeCls_2165 -> recyclerStatus:int, recyclerTimeoutSeconds:int). Was 1919, an id with no registry entry at all.
     public const int WiredEnvironmentMessageComposer = 2827; // AS3-verified (direct read): _SafeCls_3319 (parser _SafeCls_3496) -> hasClickUserWired:bool, enabledAchievements:Vector.<String>; room-wide push on entry/config-change, no request/response pair. Corrects a collision (was 1186). Not yet wired to a sender - flagged in the plan as a loose end, not built this pass.
     #region Outgoing
 
