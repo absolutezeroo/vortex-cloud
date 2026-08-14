@@ -90,6 +90,33 @@ public sealed record StoreOfferRequest(
 
 public sealed record DeleteStoreOfferRequest(int OfferId, string Reason) : IReasonedRequest;
 
+public sealed record MintableItemTypeRequest(
+    int TypeId,
+    string ProductCode,
+    int StampPrice,
+    DateTime StartsAt,
+    DateTime EndsAt,
+    bool RegionLocked,
+    bool LimitedEdition,
+    bool Enabled,
+    int SortOrder,
+    string Reason
+) : IReasonedRequest;
+
+public sealed record DeleteMintableItemTypeRequest(int TypeId, string Reason) : IReasonedRequest;
+
+public sealed record MintTokenOfferRequest(
+    int OfferId,
+    string ProductCode,
+    int SilverPrice,
+    int AmountTokens,
+    bool Enabled,
+    int SortOrder,
+    string Reason
+) : IReasonedRequest;
+
+public sealed record DeleteMintTokenOfferRequest(int OfferId, string Reason) : IReasonedRequest;
+
 public sealed record ClaimRequest(
     int PlayerId,
     string ProductCode,

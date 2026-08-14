@@ -21,7 +21,7 @@
   import PickerModal from '../components/PickerModal.svelte';
   import StatCard from '../components/StatCard.svelte';
   import Tabs from '../components/Tabs.svelte';
-  import { Gem, Boxes, TriangleAlert, Trophy, Store, Gift } from '@lucide/svelte';
+  import { Gem, Boxes, TriangleAlert, Trophy, Store, Gift, Hammer, Ticket, Sparkles } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
   // Three jobs on one page -- the collections, the shop and the collector standings -- and stacking
@@ -114,6 +114,57 @@
   let claimForm = emptyClaim();
   let claimIconUrl = null;
 
+  // A window is not optional: the client greys the convert button out once the end date has passed,
+  // and says nothing about why. A new type therefore opens now and runs for a year rather than
+  // starting empty and being saved unusable.
+  const isoLocal = (date) => new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 16);
+
+  const emptyMintable = () => {
+    const now = new Date();
+    const inAYear = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
+
+    return {
+      id: 0,
+      productCode: '',
+      stampPrice: 1,
+      startsAt: isoLocal(now),
+      endsAt: isoLocal(inAYear),
+      regionLocked: false,
+      limitedEdition: false,
+      enabled: true,
+      sortOrder: 0,
+    };
+  };
+
+  let mintableForm = emptyMintable();
+
+  const emptyTokenOffer = () => ({
+    id: 0,
+    productCode: '',
+    silverPrice: 10,
+    amountTokens: 1,
+    enabled: true,
+    sortOrder: 0,
+  });
+
+  let tokenOfferForm = emptyTokenOffer();
+
+  $: mintableIconUrl =
+    (data?.mintableTypes || []).find((t) => t.productCode === mintableForm.productCode)?.iconUrl ??
+    null;
+
+  // The editors bind to datetime-local inputs, which speak local time with no zone; the API takes
+  // instants. A row loaded for editing therefore has to come back the other way round.
+  const editMintable = (row) => {
+    mintableForm = {
+      ...row,
+      startsAt: isoLocal(new Date(row.startsAt)),
+      endsAt: isoLocal(new Date(row.endsAt)),
+    };
+  };
+
   // The shop's own icon, looked up in the listing: unlike the two prizes, an offer is a row, so its
   // image is already on the page once it has been saved.
   $: offerIconUrl =
@@ -188,6 +239,15 @@
     <StatCard label={$t('collectibles.trackedPlayers')} value={formatNumber(data.totals.trackedPlayers)}>
       <Trophy slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
     </StatCard>
+    <StatCard label={$t('collectibles.mintableOpen')} value={formatNumber(data.totals.mintableTypesOpen)}>
+      <Hammer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('collectibles.mintedRelics')} value={formatNumber(data.totals.mintedRelics)}>
+      <Sparkles slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
+    <StatCard label={$t('collectibles.stampsHeld')} value={formatNumber(data.totals.stampsHeld)}>
+      <Ticket slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+    </StatCard>
   </div>
 
   <Tabs
@@ -196,6 +256,9 @@
     tabs={[
       { id: 'collections', label: $t('collectibles.tabCollections'), icon: Gem, count: (data.collections || []).length },
       { id: 'shop', label: $t('collectibles.tabShop'), icon: Store, count: (data.storeOffers || []).length },
+      { id: 'minting', label: $t('collectibles.tabMinting'), icon: Hammer, count: (data.mintableTypes || []).length },
+      { id: 'stamps', label: $t('collectibles.tabStamps'), icon: Ticket, count: (data.tokenOffers || []).length },
+      { id: 'relics', label: $t('collectibles.tabRelics'), icon: Sparkles, count: (data.assets || []).length },
       { id: 'claims', label: $t('collectibles.tabClaims'), icon: Gift, count: (data.claims || []).length },
       { id: 'collectors', label: $t('collectibles.tabCollectors'), icon: Trophy, count: (data.topCollectors || []).length },
     ]}
@@ -699,6 +762,312 @@
   </section>
   {/if}
 
+  {#if tab === 'minting'}
+  <section class="panel" style="margin-top: 12px;">
+    <div class="panel-head"><h2>{$t('collectibles.mintingTitle')}</h2></div>
+    <p class="muted">{$t('collectibles.mintingDescription')}</p>
+    {#if (data.mintableTypes || []).length === 0}
+      <EmptyState message={$t('collectibles.noMintableTypes')} />
+    {:else}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>{$t('collectibles.colItem')}</th>
+              <th>{$t('collectibles.colStampPrice')}</th>
+              <th>{$t('collectibles.colWindow')}</th>
+              <th>{$t('collectibles.colOnSale')}</th>
+              {#if canManage}<th></th>{/if}
+            </tr>
+          </thead>
+          <tbody>
+            {#each data.mintableTypes as type}
+              <tr>
+                <td>
+                  <span class="cell">
+                    <AssetImage src={type.iconUrl} alt={type.productCode} size={32} />
+                    <code>{type.productCode}</code>
+                    {#if !type.isNft}
+                      <span class="status-badge status-badge--bad" title={$t('collectibles.notNftHelp')}>
+                        {$t('collectibles.notNft')}
+                      </span>
+                    {/if}
+                    {#if type.limitedEdition}
+                      <span class="status-badge">{$t('collectibles.limitedEdition')}</span>
+                    {/if}
+                  </span>
+                </td>
+                <td>{formatNumber(type.stampPrice)}</td>
+                <td>{formatDate(type.startsAt)} → {formatDate(type.endsAt)}</td>
+                <td>
+                  {#if !type.resolved}
+                    <span class="status-badge status-badge--bad">{$t('collectibles.missingFurni')}</span>
+                  {:else if !type.enabled}
+                    <span class="status-badge">{$t('collectibles.offerDisabled')}</span>
+                  {:else if type.expired}
+                    <span class="status-badge status-badge--bad">{$t('collectibles.windowClosed')}</span>
+                  {:else if !type.open}
+                    <span class="status-badge">{$t('collectibles.windowNotOpen')}</span>
+                  {:else}
+                    <span class="status-badge status-badge--ok">{$t('collectibles.mintable')}</span>
+                  {/if}
+                </td>
+                {#if canManage}
+                  <td class="row-actions">
+                    <button type="button" class="ghost-button" on:click={() => editMintable(type)}>
+                      {$t('collectibles.edit')}
+                    </button>
+                    <button
+                      type="button"
+                      class="ghost-button danger"
+                      on:click={() =>
+                        ops.ask(
+                          '/api/v1/operations/content/mintable-types/delete',
+                          { typeId: type.id },
+                          $t('collectibles.deleteMintable'),
+                          $t('collectibles.deleteMintableSummary', { code: type.productCode })
+                        )}
+                    >
+                      {$t('collectibles.delete')}
+                    </button>
+                  </td>
+                {/if}
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    {/if}
+
+    {#if canManage}
+      <h3 class="subhead">{$t('collectibles.mintableEditorTitle')}</h3>
+      <form
+        class="inline-form editor-form"
+        on:submit|preventDefault={() =>
+          ops.ask(
+            '/api/v1/operations/content/mintable-types',
+            {
+              typeId: Number(mintableForm.id) || 0,
+              productCode: mintableForm.productCode,
+              stampPrice: Number(mintableForm.stampPrice) || 0,
+              startsAt: new Date(mintableForm.startsAt).toISOString(),
+              endsAt: new Date(mintableForm.endsAt).toISOString(),
+              regionLocked: Boolean(mintableForm.regionLocked),
+              limitedEdition: Boolean(mintableForm.limitedEdition),
+              enabled: Boolean(mintableForm.enabled),
+              sortOrder: Number(mintableForm.sortOrder) || 0,
+            },
+            mintableForm.id ? $t('collectibles.updateMintable') : $t('collectibles.addMintable'),
+            $t('collectibles.saveMintableSummary', { code: mintableForm.productCode })
+          )}
+      >
+        <label>
+          {$t('collectibles.colItem')}
+          <span class="cell">
+            <AssetImage src={mintableIconUrl} alt={mintableForm.productCode} size={32} />
+            <input bind:value={mintableForm.productCode} placeholder="classname" readonly />
+            <button type="button" class="ghost-button" on:click={() => (picking = 'mintable')}>
+              {$t('collectibles.pickFurniture')}
+            </button>
+          </span>
+          <small class="muted">{$t('collectibles.mintableProductHelp')}</small>
+        </label>
+        <label>
+          {$t('collectibles.colStampPrice')}
+          <input type="number" min="0" bind:value={mintableForm.stampPrice} />
+          <small class="muted">{$t('collectibles.stampPriceHelp')}</small>
+        </label>
+        <label>
+          {$t('collectibles.opensAt')}
+          <input type="datetime-local" bind:value={mintableForm.startsAt} />
+        </label>
+        <label>
+          {$t('collectibles.closesAt')}
+          <input type="datetime-local" bind:value={mintableForm.endsAt} />
+          <small class="muted">{$t('collectibles.windowHelp')}</small>
+        </label>
+        <label>
+          {$t('collectibles.sortOrder')}
+          <input type="number" bind:value={mintableForm.sortOrder} />
+        </label>
+        <label class="check">
+          <input type="checkbox" bind:checked={mintableForm.limitedEdition} />
+          {$t('collectibles.limitedEdition')}
+        </label>
+        <label class="check">
+          <input type="checkbox" bind:checked={mintableForm.regionLocked} />
+          {$t('collectibles.regionLocked')}
+        </label>
+        <label class="check">
+          <input type="checkbox" bind:checked={mintableForm.enabled} />
+          {$t('collectibles.offerEnabled')}
+        </label>
+        <div class="form-actions">
+          <button type="submit" disabled={!mintableForm.productCode.trim()}>
+            {mintableForm.id ? $t('collectibles.updateMintable') : $t('collectibles.addMintable')}
+          </button>
+          <button type="button" class="ghost-button" on:click={() => (mintableForm = emptyMintable())}>
+            {$t('collectibles.newMintable')}
+          </button>
+        </div>
+      </form>
+    {/if}
+  </section>
+  {/if}
+
+  {#if tab === 'stamps'}
+  <section class="panel" style="margin-top: 12px;">
+    <div class="panel-head"><h2>{$t('collectibles.stampsTitle')}</h2></div>
+    <p class="muted">{$t('collectibles.stampsDescription')}</p>
+    {#if (data.tokenOffers || []).length === 0}
+      <EmptyState message={$t('collectibles.noTokenOffers')} />
+    {:else}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>{$t('collectibles.colBundle')}</th>
+              <th>{$t('collectibles.colStamps')}</th>
+              <th>{$t('collectibles.colSilverPrice')}</th>
+              <th>{$t('collectibles.colOnSale')}</th>
+              {#if canManage}<th></th>{/if}
+            </tr>
+          </thead>
+          <tbody>
+            {#each data.tokenOffers as offer}
+              <tr>
+                <td><code>{offer.productCode}</code></td>
+                <td>{formatNumber(offer.amountTokens)}</td>
+                <td>{formatNumber(offer.silverPrice)}</td>
+                <td>
+                  {#if offer.enabled}
+                    <span class="status-badge status-badge--ok">{$t('collectibles.onSale')}</span>
+                  {:else}
+                    <span class="status-badge">{$t('collectibles.offerDisabled')}</span>
+                  {/if}
+                </td>
+                {#if canManage}
+                  <td class="row-actions">
+                    <button type="button" class="ghost-button" on:click={() => (tokenOfferForm = { ...offer })}>
+                      {$t('collectibles.edit')}
+                    </button>
+                    <button
+                      type="button"
+                      class="ghost-button danger"
+                      on:click={() =>
+                        ops.ask(
+                          '/api/v1/operations/content/mint-token-offers/delete',
+                          { offerId: offer.id },
+                          $t('collectibles.deleteTokenOffer'),
+                          $t('collectibles.deleteTokenOfferSummary', { code: offer.productCode })
+                        )}
+                    >
+                      {$t('collectibles.delete')}
+                    </button>
+                  </td>
+                {/if}
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    {/if}
+
+    {#if canManage}
+      <h3 class="subhead">{$t('collectibles.tokenOfferEditorTitle')}</h3>
+      <form
+        class="inline-form editor-form"
+        on:submit|preventDefault={() =>
+          ops.ask(
+            '/api/v1/operations/content/mint-token-offers',
+            {
+              offerId: Number(tokenOfferForm.id) || 0,
+              productCode: tokenOfferForm.productCode,
+              silverPrice: Number(tokenOfferForm.silverPrice) || 0,
+              amountTokens: Number(tokenOfferForm.amountTokens) || 0,
+              enabled: Boolean(tokenOfferForm.enabled),
+              sortOrder: Number(tokenOfferForm.sortOrder) || 0,
+            },
+            tokenOfferForm.id ? $t('collectibles.updateTokenOffer') : $t('collectibles.addTokenOffer'),
+            $t('collectibles.saveTokenOfferSummary', { code: tokenOfferForm.productCode })
+          )}
+      >
+        <label>
+          {$t('collectibles.colBundle')}
+          <input bind:value={tokenOfferForm.productCode} placeholder="stamps_10" />
+          <small class="muted">{$t('collectibles.tokenProductHelp')}</small>
+        </label>
+        <label>
+          {$t('collectibles.colStamps')}
+          <input type="number" min="1" bind:value={tokenOfferForm.amountTokens} />
+          <small class="muted">{$t('collectibles.amountTokensHelp')}</small>
+        </label>
+        <label>
+          {$t('collectibles.colSilverPrice')}
+          <input type="number" min="0" bind:value={tokenOfferForm.silverPrice} />
+          <small class="muted">{$t('collectibles.silverPriceHelp')}</small>
+        </label>
+        <label>
+          {$t('collectibles.sortOrder')}
+          <input type="number" bind:value={tokenOfferForm.sortOrder} />
+        </label>
+        <label class="check">
+          <input type="checkbox" bind:checked={tokenOfferForm.enabled} />
+          {$t('collectibles.offerEnabled')}
+        </label>
+        <div class="form-actions">
+          <button type="submit" disabled={!tokenOfferForm.productCode.trim()}>
+            {tokenOfferForm.id ? $t('collectibles.updateTokenOffer') : $t('collectibles.addTokenOffer')}
+          </button>
+          <button type="button" class="ghost-button" on:click={() => (tokenOfferForm = emptyTokenOffer())}>
+            {$t('collectibles.newTokenOffer')}
+          </button>
+        </div>
+      </form>
+    {/if}
+  </section>
+  {/if}
+
+  {#if tab === 'relics'}
+  <section class="panel" style="margin-top: 12px;">
+    <div class="panel-head"><h2>{$t('collectibles.relicsTitle')}</h2></div>
+    <p class="muted">{$t('collectibles.relicsDescription')}</p>
+    {#if (data.assets || []).length === 0}
+      <EmptyState message={$t('collectibles.noRelics')} />
+    {:else}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>{$t('collectibles.colPlayer')}</th>
+              <th>{$t('collectibles.colItem')}</th>
+              <th>{$t('collectibles.colStampPrice')}</th>
+              <th>{$t('collectibles.colMintedAt')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each data.assets as asset}
+              <tr>
+                <td>
+                  <EntityLink label={asset.playerName} on:click={() => openPlayer(asset.playerId)} />
+                </td>
+                <td>
+                  <span class="cell">
+                    <AssetImage src={asset.iconUrl} alt={asset.productCode} size={32} />
+                    <code>{asset.productCode}</code>
+                  </span>
+                </td>
+                <td>{formatNumber(asset.stampCost)}</td>
+                <td>{formatDate(asset.mintedAt)}</td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    {/if}
+  </section>
+  {/if}
+
   {#if tab === 'claims'}
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('collectibles.claimsTitle')}</h2></div>
@@ -891,6 +1260,8 @@
         bonusIconUrl = picked.iconUrl ?? null;
       } else if (picking === 'offer') {
         offerForm.productCode = picked.name;
+      } else if (picking === 'mintable') {
+        mintableForm.productCode = picked.name;
       } else if (picking === 'claim') {
         claimForm.productCode = picked.name;
         claimIconUrl = picked.iconUrl ?? null;

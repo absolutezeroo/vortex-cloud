@@ -1,34 +1,38 @@
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Collectibles;
 using Vortex.Primitives.Messages.Incoming.Collectibles;
 using Vortex.Primitives.Messages.Outgoing.Collectibles;
+using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Collectibles;
 
 /// <summary>
-/// Mint-token bundles on sale. None.
+/// The stamp bundles on sale, which fill the minting tab's dropdown.
 /// </summary>
-/// <remarks>
-/// Answering matters more than the answer. This handler used to return without sending anything,
-/// and the collectibles interface waits on every one of these -- so silence left it loading rather
-/// than showing that the feature is off.
-/// </remarks>
-public class GetMintTokenOffersMessageHandler : IMessageHandler<GetMintTokenOffersMessage>
+public class GetMintTokenOffersMessageHandler(IGrainFactory grainFactory)
+    : IMessageHandler<GetMintTokenOffersMessage>
 {
+    private readonly IGrainFactory _grainFactory = grainFactory;
+
     public async ValueTask HandleAsync(
         GetMintTokenOffersMessage message,
         MessageContext ctx,
         CancellationToken ct
-    ) =>
+    )
+    {
+        ImmutableArray<MintTokenOfferSnapshot> offers = await _grainFactory
+            .GetNftMintingGrain()
+            .GetTokenOffersAsync(ct)
+            .ConfigureAwait(false);
+
         await ctx.SendComposerAsync(
-                new CollectibleMintTokenOffersMessageComposer
-                {
-                    Offers = ImmutableArray<MintTokenOfferSnapshot>.Empty,
-                },
+                new CollectibleMintTokenOffersMessageComposer { Offers = offers },
                 ct
             )
             .ConfigureAwait(false);
+    }
 }

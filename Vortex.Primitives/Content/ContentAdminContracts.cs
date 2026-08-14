@@ -75,6 +75,36 @@ public sealed record NftStoreOfferSpec(
     int SortOrder
 );
 
+/// <summary>
+/// One kind of furniture players may convert into a Relic. <paramref name="ProductCode"/> must name
+/// a real classname: the client counts the player's copies by the definition's sprite id, and a row
+/// naming nothing is left out of the list entirely.
+/// </summary>
+/// <remarks>
+/// The window is required rather than optional. The client disables the convert button once
+/// <paramref name="EndsAt"/> has passed, so a row with no end is a row nobody can use.
+/// </remarks>
+public sealed record NftMintableItemTypeSpec(
+    string ProductCode,
+    int StampPrice,
+    DateTime StartsAt,
+    DateTime EndsAt,
+    bool RegionLocked,
+    bool LimitedEdition,
+    bool Enabled,
+    int SortOrder
+);
+
+/// <summary>A bundle of stamps priced in silver. <paramref name="ProductCode"/> is a localization
+/// key for the purchase dialog's title, not a furniture classname — nothing is delivered.</summary>
+public sealed record NftMintTokenOfferSpec(
+    string ProductCode,
+    int SilverPrice,
+    int AmountTokens,
+    bool Enabled,
+    int SortOrder
+);
+
 /// <summary>A Relic waiting for one player. <paramref name="SetId"/> is looked up by the client as
 /// <c>collectibles.set.&lt;setId&gt;</c>, so a value with no localization entry shows raw.</summary>
 public sealed record NftClaimSpec(

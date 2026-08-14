@@ -1,28 +1,58 @@
-using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Collectibles;
+using Vortex.Primitives.Collectibles.Grains;
 using Vortex.Primitives.Messages.Incoming.Collectibles;
 using Vortex.Primitives.Messages.Outgoing.Collectibles;
+using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Players;
 
 namespace Vortex.PacketHandlers.Collectibles;
 
 /// <summary>
-/// Buying mint tokens. Nothing is sold, so the balance comes back unchanged -- the same composer the balance query uses, which is what the view re-reads.
+/// Buying stamps with silver.
 /// </summary>
 /// <remarks>
-/// Answering matters more than the answer. This handler used to return without sending anything,
-/// and the collectibles interface waits on every one of these -- so silence left it loading rather
-/// than showing that the feature is off.
+/// There is no result message for this: the tab shows whatever balance comes back and nothing else,
+/// so a refusal is reported by sending the unchanged balance. That is why the balance is sent on
+/// every path, including the ones that bought nothing — silence would leave the old number on
+/// screen and the player would think it worked.
 /// </remarks>
-public class PurchaseMintTokenMessageHandler : IMessageHandler<PurchaseMintTokenMessage>
+public class PurchaseMintTokenMessageHandler(
+    IGrainFactory grainFactory,
+    ILogger<PurchaseMintTokenMessageHandler> logger
+) : IMessageHandler<PurchaseMintTokenMessage>
 {
+    private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly ILogger<PurchaseMintTokenMessageHandler> _logger = logger;
+
     public async ValueTask HandleAsync(
         PurchaseMintTokenMessage message,
         MessageContext ctx,
         CancellationToken ct
-    ) =>
-        await ctx.SendComposerAsync(new CollectibleMintTokenCountMessageComposer { Count = 0 }, ct)
+    )
+    {
+        if (ctx.PlayerId <= 0)
+        {
+            _logger.LogWarning(
+                "A stamp purchase for offer {OfferId} arrived on a session with no player.",
+                message.OfferId
+            );
+
+            return;
+        }
+
+        MintTokenPurchaseResult result = await _grainFactory
+            .GetPlayerMintGrain(new PlayerId(ctx.PlayerId))
+            .PurchaseTokensAsync(message.OfferId, ct)
             .ConfigureAwait(false);
+
+        await ctx.SendComposerAsync(
+                new CollectibleMintTokenCountMessageComposer { Count = result.Balance },
+                ct
+            )
+            .ConfigureAwait(false);
+    }
 }

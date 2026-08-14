@@ -1,29 +1,46 @@
-using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Collectibles;
 using Vortex.Primitives.Messages.Incoming.Collectibles;
 using Vortex.Primitives.Messages.Outgoing.Collectibles;
+using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Players;
 
 namespace Vortex.PacketHandlers.Collectibles;
 
 /// <summary>
-/// Mint tokens held. None: they are bought to mint against a chain this hotel does not have.
+/// How many stamps the player holds.
 /// </summary>
 /// <remarks>
-/// Answering matters more than the answer. This handler used to return without sending anything,
-/// and the collectibles interface waits on every one of these -- so silence left it loading rather
-/// than showing that the feature is off.
+/// Asked per wallet, and every player here has exactly one — so the address that arrives is not used
+/// to pick a balance. The session's player is.
 /// </remarks>
-public class GetCollectibleMintTokensMessageHandler
+public class GetCollectibleMintTokensMessageHandler(IGrainFactory grainFactory)
     : IMessageHandler<GetCollectibleMintTokensMessage>
 {
+    private readonly IGrainFactory _grainFactory = grainFactory;
+
     public async ValueTask HandleAsync(
         GetCollectibleMintTokensMessage message,
         MessageContext ctx,
         CancellationToken ct
-    ) =>
-        await ctx.SendComposerAsync(new CollectibleMintTokenCountMessageComposer { Count = 0 }, ct)
+    )
+    {
+        if (ctx.PlayerId <= 0)
+        {
+            return;
+        }
+
+        int balance = await _grainFactory
+            .GetPlayerMintGrain(new PlayerId(ctx.PlayerId))
+            .GetTokenBalanceAsync(ct)
             .ConfigureAwait(false);
+
+        await ctx.SendComposerAsync(
+                new CollectibleMintTokenCountMessageComposer { Count = balance },
+                ct
+            )
+            .ConfigureAwait(false);
+    }
 }

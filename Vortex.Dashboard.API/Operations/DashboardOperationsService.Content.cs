@@ -316,6 +316,133 @@ internal sealed partial class DashboardOperationsService
             ct
         );
 
+    public Task<OperationResult> SaveMintableItemTypeAsync(
+        MintableItemTypeRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        ExecuteAsync(
+            request.TypeId > 0
+                ? "ops.content.mintabletype.update"
+                : "ops.content.mintabletype.create",
+            actor,
+            request.Reason,
+            targetPlayerId: null,
+            roomId: null,
+            detail: new
+            {
+                request.TypeId,
+                request.ProductCode,
+                request.StampPrice,
+            },
+            work: async c =>
+            {
+                NftMintableItemTypeSpec spec = new(
+                    request.ProductCode,
+                    request.StampPrice,
+                    request.StartsAt,
+                    request.EndsAt,
+                    request.RegionLocked,
+                    request.LimitedEdition,
+                    request.Enabled,
+                    request.SortOrder
+                );
+
+                Throw(
+                    request.TypeId > 0
+                        ? await _contentAdmin
+                            .UpdateMintableItemTypeAsync(request.TypeId, spec, c)
+                            .ConfigureAwait(false)
+                        : await _contentAdmin
+                            .CreateMintableItemTypeAsync(spec, c)
+                            .ConfigureAwait(false)
+                );
+            },
+            ct
+        );
+
+    public Task<OperationResult> DeleteMintableItemTypeAsync(
+        DeleteMintableItemTypeRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        ExecuteAsync(
+            "ops.content.mintabletype.delete",
+            actor,
+            request.Reason,
+            targetPlayerId: null,
+            roomId: null,
+            detail: new { request.TypeId },
+            work: async c =>
+                Throw(
+                    await _contentAdmin
+                        .DeleteMintableItemTypeAsync(request.TypeId, c)
+                        .ConfigureAwait(false)
+                ),
+            ct
+        );
+
+    public Task<OperationResult> SaveMintTokenOfferAsync(
+        MintTokenOfferRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        ExecuteAsync(
+            request.OfferId > 0 ? "ops.content.mintoffer.update" : "ops.content.mintoffer.create",
+            actor,
+            request.Reason,
+            targetPlayerId: null,
+            roomId: null,
+            detail: new
+            {
+                request.OfferId,
+                request.AmountTokens,
+                request.SilverPrice,
+            },
+            work: async c =>
+            {
+                NftMintTokenOfferSpec spec = new(
+                    request.ProductCode,
+                    request.SilverPrice,
+                    request.AmountTokens,
+                    request.Enabled,
+                    request.SortOrder
+                );
+
+                Throw(
+                    request.OfferId > 0
+                        ? await _contentAdmin
+                            .UpdateMintTokenOfferAsync(request.OfferId, spec, c)
+                            .ConfigureAwait(false)
+                        : await _contentAdmin
+                            .CreateMintTokenOfferAsync(spec, c)
+                            .ConfigureAwait(false)
+                );
+            },
+            ct
+        );
+
+    public Task<OperationResult> DeleteMintTokenOfferAsync(
+        DeleteMintTokenOfferRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        ExecuteAsync(
+            "ops.content.mintoffer.delete",
+            actor,
+            request.Reason,
+            targetPlayerId: null,
+            roomId: null,
+            detail: new { request.OfferId },
+            work: async c =>
+                Throw(
+                    await _contentAdmin
+                        .DeleteMintTokenOfferAsync(request.OfferId, c)
+                        .ConfigureAwait(false)
+                ),
+            ct
+        );
+
     public Task<OperationResult> SaveClaimAsync(
         ClaimRequest request,
         string actor,

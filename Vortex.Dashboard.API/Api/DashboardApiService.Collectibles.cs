@@ -234,6 +234,131 @@ internal sealed partial class DashboardApiService
                     })
                     .ToList();
 
+                // Minting: what may be converted into a Relic, and what stamps cost. A type naming
+                // furniture that does not exist is dropped by the grain rather than listed — the
+                // client would count the player's copies by a sprite id it has no definition for —
+                // so the unresolved flag here is the only warning an admin gets.
+                var mintableRows = await db
+                    .NftMintableItemTypes.AsNoTracking()
+                    .OrderBy(t => t.SortOrder)
+                    .ThenBy(t => t.Id)
+                    .Select(t => new
+                    {
+                        t.Id,
+                        t.ProductCode,
+                        t.StampPrice,
+                        t.StartsAt,
+                        t.EndsAt,
+                        t.RegionLocked,
+                        t.LimitedEdition,
+                        t.Enabled,
+                        t.SortOrder,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                List<string> mintableCodes = mintableRows
+                    .Select(t => t.ProductCode)
+                    .Distinct()
+                    .ToList();
+
+                HashSet<string> knownMintableFurniture = new(
+                    await db
+                        .FurnitureDefinitions.AsNoTracking()
+                        .Where(f => mintableCodes.Contains(f.Name))
+                        .Select(f => f.Name)
+                        .ToListAsync(ct)
+                        .ConfigureAwait(false),
+                    StringComparer.Ordinal
+                );
+
+                DateTime now = DateTime.UtcNow;
+
+                var mintableTypes = mintableRows
+                    .Select(t => new
+                    {
+                        t.Id,
+                        t.ProductCode,
+                        t.StampPrice,
+                        t.StartsAt,
+                        t.EndsAt,
+                        t.RegionLocked,
+                        t.LimitedEdition,
+                        t.Enabled,
+                        t.SortOrder,
+                        resolved = knownMintableFurniture.Contains(t.ProductCode),
+                        // What the player sees: a type is only convertible while its window is
+                        // open, and the client gives no reason for a closed one.
+                        open = t.Enabled && t.StartsAt <= now && t.EndsAt > now,
+                        expired = t.EndsAt <= now,
+                        isNft = IsCollectibleClassname(t.ProductCode),
+                        iconUrl = BuildFurniIconUrl(t.ProductCode),
+                    })
+                    .ToList();
+
+                var tokenOffers = await db
+                    .NftMintTokenOffers.AsNoTracking()
+                    .OrderBy(o => o.SortOrder)
+                    .ThenBy(o => o.Id)
+                    .Select(o => new
+                    {
+                        o.Id,
+                        o.ProductCode,
+                        o.SilverPrice,
+                        o.AmountTokens,
+                        o.Enabled,
+                        o.SortOrder,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                var assetRows = await db
+                    .NftAssets.AsNoTracking()
+                    .Where(a => a.DeletedAt == null)
+                    .OrderByDescending(a => a.Id)
+                    .Take(50)
+                    .Select(a => new
+                    {
+                        a.Id,
+                        a.PlayerEntityId,
+                        a.ProductCode,
+                        a.StampCost,
+                        a.CreatedAt,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                Dictionary<int, string> minterNames = await LoadPlayerNamesAsync(
+                        db,
+                        NormalizeIds(assetRows.Select(a => (int?)a.PlayerEntityId)),
+                        ct
+                    )
+                    .ConfigureAwait(false);
+
+                var assets = assetRows
+                    .Select(a => new
+                    {
+                        a.Id,
+                        playerId = a.PlayerEntityId,
+                        playerName = ResolvePlayerName(minterNames, a.PlayerEntityId),
+                        a.ProductCode,
+                        a.StampCost,
+                        mintedAt = a.CreatedAt,
+                        iconUrl = BuildFurniIconUrl(a.ProductCode),
+                    })
+                    .ToList();
+
+                int mintedTotal = await db
+                    .NftAssets.AsNoTracking()
+                    .CountAsync(a => a.DeletedAt == null, ct)
+                    .ConfigureAwait(false);
+
+                int stampsHeld = await db
+                    .PlayerMintTokens.AsNoTracking()
+                    .Where(row => row.DeletedAt == null)
+                    .SumAsync(row => row.Balance, ct)
+                    .ConfigureAwait(false);
+
                 var collectorRows = await db
                     .PlayerCollectorStats.AsNoTracking()
                     .OrderByDescending(s => s.HighestScore)
@@ -267,9 +392,16 @@ internal sealed partial class DashboardApiService
                         storeOffersOnSale = storeOffers.Count(o =>
                             o.Enabled && !o.soldOut && o.resolved
                         ),
+                        mintableTypes = mintableTypes.Count,
+                        mintableTypesOpen = mintableTypes.Count(t => t.open && t.resolved),
+                        mintedRelics = mintedTotal,
+                        stampsHeld,
                     },
                     collections = collectionItems,
                     storeOffers,
+                    mintableTypes,
+                    tokenOffers,
+                    assets,
                     claims,
                     topCollectors = collectorRows
                         .Select(c => new

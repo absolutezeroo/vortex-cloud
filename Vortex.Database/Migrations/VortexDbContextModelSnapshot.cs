@@ -1626,6 +1626,64 @@ namespace Vortex.Database.Migrations
                     b.ToTable("catalog_voucher_redemptions");
                 });
 
+            modelBuilder.Entity("Vortex.Database.Entities.Collectibles.NftAssetEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int?>("FurnitureDefinitionEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("furniture_definition_id");
+
+                    b.Property<int>("PlayerEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("player_id");
+
+                    b.Property<string>("ProductCode")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)")
+                        .HasColumnName("product_code");
+
+                    b.Property<int>("SourceItemId")
+                        .HasColumnType("int")
+                        .HasColumnName("source_item_id");
+
+                    b.Property<int>("StampCost")
+                        .HasColumnType("int")
+                        .HasColumnName("stamp_cost");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FurnitureDefinitionEntityId");
+
+                    b.HasIndex("PlayerEntityId");
+
+                    b.ToTable("nft_assets");
+                });
+
             modelBuilder.Entity("Vortex.Database.Entities.Collectibles.NftClaimEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -1857,6 +1915,129 @@ namespace Vortex.Database.Migrations
                     b.ToTable("nft_collection_items");
                 });
 
+            modelBuilder.Entity("Vortex.Database.Entities.Collectibles.NftMintTokenOfferEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AmountTokens")
+                        .HasColumnType("int")
+                        .HasColumnName("amount_tokens");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("enabled");
+
+                    b.Property<string>("ProductCode")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)")
+                        .HasColumnName("product_code");
+
+                    b.Property<int>("SilverPrice")
+                        .HasColumnType("int")
+                        .HasColumnName("silver_price");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int")
+                        .HasColumnName("sort_order");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.HasKey("Id");
+
+                    b.ToTable("nft_mint_token_offers");
+                });
+
+            modelBuilder.Entity("Vortex.Database.Entities.Collectibles.NftMintableItemTypeEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("enabled");
+
+                    b.Property<DateTime>("EndsAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("ends_at");
+
+                    b.Property<bool>("LimitedEdition")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("limited_edition");
+
+                    b.Property<string>("ProductCode")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)")
+                        .HasColumnName("product_code");
+
+                    b.Property<bool>("RegionLocked")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("region_locked");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int")
+                        .HasColumnName("sort_order");
+
+                    b.Property<int>("StampPrice")
+                        .HasColumnType("int")
+                        .HasColumnName("stamp_price");
+
+                    b.Property<DateTime>("StartsAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("starts_at");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductCode")
+                        .IsUnique();
+
+                    b.ToTable("nft_mintable_item_types");
+                });
+
             modelBuilder.Entity("Vortex.Database.Entities.Collectibles.NftStoreOfferEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -1987,6 +2168,49 @@ namespace Vortex.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("player_collector_stats");
+                });
+
+            modelBuilder.Entity("Vortex.Database.Entities.Collectibles.PlayerMintTokensEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Balance")
+                        .HasColumnType("int")
+                        .HasColumnName("balance");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int>("PlayerEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("player_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerEntityId")
+                        .IsUnique();
+
+                    b.ToTable("player_mint_tokens");
                 });
 
             modelBuilder.Entity("Vortex.Database.Entities.Errors.ErrorGroupEntity", b =>
@@ -8734,6 +8958,23 @@ namespace Vortex.Database.Migrations
                     b.Navigation("VoucherEntity");
                 });
 
+            modelBuilder.Entity("Vortex.Database.Entities.Collectibles.NftAssetEntity", b =>
+                {
+                    b.HasOne("Vortex.Database.Entities.Furniture.FurnitureDefinitionEntity", "FurnitureDefinitionEntity")
+                        .WithMany()
+                        .HasForeignKey("FurnitureDefinitionEntityId");
+
+                    b.HasOne("Vortex.Database.Entities.Players.PlayerEntity", "PlayerEntity")
+                        .WithMany()
+                        .HasForeignKey("PlayerEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FurnitureDefinitionEntity");
+
+                    b.Navigation("PlayerEntity");
+                });
+
             modelBuilder.Entity("Vortex.Database.Entities.Collectibles.NftClaimEntity", b =>
                 {
                     b.HasOne("Vortex.Database.Entities.Players.PlayerEntity", "Player")
@@ -8757,6 +8998,17 @@ namespace Vortex.Database.Migrations
                 });
 
             modelBuilder.Entity("Vortex.Database.Entities.Collectibles.PlayerCollectorStatsEntity", b =>
+                {
+                    b.HasOne("Vortex.Database.Entities.Players.PlayerEntity", "PlayerEntity")
+                        .WithMany()
+                        .HasForeignKey("PlayerEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PlayerEntity");
+                });
+
+            modelBuilder.Entity("Vortex.Database.Entities.Collectibles.PlayerMintTokensEntity", b =>
                 {
                     b.HasOne("Vortex.Database.Entities.Players.PlayerEntity", "PlayerEntity")
                         .WithMany()

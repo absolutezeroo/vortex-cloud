@@ -78,6 +78,32 @@ public interface IContentAdminService
 
     Task<ContentAdminResult> DeleteStoreOfferAsync(int offerId, CancellationToken ct);
 
+    Task<ContentAdminResult> CreateMintableItemTypeAsync(
+        NftMintableItemTypeSpec spec,
+        CancellationToken ct
+    );
+
+    Task<ContentAdminResult> UpdateMintableItemTypeAsync(
+        int typeId,
+        NftMintableItemTypeSpec spec,
+        CancellationToken ct
+    );
+
+    Task<ContentAdminResult> DeleteMintableItemTypeAsync(int typeId, CancellationToken ct);
+
+    Task<ContentAdminResult> CreateMintTokenOfferAsync(
+        NftMintTokenOfferSpec spec,
+        CancellationToken ct
+    );
+
+    Task<ContentAdminResult> UpdateMintTokenOfferAsync(
+        int offerId,
+        NftMintTokenOfferSpec spec,
+        CancellationToken ct
+    );
+
+    Task<ContentAdminResult> DeleteMintTokenOfferAsync(int offerId, CancellationToken ct);
+
     Task<ContentAdminResult> CreateClaimAsync(NftClaimSpec spec, CancellationToken ct);
 
     Task<ContentAdminResult> DeleteClaimAsync(int claimId, CancellationToken ct);

@@ -103,6 +103,12 @@ internal sealed class NftCollectionsGrain(
     /// <summary>
     /// How many of each collected classname the player holds, across their whole account rather
     /// than one room: a collection is about owning the thing, not about where it is standing.
+    /// <para>
+    /// Relics count too. Converting a piece of furniture destroys it, so counting only furniture
+    /// would mean minting a collectible drops the score of the collection it belongs to — the
+    /// Collectors Guild punishing collecting. A Relic is the same thing in another form, and is
+    /// counted as one of it.
+    /// </para>
     /// </summary>
     private async Task<Dictionary<string, int>> CountOwnedAsync(
         PlayerId playerId,
@@ -140,11 +146,30 @@ internal sealed class NftCollectionsGrain(
             .ToListAsync(ct)
             .ConfigureAwait(true);
 
-        return counts.ToDictionary(
+        List<OwnedCount> relics = await dbCtx
+            .NftAssets.AsNoTracking()
+            .Where(asset =>
+                asset.PlayerEntityId == playerId.Value
+                && asset.DeletedAt == null
+                && wanted.Contains(asset.ProductCode)
+            )
+            .GroupBy(asset => asset.ProductCode)
+            .Select(group => new OwnedCount(group.Key, group.Count()))
+            .ToListAsync(ct)
+            .ConfigureAwait(true);
+
+        Dictionary<string, int> owned = counts.ToDictionary(
             count => count.ProductCode,
             count => count.Amount,
             StringComparer.OrdinalIgnoreCase
         );
+
+        foreach (OwnedCount relic in relics)
+        {
+            owned[relic.ProductCode] = owned.GetValueOrDefault(relic.ProductCode) + relic.Amount;
+        }
+
+        return owned;
     }
 
     /// <summary>

@@ -216,6 +216,14 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<PlayerCollectorStatsEntity> PlayerCollectorStats { get; init; } = null!;
 
+    public DbSet<NftMintableItemTypeEntity> NftMintableItemTypes { get; init; } = null!;
+
+    public DbSet<NftMintTokenOfferEntity> NftMintTokenOffers { get; init; } = null!;
+
+    public DbSet<PlayerMintTokensEntity> PlayerMintTokens { get; init; } = null!;
+
+    public DbSet<NftAssetEntity> NftAssets { get; init; } = null!;
+
     public DbSet<PetPaletteEntity> PetPalettes { get; init; } = null!;
 
     public DbSet<PetVocalEntity> PetVocals { get; init; } = null!;

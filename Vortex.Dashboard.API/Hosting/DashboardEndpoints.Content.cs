@@ -113,6 +113,36 @@ internal static partial class DashboardEndpoints
             (ops, body, actor, ct) => ops.DeleteStoreOfferAsync(body, actor, ct),
             body => body.OfferId > 0
         );
+        Map<MintableItemTypeRequest>(
+            app,
+            "/mintable-types",
+            (ops, body, actor, ct) => ops.SaveMintableItemTypeAsync(body, actor, ct),
+            body =>
+                !string.IsNullOrWhiteSpace(body.ProductCode)
+                && body.StampPrice >= 0
+                && body.EndsAt > body.StartsAt
+        );
+        Map<DeleteMintableItemTypeRequest>(
+            app,
+            "/mintable-types/delete",
+            (ops, body, actor, ct) => ops.DeleteMintableItemTypeAsync(body, actor, ct),
+            body => body.TypeId > 0
+        );
+        Map<MintTokenOfferRequest>(
+            app,
+            "/mint-token-offers",
+            (ops, body, actor, ct) => ops.SaveMintTokenOfferAsync(body, actor, ct),
+            body =>
+                !string.IsNullOrWhiteSpace(body.ProductCode)
+                && body.SilverPrice >= 0
+                && body.AmountTokens > 0
+        );
+        Map<DeleteMintTokenOfferRequest>(
+            app,
+            "/mint-token-offers/delete",
+            (ops, body, actor, ct) => ops.DeleteMintTokenOfferAsync(body, actor, ct),
+            body => body.OfferId > 0
+        );
         Map<ClaimRequest>(
             app,
             "/claims",

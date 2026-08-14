@@ -174,6 +174,29 @@ public sealed class NftCollectionsGrainTests
         after.Score.Should().Be(55);
     }
 
+    /// <summary>
+    ///     Converting a collectible into a Relic destroys the furniture. If only furniture counted,
+    ///     minting would lower the score of the collection the item belongs to — the Collectors
+    ///     Guild punishing collecting — and a finished set would come apart the moment its owner
+    ///     used the tab beside it.
+    /// </summary>
+    [Fact]
+    public async Task ARelic_CountsTowardsItsCollectionLikeTheFurnitureItWas()
+    {
+        Harness harness = await Harness.CreateAsync().ConfigureAwait(true);
+
+        await harness.OwnAsync(Sofa).ConfigureAwait(true);
+        await harness.OwnRelicAsync(Throne).ConfigureAwait(true);
+
+        CollectorScoreSnapshot score = await harness
+            .Grain.GetCollectorScoreAsync(Collector, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        // One owned, one converted: the set is still finished, boost included.
+        score.Score.Should().Be(55);
+        score.Level.Should().Be(1);
+    }
+
     [Fact]
     public async Task ABestScore_SurvivesSellingTheFurnitureThatEarnedIt()
     {
@@ -322,6 +345,23 @@ public sealed class NftCollectionsGrainTests
                 {
                     Id = _nextFurnitureId++,
                     PlayerEntityId = ownerId,
+                    FurnitureDefinitionEntityId = classname == Sofa ? 1 : 2,
+                }
+            );
+
+            await dbCtx.SaveChangesAsync().ConfigureAwait(true);
+        }
+
+        /// <summary>Turns one of a classname into a Relic — the furniture is gone, the asset is not.</summary>
+        public async Task OwnRelicAsync(string classname, int ownerId = 101)
+        {
+            await using VortexDbContext dbCtx = new(_options);
+
+            dbCtx.NftAssets.Add(
+                new NftAssetEntity
+                {
+                    PlayerEntityId = ownerId,
+                    ProductCode = classname,
                     FurnitureDefinitionEntityId = classname == Sofa ? 1 : 2,
                 }
             );

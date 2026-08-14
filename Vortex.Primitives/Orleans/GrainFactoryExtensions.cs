@@ -299,6 +299,14 @@ public static class GrainFactoryExtensions
         PlayerId playerId
     ) => factory.GetGrain<IPlayerNftClaimsGrain>(playerId.Value);
 
+    public static INftMintingGrain GetNftMintingGrain(this IGrainFactory factory) =>
+        factory.GetGrain<INftMintingGrain>(SingletonGrainId.GLOBAL);
+
+    public static IPlayerMintGrain GetPlayerMintGrain(
+        this IGrainFactory factory,
+        PlayerId playerId
+    ) => factory.GetGrain<IPlayerMintGrain>(playerId.Value);
+
     public static IPlayerMysteryBoxGrain GetPlayerMysteryBoxGrain(
         this IGrainFactory factory,
         PlayerId playerId

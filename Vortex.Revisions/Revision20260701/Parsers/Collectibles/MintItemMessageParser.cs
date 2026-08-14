@@ -1,10 +1,12 @@
 using Vortex.Primitives.Messages.Incoming.Collectibles;
 using Vortex.Primitives.Networking;
+using Vortex.Primitives.Networking.Revisions;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Parsers.Collectibles;
 
 internal class MintItemMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new MintItemMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new MintItemMessage { ItemId = packet.PopInt(), Wallet = packet.PopString() };
 }

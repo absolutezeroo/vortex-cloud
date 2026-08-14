@@ -644,6 +644,274 @@ internal sealed partial class ContentAdminService(
         }
     }
 
+    public async Task<ContentAdminResult> CreateMintableItemTypeAsync(
+        NftMintableItemTypeSpec spec,
+        CancellationToken ct
+    )
+    {
+        if (ValidateMintableItemType(spec) is string invalid)
+        {
+            return ContentAdminResult.Fail(invalid);
+        }
+
+        string productCode = spec.ProductCode.Trim();
+
+        await using VortexDbContext db = await dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        if (
+            await db
+                .NftMintableItemTypes.AnyAsync(type => type.ProductCode == productCode, ct)
+                .ConfigureAwait(false)
+        )
+        {
+            // One row per classname: the tab lists types, not offers, and two rows for the same
+            // furniture would draw it twice at two prices.
+            return ContentAdminResult.Fail("product_code_taken");
+        }
+
+        NftMintableItemTypeEntity entity = new() { ProductCode = productCode };
+
+        Apply(entity, spec);
+        db.NftMintableItemTypes.Add(entity);
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        await ReloadMintingAsync(ct).ConfigureAwait(false);
+
+        return ContentAdminResult.Ok(entity.Id);
+    }
+
+    public async Task<ContentAdminResult> UpdateMintableItemTypeAsync(
+        int typeId,
+        NftMintableItemTypeSpec spec,
+        CancellationToken ct
+    )
+    {
+        if (ValidateMintableItemType(spec) is string invalid)
+        {
+            return ContentAdminResult.Fail(invalid);
+        }
+
+        string productCode = spec.ProductCode.Trim();
+
+        await using VortexDbContext db = await dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        NftMintableItemTypeEntity? entity = await db
+            .NftMintableItemTypes.FirstOrDefaultAsync(type => type.Id == typeId, ct)
+            .ConfigureAwait(false);
+
+        if (entity is null)
+        {
+            return ContentAdminResult.Fail("mintable_type_not_found");
+        }
+
+        if (
+            await db
+                .NftMintableItemTypes.AnyAsync(
+                    type => type.ProductCode == productCode && type.Id != typeId,
+                    ct
+                )
+                .ConfigureAwait(false)
+        )
+        {
+            return ContentAdminResult.Fail("product_code_taken");
+        }
+
+        entity.ProductCode = productCode;
+        Apply(entity, spec);
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        await ReloadMintingAsync(ct).ConfigureAwait(false);
+
+        return ContentAdminResult.Ok(entity.Id);
+    }
+
+    public async Task<ContentAdminResult> DeleteMintableItemTypeAsync(
+        int typeId,
+        CancellationToken ct
+    )
+    {
+        await using VortexDbContext db = await dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        NftMintableItemTypeEntity? entity = await db
+            .NftMintableItemTypes.FirstOrDefaultAsync(type => type.Id == typeId, ct)
+            .ConfigureAwait(false);
+
+        if (entity is null)
+        {
+            return ContentAdminResult.Fail("mintable_type_not_found");
+        }
+
+        // Removed outright, not soft-deleted: the Relics already converted from it live in their own
+        // table and keep their classname, so nothing that happened is lost with the row.
+        db.NftMintableItemTypes.Remove(entity);
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        await ReloadMintingAsync(ct).ConfigureAwait(false);
+
+        return ContentAdminResult.Ok(typeId);
+    }
+
+    public async Task<ContentAdminResult> CreateMintTokenOfferAsync(
+        NftMintTokenOfferSpec spec,
+        CancellationToken ct
+    )
+    {
+        if (ValidateMintTokenOffer(spec) is string invalid)
+        {
+            return ContentAdminResult.Fail(invalid);
+        }
+
+        await using VortexDbContext db = await dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        NftMintTokenOfferEntity entity = new() { ProductCode = spec.ProductCode.Trim() };
+
+        Apply(entity, spec);
+        db.NftMintTokenOffers.Add(entity);
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        await ReloadMintingAsync(ct).ConfigureAwait(false);
+
+        return ContentAdminResult.Ok(entity.Id);
+    }
+
+    public async Task<ContentAdminResult> UpdateMintTokenOfferAsync(
+        int offerId,
+        NftMintTokenOfferSpec spec,
+        CancellationToken ct
+    )
+    {
+        if (ValidateMintTokenOffer(spec) is string invalid)
+        {
+            return ContentAdminResult.Fail(invalid);
+        }
+
+        await using VortexDbContext db = await dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        NftMintTokenOfferEntity? entity = await db
+            .NftMintTokenOffers.FirstOrDefaultAsync(offer => offer.Id == offerId, ct)
+            .ConfigureAwait(false);
+
+        if (entity is null)
+        {
+            return ContentAdminResult.Fail("token_offer_not_found");
+        }
+
+        entity.ProductCode = spec.ProductCode.Trim();
+        Apply(entity, spec);
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        await ReloadMintingAsync(ct).ConfigureAwait(false);
+
+        return ContentAdminResult.Ok(entity.Id);
+    }
+
+    public async Task<ContentAdminResult> DeleteMintTokenOfferAsync(
+        int offerId,
+        CancellationToken ct
+    )
+    {
+        await using VortexDbContext db = await dbContextFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(false);
+
+        NftMintTokenOfferEntity? entity = await db
+            .NftMintTokenOffers.FirstOrDefaultAsync(offer => offer.Id == offerId, ct)
+            .ConfigureAwait(false);
+
+        if (entity is null)
+        {
+            return ContentAdminResult.Fail("token_offer_not_found");
+        }
+
+        db.NftMintTokenOffers.Remove(entity);
+
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        await ReloadMintingAsync(ct).ConfigureAwait(false);
+
+        return ContentAdminResult.Ok(offerId);
+    }
+
+    /// <summary>
+    /// What makes a mintable type usable at all. The window is checked here rather than left to the
+    /// client, which simply greys the convert button out and gives no reason.
+    /// </summary>
+    private static string? ValidateMintableItemType(NftMintableItemTypeSpec spec)
+    {
+        if (string.IsNullOrWhiteSpace(spec.ProductCode))
+        {
+            return "product_code_required";
+        }
+
+        if (spec.StampPrice < 0)
+        {
+            return "stamp_price_must_not_be_negative";
+        }
+
+        return spec.EndsAt <= spec.StartsAt ? "window_must_end_after_it_starts" : null;
+    }
+
+    private static string? ValidateMintTokenOffer(NftMintTokenOfferSpec spec)
+    {
+        if (string.IsNullOrWhiteSpace(spec.ProductCode))
+        {
+            return "product_code_required";
+        }
+
+        if (spec.SilverPrice < 0)
+        {
+            return "silver_price_must_not_be_negative";
+        }
+
+        // A bundle of nothing would take the silver and hand back no stamps, and the tab lists
+        // bundles by their amount — so it would also show up as a blank line in the dropdown.
+        return spec.AmountTokens <= 0 ? "amount_must_be_positive" : null;
+    }
+
+    private static void Apply(NftMintableItemTypeEntity entity, NftMintableItemTypeSpec spec)
+    {
+        entity.StampPrice = spec.StampPrice;
+        entity.StartsAt = spec.StartsAt;
+        entity.EndsAt = spec.EndsAt;
+        entity.RegionLocked = spec.RegionLocked;
+        entity.LimitedEdition = spec.LimitedEdition;
+        entity.Enabled = spec.Enabled;
+        entity.SortOrder = spec.SortOrder;
+    }
+
+    private static void Apply(NftMintTokenOfferEntity entity, NftMintTokenOfferSpec spec)
+    {
+        entity.SilverPrice = spec.SilverPrice;
+        entity.AmountTokens = spec.AmountTokens;
+        entity.Enabled = spec.Enabled;
+        entity.SortOrder = spec.SortOrder;
+    }
+
+    private async Task ReloadMintingAsync(CancellationToken ct)
+    {
+        try
+        {
+            await grainFactory.GetNftMintingGrain().ReloadAsync(ct).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "Minting cache reload failed after an admin write committed -- the live minting tab is stale until the next reload or restart"
+            );
+            throw;
+        }
+    }
+
     public async Task<ContentAdminResult> CreateClaimAsync(NftClaimSpec spec, CancellationToken ct)
     {
         if (spec.PlayerId <= 0 || string.IsNullOrWhiteSpace(spec.ProductCode))
