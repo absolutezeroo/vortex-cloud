@@ -2155,7 +2155,10 @@ export default {
     deleteClaim: 'Delete relic',
     deleteClaimSummary: 'Delete the relic {code} from {name}.',
     saveClaimSummary: 'Grant {code} to {name}.',
-    claimProductHelp: 'The furniture the player will receive.',
+    claimProductHelp: 'The furniture the player receives. Pick an nft_ classname for it to count as a collectible.',
+    notNft: 'not a collectible',
+    notNftHelp:
+      'The client recognises a collectible only by the nft_ prefix on the classname. Without it the item is filed as ordinary furniture and never shows in the inventory Collectibles category.',
     setIdHelp: 'Displayed label, looked up as collectibles.set.<id>.',
     claimLimit: 'Quantity',
     claimLimitHelp: 'How many copies they receive.',

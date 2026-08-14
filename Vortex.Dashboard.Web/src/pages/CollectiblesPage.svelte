@@ -552,6 +552,11 @@
                   <span class="cell">
                     <AssetImage src={offer.iconUrl} alt={offer.productCode} size={32} />
                     <code>{offer.productCode}</code>
+                    {#if !offer.isNft}
+                      <span class="status-badge status-badge--bad" title={$t('collectibles.notNftHelp')}>
+                        {$t('collectibles.notNft')}
+                      </span>
+                    {/if}
                     {#if offer.isFeatured}
                       <span class="status-badge">{$t('collectibles.featured')}</span>
                     {/if}
@@ -721,6 +726,11 @@
                   <span class="cell">
                     <AssetImage src={claim.iconUrl} alt={claim.productCode} size={32} />
                     <code>{claim.productCode}</code>
+                    {#if !claim.isNft}
+                      <span class="status-badge status-badge--bad" title={$t('collectibles.notNftHelp')}>
+                        {$t('collectibles.notNft')}
+                      </span>
+                    {/if}
                   </span>
                 </td>
                 <td>{formatNumber(claim.remaining)} / {formatNumber(claim.claimLimit)}</td>

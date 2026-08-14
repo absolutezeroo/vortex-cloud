@@ -1,1 +1,0 @@
-import{F as e,I as t,k as n}from"./AccessDeniedNotice-BlCR3NBO.js";var r=new Set([`$$slots`,`$$events`,`$$legacy`]);function i(i,a){let o=e(a,r),s=[[`path`,{d:`M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z`}]];n(i,t({name:`message-square`},()=>o,{get iconNode(){return s}}))}export{i as t};

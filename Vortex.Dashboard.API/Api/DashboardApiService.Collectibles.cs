@@ -19,6 +19,16 @@ namespace Vortex.Dashboard.API.Api;
 /// </summary>
 internal sealed partial class DashboardApiService
 {
+    /// <summary>
+    /// Whether the client will treat this furniture as a collectible at all. It decides from the
+    /// classname alone — <c>GroupItem.isNft()</c> is <c>className.indexOf("nft_") == 0</c> — and
+    /// uses it both to keep such items out of the ordinary Furni list and to fill the Collectibles
+    /// category. A shop offer or a relic naming anything else still works, but the buyer receives
+    /// what the client files as plain furniture.
+    /// </summary>
+    private static bool IsCollectibleClassname(string productCode) =>
+        productCode.StartsWith("nft_", StringComparison.Ordinal);
+
     public Task<object> CollectiblesAsync(CancellationToken ct) =>
         QueryAsync<object>(
             async db =>
@@ -168,6 +178,11 @@ internal sealed partial class DashboardApiService
                         o.SortOrder,
                         resolved = knownOfferFurniture.Contains(o.ProductCode),
                         soldOut = o.MintLimit > 0 && o.SoldCount >= o.MintLimit,
+                        // The client decides what counts as a collectible purely from the
+                        // classname: GroupItem.isNft() is className.indexOf("nft_") == 0. Anything
+                        // else is hidden from the inventory's Collectibles category and listed as
+                        // ordinary furniture, however it was bought.
+                        isNft = IsCollectibleClassname(o.ProductCode),
                         iconUrl = BuildFurniIconUrl(o.ProductCode),
                     })
                     .ToList();
@@ -214,6 +229,7 @@ internal sealed partial class DashboardApiService
                         remaining = c.ClaimLimit - c.ClaimedAmount,
                         c.ValidFrom,
                         c.ValidTo,
+                        isNft = IsCollectibleClassname(c.ProductCode),
                         iconUrl = BuildFurniIconUrl(c.ProductCode),
                     })
                     .ToList();

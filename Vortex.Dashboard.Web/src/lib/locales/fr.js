@@ -2159,7 +2159,10 @@ export default {
     deleteClaim: 'Supprimer la relique',
     deleteClaimSummary: 'Supprimer la relique {code} de {name}.',
     saveClaimSummary: 'Attribuer {code} à {name}.',
-    claimProductHelp: 'Le furni que le joueur recevra.',
+    claimProductHelp: 'Le furni que le joueur recevra. Choisis un classname en nft_ pour qu’il compte comme collectible.',
+    notNft: 'pas un collectible',
+    notNftHelp:
+      'Le client ne reconnaît un collectible qu’au préfixe nft_ du classname. Sans lui, l’objet est rangé dans les meubles ordinaires et n’apparaît pas dans la catégorie Collectibles de l’inventaire.',
     setIdHelp: 'Libellé affiché, cherché comme collectibles.set.<id>.',
     claimLimit: 'Quantité',
     claimLimitHelp: 'Combien d’exemplaires il recevra.',
