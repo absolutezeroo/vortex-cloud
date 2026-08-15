@@ -43,6 +43,11 @@ public abstract class FurnitureWiredConditionLogic(
 
     public virtual bool IsNegative() => false;
 
+    /// <summary>No-op for the many conditions that only read room state; overridden by the ones
+    /// whose answer lives behind a grain.</summary>
+    public virtual Task PrepareAsync(IWiredProcessingContext ctx, CancellationToken ct) =>
+        Task.CompletedTask;
+
     public virtual bool Evaluate(IWiredProcessingContext ctx) => false;
 
     protected override async Task FillInternalDataAsync(CancellationToken ct)

@@ -42,4 +42,25 @@ public interface IRoomFurniAccess
     /// <summary>Kicks a player on a wired action's behalf. Distinct from ordinary moderation: there
     /// is no actor to authorize, the room's own wiring is doing it.</summary>
     Task<bool> KickUserFromWiredAsync(PlayerId targetPlayerId, CancellationToken ct);
+
+    /// <summary>
+    /// Loads a guild's member roster into the room so <see cref="IsGuildMember"/> can answer without
+    /// awaiting. Cheap to call repeatedly: the roster is cached for a short while, and the room's own
+    /// guild is served from the roster the security module already keeps live.
+    /// </summary>
+    Task EnsureGuildRosterAsync(int groupId, CancellationToken ct);
+
+    /// <summary>Whether the player belongs to the guild, from the roster
+    /// <see cref="EnsureGuildRosterAsync"/> loaded. False when no roster was loaded — a wired box
+    /// that never prepared must not pass.</summary>
+    bool IsGuildMember(int groupId, PlayerId player);
+
+    /// <summary>Loads the badges a player currently wears into the room, for the same reason
+    /// <see cref="EnsureGuildRosterAsync"/> exists.</summary>
+    Task EnsureWornBadgesAsync(PlayerId player, CancellationToken ct);
+
+    /// <summary>Whether the player wears this badge code, from what
+    /// <see cref="EnsureWornBadgesAsync"/> loaded. Worn means occupying one of the five profile
+    /// slots, not merely owned.</summary>
+    bool IsWearingBadge(PlayerId player, string badgeCode);
 }

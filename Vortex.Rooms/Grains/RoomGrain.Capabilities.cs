@@ -210,4 +210,16 @@ public sealed partial class RoomGrain
         PlayerId targetPlayerId,
         CancellationToken ct
     ) => KickUserFromWiredAsync(targetPlayerId, ct);
+
+    Task IRoomFurniAccess.EnsureGuildRosterAsync(int groupId, CancellationToken ct) =>
+        EnsureGuildRosterAsync(groupId, ct);
+
+    bool IRoomFurniAccess.IsGuildMember(int groupId, PlayerId player) =>
+        IsGuildMember(groupId, player);
+
+    Task IRoomFurniAccess.EnsureWornBadgesAsync(PlayerId player, CancellationToken ct) =>
+        EnsureWornBadgesAsync(player, ct);
+
+    bool IRoomFurniAccess.IsWearingBadge(PlayerId player, string badgeCode) =>
+        IsWearingBadge(player, badgeCode);
 }

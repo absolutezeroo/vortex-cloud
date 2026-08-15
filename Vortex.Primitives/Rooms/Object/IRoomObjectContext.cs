@@ -63,6 +63,11 @@ public interface IRoomObjectContext
     /// <summary>The room's owner.</summary>
     public PlayerId OwnerId { get; }
 
+    /// <summary>The guild this room belongs to, or null when it is not a guild base. This is the
+    /// "current group" the group-aware wired boxes resolve to when their form is left on its first
+    /// option.</summary>
+    public int? GroupId { get; }
+
     /// <summary>The wired tuning knobs from the room's configuration.</summary>
     public IWiredLimits WiredLimits { get; }
 

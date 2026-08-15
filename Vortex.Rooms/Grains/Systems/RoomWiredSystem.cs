@@ -348,6 +348,23 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             }
         }
 
+        foreach (IWiredCondition condition in ctx.Stack.Conditions)
+        {
+            try
+            {
+                await condition.PrepareAsync(ctx, ct);
+            }
+            catch (Exception ex)
+            {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Wired condition {ConditionType} failed to prepare in room {RoomId}; it will be evaluated without its data.",
+                    condition.GetType().Name,
+                    _roomGrain.RoomId
+                );
+            }
+        }
+
         if (!EvaluateConditions(ctx.Stack.Conditions, ctx))
         {
             return;

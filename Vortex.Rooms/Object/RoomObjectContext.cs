@@ -46,6 +46,8 @@ public abstract class RoomObjectContext<TObject, TLogic, TSelf>(
 
     public PlayerId OwnerId => _roomGrain._state.RoomSnapshot.OwnerId;
 
+    public int? GroupId => _roomGrain._state.RoomSnapshot.GroupId;
+
     public IWiredLimits WiredLimits => _roomGrain._roomConfig;
 
     public RoomObjectId ObjectId => _roomObject.ObjectId;
