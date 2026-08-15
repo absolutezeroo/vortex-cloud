@@ -7,11 +7,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
+using Vortex.Database.Entities.Collectibles;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Collectibles;
+using Vortex.Primitives.Collectibles.Grains;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Inventory.Snapshots;
+using Vortex.Primitives.Messages.Outgoing.Collectibles;
 using Vortex.Primitives.Messages.Outgoing.Inventory.Trading;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans;
@@ -168,6 +172,71 @@ public sealed class RoomTradingSystem(RoomGrain roomGrain)
         {
             session.ResetAgreement();
             await BroadcastItemListAsync(session, ct).ConfigureAwait(true);
+        }
+    }
+
+    /// <summary>
+    /// Adds Relics to the requester's side of the offer.
+    /// </summary>
+    /// <remarks>
+    /// This is what replaces the wallet transfer: the Transfer tab could only move a whole wallet to
+    /// one address, where this moves chosen Relics to a chosen player, through the confirmation both
+    /// sides already understand.
+    /// <para>
+    /// There is no counterpart that removes one. The client has no such message — it re-derives which
+    /// of its Relics are locked from the list sent back — so an offered Relic stays offered until the
+    /// trade ends, and adding still resets both acceptances.
+    /// </para>
+    /// </remarks>
+    public async Task AddTradeAssetsAsync(
+        PlayerId requesterId,
+        IReadOnlyList<int> assetIds,
+        CancellationToken ct
+    )
+    {
+        if (!TryGetSession(requesterId, out RoomTradeSession? session))
+        {
+            await SendTradingNotOpenAsync(requesterId, ct).ConfigureAwait(true);
+            return;
+        }
+
+        if (session.Phase != TradePhase.Building)
+        {
+            return;
+        }
+
+        List<int> offer = session.AssetsOf(requesterId);
+
+        // Read once: the ownership check and the list the other party will see come from the same
+        // answer, and a player's Relics are few.
+        ImmutableArray<CollectibleAssetSnapshot> owned = await _roomGrain
+            ._grainFactory.GetPlayerMintGrain(requesterId)
+            .GetAssetsAsync(ct)
+            .ConfigureAwait(true);
+
+        bool changed = false;
+
+        foreach (int assetId in assetIds)
+        {
+            if (
+                offer.Contains(assetId)
+                || offer.Count >= _roomGrain._roomConfig.MaxTradeItemsPerSide
+                || !owned.Any(asset => asset.AssetId == assetId)
+            )
+            {
+                // Silently dropped, like a furniture id the offerer no longer owns: this client has
+                // no "rejected item" answer, and the Relic will simply be absent from the list.
+                continue;
+            }
+
+            offer.Add(assetId);
+            changed = true;
+        }
+
+        if (changed)
+        {
+            session.ResetAgreement();
+            await BroadcastAssetListAsync(session, ct).ConfigureAwait(true);
         }
     }
 
@@ -361,6 +430,8 @@ public sealed class RoomTradingSystem(RoomGrain roomGrain)
                 .ApplyTradeResultAsync(twoItems, oneItems, ct)
                 .ConfigureAwait(true);
 
+            await RefreshCollectiblesAsync(session, ct).ConfigureAwait(true);
+
             // Per-item forensics (item_events) plus one trade-level business-audit record that the
             // dashboard's Item audit surface reads.
             await PublishTradeAuditAsync(session.UserOneId, session.UserTwoId, oneItems, ct)
@@ -438,6 +509,8 @@ public sealed class RoomTradingSystem(RoomGrain roomGrain)
     {
         List<int> oneIds = session.UserOneItemIds;
         List<int> twoIds = session.UserTwoItemIds;
+        List<int> oneAssetIds = session.UserOneAssetIds;
+        List<int> twoAssetIds = session.UserTwoAssetIds;
         int oneOwner = session.UserOneId.Value;
         int twoOwner = session.UserTwoId.Value;
 
@@ -476,6 +549,26 @@ public sealed class RoomTradingSystem(RoomGrain roomGrain)
                     return false;
                 }
 
+                // Relics move in this same transaction, not beside it: an offer of a chair and a
+                // Relic must be all-or-nothing, and a Relic that changed hands while the chair did
+                // not would be unrecoverable -- there is no room to put it back in.
+                List<NftAssetEntity> oneAssets = await dbCtx
+                    .NftAssets.Where(a => oneAssetIds.Contains(a.Id))
+                    .ToListAsync(ct)
+                    .ConfigureAwait(true);
+                List<NftAssetEntity> twoAssets = await dbCtx
+                    .NftAssets.Where(a => twoAssetIds.Contains(a.Id))
+                    .ToListAsync(ct)
+                    .ConfigureAwait(true);
+
+                if (
+                    !IsAssetOfferPersistable(oneAssets, oneAssetIds.Count, oneOwner)
+                    || !IsAssetOfferPersistable(twoAssets, twoAssetIds.Count, twoOwner)
+                )
+                {
+                    return false;
+                }
+
                 foreach (FurnitureEntity row in oneRows)
                 {
                     row.PlayerEntityId = twoOwner;
@@ -485,6 +578,9 @@ public sealed class RoomTradingSystem(RoomGrain roomGrain)
                 {
                     row.PlayerEntityId = oneOwner;
                 }
+
+                MoveAssets(dbCtx, oneAssets, oneOwner, twoOwner);
+                MoveAssets(dbCtx, twoAssets, twoOwner, oneOwner);
 
                 await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
                 await tx.CommitAsync(ct).ConfigureAwait(true);
@@ -501,6 +597,44 @@ public sealed class RoomTradingSystem(RoomGrain roomGrain)
     ) =>
         rows.Count == expectedCount
         && rows.All(r => r.PlayerEntityId == expectedOwner && r.RoomEntityId is null);
+
+    /// <summary>A Relic cannot be standing in a room, so the guard is only that every one of them
+    /// still exists and still belongs to the player who offered it.</summary>
+    private static bool IsAssetOfferPersistable(
+        List<NftAssetEntity> rows,
+        int expectedCount,
+        int expectedOwner
+    ) =>
+        rows.Count == expectedCount
+        && rows.All(r => r.PlayerEntityId == expectedOwner && r.DeletedAt is null);
+
+    /// <summary>
+    /// Hands Relics over and records each move. The ledger row goes in the same transaction as the
+    /// ownership change, which is the only way the history can be trusted: a chain gets that from
+    /// its blocks, and a table gets it from a transaction.
+    /// </summary>
+    private static void MoveAssets(
+        VortexDbContext dbCtx,
+        List<NftAssetEntity> assets,
+        int fromOwner,
+        int toOwner
+    )
+    {
+        foreach (NftAssetEntity asset in assets)
+        {
+            asset.PlayerEntityId = toOwner;
+
+            dbCtx.NftAssetLedger.Add(
+                new NftAssetLedgerEntity
+                {
+                    NftAssetEntityId = asset.Id,
+                    FromPlayerEntityId = fromOwner,
+                    ToPlayerEntityId = toOwner,
+                    Reason = NftAssetLedgerReason.Traded,
+                }
+            );
+        }
+    }
 
     private async Task PublishTradeAuditAsync(
         PlayerId fromOwner,
@@ -704,6 +838,106 @@ public sealed class RoomTradingSystem(RoomGrain roomGrain)
                 }
             )
             .ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// Sends each side its own view of the Relics on the table.
+    /// </summary>
+    /// <remarks>
+    /// Two packets, not one. The furniture list names both sides by room-object id and can go out
+    /// unchanged to both players; this message is written as "mine" then "theirs", so the lists have
+    /// to be swapped for the second recipient. Sending both players the same packet would show each
+    /// of them the other's Relics as their own — and the trade would still settle correctly, which is
+    /// exactly why it would be hard to spot.
+    /// </remarks>
+    private async Task BroadcastAssetListAsync(RoomTradeSession session, CancellationToken ct)
+    {
+        ImmutableArray<CollectibleAssetSnapshot> oneAssets = await ResolveAssetSnapshotsAsync(
+                session.UserOneId,
+                session.UserOneAssetIds,
+                ct
+            )
+            .ConfigureAwait(true);
+        ImmutableArray<CollectibleAssetSnapshot> twoAssets = await ResolveAssetSnapshotsAsync(
+                session.UserTwoId,
+                session.UserTwoAssetIds,
+                ct
+            )
+            .ConfigureAwait(true);
+
+        await Task.WhenAll(
+                _roomGrain
+                    ._grainFactory.GetPlayerPresenceGrain(session.UserOneId)
+                    .SendComposerAsync(
+                        new TradeNftAssetsMessageComposer
+                        {
+                            MyAssets = oneAssets,
+                            TheirAssets = twoAssets,
+                        }
+                    ),
+                _roomGrain
+                    ._grainFactory.GetPlayerPresenceGrain(session.UserTwoId)
+                    .SendComposerAsync(
+                        new TradeNftAssetsMessageComposer
+                        {
+                            MyAssets = twoAssets,
+                            TheirAssets = oneAssets,
+                        }
+                    )
+            )
+            .ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// Re-sends both players their Collectibles inventory after Relics have changed hands.
+    /// </summary>
+    /// <remarks>
+    /// Nothing else would. The trade's own completion message says nothing about Relics, and the
+    /// inventory only asks for the list once per session — so without this each player keeps showing
+    /// what they held before the trade until they log out. The client diffs the list it receives
+    /// against the one it holds, which is what makes re-sending the whole thing the right move.
+    /// </remarks>
+    private async Task RefreshCollectiblesAsync(RoomTradeSession session, CancellationToken ct)
+    {
+        foreach (PlayerId playerId in new[] { session.UserOneId, session.UserTwoId })
+        {
+            ImmutableArray<CollectibleAssetSnapshot> assets = await _roomGrain
+                ._grainFactory.GetPlayerMintGrain(playerId)
+                .GetAssetsAsync(ct)
+                .ConfigureAwait(true);
+
+            await _roomGrain
+                ._grainFactory.GetPlayerPresenceGrain(playerId)
+                .SendComposerAsync(new TradeNftAssetInventoryMessageComposer { Assets = assets })
+                .ConfigureAwait(true);
+        }
+    }
+
+    private async Task<ImmutableArray<CollectibleAssetSnapshot>> ResolveAssetSnapshotsAsync(
+        PlayerId playerId,
+        List<int> assetIds,
+        CancellationToken ct
+    )
+    {
+        if (assetIds.Count == 0)
+        {
+            return [];
+        }
+
+        ImmutableArray<CollectibleAssetSnapshot> owned = await _roomGrain
+            ._grainFactory.GetPlayerMintGrain(playerId)
+            .GetAssetsAsync(ct)
+            .ConfigureAwait(true);
+
+        // Ordered by the offer rather than by the wallet, so the list reads in the order they were
+        // put on the table.
+        return
+        [
+            .. assetIds
+                .Select(assetId => owned.FirstOrDefault(asset => asset.AssetId == assetId))
+                .Where(asset => asset is not null)
+                .Select(asset => asset!),
+        ];
     }
 
     private async Task<ImmutableArray<FurnitureItemSnapshot>> ResolveOfferSnapshotsAsync(

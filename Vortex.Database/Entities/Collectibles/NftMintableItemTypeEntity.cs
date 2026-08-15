@@ -51,6 +51,15 @@ public class NftMintableItemTypeEntity : VortexEntity
     [Column("limited_edition")]
     public bool LimitedEdition { get; set; }
 
+    /// <summary>
+    /// How many may ever be converted. Zero is no limit, and is the only value that makes sense on
+    /// something not marked limited. The cap is counted against the Relics that exist rather than
+    /// against a counter column, so deleting the type and recreating it cannot mint the edition
+    /// twice.
+    /// </summary>
+    [Column("edition_size")]
+    public int EditionSize { get; set; }
+
     /// <summary>Off the list without losing the row.</summary>
     [Column("enabled")]
     public bool Enabled { get; set; } = true;

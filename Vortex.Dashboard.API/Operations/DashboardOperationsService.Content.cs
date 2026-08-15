@@ -344,6 +344,7 @@ internal sealed partial class DashboardOperationsService
                     request.EndsAt,
                     request.RegionLocked,
                     request.LimitedEdition,
+                    request.EditionSize,
                     request.Enabled,
                     request.SortOrder
                 );

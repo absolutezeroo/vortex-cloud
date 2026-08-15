@@ -224,6 +224,8 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<NftAssetEntity> NftAssets { get; init; } = null!;
 
+    public DbSet<NftAssetLedgerEntity> NftAssetLedger { get; init; } = null!;
+
     public DbSet<PetPaletteEntity> PetPalettes { get; init; } = null!;
 
     public DbSet<PetVocalEntity> PetVocals { get; init; } = null!;

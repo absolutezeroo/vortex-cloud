@@ -24,6 +24,15 @@ public interface IRoomTrading : IGrainWithIntegerKey
         CancellationToken ct
     );
 
+    /// <summary>Adds Relics to the requester's side of the offer. Ids the requester does not hold
+    /// are skipped. There is no counterpart that removes one: this client has no such message, so an
+    /// offered Relic stays offered until the trade ends.</summary>
+    public Task AddTradeAssetsAsync(
+        PlayerId requesterId,
+        IReadOnlyList<int> assetIds,
+        CancellationToken ct
+    );
+
     /// <summary>Removes an item the requester previously offered. Resets both sides' acceptance.</summary>
     public Task RemoveTradeItemAsync(PlayerId requesterId, int itemId, CancellationToken ct);
 

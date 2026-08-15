@@ -857,6 +857,11 @@ internal sealed partial class ContentAdminService(
             return "stamp_price_must_not_be_negative";
         }
 
+        if (spec.EditionSize < 0)
+        {
+            return "edition_size_must_not_be_negative";
+        }
+
         return spec.EndsAt <= spec.StartsAt ? "window_must_end_after_it_starts" : null;
     }
 
@@ -884,6 +889,7 @@ internal sealed partial class ContentAdminService(
         entity.EndsAt = spec.EndsAt;
         entity.RegionLocked = spec.RegionLocked;
         entity.LimitedEdition = spec.LimitedEdition;
+        entity.EditionSize = spec.EditionSize;
         entity.Enabled = spec.Enabled;
         entity.SortOrder = spec.SortOrder;
     }

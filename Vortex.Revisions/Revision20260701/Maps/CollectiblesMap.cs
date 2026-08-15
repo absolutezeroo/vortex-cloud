@@ -1,6 +1,7 @@
 using Vortex.Primitives.Messages.Outgoing.Collectibles;
 using Vortex.Primitives.Messages.Outgoing.Nft;
 using Vortex.Primitives.Networking.Revisions;
+using Vortex.Revisions.Configuration;
 using Vortex.Revisions.Revision20260701.Parsers.Collectibles;
 using Vortex.Revisions.Revision20260701.Serializers.Collectibles;
 using Vortex.Revisions.Revision20260701.Serializers.Nft;
@@ -9,8 +10,27 @@ namespace Vortex.Revisions.Revision20260701.Maps;
 
 internal sealed class CollectiblesMap : IRevisionMap
 {
+    private readonly ProtocolLimitsConfig _protocolLimits;
+
+    public CollectiblesMap(ProtocolLimitsConfig protocolLimits)
+    {
+        _protocolLimits = protocolLimits;
+    }
+
     public void RegisterInto(IRevisionMapBuilder builder)
     {
+        // Relics are offered through the ordinary trade window, so they are bounded by the same
+        // per-side limit as furniture rather than a rule of their own.
+        builder.MapParser(
+            MessageEvent.AddNftToTradeEvent,
+            new AddNftToTradeMessageParser(_protocolLimits.MaxTradeItems)
+        );
+        builder.MapSerializer(
+            typeof(TradeNftAssetsMessageComposer),
+            new TradeNftAssetsMessageComposerSerializer(
+                MessageComposer.TradeNftAssetsMessageComposer
+            )
+        );
         builder.MapParser(
             MessageEvent.GetCollectibleMintableItemTypesMessageEvent,
             new GetCollectibleMintableItemTypesMessageParser()

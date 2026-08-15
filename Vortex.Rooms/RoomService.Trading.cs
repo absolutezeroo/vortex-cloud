@@ -24,6 +24,23 @@ internal sealed partial class RoomService
             .ConfigureAwait(false);
     }
 
+    public async Task AddTradeAssetsAsync(
+        ActionContext ctx,
+        IReadOnlyList<int> assetIds,
+        CancellationToken ct
+    )
+    {
+        if (ctx.PlayerId <= 0 || ctx.RoomId <= 0 || assetIds.Count == 0)
+        {
+            return;
+        }
+
+        await _grainFactory
+            .GetRoomTrading(ctx.RoomId)
+            .AddTradeAssetsAsync(ctx.PlayerId, assetIds, ct)
+            .ConfigureAwait(false);
+    }
+
     public async Task AddTradeItemsAsync(
         ActionContext ctx,
         IReadOnlyList<int> itemIds,

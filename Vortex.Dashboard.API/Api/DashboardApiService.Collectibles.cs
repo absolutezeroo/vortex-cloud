@@ -251,6 +251,7 @@ internal sealed partial class DashboardApiService
                         t.EndsAt,
                         t.RegionLocked,
                         t.LimitedEdition,
+                        t.EditionSize,
                         t.Enabled,
                         t.SortOrder,
                     })
@@ -272,6 +273,14 @@ internal sealed partial class DashboardApiService
                     StringComparer.Ordinal
                 );
 
+                Dictionary<string, int> mintedByCode = await db
+                    .NftAssets.AsNoTracking()
+                    .Where(a => a.DeletedAt == null && mintableCodes.Contains(a.ProductCode))
+                    .GroupBy(a => a.ProductCode)
+                    .Select(g => new { ProductCode = g.Key, Count = g.Count() })
+                    .ToDictionaryAsync(r => r.ProductCode, r => r.Count, ct)
+                    .ConfigureAwait(false);
+
                 DateTime now = DateTime.UtcNow;
 
                 var mintableTypes = mintableRows
@@ -284,8 +293,14 @@ internal sealed partial class DashboardApiService
                         t.EndsAt,
                         t.RegionLocked,
                         t.LimitedEdition,
+                        t.EditionSize,
                         t.Enabled,
                         t.SortOrder,
+                        // How much of a limited edition is gone. Counted from the Relics that
+                        // exist, which is also what the mint checks against.
+                        mintedCount = mintedByCode.GetValueOrDefault(t.ProductCode),
+                        exhausted = t.EditionSize > 0
+                            && mintedByCode.GetValueOrDefault(t.ProductCode) >= t.EditionSize,
                         resolved = knownMintableFurniture.Contains(t.ProductCode),
                         // What the player sees: a type is only convertible while its window is
                         // open, and the client gives no reason for a closed one.
@@ -323,14 +338,41 @@ internal sealed partial class DashboardApiService
                         a.PlayerEntityId,
                         a.ProductCode,
                         a.StampCost,
+                        a.SerialNumber,
+                        a.EditionSize,
                         a.CreatedAt,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                List<int> assetIds = assetRows.Select(a => a.Id).ToList();
+
+                // Where each of them came from. This is the part of a chain worth keeping: an
+                // admin can answer "who had this before" without one.
+                var ledgerRows = await db
+                    .NftAssetLedger.AsNoTracking()
+                    .Where(l => assetIds.Contains(l.NftAssetEntityId))
+                    .OrderByDescending(l => l.Id)
+                    .Select(l => new
+                    {
+                        l.Id,
+                        assetId = l.NftAssetEntityId,
+                        l.FromPlayerEntityId,
+                        l.ToPlayerEntityId,
+                        l.Reason,
+                        l.CreatedAt,
                     })
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
                 Dictionary<int, string> minterNames = await LoadPlayerNamesAsync(
                         db,
-                        NormalizeIds(assetRows.Select(a => (int?)a.PlayerEntityId)),
+                        NormalizeIds(
+                            assetRows
+                                .Select(a => (int?)a.PlayerEntityId)
+                                .Concat(ledgerRows.Select(l => l.FromPlayerEntityId))
+                                .Concat(ledgerRows.Select(l => (int?)l.ToPlayerEntityId))
+                        ),
                         ct
                     )
                     .ConfigureAwait(false);
@@ -343,8 +385,23 @@ internal sealed partial class DashboardApiService
                         playerName = ResolvePlayerName(minterNames, a.PlayerEntityId),
                         a.ProductCode,
                         a.StampCost,
+                        a.SerialNumber,
+                        a.EditionSize,
                         mintedAt = a.CreatedAt,
                         iconUrl = BuildFurniIconUrl(a.ProductCode),
+                        history = ledgerRows
+                            .Where(l => l.assetId == a.Id)
+                            .Select(l => new
+                            {
+                                l.Id,
+                                fromPlayer = l.FromPlayerEntityId is null
+                                    ? null
+                                    : ResolvePlayerName(minterNames, l.FromPlayerEntityId.Value),
+                                toPlayer = ResolvePlayerName(minterNames, l.ToPlayerEntityId),
+                                l.Reason,
+                                at = l.CreatedAt,
+                            })
+                            .ToList(),
                     })
                     .ToList();
 

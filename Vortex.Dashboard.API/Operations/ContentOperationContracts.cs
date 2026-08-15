@@ -98,6 +98,7 @@ public sealed record MintableItemTypeRequest(
     DateTime EndsAt,
     bool RegionLocked,
     bool LimitedEdition,
+    int EditionSize,
     bool Enabled,
     int SortOrder,
     string Reason

@@ -91,6 +91,7 @@ public sealed record NftMintableItemTypeSpec(
     DateTime EndsAt,
     bool RegionLocked,
     bool LimitedEdition,
+    int EditionSize,
     bool Enabled,
     int SortOrder
 );

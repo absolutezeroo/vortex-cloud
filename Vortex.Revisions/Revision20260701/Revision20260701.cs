@@ -14,7 +14,7 @@ public sealed class Revision20260701(IOptions<ProtocolLimitsConfig> protocolLimi
             new CameraMap(),
             new CampaignMap(),
             new CatalogMap(),
-            new CollectiblesMap(),
+            new CollectiblesMap(protocolLimits.Value),
             new CompetitionMap(),
             new CraftingMap(),
             new FriendFurniMap(),

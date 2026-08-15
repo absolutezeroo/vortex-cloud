@@ -62,4 +62,7 @@ public enum MintOutcome
     NotMintable = 3,
     NotEnoughStamps = 4,
     Failed = 5,
+
+    /// <summary>Every copy of a limited edition has already been converted.</summary>
+    EditionExhausted = 6,
 }

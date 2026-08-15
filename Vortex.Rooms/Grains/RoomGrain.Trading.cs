@@ -16,6 +16,12 @@ public sealed partial class RoomGrain
         CancellationToken ct
     ) => TradingSystem.AddTradeItemsAsync(requesterId, itemIds, ct);
 
+    public Task AddTradeAssetsAsync(
+        PlayerId requesterId,
+        IReadOnlyList<int> assetIds,
+        CancellationToken ct
+    ) => TradingSystem.AddTradeAssetsAsync(requesterId, assetIds, ct);
+
     public Task RemoveTradeItemAsync(PlayerId requesterId, int itemId, CancellationToken ct) =>
         TradingSystem.RemoveTradeItemAsync(requesterId, itemId, ct);
 

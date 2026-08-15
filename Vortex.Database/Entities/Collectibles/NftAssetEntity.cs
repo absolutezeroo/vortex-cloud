@@ -23,6 +23,10 @@ namespace Vortex.Database.Entities.Collectibles;
 /// </remarks>
 [Table("nft_assets")]
 [Index(nameof(PlayerEntityId))]
+// The edition is a database invariant, not a checked-then-hoped one: two players converting the
+// last copy of the same classname at the same moment both count the same total, and the second
+// insert is what has to fail. Its mint is refunded rather than the edition oversold.
+[Index(nameof(ProductCode), nameof(SerialNumber), IsUnique = true)]
 public class NftAssetEntity : VortexEntity
 {
     [Column("player_id")]
@@ -48,6 +52,22 @@ public class NftAssetEntity : VortexEntity
     /// <summary>What the conversion cost, as it was priced on the day.</summary>
     [Column("stamp_cost")]
     public int StampCost { get; set; }
+
+    /// <summary>
+    /// Which one of its edition this is: 1 for the first ever converted of this classname, counting
+    /// up. Assigned at the mint and never changed — a Relic keeps its number through every trade,
+    /// which is the whole point of having one.
+    /// </summary>
+    [Column("serial_number")]
+    public int SerialNumber { get; set; }
+
+    /// <summary>
+    /// How many of this classname may ever exist, copied from the mintable type at the moment of
+    /// the mint. Zero is an open edition. It is copied rather than looked up so that lowering a cap
+    /// later cannot make an already-minted Relic read as "#7 of 5".
+    /// </summary>
+    [Column("edition_size")]
+    public int EditionSize { get; set; }
 
     [ForeignKey(nameof(PlayerEntityId))]
     public PlayerEntity? PlayerEntity { get; set; }

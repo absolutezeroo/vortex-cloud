@@ -55,4 +55,8 @@ public sealed record MintableTypeTerms
 
     [Id(1)]
     public required int StampPrice { get; init; }
+
+    /// <summary>How many may ever exist. Zero is an open edition.</summary>
+    [Id(2)]
+    public required int EditionSize { get; init; }
 }

@@ -72,7 +72,63 @@ internal sealed class NftMintingGrain(
 
         DateTime now = DateTime.UtcNow;
 
-        return [.. _mintableTypes.Where(type => IsOpen(type, now)).Select(ToSnapshot)];
+        CachedMintableType[] open = [.. _mintableTypes.Where(type => IsOpen(type, now))];
+
+        if (open.Length == 0)
+        {
+            return [];
+        }
+
+        // A sold-out edition leaves the list rather than staying in it and refusing. The client
+        // gives no reason for a refused conversion, so a row that can no longer be used is better
+        // gone — the same judgement as a closed window.
+        HashSet<string> exhausted = await ExhaustedEditionsAsync(open, ct).ConfigureAwait(true);
+
+        return [.. open.Where(type => !exhausted.Contains(type.ProductCode)).Select(ToSnapshot)];
+    }
+
+    /// <summary>
+    /// Which of the capped types have no copies left. Counted live rather than cached: unlike the
+    /// configuration around it, this changes every time somebody converts one.
+    /// </summary>
+    private async Task<HashSet<string>> ExhaustedEditionsAsync(
+        IReadOnlyList<CachedMintableType> types,
+        CancellationToken ct
+    )
+    {
+        string[] capped = [.. types.Where(type => type.EditionSize > 0).Select(t => t.ProductCode)];
+
+        if (capped.Length == 0)
+        {
+            return [];
+        }
+
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(true);
+
+        Dictionary<string, int> minted = await dbCtx
+            .NftAssets.AsNoTracking()
+            .Where(asset => capped.Contains(asset.ProductCode))
+            .GroupBy(asset => asset.ProductCode)
+            .Select(group => new { ProductCode = group.Key, Count = group.Count() })
+            .ToDictionaryAsync(
+                row => row.ProductCode,
+                row => row.Count,
+                StringComparer.OrdinalIgnoreCase,
+                ct
+            )
+            .ConfigureAwait(true);
+
+        return
+        [
+            .. types
+                .Where(type =>
+                    type.EditionSize > 0
+                    && minted.GetValueOrDefault(type.ProductCode) >= type.EditionSize
+                )
+                .Select(type => type.ProductCode),
+        ];
     }
 
     public async Task<ImmutableArray<MintTokenOfferSnapshot>> GetTokenOffersAsync(
@@ -114,6 +170,7 @@ internal sealed class NftMintingGrain(
             {
                 ProductCode = type.ProductCode,
                 StampPrice = type.StampPrice,
+                EditionSize = type.EditionSize,
             };
     }
 
@@ -200,6 +257,7 @@ internal sealed class NftMintingGrain(
                                 type.EndsAt,
                                 type.RegionLocked,
                                 type.LimitedEdition,
+                                type.EditionSize,
                                 type.Enabled
                             )
                             : null;
@@ -268,6 +326,7 @@ internal sealed class NftMintingGrain(
         DateTime EndsAt,
         bool RegionLocked,
         bool LimitedEdition,
+        int EditionSize,
         bool Enabled
     );
 }

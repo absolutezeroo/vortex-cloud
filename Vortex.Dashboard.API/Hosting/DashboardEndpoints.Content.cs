@@ -120,6 +120,7 @@ internal static partial class DashboardEndpoints
             body =>
                 !string.IsNullOrWhiteSpace(body.ProductCode)
                 && body.StampPrice >= 0
+                && body.EditionSize >= 0
                 && body.EndsAt > body.StartsAt
         );
         Map<DeleteMintableItemTypeRequest>(

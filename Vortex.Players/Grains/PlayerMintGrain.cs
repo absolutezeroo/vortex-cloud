@@ -180,6 +180,20 @@ internal sealed class PlayerMintGrain(
             return MintOutcome.NotEnoughStamps;
         }
 
+        // Counted against the Relics that exist rather than a counter column, so deleting a mintable
+        // type and recreating it cannot mint the same edition twice. Two players racing for the last
+        // copy both read the same total here; the unique index on (product_code, serial_number) is
+        // what actually settles it, and the loser's conversion is undone below.
+        int minted = await dbCtx
+            .NftAssets.AsNoTracking()
+            .CountAsync(asset => asset.ProductCode == terms.ProductCode, ct)
+            .ConfigureAwait(true);
+
+        if (terms.EditionSize > 0 && minted >= terms.EditionSize)
+        {
+            return MintOutcome.EditionExhausted;
+        }
+
         // Deleting the furniture row is the step that decides the whole conversion: it is scoped to
         // this player and to a row that is not already gone, so a repeat of this call deletes
         // nothing and spends nothing.
@@ -203,14 +217,32 @@ internal sealed class PlayerMintGrain(
 
         try
         {
-            dbCtx.NftAssets.Add(
-                new NftAssetEntity
+            NftAssetEntity asset = new()
+            {
+                PlayerEntityId = PlayerId.Value,
+                ProductCode = item.Definition.Name,
+                FurnitureDefinitionEntityId = item.Definition.Id,
+                SourceItemId = itemId,
+                StampCost = terms.StampPrice,
+                SerialNumber = minted + 1,
+                // Copied, not looked up: lowering a cap later must not make an existing Relic read
+                // as "#7 of 5".
+                EditionSize = terms.EditionSize,
+            };
+
+            dbCtx.NftAssets.Add(asset);
+
+            // The first line of this Relic's history, and the only one with no previous owner.
+            dbCtx.NftAssetLedger.Add(
+                new NftAssetLedgerEntity
                 {
-                    PlayerEntityId = PlayerId.Value,
-                    ProductCode = item.Definition.Name,
-                    FurnitureDefinitionEntityId = item.Definition.Id,
-                    SourceItemId = itemId,
-                    StampCost = terms.StampPrice,
+                    // The asset has no id until the save; the navigation is what tells EF to fill
+                    // the key in once it does.
+                    NftAssetEntity = asset,
+                    NftAssetEntityId = 0,
+                    FromPlayerEntityId = null,
+                    ToPlayerEntityId = PlayerId.Value,
+                    Reason = NftAssetLedgerReason.Minted,
                 }
             );
 
