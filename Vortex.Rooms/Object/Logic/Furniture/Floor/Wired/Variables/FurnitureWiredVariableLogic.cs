@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
+using Vortex.Logging.Extensions;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Providers;
@@ -62,7 +63,7 @@ public abstract class FurnitureWiredVariableLogic
         return store.TryGetValue(key, out value);
     }
 
-    public virtual Task<bool> GiveValueAsync(
+    public virtual async Task<bool> GiveValueAsync(
         WiredVariableKey key,
         WiredVariableValue value,
         bool replace = false
@@ -78,13 +79,27 @@ public abstract class FurnitureWiredVariableLogic
             || (store.ContainsKey(key) && !replace)
         )
         {
-            return Task.FromResult(false);
+            return false;
         }
 
-        return store.GiveValueAsync(key, value, replace);
+        bool existed = store.TryGetValue(key, out WiredVariableValue previous);
+
+        if (!await store.GiveValueAsync(key, value, replace))
+        {
+            return false;
+        }
+
+        await PublishChangeAsync(
+            key,
+            existed ? WiredVariableChangeKind.ValueChanged : WiredVariableChangeKind.Created,
+            existed ? previous.Value : 0,
+            value.Value
+        );
+
+        return true;
     }
 
-    public virtual Task<bool> SetValueAsync(
+    public virtual async Task<bool> SetValueAsync(
         IWiredExecutionContext ctx,
         WiredVariableKey key,
         WiredVariableValue value
@@ -96,10 +111,24 @@ public abstract class FurnitureWiredVariableLogic
             || !store.ContainsKey(key)
         )
         {
-            return Task.FromResult(false);
+            return false;
         }
 
-        return store.SetValueAsync(ctx, key, value);
+        store.TryGetValue(key, out WiredVariableValue previous);
+
+        if (!await store.SetValueAsync(ctx, key, value))
+        {
+            return false;
+        }
+
+        await PublishChangeAsync(
+            key,
+            WiredVariableChangeKind.ValueChanged,
+            previous.Value,
+            value.Value
+        );
+
+        return true;
     }
 
     public virtual bool RemoveValue(WiredVariableKey key)
@@ -109,8 +138,45 @@ public abstract class FurnitureWiredVariableLogic
             return false;
         }
 
-        return store.RemoveValue(key);
+        store.TryGetValue(key, out WiredVariableValue previous);
+
+        if (!store.RemoveValue(key))
+        {
+            return false;
+        }
+
+        // Removal is synchronous by contract (the whole variable store is, so a condition can read
+        // it), so the event is observed rather than awaited.
+        PublishChangeAsync(key, WiredVariableChangeKind.Deleted, previous.Value, 0)
+            .LogAndForget(_logger, "Failed to publish a wired variable deletion.");
+
+        return true;
     }
+
+    /// <summary>
+    /// Tells the room a value moved, so the "variable changed" trigger can fire. This sits on the
+    /// box rather than on the callers because every write reaches the store through here — a wired
+    /// action, the wired menu's set-value, anything later — and a trigger that only saw one of
+    /// those paths would look broken exactly when someone used the other.
+    /// </summary>
+    private Task PublishChangeAsync(
+        WiredVariableKey key,
+        WiredVariableChangeKind kind,
+        int previous,
+        int current
+    ) =>
+        _ctx.PublishRoomEventAsync(
+            new WiredVariableChangedEvent
+            {
+                RoomId = _ctx.RoomId,
+                CausedBy = ActionContext.CreateForWired(_ctx.RoomId),
+                Key = key,
+                Kind = kind,
+                Previous = previous,
+                Current = current,
+            },
+            CancellationToken.None
+        );
 
     public virtual Dictionary<WiredVariableValue, string> GetTextConnectors() => [];
 
