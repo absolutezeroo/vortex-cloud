@@ -8,6 +8,8 @@ internal sealed class DashboardAssetStore
     private const string HtmlContentTypeValue = "text/html; charset=utf-8";
     private const string CssContentType = "text/css; charset=utf-8";
     private const string JsContentType = "application/javascript; charset=utf-8";
+    private const string PngContentType = "image/png";
+    private const string SvgContentType = "image/svg+xml";
 
     public bool TryGetAsset(string assetName, out byte[] bytes, out string contentType)
     {
@@ -39,6 +41,8 @@ internal sealed class DashboardAssetStore
             ".css" => CssContentType,
             ".js" => JsContentType,
             ".html" => HtmlContentTypeValue,
+            ".png" => PngContentType,
+            ".svg" => SvgContentType,
             _ => "application/octet-stream",
         };
     }

@@ -91,7 +91,6 @@
     '/player-rewards': Award,
     '/collectibles': Gem,
     '/quests': Flag,
-    '/quests-stats': Flag,
     '/mystery-box': Package,
     '/prize-pools': Gift,
     '/targeted-offers': Ticket,
@@ -209,6 +208,44 @@
     return routeIcons[item.path] || Activity;
   }
 
+  // The hotel's own sidebar artwork, named `ui_navigator_icon_<route>.png` after the route it
+  // belongs to (`/quests` -> ui_navigator_icon_quests.png, `/navigator-config` ->
+  // ui_navigator_icon_navigator-config.png).
+  //
+  // Globbed rather than imported one by one, and that is the whole point: a static import of a file
+  // that has not been drawn yet fails the build, so forty-odd imports would mean drawing forty-odd
+  // icons before any of them could ship. This picks up whatever exists at build time and leaves the
+  // rest on their lucide glyph, so the set can be filled in one icon at a time.
+  const navImages = import.meta.glob('../assets/images/ui_navigator_icon_*.png', {
+    eager: true,
+    query: '?url',
+    import: 'default',
+  });
+
+  function imageFor(item) {
+    const slug = item.path.replace(/^\//, '');
+    return navImages[`../assets/images/ui_navigator_icon_${slug}.png`] ?? null;
+  }
+
+  // An icon whose filename does not match a route is the one failure this mechanism has, and it is
+  // a silent one: the file is bundled, no route ever asks for it, and the nav entry quietly keeps
+  // its lucide glyph. A misplaced underscore or a missing plural looks exactly like "not drawn
+  // yet". So the mismatches are named out loud, once, while developing.
+  if (import.meta.env.DEV) {
+    const known = new Set(NAV.map((item) => item.path.replace(/^\//, '')));
+    const orphans = Object.keys(navImages)
+      .map((key) => key.replace('../assets/images/ui_navigator_icon_', '').replace('.png', ''))
+      .filter((slug) => !known.has(slug));
+
+    if (orphans.length > 0) {
+      console.warn(
+        `[nav] ${orphans.length} sidebar icon(s) match no route and will never be shown: ` +
+          `${orphans.join(', ')}. The filename must be the route path, e.g. /pets-stats -> ` +
+          'ui_navigator_icon_pets-stats.png',
+      );
+    }
+  }
+
   function go(item) {
     if (item.allowed) {
       push(item.path);
@@ -256,6 +293,7 @@
         {#if !collapsed}
           {#each group.items as item}
             {@const Icon = iconFor(item)}
+            {@const iconImage = imageFor(item)}
             <a
               href={`#${item.path}`}
               class:active={$location === item.path}
@@ -264,8 +302,12 @@
               tabindex={item.allowed ? 0 : -1}
               on:click|preventDefault={() => go(item)}
             >
-              <span class="nav-icon" aria-hidden="true">
-                <Icon size={18} strokeWidth={1.9} />
+              <span class="nav-icon" class:nav-icon--art={iconImage} aria-hidden="true">
+                {#if iconImage}
+                  <img src={iconImage} alt="" width="24" height="24" />
+                {:else}
+                  <Icon size={18} strokeWidth={1.9} />
+                {/if}
               </span>
               <span class="nav-copy">
                 {#if !item.allowed}

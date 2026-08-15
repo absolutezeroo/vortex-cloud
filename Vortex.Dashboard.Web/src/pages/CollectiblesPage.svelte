@@ -12,6 +12,8 @@
   import OpResult from '../components/OpResult.svelte';
 
   import { formatNumber, formatDate } from '../lib/format.js';
+  import { CURRENCY_KIND, currencyChipClass } from '../lib/currency.js';
+  import CurrencyIcon from '../components/CurrencyIcon.svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer } from '../lib/session.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
@@ -133,6 +135,7 @@
       endsAt: isoLocal(inAYear),
       regionLocked: false,
       limitedEdition: false,
+      editionSize: 0,
       enabled: true,
       sortOrder: 0,
     };
@@ -625,7 +628,11 @@
                     {/if}
                   </span>
                 </td>
-                <td>{formatNumber(offer.emeraldPrice)}</td>
+                <td>
+                  <span class={currencyChipClass(CURRENCY_KIND.emeralds)}>
+                    <CurrencyIcon kind={CURRENCY_KIND.emeralds} /> {formatNumber(offer.emeraldPrice)}
+                  </span>
+                </td>
                 <td>{formatNumber(offer.score)}</td>
                 <td>{offer.rarity || '—'}</td>
                 <td>
@@ -775,6 +782,7 @@
             <tr>
               <th>{$t('collectibles.colItem')}</th>
               <th>{$t('collectibles.colStampPrice')}</th>
+              <th>{$t('collectibles.colEdition')}</th>
               <th>{$t('collectibles.colWindow')}</th>
               <th>{$t('collectibles.colOnSale')}</th>
               {#if canManage}<th></th>{/if}
@@ -797,13 +805,21 @@
                     {/if}
                   </span>
                 </td>
-                <td>{formatNumber(type.stampPrice)}</td>
+                <td>
+                  {#if type.editionSize > 0}
+                    {formatNumber(type.mintedCount)} / {formatNumber(type.editionSize)}
+                  {:else}
+                    {formatNumber(type.mintedCount)} / ∞
+                  {/if}
+                </td>
                 <td>{formatDate(type.startsAt)} → {formatDate(type.endsAt)}</td>
                 <td>
                   {#if !type.resolved}
                     <span class="status-badge status-badge--bad">{$t('collectibles.missingFurni')}</span>
                   {:else if !type.enabled}
                     <span class="status-badge">{$t('collectibles.offerDisabled')}</span>
+                  {:else if type.exhausted}
+                    <span class="status-badge status-badge--bad">{$t('collectibles.editionGone')}</span>
                   {:else if type.expired}
                     <span class="status-badge status-badge--bad">{$t('collectibles.windowClosed')}</span>
                   {:else if !type.open}
@@ -854,6 +870,7 @@
               endsAt: new Date(mintableForm.endsAt).toISOString(),
               regionLocked: Boolean(mintableForm.regionLocked),
               limitedEdition: Boolean(mintableForm.limitedEdition),
+              editionSize: Number(mintableForm.editionSize) || 0,
               enabled: Boolean(mintableForm.enabled),
               sortOrder: Number(mintableForm.sortOrder) || 0,
             },
@@ -885,6 +902,11 @@
           {$t('collectibles.closesAt')}
           <input type="datetime-local" bind:value={mintableForm.endsAt} />
           <small class="muted">{$t('collectibles.windowHelp')}</small>
+        </label>
+        <label>
+          {$t('collectibles.editionSize')}
+          <input type="number" min="0" bind:value={mintableForm.editionSize} />
+          <small class="muted">{$t('collectibles.editionSizeHelp')}</small>
         </label>
         <label>
           {$t('collectibles.sortOrder')}
@@ -938,7 +960,11 @@
               <tr>
                 <td><code>{offer.productCode}</code></td>
                 <td>{formatNumber(offer.amountTokens)}</td>
-                <td>{formatNumber(offer.silverPrice)}</td>
+                <td>
+                  <span class={currencyChipClass(CURRENCY_KIND.silver)}>
+                    <CurrencyIcon kind={CURRENCY_KIND.silver} /> {formatNumber(offer.silverPrice)}
+                  </span>
+                </td>
                 <td>
                   {#if offer.enabled}
                     <span class="status-badge status-badge--ok">{$t('collectibles.onSale')}</span>
@@ -1041,8 +1067,10 @@
             <tr>
               <th>{$t('collectibles.colPlayer')}</th>
               <th>{$t('collectibles.colItem')}</th>
+              <th>{$t('collectibles.colSerial')}</th>
               <th>{$t('collectibles.colStampPrice')}</th>
               <th>{$t('collectibles.colMintedAt')}</th>
+              <th>{$t('collectibles.colHistory')}</th>
             </tr>
           </thead>
           <tbody>
@@ -1057,8 +1085,24 @@
                     <code>{asset.productCode}</code>
                   </span>
                 </td>
+                <td>
+                  {#if asset.editionSize > 0}
+                    #{formatNumber(asset.serialNumber)} / {formatNumber(asset.editionSize)}
+                  {:else}
+                    #{formatNumber(asset.serialNumber)}
+                  {/if}
+                </td>
                 <td>{formatNumber(asset.stampCost)}</td>
                 <td>{formatDate(asset.mintedAt)}</td>
+                <td class="history">
+                  {#each asset.history as move}
+                    <div>
+                      <span class="status-badge">{move.reason}</span>
+                      {move.fromPlayer ?? '—'} → {move.toPlayer}
+                      <span class="muted">{formatDate(move.at)}</span>
+                    </div>
+                  {/each}
+                </td>
               </tr>
             {/each}
           </tbody>
@@ -1296,6 +1340,13 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
+  }
+
+  /* A Relic's whole history in one cell: short lines, and the oldest at the bottom, so the most
+     recent hand it passed through is the one read first. */
+  .history {
+    font-size: 0.85em;
+    line-height: 1.5;
   }
 
   /* These two editors carry a line of help under most fields, and the shared .inline-form aligns

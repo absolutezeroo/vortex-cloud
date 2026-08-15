@@ -1,19 +1,16 @@
-@import "tailwindcss";
+/* Tailwind is here for its reset, and for that alone. This dashboard is written in semantic
+   classes -- .panel, .status-badge, .editor-form -- declared in this file, not in utility classes
+   in the markup, and that is deliberate: the three themes below are switched by one attribute on
+   <html>, which works because the markup names what a thing *is* and this file decides how it
+   looks. Utilities would need the same CSS variables underneath and would only change the syntax.
 
-@theme {
-  --color-dashboard-page: #121d2a;
-  --color-dashboard-surface: #1a2939;
-  --color-dashboard-raised: #223347;
-  --color-dashboard-line: rgba(126, 166, 206, 0.14);
-  --color-dashboard-accent: #4fb0e6;
-  --color-dashboard-gold: #ffc21c;
-  --color-dashboard-success: #57c98a;
-  --color-dashboard-warning: #f2b23c;
-  --color-dashboard-danger: #ef6d76;
-  --font-dashboard: "Ubuntu", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
-  --radius-dashboard-card: 0.875rem;
-  --shadow-dashboard-panel: 0 14px 34px rgba(0, 0, 0, 0.34);
-}
+   There used to be a `@theme` block here declaring a dozen --color-dashboard-* tokens. Not one of
+   them was ever referenced: the palette that actually drives the dashboard is the --ink/--surface/
+   --line set defined per theme below. It was removed rather than left looking authoritative,
+   because a token that reads like the source of truth and is wired to nothing is a trap -- change
+   it and nothing happens, with nothing on screen to say why. If utilities are ever adopted, bring
+   the block back then and point it at the same values. */
+@import "tailwindcss";
 
 /* Three themes, switched by setting data-theme on <html> (see lib/theme.js). "blue" is the
    original/default look and must stay pixel-identical to what shipped before theming existed --
@@ -65,6 +62,13 @@
   --gold-ink: #2a2100;
   --gold-rgb: 255, 194, 28;
   --ok-rgb: 87, 201, 138;
+  /* One hue per currency, so a price says which money it is before its label is read. Credits
+     keep the hotel's gold; the others stay apart from each other and from the accent blue used
+     for links. */
+  --cur-duckets-rgb: 185, 140, 240;
+  --cur-diamonds-rgb: 90, 210, 232;
+  --cur-silver-rgb: 184, 198, 214;
+  --cur-emeralds-rgb: 79, 211, 154;
   --warning-rgb: 242, 178, 60;
   --danger-rgb: 239, 109, 118;
   --danger: #ef6d76;
@@ -112,6 +116,13 @@
   --gold-ink: #2a2100;
   --gold-rgb: 255, 194, 28;
   --ok-rgb: 99, 195, 157;
+  /* One hue per currency, so a price says which money it is before its label is read. Credits
+     keep the hotel's gold; the others stay apart from each other and from the accent blue used
+     for links. */
+  --cur-duckets-rgb: 190, 150, 245;
+  --cur-diamonds-rgb: 104, 216, 236;
+  --cur-silver-rgb: 190, 203, 218;
+  --cur-emeralds-rgb: 90, 216, 162;
   --warning-rgb: 219, 177, 94;
   --danger-rgb: 227, 124, 136;
   --danger: #e37c88;
@@ -159,6 +170,13 @@
   --gold-ink: #3a2c00;
   --gold-rgb: 234, 161, 0;
   --ok-rgb: 31, 157, 99;
+  /* One hue per currency, so a price says which money it is before its label is read. Credits
+     keep the hotel's gold; the others stay apart from each other and from the accent blue used
+     for links. */
+  --cur-duckets-rgb: 123, 75, 196;
+  --cur-diamonds-rgb: 15, 143, 168;
+  --cur-silver-rgb: 95, 114, 134;
+  --cur-emeralds-rgb: 15, 154, 104;
   --warning-rgb: 185, 121, 26;
   --danger-rgb: 207, 59, 69;
   --danger: #cf3b45;
@@ -330,6 +348,23 @@ button {
   color: var(--accent);
 }
 
+/* A tile holding real artwork instead of a stroke glyph. The glyph takes its colour from the tile
+   -- which is how the active state turns it dark on gold -- and a raster image cannot follow that,
+   so the tile keeps its own background rather than flooding gold behind a picture that would then
+   sit on it unchanged. The image is what says which page this is; the tile only has to frame it. */
+.nav-icon img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  /* Smooth, deliberately. The artwork is drawn at 48px for a 24px slot, so this is a *reduction* --
+     and nearest-neighbour reduction throws away every second pixel, which frays thin lines. On a
+     HiDPI screen the pair lands at 1:1 device pixels and no resampling happens at all, which is the
+     reason for drawing at 2x in the first place. (`pixelated` is the right answer when enlarging a
+     small sprite, which is the opposite case -- see the currency chips, drawn and shown at 17px.) */
+  image-rendering: auto;
+}
+
+
 .sidebar a:hover .nav-icon {
   border-color: rgba(var(--accent-rgb), 0.34);
   background: var(--surface-hover);
@@ -340,6 +375,12 @@ button {
   border-color: var(--gold);
   background: var(--gold);
   color: var(--gold-ink);
+}
+
+.sidebar a.active .nav-icon--art {
+  border-color: var(--gold);
+  background: var(--nav-icon-bg);
+  box-shadow: inset 0 0 0 1px var(--gold);
 }
 
 .nav-copy {
@@ -781,6 +822,42 @@ table {
   margin-top: 10px;
 }
 
+/* Three across instead of one per row.
+   A single column is right when a card expands in place -- the catalogue's offers open an editor
+   underneath themselves, and reading that in a third of the width would be worse. It is wrong when
+   the card is only ever read at a glance: a list of short cards down the left of a wide screen
+   wastes two thirds of it and turns twenty records into a scroll.
+   A modifier rather than a change to `.catalog-list`, because five pages share that class and only
+   some of them are the read-at-a-glance kind. Fixed at three rather than auto-fill: auto-fill on a
+   2000px screen gives five narrow columns, which is a different kind of unreadable. */
+.catalog-list--cards {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* Grid rows are as tall as their tallest card, and a card with fewer chips would otherwise end
+   halfway up its own border with its footer floating in the middle. Column layout plus an
+   auto top margin drops the footer to the bottom of every card in the row. */
+.catalog-list--cards .catalog-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.catalog-list--cards .catalog-card-detail {
+  margin-top: auto;
+}
+
+@media (max-width: 1500px) {
+  .catalog-list--cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1000px) {
+  .catalog-list--cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .catalog-card {
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -819,6 +896,41 @@ table {
   font-size: 0.78rem;
   font-weight: 700;
   white-space: nowrap;
+}
+
+/* One variant per currency, so a list of prices separates by colour before it is read.
+   The pill keeps its label either way -- colour is the second carrier, never the only one, which
+   is also what makes the neutral fallback below harmless rather than a missing state.
+   Applied through `currencyChipClass()` in lib/currency.js so the mapping from a wire value to a
+   colour lives in one place instead of being re-decided per page. */
+.cost-chip--credits {
+  border-color: rgba(var(--gold-rgb), 0.42);
+  background: rgba(var(--gold-rgb), 0.15);
+  color: var(--gold);
+}
+
+.cost-chip--duckets {
+  border-color: rgba(var(--cur-duckets-rgb), 0.42);
+  background: rgba(var(--cur-duckets-rgb), 0.15);
+  color: rgb(var(--cur-duckets-rgb));
+}
+
+.cost-chip--diamonds {
+  border-color: rgba(var(--cur-diamonds-rgb), 0.42);
+  background: rgba(var(--cur-diamonds-rgb), 0.15);
+  color: rgb(var(--cur-diamonds-rgb));
+}
+
+.cost-chip--silver {
+  border-color: rgba(var(--cur-silver-rgb), 0.42);
+  background: rgba(var(--cur-silver-rgb), 0.15);
+  color: rgb(var(--cur-silver-rgb));
+}
+
+.cost-chip--emeralds {
+  border-color: rgba(var(--cur-emeralds-rgb), 0.42);
+  background: rgba(var(--cur-emeralds-rgb), 0.15);
+  color: rgb(var(--cur-emeralds-rgb));
 }
 
 /* Nearly every button here is an icon followed by a label. Left as the default inline-block, that

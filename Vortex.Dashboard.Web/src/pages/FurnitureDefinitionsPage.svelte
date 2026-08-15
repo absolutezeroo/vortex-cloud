@@ -349,7 +349,7 @@
   {:else}
     <div class="furni-list">
       {#each items as item (item.id)}
-        <div class="furni-card">
+        <div class="furni-card" class:editing={editingId === item.id}>
           <div class="furni-row">
             <span class="furni-row-icon">
               {#if item.iconUrl}
@@ -547,8 +547,34 @@
 
   .furni-list {
     display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 8px;
     margin-top: 10px;
+  }
+
+  /* The editor unfolds inside the card it belongs to, so the card being edited takes the whole row
+     rather than squeezing a form into a quarter of the width. Reading the list four across and
+     editing full width is the pair worth having; either alone is a compromise. */
+  .furni-card.editing {
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 1700px) {
+    .furni-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 1300px) {
+    .furni-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 900px) {
+    .furni-list {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 
   .furni-card {
