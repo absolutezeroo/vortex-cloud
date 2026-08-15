@@ -14,10 +14,81 @@
     <EmbeddedResource Include="Assets\*.html" />
     <EmbeddedResource Include="Assets\*.css" />
     <EmbeddedResource Include="Assets\*.js" />
+    <!-- Images the front-end imports. Small ones (the 17px currency sprites, ~400 bytes each) never
+         reach this folder at all: Vite inlines anything under its 4 KB threshold straight into the
+         bundle as a data URI, which the dashboard CSP already allows. Anything larger is emitted
+         here as a hashed file instead, and without these two lines it would not be embedded in the
+         assembly and would 404. Silently, at that: a missing image only shows a fallback glyph. -->
+    <EmbeddedResource Include="Assets\*.png" />
+    <EmbeddedResource Include="Assets\*.svg" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Vortex.Database\Vortex.Database.csproj" />
     <ProjectReference Include="..\Vortex.Observability\Vortex.Observability.csproj" />
     <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
   </ItemGroup>
+
+  <!--
+    Builds the Svelte front-end before its output is embedded, so `dotnet build` alone is enough to
+    ship a change to the dashboard.
+
+    Without this the two halves drift apart in the most confusing way available: `npm run build`
+    writes to Assets\, but the browser is served the copy compiled into this assembly, so a
+    front-end change that was built but not re-embedded looks exactly like a change that never
+    worked. Editing, rebuilding and seeing nothing is not a state anybody should have to diagnose.
+
+    Set SkipDashboardFrontendBuild=true to opt out (a CI job that builds the front-end in its own
+    step, or a machine with no Node).
+  -->
+  <PropertyGroup>
+    <DashboardWebDir>$(MSBuildThisFileDirectory)..\Vortex.Dashboard.Web\</DashboardWebDir>
+  </PropertyGroup>
+
+  <Target
+    Name="BuildDashboardFrontend"
+    BeforeTargets="BeforeBuild"
+    Condition="'$(SkipDashboardFrontendBuild)' != 'true' AND Exists('$(DashboardWebDir)node_modules')"
+    Inputs="@(DashboardWebSource)"
+    Outputs="$(IntermediateOutputPath)dashboard-frontend.stamp"
+  >
+    <Exec Command="npm run build" WorkingDirectory="$(DashboardWebDir)" />
+
+    <!--
+      Re-gather the embedded files after Vite has written them. The globs at the top of this file
+      are expanded when the project is evaluated, which happens before any target runs, so the
+      hashed names Vite has just produced are not in that list: without this the build would embed
+      the *previous* set and the freshly built page would 404 on its own script.
+
+      The Remove has to repeat the same patterns rather than say `Assets\**`: a bare `**` is not a
+      valid MSBuild wildcard (it must be followed by a separator and a pattern), so it silently
+      matches nothing. That left both the old and the new hashed names in the list, and the compiler
+      failed on the old ones, which Vite had just deleted: CS1566, "could not find file".
+    -->
+    <ItemGroup>
+      <EmbeddedResource Remove="Assets\*.html;Assets\*.css;Assets\*.js;Assets\*.png;Assets\*.svg" />
+      <EmbeddedResource Include="Assets\*.html;Assets\*.css;Assets\*.js;Assets\*.png;Assets\*.svg" />
+    </ItemGroup>
+
+    <Touch Files="$(IntermediateOutputPath)dashboard-frontend.stamp" AlwaysCreate="true" />
+  </Target>
+
+  <!--
+    What the front-end is built from. Declared outside the target so MSBuild can compare timestamps
+    and skip the whole thing when nothing has changed, so an untouched dashboard costs no build time.
+  -->
+  <ItemGroup>
+    <DashboardWebSource
+      Include="$(DashboardWebDir)src\**\*"
+      Exclude="$(DashboardWebDir)node_modules\**\*"
+    />
+    <DashboardWebSource Include="$(DashboardWebDir)package.json;$(DashboardWebDir)vite.config.js;$(DashboardWebDir)index.html" />
+  </ItemGroup>
+
+  <Target
+    Name="WarnDashboardFrontendSkipped"
+    BeforeTargets="BeforeBuild"
+    Condition="'$(SkipDashboardFrontendBuild)' != 'true' AND !Exists('$(DashboardWebDir)node_modules')"
+  >
+    <Warning Text="Dashboard front-end not rebuilt: $(DashboardWebDir)node_modules is missing. Run 'npm install' there, or set SkipDashboardFrontendBuild=true. The assets already committed under Assets\ are embedded as-is." />
+  </Target>
 </Project>
