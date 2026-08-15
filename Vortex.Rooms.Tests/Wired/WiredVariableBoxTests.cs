@@ -18,6 +18,7 @@ using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Snapshots.Wired.Variables;
 using Vortex.Primitives.Rooms.Wired;
 using Vortex.Primitives.Rooms.Wired.Variable;
+using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Actions;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Conditions;
 using Vortex.Rooms.Wired;
 using Vortex.Tests.Support;
@@ -26,12 +27,12 @@ using Xunit;
 namespace Vortex.Rooms.Tests.Wired;
 
 /// <summary>
-/// Reading a wired variable back. The room could already write variables — give, remove, select by
-/// — but nothing could ask what one held, which left every counter, score and progression a player
-/// could build write-only. These pin the two boxes that close that: "is it set" and "how does it
-/// compare".
+/// The boxes that read a wired variable back and the one that changes it. The room could already
+/// write variables — give, remove, select by — but nothing could ask what one held and nothing
+/// could do arithmetic on it, which left every counter, score and progression a player might build
+/// write-only and fixed.
 /// </summary>
-public sealed class WiredVariableReadingTests
+public sealed class WiredVariableBoxTests
 {
     private static readonly RoomId Room = new(1);
 
@@ -213,7 +214,142 @@ public sealed class WiredVariableReadingTests
         box.Evaluate(Trigger()).Should().BeTrue();
     }
 
+    [Fact]
+    public async Task ChangeVariable_FirstWriteCreatesTheValue_ThenAccumulates()
+    {
+        FakeVariable variable = new(WiredVariableTargetType.User);
+
+        TestChangeVariable box = new(
+            StubContext(variable),
+            ChangeConfig(WiredVariableOperation.Add, operand: 5)
+        );
+
+        // SetValueAsync only updates a key that already exists, so without the Give fallback the
+        // very first "add 5" would be dropped and the variable would stay absent.
+        await box.ExecuteAsync(Execution(players: [Triggerer]), CancellationToken.None);
+        await box.ExecuteAsync(Execution(players: [Triggerer]), CancellationToken.None);
+
+        variable.Values[Key(WiredVariableTargetType.User, (int)Triggerer)].Value.Should().Be(10);
+    }
+
+    [Fact]
+    public async Task ChangeVariable_StartsFromZero_NotFromTheStoresDefault()
+    {
+        FakeVariable variable = new(WiredVariableTargetType.User);
+
+        TestChangeVariable box = new(
+            StubContext(variable),
+            ChangeConfig(WiredVariableOperation.Add, operand: 5)
+        );
+
+        await box.ExecuteAsync(Execution(players: [Triggerer]), CancellationToken.None);
+
+        // WiredVariableValue.Default is 1: reading the miss would make this 6.
+        variable.Values[Key(WiredVariableTargetType.User, (int)Triggerer)].Value.Should().Be(5);
+    }
+
+    [Fact]
+    public async Task ChangeVariable_WritesEveryTargetInTheSelection()
+    {
+        FakeVariable variable = new(WiredVariableTargetType.Furni);
+
+        TestChangeVariable box = new(
+            StubContext(variable),
+            ChangeConfig(
+                WiredVariableOperation.Assign,
+                operand: 3,
+                target: WiredVariableTargetType.Furni
+            )
+        );
+
+        await box.ExecuteAsync(Execution(furni: [Furni, Furni + 1]), CancellationToken.None);
+
+        variable.Values[Key(WiredVariableTargetType.Furni, Furni)].Value.Should().Be(3);
+        variable.Values[Key(WiredVariableTargetType.Furni, Furni + 1)].Value.Should().Be(3);
+    }
+
+    [Fact]
+    public async Task ChangeVariable_ReferenceOperandThatHoldsNothing_WritesNothing()
+    {
+        FakeVariable variable = new(WiredVariableTargetType.User);
+
+        TestChangeVariable box = new(
+            StubContext(variable),
+            ChangeConfig(WiredVariableOperation.Assign, operand: 7, referenceVariableId: "9999")
+        );
+
+        await box.ExecuteAsync(Execution(players: [Triggerer]), CancellationToken.None);
+
+        // Assigning the literal instead of the missing reference would write a number the box was
+        // never configured with.
+        variable.Values.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task ChangeVariable_UnknownOperation_LeavesTheValueAlone()
+    {
+        FakeVariable variable = new(WiredVariableTargetType.User);
+        variable.Values[Key(WiredVariableTargetType.User, (int)Triggerer)] = new(4);
+
+        TestChangeVariable box = new(
+            StubContext(variable),
+            ChangeConfig((WiredVariableOperation)111, operand: 5)
+        );
+
+        await box.ExecuteAsync(Execution(players: [Triggerer]), CancellationToken.None);
+
+        variable.Values[Key(WiredVariableTargetType.User, (int)Triggerer)].Value.Should().Be(4);
+    }
+
     // ---- harness -------------------------------------------------------------------------------
+
+    private static WiredData ChangeConfig(
+        WiredVariableOperation operation,
+        int operand,
+        string? referenceVariableId = null,
+        WiredVariableTargetType target = WiredVariableTargetType.User
+    ) =>
+        new()
+        {
+            IntParams =
+            [
+                (int)target,
+                (int)operation,
+                referenceVariableId is null ? 0 : 1,
+                operand < 0 ? -1 : 0,
+                operand,
+                (int)target,
+            ],
+            VariableIds = [VariableId, referenceVariableId ?? string.Empty],
+        };
+
+    private static IWiredExecutionContext Execution(PlayerId[]? players = null, int[]? furni = null)
+    {
+        WiredSelectionSet selection = Selection(players, furni);
+
+        return FakeProxy.Create<IWiredExecutionContext>(call =>
+            call.Method.Name == "GetEffectiveSelectionAsync"
+                ? Task.FromResult<IWiredSelectionSet>(selection)
+                : null
+        );
+    }
+
+    private static WiredSelectionSet Selection(PlayerId[]? players, int[]? furni)
+    {
+        WiredSelectionSet selection = new();
+
+        foreach (PlayerId player in players ?? [])
+        {
+            selection.SelectedPlayerIds.Add((int)player);
+        }
+
+        foreach (int id in furni ?? [])
+        {
+            selection.SelectedFurniIds.Add(id);
+        }
+
+        return selection;
+    }
 
     private static WiredVariableKey Key(WiredVariableTargetType target, int targetId) =>
         new(WiredVariableId.Parse(VariableId), target, targetId);
@@ -253,17 +389,7 @@ public sealed class WiredVariableReadingTests
             CausedBy = ActionContext.CreateForPlayer(Triggerer, Room),
         };
 
-        WiredSelectionSet selection = new();
-
-        foreach (PlayerId player in players ?? [])
-        {
-            selection.SelectedPlayerIds.Add((int)player);
-        }
-
-        foreach (int id in furni ?? [])
-        {
-            selection.SelectedFurniIds.Add(id);
-        }
+        WiredSelectionSet selection = Selection(players, furni);
 
         return FakeProxy.Create<IWiredProcessingContext>(call =>
             call.Method.Name switch
@@ -390,6 +516,16 @@ public sealed class WiredVariableReadingTests
     private sealed class TestNegativeHasVariable : WiredNegativeConditionHasVariable
     {
         public TestNegativeHasVariable(IRoomFloorItemContext ctx, WiredData data)
+            : base(null!, new StuffDataFactory(), ctx)
+        {
+            data.AttatchRules(GetIntParamRules());
+            _wiredData = data;
+        }
+    }
+
+    private sealed class TestChangeVariable : WiredActionChangeVariable
+    {
+        public TestChangeVariable(IRoomFloorItemContext ctx, WiredData data)
             : base(null!, new StuffDataFactory(), ctx)
         {
             data.AttatchRules(GetIntParamRules());
