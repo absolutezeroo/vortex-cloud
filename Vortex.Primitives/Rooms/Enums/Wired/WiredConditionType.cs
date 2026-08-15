@@ -42,7 +42,7 @@ public enum WiredConditionType
     USER_DIRECTION = 37,
     INPUT_SOURCE_QUANTITY = 38,
     CAN_PERFORM_MOVE = 39,
-    var_4934 = 40,
+    HAS_VARIABLE = 40,
     NOT_HAS_VARIABLE = 41,
     VARIABLE_VALUE = 42,
     VARIABLE_AGE = 43,
