@@ -57,6 +57,8 @@ public class WiredActionBotTalkToAvatar(
             return true;
         }
 
+        text = await ApplyTextAddonsAsync(text, ctx, ct);
+
         bool whisper = _wiredData.IntParams.Count > 0 && _wiredData.GetIntParam<int>(0) == Whisper;
 
         IWiredSelectionSet selection = await ctx.GetEffectiveSelectionAsync(this, ct);

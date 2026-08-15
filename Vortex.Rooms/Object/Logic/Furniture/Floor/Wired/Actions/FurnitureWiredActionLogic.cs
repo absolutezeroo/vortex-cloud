@@ -31,6 +31,43 @@ public abstract class FurnitureWiredActionLogic(
         Task.FromResult(true);
 
     /// <summary>
+    /// Runs a text the action is about to say through the pile's text add-ons, which is what turns
+    /// <c>$(name)</c> into a username, a furni's name or a variable's value. Every action that says
+    /// something goes through here, so a placeholder works the same in a chat bubble, a bot's line
+    /// and a kick message.
+    /// </summary>
+    protected async Task<string> ApplyTextAddonsAsync(
+        string text,
+        IWiredExecutionContext ctx,
+        CancellationToken ct
+    )
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return text;
+        }
+
+        foreach (IWiredAddon addon in ctx.Addons)
+        {
+            try
+            {
+                text = await addon.ApplyToTextAsync(text, ctx, ct);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    ex,
+                    "Wired text add-on {AddonType} failed in room {RoomId}; the text is said as written.",
+                    addon.GetType().Name,
+                    _ctx.RoomId
+                );
+            }
+        }
+
+        return text;
+    }
+
+    /// <summary>
     /// The tile of the first selected floor item, which is how every "send something to the furni"
     /// action reads its destination. False when the selection holds no floor item — a stack whose
     /// target furni has been picked up, which is ordinary rather than an error.

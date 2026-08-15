@@ -50,7 +50,7 @@ public sealed class WiredMembershipBoxTests
     [Fact]
     public void HandItem_MatchesOnlyTheConfiguredItem()
     {
-        FakeLookup lookup = new(Player(Triggerer, carryItemId: 5));
+        FakeRoomLookup lookup = new(Player(Triggerer, carryItemId: 5));
         TestHandItemCondition condition = new(StubContext(lookup: lookup), Params(5));
 
         condition.Evaluate(Trigger()).Should().BeTrue();
@@ -59,7 +59,7 @@ public sealed class WiredMembershipBoxTests
     [Fact]
     public void HandItem_DoesNotMatchADifferentItem()
     {
-        FakeLookup lookup = new(Player(Triggerer, carryItemId: 5));
+        FakeRoomLookup lookup = new(Player(Triggerer, carryItemId: 5));
         TestHandItemCondition condition = new(StubContext(lookup: lookup), Params(2));
 
         condition.Evaluate(Trigger()).Should().BeFalse();
@@ -70,8 +70,8 @@ public sealed class WiredMembershipBoxTests
     {
         // handitem0 is "None" on the client's own dropdown, so 0 is a real choice and not a
         // "leave this unset" sentinel.
-        FakeLookup empty = new(Player(Triggerer, carryItemId: 0));
-        FakeLookup holding = new(Player(Triggerer, carryItemId: 5));
+        FakeRoomLookup empty = new(Player(Triggerer, carryItemId: 0));
+        FakeRoomLookup holding = new(Player(Triggerer, carryItemId: 5));
 
         new TestHandItemCondition(StubContext(lookup: empty), Params(0))
             .Evaluate(Trigger())
@@ -87,7 +87,7 @@ public sealed class WiredMembershipBoxTests
     [Fact]
     public void HandItem_NegativeVariant_FlipsTheAnswer()
     {
-        FakeLookup lookup = new(Player(Triggerer, carryItemId: 5));
+        FakeRoomLookup lookup = new(Player(Triggerer, carryItemId: 5));
 
         new TestNegativeHandItemCondition(StubContext(lookup: lookup), Params(5))
             .Evaluate(Trigger())
@@ -103,7 +103,7 @@ public sealed class WiredMembershipBoxTests
     [Fact]
     public async Task HandItemSelector_PicksOnlyTheHolders()
     {
-        FakeLookup lookup = new(
+        FakeRoomLookup lookup = new(
             Player(Triggerer, carryItemId: 5),
             Player(Bystander, carryItemId: 0)
         );
@@ -119,7 +119,7 @@ public sealed class WiredMembershipBoxTests
     {
         FakeFurniAccess furni = new();
         TestGroupCondition condition = new(
-            StubContext(groupId: 42, furni: furni, lookup: new FakeLookup()),
+            StubContext(groupId: 42, furni: furni, lookup: new FakeRoomLookup()),
             Config(stringParam: string.Empty)
         );
 
@@ -133,7 +133,7 @@ public sealed class WiredMembershipBoxTests
     {
         FakeFurniAccess furni = new();
         TestGroupCondition condition = new(
-            StubContext(groupId: 42, furni: furni, lookup: new FakeLookup()),
+            StubContext(groupId: 42, furni: furni, lookup: new FakeRoomLookup()),
             Config(stringParam: "9")
         );
 
@@ -151,7 +151,7 @@ public sealed class WiredMembershipBoxTests
         IRoomFloorItemContext ctx = StubContext(
             groupId: 42,
             furni: furni,
-            lookup: new FakeLookup()
+            lookup: new FakeRoomLookup()
         );
 
         new TestGroupCondition(ctx, Config(string.Empty)).Evaluate(Trigger()).Should().BeTrue();
@@ -169,7 +169,7 @@ public sealed class WiredMembershipBoxTests
 
         // "Current group" in a room that belongs to no guild: nothing to be a member of.
         new TestGroupCondition(
-            StubContext(groupId: null, furni: furni, lookup: new FakeLookup()),
+            StubContext(groupId: null, furni: furni, lookup: new FakeRoomLookup()),
             Config(string.Empty)
         )
             .Evaluate(Trigger())
@@ -186,7 +186,7 @@ public sealed class WiredMembershipBoxTests
         IRoomFloorItemContext ctx = StubContext(
             groupId: 42,
             furni: furni,
-            lookup: new FakeLookup()
+            lookup: new FakeRoomLookup()
         );
 
         new TestNegativeGroupCondition(ctx, Config(string.Empty))
@@ -206,7 +206,7 @@ public sealed class WiredMembershipBoxTests
         FakeFurniAccess furni = new();
         furni.Members[42] = [Triggerer];
 
-        FakeLookup lookup = new(Player(Triggerer), Player(Bystander));
+        FakeRoomLookup lookup = new(Player(Triggerer), Player(Bystander));
         TestGroupSelector selector = new(
             StubContext(groupId: 42, furni: furni, lookup: lookup),
             Config(string.Empty)
@@ -227,12 +227,12 @@ public sealed class WiredMembershipBoxTests
         FakeFurniAccess blank = new();
 
         await new TestBadgeCondition(
-            StubContext(furni: configured, lookup: new FakeLookup()),
+            StubContext(furni: configured, lookup: new FakeRoomLookup()),
             Config("ADM")
         ).PrepareAsync(Trigger(), CancellationToken.None);
 
         await new TestBadgeCondition(
-            StubContext(furni: blank, lookup: new FakeLookup()),
+            StubContext(furni: blank, lookup: new FakeRoomLookup()),
             Config(string.Empty)
         ).PrepareAsync(Trigger(), CancellationToken.None);
 
@@ -246,7 +246,7 @@ public sealed class WiredMembershipBoxTests
         FakeFurniAccess furni = new();
         furni.WornBadges[Triggerer] = ["ADM"];
 
-        IRoomFloorItemContext ctx = StubContext(furni: furni, lookup: new FakeLookup());
+        IRoomFloorItemContext ctx = StubContext(furni: furni, lookup: new FakeRoomLookup());
 
         new TestBadgeCondition(ctx, Config("ADM")).Evaluate(Trigger()).Should().BeTrue();
         new TestBadgeCondition(ctx, Config("HC1")).Evaluate(Trigger()).Should().BeFalse();
@@ -263,7 +263,7 @@ public sealed class WiredMembershipBoxTests
         FakeFurniAccess furni = new();
         furni.WornBadges[Triggerer] = ["ADM"];
 
-        IRoomFloorItemContext ctx = StubContext(furni: furni, lookup: new FakeLookup());
+        IRoomFloorItemContext ctx = StubContext(furni: furni, lookup: new FakeRoomLookup());
 
         new TestNegativeBadgeCondition(ctx, Config("ADM")).Evaluate(Trigger()).Should().BeFalse();
         new TestNegativeBadgeCondition(ctx, Config("HC1")).Evaluate(Trigger()).Should().BeTrue();
@@ -406,51 +406,6 @@ public sealed class WiredMembershipBoxTests
 
         public Task<bool> KickUserFromWiredAsync(PlayerId targetPlayerId, CancellationToken ct) =>
             Task.FromResult(false);
-    }
-
-    private sealed class FakeLookup(params IRoomPlayer[] players) : IRoomLookup
-    {
-        private readonly IRoomPlayer[] _players = players;
-
-        public IReadOnlyCollection<IRoomAvatar> Avatars => _players;
-
-        public IReadOnlyCollection<IRoomItem> Items => [];
-
-        public int AvatarCount => _players.Length;
-
-        public IRoomAvatar? FindAvatarByPlayer(PlayerId playerId) =>
-            _players.FirstOrDefault(p => p.PlayerId == playerId);
-
-        public bool TryFindAvatarByPlayer(
-            PlayerId playerId,
-            [NotNullWhen(true)] out IRoomAvatar? avatar
-        )
-        {
-            avatar = FindAvatarByPlayer(playerId);
-
-            return avatar is not null;
-        }
-
-        public IRoomItem? FindItem(RoomObjectId objectId) => null;
-
-        public IRoomAvatar? FindAvatar(RoomObjectId objectId) => null;
-
-        public bool TryFindItem(RoomObjectId objectId, [NotNullWhen(true)] out IRoomItem? item)
-        {
-            item = null;
-
-            return false;
-        }
-
-        public bool TryFindAvatar(
-            RoomObjectId objectId,
-            [NotNullWhen(true)] out IRoomAvatar? avatar
-        )
-        {
-            avatar = null;
-
-            return false;
-        }
     }
 
     // The boxes take their configuration from the persisted wired data the room fills in; these

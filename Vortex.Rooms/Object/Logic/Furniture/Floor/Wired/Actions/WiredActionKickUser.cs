@@ -40,7 +40,7 @@ public class WiredActionKickUser(
     public override async Task<bool> ExecuteAsync(IWiredExecutionContext ctx, CancellationToken ct)
     {
         IWiredSelectionSet selection = await ctx.GetEffectiveSelectionAsync(this, ct);
-        string message = _wiredData.StringParam;
+        string message = await ApplyTextAddonsAsync(_wiredData.StringParam, ctx, ct);
 
         foreach (int playerId in selection.SelectedPlayerIds)
         {

@@ -52,7 +52,7 @@ public class WiredActionShowMessage(
 
     public override async Task<bool> ExecuteAsync(IWiredExecutionContext ctx, CancellationToken ct)
     {
-        string text = _wiredData.StringParam;
+        string text = await ApplyTextAddonsAsync(_wiredData.StringParam, ctx, ct);
 
         if (string.IsNullOrWhiteSpace(text))
         {

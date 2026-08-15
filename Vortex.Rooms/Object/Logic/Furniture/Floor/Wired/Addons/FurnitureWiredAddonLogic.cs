@@ -26,4 +26,10 @@ public abstract class FurnitureWiredAddonLogic(
 
     public virtual Task AfterEffectsAsync(IWiredProcessingContext ctx, CancellationToken ct) =>
         Task.CompletedTask;
+
+    public virtual Task<string> ApplyToTextAsync(
+        string text,
+        IWiredExecutionContext ctx,
+        CancellationToken ct
+    ) => Task.FromResult(text);
 }

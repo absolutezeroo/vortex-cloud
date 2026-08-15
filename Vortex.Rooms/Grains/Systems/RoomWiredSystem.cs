@@ -543,6 +543,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             {
                 WiredExecutionContext ctx = new(_roomGrain)
                 {
+                    Addons = pending.Stack.Addons,
                     Policy = pending.Policy,
                     Selected = new WiredSelectionSet().UnionWith(pending.Selected),
                     SelectorPool = new WiredSelectionSet().UnionWith(pending.SelectorPool),

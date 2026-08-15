@@ -25,6 +25,8 @@ public sealed class WiredExecutionContext(RoomGrain roomGrain)
     : WiredContext(roomGrain),
         IWiredExecutionContext
 {
+    public List<IWiredAddon> Addons { get; init; } = [];
+
     public List<WiredUserMovementSnapshot> UserMoves { get; } = [];
     public List<WiredFloorItemMovementSnapshot> FloorItemMoves { get; } = [];
     public List<WiredWallItemMovementSnapshot> WallItemMoves { get; } = [];

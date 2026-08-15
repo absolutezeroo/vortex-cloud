@@ -46,6 +46,8 @@ public class WiredActionBotTalk(
             return true;
         }
 
+        text = await ApplyTextAddonsAsync(text, ctx, ct);
+
         bool shout = _wiredData.IntParams.Count > 0 && _wiredData.GetIntParam<int>(0) == Shout;
 
         await ctx.ProcessBotChatAsync(

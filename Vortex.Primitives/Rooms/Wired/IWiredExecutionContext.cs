@@ -17,6 +17,11 @@ namespace Vortex.Primitives.Rooms.Wired;
 
 public interface IWiredExecutionContext : IWiredContext
 {
+    /// <summary>The add-ons of the pile whose actions are running, so an action that says something
+    /// can put its text through the text placeholders. The pile itself is not exposed: an action has
+    /// no business reaching its siblings.</summary>
+    public List<IWiredAddon> Addons { get; }
+
     public List<WiredUserMovementSnapshot> UserMoves { get; }
     public List<WiredFloorItemMovementSnapshot> FloorItemMoves { get; }
     public List<WiredWallItemMovementSnapshot> WallItemMoves { get; }
