@@ -54,6 +54,20 @@ public abstract class WiredInternalVariable(RoomGrain roomGrain) : IWiredInterna
 
     public virtual bool RemoveValue(WiredVariableKey key) => false;
 
+    /// <summary>Never: a computed variable is derived from room state on every read, so it has no
+    /// moment at which it was written.</summary>
+    public virtual bool TryGetTimestamps(
+        in WiredVariableKey key,
+        out long createdAtMs,
+        out long updatedAtMs
+    )
+    {
+        createdAtMs = 0;
+        updatedAtMs = 0;
+
+        return false;
+    }
+
     public WiredVariableSnapshot GetVarSnapshot() => _snapshot ??= BuildSnapshot();
 
     private WiredVariableSnapshot BuildSnapshot()

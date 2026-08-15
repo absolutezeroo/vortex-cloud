@@ -153,6 +153,21 @@ public abstract class FurnitureWiredVariableLogic
         return true;
     }
 
+    public virtual bool TryGetTimestamps(
+        in WiredVariableKey key,
+        out long createdAtMs,
+        out long updatedAtMs
+    )
+    {
+        createdAtMs = 0;
+        updatedAtMs = 0;
+
+        return CanBind(key)
+            && TryGetStore(key, out IWiredKeyValueStore? store)
+            && store is not null
+            && store.TryGetTimestamps(key, out createdAtMs, out updatedAtMs);
+    }
+
     /// <summary>
     /// Tells the room a value moved, so the "variable changed" trigger can fire. This sits on the
     /// box rather than on the callers because every write reaches the store through here — a wired

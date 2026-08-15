@@ -51,4 +51,21 @@ public abstract class FurnitureWiredVariableConditionLogic(
         WiredVariableTargetType target,
         out WiredVariableValue value
     ) => WiredVariableAccess.TryRead(_ctx.Furni, variableId, target, _resolvedTargets, out value);
+
+    /// <summary>When the variable was written, for the age condition. Only meaningful when it
+    /// returns true — see <see cref="WiredVariableAccess.TryReadTimestamps"/>.</summary>
+    protected bool TryReadTimestamps(
+        string variableId,
+        WiredVariableTargetType target,
+        out long createdAtMs,
+        out long updatedAtMs
+    ) =>
+        WiredVariableAccess.TryReadTimestamps(
+            _ctx.Furni,
+            variableId,
+            target,
+            _resolvedTargets,
+            out createdAtMs,
+            out updatedAtMs
+        );
 }

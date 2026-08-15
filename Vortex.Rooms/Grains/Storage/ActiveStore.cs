@@ -6,6 +6,20 @@ namespace Vortex.Rooms.Grains.Storage;
 
 public abstract class ActiveStore : IWiredVariableStore
 {
+    public virtual bool TryGetTimestamps(
+        in WiredVariableKey key,
+        out long createdAtMs,
+        out long updatedAtMs
+    )
+    {
+        createdAtMs = 0;
+        updatedAtMs = 0;
+
+        return TryGetStore(key, out KeyValueStore? store)
+            && store is not null
+            && store.TryGetTimestamps(key, out createdAtMs, out updatedAtMs);
+    }
+
     public virtual bool TryGetValue(in WiredVariableKey key, out WiredVariableValue value)
     {
         value = WiredVariableValue.Default;

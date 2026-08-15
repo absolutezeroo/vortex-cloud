@@ -29,4 +29,11 @@ public interface IWiredKeyValueStore
     );
 
     bool RemoveValue(WiredVariableKey key);
+
+    /// <summary>
+    /// When this key was first written and last written, in Unix milliseconds. False when the key
+    /// is absent, or when it was stored before the room started keeping times — an age that cannot
+    /// be known must not read as an age of zero.
+    /// </summary>
+    bool TryGetTimestamps(in WiredVariableKey key, out long createdAtMs, out long updatedAtMs);
 }

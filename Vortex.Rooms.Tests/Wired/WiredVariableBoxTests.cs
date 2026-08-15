@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -301,7 +302,95 @@ public sealed class WiredVariableBoxTests
         variable.Values[Key(WiredVariableTargetType.User, (int)Triggerer)].Value.Should().Be(4);
     }
 
+    [Fact]
+    public async Task VariableAge_OlderThan_ComparesAgainstTheChosenMoment()
+    {
+        long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        FakeVariable variable = new(WiredVariableTargetType.User);
+        WiredVariableKey key = Key(WiredVariableTargetType.User, (int)Triggerer);
+
+        variable.Values[key] = new(1);
+        // Created two hours ago, written again a minute ago.
+        variable.Stamps[key] = (now - (2 * 3600 * 1000), now - 60_000);
+
+        TestVariableAge fromCreation = new(
+            StubContext(variable),
+            AgeConfig(WiredComparisonType.GreaterThan, 1, WiredTimeUnit.Hours, fromCreation: true)
+        );
+
+        await fromCreation.PrepareAsync(Trigger(players: [Triggerer]), CancellationToken.None);
+        fromCreation.Evaluate(Trigger()).Should().BeTrue();
+
+        // The same box measured from the last write is only a minute old.
+        TestVariableAge fromUpdate = new(
+            StubContext(variable),
+            AgeConfig(WiredComparisonType.GreaterThan, 1, WiredTimeUnit.Hours, fromCreation: false)
+        );
+
+        await fromUpdate.PrepareAsync(Trigger(players: [Triggerer]), CancellationToken.None);
+        fromUpdate.Evaluate(Trigger()).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task VariableAge_YoungerThan_IsTheOtherComparison()
+    {
+        long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        FakeVariable variable = new(WiredVariableTargetType.User);
+        WiredVariableKey key = Key(WiredVariableTargetType.User, (int)Triggerer);
+
+        variable.Values[key] = new(1);
+        variable.Stamps[key] = (now - 60_000, now - 60_000);
+
+        TestVariableAge box = new(
+            StubContext(variable),
+            AgeConfig(WiredComparisonType.LessThan, 1, WiredTimeUnit.Hours, fromCreation: true)
+        );
+
+        await box.PrepareAsync(Trigger(players: [Triggerer]), CancellationToken.None);
+
+        box.Evaluate(Trigger()).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task VariableAge_WithNoRecordedMoment_Fails()
+    {
+        // A value written before the room kept times has no stamp. Measuring its age from the epoch
+        // would make it 56 years old and fire every "older than" box in the hotel.
+        FakeVariable variable = new(WiredVariableTargetType.User);
+        variable.Values[Key(WiredVariableTargetType.User, (int)Triggerer)] = new(1);
+
+        TestVariableAge box = new(
+            StubContext(variable),
+            AgeConfig(WiredComparisonType.GreaterThan, 1, WiredTimeUnit.Seconds, fromCreation: true)
+        );
+
+        await box.PrepareAsync(Trigger(players: [Triggerer]), CancellationToken.None);
+
+        box.Evaluate(Trigger()).Should().BeFalse();
+    }
+
     // ---- harness -------------------------------------------------------------------------------
+
+    private static WiredData AgeConfig(
+        WiredComparisonType comparison,
+        int duration,
+        WiredTimeUnit unit,
+        bool fromCreation
+    ) =>
+        new()
+        {
+            // [target, comparison, creation-or-update, long high, long low, unit]
+            IntParams =
+            [
+                (int)WiredVariableTargetType.User,
+                (int)comparison,
+                fromCreation ? 0 : 1,
+                duration < 0 ? -1 : 0,
+                duration,
+                (int)unit,
+            ],
+            VariableIds = [VariableId],
+        };
 
     private static WiredData ChangeConfig(
         WiredVariableOperation operation,
@@ -487,6 +576,27 @@ public sealed class WiredVariableBoxTests
             return Task.FromResult(true);
         }
 
+        public Dictionary<WiredVariableKey, (long Created, long Updated)> Stamps { get; } = [];
+
+        public bool TryGetTimestamps(
+            in WiredVariableKey key,
+            out long createdAtMs,
+            out long updatedAtMs
+        )
+        {
+            createdAtMs = 0;
+            updatedAtMs = 0;
+
+            if (!Stamps.TryGetValue(key, out (long Created, long Updated) stamp))
+            {
+                return false;
+            }
+
+            (createdAtMs, updatedAtMs) = stamp;
+
+            return true;
+        }
+
         public bool RemoveValue(WiredVariableKey key) => Values.Remove(key);
 
         public WiredVariableSnapshot GetVarSnapshot() =>
@@ -526,6 +636,16 @@ public sealed class WiredVariableBoxTests
     private sealed class TestChangeVariable : WiredActionChangeVariable
     {
         public TestChangeVariable(IRoomFloorItemContext ctx, WiredData data)
+            : base(null!, new StuffDataFactory(), ctx)
+        {
+            data.AttatchRules(GetIntParamRules());
+            _wiredData = data;
+        }
+    }
+
+    private sealed class TestVariableAge : WiredConditionVariableAge
+    {
+        public TestVariableAge(IRoomFloorItemContext ctx, WiredData data)
             : base(null!, new StuffDataFactory(), ctx)
         {
             data.AttatchRules(GetIntParamRules());

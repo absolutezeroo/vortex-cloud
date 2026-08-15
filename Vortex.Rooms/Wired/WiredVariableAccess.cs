@@ -96,4 +96,43 @@ public static class WiredVariableAccess
 
         return false;
     }
+
+    /// <summary>
+    /// When the first of the box's targets holding this variable was written, for the age
+    /// condition. False when nothing holds it, or when it is a computed variable (which is derived
+    /// on every read and so was never written) — an unknown age must not read as an age of zero.
+    /// </summary>
+    public static bool TryReadTimestamps(
+        IRoomFurniAccess furni,
+        string variableId,
+        WiredVariableTargetType target,
+        IWiredSelectionSet? selection,
+        out long createdAtMs,
+        out long updatedAtMs
+    )
+    {
+        createdAtMs = 0;
+        updatedAtMs = 0;
+
+        if (!TryResolve(furni, variableId, out WiredVariableId id, out IWiredVariable? variable))
+        {
+            return false;
+        }
+
+        foreach (int targetId in TargetIds(target, selection))
+        {
+            if (
+                variable!.TryGetTimestamps(
+                    new WiredVariableKey(id, target, targetId),
+                    out createdAtMs,
+                    out updatedAtMs
+                )
+            )
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

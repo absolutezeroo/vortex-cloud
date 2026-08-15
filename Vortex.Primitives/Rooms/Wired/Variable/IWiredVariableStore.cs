@@ -16,4 +16,12 @@ public interface IWiredVariableStore
         WiredVariableValue value
     );
     public bool RemoveValue(WiredVariableKey key);
+
+    /// <summary>When this key was first written and last written, in Unix milliseconds; false when
+    /// that is not known. See <see cref="IWiredKeyValueStore.TryGetTimestamps"/>.</summary>
+    public bool TryGetTimestamps(
+        in WiredVariableKey key,
+        out long createdAtMs,
+        out long updatedAtMs
+    );
 }
