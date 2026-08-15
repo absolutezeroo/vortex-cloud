@@ -1,17 +1,17 @@
 <script>
   import { onMount } from 'svelte';
   import { CalendarCheck, Gift, Pencil, Plus, Target, Trash2, Trophy } from '@lucide/svelte';
-  import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
-  import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
-  import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
-  import OpResult from '../components/OpResult.svelte';
-  import { apiGet } from '../lib/api.js';
-  import { formatDate, formatNumber } from '../lib/format.js';
-  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { hasDashboardCapability, isPermissionDeniedError } from '../lib/permissions.js';
-  import { identity } from '../lib/session.js';
-  import { t, translate } from '../lib/i18n.js';
-  import { createWriteOps } from '../lib/writeOps.js';
+  import AccessDeniedNotice from '../AccessDeniedNotice.svelte';
+  import ConfirmReasonModal from '../ConfirmReasonModal.svelte';
+  import ConfirmStagedModal from '../ConfirmStagedModal.svelte';
+  import OpResult from '../OpResult.svelte';
+  import { apiGet } from '../../lib/api.js';
+  import { formatDate, formatNumber } from '../../lib/format.js';
+  import { CAPABILITIES } from '../../lib/dashboardPermissions.js';
+  import { hasDashboardCapability, isPermissionDeniedError } from '../../lib/permissions.js';
+  import { identity } from '../../lib/session.js';
+  import { t, translate } from '../../lib/i18n.js';
+  import { createWriteOps } from '../../lib/writeOps.js';
 
   // Community goals and daily tasks share the quest capability: same domain, same operators, and a
   // brand new capability would have to be granted to every role before anyone could open the page.

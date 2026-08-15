@@ -76,7 +76,6 @@ export const ROUTE_PERMISSIONS = {
   quests: [CAPABILITIES.questsRead],
   prizePools: [CAPABILITIES.prizePoolsRead],
   mysteryBox: [CAPABILITIES.mysteryBoxRead],
-  questsStats: [CAPABILITIES.questsRead],
   polls: [CAPABILITIES.pollsRead],
   config: [CAPABILITIES.configRead],
   achievements: [CAPABILITIES.achievementsRead],

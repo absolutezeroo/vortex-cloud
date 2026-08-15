@@ -1,13 +1,13 @@
 <script>
   import { onMount } from 'svelte';
-  import { apiGet } from '../lib/api.js';
-  import { formatNumber } from '../lib/format.js';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
-  import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
-  import LineChart from '../components/LineChart.svelte';
-  import StatCard from '../components/StatCard.svelte';
+  import { apiGet } from '../../lib/api.js';
+  import { formatNumber } from '../../lib/format.js';
+  import { isPermissionDeniedError } from '../../lib/permissions.js';
+  import AccessDeniedNotice from '../AccessDeniedNotice.svelte';
+  import LineChart from '../LineChart.svelte';
+  import StatCard from '../StatCard.svelte';
   import { Award, CircleCheck, Users } from '@lucide/svelte';
-  import { t } from '../lib/i18n.js';
+  import { t } from '../../lib/i18n.js';
 
   const granularities = ['day', 'month', 'year'];
 

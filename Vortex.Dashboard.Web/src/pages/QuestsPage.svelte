@@ -24,10 +24,26 @@
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { reasonOk } from '../lib/validation.js';
+  import { currencyChipClass, currencyKindFromRewardType } from '../lib/currency.js';
+  import CurrencyIcon from '../components/CurrencyIcon.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
+  import Tabs from '../components/Tabs.svelte';
+  import QuestGoalsPanel from '../components/quests/QuestGoalsPanel.svelte';
+  import QuestCompletionsPanel from '../components/quests/QuestCompletionsPanel.svelte';
   import { identity } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
+
+  // One subject, one entry. The quest editor, the community goals and daily tasks, and the
+  // completion figures used to be three sidebar entries -- two of which rendered the same word,
+  // "Quests". Elsewhere in this dashboard a separate stats route earns its place by needing a
+  // separate capability (cfh vs cfh-stats, catalog vs catalog-purchases); all three of these sat
+  // behind dashboard.quests.read, so the split bought nothing and cost a reader knowing which of
+  // two identical entries held what they wanted.
+  //
+  // Each tab loads its own data on first activation, because the panels are only mounted when
+  // their tab is selected.
+  let tab = 'campaigns';
 
   // Reward is encoded in a single wire int: negative => Credits, otherwise the activity-point
   // currency type granted on completion (0 = Duckets). The form splits that back out into a friendly
@@ -286,33 +302,47 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('quests.title')}</h2>
-    <div class="head-actions">
-      <label class="filter-field">
-        {$t('quests.campaignFilter')}
-        <select bind:value={campaignFilter} on:change={loadQuests}>
-          <option value="">{$t('quests.allCampaigns')}</option>
-          {#each campaigns as campaign}
-            <option value={campaign}>{campaign}</option>
-          {/each}
-        </select>
-      </label>
-      <button type="button" class="ghost-button" on:click={loadQuests} disabled={loading}>{$t('common.refresh')}</button>
-    </div>
   </div>
   <p class="muted">{$t('quests.description')}</p>
 </section>
 
-{#if forbidden}
+<Tabs
+  bind:active={tab}
+  storageKey="quests"
+  tabs={[
+    { id: 'campaigns', label: $t('quests.tabCampaigns'), icon: Award },
+    { id: 'goals', label: $t('quests.tabGoals'), icon: Flag },
+    { id: 'completions', label: $t('quests.tabCompletions'), icon: CircleCheck },
+  ]}
+/>
+
+{#if tab === 'goals'}
+  <QuestGoalsPanel />
+{:else if tab === 'completions'}
+  <QuestCompletionsPanel />
+{:else if forbidden}
   <AccessDeniedNotice message={$t('quests.accessDenied')} />
 {:else}
   <section class="panel">
     <div class="panel-head">
       <h2><Award size={17} strokeWidth={2} aria-hidden="true" /> {$t('quests.questsHeading')}</h2>
-      {#if canManage}
-        <button type="button" class="ghost-button" on:click={openCreateQuest}>
-          <Plus size={14} strokeWidth={2} aria-hidden="true" /> {$t('quests.newQuest')}
-        </button>
-      {/if}
+      <div class="head-actions">
+        <label class="filter-field">
+          {$t('quests.campaignFilter')}
+          <select bind:value={campaignFilter} on:change={loadQuests}>
+            <option value="">{$t('quests.allCampaigns')}</option>
+            {#each campaigns as campaign}
+              <option value={campaign}>{campaign}</option>
+            {/each}
+          </select>
+        </label>
+        <button type="button" class="ghost-button" on:click={loadQuests} disabled={loading}>{$t('common.refresh')}</button>
+        {#if canManage}
+          <button type="button" class="ghost-button" on:click={openCreateQuest}>
+            <Plus size={14} strokeWidth={2} aria-hidden="true" /> {$t('quests.newQuest')}
+          </button>
+        {/if}
+      </div>
     </div>
 
     {#if loading}
@@ -322,7 +352,7 @@
     {:else if quests.length === 0}
       <p class="empty-state">{$t('quests.noQuests')}</p>
     {:else}
-      <div class="catalog-list">
+      <div class="catalog-list catalog-list--cards">
         {#each quests as quest (quest.id)}
           <div class="catalog-card">
             <div class="offer-head">
@@ -342,7 +372,10 @@
               </div>
             </div>
             <div class="offer-meta">
-              <span class="cost-chip"><Gift size={12} strokeWidth={2} aria-hidden="true" /> {rewardChip(quest, $t)}</span>
+              <span class={currencyChipClass(currencyKindFromRewardType(quest.rewardType))}>
+                <CurrencyIcon kind={currencyKindFromRewardType(quest.rewardType)} />
+                {rewardChip(quest, $t)}
+              </span>
               <span class="op-chip" title={$t('quests.totalSteps')}><ListChecks size={12} strokeWidth={2} aria-hidden="true" /> {$t('quests.stepsChip', { count: quest.totalSteps })}</span>
               <span class="op-chip" title={$t('quests.accepted')}><Users size={12} strokeWidth={2} aria-hidden="true" /> {formatNumber(quest.acceptedCount)}</span>
               <span class="op-chip" title={$t('quests.completed')}><CircleCheck size={12} strokeWidth={2} aria-hidden="true" /> {formatNumber(quest.completedCount)}</span>
@@ -530,9 +563,12 @@
 />
 
 <style>
-  .ghost-button,
   /* Quest card laid out as a column: a header line (icon + title + actions) with the reward/stat
-     chips on their own line beneath. Mirrors the targeted-offer card. */
+     chips on their own line beneath. Mirrors the targeted-offer card.
+
+     `.ghost-button` used to be listed here too, on the line above this comment, which handed every
+     button on the page `flex: 1 1 160px` -- so each one grew to fill whatever flex row it sat in.
+     That is why "Delete quest" spanned an entire card and "New quest" spanned the header. */
   .offer-head .catalog-row-main {
     flex: 1 1 160px;
     min-width: 120px;
