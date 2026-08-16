@@ -1,5 +1,6 @@
 ﻿<script>
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { Coins, Zap, Gem, Package, UserX } from '@lucide/svelte';
   import { hasDashboardCapability } from '../lib/permissions.js';
@@ -204,10 +205,7 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>{$t('operations.title')}</h2></div>
-  <p class="muted">
-    {$t('operations.description')}
-  </p>
+  <PageHeader title={$t('operations.title')} description={$t('operations.description')} />
 </section>
 
 <div class="op-grid">

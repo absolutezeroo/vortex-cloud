@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import OpResult from '../components/OpResult.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
@@ -116,8 +117,7 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>{$t('config.title')}</h2></div>
-  <p class="muted">{$t('config.description')}</p>
+  <PageHeader title={$t('config.title')} description={$t('config.description')} />
 </section>
 
 {#if loading}

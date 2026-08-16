@@ -1,6 +1,7 @@
 <script>
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
-  import Modal from '../components/Modal.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
+  import Drawer from '../components/Drawer.svelte';
   import OpResult from '../components/OpResult.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import { onMount } from 'svelte';
@@ -295,10 +296,7 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-    <h2>{$t('quests.title')}</h2>
-  </div>
-  <p class="muted">{$t('quests.description')}</p>
+  <PageHeader title={$t('quests.title')} description={$t('quests.description')} />
 </section>
 
 <Tabs
@@ -410,7 +408,7 @@
 {/if}
 
 {#if questModal}
-  <Modal
+  <Drawer
     title={questModal.id === null ? $t('quests.newQuest') : $t('quests.editQuest')}
     eyebrow={$t('quests.questsHeading')}
     width={720}
@@ -538,7 +536,7 @@
       <button class="ghost-button" type="button" onclick={closeQuestModal}>{$t('quests.cancel')}</button>
 
     {/snippet}
-  </Modal>
+  </Drawer>
 {/if}
 
 <ConfirmStagedModal {ops} eyebrow={$t('quests.confirmEyebrow')} />

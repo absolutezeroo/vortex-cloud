@@ -1,5 +1,6 @@
 <script>
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { Ban, ShieldCheck, VolumeX, Lock, LockOpen } from '@lucide/svelte';
   import { hasDashboardCapability } from '../lib/permissions.js';
@@ -180,10 +181,7 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>{$t('moderationActions.title')}</h2></div>
-  <p class="muted">
-    {$t('moderationActions.description')}
-  </p>
+  <PageHeader title={$t('moderationActions.title')} description={$t('moderationActions.description')} />
 </section>
 
 <div class="op-grid">

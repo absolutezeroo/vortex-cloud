@@ -6,6 +6,7 @@
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer } from '../lib/session.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import LineChart from '../components/LineChart.svelte';
@@ -88,8 +89,10 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>{$t('groupsStats.title')}</h2></div>
-  <p class="muted">{$t('groupsStats.description')}</p>
+  <PageHeader title={$t('groupsStats.title')} description={$t('groupsStats.description')}>
+    {#snippet actions()}
+      {/snippet}
+  </PageHeader>
 
   <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); refresh(); }}>
     <label>
@@ -108,7 +111,6 @@
         {/each}
       </select>
     </label>
-    <button type="submit" disabled={loading}>{$t('common.refresh')}</button>
   </form>
 
   {#if loading}

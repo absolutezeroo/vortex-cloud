@@ -20,7 +20,7 @@
   import AssetImage from '../components/AssetImage.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import EntityLink from '../components/EntityLink.svelte';
-  import Modal from '../components/Modal.svelte';
+  import Drawer from '../components/Drawer.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { Trophy, Award, Zap, ZapOff, Users, Layers, AlertTriangle } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
@@ -546,7 +546,7 @@
 </datalist>
 
 {#if achievementForm}
-  <Modal
+  <Drawer
     title={achievementForm.id ? $t('achievements.updateAchievement') : $t('achievements.addAchievement')}
     eyebrow={$t('achievements.editorTitle')}
     width={520}
@@ -596,11 +596,11 @@
       </button>
 
     {/snippet}
-  </Modal>
+  </Drawer>
 {/if}
 
 {#if levelForm && selected}
-  <Modal
+  <Drawer
     title={$t('achievements.levelEditorTitle')}
     eyebrow={$t('achievements.editorTitle')}
     width={520}
@@ -664,7 +664,7 @@
       </button>
 
     {/snippet}
-  </Modal>
+  </Drawer>
 {/if}
 
 <ConfirmReasonModal

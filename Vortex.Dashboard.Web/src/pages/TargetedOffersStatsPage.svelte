@@ -5,6 +5,7 @@
   import { formatNumber } from '../lib/format.js';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import LineChart from '../components/LineChart.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import StatCard from '../components/StatCard.svelte';
@@ -89,8 +90,10 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>{$t('targetedOffersStats.title')}</h2></div>
-  <p class="muted">{$t('targetedOffersStats.description')}</p>
+  <PageHeader title={$t('targetedOffersStats.title')} description={$t('targetedOffersStats.description')}>
+    {#snippet actions()}
+      {/snippet}
+  </PageHeader>
 
   <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); refresh(); }}>
     <label>
@@ -109,7 +112,6 @@
         {/each}
       </select>
     </label>
-    <button type="submit" disabled={loading}>{$t('common.refresh')}</button>
   </form>
 
   {#if loading}

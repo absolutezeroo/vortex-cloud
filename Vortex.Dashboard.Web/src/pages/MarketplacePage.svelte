@@ -4,6 +4,7 @@
   import { createResource } from '../lib/resource.js';
   import { formatNumber } from '../lib/format.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import LineChart from '../components/LineChart.svelte';
   import StatCard from '../components/StatCard.svelte';
@@ -77,8 +78,11 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>{$t('marketplace.title')}</h2></div>
-  <p class="muted">{$t('marketplace.description')}</p>
+  <PageHeader title={$t('marketplace.title')} description={$t('marketplace.description')}>
+    {#snippet actions()}
+      <button type="button" onclick={marketplace.refresh} disabled={marketplace.loading}>{$t('common.refresh')}</button>
+    {/snippet}
+  </PageHeader>
 
   <!-- Changing a field already re-reads (it changes the key), so this button no longer means "apply
        the filters" -- it means "read again now", which is why it invalidates rather than refetches
@@ -100,7 +104,6 @@
         {/each}
       </select>
     </label>
-    <button type="submit" disabled={marketplace.loading}>{$t('common.refresh')}</button>
   </form>
 
   {#if marketplace.loading}

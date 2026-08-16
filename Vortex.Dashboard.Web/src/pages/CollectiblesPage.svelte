@@ -9,6 +9,7 @@
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { identity } from '../lib/session.js';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import OpResult from '../components/OpResult.svelte';
 
   import { formatNumber, formatDate } from '../lib/format.js';
@@ -249,8 +250,10 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>{$t('collectibles.title')}</h2></div>
-  <p class="muted">{$t('collectibles.description')}</p>
+  <PageHeader title={$t('collectibles.title')} description={$t('collectibles.description')}>
+    {#snippet actions()}
+      {/snippet}
+  </PageHeader>
   <div class="toolbar">
     <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
   </div>
