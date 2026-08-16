@@ -36,6 +36,19 @@ public sealed class WebSocketSessionContext(
     public IRc4Engine? CryptoOut { get; private set; }
     public ArrayBufferWriter<byte>? WsBuffer { get; } = new(4096);
 
+    /// <summary>
+    /// False once a send has found the transport gone.
+    /// <para>
+    /// <see cref="SessionState"/> is not enough on its own: the connection is torn down in stages,
+    /// and there is a window where the pipe behind it has been completed while the session still
+    /// reports itself open. A write in that window throws rather than returning, which is the whole
+    /// reason this exists — a caller that repeats on a timer would otherwise keep discovering the
+    /// same closed connection, one exception at a time, until the framework gets round to raising
+    /// its closed event.
+    /// </para>
+    /// </summary>
+    public bool IsConnected { get; private set; } = true;
+
     public async Task CloseSessionAsync()
     {
         await session.CloseAsync().ConfigureAwait(false);
@@ -68,12 +81,27 @@ public sealed class WebSocketSessionContext(
             return;
         }
 
-        await _sendSemaphore.WaitAsync(ct).ConfigureAwait(false);
+        try
+        {
+            await _sendSemaphore.WaitAsync(ct).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (IsGone(ex))
+        {
+            // Closing the session disposes this, and it happens while sends may still be queued
+            // behind it. Waiting on a disposed semaphore throws from outside the block below, so
+            // without this the caller sees an exception rather than a send that quietly went
+            // nowhere -- which for the heartbeat meant a warning on an ordinary disconnect.
+            IsConnected = false;
+
+            return;
+        }
 
         try
         {
             if (session.State == SessionState.Closed)
             {
+                IsConnected = false;
+
                 return;
             }
 
@@ -98,6 +126,20 @@ public sealed class WebSocketSessionContext(
                 SessionKey
             );
         }
+        catch (Exception ex) when (IsGone(ex))
+        {
+            // Not a failure worth a stack trace: the client left while this was being written. The
+            // framework raises its closed event a moment later and everything is cleaned up then —
+            // all this has to do is stop pretending the connection is still there.
+            IsConnected = false;
+
+            logger.LogDebug(
+                "Dropped composer {ComposerType}: websocket session {SessionKey} is gone ({Reason}).",
+                composer?.GetType().Name ?? "<null>",
+                SessionKey,
+                ex.GetType().Name
+            );
+        }
         catch (Exception ex)
         {
             logger.LogDebug(
@@ -109,9 +151,34 @@ public sealed class WebSocketSessionContext(
         }
         finally
         {
-            _sendSemaphore.Release();
+            try
+            {
+                _sendSemaphore.Release();
+            }
+            catch (ObjectDisposedException)
+            {
+                // The session was closed while this send held the lock. There is nothing left to
+                // release it for, and throwing from a finally would replace whatever the block was
+                // already reporting.
+                IsConnected = false;
+            }
         }
     }
+
+    /// <summary>
+    /// Whether an exception means "there is no connection left", as opposed to something that went
+    /// wrong on a connection that is still there.
+    /// </summary>
+    /// <remarks>
+    /// The three shapes a departing client produces. <see cref="InvalidOperationException"/> is the
+    /// literal one — SuperSocket writes into a pipe whose writer has been completed and the pipe
+    /// says so — and it is matched on type alone rather than on its message, which is not ours to
+    /// depend on. The cancellation is the send being cut off mid-flight by the framework's own
+    /// token, which is why it is caught here rather than by the filter above: that one only fires
+    /// for <em>our</em> token.
+    /// </remarks>
+    private static bool IsGone(Exception ex) =>
+        ex is InvalidOperationException or ObjectDisposedException or OperationCanceledException;
 
     public void Dispose()
     {

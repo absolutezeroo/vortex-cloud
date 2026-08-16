@@ -243,7 +243,7 @@ public sealed class NetworkManager(
     ///     TCP listener (and is disabled at its call site), while the WebSocket listener builds its
     ///     sessions through <c>UseSessionHandler</c> and never went through it.
     /// </summary>
-    private async Task RunWsHeartbeatAsync(ISessionContext session, CancellationToken ct)
+    private async Task RunWsHeartbeatAsync(WebSocketSessionContext session, CancellationToken ct)
     {
         using PeriodicTimer timer = new(
             TimeSpan.FromMilliseconds(_config.PingIntervalMilliseconds)
@@ -255,6 +255,15 @@ public sealed class NetworkManager(
         {
             while (await timer.WaitForNextTickAsync(ct).ConfigureAwait(false))
             {
+                // The closed event is what normally ends this loop, and it is raised a moment after
+                // the connection actually goes. Sending into that gap throws instead of returning,
+                // so a heartbeat that ignored it would rediscover the same dead connection on every
+                // tick -- one logged exception each time -- for as long as the gap lasted.
+                if (!session.IsConnected)
+                {
+                    return;
+                }
+
                 TimeSpan silence = DateTime.UtcNow - session.LastActivityUtc;
 
                 // Off by default — see NetworkingConfig.PongTimeout. A silent session is almost
