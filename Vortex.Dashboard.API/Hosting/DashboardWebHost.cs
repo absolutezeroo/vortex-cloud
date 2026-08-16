@@ -23,6 +23,7 @@ using Vortex.Dashboard.API.Http;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Security;
+using Vortex.Database.Backup;
 using Vortex.Observability.Configuration;
 using Vortex.Observability.Diagnostics;
 using Vortex.Primitives.Hosting;
@@ -191,19 +192,39 @@ internal sealed class DashboardWebHost(
     }
 
     /// <summary>
+    ///     Everything an endpoint delegate is allowed to ask for by parameter. The web app has its own
+    ///     container, so a type missing from this list is not merely unresolvable — minimal APIs decide
+    ///     what a parameter *is* by asking the container whether it knows the type, and a type it does
+    ///     not know is taken for the request body. On a GET that is fatal, and not at the endpoint:
+    ///     inference runs while the middleware pipeline is being built, so one unlisted service takes
+    ///     down the entire dashboard with "Body was inferred but the method does not allow inferred body
+    ///     parameters". <c>DashboardEndpointServiceTests</c> maps every endpoint against exactly this
+    ///     list so the omission is a failing test rather than a degraded emulator.
+    /// </summary>
+    internal static readonly Type[] ForwardedServiceTypes =
+    [
+        typeof(DashboardApiService),
+        typeof(DashboardOperationsService),
+        typeof(DashboardAuthService),
+        typeof(DashboardSessionStore),
+        typeof(DashboardAssetStore),
+        typeof(DashboardAssetUrls),
+        typeof(DashboardAuditEmitter),
+        typeof(IDatabaseBackupService),
+    ];
+
+    /// <summary>
     ///     Shares the dashboard singletons constructed in the parent container with the web app's DI, so
     ///     endpoints resolve the very same instances (which already have their Orleans/EF dependencies
     ///     satisfied) rather than rebuilding the object graph.
     /// </summary>
     private void ForwardSingletons(IServiceCollection services)
     {
-        services.AddSingleton(rootServices.GetRequiredService<DashboardApiService>());
-        services.AddSingleton(rootServices.GetRequiredService<DashboardOperationsService>());
-        services.AddSingleton(rootServices.GetRequiredService<DashboardAuthService>());
-        services.AddSingleton(rootServices.GetRequiredService<DashboardSessionStore>());
-        services.AddSingleton(rootServices.GetRequiredService<DashboardAssetStore>());
-        services.AddSingleton(rootServices.GetRequiredService<DashboardAssetUrls>());
-        services.AddSingleton(rootServices.GetRequiredService<DashboardAuditEmitter>());
+        foreach (Type serviceType in ForwardedServiceTypes)
+        {
+            services.AddSingleton(serviceType, rootServices.GetRequiredService(serviceType));
+        }
+
         services.AddSingleton(options);
     }
 

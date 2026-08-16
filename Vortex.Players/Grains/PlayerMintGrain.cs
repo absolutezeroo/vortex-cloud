@@ -197,15 +197,21 @@ internal sealed class PlayerMintGrain(
         // Deleting the furniture row is the step that decides the whole conversion: it is scoped to
         // this player and to a row that is not already gone, so a repeat of this call deletes
         // nothing and spends nothing.
+        // No room condition here, deliberately. A room detaches its furniture from the database in
+        // a deferred batch, so a row keeps naming the room it just left for as long as that flush
+        // takes -- and requiring room_id to be null refused every item that had been in a room
+        // moments earlier, silently. The real guard is the inventory snapshot read above: the
+        // inventory only ever holds furniture that is not standing in a room.
         int deleted = await dbCtx
             .Furnitures.Where(furni =>
                 furni.Id == itemId
                 && furni.PlayerEntityId == PlayerId.Value
-                && furni.RoomEntityId == null
                 && furni.DeletedAt == null
             )
             .ExecuteUpdateAsync(
-                row => row.SetProperty(furni => furni.DeletedAt, DateTime.UtcNow),
+                row =>
+                    row.SetProperty(furni => furni.DeletedAt, DateTime.UtcNow)
+                        .SetProperty(furni => furni.RoomEntityId, (int?)null),
                 ct
             )
             .ConfigureAwait(true);
