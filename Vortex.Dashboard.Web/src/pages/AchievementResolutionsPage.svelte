@@ -176,7 +176,7 @@
               </tr>
             </thead>
             <tbody>
-              {#each offers as offer (offer.Id)}
+              {#each offers as offer (offer.id)}
                 <tr class:orphan={offer.orphaned}>
                   <td>
                     {offer.achievementName || `#${offer.achievementId}`}
@@ -186,12 +186,12 @@
                   </td>
                   <td class="muted">{offer.category || '—'}</td>
                   <td class="num">{offer.levelCount}</td>
-                  <td class="num">+{offer.TargetLevelOffset}</td>
+                  <td class="num">+{offer.targetLevelOffset}</td>
                   <td class="num">{formatNumber(offer.taken)}</td>
                   <td class="num">{formatNumber(offer.completed)}</td>
                   <td class="num">{offer.completionRate}%</td>
                   <td>
-                    {#if offer.Enabled}
+                    {#if offer.enabled}
                       <span class="pill ok">{$t('common.yes')}</span>
                     {:else}
                       <span class="pill">{$t('common.no')}</span>
@@ -239,16 +239,16 @@
               </tr>
             </thead>
             <tbody>
-              {#each pageRows as row (row.Id)}
+              {#each pageRows as row (row.id)}
                 <tr>
                   <td><PlayerCell name={row.playerName} /></td>
                   <td>
                     {row.achievementName || `#${row.achievementId}`}
                     <span class="muted">· #{row.itemId}</span>
                   </td>
-                  <td class="num">{row.reachedLevel}/{row.TargetLevel}</td>
-                  <td class="muted">{formatDate(row.StartedAt)}</td>
-                  <td class="muted">{formatDate(row.EndsAt)}</td>
+                  <td class="num">{row.reachedLevel}/{row.targetLevel}</td>
+                  <td class="muted">{formatDate(row.startedAt)}</td>
+                  <td class="muted">{formatDate(row.endsAt)}</td>
                   <td>
                     {#if row.state === 'completed'}
                       <span class="pill ok">
