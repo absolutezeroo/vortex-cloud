@@ -90,54 +90,54 @@
     return Array.isArray(value) ? value.join('\n') : '';
   }
 
-  let catalogType = 0;
-  let parentChain = []; // [{ id, label }], ancestors of the current level (root = empty array).
+  let catalogType = $state(0);
+  let parentChain = $state([]); // [{ id, label }], ancestors of the current level (root = empty array).
 
-  let pages = [];
-  let pagesLoading = false;
-  let pagesError = '';
-  let pagesForbidden = false;
+  let pages = $state([]);
+  let pagesLoading = $state(false);
+  let pagesError = $state('');
+  let pagesForbidden = $state(false);
 
-  let currentPage = null;
+  let currentPage = $state(null);
   let currentPageLoading = false;
 
-  let currencyTypes = [];
+  let currencyTypes = $state([]);
   let iconTemplate = '';
 
   // 'new' | 'edit' | null -- which form's icon field the picker modal is currently targeting.
-  let iconPickerTarget = null;
+  let iconPickerTarget = $state(null);
 
   function iconUrlFor(id) {
     return iconTemplate && Number(id) > 0 ? iconTemplate.replace('{id}', String(id)) : null;
   }
 
-  let newPageOpen = false;
-  let newPage = emptyPageForm();
-  let editPageOpen = false;
-  let editPageForm = null;
+  let newPageOpen = $state(false);
+  let newPage = $state(emptyPageForm());
+  let editPageOpen = $state(false);
+  let editPageForm = $state(null);
 
-  let newOfferOpen = false;
-  let newOffer = emptyOfferForm();
-  let editOfferId = null;
-  let editOfferForm = null;
+  let newOfferOpen = $state(false);
+  let newOffer = $state(emptyOfferForm());
+  let editOfferId = $state(null);
+  let editOfferForm = $state(null);
 
-  let selectedOfferId = null;
-  let offerDetail = null;
-  let offerDetailLoading = false;
-  let offerDetailError = '';
+  let selectedOfferId = $state(null);
+  let offerDetail = $state(null);
+  let offerDetailLoading = $state(false);
+  let offerDetailError = $state('');
 
-  let newProductOpen = false;
-  let newProduct = emptyProductForm();
-  let editProductId = null;
-  let editProductForm = null;
+  let newProductOpen = $state(false);
+  let newProduct = $state(emptyProductForm());
+  let editProductId = $state(null);
+  let editProductForm = $state(null);
 
   // Every write is staged here and confirmed in the dialog below before it is posted. createWriteOps
   // owns that cycle -- posting, remembering the audited reason, and tracking each form's busy state,
   // error and result under its own key -- so the page only describes what each button writes.
   const ops = createWriteOps();
-  let picker = null;
+  let picker = $state(null);
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsCatalogManage);
+  let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsCatalogManage));
 
   // Plain function, not a `$:` derived value: navigation functions below mutate `parentChain` and
   // then immediately call loadPages()/loadCurrentPage() in the same synchronous block. A `$:`
@@ -681,7 +681,7 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('catalogAdmin.title')}</h2>
-    <button type="button" class="ghost-button" on:click={refreshAll} disabled={pagesLoading}>{$t('common.refresh')}</button>
+    <button type="button" class="ghost-button" onclick={refreshAll} disabled={pagesLoading}>{$t('common.refresh')}</button>
   </div>
   <p class="muted">
     {$t('catalogAdmin.description')}
@@ -689,7 +689,7 @@
 
   <div class="catalog-tabs">
     {#each CATALOG_TYPES as ct}
-      <button type="button" class="catalog-tab" class:active={catalogType === ct.value} on:click={() => switchCatalogType(ct.value)}>
+      <button type="button" class="catalog-tab" class:active={catalogType === ct.value} onclick={() => switchCatalogType(ct.value)}>
         <Tag size={14} strokeWidth={2} aria-hidden="true" />
         {$t(ct.key)}
       </button>
@@ -697,12 +697,12 @@
   </div>
 
   <nav class="breadcrumb" aria-label="Catalog page path">
-    <button type="button" class="crumb-button" class:active={parentChain.length === 0} on:click={() => drillToBreadcrumb(-1)}>
+    <button type="button" class="crumb-button" class:active={parentChain.length === 0} onclick={() => drillToBreadcrumb(-1)}>
       <Folder size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.root')}
     </button>
     {#each parentChain as crumb, i}
       <ChevronRight size={14} strokeWidth={2} class="muted" aria-hidden="true" />
-      <button type="button" class="crumb-button" class:active={i === parentChain.length - 1} on:click={() => drillToBreadcrumb(i)}>
+      <button type="button" class="crumb-button" class:active={i === parentChain.length - 1} onclick={() => drillToBreadcrumb(i)}>
         {crumb.label}
       </button>
     {/each}
@@ -729,39 +729,55 @@
           </div>
         </div>
         {#if canManage}
-          <button type="button" class="ghost-button" on:click={startEditPage}>
+          <button type="button" class="ghost-button" onclick={startEditPage}>
             <Pencil size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.edit')}
           </button>
         {/if}
       </div>
       <div class="metric-grid compact">
         <StatCard label={$t('catalogAdmin.layout')} value={currentPage.layout}>
-          <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+          {#snippet icon()}
+            <Activity size={15} strokeWidth={2} aria-hidden="true" />
+          {/snippet}
         </StatCard>
         <StatCard label={$t('catalogAdmin.icon')}>
-          <Image slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
-          <strong slot="value" class="icon-preview">
-            {#if currentPage.iconUrl}<img src={currentPage.iconUrl} alt="" />{/if}
-            #{currentPage.icon}
-          </strong>
+          {#snippet icon()}
+            <Image size={15} strokeWidth={2} aria-hidden="true" />
+          {/snippet}
+          {#snippet value()}
+                    <strong class="icon-preview">
+              {#if currentPage.iconUrl}<img src={currentPage.iconUrl} alt="" />{/if}
+              #{currentPage.icon}
+            </strong>
+          {/snippet}
         </StatCard>
         <StatCard label={$t('catalogAdmin.sortOrder')} value={currentPage.sortOrder}>
-          <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+          {#snippet icon()}
+            <Hash size={15} strokeWidth={2} aria-hidden="true" />
+          {/snippet}
         </StatCard>
         <StatCard label={$t('catalogAdmin.visible')}>
-          <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
-          <span slot="value">
-            <span class="status-badge" class:status-badge--ok={currentPage.visible} class:status-badge--bad={!currentPage.visible}>
-              {#if currentPage.visible}<Eye size={12} strokeWidth={2} aria-hidden="true" />{:else}<EyeOff size={12} strokeWidth={2} aria-hidden="true" />{/if}
-              {currentPage.visible ? $t('catalogAdmin.visible') : $t('catalogAdmin.hidden')}
+          {#snippet icon()}
+            <Activity size={15} strokeWidth={2} aria-hidden="true" />
+          {/snippet}
+          {#snippet value()}
+                    <span>
+              <span class="status-badge" class:status-badge--ok={currentPage.visible} class:status-badge--bad={!currentPage.visible}>
+                {#if currentPage.visible}<Eye size={12} strokeWidth={2} aria-hidden="true" />{:else}<EyeOff size={12} strokeWidth={2} aria-hidden="true" />{/if}
+                {currentPage.visible ? $t('catalogAdmin.visible') : $t('catalogAdmin.hidden')}
+              </span>
             </span>
-          </span>
+          {/snippet}
         </StatCard>
         <StatCard label={$t('catalogAdmin.imageData')} value={$t('catalogAdmin.lineCount', { count: (currentPage.imageData || []).length })}>
-          <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+          {#snippet icon()}
+            <Hash size={15} strokeWidth={2} aria-hidden="true" />
+          {/snippet}
         </StatCard>
         <StatCard label={$t('catalogAdmin.textData')} value={$t('catalogAdmin.lineCount', { count: (currentPage.textData || []).length })}>
-          <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+          {#snippet icon()}
+            <Hash size={15} strokeWidth={2} aria-hidden="true" />
+          {/snippet}
         </StatCard>
       </div>
 
@@ -778,7 +794,7 @@
           <div class="op-field">
             <span class="op-label">{$t('catalogAdmin.icon')}</span>
             <div class="op-pick">
-              <button class="ghost-button" type="button" on:click={() => (iconPickerTarget = 'edit')}>
+              <button class="ghost-button" type="button" onclick={() => (iconPickerTarget = 'edit')}>
                 <Image size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.selectIcon')}
               </button>
               <span class="op-chip">
@@ -809,8 +825,8 @@
             <textarea id="edit-page-text-data" rows="3" bind:value={editPageForm.textDataText} placeholder="Welcome to our shop!"></textarea>
           </div>
           <div class="op-actions">
-            <button type="button" on:click={stageUpdatePage} disabled={$ops.busyKeys.updatePage}>{$t('catalogAdmin.save')}</button>
-            <button class="ghost-button" type="button" on:click={() => (editPageOpen = false)}>{$t('catalogAdmin.cancel')}</button>
+            <button type="button" onclick={stageUpdatePage} disabled={$ops.busyKeys.updatePage}>{$t('catalogAdmin.save')}</button>
+            <button class="ghost-button" type="button" onclick={() => (editPageOpen = false)}>{$t('catalogAdmin.cancel')}</button>
           </div>
           {#if $ops.errors.updatePage}<p class="empty-state danger">{$ops.errors.updatePage}</p>{/if}
           {#if $ops.results.updatePage}
@@ -823,7 +839,7 @@
         <div class="catalog-card-detail">
           <div class="op-field">
             <div class="op-pick">
-              <button type="button" class="ghost-button danger" on:click={stageDeletePage}>
+              <button type="button" class="ghost-button danger" onclick={stageDeletePage}>
                 <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.deletePage')}
               </button>
             </div>
@@ -842,7 +858,7 @@
     <div class="panel-head">
       <h2><Folder size={17} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.subPages')}</h2>
       {#if canManage}
-        <button type="button" class="ghost-button" on:click={() => (newPageOpen = !newPageOpen)}>
+        <button type="button" class="ghost-button" onclick={() => (newPageOpen = !newPageOpen)}>
           <Plus size={14} strokeWidth={2} aria-hidden="true" /> {newPageOpen ? $t('catalogAdmin.cancel') : $t('catalogAdmin.newPage')}
         </button>
       {/if}
@@ -861,7 +877,7 @@
         <div class="op-field">
           <span class="op-label">{$t('catalogAdmin.icon')}</span>
           <div class="op-pick">
-            <button class="ghost-button" type="button" on:click={() => (iconPickerTarget = 'new')}>
+            <button class="ghost-button" type="button" onclick={() => (iconPickerTarget = 'new')}>
               <Image size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.selectIcon')}
             </button>
             <span class="op-chip">
@@ -892,7 +908,7 @@
           <textarea id="new-page-text-data" rows="3" bind:value={newPage.textDataText} placeholder="Welcome to our shop!"></textarea>
         </div>
         <div class="op-actions">
-          <button type="button" on:click={stageCreatePage} disabled={$ops.busyKeys.createPage}>{$t('catalogAdmin.create')}</button>
+          <button type="button" onclick={stageCreatePage} disabled={$ops.busyKeys.createPage}>{$t('catalogAdmin.create')}</button>
         </div>
         {#if $ops.errors.createPage}<p class="empty-state danger">{$ops.errors.createPage}</p>{/if}
         {#if $ops.results.createPage}
@@ -910,7 +926,7 @@
     {:else}
       <div class="catalog-list">
         {#each pages as page (page.id)}
-          <button type="button" class="catalog-row" on:click={() => drillInto(page)}>
+          <button type="button" class="catalog-row" onclick={() => drillInto(page)}>
             <span class="catalog-row-icon">
               {#if page.iconUrl}
                 <img src={page.iconUrl} alt="" />
@@ -941,7 +957,7 @@
       <div class="panel-head">
         <h2><Tag size={17} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.offersOnPage')}</h2>
         {#if canManage}
-          <button type="button" class="ghost-button" on:click={openNewOffer}>
+          <button type="button" class="ghost-button" onclick={openNewOffer}>
             <Plus size={14} strokeWidth={2} aria-hidden="true" /> {newOfferOpen ? $t('catalogAdmin.cancel') : $t('catalogAdmin.newOffer')}
           </button>
         {/if}
@@ -987,7 +1003,7 @@
             <label><input type="checkbox" bind:checked={newOffer.visible} /> {$t('catalogAdmin.visible')}</label>
           </div>
           <div class="op-actions">
-            <button type="button" on:click={stageCreateOffer} disabled={$ops.busyKeys.createOffer}>{$t('catalogAdmin.create')}</button>
+            <button type="button" onclick={stageCreateOffer} disabled={$ops.busyKeys.createOffer}>{$t('catalogAdmin.create')}</button>
           </div>
           {#if $ops.errors.createOffer}<p class="empty-state danger">{$ops.errors.createOffer}</p>{/if}
           {#if $ops.results.createOffer}
@@ -1015,11 +1031,11 @@
                   </span>
                 </span>
                 <div class="op-actions">
-                  <button type="button" class="ghost-button" class:active={selectedOfferId === offer.id} on:click={() => toggleOfferDetail(offer.id)}>
+                  <button type="button" class="ghost-button" class:active={selectedOfferId === offer.id} onclick={() => toggleOfferDetail(offer.id)}>
                     <Package size={14} strokeWidth={2} aria-hidden="true" /> {offerActionLabel(offer, selectedOfferId, $t)}
                   </button>
                   {#if canManage}
-                    <button type="button" class="ghost-button" on:click={() => startEditOffer(offer)}>
+                    <button type="button" class="ghost-button" onclick={() => startEditOffer(offer)}>
                       <Pencil size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.edit')}
                     </button>
                   {/if}
@@ -1079,8 +1095,8 @@
                   <div class="op-field"><label><input type="checkbox" bind:checked={editOfferForm.canBundle} /> {$t('catalogAdmin.canBundle')}</label></div>
                   <div class="op-field"><label><input type="checkbox" bind:checked={editOfferForm.visible} /> {$t('catalogAdmin.visible')}</label></div>
                   <div class="op-actions">
-                    <button type="button" on:click={stageUpdateOffer} disabled={$ops.busyKeys.updateOffer}>{$t('catalogAdmin.save')}</button>
-                    <button class="ghost-button" type="button" on:click={() => (editOfferId = null)}>{$t('catalogAdmin.cancel')}</button>
+                    <button type="button" onclick={stageUpdateOffer} disabled={$ops.busyKeys.updateOffer}>{$t('catalogAdmin.save')}</button>
+                    <button class="ghost-button" type="button" onclick={() => (editOfferId = null)}>{$t('catalogAdmin.cancel')}</button>
                   </div>
                   {#if $ops.errors.updateOffer}<p class="empty-state danger">{$ops.errors.updateOffer}</p>{/if}
                   {#if $ops.results.updateOffer}
@@ -1091,7 +1107,7 @@
 
               {#if canManage}
                 <div class="catalog-card-detail op-pick">
-                  <button type="button" class="ghost-button danger" on:click={() => stageDeleteOffer(offer)}>
+                  <button type="button" class="ghost-button danger" onclick={() => stageDeleteOffer(offer)}>
                     <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.deleteOffer')}
                   </button>
                 </div>
@@ -1102,7 +1118,7 @@
                   <div class="panel-head">
                     <h3><Package size={15} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.itemsDelivered')}</h3>
                     {#if canManage}
-                      <button type="button" class="ghost-button" on:click={() => (newProductOpen = !newProductOpen)}>
+                      <button type="button" class="ghost-button" onclick={() => (newProductOpen = !newProductOpen)}>
                         <Plus size={14} strokeWidth={2} aria-hidden="true" /> {newProductOpen ? $t('catalogAdmin.cancel') : $t('catalogAdmin.addItem')}
                       </button>
                     {/if}
@@ -1127,7 +1143,7 @@
                             <button
                               class="ghost-button"
                               type="button"
-                              on:click={() => pickProductFurniture((f) => (newProduct = { ...newProduct, furnitureDefinitionId: f.id, furnitureName: f.name, furnitureSprite: f.spriteId, furnitureIcon: f.iconUrl }))}
+                              onclick={() => pickProductFurniture((f) => (newProduct = { ...newProduct, furnitureDefinitionId: f.id, furnitureName: f.name, furnitureSprite: f.spriteId, furnitureIcon: f.iconUrl }))}
                             >
                               <Image size={14} strokeWidth={2} aria-hidden="true" /> {$t('common.selectFurniture')}
                             </button>
@@ -1136,7 +1152,7 @@
                                 {#if newProduct.furnitureIcon}<img class="op-sprite" src={newProduct.furnitureIcon} alt="" />{:else}<span class="op-sprite">{newProduct.furnitureSprite}</span>{/if}
                                 {newProduct.furnitureName} <small>#{newProduct.furnitureDefinitionId}</small>
                               </span>
-                              <button class="ghost-button" type="button" on:click={() => (newProduct = { ...newProduct, furnitureDefinitionId: '', furnitureName: '', furnitureIcon: '', furnitureSprite: '' })}>{$t('catalogAdmin.clear')}</button>
+                              <button class="ghost-button" type="button" onclick={() => (newProduct = { ...newProduct, furnitureDefinitionId: '', furnitureName: '', furnitureIcon: '', furnitureSprite: '' })}>{$t('catalogAdmin.clear')}</button>
                             {:else}
                               <span class="muted">{$t('common.noFurnitureSelected')}</span>
                             {/if}
@@ -1162,7 +1178,7 @@
                           <label><input type="checkbox" bind:checked={newProduct.buildersClubEligible} /> {$t('catalogAdmin.bcEligible')}</label>
                         </div>
                         <div class="op-actions">
-                          <button type="button" on:click={stageCreateProduct} disabled={$ops.busyKeys.createProduct}>{$t('catalogAdmin.create')}</button>
+                          <button type="button" onclick={stageCreateProduct} disabled={$ops.busyKeys.createProduct}>{$t('catalogAdmin.create')}</button>
                         </div>
                         {#if $ops.errors.createProduct}<p class="empty-state danger">{$ops.errors.createProduct}</p>{/if}
                         {#if $ops.results.createProduct}
@@ -1199,7 +1215,7 @@
                                 {/if}
                               </span>
                               {#if canManage}
-                                <button type="button" class="ghost-button" on:click={() => startEditProduct(product)}>
+                                <button type="button" class="ghost-button" onclick={() => startEditProduct(product)}>
                                   <Pencil size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.edit')}
                                 </button>
                               {/if}
@@ -1235,8 +1251,8 @@
                                 </div>
                                 <div class="op-field"><label><input type="checkbox" bind:checked={editProductForm.buildersClubEligible} /> {$t('catalogAdmin.bcEligible')}</label></div>
                                 <div class="op-actions">
-                                  <button type="button" on:click={stageUpdateProduct} disabled={$ops.busyKeys.updateProduct}>{$t('catalogAdmin.save')}</button>
-                                  <button class="ghost-button" type="button" on:click={() => (editProductId = null)}>{$t('catalogAdmin.cancel')}</button>
+                                  <button type="button" onclick={stageUpdateProduct} disabled={$ops.busyKeys.updateProduct}>{$t('catalogAdmin.save')}</button>
+                                  <button class="ghost-button" type="button" onclick={() => (editProductId = null)}>{$t('catalogAdmin.cancel')}</button>
                                 </div>
                                 {#if $ops.errors.updateProduct}<p class="empty-state danger">{$ops.errors.updateProduct}</p>{/if}
                                 {#if $ops.results.updateProduct}
@@ -1247,7 +1263,7 @@
 
                             {#if canManage}
                               <div class="catalog-card-detail op-pick">
-                                <button type="button" class="ghost-button danger" on:click={() => stageDeleteProduct(product)}>
+                                <button type="button" class="ghost-button danger" onclick={() => stageDeleteProduct(product)}>
                                   <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.deleteProduct')}
                                 </button>
                               </div>
@@ -1309,8 +1325,8 @@
   busy={$ops.busy}
   error={$ops.error}
   danger={$ops.pending?.danger ?? false}
-  on:confirm={(e) => ops.confirm(e.detail)}
-  on:cancel={() => ops.cancel()}
+  onconfirm={ops.confirm}
+  oncancel={() => ops.cancel()}
 />
 
 <style>

@@ -5,21 +5,34 @@
   import AssetImage from './AssetImage.svelte';
   import { avatarCache, resolveAvatar } from '../lib/avatars.js';
 
-  export let type = 'player';
-  export let id;
-  export let label = '';
-  export let openPlayer;
-  export let openItem;
   // Show the real Habbo avatar head next to a player's name. Resolved lazily + batched via
   // lib/avatars.js; falls back to a neutral head only if the player has no figure. Set avatar={false}
-  // for tight inline usages where a head would be noise.
-  export let avatar = true;
+  
+  /**
+   * @typedef {Object} Props
+   * @property {string} [type]
+   * @property {any} id
+   * @property {string} [label]
+   * @property {any} openPlayer
+   * @property {any} openItem
+   * @property {boolean} [avatar] - for tight inline usages where a head would be noise.
+   */
 
-  $: hasId = id !== null && id !== undefined && id !== '';
-  $: numId = hasId ? Number(id) : null;
-  $: showAvatar = type === 'player' && avatar && numId !== null && !Number.isNaN(numId);
-  $: avatarUrl = showAvatar ? $avatarCache.get(numId) : undefined;
-  $: resolvedLabel = label || $t(type === 'item' ? 'common.itemHash' : 'common.playerHash', { id });
+  /** @type {Props} */
+  let {
+    type = 'player',
+    id,
+    label = '',
+    openPlayer,
+    openItem,
+    avatar = true
+  } = $props();
+
+  let hasId = $derived(id !== null && id !== undefined && id !== '');
+  let numId = $derived(hasId ? Number(id) : null);
+  let showAvatar = $derived(type === 'player' && avatar && numId !== null && !Number.isNaN(numId));
+  let avatarUrl = $derived(showAvatar ? $avatarCache.get(numId) : undefined);
+  let resolvedLabel = $derived(label || $t(type === 'item' ? 'common.itemHash' : 'common.playerHash', { id }));
 
   onMount(() => {
     if (showAvatar) resolveAvatar(numId);
@@ -39,10 +52,10 @@
   {#if showAvatar && avatarUrl}
     <span class="entity-avatar">
       <AssetImage src={avatarUrl} size={22} fallbackIcon={User} alt="" />
-      <button type="button" class="entity-player" on:click={open}>{resolvedLabel}</button>
+      <button type="button" class="entity-player" onclick={open}>{resolvedLabel}</button>
     </span>
   {:else}
-    <button type="button" class:entity-player={type === 'player'} class:entity-item={type === 'item'} on:click={open}>
+    <button type="button" class:entity-player={type === 'player'} class:entity-item={type === 'item'} onclick={open}>
       {resolvedLabel}
     </button>
   {/if}

@@ -10,24 +10,24 @@
   import { openPlayer, openItem } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
 
-  let clubStats = null;
-  let clubError = '';
+  let clubStats = $state(null);
+  let clubError = $state('');
 
-  $: byType = clubStats?.byType || [];
-  $: lifecycle = clubStats?.lifecycle?.timeline || [];
-  $: byMonths = clubStats?.lifecycle?.byMonths || [];
-  $: recentEvents = clubStats?.lifecycle?.recentEvents || [];
-  $: topExpiring = clubStats?.topExpiring || [];
-  $: byTypeScale = Math.max(1, ...byType.map((row) => Number(row.total || 0)));
-  $: lifecycleScale = Math.max(
+  let byType = $derived(clubStats?.byType || []);
+  let lifecycle = $derived(clubStats?.lifecycle?.timeline || []);
+  let byMonths = $derived(clubStats?.lifecycle?.byMonths || []);
+  let recentEvents = $derived(clubStats?.lifecycle?.recentEvents || []);
+  let topExpiring = $derived(clubStats?.topExpiring || []);
+  let byTypeScale = $derived(Math.max(1, ...byType.map((row) => Number(row.total || 0))));
+  let lifecycleScale = $derived(Math.max(
     1,
     ...lifecycle.map((point) => Math.max(point.purchases || 0, point.renewals || 0, point.expired || 0)),
-  );
-  $: byMonthsScale = Math.max(
+  ));
+  let byMonthsScale = $derived(Math.max(
     1,
     ...byMonths.map((point) => Math.max(point.total || 0, point.purchases || 0, point.renewals || 0)),
-  );
-  $: activeRate = Number(clubStats?.totals?.activeRate || 0);
+  ));
+  let activeRate = $derived(Number(clubStats?.totals?.activeRate || 0));
 
   async function refresh() {
     clubError = '';
@@ -51,7 +51,7 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('subscriptions.title')}</h2>
-    <button type="button" on:click={refresh}>{$t('common.refresh')}</button>
+    <button type="button" onclick={refresh}>{$t('common.refresh')}</button>
   </div>
   <p class="muted">{$t('subscriptions.description')}</p>
 
@@ -88,17 +88,27 @@
 
         <div class="metric-grid compact">
           <StatCard label={$t('subscriptions.totalSubs')} value={clubStats?.totals?.totalSubscriptions || 0} sub={$t('subscriptions.inDatabase')} accent>
-            <Sparkles slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+            {#snippet icon()}
+              <Sparkles size={15} strokeWidth={2} aria-hidden="true" />
+            {/snippet}
           </StatCard>
           <StatCard label={$t('subscriptions.expiring7d')} value={clubStats?.totals?.expiringIn7Days || 0} sub={$t('subscriptions.priorityRenewal')} accent>
-            <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+            {#snippet icon()}
+              <Timer size={15} strokeWidth={2} aria-hidden="true" />
+            {/snippet}
           </StatCard>
           <StatCard label={$t('subscriptions.expiring30d')} value={clubStats?.totals?.expiringIn30Days || 0} sub={$t('subscriptions.window30d')} accent>
-            <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+            {#snippet icon()}
+              <Timer size={15} strokeWidth={2} aria-hidden="true" />
+            {/snippet}
           </StatCard>
           <StatCard label={$t('subscriptions.renewalRate')} sub={$t('subscriptions.actionsCount', { renewals: clubStats?.lifecycle?.totals?.renewals || 0, purchases: clubStats?.lifecycle?.totals?.purchases || 0 })} accent>
-            <Sparkles slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
-            <span slot="value">{formatNumber((clubStats?.lifecycle?.totals?.renewalShare || 0) * 100, 2)}%</span>
+            {#snippet icon()}
+              <Sparkles size={15} strokeWidth={2} aria-hidden="true" />
+            {/snippet}
+            {#snippet value()}
+              <span>{formatNumber((clubStats?.lifecycle?.totals?.renewalShare || 0) * 100, 2)}%</span>
+            {/snippet}
           </StatCard>
         </div>
       </div>
@@ -136,13 +146,19 @@
     {:else}
       <div class="metric-grid compact">
         <StatCard label={$t('subscriptions.purchases')} value={clubStats?.lifecycle?.totals?.purchases || 0} sub={$t('subscriptions.newSubs')} accent>
-          <ShoppingBag slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+          {#snippet icon()}
+            <ShoppingBag size={15} strokeWidth={2} aria-hidden="true" />
+          {/snippet}
         </StatCard>
         <StatCard label={$t('subscriptions.renewals')} value={clubStats?.lifecycle?.totals?.renewals || 0} sub={$t('subscriptions.topUps')} accent>
-          <Sparkles slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+          {#snippet icon()}
+            <Sparkles size={15} strokeWidth={2} aria-hidden="true" />
+          {/snippet}
         </StatCard>
         <StatCard label={$t('subscriptions.expirations')} value={clubStats?.lifecycle?.totals?.expired || 0} sub={$t('subscriptions.churn')} accent>
-          <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+          {#snippet icon()}
+            <Timer size={15} strokeWidth={2} aria-hidden="true" />
+          {/snippet}
         </StatCard>
       </div>
 

@@ -1,4 +1,5 @@
 <script>
+
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api.js';
   import { formatNumber } from '../lib/format.js';
@@ -23,13 +24,13 @@
     '#9f6ce1',
   ];
 
-  let since = '';
-  let until = '';
-  let granularity = 'day';
-  let loading = false;
-  let forbidden = false;
-  let error = '';
-  let data = null;
+  let since = $state('');
+  let until = $state('');
+  let granularity = $state('day');
+  let loading = $state(false);
+  let forbidden = $state(false);
+  let error = $state('');
+  let data = $state(null);
 
   function toLocalDateValue(value) {
     const date = new Date(value);
@@ -76,18 +77,18 @@
     }
   }
 
-  $: currencies = data?.currencies || [];
-  $: spendSeries = (data?.series || []).map((s, i) => ({
+  let currencies = $derived(data?.currencies || []);
+  let spendSeries = $derived((data?.series || []).map((s, i) => ({
     name: s.currency,
     color: colorFor(i),
     points: (s.points || []).map((p) => ({ label: p.label, value: p.spend })),
-  }));
-  $: earnedSeries = (data?.series || []).map((s, i) => ({
+  })));
+  let earnedSeries = $derived((data?.series || []).map((s, i) => ({
     name: s.currency,
     color: colorFor(i),
     points: (s.points || []).map((p) => ({ label: p.label, value: p.earned })),
-  }));
-  $: categories = data?.categories || [];
+  })));
+  let categories = $derived(data?.categories || []);
 
   function actionLabel(action) {
     // Audit action keys are dotted machine names (e.g. "economy.catalog_purchase") — humanize them
@@ -109,7 +110,7 @@
     {$t('economyTrends.descriptionBefore')} <code>currency_types</code> {$t('economyTrends.descriptionAfter')}
   </p>
 
-  <form class="toolbar-grid" on:submit|preventDefault={refresh}>
+  <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); refresh(); }}>
     <label>
       {$t('common.since')}
       <input type="date" bind:value={since} />
@@ -142,8 +143,12 @@
   <div class="metric-grid" style="margin-top: 12px;">
     {#each currencies as currency, i}
       <StatCard label={currency} value={formatNumber(data.totals[currency]?.spend || 0)} color={colorFor(i)}>
-        <Coins slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
-        <span slot="sub">{$t('economyTrends.spentSuffix')} · {formatNumber(data.totals[currency]?.earned || 0)} {$t('economyTrends.earnedSuffix')} · {formatNumber(data.totals[currency]?.transactionCount || 0)} {$t('economyTrends.txnsSuffix')}</span>
+        {#snippet icon()}
+          <Coins size={15} strokeWidth={2} aria-hidden="true" />
+        {/snippet}
+        {#snippet sub()}
+          <span>{$t('economyTrends.spentSuffix')} · {formatNumber(data.totals[currency]?.earned || 0)} {$t('economyTrends.earnedSuffix')} · {formatNumber(data.totals[currency]?.transactionCount || 0)} {$t('economyTrends.txnsSuffix')}</span>
+        {/snippet}
       </StatCard>
     {/each}
   </div>

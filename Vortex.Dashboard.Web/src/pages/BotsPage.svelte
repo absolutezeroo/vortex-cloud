@@ -1,4 +1,5 @@
 <script>
+
   // Bots are authored from inside the client, so this page reads. What it adds over the raw table is
   // the decoded skill blob: a bot whose menu shows no buttons, or one configured to chat but with
   // zero phrases, looks identical in `bots` and completely different here.
@@ -27,17 +28,17 @@
 
   const PAGE_SIZE = 40;
 
-  let term = '';
-  let owner = null;
-  let placedFilter = '';
-  let page = 1;
-  let selected = null;
+  let term = $state('');
+  let owner = $state(null);
+  let placedFilter = $state('');
+  let page = $state(1);
+  let selected = $state(null);
 
   // These sections are independent jobs that were stacked vertically, so reaching the last one
   // meant scrolling past every other. Nothing here is read against anything else -- which is
   // both what makes tabs right and what would have made them wrong.
-  let tab = 'roster';
-  let pickingOwner = false;
+  let tab = $state('roster');
+  let pickingOwner = $state(false);
 
   // Three endpoints, one screen, so one resource: the roster is meaningless without the stats header
   // and the hand-item table, and a page that loaded two of the three would be lying about the third.
@@ -56,7 +57,7 @@
     return { list, stats, handItems };
   });
 
-  $: ({ list, stats, handItems } = $bots.data ?? {});
+  let { list, stats, handItems } = $derived($bots.data ?? {});
 
   // The expanded row's bot. Its own resource because it is read on demand rather than with the page
   // -- `immediate: false` is exactly that: no read until select() asks for one.
@@ -64,20 +65,20 @@
 
   const ops = createWriteOps(bots.refresh);
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsContentManage);
+  let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsContentManage));
 
   const emptyHandItem = () => ({ handItemId: 0, name: '', nutrition: 0, thirst: 0 });
-  let handItemForm = emptyHandItem();
+  let handItemForm = $state(emptyHandItem());
 
   // The only picture of a hand item is an avatar holding it, and the id decides which. Built from
   // the template so a brand-new id previews before its row exists.
-  $: handItemPreviewUrl =
-    handItemForm.handItemId && handItems?.imageTemplate
+  let handItemPreviewUrl =
+    $derived(handItemForm.handItemId && handItems?.imageTemplate
       ? handItems.imageTemplate.replace('{item}', String(Number(handItemForm.handItemId)))
-      : null;
-  let botDraft = null;
+      : null);
+  let botDraft = $state(null);
 
-  $: totalPages = list ? Math.max(1, Math.ceil((list.total || 0) / (list.limit || PAGE_SIZE))) : 1;
+  let totalPages = $derived(list ? Math.max(1, Math.ceil((list.total || 0) / (list.limit || PAGE_SIZE))) : 1);
 
   function goToPage(next) {
     page = next;
@@ -120,7 +121,7 @@
     void detail.refresh();
   }
 
-  $: growthSeries = stats
+  let growthSeries = $derived(stats
     ? [
         {
           name: $t('bots.totalBots'),
@@ -128,21 +129,21 @@
           points: (stats.growth || []).map((p) => ({ label: p.label, value: p.botsCreated })),
         },
       ]
-    : [];
+    : []);
 </script>
 
 <section class="panel">
   <div class="panel-head"><h2>{$t('bots.title')}</h2></div>
   <p class="muted">{$t('bots.description')}</p>
 
-  <form class="toolbar-grid" on:submit|preventDefault={search}>
+  <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); search(); }}>
     <label>
       {$t('bots.search')}
       <input type="search" bind:value={term} placeholder={$t('bots.searchPlaceholder')} />
     </label>
     <label>
       {$t('bots.owner')}
-      <button type="button" class="ghost-button" on:click={() => (pickingOwner = true)}>
+      <button type="button" class="ghost-button" onclick={() => (pickingOwner = true)}>
         {owner ? owner.name : $t('bots.anyOwner')}
       </button>
     </label>
@@ -156,7 +157,7 @@
     </label>
     <button type="submit" disabled={$bots.loading}>{$t('common.refresh')}</button>
     {#if owner}
-      <button type="button" class="ghost-button" on:click={clearOwner}>{$t('bots.clearOwner')}</button>
+      <button type="button" class="ghost-button" onclick={clearOwner}>{$t('bots.clearOwner')}</button>
     {/if}
   </form>
 
@@ -172,22 +173,34 @@
 {#if stats}
   <div class="metric-grid" style="margin-top: 12px;">
     <StatCard label={$t('bots.totalBots')} value={formatNumber(stats.totals.totalBots)}>
-      <Bot slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Bot size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('bots.placedBots')} value={formatNumber(stats.totals.placedBots)} sub={$t('bots.inventoryBots', { count: formatNumber(stats.totals.inventoryBots) })}>
-      <MapPin slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <MapPin size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('bots.chattyBots')} value={formatNumber(stats.totals.chattyBots)} sub={$t('bots.autoChatBots', { count: formatNumber(stats.totals.autoChatBots) })}>
-      <MessageSquare slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <MessageSquare size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('bots.wanderingBots')} value={formatNumber(stats.totals.wanderingBots)}>
-      <Bot slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Bot size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('bots.distinctOwners')} value={formatNumber(stats.totals.distinctOwners)}>
-      <Users slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Users size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('bots.roomsWithBots')} value={formatNumber(stats.totals.roomsWithBots)}>
-      <MapPin slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <MapPin size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
   </div>
 
@@ -226,7 +239,7 @@
         </thead>
         <tbody>
           {#each list.items || [] as row}
-            <tr class:selected={selected === row.id} on:click={() => select(row)} style="cursor: pointer;">
+            <tr class:selected={selected === row.id} onclick={() => select(row)} style="cursor: pointer;">
               <td>
                 <span class="bot-cell">
                   <AssetImage src={row.avatarUrl} alt={row.name} size={36} fallbackIcon={Bot} />
@@ -261,8 +274,7 @@
                     class="ghost-button"
                     disabled={row.placed}
                     title={row.placed ? $t('bots.placedLocked') : ''}
-                    on:click|stopPropagation={() =>
-                      (botDraft = { id: row.id, name: row.name, motto: row.motto, figure: row.figure })}
+                    onclick={(event) => { event.stopPropagation(); botDraft = { id: row.id, name: row.name, motto: row.motto, figure: row.figure }; }}
                   >
                     {$t('bots.edit')}
                   </button>
@@ -271,13 +283,15 @@
                     class="ghost-button danger"
                     disabled={row.placed}
                     title={row.placed ? $t('bots.placedLocked') : ''}
-                    on:click|stopPropagation={() =>
+                    onclick={(event) => {
+                      event.stopPropagation();
                       ops.ask(
                         '/api/v1/operations/content/bots/delete',
                         { botId: row.id },
                         $t('bots.deleteBot'),
                         $t('bots.deleteBotSummary', { name: row.name })
-                      )}
+                      );
+                    }}
                   >
                     {$t('bots.delete')}
                   </button>
@@ -322,7 +336,8 @@
     {#if canManage && botDraft}
       <form
         class="inline-form"
-        on:submit|preventDefault={() =>
+        onsubmit={(event) => {
+          event.preventDefault();
           ops.ask(
             '/api/v1/operations/content/bots',
             {
@@ -333,7 +348,8 @@
             },
             $t('bots.updateBot'),
             $t('bots.updateBotSummary', { name: botDraft.name })
-          )}
+          );
+        }}
       >
         <label>
           {$t('bots.colBot')}
@@ -348,7 +364,7 @@
           <input bind:value={botDraft.figure} />
         </label>
         <button type="submit">{$t('bots.save')}</button>
-        <button type="button" class="ghost-button" on:click={() => (botDraft = null)}>
+        <button type="button" class="ghost-button" onclick={() => (botDraft = null)}>
           {$t('bots.cancel')}
         </button>
       </form>
@@ -370,7 +386,7 @@
         prevLabel={$t('common.prev')}
         nextLabel={$t('common.next')}
         disabled={$bots.loading}
-        on:change={(e) => goToPage(e.detail)}
+        onchange={goToPage}
       />
     {/if}
   </section>
@@ -413,13 +429,13 @@
                 <td>{item.thirst || '—'}</td>
                 {#if canManage}
                   <td class="row-actions">
-                    <button type="button" class="ghost-button" on:click={() => (handItemForm = { ...item })}>
+                    <button type="button" class="ghost-button" onclick={() => (handItemForm = { ...item })}>
                       {$t('bots.edit')}
                     </button>
                     <button
                       type="button"
                       class="ghost-button danger"
-                      on:click={() =>
+                      onclick={() =>
                         ops.ask(
                           '/api/v1/operations/content/hand-items/delete',
                           { id: item.id },
@@ -446,7 +462,8 @@
     <p class="muted">{$t('bots.handItemEditorHint')}</p>
     <form
       class="inline-form"
-      on:submit|preventDefault={() =>
+      onsubmit={(event) => {
+        event.preventDefault();
         ops.ask(
           '/api/v1/operations/content/hand-items',
           {
@@ -457,7 +474,8 @@
           },
           $t('bots.saveHandItem'),
           $t('bots.saveHandItemSummary', { id: handItemForm.handItemId, name: handItemForm.name })
-        )}
+        );
+      }}
     >
       <label>
         {$t('bots.colHandItemId')}
@@ -481,7 +499,7 @@
       <button type="submit" disabled={!handItemForm.name.trim() || !handItemForm.handItemId}>
         {$t('bots.saveHandItem')}
       </button>
-      <button type="button" class="ghost-button" on:click={() => (handItemForm = emptyHandItem())}>
+      <button type="button" class="ghost-button" onclick={() => (handItemForm = emptyHandItem())}>
         {$t('bots.clear')}
       </button>
     </form>
@@ -511,8 +529,8 @@
   confirmLabel={$ops.pending?.title ?? $t('common.confirm')}
   busy={$ops.busy}
   error={$ops.error}
-  on:confirm={(e) => ops.confirm(e.detail)}
-  on:cancel={() => ops.cancel()}
+  onconfirm={ops.confirm}
+  oncancel={() => ops.cancel()}
 />
 
 <style>

@@ -4,16 +4,22 @@
   // Uses the global .empty-state class so it themes with everything else.
   import { Inbox, LoaderCircle, TriangleAlert } from '@lucide/svelte';
 
-  export let kind = 'empty'; // 'empty' | 'loading' | 'error'
-  export let message = '';
+  /**
+   * @typedef {Object} Props
+   * @property {string} [kind] - 'empty' | 'loading' | 'error'
+   * @property {string} [message]
+   */
+
+  /** @type {Props} */
+  let { kind = 'empty', message = '' } = $props();
 
   const ICONS = { empty: Inbox, loading: LoaderCircle, error: TriangleAlert };
-  $: Icon = ICONS[kind] || Inbox;
+  let Icon = $derived(ICONS[kind] || Inbox);
 </script>
 
 <p class="empty-state" class:danger={kind === 'error'}>
   <span class="es-ico" class:spin={kind === 'loading'}>
-    <svelte:component this={Icon} size={16} strokeWidth={2} aria-hidden="true" />
+    <Icon size={16} strokeWidth={2} aria-hidden="true" />
   </span>
   <span>{message}</span>
 </p>

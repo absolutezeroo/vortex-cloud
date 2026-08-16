@@ -7,12 +7,18 @@
   import { t } from '../lib/i18n.js';
   import { parseAuditData, describeTarget, fieldTransitions, deletedFields } from '../lib/auditData.js';
 
-  export let data = '';
+  /**
+   * @typedef {Object} Props
+   * @property {string} [data]
+   */
 
-  $: parsed = parseAuditData(data);
-  $: detailPairs = parsed.detail
+  /** @type {Props} */
+  let { data = '' } = $props();
+
+  let parsed = $derived(parseAuditData(data));
+  let detailPairs = $derived(parsed.detail
     ? Object.entries(parsed.detail).filter(([, v]) => v !== null && v !== undefined && v !== '')
-    : [];
+    : []);
 </script>
 
 <div class="audit-detail">

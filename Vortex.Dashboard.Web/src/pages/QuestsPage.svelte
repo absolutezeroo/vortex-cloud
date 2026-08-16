@@ -43,7 +43,7 @@
   //
   // Each tab loads its own data on first activation, because the panels are only mounted when
   // their tab is selected.
-  let tab = 'campaigns';
+  let tab = $state('campaigns');
 
   // Reward is encoded in a single wire int: negative => Credits, otherwise the activity-point
   // currency type granted on completion (0 = Duckets). The form splits that back out into a friendly
@@ -96,18 +96,18 @@
     return translator('quests.rewardPoints', { amount, type: quest.rewardType });
   }
 
-  let quests = [];
+  let quests = $state([]);
   // Campaigns power the filter dropdown. The list endpoint only reports the campaigns present in the
   // *filtered* rows, so once a filter is active it would collapse to a single option -- keep the full
   // set from the last unfiltered load so the dropdown stays complete.
-  let campaigns = [];
-  let campaignFilter = '';
+  let campaigns = $state([]);
+  let campaignFilter = $state('');
   // Valid objective types from the backend (name + whether a trigger actually advances it today).
   // Loaded best-effort: if the fetch fails we fall back to a free-text questType input.
-  let questTypes = [];
-  let loading = false;
-  let error = '';
-  let forbidden = false;
+  let questTypes = $state([]);
+  let loading = $state(false);
+  let error = $state('');
+  let forbidden = $state(false);
 
   // One modal serves both create and edit: the fields are the same nineteen either way, and the two
   // used to be a copy-paste pair unfolding inside the panel. `id === null` is a create.
@@ -115,7 +115,7 @@
   // to, which is the case every design system reserves a dialog for -- a multi-field form with mixed
   // input types. It also means the save commits straight away: a confirm dialog on top of a dialog
   // is the one thing the same guidance rules out, and the modal is itself the deliberate step.
-  let questModal = null;
+  let questModal = $state(null);
 
   // The edits carry their reason as a field of the form itself; the deletes collect it in the shared
   // ConfirmReasonModal. Two stores rather than one so staging an edit cannot open the delete dialog
@@ -123,8 +123,8 @@
   const ops = createWriteOps();
   const deleteOps = createWriteOps();
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsQuestsManage);
-  $: questTypeNames = questTypes.map((it) => it.name);
+  let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsQuestsManage));
+  let questTypeNames = $derived(questTypes.map((it) => it.name));
 
   async function loadQuests() {
     loading = true;
@@ -329,16 +329,16 @@
       <div class="head-actions">
         <label class="filter-field">
           {$t('quests.campaignFilter')}
-          <select bind:value={campaignFilter} on:change={loadQuests}>
+          <select bind:value={campaignFilter} onchange={loadQuests}>
             <option value="">{$t('quests.allCampaigns')}</option>
             {#each campaigns as campaign}
               <option value={campaign}>{campaign}</option>
             {/each}
           </select>
         </label>
-        <button type="button" class="ghost-button" on:click={loadQuests} disabled={loading}>{$t('common.refresh')}</button>
+        <button type="button" class="ghost-button" onclick={loadQuests} disabled={loading}>{$t('common.refresh')}</button>
         {#if canManage}
-          <button type="button" class="ghost-button" on:click={openCreateQuest}>
+          <button type="button" class="ghost-button" onclick={openCreateQuest}>
             <Plus size={14} strokeWidth={2} aria-hidden="true" /> {$t('quests.newQuest')}
           </button>
         {/if}
@@ -365,7 +365,7 @@
               </span>
               <div class="op-actions offer-actions">
                 {#if canManage}
-                  <button type="button" class="ghost-button" on:click={() => startEditQuest(quest)}>
+                  <button type="button" class="ghost-button" onclick={() => startEditQuest(quest)}>
                     <Pencil size={14} strokeWidth={2} aria-hidden="true" /> {$t('quests.edit')}
                   </button>
                 {/if}
@@ -398,7 +398,7 @@
 
             {#if canManage}
               <div class="catalog-card-detail delete-bar">
-                <button type="button" class="ghost-button danger" on:click={() => openDeleteQuest(quest)}>
+                <button type="button" class="ghost-button danger" onclick={() => openDeleteQuest(quest)}>
                   <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> {$t('quests.deleteQuest')}
                 </button>
               </div>
@@ -420,7 +420,7 @@
     eyebrow={$t('quests.questsHeading')}
     width={720}
     labelledBy="quest-form-title"
-    on:close={closeQuestModal}
+    onclose={closeQuestModal}
   >
     <div class="op-field">
       <label for="quest-campaign">{$t('quests.campaignCodeRequired')}</label>
@@ -502,7 +502,7 @@
           <input id="quest-seconds" type="number" min="0" bind:value={questModal.form.seasonalSeconds} />
           <div class="preset-row">
             {#each seasonalPresets as preset}
-              <button type="button" class="ghost-button preset" on:click={() => { questModal.form.seasonalSeconds = preset.seconds; questModal = questModal; }}>{$t(preset.key)}</button>
+              <button type="button" class="ghost-button preset" onclick={() => { questModal.form.seasonalSeconds = preset.seconds; questModal = questModal; }}>{$t(preset.key)}</button>
             {/each}
           </div>
         </div>
@@ -539,12 +539,14 @@
 
     {#if $ops.errors.questForm}<p class="empty-state danger">{$ops.errors.questForm}</p>{/if}
 
-    <svelte:fragment slot="actions">
-      <button type="button" on:click={saveQuest} disabled={$ops.busyKeys.questForm}>
+    {#snippet actions()}
+
+      <button type="button" onclick={saveQuest} disabled={$ops.busyKeys.questForm}>
         {questModal.id === null ? $t('quests.create') : $t('quests.save')}
       </button>
-      <button class="ghost-button" type="button" on:click={closeQuestModal}>{$t('quests.cancel')}</button>
-    </svelte:fragment>
+      <button class="ghost-button" type="button" onclick={closeQuestModal}>{$t('quests.cancel')}</button>
+
+    {/snippet}
   </Modal>
 {/if}
 
@@ -560,8 +562,8 @@
   busy={$deleteOps.busy}
   error={$deleteOps.error}
   danger={$deleteOps.pending?.danger ?? false}
-  on:confirm={(e) => deleteOps.confirm(e.detail)}
-  on:cancel={() => deleteOps.cancel()}
+  onconfirm={deleteOps.confirm}
+  oncancel={() => deleteOps.cancel()}
 />
 
 <style>

@@ -57,38 +57,38 @@
     return Number.isNaN(date.getTime()) ? null : date.toISOString();
   }
 
-  let activeOnly = false;
+  let activeOnly = $state(false);
 
   // Admin-form metadata loaded once: the configured promo-image base template (drives the
   // filename-only image inputs) and the currency types for the activity-point picker.
-  let imageTemplate = null;
-  let currencyTypes = [];
+  let imageTemplate = $state(null);
+  let currencyTypes = $state([]);
   // Available promo images (from the asset folder) for the gallery picker, so operators pick a real
   // image instead of typing a filename blind. Empty when the picker is unconfigured.
-  let offerImages = [];
+  let offerImages = $state([]);
   // Activity points can be paid in any non-Credits currency; Credits are handled by the separate
   // credits price field, so excluding them here avoids offering the same currency twice.
-  $: activityPointCurrencyTypes = currencyTypes.filter((c) => c.type !== 'Credits');
+  let activityPointCurrencyTypes = $derived(currencyTypes.filter((c) => c.type !== 'Credits'));
 
-  let offers = [];
-  let loading = false;
-  let error = '';
-  let forbidden = false;
+  let offers = $state([]);
+  let loading = $state(false);
+  let error = $state('');
+  let forbidden = $state(false);
 
-  let newOfferOpen = false;
-  let newOffer = emptyOfferForm();
-  let editOfferId = null;
-  let editOfferForm = null;
+  let newOfferOpen = $state(false);
+  let newOffer = $state(emptyOfferForm());
+  let editOfferId = $state(null);
+  let editOfferForm = $state(null);
 
-  let selectedOfferId = null;
-  let offerDetail = null;
-  let offerDetailLoading = false;
-  let offerDetailError = '';
+  let selectedOfferId = $state(null);
+  let offerDetail = $state(null);
+  let offerDetailLoading = $state(false);
+  let offerDetailError = $state('');
 
-  let newProductOpen = false;
-  let newProduct = emptyProductForm();
-  let editProductId = null;
-  let editProductForm = null;
+  let newProductOpen = $state(false);
+  let newProduct = $state(emptyProductForm());
+  let editProductId = $state(null);
+  let editProductForm = $state(null);
 
   // The edits carry their reason as a field of the form itself; the deletes collect it in the shared
   // ConfirmReasonModal beside every trash button. Two stores rather than one so staging an edit
@@ -97,7 +97,7 @@
   const ops = createWriteOps();
   const deleteOps = createWriteOps();
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsTargetedOffersManage);
+  let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsTargetedOffersManage));
 
   async function loadOffers() {
     loading = true;
@@ -407,10 +407,10 @@
     <h2>{$t('targetedOffers.title')}</h2>
     <div class="head-actions">
       <label class="active-toggle">
-        <input type="checkbox" bind:checked={activeOnly} on:change={loadOffers} />
+        <input type="checkbox" bind:checked={activeOnly} onchange={loadOffers} />
         {$t('targetedOffers.activeOnlyLabel')}
       </label>
-      <button type="button" class="ghost-button" on:click={refreshAll} disabled={loading}>{$t('common.refresh')}</button>
+      <button type="button" class="ghost-button" onclick={refreshAll} disabled={loading}>{$t('common.refresh')}</button>
     </div>
   </div>
   <p class="muted">{$t('targetedOffers.description')}</p>
@@ -423,7 +423,7 @@
     <div class="panel-head">
       <h2><Target size={17} strokeWidth={2} aria-hidden="true" /> {$t('targetedOffers.offersHeading')}</h2>
       {#if canManage}
-        <button type="button" class="ghost-button" on:click={() => (newOfferOpen = !newOfferOpen)}>
+        <button type="button" class="ghost-button" onclick={() => (newOfferOpen = !newOfferOpen)}>
           <Plus size={14} strokeWidth={2} aria-hidden="true" /> {newOfferOpen ? $t('targetedOffers.cancel') : $t('targetedOffers.newOffer')}
         </button>
       {/if}
@@ -505,7 +505,7 @@
           <input id="new-offer-reason" bind:value={newOffer.reason} placeholder={$t('targetedOffers.reasonOfferPlaceholder')} list="reason-history" />
         </div>
         <div class="op-actions">
-          <button type="button" on:click={stageCreateOffer} disabled={$ops.busyKeys.createOffer}>{$t('targetedOffers.create')}</button>
+          <button type="button" onclick={stageCreateOffer} disabled={$ops.busyKeys.createOffer}>{$t('targetedOffers.create')}</button>
         </div>
         {#if $ops.errors.createOffer}<p class="empty-state danger">{$ops.errors.createOffer}</p>{/if}
         {#if $ops.results.createOffer}
@@ -531,11 +531,11 @@
                 <small class="muted">{offer.identifier} - #{offer.id}{offer.productCode ? ` - ${offer.productCode}` : ''}</small>
               </span>
               <div class="op-actions offer-actions">
-                <button type="button" class="ghost-button" class:active={selectedOfferId === offer.id} on:click={() => toggleOfferDetail(offer.id)}>
+                <button type="button" class="ghost-button" class:active={selectedOfferId === offer.id} onclick={() => toggleOfferDetail(offer.id)}>
                   <Package size={14} strokeWidth={2} aria-hidden="true" /> {offerProductsLabel(offer, selectedOfferId, $t)}
                 </button>
                 {#if canManage}
-                  <button type="button" class="ghost-button" on:click={() => startEditOffer(offer)}>
+                  <button type="button" class="ghost-button" onclick={() => startEditOffer(offer)}>
                     <Pencil size={14} strokeWidth={2} aria-hidden="true" /> {$t('targetedOffers.edit')}
                   </button>
                 {/if}
@@ -631,8 +631,8 @@
                     <input id={`edit-offer-reason-${offer.id}`} bind:value={editOfferForm.reason} placeholder={$t('common.reasonPlaceholderChange')} list="reason-history" />
                   </div>
                   <div class="op-actions">
-                    <button type="button" on:click={stageUpdateOffer} disabled={$ops.busyKeys.updateOffer}>{$t('targetedOffers.save')}</button>
-                    <button class="ghost-button" type="button" on:click={() => { editOfferId = null; editOfferForm = null; }}>{$t('targetedOffers.cancel')}</button>
+                    <button type="button" onclick={stageUpdateOffer} disabled={$ops.busyKeys.updateOffer}>{$t('targetedOffers.save')}</button>
+                    <button class="ghost-button" type="button" onclick={() => { editOfferId = null; editOfferForm = null; }}>{$t('targetedOffers.cancel')}</button>
                   </div>
                   {#if $ops.errors.updateOffer}<p class="empty-state danger">{$ops.errors.updateOffer}</p>{/if}
                   {#if $ops.results.updateOffer}
@@ -646,7 +646,7 @@
 
             {#if canManage}
               <div class="catalog-card-detail delete-bar">
-                <button type="button" class="ghost-button danger" on:click={() => openDeleteOffer(offer)}>
+                <button type="button" class="ghost-button danger" onclick={() => openDeleteOffer(offer)}>
                   <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> {$t('targetedOffers.deleteOffer')}
                 </button>
               </div>
@@ -657,7 +657,7 @@
                 <div class="panel-head">
                   <h3><Package size={15} strokeWidth={2} aria-hidden="true" /> {$t('targetedOffers.bundleProducts')}</h3>
                   {#if canManage}
-                    <button type="button" class="ghost-button" on:click={() => (newProductOpen = !newProductOpen)}>
+                    <button type="button" class="ghost-button" onclick={() => (newProductOpen = !newProductOpen)}>
                       <Plus size={14} strokeWidth={2} aria-hidden="true" /> {newProductOpen ? $t('targetedOffers.cancel') : $t('targetedOffers.addProduct')}
                     </button>
                   {/if}
@@ -687,7 +687,7 @@
                         <input id="new-product-reason" bind:value={newProduct.reason} placeholder={$t('targetedOffers.reasonProductPlaceholder')} list="reason-history" />
                       </div>
                       <div class="op-actions">
-                        <button type="button" on:click={stageCreateProduct} disabled={$ops.busyKeys.createProduct}>{$t('targetedOffers.create')}</button>
+                        <button type="button" onclick={stageCreateProduct} disabled={$ops.busyKeys.createProduct}>{$t('targetedOffers.create')}</button>
                       </div>
                       {#if $ops.errors.createProduct}<p class="empty-state danger">{$ops.errors.createProduct}</p>{/if}
                       {#if $ops.results.createProduct}
@@ -718,7 +718,7 @@
                               <span class="op-chip" title={$t('targetedOffers.quantity')}>x{product.quantity}</span>
                             </span>
                             {#if canManage}
-                              <button type="button" class="ghost-button" on:click={() => startEditProduct(product)}>
+                              <button type="button" class="ghost-button" onclick={() => startEditProduct(product)}>
                                 <Pencil size={14} strokeWidth={2} aria-hidden="true" /> {$t('targetedOffers.edit')}
                               </button>
                             {/if}
@@ -743,8 +743,8 @@
                                 <input id={`edit-product-reason-${product.id}`} bind:value={editProductForm.reason} placeholder={$t('common.reasonPlaceholderChange')} list="reason-history" />
                               </div>
                               <div class="op-actions">
-                                <button type="button" on:click={stageUpdateProduct} disabled={$ops.busyKeys.updateProduct}>{$t('targetedOffers.save')}</button>
-                                <button class="ghost-button" type="button" on:click={() => { editProductId = null; editProductForm = null; }}>{$t('targetedOffers.cancel')}</button>
+                                <button type="button" onclick={stageUpdateProduct} disabled={$ops.busyKeys.updateProduct}>{$t('targetedOffers.save')}</button>
+                                <button class="ghost-button" type="button" onclick={() => { editProductId = null; editProductForm = null; }}>{$t('targetedOffers.cancel')}</button>
                               </div>
                               {#if $ops.errors.updateProduct}<p class="empty-state danger">{$ops.errors.updateProduct}</p>{/if}
                               {#if $ops.results.updateProduct}
@@ -755,7 +755,7 @@
 
                           {#if canManage}
                             <div class="catalog-card-detail delete-bar">
-                              <button type="button" class="ghost-button danger" on:click={() => openDeleteProduct(product)}>
+                              <button type="button" class="ghost-button danger" onclick={() => openDeleteProduct(product)}>
                                 <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> {$t('targetedOffers.deleteProduct')}
                               </button>
                             </div>
@@ -794,8 +794,8 @@
   busy={$deleteOps.busy}
   error={$deleteOps.error}
   danger={$deleteOps.pending?.danger ?? false}
-  on:confirm={(e) => deleteOps.confirm(e.detail)}
-  on:cancel={() => deleteOps.cancel()}
+  onconfirm={deleteOps.confirm}
+  oncancel={() => deleteOps.cancel()}
 />
 
 <style>

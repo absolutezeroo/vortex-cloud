@@ -1,13 +1,14 @@
 <script>
+
   import { describeApiError, isConnectionError, login } from '../lib/api.js';
   import { t, translate } from '../lib/i18n.js';
 
-  export let onAuthenticated;
+  let { onAuthenticated } = $props();
 
-  let email = '';
-  let password = '';
-  let error = '';
-  let busy = false;
+  let email = $state('');
+  let password = $state('');
+  let error = $state('');
+  let busy = $state(false);
 
   async function submit() {
     if (busy) return;
@@ -33,7 +34,7 @@
 </script>
 
 <div class="login-screen">
-  <form class="login-card" on:submit|preventDefault={submit}>
+  <form class="login-card" onsubmit={(event) => { event.preventDefault(); submit(); }}>
     <div class="login-brand">
       <span class="brand-mark" aria-hidden="true">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">

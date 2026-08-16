@@ -13,16 +13,16 @@
   import { identity, openPlayer, openItem } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
 
-  let loading = false;
-  let forbidden = false;
-  let error = '';
-  let rooms = [];
+  let loading = $state(false);
+  let forbidden = $state(false);
+  let error = $state('');
+  let rooms = $state([]);
 
   // Expanded room id -> occupant list / loading state.
-  let expanded = null;
-  let occupants = [];
-  let occupantsLoading = false;
-  let occupantsError = '';
+  let expanded = $state(null);
+  let occupants = $state([]);
+  let occupantsLoading = $state(false);
+  let occupantsError = $state('');
 
   // The one in-flight/last-confirmed action, staged through the shared reason modal: it stays open
   // on error so the operator sees why it failed and closes on success (the room/occupant list
@@ -30,7 +30,7 @@
   // since closing a room reloads the room list while a kick only reloads that room's occupants.
   const ops = createWriteOps();
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsRoomsManage);
+  let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsRoomsManage));
 
   function roomId(room) {
     return room.roomId ?? room.RoomId;
@@ -142,7 +142,7 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('roomControl.title')}</h2>
-    <button type="button" class="ghost-button" on:click={refresh} disabled={loading}>{$t('common.refresh')}</button>
+    <button type="button" class="ghost-button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
   </div>
   <p class="muted">
     {$t('roomControl.description')}
@@ -174,7 +174,7 @@
       {#each rooms as room (roomId(room))}
         <tr>
           <td>
-            <button class="ghost-button" type="button" on:click={() => toggleExpand(roomId(room))}>
+            <button class="ghost-button" type="button" onclick={() => toggleExpand(roomId(room))}>
               {#if expanded === roomId(room)}<ChevronDown size={14} strokeWidth={2} aria-hidden="true" />{:else}<ChevronRight size={14} strokeWidth={2} aria-hidden="true" />{/if} {roomName(room)} <small>#{roomId(room)}</small>
             </button>
           </td>
@@ -183,7 +183,7 @@
           <td>{formatDate(roomUpdatedAt(room))}</td>
           <td>
             {#if canManage}
-              <button type="button" on:click={() => stageClose(room)}>{$t('roomControl.forceClose')}</button>
+              <button type="button" onclick={() => stageClose(room)}>{$t('roomControl.forceClose')}</button>
             {:else}
               <span class="muted">{$t('roomControl.readOnly')}</span>
             {/if}
@@ -207,7 +207,7 @@
                         </td>
                         <td>
                           {#if canManage}
-                            <button type="button" class="ghost-button" on:click={() => stageKick(occupant, roomId(room))}>{$t('roomControl.kick')}</button>
+                            <button type="button" class="ghost-button" onclick={() => stageKick(occupant, roomId(room))}>{$t('roomControl.kick')}</button>
                           {/if}
                         </td>
                       </tr>
@@ -237,6 +237,6 @@
   busy={$ops.busy}
   error={$ops.error}
   danger={$ops.pending?.danger ?? false}
-  on:confirm={(e) => ops.confirm(e.detail)}
-  on:cancel={() => ops.cancel()}
+  onconfirm={ops.confirm}
+  oncancel={() => ops.cancel()}
 />

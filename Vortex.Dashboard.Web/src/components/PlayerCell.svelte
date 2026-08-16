@@ -6,12 +6,24 @@
   import { User } from '@lucide/svelte';
   import AssetImage from './AssetImage.svelte';
 
-  export let name = '';
-  export let avatarUrl = null;
-  export let size = 32;
+  /**
+   * @typedef {Object} Props
+   * @property {string} [name]
+   * @property {any} [avatarUrl]
+   * @property {number} [size]
+   * @property {import('svelte').Snippet} [children]
+   */
+
+  /** @type {Props} */
+  let {
+    name = '',
+    avatarUrl = null,
+    size = 32,
+    children
+  } = $props();
 </script>
 
 <span class="player">
   <AssetImage src={avatarUrl} {size} fallbackIcon={User} alt={name} />
-  <slot><span class="player-name">{name}</span></slot>
+  {#if children}{@render children()}{:else}<span class="player-name">{name}</span>{/if}
 </span>

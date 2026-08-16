@@ -16,16 +16,27 @@
   import { onMount, onDestroy } from 'svelte';
   import { t } from '../lib/i18n.js';
 
-  export let series = []; // [{ name, color, points: [{ label, value }] }]
-  export let height = 220;
-  export let valueFormatter = (v) => String(v);
-  export let emptyMessage = '';
+  /**
+   * @typedef {Object} Props
+   * @property {any} [series] - [{ name, color, points: [{ label, value }] }]
+   * @property {number} [height]
+   * @property {any} [valueFormatter]
+   * @property {string} [emptyMessage]
+   */
+
+  /** @type {Props} */
+  let {
+    series = [],
+    height = 220,
+    valueFormatter = (v) => String(v),
+    emptyMessage = ''
+  } = $props();
 
   // Nonzero default so the chart renders at a sane size immediately, before the ResizeObserver
   // below reports the real measured width.
-  let containerWidth = 300;
-  let containerEl;
-  let hoverIndex = null;
+  let containerWidth = $state(300);
+  let containerEl = $state();
+  let hoverIndex = $state(null);
   let resizeObserver;
 
   // bind:clientWidth alone does not reliably report the real width the moment this component's
@@ -66,17 +77,17 @@
 
   const margin = { top: 12, right: 12, bottom: 26, left: 12 };
 
-  $: viewWidth = Math.max(60, containerWidth);
-  $: viewHeight = height;
-  $: innerWidth = Math.max(1, viewWidth - margin.left - margin.right);
-  $: innerHeight = Math.max(1, viewHeight - margin.top - margin.bottom);
-  $: allPoints = series.flatMap((s) => s.points || []);
-  $: hasData = allPoints.length > 0;
-  $: pointCount = Math.max(1, ...series.map((s) => (s.points || []).length), 1);
-  $: rawMax = Math.max(0, ...allPoints.map((p) => Number(p.value) || 0));
-  $: rawMin = Math.min(0, ...allPoints.map((p) => Number(p.value) || 0));
-  $: maxValue = rawMax === rawMin ? rawMax + 1 : rawMax;
-  $: minValue = rawMin;
+  let viewWidth = $derived(Math.max(60, containerWidth));
+  let viewHeight = $derived(height);
+  let innerWidth = $derived(Math.max(1, viewWidth - margin.left - margin.right));
+  let innerHeight = $derived(Math.max(1, viewHeight - margin.top - margin.bottom));
+  let allPoints = $derived(series.flatMap((s) => s.points || []));
+  let hasData = $derived(allPoints.length > 0);
+  let pointCount = $derived(Math.max(1, ...series.map((s) => (s.points || []).length), 1));
+  let rawMax = $derived(Math.max(0, ...allPoints.map((p) => Number(p.value) || 0)));
+  let rawMin = $derived(Math.min(0, ...allPoints.map((p) => Number(p.value) || 0)));
+  let maxValue = $derived(rawMax === rawMin ? rawMax + 1 : rawMax);
+  let minValue = $derived(rawMin);
 
   // xFor/yFor/pathFor all take their reactive inputs (innerW/count/innerH/minV/maxV) as explicit
   // parameters instead of reading innerWidth/pointCount/innerHeight/minValue/maxValue from closure.
@@ -142,8 +153,8 @@
     hoverIndex = null;
   }
 
-  $: hoverRows =
-    hoverIndex === null
+  let hoverRows =
+    $derived(hoverIndex === null
       ? []
       : series
           .map((s) => ({
@@ -151,24 +162,24 @@
             color: s.color,
             point: (s.points || [])[hoverIndex],
           }))
-          .filter((r) => r.point !== undefined);
+          .filter((r) => r.point !== undefined));
 
-  $: hoverLabel = hoverRows[0]?.point?.label ?? '';
-  $: hoverX = hoverIndex === null ? 0 : xFor(hoverIndex, innerWidth, pointCount);
-  $: tooltipAlignRight = hoverX > viewWidth * 0.6;
+  let hoverLabel = $derived(hoverRows[0]?.point?.label ?? '');
+  let hoverX = $derived(hoverIndex === null ? 0 : xFor(hoverIndex, innerWidth, pointCount));
+  let tooltipAlignRight = $derived(hoverX > viewWidth * 0.6);
 
-  $: gridLines = [0, 0.25, 0.5, 0.75, 1].map((t) => margin.top + t * innerHeight);
-  $: labelPoints = (series[0]?.points || []).map((p, i) => ({ index: i, label: p.label }));
+  let gridLines = $derived([0, 0.25, 0.5, 0.75, 1].map((t) => margin.top + t * innerHeight));
+  let labelPoints = $derived((series[0]?.points || []).map((p, i) => ({ index: i, label: p.label })));
   // Thin the x-axis labels so they don't overlap when there are many points.
-  $: labelStride = Math.max(1, Math.ceil(labelPoints.length / 8));
+  let labelStride = $derived(Math.max(1, Math.ceil(labelPoints.length / 8)));
 </script>
 
 <div
   class="linechart"
   style={`height: ${height}px`}
   bind:this={containerEl}
-  on:mousemove={handleMove}
-  on:mouseleave={handleLeave}
+  onmousemove={handleMove}
+  onmouseleave={handleLeave}
   role="img"
   aria-label="Trend chart"
 >

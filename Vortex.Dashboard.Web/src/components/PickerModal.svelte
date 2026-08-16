@@ -7,12 +7,24 @@
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { t } from '../lib/i18n.js';
 
-  // kind: 'user' | 'furniture' | 'room'
-  export let kind = 'user';
-  export let title = 'Select';
-  export let onSelect;
-  export let onClose;
-  export let canSelect = true;
+  
+  /**
+   * @typedef {Object} Props
+   * @property {string} [kind] - kind: 'user' | 'furniture' | 'room'
+   * @property {string} [title]
+   * @property {any} onSelect
+   * @property {any} onClose
+   * @property {boolean} [canSelect]
+   */
+
+  /** @type {Props} */
+  let {
+    kind = 'user',
+    title = 'Select',
+    onSelect,
+    onClose,
+    canSelect = true
+  } = $props();
 
   const ENDPOINTS = {
     furniture: '/api/v1/directory/furniture',
@@ -22,22 +34,24 @@
 
   const endpoint = ENDPOINTS[kind] ?? ENDPOINTS.user;
 
-  let query = '';
-  let rows = [];
-  let hasMore = false;
-  let loadingMore = false;
+  let query = $state('');
+  let rows = $state([]);
+  let hasMore = $state(false);
+  let loadingMore = $state(false);
   const PAGE_SIZE = 60;
-  let loading = false;
-  let error = '';
-  let forbidden = false;
+  let loading = $state(false);
+  let error = $state('');
+  let forbidden = $state(false);
 
-  $: if (!canSelect) {
-    forbidden = true;
-    error = '';
-    rows = [];
-  } else {
-    forbidden = false;
-  }
+  $effect(() => {
+    if (!canSelect) {
+      forbidden = true;
+      error = '';
+      rows = [];
+    } else {
+      forbidden = false;
+    }
+  });
 
   const ACCESS_DENIED_KEYS = {
     furniture: 'pickerModal.furnitureAccessDenied',
@@ -57,7 +71,7 @@
     user: 'pickerModal.searchPlayerPlaceholder',
   };
 
-  $: permissionMessage = $t(ACCESS_DENIED_KEYS[kind] ?? ACCESS_DENIED_KEYS.user);
+  let permissionMessage = $derived($t(ACCESS_DENIED_KEYS[kind] ?? ACCESS_DENIED_KEYS.user));
 
   async function load() {
     if (!canSelect) {
@@ -128,13 +142,15 @@
   eyebrow={$t(EYEBROW_KEYS[kind] ?? EYEBROW_KEYS.user)}
   width={620}
   labelledBy="picker-modal-title"
-  on:close={onClose}
+  onclose={onClose}
 >
-  <button slot="header" class="ghost-button" type="button" on:click={onClose}>
-    {$t('pickerModal.close')}
-  </button>
+  {#snippet header()}
+    <button class="ghost-button" type="button" onclick={onClose}>
+      {$t('pickerModal.close')}
+    </button>
+  {/snippet}
 
-  <form class="toolbar" on:submit|preventDefault={load}>
+  <form class="toolbar" onsubmit={(event) => { event.preventDefault(); load(); }}>
     <input
       bind:value={query}
       placeholder={$t(SEARCH_PLACEHOLDER_KEYS[kind] ?? SEARCH_PLACEHOLDER_KEYS.user)}
@@ -154,7 +170,7 @@
   <div class="pick-list">
     {#each rows as row}
       {#if kind === 'furniture'}
-        <button type="button" class="pick-row" on:click={() => choose(row)}>
+        <button type="button" class="pick-row" onclick={() => choose(row)}>
           {#if row.iconUrl}
             <img class="pick-icon" src={row.iconUrl} alt="" />
           {:else}
@@ -168,7 +184,7 @@
           </span>
         </button>
       {:else if kind === 'room'}
-        <button type="button" class="pick-row" on:click={() => choose(row)}>
+        <button type="button" class="pick-row" onclick={() => choose(row)}>
           <span class="pick-icon" aria-hidden="true"><House size={18} /></span>
           <span class="pick-dot" class:on={row.usersNow > 0} aria-hidden="true"></span>
           <span class="pick-main">
@@ -182,7 +198,7 @@
           </span>
         </button>
       {:else}
-        <button type="button" class="pick-row" on:click={() => choose(row)}>
+        <button type="button" class="pick-row" onclick={() => choose(row)}>
           <AssetImage src={row.avatarUrl} alt={row.name} size={38} fallbackIcon={User} />
           <span class="pick-dot" class:on={row.online} aria-hidden="true"></span>
           <span class="pick-main">
@@ -195,7 +211,7 @@
       {#if !loading}<p class="empty-state">{$t('pickerModal.noResults')}</p>{/if}
     {/each}
     {#if hasMore}
-      <button type="button" class="ghost-button" on:click={loadMore} disabled={loadingMore}>
+      <button type="button" class="ghost-button" onclick={loadMore} disabled={loadingMore}>
         {loadingMore ? $t('common.loading') : $t('pickerModal.loadMore')}
       </button>
     {/if}

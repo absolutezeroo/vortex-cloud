@@ -21,23 +21,23 @@
   // in extraParam instead, so the form swaps which field it asks for.
   const FURNITURE_TYPES = ['Floor', 'Wall'];
 
-  let pools = [];
-  let entries = [];
+  let pools = $state([]);
+  let entries = $state([]);
   let totals = [];
-  let bindings = [];
+  let bindings = $state([]);
 
-  let tab = 'pools';
+  let tab = $state('pools');
 
   // The bindings table is the one list here that grows with the hotel rather than with the operator:
   // every crackable furni is a row, which is a four-figure scroll on a real database. Filter first --
   // an operator arrives knowing which furni they are looking for -- and page what is left. Both are
   // client-side because the whole set already arrived with the page.
   const BINDINGS_PAGE_SIZE = 25;
-  let bindingQuery = '';
-  let bindingPool = '';
-  let bindingPage = 1;
+  let bindingQuery = $state('');
+  let bindingPool = $state('');
+  let bindingPage = $state(1);
 
-  $: filteredBindings = bindings.filter((b) => {
+  let filteredBindings = $derived(bindings.filter((b) => {
     if (bindingPool && b.pool !== bindingPool) return false;
     if (!bindingQuery.trim()) return true;
 
@@ -48,33 +48,35 @@
       (b.furnitureLogic ?? '').toLowerCase().includes(needle) ||
       String(b.furnitureDefinitionId).includes(needle)
     );
-  });
+  }));
 
-  $: bindingPageCount = Math.max(1, Math.ceil(filteredBindings.length / BINDINGS_PAGE_SIZE));
+  let bindingPageCount = $derived(Math.max(1, Math.ceil(filteredBindings.length / BINDINGS_PAGE_SIZE)));
   // Narrowing the filter can strand the operator past the last page; walk them back to it.
-  $: if (bindingPage > bindingPageCount) bindingPage = bindingPageCount;
-  $: pagedBindings = filteredBindings.slice(
+  $effect(() => {
+    if (bindingPage > bindingPageCount) bindingPage = bindingPageCount;
+  });
+  let pagedBindings = $derived(filteredBindings.slice(
     (bindingPage - 1) * BINDINGS_PAGE_SIZE,
     bindingPage * BINDINGS_PAGE_SIZE
-  );
-  $: bindingPools = [...new Set(bindings.map((b) => b.pool))].sort();
+  ));
+  let bindingPools = $derived([...new Set(bindings.map((b) => b.pool))].sort());
 
-  let productTypes = [];
-  let stats = null;
-  let statsDays = 7;
+  let productTypes = $state([]);
+  let stats = $state(null);
+  let statsDays = $state(7);
 
-  let loading = false;
-  let denied = false;
-  let error = '';
+  let loading = $state(false);
+  let denied = $state(false);
+  let error = $state('');
 
-  let selectedPoolId = null;
-  let newPool = emptyPool();
-  let newEntry = emptyEntry();
-  let newBinding = emptyBinding();
+  let selectedPoolId = $state(null);
+  let newPool = $state(emptyPool());
+  let newEntry = $state(emptyEntry());
+  let newBinding = $state(emptyBinding());
 
   // Typing a definition id by hand means looking it up somewhere else first; the furniture
   // picker is what every other page uses for this.
-  let picking = null;
+  let picking = $state(null);
 
   // Every write is staged through the shared reason modal; createWriteOps posts it, remembers the
   // reason (which the hand-rolled version here used to drop) and refreshes both reads.
@@ -105,10 +107,10 @@
     };
   }
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsPrizePoolsManage);
-  $: selectedPool = pools.find((p) => p.id === selectedPoolId) ?? pools[0] ?? null;
-  $: poolEntries = selectedPool ? entries.filter((e) => e.poolId === selectedPool.id) : [];
-  $: poolStats = stats?.pools?.find((p) => p.pool === selectedPool?.code) ?? null;
+  let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsPrizePoolsManage));
+  let selectedPool = $derived(pools.find((p) => p.id === selectedPoolId) ?? pools[0] ?? null);
+  let poolEntries = $derived(selectedPool ? entries.filter((e) => e.poolId === selectedPool.id) : []);
+  let poolStats = $derived(stats?.pools?.find((p) => p.pool === selectedPool?.code) ?? null);
 
   // The share a draw really sees: an entry competes with the pool entries that can be drawn beside
   // it, which for a variantless one is every variant of the pool. The server groups them the same
@@ -181,14 +183,14 @@
   <div class="panel-head">
     <h2><Dices size={17} strokeWidth={2} aria-hidden="true" /> {$t('prizePools.title')}</h2>
     <div class="toolbar">
-      <button type="button" class="ghost-button" on:click={load} disabled={loading}>
+      <button type="button" class="ghost-button" onclick={load} disabled={loading}>
         {$t('common.refresh')}
       </button>
       {#if canManage}
         <button
           type="button"
           class="ghost-button"
-          on:click={() =>
+          onclick={() =>
             stage(
               $t('prizePools.reload'),
               $t('prizePools.reloaded'),
@@ -240,7 +242,7 @@
             type="button"
             class="btn btn-ghost btn-sm"
             aria-pressed={selectedPool?.id === pool.id}
-            on:click={() => (selectedPoolId = pool.id)}
+            onclick={() => (selectedPoolId = pool.id)}
           >
             {pool.name}
             {#if pool.isBuiltIn}
@@ -278,7 +280,7 @@
           type="button"
           class="btn btn-primary btn-sm"
           disabled={!newPool.code.trim() || !newPool.name.trim()}
-          on:click={() =>
+          onclick={() =>
             stage($t('prizePools.newPool'), newPool.code, '/api/operations/prize-pools', {
               ...newPool,
             })}
@@ -295,7 +297,7 @@
       <div class="panel-head">
         <h2>{$t('prizePools.entriesHeading')} — {selectedPool.name}</h2>
         <div class="toolbar">
-          <select bind:value={statsDays} on:change={loadStats}>
+          <select bind:value={statsDays} onchange={loadStats}>
             {#each [1, 7, 30, 90] as days}
               <option value={days}>{days}</option>
             {/each}
@@ -363,7 +365,7 @@
                         type="button"
                         class="icon-btn"
                         title={$t('prizePools.remove')}
-                        on:click={() =>
+                        onclick={() =>
                           stage(
                             $t('prizePools.remove'),
                             entryTarget(entry),
@@ -405,7 +407,7 @@
                 <button
                   type="button"
                   class="ghost-button"
-                  on:click={() => (picking = 'entry')}>{$t('prizePools.pick')}</button
+                  onclick={() => (picking = 'entry')}>{$t('prizePools.pick')}</button
                 >
               </div>
             </div>
@@ -428,7 +430,7 @@
           <button
             type="button"
             class="btn btn-primary btn-sm"
-            on:click={() =>
+            onclick={() =>
               stage(
                 $t('prizePools.newEntry'),
                 selectedPool.code,
@@ -469,13 +471,13 @@
           <input
             type="search"
             bind:value={bindingQuery}
-            on:input={() => (bindingPage = 1)}
+            oninput={() => (bindingPage = 1)}
             placeholder={$t('prizePools.searchBindingsPlaceholder')}
           />
         </label>
         <label>
           {$t('prizePools.pool')}
-          <select bind:value={bindingPool} on:change={() => (bindingPage = 1)}>
+          <select bind:value={bindingPool} onchange={() => (bindingPage = 1)}>
             <option value="">{$t('prizePools.allPools')}</option>
             {#each bindingPools as pool}
               <option value={pool}>{pool}</option>
@@ -520,7 +522,7 @@
                       type="button"
                       class="icon-btn"
                       title={$t('prizePools.remove')}
-                      on:click={() =>
+                      onclick={() =>
                         stage(
                           $t('prizePools.remove'),
                           binding.furnitureName ?? `#${binding.furnitureDefinitionId}`,
@@ -551,7 +553,7 @@
           prevLabel={$t('common.prev')}
           nextLabel={$t('common.next')}
           pageWord={$t('common.page')}
-          on:change={(e) => (bindingPage = e.detail)}
+          onchange={(detail) => (bindingPage = detail)}
         />
       {/if}
     {/if}
@@ -566,7 +568,7 @@
               type="number"
               bind:value={newBinding.furnitureDefinitionId}
             />
-            <button type="button" class="ghost-button" on:click={() => (picking = 'binding')}
+            <button type="button" class="ghost-button" onclick={() => (picking = 'binding')}
               >{$t('prizePools.pick')}</button
             >
           </div>
@@ -590,7 +592,7 @@
           type="button"
           class="btn btn-primary btn-sm"
           disabled={!newBinding.furnitureDefinitionId || !newBinding.poolCode}
-          on:click={() =>
+          onclick={() =>
             stage(
               $t('prizePools.newBinding'),
               newBinding.poolCode,
@@ -634,8 +636,8 @@
   busy={$ops.busy}
   error={$ops.error}
   danger={$ops.pending?.danger ?? false}
-  on:confirm={(e) => ops.confirm(e.detail)}
-  on:cancel={() => ops.cancel()}
+  onconfirm={ops.confirm}
+  oncancel={() => ops.cancel()}
 />
 
 <style>

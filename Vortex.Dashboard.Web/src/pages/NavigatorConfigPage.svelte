@@ -22,10 +22,10 @@
   import { Compass, LayoutList, FolderTree, CalendarRange } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
-  let loading = false;
-  let forbidden = false;
-  let error = '';
-  let data = null;
+  let loading = $state(false);
+  let forbidden = $state(false);
+  let error = $state('');
+  let data = $state(null);
   // Every write goes through createWriteOps: the modal collects the reason, the store posts it,
   // remembers it and refreshes -- this callback is only the page's own "clear the drafts" step.
   const ops = createWriteOps(async () => {
@@ -36,9 +36,9 @@
     await refresh();
   });
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsNavigatorManage);
-  $: queryTypes = data?.queryTypes || [];
-  $: searchCodes = data?.searchCodes || [];
+  let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsNavigatorManage));
+  let queryTypes = $derived(data?.queryTypes || []);
+  let searchCodes = $derived(data?.searchCodes || []);
 
   const newContext = () => ({ searchCode: '', visible: true, queryType: 0, orderNum: 0 });
   const newQuickLink = (contextId) => ({
@@ -61,16 +61,16 @@
   });
   const newEventCategory = () => ({ name: '', visible: true });
 
-  let contextForm = newContext();
-  let quickLinkForms = {};
-  let categoryForm = newCategory();
-  let eventCategoryForm = newEventCategory();
-  let editing = null; // { kind, id, draft }
+  let contextForm = $state(newContext());
+  let quickLinkForms = $state({});
+  let categoryForm = $state(newCategory());
+  let eventCategoryForm = $state(newEventCategory());
+  let editing = $state(null); // { kind, id, draft }
 
   // These sections are independent jobs that were stacked vertically, so reaching the last one
   // meant scrolling past every other. Nothing here is read against anything else -- which is
   // both what makes tabs right and what would have made them wrong.
-  let tab = 'contexts';
+  let tab = $state('contexts');
 
   async function refresh() {
     loading = true;
@@ -124,12 +124,12 @@
   <p class="muted">{$t('navigatorConfig.description')}</p>
 
   <div class="toolbar">
-    <button type="button" on:click={refresh} disabled={loading}>{$t('common.refresh')}</button>
+    <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
     {#if canManage}
       <button
         type="button"
         class="ghost-button"
-        on:click={() =>
+        onclick={() =>
           ask(
             '/api/v1/operations/navigator/seed-defaults',
             {},
@@ -158,16 +158,24 @@
 {#if data}
   <div class="metric-grid" style="margin-top: 12px;">
     <StatCard label={$t('navigatorConfig.tabs')} value={formatNumber(data.health.contextCount)}>
-      <Compass slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Compass size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('navigatorConfig.blocks')} value={formatNumber(data.health.quickLinkCount)}>
-      <LayoutList slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <LayoutList size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('navigatorConfig.categories')} value={formatNumber(data.health.flatCategoryCount)}>
-      <FolderTree slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <FolderTree size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('navigatorConfig.eventCategories')} value={formatNumber(data.health.eventCategoryCount)}>
-      <CalendarRange slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <CalendarRange size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
   </div>
 
@@ -227,13 +235,13 @@
           </div>
           {#if canManage}
             <div class="row-actions">
-              <button type="button" class="ghost-button" on:click={() => startEdit('context', context)}>
+              <button type="button" class="ghost-button" onclick={() => startEdit('context', context)}>
                 {$t('navigatorConfig.edit')}
               </button>
               <button
                 type="button"
                 class="ghost-button danger"
-                on:click={() =>
+                onclick={() =>
                   ask(
                     '/api/v1/operations/navigator/contexts/delete',
                     { contextId: context.id },
@@ -250,13 +258,15 @@
         {#if editing?.kind === 'context' && editing.id === context.id}
           <form
             class="edit-grid"
-            on:submit|preventDefault={() =>
+            onsubmit={(event) => {
+              event.preventDefault();
               ask(
                 '/api/v1/operations/navigator/contexts/update',
                 { contextId: context.id, ...editing.draft },
                 $t('navigatorConfig.updateTab'),
                 $t('navigatorConfig.updateTabSummary', { code: editing.draft.searchCode })
-              )}
+              );
+            }}
           >
             <label>
               {$t('navigatorConfig.searchCode')}
@@ -279,7 +289,7 @@
               {$t('navigatorConfig.visible')}
             </label>
             <button type="submit">{$t('navigatorConfig.save')}</button>
-            <button type="button" class="ghost-button" on:click={() => (editing = null)}>
+            <button type="button" class="ghost-button" onclick={() => (editing = null)}>
               {$t('navigatorConfig.cancel')}
             </button>
           </form>
@@ -312,13 +322,13 @@
                   <td>{link.orderNum}</td>
                   {#if canManage}
                     <td class="row-actions">
-                      <button type="button" class="ghost-button" on:click={() => startEdit('quickLink', link)}>
+                      <button type="button" class="ghost-button" onclick={() => startEdit('quickLink', link)}>
                         {$t('navigatorConfig.edit')}
                       </button>
                       <button
                         type="button"
                         class="ghost-button danger"
-                        on:click={() =>
+                        onclick={() =>
                           ask(
                             '/api/v1/operations/navigator/quick-links/delete',
                             { quickLinkId: link.id },
@@ -336,7 +346,8 @@
                     <td colspan={canManage ? 6 : 5}>
                       <form
                         class="edit-grid"
-                        on:submit|preventDefault={() =>
+                        onsubmit={(event) => {
+                          event.preventDefault();
                           ask(
                             '/api/v1/operations/navigator/quick-links/update',
                             {
@@ -350,7 +361,8 @@
                             },
                             $t('navigatorConfig.updateBlock'),
                             $t('navigatorConfig.updateBlockSummary', { code: editing.draft.searchCode })
-                          )}
+                          );
+                        }}
                       >
                         <label>
                           {$t('navigatorConfig.searchCode')}
@@ -377,7 +389,7 @@
                           <input type="number" bind:value={editing.draft.orderNum} />
                         </label>
                         <button type="submit">{$t('navigatorConfig.save')}</button>
-                        <button type="button" class="ghost-button" on:click={() => (editing = null)}>
+                        <button type="button" class="ghost-button" onclick={() => (editing = null)}>
                           {$t('navigatorConfig.cancel')}
                         </button>
                       </form>
@@ -396,7 +408,8 @@
         {#if canManage && quickLinkForms[context.id]}
           <form
             class="edit-grid"
-            on:submit|preventDefault={() =>
+            onsubmit={(event) => {
+              event.preventDefault();
               ask(
                 '/api/v1/operations/navigator/quick-links',
                 {
@@ -412,13 +425,14 @@
                   code: quickLinkForms[context.id].searchCode,
                   tab: context.searchCode,
                 })
-              )}
+              );
+            }}
           >
             <label>
               {$t('navigatorConfig.searchCode')}
               <select
                 value={quickLinkForms[context.id].searchCode}
-                on:change={(e) => onCodePicked(quickLinkForms[context.id], e.currentTarget.value)}
+                onchange={(e) => onCodePicked(quickLinkForms[context.id], e.currentTarget.value)}
               >
                 <option value="">{$t('navigatorConfig.pickCode')}</option>
                 {#each searchCodes as code}
@@ -449,17 +463,19 @@
     {#if canManage}
       <form
         class="edit-grid"
-        on:submit|preventDefault={() =>
+        onsubmit={(event) => {
+          event.preventDefault();
           ask(
             '/api/v1/operations/navigator/contexts',
             contextForm,
             $t('navigatorConfig.addTab'),
             $t('navigatorConfig.addTabSummary', { code: contextForm.searchCode })
-          )}
+          );
+        }}
       >
         <label>
           {$t('navigatorConfig.searchCode')}
-          <select value={contextForm.searchCode} on:change={(e) => onCodePicked(contextForm, e.currentTarget.value)}>
+          <select value={contextForm.searchCode} onchange={(e) => onCodePicked(contextForm, e.currentTarget.value)}>
             <option value="">{$t('navigatorConfig.pickCode')}</option>
             {#each searchCodes.filter((c) => c.topLevel) as code}
               <option value={code.code}>{code.code} — {code.queryTypeLabel}</option>
@@ -518,13 +534,13 @@
               <td>{category.orderNum}</td>
               {#if canManage}
                 <td class="row-actions">
-                  <button type="button" class="ghost-button" on:click={() => startEdit('category', category)}>
+                  <button type="button" class="ghost-button" onclick={() => startEdit('category', category)}>
                     {$t('navigatorConfig.edit')}
                   </button>
                   <button
                     type="button"
                     class="ghost-button danger"
-                    on:click={() =>
+                    onclick={() =>
                       ask(
                         '/api/v1/operations/navigator/categories/delete',
                         { categoryId: category.id },
@@ -545,13 +561,15 @@
                 <td colspan={canManage ? 8 : 7}>
                   <form
                     class="edit-grid"
-                    on:submit|preventDefault={() =>
+                    onsubmit={(event) => {
+                      event.preventDefault();
                       ask(
                         '/api/v1/operations/navigator/categories/update',
                         { categoryId: category.id, ...editing.draft },
                         $t('navigatorConfig.updateCategory'),
                         $t('navigatorConfig.updateCategorySummary', { name: editing.draft.name })
-                      )}
+                      );
+                    }}
                   >
                     <label>
                       {$t('navigatorConfig.colName')}
@@ -574,7 +592,7 @@
                       {$t('navigatorConfig.colStaffOnly')}
                     </label>
                     <button type="submit">{$t('navigatorConfig.save')}</button>
-                    <button type="button" class="ghost-button" on:click={() => (editing = null)}>
+                    <button type="button" class="ghost-button" onclick={() => (editing = null)}>
                       {$t('navigatorConfig.cancel')}
                     </button>
                   </form>
@@ -593,13 +611,15 @@
     {#if canManage}
       <form
         class="edit-grid"
-        on:submit|preventDefault={() =>
+        onsubmit={(event) => {
+          event.preventDefault();
           ask(
             '/api/v1/operations/navigator/categories',
             categoryForm,
             $t('navigatorConfig.addCategory'),
             $t('navigatorConfig.addCategorySummary', { name: categoryForm.name })
-          )}
+          );
+        }}
       >
         <label>
           {$t('navigatorConfig.colName')}
@@ -647,13 +667,13 @@
               <td>{category.visible ? $t('common.yes') : $t('common.no')}</td>
               {#if canManage}
                 <td class="row-actions">
-                  <button type="button" class="ghost-button" on:click={() => startEdit('eventCategory', category)}>
+                  <button type="button" class="ghost-button" onclick={() => startEdit('eventCategory', category)}>
                     {$t('navigatorConfig.edit')}
                   </button>
                   <button
                     type="button"
                     class="ghost-button danger"
-                    on:click={() =>
+                    onclick={() =>
                       ask(
                         '/api/v1/operations/navigator/event-categories/delete',
                         { categoryId: category.id },
@@ -671,7 +691,8 @@
                 <td colspan={canManage ? 5 : 4}>
                   <form
                     class="edit-grid"
-                    on:submit|preventDefault={() =>
+                    onsubmit={(event) => {
+                      event.preventDefault();
                       ask(
                         '/api/v1/operations/navigator/event-categories/update',
                         {
@@ -681,7 +702,8 @@
                         },
                         $t('navigatorConfig.updateEventCategory'),
                         $t('navigatorConfig.updateEventCategorySummary', { name: editing.draft.name })
-                      )}
+                      );
+                    }}
                   >
                     <label>
                       {$t('navigatorConfig.colName')}
@@ -692,7 +714,7 @@
                       {$t('navigatorConfig.visible')}
                     </label>
                     <button type="submit">{$t('navigatorConfig.save')}</button>
-                    <button type="button" class="ghost-button" on:click={() => (editing = null)}>
+                    <button type="button" class="ghost-button" onclick={() => (editing = null)}>
                       {$t('navigatorConfig.cancel')}
                     </button>
                   </form>
@@ -711,13 +733,15 @@
     {#if canManage}
       <form
         class="edit-grid"
-        on:submit|preventDefault={() =>
+        onsubmit={(event) => {
+          event.preventDefault();
           ask(
             '/api/v1/operations/navigator/event-categories',
             eventCategoryForm,
             $t('navigatorConfig.addEventCategory'),
             $t('navigatorConfig.addEventCategorySummary', { name: eventCategoryForm.name })
-          )}
+          );
+        }}
       >
         <label>
           {$t('navigatorConfig.colName')}
@@ -745,8 +769,8 @@
   confirmLabel={$ops.pending?.title ?? $t('common.confirm')}
   busy={$ops.busy}
   error={$ops.error}
-  on:confirm={(e) => ops.confirm(e.detail)}
-  on:cancel={() => ops.cancel()}
+  onconfirm={ops.confirm}
+  oncancel={() => ops.cancel()}
 />
 
 <style>

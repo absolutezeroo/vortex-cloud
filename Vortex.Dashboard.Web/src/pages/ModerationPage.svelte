@@ -1,4 +1,5 @@
 <script>
+
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api.js';
   import { formatDate, formatDuration, formatNumber } from '../lib/format.js';
@@ -31,22 +32,24 @@
     other: '#64748b',
   };
 
-  let since = '';
-  let until = '';
-  let actor = '';
-  let target = '';
-  let room = '';
-  let action = '';
-  let result = '';
-  let limit = '80';
-  let page = 1;
-  let loading = false;
-  let error = '';
-  let forbidden = false;
-  let data = null;
+  let since = $state('');
+  let until = $state('');
+  let actor = $state('');
+  let target = $state('');
+  let room = $state('');
+  let action = $state('');
+  let result = $state('');
+  let limit = $state('80');
+  let page = $state(1);
+  let loading = $state(false);
+  let error = $state('');
+  let forbidden = $state(false);
+  let data = $state(null);
 
-  let filterSummary = '';
-  $: if (!filterSummary) filterSummary = translate('moderation.noDataLoaded');
+  let filterSummary = $state('');
+  $effect(() => {
+    if (!filterSummary) filterSummary = translate('moderation.noDataLoaded');
+  });
 
   function toLocalInputValue(value) {
     if (!value) {
@@ -172,7 +175,7 @@
     void refresh();
   }
 
-  $: totalPages = Math.max(1, Math.ceil((data?.totals?.total || 0) / Number(limit || 1)));
+  let totalPages = $derived(Math.max(1, Math.ceil((data?.totals?.total || 0) / Number(limit || 1))));
 
   function goToPage(next) {
     page = Math.min(totalPages, Math.max(1, next));
@@ -234,11 +237,11 @@
     URL.revokeObjectURL(url);
   }
 
-  $: actionDistribution = data?.distribution?.byAction || [];
-  $: timelineRows = data?.timeline || [];
-  $: rowMax = timelineRows.reduce((max, row) => Math.max(max, row.count || 0), 0);
-  $: totalForPie = actionDistribution.reduce((sum, item) => sum + (item.count || 0), 0);
-  $: pieSegments = (() => {
+  let actionDistribution = $derived(data?.distribution?.byAction || []);
+  let timelineRows = $derived(data?.timeline || []);
+  let rowMax = $derived(timelineRows.reduce((max, row) => Math.max(max, row.count || 0), 0));
+  let totalForPie = $derived(actionDistribution.reduce((sum, item) => sum + (item.count || 0), 0));
+  let pieSegments = $derived((() => {
     let cursor = 0;
     const segments = [];
 
@@ -259,7 +262,7 @@
     }
 
     return segments;
-  })();
+  })());
 
   function pieStyle() {
     if (!pieSegments.length || totalForPie === 0) {
@@ -278,10 +281,10 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('moderation.title')}</h2>
-    <button type="button" on:click={exportCsv}>{$t('moderation.exportCsv')}</button>
+    <button type="button" onclick={exportCsv}>{$t('moderation.exportCsv')}</button>
   </div>
 
-  <form class="toolbar-grid" on:submit|preventDefault={applyFilters}>
+  <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); applyFilters(); }}>
     <label>
       {$t('moderation.since')}
       <input type="datetime-local" bind:value={since} />
@@ -338,29 +341,47 @@
 
   <div class="metric-grid compact">
     <StatCard label={$t('moderation.totalActions')} value={formatNumber(data?.totals?.total || 0)}>
-      <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Hash size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('moderation.successful')} value={formatNumber(data?.totals?.success || 0)}>
-      <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Activity size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('moderation.denied')} value={formatNumber(data?.totals?.denied || 0)}>
-      <TriangleAlert slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('moderation.failed')} value={formatNumber(data?.totals?.failed || 0)}>
-      <TriangleAlert slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('moderation.renewals')} value={formatNumber(data?.totals?.renewalCount || 0)}>
-      <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Hash size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('moderation.avgDuration')} value={formatDuration(data?.totals?.averageDurationSeconds || 0)}>
-      <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Timer size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('moderation.activeBans')} value={formatNumber(data?.totals?.activeBans || 0)}>
-      <TriangleAlert slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('moderation.bansRetention')}>
-      <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
-      <span slot="value">{((data?.totals?.retentionRate || 0) * 100).toFixed(2)}%</span>
+      {#snippet icon()}
+        <Activity size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
+      {#snippet value()}
+        <span>{((data?.totals?.retentionRate || 0) * 100).toFixed(2)}%</span>
+      {/snippet}
     </StatCard>
   </div>
 
@@ -514,7 +535,7 @@
         prevLabel={$t('common.prev')}
         nextLabel={$t('common.next')}
         disabled={loading}
-        on:change={(e) => goToPage(e.detail)}
+        onchange={goToPage}
       />
     {/if}
   </div>

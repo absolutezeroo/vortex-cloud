@@ -13,13 +13,13 @@
   import { get } from 'svelte/store';
   import { Activity, Users, DoorOpen, Sparkles, Cpu, Gauge, TriangleAlert, Timer } from '@lucide/svelte';
 
-  let data = null;
-  let error = '';
-  let forbidden = false;
-  let trend = [];
+  let data = $state(null);
+  let error = $state('');
+  let forbidden = $state(false);
+  let trend = $state([]);
   // What the hotel contains, as opposed to how it is behaving. Fetched once (it moves on the scale
   // of an admin edit, not of a tick) and never on the 10s health poll.
-  let inventory = null;
+  let inventory = $state(null);
   const maxTrendSamples = 20;
 
   function addTrendSample(snapshot) {
@@ -40,13 +40,13 @@
 
   // The live trend feeds the shared LineChart (one charting primitive across the whole dashboard)
   // instead of the old hand-rolled bar rows + empty donut. Sky accent matches the token palette.
-  $: packetsSeries = [
+  let packetsSeries = $derived([
     {
       name: $t('overview.packetsPerSec'),
       color: '#4fb0e6',
       points: trend.map((entry) => ({ label: entry.label, value: entry.packetRate })),
     },
-  ];
+  ]);
 
   async function refresh() {
     forbidden = false;
@@ -85,7 +85,7 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('overview.title')}</h2>
-    <button type="button" on:click={refresh}>{$t('common.refresh')}</button>
+    <button type="button" onclick={refresh}>{$t('common.refresh')}</button>
   </div>
 
   {#if forbidden}
@@ -96,31 +96,49 @@
 
   <div class="stats">
     <StatCard label={$t('overview.status')} value={data?.status || '-'}>
-      <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Activity size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('overview.sessions')} value={data?.activeSessions ?? '-'}>
-      <Users slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Users size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('overview.rooms')} value={data?.activeRooms ?? '-'}>
-      <DoorOpen slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <DoorOpen size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard accent label={$t('overview.club')} value={data?.activeClubSubscribers ?? '-'}>
-      <Sparkles slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Sparkles size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('overview.memory')} value={data?.managedMemoryMb ?? '-'}>
-      <Cpu slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Cpu size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('overview.packetsPerSec')} value={formatNumber(data?.live?.packetsPerSecond, 2)}>
-      <Gauge slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Gauge size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('overview.errorsPerMin')} value={formatNumber(data?.live?.errorsPerMinute, 2)}>
-      <TriangleAlert slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('overview.latencyP50')} value={`${formatNumber(data?.live?.latencyP50Ms, 2)} ms`}>
-      <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Timer size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('overview.latencyP95')} value={`${formatNumber(data?.live?.latencyP95Ms, 2)} ms`}>
-      <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Timer size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
   </div>
 </section>

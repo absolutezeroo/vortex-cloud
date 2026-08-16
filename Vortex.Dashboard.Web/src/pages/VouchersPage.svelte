@@ -25,7 +25,7 @@
     return entry ? translator(entry.key) : String(value);
   }
 
-  let create = {
+  let create = $state({
     code: '',
     currencyType: 1,
     activityPointType: '',
@@ -33,19 +33,19 @@
     maxRedemptions: '',
     expiresAt: '',
     reason: '',
-  };
-  let deactivate = { code: '', reason: '' };
-  let lookupCode = '';
-  let lookupResult = null;
-  let lookupError = '';
-  let lookupLoading = false;
+  });
+  let deactivate = $state({ code: '', reason: '' });
+  let lookupCode = $state('');
+  let lookupResult = $state(null);
+  let lookupError = $state('');
+  let lookupLoading = $state(false);
 
   // Every write is staged here and confirmed in the dialog below before it is posted. createWriteOps
   // owns that cycle -- posting, remembering the audited reason, and tracking each form's busy state,
   // error and result under its own key -- so the page only describes what each button writes.
   const ops = createWriteOps();
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsManageVouchers);
+  let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsManageVouchers));
 
   function reasonError(id, message) {
     ops.fail(id, message);
@@ -181,7 +181,7 @@
         <input id="voucher-reason" bind:value={create.reason} placeholder={$t('vouchers.reasonVoucher')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageCreate} disabled={$ops.busyKeys.create}>{$t('common.run')}</button>
+        <button type="button" onclick={stageCreate} disabled={$ops.busyKeys.create}>{$t('common.run')}</button>
       </div>
       {#if $ops.errors.create}<p class="empty-state danger">{$ops.errors.create}</p>{/if}
       {#if $ops.results.create}
@@ -204,7 +204,7 @@
         <input id="deactivate-reason" bind:value={deactivate.reason} placeholder={$t('vouchers.reasonDeactivate')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageDeactivate} disabled={$ops.busyKeys.deactivate}>{$t('common.run')}</button>
+        <button type="button" onclick={stageDeactivate} disabled={$ops.busyKeys.deactivate}>{$t('common.run')}</button>
       </div>
       {#if $ops.errors.deactivate}<p class="empty-state danger">{$ops.errors.deactivate}</p>{/if}
       {#if $ops.results.deactivate}
@@ -215,7 +215,7 @@
 
   <section class="panel">
     <div class="panel-head"><h2>{$t('vouchers.lookupTitle')}</h2></div>
-    <form class="toolbar" on:submit|preventDefault={lookup}>
+    <form class="toolbar" onsubmit={(event) => { event.preventDefault(); lookup(); }}>
       <input bind:value={lookupCode} placeholder={$t('vouchers.voucherCode')} style="text-transform: uppercase;" />
       <button type="submit" disabled={lookupLoading}>{$t('vouchers.inspect')}</button>
     </form>
@@ -229,20 +229,32 @@
       {:else}
         <div class="metric-grid compact">
           <StatCard label={$t('vouchers.status')} value={lookupResult.isActive ? $t('vouchers.active') : $t('vouchers.inactive')}>
-            <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+            {#snippet icon()}
+              <Activity size={15} strokeWidth={2} aria-hidden="true" />
+            {/snippet}
           </StatCard>
           <StatCard label={$t('vouchers.currencyCol')} value={currencyLabel(lookupResult.currencyType, $t)} accent>
-            <Coins slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+            {#snippet icon()}
+              <Coins size={15} strokeWidth={2} aria-hidden="true" />
+            {/snippet}
           </StatCard>
           <StatCard label={$t('vouchers.amountCol')} value={lookupResult.amount} accent>
-            <Coins slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+            {#snippet icon()}
+              <Coins size={15} strokeWidth={2} aria-hidden="true" />
+            {/snippet}
           </StatCard>
           <StatCard label={$t('vouchers.redemptions')}>
-            <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
-            <span slot="value">{lookupResult.redemptionCount}{lookupResult.maxRedemptions ? ` / ${lookupResult.maxRedemptions}` : ''}</span>
+            {#snippet icon()}
+              <Hash size={15} strokeWidth={2} aria-hidden="true" />
+            {/snippet}
+            {#snippet value()}
+              <span>{lookupResult.redemptionCount}{lookupResult.maxRedemptions ? ` / ${lookupResult.maxRedemptions}` : ''}</span>
+            {/snippet}
           </StatCard>
           <StatCard label={$t('vouchers.expires')} value={lookupResult.expiresAt ? formatDate(lookupResult.expiresAt) : $t('vouchers.never')}>
-            <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+            {#snippet icon()}
+              <Timer size={15} strokeWidth={2} aria-hidden="true" />
+            {/snippet}
           </StatCard>
         </div>
       {/if}

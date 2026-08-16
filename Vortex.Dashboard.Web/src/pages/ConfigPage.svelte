@@ -11,10 +11,10 @@
   import { identity } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
 
-  let items = [];
-  let editValues = {};
-  let loading = true;
-  let loadError = '';
+  let items = $state([]);
+  let editValues = $state({});
+  let loading = $state(true);
+  let loadError = $state('');
 
   // One store drives every row's save: the shared modal collects the reason, createWriteOps posts it
   // and keys the busy state and the result to the setting being changed, so two rows saved in a row
@@ -23,12 +23,12 @@
 
   // What the modal is confirming, kept beside the store because the dialog shows the old and new
   // value -- the thing an operator actually re-reads before committing a live config change.
-  let editing = null;
+  let editing = $state(null);
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsManageConfig);
+  let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsManageConfig));
 
   // Preserve the catalog order coming from the API while bucketing into the declared groups.
-  $: groups = (() => {
+  let groups = $derived((() => {
     const order = [];
     const byGroup = new Map();
     for (const item of items) {
@@ -39,7 +39,7 @@
       byGroup.get(item.group).push(item);
     }
     return order.map((name) => ({ name, items: byGroup.get(name) }));
-  })();
+  })());
 
   function effectiveValue(item) {
     return item.currentValue ?? item.defaultValue;
@@ -160,7 +160,7 @@
               {/if}
               <button
                 type="button"
-                on:click={() => startSave(item)}
+                onclick={() => startSave(item)}
                 disabled={!canManage || $ops.busyKeys[item.key] || !isDirty(item)}
               >
                 {$t('config.save')}
@@ -187,8 +187,8 @@
   busy={$ops.busy}
   error={$ops.error}
   danger={false}
-  on:confirm={(e) => ops.confirm(e.detail)}
-  on:cancel={() => { ops.cancel(); editing = null; }}
+  onconfirm={ops.confirm}
+  oncancel={() => { ops.cancel(); editing = null; }}
 >
   {#if editing}
     <p class="muted small">{editing.description}</p>

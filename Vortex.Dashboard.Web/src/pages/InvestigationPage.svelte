@@ -1,4 +1,5 @@
 ﻿<script>
+
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api.js';
   import { compactCorrelation, formatDate, summarizeData } from '../lib/format.js';
@@ -10,13 +11,15 @@
   import { openPlayer, openItem } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
 
-  let query = '';
-  let rows = [];
-  let player = null;
-  let state = '';
-  $: if (!state) state = translate('investigation.hint');
-  let error = '';
-  let forbidden = false;
+  let query = $state('');
+  let rows = $state([]);
+  let player = $state(null);
+  let summary = $state('');
+  $effect(() => {
+    if (!summary) summary = translate('investigation.hint');
+  });
+  let error = $state('');
+  let forbidden = $state(false);
 
   function push(rows, row) {
     rows.push({
@@ -44,14 +47,14 @@
         (data.asActor || []).forEach((row) => push(nextRows, { kind: 'audit', ...row }));
         (data.ledger || []).forEach((row) => push(nextRows, { kind: 'ledger', playerId: term, ...row }));
         (data.itemHistory || []).forEach((row) => push(nextRows, { kind: 'item', ...row }));
-        state = translate('investigation.eventsForPlayer', { count: nextRows.length, term });
+        summary = translate('investigation.eventsForPlayer', { count: nextRows.length, term });
       } else if (data.kind === 'correlationId') {
         (data.audit || []).forEach((row) => push(nextRows, { kind: 'audit', ...row }));
         (data.ledger || []).forEach((row) => push(nextRows, { kind: 'ledger', ...row }));
         (data.items || []).forEach((row) => push(nextRows, { kind: 'item', ...row }));
-        state = translate('investigation.linkedEventsFor', { count: nextRows.length, term });
+        summary = translate('investigation.linkedEventsFor', { count: nextRows.length, term });
       } else {
-        state = data.hint || translate('investigation.noStructuredResult');
+        summary = data.hint || translate('investigation.noStructuredResult');
       }
 
       rows = nextRows.sort((left, right) => right.sortTime - left.sortTime);
@@ -74,13 +77,13 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('investigation.title')}</h2>
-    <button type="button" on:click={search}>{$t('investigation.search')}</button>
+    <button type="button" onclick={search}>{$t('investigation.search')}</button>
   </div>
-  <form class="toolbar" on:submit|preventDefault={search}>
+  <form class="toolbar" onsubmit={(event) => { event.preventDefault(); search(); }}>
     <input bind:value={query} placeholder={$t('investigation.searchPlaceholder')} />
     <button type="submit">{$t('investigation.load')}</button>
   </form>
-  <p class="muted">{state}</p>
+  <p class="muted">{summary}</p>
 
   {#if forbidden}
     <AccessDeniedNotice message={$t('investigation.accessDenied')} />

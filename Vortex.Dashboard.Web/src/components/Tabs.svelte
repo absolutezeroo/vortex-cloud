@@ -10,20 +10,22 @@
   //
   //   <Tabs tabs={[{ id: 'prizes', label: 'Prizes', icon: Gift, count: prizes.length }]} bind:active />
   //   {#if active === 'prizes'} ... {/if}
-  import { createEventDispatcher } from 'svelte';
 
-  /** [{ id, label, icon?, count? }] -- `icon` is a lucide component, `count` a badge. */
-  export let tabs = [];
-  export let active = tabs[0]?.id ?? '';
+  
+  
   /**
-   * Remembers the open tab under this key for the session, so a refresh (or coming back from
-   * another page) lands where the operator left off instead of resetting to the first tab.
+   * @typedef {Object} Props
+   * @property {any} [tabs] - [{ id, label, icon?, count? }] -- `icon` is a lucide component, `count` a badge.
+   * @property {any} [active]
+   * @property {(id: string) => void} [onchange] - receives the newly selected tab id
+   * @property {string} [storageKey] - Remembers the open tab under this key for the session, so a refresh (or coming back from
+another page) lands where the operator left off instead of resetting to the first tab.
    */
-  export let storageKey = '';
 
-  const dispatch = createEventDispatcher();
+  /** @type {Props} */
+  let { tabs = [], active = $bindable(tabs[0]?.id ?? ''), storageKey = '', onchange } = $props();
 
-  let buttons = [];
+  let buttons = $state([]);
 
   if (storageKey) {
     try {
@@ -38,7 +40,7 @@
     if (id === active) return;
 
     active = id;
-    dispatch('change', id);
+    onchange?.(id);
 
     if (storageKey) {
       try {
@@ -84,11 +86,11 @@
       aria-selected={active === tab.id}
       aria-controls="panel-{tab.id}"
       tabindex={active === tab.id ? 0 : -1}
-      on:click={() => select(tab.id)}
-      on:keydown={(e) => onKeydown(e, i)}
+      onclick={() => select(tab.id)}
+      onkeydown={(e) => onKeydown(e, i)}
     >
       {#if tab.icon}
-        <svelte:component this={tab.icon} size={14} strokeWidth={2} aria-hidden="true" />
+        <tab.icon size={14} strokeWidth={2} aria-hidden="true" />
       {/if}
       <span>{tab.label}</span>
       {#if tab.count != null}<span class="tab-count">{tab.count}</span>{/if}

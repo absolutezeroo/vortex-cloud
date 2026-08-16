@@ -33,38 +33,17 @@
     '#6fbfa8',
   ];
 
-  let data = null;
-  let error = '';
-  let forbidden = false;
-  let history = [];
+  let data = $state(null);
+  let error = $state('');
+  let forbidden = $state(false);
+  let history = $state([]);
 
-  $: steps = data?.steps || [];
-  $: directoryCalls = data?.directoryCalls || [];
-  $: tick = data?.tick || null;
-  $: windowSeconds = data?.windowSeconds || 0;
 
-  // A window with zero ticks means nothing is loaded or metrics are off -- distinguish the two so
-  // the operator is not left guessing which.
-  $: idle = (tick?.count || 0) === 0 && steps.length === 0;
 
-  $: colorFor = (name) => {
-    const index = stepOrder.indexOf(name);
-    return STEP_COLORS[(index < 0 ? 0 : index) % STEP_COLORS.length];
-  };
 
   // Assignment order, not cost order, so colours are stable while the table re-sorts.
-  let stepOrder = [];
+  let stepOrder = $state([]);
 
-  $: chartSeries = stepOrder
-    .filter((name) => history.some((point) => point.values[name] !== undefined))
-    .map((name) => ({
-      name,
-      color: colorFor(name),
-      points: history.map((point) => ({
-        label: point.label,
-        value: point.values[name] ?? 0,
-      })),
-    }));
 
   async function refresh() {
     forbidden = false;
@@ -105,6 +84,27 @@
     const interval = setInterval(refresh, REFRESH_MS);
     return () => clearInterval(interval);
   });
+  let steps = $derived(data?.steps || []);
+  let directoryCalls = $derived(data?.directoryCalls || []);
+  let tick = $derived(data?.tick || null);
+  let windowSeconds = $derived(data?.windowSeconds || 0);
+  // A window with zero ticks means nothing is loaded or metrics are off -- distinguish the two so
+  // the operator is not left guessing which.
+  let idle = $derived((tick?.count || 0) === 0 && steps.length === 0);
+  let colorFor = $derived((name) => {
+    const index = stepOrder.indexOf(name);
+    return STEP_COLORS[(index < 0 ? 0 : index) % STEP_COLORS.length];
+  });
+  let chartSeries = $derived(stepOrder
+    .filter((name) => history.some((point) => point.values[name] !== undefined))
+    .map((name) => ({
+      name,
+      color: colorFor(name),
+      points: history.map((point) => ({
+        label: point.label,
+        value: point.values[name] ?? 0,
+      })),
+    })));
 </script>
 
 <section class="panel">
@@ -113,7 +113,7 @@
       <p class="eyebrow">{$t('nav.performanceShort')}</p>
       <h2>{$t('performance.title')}</h2>
     </div>
-    <button type="button" on:click={refresh}>{$t('common.refresh')}</button>
+    <button type="button" onclick={refresh}>{$t('common.refresh')}</button>
   </div>
 
   {#if forbidden}
@@ -125,19 +125,33 @@
 
     <div class="metric-grid compact">
       <StatCard label={$t('performance.tickP50')}>
-        <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
-        <span slot="value">{formatNumber(tick?.p50Ms, 2)} ms</span>
+        {#snippet icon()}
+          <Timer size={15} strokeWidth={2} aria-hidden="true" />
+        {/snippet}
+        {#snippet value()}
+          <span>{formatNumber(tick?.p50Ms, 2)} ms</span>
+        {/snippet}
       </StatCard>
       <StatCard label={$t('performance.tickP95')}>
-        <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
-        <span slot="value">{formatNumber(tick?.p95Ms, 2)} ms</span>
+        {#snippet icon()}
+          <Timer size={15} strokeWidth={2} aria-hidden="true" />
+        {/snippet}
+        {#snippet value()}
+          <span>{formatNumber(tick?.p95Ms, 2)} ms</span>
+        {/snippet}
       </StatCard>
       <StatCard label={$t('performance.tickP99')}>
-        <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
-        <span slot="value">{formatNumber(tick?.p99Ms, 2)} ms</span>
+        {#snippet icon()}
+          <Timer size={15} strokeWidth={2} aria-hidden="true" />
+        {/snippet}
+        {#snippet value()}
+          <span>{formatNumber(tick?.p99Ms, 2)} ms</span>
+        {/snippet}
       </StatCard>
       <StatCard label={$t('performance.tickCount')} value={formatNumber(tick?.count)}>
-        <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+        {#snippet icon()}
+          <Activity size={15} strokeWidth={2} aria-hidden="true" />
+        {/snippet}
       </StatCard>
     </div>
   {/if}

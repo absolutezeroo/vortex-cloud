@@ -25,11 +25,17 @@
     [CURRENCY_KIND.silver]: silverIcon,
   };
 
-  export let kind = CURRENCY_KIND.points;
-  /** Drawn at the sprite's own size by default; anything else scales it with pixels kept crisp. */
-  export let size = 17;
+  
+  /**
+   * @typedef {Object} Props
+   * @property {any} [kind]
+   * @property {number} [size] - Drawn at the sprite's own size by default; anything else scales it with pixels kept crisp.
+   */
 
-  $: src = ICONS[kind] ?? null;
+  /** @type {Props} */
+  let { kind = CURRENCY_KIND.points, size = 17 } = $props();
+
+  let src = $derived(ICONS[kind] ?? null);
 </script>
 
 {#if src}

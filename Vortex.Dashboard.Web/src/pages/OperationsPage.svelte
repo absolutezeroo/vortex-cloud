@@ -12,26 +12,26 @@
   import { t, translate } from '../lib/i18n.js';
 
   // One state bag per action.
-  let credits = { playerId: '', playerName: '', playerOnline: false, amount: '', reason: '' };
-  let activity = {
+  let credits = $state({ playerId: '', playerName: '', playerOnline: false, amount: '', reason: '' });
+  let activity = $state({
     playerId: '',
     playerName: '',
     playerOnline: false,
     type: '0',
     amount: '',
     reason: '',
-  };
+  });
   // Silver and emeralds share one form: they are the same grant with a different currency, and two
   // near-identical cards would only make the operator read both to find the right one.
-  let collectibles = {
+  let collectibles = $state({
     playerId: '',
     playerName: '',
     playerOnline: false,
     currency: 'silver',
     amount: '',
     reason: '',
-  };
-  let item = {
+  });
+  let item = $state({
     playerId: '',
     playerName: '',
     playerOnline: false,
@@ -41,8 +41,8 @@
     defIcon: '',
     extraData: '',
     reason: '',
-  };
-  let kick = { playerId: '', playerName: '', playerOnline: false, reason: '' };
+  });
+  let kick = $state({ playerId: '', playerName: '', playerOnline: false, reason: '' });
 
   // Per-action UI state, keyed by action id.
   // Every write is staged here and confirmed in the dialog below before it is posted. createWriteOps
@@ -51,7 +51,7 @@
   const ops = createWriteOps();
 
   // Active picker modal (user / furniture).
-  let picker = null;
+  let picker = $state(null);
 
   const capabilityByAction = {
     credits: OPERATION_CAPABILITIES.credits,
@@ -61,11 +61,11 @@
     kick: OPERATION_CAPABILITIES.kick,
   };
 
-  $: canCredits = hasDashboardCapability($identity, capabilityByAction.credits);
-  $: canActivity = hasDashboardCapability($identity, capabilityByAction.activity);
-  $: canCollectibles = hasDashboardCapability($identity, capabilityByAction.collectibles);
-  $: canItem = hasDashboardCapability($identity, capabilityByAction.item);
-  $: canKick = hasDashboardCapability($identity, capabilityByAction.kick);
+  let canCredits = $derived(hasDashboardCapability($identity, capabilityByAction.credits));
+  let canActivity = $derived(hasDashboardCapability($identity, capabilityByAction.activity));
+  let canCollectibles = $derived(hasDashboardCapability($identity, capabilityByAction.collectibles));
+  let canItem = $derived(hasDashboardCapability($identity, capabilityByAction.item));
+  let canKick = $derived(hasDashboardCapability($identity, capabilityByAction.kick));
 
   function pickUser(apply) {
     picker = { kind: 'user', title: translate('operations.selectPlayerTitle'), onSelect: apply };
@@ -222,7 +222,7 @@
           <button
             class="ghost-button"
             type="button"
-            on:click={() =>
+            onclick={() =>
               pickUser(
                 (u) =>
                   (credits = {
@@ -254,7 +254,7 @@
         <input id="credits-reason" bind:value={credits.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageCredits} disabled={$ops.busyKeys.credits}>{$t('common.run')}</button>
+        <button type="button" onclick={stageCredits} disabled={$ops.busyKeys.credits}>{$t('common.run')}</button>
       </div>
       {#if $ops.errors.credits}<p class="empty-state danger">{$ops.errors.credits}</p>{/if}
       {#if $ops.results.credits}
@@ -274,7 +274,7 @@
           <button
             class="ghost-button"
             type="button"
-            on:click={() =>
+            onclick={() =>
               pickUser(
                 (u) =>
                   (activity = {
@@ -310,7 +310,7 @@
         <input id="activity-reason" bind:value={activity.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageActivity} disabled={$ops.busyKeys.activity}>{$t('common.run')}</button>
+        <button type="button" onclick={stageActivity} disabled={$ops.busyKeys.activity}>{$t('common.run')}</button>
       </div>
       {#if $ops.errors.activity}<p class="empty-state danger">{$ops.errors.activity}</p>{/if}
       {#if $ops.results.activity}
@@ -330,7 +330,7 @@
           <button
             class="ghost-button"
             type="button"
-            on:click={() =>
+            onclick={() =>
               pickUser(
                 (u) =>
                   (collectibles = {
@@ -369,7 +369,7 @@
         <input id="collectibles-reason" bind:value={collectibles.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageCollectibles} disabled={$ops.busyKeys.collectibles}>{$t('common.run')}</button>
+        <button type="button" onclick={stageCollectibles} disabled={$ops.busyKeys.collectibles}>{$t('common.run')}</button>
       </div>
       {#if $ops.errors.collectibles}<p class="empty-state danger">{$ops.errors.collectibles}</p>{/if}
       {#if $ops.results.collectibles}
@@ -389,7 +389,7 @@
           <button
             class="ghost-button"
             type="button"
-            on:click={() =>
+            onclick={() =>
               pickUser(
                 (u) =>
                   (item = { ...item, playerId: u.id, playerName: u.name, playerOnline: u.online }),
@@ -413,7 +413,7 @@
           <button
             class="ghost-button"
             type="button"
-            on:click={() =>
+            onclick={() =>
               pickFurniture(
                 (f) =>
                   (item = {
@@ -450,7 +450,7 @@
         <input id="item-reason" bind:value={item.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageItem} disabled={$ops.busyKeys.item}>{$t('common.run')}</button>
+        <button type="button" onclick={stageItem} disabled={$ops.busyKeys.item}>{$t('common.run')}</button>
       </div>
       {#if $ops.errors.item}<p class="empty-state danger">{$ops.errors.item}</p>{/if}
       {#if $ops.results.item}
@@ -470,7 +470,7 @@
           <button
             class="ghost-button"
             type="button"
-            on:click={() =>
+            onclick={() =>
               pickUser(
                 (u) =>
                   (kick = { ...kick, playerId: u.id, playerName: u.name, playerOnline: u.online }),
@@ -493,7 +493,7 @@
         <input id="kick-reason" bind:value={kick.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageKick} disabled={$ops.busyKeys.kick}>{$t('common.run')}</button>
+        <button type="button" onclick={stageKick} disabled={$ops.busyKeys.kick}>{$t('common.run')}</button>
       </div>
       {#if $ops.errors.kick}<p class="empty-state danger">{$ops.errors.kick}</p>{/if}
       {#if $ops.results.kick}

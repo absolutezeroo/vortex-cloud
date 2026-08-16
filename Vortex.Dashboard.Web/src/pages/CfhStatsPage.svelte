@@ -1,4 +1,5 @@
 <script>
+
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api.js';
   import { formatNumber } from '../lib/format.js';
@@ -27,13 +28,13 @@
     return translator(closeReasonKeys[value] || value);
   }
 
-  let since = '';
-  let until = '';
-  let granularity = 'day';
-  let loading = false;
-  let forbidden = false;
-  let error = '';
-  let data = null;
+  let since = $state('');
+  let until = $state('');
+  let granularity = $state('day');
+  let loading = $state(false);
+  let forbidden = $state(false);
+  let error = $state('');
+  let data = $state(null);
 
   function toLocalDateValue(value) {
     const date = new Date(value);
@@ -72,7 +73,7 @@
     }
   }
 
-  $: timelineSeries = data
+  let timelineSeries = $derived(data
     ? [
         {
           name: $t('cfhStats.totalTickets'),
@@ -80,9 +81,9 @@
           points: (data.timeline || []).map((p) => ({ label: p.label, value: p.ticketsCreated })),
         },
       ]
-    : [];
+    : []);
 
-  $: sanctionRatePercent = data ? Math.round(data.totals.sanctionRate * 1000) / 10 : 0;
+  let sanctionRatePercent = $derived(data ? Math.round(data.totals.sanctionRate * 1000) / 10 : 0);
 
   onMount(() => {
     setDefaultWindow();
@@ -94,7 +95,7 @@
   <div class="panel-head"><h2>{$t('cfhStats.title')}</h2></div>
   <p class="muted">{$t('cfhStats.description')}</p>
 
-  <form class="toolbar-grid" on:submit|preventDefault={refresh}>
+  <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); refresh(); }}>
     <label>
       {$t('common.since')}
       <input type="date" bind:value={since} />
@@ -126,26 +127,42 @@
 {#if data}
   <div class="metric-grid" style="margin-top: 12px;">
     <StatCard label={$t('cfhStats.totalTickets')} value={formatNumber(data.totals.totalTickets)}>
-      <MessageCircleWarning slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <MessageCircleWarning size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('cfhStats.openCount')} value={formatNumber(data.totals.openCount)}>
-      <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Hash size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('cfhStats.pickedCount')} value={formatNumber(data.totals.pickedCount)}>
-      <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Hash size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('cfhStats.closedCount')} value={formatNumber(data.totals.closedCount)}>
-      <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Hash size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('cfhStats.sanctionedCount')} value={formatNumber(data.totals.sanctionedCount)}>
-      <TriangleAlert slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('cfhStats.sanctionRate')}>
-      <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
-      <span slot="value">{sanctionRatePercent}%</span>
+      {#snippet icon()}
+        <Activity size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
+      {#snippet value()}
+        <span>{sanctionRatePercent}%</span>
+      {/snippet}
     </StatCard>
     <StatCard label={$t('cfhStats.avgResolutionMinutes')} value={data.totals.avgResolutionMinutes}>
-      <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Timer size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
   </div>
 

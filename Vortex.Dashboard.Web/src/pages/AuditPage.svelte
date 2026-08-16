@@ -45,29 +45,29 @@
     Failed: 'status-badge--bad',
   };
 
-  let since = '';
-  let until = '';
-  let actor = '';
-  let target = '';
-  let category = '';
-  let action = '';
+  let since = $state('');
+  let until = $state('');
+  let actor = $state('');
+  let target = $state('');
+  let category = $state('');
+  let action = $state('');
   // Which row is open, by index. Reset on every reload -- an index kept across a refetch would
   // expand whatever event happens to land in that slot.
-  let expanded = null;
+  let expanded = $state(null);
 
   function toggle(index) {
     expanded = expanded === index ? null : index;
   }
-  let limit = 50;
-  let page = 1;
+  let limit = $state(50);
+  let page = $state(1);
 
-  let rows = [];
-  let total = 0;
-  let loading = false;
-  let error = '';
-  let forbidden = false;
+  let rows = $state([]);
+  let total = $state(0);
+  let loading = $state(false);
+  let error = $state('');
+  let forbidden = $state(false);
 
-  $: totalPages = Math.max(1, Math.ceil(total / limit));
+  let totalPages = $derived(Math.max(1, Math.ceil(total / limit)));
 
   function categoryColor(value) {
     return categoryColors[value] || categoryColors.other;
@@ -145,10 +145,10 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('audit.title')}</h2>
-    <button type="button" on:click={refresh} disabled={loading}>{$t('common.refresh')}</button>
+    <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
   </div>
 
-  <form class="toolbar-grid" on:submit|preventDefault={applyFilters}>
+  <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); applyFilters(); }}>
     <label>
       {$t('audit.since')}
       <input type="datetime-local" bind:value={since} />
@@ -205,8 +205,8 @@
             tabindex="0"
             role="button"
             aria-expanded={expanded === i}
-            on:click={() => toggle(i)}
-            on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggle(i))}
+            onclick={() => toggle(i)}
+            onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggle(i))}
           >
             <td>{formatDate(row.occurredAt)}</td>
             <td>
@@ -245,7 +245,7 @@
       prevLabel={$t('common.prev')}
       nextLabel={$t('common.next')}
       disabled={loading}
-      on:change={(e) => goToPage(e.detail)}
+      onchange={goToPage}
     />
   {/if}
 </section>

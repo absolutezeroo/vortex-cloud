@@ -23,15 +23,15 @@
   import { Trophy, Award, Zap, ZapOff, Users } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
-  let category = '';
-  let loading = false;
-  let forbidden = false;
-  let error = '';
-  let list = null;
-  let stats = null;
-  let selected = null;
-  let detail = null;
-  let detailLoading = false;
+  let category = $state('');
+  let loading = $state(false);
+  let forbidden = $state(false);
+  let error = $state('');
+  let list = $state(null);
+  let stats = $state(null);
+  let selected = $state(null);
+  let detail = $state(null);
+  let detailLoading = $state(false);
 
   const ops = createWriteOps(async () => {
     achievementForm = null;
@@ -40,7 +40,7 @@
     if (selected) await reloadDetail(selected);
   });
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsContentManage);
+  let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsContentManage));
 
   const emptyAchievement = () => ({ id: 0, name: '', category: '', displayMethod: 0 });
   const emptyLevel = () => ({
@@ -56,16 +56,16 @@
   // the top and the form that edited it sat several hundred pixels below, with nothing tying the
   // two together. They are dialogs now -- a multi-field form with mixed inputs is the case a
   // dialog is for, and it opens attached to the row you clicked.
-  let achievementForm = null;
-  let levelForm = null;
+  let achievementForm = $state(null);
+  let levelForm = $state(null);
 
   // The badge file is named after the code, so the preview is the honest test of a typed one: a
   // wrong code shows the fallback here exactly as it would show nothing in the client. Built from
   // the template so a rung that does not exist yet still previews.
-  $: badgePreviewUrl =
-    levelForm?.badgeCode?.trim() && stats?.badgeImageTemplate
+  let badgePreviewUrl =
+    $derived(levelForm?.badgeCode?.trim() && stats?.badgeImageTemplate
       ? stats.badgeImageTemplate.replace('{badge}', encodeURIComponent(levelForm.badgeCode.trim()))
-      : null;
+      : null);
 
   async function reloadDetail(id) {
     try {
@@ -145,7 +145,7 @@
   <div class="panel-head"><h2>{$t('achievements.title')}</h2></div>
   <p class="muted">{$t('achievements.description')}</p>
 
-  <form class="toolbar-grid" on:submit|preventDefault={refresh}>
+  <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); refresh(); }}>
     <label>
       {$t('achievements.category')}
       <select bind:value={category}>
@@ -170,22 +170,34 @@
 {#if stats}
   <div class="metric-grid" style="margin-top: 12px;">
     <StatCard label={$t('achievements.totalAchievements')} value={formatNumber(stats.totals.totalAchievements)}>
-      <Trophy slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Trophy size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('achievements.totalLevels')} value={formatNumber(stats.totals.totalLevels)}>
-      <Award slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Award size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('achievements.triggered')} value={formatNumber(stats.totals.triggeredCount)}>
-      <Zap slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Zap size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('achievements.untriggered')} value={formatNumber(stats.totals.untriggeredCount)}>
-      <ZapOff slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <ZapOff size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('achievements.badgesAwarded')} value={formatNumber(stats.totals.badgesAwarded)}>
-      <Award slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Award size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('achievements.playersWithProgress')} value={formatNumber(stats.totals.playersWithProgress)}>
-      <Users slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Users size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
   </div>
 {/if}
@@ -211,7 +223,7 @@
         </thead>
         <tbody>
           {#each list.items || [] as row}
-            <tr class:selected={selected === row.id} on:click={() => select(row)} style="cursor: pointer;">
+            <tr class:selected={selected === row.id} onclick={() => select(row)} style="cursor: pointer;">
               <td>
                 <span class="badge-cell">
                   <AssetImage src={row.badgeUrl} alt={row.name} size={32} fallbackIcon={Trophy} />
@@ -237,26 +249,30 @@
                   <button
                     type="button"
                     class="ghost-button"
-                    on:click|stopPropagation={() =>
-                      (achievementForm = {
+                    onclick={(event) => {
+                      event.stopPropagation();
+                      achievementForm = {
                         id: row.id,
                         name: row.name,
                         category: row.category,
                         displayMethod: row.displayMethod,
-                      })}
+                      };
+                    }}
                   >
                     {$t('achievements.edit')}
                   </button>
                   <button
                     type="button"
                     class="ghost-button danger"
-                    on:click|stopPropagation={() =>
+                    onclick={(event) => {
+                      event.stopPropagation();
                       ops.ask(
                         '/api/v1/operations/content/achievements/delete',
                         { achievementId: row.id },
                         $t('achievements.deleteAchievement'),
                         $t('achievements.deleteAchievementSummary', { name: row.name })
-                      )}
+                      );
+                    }}
                   >
                     {$t('achievements.delete')}
                   </button>
@@ -310,20 +326,22 @@
                                   <button
                                     type="button"
                                     class="ghost-button"
-                                    on:click|stopPropagation={() => (levelForm = { ...level })}
+                                    onclick={(event) => { event.stopPropagation(); levelForm = { ...level }; }}
                                   >
                                     {$t('achievements.edit')}
                                   </button>
                                   <button
                                     type="button"
                                     class="ghost-button danger"
-                                    on:click|stopPropagation={() =>
+                                    onclick={(event) => {
+                                      event.stopPropagation();
                                       ops.ask(
                                         '/api/v1/operations/content/achievements/levels/delete',
                                         { levelId: level.id },
                                         $t('achievements.deleteLevel'),
                                         $t('achievements.deleteLevelSummary', { level: level.level })
-                                      )}
+                                      );
+                                    }}
                                   >
                                     {$t('achievements.delete')}
                                   </button>
@@ -383,12 +401,12 @@
     <div class="panel-head">
       <h2>{$t('achievements.editorTitle')}</h2>
       <div class="head-actions">
-        <button type="button" class="ghost-button" on:click={() => (achievementForm = emptyAchievement())}>
+        <button type="button" class="ghost-button" onclick={() => (achievementForm = emptyAchievement())}>
           <Award size={14} strokeWidth={2} aria-hidden="true" />
           {$t('achievements.newAchievement')}
         </button>
         {#if selected}
-          <button type="button" class="ghost-button" on:click={() => (levelForm = emptyLevel())}>
+          <button type="button" class="ghost-button" onclick={() => (levelForm = emptyLevel())}>
             <Trophy size={14} strokeWidth={2} aria-hidden="true" />
             {$t('achievements.levelEditorTitle')}
           </button>
@@ -416,7 +434,7 @@
     eyebrow={$t('achievements.editorTitle')}
     width={520}
     labelledBy="achievement-form-title"
-    on:close={() => (achievementForm = null)}
+    onclose={() => (achievementForm = null)}
   >
     <div class="op-field">
       <label for="achievement-name">{$t('achievements.colName')}</label>
@@ -436,29 +454,31 @@
       <input id="achievement-display" type="number" bind:value={achievementForm.displayMethod} min="0" />
     </div>
 
-    <svelte:fragment slot="actions">
+    {#snippet actions()}
+
       <button
         type="button"
         disabled={!achievementForm.name.trim() || !achievementForm.category.trim()}
-        on:click={() =>
-          ops.ask(
-            '/api/v1/operations/content/achievements',
-            {
-              achievementId: Number(achievementForm.id) || 0,
-              name: achievementForm.name,
-              category: achievementForm.category,
-              displayMethod: Number(achievementForm.displayMethod) || 0,
-            },
-            achievementForm.id ? $t('achievements.updateAchievement') : $t('achievements.addAchievement'),
-            $t('achievements.saveSummary', { name: achievementForm.name })
-          )}
+        onclick={() =>
+        ops.ask(
+          '/api/v1/operations/content/achievements',
+          {
+            achievementId: Number(achievementForm.id) || 0,
+            name: achievementForm.name,
+            category: achievementForm.category,
+            displayMethod: Number(achievementForm.displayMethod) || 0,
+          },
+          achievementForm.id ? $t('achievements.updateAchievement') : $t('achievements.addAchievement'),
+          $t('achievements.saveSummary', { name: achievementForm.name })
+        )}
       >
         {achievementForm.id ? $t('achievements.updateAchievement') : $t('achievements.addAchievement')}
       </button>
-      <button class="ghost-button" type="button" on:click={() => (achievementForm = null)}>
+      <button class="ghost-button" type="button" onclick={() => (achievementForm = null)}>
         {$t('common.cancel')}
       </button>
-    </svelte:fragment>
+
+    {/snippet}
   </Modal>
 {/if}
 
@@ -468,7 +488,7 @@
     eyebrow={$t('achievements.editorTitle')}
     width={520}
     labelledBy="level-form-title"
-    on:close={() => (levelForm = null)}
+    onclose={() => (levelForm = null)}
   >
     <div class="op-field">
       <label for="level-number">{$t('achievements.colLevel')}</label>
@@ -499,32 +519,34 @@
       <input id="level-score" type="number" bind:value={levelForm.scorePoints} min="0" />
     </div>
 
-    <svelte:fragment slot="actions">
+    {#snippet actions()}
+
       <button
         type="button"
         disabled={!levelForm.badgeCode.trim()}
-        on:click={() =>
-          ops.ask(
-            '/api/v1/operations/content/achievements/levels',
-            {
-              achievementId: selected,
-              level: Number(levelForm.level),
-              badgeCode: levelForm.badgeCode,
-              progressRequirement: Number(levelForm.progressRequirement),
-              rewardAmount: Number(levelForm.rewardAmount),
-              rewardType: Number(levelForm.rewardType),
-              scorePoints: Number(levelForm.scorePoints),
-            },
-            $t('achievements.saveLevel'),
-            $t('achievements.saveLevelSummary', { level: levelForm.level })
-          )}
+        onclick={() =>
+        ops.ask(
+          '/api/v1/operations/content/achievements/levels',
+          {
+            achievementId: selected,
+            level: Number(levelForm.level),
+            badgeCode: levelForm.badgeCode,
+            progressRequirement: Number(levelForm.progressRequirement),
+            rewardAmount: Number(levelForm.rewardAmount),
+            rewardType: Number(levelForm.rewardType),
+            scorePoints: Number(levelForm.scorePoints),
+          },
+          $t('achievements.saveLevel'),
+          $t('achievements.saveLevelSummary', { level: levelForm.level })
+        )}
       >
         {$t('achievements.saveLevel')}
       </button>
-      <button class="ghost-button" type="button" on:click={() => (levelForm = null)}>
+      <button class="ghost-button" type="button" onclick={() => (levelForm = null)}>
         {$t('common.cancel')}
       </button>
-    </svelte:fragment>
+
+    {/snippet}
   </Modal>
 {/if}
 
@@ -628,8 +650,8 @@
   confirmLabel={$ops.pending?.title ?? $t('common.confirm')}
   busy={$ops.busy}
   error={$ops.error}
-  on:confirm={(e) => ops.confirm(e.detail)}
-  on:cancel={() => ops.cancel()}
+  onconfirm={ops.confirm}
+  oncancel={() => ops.cancel()}
 />
 
 <style>

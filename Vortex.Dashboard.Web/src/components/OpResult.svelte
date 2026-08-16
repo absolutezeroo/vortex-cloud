@@ -10,18 +10,24 @@
   import { describeOpError } from '../lib/opErrors.js';
   import { t } from '../lib/i18n.js';
 
-  export let result = null;
-  export let onCopy = null; // (correlationId) => void — shows a copy button when provided
-  export let copyLabel = 'Copy';
+  /**
+   * @typedef {Object} Props
+   * @property {any} [result]
+   * @property {any} [onCopy] - (correlationId) => void — shows a copy button when provided
+   * @property {string} [copyLabel]
+   */
+
+  /** @type {Props} */
+  let { result = null, onCopy = null, copyLabel = 'Copy' } = $props();
 
   // On success the server sends the literal "ok", which is not a sentence to show an operator. On a
   // refusal it sends the domain's own code (offer_has_products); both need translating before they
   // reach the screen. Depends on $t so the line re-renders when the locale changes.
-  $: message = result
+  let message = $derived(result
     ? result.ok
       ? $t('common.resultSuccess')
       : describeOpError(result.message)
-    : '';
+    : '');
 </script>
 
 {#if result}
@@ -36,7 +42,7 @@
       <code class="op-result-cid">cid {compactCorrelation(result.correlationId)}</code>
     {/if}
     {#if onCopy && result.correlationId}
-      <button class="ghost-button op-result-copy" type="button" on:click={() => onCopy(result.correlationId)}>{copyLabel}</button>
+      <button class="ghost-button op-result-copy" type="button" onclick={() => onCopy(result.correlationId)}>{copyLabel}</button>
     {/if}
   </p>
 {/if}

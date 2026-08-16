@@ -1,4 +1,5 @@
 <script>
+
   import { onMount } from 'svelte';
   import { CheckCircle2, Clock, ListChecks, Trophy } from '@lucide/svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
@@ -19,18 +20,18 @@
 
   const PAGE_SIZE = 25;
 
-  let offers = [];
-  let challenges = [];
-  let totals = null;
-  let truncated = false;
-  let loading = false;
-  let error = '';
-  let forbidden = false;
+  let offers = $state([]);
+  let challenges = $state([]);
+  let totals = $state(null);
+  let truncated = $state(false);
+  let loading = $state(false);
+  let error = $state('');
+  let forbidden = $state(false);
 
-  let tab = 'offers';
-  let state = '';
-  let search = '';
-  let page = 1;
+  let tab = $state('offers');
+  let stateFilter = $state('');
+  let search = $state('');
+  let page = $state(1);
 
   async function load() {
     loading = true;
@@ -38,7 +39,7 @@
     forbidden = false;
 
     try {
-      const query = state ? `?state=${encodeURIComponent(state)}` : '';
+      const query = stateFilter ? `?state=${encodeURIComponent(stateFilter)}` : '';
       const data = await apiGet(`/api/achievements/resolutions${query}`);
 
       offers = data.offers || [];
@@ -63,12 +64,12 @@
   // The state filter runs server-side because it decides what the 200-row cap keeps; the text
   // search is client-side over whatever came back.
   function onStateChange(value) {
-    state = value;
+    stateFilter = value;
     page = 1;
     load();
   }
 
-  $: filtered = challenges.filter((c) => {
+  let filtered = $derived(challenges.filter((c) => {
     if (!search.trim()) return true;
 
     const needle = search.trim().toLowerCase();
@@ -78,12 +79,14 @@
       (c.achievementName || '').toLowerCase().includes(needle) ||
       String(c.itemId).includes(needle)
     );
-  });
+  }));
 
-  $: pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  $: safePage = Math.min(page, pageCount);
-  $: pageRows = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-  $: search, (page = 1);
+  let pageCount = $derived(Math.max(1, Math.ceil(filtered.length / PAGE_SIZE)));
+  let safePage = $derived(Math.min(page, pageCount));
+  let pageRows = $derived(filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE));
+  $effect(() => {
+    search, (page = 1);
+  });
 
   onMount(load);
 </script>
@@ -207,7 +210,7 @@
           bind:value={search}
           placeholder={$t('achievementResolutions.searchPlaceholder')}
         />
-        <select value={state} on:change={(e) => onStateChange(e.currentTarget.value)}>
+        <select value={stateFilter} onchange={(e) => onStateChange(e.currentTarget.value)}>
           <option value="">{$t('achievementResolutions.stateAll')}</option>
           <option value="live">{$t('achievementResolutions.stateLive')}</option>
           <option value="completed">{$t('achievementResolutions.stateCompleted')}</option>

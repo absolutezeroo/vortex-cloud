@@ -1,4 +1,5 @@
 <script>
+
   import { onMount } from 'svelte';
   import Router, { replace, location } from 'svelte-spa-router';
   import { AlertTriangle, RefreshCw, WifiOff } from '@lucide/svelte';
@@ -16,10 +17,10 @@
   import Login from './components/Login.svelte';
   import EntityModal from './components/EntityModal.svelte';
 
-  let status = 'loading'; // 'loading' | 'login' | 'ready' | 'unavailable'
-  let bootMessage = '';
-  let retryBusy = false;
-  let logoutBusy = false;
+  let status = $state('loading'); // 'loading' | 'login' | 'ready' | 'unavailable'
+  let bootMessage = $state('');
+  let retryBusy = $state(false);
+  let logoutBusy = $state(false);
   let retryTimer = null;
   let identityRequestId = 0;
 
@@ -150,9 +151,11 @@
   }
 
   // Normalise the empty root hash to the overview entry point once authenticated.
-  $: if (status === 'ready' && ($location === '/' || $location === '')) {
-    replace('/overview');
-  }
+  $effect(() => {
+    if (status === 'ready' && ($location === '/' || $location === '')) {
+      replace('/overview');
+    }
+  });
 </script>
 
 {#if status === 'loading'}
@@ -174,7 +177,7 @@
         <h1>{$t('boot.connectionPaused')}</h1>
         <p>{bootMessage || $connectionIssue?.message || $t('boot.unreachable')}</p>
       </div>
-      <button type="button" on:click={() => retryConnection(false)} disabled={retryBusy}>
+      <button type="button" onclick={() => retryConnection(false)} disabled={retryBusy}>
         <RefreshCw size={16} class={retryBusy ? 'spin' : ''} />
         <span>{retryBusy ? $t('boot.retrying') : $t('boot.retryNow')}</span>
       </button>
@@ -186,7 +189,7 @@
     <div class="connection-banner" role="status">
       <AlertTriangle size={16} />
       <span>{$connectionIssue.message}</span>
-      <button type="button" on:click={() => retryConnection(true)} disabled={retryBusy}>
+      <button type="button" onclick={() => retryConnection(true)} disabled={retryBusy}>
         <RefreshCw size={14} class={retryBusy ? 'spin' : ''} />
         <span>{$t('common.retry')}</span>
       </button>
@@ -199,7 +202,7 @@
     <div class="connection-banner" role="status">
       <AlertTriangle size={16} />
       <span>{$connectionIssue.message}</span>
-      <button type="button" on:click={() => retryConnection(true)} disabled={retryBusy}>
+      <button type="button" onclick={() => retryConnection(true)} disabled={retryBusy}>
         <RefreshCw size={14} class={retryBusy ? 'spin' : ''} />
         <span>{$t('common.retry')}</span>
       </button>

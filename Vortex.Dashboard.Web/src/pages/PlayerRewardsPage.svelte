@@ -23,40 +23,40 @@
   import { Award, Sparkles, MessageCircle, Shirt } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
-  let loading = false;
-  let forbidden = false;
-  let error = '';
-  let data = null;
-  let player = null;
-  let detail = null;
-  let detailLoading = false;
-  let picking = false;
+  let loading = $state(false);
+  let forbidden = $state(false);
+  let error = $state('');
+  let data = $state(null);
+  let player = $state(null);
+  let detail = $state(null);
+  let detailLoading = $state(false);
+  let picking = $state(false);
 
   const ops = createWriteOps(async () => {
     await refresh();
     if (player) await loadPlayer(player);
   });
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsContentManage);
+  let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsContentManage));
 
-  let badgeCode = '';
+  let badgeCode = $state('');
 
   // Same reasoning for a badge code: it is granted before anyone holds it, so the preview is built
   // from the template. A code that names no file falls back, exactly as the client would show
   // nothing.
-  $: badgePreviewUrl =
-    badgeCode.trim() && data?.badgeImageTemplate
+  let badgePreviewUrl =
+    $derived(badgeCode.trim() && data?.badgeImageTemplate
       ? data.badgeImageTemplate.replace('{badge}', encodeURIComponent(badgeCode.trim()))
-      : null;
-  let effectId = 0;
+      : null);
+  let effectId = $state(0);
 
   // Built from the template rather than looked up: the id being granted is usually one nobody owns
   // yet, so there would be nothing to look up. An avatar wearing it is the only picture of an effect.
-  $: effectPreviewUrl =
-    effectId && data?.effectImageTemplate
+  let effectPreviewUrl =
+    $derived(effectId && data?.effectImageTemplate
       ? data.effectImageTemplate.replace('{effect}', String(Number(effectId)))
-      : null;
-  let effectDuration = 0;
+      : null);
+  let effectDuration = $state(0);
 
   async function refresh() {
     loading = true;
@@ -102,8 +102,8 @@
   <div class="panel-head"><h2>{$t('playerRewards.title')}</h2></div>
   <p class="muted">{$t('playerRewards.description')}</p>
   <div class="toolbar">
-    <button type="button" on:click={refresh} disabled={loading}>{$t('common.refresh')}</button>
-    <button type="button" class="ghost-button" on:click={() => (picking = true)}>
+    <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
+    <button type="button" class="ghost-button" onclick={() => (picking = true)}>
       {player ? player.name : $t('playerRewards.inspectPlayer')}
     </button>
   </div>
@@ -124,30 +124,42 @@
       value={formatNumber(data.totals.totalBadges)}
       sub={$t('playerRewards.equipped', { count: formatNumber(data.totals.equippedBadges) })}
     >
-      <Award slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Award size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('playerRewards.distinctBadges')} value={formatNumber(data.totals.distinctBadgeCodes)}>
-      <Award slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Award size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('playerRewards.playersWithBadges')} value={formatNumber(data.totals.playersWithBadges)}>
-      <Award slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Award size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard
       label={$t('playerRewards.effects')}
       value={formatNumber(data.totals.totalEffects)}
       sub={$t('playerRewards.activated', { count: formatNumber(data.totals.activatedEffects) })}
     >
-      <Sparkles slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Sparkles size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('playerRewards.chatStyles')} value={formatNumber(data.totals.chatStyleCount)}>
-      <MessageCircle slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <MessageCircle size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard
       label={$t('playerRewards.outfits')}
       value={formatNumber(data.totals.wardrobeOutfits)}
       sub={$t('playerRewards.wardrobeUsers', { count: formatNumber(data.totals.wardrobeUsers) })}
     >
-      <Shirt slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Shirt size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
   </div>
 
@@ -385,13 +397,15 @@
 
     <form
       class="inline-form"
-      on:submit|preventDefault={() =>
+      onsubmit={(event) => {
+        event.preventDefault();
         ops.ask(
           '/api/v1/operations/content/badges/grant',
           { playerId: player.id, badgeCode },
           $t('playerRewards.grantBadge'),
           $t('playerRewards.grantBadgeSummary', { code: badgeCode, name: player.name })
-        )}
+        );
+      }}
     >
       <label>
         {$t('playerRewards.colBadge')}
@@ -408,7 +422,7 @@
         type="button"
         class="ghost-button danger"
         disabled={!badgeCode.trim()}
-        on:click={() =>
+        onclick={() =>
           ops.ask(
             '/api/v1/operations/content/badges/revoke',
             { playerId: player.id, badgeCode },
@@ -422,13 +436,15 @@
 
     <form
       class="inline-form"
-      on:submit|preventDefault={() =>
+      onsubmit={(event) => {
+        event.preventDefault();
         ops.ask(
           '/api/v1/operations/content/effects/grant',
           { playerId: player.id, effectId: Number(effectId), durationSeconds: Number(effectDuration) || 0 },
           $t('playerRewards.grantEffect'),
           $t('playerRewards.grantEffectSummary', { id: effectId, name: player.name })
-        )}
+        );
+      }}
     >
       <label>
         {$t('playerRewards.colEffect')}
@@ -446,7 +462,7 @@
         type="button"
         class="ghost-button danger"
         disabled={!effectId}
-        on:click={() =>
+        onclick={() =>
           ops.ask(
             '/api/v1/operations/content/effects/revoke',
             { playerId: player.id, effectId: Number(effectId), durationSeconds: 0 },
@@ -485,8 +501,8 @@
   confirmLabel={$ops.pending?.title ?? $t('common.confirm')}
   busy={$ops.busy}
   error={$ops.error}
-  on:confirm={(e) => ops.confirm(e.detail)}
-  on:cancel={() => ops.cancel()}
+  onconfirm={ops.confirm}
+  oncancel={() => ops.cancel()}
 />
 
 <style>

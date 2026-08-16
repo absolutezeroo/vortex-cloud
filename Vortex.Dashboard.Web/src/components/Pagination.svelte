@@ -4,23 +4,38 @@
   // paged so Audit / Moderation / Furniture (which each hand-rolled the same block) and the pages
   // that currently dump everything all look and behave identically. Labels are props so callers can
   // pass translated strings ($t).
-  import { createEventDispatcher } from 'svelte';
 
-  export let page = 1;
-  export let pageCount = 1;
-  export let total = null; // grand total, enables the "start–end of total" count
-  export let pageSize = null; // enables the shown range in that count
-  export let label = 'éléments';
-  export let prevLabel = 'Précédent';
-  export let nextLabel = 'Suivant';
-  export let pageWord = 'Page';
-  export let disabled = false; // e.g. bind to `loading` to freeze the pager during a fetch
+  /**
+   * @typedef {Object} Props
+   * @property {number} [page]
+   * @property {number} [pageCount]
+   * @property {any} [total] - grand total, enables the "start–end of total" count
+   * @property {any} [pageSize] - enables the shown range in that count
+   * @property {string} [label]
+   * @property {string} [prevLabel]
+   * @property {string} [nextLabel]
+   * @property {string} [pageWord]
+   * @property {boolean} [disabled] - e.g. bind to `loading` to freeze the pager during a fetch
+   * @property {(page: number) => void} [onchange] - receives the new 1-based page
+   */
 
-  const dispatch = createEventDispatcher();
+  /** @type {Props} */
+  let {
+    page = 1,
+    pageCount = 1,
+    total = null,
+    pageSize = null,
+    label = 'éléments',
+    prevLabel = 'Précédent',
+    nextLabel = 'Suivant',
+    pageWord = 'Page',
+    disabled = false,
+    onchange
+  } = $props();
 
   function go(target) {
     const next = Math.min(Math.max(1, target), Math.max(1, pageCount));
-    if (next !== page) dispatch('change', next);
+    if (next !== page) onchange?.(next);
   }
 
   // Compact page window: always show 1 and last, the current page and its neighbours, with
@@ -39,14 +54,14 @@
     return out;
   }
 
-  $: pages = buildPages(page, pageCount);
-  $: rangeStart = pageSize ? (page - 1) * pageSize + 1 : null;
-  $: rangeEnd =
-    pageSize != null && total != null
+  let pages = $derived(buildPages(page, pageCount));
+  let rangeStart = $derived(pageSize ? (page - 1) * pageSize + 1 : null);
+  let rangeEnd =
+    $derived(pageSize != null && total != null
       ? Math.min(page * pageSize, total)
       : pageSize != null
         ? page * pageSize
-        : null;
+        : null);
 </script>
 
 <div class="pager">
@@ -60,14 +75,14 @@
   {/if}
 
   <div class="pager-pages">
-    <button type="button" on:click={() => go(page - 1)} disabled={disabled || page <= 1} aria-label={prevLabel}>‹</button>
+    <button type="button" onclick={() => go(page - 1)} disabled={disabled || page <= 1} aria-label={prevLabel}>‹</button>
     {#each pages as p}
       {#if p === '…'}
         <span class="pager-ellipsis" aria-hidden="true">…</span>
       {:else}
-        <button type="button" class:active={p === page} disabled={disabled} aria-current={p === page ? 'page' : undefined} on:click={() => go(p)}>{p}</button>
+        <button type="button" class:active={p === page} disabled={disabled} aria-current={p === page ? 'page' : undefined} onclick={() => go(p)}>{p}</button>
       {/if}
     {/each}
-    <button type="button" on:click={() => go(page + 1)} disabled={disabled || page >= pageCount} aria-label={nextLabel}>›</button>
+    <button type="button" onclick={() => go(page + 1)} disabled={disabled || page >= pageCount} aria-label={nextLabel}>›</button>
   </div>
 </div>

@@ -8,29 +8,29 @@
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { t } from '../lib/i18n.js';
 
-  let data = null;
-  let error = '';
-  let forbidden = false;
+  let data = $state(null);
+  let error = $state('');
+  let forbidden = $state(false);
 
-  $: signals = data?.signals || [];
-  $: topErrorGroups = data?.topErrorGroups || [];
-  $: topGroups = topErrorGroups.slice(0, 12);
+  let signals = $derived(data?.signals || []);
+  let topErrorGroups = $derived(data?.topErrorGroups || []);
+  let topGroups = $derived(topErrorGroups.slice(0, 12));
 
-  $: criticalCount = signals.filter(
+  let criticalCount = $derived(signals.filter(
     (signal) => String(signal.severity || '').toLowerCase() === 'critical'
-  ).length;
-  $: degradedCount = signals.filter(
+  ).length);
+  let degradedCount = $derived(signals.filter(
     (signal) => String(signal.severity || '').toLowerCase() === 'degraded'
-  ).length;
-  $: healthyCount = Math.max(0, signals.length - criticalCount - degradedCount);
+  ).length);
+  let healthyCount = $derived(Math.max(0, signals.length - criticalCount - degradedCount));
 
-  $: signalBuckets = [
+  let signalBuckets = $derived([
     { severity: 'critical', label: $t('incidents.critical'), count: criticalCount, color: 'var(--danger)' },
     { severity: 'degraded', label: $t('incidents.degraded'), count: degradedCount, color: 'var(--warning)' },
     { severity: 'healthy', label: $t('incidents.healthy'), count: healthyCount, color: 'var(--ok)' },
-  ];
-  $: severityScale = Math.max(1, ...signalBuckets.map((bucket) => bucket.count || 0));
-  $: topErrorScale = Math.max(1, ...topGroups.map((entry) => entry.totalOccurrences || 0));
+  ]);
+  let severityScale = $derived(Math.max(1, ...signalBuckets.map((bucket) => bucket.count || 0)));
+  let topErrorScale = $derived(Math.max(1, ...topGroups.map((entry) => entry.totalOccurrences || 0)));
 
   async function refresh() {
     forbidden = false;
@@ -75,7 +75,7 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('incidents.title')}</h2>
-    <button type="button" on:click={refresh}>{$t('common.refresh')}</button>
+    <button type="button" onclick={refresh}>{$t('common.refresh')}</button>
   </div>
 
   {#if forbidden}
@@ -94,16 +94,24 @@
 
   <div class="metric-grid compact" style="margin-top: 12px;">
     <StatCard label={$t('incidents.activeSignals')} value={formatNumber(signals.length)} sub={$t('incidents.latestSnapshot')}>
-      <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Activity size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('incidents.errorSpikes')} value={formatRate(data?.errorSpikesPerMinute)} sub={$t('incidents.runtimeErrorsPerMin')}>
-      <TriangleAlert slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('incidents.loginFailedSpikes')} value={formatRate(data?.loginFailedSpikesPerMinute)} sub={$t('incidents.authFailuresPerMin')}>
-      <TriangleAlert slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('incidents.topErrorGroups')} value={formatNumber(topErrorGroups.length)} sub={$t('incidents.windowAggregation')}>
-      <TriangleAlert slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
   </div>
 </section>

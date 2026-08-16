@@ -19,25 +19,25 @@
     { value: 3, label: 'Resolved' },
   ];
 
-  let loading = false;
-  let forbidden = false;
-  let error = '';
-  let queue = [];
+  let loading = $state(false);
+  let forbidden = $state(false);
+  let error = $state('');
+  let queue = $state([]);
 
   // Row-scoped action state, keyed by issueId.
-  let rowBusy = {};
-  let rowError = {};
+  let rowBusy = $state({});
+  let rowError = $state({});
 
   // Inline "ban reported player" panel — opened per row, closed after confirm/cancel.
   // The ban IS an audited sanction, unlike the queue moves above: it goes through the shared write
   // store so its reason reaches the audit log and the reason-history datalist, and so a 403 mid-
   // session reads the same here as everywhere else. The draft holds the form; the store holds the
   // write.
-  let banDraft = null;
+  let banDraft = $state(null);
   const banOps = createWriteOps();
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsCfhManage);
-  $: canBan = hasDashboardCapability($identity, CAPABILITIES.opsBanAccount);
+  let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsCfhManage));
+  let canBan = $derived(hasDashboardCapability($identity, CAPABILITIES.opsBanAccount));
 
   async function refresh() {
     loading = true;
@@ -139,7 +139,7 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('cfh.title')}</h2>
-    <button type="button" class="ghost-button" on:click={refresh} disabled={loading}>{$t('common.refresh')}</button>
+    <button type="button" class="ghost-button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
   </div>
   <p class="muted">{$t('cfh.description')}</p>
 
@@ -177,12 +177,12 @@
           <td>
             {#if canManage}
               <div class="op-actions">
-                <button type="button" class="ghost-button" on:click={() => pick(entry.issueId)} disabled={rowBusy[entry.issueId]}>{$t('cfh.pick')}</button>
-                <button type="button" class="ghost-button" on:click={() => close(entry.issueId, 3, false)} disabled={rowBusy[entry.issueId]}>{$t('cfh.resolve')}</button>
-                <button type="button" class="ghost-button" on:click={() => close(entry.issueId, 1, false)} disabled={rowBusy[entry.issueId]}>{$t('cfh.useless')}</button>
-                <button type="button" class="ghost-button" on:click={() => release(entry.issueId)} disabled={rowBusy[entry.issueId]}>{$t('cfh.release')}</button>
+                <button type="button" class="ghost-button" onclick={() => pick(entry.issueId)} disabled={rowBusy[entry.issueId]}>{$t('cfh.pick')}</button>
+                <button type="button" class="ghost-button" onclick={() => close(entry.issueId, 3, false)} disabled={rowBusy[entry.issueId]}>{$t('cfh.resolve')}</button>
+                <button type="button" class="ghost-button" onclick={() => close(entry.issueId, 1, false)} disabled={rowBusy[entry.issueId]}>{$t('cfh.useless')}</button>
+                <button type="button" class="ghost-button" onclick={() => release(entry.issueId)} disabled={rowBusy[entry.issueId]}>{$t('cfh.release')}</button>
                 {#if canBan}
-                  <button type="button" on:click={() => openBanDraft(entry)}>{$t('cfh.banReportedPlayer')}</button>
+                  <button type="button" onclick={() => openBanDraft(entry)}>{$t('cfh.banReportedPlayer')}</button>
                 {/if}
               </div>
               {#if rowError[entry.issueId]}<p class="empty-state danger">{rowError[entry.issueId]}</p>{/if}
@@ -204,7 +204,7 @@
     eyebrow={$t('cfh.sanctionEyebrow')}
     width={460}
     labelledBy="cfh-ban-title"
-    on:close={cancelBanDraft}
+    onclose={cancelBanDraft}
   >
     <p class="muted">{banDraft.playerName || $t('cfh.player')} (#{banDraft.playerId})</p>
     <div class="op-checkbox-field">
@@ -226,9 +226,11 @@
       <OpResult result={$banOps.result} />
     {/if}
 
-    <svelte:fragment slot="actions">
-      <button type="button" on:click={confirmBanDraft} disabled={$banOps.busy}>{$t('cfh.confirmBan')}</button>
-      <button class="ghost-button" type="button" on:click={cancelBanDraft}>{$t('cfh.close')}</button>
-    </svelte:fragment>
+    {#snippet actions()}
+
+      <button type="button" onclick={confirmBanDraft} disabled={$banOps.busy}>{$t('cfh.confirmBan')}</button>
+      <button class="ghost-button" type="button" onclick={cancelBanDraft}>{$t('cfh.close')}</button>
+
+    {/snippet}
   </Modal>
 {/if}

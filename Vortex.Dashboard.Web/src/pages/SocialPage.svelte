@@ -1,4 +1,5 @@
 <script>
+
   // The social graph and the guild forums. Friendship rows are stored in both directions, so the
   // API halves them — the raw row count is shown next to it so the two numbers never look like a
   // discrepancy.
@@ -21,13 +22,13 @@
     return translator(`common.granularity${value.charAt(0).toUpperCase()}${value.slice(1)}`);
   }
 
-  let since = '';
-  let until = '';
-  let granularity = 'day';
-  let loading = false;
-  let forbidden = false;
-  let error = '';
-  let data = null;
+  let since = $state('');
+  let until = $state('');
+  let granularity = $state('day');
+  let loading = $state(false);
+  let forbidden = $state(false);
+  let error = $state('');
+  let data = $state(null);
 
   function toLocalDateValue(value) {
     const date = new Date(value);
@@ -66,7 +67,7 @@
     }
   }
 
-  $: messageSeries = data
+  let messageSeries = $derived(data
     ? [
         {
           name: $t('social.messages'),
@@ -74,7 +75,7 @@
           points: (data.timeline || []).map((p) => ({ label: p.label, value: p.messages })),
         },
       ]
-    : [];
+    : []);
 
   onMount(() => {
     setDefaultWindow();
@@ -86,7 +87,7 @@
   <div class="panel-head"><h2>{$t('social.title')}</h2></div>
   <p class="muted">{$t('social.description')}</p>
 
-  <form class="toolbar-grid" on:submit|preventDefault={refresh}>
+  <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); refresh(); }}>
     <label>
       {$t('common.since')}
       <input type="date" bind:value={since} />
@@ -122,34 +123,46 @@
       value={formatNumber(data.totals.friendships)}
       sub={$t('social.friendRows', { rows: formatNumber(data.totals.friendRows) })}
     >
-      <Users slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Users size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('social.playersWithFriends')} value={formatNumber(data.totals.playersWithFriends)}>
-      <Users slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Users size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('social.pendingRequests')} value={formatNumber(data.totals.pendingRequests)}>
-      <UserPlus slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <UserPlus size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard
       label={$t('social.blocked')}
       value={formatNumber(data.totals.blockedPairs)}
       sub={$t('social.ignored', { count: formatNumber(data.totals.ignoredPairs) })}
     >
-      <ShieldOff slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <ShieldOff size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard
       label={$t('social.messages')}
       value={formatNumber(data.totals.totalMessages)}
       sub={$t('social.undelivered', { count: formatNumber(data.totals.undelivered) })}
     >
-      <MessageSquare slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <MessageSquare size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard
       label={$t('social.threads')}
       value={formatNumber(data.totals.threads)}
       sub={$t('social.posts', { count: formatNumber(data.totals.posts) })}
     >
-      <MessagesSquare slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <MessagesSquare size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
   </div>
 

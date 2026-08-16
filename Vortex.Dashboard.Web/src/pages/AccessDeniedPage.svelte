@@ -6,11 +6,11 @@
 
   // The router lands here either after a failed capability guard (deniedRoute is set) or on an
   // unknown hash (deniedRoute empty -> treat as a missing section).
-  $: label = $t(NAV.find((item) => item.path === $deniedRoute)?.labelKey || '');
-  $: title = $deniedRoute ? $t('accessDeniedPage.insufficientRightsTitle') : $t('accessDeniedPage.unknownRouteTitle');
-  $: message = $deniedRoute
+  let label = $derived($t(NAV.find((item) => item.path === $deniedRoute)?.labelKey || ''));
+  let title = $derived($deniedRoute ? $t('accessDeniedPage.insufficientRightsTitle') : $t('accessDeniedPage.unknownRouteTitle'));
+  let message = $derived($deniedRoute
     ? $t('accessDeniedPage.roleDenied', { section: label || $deniedRoute })
-    : $t('accessDeniedPage.unknownSection');
+    : $t('accessDeniedPage.unknownSection'));
 </script>
 
 <AccessDeniedNotice {title} {message} />

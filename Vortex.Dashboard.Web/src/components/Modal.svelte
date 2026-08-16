@@ -5,29 +5,46 @@
   // modal landed on the page behind it -- which is how an operator ends up typing a reason into a
   // form they cannot see. Both behaviours live here now, so every dialog gets them by existing.
   //
-  //   <Modal title={...} eyebrow={...} width={480} on:close={...}>
+  //   <Modal title={...} eyebrow={...} width={480} onclose={...}>
   //     ...body...
   //     <svelte:fragment slot="actions">...buttons...</svelte:fragment>
   //   </Modal>
-  import { createEventDispatcher, onDestroy, onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
 
-  export let title = '';
-  export let eyebrow = '';
-  /** Panel width in px; the panel still shrinks to the viewport on a narrow screen. */
-  export let width = 1040;
-  /** Set false for a dialog that must be dismissed with an explicit action. */
-  export let dismissible = true;
-  export let labelledBy = 'modal-title';
+  
+  
+  
   /**
-   * Lay the panel out as a flex column instead of the default grid. What the pickers want from this
-   * is a body that scrolls under a header that does not -- a long icon grid should not push the
-   * search box off the top of the dialog.
+   * @typedef {Object} Props
+   * @property {string} [title]
+   * @property {string} [eyebrow]
+   * @property {number} [width] - Panel width in px; the panel still shrinks to the viewport on a narrow screen.
+   * @property {boolean} [dismissible] - Set false for a dialog that must be dismissed with an explicit action.
+   * @property {string} [labelledBy]
+   * @property {boolean} [column] - Lay the panel out as a flex column instead of the default grid. What the pickers want from this
+is a body that scrolls under a header that does not -- a long icon grid should not push the
+search box off the top of the dialog.
+   * @property {import('svelte').Snippet} [header]
+   * @property {import('svelte').Snippet} [children]
+   * @property {import('svelte').Snippet} [actions]
+   * @property {() => void} [onclose] - called when the operator dismisses the dialog
    */
-  export let column = false;
 
-  const dispatch = createEventDispatcher();
+  /** @type {Props} */
+  let {
+    title = '',
+    eyebrow = '',
+    width = 1040,
+    dismissible = true,
+    labelledBy = 'modal-title',
+    column = false,
+    header,
+    children,
+    actions,
+    onclose
+  } = $props();
 
-  let panel;
+  let panel = $state();
   let previouslyFocused = null;
 
   const FOCUSABLE =
@@ -35,7 +52,7 @@
 
   function close() {
     if (dismissible) {
-      dispatch('close');
+      onclose?.();
     }
   }
 
@@ -101,7 +118,7 @@
     type="button"
     aria-label="Close"
     tabindex="-1"
-    on:click={close}
+    onclick={close}
   ></button>
   <section
     class="modal-panel"
@@ -113,21 +130,21 @@
     style="width: min({width}px, 100%)"
     bind:this={panel}
   >
-    {#if title || eyebrow || $$slots.header}
+    {#if title || eyebrow || header}
       <header class="modal-header">
         <div>
           {#if eyebrow}<p class="eyebrow">{eyebrow}</p>{/if}
           {#if title}<h2 id={labelledBy}>{title}</h2>{/if}
         </div>
-        <slot name="header" />
+        {@render header?.()}
       </header>
     {/if}
 
-    <slot />
+    {@render children?.()}
 
-    {#if $$slots.actions}
+    {#if actions}
       <div class="op-actions">
-        <slot name="actions" />
+        {@render actions?.()}
       </div>
     {/if}
   </section>

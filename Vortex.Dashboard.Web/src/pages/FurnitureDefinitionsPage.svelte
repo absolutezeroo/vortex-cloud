@@ -1,4 +1,5 @@
 <script>
+
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { Eye, EyeOff, Image, Package, Pencil, Plus, Trash2 } from '@lucide/svelte';
@@ -49,16 +50,16 @@
     };
   }
 
-  let page = 1;
+  let page = $state(1);
   let limit = 40;
-  let query = '';
+  let query = $state('');
 
-  let newOpen = false;
-  let newForm = emptyForm();
-  let editingId = null;
-  let editForm = null;
+  let newOpen = $state(false);
+  let newForm = $state(emptyForm());
+  let editingId = $state(null);
+  let editForm = $state(null);
 
-  let deleteReason = {};
+  let deleteReason = $state({});
 
   // Every write is staged here and confirmed in the dialog below before it is posted. createWriteOps
   // owns that cycle -- posting, remembering the audited reason, and tracking each form's busy state,
@@ -74,10 +75,10 @@
     return apiGet(`/api/v1/furniture/definitions?${params}`);
   });
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsFurnitureManage);
-  $: items = $definitions.data?.items ?? [];
-  $: total = $definitions.data?.total ?? 0;
-  $: totalPages = Math.max(1, Math.ceil(total / limit));
+  let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsFurnitureManage));
+  let items = $derived($definitions.data?.items ?? []);
+  let total = $derived($definitions.data?.total ?? 0);
+  let totalPages = $derived(Math.max(1, Math.ceil(total / limit)));
 
   function search() {
     page = 1;
@@ -210,7 +211,7 @@
   <div class="panel-head">
     <h2><Package size={18} strokeWidth={2} aria-hidden="true" /> {$t('furnitureAdmin.title')}</h2>
     {#if canManage}
-      <button type="button" class="ghost-button" on:click={() => (newOpen = !newOpen)}>
+      <button type="button" class="ghost-button" onclick={() => (newOpen = !newOpen)}>
         <Plus size={14} strokeWidth={2} aria-hidden="true" /> {newOpen ? $t('furnitureAdmin.cancel') : $t('furnitureAdmin.newDefinition')}
       </button>
     {/if}
@@ -219,7 +220,7 @@
     {$t('furnitureAdmin.description')}
   </p>
 
-  <form class="toolbar" on:submit|preventDefault={search}>
+  <form class="toolbar" onsubmit={(event) => { event.preventDefault(); search(); }}>
     <input bind:value={query} placeholder={$t('furnitureAdmin.searchPlaceholder')} />
     <button type="submit" disabled={$definitions.loading}>{$t('furnitureAdmin.search')}</button>
   </form>
@@ -305,7 +306,7 @@
         <input id="new-furni-reason" bind:value={newForm.reason} placeholder={$t('furnitureAdmin.reasonNewPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageCreate} disabled={$ops.busyKeys.create}>{$t('furnitureAdmin.create')}</button>
+        <button type="button" onclick={stageCreate} disabled={$ops.busyKeys.create}>{$t('furnitureAdmin.create')}</button>
       </div>
       {#if $ops.errors.create}<p class="empty-state danger">{$ops.errors.create}</p>{/if}
       {#if $ops.results.create}
@@ -346,7 +347,7 @@
               </span>
             </span>
             {#if canManage}
-              <button type="button" class="ghost-button" on:click={() => startEdit(item)}>
+              <button type="button" class="ghost-button" onclick={() => startEdit(item)}>
                 <Pencil size={14} strokeWidth={2} aria-hidden="true" /> {$t('furnitureAdmin.edit')}
               </button>
             {/if}
@@ -433,8 +434,8 @@
                 <input id={`edit-furni-reason-${item.id}`} bind:value={editForm.reason} placeholder={$t('furnitureAdmin.reasonChangePlaceholder')} list="reason-history" />
               </div>
               <div class="op-actions">
-                <button type="button" on:click={stageUpdate} disabled={$ops.busyKeys.update}>{$t('furnitureAdmin.save')}</button>
-                <button class="ghost-button" type="button" on:click={() => (editingId = null)}>{$t('furnitureAdmin.cancel')}</button>
+                <button type="button" onclick={stageUpdate} disabled={$ops.busyKeys.update}>{$t('furnitureAdmin.save')}</button>
+                <button class="ghost-button" type="button" onclick={() => (editingId = null)}>{$t('furnitureAdmin.cancel')}</button>
               </div>
               {#if $ops.errors.update}<p class="empty-state danger">{$ops.errors.update}</p>{/if}
               {#if $ops.results.update}
@@ -446,7 +447,7 @@
           {#if canManage}
             <div class="furni-card-detail op-pick">
               <input bind:value={deleteReason[item.id]} placeholder={$t('furnitureAdmin.deleteReasonPlaceholder')} list="reason-history" style="flex: 1;" />
-              <button type="button" class="ghost-button danger" on:click={() => stageDelete(item)}>
+              <button type="button" class="ghost-button danger" onclick={() => stageDelete(item)}>
                 <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> {$t('furnitureAdmin.delete')}
               </button>
             </div>
@@ -465,7 +466,7 @@
       pageWord={$t('common.page')}
       prevLabel={$t('furnitureAdmin.previous')}
       nextLabel={$t('common.next')}
-      on:change={(e) => goToPage(e.detail)}
+      onchange={goToPage}
     />
   {/if}
 </section>

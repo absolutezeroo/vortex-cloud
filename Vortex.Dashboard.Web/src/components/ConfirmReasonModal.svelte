@@ -10,45 +10,64 @@
   // The before/after list is also the thing worth reading before confirming: "Price: 2 → 4" catches
   // a mistyped field in a way "Save this offer?" never did.
   import Modal from './Modal.svelte';
-  import { createEventDispatcher } from 'svelte';
-  import { CircleX } from '@lucide/svelte';
+    import { CircleX } from '@lucide/svelte';
   import { reasonOk } from '../lib/validation.js';
   import { t } from '../lib/i18n.js';
 
-  export let open = false;
-  export let title = '';
-  export let summary = '';
-  export let confirmLabel = '';
-  export let busy = false;
-  export let error = '';
-  export let danger = true;
-  export let changes = [];
-  export let noteOnly = true;
+  /**
+   * @typedef {Object} Props
+   * @property {boolean} [open]
+   * @property {string} [title]
+   * @property {string} [summary]
+   * @property {string} [confirmLabel]
+   * @property {boolean} [busy]
+   * @property {string} [error]
+   * @property {boolean} [danger]
+   * @property {any} [changes]
+   * @property {boolean} [noteOnly]
+   * @property {import('svelte').Snippet} [children]
+   * @property {(note: string) => void} [onconfirm] - receives the operator's note, already trimmed
+   * @property {() => void} [oncancel]
+   */
 
-  const dispatch = createEventDispatcher();
+  /** @type {Props} */
+  let {
+    open = false,
+    title = '',
+    summary = '',
+    confirmLabel = '',
+    busy = false,
+    error = '',
+    danger = true,
+    changes = [],
+    noteOnly = true,
+    children,
+    onconfirm,
+    oncancel
+  } = $props();
 
-  let note = '';
-  let prevOpen = false;
+  let note = $state('');
+  let prevOpen = $state(false);
   // Reset the field only on the closed -> open transition, so typing doesn't wipe it and a reused
   // modal never carries the previous action's note.
-  $: {
+  $effect(() => {
     if (open && !prevOpen) {
       note = '';
     }
     prevOpen = open;
-  }
+  });
 
-  $: valid = noteOnly || reasonOk(note);
+  let valid = $derived(noteOnly || reasonOk(note));
 
   function cancel() {
-    dispatch('cancel');
+    oncancel?.();
   }
 
   function confirm() {
     if (!valid || busy) {
       return;
     }
-    dispatch('confirm', note.trim());
+    onconfirm?.(note.trim());
   }
 </script>
 
@@ -58,7 +77,7 @@
     eyebrow={$t('common.confirm')}
     width={460}
     labelledBy="confirm-reason-title"
-    on:close={cancel}
+    onclose={cancel}
   >
     {#if summary}<p>{summary}</p>{/if}
 
@@ -77,27 +96,27 @@
 
     <!-- Optional richer detail than a summary sentence: the config editor shows the old/new value,
          which is the thing the operator actually double-checks before confirming. -->
-    <slot />
+    {@render children?.()}
     <div class="op-field">
       <label for="confirm-reason-input">
         {noteOnly ? $t('common.noteOptional') : $t('common.reasonRequired')}
       </label>
-      <!-- svelte-ignore a11y-autofocus -->
+      <!-- svelte-ignore a11y_autofocus -->
       <input
         id="confirm-reason-input"
         bind:value={note}
         placeholder={noteOnly ? $t('common.notePlaceholder') : $t('common.reasonPlaceholderChange')}
         list="reason-history"
         autofocus
-        on:keydown={(e) => e.key === 'Enter' && confirm()}
+        onkeydown={(e) => e.key === 'Enter' && confirm()}
       />
     </div>
     {#if error}<p class="op-result danger"><CircleX size={16} strokeWidth={2} aria-hidden="true" /> {error}</p>{/if}
     <div class="op-actions">
-      <button type="button" class:danger on:click={confirm} disabled={busy || !valid}>
+      <button type="button" class:danger onclick={confirm} disabled={busy || !valid}>
         {confirmLabel || $t('common.confirm')}
       </button>
-      <button class="ghost-button" type="button" on:click={cancel}>{$t('common.cancel')}</button>
+      <button class="ghost-button" type="button" onclick={cancel}>{$t('common.cancel')}</button>
     </div>
   </Modal>
 {/if}

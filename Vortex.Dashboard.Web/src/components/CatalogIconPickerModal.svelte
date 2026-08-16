@@ -7,21 +7,27 @@
   // There is no manifest of which catalog icon ids actually have a file on the asset host --
   // the id -> filename pattern (icon_{id}.png) is fixed, but which ids are populated is not.
   // So "browse all available icons" means probing candidate ids and letting the browser's own
-  // <img> load/error events tell us which ones are real, rather than trusting a hardcoded list.
-  export let title = 'Select an icon';
-  export let onSelect;
-  export let onClose;
+  
+  /**
+   * @typedef {Object} Props
+   * @property {string} [title] - <img> load/error events tell us which ones are real, rather than trusting a hardcoded list.
+   * @property {any} onSelect
+   * @property {any} onClose
+   */
+
+  /** @type {Props} */
+  let { title = 'Select an icon', onSelect, onClose } = $props();
 
   const BATCH_SIZE = 60;
 
   let template = '';
-  let templateLoading = true;
-  let templateError = '';
+  let templateLoading = $state(true);
+  let templateError = $state('');
 
-  let probeIds = [];
-  let loadedIds = new Set();
-  let failedIds = new Set();
-  let gridEl;
+  let probeIds = $state([]);
+  let loadedIds = $state(new Set());
+  let failedIds = $state(new Set());
+  let gridEl = $state();
 
   function urlFor(id) {
     return template.replace('{id}', String(id));
@@ -65,9 +71,9 @@
     onClose?.();
   }
 
-  $: foundCount = loadedIds.size;
-  $: probedCount = probeIds.length;
-  $: settledCount = loadedIds.size + failedIds.size;
+  let foundCount = $derived(loadedIds.size);
+  let probedCount = $derived(probeIds.length);
+  let settledCount = $derived(loadedIds.size + failedIds.size);
 
   onMount(async () => {
     try {
@@ -92,11 +98,13 @@
   width={720}
   column
   labelledBy="catalog-icon-picker-title"
-  on:close={onClose}
+  onclose={onClose}
 >
-  <button slot="header" class="ghost-button" type="button" on:click={onClose}>
-    {$t('pickerModal.close')}
-  </button>
+  {#snippet header()}
+    <button class="ghost-button" type="button" onclick={onClose}>
+      {$t('pickerModal.close')}
+    </button>
+  {/snippet}
 
   {#if templateLoading}
     <p class="empty-state">{$t('pickerModal.loading')}</p>
@@ -115,15 +123,15 @@
             class="icon-cell"
             class:pending={!loadedIds.has(id)}
             disabled={!loadedIds.has(id)}
-            on:click={() => choose(id)}
+            onclick={() => choose(id)}
             title={`icon_${id}`}
           >
             <img
               src={urlFor(id)}
               alt=""
               loading="lazy"
-              on:load={() => markLoaded(id)}
-              on:error={() => markFailed(id)}
+              onload={() => markLoaded(id)}
+              onerror={() => markFailed(id)}
             />
             <small>#{id}</small>
           </button>

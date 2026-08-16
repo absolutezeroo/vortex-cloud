@@ -9,15 +9,28 @@
   import AssetImage from './AssetImage.svelte';
   import { t } from '../lib/i18n.js';
 
-  export let id = '';
-  export let label = '';
-  export let value = '';
-  export let imageTemplate = null;
-  export let previewAlt = '';
-  /** Available images for the gallery picker: [{ file, url, thumbUrl }]. Empty hides the picker. */
-  export let images = [];
+  
+  /**
+   * @typedef {Object} Props
+   * @property {string} [id]
+   * @property {string} [label]
+   * @property {string} [value]
+   * @property {any} [imageTemplate]
+   * @property {string} [previewAlt]
+   * @property {any} [images] - Available images for the gallery picker: [{ file, url, thumbUrl }]. Empty hides the picker.
+   */
 
-  let browseOpen = false;
+  /** @type {Props} */
+  let {
+    id = '',
+    label = '',
+    value = $bindable(''),
+    imageTemplate = null,
+    previewAlt = '',
+    images = []
+  } = $props();
+
+  let browseOpen = $state(false);
 
   const isHttp = (candidate) => /^https?:\/\//i.test((candidate || '').trim());
 
@@ -26,25 +39,25 @@
     browseOpen = false;
   }
 
-  $: v = value || '';
-  $: prefix = imageTemplate ? imageTemplate.split('{file}')[0] : '';
-  $: suffix = imageTemplate ? imageTemplate.split('{file}')[1] ?? '' : '';
+  let v = $derived(value || '');
+  let prefix = $derived(imageTemplate ? imageTemplate.split('{file}')[0] : '');
+  let suffix = $derived(imageTemplate ? imageTemplate.split('{file}')[1] ?? '' : '');
 
   // A stored value "lives under" the template when it starts with the base prefix (and matches any
   // trailing suffix). Such values are edited as just their filename; anything else is a foreign full
   // URL that we must not mangle.
-  $: underBase =
-    Boolean(imageTemplate) &&
+  let underBase =
+    $derived(Boolean(imageTemplate) &&
     v.trim() !== '' &&
     v.startsWith(prefix) &&
-    (suffix === '' || v.endsWith(suffix));
+    (suffix === '' || v.endsWith(suffix)));
 
   // Filename mode applies when a template exists AND the value is empty or already under the base.
-  $: filenameMode = Boolean(imageTemplate) && (v.trim() === '' || underBase);
+  let filenameMode = $derived(Boolean(imageTemplate) && (v.trim() === '' || underBase));
 
-  $: filename = underBase
+  let filename = $derived(underBase
     ? v.slice(prefix.length, suffix ? v.length - suffix.length : v.length)
-    : '';
+    : '');
 
   function onFilenameInput(event) {
     const raw = event.target.value.trim();
@@ -71,18 +84,18 @@
       <input
         {id}
         value={filename}
-        on:input={onFilenameInput}
+        oninput={onFilenameInput}
         placeholder={$t('targetedOffers.filenamePlaceholder')}
       />
     </div>
     <small class="muted">{$t('targetedOffers.filenameHint')}</small>
   {:else}
-    <input {id} value={v} on:input={onFullUrlInput} placeholder="https://..." />
+    <input {id} value={v} oninput={onFullUrlInput} placeholder="https://..." />
   {/if}
 
   <div class="field-actions">
     {#if images.length}
-      <button type="button" class="ghost-button" on:click={() => (browseOpen = true)}>
+      <button type="button" class="ghost-button" onclick={() => (browseOpen = true)}>
         <Image size={14} strokeWidth={2} aria-hidden="true" />
         {$t('targetedOffers.browseImages')}
       </button>
@@ -101,7 +114,7 @@
     width={720}
     column
     labelledBy="offer-image-picker-title"
-    on:close={() => (browseOpen = false)}
+    onclose={() => (browseOpen = false)}
   >
     <div class="gallery-grid">
       {#each images as image (image.file)}
@@ -109,7 +122,7 @@
           type="button"
           class="gallery-item"
           class:selected={v === image.url}
-          on:click={() => pick(image)}
+          onclick={() => pick(image)}
           title={image.file}
         >
           <AssetImage src={image.thumbUrl || image.url} alt={image.file} size={80} />
@@ -118,7 +131,7 @@
       {/each}
     </div>
     <div class="op-actions">
-      <button type="button" class="ghost-button" on:click={() => (browseOpen = false)}>
+      <button type="button" class="ghost-button" onclick={() => (browseOpen = false)}>
         {$t('common.cancel')}
       </button>
     </div>

@@ -21,19 +21,19 @@
   import { Ticket, Store, Coins, Hammer } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
-  let loading = false;
-  let forbidden = false;
-  let error = '';
-  let data = null;
+  let loading = $state(false);
+  let forbidden = $state(false);
+  let error = $state('');
+  let data = $state(null);
 
   const ops = createWriteOps(refresh);
 
   // These sections are independent jobs that were stacked vertically, so reaching the last one
   // meant scrolling past every other. Nothing here is read against anything else -- which is
   // both what makes tabs right and what would have made them wrong.
-  let tab = 'ltd';
+  let tab = $state('ltd');
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsContentManage);
+  let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsContentManage));
 
   const emptyCurrency = () => ({
     id: 0,
@@ -52,15 +52,15 @@
     requiresHc: false,
   });
 
-  let currencyForm = emptyCurrency();
-  let tierForm = emptyTier();
-  let termsForm = emptyTerms();
+  let currencyForm = $state(emptyCurrency());
+  let tierForm = $state(emptyTier());
+  let termsForm = $state(emptyTerms());
 
   // Placed-furniture ids have no picker of their own (the furniture picker searches definitions, not
   // placed items), so the id at least previews the space it points at.
-  $: termsPreviewUrl =
-    (data?.rentableSpaces || []).find((r) => r.furnitureId === Number(termsForm.furnitureId))
-      ?.iconUrl ?? null;
+  let termsPreviewUrl =
+    $derived((data?.rentableSpaces || []).find((r) => r.furnitureId === Number(termsForm.furnitureId))
+      ?.iconUrl ?? null);
 
   async function refresh() {
     loading = true;
@@ -97,7 +97,7 @@
   <div class="panel-head"><h2>{$t('economyExtras.title')}</h2></div>
   <p class="muted">{$t('economyExtras.description')}</p>
   <div class="toolbar">
-    <button type="button" on:click={refresh} disabled={loading}>{$t('common.refresh')}</button>
+    <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
   </div>
 
   {#if loading}
@@ -116,20 +116,28 @@
       value={formatNumber(data.totals.ltdSeries)}
       sub={$t('economyExtras.running', { count: formatNumber(data.totals.runningSeries) })}
     >
-      <Ticket slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Ticket size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard
       label={$t('economyExtras.rentableSpaces')}
       value={formatNumber(data.totals.rentableSpaces)}
       sub={$t('economyExtras.rentedNow', { count: formatNumber(data.totals.rentedNow) })}
     >
-      <Store slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Store size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('economyExtras.currencies')} value={formatNumber(data.totals.currencies)}>
-      <Coins slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Coins size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('economyExtras.buildersClubTiers')} value={formatNumber(data.totals.buildersClubTiers)}>
-      <Hammer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Hammer size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
   </div>
 
@@ -275,7 +283,7 @@
               <td>{formatNumber(row.totalHeld)}</td>
               {#if canManage}
                 <td class="row-actions">
-                  <button type="button" class="ghost-button" on:click={() => (currencyForm = { ...row })}>
+                  <button type="button" class="ghost-button" onclick={() => (currencyForm = { ...row })}>
                     {$t('economyExtras.edit')}
                   </button>
                 </td>
@@ -296,7 +304,8 @@
       <h3 class="subhead">{$t('economyExtras.currenciesTitle')}</h3>
       <form
         class="inline-form"
-        on:submit|preventDefault={() =>
+        onsubmit={(event) => {
+          event.preventDefault();
           ops.ask(
             '/api/v1/operations/content/currencies',
             {
@@ -312,7 +321,8 @@
             },
             currencyForm.id ? $t('economyExtras.updateCurrency') : $t('economyExtras.addCurrency'),
             $t('economyExtras.saveCurrencySummary', { name: currencyForm.name })
-          )}
+          );
+        }}
       >
         <label>
           {$t('economyExtras.colCurrency')}
@@ -338,7 +348,7 @@
           {currencyForm.id ? $t('economyExtras.updateCurrency') : $t('economyExtras.addCurrency')}
         </button>
         {#if currencyForm.id}
-          <button type="button" class="ghost-button" on:click={() => (currencyForm = emptyCurrency())}>
+          <button type="button" class="ghost-button" onclick={() => (currencyForm = emptyCurrency())}>
             {$t('economyExtras.newCurrency')}
           </button>
         {/if}
@@ -347,13 +357,15 @@
       <h3 class="subhead">{$t('economyExtras.buildersClubTitle')}</h3>
       <form
         class="inline-form"
-        on:submit|preventDefault={() =>
+        onsubmit={(event) => {
+          event.preventDefault();
           ops.ask(
             '/api/v1/operations/content/builders-club',
             { level: Number(tierForm.level), furniLimit: Number(tierForm.furniLimit) },
             $t('economyExtras.saveTier'),
             $t('economyExtras.saveTierSummary', { level: tierForm.level, limit: tierForm.furniLimit })
-          )}
+          );
+        }}
       >
         <label>
           {$t('economyExtras.colLevel')}
@@ -370,7 +382,8 @@
       <p class="muted">{$t('economyExtras.termsEditorHint')}</p>
       <form
         class="inline-form"
-        on:submit|preventDefault={() =>
+        onsubmit={(event) => {
+          event.preventDefault();
           ops.ask(
             '/api/v1/operations/content/rentable-terms',
             {
@@ -382,7 +395,8 @@
             },
             $t('economyExtras.saveTerms'),
             $t('economyExtras.saveTermsSummary', { id: termsForm.furnitureId })
-          )}
+          );
+        }}
       >
         <label>
           {$t('economyExtras.colFurniture')}
@@ -446,13 +460,13 @@
               <td>{formatNumber(row.furniLimit)}</td>
               {#if canManage}
                 <td class="row-actions">
-                  <button type="button" class="ghost-button" on:click={() => (tierForm = { ...row })}>
+                  <button type="button" class="ghost-button" onclick={() => (tierForm = { ...row })}>
                     {$t('economyExtras.edit')}
                   </button>
                   <button
                     type="button"
                     class="ghost-button danger"
-                    on:click={() =>
+                    onclick={() =>
                       ops.ask(
                         '/api/v1/operations/content/builders-club/delete',
                         { tierId: row.id },
@@ -484,8 +498,8 @@
   confirmLabel={$ops.pending?.title ?? $t('common.confirm')}
   busy={$ops.busy}
   error={$ops.error}
-  on:confirm={(e) => ops.confirm(e.detail)}
-  on:cancel={() => ops.cancel()}
+  onconfirm={ops.confirm}
+  oncancel={() => ops.cancel()}
 />
 
 <style>

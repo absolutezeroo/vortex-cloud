@@ -28,17 +28,17 @@
 
   // Three jobs on one page -- the collections, the shop and the collector standings -- and stacking
   // them meant scrolling past two to reach the third.
-  let tab = 'collections';
+  let tab = $state('collections');
 
-  let loading = false;
-  let forbidden = false;
-  let error = '';
-  let data = null;
-  let expanded = null;
+  let loading = $state(false);
+  let forbidden = $state(false);
+  let error = $state('');
+  let data = $state(null);
+  let expanded = $state(null);
 
   const ops = createWriteOps(refresh);
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsContentManage);
+  let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsContentManage));
 
   const emptyCollection = () => ({
     id: 0,
@@ -59,18 +59,18 @@
     sortOrder: 0,
   });
 
-  let collectionForm = emptyCollection();
-  let itemForm = emptyItem();
+  let collectionForm = $state(emptyCollection());
+  let itemForm = $state(emptyItem());
 
   // Which furniture picker is open, if any: the collection's two prizes and the collection item all
   // pick from the same catalogue, so they share one modal rather than three.
-  let picking = null;
+  let picking = $state(null);
 
   // The icons of the two prizes, remembered from the pick. They are not in `data` like the item
   // icons are -- a prize is a classname on the collection, not a row in its item list -- so without
   // this the admin picks a chair and sees only the word.
-  let rewardIconUrl = null;
-  let bonusIconUrl = null;
+  let rewardIconUrl = $state(null);
+  let bonusIconUrl = $state(null);
 
   // Only the statuses mean something, and only on this side: the client parses the field and never
   // reads it, so Draft is a collection the server withholds rather than one the client hides.
@@ -100,7 +100,7 @@
     sortOrder: 0,
   });
 
-  let offerForm = emptyOffer();
+  let offerForm = $state(emptyOffer());
 
   const emptyClaim = () => ({
     playerId: '',
@@ -113,8 +113,8 @@
     validTo: '',
   });
 
-  let claimForm = emptyClaim();
-  let claimIconUrl = null;
+  let claimForm = $state(emptyClaim());
+  let claimIconUrl = $state(null);
 
   // A window is not optional: the client greys the convert button out once the end date has passed,
   // and says nothing about why. A new type therefore opens now and runs for a year rather than
@@ -141,7 +141,7 @@
     };
   };
 
-  let mintableForm = emptyMintable();
+  let mintableForm = $state(emptyMintable());
 
   const emptyTokenOffer = () => ({
     id: 0,
@@ -152,7 +152,7 @@
     sortOrder: 0,
   });
 
-  let tokenOfferForm = emptyTokenOffer();
+  let tokenOfferForm = $state(emptyTokenOffer());
 
   // The three the client knows. It switches on this exact string to pick the caption and the tile
   // colours, and has no branch for anything else -- an unknown one prints the word "null" above the
@@ -175,13 +175,13 @@
     sortOrder: 0,
   });
 
-  let avatarForm = emptyAvatar();
+  let avatarForm = $state(emptyAvatar());
 
   // Who is being given a copy, and what for. Kept beside the avatar it belongs to rather than in one
   // form at the bottom: the note is about this avatar, and an admin handing out prizes at an event
   // is looking at the row, not at a form.
-  let grantAvatarId = 0;
-  let grantForm = { playerId: '', playerName: '', note: '' };
+  let grantAvatarId = $state(0);
+  let grantForm = $state({ playerId: '', playerName: '', note: '' });
 
   const startGrant = (avatar) => {
     grantAvatarId = avatar.id;
@@ -192,9 +192,9 @@
     avatarForm = { ...row };
   };
 
-  $: mintableIconUrl =
-    (data?.mintableTypes || []).find((t) => t.productCode === mintableForm.productCode)?.iconUrl ??
-    null;
+  let mintableIconUrl =
+    $derived((data?.mintableTypes || []).find((t) => t.productCode === mintableForm.productCode)?.iconUrl ??
+    null);
 
   // The editors bind to datetime-local inputs, which speak local time with no zone; the API takes
   // instants. A row loaded for editing therefore has to come back the other way round.
@@ -208,18 +208,18 @@
 
   // The shop's own icon, looked up in the listing: unlike the two prizes, an offer is a row, so its
   // image is already on the page once it has been saved.
-  $: offerIconUrl =
-    (data?.storeOffers || []).find((o) => o.productCode === offerForm.productCode)?.iconUrl ?? null;
+  let offerIconUrl =
+    $derived((data?.storeOffers || []).find((o) => o.productCode === offerForm.productCode)?.iconUrl ?? null);
 
   const statusLabel = (value) =>
     $t(STATUS_OPTIONS.find((o) => o.value === Number(value))?.key ?? 'collectibles.statusUnknown');
 
   // The product code is a furniture classname, so it is picked from the real catalogue rather than
   // typed: a code that matches nothing is exactly what makes a collection uncompletable.
-  $: itemPreviewUrl =
-    (data?.collections || [])
+  let itemPreviewUrl =
+    $derived((data?.collections || [])
       .flatMap((c) => c.items || [])
-      .find((i) => i.productCode === itemForm.productCode)?.iconUrl ?? null;
+      .find((i) => i.productCode === itemForm.productCode)?.iconUrl ?? null);
 
   async function refresh() {
     loading = true;
@@ -251,7 +251,7 @@
   <div class="panel-head"><h2>{$t('collectibles.title')}</h2></div>
   <p class="muted">{$t('collectibles.description')}</p>
   <div class="toolbar">
-    <button type="button" on:click={refresh} disabled={loading}>{$t('common.refresh')}</button>
+    <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
   </div>
 
   {#if loading}
@@ -266,28 +266,44 @@
 {#if data}
   <div class="metric-grid" style="margin-top: 12px;">
     <StatCard label={$t('collectibles.collections')} value={formatNumber(data.totals.collections)}>
-      <Gem slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Gem size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('collectibles.items')} value={formatNumber(data.totals.items)}>
-      <Boxes slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Boxes size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('collectibles.completable')} value={formatNumber(data.totals.completableCollections)}>
-      <Gem slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Gem size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('collectibles.unresolved')} value={formatNumber(data.totals.unresolvedItems)}>
-      <TriangleAlert slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('collectibles.trackedPlayers')} value={formatNumber(data.totals.trackedPlayers)}>
-      <Trophy slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Trophy size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('collectibles.mintableOpen')} value={formatNumber(data.totals.mintableTypesOpen)}>
-      <Hammer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Hammer size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('collectibles.mintedRelics')} value={formatNumber(data.totals.mintedRelics)}>
-      <Sparkles slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Sparkles size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('collectibles.stampsHeld')} value={formatNumber(data.totals.stampsHeld)}>
-      <Ticket slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Ticket size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
   </div>
 
@@ -329,7 +345,7 @@
           <tbody>
             {#each data.collections as collection}
               <tr
-                on:click={() => (expanded = expanded === collection.id ? null : collection.id)}
+                onclick={() => (expanded = expanded === collection.id ? null : collection.id)}
                 style="cursor: pointer;"
                 class:selected={expanded === collection.id}
               >
@@ -359,7 +375,8 @@
                     <button
                       type="button"
                       class="ghost-button"
-                      on:click|stopPropagation={() => {
+                      onclick={(event) => {
+                        event.stopPropagation();
                         collectionForm = { ...collection };
                         // The prize icons are not in the listing, so they stay blank until the
                         // admin picks again rather than showing the previous collection's.
@@ -372,13 +389,15 @@
                     <button
                       type="button"
                       class="ghost-button danger"
-                      on:click|stopPropagation={() =>
+                      onclick={(event) => {
+                        event.stopPropagation();
                         ops.ask(
                           '/api/v1/operations/content/collections/delete',
                           { collectionId: collection.id },
                           $t('collectibles.deleteCollection'),
                           $t('collectibles.deleteCollectionSummary', { name: collection.name })
-                        )}
+                        );
+                      }}
                     >
                       {$t('collectibles.delete')}
                     </button>
@@ -419,13 +438,13 @@
                               </td>
                               {#if canManage}
                                 <td class="row-actions">
-                                  <button type="button" class="ghost-button" on:click={() => (itemForm = { ...item })}>
+                                  <button type="button" class="ghost-button" onclick={() => (itemForm = { ...item })}>
                                     {$t('collectibles.edit')}
                                   </button>
                                   <button
                                     type="button"
                                     class="ghost-button danger"
-                                    on:click={() =>
+                                    onclick={() =>
                                       ops.ask(
                                         '/api/v1/operations/content/collections/items/delete',
                                         { itemId: item.id },
@@ -459,7 +478,8 @@
       <div class="panel-head"><h2>{$t('collectibles.editorTitle')}</h2></div>
       <form
         class="inline-form editor-form"
-        on:submit|preventDefault={() =>
+        onsubmit={(event) => {
+          event.preventDefault();
           ops.ask(
             '/api/v1/operations/content/collections',
             {
@@ -473,7 +493,8 @@
             },
             collectionForm.id ? $t('collectibles.updateCollection') : $t('collectibles.addCollection'),
             $t('collectibles.saveCollectionSummary', { name: collectionForm.name })
-          )}
+          );
+        }}
       >
         <label>
           {$t('collectibles.colCode')}
@@ -501,14 +522,14 @@
           <span class="cell">
             <AssetImage src={rewardIconUrl} alt={collectionForm.rewardProductCode} size={32} />
             <input bind:value={collectionForm.rewardProductCode} placeholder="classname" readonly />
-            <button type="button" class="ghost-button" on:click={() => (picking = 'reward')}>
+            <button type="button" class="ghost-button" onclick={() => (picking = 'reward')}>
               {$t('collectibles.pickFurniture')}
             </button>
             {#if collectionForm.rewardProductCode}
               <button
                 type="button"
                 class="ghost-button"
-                on:click={() => {
+                onclick={() => {
                   collectionForm.rewardProductCode = '';
                   rewardIconUrl = null;
                 }}
@@ -524,14 +545,14 @@
           <span class="cell">
             <AssetImage src={bonusIconUrl} alt={collectionForm.bonusProductCode} size={32} />
             <input bind:value={collectionForm.bonusProductCode} placeholder="classname" readonly />
-            <button type="button" class="ghost-button" on:click={() => (picking = 'bonus')}>
+            <button type="button" class="ghost-button" onclick={() => (picking = 'bonus')}>
               {$t('collectibles.pickFurniture')}
             </button>
             {#if collectionForm.bonusProductCode}
               <button
                 type="button"
                 class="ghost-button"
-                on:click={() => {
+                onclick={() => {
                   collectionForm.bonusProductCode = '';
                   bonusIconUrl = null;
                 }}
@@ -550,7 +571,7 @@
             <button
               type="button"
               class="ghost-button"
-              on:click={() => {
+              onclick={() => {
                 collectionForm = emptyCollection();
                 rewardIconUrl = null;
                 bonusIconUrl = null;
@@ -566,7 +587,8 @@
         <h3 class="subhead">{$t('collectibles.itemEditorTitle')}</h3>
         <form
           class="inline-form editor-form"
-          on:submit|preventDefault={() =>
+          onsubmit={(event) => {
+            event.preventDefault();
             ops.ask(
               '/api/v1/operations/content/collections/items',
               {
@@ -581,14 +603,15 @@
               },
               $t('collectibles.saveItem'),
               $t('collectibles.saveItemSummary', { code: itemForm.productCode })
-            )}
+            );
+          }}
         >
           <label>
             {$t('collectibles.colItem')}
             <span class="cell">
               <AssetImage src={itemPreviewUrl} alt={itemForm.productCode} size={32} />
               <input bind:value={itemForm.productCode} placeholder="classname" readonly />
-              <button type="button" class="ghost-button" on:click={() => (picking = 'item')}>
+              <button type="button" class="ghost-button" onclick={() => (picking = 'item')}>
                 {$t('collectibles.pickFurniture')}
               </button>
             </span>
@@ -614,7 +637,7 @@
           </label>
           <div class="form-actions">
             <button type="submit" disabled={!itemForm.productCode.trim()}>{$t('collectibles.saveItem')}</button>
-            <button type="button" class="ghost-button" on:click={() => (itemForm = emptyItem())}>
+            <button type="button" class="ghost-button" onclick={() => (itemForm = emptyItem())}>
               {$t('collectibles.newItem')}
             </button>
           </div>
@@ -694,13 +717,13 @@
                 </td>
                 {#if canManage}
                   <td class="row-actions">
-                    <button type="button" class="ghost-button" on:click={() => (offerForm = { ...offer })}>
+                    <button type="button" class="ghost-button" onclick={() => (offerForm = { ...offer })}>
                       {$t('collectibles.edit')}
                     </button>
                     <button
                       type="button"
                       class="ghost-button danger"
-                      on:click={() =>
+                      onclick={() =>
                         ops.ask(
                           '/api/v1/operations/content/store-offers/delete',
                           { offerId: offer.id },
@@ -723,7 +746,8 @@
       <h3 class="subhead">{$t('collectibles.offerEditorTitle')}</h3>
       <form
         class="inline-form editor-form"
-        on:submit|preventDefault={() =>
+        onsubmit={(event) => {
+          event.preventDefault();
           ops.ask(
             '/api/v1/operations/content/store-offers',
             {
@@ -742,14 +766,15 @@
             },
             offerForm.id ? $t('collectibles.updateOffer') : $t('collectibles.addOffer'),
             $t('collectibles.saveOfferSummary', { code: offerForm.productCode })
-          )}
+          );
+        }}
       >
         <label>
           {$t('collectibles.colItem')}
           <span class="cell">
             <AssetImage src={offerIconUrl} alt={offerForm.productCode} size={32} />
             <input bind:value={offerForm.productCode} placeholder="classname" readonly />
-            <button type="button" class="ghost-button" on:click={() => (picking = 'offer')}>
+            <button type="button" class="ghost-button" onclick={() => (picking = 'offer')}>
               {$t('collectibles.pickFurniture')}
             </button>
           </span>
@@ -799,7 +824,7 @@
           <button type="submit" disabled={!offerForm.productCode.trim()}>
             {offerForm.id ? $t('collectibles.updateOffer') : $t('collectibles.addOffer')}
           </button>
-          <button type="button" class="ghost-button" on:click={() => (offerForm = emptyOffer())}>
+          <button type="button" class="ghost-button" onclick={() => (offerForm = emptyOffer())}>
             {$t('collectibles.newOffer')}
           </button>
         </div>
@@ -869,13 +894,13 @@
                 </td>
                 {#if canManage}
                   <td class="row-actions">
-                    <button type="button" class="ghost-button" on:click={() => editMintable(type)}>
+                    <button type="button" class="ghost-button" onclick={() => editMintable(type)}>
                       {$t('collectibles.edit')}
                     </button>
                     <button
                       type="button"
                       class="ghost-button danger"
-                      on:click={() =>
+                      onclick={() =>
                         ops.ask(
                           '/api/v1/operations/content/mintable-types/delete',
                           { typeId: type.id },
@@ -898,7 +923,8 @@
       <h3 class="subhead">{$t('collectibles.mintableEditorTitle')}</h3>
       <form
         class="inline-form editor-form"
-        on:submit|preventDefault={() =>
+        onsubmit={(event) => {
+          event.preventDefault();
           ops.ask(
             '/api/v1/operations/content/mintable-types',
             {
@@ -915,14 +941,15 @@
             },
             mintableForm.id ? $t('collectibles.updateMintable') : $t('collectibles.addMintable'),
             $t('collectibles.saveMintableSummary', { code: mintableForm.productCode })
-          )}
+          );
+        }}
       >
         <label>
           {$t('collectibles.colItem')}
           <span class="cell">
             <AssetImage src={mintableIconUrl} alt={mintableForm.productCode} size={32} />
             <input bind:value={mintableForm.productCode} placeholder="classname" readonly />
-            <button type="button" class="ghost-button" on:click={() => (picking = 'mintable')}>
+            <button type="button" class="ghost-button" onclick={() => (picking = 'mintable')}>
               {$t('collectibles.pickFurniture')}
             </button>
           </span>
@@ -967,7 +994,7 @@
           <button type="submit" disabled={!mintableForm.productCode.trim()}>
             {mintableForm.id ? $t('collectibles.updateMintable') : $t('collectibles.addMintable')}
           </button>
-          <button type="button" class="ghost-button" on:click={() => (mintableForm = emptyMintable())}>
+          <button type="button" class="ghost-button" onclick={() => (mintableForm = emptyMintable())}>
             {$t('collectibles.newMintable')}
           </button>
         </div>
@@ -1013,13 +1040,13 @@
                 </td>
                 {#if canManage}
                   <td class="row-actions">
-                    <button type="button" class="ghost-button" on:click={() => (tokenOfferForm = { ...offer })}>
+                    <button type="button" class="ghost-button" onclick={() => (tokenOfferForm = { ...offer })}>
                       {$t('collectibles.edit')}
                     </button>
                     <button
                       type="button"
                       class="ghost-button danger"
-                      on:click={() =>
+                      onclick={() =>
                         ops.ask(
                           '/api/v1/operations/content/mint-token-offers/delete',
                           { offerId: offer.id },
@@ -1042,7 +1069,8 @@
       <h3 class="subhead">{$t('collectibles.tokenOfferEditorTitle')}</h3>
       <form
         class="inline-form editor-form"
-        on:submit|preventDefault={() =>
+        onsubmit={(event) => {
+          event.preventDefault();
           ops.ask(
             '/api/v1/operations/content/mint-token-offers',
             {
@@ -1055,7 +1083,8 @@
             },
             tokenOfferForm.id ? $t('collectibles.updateTokenOffer') : $t('collectibles.addTokenOffer'),
             $t('collectibles.saveTokenOfferSummary', { code: tokenOfferForm.productCode })
-          )}
+          );
+        }}
       >
         <label>
           {$t('collectibles.colBundle')}
@@ -1084,7 +1113,7 @@
           <button type="submit" disabled={!tokenOfferForm.productCode.trim()}>
             {tokenOfferForm.id ? $t('collectibles.updateTokenOffer') : $t('collectibles.addTokenOffer')}
           </button>
-          <button type="button" class="ghost-button" on:click={() => (tokenOfferForm = emptyTokenOffer())}>
+          <button type="button" class="ghost-button" onclick={() => (tokenOfferForm = emptyTokenOffer())}>
             {$t('collectibles.newTokenOffer')}
           </button>
         </div>
@@ -1116,7 +1145,7 @@
             {#each data.assets as asset}
               <tr>
                 <td>
-                  <EntityLink label={asset.playerName} on:click={() => openPlayer(asset.playerId)} />
+                  <EntityLink type="player" id={asset.playerId} label={asset.playerName} {openPlayer} />
                 </td>
                 <td>
                   <span class="cell">
@@ -1193,7 +1222,7 @@
                     <button
                       type="button"
                       class="ghost-button danger"
-                      on:click={() =>
+                      onclick={() =>
                         ops.ask(
                           '/api/v1/operations/content/claims/delete',
                           { claimId: claim.id },
@@ -1216,7 +1245,8 @@
       <h3 class="subhead">{$t('collectibles.claimEditorTitle')}</h3>
       <form
         class="inline-form editor-form"
-        on:submit|preventDefault={() =>
+        onsubmit={(event) => {
+          event.preventDefault();
           ops.ask(
             '/api/v1/operations/content/claims',
             {
@@ -1231,12 +1261,13 @@
             },
             $t('collectibles.addClaim'),
             $t('collectibles.saveClaimSummary', { code: claimForm.productCode, name: claimForm.playerName || claimForm.playerId })
-          )}
+          );
+        }}
       >
         <label>
           {$t('common.playerRequired')}
           <span class="cell">
-            <button class="ghost-button" type="button" on:click={() => (picking = 'claimPlayer')}>
+            <button class="ghost-button" type="button" onclick={() => (picking = 'claimPlayer')}>
               {$t('common.selectUser')}
             </button>
             {#if claimForm.playerId}
@@ -1251,7 +1282,7 @@
           <span class="cell">
             <AssetImage src={claimIconUrl} alt={claimForm.productCode} size={32} />
             <input bind:value={claimForm.productCode} placeholder="classname" readonly />
-            <button type="button" class="ghost-button" on:click={() => (picking = 'claim')}>
+            <button type="button" class="ghost-button" onclick={() => (picking = 'claim')}>
               {$t('collectibles.pickFurniture')}
             </button>
           </span>
@@ -1279,7 +1310,7 @@
           <button
             type="button"
             class="ghost-button"
-            on:click={() => {
+            onclick={() => {
               claimForm = emptyClaim();
               claimIconUrl = null;
             }}
@@ -1378,7 +1409,7 @@
                             <button
                               type="button"
                               class="ghost-button danger"
-                              on:click={() =>
+                              onclick={() =>
                                 ops.ask(
                                   '/api/v1/operations/content/nft-avatars/revoke',
                                   { copyId: holder.id },
@@ -1404,10 +1435,10 @@
 
             {#if canManage}
               <div class="form-actions">
-                <button type="button" class="ghost-button" on:click={() => editAvatar(avatar)}>
+                <button type="button" class="ghost-button" onclick={() => editAvatar(avatar)}>
                   {$t('collectibles.edit')}
                 </button>
-                <button type="button" class="ghost-button" on:click={() => startGrant(avatar)}>
+                <button type="button" class="ghost-button" onclick={() => startGrant(avatar)}>
                   {$t('collectibles.grantAvatar')}
                 </button>
                 <button
@@ -1415,7 +1446,7 @@
                   class="ghost-button danger"
                   disabled={avatar.grantedCount > 0}
                   title={avatar.grantedCount > 0 ? $t('collectibles.deleteAvatarBlocked') : ''}
-                  on:click={() =>
+                  onclick={() =>
                     ops.ask(
                       '/api/v1/operations/content/nft-avatars/delete',
                       { avatarId: avatar.id },
@@ -1430,7 +1461,8 @@
               {#if grantAvatarId === avatar.id}
                 <form
                   class="inline-form editor-form"
-                  on:submit|preventDefault={() =>
+                  onsubmit={(event) => {
+                    event.preventDefault();
                     ops.ask(
                       '/api/v1/operations/content/nft-avatars/grant',
                       {
@@ -1443,12 +1475,13 @@
                         code: avatar.avatarCode,
                         name: grantForm.playerName || grantForm.playerId,
                       })
-                    )}
+                    );
+                  }}
                 >
                   <label>
                     {$t('common.playerRequired')}
                     <span class="cell">
-                      <button class="ghost-button" type="button" on:click={() => (picking = 'grantPlayer')}>
+                      <button class="ghost-button" type="button" onclick={() => (picking = 'grantPlayer')}>
                         {$t('common.selectUser')}
                       </button>
                       {#if grantForm.playerId}
@@ -1465,7 +1498,7 @@
                   </label>
                   <div class="form-actions">
                     <button type="submit" disabled={!grantForm.playerId}>{$t('collectibles.grantAvatar')}</button>
-                    <button type="button" class="ghost-button" on:click={() => (grantAvatarId = 0)}>
+                    <button type="button" class="ghost-button" onclick={() => (grantAvatarId = 0)}>
                       {$t('common.cancel')}
                     </button>
                   </div>
@@ -1481,7 +1514,8 @@
       <h3 class="subhead">{$t('collectibles.avatarEditorTitle')}</h3>
       <form
         class="inline-form editor-form"
-        on:submit|preventDefault={() =>
+        onsubmit={(event) => {
+          event.preventDefault();
           ops.ask(
             avatarForm.id
               ? '/api/v1/operations/content/nft-avatars/update'
@@ -1499,7 +1533,8 @@
             },
             avatarForm.id ? $t('collectibles.updateAvatar') : $t('collectibles.addAvatar'),
             $t('collectibles.saveAvatarSummary', { code: avatarForm.avatarCode })
-          )}
+          );
+        }}
       >
         <label>
           {$t('collectibles.colCode')}
@@ -1549,7 +1584,7 @@
           <button type="submit" disabled={!avatarForm.avatarCode.trim() || !avatarForm.figure.trim()}>
             {avatarForm.id ? $t('collectibles.updateAvatar') : $t('collectibles.addAvatar')}
           </button>
-          <button type="button" class="ghost-button" on:click={() => (avatarForm = emptyAvatar())}>
+          <button type="button" class="ghost-button" onclick={() => (avatarForm = emptyAvatar())}>
             {$t('collectibles.newAvatar')}
           </button>
         </div>
@@ -1639,8 +1674,8 @@
   confirmLabel={$ops.pending?.title ?? $t('common.confirm')}
   busy={$ops.busy}
   error={$ops.error}
-  on:confirm={(e) => ops.confirm(e.detail)}
-  on:cancel={() => ops.cancel()}
+  onconfirm={ops.confirm}
+  oncancel={() => ops.cancel()}
 />
 
 <style>

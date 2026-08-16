@@ -52,22 +52,22 @@
     return { productItemTypeId: 0, rewardTypeId: 'credits', extraParams: '', amount: 0 };
   }
 
-  let goals = [];
-  let tasks = [];
-  let questTypes = [];
-  let loading = false;
-  let error = '';
-  let forbidden = false;
+  let goals = $state([]);
+  let tasks = $state([]);
+  let questTypes = $state([]);
+  let loading = $state(false);
+  let error = $state('');
+  let forbidden = $state(false);
 
-  let newGoal = null;
-  let editGoal = null;
-  let newTask = null;
-  let editTask = null;
+  let newGoal = $state(null);
+  let editGoal = $state(null);
+  let newTask = $state(null);
+  let editTask = $state(null);
 
   const ops = createWriteOps();
   const deleteOps = createWriteOps();
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsQuestsManage);
+  let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsQuestsManage));
 
   async function load() {
     loading = true;
@@ -301,7 +301,7 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('questContent.title')}</h2>
-    <button type="button" class="ghost-button" on:click={load} disabled={loading}>
+    <button type="button" class="ghost-button" onclick={load} disabled={loading}>
       {$t('common.refresh')}
     </button>
   </div>
@@ -322,7 +322,7 @@
         <button
           type="button"
           class="ghost-button"
-          on:click={() => {
+          onclick={() => {
             editGoal = null;
             newGoal = newGoal ? null : emptyGoal();
           }}
@@ -366,7 +366,7 @@
               <button
                 type="button"
                 class="ghost-button danger"
-                on:click={() => {
+                onclick={() => {
                   newGoal.levels = newGoal.levels.filter((_, i) => i !== index);
                   if (newGoal.levels.length === 0) newGoal.levels = [emptyLevel()];
                 }}
@@ -375,7 +375,7 @@
               </button>
             </div>
           {/each}
-          <button type="button" class="ghost-button" on:click={() => (newGoal.levels = [...newGoal.levels, emptyLevel()])}>
+          <button type="button" class="ghost-button" onclick={() => (newGoal.levels = [...newGoal.levels, emptyLevel()])}>
             <Plus size={12} strokeWidth={2} aria-hidden="true" /> {$t('questContent.addLevel')}
           </button>
           <small class="muted">{$t('questContent.ladderHint')}</small>
@@ -385,7 +385,7 @@
           <label for="goal-reason">{$t('common.reason')}</label>
           <input id="goal-reason" bind:value={newGoal.reason} />
         </div>
-        <button type="button" on:click={saveGoal} disabled={$ops.busyKeys.goalCreate}>
+        <button type="button" onclick={saveGoal} disabled={$ops.busyKeys.goalCreate}>
           {$t('questContent.create')}
         </button>
         <OpResult result={$ops.results.goalCreate} error={$ops.errors.goalCreate} />
@@ -422,13 +422,13 @@
             </span>
             {#if canManage}
               <span class="row-actions">
-                <button type="button" class="ghost-button" on:click={() => startEditGoal(goal)}>
+                <button type="button" class="ghost-button" onclick={() => startEditGoal(goal)}>
                   <Pencil size={12} strokeWidth={2} aria-hidden="true" />
                 </button>
                 <button
                   type="button"
                   class="ghost-button danger"
-                  on:click={() => askDelete('goal', goal.id, goal.code)}
+                  onclick={() => askDelete('goal', goal.id, goal.code)}
                 >
                   <Trash2 size={12} strokeWidth={2} aria-hidden="true" />
                 </button>
@@ -477,7 +477,7 @@
                     <button
                       type="button"
                       class="ghost-button danger"
-                      on:click={() => {
+                      onclick={() => {
                         editGoal.levels = editGoal.levels.filter((_, i) => i !== index);
                         if (editGoal.levels.length === 0) editGoal.levels = [emptyLevel()];
                       }}
@@ -486,7 +486,7 @@
                     </button>
                   </div>
                 {/each}
-                <button type="button" class="ghost-button" on:click={() => (editGoal.levels = [...editGoal.levels, emptyLevel()])}>
+                <button type="button" class="ghost-button" onclick={() => (editGoal.levels = [...editGoal.levels, emptyLevel()])}>
                   <Plus size={12} strokeWidth={2} aria-hidden="true" /> {$t('questContent.addLevel')}
                 </button>
               </fieldset>
@@ -496,10 +496,10 @@
                 <input id={`edit-goal-reason-${goal.id}`} bind:value={editGoal.reason} />
               </div>
               <div class="row-actions">
-                <button type="button" on:click={saveGoal} disabled={$ops.busyKeys[`goal:${goal.id}`]}>
+                <button type="button" onclick={saveGoal} disabled={$ops.busyKeys[`goal:${goal.id}`]}>
                   {$t('questContent.save')}
                 </button>
-                <button type="button" class="ghost-button" on:click={() => (editGoal = null)}>
+                <button type="button" class="ghost-button" onclick={() => (editGoal = null)}>
                   {$t('questContent.cancel')}
                 </button>
               </div>
@@ -521,7 +521,7 @@
         <button
           type="button"
           class="ghost-button"
-          on:click={() => {
+          onclick={() => {
             editTask = null;
             newTask = newTask ? null : emptyTask();
           }}
@@ -582,7 +582,7 @@
               <button
                 type="button"
                 class="ghost-button danger"
-                on:click={() => {
+                onclick={() => {
                   newTask.rewards = newTask.rewards.filter((_, i) => i !== index);
                   if (newTask.rewards.length === 0) newTask.rewards = [emptyReward()];
                 }}
@@ -591,7 +591,7 @@
               </button>
             </div>
           {/each}
-          <button type="button" class="ghost-button" on:click={() => (newTask.rewards = [...newTask.rewards, emptyReward()])}>
+          <button type="button" class="ghost-button" onclick={() => (newTask.rewards = [...newTask.rewards, emptyReward()])}>
             <Plus size={12} strokeWidth={2} aria-hidden="true" /> {$t('questContent.addReward')}
           </button>
           <small class="muted">{$t('questContent.rewardsHint')}</small>
@@ -601,7 +601,7 @@
           <label for="task-reason">{$t('common.reason')}</label>
           <input id="task-reason" bind:value={newTask.reason} />
         </div>
-        <button type="button" on:click={saveTask} disabled={$ops.busyKeys.taskCreate}>
+        <button type="button" onclick={saveTask} disabled={$ops.busyKeys.taskCreate}>
           {$t('questContent.create')}
         </button>
         <OpResult result={$ops.results.taskCreate} error={$ops.errors.taskCreate} />
@@ -641,13 +641,13 @@
             </span>
             {#if canManage}
               <span class="row-actions">
-                <button type="button" class="ghost-button" on:click={() => startEditTask(task)}>
+                <button type="button" class="ghost-button" onclick={() => startEditTask(task)}>
                   <Pencil size={12} strokeWidth={2} aria-hidden="true" />
                 </button>
                 <button
                   type="button"
                   class="ghost-button danger"
-                  on:click={() => askDelete('task', task.id, task.taskCode)}
+                  onclick={() => askDelete('task', task.id, task.taskCode)}
                 >
                   <Trash2 size={12} strokeWidth={2} aria-hidden="true" />
                 </button>
@@ -707,7 +707,7 @@
                     <button
                       type="button"
                       class="ghost-button danger"
-                      on:click={() => {
+                      onclick={() => {
                         editTask.rewards = editTask.rewards.filter((_, i) => i !== index);
                         if (editTask.rewards.length === 0) editTask.rewards = [emptyReward()];
                       }}
@@ -716,7 +716,7 @@
                     </button>
                   </div>
                 {/each}
-                <button type="button" class="ghost-button" on:click={() => (editTask.rewards = [...editTask.rewards, emptyReward()])}>
+                <button type="button" class="ghost-button" onclick={() => (editTask.rewards = [...editTask.rewards, emptyReward()])}>
                   <Plus size={12} strokeWidth={2} aria-hidden="true" /> {$t('questContent.addReward')}
                 </button>
               </fieldset>
@@ -726,10 +726,10 @@
                 <input id={`edit-task-reason-${task.id}`} bind:value={editTask.reason} />
               </div>
               <div class="row-actions">
-                <button type="button" on:click={saveTask} disabled={$ops.busyKeys[`task:${task.id}`]}>
+                <button type="button" onclick={saveTask} disabled={$ops.busyKeys[`task:${task.id}`]}>
                   {$t('questContent.save')}
                 </button>
-                <button type="button" class="ghost-button" on:click={() => (editTask = null)}>
+                <button type="button" class="ghost-button" onclick={() => (editTask = null)}>
                   {$t('questContent.cancel')}
                 </button>
               </div>
@@ -754,8 +754,8 @@
   busy={$deleteOps.busy}
   error={$deleteOps.error}
   danger={$deleteOps.pending?.danger ?? false}
-  on:confirm={(e) => deleteOps.confirm(e.detail)}
-  on:cancel={() => deleteOps.cancel()}
+  onconfirm={deleteOps.confirm}
+  oncancel={() => deleteOps.cancel()}
 />
 
 <style>

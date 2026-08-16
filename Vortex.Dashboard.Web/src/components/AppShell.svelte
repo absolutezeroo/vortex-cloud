@@ -1,4 +1,5 @@
 <script>
+
   import { location, push } from 'svelte-spa-router';
   import {
     Activity,
@@ -49,8 +50,15 @@
   import { theme, setTheme, THEMES } from '../lib/theme.js';
   import { t, locale, setLocale, LOCALES } from '../lib/i18n.js';
 
-  export let logout;
-  export let logoutBusy = false;
+  /**
+   * @typedef {Object} Props
+   * @property {any} logout
+   * @property {boolean} [logoutBusy]
+   * @property {import('svelte').Snippet} [children]
+   */
+
+  /** @type {Props} */
+  let { logout, logoutBusy = false, children } = $props();
 
   // Keep in sync with the `group` field on NAV entries (routes.js). Groups are domains, not tool
   // kinds: an operator looks for "the quest thing", not for "the editing thing".
@@ -99,7 +107,7 @@
     '/performance': Gauge,
   };
 
-  let query = '';
+  let query = $state('');
 
   // Which nav groups are collapsed, keyed by the stable GROUP_ORDER id (not the translated label,
   // which changes with $locale and would silently reset saved state on a language switch).
@@ -124,7 +132,7 @@
     return new Set(GROUP_ORDER.filter((group) => group !== (active?.group ?? 'Live')));
   }
 
-  let collapsedGroups = loadCollapsedGroups();
+  let collapsedGroups = $state(loadCollapsedGroups());
 
   function toggleGroup(id) {
     if (collapsedGroups.has(id)) {
@@ -150,29 +158,7 @@
     return groupsCollapsed.has(group.id) && !q.trim();
   }
 
-  // Re-evaluate access whenever the identity changes (login / logout / role swap). label/short are
-  // resolved here (not read directly off NAV) so they re-translate whenever $locale changes too --
-  // $t is referenced directly in this statement's own expression for that reason (see the Svelte
-  // reactivity note on ApiExplorerPage's `filtered` for why that matters).
-  $: items = NAV.map((item) => ({
-    ...item,
-    label: $t(item.labelKey),
-    short: $t(item.shortKey),
-    allowed: hasRouteAccess(item, $identity),
-  }));
-  $: groupLabels = {
-    Live: $t('nav.groupLive'),
-    Players: $t('nav.groupPlayers'),
-    Rooms: $t('nav.groupRooms'),
-    Economy: $t('nav.groupEconomy'),
-    Content: $t('nav.groupContent'),
-    Social: $t('nav.groupSocial'),
-    System: $t('nav.groupSystem'),
-  };
 
-  // Navigating into a folded group -- a deep link, a search result, the access-denied redirect --
-  // opens it. A page whose own nav entry stays hidden reads as a dead end.
-  $: revealActiveGroup($location);
 
   function revealActiveGroup(path) {
     const active = NAV.find((item) => item.path === path);
@@ -182,14 +168,6 @@
       collapsedGroups = collapsedGroups;
     }
   }
-  $: filteredItems = filterItems(items, query);
-  $: groups = GROUP_ORDER.map((name) => ({
-    id: name,
-    name: groupLabels[name] || name,
-    items: filteredItems.filter((item) => (item.group || 'Other') === name),
-  })).filter((group) => group.items.length > 0);
-  $: email = $identity?.email || '';
-  $: activeLabel = items.find((item) => item.path === $location)?.label || $t('nav.dashboardFallback');
 
   function filterItems(list, q) {
     const needle = q.trim().toLowerCase();
@@ -251,6 +229,38 @@
       push(item.path);
     }
   }
+  // Re-evaluate access whenever the identity changes (login / logout / role swap). label/short are
+  // resolved here (not read directly off NAV) so they re-translate whenever $locale changes too --
+  // $t is referenced directly in this statement's own expression for that reason (see the Svelte
+  // reactivity note on ApiExplorerPage's `filtered` for why that matters).
+  let items = $derived(NAV.map((item) => ({
+    ...item,
+    label: $t(item.labelKey),
+    short: $t(item.shortKey),
+    allowed: hasRouteAccess(item, $identity),
+  })));
+  let groupLabels = $derived({
+    Live: $t('nav.groupLive'),
+    Players: $t('nav.groupPlayers'),
+    Rooms: $t('nav.groupRooms'),
+    Economy: $t('nav.groupEconomy'),
+    Content: $t('nav.groupContent'),
+    Social: $t('nav.groupSocial'),
+    System: $t('nav.groupSystem'),
+  });
+  // Navigating into a folded group -- a deep link, a search result, the access-denied redirect --
+  // opens it. A page whose own nav entry stays hidden reads as a dead end.
+  $effect(() => {
+    revealActiveGroup($location);
+  });
+  let filteredItems = $derived(filterItems(items, query));
+  let groups = $derived(GROUP_ORDER.map((name) => ({
+    id: name,
+    name: groupLabels[name] || name,
+    items: filteredItems.filter((item) => (item.group || 'Other') === name),
+  })).filter((group) => group.items.length > 0));
+  let email = $derived($identity?.email || '');
+  let activeLabel = $derived(items.find((item) => item.path === $location)?.label || $t('nav.dashboardFallback'));
 </script>
 
 <main class="app-shell">
@@ -280,13 +290,14 @@
     <nav aria-label="Dashboard sections">
       {#each groups as group}
         {@const collapsed = isCollapsed(group, query, collapsedGroups)}
+        {@const SvelteComponent = collapsed ? ChevronRight : ChevronDown}
         <button
           type="button"
           class="nav-group-label"
-          on:click={() => toggleGroup(group.id)}
+          onclick={() => toggleGroup(group.id)}
           aria-expanded={!collapsed}
         >
-          <svelte:component this={collapsed ? ChevronRight : ChevronDown} size={13} strokeWidth={2.2} aria-hidden="true" />
+          <SvelteComponent size={13} strokeWidth={2.2} aria-hidden="true" />
           <span>{group.name}</span>
           <span class="nav-group-count">{group.items.length}</span>
         </button>
@@ -300,7 +311,7 @@
               class:disabled={!item.allowed}
               aria-disabled={!item.allowed}
               tabindex={item.allowed ? 0 : -1}
-              on:click|preventDefault={() => go(item)}
+              onclick={(event) => { event.preventDefault(); go(item); }}
             >
               <span class="nav-icon" class:nav-icon--art={iconImage} aria-hidden="true">
                 {#if iconImage}
@@ -349,7 +360,7 @@
               role="radio"
               aria-checked={$locale === loc.value}
               class:active={$locale === loc.value}
-              on:click={() => setLocale(loc.value)}
+              onclick={() => setLocale(loc.value)}
             >
               {loc.label}
             </button>
@@ -362,7 +373,7 @@
               role="radio"
               aria-checked={$theme === themeOption.value}
               class:active={$theme === themeOption.value}
-              on:click={() => setTheme(themeOption.value)}
+              onclick={() => setTheme(themeOption.value)}
             >
               {themeOption.label}
             </button>
@@ -375,7 +386,7 @@
           title={$t('common.signOut')}
           disabled={logoutBusy}
           aria-busy={logoutBusy}
-          on:click={() => logout()}
+          onclick={() => logout()}
         >
           <LogOut size={16} strokeWidth={1.9} />
           <span>{logoutBusy ? $t('common.signingOut') : $t('common.signOut')}</span>
@@ -383,7 +394,7 @@
       </div>
     </header>
 
-    <slot />
+    {@render children?.()}
   </section>
 
   <datalist id="reason-history">

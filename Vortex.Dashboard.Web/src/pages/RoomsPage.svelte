@@ -1,4 +1,5 @@
 ﻿<script>
+
   import { apiGet } from '../lib/api.js';
   import { formatDate, summarizeData } from '../lib/format.js';
   import EntityLink from '../components/EntityLink.svelte';
@@ -7,10 +8,10 @@
   import { openPlayer, openItem } from '../lib/session.js';
   import { t } from '../lib/i18n.js';
 
-  let roomId = '';
-  let data = null;
-  let error = '';
-  let forbidden = false;
+  let roomId = $state('');
+  let data = $state(null);
+  let error = $state('');
+  let forbidden = $state(false);
 
   async function load() {
     if (!roomId.trim()) {
@@ -39,9 +40,9 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('roomsTimeline.title')}</h2>
-    <button type="button" on:click={load}>{$t('common.refresh')}</button>
+    <button type="button" onclick={load}>{$t('common.refresh')}</button>
   </div>
-  <form class="toolbar" on:submit|preventDefault={load}>
+  <form class="toolbar" onsubmit={(event) => { event.preventDefault(); load(); }}>
     <input bind:value={roomId} placeholder={$t('roomsTimeline.roomIdPlaceholder')} />
     <button type="submit">{$t('roomsTimeline.inspect')}</button>
   </form>

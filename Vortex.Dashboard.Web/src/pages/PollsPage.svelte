@@ -60,30 +60,30 @@
     return { value: '', choiceText: '', choiceType: 0, sortOrder: 0 };
   }
 
-  let polls = [];
-  let questionTypes = [];
-  let enabledOnly = false;
-  let loading = false;
-  let error = '';
-  let forbidden = false;
+  let polls = $state([]);
+  let questionTypes = $state([]);
+  let enabledOnly = $state(false);
+  let loading = $state(false);
+  let error = $state('');
+  let forbidden = $state(false);
 
   // One survey is expanded at a time: the detail (question tree) and the results are separate reads,
   // both keyed to the open poll so switching rows never shows one survey's answers under another's.
-  let expandedId = null;
-  let detail = null;
-  let detailError = '';
-  let results = null;
-  let resultsError = '';
-  let showResults = false;
+  let expandedId = $state(null);
+  let detail = $state(null);
+  let detailError = $state('');
+  let results = $state(null);
+  let resultsError = $state('');
+  let showResults = $state(false);
 
-  let newPollOpen = false;
-  let newPoll = emptyPollForm();
-  let editPollForm = null;
+  let newPollOpen = $state(false);
+  let newPoll = $state(emptyPollForm());
+  let editPollForm = $state(null);
 
-  let questionForm = null;
-  let editingQuestionId = null;
+  let questionForm = $state(null);
+  let editingQuestionId = $state(null);
 
-  let roomPickerFor = null;
+  let roomPickerFor = $state(null);
 
   // Deletes get their own store: they collect the reason in the shared modal (the edits carry it in
   // the form), so the two flows must be able to be staged independently without one modal's pending
@@ -96,8 +96,8 @@
   // `key` so its outcome renders next to it rather than in one banner for the whole page.
   const ops = createWriteOps();
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsPollsManage);
-  $: choiceTypeSelected = questionForm && CHOICE_TYPES.includes(Number(questionForm.questionType));
+  let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsPollsManage));
+  let choiceTypeSelected = $derived(questionForm && CHOICE_TYPES.includes(Number(questionForm.questionType)));
 
   async function loadPolls() {
     loading = true;
@@ -433,10 +433,10 @@
     <h2>{$t('polls.title')}</h2>
     <div class="head-actions">
       <label class="filter-field">
-        <input type="checkbox" bind:checked={enabledOnly} on:change={loadPolls} />
+        <input type="checkbox" bind:checked={enabledOnly} onchange={loadPolls} />
         {$t('polls.enabledOnly')}
       </label>
-      <button type="button" class="ghost-button" on:click={loadPolls} disabled={loading}>
+      <button type="button" class="ghost-button" onclick={loadPolls} disabled={loading}>
         {$t('common.refresh')}
       </button>
     </div>
@@ -451,7 +451,7 @@
     <div class="panel-head">
       <h2><ListChecks size={17} strokeWidth={2} aria-hidden="true" /> {$t('polls.pollsHeading')}</h2>
       {#if canManage}
-        <button type="button" class="ghost-button" on:click={() => (newPollOpen = !newPollOpen)}>
+        <button type="button" class="ghost-button" onclick={() => (newPollOpen = !newPollOpen)}>
           <Plus size={14} strokeWidth={2} aria-hidden="true" />
           {newPollOpen ? $t('polls.cancel') : $t('polls.newPoll')}
         </button>
@@ -496,12 +496,12 @@
         <div class="op-field">
           <span class="field-label">{$t('polls.roomPin')}</span>
           <div class="picker-row">
-            <button type="button" class="ghost-button" on:click={() => (roomPickerFor = 'new')}>
+            <button type="button" class="ghost-button" onclick={() => (roomPickerFor = 'new')}>
               <House size={14} strokeWidth={2} aria-hidden="true" />
               {newPoll.roomName || $t('polls.anyRoom')}
             </button>
             {#if newPoll.roomId}
-              <button type="button" class="ghost-button" on:click={() => (newPoll = clearRoom(newPoll))}>
+              <button type="button" class="ghost-button" onclick={() => (newPoll = clearRoom(newPoll))}>
                 {$t('polls.clearRoom')}
               </button>
             {/if}
@@ -519,7 +519,7 @@
           <label for="new-poll-reason">{$t('common.reason')}</label>
           <input id="new-poll-reason" bind:value={newPoll.reason} />
         </div>
-        <button type="button" on:click={stageCreatePoll} disabled={$ops.busyKeys.createPoll || !canManage}>
+        <button type="button" onclick={stageCreatePoll} disabled={$ops.busyKeys.createPoll || !canManage}>
           {$t('polls.create')}
         </button>
         <OpResult result={$ops.results.createPoll} error={$ops.errors.createPoll} />
@@ -535,7 +535,7 @@
     <div class="catalog-list">
       {#each polls as poll (poll.id)}
         <article class="catalog-card">
-          <button type="button" class="poll-row" on:click={() => openPoll(poll)}>
+          <button type="button" class="poll-row" onclick={() => openPoll(poll)}>
             <span class="catalog-row-main">
               <strong>{poll.headline}</strong>
               <small>{poll.code} - {$t('polls.questionCount', { roots: poll.rootQuestionCount, followUps: poll.followUpCount })}</small>
@@ -570,12 +570,12 @@
               {:else}
                 <div class="detail-actions">
                   {#if canManage}
-                    <button type="button" class="ghost-button" on:click={() => (editPollForm ? (editPollForm = null) : startEditPoll(detail))}>
+                    <button type="button" class="ghost-button" onclick={() => (editPollForm ? (editPollForm = null) : startEditPoll(detail))}>
                       <Pencil size={13} strokeWidth={2} aria-hidden="true" />
                       {editPollForm ? $t('polls.cancel') : $t('polls.editPoll')}
                     </button>
                   {/if}
-                  <button type="button" class="ghost-button" on:click={() => toggleResults(poll.id)}>
+                  <button type="button" class="ghost-button" onclick={() => toggleResults(poll.id)}>
                     <ChartColumn size={13} strokeWidth={2} aria-hidden="true" />
                     {showResults ? $t('polls.hideResults') : $t('polls.showResults')}
                   </button>
@@ -583,7 +583,7 @@
                     <button
                       type="button"
                       class="ghost-button danger"
-                      on:click={() => askDelete({ kind: 'poll', id: poll.id, pollId: poll.id, label: poll.code })}
+                      onclick={() => askDelete({ kind: 'poll', id: poll.id, pollId: poll.id, label: poll.code })}
                     >
                       <Trash2 size={13} strokeWidth={2} aria-hidden="true" /> {$t('polls.deletePoll')}
                     </button>
@@ -624,12 +624,12 @@
                   <div class="op-field">
                     <span class="field-label">{$t('polls.roomPin')}</span>
                     <div class="picker-row">
-                      <button type="button" class="ghost-button" on:click={() => (roomPickerFor = 'edit')}>
+                      <button type="button" class="ghost-button" onclick={() => (roomPickerFor = 'edit')}>
                         <House size={14} strokeWidth={2} aria-hidden="true" />
                         {editPollForm.roomName || $t('polls.anyRoom')}
                       </button>
                       {#if editPollForm.roomId}
-                        <button type="button" class="ghost-button" on:click={() => (editPollForm = clearRoom(editPollForm))}>
+                        <button type="button" class="ghost-button" onclick={() => (editPollForm = clearRoom(editPollForm))}>
                           {$t('polls.clearRoom')}
                         </button>
                       {/if}
@@ -646,7 +646,7 @@
                     <label for="edit-poll-reason">{$t('common.reason')}</label>
                     <input id="edit-poll-reason" bind:value={editPollForm.reason} />
                   </div>
-                  <button type="button" on:click={() => stageUpdatePoll(poll.id)} disabled={$ops.busyKeys[`updatePoll:${poll.id}`]}>
+                  <button type="button" onclick={() => stageUpdatePoll(poll.id)} disabled={$ops.busyKeys[`updatePoll:${poll.id}`]}>
                     {$t('polls.save')}
                   </button>
                   <OpResult result={$ops.results[`updatePoll:${poll.id}`]} error={$ops.errors[`updatePoll:${poll.id}`]} />
@@ -673,18 +673,18 @@
                         </span>
                         {#if canManage}
                           <span class="row-actions">
-                            <button type="button" class="ghost-button" on:click={() => startEditQuestion(poll.id, question)}>
+                            <button type="button" class="ghost-button" onclick={() => startEditQuestion(poll.id, question)}>
                               <Pencil size={12} strokeWidth={2} aria-hidden="true" />
                             </button>
                             {#if detail.npsPoll}
-                              <button type="button" class="ghost-button" on:click={() => startNewQuestion(poll.id, question.id)}>
+                              <button type="button" class="ghost-button" onclick={() => startNewQuestion(poll.id, question.id)}>
                                 <Split size={12} strokeWidth={2} aria-hidden="true" /> {$t('polls.addFollowUp')}
                               </button>
                             {/if}
                             <button
                               type="button"
                               class="ghost-button danger"
-                              on:click={() => askDelete({ kind: 'question', id: question.id, pollId: poll.id, label: question.questionText })}
+                              onclick={() => askDelete({ kind: 'question', id: question.id, pollId: poll.id, label: question.questionText })}
                             >
                               <Trash2 size={12} strokeWidth={2} aria-hidden="true" />
                             </button>
@@ -716,13 +716,13 @@
                           </span>
                           {#if canManage}
                             <span class="row-actions">
-                              <button type="button" class="ghost-button" on:click={() => startEditFollowUp(poll.id, question.id, child)}>
+                              <button type="button" class="ghost-button" onclick={() => startEditFollowUp(poll.id, question.id, child)}>
                                 <Pencil size={12} strokeWidth={2} aria-hidden="true" />
                               </button>
                               <button
                                 type="button"
                                 class="ghost-button danger"
-                                on:click={() => askDelete({ kind: 'question', id: child.id, pollId: poll.id, label: child.questionText })}
+                                onclick={() => askDelete({ kind: 'question', id: child.id, pollId: poll.id, label: child.questionText })}
                               >
                                 <Trash2 size={12} strokeWidth={2} aria-hidden="true" />
                               </button>
@@ -735,7 +735,7 @@
                 </div>
 
                 {#if canManage && !questionForm}
-                  <button type="button" class="ghost-button" on:click={() => startNewQuestion(poll.id)}>
+                  <button type="button" class="ghost-button" onclick={() => startNewQuestion(poll.id)}>
                     <Plus size={13} strokeWidth={2} aria-hidden="true" /> {$t('polls.newQuestion')}
                   </button>
                 {/if}
@@ -793,7 +793,7 @@
                             <button
                               type="button"
                               class="ghost-button danger"
-                              on:click={() => {
+                              onclick={() => {
                                 questionForm.choices = questionForm.choices.filter((_, i) => i !== index);
                                 if (questionForm.choices.length === 0) questionForm.choices = [emptyChoice()];
                               }}
@@ -805,7 +805,7 @@
                         <button
                           type="button"
                           class="ghost-button"
-                          on:click={() => (questionForm.choices = [...questionForm.choices, emptyChoice()])}
+                          onclick={() => (questionForm.choices = [...questionForm.choices, emptyChoice()])}
                         >
                           <Plus size={12} strokeWidth={2} aria-hidden="true" /> {$t('polls.addChoice')}
                         </button>
@@ -818,8 +818,8 @@
                       <input id="question-reason" bind:value={questionForm.reason} />
                     </div>
                     <div class="picker-row">
-                      <button type="button" on:click={stageSaveQuestion}>{$t('polls.save')}</button>
-                      <button type="button" class="ghost-button" on:click={() => { questionForm = null; editingQuestionId = null; }}>
+                      <button type="button" onclick={stageSaveQuestion}>{$t('polls.save')}</button>
+                      <button type="button" class="ghost-button" onclick={() => { questionForm = null; editingQuestionId = null; }}>
                         {$t('polls.cancel')}
                       </button>
                     </div>
@@ -931,8 +931,8 @@
   busy={$deleteOps.busy}
   error={$deleteOps.error}
   danger={$deleteOps.pending?.danger ?? false}
-  on:confirm={(e) => deleteOps.confirm(e.detail)}
-  on:cancel={() => deleteOps.cancel()}
+  onconfirm={deleteOps.confirm}
+  oncancel={() => deleteOps.cancel()}
 />
 
 <style>

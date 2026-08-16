@@ -1,8 +1,14 @@
 <script>
   import { t } from '../lib/i18n.js';
 
-  export let title = '';
-  export let message = '';
+  /**
+   * @typedef {Object} Props
+   * @property {string} [title]
+   * @property {string} [message]
+   */
+
+  /** @type {Props} */
+  let { title = '', message = '' } = $props();
 </script>
 
 <section class="access-denied-notice" role="status" aria-live="polite">

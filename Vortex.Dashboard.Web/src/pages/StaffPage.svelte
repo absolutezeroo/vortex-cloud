@@ -21,22 +21,22 @@
   import { ShieldCheck, KeyRound, Users, Gavel, User } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
-  let loading = false;
-  let forbidden = false;
-  let error = '';
-  let data = null;
-  let expanded = null;
+  let loading = $state(false);
+  let forbidden = $state(false);
+  let error = $state('');
+  let data = $state(null);
+  let expanded = $state(null);
 
   // These sections are independent jobs that were stacked vertically, so reaching the last one
   // meant scrolling past every other. Nothing here is read against anything else -- which is
   // both what makes tabs right and what would have made them wrong.
-  let tab = 'roles';
+  let tab = $state('roles');
 
-  let roleForm = { key: '', name: '' };
-  let roleDraft = null; // { id, key, name }
-  let capabilityDraft = null; // { roleId, selected: Set }
-  let presetForm = emptyPreset();
-  let presetDraft = null;
+  let roleForm = $state({ key: '', name: '' });
+  let roleDraft = $state(null); // { id, key, name }
+  let capabilityDraft = $state(null); // { roleId, selected: Set }
+  let presetForm = $state(emptyPreset());
+  let presetDraft = $state(null);
 
   // One modal drives every write, so the audited reason cannot be skipped on any of the small forms.
   // createWriteOps owns that whole cycle (stage -> confirm with reason -> remember it -> refresh);
@@ -52,12 +52,12 @@
   });
 
 
-  let accountQuery = '';
-  let accountResults = [];
-  let accountSearching = false;
-  let assignRoleId = 0;
+  let accountQuery = $state('');
+  let accountResults = $state([]);
+  let accountSearching = $state(false);
+  let assignRoleId = $state(0);
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsStaffManage);
+  let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsStaffManage));
 
   function emptyPreset() {
     return { kind: 0, presetIndex: 0, name: '', durationSeconds: null, message: '' };
@@ -154,7 +154,7 @@
   <div class="panel-head"><h2>{$t('staff.title')}</h2></div>
   <p class="muted">{$t('staff.description')}</p>
   <div class="toolbar">
-    <button type="button" on:click={refresh} disabled={loading}>{$t('common.refresh')}</button>
+    <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
     {#if !canManage}
       <span class="muted">{$t('staff.readOnly')}</span>
     {/if}
@@ -176,23 +176,33 @@
 {#if data}
   <div class="metric-grid" style="margin-top: 12px;">
     <StatCard label={$t('staff.roles')} value={formatNumber(data.totals.roleCount)}>
-      <ShieldCheck slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <ShieldCheck size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('staff.accounts')} value={formatNumber(data.totals.staffAccounts)}>
-      <Users slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Users size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard
       label={$t('staff.capabilities')}
       value={formatNumber(data.totals.declaredCapabilities)}
       sub={$t('staff.grantedCapabilities', { count: formatNumber(data.totals.grantedCapabilities) })}
     >
-      <KeyRound slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <KeyRound size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('staff.presets')} value={formatNumber(data.totals.presetCount)}>
-      <Gavel slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Gavel size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('staff.activeBans')} value={formatNumber(data.totals.activeBans)}>
-      <Gavel slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Gavel size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
   </div>
 
@@ -225,7 +235,7 @@
           {#each data.roles || [] as role}
             <tr class:selected={expanded === role.id}>
               <td>
-                <button type="button" class="link-cell" on:click={() => (expanded = expanded === role.id ? null : role.id)}>
+                <button type="button" class="link-cell" onclick={() => (expanded = expanded === role.id ? null : role.id)}>
                   {role.name}
                 </button>
               </td>
@@ -248,16 +258,16 @@
               </td>
               {#if canManage}
                 <td class="row-actions">
-                  <button type="button" class="ghost-button" on:click={() => startCapabilityEdit(role)}>
+                  <button type="button" class="ghost-button" onclick={() => startCapabilityEdit(role)}>
                     {$t('staff.editCapabilities')}
                   </button>
-                  <button type="button" class="ghost-button" on:click={() => (roleDraft = { ...role })}>
+                  <button type="button" class="ghost-button" onclick={() => (roleDraft = { ...role })}>
                     {$t('staff.rename')}
                   </button>
                   <button
                     type="button"
                     class="ghost-button danger"
-                    on:click={() =>
+                    onclick={() =>
                       ask(
                         '/api/v1/operations/staff/roles/delete',
                         { roleId: role.id },
@@ -276,13 +286,15 @@
                 <td colspan={canManage ? 6 : 5}>
                   <form
                     class="inline-form"
-                    on:submit|preventDefault={() =>
+                    onsubmit={(event) => {
+                      event.preventDefault();
                       ask(
                         '/api/v1/operations/staff/roles/update',
                         { roleId: role.id, key: roleDraft.key, name: roleDraft.name },
                         $t('staff.updateRole'),
                         $t('staff.updateRoleSummary', { role: roleDraft.name })
-                      )}
+                      );
+                    }}
                   >
                     <label>
                       {$t('staff.colKey')}
@@ -293,7 +305,7 @@
                       <input bind:value={roleDraft.name} required />
                     </label>
                     <button type="submit">{$t('staff.save')}</button>
-                    <button type="button" class="ghost-button" on:click={() => (roleDraft = null)}>
+                    <button type="button" class="ghost-button" onclick={() => (roleDraft = null)}>
                       {$t('staff.cancel')}
                     </button>
                   </form>
@@ -317,7 +329,7 @@
                       <input
                         type="checkbox"
                         checked={capabilityDraft.selected.has(data.wildcard)}
-                        on:change={() => toggleCapability(data.wildcard)}
+                        onchange={() => toggleCapability(data.wildcard)}
                       />
                       <code>{data.wildcard}</code>
                       <span class="muted">{$t('staff.wildcardHint')}</span>
@@ -326,10 +338,10 @@
                       <div class="cap-area">
                         <div class="cap-area-head">
                           <strong>{group.area}</strong>
-                          <button type="button" class="ghost-button" on:click={() => toggleArea(group, true)}>
+                          <button type="button" class="ghost-button" onclick={() => toggleArea(group, true)}>
                             {$t('staff.selectAll')}
                           </button>
-                          <button type="button" class="ghost-button" on:click={() => toggleArea(group, false)}>
+                          <button type="button" class="ghost-button" onclick={() => toggleArea(group, false)}>
                             {$t('staff.selectNone')}
                           </button>
                         </div>
@@ -339,7 +351,7 @@
                               <input
                                 type="checkbox"
                                 checked={capabilityDraft.selected.has(cap)}
-                                on:change={() => toggleCapability(cap)}
+                                onchange={() => toggleCapability(cap)}
                               />
                               <code>{cap}</code>
                             </label>
@@ -348,10 +360,10 @@
                       </div>
                     {/each}
                     <div class="editor-actions">
-                      <button type="button" on:click={() => saveCapabilities(role)}>
+                      <button type="button" onclick={() => saveCapabilities(role)}>
                         {$t('staff.saveCapabilities')}
                       </button>
-                      <button type="button" class="ghost-button" on:click={() => (capabilityDraft = null)}>
+                      <button type="button" class="ghost-button" onclick={() => (capabilityDraft = null)}>
                         {$t('staff.cancel')}
                       </button>
                       <span class="muted">
@@ -380,13 +392,15 @@
     {#if canManage}
       <form
         class="inline-form"
-        on:submit|preventDefault={() =>
+        onsubmit={(event) => {
+          event.preventDefault();
           ask(
             '/api/v1/operations/staff/roles',
             { key: roleForm.key, name: roleForm.name },
             $t('staff.addRole'),
             $t('staff.addRoleSummary', { role: roleForm.name })
-          )}
+          );
+        }}
       >
         <label>
           {$t('staff.colKey')}
@@ -460,7 +474,7 @@
     {#if canManage}
       <h3 class="subhead">{$t('staff.assignTitle')}</h3>
       <p class="muted">{$t('staff.assignDescription')}</p>
-      <form class="inline-form" on:submit|preventDefault={searchAccounts}>
+      <form class="inline-form" onsubmit={(event) => { event.preventDefault(); searchAccounts(); }}>
         <label>
           {$t('staff.searchAccount')}
           <input bind:value={accountQuery} placeholder={$t('staff.searchAccountPlaceholder')} />
@@ -501,7 +515,7 @@
                           type="button"
                           class="chip-x"
                           title={$t('staff.revoke')}
-                          on:click={() =>
+                          onclick={() =>
                             ask(
                               '/api/v1/operations/staff/assignments/delete',
                               { accountId: account.id, roleId: id },
@@ -521,7 +535,7 @@
                       type="button"
                       class="ghost-button"
                       disabled={!assignRoleId || (account.roleIds || []).includes(assignRoleId)}
-                      on:click={() =>
+                      onclick={() =>
                         ask(
                           '/api/v1/operations/staff/assignments',
                           { accountId: account.id, roleId: assignRoleId },
@@ -574,7 +588,7 @@
                   <button
                     type="button"
                     class="ghost-button"
-                    on:click={() =>
+                    onclick={() =>
                       (presetDraft = {
                         id: preset.id,
                         kind: (data.presetKinds || []).find((k) => k.label === preset.kind)?.value ?? 0,
@@ -589,7 +603,7 @@
                   <button
                     type="button"
                     class="ghost-button danger"
-                    on:click={() =>
+                    onclick={() =>
                       ask(
                         '/api/v1/operations/staff/presets/delete',
                         { presetId: preset.id },
@@ -607,7 +621,8 @@
                 <td colspan={canManage ? 6 : 5}>
                   <form
                     class="inline-form"
-                    on:submit|preventDefault={() =>
+                    onsubmit={(event) => {
+                      event.preventDefault();
                       ask(
                         '/api/v1/operations/staff/presets/update',
                         {
@@ -622,7 +637,8 @@
                         },
                         $t('staff.updatePreset'),
                         $t('staff.updatePresetSummary', { name: presetDraft.name })
-                      )}
+                      );
+                    }}
                   >
                     <label>
                       {$t('staff.colKind')}
@@ -649,7 +665,7 @@
                       <input bind:value={presetDraft.message} />
                     </label>
                     <button type="submit">{$t('staff.save')}</button>
-                    <button type="button" class="ghost-button" on:click={() => (presetDraft = null)}>
+                    <button type="button" class="ghost-button" onclick={() => (presetDraft = null)}>
                       {$t('staff.cancel')}
                     </button>
                   </form>
@@ -666,7 +682,8 @@
     {#if canManage}
       <form
         class="inline-form"
-        on:submit|preventDefault={() =>
+        onsubmit={(event) => {
+          event.preventDefault();
           ask(
             '/api/v1/operations/staff/presets',
             {
@@ -678,7 +695,8 @@
             },
             $t('staff.addPreset'),
             $t('staff.addPresetSummary', { name: presetForm.name })
-          )}
+          );
+        }}
       >
         <label>
           {$t('staff.colKind')}
@@ -720,8 +738,8 @@
   confirmLabel={$ops.pending?.title ?? $t('common.confirm')}
   busy={$ops.busy}
   error={$ops.error}
-  on:confirm={(e) => ops.confirm(e.detail)}
-  on:cancel={() => ops.cancel()}
+  onconfirm={ops.confirm}
+  oncancel={() => ops.cancel()}
 />
 
 <style>

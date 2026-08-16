@@ -12,31 +12,31 @@
   import { t, translate } from '../lib/i18n.js';
 
   // One state bag per action, mirroring OperationsPage's pattern.
-  let ban = {
+  let ban = $state({
     playerId: '',
     playerName: '',
     playerOnline: false,
     permanent: false,
     durationSeconds: '',
     reason: '',
-  };
-  let unban = { playerId: '', playerName: '', playerOnline: false, reason: '' };
-  let mute = { playerId: '', playerName: '', playerOnline: false, durationSeconds: '', reason: '' };
-  let tradingLock = {
+  });
+  let unban = $state({ playerId: '', playerName: '', playerOnline: false, reason: '' });
+  let mute = $state({ playerId: '', playerName: '', playerOnline: false, durationSeconds: '', reason: '' });
+  let tradingLock = $state({
     playerId: '',
     playerName: '',
     playerOnline: false,
     permanent: false,
     durationSeconds: '',
     reason: '',
-  };
-  let tradingUnlock = { playerId: '', playerName: '', playerOnline: false, reason: '' };
+  });
+  let tradingUnlock = $state({ playerId: '', playerName: '', playerOnline: false, reason: '' });
 
   // Every write is staged here and confirmed in the dialog below before it is posted. createWriteOps
   // owns that cycle -- posting, remembering the audited reason, and tracking each form's busy state,
   // error and result under its own key -- so the page only describes what each button writes.
   const ops = createWriteOps();
-  let picker = null;
+  let picker = $state(null);
 
   const capabilityByAction = {
     ban: MODERATION_OPERATION_CAPABILITIES.ban,
@@ -46,11 +46,11 @@
     tradingUnlock: MODERATION_OPERATION_CAPABILITIES.tradingUnlock,
   };
 
-  $: canBan = hasDashboardCapability($identity, capabilityByAction.ban);
-  $: canUnban = hasDashboardCapability($identity, capabilityByAction.unban);
-  $: canMute = hasDashboardCapability($identity, capabilityByAction.mute);
-  $: canTradingLock = hasDashboardCapability($identity, capabilityByAction.tradingLock);
-  $: canTradingUnlock = hasDashboardCapability($identity, capabilityByAction.tradingUnlock);
+  let canBan = $derived(hasDashboardCapability($identity, capabilityByAction.ban));
+  let canUnban = $derived(hasDashboardCapability($identity, capabilityByAction.unban));
+  let canMute = $derived(hasDashboardCapability($identity, capabilityByAction.mute));
+  let canTradingLock = $derived(hasDashboardCapability($identity, capabilityByAction.tradingLock));
+  let canTradingUnlock = $derived(hasDashboardCapability($identity, capabilityByAction.tradingUnlock));
 
   function pickUser(apply) {
     picker = { kind: 'user', title: translate('operations.selectPlayerTitle'), onSelect: apply };
@@ -198,7 +198,7 @@
           <button
             class="ghost-button"
             type="button"
-            on:click={() =>
+            onclick={() =>
               pickUser(
                 (u) => (ban = { ...ban, playerId: u.id, playerName: u.name, playerOnline: u.online }),
               )}
@@ -230,7 +230,7 @@
         <input id="ban-reason" bind:value={ban.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageBan} disabled={$ops.busyKeys.ban}>{$t('common.run')}</button>
+        <button type="button" onclick={stageBan} disabled={$ops.busyKeys.ban}>{$t('common.run')}</button>
       </div>
       {#if $ops.errors.ban}<p class="empty-state danger">{$ops.errors.ban}</p>{/if}
       {#if $ops.results.ban}
@@ -250,7 +250,7 @@
           <button
             class="ghost-button"
             type="button"
-            on:click={() =>
+            onclick={() =>
               pickUser(
                 (u) => (unban = { ...unban, playerId: u.id, playerName: u.name, playerOnline: u.online }),
               )}
@@ -272,7 +272,7 @@
         <input id="unban-reason" bind:value={unban.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageUnban} disabled={$ops.busyKeys.unban}>{$t('common.run')}</button>
+        <button type="button" onclick={stageUnban} disabled={$ops.busyKeys.unban}>{$t('common.run')}</button>
       </div>
       {#if $ops.errors.unban}<p class="empty-state danger">{$ops.errors.unban}</p>{/if}
       {#if $ops.results.unban}
@@ -293,7 +293,7 @@
           <button
             class="ghost-button"
             type="button"
-            on:click={() =>
+            onclick={() =>
               pickUser(
                 (u) => (mute = { ...mute, playerId: u.id, playerName: u.name, playerOnline: u.online }),
               )}
@@ -319,7 +319,7 @@
         <input id="mute-reason" bind:value={mute.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageMute} disabled={$ops.busyKeys.mute}>{$t('common.run')}</button>
+        <button type="button" onclick={stageMute} disabled={$ops.busyKeys.mute}>{$t('common.run')}</button>
       </div>
       {#if $ops.errors.mute}<p class="empty-state danger">{$ops.errors.mute}</p>{/if}
       {#if $ops.results.mute}
@@ -339,7 +339,7 @@
           <button
             class="ghost-button"
             type="button"
-            on:click={() =>
+            onclick={() =>
               pickUser(
                 (u) =>
                   (tradingLock = {
@@ -377,7 +377,7 @@
         <input id="tradinglock-reason" bind:value={tradingLock.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageTradingLock} disabled={$ops.busyKeys.tradingLock}>{$t('common.run')}</button>
+        <button type="button" onclick={stageTradingLock} disabled={$ops.busyKeys.tradingLock}>{$t('common.run')}</button>
       </div>
       {#if $ops.errors.tradingLock}<p class="empty-state danger">{$ops.errors.tradingLock}</p>{/if}
       {#if $ops.results.tradingLock}
@@ -397,7 +397,7 @@
           <button
             class="ghost-button"
             type="button"
-            on:click={() =>
+            onclick={() =>
               pickUser(
                 (u) =>
                   (tradingUnlock = {
@@ -425,7 +425,7 @@
         <input id="tradingunlock-reason" bind:value={tradingUnlock.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
-        <button type="button" on:click={stageTradingUnlock} disabled={$ops.busyKeys.tradingUnlock}>{$t('common.run')}</button>
+        <button type="button" onclick={stageTradingUnlock} disabled={$ops.busyKeys.tradingUnlock}>{$t('common.run')}</button>
       </div>
       {#if $ops.errors.tradingUnlock}<p class="empty-state danger">{$ops.errors.tradingUnlock}</p>{/if}
       {#if $ops.results.tradingUnlock}

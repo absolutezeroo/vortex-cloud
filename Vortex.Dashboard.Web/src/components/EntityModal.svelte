@@ -10,17 +10,12 @@
   import { modal, closeModal, openPlayer, openItem } from '../lib/session.js';
   import { t } from '../lib/i18n.js';
 
-  let loading = false;
-  let error = '';
-  let data = null;
-  let currentKey = '';
-  let forbidden = false;
+  let loading = $state(false);
+  let error = $state('');
+  let data = $state(null);
+  let currentKey = $state('');
+  let forbidden = $state(false);
 
-  $: key = $modal ? `${$modal.type}:${$modal.id}` : '';
-  $: if (key && key !== currentKey) {
-    currentKey = key;
-    void load();
-  }
 
   async function load() {
     loading = true;
@@ -45,10 +40,17 @@
     }
   }
 
-  $: playerProfile = data?.kind === 'id' ? data.playerProfile : null;
-  $: itemProfile = $modal?.type === 'item' ? data : null;
 
-  $: forbiddenMessage = $t($modal?.type === 'item' ? 'entityModal.itemAccessDenied' : 'entityModal.playerAccessDenied');
+  let key = $derived($modal ? `${$modal.type}:${$modal.id}` : '');
+  $effect(() => {
+    if (key && key !== currentKey) {
+      currentKey = key;
+      void load();
+    }
+  });
+  let playerProfile = $derived(data?.kind === 'id' ? data.playerProfile : null);
+  let itemProfile = $derived($modal?.type === 'item' ? data : null);
+  let forbiddenMessage = $derived($t($modal?.type === 'item' ? 'entityModal.itemAccessDenied' : 'entityModal.playerAccessDenied'));
 </script>
 
 {#if $modal}
@@ -56,11 +58,13 @@
     title={$modal.label || `${$modal.type} #${$modal.id}`}
     eyebrow={$modal.type === 'item' ? $t('entityModal.itemInspector') : $t('entityModal.playerInspector')}
     labelledBy="entity-modal-title"
-    on:close={closeModal}
+    onclose={closeModal}
   >
-    <button slot="header" class="ghost-button" type="button" on:click={closeModal}>
-      {$t('pickerModal.close')}
-    </button>
+    {#snippet header()}
+        <button class="ghost-button" type="button" onclick={closeModal}>
+        {$t('pickerModal.close')}
+      </button>
+    {/snippet}
 
     {#if loading}
       <p class="empty-state">{$t('pickerModal.loading')}</p>

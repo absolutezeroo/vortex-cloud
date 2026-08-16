@@ -46,37 +46,37 @@
     };
   }
 
-  let definitions = [];
-  let prizes = [];
-  let pools = [];
-  let colors = [];
-  let productTypes = [];
-  let stats = null;
-  let statsDays = 7;
+  let definitions = $state([]);
+  let prizes = $state([]);
+  let pools = $state([]);
+  let colors = $state([]);
+  let productTypes = $state([]);
+  let stats = $state(null);
+  let statsDays = $state(7);
 
-  let loading = false;
-  let error = '';
-  let forbidden = false;
+  let loading = $state(false);
+  let error = $state('');
+  let forbidden = $state(false);
 
-  let newPrizeOpen = false;
-  let newPrize = emptyPrizeForm();
-  let editPrizeId = null;
-  let editPrize = null;
+  let newPrizeOpen = $state(false);
+  let newPrize = $state(emptyPrizeForm());
+  let editPrizeId = $state(null);
+  let editPrize = $state(null);
 
   // Furniture is picked the same way players are: an operator knows the box, not its id.
-  let furniPicker = null;
+  let furniPicker = $state(null);
 
   // Both grants target a picked player, not a typed name: the shared PickerModal searches the live
   // directory, so the operation carries an unambiguous id and a rename or a typo cannot misfire it.
-  let keyForm = { playerId: 0, playerName: '', playerOnline: false, color: 'purple' };
-  let boxForm = {
+  let keyForm = $state({ playerId: 0, playerName: '', playerOnline: false, color: 'purple' });
+  let boxForm = $state({
     playerId: 0,
     playerName: '',
     playerOnline: false,
     furnitureDefinitionId: '',
     color: 'purple',
-  };
-  let picker = null;
+  });
+  let picker = $state(null);
 
   function pickPlayer(apply) {
     picker = { title: translate('mysteryBox.selectPlayerTitle'), onSelect: apply };
@@ -90,11 +90,11 @@
   // Four jobs on one page: read the numbers, edit the box definitions, edit the prize table, hand a
   // box or a key to a player. Stacked vertically they were roughly 4000px of scrolling to reach the
   // last one; nothing here needs to be read against anything else, which is the case tabs are for.
-  let tab = 'overview';
+  let tab = $state('overview');
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsMysteryBoxManage);
-  $: boxPrizes = prizes.filter((p) => p.pool === POOL_BOX);
-  $: trophyPrizes = prizes.filter((p) => p.pool === POOL_TROPHY);
+  let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsMysteryBoxManage));
+  let boxPrizes = $derived(prizes.filter((p) => p.pool === POOL_BOX));
+  let trophyPrizes = $derived(prizes.filter((p) => p.pool === POOL_TROPHY));
 
   // Share of a pool, computed against the entries a draw actually competes with: same pool, and a
   // colourless prize competes with the colour-specific ones for that colour only.
@@ -312,11 +312,11 @@
   <div class="panel-head">
     <h2>{$t('mysteryBox.title')}</h2>
     <div class="head-actions">
-      <button type="button" class="ghost-button" on:click={load} disabled={loading}>
+      <button type="button" class="ghost-button" onclick={load} disabled={loading}>
         {$t('common.refresh')}
       </button>
       {#if canManage}
-        <button type="button" class="ghost-button" on:click={stageReload}>
+        <button type="button" class="ghost-button" onclick={stageReload}>
           <RefreshCw size={14} strokeWidth={2} aria-hidden="true" /> {$t('mysteryBox.reload')}
         </button>
       {/if}
@@ -347,7 +347,7 @@
         <h2><Sparkles size={17} strokeWidth={2} aria-hidden="true" /> {$t('mysteryBox.statsHeading')}</h2>
         <label class="filter-field">
           {$t('mysteryBox.windowDays')}
-          <select bind:value={statsDays} on:change={loadStats}>
+          <select bind:value={statsDays} onchange={loadStats}>
             {#each [7, 30, 90] as days}
               <option value={days}>{$t('mysteryBox.days', { count: days })}</option>
             {/each}
@@ -450,7 +450,7 @@
     <div class="panel-head">
       <h2><Gift size={17} strokeWidth={2} aria-hidden="true" /> {$t('mysteryBox.prizesHeading')}</h2>
       {#if canManage}
-        <button type="button" class="ghost-button" on:click={() => (newPrizeOpen = !newPrizeOpen)}>
+        <button type="button" class="ghost-button" onclick={() => (newPrizeOpen = !newPrizeOpen)}>
           <Plus size={14} strokeWidth={2} aria-hidden="true" />
           {newPrizeOpen ? $t('mysteryBox.cancel') : $t('mysteryBox.newPrize')}
         </button>
@@ -499,7 +499,7 @@
               <button
                 type="button"
                 class="ghost-button"
-                on:click={() =>
+                onclick={() =>
                   (furniPicker = (item) => (newPrize.furnitureDefinitionId = item.id))}
                 >{$t('mysteryBox.pick')}</button
               >
@@ -521,7 +521,7 @@
           <label><input type="checkbox" bind:checked={newPrize.enabled} /> {$t('mysteryBox.enabled')}</label>
         </div>
         <div class="op-actions">
-          <button type="button" on:click={stageCreatePrize}>{$t('mysteryBox.create')}</button>
+          <button type="button" onclick={stageCreatePrize}>{$t('mysteryBox.create')}</button>
         </div>
         {#if $ops.errors.createPrize}<p class="empty-state danger">{$ops.errors.createPrize}</p>{/if}
         {#if $ops.results.createPrize}<OpResult result={$ops.results.createPrize} />{/if}
@@ -572,10 +572,10 @@
                   {/if}
                   {#if canManage}
                     <div class="op-actions offer-actions">
-                      <button type="button" class="ghost-button" on:click={() => startEditPrize(prize)}>
+                      <button type="button" class="ghost-button" onclick={() => startEditPrize(prize)}>
                         <Pencil size={14} strokeWidth={2} aria-hidden="true" /> {$t('mysteryBox.edit')}
                       </button>
-                      <button type="button" class="ghost-button danger" on:click={() => stageDeletePrize(prize)}>
+                      <button type="button" class="ghost-button danger" onclick={() => stageDeletePrize(prize)}>
                         <Trash2 size={14} strokeWidth={2} aria-hidden="true" />
                       </button>
                     </div>
@@ -622,7 +622,7 @@
                           <button
                             type="button"
                             class="ghost-button"
-                            on:click={() =>
+                            onclick={() =>
                               (furniPicker = (item) =>
                                 (editPrize.furnitureDefinitionId = item.id))}
                             >{$t('mysteryBox.pick')}</button
@@ -644,8 +644,8 @@
                       <label><input type="checkbox" bind:checked={editPrize.enabled} /> {$t('mysteryBox.enabled')}</label>
                     </div>
                     <div class="op-actions">
-                      <button type="button" on:click={stageUpdatePrize}>{$t('mysteryBox.save')}</button>
-                      <button type="button" class="ghost-button" on:click={() => { editPrizeId = null; editPrize = null; }}>
+                      <button type="button" onclick={stageUpdatePrize}>{$t('mysteryBox.save')}</button>
+                      <button type="button" class="ghost-button" onclick={() => { editPrizeId = null; editPrize = null; }}>
                         {$t('mysteryBox.cancel')}
                       </button>
                     </div>
@@ -681,7 +681,7 @@
               <button
                 type="button"
                 class="ghost-button"
-                on:click={() =>
+                onclick={() =>
                   pickPlayer(
                     (u) =>
                       (boxForm = {
@@ -723,7 +723,7 @@
             <small class="muted">{$t('mysteryBox.colorHint')}</small>
           </div>
           <div class="op-actions">
-            <button type="button" on:click={stageGrantBox}>{$t('mysteryBox.grantBox')}</button>
+            <button type="button" onclick={stageGrantBox}>{$t('mysteryBox.grantBox')}</button>
           </div>
           {#if $ops.errors.grantBox}<p class="empty-state danger">{$ops.errors.grantBox}</p>{/if}
           {#if $ops.results.grantBox}<OpResult result={$ops.results.grantBox} />{/if}
@@ -743,7 +743,7 @@
             <button
               type="button"
               class="ghost-button"
-              on:click={() =>
+              onclick={() =>
                 pickPlayer(
                   (u) =>
                     (keyForm = {
@@ -775,7 +775,7 @@
           </select>
         </div>
         <div class="op-actions">
-          <button type="button" on:click={stageGrantKey}>{$t('mysteryBox.grantKey')}</button>
+          <button type="button" onclick={stageGrantKey}>{$t('mysteryBox.grantKey')}</button>
         </div>
         {#if $ops.errors.grantKey}<p class="empty-state danger">{$ops.errors.grantKey}</p>{/if}
         {#if $ops.results.grantKey}<OpResult result={$ops.results.grantKey} />{/if}
@@ -817,8 +817,8 @@
   busy={$ops.busy}
   error={$ops.error}
   danger={false}
-  on:confirm={(e) => ops.confirm(e.detail)}
-  on:cancel={() => ops.cancel()}
+  onconfirm={ops.confirm}
+  oncancel={() => ops.cancel()}
 />
 
 <style>

@@ -6,11 +6,23 @@
   import { Coins } from '@lucide/svelte';
   import { formatNumber } from '../lib/format.js';
 
-  export let amount = 0;
-  export let src = null; // optional currency sprite URL (coins / duckets / diamonds…)
-  export let alt = '';
-  export let decimals = 0;
-  export let suffix = ''; // e.g. "c" for credits, or a currency short name
+  /**
+   * @typedef {Object} Props
+   * @property {number} [amount]
+   * @property {any} [src] - optional currency sprite URL (coins / duckets / diamonds…)
+   * @property {string} [alt]
+   * @property {number} [decimals]
+   * @property {string} [suffix] - e.g. "c" for credits, or a currency short name
+   */
+
+  /** @type {Props} */
+  let {
+    amount = 0,
+    src = null,
+    alt = '',
+    decimals = 0,
+    suffix = ''
+  } = $props();
 </script>
 
 <span class="coin">

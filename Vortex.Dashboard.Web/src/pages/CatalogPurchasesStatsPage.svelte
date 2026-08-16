@@ -1,4 +1,5 @@
 <script>
+
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api.js';
   import { formatNumber } from '../lib/format.js';
@@ -16,13 +17,13 @@
     return translator(`common.granularity${value.charAt(0).toUpperCase()}${value.slice(1)}`);
   }
 
-  let since = '';
-  let until = '';
-  let granularity = 'day';
-  let loading = false;
-  let forbidden = false;
-  let error = '';
-  let data = null;
+  let since = $state('');
+  let until = $state('');
+  let granularity = $state('day');
+  let loading = $state(false);
+  let forbidden = $state(false);
+  let error = $state('');
+  let data = $state(null);
 
   function toLocalDateValue(value) {
     const date = new Date(value);
@@ -61,7 +62,7 @@
     }
   }
 
-  $: purchaseSeries = data
+  let purchaseSeries = $derived(data
     ? [
         {
           name: $t('catalogPurchases.purchaseCount'),
@@ -69,9 +70,9 @@
           points: (data.timeline || []).map((p) => ({ label: p.label, value: p.purchaseCount })),
         },
       ]
-    : [];
+    : []);
 
-  $: creditsSeries = data
+  let creditsSeries = $derived(data
     ? [
         {
           name: $t('catalogPurchases.totalCreditsSpent'),
@@ -79,7 +80,7 @@
           points: (data.timeline || []).map((p) => ({ label: p.label, value: p.creditsSpent })),
         },
       ]
-    : [];
+    : []);
 
   onMount(() => {
     setDefaultWindow();
@@ -91,7 +92,7 @@
   <div class="panel-head"><h2>{$t('catalogPurchases.title')}</h2></div>
   <p class="muted">{$t('catalogPurchases.description')}</p>
 
-  <form class="toolbar-grid" on:submit|preventDefault={refresh}>
+  <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); refresh(); }}>
     <label>
       {$t('common.since')}
       <input type="date" bind:value={since} />
@@ -123,13 +124,19 @@
 {#if data}
   <div class="metric-grid" style="margin-top: 12px;">
     <StatCard label={$t('catalogPurchases.purchaseCount')} value={formatNumber(data.totals.purchaseCount)}>
-      <ShoppingBag slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <ShoppingBag size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('catalogPurchases.totalCreditsSpent')} value={formatNumber(data.totals.totalCreditsSpent)} accent>
-      <Coins slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Coins size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('catalogPurchases.totalQuantity')} value={formatNumber(data.totals.totalQuantity)}>
-      <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Hash size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
   </div>
 

@@ -11,9 +11,15 @@
   import Modal from './Modal.svelte';
   import { t } from '../lib/i18n.js';
 
-  /** The createWriteOps store driving this dialog. */
-  export let ops;
-  export let eyebrow = '';
+  
+  /**
+   * @typedef {Object} Props
+   * @property {any} ops - The createWriteOps store driving this dialog.
+   * @property {string} [eyebrow]
+   */
+
+  /** @type {Props} */
+  let { ops, eyebrow = '' } = $props();
 </script>
 
 {#if $ops.pending}
@@ -22,7 +28,7 @@
     {eyebrow}
     width={460}
     labelledBy="confirm-staged-title"
-    on:close={() => ops.cancel()}
+    onclose={() => ops.cancel()}
   >
     <p>{$ops.pending.summary}</p>
     {#if $ops.pending.changes?.length}
@@ -44,14 +50,16 @@
     {/if}
     {#if $ops.error}<p class="empty-state danger">{$ops.error}</p>{/if}
 
-    <svelte:fragment slot="actions">
-      <button type="button" on:click={() => ops.confirm()} disabled={$ops.busy}>
+    {#snippet actions()}
+
+      <button type="button" onclick={() => ops.confirm()} disabled={$ops.busy}>
         {$t('common.confirm')}
       </button>
-      <button class="ghost-button" type="button" on:click={() => ops.cancel()}>
+      <button class="ghost-button" type="button" onclick={() => ops.cancel()}>
         {$t('common.cancel')}
       </button>
-    </svelte:fragment>
+
+    {/snippet}
   </Modal>
 {/if}
 

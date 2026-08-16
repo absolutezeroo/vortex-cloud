@@ -8,20 +8,20 @@
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { t } from '../lib/i18n.js';
 
-  let data = null;
-  let error = '';
-  let forbidden = false;
+  let data = $state(null);
+  let error = $state('');
+  let forbidden = $state(false);
 
-  $: topOperations = data?.topOperations || [];
-  $: topFailedOperations = data?.topFailedOperations || [];
-  $: topOpsScale = Math.max(
+  let topOperations = $derived(data?.topOperations || []);
+  let topFailedOperations = $derived(data?.topFailedOperations || []);
+  let topOpsScale = $derived(Math.max(
     1,
     ...topOperations.map((row) => Number(row.packetsPerMinute || 0)),
-  );
-  $: topFailedScale = Math.max(
+  ));
+  let topFailedScale = $derived(Math.max(
     1,
     ...topFailedOperations.map((row) => Number(row.packetsPerMinute || 0)),
-  );
+  ));
 
   async function refresh() {
     forbidden = false;
@@ -46,7 +46,7 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('packets.title')}</h2>
-    <button type="button" on:click={refresh}>{$t('common.refresh')}</button>
+    <button type="button" onclick={refresh}>{$t('common.refresh')}</button>
   </div>
 
   {#if forbidden}
@@ -57,18 +57,30 @@
 
   <div class="metric-grid compact">
     <StatCard label={$t('packets.packetsPerSec')} value={formatNumber(data?.packetsPerSecond, 2)}>
-      <Gauge slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Gauge size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('packets.errorsPerMin')} value={formatNumber(data?.errorsPerMinute, 2)}>
-      <TriangleAlert slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('packets.latencyP50')}>
-      <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
-      <span slot="value">{formatNumber(data?.latencyP50Ms, 2)} ms</span>
+      {#snippet icon()}
+        <Timer size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
+      {#snippet value()}
+        <span>{formatNumber(data?.latencyP50Ms, 2)} ms</span>
+      {/snippet}
     </StatCard>
     <StatCard label={$t('packets.latencyP95')}>
-      <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
-      <span slot="value">{formatNumber(data?.latencyP95Ms, 2)} ms</span>
+      {#snippet icon()}
+        <Timer size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
+      {#snippet value()}
+        <span>{formatNumber(data?.latencyP95Ms, 2)} ms</span>
+      {/snippet}
     </StatCard>
   </div>
 </section>

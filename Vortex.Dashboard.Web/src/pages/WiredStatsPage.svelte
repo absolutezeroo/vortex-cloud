@@ -9,10 +9,10 @@
   import { Package, Cable, DoorOpen } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
-  let loading = false;
-  let forbidden = false;
-  let error = '';
-  let data = null;
+  let loading = $state(false);
+  let forbidden = $state(false);
+  let error = $state('');
+  let data = $state(null);
 
   const categoryKeys = {
     trigger: 'wiredStats.categoryTrigger',
@@ -57,7 +57,7 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('wiredStats.title')}</h2>
-    <button type="button" on:click={refresh} disabled={loading}>{$t('common.refresh')}</button>
+    <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
   </div>
   <p class="muted">{$t('wiredStats.description')}</p>
 
@@ -73,10 +73,14 @@
 {#if data}
   <div class="metric-grid" style="margin-top: 12px;">
     <StatCard label={$t('wiredStats.totalWiredPlaced')} value={formatNumber(data.totals.totalWiredPlaced)}>
-      <Cable slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Cable size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('wiredStats.roomsWithWired')} value={formatNumber(data.totals.roomsWithWired)}>
-      <DoorOpen slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <DoorOpen size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
   </div>
 

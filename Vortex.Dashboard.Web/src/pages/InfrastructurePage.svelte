@@ -14,18 +14,18 @@
   import { formatBytes } from '../lib/format.js';
   import { t, translate } from '../lib/i18n.js';
 
-  let data = null;
-  let error = '';
-  let forbidden = false;
+  let data = $state(null);
+  let error = $state('');
+  let forbidden = $state(false);
 
   // The coarse safety net. Listing and triggering only: where dumps go, how often and how many are
   // kept is bootstrap config on purpose -- a retention an operator can set to zero from the same
   // screen as the mistake is not a safety net. Restoring is not offered here either; rolling the
   // whole database back discards every change since, which belongs in a maintenance window.
-  let backups = null;
+  let backups = $state(null);
   const backupOps = createWriteOps(loadBackups);
 
-  $: canBackup = hasDashboardCapability($identity, CAPABILITIES.opsDatabaseBackup);
+  let canBackup = $derived(hasDashboardCapability($identity, CAPABILITIES.opsDatabaseBackup));
 
   async function loadBackups() {
     if (!canBackup) return;
@@ -47,8 +47,8 @@
       { key: 'backup', danger: false },
     );
   }
-  $: silos = data?.orleansCluster?.silos || [];
-  $: siloRows = (() => {
+  let silos = $derived(data?.orleansCluster?.silos || []);
+  let siloRows = $derived((() => {
     const buckets = new Map();
 
     for (const silo of silos) {
@@ -62,9 +62,9 @@
         count,
       }))
       .sort((a, b) => b.count - a.count || String(a.status).localeCompare(String(b.status)));
-  })();
+  })());
 
-  $: siloMax = Math.max(1, ...siloRows.map((row) => row.count || 0));
+  let siloMax = $derived(Math.max(1, ...siloRows.map((row) => row.count || 0)));
 
   async function refresh() {
     forbidden = false;
@@ -128,7 +128,7 @@
       <p class="eyebrow">{$t('infrastructure.eyebrowRuntime')}</p>
       <h2>{$t('infrastructure.title')}</h2>
     </div>
-    <button type="button" on:click={refresh}>{$t('common.refresh')}</button>
+    <button type="button" onclick={refresh}>{$t('common.refresh')}</button>
   </div>
 
   {#if forbidden}
@@ -139,25 +139,43 @@
 
   <div class="metric-grid">
     <StatCard label={$t('infrastructure.emulator')} sub={$t('infrastructure.process', { id: data?.runtime?.processId || '-' })}>
-      <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
-      <strong slot="value" class={statusClass(data?.runtime?.status)}>{data?.runtime?.status || '-'}</strong>
+      {#snippet icon()}
+        <Activity size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
+      {#snippet value()}
+        <strong class={statusClass(data?.runtime?.status)}>{data?.runtime?.status || '-'}</strong>
+      {/snippet}
     </StatCard>
     <StatCard label={$t('infrastructure.overallHealth')} sub={$t('infrastructure.dbAndOrleans')}>
-      <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
-      <strong slot="value" class={statusClass(data?.overall)}>{data?.overall || '-'}</strong>
+      {#snippet icon()}
+        <Activity size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
+      {#snippet value()}
+        <strong class={statusClass(data?.overall)}>{data?.overall || '-'}</strong>
+      {/snippet}
     </StatCard>
     <StatCard label={$t('infrastructure.uptime')} value={formatDuration(data?.runtime?.uptimeSeconds)} sub={$t('infrastructure.started', { date: formatDate(data?.runtime?.startedAtUtc) })}>
-      <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Activity size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('infrastructure.environment')} value={data?.runtime?.environmentName || '-'} sub={data?.runtime?.machineName || '-'}>
-      <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Activity size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('infrastructure.memory')} sub={$t('infrastructure.managed', { value: formatNumber(data?.runtime?.managedMemoryMb) })}>
-      <Cpu slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
-      <span slot="value">{formatNumber(data?.runtime?.workingSetMb)} MB</span>
+      {#snippet icon()}
+        <Cpu size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
+      {#snippet value()}
+        <span>{formatNumber(data?.runtime?.workingSetMb)} MB</span>
+      {/snippet}
     </StatCard>
     <StatCard label={$t('infrastructure.cpu')} value={data?.runtime?.processorCount ?? '-'} sub={$t('infrastructure.logicalProcessors')}>
-      <Cpu slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Cpu size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
   </div>
 </section>
@@ -174,11 +192,17 @@
 
     <div class="metric-grid compact">
       <StatCard label={$t('infrastructure.latency')} sub={$t('infrastructure.canConnectProbe')}>
-        <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
-        <span slot="value">{formatNumber(data?.database?.latencyMs, 2)} ms</span>
+        {#snippet icon()}
+          <Timer size={15} strokeWidth={2} aria-hidden="true" />
+        {/snippet}
+        {#snippet value()}
+          <span>{formatNumber(data?.database?.latencyMs, 2)} ms</span>
+        {/snippet}
       </StatCard>
       <StatCard label={$t('infrastructure.detail')} value={data?.database?.name || $t('infrastructure.database')} sub={data?.database?.detail || '-'}>
-        <Activity slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+        {#snippet icon()}
+          <Activity size={15} strokeWidth={2} aria-hidden="true" />
+        {/snippet}
       </StatCard>
     </div>
   </div>
@@ -194,12 +218,20 @@
 
     <div class="metric-grid compact">
       <StatCard label={$t('infrastructure.probeLatency')} sub={$t('infrastructure.managementGrains')}>
-        <Timer slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
-        <span slot="value">{formatNumber(data?.orleans?.latencyMs, 2)} ms</span>
+        {#snippet icon()}
+          <Timer size={15} strokeWidth={2} aria-hidden="true" />
+        {/snippet}
+        {#snippet value()}
+          <span>{formatNumber(data?.orleans?.latencyMs, 2)} ms</span>
+        {/snippet}
       </StatCard>
       <StatCard label={$t('infrastructure.activeSilos')} sub={data?.orleansCluster?.detail || data?.orleans?.detail || '-'}>
-        <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
-        <span slot="value">{data?.orleansCluster?.activeSiloCount ?? '-'}/{data?.orleansCluster?.siloCount ?? '-'}</span>
+        {#snippet icon()}
+          <Hash size={15} strokeWidth={2} aria-hidden="true" />
+        {/snippet}
+        {#snippet value()}
+          <span>{data?.orleansCluster?.activeSiloCount ?? '-'}/{data?.orleansCluster?.siloCount ?? '-'}</span>
+        {/snippet}
       </StatCard>
     </div>
   </div>
@@ -279,7 +311,7 @@
         <p class="eyebrow">{$t('infrastructure.eyebrowBackup')}</p>
         <h2>{$t('infrastructure.backups')}</h2>
       </div>
-      <button type="button" on:click={stageBackup} disabled={$backupOps.busyKeys.backup}>
+      <button type="button" onclick={stageBackup} disabled={$backupOps.busyKeys.backup}>
         {$t('infrastructure.backupNow')}
       </button>
     </div>
@@ -317,7 +349,7 @@
     busy={$backupOps.busy}
     error={$backupOps.error}
     danger={false}
-    on:confirm={(e) => backupOps.confirm(e.detail)}
-    on:cancel={() => backupOps.cancel()}
+    onconfirm={backupOps.confirm}
+    oncancel={() => backupOps.cancel()}
   />
 {/if}

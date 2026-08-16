@@ -1,4 +1,5 @@
 <script>
+
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api.js';
   import { formatNumber, formatDate } from '../lib/format.js';
@@ -25,13 +26,13 @@
     return value;
   }
 
-  let since = '';
-  let until = '';
-  let granularity = 'day';
-  let loading = false;
-  let forbidden = false;
-  let error = '';
-  let data = null;
+  let since = $state('');
+  let until = $state('');
+  let granularity = $state('day');
+  let loading = $state(false);
+  let forbidden = $state(false);
+  let error = $state('');
+  let data = $state(null);
 
   function toLocalDateValue(value) {
     const date = new Date(value);
@@ -70,7 +71,7 @@
     }
   }
 
-  $: growthSeries = data
+  let growthSeries = $derived(data
     ? [
         {
           name: $t('groupsStats.totalGroups'),
@@ -78,7 +79,7 @@
           points: (data.growth || []).map((p) => ({ label: p.label, value: p.groupsCreated })),
         },
       ]
-    : [];
+    : []);
 
   onMount(() => {
     setDefaultWindow();
@@ -90,7 +91,7 @@
   <div class="panel-head"><h2>{$t('groupsStats.title')}</h2></div>
   <p class="muted">{$t('groupsStats.description')}</p>
 
-  <form class="toolbar-grid" on:submit|preventDefault={refresh}>
+  <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); refresh(); }}>
     <label>
       {$t('common.since')}
       <input type="date" bind:value={since} />
@@ -122,19 +123,29 @@
 {#if data}
   <div class="metric-grid" style="margin-top: 12px;">
     <StatCard label={$t('groupsStats.totalGroups')} value={formatNumber(data.totals.totalGroups)}>
-      <Users slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Users size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('groupsStats.totalMembers')} value={formatNumber(data.totals.totalMembers)}>
-      <Users slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Users size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('groupsStats.totalThreads')} value={formatNumber(data.totals.totalThreads)}>
-      <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Hash size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('groupsStats.totalPosts')} value={formatNumber(data.totals.totalPosts)}>
-      <Hash slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Hash size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('groupsStats.avgMembersPerGroup')} value={data.totals.avgMembersPerGroup}>
-      <Users slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Users size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
   </div>
 

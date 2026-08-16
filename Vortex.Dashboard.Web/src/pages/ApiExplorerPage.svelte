@@ -7,43 +7,20 @@
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { t } from '../lib/i18n.js';
 
-  let data = null;
-  let error = '';
-  let forbidden = false;
-  let loading = true;
+  let data = $state(null);
+  let error = $state('');
+  let forbidden = $state(false);
+  let loading = $state(true);
 
-  let search = '';
-  let domainFilter = 'all';
-  let methodFilter = 'all';
+  let search = $state('');
+  let domainFilter = $state('all');
+  let methodFilter = $state('all');
 
-  let copiedPath = '';
+  let copiedPath = $state('');
 
-  $: routes = data?.routes || [];
-  $: groups = data?.groups || [];
-  $: methodUsage = data?.methodUsage || [];
-  $: domains = ['all', ...new Set(groups.map((group) => group.domain).sort())];
-  $: methods = ['all', ...new Set(methodUsage.map((item) => item.method).sort())];
 
-  $: normalizedSearch = String(search || '').toLowerCase().trim();
-  $: normalizedDomain = String(domainFilter || 'all').toLowerCase();
-  $: normalizedMethod = String(methodFilter || 'all').toLowerCase();
 
-  // normalizedSearch/normalizedDomain/normalizedMethod must appear as literal identifiers in this
-  // statement -- Svelte's reactive dependency tracking for `$:` only scans the statement's own
-  // expression text, it doesn't trace into called functions' bodies. Reading them only inside
-  // matchesSearch/matchesDomain/matchesMethod (as this used to) makes `filtered` invisible to
-  // changes in the search box or the domain/method selects: it silently never re-ran after the
-  // first load, so every filter control on this page looked wired up but did nothing.
-  $: filtered = routes.filter(
-    (route) =>
-      matchesSearch(route, normalizedSearch) &&
-      matchesDomain(route, normalizedDomain) &&
-      matchesMethod(route, normalizedMethod)
-  );
 
-  $: groupedByDomain = groupBy(filtered, (route) => route.domain || 'misc');
-  $: maxDomain = Math.max(1, ...groups.map((group) => group.routeCount || 0));
-  $: maxMethod = Math.max(1, ...methodUsage.map((entry) => entry.count || 0));
 
   function matchesSearch(route, normalizedSearchValue) {
     if (!normalizedSearchValue) return true;
@@ -139,12 +116,35 @@
   }
 
   onMount(refresh);
+  let routes = $derived(data?.routes || []);
+  let groups = $derived(data?.groups || []);
+  let methodUsage = $derived(data?.methodUsage || []);
+  let domains = $derived(['all', ...new Set(groups.map((group) => group.domain).sort())]);
+  let methods = $derived(['all', ...new Set(methodUsage.map((item) => item.method).sort())]);
+  let normalizedSearch = $derived(String(search || '').toLowerCase().trim());
+  let normalizedDomain = $derived(String(domainFilter || 'all').toLowerCase());
+  let normalizedMethod = $derived(String(methodFilter || 'all').toLowerCase());
+  // normalizedSearch/normalizedDomain/normalizedMethod must appear as literal identifiers in this
+  // statement -- Svelte's reactive dependency tracking for `$:` only scans the statement's own
+  // expression text, it doesn't trace into called functions' bodies. Reading them only inside
+  // matchesSearch/matchesDomain/matchesMethod (as this used to) makes `filtered` invisible to
+  // changes in the search box or the domain/method selects: it silently never re-ran after the
+  // first load, so every filter control on this page looked wired up but did nothing.
+  let filtered = $derived(routes.filter(
+    (route) =>
+      matchesSearch(route, normalizedSearch) &&
+      matchesDomain(route, normalizedDomain) &&
+      matchesMethod(route, normalizedMethod)
+  ));
+  let groupedByDomain = $derived(groupBy(filtered, (route) => route.domain || 'misc'));
+  let maxDomain = $derived(Math.max(1, ...groups.map((group) => group.routeCount || 0)));
+  let maxMethod = $derived(Math.max(1, ...methodUsage.map((entry) => entry.count || 0)));
 </script>
 
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('apiExplorer.title')}</h2>
-    <button type="button" on:click={refresh} disabled={loading}>
+    <button type="button" onclick={refresh} disabled={loading}>
       {loading ? $t('apiExplorer.refreshing') : $t('common.refresh')}
     </button>
   </div>
@@ -238,7 +238,7 @@
   <div class="panel-head">
     <h3>{$t('apiExplorer.routesCount', { count: filtered.length })}</h3>
     {#if domainFilter !== 'all'}
-      <button type="button" class="ghost-button" on:click={() => selectDomain('all')}>
+      <button type="button" class="ghost-button" onclick={() => selectDomain('all')}>
         <X size={14} strokeWidth={2} aria-hidden="true" /> {domainFilter}
       </button>
     {/if}
@@ -253,7 +253,7 @@
         type="button"
         class="domain-pill"
         class:active={normalizedDomain === g.domain.toLowerCase()}
-        on:click={() => selectDomain(g.domain)}
+        onclick={() => selectDomain(g.domain)}
       >
         {g.domain} <small>{g.routeCount}</small>
       </button>
@@ -298,7 +298,7 @@
                 <button
                   type="button"
                   class="ghost-button"
-                  on:click={() => copyCurl(route.path, route.methods[0] || 'GET')}
+                  onclick={() => copyCurl(route.path, route.methods[0] || 'GET')}
                 >
                   {copiedPath === route.path ? $t('apiExplorer.copied') : $t('apiExplorer.copy')}
                 </button>

@@ -1,4 +1,5 @@
 <script>
+
   import { apiGet } from '../lib/api.js';
   import { createResource } from '../lib/resource.js';
   import { formatNumber } from '../lib/format.js';
@@ -18,9 +19,9 @@
     return translator(`common.granularity${value.charAt(0).toUpperCase()}${value.slice(1)}`);
   }
 
-  let since = '';
-  let until = '';
-  let granularity = 'day';
+  let since = $state('');
+  let until = $state('');
+  let granularity = $state('day');
 
   function toLocalDateValue(value) {
     const date = new Date(value);
@@ -46,9 +47,9 @@
     return apiGet(`/api/v1/economy/marketplace?${params}`);
   });
 
-  $: data = $marketplace.data;
+  let data = $derived($marketplace.data);
 
-  $: salesSeries = data
+  let salesSeries = $derived(data
     ? [
         {
           name: $t('marketplace.salesVolume'),
@@ -56,9 +57,9 @@
           points: (data.timeline || []).map((p) => ({ label: p.label, value: p.volume })),
         },
       ]
-    : [];
+    : []);
 
-  $: countSeries = data
+  let countSeries = $derived(data
     ? [
         {
           name: $t('marketplace.salesCount'),
@@ -66,14 +67,14 @@
           points: (data.timeline || []).map((p) => ({ label: p.label, value: p.sales })),
         },
       ]
-    : [];
+    : []);
 </script>
 
 <section class="panel">
   <div class="panel-head"><h2>{$t('marketplace.title')}</h2></div>
   <p class="muted">{$t('marketplace.description')}</p>
 
-  <form class="toolbar-grid" on:submit|preventDefault={marketplace.refresh}>
+  <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); marketplace.refresh(); }}>
     <label>
       {$t('common.since')}
       <input type="date" bind:value={since} />
@@ -105,16 +106,24 @@
 {#if data}
   <div class="metric-grid" style="margin-top: 12px;">
     <StatCard label={$t('marketplace.activeListings')} value={formatNumber(data.totals.activeListings)}>
-      <ShoppingCart slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <ShoppingCart size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('marketplace.soldWindow')} value={formatNumber(data.totals.soldCount)}>
-      <ShoppingBag slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <ShoppingBag size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('marketplace.volumeCredits')} value={formatNumber(data.totals.totalVolume)} accent>
-      <Coins slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Coins size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
     <StatCard label={$t('marketplace.averagePrice')} value={formatNumber(data.totals.averagePrice, 1)} accent>
-      <Coins slot="icon" size={15} strokeWidth={2} aria-hidden="true" />
+      {#snippet icon()}
+        <Coins size={15} strokeWidth={2} aria-hidden="true" />
+      {/snippet}
     </StatCard>
   </div>
 
