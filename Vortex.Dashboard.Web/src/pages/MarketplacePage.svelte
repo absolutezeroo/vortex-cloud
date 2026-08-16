@@ -35,19 +35,25 @@
     until = toLocalDateValue(end);
   }
 
-  // Synchronously at init, not in onMount: createResource reads the window on its own first pass,
-  // which happens before any onMount this page could register.
+  // Synchronously at init: the window is part of the cache key below, so it has to hold real dates
+  // before the first read is described.
   setDefaultWindow();
 
-  const marketplace = createResource(() => {
-    const params = new URLSearchParams({ granularity });
-    if (since) params.set('since', new Date(since).toISOString());
-    if (until) params.set('until', new Date(`${until}T23:59:59`).toISOString());
+  // The window and granularity ARE the identity of this read, so they belong in the key: flipping
+  // back to a range already looked at is served from cache, and the form no longer needs to ask for
+  // a refresh -- changing a field changes the key, and the read follows.
+  const marketplace = createResource(
+    () => ['marketplace', since, until, granularity],
+    () => {
+      const params = new URLSearchParams({ granularity });
+      if (since) params.set('since', new Date(since).toISOString());
+      if (until) params.set('until', new Date(`${until}T23:59:59`).toISOString());
 
-    return apiGet(`/api/v1/economy/marketplace?${params}`);
-  });
+      return apiGet(`/api/v1/economy/marketplace?${params}`);
+    }
+  );
 
-  let data = $derived($marketplace.data);
+  let data = $derived(marketplace.data);
 
   let salesSeries = $derived(data
     ? [
@@ -74,6 +80,9 @@
   <div class="panel-head"><h2>{$t('marketplace.title')}</h2></div>
   <p class="muted">{$t('marketplace.description')}</p>
 
+  <!-- Changing a field already re-reads (it changes the key), so this button no longer means "apply
+       the filters" -- it means "read again now", which is why it invalidates rather than refetches
+       blindly. -->
   <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); marketplace.refresh(); }}>
     <label>
       {$t('common.since')}
@@ -91,15 +100,15 @@
         {/each}
       </select>
     </label>
-    <button type="submit" disabled={$marketplace.loading}>{$t('common.refresh')}</button>
+    <button type="submit" disabled={marketplace.loading}>{$t('common.refresh')}</button>
   </form>
 
-  {#if $marketplace.loading}
+  {#if marketplace.loading}
     <p class="muted">{$t('marketplace.loading')}</p>
-  {:else if $marketplace.forbidden}
+  {:else if marketplace.forbidden}
     <AccessDeniedNotice message={$t('marketplace.accessDenied')} />
-  {:else if $marketplace.error}
-    <p class="empty-state danger">{$marketplace.error}</p>
+  {:else if marketplace.error}
+    <p class="empty-state danger">{marketplace.error}</p>
   {/if}
 </section>
 

@@ -42,26 +42,33 @@
 
   // Three endpoints, one screen, so one resource: the roster is meaningless without the stats header
   // and the hand-item table, and a page that loaded two of the three would be lying about the third.
-  const bots = createResource(async () => {
-    const params = new URLSearchParams({ page: String(page), limit: String(PAGE_SIZE) });
-    if (term.trim()) params.set('q', term.trim());
-    if (owner) params.set('ownerId', String(owner.id));
-    if (placedFilter) params.set('placed', placedFilter);
+  const bots = createResource(
+    () => ['bots', page, term.trim(), owner?.id ?? null, placedFilter],
+    async () => {
+      const params = new URLSearchParams({ page: String(page), limit: String(PAGE_SIZE) });
+      if (term.trim()) params.set('q', term.trim());
+      if (owner) params.set('ownerId', String(owner.id));
+      if (placedFilter) params.set('placed', placedFilter);
 
-    const [list, stats, handItems] = await Promise.all([
-      apiGet(`/api/v1/bots?${params}`),
-      apiGet('/api/v1/bots/stats'),
-      apiGet('/api/v1/hand-items'),
-    ]);
+      const [list, stats, handItems] = await Promise.all([
+        apiGet(`/api/v1/bots?${params}`),
+        apiGet('/api/v1/bots/stats'),
+        apiGet('/api/v1/hand-items'),
+      ]);
 
-    return { list, stats, handItems };
-  });
+      return { list, stats, handItems };
+    }
+  );
 
-  let { list, stats, handItems } = $derived($bots.data ?? {});
+  let { list, stats, handItems } = $derived(bots.data ?? {});
 
-  // The expanded row's bot. Its own resource because it is read on demand rather than with the page
-  // -- `immediate: false` is exactly that: no read until select() asks for one.
-  const detail = createResource(() => apiGet(`/api/v1/bots/${selected}`), { immediate: false });
+  // The expanded row's bot, keyed by which row is open: selecting a bot IS the request, and a bot
+  // looked at once reopens from cache. `enabled` is what keeps it from firing with no selection.
+  const detail = createResource(
+    () => ['bot', selected],
+    () => apiGet(`/api/v1/bots/${selected}`),
+    { enabled: () => selected !== null }
+  );
 
   const ops = createWriteOps(bots.refresh);
 
@@ -82,12 +89,10 @@
 
   function goToPage(next) {
     page = next;
-    void bots.refresh();
   }
 
   function search() {
     page = 1;
-    void bots.refresh();
   }
 
   // The server returns the client's own skill identifiers; map them to copy an operator can read,
@@ -112,13 +117,7 @@
   }
 
   function select(row) {
-    if (selected === row.id) {
-      selected = null;
-      return;
-    }
-
-    selected = row.id;
-    void detail.refresh();
+    selected = selected === row.id ? null : row.id;
   }
 
   let growthSeries = $derived(stats
@@ -155,18 +154,18 @@
         <option value="false">{$t('bots.placementInventory')}</option>
       </select>
     </label>
-    <button type="submit" disabled={$bots.loading}>{$t('common.refresh')}</button>
+    <button type="submit" disabled={bots.loading}>{$t('common.refresh')}</button>
     {#if owner}
       <button type="button" class="ghost-button" onclick={clearOwner}>{$t('bots.clearOwner')}</button>
     {/if}
   </form>
 
-  {#if $bots.loading}
+  {#if bots.loading}
     <p class="muted">{$t('common.loading')}</p>
-  {:else if $bots.forbidden}
+  {:else if bots.forbidden}
     <AccessDeniedNotice message={$t('bots.accessDenied')} />
-  {:else if $bots.error}
-    <p class="empty-state danger">{$bots.error}</p>
+  {:else if bots.error}
+    <p class="empty-state danger">{bots.error}</p>
   {/if}
 </section>
 
@@ -301,21 +300,21 @@
             {#if selected === row.id}
               <tr>
                 <td colspan={canManage ? 8 : 7}>
-                  {#if $detail.loading}
+                  {#if detail.loading}
                     <p class="muted">{$t('common.loading')}</p>
-                  {:else if $detail.error}
-                    <p class="empty-state danger">{$detail.error}</p>
-                  {:else if $detail.data}
+                  {:else if detail.error}
+                    <p class="empty-state danger">{detail.error}</p>
+                  {:else if detail.data}
                     <dl class="detail-grid">
-                      <div><dt>{$t('bots.detailFigure')}</dt><dd><code>{$detail.data.figure}</code></dd></div>
-                      <div><dt>{$t('bots.detailGender')}</dt><dd>{$detail.data.gender}</dd></div>
-                      <div><dt>{$t('bots.detailDelay')}</dt><dd>{$detail.data.chatDelaySeconds}s</dd></div>
-                      <div><dt>{$t('bots.detailMix')}</dt><dd>{$detail.data.mixSentences ? $t('common.yes') : $t('common.no')}</dd></div>
-                      <div><dt>{$t('bots.detailCreated')}</dt><dd>{new Date($detail.data.createdAt).toLocaleString()}</dd></div>
+                      <div><dt>{$t('bots.detailFigure')}</dt><dd><code>{detail.data.figure}</code></dd></div>
+                      <div><dt>{$t('bots.detailGender')}</dt><dd>{detail.data.gender}</dd></div>
+                      <div><dt>{$t('bots.detailDelay')}</dt><dd>{detail.data.chatDelaySeconds}s</dd></div>
+                      <div><dt>{$t('bots.detailMix')}</dt><dd>{detail.data.mixSentences ? $t('common.yes') : $t('common.no')}</dd></div>
+                      <div><dt>{$t('bots.detailCreated')}</dt><dd>{new Date(detail.data.createdAt).toLocaleString()}</dd></div>
                     </dl>
-                    {#if ($detail.data.phrases || []).length > 0}
+                    {#if (detail.data.phrases || []).length > 0}
                       <ul class="phrase-list">
-                        {#each $detail.data.phrases as phrase}
+                        {#each detail.data.phrases as phrase}
                           <li>{phrase}</li>
                         {/each}
                       </ul>
@@ -385,7 +384,7 @@
         pageWord={$t('common.page')}
         prevLabel={$t('common.prev')}
         nextLabel={$t('common.next')}
-        disabled={$bots.loading}
+        disabled={bots.loading}
         onchange={goToPage}
       />
     {/if}

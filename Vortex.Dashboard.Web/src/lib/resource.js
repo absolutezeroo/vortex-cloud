@@ -1,94 +1,88 @@
-// Every page in this dashboard reads the same way: raise a loading flag, GET, sort the failure into
-// "the session does not hold this capability" versus everything else, drop the data, lower the flag.
-// It was written out by hand once per page -- `forbidden = true` appears in 41 files -- and every
-// copy is a chance to forget one of the four states, to report a timeout as a bare HTTP code, or to
-// let a slow response overwrite a newer one.
+// The dashboard's read cycle, backed by TanStack Query.
 //
-// createResource owns that cycle the way createWriteOps owns the write cycle, so a page describes
-// what it reads instead of how reading works.
+// This stays a wrapper rather than pages calling createQuery directly, because two of the four
+// states a dashboard page shows are not things TanStack knows about: a read refused for want of a
+// capability is not an error to apologise for (the page owns that branch and names the missing
+// capability), and a timeout / dropped connection / 429 has to become the sentence describeApiError
+// already writes rather than a raw code. Roughly forty pages still hand-roll this cycle; they should
+// migrate onto one helper, not onto one library plus a copy of those two rules each.
 //
 // Usage in a page:
-//   const rooms = createResource(() => apiGet('/api/v1/rooms'));
-//   $: items = $rooms.data?.items ?? [];
-//   {#if $rooms.loading} ... {:else if $rooms.forbidden} <AccessDeniedNotice ... /> {/if}
+//   const rooms = createResource(() => ['rooms'], () => apiGet('/api/v1/rooms'));
+//   $: items = rooms.data?.items ?? [];
+//   {#if rooms.loading} ... {:else if rooms.forbidden} <AccessDeniedNotice ... /> {/if}
 //
-// The loader is a closure, so it reads whatever the page's filter variables hold at the moment
-// refresh() runs. A search box or a page number needs no wiring beyond calling refresh():
-//   const list = createResource(() => apiGet(`/api/v1/bots?page=${page}`));
-//   function search() { page = 1; void list.refresh(); }
+// The KEY is the important half and the part that is new. It is a function so it re-reads the
+// page's filter variables, and it is the cache identity: two different pages of the same list are
+// two entries, so paging back is instant instead of a round trip.
 //
-// Several endpoints that belong to one screen are ONE resource, not three -- return them together
-// and the page keeps a single loading flag and a single failure path, instead of a screen that is
-// half-loaded and half-refused:
-//   const data = createResource(async () => {
-//     const [list, stats] = await Promise.all([apiGet('/api/v1/bots'), apiGet('/api/v1/bots/stats')]);
-//     return { list, stats };
-//   });
+//   const list = createResource(() => ['bots', page, term], () => apiGet(`/api/v1/bots?...`));
+//   function search() { page = 1; }   // no refresh() -- the key changed, so the read follows
 //
-// It pairs with createWriteOps -- hand it the refresh so a committed write re-reads the page:
-//   const ops = createWriteOps(data.refresh);
-import { onMount } from 'svelte';
-import { writable } from 'svelte/store';
+// That is the behaviour change worth knowing about: moving a filter no longer needs a refresh()
+// call, and neither does mounting. refresh() is now only for "something I wrote made this stale",
+// and it invalidates the whole FAMILY (every key starting with the same first segment), because a
+// create or a delete makes every page and every filter of that list stale, not just the one on
+// screen.
+//
+// Reads that wait to be asked for -- a panel behind a tab, a row's detail -- pass `enabled`:
+//   const detail = createResource(() => ['bot', selected], () => apiGet(`/api/v1/bots/${selected}`),
+//     { enabled: () => selected !== null });
+//
+// It still pairs with createWriteOps -- hand it the refresh so a committed write re-reads:
+//   const ops = createWriteOps(bots.refresh);
+import { createQuery, useQueryClient, keepPreviousData } from '@tanstack/svelte-query';
 import { describeApiError } from './api.js';
 import { isPermissionDeniedError } from './permissions.js';
 
+/** Reads stay fresh for half a minute; a dashboard operator is reading, not trading. */
+const DEFAULT_STALE_TIME_MS = 30_000;
+
 /**
- * @param loader called on every read; whatever it resolves to becomes `data`.
- * @param options.initial what `data` holds before the first read and after a failure (default null).
- * @param options.immediate set false for a resource that must not read until the page says so --
- *        a panel behind a tab, or a list that needs a row selected first.
+ * @param key () => unknown[] -- the cache identity, re-read whenever the page's filters change.
+ * @param loader () => Promise<T> -- the actual request.
+ * @param options.enabled () => boolean -- false holds the read back entirely.
+ * @param options.staleTime how long a cached read is served without a refetch.
  */
-export function createResource(loader, options = {}) {
-  const initial = options.initial ?? null;
-  const state = writable({ data: initial, loading: false, error: '', forbidden: false });
+export function createResource(key, loader, options = {}) {
+  const client = useQueryClient();
 
-  // Guards against out-of-order responses. Two refreshes in flight -- an operator retyping a search,
-  // or a filter changed while the first read is still travelling -- and the *slower* one lands last
-  // and wins, leaving the table showing results for a query that is no longer on screen. Every
-  // hand-written copy of this cycle had that bug; none of them could have it consistently fixed
-  // without this counter, because the page has nothing to compare a stale reply against.
-  let sequence = 0;
+  const query = createQuery(() => ({
+    queryKey: key(),
+    queryFn: loader,
+    enabled: options.enabled ? options.enabled() : true,
+    staleTime: options.staleTime ?? DEFAULT_STALE_TIME_MS,
+    // Keep the rows on screen while the next page travels, so changing a filter does not blank the
+    // table and jump the scroll. This is what the hand-written version did by never clearing on the
+    // way out, and it is why `loading` below maps to isFetching rather than isPending.
+    placeholderData: keepPreviousData,
+    // Retrying a 403 is pointless -- the session will not gain the capability on the second attempt
+    // -- and it delays the notice the operator needs to read.
+    retry: (failureCount, error) => !isPermissionDeniedError(error) && failureCount < 2,
+  }));
 
-  async function refresh() {
-    const mine = ++sequence;
+  // Getters rather than a snapshot: each read happens inside the caller's render, so it registers
+  // as a dependency there. That is also why this file needs no runes of its own.
+  return {
+    /** Cleared on failure, so a page never draws stale rows underneath an error it just reported. */
+    get data() {
+      return query.isError ? undefined : query.data;
+    },
+    get loading() {
+      return query.isFetching;
+    },
+    get error() {
+      if (!query.isError || isPermissionDeniedError(query.error)) return '';
 
-    // Deliberately does NOT clear `data`: keeping the previous rows on screen while the next read
-    // travels is what stops every filter change from blanking the page and jumping the scroll.
-    state.update((s) => ({ ...s, loading: true, error: '', forbidden: false }));
-
-    try {
-      const data = await loader();
-
-      if (mine !== sequence) return false;
-
-      state.update((s) => ({ ...s, data, loading: false }));
-      return true;
-    } catch (err) {
-      if (mine !== sequence) return false;
-
-      // A refused read is not an error to apologise for -- the page owns that branch and shows the
-      // operator which capability is missing, so it gets its own flag rather than an error string.
-      if (isPermissionDeniedError(err)) {
-        state.update((s) => ({ ...s, data: initial, loading: false, forbidden: true }));
-        return false;
-      }
-
-      // describeApiError, not err.message: a timeout, a dropped connection or a 429 each become a
-      // sentence the operator can act on. The hand-written copies surfaced the raw code.
-      state.update((s) => ({ ...s, data: initial, loading: false, error: describeApiError(err) }));
-      return false;
-    }
-  }
-
-  // Registered here rather than left to the page, which is why createResource must be called at the
-  // top level of a component's <script>. A page that needs state prepared before the first read
-  // (a default date window, say) should prepare it synchronously at init, not in its own onMount --
-  // this callback is registered at the point createResource is called and would run first.
-  if (options.immediate !== false) {
-    onMount(() => {
-      void refresh();
-    });
-  }
-
-  return { subscribe: state.subscribe, refresh };
+      return describeApiError(query.error);
+    },
+    /** The read was refused for want of a capability; the page names which one. */
+    get forbidden() {
+      return query.isError && isPermissionDeniedError(query.error);
+    },
+    /** Marks the whole family stale -- see the note above on why it is the family and not this key. */
+    refresh() {
+      return client.invalidateQueries({ queryKey: key().slice(0, 1) });
+    },
+  };
 }

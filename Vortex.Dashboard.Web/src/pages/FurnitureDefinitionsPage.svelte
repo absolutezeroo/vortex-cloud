@@ -66,28 +66,29 @@
   // error and result under its own key -- so the page only describes what each button writes.
   const ops = createWriteOps();
 
-  // The search box and the page number are read from here at call time, so paging and searching are
-  // just "move the variable, refresh" -- no state to thread through.
-  const definitions = createResource(() => {
-    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
-    if (query.trim()) params.set('q', query.trim());
+  // Page and search term are the cache key, so paging is "move the variable" and nothing else --
+  // the read follows, and stepping back to a page already seen is served from cache.
+  const definitions = createResource(
+    () => ['furniture-definitions', page, limit, query.trim()],
+    () => {
+      const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+      if (query.trim()) params.set('q', query.trim());
 
-    return apiGet(`/api/v1/furniture/definitions?${params}`);
-  });
+      return apiGet(`/api/v1/furniture/definitions?${params}`);
+    }
+  );
 
   let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsFurnitureManage));
-  let items = $derived($definitions.data?.items ?? []);
-  let total = $derived($definitions.data?.total ?? 0);
+  let items = $derived(definitions.data?.items ?? []);
+  let total = $derived(definitions.data?.total ?? 0);
   let totalPages = $derived(Math.max(1, Math.ceil(total / limit)));
 
   function search() {
     page = 1;
-    void definitions.refresh();
   }
 
   function goToPage(next) {
     page = Math.min(totalPages, Math.max(1, next));
-    void definitions.refresh();
   }
 
   function specFrom(form) {
@@ -222,7 +223,7 @@
 
   <form class="toolbar" onsubmit={(event) => { event.preventDefault(); search(); }}>
     <input bind:value={query} placeholder={$t('furnitureAdmin.searchPlaceholder')} />
-    <button type="submit" disabled={$definitions.loading}>{$t('furnitureAdmin.search')}</button>
+    <button type="submit" disabled={definitions.loading}>{$t('furnitureAdmin.search')}</button>
   </form>
 
   {#if newOpen}
@@ -315,12 +316,12 @@
     </div>
   {/if}
 
-  {#if $definitions.forbidden}
+  {#if definitions.forbidden}
     <AccessDeniedNotice message={$t('furnitureAdmin.accessDenied')} />
-  {:else if $definitions.loading}
+  {:else if definitions.loading}
     <p class="muted">{$t('furnitureAdmin.loading')}</p>
-  {:else if $definitions.error}
-    <p class="empty-state danger">{$definitions.error}</p>
+  {:else if definitions.error}
+    <p class="empty-state danger">{definitions.error}</p>
   {:else if items.length === 0}
     <p class="empty-state">{$t('furnitureAdmin.noMatch')}</p>
   {:else}

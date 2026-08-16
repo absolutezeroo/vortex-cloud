@@ -8,6 +8,7 @@
     "lint": "eslint src"
   },
   "dependencies": {
+    "@tanstack/svelte-query": "^6.1.38",
     "svelte-spa-router": "^4.0.1"
   },
   "devDependencies": {

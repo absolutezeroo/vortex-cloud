@@ -2,6 +2,7 @@
 
   import { onMount } from 'svelte';
   import Router, { replace, location } from 'svelte-spa-router';
+  import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
   import { AlertTriangle, RefreshCw, WifiOff } from '@lucide/svelte';
   import {
     describeApiError,
@@ -16,6 +17,11 @@
   import AppShell from './components/AppShell.svelte';
   import Login from './components/Login.svelte';
   import EntityModal from './components/EntityModal.svelte';
+
+  // One client for the whole dashboard: it is the cache, so navigating away from a page and back
+  // reuses what was already read instead of asking again. Per-read policy (staleness, what counts as
+  // a retryable failure) lives in lib/resource.js, next to the rules it depends on.
+  const queryClient = new QueryClient();
 
   let status = $state('loading'); // 'loading' | 'login' | 'ready' | 'unavailable'
   let bootMessage = $state('');
@@ -158,63 +164,67 @@
   });
 </script>
 
-{#if status === 'loading'}
-  <div class="boot-screen">
-    <section class="boot-panel" aria-live="polite">
-      <RefreshCw size={24} class="spin" />
-      <div>
-        <p class="eyebrow">{$t('nav.brandTitle')}</p>
-        <h1>{$t('boot.checkingEmulator')}</h1>
-      </div>
-    </section>
-  </div>
-{:else if status === 'unavailable'}
-  <div class="boot-screen">
-    <section class="boot-panel boot-panel--wide" role="status" aria-live="polite">
-      <WifiOff size={30} />
-      <div>
-        <p class="eyebrow">{$t('boot.unavailableEyebrow')}</p>
-        <h1>{$t('boot.connectionPaused')}</h1>
-        <p>{bootMessage || $connectionIssue?.message || $t('boot.unreachable')}</p>
-      </div>
-      <button type="button" onclick={() => retryConnection(false)} disabled={retryBusy}>
-        <RefreshCw size={16} class={retryBusy ? 'spin' : ''} />
-        <span>{retryBusy ? $t('boot.retrying') : $t('boot.retryNow')}</span>
-      </button>
-      <small>{$t('boot.autoRetry')}</small>
-    </section>
-  </div>
-{:else if status === 'login'}
-  {#if $connectionIssue}
-    <div class="connection-banner" role="status">
-      <AlertTriangle size={16} />
-      <span>{$connectionIssue.message}</span>
-      <button type="button" onclick={() => retryConnection(true)} disabled={retryBusy}>
-        <RefreshCw size={14} class={retryBusy ? 'spin' : ''} />
-        <span>{$t('common.retry')}</span>
-      </button>
+<QueryClientProvider client={queryClient}>
+
+  {#if status === 'loading'}
+    <div class="boot-screen">
+      <section class="boot-panel" aria-live="polite">
+        <RefreshCw size={24} class="spin" />
+        <div>
+          <p class="eyebrow">{$t('nav.brandTitle')}</p>
+          <h1>{$t('boot.checkingEmulator')}</h1>
+        </div>
+      </section>
     </div>
+  {:else if status === 'unavailable'}
+    <div class="boot-screen">
+      <section class="boot-panel boot-panel--wide" role="status" aria-live="polite">
+        <WifiOff size={30} />
+        <div>
+          <p class="eyebrow">{$t('boot.unavailableEyebrow')}</p>
+          <h1>{$t('boot.connectionPaused')}</h1>
+          <p>{bootMessage || $connectionIssue?.message || $t('boot.unreachable')}</p>
+        </div>
+        <button type="button" onclick={() => retryConnection(false)} disabled={retryBusy}>
+          <RefreshCw size={16} class={retryBusy ? 'spin' : ''} />
+          <span>{retryBusy ? $t('boot.retrying') : $t('boot.retryNow')}</span>
+        </button>
+        <small>{$t('boot.autoRetry')}</small>
+      </section>
+    </div>
+  {:else if status === 'login'}
+    {#if $connectionIssue}
+      <div class="connection-banner" role="status">
+        <AlertTriangle size={16} />
+        <span>{$connectionIssue.message}</span>
+        <button type="button" onclick={() => retryConnection(true)} disabled={retryBusy}>
+          <RefreshCw size={14} class={retryBusy ? 'spin' : ''} />
+          <span>{$t('common.retry')}</span>
+        </button>
+      </div>
+    {/if}
+
+    <Login onAuthenticated={loadIdentity} />
+  {:else}
+    {#if $connectionIssue}
+      <div class="connection-banner" role="status">
+        <AlertTriangle size={16} />
+        <span>{$connectionIssue.message}</span>
+        <button type="button" onclick={() => retryConnection(true)} disabled={retryBusy}>
+          <RefreshCw size={14} class={retryBusy ? 'spin' : ''} />
+          <span>{$t('common.retry')}</span>
+        </button>
+      </div>
+    {/if}
+
+    <AppShell logout={handleLogout} {logoutBusy}>
+      <Router {routes} on:conditionsFailed={handleConditionsFailed} />
+    </AppShell>
+
+    <EntityModal />
   {/if}
 
-  <Login onAuthenticated={loadIdentity} />
-{:else}
-  {#if $connectionIssue}
-    <div class="connection-banner" role="status">
-      <AlertTriangle size={16} />
-      <span>{$connectionIssue.message}</span>
-      <button type="button" onclick={() => retryConnection(true)} disabled={retryBusy}>
-        <RefreshCw size={14} class={retryBusy ? 'spin' : ''} />
-        <span>{$t('common.retry')}</span>
-      </button>
-    </div>
-  {/if}
-
-  <AppShell logout={handleLogout} {logoutBusy}>
-    <Router {routes} on:conditionsFailed={handleConditionsFailed} />
-  </AppShell>
-
-  <EntityModal />
-{/if}
+</QueryClientProvider>
 
 <style>
   .boot-screen {
