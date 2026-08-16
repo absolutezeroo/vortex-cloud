@@ -18,6 +18,13 @@ public interface IWiredPolicy
     /// <summary>How many past firings the random mode avoids repeating, from the same add-on's
     /// second slider. Zero lets it draw the same effect twice in a row.</summary>
     public int EffectAvoidRecentExecutions { get; set; }
+
+    /// <summary>How many times the pile may run inside <see cref="ExecutionWindowMs"/>. Zero is no
+    /// limit at all, which is what a pile without the execution-limit add-on has.</summary>
+    public int ExecutionLimit { get; set; }
+
+    /// <summary>The window the limit is counted over.</summary>
+    public int ExecutionWindowMs { get; set; }
     public WiredAnimationModeType AnimationMode { get; set; }
     public int AnimationTimeMs { get; set; }
     public TimeSpan Delay { get; set; }

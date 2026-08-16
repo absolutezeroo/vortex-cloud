@@ -5,4 +5,5 @@ public enum WiredEffectModeType
     All = 0,
     Random = 1,
     FirstOnly = 2,
+    Unseen = 3,
 }

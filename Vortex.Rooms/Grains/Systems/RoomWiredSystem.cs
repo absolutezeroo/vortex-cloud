@@ -61,6 +61,12 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
     // already in this set is skipped rather than entered twice.
     private readonly HashSet<int> _callChainTiles = [];
 
+    // Which effects each pile has already run since its "unseen" cycle last reset, and when each
+    // pile fired, for the execution limit. Both are keyed by stack (tile) id and are ephemeral: a
+    // room that unloads starts its cycles and its windows again.
+    private readonly Dictionary<int, WiredUnseenCycle> _unseenCycles = [];
+    private readonly Dictionary<int, WiredExecutionWindow> _executionWindows = [];
+
     // What each pile's random add-on drew on its last firings, so "avoid effects from the last N
     // executions" has something to avoid. Keyed by stack (tile) id, oldest firing first.
     private readonly Dictionary<int, Queue<HashSet<int>>> _recentRandomPicks = [];
@@ -384,6 +390,13 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         // distinguishable. It also means a trigger that seals the triggering user into the
         // selection has done so before the conditions read it.
         if (!await trigger.CanTriggerAsync(ctx, ct))
+        {
+            return;
+        }
+
+        // The limit is asked after the add-ons have spoken (they are what sets it) and before any
+        // branch runs, so a pile that is over its quota costs nothing at all this firing.
+        if (!TryConsumeExecutionAllowance(ctx.Stack.StackId, ctx.Policy, now))
         {
             return;
         }
@@ -1066,9 +1079,58 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         {
             WiredEffectModeType.FirstOnly => [actions[0]],
             WiredEffectModeType.Random => ChooseRandomActions(stackId, actions, policy),
+            WiredEffectModeType.Unseen => ChooseUnseenAction(stackId, actions),
             _ => [.. actions],
         };
     }
+
+    /// <summary>
+    /// Whether this pile may fire now, against the execution-limit add-on's "N times per window".
+    /// Records the firing when it may.
+    /// </summary>
+    /// <remarks>
+    /// The window is rolling rather than fixed: firings older than it are forgotten as we go, so a
+    /// pile limited to 3 per 5 seconds can always fire again 5 seconds after its third — it does not
+    /// wait for a bucket to expire.
+    /// </remarks>
+    private bool TryConsumeExecutionAllowance(int stackId, IWiredPolicy policy, long nowMs)
+    {
+        if (policy.ExecutionLimit <= 0 || policy.ExecutionWindowMs <= 0)
+        {
+            _executionWindows.Remove(stackId);
+
+            return true;
+        }
+
+        if (!_executionWindows.TryGetValue(stackId, out WiredExecutionWindow? window))
+        {
+            window = new WiredExecutionWindow();
+            _executionWindows[stackId] = window;
+        }
+
+        return window.TryConsume(policy.ExecutionLimit, policy.ExecutionWindowMs, nowMs);
+    }
+
+    /// <summary>
+    /// One effect the pile has not run yet, in the pile's own order. When every effect has been
+    /// seen the cycle starts over, so the pile keeps firing rather than falling silent once it has
+    /// been through them all.
+    /// </summary>
+    private List<IWiredAction> ChooseUnseenAction(int stackId, List<IWiredAction> actions)
+    {
+        if (!_unseenCycles.TryGetValue(stackId, out WiredUnseenCycle? cycle))
+        {
+            cycle = new WiredUnseenCycle();
+            _unseenCycles[stackId] = cycle;
+        }
+
+        int index = cycle.Next([.. actions.Select(ObjectIdOf)]);
+
+        return index < 0 ? [] : [actions[index]];
+    }
+
+    private static int ObjectIdOf(IWiredAction action) =>
+        (action as FurnitureWiredLogic)?.ObjectId.Value ?? 0;
 
     /// <summary>
     /// The random add-on's draw: N effects, avoiding what the pile ran in its last M firings. The
