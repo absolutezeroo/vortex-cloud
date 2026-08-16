@@ -2,8 +2,8 @@
   // Bots are authored from inside the client, so this page reads. What it adds over the raw table is
   // the decoded skill blob: a bot whose menu shows no buttons, or one configured to chat but with
   // zero phrases, looks identical in `bots` and completely different here.
-  import { onMount } from 'svelte';
   import { apiGet } from '../lib/api.js';
+  import { createResource } from '../lib/resource.js';
   import { createWriteOps } from '../lib/writeOps.js';
   import { hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
@@ -12,7 +12,6 @@
   import OpResult from '../components/OpResult.svelte';
 
   import { formatNumber } from '../lib/format.js';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer } from '../lib/session.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import AssetImage from '../components/AssetImage.svelte';
@@ -32,23 +31,38 @@
   let owner = null;
   let placedFilter = '';
   let page = 1;
-  let loading = false;
-  let forbidden = false;
-  let error = '';
-  let list = null;
-  let stats = null;
-  let handItems = null;
   let selected = null;
 
   // These sections are independent jobs that were stacked vertically, so reaching the last one
   // meant scrolling past every other. Nothing here is read against anything else -- which is
   // both what makes tabs right and what would have made them wrong.
   let tab = 'roster';
-  let detail = null;
-  let detailLoading = false;
   let pickingOwner = false;
 
-  const ops = createWriteOps(refresh);
+  // Three endpoints, one screen, so one resource: the roster is meaningless without the stats header
+  // and the hand-item table, and a page that loaded two of the three would be lying about the third.
+  const bots = createResource(async () => {
+    const params = new URLSearchParams({ page: String(page), limit: String(PAGE_SIZE) });
+    if (term.trim()) params.set('q', term.trim());
+    if (owner) params.set('ownerId', String(owner.id));
+    if (placedFilter) params.set('placed', placedFilter);
+
+    const [list, stats, handItems] = await Promise.all([
+      apiGet(`/api/v1/bots?${params}`),
+      apiGet('/api/v1/bots/stats'),
+      apiGet('/api/v1/hand-items'),
+    ]);
+
+    return { list, stats, handItems };
+  });
+
+  $: ({ list, stats, handItems } = $bots.data ?? {});
+
+  // The expanded row's bot. Its own resource because it is read on demand rather than with the page
+  // -- `immediate: false` is exactly that: no read until select() asks for one.
+  const detail = createResource(() => apiGet(`/api/v1/bots/${selected}`), { immediate: false });
+
+  const ops = createWriteOps(bots.refresh);
 
   $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsContentManage);
 
@@ -65,49 +79,14 @@
 
   $: totalPages = list ? Math.max(1, Math.ceil((list.total || 0) / (list.limit || PAGE_SIZE))) : 1;
 
-  async function refresh() {
-    loading = true;
-    error = '';
-    forbidden = false;
-
-    const params = new URLSearchParams({ page: String(page), limit: String(PAGE_SIZE) });
-    if (term.trim()) params.set('q', term.trim());
-    if (owner) params.set('ownerId', String(owner.id));
-    if (placedFilter) params.set('placed', placedFilter);
-
-    try {
-      const [listResult, statsResult, handItemsResult] = await Promise.all([
-        apiGet(`/api/v1/bots?${params}`),
-        apiGet('/api/v1/bots/stats'),
-        apiGet('/api/v1/hand-items'),
-      ]);
-      list = listResult;
-      stats = statsResult;
-      handItems = handItemsResult;
-    } catch (err) {
-      if (isPermissionDeniedError(err)) {
-        forbidden = true;
-        list = null;
-        stats = null;
-        handItems = null;
-        return;
-      }
-
-      error = err.message;
-      list = null;
-    } finally {
-      loading = false;
-    }
-  }
-
   function goToPage(next) {
     page = next;
-    void refresh();
+    void bots.refresh();
   }
 
   function search() {
     page = 1;
-    void refresh();
+    void bots.refresh();
   }
 
   // The server returns the client's own skill identifiers; map them to copy an operator can read,
@@ -131,24 +110,14 @@
     search();
   }
 
-  async function select(row) {
+  function select(row) {
     if (selected === row.id) {
       selected = null;
-      detail = null;
       return;
     }
 
     selected = row.id;
-    detail = null;
-    detailLoading = true;
-
-    try {
-      detail = await apiGet(`/api/v1/bots/${row.id}`);
-    } catch (err) {
-      error = err.message;
-    } finally {
-      detailLoading = false;
-    }
+    void detail.refresh();
   }
 
   $: growthSeries = stats
@@ -160,10 +129,6 @@
         },
       ]
     : [];
-
-  onMount(() => {
-    void refresh();
-  });
 </script>
 
 <section class="panel">
@@ -189,18 +154,18 @@
         <option value="false">{$t('bots.placementInventory')}</option>
       </select>
     </label>
-    <button type="submit" disabled={loading}>{$t('common.refresh')}</button>
+    <button type="submit" disabled={$bots.loading}>{$t('common.refresh')}</button>
     {#if owner}
       <button type="button" class="ghost-button" on:click={clearOwner}>{$t('bots.clearOwner')}</button>
     {/if}
   </form>
 
-  {#if loading}
+  {#if $bots.loading}
     <p class="muted">{$t('common.loading')}</p>
-  {:else if forbidden}
+  {:else if $bots.forbidden}
     <AccessDeniedNotice message={$t('bots.accessDenied')} />
-  {:else if error}
-    <p class="empty-state danger">{error}</p>
+  {:else if $bots.error}
+    <p class="empty-state danger">{$bots.error}</p>
   {/if}
 </section>
 
@@ -322,19 +287,21 @@
             {#if selected === row.id}
               <tr>
                 <td colspan={canManage ? 8 : 7}>
-                  {#if detailLoading}
+                  {#if $detail.loading}
                     <p class="muted">{$t('common.loading')}</p>
-                  {:else if detail}
+                  {:else if $detail.error}
+                    <p class="empty-state danger">{$detail.error}</p>
+                  {:else if $detail.data}
                     <dl class="detail-grid">
-                      <div><dt>{$t('bots.detailFigure')}</dt><dd><code>{detail.figure}</code></dd></div>
-                      <div><dt>{$t('bots.detailGender')}</dt><dd>{detail.gender}</dd></div>
-                      <div><dt>{$t('bots.detailDelay')}</dt><dd>{detail.chatDelaySeconds}s</dd></div>
-                      <div><dt>{$t('bots.detailMix')}</dt><dd>{detail.mixSentences ? $t('common.yes') : $t('common.no')}</dd></div>
-                      <div><dt>{$t('bots.detailCreated')}</dt><dd>{new Date(detail.createdAt).toLocaleString()}</dd></div>
+                      <div><dt>{$t('bots.detailFigure')}</dt><dd><code>{$detail.data.figure}</code></dd></div>
+                      <div><dt>{$t('bots.detailGender')}</dt><dd>{$detail.data.gender}</dd></div>
+                      <div><dt>{$t('bots.detailDelay')}</dt><dd>{$detail.data.chatDelaySeconds}s</dd></div>
+                      <div><dt>{$t('bots.detailMix')}</dt><dd>{$detail.data.mixSentences ? $t('common.yes') : $t('common.no')}</dd></div>
+                      <div><dt>{$t('bots.detailCreated')}</dt><dd>{new Date($detail.data.createdAt).toLocaleString()}</dd></div>
                     </dl>
-                    {#if (detail.phrases || []).length > 0}
+                    {#if ($detail.data.phrases || []).length > 0}
                       <ul class="phrase-list">
-                        {#each detail.phrases as phrase}
+                        {#each $detail.data.phrases as phrase}
                           <li>{phrase}</li>
                         {/each}
                       </ul>
@@ -402,7 +369,7 @@
         pageWord={$t('common.page')}
         prevLabel={$t('common.prev')}
         nextLabel={$t('common.next')}
-        disabled={loading}
+        disabled={$bots.loading}
         on:change={(e) => goToPage(e.detail)}
       />
     {/if}

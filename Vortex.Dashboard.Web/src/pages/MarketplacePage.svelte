@@ -1,8 +1,7 @@
 <script>
-  import { onMount } from 'svelte';
   import { apiGet } from '../lib/api.js';
+  import { createResource } from '../lib/resource.js';
   import { formatNumber } from '../lib/format.js';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import LineChart from '../components/LineChart.svelte';
@@ -22,10 +21,6 @@
   let since = '';
   let until = '';
   let granularity = 'day';
-  let loading = false;
-  let forbidden = false;
-  let error = '';
-  let data = null;
 
   function toLocalDateValue(value) {
     const date = new Date(value);
@@ -39,30 +34,19 @@
     until = toLocalDateValue(end);
   }
 
-  async function refresh() {
-    loading = true;
-    error = '';
-    forbidden = false;
+  // Synchronously at init, not in onMount: createResource reads the window on its own first pass,
+  // which happens before any onMount this page could register.
+  setDefaultWindow();
 
+  const marketplace = createResource(() => {
     const params = new URLSearchParams({ granularity });
     if (since) params.set('since', new Date(since).toISOString());
     if (until) params.set('until', new Date(`${until}T23:59:59`).toISOString());
 
-    try {
-      data = await apiGet(`/api/v1/economy/marketplace?${params}`);
-    } catch (err) {
-      if (isPermissionDeniedError(err)) {
-        forbidden = true;
-        data = null;
-        return;
-      }
+    return apiGet(`/api/v1/economy/marketplace?${params}`);
+  });
 
-      error = err.message;
-      data = null;
-    } finally {
-      loading = false;
-    }
-  }
+  $: data = $marketplace.data;
 
   $: salesSeries = data
     ? [
@@ -83,18 +67,13 @@
         },
       ]
     : [];
-
-  onMount(() => {
-    setDefaultWindow();
-    void refresh();
-  });
 </script>
 
 <section class="panel">
   <div class="panel-head"><h2>{$t('marketplace.title')}</h2></div>
   <p class="muted">{$t('marketplace.description')}</p>
 
-  <form class="toolbar-grid" on:submit|preventDefault={refresh}>
+  <form class="toolbar-grid" on:submit|preventDefault={marketplace.refresh}>
     <label>
       {$t('common.since')}
       <input type="date" bind:value={since} />
@@ -111,15 +90,15 @@
         {/each}
       </select>
     </label>
-    <button type="submit" disabled={loading}>{$t('common.refresh')}</button>
+    <button type="submit" disabled={$marketplace.loading}>{$t('common.refresh')}</button>
   </form>
 
-  {#if loading}
+  {#if $marketplace.loading}
     <p class="muted">{$t('marketplace.loading')}</p>
-  {:else if forbidden}
+  {:else if $marketplace.forbidden}
     <AccessDeniedNotice message={$t('marketplace.accessDenied')} />
-  {:else if error}
-    <p class="empty-state danger">{error}</p>
+  {:else if $marketplace.error}
+    <p class="empty-state danger">{$marketplace.error}</p>
   {/if}
 </section>
 

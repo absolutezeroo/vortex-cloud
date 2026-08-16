@@ -1,11 +1,11 @@
 <script>
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
   import OpResult from '../components/OpResult.svelte';
-  import { onMount } from 'svelte';
   import { Eye, EyeOff, Image, Package, Pencil, Plus, Trash2 } from '@lucide/svelte';
   import { apiGet } from '../lib/api.js';
+  import { createResource } from '../lib/resource.js';
   import { createWriteOps } from '../lib/writeOps.js';
-  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
+  import { hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { reasonOk } from '../lib/validation.js';
   import {
@@ -49,14 +49,9 @@
     };
   }
 
-  let items = [];
-  let total = 0;
   let page = 1;
   let limit = 40;
   let query = '';
-  let loading = false;
-  let error = '';
-  let forbidden = false;
 
   let newOpen = false;
   let newForm = emptyForm();
@@ -70,43 +65,28 @@
   // error and result under its own key -- so the page only describes what each button writes.
   const ops = createWriteOps();
 
-  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsFurnitureManage);
-  $: totalPages = Math.max(1, Math.ceil(total / limit));
-
-  async function refresh() {
-    loading = true;
-    error = '';
-    forbidden = false;
-
+  // The search box and the page number are read from here at call time, so paging and searching are
+  // just "move the variable, refresh" -- no state to thread through.
+  const definitions = createResource(() => {
     const params = new URLSearchParams({ page: String(page), limit: String(limit) });
     if (query.trim()) params.set('q', query.trim());
 
-    try {
-      const data = await apiGet(`/api/v1/furniture/definitions?${params}`);
-      items = data.items || [];
-      total = data.total || 0;
-    } catch (err) {
-      if (isPermissionDeniedError(err)) {
-        forbidden = true;
-        items = [];
-        return;
-      }
+    return apiGet(`/api/v1/furniture/definitions?${params}`);
+  });
 
-      error = err.message;
-      items = [];
-    } finally {
-      loading = false;
-    }
-  }
+  $: canManage = hasDashboardCapability($identity, CAPABILITIES.opsFurnitureManage);
+  $: items = $definitions.data?.items ?? [];
+  $: total = $definitions.data?.total ?? 0;
+  $: totalPages = Math.max(1, Math.ceil(total / limit));
 
   function search() {
     page = 1;
-    void refresh();
+    void definitions.refresh();
   }
 
   function goToPage(next) {
     page = Math.min(totalPages, Math.max(1, next));
-    void refresh();
+    void definitions.refresh();
   }
 
   function specFrom(form) {
@@ -159,7 +139,7 @@
       async () => {
         newOpen = false;
         newForm = emptyForm();
-        await refresh();
+        await definitions.refresh();
       },
     );
   }
@@ -203,7 +183,7 @@
       translate('furnitureAdmin.updateSummary', { id: editingId }),
       async () => {
         editingId = null;
-        await refresh();
+        await definitions.refresh();
       },
     );
   }
@@ -220,14 +200,10 @@
       translate('furnitureAdmin.deleteSummary', { name: item.name, id: item.id }),
       async () => {
         deleteReason = { ...deleteReason, [item.id]: '' };
-        await refresh();
+        await definitions.refresh();
       },
     );
   }
-
-  onMount(() => {
-    void refresh();
-  });
 </script>
 
 <section class="panel">
@@ -245,7 +221,7 @@
 
   <form class="toolbar" on:submit|preventDefault={search}>
     <input bind:value={query} placeholder={$t('furnitureAdmin.searchPlaceholder')} />
-    <button type="submit" disabled={loading}>{$t('furnitureAdmin.search')}</button>
+    <button type="submit" disabled={$definitions.loading}>{$t('furnitureAdmin.search')}</button>
   </form>
 
   {#if newOpen}
@@ -338,12 +314,12 @@
     </div>
   {/if}
 
-  {#if forbidden}
+  {#if $definitions.forbidden}
     <AccessDeniedNotice message={$t('furnitureAdmin.accessDenied')} />
-  {:else if loading}
+  {:else if $definitions.loading}
     <p class="muted">{$t('furnitureAdmin.loading')}</p>
-  {:else if error}
-    <p class="empty-state danger">{error}</p>
+  {:else if $definitions.error}
+    <p class="empty-state danger">{$definitions.error}</p>
   {:else if items.length === 0}
     <p class="empty-state">{$t('furnitureAdmin.noMatch')}</p>
   {:else}
