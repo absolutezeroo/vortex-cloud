@@ -14,9 +14,12 @@ public class RoomRightEntity : VortexEntity
     [Column("player_id")]
     public required int PlayerEntityId { get; set; }
 
+    // Optional on the CLR side only -- the relationship stays required because both foreign keys are
+    // non-nullable. A grant is written from two ids the grain already holds, so forcing the caller to
+    // materialise the full room and player rows (or fake them with `null!`) buys nothing.
     [ForeignKey(nameof(RoomEntityId))]
-    public required RoomEntity RoomEntity { get; set; }
+    public RoomEntity? RoomEntity { get; set; }
 
     [ForeignKey(nameof(PlayerEntityId))]
-    public required PlayerEntity PlayerEntity { get; set; }
+    public PlayerEntity? PlayerEntity { get; set; }
 }

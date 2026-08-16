@@ -242,7 +242,7 @@ public sealed partial class RoomGrain
                 .Select(r => new RoomControllerSnapshot
                 {
                     PlayerId = r.PlayerEntityId,
-                    Name = r.PlayerEntity.Name,
+                    Name = r.PlayerEntity != null ? r.PlayerEntity.Name : string.Empty,
                 })
                 .ToListAsync(ct)
                 .ConfigureAwait(true);
@@ -385,8 +385,6 @@ public sealed partial class RoomGrain
                 {
                     RoomEntityId = _state.RoomId.Value,
                     PlayerEntityId = target.Value,
-                    RoomEntity = null!,
-                    PlayerEntity = null!,
                 }
             );
 

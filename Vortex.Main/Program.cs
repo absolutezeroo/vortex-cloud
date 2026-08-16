@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,6 +39,13 @@ internal class Program
 {
     public static async Task Main(string[] args)
     {
+        // The protocol is culture-free, the host it runs on is not. Any `ToString()`/`Parse` that
+        // forgets an explicit IFormatProvider would emit "1,5" for a wallpaper id or a furni
+        // altitude on a fr-FR machine and read back as garbage on the client. Pinning the default
+        // for every thread makes the correct behaviour the fallback rather than the exception.
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+
         // Held in a `using` for the whole of Main rather than discarded: the factory owns the
         // console provider, and disposing it any earlier would break the logger it created (CA2000).
         using ILoggerFactory bootstrapLoggerFactory = LoggerFactory.Create(builder =>
