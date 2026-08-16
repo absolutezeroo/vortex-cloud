@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
+using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 
@@ -246,5 +248,22 @@ public sealed class RoomSecurityModule(RoomGrain roomGrain)
             ._grainFactory.GetPlayerPresenceGrain(playerId)
             .OnControllerLevelUpdatedAsync(_roomGrain.RoomId, controllerLevel, ct)
             .ConfigureAwait(true);
+
+        // The presence notification only re-draws the subject's own UI. Everyone else reads the
+        // level off the avatar's `flatctrl` status, which is stamped once at spawn -- without this
+        // the rights star only appears after the player leaves and re-enters. `AddStatus` marks the
+        // object dirty, so the room tick carries it out with the next status batch.
+        if (
+            !_roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId)
+            || !_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar)
+        )
+        {
+            return;
+        }
+
+        avatar.AddStatus(
+            AvatarStatusType.FlatControl,
+            ((int)controllerLevel).ToString(CultureInfo.InvariantCulture)
+        );
     }
 }

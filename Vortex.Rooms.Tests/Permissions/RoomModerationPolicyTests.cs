@@ -89,6 +89,28 @@ public sealed class RoomModerationPolicyTests
     }
 
     /// <summary>
+    /// The client's kick dropdown offers "All users" (2). Before <see cref="ModSettingType.All"/>
+    /// existed the cast landed on an unnamed enum value and fell through the switch to "nobody", so
+    /// picking the most permissive option produced the most restrictive room.
+    /// </summary>
+    [Theory]
+    [InlineData(RoomControllerType.None)]
+    [InlineData(RoomControllerType.Rights)]
+    [InlineData(RoomControllerType.GroupRights)]
+    [InlineData(RoomControllerType.GroupAdmin)]
+    public void AllSetting_AllowsEveryOccupant(RoomControllerType level)
+    {
+        RoomModerationPolicy.CanModerate(level, ModSettingType.All).Should().BeTrue();
+    }
+
+    /// <summary>The wire value the client actually sends for "All users".</summary>
+    [Fact]
+    public void AllSetting_MapsToTheClientsWireValue()
+    {
+        ((int)ModSettingType.All).Should().Be(2);
+    }
+
+    /// <summary>
     /// Staff moderation authority is orthogonal to the controller ladder. A role holding
     /// <c>moderation.kick</c> but not <c>room.moderate.any</c> resolves to
     /// <see cref="RoomControllerType.None"/> in the room — it must still moderate, without that

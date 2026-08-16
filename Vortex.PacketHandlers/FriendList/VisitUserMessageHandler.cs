@@ -9,12 +9,15 @@ using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Grains;
+using Vortex.Primitives.Rooms;
 
 namespace Vortex.PacketHandlers.FriendList;
 
-public class VisitUserMessageHandler(IGrainFactory grainFactory) : IMessageHandler<VisitUserMessage>
+public class VisitUserMessageHandler(IGrainFactory grainFactory, IRoomService roomService)
+    : IMessageHandler<VisitUserMessage>
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly IRoomService _roomService = roomService;
 
     public async ValueTask HandleAsync(
         VisitUserMessage message,
@@ -70,7 +73,11 @@ public class VisitUserMessageHandler(IGrainFactory grainFactory) : IMessageHandl
             return;
         }
 
-        IPlayerPresenceGrain selfPresence = _grainFactory.GetPlayerPresenceGrain(ctx.PlayerId);
-        await selfPresence.SetActiveRoomAsync(activeRoom.RoomId, ct).ConfigureAwait(false);
+        // Following a friend is an ordinary room entry, not a teleport: routing it through the room
+        // service is what keeps the ban list, the capacity limit, the password door and the doorbell
+        // in play. Setting the active room directly would walk the follower straight past all four.
+        await _roomService
+            .OpenRoomForPlayerIdAsync(ctx.AsActionContext(), ctx.PlayerId, activeRoom.RoomId, ct)
+            .ConfigureAwait(false);
     }
 }

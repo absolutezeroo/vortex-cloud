@@ -38,6 +38,10 @@ public static class RoomModerationPolicy
         return setting switch
         {
             ModSettingType.Owner => false,
+            // "All users" — the only setting that grants a plain occupant moderation authority.
+            // The client offers it on the kick dropdown alone; we honour it wherever it arrives
+            // rather than second-guessing which action it came from.
+            ModSettingType.All => true,
             ModSettingType.Rights or ModSettingType.RightsOrGroup => level
                 >= RoomControllerType.Rights,
             // Guild-only: a plain rights-holder is deliberately excluded, so the level has to come
