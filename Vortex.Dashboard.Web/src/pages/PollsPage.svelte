@@ -15,6 +15,7 @@
     Trash2,
   } from '@lucide/svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import Drawer from '../components/Drawer.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import OpResult from '../components/OpResult.svelte';
@@ -448,69 +449,6 @@
       {/if}
     </div>
 
-    {#if newPollOpen}
-      <div class="catalog-card-detail">
-        <div class="op-field">
-          <label for="new-poll-code">{$t('polls.codeRequired')}</label>
-          <input id="new-poll-code" bind:value={newPoll.code} placeholder={$t('polls.codePlaceholder')} />
-          <small class="muted">{$t('polls.codeHint')}</small>
-        </div>
-        <div class="op-field">
-          <label for="new-poll-headline">{$t('polls.headlineRequired')}</label>
-          <input id="new-poll-headline" bind:value={newPoll.headline} />
-        </div>
-        <div class="op-field">
-          <label for="new-poll-summary">{$t('polls.summaryRequired')}</label>
-          <input id="new-poll-summary" bind:value={newPoll.summary} />
-          <small class="muted">{$t('polls.offerHint')}</small>
-        </div>
-        <div class="op-field">
-          <label for="new-poll-start">{$t('polls.startMessage')}</label>
-          <input id="new-poll-start" bind:value={newPoll.startMessage} />
-        </div>
-        <div class="op-field">
-          <label for="new-poll-end">{$t('polls.endMessage')}</label>
-          <input id="new-poll-end" bind:value={newPoll.endMessage} />
-        </div>
-        <div class="op-field">
-          <label for="new-poll-type">{$t('polls.pollType')}</label>
-          <input id="new-poll-type" bind:value={newPoll.pollType} placeholder={$t('polls.pollTypePlaceholder')} />
-        </div>
-        <div class="op-field">
-          <label><input type="checkbox" bind:checked={newPoll.npsPoll} /> {$t('polls.npsLabel')}</label>
-          <small class="muted">{$t('polls.npsHint')}</small>
-        </div>
-        <div class="op-field">
-          <label><input type="checkbox" bind:checked={newPoll.offerOnRoomEntry} /> {$t('polls.offerOnRoomEntry')}</label>
-        </div>
-        <div class="op-field">
-          <span class="field-label">{$t('polls.roomPin')}</span>
-          <div class="picker-row">
-            <button type="button" class="ghost-button" onclick={() => (roomPickerFor = 'new')}>
-              <House size={14} strokeWidth={2} aria-hidden="true" />
-              {newPoll.roomName || $t('polls.anyRoom')}
-            </button>
-            {#if newPoll.roomId}
-              <button type="button" class="ghost-button" onclick={() => (newPoll = clearRoom(newPoll))}>
-                {$t('polls.clearRoom')}
-              </button>
-            {/if}
-          </div>
-          <small class="muted">{$t('polls.roomPinHint')}</small>
-        </div>
-        <div class="op-field">
-          <label for="new-poll-sort">{$t('polls.sortOrder')}</label>
-          <input id="new-poll-sort" type="number" bind:value={newPoll.sortOrder} />
-        </div>
-        <div class="op-field">
-          <label><input type="checkbox" bind:checked={newPoll.enabled} /> {$t('polls.enabledLabel')}</label>
-        </div>
-        <button type="button" onclick={stageCreatePoll} disabled={$ops.busyKeys.createPoll || !canManage}>
-          {$t('polls.create')}
-        </button>
-        <OpResult result={$ops.results.createPoll} error={$ops.errors.createPoll} />
-      </div>
-    {/if}
 
     {#if error}
       <p class="empty-state danger">{error}</p>
@@ -576,63 +514,6 @@
                   {/if}
                 </div>
 
-                {#if editPollForm}
-                  <div class="op-field">
-                    <label for="edit-poll-code">{$t('polls.codeRequired')}</label>
-                    <input id="edit-poll-code" bind:value={editPollForm.code} />
-                  </div>
-                  <div class="op-field">
-                    <label for="edit-poll-headline">{$t('polls.headlineRequired')}</label>
-                    <input id="edit-poll-headline" bind:value={editPollForm.headline} />
-                  </div>
-                  <div class="op-field">
-                    <label for="edit-poll-summary">{$t('polls.summaryRequired')}</label>
-                    <input id="edit-poll-summary" bind:value={editPollForm.summary} />
-                  </div>
-                  <div class="op-field">
-                    <label for="edit-poll-start">{$t('polls.startMessage')}</label>
-                    <input id="edit-poll-start" bind:value={editPollForm.startMessage} />
-                  </div>
-                  <div class="op-field">
-                    <label for="edit-poll-end">{$t('polls.endMessage')}</label>
-                    <input id="edit-poll-end" bind:value={editPollForm.endMessage} />
-                  </div>
-                  <div class="op-field">
-                    <label for="edit-poll-type">{$t('polls.pollType')}</label>
-                    <input id="edit-poll-type" bind:value={editPollForm.pollType} />
-                  </div>
-                  <div class="op-field">
-                    <label><input type="checkbox" bind:checked={editPollForm.npsPoll} /> {$t('polls.npsLabel')}</label>
-                  </div>
-                  <div class="op-field">
-                    <label><input type="checkbox" bind:checked={editPollForm.offerOnRoomEntry} /> {$t('polls.offerOnRoomEntry')}</label>
-                  </div>
-                  <div class="op-field">
-                    <span class="field-label">{$t('polls.roomPin')}</span>
-                    <div class="picker-row">
-                      <button type="button" class="ghost-button" onclick={() => (roomPickerFor = 'edit')}>
-                        <House size={14} strokeWidth={2} aria-hidden="true" />
-                        {editPollForm.roomName || $t('polls.anyRoom')}
-                      </button>
-                      {#if editPollForm.roomId}
-                        <button type="button" class="ghost-button" onclick={() => (editPollForm = clearRoom(editPollForm))}>
-                          {$t('polls.clearRoom')}
-                        </button>
-                      {/if}
-                    </div>
-                  </div>
-                  <div class="op-field">
-                    <label for="edit-poll-sort">{$t('polls.sortOrder')}</label>
-                    <input id="edit-poll-sort" type="number" bind:value={editPollForm.sortOrder} />
-                  </div>
-                  <div class="op-field">
-                    <label><input type="checkbox" bind:checked={editPollForm.enabled} /> {$t('polls.enabledLabel')}</label>
-                  </div>
-                  <button type="button" onclick={() => stageUpdatePoll(poll.id)} disabled={$ops.busyKeys[`updatePoll:${poll.id}`]}>
-                    {$t('polls.save')}
-                  </button>
-                  <OpResult result={$ops.results[`updatePoll:${poll.id}`]} error={$ops.errors[`updatePoll:${poll.id}`]} />
-                {/if}
 
                 <h3 class="section-title">
                   <CircleHelp size={14} strokeWidth={2} aria-hidden="true" /> {$t('polls.questionsHeading')}
@@ -722,91 +603,6 @@
                   </button>
                 {/if}
 
-                {#if questionForm && questionForm.pollId === poll.id}
-                  <div class="question-form">
-                    <h4>
-                      {editingQuestionId ? $t('polls.editQuestion') : $t('polls.newQuestion')}
-                      {#if questionForm.parentQuestionId}<span class="chip small">{$t('polls.chipFollowUp')}</span>{/if}
-                    </h4>
-                    <div class="op-field">
-                      <label for="question-text">{$t('polls.questionTextRequired')}</label>
-                      <input id="question-text" bind:value={questionForm.questionText} />
-                    </div>
-                    <div class="op-field">
-                      <label for="question-type">{$t('polls.questionType')}</label>
-                      <select id="question-type" bind:value={questionForm.questionType}>
-                        {#each questionTypes as type (type.id)}
-                          <option value={type.id}>{type.name}</option>
-                        {/each}
-                        {#if questionTypes.length === 0}
-                          <option value={1}>SingleChoice</option>
-                          <option value={2}>MultipleChoice</option>
-                          <option value={3}>TextLine</option>
-                          <option value={4}>TextArea</option>
-                        {/if}
-                      </select>
-                    </div>
-                    {#if questionForm.parentQuestionId}
-                      <div class="op-field">
-                        <label for="question-category">{$t('polls.questionCategory')}</label>
-                        <input id="question-category" type="number" min="0" bind:value={questionForm.questionCategory} />
-                        <small class="muted">{$t('polls.questionCategoryHint')}</small>
-                      </div>
-                    {/if}
-                    <div class="op-field">
-                      <label for="question-sort">{$t('polls.sortOrder')}</label>
-                      <input id="question-sort" type="number" bind:value={questionForm.sortOrder} />
-                    </div>
-
-                    {#if choiceTypeSelected}
-                      <fieldset class="op-subgroup">
-                        <legend>{$t('polls.choicesLegend')}</legend>
-                        {#each questionForm.choices as choice, index}
-                          <div class="choice-row">
-                            <input placeholder={$t('polls.choiceValue')} bind:value={choice.value} />
-                            <input placeholder={$t('polls.choiceText')} bind:value={choice.choiceText} />
-                            <input
-                              type="number"
-                              min="0"
-                              title={$t('polls.choiceTypeHint')}
-                              bind:value={choice.choiceType}
-                              disabled={!detail.npsPoll}
-                            />
-                            <button
-                              type="button"
-                              class="ghost-button danger"
-                              onclick={() => {
-                                questionForm.choices = questionForm.choices.filter((_, i) => i !== index);
-                                if (questionForm.choices.length === 0) questionForm.choices = [emptyChoice()];
-                              }}
-                            >
-                              <Trash2 size={12} strokeWidth={2} aria-hidden="true" />
-                            </button>
-                          </div>
-                        {/each}
-                        <button
-                          type="button"
-                          class="ghost-button"
-                          onclick={() => (questionForm.choices = [...questionForm.choices, emptyChoice()])}
-                        >
-                          <Plus size={12} strokeWidth={2} aria-hidden="true" /> {$t('polls.addChoice')}
-                        </button>
-                        <small class="muted">{$t('polls.choicesHint')}</small>
-                      </fieldset>
-                    {/if}
-
-                    <div class="picker-row">
-                      <button type="button" onclick={stageSaveQuestion}>{$t('polls.save')}</button>
-                      <button type="button" class="ghost-button" onclick={() => { questionForm = null; editingQuestionId = null; }}>
-                        {$t('polls.cancel')}
-                      </button>
-                    </div>
-                    <OpResult
-                      result={$ops.results[editingQuestionId ? `updateQuestion:${editingQuestionId}` : 'createQuestion']}
-                      error={$ops.errors[editingQuestionId ? `updateQuestion:${editingQuestionId}` : 'createQuestion']}
-                    />
-                  </div>
-                {/if}
 
                 {#if showResults}
                   <h3 class="section-title">
@@ -898,6 +694,220 @@
 {/if}
 
 <ConfirmStagedModal {ops} eyebrow={$t('polls.confirmEyebrow')} />
+
+{#if newPollOpen}
+  <Drawer title={$t('polls.newPoll')} eyebrow={$t('polls.title')} onclose={() => { newPollOpen = false; }}>
+    <div class="catalog-card-detail">
+      <div class="op-field">
+        <label for="new-poll-code">{$t('polls.codeRequired')}</label>
+        <input id="new-poll-code" bind:value={newPoll.code} placeholder={$t('polls.codePlaceholder')} />
+        <small class="muted">{$t('polls.codeHint')}</small>
+      </div>
+      <div class="op-field">
+        <label for="new-poll-headline">{$t('polls.headlineRequired')}</label>
+        <input id="new-poll-headline" bind:value={newPoll.headline} />
+      </div>
+      <div class="op-field">
+        <label for="new-poll-summary">{$t('polls.summaryRequired')}</label>
+        <input id="new-poll-summary" bind:value={newPoll.summary} />
+        <small class="muted">{$t('polls.offerHint')}</small>
+      </div>
+      <div class="op-field">
+        <label for="new-poll-start">{$t('polls.startMessage')}</label>
+        <input id="new-poll-start" bind:value={newPoll.startMessage} />
+      </div>
+      <div class="op-field">
+        <label for="new-poll-end">{$t('polls.endMessage')}</label>
+        <input id="new-poll-end" bind:value={newPoll.endMessage} />
+      </div>
+      <div class="op-field">
+        <label for="new-poll-type">{$t('polls.pollType')}</label>
+        <input id="new-poll-type" bind:value={newPoll.pollType} placeholder={$t('polls.pollTypePlaceholder')} />
+      </div>
+      <div class="op-field">
+        <label><input type="checkbox" bind:checked={newPoll.npsPoll} /> {$t('polls.npsLabel')}</label>
+        <small class="muted">{$t('polls.npsHint')}</small>
+      </div>
+      <div class="op-field">
+        <label><input type="checkbox" bind:checked={newPoll.offerOnRoomEntry} /> {$t('polls.offerOnRoomEntry')}</label>
+      </div>
+      <div class="op-field">
+        <span class="field-label">{$t('polls.roomPin')}</span>
+        <div class="picker-row">
+          <button type="button" class="ghost-button" onclick={() => (roomPickerFor = 'new')}>
+            <House size={14} strokeWidth={2} aria-hidden="true" />
+            {newPoll.roomName || $t('polls.anyRoom')}
+          </button>
+          {#if newPoll.roomId}
+            <button type="button" class="ghost-button" onclick={() => (newPoll = clearRoom(newPoll))}>
+              {$t('polls.clearRoom')}
+            </button>
+          {/if}
+        </div>
+        <small class="muted">{$t('polls.roomPinHint')}</small>
+      </div>
+      <div class="op-field">
+        <label for="new-poll-sort">{$t('polls.sortOrder')}</label>
+        <input id="new-poll-sort" type="number" bind:value={newPoll.sortOrder} />
+      </div>
+      <div class="op-field">
+        <label><input type="checkbox" bind:checked={newPoll.enabled} /> {$t('polls.enabledLabel')}</label>
+      </div>
+      <button type="button" onclick={stageCreatePoll} disabled={$ops.busyKeys.createPoll || !canManage}>
+        {$t('polls.create')}
+      </button>
+      <OpResult result={$ops.results.createPoll} error={$ops.errors.createPoll} />
+    </div>
+  </Drawer>
+{/if}
+
+{#if editPollForm}
+  <Drawer title={$t('polls.editPoll')} eyebrow={$t('polls.title')} onclose={() => { editPollForm = null; }}>
+    <div class="op-field">
+      <label for="edit-poll-code">{$t('polls.codeRequired')}</label>
+      <input id="edit-poll-code" bind:value={editPollForm.code} />
+    </div>
+    <div class="op-field">
+      <label for="edit-poll-headline">{$t('polls.headlineRequired')}</label>
+      <input id="edit-poll-headline" bind:value={editPollForm.headline} />
+    </div>
+    <div class="op-field">
+      <label for="edit-poll-summary">{$t('polls.summaryRequired')}</label>
+      <input id="edit-poll-summary" bind:value={editPollForm.summary} />
+    </div>
+    <div class="op-field">
+      <label for="edit-poll-start">{$t('polls.startMessage')}</label>
+      <input id="edit-poll-start" bind:value={editPollForm.startMessage} />
+    </div>
+    <div class="op-field">
+      <label for="edit-poll-end">{$t('polls.endMessage')}</label>
+      <input id="edit-poll-end" bind:value={editPollForm.endMessage} />
+    </div>
+    <div class="op-field">
+      <label for="edit-poll-type">{$t('polls.pollType')}</label>
+      <input id="edit-poll-type" bind:value={editPollForm.pollType} />
+    </div>
+    <div class="op-field">
+      <label><input type="checkbox" bind:checked={editPollForm.npsPoll} /> {$t('polls.npsLabel')}</label>
+    </div>
+    <div class="op-field">
+      <label><input type="checkbox" bind:checked={editPollForm.offerOnRoomEntry} /> {$t('polls.offerOnRoomEntry')}</label>
+    </div>
+    <div class="op-field">
+      <span class="field-label">{$t('polls.roomPin')}</span>
+      <div class="picker-row">
+        <button type="button" class="ghost-button" onclick={() => (roomPickerFor = 'edit')}>
+          <House size={14} strokeWidth={2} aria-hidden="true" />
+          {editPollForm.roomName || $t('polls.anyRoom')}
+        </button>
+        {#if editPollForm.roomId}
+          <button type="button" class="ghost-button" onclick={() => (editPollForm = clearRoom(editPollForm))}>
+            {$t('polls.clearRoom')}
+          </button>
+        {/if}
+      </div>
+    </div>
+    <div class="op-field">
+      <label for="edit-poll-sort">{$t('polls.sortOrder')}</label>
+      <input id="edit-poll-sort" type="number" bind:value={editPollForm.sortOrder} />
+    </div>
+    <div class="op-field">
+      <label><input type="checkbox" bind:checked={editPollForm.enabled} /> {$t('polls.enabledLabel')}</label>
+    </div>
+    <button type="button" onclick={() => stageUpdatePoll(editPollForm.id)} disabled={$ops.busyKeys[`updatePoll:${editPollForm.id}`]}>
+      {$t('polls.save')}
+    </button>
+    <OpResult result={$ops.results[`updatePoll:${editPollForm.id}`]} error={$ops.errors[`updatePoll:${editPollForm.id}`]} />
+  </Drawer>
+{/if}
+
+{#if questionForm}
+  <Drawer title={$t('polls.questionEditorTitle')} eyebrow={$t('polls.title')} onclose={() => { questionForm = null; editingQuestionId = null; }}>
+    <div class="question-form">
+      <h4>
+        {editingQuestionId ? $t('polls.editQuestion') : $t('polls.newQuestion')}
+        {#if questionForm.parentQuestionId}<span class="chip small">{$t('polls.chipFollowUp')}</span>{/if}
+      </h4>
+      <div class="op-field">
+        <label for="question-text">{$t('polls.questionTextRequired')}</label>
+        <input id="question-text" bind:value={questionForm.questionText} />
+      </div>
+      <div class="op-field">
+        <label for="question-type">{$t('polls.questionType')}</label>
+        <select id="question-type" bind:value={questionForm.questionType}>
+          {#each questionTypes as type (type.id)}
+            <option value={type.id}>{type.name}</option>
+          {/each}
+          {#if questionTypes.length === 0}
+            <option value={1}>SingleChoice</option>
+            <option value={2}>MultipleChoice</option>
+            <option value={3}>TextLine</option>
+            <option value={4}>TextArea</option>
+          {/if}
+        </select>
+      </div>
+      {#if questionForm.parentQuestionId}
+        <div class="op-field">
+          <label for="question-category">{$t('polls.questionCategory')}</label>
+          <input id="question-category" type="number" min="0" bind:value={questionForm.questionCategory} />
+          <small class="muted">{$t('polls.questionCategoryHint')}</small>
+        </div>
+      {/if}
+      <div class="op-field">
+        <label for="question-sort">{$t('polls.sortOrder')}</label>
+        <input id="question-sort" type="number" bind:value={questionForm.sortOrder} />
+      </div>
+
+      {#if choiceTypeSelected}
+        <fieldset class="op-subgroup">
+          <legend>{$t('polls.choicesLegend')}</legend>
+          {#each questionForm.choices as choice, index}
+            <div class="choice-row">
+              <input placeholder={$t('polls.choiceValue')} bind:value={choice.value} />
+              <input placeholder={$t('polls.choiceText')} bind:value={choice.choiceText} />
+              <input
+                type="number"
+                min="0"
+                title={$t('polls.choiceTypeHint')}
+                bind:value={choice.choiceType}
+                disabled={!detail.npsPoll}
+              />
+              <button
+                type="button"
+                class="ghost-button danger"
+                onclick={() => {
+                  questionForm.choices = questionForm.choices.filter((_, i) => i !== index);
+                  if (questionForm.choices.length === 0) questionForm.choices = [emptyChoice()];
+                }}
+              >
+                <Trash2 size={12} strokeWidth={2} aria-hidden="true" />
+              </button>
+            </div>
+          {/each}
+          <button
+            type="button"
+            class="ghost-button"
+            onclick={() => (questionForm.choices = [...questionForm.choices, emptyChoice()])}
+          >
+            <Plus size={12} strokeWidth={2} aria-hidden="true" /> {$t('polls.addChoice')}
+          </button>
+          <small class="muted">{$t('polls.choicesHint')}</small>
+        </fieldset>
+      {/if}
+
+      <div class="picker-row">
+        <button type="button" onclick={stageSaveQuestion}>{$t('polls.save')}</button>
+        <button type="button" class="ghost-button" onclick={() => { questionForm = null; editingQuestionId = null; }}>
+          {$t('polls.cancel')}
+        </button>
+      </div>
+      <OpResult
+        result={$ops.results[editingQuestionId ? `updateQuestion:${editingQuestionId}` : 'createQuestion']}
+        error={$ops.errors[editingQuestionId ? `updateQuestion:${editingQuestionId}` : 'createQuestion']}
+      />
+    </div>
+  </Drawer>
+{/if}
 
 <ConfirmReasonModal
   open={Boolean($deleteOps.pending)}
