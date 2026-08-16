@@ -13,6 +13,7 @@ using Vortex.Primitives.Rooms.Wired;
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Triggers;
 
 [RoomObjectLogic("wf_trg_user_exits_room")]
+[RoomObjectLogic("wf_trg_leave_room")]
 public class WiredTriggerHabboLeaveRoom(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,

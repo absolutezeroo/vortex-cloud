@@ -18,6 +18,7 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Conditions;
 /// the box on its first option asks for empty-handed users, which is what the form says.
 /// </summary>
 [RoomObjectLogic("wf_cnd_wears_handitem")]
+[RoomObjectLogic("wf_cnd_has_handitem")]
 public class WiredConditionHabboHasHanditem(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,

@@ -16,6 +16,7 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Conditions;
 /// effect"). Client ActorIsWearingEffect stores a single number input as intParams [effectId], so this
 /// compares the actor's currently worn effect id against that value.</summary>
 [RoomObjectLogic("wf_cnd_wears_effect")]
+[RoomObjectLogic("wf_cnd_wearing_effect")]
 public class WiredConditionHabboHasEffect(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,

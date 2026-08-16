@@ -18,6 +18,7 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Addons;
 /// match:") offers seven choices — All, At least one, Not all, None, and three counting comparisons.
 /// </summary>
 [RoomObjectLogic("wf_xtra_one_condition")]
+[RoomObjectLogic("wf_xtra_or_eval")]
 public class WiredAddonConditionsEval(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,

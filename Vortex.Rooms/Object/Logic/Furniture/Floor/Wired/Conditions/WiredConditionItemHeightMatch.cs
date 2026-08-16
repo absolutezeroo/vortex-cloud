@@ -16,6 +16,7 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Conditions;
 /// (0 = equal, 1 = less than, 2 = greater than). This box has no negative variant; the operator
 /// already covers the inverse cases.</summary>
 [RoomObjectLogic("wf_cnd_has_same_height")]
+[RoomObjectLogic("wf_cnd_has_altitude")]
 public class WiredConditionItemHeightMatch(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,
