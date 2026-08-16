@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Vortex.Benchmark;
+namespace Vortex.LoadGen;
 
 /// <summary>
 /// One fake player, on a real socket.
@@ -32,7 +32,7 @@ namespace Vortex.Benchmark;
 /// the per-session fan-out on the way back.
 /// </para>
 /// </remarks>
-internal sealed class SyntheticClient(string host, int port) : IDisposable
+public sealed class SyntheticClient(string host, int port) : IDisposable
 {
     private const int SsoTicketHeader = 882;
     private const int OpenFlatConnectionHeader = 3234;

@@ -33,6 +33,7 @@ namespace Vortex.Benchmark;
 internal sealed class BenchmarkService(
     BenchmarkProvisioner provisioner,
     BenchmarkReportWriter reportWriter,
+    LoadGeneratorHost generator,
     IGrainFactory grainFactory,
     IConfiguration configuration,
     ILogger<BenchmarkService> logger
@@ -171,15 +172,13 @@ internal sealed class BenchmarkService(
 
     private async Task RunAsync(BenchmarkPlan plan, CancellationToken ct)
     {
-        List<SyntheticClient> clients = [];
-        BenchmarkFixture? fixture = null;
         ProcessCounters before = ProcessCounters.Capture();
 
         try
         {
             _state = _state with { Phase = BenchmarkPhase.Provisioning };
 
-            fixture = await provisioner
+            BenchmarkFixture fixture = await provisioner
                 .ProvisionAsync(
                     plan.Players,
                     plan.Furniture,
@@ -199,28 +198,30 @@ internal sealed class BenchmarkService(
 
             (string host, int port) = ReadListener();
 
-            // Everything the run drives hangs off this, not off `ct` directly, so the duration can
-            // end the run on its own. Awaiting the sampler on a token only the Stop button cancels
-            // meant a run sat in Steady after its time was up, waiting for a human -- the duration
-            // was a suggestion.
-            using CancellationTokenSource runCts = CancellationTokenSource.CreateLinkedTokenSource(
-                ct
-            );
-
-            Task sampler = Task.Run(
-                () => SampleAsync(clients, runCts.Token),
-                CancellationToken.None
-            );
-
-            await RampAsync(plan, fixture, host, port, clients, runCts.Token).ConfigureAwait(false);
-
-            _state = _state with { Phase = BenchmarkPhase.Steady };
-
-            await Task.Delay(TimeSpan.FromSeconds(plan.DurationSeconds), runCts.Token)
+            // Everything from here happens in another process. This one only reads what comes back,
+            // which is the whole reason the numbers can be believed: a hundred synthetic players no
+            // longer means two hundred loops competing with the hotel they are supposed to measure.
+            await generator
+                .RunAsync(
+                    new LoadGeneratorPlan
+                    {
+                        Host = host,
+                        Port = port,
+                        RoomId = fixture.RoomId,
+                        DurationSeconds = plan.DurationSeconds,
+                        RampSeconds = plan.RampSeconds,
+                        WalkIntervalMs = plan.WalkIntervalMs,
+                        ChatIntervalMs = plan.ChatIntervalMs,
+                        Tickets = fixture.Tickets,
+                        WalkTargets =
+                        [
+                            .. fixture.WalkTargets.Select(tile => new[] { tile.X, tile.Y }),
+                        ],
+                    },
+                    OnSample,
+                    ct
+                )
                 .ConfigureAwait(false);
-
-            await runCts.CancelAsync().ConfigureAwait(false);
-            await sampler.ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
@@ -236,11 +237,6 @@ internal sealed class BenchmarkService(
         finally
         {
             _state = _state with { Phase = BenchmarkPhase.TearingDown };
-
-            foreach (SyntheticClient client in clients)
-            {
-                client.Dispose();
-            }
 
             string? residue = await provisioner
                 .TeardownAsync(CancellationToken.None)
@@ -267,191 +263,22 @@ internal sealed class BenchmarkService(
         }
     }
 
-    private async Task RampAsync(
-        BenchmarkPlan plan,
-        BenchmarkFixture fixture,
-        string host,
-        int port,
-        List<SyntheticClient> clients,
-        CancellationToken ct
-    )
-    {
-        // Spread the arrivals. All at once would measure the accept path under a thundering herd,
-        // which is a real question but not this one -- and it would leave the steady phase measuring
-        // a hotel still busy digesting the login storm.
-        int gapMs =
-            plan.RampSeconds > 0 && plan.Players > 1
-                ? Math.Max(1, plan.RampSeconds * 1000 / plan.Players)
-                : 0;
-
-        for (int index = 0; index < fixture.Tickets.Length; index++)
-        {
-            ct.ThrowIfCancellationRequested();
-
-            SyntheticClient client = new(host, port);
-
-            try
-            {
-                await client.ConnectAsync(fixture.Tickets[index], ct).ConfigureAwait(false);
-
-                clients.Add(client);
-
-                _ = Task.Run(() => client.ReceiveLoopAsync(ct), CancellationToken.None);
-                _ = Task.Run(() => DriveAsync(client, plan, fixture, index, ct), ct);
-
-                _state = _state with { ConnectedClients = clients.Count };
-            }
-            catch (Exception ex) when (ex is not OperationCanceledException)
-            {
-                client.Dispose();
-
-                logger.LogDebug(ex, "Benchmark client {Index} could not connect.", index);
-            }
-
-            if (gapMs > 0)
-            {
-                await Task.Delay(gapMs, ct).ConfigureAwait(false);
-            }
-        }
-    }
-
     /// <summary>
-    /// What one synthetic player does for a living: enter the room, then walk, talk and ping on
-    /// their own timers.
+    /// One second, as the generator saw it. Kept here rather than in the other process because the
+    /// page reads this list live and the report is written from it.
     /// </summary>
-    private static async Task DriveAsync(
-        SyntheticClient client,
-        BenchmarkPlan plan,
-        BenchmarkFixture fixture,
-        int seed,
-        CancellationToken ct
-    )
+    private void OnSample(BenchmarkSample sample)
     {
-        try
+        _samples.Enqueue(sample);
+
+        _state = _state with
         {
-            // The login has to land before the room will have them, and the answer that would say so
-            // is one of the composers this client deliberately cannot read. A fixed pause is the
-            // honest trade: measured from the steady phase, not the ramp, so it costs nothing.
-            await Task.Delay(500, ct).ConfigureAwait(false);
-            await client.EnterRoomAsync(fixture.RoomId, ct).ConfigureAwait(false);
-            await Task.Delay(500, ct).ConfigureAwait(false);
-
-            // Each action keeps its own clock rather than counting one-second ticks. The tick counter
-            // it replaces could only ever express whole seconds -- "every 500 ms" quietly became
-            // every second, and "every 2500 ms" became every two -- so the field on the page did not
-            // mean what it said.
-            long now = Environment.TickCount64;
-            long nextWalk = now;
-            long nextChat = now;
-            long nextPing = now;
-            int step = seed;
-
-            while (!ct.IsCancellationRequested)
-            {
-                now = Environment.TickCount64;
-
-                if (now >= nextPing)
-                {
-                    await client.PingAsync(ct).ConfigureAwait(false);
-
-                    nextPing = now + 1000;
-                }
-
-                if (plan.WalkIntervalMs > 0 && now >= nextWalk)
-                {
-                    // A tile the room really has, taken from its own map. Walking at a hole is
-                    // refused before the pathfinder runs, which is the half worth measuring -- and
-                    // the offset by seed stops four hundred avatars from all heading for one tile,
-                    // which is a queue, not a load.
-                    (int x, int y) = fixture.WalkTargets[
-                        Math.Abs(step + seed) % fixture.WalkTargets.Length
-                    ];
-
-                    await client.WalkAsync(x, y, ct).ConfigureAwait(false);
-
-                    step++;
-                    nextWalk = now + plan.WalkIntervalMs;
-                }
-
-                if (plan.ChatIntervalMs > 0 && now >= nextChat)
-                {
-                    await client
-                        .SayAsync(string.Create(CultureInfo.InvariantCulture, $"bench {step}"), ct)
-                        .ConfigureAwait(false);
-
-                    nextChat = now + plan.ChatIntervalMs;
-                }
-
-                // Fine enough to honour a half-second interval without spinning.
-                await Task.Delay(100, ct).ConfigureAwait(false);
-            }
-        }
-        catch (OperationCanceledException)
-        {
-            // The run ended.
-        }
-    }
-
-    private async Task SampleAsync(List<SyntheticClient> clients, CancellationToken ct)
-    {
-        using PeriodicTimer timer = new(TimeSpan.FromSeconds(1));
-
-        try
-        {
-            while (await timer.WaitForNextTickAsync(ct).ConfigureAwait(false))
-            {
-                SyntheticClient[] snapshot = [.. clients];
-                List<double> roundTrips = [];
-
-                foreach (SyntheticClient client in snapshot)
-                {
-                    while (client.RoundTrips.TryDequeue(out long ticks))
-                    {
-                        roundTrips.Add(ticks * 1000.0 / Stopwatch.Frequency);
-                    }
-                }
-
-                roundTrips.Sort();
-
-                _samples.Enqueue(
-                    new BenchmarkSample
-                    {
-                        AtUtc = DateTime.UtcNow,
-                        ConnectedClients = snapshot.Count(client => client.Connected),
-                        RttMedianMs = Percentile(roundTrips, 0.50),
-                        RttP95Ms = Percentile(roundTrips, 0.95),
-                        PacketsReceived = snapshot.Sum(client =>
-                            Interlocked.Read(ref client.PacketsReceived)
-                        ),
-                        BytesReceived = snapshot.Sum(client =>
-                            Interlocked.Read(ref client.BytesReceived)
-                        ),
-                        Failures = snapshot.Sum(client => Interlocked.Read(ref client.Failures)),
-                    }
-                );
-            }
-        }
-        catch (OperationCanceledException)
-        {
-            // The run ended.
-        }
-    }
-
-    /// <summary>
-    /// Exact rather than bucketed: a run's sample is a few thousand round trips at most, and sorting
-    /// them once a second costs less than the error a histogram would introduce at the tail — which
-    /// is the end of the distribution anyone actually asks about.
-    /// </summary>
-    private static double Percentile(List<double> sorted, double percentile)
-    {
-        if (sorted.Count == 0)
-        {
-            return 0;
-        }
-
-        int index = (int)Math.Ceiling(percentile * sorted.Count) - 1;
-
-        return sorted[Math.Clamp(index, 0, sorted.Count - 1)];
+            Phase =
+                _state.Phase == BenchmarkPhase.Ramping && sample.ConnectedClients > 0
+                    ? BenchmarkPhase.Steady
+                    : _state.Phase,
+            ConnectedClients = sample.ConnectedClients,
+        };
     }
 
     private (string Host, int Port) ReadListener()

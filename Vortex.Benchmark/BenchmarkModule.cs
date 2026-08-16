@@ -14,6 +14,7 @@ public sealed class BenchmarkModule : IHostPluginModule
     {
         services.AddSingleton<BenchmarkProvisioner>();
         services.AddSingleton<BenchmarkReportWriter>();
+        services.AddSingleton<LoadGeneratorHost>();
         services.AddSingleton<BenchmarkService>();
         services.AddSingleton<IBenchmarkService>(sp => sp.GetRequiredService<BenchmarkService>());
 

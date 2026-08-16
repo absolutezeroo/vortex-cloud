@@ -3,10 +3,10 @@ using System.Buffers.Binary;
 using System.IO;
 using System.Text;
 
-namespace Vortex.Benchmark;
+namespace Vortex.LoadGen;
 
 /// <summary>Builds one frame, big-endian, with the length filled in at the end.</summary>
-internal sealed class BenchmarkPacketWriter(int header)
+public sealed class BenchmarkPacketWriter(int header)
 {
     private readonly MemoryStream _body = new();
 

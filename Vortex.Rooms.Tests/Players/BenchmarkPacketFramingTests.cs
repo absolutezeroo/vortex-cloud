@@ -2,13 +2,13 @@ using System;
 using System.Buffers.Binary;
 using System.Text;
 using FluentAssertions;
-using Vortex.Benchmark;
+using Vortex.LoadGen;
 using Xunit;
 
 namespace Vortex.Rooms.Tests.Players;
 
 /// <summary>
-/// The load test's synthetic client writes its own frames, and this is what they have to look like.
+/// The load generator's synthetic client writes its own frames, and this is what they have to look like.
 /// </summary>
 /// <remarks>
 /// <para>

@@ -16,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Vortex.Benchmark\Vortex.Benchmark.csproj" />
+    <ProjectReference Include="..\Vortex.LoadGen\Vortex.LoadGen.csproj" />
     <ProjectReference Include="..\Vortex.Database\Vortex.Database.csproj" />
     <ProjectReference Include="..\Vortex.Events\Vortex.Events.csproj" />
     <ProjectReference Include="..\Vortex.Furniture\Vortex.Furniture.csproj" />
