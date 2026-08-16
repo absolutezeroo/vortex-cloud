@@ -1,12 +1,13 @@
 <script>
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { apiGet } from '../lib/api.js';
   import { createWriteOps } from '../lib/writeOps.js';
   import { compactCorrelation, formatDate } from '../lib/format.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { reasonOk, positive, nonNegative } from '../lib/validation.js';
+  import { positive, nonNegative } from '../lib/validation.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { Activity, Coins, Hash, Timer } from '@lucide/svelte';
@@ -32,9 +33,8 @@
     amount: '',
     maxRedemptions: '',
     expiresAt: '',
-    reason: '',
   });
-  let deactivate = $state({ code: '', reason: '' });
+  let deactivate = $state({ code: '' });
   let lookupCode = $state('');
   let lookupResult = $state(null);
   let lookupError = $state('');
@@ -56,7 +56,6 @@
       key: id,
       valid,
       invalidMessage: translate('vouchers.fillFields'),
-      reason: body.reason,
     });
 
   function stageCreate() {
@@ -74,7 +73,6 @@
       Boolean(create.code.trim()) &&
         positive(create.amount) &&
         (!needsActivityType || nonNegative(create.activityPointType)) &&
-        reasonOk(create.reason),
       {
         code: create.code.trim(),
         currencyType: Number(create.currencyType),
@@ -82,7 +80,6 @@
         amount: Number(create.amount),
         maxRedemptions: create.maxRedemptions ? Number(create.maxRedemptions) : null,
         expiresAt: create.expiresAt ? new Date(create.expiresAt).toISOString() : null,
-        reason: create.reason.trim(),
       },
       translate('vouchers.createSummary', {
         code: create.code.trim(),
@@ -102,8 +99,8 @@
       'deactivate',
       translate('vouchers.deactivateTitle'),
       '/api/v1/operations/vouchers/deactivate',
-      Boolean(deactivate.code.trim()) && reasonOk(deactivate.reason),
-      { code: deactivate.code.trim(), reason: deactivate.reason.trim() },
+      Boolean(deactivate.code.trim()),
+      { code: deactivate.code.trim() },
       translate('vouchers.deactivateSummary', { code: deactivate.code.trim() }),
     );
   }
@@ -136,8 +133,7 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>{$t('vouchers.title')}</h2></div>
-  <p class="muted">{$t('vouchers.description')}</p>
+  <PageHeader title={$t('vouchers.title')} description={$t('vouchers.description')} />
 </section>
 
 <div class="op-grid">
@@ -176,10 +172,6 @@
         <label for="voucher-expires">{$t('vouchers.expiresAt')}</label>
         <input id="voucher-expires" type="datetime-local" bind:value={create.expiresAt} />
       </div>
-      <div class="op-field">
-        <label for="voucher-reason">{$t('common.reasonRequired')}</label>
-        <input id="voucher-reason" bind:value={create.reason} placeholder={$t('vouchers.reasonVoucher')} list="reason-history" />
-      </div>
       <div class="op-actions">
         <button type="button" onclick={stageCreate} disabled={$ops.busyKeys.create}>{$t('common.run')}</button>
       </div>
@@ -198,10 +190,6 @@
       <div class="op-field">
         <label for="deactivate-code">{$t('vouchers.code')}</label>
         <input id="deactivate-code" bind:value={deactivate.code} placeholder="SUMMER2026" style="text-transform: uppercase;" />
-      </div>
-      <div class="op-field">
-        <label for="deactivate-reason">{$t('common.reasonRequired')}</label>
-        <input id="deactivate-reason" bind:value={deactivate.reason} placeholder={$t('vouchers.reasonDeactivate')} list="reason-history" />
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageDeactivate} disabled={$ops.busyKeys.deactivate}>{$t('common.run')}</button>

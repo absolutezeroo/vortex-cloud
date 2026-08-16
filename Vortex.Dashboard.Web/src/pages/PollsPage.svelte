@@ -26,7 +26,6 @@
   import { hasDashboardCapability, isPermissionDeniedError } from '../lib/permissions.js';
   import { identity } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
-  import { reasonOk } from '../lib/validation.js';
 
   // The client's own question types. 1/2 take a choice list; 3/4 are free text. 5 and 6 exist in
   // the client enum but its survey dialog skips them outright, so the server rejects them too --
@@ -38,7 +37,7 @@
       code: '', pollType: '', headline: '', summary: '',
       startMessage: '', endMessage: '',
       npsPoll: false, enabled: true, offerOnRoomEntry: true,
-      roomId: null, roomName: '', sortOrder: 0, reason: '',
+      roomId: null, roomName: '', sortOrder: 0,
     };
   }
 
@@ -52,7 +51,6 @@
       questionCategory: 0,
       questionAnswerType: 0,
       choices: [emptyChoice()],
-      reason: '',
     };
   }
 
@@ -186,7 +184,6 @@
       key: id,
       valid,
       invalidMessage: translate('polls.fillFields'),
-      reason: body.reason,
       onSuccess,
     });
 
@@ -203,7 +200,6 @@
       offerOnRoomEntry: form.offerOnRoomEntry,
       roomId: form.roomId ?? null,
       sortOrder: Number(form.sortOrder) || 0,
-      reason: form.reason.trim(),
     };
 
     return pollId === null ? body : { pollId, ...body };
@@ -213,8 +209,7 @@
     return (
       Boolean(form.code.trim()) &&
       Boolean(form.headline.trim()) &&
-      Boolean(form.summary.trim()) &&
-      reasonOk(form.reason)
+      Boolean(form.summary.trim())
     );
   }
 
@@ -250,7 +245,6 @@
       roomId: poll.roomId ?? null,
       roomName: poll.roomName || '',
       sortOrder: poll.sortOrder ?? 0,
-      reason: '',
     };
   }
 
@@ -295,14 +289,13 @@
               sortOrder: index,
             }))
         : [],
-      reason: form.reason.trim(),
     };
 
     return questionId === null ? body : { questionId, ...body };
   }
 
   function questionFormValid(form) {
-    if (!form.questionText.trim() || !reasonOk(form.reason)) return false;
+    if (!form.questionText.trim()) return false;
 
     if (!CHOICE_TYPES.includes(Number(form.questionType))) return true;
 
@@ -335,7 +328,6 @@
               sortOrder: c.sortOrder,
             }))
           : [emptyChoice()],
-      reason: '',
     };
   }
 
@@ -513,10 +505,6 @@
         <div class="op-field">
           <label><input type="checkbox" bind:checked={newPoll.enabled} /> {$t('polls.enabledLabel')}</label>
         </div>
-        <div class="op-field">
-          <label for="new-poll-reason">{$t('common.reason')}</label>
-          <input id="new-poll-reason" bind:value={newPoll.reason} />
-        </div>
         <button type="button" onclick={stageCreatePoll} disabled={$ops.busyKeys.createPoll || !canManage}>
           {$t('polls.create')}
         </button>
@@ -639,10 +627,6 @@
                   </div>
                   <div class="op-field">
                     <label><input type="checkbox" bind:checked={editPollForm.enabled} /> {$t('polls.enabledLabel')}</label>
-                  </div>
-                  <div class="op-field">
-                    <label for="edit-poll-reason">{$t('common.reason')}</label>
-                    <input id="edit-poll-reason" bind:value={editPollForm.reason} />
                   </div>
                   <button type="button" onclick={() => stageUpdatePoll(poll.id)} disabled={$ops.busyKeys[`updatePoll:${poll.id}`]}>
                     {$t('polls.save')}
@@ -811,10 +795,6 @@
                       </fieldset>
                     {/if}
 
-                    <div class="op-field">
-                      <label for="question-reason">{$t('common.reason')}</label>
-                      <input id="question-reason" bind:value={questionForm.reason} />
-                    </div>
                     <div class="picker-row">
                       <button type="button" onclick={stageSaveQuestion}>{$t('polls.save')}</button>
                       <button type="button" class="ghost-button" onclick={() => { questionForm = null; editingQuestionId = null; }}>

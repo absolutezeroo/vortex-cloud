@@ -20,7 +20,6 @@
   import { createWriteOps } from '../lib/writeOps.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { reasonOk } from '../lib/validation.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import OfferImageField from '../components/OfferImageField.svelte';
@@ -32,12 +31,12 @@
     return {
       identifier: '', offerType: 0, title: '', description: '', imageUrl: '', iconImageUrl: '',
       productCode: '', priceInCredits: 0, priceInActivityPoints: 0, activityPointType: 0,
-      purchaseLimit: 0, expiresAt: '', active: true, sortOrder: 0, reason: '',
+      purchaseLimit: 0, expiresAt: '', active: true, sortOrder: 0,
     };
   }
 
   function emptyProductForm() {
-    return { productCode: '', furnitureDefinitionId: '', quantity: 1, reason: '' };
+    return { productCode: '', furnitureDefinitionId: '', quantity: 1 };
   }
 
   // The API returns/consumes ExpiresAt as an ISO instant (or null); <input type="datetime-local">
@@ -90,10 +89,10 @@
   let editProductId = $state(null);
   let editProductForm = $state(null);
 
-  // The edits carry their reason as a field of the form itself; the deletes collect it in the shared
-  // ConfirmReasonModal beside every trash button. Two stores rather than one so staging an edit
-  // cannot open the delete dialog (and vice versa); each form passes a `key` so its busy state,
-  // error and OpResult land next to it instead of in one banner for the whole page.
+  // Nothing here asks the operator for a reason: createWriteOps builds the audited sentence from the
+  // action itself and the confirm dialog takes an optional note. Two stores rather than one so
+  // staging an edit cannot open the delete dialog (and vice versa); each form passes a `key` so its
+  // busy state, error and OpResult land next to it instead of in one banner for the whole page.
   const ops = createWriteOps();
   const deleteOps = createWriteOps();
 
@@ -170,7 +169,6 @@
       key: id,
       valid,
       invalidMessage: translate('targetedOffers.fillFields'),
-      reason: body.reason,
       onSuccess,
     });
 
@@ -192,7 +190,6 @@
       expiresAt: fromDateTimeLocal(form.expiresAt),
       active: form.active,
       sortOrder: Number(form.sortOrder) || 0,
-      reason: form.reason.trim(),
     };
 
     return offerId === null ? body : { offerId, ...body };
@@ -205,7 +202,7 @@
       'createOffer',
       translate('targetedOffers.newOffer'),
       '/api/operations/targeted-offers',
-      Boolean(newOffer.identifier.trim()) && reasonOk(newOffer.reason),
+      Boolean(newOffer.identifier.trim()),
       buildOfferBody(newOffer, null),
       translate('targetedOffers.createOfferSummary', { name: newOffer.identifier.trim() }),
       async () => {
@@ -240,7 +237,6 @@
         expiresAt: toDateTimeLocal(detail.expiresAt),
         active: detail.active,
         sortOrder: detail.sortOrder ?? 0,
-        reason: '',
       };
     } catch (err) {
       editOfferId = null;
@@ -258,7 +254,7 @@
       'updateOffer',
       translate('targetedOffers.edit'),
       '/api/operations/targeted-offers/update',
-      Boolean(editOfferForm.identifier.trim()) && reasonOk(editOfferForm.reason),
+      Boolean(editOfferForm.identifier.trim()),
       buildOfferBody(editOfferForm, editOfferId),
       translate('targetedOffers.updateOfferSummary', { id: editOfferId }),
       async () => {
@@ -280,13 +276,12 @@
       'createProduct',
       translate('targetedOffers.addProduct'),
       '/api/operations/targeted-offers/products',
-      Boolean(newProduct.productCode.trim()) && reasonOk(newProduct.reason),
+      Boolean(newProduct.productCode.trim()),
       {
         offerId: selectedOfferId,
         productCode: newProduct.productCode.trim(),
         furnitureDefinitionId: newProduct.furnitureDefinitionId ? Number(newProduct.furnitureDefinitionId) : null,
         quantity: Number(newProduct.quantity) || 1,
-        reason: newProduct.reason.trim(),
       },
       translate('targetedOffers.addProductSummary', { id: selectedOfferId }),
       async () => {
@@ -304,7 +299,6 @@
       productCode: product.productCode || '',
       furnitureDefinitionId: product.furnitureDefinitionEntityId ?? '',
       quantity: product.quantity,
-      reason: '',
     };
   }
 
@@ -315,13 +309,12 @@
       'updateProduct',
       translate('targetedOffers.edit'),
       '/api/operations/targeted-offers/products/update',
-      Boolean(editProductForm.productCode.trim()) && reasonOk(editProductForm.reason),
+      Boolean(editProductForm.productCode.trim()),
       {
         productId: editProductId,
         productCode: editProductForm.productCode.trim(),
         furnitureDefinitionId: editProductForm.furnitureDefinitionId ? Number(editProductForm.furnitureDefinitionId) : null,
         quantity: Number(editProductForm.quantity) || 1,
-        reason: editProductForm.reason.trim(),
       },
       translate('targetedOffers.updateProductSummary', { id: editProductId }),
       async () => {
@@ -500,10 +493,6 @@
         <div class="op-field">
           <label><input type="checkbox" bind:checked={newOffer.active} /> {$t('targetedOffers.activeLabel')}</label>
         </div>
-        <div class="op-field">
-          <label for="new-offer-reason">{$t('common.reasonRequired')}</label>
-          <input id="new-offer-reason" bind:value={newOffer.reason} placeholder={$t('targetedOffers.reasonOfferPlaceholder')} list="reason-history" />
-        </div>
         <div class="op-actions">
           <button type="button" onclick={stageCreateOffer} disabled={$ops.busyKeys.createOffer}>{$t('targetedOffers.create')}</button>
         </div>
@@ -626,10 +615,6 @@
                   <div class="op-field">
                     <label><input type="checkbox" bind:checked={editOfferForm.active} /> {$t('targetedOffers.activeLabel')}</label>
                   </div>
-                  <div class="op-field">
-                    <label for={`edit-offer-reason-${offer.id}`}>{$t('common.reasonRequired')}</label>
-                    <input id={`edit-offer-reason-${offer.id}`} bind:value={editOfferForm.reason} placeholder={$t('common.reasonPlaceholderChange')} list="reason-history" />
-                  </div>
                   <div class="op-actions">
                     <button type="button" onclick={stageUpdateOffer} disabled={$ops.busyKeys.updateOffer}>{$t('targetedOffers.save')}</button>
                     <button class="ghost-button" type="button" onclick={() => { editOfferId = null; editOfferForm = null; }}>{$t('targetedOffers.cancel')}</button>
@@ -682,10 +667,6 @@
                         <label for="new-product-quantity">{$t('targetedOffers.quantity')}</label>
                         <input id="new-product-quantity" type="number" min="1" bind:value={newProduct.quantity} />
                       </div>
-                      <div class="op-field">
-                        <label for="new-product-reason">{$t('common.reasonRequired')}</label>
-                        <input id="new-product-reason" bind:value={newProduct.reason} placeholder={$t('targetedOffers.reasonProductPlaceholder')} list="reason-history" />
-                      </div>
                       <div class="op-actions">
                         <button type="button" onclick={stageCreateProduct} disabled={$ops.busyKeys.createProduct}>{$t('targetedOffers.create')}</button>
                       </div>
@@ -737,10 +718,6 @@
                               <div class="op-field">
                                 <label for={`edit-product-qty-${product.id}`}>{$t('targetedOffers.quantity')}</label>
                                 <input id={`edit-product-qty-${product.id}`} type="number" min="1" bind:value={editProductForm.quantity} />
-                              </div>
-                              <div class="op-field">
-                                <label for={`edit-product-reason-${product.id}`}>{$t('common.reasonRequired')}</label>
-                                <input id={`edit-product-reason-${product.id}`} bind:value={editProductForm.reason} placeholder={$t('common.reasonPlaceholderChange')} list="reason-history" />
                               </div>
                               <div class="op-actions">
                                 <button type="button" onclick={stageUpdateProduct} disabled={$ops.busyKeys.updateProduct}>{$t('targetedOffers.save')}</button>

@@ -23,7 +23,6 @@
   import { formatDate, formatDuration, formatNumber } from '../lib/format.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { reasonOk } from '../lib/validation.js';
   import { currencyChipClass, currencyKindFromRewardType } from '../lib/currency.js';
   import CurrencyIcon from '../components/CurrencyIcon.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
@@ -54,7 +53,7 @@
       totalSteps: 1, rewardKind: 'activityPoints', rewardPointType: 0, rewardAmount: 0,
       targetType: '', targetValue: '', enabled: true,
       catalogPageName: '', imageVersion: '', sortOrder: 0, easy: false,
-      seasonal: false, seasonalSeconds: 0, endsAt: '', reason: '',
+      seasonal: false, seasonalSeconds: 0, endsAt: '',
     };
   }
 
@@ -173,7 +172,6 @@
       seasonal: form.seasonal,
       seasonalSeconds: Number(form.seasonalSeconds) || 0,
       endsAt: fromDateTimeLocal(form.endsAt),
-      reason: form.reason.trim(),
     };
 
     return questId === null ? body : { questId, ...body };
@@ -183,8 +181,7 @@
     return (
       Boolean(form.campaignCode.trim()) &&
       Boolean(form.localizationCode.trim()) &&
-      Boolean(form.questType.trim()) &&
-      reasonOk(form.reason)
+      Boolean(form.questType.trim())
     );
   }
 
@@ -213,7 +210,6 @@
         key: 'questForm',
         valid: formValid(form),
         invalidMessage: translate('quests.fillFields'),
-        reason: form.reason.trim(),
         onSuccess: async () => {
           questModal = null;
           await loadQuests();
@@ -255,7 +251,6 @@
           seasonal: detail.seasonal,
           seasonalSeconds: detail.seasonalSeconds ?? 0,
           endsAt: toDateTimeLocal(detail.endsAt),
-          reason: '',
         },
       };
     } catch (err) {
@@ -531,10 +526,6 @@
     </div>
     <div class="op-field">
       <label><input type="checkbox" bind:checked={questModal.form.easy} /> {$t('quests.easyLabel')}</label>
-    </div>
-    <div class="op-field">
-      <label for="quest-reason">{$t('common.reasonRequired')}</label>
-      <input id="quest-reason" bind:value={questModal.form.reason} placeholder={$t('quests.reasonPlaceholder')} list="reason-history" />
     </div>
 
     {#if $ops.errors.questForm}<p class="empty-state danger">{$ops.errors.questForm}</p>{/if}
