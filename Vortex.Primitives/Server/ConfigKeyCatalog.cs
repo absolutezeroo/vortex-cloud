@@ -212,6 +212,13 @@ public static class ConfigKeyCatalog
             "Rooms kept in the visited/most-visited lists",
             "Navigator"
         ),
+        new(
+            "navigator.favourite_limit",
+            "30",
+            ConfigValueKind.Int,
+            "Rooms a player may favourite (the client refuses to add past this, so 0 disables favourites entirely)",
+            "Navigator"
+        ),
         // Freeze minigame balance. Keys/defaults mirror Vortex.Rooms FreezeConfig / FreezeSettings
         // (duplicated here because Primitives can't reference that feature project).
         new("freeze.start_lives", "3", ConfigValueKind.Int, "Freeze: starting lives", "Freeze"),

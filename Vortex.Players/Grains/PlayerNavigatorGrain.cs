@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -282,6 +283,30 @@ internal sealed class PlayerNavigatorGrain(
             )
             .ExecuteDeleteAsync(ct)
             .ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// The rooms this player has favourited. Read at login so the client can draw the star on the
+    /// right rooms and know how close to its limit it is — it tracks both from this one message and
+    /// never asks again.
+    /// </summary>
+    public async Task<ImmutableArray<int>> GetFavouriteRoomIdsAsync(CancellationToken ct)
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(true);
+
+        int playerId = (int)this.GetPrimaryKeyLong();
+
+        List<int> roomIds = await dbCtx
+            .PlayerFavouriteRooms.AsNoTracking()
+            .Where(f => f.PlayerEntityId == playerId && f.DeletedAt == null)
+            .OrderBy(f => f.Id)
+            .Select(f => f.RoomEntityId)
+            .ToListAsync(ct)
+            .ConfigureAwait(true);
+
+        return [.. roomIds];
     }
 
     public Task<int> GetHomeRoomIdAsync(CancellationToken ct) => Task.FromResult(_homeRoomId);

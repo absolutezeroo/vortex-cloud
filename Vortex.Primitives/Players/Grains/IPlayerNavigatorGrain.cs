@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
@@ -32,6 +33,9 @@ public interface IPlayerNavigatorGrain : IGrainWithIntegerKey
 
     Task AddFavouriteRoomAsync(int roomId, CancellationToken ct);
     Task RemoveFavouriteRoomAsync(int roomId, CancellationToken ct);
+
+    /// <summary>The rooms this player has favourited, oldest first.</summary>
+    Task<ImmutableArray<int>> GetFavouriteRoomIdsAsync(CancellationToken ct);
 
     Task<int> GetHomeRoomIdAsync(CancellationToken ct);
     Task SetHomeRoomIdAsync(int roomId, CancellationToken ct);

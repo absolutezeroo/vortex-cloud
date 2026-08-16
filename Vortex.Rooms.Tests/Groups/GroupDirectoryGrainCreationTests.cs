@@ -359,7 +359,7 @@ public sealed class GroupDirectoryGrainCreationTests
         public Task<PlayerModeratorInfoSnapshot> GetModeratorInfoAsync(CancellationToken ct) =>
             throw new NotSupportedException();
 
-        public Task MarkLoggedInAsync(CancellationToken ct) => Task.CompletedTask;
+        public Task<bool> MarkLoggedInAsync(CancellationToken ct) => Task.FromResult(false);
 
         public Task<PlayerModToolPreferencesSnapshot> GetModToolPreferencesAsync(
             CancellationToken ct

@@ -24,4 +24,14 @@ public static class NavigatorConfig
     /// <summary>Distinct rooms kept in the "recently visited" / "most visited" lists.</summary>
     public const string HistoryLimitKey = "navigator.history_limit";
     public const int HistoryLimitDefault = 25;
+
+    /// <summary>
+    /// How many rooms a player may keep as favourites. The client enforces this itself:
+    /// <c>NavigatorData.isFavouritesFull()</c> is <c>count &gt;= limit</c>, and
+    /// <c>RoomInfoViewCtrl.onAddFavouriteClick</c> shows "favourites full" instead of sending the
+    /// add — so a limit of 0 makes the feature unreachable without a single packet leaving the
+    /// client. 30 is Habbo's own figure.
+    /// </summary>
+    public const string FavouriteLimitKey = "navigator.favourite_limit";
+    public const int FavouriteLimitDefault = 30;
 }

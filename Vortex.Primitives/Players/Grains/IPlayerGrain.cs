@@ -115,7 +115,8 @@ public interface IPlayerGrain : IGrainWithIntegerKey
     public Task<PlayerModeratorInfoSnapshot> GetModeratorInfoAsync(CancellationToken ct);
 
     /// <summary>Stamps <c>last_login_at</c>. Called once per successful SSO handshake.</summary>
-    public Task MarkLoggedInAsync(CancellationToken ct);
+    /// <summary>Stamps this login; returns true when it is the first of the day.</summary>
+    public Task<bool> MarkLoggedInAsync(CancellationToken ct);
 
     public Task<PlayerModToolPreferencesSnapshot> GetModToolPreferencesAsync(CancellationToken ct);
 

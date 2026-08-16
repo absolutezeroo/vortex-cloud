@@ -27,6 +27,7 @@ using Vortex.Primitives.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Messages.Outgoing.Users;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.MysteryBox.Snapshots;
+using Vortex.Primitives.Navigator;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
@@ -131,7 +132,7 @@ public class SSOTicketMessageHandler(
             // AVATAR_NAME_CHANGE / NEW_ROOM_SELECT constants.)
             // Stamped before anything else that can fail: the mod tool's "minutes since last login"
             // is only meaningful if every successful handshake records one.
-            await _grainFactory
+            bool isFirstLoginOfDay = await _grainFactory
                 .GetPlayerGrain(PlayerId.Parse(playerId))
                 .MarkLoggedInAsync(ct)
                 .ConfigureAwait(false);
@@ -185,8 +186,31 @@ public class SSOTicketMessageHandler(
                     ct
                 )
                 .ConfigureAwait(false);
+            // The client keeps both of these for the whole session and never asks again: it draws the
+            // star from the id list and refuses to add past the limit on its own
+            // (NavigatorData.isFavouritesFull, RoomInfoViewCtrl.onAddFavouriteClick). A limit of 0
+            // therefore made `count >= limit` true on an empty list, so "Favourites full" was shown
+            // and the add packet never left the client -- the handler, the grain and the table were
+            // all built and unreachable.
+            ImmutableArray<int> favouriteRoomIds = await _grainFactory
+                .GetPlayerNavigatorGrain(playerId)
+                .GetFavouriteRoomIdsAsync(ct)
+                .ConfigureAwait(false);
+
+            int favouriteLimit = await _grainFactory
+                .GetServerConfigGrain()
+                .GetIntAsync(
+                    NavigatorConfig.FavouriteLimitKey,
+                    NavigatorConfig.FavouriteLimitDefault
+                )
+                .ConfigureAwait(false);
+
             await ctx.SendComposerAsync(
-                    new FavouritesMessageComposer { Limit = 0, FavoriteRoomIds = [] },
+                    new FavouritesMessageComposer
+                    {
+                        Limit = favouriteLimit,
+                        FavoriteRoomIds = favouriteRoomIds,
+                    },
                     ct
                 )
                 .ConfigureAwait(false);
@@ -209,8 +233,17 @@ public class SSOTicketMessageHandler(
                     ct
                 )
                 .ConfigureAwait(false);
+            // SessionDataManager.isNoob is `level != 0`, and the client softens several surfaces on
+            // it (RoomUI's noob room handling, the avatar info card). Whether somebody is new is
+            // exactly what the NUX flag already read above says, so this stops claiming every
+            // account is a veteran on its first second.
             await ctx.SendComposerAsync(
-                    new NoobnessLevelMessage { NoobnessLevel = NoobnessLevelType.NotNoob },
+                    new NoobnessLevelMessage
+                    {
+                        NoobnessLevel = nuxCompleted
+                            ? NoobnessLevelType.NotNoob
+                            : NoobnessLevelType.Noob,
+                    },
                     ct
                 )
                 .ConfigureAwait(false);
@@ -334,10 +367,21 @@ public class SSOTicketMessageHandler(
                 .ConfigureAwait(false);
             await ctx.SendComposerAsync(new InfoFeedEnableMessageComposer { Enabled = true }, ct)
                 .ConfigureAwait(false);
-            await ctx.SendComposerAsync(new AchievementsScoreEventMessageComposer { Score = 0 }, ct)
+            // The score the toolbar badge shows. It is already maintained (PlayerAchievementGrain
+            // adds to it) and already sent on the profile and on the room avatar -- login was the
+            // one place that reported zero, so the badge read empty until a profile was opened.
+            PlayerSummarySnapshot summary = await _grainFactory
+                .GetPlayerGrain(PlayerId.Parse(playerId))
+                .GetSummaryAsync(ct)
+                .ConfigureAwait(false);
+
+            await ctx.SendComposerAsync(
+                    new AchievementsScoreEventMessageComposer { Score = summary.AchievementScore },
+                    ct
+                )
                 .ConfigureAwait(false);
             await ctx.SendComposerAsync(
-                    new IsFirstLoginOfDayMessage { IsFirstLoginOfDay = true },
+                    new IsFirstLoginOfDayMessage { IsFirstLoginOfDay = isFirstLoginOfDay },
                     ct
                 )
                 .ConfigureAwait(false);

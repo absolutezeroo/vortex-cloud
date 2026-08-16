@@ -93,7 +93,15 @@ internal sealed partial class PlayerGrain
     private static int ToWholeMinutes(TimeSpan span) =>
         span <= TimeSpan.Zero ? 0 : (int)Math.Min(span.TotalMinutes, int.MaxValue);
 
-    public async Task MarkLoggedInAsync(CancellationToken ct)
+    /// <summary>
+    /// Stamps this login and reports whether it is the day's first.
+    /// </summary>
+    /// <returns>
+    /// True when the previous login was on an earlier day, or when there is no previous login at
+    /// all. Returned rather than left to the caller because this is the only moment both values
+    /// exist: the stamp below destroys the old one, and everything at login runs after it.
+    /// </returns>
+    public async Task<bool> MarkLoggedInAsync(CancellationToken ct)
     {
         await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
 
@@ -104,12 +112,21 @@ internal sealed partial class PlayerGrain
 
         if (entity is null)
         {
-            return;
+            return false;
         }
 
-        entity.LastLoginAt = DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow;
+
+        // Compared in UTC, the same clock the column is written in. A hotel that wants the day to
+        // turn over at its own local midnight would shift both, not just this read.
+        bool isFirstLoginOfDay =
+            entity.LastLoginAt is not DateTime previous || previous.Date < now.Date;
+
+        entity.LastLoginAt = now;
 
         await dbCtx.SaveChangesAsync(ct);
+
+        return isFirstLoginOfDay;
     }
 
     public async Task<PlayerModToolPreferencesSnapshot> GetModToolPreferencesAsync(
