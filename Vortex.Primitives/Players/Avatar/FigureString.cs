@@ -21,6 +21,18 @@ namespace Vortex.Primitives.Players.Avatar;
 /// </remarks>
 public static class FigureString
 {
+    /// <summary>
+    /// How long a look may be, and the width of every column that stores one.
+    /// </summary>
+    /// <remarks>
+    /// <c>players.figure</c> was 100 while the bot and wardrobe columns beside it were already 255,
+    /// and 100 is simply too small: an ordinary look runs to about ninety characters, and redeeming
+    /// a clothing furni *appends* its sets to it. The write then failed in the persistence layer,
+    /// which is far from the packet that caused it -- so the length is checked where the look
+    /// arrives, against this.
+    /// </remarks>
+    public const int MaxLength = 255;
+
     /// <summary>The distinct figure set ids a look is wearing.</summary>
     public static ImmutableArray<int> SetIdsOf(string? figure)
     {

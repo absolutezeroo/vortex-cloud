@@ -8,6 +8,7 @@ using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Messenger;
 using Vortex.Database.Entities.Room;
 using Vortex.Database.Entities.Security;
+using Vortex.Primitives.Players.Avatar;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Rooms.Enums;
 
@@ -30,7 +31,7 @@ public class PlayerEntity : VortexEntity
     public string? Motto { get; set; }
 
     [Column("figure")]
-    [MaxLength(100)]
+    [MaxLength(FigureString.MaxLength)]
     [DefaultValue("hr-115-42.hd-195-19.ch-3030-82.lg-275-1408.fa-1201.ca-1804-64")]
     public required string Figure { get; set; }
 

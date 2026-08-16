@@ -53,6 +53,20 @@ public class UpdateFigureDataMessageHandler(
             return;
         }
 
+        if (message.Figure.Length > FigureString.MaxLength)
+        {
+            // Refused here rather than in the persistence layer, where it surfaced as an unhandled
+            // MySQL "data too long" three call stacks from the packet that caused it.
+            _logger.LogWarning(
+                "Player {PlayerId} sent a {Length}-character figure; the limit is {Max}. Look unchanged.",
+                ctx.PlayerId,
+                message.Figure.Length,
+                FigureString.MaxLength
+            );
+
+            return;
+        }
+
         if (!await MayWearAsync(message.Figure, ctx.PlayerId, ct).ConfigureAwait(false))
         {
             return;
