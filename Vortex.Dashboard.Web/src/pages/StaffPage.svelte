@@ -13,6 +13,8 @@
   import { identity } from '../lib/session.js';
   import { createWriteOps } from '../lib/writeOps.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import Drawer from '../components/Drawer.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import EmptyState from '../components/EmptyState.svelte';
@@ -106,7 +108,7 @@
     expanded = role.id;
     // SvelteSet, not Set: $state proxies this object but NOT a Set held inside it, so the
     // add/delete below would mutate without signalling and no checkbox would move.
-    capabilityDraft = { roleId: role.id, selected: new SvelteSet(role.capabilities) };
+    capabilityDraft = { roleId: role.id, role, selected: new SvelteSet(role.capabilities) };
   }
 
   function toggleCapability(key) {
@@ -150,7 +152,7 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>{$t('staff.title')}</h2></div>
+  <PageHeader title={$t('staff.title')} description={$t('staff.description')} />
   <p class="muted">{$t('staff.description')}</p>
   <div class="toolbar">
     <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
@@ -280,37 +282,6 @@
               {/if}
             </tr>
 
-            {#if roleDraft?.id === role.id}
-              <tr>
-                <td colspan={canManage ? 6 : 5}>
-                  <form
-                    class="inline-form"
-                    onsubmit={(event) => {
-                      event.preventDefault();
-                      ask(
-                        '/api/v1/operations/staff/roles/update',
-                        { roleId: role.id, key: roleDraft.key, name: roleDraft.name },
-                        $t('staff.updateRole'),
-                        $t('staff.updateRoleSummary', { role: roleDraft.name })
-                      );
-                    }}
-                  >
-                    <label>
-                      {$t('staff.colKey')}
-                      <input bind:value={roleDraft.key} required />
-                    </label>
-                    <label>
-                      {$t('staff.colRole')}
-                      <input bind:value={roleDraft.name} required />
-                    </label>
-                    <button type="submit">{$t('staff.save')}</button>
-                    <button type="button" class="ghost-button" onclick={() => (roleDraft = null)}>
-                      {$t('staff.cancel')}
-                    </button>
-                  </form>
-                </td>
-              </tr>
-            {/if}
 
             {#if expanded === role.id}
               <tr>
@@ -322,54 +293,6 @@
                     </p>
                   {/if}
 
-                  {#if canManage && capabilityDraft?.roleId === role.id}
-                    <p class="muted">{$t('staff.capabilityEditorHint')}</p>
-                    <label class="wildcard-row">
-                      <input
-                        type="checkbox"
-                        checked={capabilityDraft.selected.has(data.wildcard)}
-                        onchange={() => toggleCapability(data.wildcard)}
-                      />
-                      <code>{data.wildcard}</code>
-                      <span class="muted">{$t('staff.wildcardHint')}</span>
-                    </label>
-                    {#each data.allCapabilities || [] as group}
-                      <div class="cap-area">
-                        <div class="cap-area-head">
-                          <strong>{group.area}</strong>
-                          <button type="button" class="ghost-button" onclick={() => toggleArea(group, true)}>
-                            {$t('staff.selectAll')}
-                          </button>
-                          <button type="button" class="ghost-button" onclick={() => toggleArea(group, false)}>
-                            {$t('staff.selectNone')}
-                          </button>
-                        </div>
-                        <div class="cap-grid">
-                          {#each group.capabilities as cap}
-                            <label class="cap-check">
-                              <input
-                                type="checkbox"
-                                checked={capabilityDraft.selected.has(cap)}
-                                onchange={() => toggleCapability(cap)}
-                              />
-                              <code>{cap}</code>
-                            </label>
-                          {/each}
-                        </div>
-                      </div>
-                    {/each}
-                    <div class="editor-actions">
-                      <button type="button" onclick={() => saveCapabilities(role)}>
-                        {$t('staff.saveCapabilities')}
-                      </button>
-                      <button type="button" class="ghost-button" onclick={() => (capabilityDraft = null)}>
-                        {$t('staff.cancel')}
-                      </button>
-                      <span class="muted">
-                        {$t('staff.selectedCount', { count: capabilityDraft.selected.size })}
-                      </span>
-                    </div>
-                  {:else}
                     <div class="cap-list">
                       {#each role.capabilities as cap}
                         <code class="chip">{cap}</code>
@@ -377,7 +300,6 @@
                         <span class="muted">{$t('staff.noCapabilities')}</span>
                       {/each}
                     </div>
-                  {/if}
                 </td>
               </tr>
             {/if}
@@ -615,62 +537,6 @@
                 </td>
               {/if}
             </tr>
-            {#if presetDraft?.id === preset.id}
-              <tr>
-                <td colspan={canManage ? 6 : 5}>
-                  <form
-                    class="inline-form"
-                    onsubmit={(event) => {
-                      event.preventDefault();
-                      ask(
-                        '/api/v1/operations/staff/presets/update',
-                        {
-                          presetId: preset.id,
-                          kind: Number(presetDraft.kind),
-                          presetIndex: Number(presetDraft.presetIndex),
-                          name: presetDraft.name,
-                          durationSeconds: presetDraft.durationSeconds
-                            ? Number(presetDraft.durationSeconds)
-                            : null,
-                          message: presetDraft.message,
-                        },
-                        $t('staff.updatePreset'),
-                        $t('staff.updatePresetSummary', { name: presetDraft.name })
-                      );
-                    }}
-                  >
-                    <label>
-                      {$t('staff.colKind')}
-                      <select bind:value={presetDraft.kind}>
-                        {#each data.presetKinds || [] as kind}
-                          <option value={kind.value}>{kind.label}</option>
-                        {/each}
-                      </select>
-                    </label>
-                    <label>
-                      {$t('staff.colIndex')}
-                      <input type="number" bind:value={presetDraft.presetIndex} min="0" />
-                    </label>
-                    <label>
-                      {$t('staff.colPresetName')}
-                      <input bind:value={presetDraft.name} required />
-                    </label>
-                    <label>
-                      {$t('staff.durationSeconds')}
-                      <input type="number" bind:value={presetDraft.durationSeconds} min="0" placeholder={$t('common.permanent')} />
-                    </label>
-                    <label>
-                      {$t('staff.colMessage')}
-                      <input bind:value={presetDraft.message} />
-                    </label>
-                    <button type="submit">{$t('staff.save')}</button>
-                    <button type="button" class="ghost-button" onclick={() => (presetDraft = null)}>
-                      {$t('staff.cancel')}
-                    </button>
-                  </form>
-                </td>
-              </tr>
-            {/if}
           {:else}
             <tr><td colspan={canManage ? 6 : 5} class="muted">{$t('staff.noPresets')}</td></tr>
           {/each}
@@ -726,6 +592,142 @@
     {/if}
   </section>
   {/if}
+{/if}
+
+{#if roleDraft}
+  <Drawer title={$t('staff.rolesTitle')} eyebrow={$t('staff.title')} onclose={() => (roleDraft = null)}>
+    <form
+      class="inline-form"
+      onsubmit={(event) => {
+        event.preventDefault();
+        ask(
+          '/api/v1/operations/staff/roles/update',
+          { roleId: roleDraft.id, key: roleDraft.key, name: roleDraft.name },
+          $t('staff.updateRole'),
+          $t('staff.updateRoleSummary', { role: roleDraft.name })
+        );
+      }}
+    >
+      <label>
+        {$t('staff.colKey')}
+        <input bind:value={roleDraft.key} required />
+      </label>
+      <label>
+        {$t('staff.colRole')}
+        <input bind:value={roleDraft.name} required />
+      </label>
+      <button type="submit">{$t('staff.save')}</button>
+      <button type="button" class="ghost-button" onclick={() => (roleDraft = null)}>
+        {$t('staff.cancel')}
+      </button>
+    </form>
+  </Drawer>
+{/if}
+
+{#if capabilityDraft}
+  <Drawer title={$t('staff.capabilitiesTitle')} eyebrow={$t('staff.title')} onclose={() => (capabilityDraft = null)}>
+    <p class="muted">{$t('staff.capabilityEditorHint')}</p>
+    <label class="wildcard-row">
+      <input
+        type="checkbox"
+        checked={capabilityDraft.selected.has(data.wildcard)}
+        onchange={() => toggleCapability(data.wildcard)}
+      />
+      <code>{data.wildcard}</code>
+      <span class="muted">{$t('staff.wildcardHint')}</span>
+    </label>
+    {#each data.allCapabilities || [] as group}
+      <div class="cap-area">
+        <div class="cap-area-head">
+          <strong>{group.area}</strong>
+          <button type="button" class="ghost-button" onclick={() => toggleArea(group, true)}>
+            {$t('staff.selectAll')}
+          </button>
+          <button type="button" class="ghost-button" onclick={() => toggleArea(group, false)}>
+            {$t('staff.selectNone')}
+          </button>
+        </div>
+        <div class="cap-grid">
+          {#each group.capabilities as cap}
+            <label class="cap-check">
+              <input
+                type="checkbox"
+                checked={capabilityDraft.selected.has(cap)}
+                onchange={() => toggleCapability(cap)}
+              />
+              <code>{cap}</code>
+            </label>
+          {/each}
+        </div>
+      </div>
+    {/each}
+    <div class="editor-actions">
+      <button type="button" onclick={() => saveCapabilities(capabilityDraft.role)}>
+        {$t('staff.saveCapabilities')}
+      </button>
+      <button type="button" class="ghost-button" onclick={() => (capabilityDraft = null)}>
+        {$t('staff.cancel')}
+      </button>
+      <span class="muted">
+        {$t('staff.selectedCount', { count: capabilityDraft.selected.size })}
+      </span>
+    </div>
+  </Drawer>
+{/if}
+
+{#if presetDraft}
+  <Drawer title={$t('staff.presetsTitle')} eyebrow={$t('staff.title')} onclose={() => (presetDraft = null)}>
+    <form
+      class="inline-form"
+      onsubmit={(event) => {
+        event.preventDefault();
+        ask(
+          '/api/v1/operations/staff/presets/update',
+          {
+            presetId: presetDraft.id,
+            kind: Number(presetDraft.kind),
+            presetIndex: Number(presetDraft.presetIndex),
+            name: presetDraft.name,
+            durationSeconds: presetDraft.durationSeconds
+              ? Number(presetDraft.durationSeconds)
+              : null,
+            message: presetDraft.message,
+          },
+          $t('staff.updatePreset'),
+          $t('staff.updatePresetSummary', { name: presetDraft.name })
+        );
+      }}
+    >
+      <label>
+        {$t('staff.colKind')}
+        <select bind:value={presetDraft.kind}>
+          {#each data.presetKinds || [] as kind}
+            <option value={kind.value}>{kind.label}</option>
+          {/each}
+        </select>
+      </label>
+      <label>
+        {$t('staff.colIndex')}
+        <input type="number" bind:value={presetDraft.presetIndex} min="0" />
+      </label>
+      <label>
+        {$t('staff.colPresetName')}
+        <input bind:value={presetDraft.name} required />
+      </label>
+      <label>
+        {$t('staff.durationSeconds')}
+        <input type="number" bind:value={presetDraft.durationSeconds} min="0" placeholder={$t('common.permanent')} />
+      </label>
+      <label>
+        {$t('staff.colMessage')}
+        <input bind:value={presetDraft.message} />
+      </label>
+      <button type="submit">{$t('staff.save')}</button>
+      <button type="button" class="ghost-button" onclick={() => (presetDraft = null)}>
+        {$t('staff.cancel')}
+      </button>
+    </form>
+  </Drawer>
 {/if}
 
 <ConfirmReasonModal

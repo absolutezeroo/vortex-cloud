@@ -14,6 +14,8 @@
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { identity } from '../lib/session.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import Drawer from '../components/Drawer.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import OpResult from '../components/OpResult.svelte';
@@ -28,6 +30,15 @@
   let data = $state(null);
   // Every write goes through createWriteOps: the modal collects the reason, the store posts it,
   // remembers it and refreshes -- this callback is only the page's own "clear the drafts" step.
+  // What the one drawer calls itself, per kind. Passed the translator so the title follows a
+  // language change like every other label on the page.
+  function editorTitle(kind, translator) {
+    if (kind === 'context') return translator('navigatorConfig.tabsTitle');
+    if (kind === 'quickLink') return translator('navigatorConfig.quickLinksTitle');
+    if (kind === 'category') return translator('navigatorConfig.categoriesTitle');
+    return translator('navigatorConfig.eventCategoriesTitle');
+  }
+
   const ops = createWriteOps(async () => {
     editing = null;
     contextForm = newContext();
@@ -98,8 +109,10 @@
 
   const ask = (endpoint, body, title, summary) => ops.ask(endpoint, body, title, summary);
 
-  function startEdit(kind, row) {
-    editing = { kind, id: row.id, draft: { ...row } };
+  function startEdit(kind, row, parentId = null) {
+    // parentId: a quick link belongs to a tab, and the drawer no longer sits inside that tab's
+    // markup, so the parent it posts against has to travel with the edit.
+    editing = { kind, id: row.id, parentId, draft: { ...row } };
   }
 
   function queryTypeLabel(value) {
@@ -120,8 +133,7 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>{$t('navigatorConfig.title')}</h2></div>
-  <p class="muted">{$t('navigatorConfig.description')}</p>
+  <PageHeader title={$t('navigatorConfig.title')} description={$t('navigatorConfig.description')} />
 
   <div class="toolbar">
     <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
@@ -255,45 +267,6 @@
           {/if}
         </header>
 
-        {#if editing?.kind === 'context' && editing.id === context.id}
-          <form
-            class="edit-grid"
-            onsubmit={(event) => {
-              event.preventDefault();
-              ask(
-                '/api/v1/operations/navigator/contexts/update',
-                { contextId: context.id, ...editing.draft },
-                $t('navigatorConfig.updateTab'),
-                $t('navigatorConfig.updateTabSummary', { code: editing.draft.searchCode })
-              );
-            }}
-          >
-            <label>
-              {$t('navigatorConfig.searchCode')}
-              <input bind:value={editing.draft.searchCode} required />
-            </label>
-            <label>
-              {$t('navigatorConfig.queryType')}
-              <select bind:value={editing.draft.queryType}>
-                {#each queryTypes as q}
-                  <option value={q.value}>{q.label}</option>
-                {/each}
-              </select>
-            </label>
-            <label>
-              {$t('navigatorConfig.order')}
-              <input type="number" bind:value={editing.draft.orderNum} />
-            </label>
-            <label class="check">
-              <input type="checkbox" bind:checked={editing.draft.visible} />
-              {$t('navigatorConfig.visible')}
-            </label>
-            <button type="submit">{$t('navigatorConfig.save')}</button>
-            <button type="button" class="ghost-button" onclick={() => (editing = null)}>
-              {$t('navigatorConfig.cancel')}
-            </button>
-          </form>
-        {/if}
 
         <div class="table-wrap">
           <table>
@@ -322,7 +295,7 @@
                   <td>{link.orderNum}</td>
                   {#if canManage}
                     <td class="row-actions">
-                      <button type="button" class="ghost-button" onclick={() => startEdit('quickLink', link)}>
+                      <button type="button" class="ghost-button" onclick={() => startEdit('quickLink', link, context.id)}>
                         {$t('navigatorConfig.edit')}
                       </button>
                       <button
@@ -341,61 +314,6 @@
                     </td>
                   {/if}
                 </tr>
-                {#if editing?.kind === 'quickLink' && editing.id === link.id}
-                  <tr>
-                    <td colspan={canManage ? 6 : 5}>
-                      <form
-                        class="edit-grid"
-                        onsubmit={(event) => {
-                          event.preventDefault();
-                          ask(
-                            '/api/v1/operations/navigator/quick-links/update',
-                            {
-                              quickLinkId: link.id,
-                              contextId: context.id,
-                              searchCode: editing.draft.searchCode,
-                              filter: editing.draft.filter || '',
-                              localization: editing.draft.localization || '',
-                              queryType: editing.draft.queryType,
-                              orderNum: editing.draft.orderNum,
-                            },
-                            $t('navigatorConfig.updateBlock'),
-                            $t('navigatorConfig.updateBlockSummary', { code: editing.draft.searchCode })
-                          );
-                        }}
-                      >
-                        <label>
-                          {$t('navigatorConfig.searchCode')}
-                          <input bind:value={editing.draft.searchCode} required />
-                        </label>
-                        <label>
-                          {$t('navigatorConfig.queryType')}
-                          <select bind:value={editing.draft.queryType}>
-                            {#each queryTypes as q}
-                              <option value={q.value}>{q.label}</option>
-                            {/each}
-                          </select>
-                        </label>
-                        <label>
-                          {$t('navigatorConfig.colFilter')}
-                          <input bind:value={editing.draft.filter} />
-                        </label>
-                        <label>
-                          {$t('navigatorConfig.colLocalization')}
-                          <input bind:value={editing.draft.localization} />
-                        </label>
-                        <label>
-                          {$t('navigatorConfig.order')}
-                          <input type="number" bind:value={editing.draft.orderNum} />
-                        </label>
-                        <button type="submit">{$t('navigatorConfig.save')}</button>
-                        <button type="button" class="ghost-button" onclick={() => (editing = null)}>
-                          {$t('navigatorConfig.cancel')}
-                        </button>
-                      </form>
-                    </td>
-                  </tr>
-                {/if}
               {:else}
                 <tr>
                   <td colspan={canManage ? 6 : 5} class="muted">{$t('navigatorConfig.noBlocks')}</td>
@@ -556,49 +474,6 @@
                 </td>
               {/if}
             </tr>
-            {#if editing?.kind === 'category' && editing.id === category.id}
-              <tr>
-                <td colspan={canManage ? 8 : 7}>
-                  <form
-                    class="edit-grid"
-                    onsubmit={(event) => {
-                      event.preventDefault();
-                      ask(
-                        '/api/v1/operations/navigator/categories/update',
-                        { categoryId: category.id, ...editing.draft },
-                        $t('navigatorConfig.updateCategory'),
-                        $t('navigatorConfig.updateCategorySummary', { name: editing.draft.name })
-                      );
-                    }}
-                  >
-                    <label>
-                      {$t('navigatorConfig.colName')}
-                      <input bind:value={editing.draft.name} required />
-                    </label>
-                    <label>
-                      {$t('navigatorConfig.colMinRank')}
-                      <input type="number" bind:value={editing.draft.minRank} />
-                    </label>
-                    <label>
-                      {$t('navigatorConfig.order')}
-                      <input type="number" bind:value={editing.draft.orderNum} />
-                    </label>
-                    <label class="check">
-                      <input type="checkbox" bind:checked={editing.draft.visible} />
-                      {$t('navigatorConfig.visible')}
-                    </label>
-                    <label class="check">
-                      <input type="checkbox" bind:checked={editing.draft.staffOnly} />
-                      {$t('navigatorConfig.colStaffOnly')}
-                    </label>
-                    <button type="submit">{$t('navigatorConfig.save')}</button>
-                    <button type="button" class="ghost-button" onclick={() => (editing = null)}>
-                      {$t('navigatorConfig.cancel')}
-                    </button>
-                  </form>
-                </td>
-              </tr>
-            {/if}
           {:else}
             <tr>
               <td colspan={canManage ? 8 : 7} class="muted">{$t('navigatorConfig.noCategories')}</td>
@@ -686,41 +561,6 @@
                 </td>
               {/if}
             </tr>
-            {#if editing?.kind === 'eventCategory' && editing.id === category.id}
-              <tr>
-                <td colspan={canManage ? 5 : 4}>
-                  <form
-                    class="edit-grid"
-                    onsubmit={(event) => {
-                      event.preventDefault();
-                      ask(
-                        '/api/v1/operations/navigator/event-categories/update',
-                        {
-                          categoryId: category.id,
-                          name: editing.draft.name,
-                          visible: editing.draft.visible,
-                        },
-                        $t('navigatorConfig.updateEventCategory'),
-                        $t('navigatorConfig.updateEventCategorySummary', { name: editing.draft.name })
-                      );
-                    }}
-                  >
-                    <label>
-                      {$t('navigatorConfig.colName')}
-                      <input bind:value={editing.draft.name} required />
-                    </label>
-                    <label class="check">
-                      <input type="checkbox" bind:checked={editing.draft.visible} />
-                      {$t('navigatorConfig.visible')}
-                    </label>
-                    <button type="submit">{$t('navigatorConfig.save')}</button>
-                    <button type="button" class="ghost-button" onclick={() => (editing = null)}>
-                      {$t('navigatorConfig.cancel')}
-                    </button>
-                  </form>
-                </td>
-              </tr>
-            {/if}
           {:else}
             <tr>
               <td colspan={canManage ? 5 : 4} class="muted">{$t('navigatorConfig.noEventCategories')}</td>
@@ -758,6 +598,190 @@
     {/if}
   </section>
   {/if}
+{/if}
+
+{#if editing}
+  <!-- One drawer for all four editors: `editing` was already a single {kind, id, draft},
+       so what used to unfold inside four different lists is one panel that switches on kind. -->
+  <Drawer
+    title={editorTitle(editing.kind, $t)}
+    eyebrow={$t('navigatorConfig.title')}
+    onclose={() => (editing = null)}
+  >
+    {#if editing.kind === 'context'}
+            <form
+              class="edit-grid"
+              onsubmit={(event) => {
+                event.preventDefault();
+                ask(
+                  '/api/v1/operations/navigator/contexts/update',
+                  { contextId: editing.id, ...editing.draft },
+                  $t('navigatorConfig.updateTab'),
+                  $t('navigatorConfig.updateTabSummary', { code: editing.draft.searchCode })
+                );
+              }}
+            >
+              <label>
+                {$t('navigatorConfig.searchCode')}
+                <input bind:value={editing.draft.searchCode} required />
+              </label>
+              <label>
+                {$t('navigatorConfig.queryType')}
+                <select bind:value={editing.draft.queryType}>
+                  {#each queryTypes as q}
+                    <option value={q.value}>{q.label}</option>
+                  {/each}
+                </select>
+              </label>
+              <label>
+                {$t('navigatorConfig.order')}
+                <input type="number" bind:value={editing.draft.orderNum} />
+              </label>
+              <label class="check">
+                <input type="checkbox" bind:checked={editing.draft.visible} />
+                {$t('navigatorConfig.visible')}
+              </label>
+              <button type="submit">{$t('navigatorConfig.save')}</button>
+              <button type="button" class="ghost-button" onclick={() => (editing = null)}>
+                {$t('navigatorConfig.cancel')}
+              </button>
+            </form>
+    {:else if editing.kind === 'quickLink'}
+                    <tr>
+                      <td colspan={canManage ? 6 : 5}>
+                        <form
+                          class="edit-grid"
+                          onsubmit={(event) => {
+                            event.preventDefault();
+                            ask(
+                              '/api/v1/operations/navigator/quick-links/update',
+                              {
+                                quickLinkId: editing.id,
+                                contextId: editing.parentId,
+                                searchCode: editing.draft.searchCode,
+                                filter: editing.draft.filter || '',
+                                localization: editing.draft.localization || '',
+                                queryType: editing.draft.queryType,
+                                orderNum: editing.draft.orderNum,
+                              },
+                              $t('navigatorConfig.updateBlock'),
+                              $t('navigatorConfig.updateBlockSummary', { code: editing.draft.searchCode })
+                            );
+                          }}
+                        >
+                          <label>
+                            {$t('navigatorConfig.searchCode')}
+                            <input bind:value={editing.draft.searchCode} required />
+                          </label>
+                          <label>
+                            {$t('navigatorConfig.queryType')}
+                            <select bind:value={editing.draft.queryType}>
+                              {#each queryTypes as q}
+                                <option value={q.value}>{q.label}</option>
+                              {/each}
+                            </select>
+                          </label>
+                          <label>
+                            {$t('navigatorConfig.colFilter')}
+                            <input bind:value={editing.draft.filter} />
+                          </label>
+                          <label>
+                            {$t('navigatorConfig.colLocalization')}
+                            <input bind:value={editing.draft.localization} />
+                          </label>
+                          <label>
+                            {$t('navigatorConfig.order')}
+                            <input type="number" bind:value={editing.draft.orderNum} />
+                          </label>
+                          <button type="submit">{$t('navigatorConfig.save')}</button>
+                          <button type="button" class="ghost-button" onclick={() => (editing = null)}>
+                            {$t('navigatorConfig.cancel')}
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+    {:else if editing.kind === 'category'}
+                <tr>
+                  <td colspan={canManage ? 8 : 7}>
+                    <form
+                      class="edit-grid"
+                      onsubmit={(event) => {
+                        event.preventDefault();
+                        ask(
+                          '/api/v1/operations/navigator/categories/update',
+                          { categoryId: editing.id, ...editing.draft },
+                          $t('navigatorConfig.updateCategory'),
+                          $t('navigatorConfig.updateCategorySummary', { name: editing.draft.name })
+                        );
+                      }}
+                    >
+                      <label>
+                        {$t('navigatorConfig.colName')}
+                        <input bind:value={editing.draft.name} required />
+                      </label>
+                      <label>
+                        {$t('navigatorConfig.colMinRank')}
+                        <input type="number" bind:value={editing.draft.minRank} />
+                      </label>
+                      <label>
+                        {$t('navigatorConfig.order')}
+                        <input type="number" bind:value={editing.draft.orderNum} />
+                      </label>
+                      <label class="check">
+                        <input type="checkbox" bind:checked={editing.draft.visible} />
+                        {$t('navigatorConfig.visible')}
+                      </label>
+                      <label class="check">
+                        <input type="checkbox" bind:checked={editing.draft.staffOnly} />
+                        {$t('navigatorConfig.colStaffOnly')}
+                      </label>
+                      <button type="submit">{$t('navigatorConfig.save')}</button>
+                      <button type="button" class="ghost-button" onclick={() => (editing = null)}>
+                        {$t('navigatorConfig.cancel')}
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+    {:else if editing.kind === 'eventCategory'}
+                <tr>
+                  <td colspan={canManage ? 5 : 4}>
+                    <form
+                      class="edit-grid"
+                      onsubmit={(event) => {
+                        event.preventDefault();
+                        ask(
+                          '/api/v1/operations/navigator/event-categories/update',
+                          {
+                            categoryId: editing.id,
+                            name: editing.draft.name,
+                            visible: editing.draft.visible,
+                          },
+                          $t('navigatorConfig.updateEventCategory'),
+                          $t('navigatorConfig.updateEventCategorySummary', { name: editing.draft.name })
+                        );
+                      }}
+                    >
+                      <label>
+                        {$t('navigatorConfig.colName')}
+                        <input bind:value={editing.draft.name} required />
+                      </label>
+                      <label class="check">
+                        <input type="checkbox" bind:checked={editing.draft.visible} />
+                        {$t('navigatorConfig.visible')}
+                      </label>
+                      <button type="submit">{$t('navigatorConfig.save')}</button>
+                      <button type="button" class="ghost-button" onclick={() => (editing = null)}>
+                        {$t('navigatorConfig.cancel')}
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+    {/if}
+
+    {#snippet actions()}
+      <button type="button" class="ghost-button" onclick={() => (editing = null)}>{$t('common.cancel')}</button>
+    {/snippet}
+  </Drawer>
 {/if}
 
 <ConfirmReasonModal
