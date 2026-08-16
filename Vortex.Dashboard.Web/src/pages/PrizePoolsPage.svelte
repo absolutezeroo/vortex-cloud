@@ -236,21 +236,27 @@
     {:else if pools.length === 0}
       <EmptyState message={$t('prizePools.noPools')} />
     {:else}
-      <div class="inline-list">
+      <!-- A grid of equal tiles rather than a wrapped row of buttons. As a row, each chip was as
+           wide as its own name and the ones carrying a BUILT-IN badge were wider still, so a list
+           of near-identical crackable pools read as ragged noise you had to scan letter by letter.
+           Equal columns put every name at the same left edge, which is what makes them comparable. -->
+      <div class="pool-grid">
         {#each pools as pool (pool.id)}
           <button
             type="button"
-            class="btn btn-ghost btn-sm"
+            class="pool-tile"
             aria-pressed={selectedPool?.id === pool.id}
             onclick={() => (selectedPoolId = pool.id)}
           >
-            {pool.name}
-            {#if pool.isBuiltIn}
-              <span class="status-badge status-badge--ok">{$t('prizePools.builtIn')}</span>
-            {/if}
-            {#if !pool.enabled}
-              <span class="status-badge status-badge--warn">{$t('prizePools.enabled')}</span>
-            {/if}
+            <span class="pool-tile-name">{pool.name}</span>
+            <span class="pool-tile-badges">
+              {#if pool.isBuiltIn}
+                <span class="status-badge status-badge--ok">{$t('prizePools.builtIn')}</span>
+              {/if}
+              {#if !pool.enabled}
+                <span class="status-badge status-badge--warn">{$t('prizePools.enabled')}</span>
+              {/if}
+            </span>
           </button>
         {/each}
       </div>
@@ -645,8 +651,7 @@
      stats ran into the table and the table into the action row. */
   .panel > .stats,
   .panel > .table-wrap,
-  .panel > .op-grid,
-  .panel > .inline-list {
+  .panel > .op-grid {
     margin-bottom: 18px;
   }
 
@@ -670,9 +675,56 @@
     margin-top: 4px;
   }
 
-  /* Selected pool: aria-pressed is the state, so it drives the styling rather than a second class. */
-  .btn[aria-pressed='true'] {
+  .pool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .pool-tile {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    /* Fixed height, so a tile carrying a badge does not stand taller than its neighbours. */
+    min-height: 40px;
+    width: 100%;
+    text-align: left;
+    border: 1px solid var(--line-strong);
+    border-radius: 9px;
+    background: var(--surface-strong);
+    color: var(--ink);
+    padding: 8px 12px;
+    font-weight: 700;
+    font-size: 0.86rem;
+    transition: background 140ms ease, border-color 140ms ease;
+  }
+
+  .pool-tile:hover {
+    background: var(--surface-hover);
+  }
+
+  /* The name truncates rather than wrapping: two-line tiles would reintroduce the ragged heights
+     this grid exists to remove, and the full name is one hover away. */
+  .pool-tile-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .pool-tile-badges {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex: none;
+  }
+
+  /* Selected pool: aria-pressed is the state, so it drives the styling rather than a second class.
+     Tinting the surface as well as the border -- a border alone was easy to miss across a grid. */
+  .pool-tile[aria-pressed='true'] {
     border-color: var(--accent);
     color: var(--accent);
+    background: var(--accent-soft);
   }
 </style>

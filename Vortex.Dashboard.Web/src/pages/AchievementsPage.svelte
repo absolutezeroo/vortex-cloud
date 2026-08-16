@@ -15,12 +15,14 @@
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer } from '../lib/session.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
+  import Tabs from '../components/Tabs.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import Modal from '../components/Modal.svelte';
   import StatCard from '../components/StatCard.svelte';
-  import { Trophy, Award, Zap, ZapOff, Users } from '@lucide/svelte';
+  import { Trophy, Award, Zap, ZapOff, Users, Layers, AlertTriangle } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
   let category = $state('');
@@ -32,6 +34,11 @@
   let selected = $state(null);
   let detail = $state(null);
   let detailLoading = $state(false);
+
+  // The definitions list and its editor stay on ONE tab: they are master and detail, read
+  // together, and NN/g is explicit that tabs make that pairing worse. The three read-only breakdowns
+  // below them are the ones nobody was reaching.
+  let tab = $state('definitions');
 
   const ops = createWriteOps(async () => {
     achievementForm = null;
@@ -142,8 +149,11 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>{$t('achievements.title')}</h2></div>
-  <p class="muted">{$t('achievements.description')}</p>
+  <PageHeader title={$t('achievements.title')} description={$t('achievements.description')}>
+    {#snippet actions()}
+      <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
+    {/snippet}
+  </PageHeader>
 
   <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); refresh(); }}>
     <label>
@@ -155,7 +165,6 @@
         {/each}
       </select>
     </label>
-    <button type="submit" disabled={loading}>{$t('common.refresh')}</button>
   </form>
 
   {#if loading}
@@ -202,226 +211,334 @@
   </div>
 {/if}
 
-{#if list}
-  <div class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>{$t('achievements.definitionsTitle')}</h2></div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>{$t('achievements.colName')}</th>
-            <th>{$t('achievements.colCategory')}</th>
-            <th>{$t('achievements.colTrigger')}</th>
-            <th>{$t('achievements.colLevels')}</th>
-            <th>{$t('achievements.colFinalRequirement')}</th>
-            <th>{$t('achievements.colScore')}</th>
-            <th>{$t('achievements.colStarted')}</th>
-            <th>{$t('achievements.colCompleted')}</th>
-            <th>{$t('achievements.colBadges')}</th>
-            {#if canManage}<th></th>{/if}
-          </tr>
-        </thead>
-        <tbody>
-          {#each list.items || [] as row}
-            <tr class:selected={selected === row.id} onclick={() => select(row)} style="cursor: pointer;">
-              <td>
-                <span class="badge-cell">
-                  <AssetImage src={row.badgeUrl} alt={row.name} size={32} fallbackIcon={Trophy} />
-                  <span>{row.name}</span>
-                </span>
-              </td>
-              <td>{row.category}</td>
-              <td>
-                {#if row.triggered}
-                  <span class="status-badge status-badge--ok">{$t('achievements.triggerLive')}</span>
-                {:else}
-                  <span class="status-badge status-badge--warn">{$t('achievements.triggerMissing')}</span>
-                {/if}
-              </td>
-              <td>{row.levelCount}</td>
-              <td>{formatNumber(row.finalRequirement)}</td>
-              <td>{formatNumber(row.totalScore)}</td>
-              <td>{formatNumber(row.playersStarted)}</td>
-              <td>{formatNumber(row.playersCompleted)}</td>
-              <td>{formatNumber(row.badgesAwarded)}</td>
-              {#if canManage}
-                <td class="row-actions">
-                  <button
-                    type="button"
-                    class="ghost-button"
-                    onclick={(event) => {
-                      event.stopPropagation();
-                      achievementForm = {
-                        id: row.id,
-                        name: row.name,
-                        category: row.category,
-                        displayMethod: row.displayMethod,
-                      };
-                    }}
-                  >
-                    {$t('achievements.edit')}
-                  </button>
-                  <button
-                    type="button"
-                    class="ghost-button danger"
-                    onclick={(event) => {
-                      event.stopPropagation();
-                      ops.ask(
-                        '/api/v1/operations/content/achievements/delete',
-                        { achievementId: row.id },
-                        $t('achievements.deleteAchievement'),
-                        $t('achievements.deleteAchievementSummary', { name: row.name })
-                      );
-                    }}
-                  >
-                    {$t('achievements.delete')}
-                  </button>
-                </td>
-              {/if}
-            </tr>
-            {#if selected === row.id}
-              <tr>
-                <td colspan={canManage ? 10 : 9}>
-                  {#if detailLoading}
-                    <p class="muted">{$t('common.loading')}</p>
-                  {:else if detail}
-                    <div class="table-wrap">
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>{$t('achievements.colLevel')}</th>
-                            <th>{$t('achievements.colBadgeCode')}</th>
-                            <th>{$t('achievements.colRequirement')}</th>
-                            <th>{$t('achievements.colReward')}</th>
-                            <th>{$t('achievements.colLevelScore')}</th>
-                            <th>{$t('achievements.colPlayersAtLevel')}</th>
-                            {#if canManage}<th></th>{/if}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {#each detail.ladder || [] as level}
-                            <tr>
-                              <td>{level.level}</td>
-                              <td>
-                                <span class="badge-cell">
-                                  <AssetImage
-                                    src={level.badgeUrl}
-                                    alt={level.badgeCode}
-                                    size={28}
-                                    fallbackIcon={Award}
-                                  />
-                                  <code>{level.badgeCode}</code>
-                                </span>
-                              </td>
-                              <td>{formatNumber(level.progressRequirement)}</td>
-                              <td>{rewardLabel(level)}</td>
-                              <td>{formatNumber(level.scorePoints)}</td>
-                              <td>
-                                {formatNumber(
-                                  (detail.levelDistribution || []).find((d) => d.level === level.level)?.players || 0
-                                )}
-                              </td>
-                              {#if canManage}
-                                <td class="row-actions">
-                                  <button
-                                    type="button"
-                                    class="ghost-button"
-                                    onclick={(event) => { event.stopPropagation(); levelForm = { ...level }; }}
-                                  >
-                                    {$t('achievements.edit')}
-                                  </button>
-                                  <button
-                                    type="button"
-                                    class="ghost-button danger"
-                                    onclick={(event) => {
-                                      event.stopPropagation();
-                                      ops.ask(
-                                        '/api/v1/operations/content/achievements/levels/delete',
-                                        { levelId: level.id },
-                                        $t('achievements.deleteLevel'),
-                                        $t('achievements.deleteLevelSummary', { level: level.level })
-                                      );
-                                    }}
-                                  >
-                                    {$t('achievements.delete')}
-                                  </button>
-                                </td>
-                              {/if}
-                            </tr>
-                          {/each}
-                        </tbody>
-                      </table>
-                    </div>
+<Tabs
+  bind:active={tab}
+  storageKey="achievements"
+  tabs={[
+    { id: 'definitions', label: $t('achievements.definitionsTitle'), icon: Award, count: list?.items?.length },
+    { id: 'categories', label: $t('achievements.byCategoryTitle'), icon: Layers },
+    { id: 'untouched', label: $t('achievements.untouchedTitle'), icon: AlertTriangle },
+    { id: 'leaderboard', label: $t('achievements.leaderboardTitle'), icon: Trophy },
+  ]}
+/>
 
-                    {#if (detail.topPlayers || []).length > 0}
-                      <h3 class="subhead">{$t('achievements.topHoldersTitle')}</h3>
+{#if tab === 'definitions'}
+  {#if list}
+    <div class="panel" style="margin-top: 12px;">
+      <div class="panel-head"><h2>{$t('achievements.definitionsTitle')}</h2></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>{$t('achievements.colName')}</th>
+              <th>{$t('achievements.colCategory')}</th>
+              <th>{$t('achievements.colTrigger')}</th>
+              <th>{$t('achievements.colLevels')}</th>
+              <th>{$t('achievements.colFinalRequirement')}</th>
+              <th>{$t('achievements.colScore')}</th>
+              <th>{$t('achievements.colStarted')}</th>
+              <th>{$t('achievements.colCompleted')}</th>
+              <th>{$t('achievements.colBadges')}</th>
+              {#if canManage}<th></th>{/if}
+            </tr>
+          </thead>
+          <tbody>
+            {#each list.items || [] as row}
+              <tr class:selected={selected === row.id} onclick={() => select(row)} style="cursor: pointer;">
+                <td>
+                  <span class="badge-cell">
+                    <AssetImage src={row.badgeUrl} alt={row.name} size={32} fallbackIcon={Trophy} />
+                    <span>{row.name}</span>
+                  </span>
+                </td>
+                <td>{row.category}</td>
+                <td>
+                  {#if row.triggered}
+                    <span class="status-badge status-badge--ok">{$t('achievements.triggerLive')}</span>
+                  {:else}
+                    <span class="status-badge status-badge--warn">{$t('achievements.triggerMissing')}</span>
+                  {/if}
+                </td>
+                <td>{row.levelCount}</td>
+                <td>{formatNumber(row.finalRequirement)}</td>
+                <td>{formatNumber(row.totalScore)}</td>
+                <td>{formatNumber(row.playersStarted)}</td>
+                <td>{formatNumber(row.playersCompleted)}</td>
+                <td>{formatNumber(row.badgesAwarded)}</td>
+                {#if canManage}
+                  <td class="row-actions">
+                    <button
+                      type="button"
+                      class="ghost-button"
+                      onclick={(event) => {
+                        event.stopPropagation();
+                        achievementForm = {
+                          id: row.id,
+                          name: row.name,
+                          category: row.category,
+                          displayMethod: row.displayMethod,
+                        };
+                      }}
+                    >
+                      {$t('achievements.edit')}
+                    </button>
+                    <button
+                      type="button"
+                      class="ghost-button danger"
+                      onclick={(event) => {
+                        event.stopPropagation();
+                        ops.ask(
+                          '/api/v1/operations/content/achievements/delete',
+                          { achievementId: row.id },
+                          $t('achievements.deleteAchievement'),
+                          $t('achievements.deleteAchievementSummary', { name: row.name })
+                        );
+                      }}
+                    >
+                      {$t('achievements.delete')}
+                    </button>
+                  </td>
+                {/if}
+              </tr>
+              {#if selected === row.id}
+                <tr>
+                  <td colspan={canManage ? 10 : 9}>
+                    {#if detailLoading}
+                      <p class="muted">{$t('common.loading')}</p>
+                    {:else if detail}
                       <div class="table-wrap">
                         <table>
                           <thead>
                             <tr>
-                              <th>{$t('achievements.colPlayer')}</th>
                               <th>{$t('achievements.colLevel')}</th>
-                              <th>{$t('achievements.colProgress')}</th>
+                              <th>{$t('achievements.colBadgeCode')}</th>
+                              <th>{$t('achievements.colRequirement')}</th>
+                              <th>{$t('achievements.colReward')}</th>
+                              <th>{$t('achievements.colLevelScore')}</th>
+                              <th>{$t('achievements.colPlayersAtLevel')}</th>
+                              {#if canManage}<th></th>{/if}
                             </tr>
                           </thead>
                           <tbody>
-                            {#each detail.topPlayers as holder}
+                            {#each detail.ladder || [] as level}
                               <tr>
+                                <td>{level.level}</td>
                                 <td>
-                                  <EntityLink
-                                    type="player"
-                                    id={holder.playerId}
-                                    label={holder.playerName}
-                                    {openPlayer}
-                                  />
+                                  <span class="badge-cell">
+                                    <AssetImage
+                                      src={level.badgeUrl}
+                                      alt={level.badgeCode}
+                                      size={28}
+                                      fallbackIcon={Award}
+                                    />
+                                    <code>{level.badgeCode}</code>
+                                  </span>
                                 </td>
-                                <td>{holder.level}</td>
-                                <td>{formatNumber(holder.progress)}</td>
+                                <td>{formatNumber(level.progressRequirement)}</td>
+                                <td>{rewardLabel(level)}</td>
+                                <td>{formatNumber(level.scorePoints)}</td>
+                                <td>
+                                  {formatNumber(
+                                    (detail.levelDistribution || []).find((d) => d.level === level.level)?.players || 0
+                                  )}
+                                </td>
+                                {#if canManage}
+                                  <td class="row-actions">
+                                    <button
+                                      type="button"
+                                      class="ghost-button"
+                                      onclick={(event) => { event.stopPropagation(); levelForm = { ...level }; }}
+                                    >
+                                      {$t('achievements.edit')}
+                                    </button>
+                                    <button
+                                      type="button"
+                                      class="ghost-button danger"
+                                      onclick={(event) => {
+                                        event.stopPropagation();
+                                        ops.ask(
+                                          '/api/v1/operations/content/achievements/levels/delete',
+                                          { levelId: level.id },
+                                          $t('achievements.deleteLevel'),
+                                          $t('achievements.deleteLevelSummary', { level: level.level })
+                                        );
+                                      }}
+                                    >
+                                      {$t('achievements.delete')}
+                                    </button>
+                                  </td>
+                                {/if}
                               </tr>
                             {/each}
                           </tbody>
                         </table>
                       </div>
-                    {/if}
-                  {/if}
-                </td>
-              </tr>
-            {/if}
-          {:else}
-            <tr><td colspan={canManage ? 10 : 9} class="muted">{$t('achievements.noDefinitions')}</td></tr>
-          {/each}
-        </tbody>
-      </table>
-    </div>
-  </div>
-{/if}
 
-{#if canManage && list}
-  <section class="panel" style="margin-top: 12px;">
-    <div class="panel-head">
-      <h2>{$t('achievements.editorTitle')}</h2>
-      <div class="head-actions">
-        <button type="button" class="ghost-button" onclick={() => (achievementForm = emptyAchievement())}>
-          <Award size={14} strokeWidth={2} aria-hidden="true" />
-          {$t('achievements.newAchievement')}
-        </button>
-        {#if selected}
-          <button type="button" class="ghost-button" onclick={() => (levelForm = emptyLevel())}>
-            <Trophy size={14} strokeWidth={2} aria-hidden="true" />
-            {$t('achievements.levelEditorTitle')}
-          </button>
-        {/if}
+                      {#if (detail.topPlayers || []).length > 0}
+                        <h3 class="subhead">{$t('achievements.topHoldersTitle')}</h3>
+                        <div class="table-wrap">
+                          <table>
+                            <thead>
+                              <tr>
+                                <th>{$t('achievements.colPlayer')}</th>
+                                <th>{$t('achievements.colLevel')}</th>
+                                <th>{$t('achievements.colProgress')}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {#each detail.topPlayers as holder}
+                                <tr>
+                                  <td>
+                                    <EntityLink
+                                      type="player"
+                                      id={holder.playerId}
+                                      label={holder.playerName}
+                                      {openPlayer}
+                                    />
+                                  </td>
+                                  <td>{holder.level}</td>
+                                  <td>{formatNumber(holder.progress)}</td>
+                                </tr>
+                              {/each}
+                            </tbody>
+                          </table>
+                        </div>
+                      {/if}
+                    {/if}
+                  </td>
+                </tr>
+              {/if}
+            {:else}
+              <tr><td colspan={canManage ? 10 : 9} class="muted">{$t('achievements.noDefinitions')}</td></tr>
+            {/each}
+          </tbody>
+        </table>
       </div>
     </div>
-    <p class="muted">{$t('achievements.editorHint')}</p>
-    {#if !selected}
-      <p class="muted">{$t('achievements.pickToEditLevels')}</p>
-    {/if}
+  {/if}
 
-    {#if $ops.result}
-      <OpResult result={$ops.result} />
-    {/if}
-  </section>
+  {#if canManage && list}
+    <section class="panel" style="margin-top: 12px;">
+      <div class="panel-head">
+        <h2>{$t('achievements.editorTitle')}</h2>
+        <div class="head-actions">
+          <button type="button" class="ghost-button" onclick={() => (achievementForm = emptyAchievement())}>
+            <Award size={14} strokeWidth={2} aria-hidden="true" />
+            {$t('achievements.newAchievement')}
+          </button>
+          {#if selected}
+            <button type="button" class="ghost-button" onclick={() => (levelForm = emptyLevel())}>
+              <Trophy size={14} strokeWidth={2} aria-hidden="true" />
+              {$t('achievements.levelEditorTitle')}
+            </button>
+          {/if}
+        </div>
+      </div>
+      <p class="muted">{$t('achievements.editorHint')}</p>
+      {#if !selected}
+        <p class="muted">{$t('achievements.pickToEditLevels')}</p>
+      {/if}
+
+      {#if $ops.result}
+        <OpResult result={$ops.result} />
+      {/if}
+    </section>
+  {/if}
+{/if}
+
+{#if tab === 'categories' && stats}
+    <div class="panel" style="margin-top: 12px;">
+      <div class="panel-head"><h2>{$t('achievements.byCategoryTitle')}</h2></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>{$t('achievements.colCategory')}</th>
+              <th>{$t('achievements.colAchievements')}</th>
+              <th>{$t('achievements.colLevels')}</th>
+              <th>{$t('achievements.colBadges')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each stats.byCategory || [] as row}
+              <tr>
+                <td>{row.category}</td>
+                <td>{formatNumber(row.achievements)}</td>
+                <td>{formatNumber(row.levels)}</td>
+                <td>{formatNumber(row.badgesAwarded)}</td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    </div>
+{/if}
+
+{#if tab === 'untouched' && stats}
+    <div class="panel" style="margin-top: 12px;">
+      <div class="panel-head"><h2>{$t('achievements.untouchedTitle')}</h2></div>
+      <p class="muted">{$t('achievements.untouchedDescription')}</p>
+      {#if (stats.untouched || []).length === 0}
+        <EmptyState message={$t('achievements.untouchedNone')} />
+      {:else}
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>{$t('achievements.colName')}</th>
+                <th>{$t('achievements.colCategory')}</th>
+                <th>{$t('achievements.colTrigger')}</th>
+                <th>{$t('achievements.colLevels')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {#each stats.untouched as row}
+                <tr>
+                  <td>{row.name}</td>
+                  <td>{row.category}</td>
+                  <td>
+                    {#if row.triggered}
+                      <span class="status-badge status-badge--ok">{$t('achievements.triggerLive')}</span>
+                    {:else}
+                      <span class="status-badge status-badge--warn">{$t('achievements.triggerMissing')}</span>
+                    {/if}
+                  </td>
+                  <td>{row.levels}</td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
+      {/if}
+    </div>
+{/if}
+
+{#if tab === 'leaderboard' && stats}
+    <div class="panel" style="margin-top: 12px;">
+      <div class="panel-head"><h2>{$t('achievements.leaderboardTitle')}</h2></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>{$t('achievements.colPlayer')}</th>
+              <th>{$t('achievements.colPlayerScore')}</th>
+              <th>{$t('achievements.colBadges')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each stats.topPlayers || [] as row}
+              <tr>
+                <td><EntityLink type="player" id={row.playerId} label={row.playerName} {openPlayer} /></td>
+                <td>{formatNumber(row.score)}</td>
+                <td>{formatNumber(row.badges)}</td>
+              </tr>
+            {:else}
+              <tr><td colspan="3" class="muted">{$t('achievements.noProgress')}</td></tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    </div>
 {/if}
 
 <datalist id="achievement-categories">
@@ -548,97 +665,6 @@
 
     {/snippet}
   </Modal>
-{/if}
-
-{#if stats}
-  <div class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>{$t('achievements.byCategoryTitle')}</h2></div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>{$t('achievements.colCategory')}</th>
-            <th>{$t('achievements.colAchievements')}</th>
-            <th>{$t('achievements.colLevels')}</th>
-            <th>{$t('achievements.colBadges')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each stats.byCategory || [] as row}
-            <tr>
-              <td>{row.category}</td>
-              <td>{formatNumber(row.achievements)}</td>
-              <td>{formatNumber(row.levels)}</td>
-              <td>{formatNumber(row.badgesAwarded)}</td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>{$t('achievements.untouchedTitle')}</h2></div>
-    <p class="muted">{$t('achievements.untouchedDescription')}</p>
-    {#if (stats.untouched || []).length === 0}
-      <EmptyState message={$t('achievements.untouchedNone')} />
-    {:else}
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>{$t('achievements.colName')}</th>
-              <th>{$t('achievements.colCategory')}</th>
-              <th>{$t('achievements.colTrigger')}</th>
-              <th>{$t('achievements.colLevels')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each stats.untouched as row}
-              <tr>
-                <td>{row.name}</td>
-                <td>{row.category}</td>
-                <td>
-                  {#if row.triggered}
-                    <span class="status-badge status-badge--ok">{$t('achievements.triggerLive')}</span>
-                  {:else}
-                    <span class="status-badge status-badge--warn">{$t('achievements.triggerMissing')}</span>
-                  {/if}
-                </td>
-                <td>{row.levels}</td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      </div>
-    {/if}
-  </div>
-
-  <div class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>{$t('achievements.leaderboardTitle')}</h2></div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>{$t('achievements.colPlayer')}</th>
-            <th>{$t('achievements.colPlayerScore')}</th>
-            <th>{$t('achievements.colBadges')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each stats.topPlayers || [] as row}
-            <tr>
-              <td><EntityLink type="player" id={row.playerId} label={row.playerName} {openPlayer} /></td>
-              <td>{formatNumber(row.score)}</td>
-              <td>{formatNumber(row.badges)}</td>
-            </tr>
-          {:else}
-            <tr><td colspan="3" class="muted">{$t('achievements.noProgress')}</td></tr>
-          {/each}
-        </tbody>
-      </table>
-    </div>
-  </div>
 {/if}
 
 <ConfirmReasonModal
