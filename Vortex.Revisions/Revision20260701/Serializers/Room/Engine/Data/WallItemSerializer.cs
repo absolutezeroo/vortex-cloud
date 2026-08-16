@@ -25,7 +25,9 @@ internal class WallItemSerializer
         // send — but StuffDataSnapshot carries no such field, so it cannot be reached from here
         // without widening the snapshot. Until then a non-legacy wall item renders stateless rather
         // than desyncing the room.
-        if (item.StuffData is LegacyStuffSnapshot legacy) { packet.WriteString(legacy.Data); }
+        packet.WriteString(
+            item.StuffData is LegacyStuffSnapshot legacy ? legacy.Data : string.Empty
+        );
 
         packet
             .WriteInteger(-1) // expiration

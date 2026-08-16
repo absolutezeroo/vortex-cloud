@@ -32,7 +32,10 @@ public sealed class WallItemStuffDataWireTests
 
     private static ClientPacket SerializeAndReadBody(ItemsMessageComposer composer)
     {
-        byte[] bytes = Revision.Serializers[typeof(ItemsMessageComposer)].Serialize(composer).ToArray();
+        byte[] bytes = Revision
+            .Serializers[typeof(ItemsMessageComposer)]
+            .Serialize(composer)
+            .ToArray();
         // AbstractSerializer prepends int length (4) + short header (2).
         byte[] body = new byte[bytes.Length - 6];
         Array.Copy(bytes, 6, body, 0, body.Length);
@@ -67,9 +70,15 @@ public sealed class WallItemStuffDataWireTests
         };
 
     /// <summary>Reads the packet exactly as the client's parseItemData does.</summary>
-    private static (string Id, int SpriteId, string Position, string Data, int Expiration, int Usage, int OwnerId) ReadItem(
-        ClientPacket packet
-    )
+    private static (
+        string Id,
+        int SpriteId,
+        string Position,
+        string Data,
+        int Expiration,
+        int Usage,
+        int OwnerId
+    ) ReadItem(ClientPacket packet)
     {
         packet.PopInt().Should().Be(1, "one owner name precedes the items");
         packet.PopInt();
@@ -94,8 +103,15 @@ public sealed class WallItemStuffDataWireTests
             Compose(new LegacyStuffSnapshot { StuffBitmask = 0, Data = "1" })
         );
 
-        (string Id, int SpriteId, string Position, string Data, int Expiration, int Usage, int OwnerId) item =
-            ReadItem(packet);
+        (
+            string Id,
+            int SpriteId,
+            string Position,
+            string Data,
+            int Expiration,
+            int Usage,
+            int OwnerId
+        ) item = ReadItem(packet);
 
         item.Id.Should().Be("4711");
         item.SpriteId.Should().Be(4242);
@@ -121,14 +137,23 @@ public sealed class WallItemStuffDataWireTests
             )
         );
 
-        (string Id, int SpriteId, string Position, string Data, int Expiration, int Usage, int OwnerId) item =
-            ReadItem(packet);
+        (
+            string Id,
+            int SpriteId,
+            string Position,
+            string Data,
+            int Expiration,
+            int Usage,
+            int OwnerId
+        ) item = ReadItem(packet);
 
         item.Id.Should().Be("4711");
         item.SpriteId.Should().Be(4242);
         item.Position.Should().Be(":w=1,2 l=0,0 l");
-        item.Data.Should().BeEmpty("non-legacy wall data has no legacy projection on the snapshot yet");
-        item.Expiration.Should().Be(-1, "the field after the data string must still land on the expiration");
+        item.Data.Should()
+            .BeEmpty("non-legacy wall data has no legacy projection on the snapshot yet");
+        item.Expiration.Should()
+            .Be(-1, "the field after the data string must still land on the expiration");
         item.OwnerId.Should().Be(9);
         packet.Remaining.Should().Be(0, "the client consumes the packet exactly");
     }

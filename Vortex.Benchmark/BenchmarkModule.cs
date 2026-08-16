@@ -13,6 +13,7 @@ public sealed class BenchmarkModule : IHostPluginModule
     public void ConfigureServices(IServiceCollection services, HostApplicationBuilder builder)
     {
         services.AddSingleton<BenchmarkProvisioner>();
+        services.AddSingleton<BenchmarkReportWriter>();
         services.AddSingleton<BenchmarkService>();
         services.AddSingleton<IBenchmarkService>(sp => sp.GetRequiredService<BenchmarkService>());
 
