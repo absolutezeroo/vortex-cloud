@@ -61,6 +61,10 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
     // already in this set is skipped rather than entered twice.
     private readonly HashSet<int> _callChainTiles = [];
 
+    // What each pile's random add-on drew on its last firings, so "avoid effects from the last N
+    // executions" has something to avoid. Keyed by stack (tile) id, oldest firing first.
+    private readonly Dictionary<int, Queue<HashSet<int>>> _recentRandomPicks = [];
+
     /// <summary>How deep one "execute stacks" chain may go. The tile guard already makes a cycle
     /// impossible; this bounds the cost of a wide, legitimate chain.</summary>
     private const int MaxCallChainDepth = 8;
@@ -419,6 +423,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         // co-located with the trigger. Delayed actions are re-validated again at execution time in
         // ExecuteStackChainAsync, in case a box leaves the pile during its delay window.
         List<IWiredAction> actions = ChooseActions(
+            ctx.Stack.StackId,
             WiredActionBranch.Select(ctx.Stack.Actions, conditionsPassed),
             ctx.Policy
         );
@@ -1046,7 +1051,11 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         && tileIdx < _roomGrain._state.TileFloorStacks.Length
         && _roomGrain._state.TileFloorStacks[tileIdx].Contains(objectId);
 
-    private static List<IWiredAction> ChooseActions(List<IWiredAction> actions, IWiredPolicy policy)
+    private List<IWiredAction> ChooseActions(
+        int stackId,
+        List<IWiredAction> actions,
+        IWiredPolicy policy
+    )
     {
         if (actions.Count == 0)
         {
@@ -1056,9 +1065,73 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         return policy.EffectMode switch
         {
             WiredEffectModeType.FirstOnly => [actions[0]],
-            WiredEffectModeType.Random => [actions[Random.Shared.Next(actions.Count)]],
+            WiredEffectModeType.Random => ChooseRandomActions(stackId, actions, policy),
             _ => [.. actions],
         };
+    }
+
+    /// <summary>
+    /// The random add-on's draw: N effects, avoiding what the pile ran in its last M firings. The
+    /// history is kept per pile here rather than on the add-on, because the add-on's own box is
+    /// rebuilt from the tile on every fire and would forget between them.
+    /// </summary>
+    private List<IWiredAction> ChooseRandomActions(
+        int stackId,
+        List<IWiredAction> actions,
+        IWiredPolicy policy
+    )
+    {
+        List<int> ids =
+        [
+            .. actions.Select(action => (action as FurnitureWiredLogic)?.ObjectId.Value ?? 0),
+        ];
+
+        HashSet<int> recent = [];
+
+        if (
+            policy.EffectAvoidRecentExecutions > 0
+            && _recentRandomPicks.TryGetValue(stackId, out Queue<HashSet<int>>? history)
+        )
+        {
+            foreach (HashSet<int> firing in history)
+            {
+                recent.UnionWith(firing);
+            }
+        }
+
+        List<int> picked = WiredRandomEffectPicker.Pick(
+            ids,
+            Math.Max(1, policy.EffectPickCount),
+            recent,
+            Random.Shared
+        );
+
+        RememberRandomPick(stackId, [.. picked.Select(index => ids[index])], policy);
+
+        return [.. picked.Select(index => actions[index])];
+    }
+
+    private void RememberRandomPick(int stackId, HashSet<int> picked, IWiredPolicy policy)
+    {
+        if (policy.EffectAvoidRecentExecutions <= 0)
+        {
+            _recentRandomPicks.Remove(stackId);
+
+            return;
+        }
+
+        if (!_recentRandomPicks.TryGetValue(stackId, out Queue<HashSet<int>>? history))
+        {
+            history = new Queue<HashSet<int>>();
+            _recentRandomPicks[stackId] = history;
+        }
+
+        history.Enqueue(picked);
+
+        while (history.Count > policy.EffectAvoidRecentExecutions)
+        {
+            history.Dequeue();
+        }
     }
 
     private static bool EvaluateConditions(

@@ -9,6 +9,8 @@ public sealed class WiredPolicy : IWiredPolicy
     public WiredConditionModeType ConditionMode { get; set; } = WiredConditionModeType.All;
     public int ConditionCompareValue { get; set; }
     public WiredEffectModeType EffectMode { get; set; } = WiredEffectModeType.All;
+    public int EffectPickCount { get; set; } = 1;
+    public int EffectAvoidRecentExecutions { get; set; }
     public WiredAnimationModeType AnimationMode { get; set; } = WiredAnimationModeType.Smooth;
 
     // The default slide duration for wired moves. 50ms (one wired tick) was imperceptible — furni and
