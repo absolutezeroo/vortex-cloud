@@ -901,7 +901,7 @@ export default {
     stackHeight: 'Stack height',
     usagePolicy: 'Usage policy',
     stuffDataType: 'Stuff data type',
-    extraDataOptional: 'Extra data (optional)',
+    extraDataOptional: 'Extra data',
     canStack: 'Can stack',
     canWalk: 'Can walk',
     canSit: 'Can sit',

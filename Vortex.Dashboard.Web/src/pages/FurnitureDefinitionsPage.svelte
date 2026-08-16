@@ -466,8 +466,12 @@
     min-width: 0;
   }
 
+  /* The cells stretch to the tallest in their row, so a label that wraps to two lines -- "Extra
+     data", and most labels once translated -- would leave its input sitting lower than its
+     neighbours. Packing each cell's content to the bottom lines every input up regardless. */
   .form-grid > .op-field {
     min-width: 0;
+    align-content: end;
   }
 
   .form-grid > .op-field input,

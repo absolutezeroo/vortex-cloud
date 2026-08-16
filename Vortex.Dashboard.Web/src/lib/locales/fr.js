@@ -900,7 +900,7 @@ export default {
     stackHeight: 'Hauteur empilable',
     usagePolicy: "Politique d'utilisation",
     stuffDataType: 'Type de stuff data',
-    extraDataOptional: 'Données supplémentaires (optionnel)',
+    extraDataOptional: 'Données supplémentaires',
     canStack: 'Empilable',
     canWalk: 'Marchable',
     canSit: 'Assis possible',
