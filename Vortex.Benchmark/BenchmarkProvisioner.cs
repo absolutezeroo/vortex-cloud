@@ -68,12 +68,9 @@ internal sealed class BenchmarkProvisioner(
 
         bool borrowed = targetRoomId > 0;
 
-        if (
-            borrowed
-            && !await db.Rooms.AnyAsync(r => r.Id == targetRoomId, ct).ConfigureAwait(false)
-        )
+        if (borrowed)
         {
-            throw new InvalidOperationException("benchmark_room_not_found");
+            await CheckBorrowedRoomAsync(db, targetRoomId, players, ct).ConfigureAwait(false);
         }
 
         int modelId = await db
@@ -177,6 +174,45 @@ internal sealed class BenchmarkProvisioner(
             ],
             PlacedFurniture = furniture,
         };
+    }
+
+    /// <summary>
+    /// Refuses a borrowed room the run could not actually fill, before anything is created.
+    /// </summary>
+    /// <remarks>
+    /// Both of these would otherwise fail quietly and produce a run that looks like it worked: the
+    /// clients connect, the room turns them away one by one, and the samples show a hotel coping
+    /// beautifully with almost no load. A refusal up front is worth more than a graph of nothing.
+    /// </remarks>
+    private static async Task CheckBorrowedRoomAsync(
+        VortexDbContext db,
+        int roomId,
+        int players,
+        CancellationToken ct
+    )
+    {
+        var room = await db
+            .Rooms.AsNoTracking()
+            .Where(r => r.Id == roomId)
+            .Select(r => new { r.DoorMode, r.PlayersMax })
+            .FirstOrDefaultAsync(ct)
+            .ConfigureAwait(false);
+
+        if (room is null)
+        {
+            throw new InvalidOperationException("benchmark_room_not_found");
+        }
+
+        // A doorbell or a password stops a synthetic player at the door, and it has no way to knock.
+        if (room.DoorMode != RoomDoorModeType.Open)
+        {
+            throw new InvalidOperationException("benchmark_room_not_open");
+        }
+
+        if (room.PlayersMax > 0 && room.PlayersMax < players)
+        {
+            throw new InvalidOperationException("benchmark_room_too_small");
+        }
     }
 
     /// <summary>

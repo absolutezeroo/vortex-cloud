@@ -364,7 +364,7 @@
     onSelect={(picked) => {
       form.roomId = picked.id;
       form.roomName = picked.name;
-      picking = null;
+      picking = false;
     }}
     onClose={() => (picking = false)}
   />
@@ -379,8 +379,9 @@
   confirmLabel={$ops.pending?.title ?? $t('common.confirm')}
   busy={$ops.busy}
   error={$ops.error}
-  on:confirm={(event) => ops.confirm(event.detail)}
-  on:cancel={ops.cancel}
+  danger={$ops.pending?.danger ?? false}
+  onconfirm={ops.confirm}
+  oncancel={() => ops.cancel()}
 />
 
 <OpResult result={$ops.result} />

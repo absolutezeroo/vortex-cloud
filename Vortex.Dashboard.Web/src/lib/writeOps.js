@@ -6,7 +6,9 @@
 // Usage in a page:
 //   const ops = createWriteOps(refresh);
 //   ops.ask('/api/v1/operations/...', { id }, title, summary)   // opens the modal
-//   <ConfirmReasonModal open={Boolean($ops.pending)} ... on:confirm={(e) => ops.confirm(e.detail)} />
+//   <ConfirmReasonModal open={Boolean($ops.pending)} ... onconfirm={ops.confirm} oncancel={() => ops.cancel()} />
+//   The modal takes callback props, not events: `on:confirm` compiles, renders, and silently does
+//   nothing -- the confirm button becomes a button that closes nothing and posts nothing.
 //
 // Pages that host several independent forms (a create panel, a per-row edit, a nested child editor)
 // pass a `key` so each one shows its own busy state, error and OpResult instead of sharing one
