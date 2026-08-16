@@ -1,10 +1,13 @@
 using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents;
 using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
+using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Revision20260701.Parsers.UserDefinedRoomEvents;
 using Vortex.Revisions.Revision20260701.Parsers.UserDefinedRoomEvents.Wiredmenu;
+using Vortex.Revisions.Revision20260701.Parsers.UserDefinedRoomEvents.Wiredtrading;
 using Vortex.Revisions.Revision20260701.Serializers.UserDefinedRoomEvents;
 using Vortex.Revisions.Revision20260701.Serializers.UserDefinedRoomEvents.Wiredmenu;
+using Vortex.Revisions.Revision20260701.Serializers.UserDefinedRoomEvents.Wiredtrading;
 
 namespace Vortex.Revisions.Revision20260701.Maps;
 
@@ -84,6 +87,10 @@ internal sealed class UserDefinedRoomEventsMap : IRevisionMap
             MessageEvent.WiredSetRoomSettingsMessageEvent,
             new WiredSetRoomSettingsMessageParser()
         );
+
+        // Userdefinedroomevents Wiredtrading
+        builder.MapParser(MessageEvent.OpenWiredChestEvent, new OpenWiredChestMessageParser());
+        builder.MapParser(MessageEvent.CloseWiredChestEvent, new CloseWiredChestMessageParser());
 
         builder.MapSerializer(
             typeof(OpenEventMessageComposer),
@@ -212,6 +219,15 @@ internal sealed class UserDefinedRoomEventsMap : IRevisionMap
             new WiredVariablesForObjectEventMessageComposerSerializer(
                 MessageComposer.WiredVariablesForObjectComposer
             )
+        );
+
+        builder.MapSerializer(
+            typeof(WiredChestOpenMessageComposer),
+            new WiredChestOpenMessageComposerSerializer(MessageComposer.WiredChestOpenComposer)
+        );
+        builder.MapSerializer(
+            typeof(WiredChestCoinsMessageComposer),
+            new WiredChestCoinsMessageComposerSerializer(MessageComposer.WiredChestCoinsComposer)
         );
     }
 }

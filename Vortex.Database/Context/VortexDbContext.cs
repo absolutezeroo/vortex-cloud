@@ -232,6 +232,8 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<WiredPermanentVariableEntity> WiredPermanentVariables { get; init; } = null!;
 
+    public DbSet<WiredChestEntity> WiredChests { get; init; } = null!;
+
     public DbSet<RoomWiredLogEntity> RoomWiredLogs { get; init; } = null!;
 
     public DbSet<PlayerWiredPreferencesEntity> PlayerWiredPreferences { get; init; } = null!;

@@ -31,7 +31,7 @@ public class FurnitureEntity : VortexEntity
     public double Z { get; set; }
 
     [Column("direction")]
-    [DefaultValue(Rotation.North)] // Rotation.North
+    [DefaultValue(Rotation.North)]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public Rotation Rotation { get; set; }
 
@@ -45,12 +45,11 @@ public class FurnitureEntity : VortexEntity
     [ForeignKey(nameof(PlayerEntityId))]
     public PlayerEntity? PlayerEntity { get; set; }
 
-    /// <summary>
-    /// Tag: set to the rentable-space furni id when this item was placed inside a rented space
-    /// (DATA-MODEL §3.3). Cleared when the rental expires and the item returns to inventory.
-    /// </summary>
     [Column("rentable_space_furniture_id")]
     public int? RentableSpaceFurnitureEntityId { get; set; }
+
+    [Column("wired_chest_id")]
+    public int? WiredChestEntityId { get; set; }
 
     [ForeignKey(nameof(FurnitureDefinitionEntityId))]
     public FurnitureDefinitionEntity? FurnitureDefinitionEntity { get; set; }

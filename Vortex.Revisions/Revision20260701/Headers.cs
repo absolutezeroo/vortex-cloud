@@ -16,6 +16,12 @@ internal static class MessageEvent
     public const int GetCustomFilterMessageEvent = 801; // AS3-verified (direct read): WIN63 registry _SafeCls_2046.as _composers[801] = _SafeCls_2412 (no payload); WordFilterSettingsView is the only consumer. The previous value was a placeholder with no handler behind it
     public const int RemoveFromCustomFilterMessageEvent = 2209; // AS3-verified (direct read): WIN63 registry _SafeCls_2046.as _composers[2209] = _SafeCls_2506(String word); WordFilterSettingsView is the only consumer. The previous value was a placeholder with no handler behind it
     public const int WiredGetRoomLogsEvent = 706;
+
+    // Wired chests. Both ids read straight from the client's own composer registry
+    // (_SafeCls_2046: _composers[806] = _SafeCls_2597, _composers[2935] = _SafeCls_3068), which is
+    // where WiredChestController.open/setClosedStatus send.
+    public const int OpenWiredChestEvent = 806;
+    public const int CloseWiredChestEvent = 2935;
     public const int BlockListInitEvent = 798; // AS3-verified (direct read): BlockedUsersManager.as:54 -> send(new _SafeCls_3511()) (no args) @798; was 2610, which has no entry in the WIN63 registry at all
     public const int BlockUserMessageEvent = 483; // AS3-verified (direct read): BlockedUsersManager.as:94 -> send(new _SafeCls_2856(userId)) @483; was 2371, which has no entry in the WIN63 registry at all
     public const int ReplenishRespectMessageEvent = 426; // AS3-verified (direct read): SessionDataManager.as:889 -> send(new _SafeCls_1865()) (no args) @426; was 3323, which has no entry in the WIN63 registry at all
@@ -646,6 +652,12 @@ internal static class MessageComposer
     public const int BanInfoMessageComposer = 2557;
     public const int MyCfhReportStatusMessageComposer = 2474;
     public const int WiredRoomLogsComposer = 1910; // AS3-verified (direct read): _SafeCls_3729 -> WiredLogPage; corrects a collision (was 3761)
+
+    // Wired chests, from the incoming registry (_SafeStr_4546): 1174 -> _SafeCls_3156 (the parser
+    // reads a lone chest id, and WiredChestController.onOpenChest opens on it), 1022 ->
+    // _SafeCls_3882 (chest id, coins, isUpdate), read by CoinChestSubController.
+    public const int WiredChestOpenComposer = 1174;
+    public const int WiredChestCoinsComposer = 1022;
     public const int TreasureHuntFailMessageComposer = 3822;
     public const int TreasureHuntFirstWinnerMessageComposer = 1232;
     public const int TreasureHuntUpdateMessageComposer = 377;
