@@ -49,6 +49,7 @@
     <ProjectReference Include="..\Vortex.Logging\Vortex.Logging.csproj" />
     <ProjectReference Include="..\Vortex.Marketplace\Vortex.Marketplace.csproj" />
     <ProjectReference Include="..\Vortex.Messages\Vortex.Messages.csproj" />
+    <ProjectReference Include="..\Vortex.Benchmark\Vortex.Benchmark.csproj" />
     <ProjectReference Include="..\Vortex.Navigator\Vortex.Navigator.csproj" />
     <ProjectReference Include="..\Vortex.Networking\Vortex.Networking.csproj" />
     <ProjectReference Include="..\Vortex.Dashboard.API\Vortex.Dashboard.API.csproj" />

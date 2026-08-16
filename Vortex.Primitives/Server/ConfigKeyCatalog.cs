@@ -36,6 +36,13 @@ public static class ConfigKeyCatalog
     public static readonly ImmutableArray<ConfigKeyDescriptor> All =
     [
         new(
+            "benchmark.enabled",
+            "false",
+            ConfigValueKind.Bool,
+            "Allow the dashboard to run load tests against this hotel. Off by default: a run opens hundreds of real connections and competes with live players for the same room ticks.",
+            "Benchmark"
+        ),
+        new(
             "motd.lines",
             "[\"Welcome to Vortex! Have fun and be nice to each other.\"]",
             ConfigValueKind.Json,

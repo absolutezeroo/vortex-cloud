@@ -155,6 +155,18 @@ public static class Capabilities
         /// and hand items, player grants, the economy's smaller tables, and NFT collections.</summary>
         public const string OpsContentManage = "dashboard.ops.content.manage";
 
+        /// <summary>Read what a load run measured. Separate from running one: the numbers are worth
+        /// showing to anyone tuning the hotel, and reading them costs nothing.</summary>
+        public const string BenchmarkRead = "dashboard.benchmark.read";
+
+        /// <summary>
+        /// Start and stop a load run. The most physical capability on the dashboard: it opens
+        /// hundreds of real connections to this hotel, writes hundreds of rows, and competes with
+        /// live players for the same room ticks. Held apart from every other ops capability for that
+        /// reason, and it still refuses unless <c>benchmark.enabled</c> is set.
+        /// </summary>
+        public const string OpsBenchmarkRun = "dashboard.ops.benchmark.run";
+
         /// <summary>
         /// Every <c>dashboard.*</c> capability, declared once. This is the single source the whole
         /// dashboard reads from: <c>DashboardWebHost</c> registers one authorization policy per entry
@@ -212,6 +224,8 @@ public static class Capabilities
             CollectiblesRead,
             OpsStaffManage,
             OpsContentManage,
+            BenchmarkRead,
+            OpsBenchmarkRun,
         ];
     }
 

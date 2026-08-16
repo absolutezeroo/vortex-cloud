@@ -278,3 +278,21 @@ public sealed record UpdateFurnitureDefinitionRequest(
 /// instances or by a catalog product.</summary>
 public sealed record DeleteFurnitureDefinitionRequest(int DefinitionId, string Reason)
     : IReasonedRequest;
+
+/// <summary>
+/// The load a run should apply. Bounds are checked at the endpoint rather than here — a plan asking
+/// for a million players is a typo, and the refusal should come before the audit rather than after.
+/// </summary>
+public sealed record BenchmarkStartRequest(
+    int Players,
+    int Furniture,
+    int RoomId,
+    int DurationSeconds,
+    int RampSeconds,
+    int WalkIntervalMs,
+    int ChatIntervalMs,
+    string? Label,
+    string Reason
+) : IReasonedRequest;
+
+public sealed record BenchmarkStopRequest(string Reason) : IReasonedRequest;

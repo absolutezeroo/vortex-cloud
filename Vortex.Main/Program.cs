@@ -10,6 +10,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Vortex.Authentication;
+using Vortex.Benchmark;
 using Vortex.Catalog;
 using Vortex.Crypto.Extensions;
 using Vortex.Dashboard.API;
@@ -126,6 +127,7 @@ internal class Program
         builder.Services.AddHostPlugin<InventoryModule>(builder);
         builder.Services.AddHostPlugin<MarketplaceModule>(builder);
         builder.Services.AddHostPlugin<DashboardApiModule>(builder);
+        builder.Services.AddHostPlugin<BenchmarkModule>(builder);
         builder.Services.AddHostPlugin<NavigatorModule>(builder);
         builder.Services.AddHostPlugin<RoomModule>(builder);
         builder.Services.AddHostPlugin<PacketHandlersModule>(builder);

@@ -19,6 +19,7 @@ using Vortex.Database.Entities.Room;
 using Vortex.Observability.Configuration;
 using Vortex.Observability.Metrics;
 using Vortex.Observability.Runtime;
+using Vortex.Primitives.Benchmark;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
@@ -40,6 +41,7 @@ internal sealed partial class DashboardApiService(
     DashboardAssetUrls assetUrls,
     IVortexMetrics metrics,
     RoomPerformanceAggregator roomPerformance,
+    IBenchmarkService benchmark,
     IOptions<ObservabilityConfig> options
 )
 {
@@ -54,6 +56,7 @@ internal sealed partial class DashboardApiService(
     private readonly ClientPerformanceMetrics _clientPerformanceMetrics = clientPerformanceMetrics;
     private readonly IVortexMetrics _metrics = metrics;
     private readonly RoomPerformanceAggregator _roomPerformance = roomPerformance;
+    private readonly IBenchmarkService _benchmark = benchmark;
     private readonly ObservabilityConfig _config = options.Value;
 
     private static readonly TimeSpan TotalsCacheTtl = TimeSpan.FromSeconds(30);
