@@ -372,6 +372,10 @@ export default {
     throwawayRoom: 'a throwaway room, built for the run',
     useThrowaway: 'use a throwaway room instead',
     borrowedRoom: 'your room',
+    reportWritten: 'Report written to',
+    copyPath: 'Copy the path',
+    reportHelp:
+      'Every run leaves this file behind, finished or failed. It carries the plan, every sample, the room tick broken down by step, and what the process was doing either side of the run — which is what turns "it got slower" into "it got slower here". Hand the path to anyone looking at performance with you.',
     stateTitle: 'This run',
     phaseIdle: 'idle',
     phaseProvisioning: 'building the room',

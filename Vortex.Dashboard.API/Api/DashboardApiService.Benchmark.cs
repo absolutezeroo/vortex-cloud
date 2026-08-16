@@ -73,6 +73,8 @@ internal sealed partial class DashboardApiService
             // Non-null means rows were left in the hotel. Surfaced rather than logged: it is the
             // one outcome of a run that outlives the run.
             status.Residue,
+            // The artefact. A number on a page cannot be attached to anything; this can.
+            status.ReportPath,
             samples,
             summary = samples.Count == 0
                 ? null

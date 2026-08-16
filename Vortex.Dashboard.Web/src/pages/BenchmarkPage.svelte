@@ -187,6 +187,17 @@
       </StatCard>
     </div>
 
+    {#if data.reportPath}
+      <p class="report">
+        {$t('benchmark.reportWritten')}
+        <code>{data.reportPath}</code>
+        <button type="button" class="ghost-button" on:click={() => navigator.clipboard?.writeText(data.reportPath)}>
+          {$t('benchmark.copyPath')}
+        </button>
+      </p>
+      <p class="muted">{$t('benchmark.reportHelp')}</p>
+    {/if}
+
     {#if data.startedAt}
       <p class="muted">
         {$t('benchmark.startedAt', { at: formatDate(data.startedAt) })}
@@ -387,6 +398,27 @@
 <OpResult result={$ops.result} />
 
 <style>
+  .report {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0 2px;
+  }
+
+  .report code {
+    word-break: break-all;
+  }
+
+  /* The picked room and its buttons on one line. .editor-form gives the grid; this is the row
+     inside one of its cells. */
+  .cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
   /* A fixed box the line is stretched into, so a run of six samples and a run of six hundred are
      read the same way. The viewBox is unitless and the stroke is un-scaled, which is what keeps the
      line one pixel wide at any width. */

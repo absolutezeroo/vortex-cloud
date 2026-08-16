@@ -32,6 +32,7 @@ namespace Vortex.Benchmark;
 /// </remarks>
 internal sealed class BenchmarkService(
     BenchmarkProvisioner provisioner,
+    BenchmarkReportWriter reportWriter,
     IGrainFactory grainFactory,
     IConfiguration configuration,
     ILogger<BenchmarkService> logger
@@ -118,6 +119,7 @@ internal sealed class BenchmarkService(
             RoomId = state.RoomId,
             Error = state.Error,
             Residue = state.Residue,
+            ReportPath = state.ReportPath,
             Enabled = Volatile.Read(ref _enabled),
             BorrowedRoom = state.BorrowedRoom,
             Samples = [.. _samples],
@@ -166,6 +168,7 @@ internal sealed class BenchmarkService(
     {
         List<SyntheticClient> clients = [];
         BenchmarkFixture? fixture = null;
+        ProcessCounters before = ProcessCounters.Capture();
 
         try
         {
@@ -229,6 +232,14 @@ internal sealed class BenchmarkService(
                 ConnectedClients = 0,
                 Residue = residue,
             };
+
+            // Written last, so it describes the run as it finished -- teardown included. A failed run
+            // gets a report too: the interesting ones usually are the failures.
+            string? report = await reportWriter
+                .WriteAsync(plan, GetStatus(), before, CancellationToken.None)
+                .ConfigureAwait(false);
+
+            _state = _state with { ReportPath = report };
         }
     }
 
@@ -262,7 +273,7 @@ internal sealed class BenchmarkService(
                 clients.Add(client);
 
                 _ = Task.Run(() => client.ReceiveLoopAsync(ct), CancellationToken.None);
-                _ = Task.Run(() => DriveAsync(client, plan, fixture.RoomId, ct), ct);
+                _ = Task.Run(() => DriveAsync(client, plan, fixture, index, ct), ct);
 
                 _state = _state with { ConnectedClients = clients.Count };
             }
@@ -287,7 +298,8 @@ internal sealed class BenchmarkService(
     private static async Task DriveAsync(
         SyntheticClient client,
         BenchmarkPlan plan,
-        int roomId,
+        BenchmarkFixture fixture,
+        int seed,
         CancellationToken ct
     )
     {
@@ -297,35 +309,57 @@ internal sealed class BenchmarkService(
             // is one of the composers this client deliberately cannot read. A fixed pause is the
             // honest trade: measured from the steady phase, not the ramp, so it costs nothing.
             await Task.Delay(500, ct).ConfigureAwait(false);
-            await client.EnterRoomAsync(roomId, ct).ConfigureAwait(false);
+            await client.EnterRoomAsync(fixture.RoomId, ct).ConfigureAwait(false);
             await Task.Delay(500, ct).ConfigureAwait(false);
 
-            long tick = 0;
+            // Each action keeps its own clock rather than counting one-second ticks. The tick counter
+            // it replaces could only ever express whole seconds -- "every 500 ms" quietly became
+            // every second, and "every 2500 ms" became every two -- so the field on the page did not
+            // mean what it said.
+            long now = Environment.TickCount64;
+            long nextWalk = now;
+            long nextChat = now;
+            long nextPing = now;
+            int step = seed;
 
             while (!ct.IsCancellationRequested)
             {
-                await client.PingAsync(ct).ConfigureAwait(false);
+                now = Environment.TickCount64;
 
-                if (plan.WalkIntervalMs > 0 && tick % Math.Max(1, plan.WalkIntervalMs / 1000) == 0)
+                if (now >= nextPing)
                 {
-                    // Small coordinates: every stock room model has a floor here. A tile the model
-                    // does not have is refused by the room, which still exercises the handler but
-                    // stops measuring the pathfinder -- the expensive half.
-                    await client
-                        .WalkAsync((int)(tick % 6) + 1, (int)(tick % 4) + 1, ct)
-                        .ConfigureAwait(false);
+                    await client.PingAsync(ct).ConfigureAwait(false);
+
+                    nextPing = now + 1000;
                 }
 
-                if (plan.ChatIntervalMs > 0 && tick % Math.Max(1, plan.ChatIntervalMs / 1000) == 0)
+                if (plan.WalkIntervalMs > 0 && now >= nextWalk)
                 {
-                    await client
-                        .SayAsync(string.Create(CultureInfo.InvariantCulture, $"bench {tick}"), ct)
-                        .ConfigureAwait(false);
+                    // A tile the room really has, taken from its own map. Walking at a hole is
+                    // refused before the pathfinder runs, which is the half worth measuring -- and
+                    // the offset by seed stops four hundred avatars from all heading for one tile,
+                    // which is a queue, not a load.
+                    (int x, int y) = fixture.WalkTargets[
+                        Math.Abs(step + seed) % fixture.WalkTargets.Length
+                    ];
+
+                    await client.WalkAsync(x, y, ct).ConfigureAwait(false);
+
+                    step++;
+                    nextWalk = now + plan.WalkIntervalMs;
                 }
 
-                tick++;
+                if (plan.ChatIntervalMs > 0 && now >= nextChat)
+                {
+                    await client
+                        .SayAsync(string.Create(CultureInfo.InvariantCulture, $"bench {step}"), ct)
+                        .ConfigureAwait(false);
 
-                await Task.Delay(1000, ct).ConfigureAwait(false);
+                    nextChat = now + plan.ChatIntervalMs;
+                }
+
+                // Fine enough to honour a half-second interval without spinning.
+                await Task.Delay(100, ct).ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException)
@@ -425,6 +459,7 @@ internal sealed class BenchmarkService(
         public required string? Error { get; init; }
         public required string? Residue { get; init; }
         public required bool BorrowedRoom { get; init; }
+        public required string? ReportPath { get; init; }
 
         public static readonly BenchmarkState Empty = new()
         {
@@ -438,6 +473,7 @@ internal sealed class BenchmarkService(
             Error = null,
             Residue = null,
             BorrowedRoom = false,
+            ReportPath = null,
         };
 
         public static BenchmarkState Starting(BenchmarkPlan plan) =>

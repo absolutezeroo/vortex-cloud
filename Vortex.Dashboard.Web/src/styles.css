@@ -1806,3 +1806,60 @@ textarea {
 .stat .stat-delta.flat {
   color: var(--muted);
 }
+
+/* An editor form: one cell per field, all starting at the top.
+   The shared .inline-form aligns its children on their bottom edge, which is right for a row of
+   three plain inputs and wrong the moment a field carries a line of help under it -- hints of
+   different lengths then push each field to a different height and the row reads as broken. This
+   lived in one page's scoped <style> for a while, which meant the second page to ask for it got the
+   class name and none of the layout: the form looked exactly as ragged as if the class did not
+   exist, because for that page it did not. */
+.editor-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  align-items: start;
+  gap: 14px 12px;
+}
+
+.editor-form label {
+  gap: 6px;
+}
+
+.editor-form small {
+  line-height: 1.35;
+}
+
+/* The buttons are not a field: they take the whole width below the last row rather than sitting
+   in a cell of their own and stretching to a column's width. */
+.editor-form .form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* A picked value and its two buttons can outgrow a narrow column; let them wrap inside it. */
+.editor-form .cell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.editor-form .cell input {
+  min-width: 0;
+  flex: 1 1 110px;
+}
+
+/* A checkbox reads as a switch beside its wording, not as a field stacked under a caption. */
+.editor-form label.check,
+.editor-form label.checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.editor-form label.check input,
+.editor-form label.checkbox input {
+  width: auto;
+}

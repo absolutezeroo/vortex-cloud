@@ -129,6 +129,12 @@ public sealed record BenchmarkStatus
 
     /// <summary>True when the run was pointed at a room that already existed.</summary>
     public required bool BorrowedRoom { get; init; }
+
+    /// <summary>
+    /// Where the run's report was written, once it has finished. This is the artefact — the samples
+    /// above are for looking at, the file is for keeping, comparing and sending to somebody.
+    /// </summary>
+    public required string? ReportPath { get; init; }
 }
 
 public sealed record BenchmarkStartResult(bool Started, string? ErrorCode);

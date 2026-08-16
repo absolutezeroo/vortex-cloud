@@ -370,6 +370,10 @@ export default {
     throwawayRoom: 'une salle jetable, construite pour le run',
     useThrowaway: 'utiliser une salle jetable',
     borrowedRoom: 'votre salle',
+    reportWritten: 'Écrit dans',
+    copyPath: 'Copier le chemin',
+    reportHelp:
+      "Chaque run laisse ce fichier derrière lui, réussi ou non. Il contient le plan, tous les échantillons, le tick de salle détaillé étape par étape, et l'état du processus avant et après — c'est ce qui transforme « c'est devenu plus lent » en « c'est devenu plus lent ici ». Donnez le chemin à qui regarde les perfs avec vous.",
     stateTitle: 'Ce run',
     phaseIdle: 'au repos',
     phaseProvisioning: 'construction de la salle',

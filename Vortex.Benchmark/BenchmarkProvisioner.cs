@@ -7,13 +7,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Players;
 using Vortex.Database.Entities.Room;
 using Vortex.Database.Entities.Security;
 using Vortex.Primitives.Navigator.Enums;
+using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums;
+using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Enums;
 
 namespace Vortex.Benchmark;
@@ -36,6 +40,7 @@ namespace Vortex.Benchmark;
 /// </remarks>
 internal sealed class BenchmarkProvisioner(
     IDbContextFactory<VortexDbContext> dbContextFactory,
+    IGrainFactory grainFactory,
     ILogger<BenchmarkProvisioner> logger
 )
 {
@@ -73,16 +78,56 @@ internal sealed class BenchmarkProvisioner(
             await CheckBorrowedRoomAsync(db, targetRoomId, players, ct).ConfigureAwait(false);
         }
 
-        int modelId = await db
-            .RoomModels.AsNoTracking()
-            .OrderBy(m => m.Id)
-            .Select(m => m.Id)
-            .FirstOrDefaultAsync(ct)
-            .ConfigureAwait(false);
+        // The map of the room the run will use, so furniture lands on tiles that exist. Placing by
+        // arithmetic instead -- a square grid from the origin -- puts most of a large batch on void
+        // tiles, where the room ignores it: the rows are written, the items never appear, and the
+        // run measures a room it thinks is full and is not.
+        string modelData = borrowed
+            ? await db
+                .Rooms.AsNoTracking()
+                .Where(r => r.Id == targetRoomId)
+                .Select(r => r.RoomModelEntity!.Model)
+                .FirstAsync(ct)
+                .ConfigureAwait(false)
+            : string.Empty;
 
-        if (modelId == 0 && !borrowed)
+        int modelId = 0;
+
+        if (!borrowed)
         {
-            throw new InvalidOperationException("benchmark_no_room_model");
+            // The roomiest model rather than the first one: model_a is mostly void, and a run asking
+            // for two hundred items would have nowhere to put them.
+            var model = await db
+                .RoomModels.AsNoTracking()
+                .Where(m => m.Enabled)
+                .Select(m => new { m.Id, m.Model })
+                .ToListAsync(ct)
+                .ConfigureAwait(false);
+
+            var roomiest = model
+                .Select(m => new
+                {
+                    m.Id,
+                    m.Model,
+                    Tiles = OpenTiles(m.Model).Count,
+                })
+                .OrderByDescending(m => m.Tiles)
+                .FirstOrDefault();
+
+            if (roomiest is null || roomiest.Tiles == 0)
+            {
+                throw new InvalidOperationException("benchmark_no_room_model");
+            }
+
+            modelId = roomiest.Id;
+            modelData = roomiest.Model;
+        }
+
+        List<(int X, int Y)> openTiles = OpenTiles(modelData);
+
+        if (openTiles.Count == 0)
+        {
+            throw new InvalidOperationException("benchmark_room_has_no_floor");
         }
 
         // One definition, reused for every item. A run is measuring how much furniture costs, not
@@ -152,10 +197,21 @@ internal sealed class BenchmarkProvisioner(
 
         if (furniture > 0)
         {
-            db.Furnitures.AddRange(BuildFurniture(roomId, owner.Id, definitionId, furniture));
+            db.Furnitures.AddRange(
+                BuildFurniture(roomId, owner.Id, definitionId, furniture, openTiles)
+            );
         }
 
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        // The room reads its item map when it activates and not again, so furniture written under a
+        // room that is already awake stays invisible -- the rows exist, the room never sees them,
+        // and the run measures an empty room it believes is full. Sending it to sleep here means the
+        // synthetic players wake it up and it loads everything, theirs and ours.
+        await grainFactory
+            .GetRoomCore(new RoomId(roomId))
+            .DeactivateRoomAsync()
+            .ConfigureAwait(false);
 
         logger.LogInformation(
             "Benchmark provisioned room {RoomId} with {Players} accounts and {Furniture} items.",
@@ -173,6 +229,9 @@ internal sealed class BenchmarkProvisioner(
                 .. tickets.OrderBy(ticket => ticket.PlayerEntityId).Select(ticket => ticket.Ticket),
             ],
             PlacedFurniture = furniture,
+            // Real tiles, so a walk is a walk. Sending a synthetic player at a hole means the room
+            // refuses the move and the pathfinder -- the expensive half of the load -- never runs.
+            WalkTargets = [.. openTiles.Take(32)],
         };
     }
 
@@ -327,28 +386,73 @@ internal sealed class BenchmarkProvisioner(
             IsStaffPick = false,
         };
 
+    /// <summary>
+    /// The tiles a room actually has floor on.
+    /// </summary>
+    /// <remarks>
+    /// The heightmap is one character per tile, <c>x</c> for a hole, and the rows are separated by a
+    /// literal backslash-n in the column rather than by a real newline — so all three separators are
+    /// accepted here, and a model stored either way parses the same.
+    /// </remarks>
+    private static List<(int X, int Y)> OpenTiles(string model)
+    {
+        List<(int X, int Y)> tiles = [];
+
+        if (string.IsNullOrWhiteSpace(model))
+        {
+            return tiles;
+        }
+
+        const string LiteralCarriageReturn = @"\r";
+        const string LiteralNewline = @"\n";
+
+        string[] rows = model
+            .Replace(LiteralCarriageReturn, "\n", StringComparison.Ordinal)
+            .Replace(LiteralNewline, "\n", StringComparison.Ordinal)
+            .Replace("\r", "\n", StringComparison.Ordinal)
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+        for (int y = 0; y < rows.Length; y++)
+        {
+            string row = rows[y].Trim();
+
+            for (int x = 0; x < row.Length; x++)
+            {
+                if (row[x] is not ('x' or 'X' or ' '))
+                {
+                    tiles.Add((x, y));
+                }
+            }
+        }
+
+        return tiles;
+    }
+
+    /// <summary>
+    /// Fills the floor first and only then stacks, which is what a crowded room looks like: a pile on
+    /// one tile is a single lookup for the room and a single sprite column for the client, and would
+    /// flatter both.
+    /// </summary>
     private static IEnumerable<FurnitureEntity> BuildFurniture(
         int roomId,
         int ownerId,
         int definitionId,
-        int count
+        int count,
+        List<(int X, int Y)> openTiles
     )
     {
-        // Spread over a square rather than stacked on one tile: a pile is one lookup, a field is the
-        // item map doing the work it does in a real room. The client's side of the comparison needs
-        // this too -- a hundred sprites on one tile is not a hundred sprites to draw.
-        int side = (int)Math.Ceiling(Math.Sqrt(count));
-
         for (int index = 0; index < count; index++)
         {
+            (int x, int y) = openTiles[index % openTiles.Count];
+
             yield return new FurnitureEntity
             {
                 PlayerEntityId = ownerId,
                 FurnitureDefinitionEntityId = definitionId,
                 RoomEntityId = roomId,
-                X = index % side,
-                Y = index / side,
-                Z = 0,
+                X = x,
+                Y = y,
+                Z = index / openTiles.Count,
                 Rotation = Rotation.North,
                 ExtraData = FurnitureStamp,
             };
@@ -365,4 +469,6 @@ internal sealed record BenchmarkFixture
     public required int PlacedFurniture { get; init; }
 
     public required bool Borrowed { get; init; }
+
+    public required ImmutableArray<(int X, int Y)> WalkTargets { get; init; }
 }
