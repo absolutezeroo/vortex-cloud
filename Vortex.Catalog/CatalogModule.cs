@@ -24,6 +24,10 @@ public sealed class CatalogModule : IHostPluginModule
         services.AddSingleton<ICatalogAdminService, CatalogAdminService>();
         services.AddSingleton<ITargetedOfferAdminService, TargetedOfferAdminService>();
         services.AddSingleton<ILtdScheduleService, LtdScheduleService>();
+
+        // Tops up the catalogue's wired section at startup: a wired box the server implements but
+        // no page sells cannot be built with.
+        services.AddHostedService<Seeding.WiredCatalogSeederService>();
         services.AddSingleton<ICatalogClubOfferProvider, CatalogClubOfferProvider>();
         services.AddSingleton<IReferenceDataProvider>(sp =>
             (IReferenceDataProvider)sp.GetRequiredService<ICatalogClubOfferProvider>()
