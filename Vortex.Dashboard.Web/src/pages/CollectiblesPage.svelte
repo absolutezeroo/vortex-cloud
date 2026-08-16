@@ -1812,7 +1812,7 @@
      the top, which leaves the hints free to be as long as they need to be. */
   .editor-form {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
     align-items: start;
     gap: 14px 12px;
   }

@@ -1016,6 +1016,24 @@ table {
   overflow-x: auto;
 }
 
+/* A table pressed flat against the filter row above it reads as part of that control rather than as
+   its result -- and against a paragraph, as if the sentence were a caption. Space it from whatever
+   introduced it. Sibling selectors rather than a blanket margin so a table that already opens a
+   panel does not gain a gap above nothing. */
+.toolbar + .table-wrap,
+.toolbar-grid + .table-wrap,
+.filters + .table-wrap,
+.head-actions + .table-wrap,
+p + .table-wrap,
+h3 + .table-wrap,
+.toolbar + table,
+.toolbar-grid + table,
+.filters + table,
+p + table,
+h3 + table {
+  margin-top: 14px;
+}
+
 th,
 td {
   border-bottom: 1px solid var(--line);
@@ -1149,7 +1167,9 @@ code {
 .modal-layer {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  /* Above the drawer: the pickers are opened FROM an edit drawer, so a modal is always the newer
+     layer. At 50 against the drawer's 60 they opened behind the panel that asked for them. */
+  z-index: 80;
   display: grid;
   place-items: center;
   padding: 22px;
@@ -1282,6 +1302,7 @@ input:not([type='checkbox']):not([type='radio']) {
   padding: 9px 10px;
   outline: none;
   font: inherit;
+  transition: border-color 140ms ease, background 140ms ease;
   /* Makes native affordances (the date picker's calendar glyph, number spinners) follow the app
      theme instead of rendering a light-on-light control. */
   color-scheme: inherit;
@@ -1302,6 +1323,23 @@ input[type='month']::-webkit-calendar-picker-indicator,
 input[type='time']::-webkit-calendar-picker-indicator {
   cursor: pointer;
   opacity: 0.7;
+}
+
+/* The native arrow is drawn hard against the right border, which reads as a rendering fault next to
+   the rounded corner. Replaced with our own chevron, inset far enough to breathe, and the extra
+   right padding keeps a long option from running underneath it. */
+select {
+  appearance: none;
+  padding-right: 32px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 17px) calc(50% + 2px), calc(100% - 12px) calc(50% + 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+select:hover {
+  background-color: var(--surface-hover);
 }
 
 select option {

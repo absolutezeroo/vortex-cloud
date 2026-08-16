@@ -40,6 +40,20 @@
   // below them are the ones nobody was reaching.
   let tab = $state('definitions');
 
+  // The category picker: a sentinel option that reveals a text box, so an existing category is
+  // chosen and a new one is typed once rather than every time.
+  const NEW_CATEGORY = '__new__';
+  let categoryChoice = $state('');
+
+  // Called when the editor opens. An achievement whose category is not in the list -- including a
+  // brand-new one, whose category is blank -- lands on the "new category" branch with its value kept.
+  // Set here rather than in an effect: an effect recomputing the choice from the form would snap
+  // "new category" straight back to whatever the form still held.
+  function openAchievementEditor(form) {
+    achievementForm = form;
+    categoryChoice = (list?.categories || []).includes(form.category) ? form.category : NEW_CATEGORY;
+  }
+
   const ops = createWriteOps(async () => {
     achievementForm = null;
     levelForm = null;
@@ -272,12 +286,12 @@
                       class="ghost-button"
                       onclick={(event) => {
                         event.stopPropagation();
-                        achievementForm = {
+                        openAchievementEditor({
                           id: row.id,
                           name: row.name,
                           category: row.category,
                           displayMethod: row.displayMethod,
-                        };
+                        });
                       }}
                     >
                       {$t('achievements.edit')}
@@ -422,7 +436,7 @@
       <div class="panel-head">
         <h2>{$t('achievements.editorTitle')}</h2>
         <div class="head-actions">
-          <button type="button" class="ghost-button" onclick={() => (achievementForm = emptyAchievement())}>
+          <button type="button" class="ghost-button" onclick={() => openAchievementEditor(emptyAchievement())}>
             <Award size={14} strokeWidth={2} aria-hidden="true" />
             {$t('achievements.newAchievement')}
           </button>
@@ -559,16 +573,34 @@
     </div>
     <div class="op-field">
       <label for="achievement-category">{$t('achievements.colCategory')}</label>
-      <input
+      <!-- The categories that exist, rather than a text box: a typo here does not fail, it silently
+           creates a category of one. The last option is how a genuinely new one gets made. -->
+      <select
         id="achievement-category"
-        bind:value={achievementForm.category}
-        placeholder="explore"
-        list="achievement-categories"
-      />
+        bind:value={categoryChoice}
+        onchange={() => {
+          if (categoryChoice !== NEW_CATEGORY) achievementForm.category = categoryChoice;
+        }}
+      >
+        {#each list?.categories || [] as c}<option value={c}>{c}</option>{/each}
+        <option value={NEW_CATEGORY}>{$t('achievements.categoryNew')}</option>
+      </select>
     </div>
+    {#if categoryChoice === NEW_CATEGORY}
+      <div class="op-field">
+        <label for="achievement-category-new">{$t('achievements.categoryNewLabel')}</label>
+        <input id="achievement-category-new" bind:value={achievementForm.category} placeholder="explore" />
+      </div>
+    {/if}
     <div class="op-field">
       <label for="achievement-display">{$t('achievements.displayMethod')}</label>
-      <input id="achievement-display" type="number" bind:value={achievementForm.displayMethod} min="0" />
+      <!-- The client only ever asks `displayMethod != 1`, and the one thing it decides is whether the
+           progress bar is drawn. A number box invited a value that means nothing. -->
+      <select id="achievement-display" bind:value={achievementForm.displayMethod}>
+        <option value={0}>{$t('achievements.displayMethodProgress')}</option>
+        <option value={1}>{$t('achievements.displayMethodNoProgress')}</option>
+      </select>
+      <small class="muted">{$t('achievements.displayMethodHint')}</small>
     </div>
 
     {#snippet actions()}

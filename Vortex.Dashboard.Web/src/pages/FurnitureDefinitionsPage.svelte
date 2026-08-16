@@ -456,7 +456,7 @@
 
   .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 10px 16px;
     /* Grid items default to min-width: auto, which refuses to shrink below the intrinsic content
        width of whatever's inside (a <select> with long option text, in this form) -- that silently
