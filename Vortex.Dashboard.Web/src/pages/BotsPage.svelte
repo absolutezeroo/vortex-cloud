@@ -15,6 +15,8 @@
   import { formatNumber } from '../lib/format.js';
   import { openPlayer } from '../lib/session.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import Drawer from '../components/Drawer.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import EntityLink from '../components/EntityLink.svelte';
@@ -75,12 +77,13 @@
   let canManage = $derived(hasDashboardCapability($identity, CAPABILITIES.opsContentManage));
 
   const emptyHandItem = () => ({ handItemId: 0, name: '', nutrition: 0, thirst: 0 });
-  let handItemForm = $state(emptyHandItem());
+  // null means the editor is closed; the drawer is the editor now.
+  let handItemForm = $state(null);
 
   // The only picture of a hand item is an avatar holding it, and the id decides which. Built from
   // the template so a brand-new id previews before its row exists.
   let handItemPreviewUrl =
-    $derived(handItemForm.handItemId && handItems?.imageTemplate
+    $derived(handItemForm?.handItemId && handItems?.imageTemplate
       ? handItems.imageTemplate.replace('{item}', String(Number(handItemForm.handItemId)))
       : null);
   let botDraft = $state(null);
@@ -132,8 +135,11 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>{$t('bots.title')}</h2></div>
-  <p class="muted">{$t('bots.description')}</p>
+  <PageHeader title={$t('bots.title')} description={$t('bots.description')}>
+    {#snippet actions()}
+      <button type="button" onclick={bots.refresh} disabled={bots.loading}>{$t('common.refresh')}</button>
+    {/snippet}
+  </PageHeader>
 
   <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); search(); }}>
     <label>
@@ -154,7 +160,6 @@
         <option value="false">{$t('bots.placementInventory')}</option>
       </select>
     </label>
-    <button type="submit" disabled={bots.loading}>{$t('common.refresh')}</button>
     {#if owner}
       <button type="button" class="ghost-button" onclick={clearOwner}>{$t('bots.clearOwner')}</button>
     {/if}
@@ -332,43 +337,6 @@
       </table>
     </div>
 
-    {#if canManage && botDraft}
-      <form
-        class="inline-form"
-        onsubmit={(event) => {
-          event.preventDefault();
-          ops.ask(
-            '/api/v1/operations/content/bots',
-            {
-              botId: botDraft.id,
-              name: botDraft.name,
-              motto: botDraft.motto || '',
-              figure: botDraft.figure || '',
-            },
-            $t('bots.updateBot'),
-            $t('bots.updateBotSummary', { name: botDraft.name })
-          );
-        }}
-      >
-        <label>
-          {$t('bots.colBot')}
-          <input bind:value={botDraft.name} required />
-        </label>
-        <label>
-          {$t('bots.motto')}
-          <input bind:value={botDraft.motto} />
-        </label>
-        <label>
-          {$t('bots.detailFigure')}
-          <input bind:value={botDraft.figure} />
-        </label>
-        <button type="submit">{$t('bots.save')}</button>
-        <button type="button" class="ghost-button" onclick={() => (botDraft = null)}>
-          {$t('bots.cancel')}
-        </button>
-      </form>
-      <p class="muted">{$t('bots.placedHint')}</p>
-    {/if}
 
     {#if $ops.result}
       <OpResult result={$ops.result} />
@@ -397,7 +365,14 @@
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head">
       <h2>{$t('bots.handItemsTitle')}</h2>
-      <span class="muted">{$t('bots.handItemsCount', { total: handItems.count, consumable: handItems.consumableCount })}</span>
+      <div class="head-actions">
+        <span class="muted">{$t('bots.handItemsCount', { total: handItems.count, consumable: handItems.consumableCount })}</span>
+        {#if canManage}
+          <button type="button" class="ghost-button" onclick={() => (handItemForm = emptyHandItem())}>
+            {$t('bots.saveHandItem')}
+          </button>
+        {/if}
+      </div>
     </div>
     <p class="muted">{$t('bots.handItemsDescription')}</p>
     {#if (handItems.items || []).length === 0}
@@ -453,57 +428,100 @@
       </div>
     {/if}
   </section>
+  {/if}
 {/if}
 
-{#if canManage && handItems}
-  <section class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>{$t('bots.handItemEditorTitle')}</h2></div>
+{#if canManage && handItemForm}
+  <Drawer
+    title={$t('bots.handItemEditorTitle')}
+    eyebrow={$t('bots.tabHandItems')}
+    onclose={() => (handItemForm = null)}
+  >
     <p class="muted">{$t('bots.handItemEditorHint')}</p>
-    <form
-      class="inline-form"
-      onsubmit={(event) => {
-        event.preventDefault();
-        ops.ask(
-          '/api/v1/operations/content/hand-items',
-          {
-            handItemId: Number(handItemForm.handItemId),
-            name: handItemForm.name,
-            nutrition: Number(handItemForm.nutrition) || 0,
-            thirst: Number(handItemForm.thirst) || 0,
-          },
-          $t('bots.saveHandItem'),
-          $t('bots.saveHandItemSummary', { id: handItemForm.handItemId, name: handItemForm.name })
-        );
-      }}
-    >
-      <label>
-        {$t('bots.colHandItemId')}
-        <span class="bot-cell">
-          <input type="number" bind:value={handItemForm.handItemId} min="1" />
-          <AssetImage src={handItemPreviewUrl} alt="" size={40} fallbackIcon={Hand} />
-        </span>
-      </label>
-      <label>
-        {$t('bots.colHandItemName')}
-        <input bind:value={handItemForm.name} />
-      </label>
-      <label>
-        {$t('bots.colNutrition')}
-        <input type="number" bind:value={handItemForm.nutrition} min="0" />
-      </label>
-      <label>
-        {$t('bots.colThirst')}
-        <input type="number" bind:value={handItemForm.thirst} min="0" />
-      </label>
-      <button type="submit" disabled={!handItemForm.name.trim() || !handItemForm.handItemId}>
+
+    <div class="op-field">
+      <label for="hand-item-id">{$t('bots.colHandItemId')}</label>
+      <span class="bot-cell">
+        <input id="hand-item-id" type="number" bind:value={handItemForm.handItemId} min="1" />
+        <AssetImage src={handItemPreviewUrl} alt="" size={40} fallbackIcon={Hand} />
+      </span>
+    </div>
+    <div class="op-field">
+      <label for="hand-item-name">{$t('bots.colHandItemName')}</label>
+      <input id="hand-item-name" bind:value={handItemForm.name} />
+    </div>
+    <div class="op-field">
+      <label for="hand-item-nutrition">{$t('bots.colNutrition')}</label>
+      <input id="hand-item-nutrition" type="number" bind:value={handItemForm.nutrition} min="0" />
+    </div>
+    <div class="op-field">
+      <label for="hand-item-thirst">{$t('bots.colThirst')}</label>
+      <input id="hand-item-thirst" type="number" bind:value={handItemForm.thirst} min="0" />
+    </div>
+
+    {#snippet actions()}
+      <button
+        type="button"
+        disabled={!handItemForm.name.trim() || !handItemForm.handItemId}
+        onclick={() =>
+          ops.ask(
+            '/api/v1/operations/content/hand-items',
+            {
+              handItemId: Number(handItemForm.handItemId),
+              name: handItemForm.name,
+              nutrition: Number(handItemForm.nutrition) || 0,
+              thirst: Number(handItemForm.thirst) || 0,
+            },
+            $t('bots.saveHandItem'),
+            $t('bots.saveHandItemSummary', { id: handItemForm.handItemId, name: handItemForm.name }),
+            { onSuccess: () => (handItemForm = null) }
+          )}
+      >
         {$t('bots.saveHandItem')}
       </button>
-      <button type="button" class="ghost-button" onclick={() => (handItemForm = emptyHandItem())}>
-        {$t('bots.clear')}
+      <button type="button" class="ghost-button" onclick={() => (handItemForm = null)}>{$t('bots.cancel')}</button>
+    {/snippet}
+  </Drawer>
+{/if}
+
+{#if canManage && botDraft}
+  <Drawer title={$t('bots.updateBot')} eyebrow={$t('bots.title')} onclose={() => (botDraft = null)}>
+    <div class="op-field">
+      <label for="bot-name">{$t('bots.colBot')}</label>
+      <input id="bot-name" bind:value={botDraft.name} required />
+    </div>
+    <div class="op-field">
+      <label for="bot-motto">{$t('bots.motto')}</label>
+      <input id="bot-motto" bind:value={botDraft.motto} />
+    </div>
+    <div class="op-field">
+      <label for="bot-figure">{$t('bots.detailFigure')}</label>
+      <input id="bot-figure" bind:value={botDraft.figure} />
+    </div>
+    <p class="muted">{$t('bots.placedHint')}</p>
+
+    {#snippet actions()}
+      <button
+        type="button"
+        onclick={() =>
+          ops.ask(
+            '/api/v1/operations/content/bots',
+            {
+              botId: botDraft.id,
+              name: botDraft.name,
+              motto: botDraft.motto || '',
+              figure: botDraft.figure || '',
+            },
+            $t('bots.updateBot'),
+            $t('bots.updateBotSummary', { name: botDraft.name }),
+            { onSuccess: () => (botDraft = null) }
+          )}
+      >
+        {$t('bots.save')}
       </button>
-    </form>
-  </section>
-  {/if}
+      <button type="button" class="ghost-button" onclick={() => (botDraft = null)}>{$t('bots.cancel')}</button>
+    {/snippet}
+  </Drawer>
 {/if}
 
 {#if pickingOwner}
