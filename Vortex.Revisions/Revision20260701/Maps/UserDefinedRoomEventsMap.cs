@@ -91,6 +91,14 @@ internal sealed class UserDefinedRoomEventsMap : IRevisionMap
         // Userdefinedroomevents Wiredtrading
         builder.MapParser(MessageEvent.OpenWiredChestEvent, new OpenWiredChestMessageParser());
         builder.MapParser(MessageEvent.CloseWiredChestEvent, new CloseWiredChestMessageParser());
+        builder.MapParser(
+            MessageEvent.WithdrawWiredChestCreditsEvent,
+            new WithdrawWiredChestCreditsMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.WithdrawAllFromWiredChestEvent,
+            new WithdrawAllFromWiredChestMessageParser()
+        );
 
         builder.MapSerializer(
             typeof(OpenEventMessageComposer),

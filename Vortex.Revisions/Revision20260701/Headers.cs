@@ -22,6 +22,11 @@ internal static class MessageEvent
     // where WiredChestController.open/setClosedStatus send.
     public const int OpenWiredChestEvent = 806;
     public const int CloseWiredChestEvent = 2935;
+
+    // _composers[2843] = _SafeCls_3395, sent by CoinChestSubController.onWithdrawClick with the
+    // typed amount; _composers[3611] = _SafeCls_3968, the wrapper view's "withdraw all".
+    public const int WithdrawWiredChestCreditsEvent = 2843;
+    public const int WithdrawAllFromWiredChestEvent = 3611;
     public const int BlockListInitEvent = 798; // AS3-verified (direct read): BlockedUsersManager.as:54 -> send(new _SafeCls_3511()) (no args) @798; was 2610, which has no entry in the WIN63 registry at all
     public const int BlockUserMessageEvent = 483; // AS3-verified (direct read): BlockedUsersManager.as:94 -> send(new _SafeCls_2856(userId)) @483; was 2371, which has no entry in the WIN63 registry at all
     public const int ReplenishRespectMessageEvent = 426; // AS3-verified (direct read): SessionDataManager.as:889 -> send(new _SafeCls_1865()) (no args) @426; was 3323, which has no entry in the WIN63 registry at all

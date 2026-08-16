@@ -22,4 +22,19 @@ public partial interface IRoomWired
         int chestId,
         CancellationToken ct
     );
+
+    /// <summary>
+    /// Moves credits out of a chest and into the asking player's wallet. Returns what the chest
+    /// holds afterwards, or null when nothing moved.
+    /// </summary>
+    /// <remarks>
+    /// Pass <paramref name="amount"/> as 0 or less to take everything, which is what the chest's
+    /// "withdraw all" button asks for.
+    /// </remarks>
+    Task<WiredChestSnapshot?> WithdrawWiredChestCreditsAsync(
+        ActionContext ctx,
+        int chestId,
+        int amount,
+        CancellationToken ct
+    );
 }
