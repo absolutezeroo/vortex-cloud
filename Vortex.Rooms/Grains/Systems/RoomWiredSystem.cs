@@ -14,6 +14,7 @@ using Vortex.Primitives.Rooms.Events.Player;
 using Vortex.Primitives.Rooms.Events.RoomItem;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;
+using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Wired;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Actions;
@@ -54,6 +55,15 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
 
     private bool _firstRun = true;
     private long _nextStackExecutionId;
+
+    // Tiles whose pile is somewhere in the current "execute stacks" chain. A pile that calls itself,
+    // or two piles that call each other, would otherwise recurse until the room fell over; a tile
+    // already in this set is skipped rather than entered twice.
+    private readonly HashSet<int> _callChainTiles = [];
+
+    /// <summary>How deep one "execute stacks" chain may go. The tile guard already makes a cycle
+    /// impossible; this bounds the cost of a wide, legitimate chain.</summary>
+    private const int MaxCallChainDepth = 8;
 
     // Boxes currently lit by FlashActivationStateAsync, mapped to the room-clock time their visual
     // state reverts to unlit. Re-flashing a box simply pushes its revert time back.
@@ -365,22 +375,23 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             }
         }
 
-        if (!EvaluateConditions(ctx.Stack.Conditions, ctx))
-        {
-            return;
-        }
-
+        // The trigger is asked before the conditions, not after: a pile's negative actions are for
+        // "the trigger fired but the conditions did not hold", so the two answers have to be
+        // distinguishable. It also means a trigger that seals the triggering user into the
+        // selection has done so before the conditions read it.
         if (!await trigger.CanTriggerAsync(ctx, ct))
         {
             return;
         }
 
-        ctx.Trigger.FlashActivationStateAsync(ct)
+        bool conditionsPassed = EvaluateConditions(ctx.Stack.Conditions, ctx);
+
+        ctx.Trigger?.FlashActivationStateAsync(ct)
             .LogAndForget(_roomGrain._logger, "Failed to flash activation state for trigger.");
 
         // Before/AfterEffects addon hooks run in ExecuteStackChainAsync, around the chain's actual
         // execution — which can be ticks later than this scheduling when actions carry delays.
-        ScheduleStackExecution(ctx, now);
+        ScheduleStackExecution(ctx, now, conditionsPassed);
     }
 
     /// <summary>Builds the signal payload for a fired stack: the furni and users a receive-signal
@@ -398,12 +409,19 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         return signal;
     }
 
-    private void ScheduleStackExecution(WiredProcessingContext ctx, long dueAtMs)
+    private void ScheduleStackExecution(
+        WiredProcessingContext ctx,
+        long dueAtMs,
+        bool conditionsPassed
+    )
     {
         // ctx.Stack was resolved live from the trigger's current tile, so every action in it is already
         // co-located with the trigger. Delayed actions are re-validated again at execution time in
         // ExecuteStackChainAsync, in case a box leaves the pile during its delay window.
-        List<IWiredAction> actions = ChooseActions(ctx.Stack.Actions, ctx.Policy);
+        List<IWiredAction> actions = ChooseActions(
+            WiredActionBranch.Select(ctx.Stack.Actions, conditionsPassed),
+            ctx.Policy
+        );
 
         if (actions.Count == 0)
         {
@@ -896,6 +914,130 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         }
 
         return stack;
+    }
+
+    /// <summary>
+    /// Runs the piles sitting under the given furni, as the "execute stacks" action asks: their
+    /// triggers and their conditions are bypassed entirely, which is what the furni promises in as
+    /// many words.
+    /// </summary>
+    /// <remarks>
+    /// The calling pile's selection carries into the called one before its own selectors run, so
+    /// "the user who walked on the first pile" is still who the second pile acts on. The caller's
+    /// own tile is held in the chain guard for the duration, so a pile cannot execute itself.
+    /// </remarks>
+    /// <returns>How many piles were actually executed.</returns>
+    internal async Task<int> ExecuteStacksAtAsync(
+        int callerTileIdx,
+        IReadOnlyCollection<int> targetFurniIds,
+        IWiredSelectionSet inheritedSelection,
+        CancellationToken ct
+    )
+    {
+        if (targetFurniIds.Count == 0 || _callChainTiles.Count >= MaxCallChainDepth)
+        {
+            return 0;
+        }
+
+        bool holdsCaller = callerTileIdx >= 0 && _callChainTiles.Add(callerTileIdx);
+        int executed = 0;
+
+        try
+        {
+            foreach (int furniId in targetFurniIds)
+            {
+                if (
+                    !_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+                    || item is not IRoomFloorItem floor
+                )
+                {
+                    continue;
+                }
+
+                int tileIdx = _roomGrain.MapModule.ToIdx(floor.X, floor.Y);
+
+                if (!_callChainTiles.Add(tileIdx))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    if (await ExecuteCalledStackAsync(tileIdx, inheritedSelection, ct))
+                    {
+                        executed++;
+                    }
+                }
+                finally
+                {
+                    _callChainTiles.Remove(tileIdx);
+                }
+            }
+        }
+        finally
+        {
+            if (holdsCaller)
+            {
+                _callChainTiles.Remove(callerTileIdx);
+            }
+        }
+
+        return executed;
+    }
+
+    private async Task<bool> ExecuteCalledStackAsync(
+        int tileIdx,
+        IWiredSelectionSet inheritedSelection,
+        CancellationToken ct
+    )
+    {
+        WiredStack stack = await BuildStackFromTileAsync(tileIdx, ct);
+
+        if (stack.Actions.Count == 0)
+        {
+            return false;
+        }
+
+        WiredProcessingContext ctx = new(_roomGrain)
+        {
+            // No trigger and no triggering event: this pile ran because another one said so.
+            Event = new WiredStackCalledEvent
+            {
+                RoomId = _roomGrain.RoomId,
+                CausedBy = ActionContext.CreateForWired(_roomGrain.RoomId),
+            },
+            Stack = stack,
+            Trigger = null,
+        };
+
+        ctx.Selected.UnionWith(inheritedSelection);
+
+        foreach (IWiredSelector selector in stack.Selectors)
+        {
+            ctx.SelectorPool.UnionWith(await selector.SelectAsync(ctx, ct));
+        }
+
+        foreach (IWiredAddon addon in stack.Addons)
+        {
+            try
+            {
+                await addon.MutatePolicyAsync(ctx, ct);
+            }
+            catch (Exception ex)
+            {
+                _roomGrain._logger.LogWarning(
+                    ex,
+                    "Wired addon {AddonType} failed to mutate the policy of a called pile in room {RoomId}.",
+                    addon.GetType().Name,
+                    _roomGrain.RoomId
+                );
+            }
+        }
+
+        // Conditions are deliberately not evaluated, so the positive branch is what runs.
+        ScheduleStackExecution(ctx, _roomGrain.NowMs(), conditionsPassed: true);
+
+        return true;
     }
 
     /// <summary>True if the given object currently sits on <paramref name="tileIdx"/>'s floor pile.</summary>

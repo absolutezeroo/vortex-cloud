@@ -9,6 +9,7 @@ using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
+using Vortex.Primitives.Rooms.Wired;
 using Vortex.Primitives.Rooms.Wired.Variable;
 using Vortex.Rooms.Grains.Storage;
 
@@ -222,4 +223,11 @@ public sealed partial class RoomGrain
 
     bool IRoomFurniAccess.IsWearingBadge(PlayerId player, string badgeCode) =>
         IsWearingBadge(player, badgeCode);
+
+    Task<int> IRoomFurniAccess.ExecuteWiredStacksAtAsync(
+        int callerTileIdx,
+        IReadOnlyCollection<int> targetFurniIds,
+        IWiredSelectionSet inheritedSelection,
+        CancellationToken ct
+    ) => WiredSystem.ExecuteStacksAtAsync(callerTileIdx, targetFurniIds, inheritedSelection, ct);
 }

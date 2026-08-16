@@ -348,66 +348,6 @@ public sealed class WiredMembershipBoxTests
 
     private sealed record TestEvent : RoomEvent;
 
-    /// <summary>Only the members the boxes under test reach for; the rest of the room's furni surface
-    /// is not what these tests are about.</summary>
-    private sealed class FakeFurniAccess : IRoomFurniAccess
-    {
-        public Dictionary<int, HashSet<PlayerId>> Members { get; } = [];
-
-        public Dictionary<PlayerId, HashSet<string>> WornBadges { get; } = [];
-
-        public List<int> RostersRequested { get; } = [];
-
-        public List<PlayerId> BadgesRequested { get; } = [];
-
-        public Task EnsureGuildRosterAsync(int groupId, CancellationToken ct)
-        {
-            RostersRequested.Add(groupId);
-
-            return Task.CompletedTask;
-        }
-
-        public bool IsGuildMember(int groupId, PlayerId player) =>
-            Members.TryGetValue(groupId, out HashSet<PlayerId>? members)
-            && members.Contains(player);
-
-        public Task EnsureWornBadgesAsync(PlayerId player, CancellationToken ct)
-        {
-            BadgesRequested.Add(player);
-
-            return Task.CompletedTask;
-        }
-
-        public bool IsWearingBadge(PlayerId player, string badgeCode) =>
-            WornBadges.TryGetValue(player, out HashSet<string>? worn) && worn.Contains(badgeCode);
-
-        public Task<bool> ValidateFloorItemPlacementAsync(
-            ActionContext ctx,
-            RoomObjectId itemId,
-            int x,
-            int y,
-            Rotation rot
-        ) => Task.FromResult(true);
-
-        public IWiredVariable? GetVariableById(WiredVariableId id) => null;
-
-        public void ScheduleFlashRevert(RoomObjectId objectId) { }
-
-        public void ResetTimers() { }
-
-        public WiredVariableHash AllVariablesHash => default;
-
-        public bool TryGetVariableStore(WiredVariableKey key, out IWiredKeyValueStore? store)
-        {
-            store = null;
-
-            return false;
-        }
-
-        public Task<bool> KickUserFromWiredAsync(PlayerId targetPlayerId, CancellationToken ct) =>
-            Task.FromResult(false);
-    }
-
     // The boxes take their configuration from the persisted wired data the room fills in; these
     // subclasses hand it over directly so the behaviour can be exercised without a live room.
     private sealed class TestHandItemCondition : WiredConditionHabboHasHanditem

@@ -27,6 +27,8 @@ public abstract class FurnitureWiredActionLogic(
 
     public int GetDelayMs() => _delayMs;
 
+    public virtual bool IsNegative() => false;
+
     public virtual Task<bool> ExecuteAsync(IWiredExecutionContext ctx, CancellationToken ct) =>
         Task.FromResult(true);
 

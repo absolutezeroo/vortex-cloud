@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Wired;
 using Vortex.Primitives.Rooms.Wired.Variable;
 
 namespace Vortex.Primitives.Rooms.Object;
@@ -63,4 +65,17 @@ public interface IRoomFurniAccess
     /// <see cref="EnsureWornBadgesAsync"/> loaded. Worn means occupying one of the five profile
     /// slots, not merely owned.</summary>
     bool IsWearingBadge(PlayerId player, string badgeCode);
+
+    /// <summary>
+    /// Runs the piles under these furni, bypassing their own triggers and conditions — the
+    /// "execute stacks" action. The calling box's tile is passed so a pile cannot execute itself,
+    /// and the caller's selection carries into the called piles.
+    /// </summary>
+    /// <returns>How many piles were executed.</returns>
+    Task<int> ExecuteWiredStacksAtAsync(
+        int callerTileIdx,
+        IReadOnlyCollection<int> targetFurniIds,
+        IWiredSelectionSet inheritedSelection,
+        CancellationToken ct
+    );
 }

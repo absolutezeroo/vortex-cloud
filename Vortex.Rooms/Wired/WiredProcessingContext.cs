@@ -10,5 +10,5 @@ public sealed class WiredProcessingContext(RoomGrain roomGrain)
 {
     public required RoomEvent Event { get; init; }
     public required IWiredStack Stack { get; init; }
-    public required IWiredTrigger Trigger { get; init; }
+    public IWiredTrigger? Trigger { get; init; }
 }
