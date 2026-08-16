@@ -1,18 +1,46 @@
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Messages.Incoming.Register;
 using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Players;
+using Vortex.Primitives.Players.Avatar;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Server.Grains;
 
 namespace Vortex.PacketHandlers.Register;
 
-public class UpdateFigureDataMessageHandler(IGrainFactory grainFactory)
-    : IMessageHandler<UpdateFigureDataMessage>
+/// <summary>
+/// Saving a look.
+/// </summary>
+/// <remarks>
+/// <para>
+/// The avatar editor already refuses to offer a sellable set the player has not unlocked, but that
+/// is the client judging itself against a list it holds. This is the untrusted edge, so the same
+/// rule is applied here: a look wearing something the account does not own is refused whole rather
+/// than quietly stripped, because a half-applied figure is worse than an unchanged one.
+/// </para>
+/// <para>
+/// The check fails open by construction — a hotel that has not seeded the sellable list finds
+/// nothing to refuse — and <c>clothing.enforce_ownership</c> turns it off outright. That switch
+/// exists because this sits on the path every look change takes: if the seeded data and the hotel's
+/// figuredata ever disagree, the symptom is players unable to change clothes at all, and waiting for
+/// a rebuild to undo that would be the wrong trade.
+/// </para>
+/// </remarks>
+public class UpdateFigureDataMessageHandler(
+    IGrainFactory grainFactory,
+    ILogger<UpdateFigureDataMessageHandler> logger
+) : IMessageHandler<UpdateFigureDataMessage>
 {
+    private const string EnforceOwnershipKey = "clothing.enforce_ownership";
+
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly ILogger<UpdateFigureDataMessageHandler> _logger = logger;
 
     public async ValueTask HandleAsync(
         UpdateFigureDataMessage message,
@@ -21,6 +49,11 @@ public class UpdateFigureDataMessageHandler(IGrainFactory grainFactory)
     )
     {
         if (ctx.PlayerId < 0)
+        {
+            return;
+        }
+
+        if (!await MayWearAsync(message.Figure, ctx.PlayerId, ct).ConfigureAwait(false))
         {
             return;
         }
@@ -34,5 +67,38 @@ public class UpdateFigureDataMessageHandler(IGrainFactory grainFactory)
                 ct
             )
             .ConfigureAwait(false);
+    }
+
+    private async Task<bool> MayWearAsync(string figure, int playerId, CancellationToken ct)
+    {
+        bool enforce = await _grainFactory
+            .GetServerConfigGrain()
+            .GetBoolAsync(EnforceOwnershipKey, true)
+            .ConfigureAwait(false);
+
+        if (!enforce)
+        {
+            return true;
+        }
+
+        ImmutableArray<int> unowned = await _grainFactory
+            .GetPlayerClothingGrain(new PlayerId(playerId))
+            .FindUnownedSellableAsync(FigureString.SetIdsOf(figure), ct)
+            .ConfigureAwait(false);
+
+        if (unowned.IsEmpty)
+        {
+            return true;
+        }
+
+        // Named, because the client shows nothing: the look simply does not change. Without this
+        // line a refusal is indistinguishable from a packet that never arrived.
+        _logger.LogWarning(
+            "Player {PlayerId} tried to wear figure set(s) {Sets} they have not unlocked; look unchanged.",
+            playerId,
+            string.Join(", ", unowned)
+        );
+
+        return false;
     }
 }

@@ -307,6 +307,16 @@ public static class GrainFactoryExtensions
         PlayerId playerId
     ) => factory.GetGrain<IPlayerMintGrain>(playerId.Value);
 
+    public static IPlayerClothingGrain GetPlayerClothingGrain(
+        this IGrainFactory factory,
+        PlayerId playerId
+    ) => factory.GetGrain<IPlayerClothingGrain>(playerId.Value);
+
+    public static IPlayerClothingGrain GetPlayerClothingGrain(
+        this IGrainFactory factory,
+        long playerId
+    ) => factory.GetGrain<IPlayerClothingGrain>(playerId);
+
     public static IPlayerMysteryBoxGrain GetPlayerMysteryBoxGrain(
         this IGrainFactory factory,
         PlayerId playerId

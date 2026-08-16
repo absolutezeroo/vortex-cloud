@@ -191,11 +191,20 @@ public class SSOTicketMessageHandler(
                 )
                 .ConfigureAwait(false);
             // unseen items
+            // The clothing the account has unlocked. This used to be two empty arrays, which told
+            // every player at every login that they own no wearable sets -- the avatar editor then
+            // greys out everything they have ever redeemed, and a clothing furni they have already
+            // bound asks to be redeemed a second time.
+            PlayerClothingSnapshot clothing = await _grainFactory
+                .GetPlayerClothingGrain(ctx.PlayerId)
+                .GetUnlockedAsync(ct)
+                .ConfigureAwait(false);
+
             await ctx.SendComposerAsync(
                     new FigureSetIdsEventMessageComposer
                     {
-                        FigureSetIds = [],
-                        BoundFurnitureNames = [],
+                        FigureSetIds = clothing.FigureSetIds,
+                        BoundFurnitureNames = clothing.BoundFurnitureNames,
                     },
                     ct
                 )

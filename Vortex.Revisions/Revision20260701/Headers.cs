@@ -343,6 +343,7 @@ internal static class MessageEvent
     public const int SilverFeeMessageEvent = 2717; // AS3-verified (ghost fix): TradingModel::addSilverFee()
     public const int UnacceptTradingEvent = 1030;
     public const int UpdateFigureDataMessageEvent = 3339; // AS3-verified (old-revision trace): still exists in current revision at 3339
+    public const int RedeemPurchasableClothingMessageEvent = 3637; // AS3-verified (direct read): FurnitureContextMenuWidgetHandler::redeemPurchasableClothing() -> send(new _SafeCls_3394(roomObjectId)) @3637, one int. Answered by FigureSetIds@1231 -- there is no result message
     public const int AvatarExpressionMessageEvent = 2912;
     public const int ChangeMottoMessageEvent = 2659;
     public const int ChangePostureMessageEvent = 3181;

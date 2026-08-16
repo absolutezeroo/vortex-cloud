@@ -14,6 +14,7 @@ using Vortex.Revisions.Revision20260701.Parsers.Inventory.Achievements;
 using Vortex.Revisions.Revision20260701.Parsers.Inventory.Avatareffect;
 using Vortex.Revisions.Revision20260701.Parsers.Inventory.Badges;
 using Vortex.Revisions.Revision20260701.Parsers.Inventory.Bots;
+using Vortex.Revisions.Revision20260701.Parsers.Inventory.Clothing;
 using Vortex.Revisions.Revision20260701.Parsers.Inventory.Furni;
 using Vortex.Revisions.Revision20260701.Parsers.Inventory.Pets;
 using Vortex.Revisions.Revision20260701.Parsers.Inventory.Purse;
@@ -101,6 +102,12 @@ internal sealed class InventoryMap : IRevisionMap
 
         // Inventory Purse
         builder.MapParser(MessageEvent.GetCreditsInfoEvent, new GetCreditsInfoMessageParser());
+
+        // Inventory Clothing
+        builder.MapParser(
+            MessageEvent.RedeemPurchasableClothingMessageEvent,
+            new RedeemPurchasableClothingMessageParser()
+        );
 
         // Inventory Trading
         builder.MapParser(MessageEvent.AcceptTradingEvent, new AcceptTradingMessageParser());
