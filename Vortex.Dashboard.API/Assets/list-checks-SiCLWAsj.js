@@ -1,0 +1,1 @@
+import{A as e,I as t,L as n}from"./AccessDeniedNotice-D0JW-9ZH.js";var r=new Set([`$$slots`,`$$events`,`$$legacy`]);function i(i,a){let o=t(a,r),s=[[`path`,{d:`M13 5h8`}],[`path`,{d:`M13 12h8`}],[`path`,{d:`M13 19h8`}],[`path`,{d:`m3 17 2 2 4-4`}],[`path`,{d:`m3 7 2 2 4-4`}]];e(i,n({name:`list-checks`},()=>o,{get iconNode(){return s}}))}export{i as t};

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text.Json;
@@ -6,6 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orleans;
+using Vortex.Database.Auditing;
+using Vortex.Database.Backup;
 using Vortex.Observability.Diagnostics;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Catalog;
@@ -51,6 +54,7 @@ internal sealed partial class DashboardOperationsService(
     IMysteryBoxAdminService mysteryBoxAdmin,
     IPrizePoolAdminService prizePoolAdmin,
     IFurnitureAdminService furnitureAdmin,
+    IDatabaseBackupService databaseBackups,
     IAuditSink auditSink,
     IVortexContextAccessor context,
     IVortexMetrics metrics,
@@ -80,6 +84,7 @@ internal sealed partial class DashboardOperationsService(
     private readonly IMysteryBoxAdminService _mysteryBoxAdmin = mysteryBoxAdmin;
     private readonly IPrizePoolAdminService _prizePoolAdmin = prizePoolAdmin;
     private readonly IFurnitureAdminService _furnitureAdmin = furnitureAdmin;
+    private readonly IDatabaseBackupService _databaseBackups = databaseBackups;
     private readonly IAuditSink _auditSink = auditSink;
     private readonly IVortexContextAccessor _context = context;
     private readonly IVortexMetrics _metrics = metrics;
@@ -149,6 +154,11 @@ internal sealed partial class DashboardOperationsService(
             roomId: roomId
         );
 
+        // Armed for the duration of the domain call so the audit can say what the write replaced,
+        // not merely which id it was pointed at. Before this, a delete recorded `{ offerId: 12 }`
+        // and the row itself was gone -- there was nowhere left to read what it had been.
+        using IEntityChangeCapture capture = EntityChangeCapture.Begin();
+
         try
         {
             await work(ct).ConfigureAwait(false);
@@ -163,7 +173,8 @@ internal sealed partial class DashboardOperationsService(
                 targetPlayerId,
                 roomId,
                 detail,
-                category
+                category,
+                capture.Changes
             );
 
             return OperationResult.Succeeded(correlationId.Value);
@@ -190,7 +201,10 @@ internal sealed partial class DashboardOperationsService(
                 targetPlayerId,
                 roomId,
                 detail,
-                category
+                category,
+                // Usually empty -- a domain rejection happens before anything is written. When it is
+                // not, a row was saved before the refusal, and that is exactly the case worth seeing.
+                capture.Changes
             );
 
             return OperationResult.Failed(correlationId.Value, ex.Message);
@@ -214,7 +228,8 @@ internal sealed partial class DashboardOperationsService(
                 targetPlayerId,
                 roomId,
                 detail,
-                category
+                category,
+                capture.Changes
             );
 
             return OperationResult.Failed(correlationId.Value);
@@ -231,7 +246,8 @@ internal sealed partial class DashboardOperationsService(
         long? targetPlayerId,
         int? roomId,
         object detail,
-        AuditCategory category = AuditCategory.Staff
+        AuditCategory category = AuditCategory.Staff,
+        IReadOnlyList<EntityChange>? changes = null
     ) =>
         _auditSink.Emit(
             new AuditEvent
@@ -249,6 +265,11 @@ internal sealed partial class DashboardOperationsService(
                         actor,
                         reason,
                         detail,
+                        // Omitted rather than written as an empty array: most operations touch no
+                        // tracked row (they call a grain, or use a bulk statement), and a `changes: []`
+                        // on every one of those would read as "nothing changed" instead of "not
+                        // recorded here".
+                        changes = changes is { Count: > 0 } ? changes : null,
                     }
                 ),
             }

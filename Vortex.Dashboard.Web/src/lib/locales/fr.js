@@ -188,6 +188,14 @@ export default {
     requestFailed: 'La requête a échoué.',
   },
   audit: {
+    // La ligne dépliée. `changes` vient du change tracker EF ; sur une suppression, c'est la seule
+    // copie survivante de la ligne.
+    wasDeleted: 'supprimé',
+    opDelete: 'Supprimé',
+    opUpdate: 'Modifié',
+    byActor: 'Par {actor}',
+    noEntityChanges:
+      "Aucun changement de ligne enregistré pour cette action — elle est passée par un grain ou une requête en masse plutôt que par une écriture suivie.",
     title: "Événements d'audit récents",
     accessDenied: "Vous n'avez pas l'autorisation d'accéder au journal d'audit.",
     since: 'Depuis',
@@ -521,6 +529,16 @@ export default {
     noGroupedData: "Aucune donnée d'erreur groupée pour cette fenêtre.",
   },
   infrastructure: {
+    eyebrowBackup: 'Filet de sécurité',
+    backups: 'Sauvegardes de la base',
+    backupNow: 'Sauvegarder maintenant',
+    backupSummary: 'Prendre un dump de la base maintenant, en plus de la planification.',
+    backupNotConfigured:
+      "Les sauvegardes sont désactivées. Renseigne Vortex:Database:Backup — Enabled, et MysqlDumpPath vers ton binaire mysqldump.",
+    backupNone: 'Aucune sauvegarde pour le moment.',
+    backupFile: 'Fichier',
+    backupSize: 'Taille',
+    backupTaken: 'Prise le',
     eyebrowRuntime: 'Runtime',
     title: "Infrastructure de l'émulateur",
     accessDenied: "Vous n'avez pas l'autorisation d'accéder aux métriques infrastructure.",

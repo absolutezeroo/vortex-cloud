@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Vortex.Database.Auditing;
+using Vortex.Database.Backup;
 using Vortex.Database.Configuration;
 using Vortex.Database.Context;
 using Vortex.Database.Delegates;
@@ -41,8 +43,20 @@ public static class ServiceCollectionExtensions
                         options.EnableRetryOnFailure(maxRetryCount: 3);
                     }
                 );
+
+                // Records what an admin write replaced, read from EF's own original values. Inert
+                // unless an EntityChangeCapture is armed, which only the dashboard's operation
+                // envelope does -- the game's write path never enters the body of the interceptor.
+                options.AddInterceptors(new EntityChangeInterceptor());
             }
         );
+
+        services
+            .AddOptions<DatabaseBackupConfig>()
+            .Bind(builder.Configuration.GetSection(DatabaseBackupConfig.SECTION_NAME));
+
+        services.AddSingleton<IDatabaseBackupService, DatabaseBackupService>();
+        services.AddHostedService<DatabaseBackupScheduler>();
 
         return services;
     }

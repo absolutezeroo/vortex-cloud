@@ -190,6 +190,14 @@ export default {
     requestFailed: 'Request failed.',
   },
   audit: {
+    // The expanded row. `changes` is the before/after captured from EF's change tracker; for a
+    // delete it is the only surviving copy of the row.
+    wasDeleted: 'deleted',
+    opDelete: 'Deleted',
+    opUpdate: 'Updated',
+    byActor: 'By {actor}',
+    noEntityChanges:
+      'No row-level change recorded for this action — it went through a grain or a bulk statement rather than a tracked write.',
     title: 'Recent audit events',
     accessDenied: 'You do not have permission to access the audit feed.',
     since: 'Since',
@@ -522,6 +530,16 @@ export default {
     noGroupedData: 'No grouped error data for this window.',
   },
   infrastructure: {
+    eyebrowBackup: 'Safety net',
+    backups: 'Database backups',
+    backupNow: 'Back up now',
+    backupSummary: 'Take a database dump now, on top of the schedule.',
+    backupNotConfigured:
+      'Backups are off. Set Vortex:Database:Backup — Enabled, and MysqlDumpPath pointing at your mysqldump binary.',
+    backupNone: 'No backup taken yet.',
+    backupFile: 'File',
+    backupSize: 'Size',
+    backupTaken: 'Taken',
     eyebrowRuntime: 'Runtime',
     title: 'Emulator infrastructure',
     accessDenied: 'You do not have permission to access infrastructure metrics.',

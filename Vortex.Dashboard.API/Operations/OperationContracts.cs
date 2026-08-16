@@ -29,6 +29,10 @@ public sealed record GiveCreditsRequest(int PlayerId, int Amount, string Reason)
 /// <c>ConfigKeyCatalog</c> key and <paramref name="Value"/> must parse for that key's kind.</summary>
 public sealed record SetConfigRequest(string Key, string Value, string Reason) : IReasonedRequest;
 
+/// <summary>Take a database dump now, on top of the schedule. Carries only the reason: where it is
+/// written and how many are kept is bootstrap configuration, not an operator's choice.</summary>
+public sealed record CreateDatabaseBackupRequest(string Reason) : IReasonedRequest;
+
 /// <summary>Grant activity points of a given type to a player.</summary>
 public sealed record GiveActivityPointsRequest(int PlayerId, int Type, int Amount, string Reason)
     : IReasonedRequest;

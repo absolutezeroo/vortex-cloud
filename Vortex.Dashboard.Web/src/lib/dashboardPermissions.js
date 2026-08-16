@@ -34,6 +34,7 @@ export const CAPABILITIES = {
   configRead: 'dashboard.config.read',
   opsManageConfig: 'dashboard.ops.config.manage',
   performanceRead: 'dashboard.performance.read',
+  opsDatabaseBackup: 'dashboard.ops.database.backup',
   achievementsRead: 'dashboard.achievements.read',
   botsRead: 'dashboard.bots.read',
   navigatorRead: 'dashboard.navigator.read',

@@ -1,7 +1,9 @@
 <script>
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api.js';
-  import { compactCorrelation, formatDate, summarizeData } from '../lib/format.js';
+  import { compactCorrelation, formatDate } from '../lib/format.js';
+  import AuditDetail from '../components/AuditDetail.svelte';
+  import { summarizeAudit } from '../lib/auditData.js';
   import EntityLink from '../components/EntityLink.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import Pagination from '../components/Pagination.svelte';
@@ -49,6 +51,13 @@
   let target = '';
   let category = '';
   let action = '';
+  // Which row is open, by index. Reset on every reload -- an index kept across a refetch would
+  // expand whatever event happens to land in that slot.
+  let expanded = null;
+
+  function toggle(index) {
+    expanded = expanded === index ? null : index;
+  }
   let limit = 50;
   let page = 1;
 
@@ -101,11 +110,13 @@
     try {
       const data = await apiGet(`/api/v1/forensics/audit?${buildParams()}`);
       rows = data.items || [];
+      expanded = null;
       total = data.total || 0;
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
         rows = [];
+        expanded = null;
         total = 0;
         return;
       }
@@ -187,8 +198,16 @@
     <table>
       <thead><tr><th>{$t('audit.colTime')}</th><th>{$t('audit.colCategory')}</th><th>{$t('audit.colAction')}</th><th>{$t('audit.colActor')}</th><th>{$t('audit.colTarget')}</th><th>{$t('audit.colResult')}</th><th>{$t('audit.colData')}</th><th>{$t('audit.colCid')}</th></tr></thead>
       <tbody>
-        {#each rows as row}
-          <tr>
+        {#each rows as row, i}
+          <tr
+            class="audit-row"
+            class:expanded={expanded === i}
+            tabindex="0"
+            role="button"
+            aria-expanded={expanded === i}
+            on:click={() => toggle(i)}
+            on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggle(i))}
+          >
             <td>{formatDate(row.occurredAt)}</td>
             <td>
               <span class="category-badge" style={`border-left-color: ${categoryColor(row.category)};`}>
@@ -203,9 +222,14 @@
                 {resultLabel(row.result, $t)}
               </span>
             </td>
-            <td class="truncate" title={summarizeData(row.data)}>{summarizeData(row.data)}</td>
+            <td class="truncate" title={summarizeAudit(row.data)}>{summarizeAudit(row.data)}</td>
             <td>{compactCorrelation(row.correlationId)}</td>
           </tr>
+          {#if expanded === i}
+            <tr class="audit-detail-row">
+              <td colspan="8"><AuditDetail data={row.data} /></td>
+            </tr>
+          {/if}
         {:else}
           <tr><td colspan="8" class="muted">{$t('audit.noRows')}</td></tr>
         {/each}
@@ -227,6 +251,19 @@
 </section>
 
 <style>
+  .audit-row {
+    cursor: pointer;
+  }
+
+  .audit-row:hover,
+  .audit-row.expanded {
+    background: var(--surface-hover, rgba(128, 128, 128, 0.08));
+  }
+
+  .audit-detail-row > td {
+    padding: 0;
+  }
+
   .category-badge {
     display: inline-flex;
     align-items: center;

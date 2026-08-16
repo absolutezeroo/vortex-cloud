@@ -65,3 +65,22 @@ export function summarizeData(value) {
     return text.length > 160 ? `${text.substring(0, 160)}...` : text;
   }
 }
+
+/** A file size an operator reads at a glance -- a database dump is megabytes, not bytes. */
+export function formatBytes(value) {
+  const bytes = Number(value);
+
+  if (!Number.isFinite(bytes) || bytes < 0) return '-';
+  if (bytes < 1024) return `${bytes} B`;
+
+  const units = ['KB', 'MB', 'GB', 'TB'];
+  let size = bytes / 1024;
+  let unit = 0;
+
+  while (size >= 1024 && unit < units.length - 1) {
+    size /= 1024;
+    unit += 1;
+  }
+
+  return `${size.toFixed(size >= 100 ? 0 : 1)} ${units[unit]}`;
+}

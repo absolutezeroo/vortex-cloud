@@ -116,6 +116,11 @@ public static class Capabilities
         public const string OpsConfigManage = "dashboard.ops.config.manage";
         public const string PerformanceRead = "dashboard.performance.read";
 
+        /// <summary>Take a database dump on demand and see the ones already kept. Separate from
+        /// config management: a hotel may well want the safety net readable and triggerable by
+        /// operators who are not allowed to change what the server runs on.</summary>
+        public const string OpsDatabaseBackup = "dashboard.ops.database.backup";
+
         /// <summary>Achievement definitions, their level ladders and hotel-wide progression.</summary>
         public const string AchievementsRead = "dashboard.achievements.read";
 
@@ -197,6 +202,7 @@ public static class Capabilities
             ConfigRead,
             OpsConfigManage,
             PerformanceRead,
+            OpsDatabaseBackup,
             AchievementsRead,
             BotsRead,
             NavigatorRead,

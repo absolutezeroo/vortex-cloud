@@ -5,12 +5,48 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { Activity, Cpu, Timer, Hash } from '@lucide/svelte';
-  import { isPermissionDeniedError } from '../lib/permissions.js';
-  import { t } from '../lib/i18n.js';
+  import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
+  import { CAPABILITIES } from '../lib/dashboardPermissions.js';
+  import { identity } from '../lib/session.js';
+  import { createWriteOps } from '../lib/writeOps.js';
+  import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
+  import OpResult from '../components/OpResult.svelte';
+  import { formatBytes } from '../lib/format.js';
+  import { t, translate } from '../lib/i18n.js';
 
   let data = null;
   let error = '';
   let forbidden = false;
+
+  // The coarse safety net. Listing and triggering only: where dumps go, how often and how many are
+  // kept is bootstrap config on purpose -- a retention an operator can set to zero from the same
+  // screen as the mistake is not a safety net. Restoring is not offered here either; rolling the
+  // whole database back discards every change since, which belongs in a maintenance window.
+  let backups = null;
+  const backupOps = createWriteOps(loadBackups);
+
+  $: canBackup = hasDashboardCapability($identity, CAPABILITIES.opsDatabaseBackup);
+
+  async function loadBackups() {
+    if (!canBackup) return;
+
+    try {
+      backups = await apiGet('/api/v1/database/backups');
+    } catch {
+      // A denied or unreachable listing must not take the rest of the page down with it.
+      backups = null;
+    }
+  }
+
+  function stageBackup() {
+    backupOps.ask(
+      '/api/v1/operations/database/backup',
+      {},
+      translate('infrastructure.backupNow'),
+      translate('infrastructure.backupSummary'),
+      { key: 'backup', danger: false },
+    );
+  }
   $: silos = data?.orleansCluster?.silos || [];
   $: siloRows = (() => {
     const buckets = new Map();
@@ -80,6 +116,7 @@
 
   onMount(() => {
     void refresh();
+    void loadBackups();
     const interval = setInterval(refresh, 10000);
     return () => clearInterval(interval);
   });
@@ -234,3 +271,53 @@
     </tbody>
   </table>
 </section>
+
+{#if canBackup}
+  <section class="panel" style="margin-top: 12px;">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">{$t('infrastructure.eyebrowBackup')}</p>
+        <h2>{$t('infrastructure.backups')}</h2>
+      </div>
+      <button type="button" on:click={stageBackup} disabled={$backupOps.busyKeys.backup}>
+        {$t('infrastructure.backupNow')}
+      </button>
+    </div>
+
+    {#if $backupOps.errors.backup}<p class="empty-state danger">{$backupOps.errors.backup}</p>{/if}
+    {#if $backupOps.results.backup}<OpResult result={$backupOps.results.backup} />{/if}
+
+    {#if backups && !backups.configured}
+      <p class="empty-state">{$t('infrastructure.backupNotConfigured')}</p>
+    {:else if backups?.items?.length}
+      <table>
+        <thead><tr><th>{$t('infrastructure.backupFile')}</th><th>{$t('infrastructure.backupSize')}</th><th>{$t('infrastructure.backupTaken')}</th></tr></thead>
+        <tbody>
+          {#each backups.items as item}
+            <tr>
+              <td><code>{item.fileName}</code></td>
+              <td>{formatBytes(item.sizeBytes)}</td>
+              <td>{formatDate(item.createdUtc)}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    {:else}
+      <p class="empty-state">{$t('infrastructure.backupNone')}</p>
+    {/if}
+  </section>
+
+  <ConfirmReasonModal
+    open={Boolean($backupOps.pending)}
+    title={$backupOps.pending?.title ?? ''}
+    changes={$backupOps.pending?.changes ?? []}
+    noteOnly={$backupOps.pending?.noteOnly ?? false}
+    summary={$backupOps.pending?.summary ?? ''}
+    confirmLabel={$t('infrastructure.backupNow')}
+    busy={$backupOps.busy}
+    error={$backupOps.error}
+    danger={false}
+    on:confirm={(e) => backupOps.confirm(e.detail)}
+    on:cancel={() => backupOps.cancel()}
+  />
+{/if}
