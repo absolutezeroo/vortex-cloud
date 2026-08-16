@@ -1302,7 +1302,7 @@ input:not([type='checkbox']):not([type='radio']) {
   padding: 9px 10px;
   outline: none;
   font: inherit;
-  transition: border-color 140ms ease, background 140ms ease;
+  transition: border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
   /* Makes native affordances (the date picker's calendar glyph, number spinners) follow the app
      theme instead of rendering a light-on-light control. */
   color-scheme: inherit;
@@ -1326,45 +1326,39 @@ input[type='time']::-webkit-calendar-picker-indicator {
 }
 
 /* The native arrow is drawn hard against the right border, which reads as a rendering fault next to
-   the rounded corner. Replaced with our own chevron, inset far enough to breathe, and the extra
+   the rounded corner. Replaced with a proper chevron, inset far enough to breathe, and the extra
    right padding keeps a long option from running underneath it.
 
-   It flips up on focus, which is when the list opens. A native select cannot do better than that:
-   the arrow is a background image, so nothing about it can be rotated by transform, and there is no
-   reliable open-state selector to hang an animation on. The position is what transitions, so the
-   flip arrives with a small lift rather than a jump. */
+   It does NOT rotate, and that is a decision rather than an omission. The arrow on a native select
+   is a background image: no transform reaches it, and there is no reliable open-state selector, so
+   the only way to rotate one is to put a real element beside it -- which needs a wrapper each
+   select can be positioned against. Of the 71 in this dashboard only 31 sit in one. A dashboard
+   where some arrows turn and the rest do not is worse than one where none do, so what reacts is the
+   colour and the border, on every select alike. (A custom listbox component would rotate; it would
+   also cost the native keyboard and mobile behaviour, which is a bigger trade than an arrow.)
+
+   Drawn as an SVG rather than the usual pair of gradients -- gradients make a wedge, and at this
+   size the difference between a wedge and a chevron is the whole complaint. The stroke is baked
+   into the data URI, so each theme names its own. */
 select {
   appearance: none;
-  padding-right: 32px;
-  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
-    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
-  background-position: calc(100% - 17px) calc(50% + 2px), calc(100% - 12px) calc(50% + 2px);
-  background-size: 5px 5px, 5px 5px;
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1.5 1.75 6 6.25l4.5-4.5' stroke='%238ba3bc' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-position: right 12px center;
+  background-size: 11px 7px;
   background-repeat: no-repeat;
-  transition: border-color 140ms ease, background-color 140ms ease,
-    background-position 160ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+:root[data-theme='dark'] select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1.5 1.75 6 6.25l4.5-4.5' stroke='%238d9096' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+:root[data-theme='white'] select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1.5 1.75 6 6.25l4.5-4.5' stroke='%235f7085' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
 select:hover {
   background-color: var(--surface-hover);
-}
-
-select:hover,
-select:focus {
-  background-image: linear-gradient(45deg, transparent 50%, var(--accent) 50%),
-    linear-gradient(135deg, var(--accent) 50%, transparent 50%);
-}
-
-select:focus {
-  background-image: linear-gradient(225deg, transparent 50%, var(--accent) 50%),
-    linear-gradient(315deg, var(--accent) 50%, transparent 50%);
-  background-position: calc(100% - 12px) calc(50% - 2px), calc(100% - 17px) calc(50% - 2px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  select {
-    transition: border-color 140ms ease, background-color 140ms ease;
-  }
 }
 
 select option {
