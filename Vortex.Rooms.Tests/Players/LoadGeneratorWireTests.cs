@@ -62,9 +62,15 @@ public sealed class LoadGeneratorWireTests
     }
 
     /// <summary>
-    /// The generator has to be sitting beside the emulator for a run to start at all — it is copied
-    /// there by the build, and a project reference that stopped copying it would surface as
-    /// "benchmark_generator_missing" at the first run and nowhere earlier.
+    /// Both halves of the generator have to be deployed together — the launcher and the assembly it
+    /// is a shim for.
+    /// <para>
+    /// This checks the directory the <em>tests</em> run in, not the emulator's, so it is not proof
+    /// that a run will find it: an earlier version of this test passed green while the emulator's
+    /// own output was missing the assembly. What it does catch is the half-copy itself, which is the
+    /// mistake that actually happened — a reference that brings the launcher and leaves the code
+    /// behind.
+    /// </para>
     /// </summary>
     [Fact]
     public void TheGeneratorExecutable_IsShippedBesideTheHost()

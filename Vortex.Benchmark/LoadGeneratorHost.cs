@@ -45,7 +45,16 @@ internal sealed class LoadGeneratorHost(ILogger<LoadGeneratorHost> logger)
             OperatingSystem.IsWindows() ? "Vortex.LoadGen.exe" : "Vortex.LoadGen"
         );
 
-    public static bool IsAvailable => File.Exists(ExecutablePath);
+    /// <summary>
+    /// The managed assembly the launcher above is only a shim for. Checked separately because a
+    /// build once copied the shim and left this behind, and the failure that produced —
+    /// "The application to execute does not exist" on the child's stderr, after a hundred accounts
+    /// had already been created — said nothing about which of the two was missing.
+    /// </summary>
+    private static string AssemblyPath =>
+        Path.Combine(AppContext.BaseDirectory, "Vortex.LoadGen.dll");
+
+    public static bool IsAvailable => File.Exists(ExecutablePath) && File.Exists(AssemblyPath);
 
     /// <summary>
     /// Runs one load, reporting each second as it arrives. Returns when the generator exits, which
@@ -59,6 +68,17 @@ internal sealed class LoadGeneratorHost(ILogger<LoadGeneratorHost> logger)
     {
         if (!IsAvailable)
         {
+            // Refused here, before the accounts and the furniture exist. A run that provisions and
+            // then discovers it has nothing to run with leaves the teardown to clean up a hotel that
+            // was never loaded.
+            logger.LogError(
+                "Load generator is not deployed: {Executable} exists={ExeFound}, {Assembly} exists={DllFound}",
+                ExecutablePath,
+                File.Exists(ExecutablePath),
+                AssemblyPath,
+                File.Exists(AssemblyPath)
+            );
+
             throw new InvalidOperationException("benchmark_generator_missing");
         }
 

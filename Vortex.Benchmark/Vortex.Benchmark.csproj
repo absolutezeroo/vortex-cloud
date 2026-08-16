@@ -8,16 +8,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Vortex.Database\Vortex.Database.csproj" />
-    <!--
-      Referenced so the build drops the generator's executable beside this assembly, and for no
-      other reason: ReferenceOutputAssembly is off because nothing here links against it. The whole
-      value of that process is that it does not share this one.
-    -->
-    <ProjectReference Include="..\Vortex.LoadGen\Vortex.LoadGen.csproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <OutputItemType>Content</OutputItemType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </ProjectReference>
     <ProjectReference Include="..\Vortex.Observability\Vortex.Observability.csproj" />
     <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
   </ItemGroup>
