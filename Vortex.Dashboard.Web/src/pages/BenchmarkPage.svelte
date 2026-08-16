@@ -56,6 +56,26 @@
     }
   }
 
+  // The same verdict arrives in two shapes and it is not worth fighting: the live one comes through
+  // the API, which camel-cases everything, and a past one is the report file served as it sits on
+  // disk, which does not. Normalised once here rather than guessed at four call sites.
+  const GRADES = ['Good', 'Watch', 'Bad'];
+
+  const verdictOf = (raw) => {
+    if (!raw) return null;
+
+    const grade = raw.Grade ?? raw.grade;
+
+    return {
+      grade: typeof grade === 'number' ? (GRADES[grade] ?? '') : (grade ?? ''),
+      headline: raw.Headline ?? raw.headline ?? '',
+      findings: raw.Findings ?? raw.findings ?? [],
+    };
+  };
+
+  $: liveVerdict = verdictOf(data?.verdict);
+  $: openVerdict = verdictOf(openRun?.verdict);
+
   const gradeTone = (grade) => {
     if (grade === 'Bad') return 'status-badge--bad';
     if (grade === 'Watch') return 'status-badge--warn';
@@ -224,18 +244,18 @@
       <p class="empty-state danger">{$t('benchmark.residue', { detail: data.residue })}</p>
     {/if}
 
-    {#if data.verdict}
+    {#if liveVerdict}
       <!-- The answer, before the measurements. Somebody running their first load test does not know
            what 1.6 ms means; they know what "a player froze" means. -->
       <div class="verdict">
-        <span class="status-badge {gradeTone(data.verdict.Grade)}">
-          {gradeLabel(data.verdict.Grade)}
+        <span class="status-badge {gradeTone(liveVerdict.grade)}">
+          {gradeLabel(liveVerdict.grade)}
         </span>
-        <strong>{data.verdict.Headline}</strong>
+        <strong>{liveVerdict.headline}</strong>
       </div>
-      {#if (data.verdict.Findings || []).length > 0}
+      {#if liveVerdict.findings.length > 0}
         <ul class="findings">
-          {#each data.verdict.Findings as finding}
+          {#each liveVerdict.findings as finding}
             <li>{finding}</li>
           {/each}
         </ul>
@@ -414,16 +434,16 @@
     {:else if openRun}
       <h3 class="subhead">{openRunName}</h3>
 
-      {#if openRun.verdict}
+      {#if openVerdict}
         <div class="verdict">
-          <span class="status-badge {gradeTone(openRun.verdict.Grade)}">
-            {gradeLabel(openRun.verdict.Grade)}
+          <span class="status-badge {gradeTone(openVerdict.grade)}">
+            {gradeLabel(openVerdict.grade)}
           </span>
-          <strong>{openRun.verdict.Headline}</strong>
+          <strong>{openVerdict.headline}</strong>
         </div>
-        {#if (openRun.verdict.Findings || []).length > 0}
+        {#if openVerdict.findings.length > 0}
           <ul class="findings">
-            {#each openRun.verdict.Findings as finding}
+            {#each openVerdict.findings as finding}
               <li>{finding}</li>
             {/each}
           </ul>

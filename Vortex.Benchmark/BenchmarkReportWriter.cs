@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,7 +39,16 @@ internal sealed partial class BenchmarkReportWriter(
     ILogger<BenchmarkReportWriter> logger
 )
 {
-    private static readonly JsonSerializerOptions Formatting = new() { WriteIndented = true };
+    /// <summary>
+    /// Enums as their names. A grade written as <c>2</c> is unreadable to a person opening the file
+    /// and a trap for anything reading it back — which is exactly what happened: the history list
+    /// asked for a string, got a number, threw, and dropped the run from the list without a word.
+    /// </summary>
+    private static readonly JsonSerializerOptions Formatting = new()
+    {
+        WriteIndented = true,
+        Converters = { new JsonStringEnumConverter() },
+    };
 
     public string Directory => Path.Combine(environment.ContentRootPath, "logs", "benchmark");
 
@@ -163,6 +173,30 @@ internal sealed partial class BenchmarkReportWriter(
             : null;
     }
 
+    /// <summary>
+    /// The grade, however it was written. Files exist from before enums were named, where it is a
+    /// number; a reader that only understood one shape would drop the other's runs from the list.
+    /// </summary>
+    private static string GradeOf(JsonElement root)
+    {
+        if (!root.TryGetProperty("verdict", out JsonElement verdict))
+        {
+            return string.Empty;
+        }
+
+        if (!verdict.TryGetProperty("Grade", out JsonElement grade))
+        {
+            return string.Empty;
+        }
+
+        return grade.ValueKind switch
+        {
+            JsonValueKind.String => grade.GetString() ?? string.Empty,
+            JsonValueKind.Number => Enum.GetName((BenchmarkGrade)grade.GetInt32()) ?? string.Empty,
+            _ => string.Empty,
+        };
+    }
+
     [GeneratedRegex(@"^run-\d{8}-\d{6}\.json$")]
     private static partial Regex ReportName();
 
@@ -232,9 +266,7 @@ internal sealed partial class BenchmarkReportWriter(
                 PeakClients = client.GetProperty("peakClients").GetInt32(),
                 WorstRttMs = client.GetProperty("worstRttMs").GetDouble(),
                 Failures = client.GetProperty("failures").GetInt64(),
-                Grade = root.TryGetProperty("verdict", out JsonElement verdict)
-                    ? verdict.GetProperty("Grade").GetString() ?? string.Empty
-                    : string.Empty,
+                Grade = GradeOf(root),
                 Headline = root.TryGetProperty("verdict", out JsonElement head)
                     ? head.GetProperty("Headline").GetString() ?? string.Empty
                     : string.Empty,
