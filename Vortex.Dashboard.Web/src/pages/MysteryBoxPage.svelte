@@ -13,6 +13,7 @@
   } from '@lucide/svelte';
   import OpResult from '../components/OpResult.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import Drawer from '../components/Drawer.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import PickerModal from '../components/PickerModal.svelte';
   import AssetImage from '../components/AssetImage.svelte';
@@ -450,83 +451,14 @@
     <div class="panel-head">
       <h2><Gift size={17} strokeWidth={2} aria-hidden="true" /> {$t('mysteryBox.prizesHeading')}</h2>
       {#if canManage}
-        <button type="button" class="ghost-button" onclick={() => (newPrizeOpen = !newPrizeOpen)}>
+        <button type="button" class="ghost-button" onclick={() => (newPrizeOpen = true)}>
           <Plus size={14} strokeWidth={2} aria-hidden="true" />
-          {newPrizeOpen ? $t('mysteryBox.cancel') : $t('mysteryBox.newPrize')}
+          {$t('mysteryBox.newPrize')}
         </button>
       {/if}
     </div>
     <p class="muted">{$t('mysteryBox.prizesHint')}</p>
 
-    {#if newPrizeOpen}
-      <div class="catalog-card-detail">
-        <div class="op-field">
-          <label for="new-prize-pool">{$t('mysteryBox.pool')}</label>
-          <select id="new-prize-pool" bind:value={newPrize.pool}>
-            <option value={POOL_BOX}>{$t('mysteryBox.poolBox')}</option>
-            <option value={POOL_TROPHY}>{$t('mysteryBox.poolTrophy')}</option>
-          </select>
-        </div>
-        {#if newPrize.pool === POOL_BOX}
-          <div class="op-field">
-            <label for="new-prize-color">{$t('mysteryBox.color')}</label>
-            <select id="new-prize-color" bind:value={newPrize.color}>
-              <option value="">{$t('mysteryBox.colorAny')}</option>
-              {#each colors as color}
-                <option value={color}>{color}</option>
-              {/each}
-            </select>
-          </div>
-        {/if}
-        <div class="op-field">
-          <label for="new-prize-type">{$t('mysteryBox.productType')}</label>
-          <select id="new-prize-type" bind:value={newPrize.productType}>
-            {#each productTypes as productType}
-              <option value={productType}>{productType}</option>
-            {/each}
-          </select>
-        </div>
-        {#if FURNITURE_TYPES.includes(newPrize.productType)}
-          <div class="op-field">
-            <label for="new-prize-furni">{$t('mysteryBox.furnitureDefinitionId')}</label>
-            <div class="op-pick">
-              <input
-                id="new-prize-furni"
-                type="number"
-                min="1"
-                bind:value={newPrize.furnitureDefinitionId}
-              />
-              <button
-                type="button"
-                class="ghost-button"
-                onclick={() =>
-                  (furniPicker = (item) => (newPrize.furnitureDefinitionId = item.id))}
-                >{$t('mysteryBox.pick')}</button
-              >
-            </div>
-          </div>
-        {:else}
-          <div class="op-field">
-            <label for="new-prize-extra">{$t('mysteryBox.extraParam')}</label>
-            <input id="new-prize-extra" bind:value={newPrize.extraParam} />
-            <small class="muted">{$t('mysteryBox.extraParamHint')}</small>
-          </div>
-        {/if}
-        <div class="op-field">
-          <label for="new-prize-weight">{$t('mysteryBox.weight')}</label>
-          <input id="new-prize-weight" type="number" min="1" bind:value={newPrize.weight} />
-          <small class="muted">{$t('mysteryBox.weightHint')}</small>
-        </div>
-        <div class="op-field">
-          <label><input type="checkbox" bind:checked={newPrize.enabled} /> {$t('mysteryBox.enabled')}</label>
-        </div>
-        <div class="op-actions">
-          <button type="button" onclick={stageCreatePrize}>{$t('mysteryBox.create')}</button>
-        </div>
-        {#if $ops.errors.createPrize}<p class="empty-state danger">{$ops.errors.createPrize}</p>{/if}
-        {#if $ops.results.createPrize}<OpResult result={$ops.results.createPrize} />{/if}
-      </div>
-    {/if}
 
     {#if pools.length > 0}
       <div class="chip-row">
@@ -581,77 +513,6 @@
                     </div>
                   {/if}
                 </div>
-                {#if editPrizeId === prize.id && editPrize}
-                  <div class="catalog-card-detail">
-                    <div class="op-field">
-                      <label for={`edit-prize-pool-${prize.id}`}>{$t('mysteryBox.pool')}</label>
-                      <select id={`edit-prize-pool-${prize.id}`} bind:value={editPrize.pool}>
-                        <option value={POOL_BOX}>{$t('mysteryBox.poolBox')}</option>
-                        <option value={POOL_TROPHY}>{$t('mysteryBox.poolTrophy')}</option>
-                      </select>
-                    </div>
-                    {#if editPrize.pool === POOL_BOX}
-                      <div class="op-field">
-                        <label for={`edit-prize-color-${prize.id}`}>{$t('mysteryBox.color')}</label>
-                        <select id={`edit-prize-color-${prize.id}`} bind:value={editPrize.color}>
-                          <option value="">{$t('mysteryBox.colorAny')}</option>
-                          {#each colors as color}
-                            <option value={color}>{color}</option>
-                          {/each}
-                        </select>
-                      </div>
-                    {/if}
-                    <div class="op-field">
-                      <label for={`edit-prize-type-${prize.id}`}>{$t('mysteryBox.productType')}</label>
-                      <select id={`edit-prize-type-${prize.id}`} bind:value={editPrize.productType}>
-                        {#each productTypes as productType}
-                          <option value={productType}>{productType}</option>
-                        {/each}
-                      </select>
-                    </div>
-                    {#if FURNITURE_TYPES.includes(editPrize.productType)}
-                      <div class="op-field">
-                        <label for={`edit-prize-furni-${prize.id}`}>{$t('mysteryBox.furnitureDefinitionId')}</label>
-                        <div class="op-pick">
-                          <input
-                            id={`edit-prize-furni-${prize.id}`}
-                            type="number"
-                            min="1"
-                            bind:value={editPrize.furnitureDefinitionId}
-                          />
-                          <button
-                            type="button"
-                            class="ghost-button"
-                            onclick={() =>
-                              (furniPicker = (item) =>
-                                (editPrize.furnitureDefinitionId = item.id))}
-                            >{$t('mysteryBox.pick')}</button
-                          >
-                        </div>
-                      </div>
-                    {:else}
-                      <div class="op-field">
-                        <label for={`edit-prize-extra-${prize.id}`}>{$t('mysteryBox.extraParam')}</label>
-                        <input id={`edit-prize-extra-${prize.id}`} bind:value={editPrize.extraParam} />
-                        <small class="muted">{$t('mysteryBox.extraParamHint')}</small>
-                      </div>
-                    {/if}
-                    <div class="op-field">
-                      <label for={`edit-prize-weight-${prize.id}`}>{$t('mysteryBox.weight')}</label>
-                      <input id={`edit-prize-weight-${prize.id}`} type="number" min="1" bind:value={editPrize.weight} />
-                    </div>
-                    <div class="op-field">
-                      <label><input type="checkbox" bind:checked={editPrize.enabled} /> {$t('mysteryBox.enabled')}</label>
-                    </div>
-                    <div class="op-actions">
-                      <button type="button" onclick={stageUpdatePrize}>{$t('mysteryBox.save')}</button>
-                      <button type="button" class="ghost-button" onclick={() => { editPrizeId = null; editPrize = null; }}>
-                        {$t('mysteryBox.cancel')}
-                      </button>
-                    </div>
-                    {#if $ops.errors.updatePrize}<p class="empty-state danger">{$ops.errors.updatePrize}</p>{/if}
-                  </div>
-                {/if}
               </div>
             {/each}
           </div>
@@ -805,6 +666,152 @@
     onClose={() => (picker = null)}
     canSelect={canManage}
   />
+{/if}
+
+{#if newPrizeOpen}
+  <Drawer title={$t('mysteryBox.newPrize')} eyebrow={$t('mysteryBox.prizesHeading')} onclose={() => { newPrizeOpen = false; }}>
+    <div class="catalog-card-detail">
+      <div class="op-field">
+        <label for="new-prize-pool">{$t('mysteryBox.pool')}</label>
+        <select id="new-prize-pool" bind:value={newPrize.pool}>
+          <option value={POOL_BOX}>{$t('mysteryBox.poolBox')}</option>
+          <option value={POOL_TROPHY}>{$t('mysteryBox.poolTrophy')}</option>
+        </select>
+      </div>
+      {#if newPrize.pool === POOL_BOX}
+        <div class="op-field">
+          <label for="new-prize-color">{$t('mysteryBox.color')}</label>
+          <select id="new-prize-color" bind:value={newPrize.color}>
+            <option value="">{$t('mysteryBox.colorAny')}</option>
+            {#each colors as color}
+              <option value={color}>{color}</option>
+            {/each}
+          </select>
+        </div>
+      {/if}
+      <div class="op-field">
+        <label for="new-prize-type">{$t('mysteryBox.productType')}</label>
+        <select id="new-prize-type" bind:value={newPrize.productType}>
+          {#each productTypes as productType}
+            <option value={productType}>{productType}</option>
+          {/each}
+        </select>
+      </div>
+      {#if FURNITURE_TYPES.includes(newPrize.productType)}
+        <div class="op-field">
+          <label for="new-prize-furni">{$t('mysteryBox.furnitureDefinitionId')}</label>
+          <div class="op-pick">
+            <input
+              id="new-prize-furni"
+              type="number"
+              min="1"
+              bind:value={newPrize.furnitureDefinitionId}
+            />
+            <button
+              type="button"
+              class="ghost-button"
+              onclick={() =>
+                (furniPicker = (item) => (newPrize.furnitureDefinitionId = item.id))}
+              >{$t('mysteryBox.pick')}</button
+            >
+          </div>
+        </div>
+      {:else}
+        <div class="op-field">
+          <label for="new-prize-extra">{$t('mysteryBox.extraParam')}</label>
+          <input id="new-prize-extra" bind:value={newPrize.extraParam} />
+          <small class="muted">{$t('mysteryBox.extraParamHint')}</small>
+        </div>
+      {/if}
+      <div class="op-field">
+        <label for="new-prize-weight">{$t('mysteryBox.weight')}</label>
+        <input id="new-prize-weight" type="number" min="1" bind:value={newPrize.weight} />
+        <small class="muted">{$t('mysteryBox.weightHint')}</small>
+      </div>
+      <div class="op-field">
+        <label><input type="checkbox" bind:checked={newPrize.enabled} /> {$t('mysteryBox.enabled')}</label>
+      </div>
+      <div class="op-actions">
+        <button type="button" onclick={stageCreatePrize}>{$t('mysteryBox.create')}</button>
+      </div>
+      {#if $ops.errors.createPrize}<p class="empty-state danger">{$ops.errors.createPrize}</p>{/if}
+      {#if $ops.results.createPrize}<OpResult result={$ops.results.createPrize} />{/if}
+    </div>
+  </Drawer>
+{/if}
+
+{#if editPrizeId !== null && editPrize}
+  <Drawer title={$t('mysteryBox.editPrize')} eyebrow={$t('mysteryBox.prizesHeading')} onclose={() => { editPrizeId = null; editPrize = null; }}>
+    <div class="catalog-card-detail">
+      <div class="op-field">
+        <label for={`edit-prize-pool-${editPrize.id}`}>{$t('mysteryBox.pool')}</label>
+        <select id={`edit-prize-pool-${editPrize.id}`} bind:value={editPrize.pool}>
+          <option value={POOL_BOX}>{$t('mysteryBox.poolBox')}</option>
+          <option value={POOL_TROPHY}>{$t('mysteryBox.poolTrophy')}</option>
+        </select>
+      </div>
+      {#if editPrize.pool === POOL_BOX}
+        <div class="op-field">
+          <label for={`edit-prize-color-${editPrize.id}`}>{$t('mysteryBox.color')}</label>
+          <select id={`edit-prize-color-${editPrize.id}`} bind:value={editPrize.color}>
+            <option value="">{$t('mysteryBox.colorAny')}</option>
+            {#each colors as color}
+              <option value={color}>{color}</option>
+            {/each}
+          </select>
+        </div>
+      {/if}
+      <div class="op-field">
+        <label for={`edit-prize-type-${editPrize.id}`}>{$t('mysteryBox.productType')}</label>
+        <select id={`edit-prize-type-${editPrize.id}`} bind:value={editPrize.productType}>
+          {#each productTypes as productType}
+            <option value={productType}>{productType}</option>
+          {/each}
+        </select>
+      </div>
+      {#if FURNITURE_TYPES.includes(editPrize.productType)}
+        <div class="op-field">
+          <label for={`edit-prize-furni-${editPrize.id}`}>{$t('mysteryBox.furnitureDefinitionId')}</label>
+          <div class="op-pick">
+            <input
+              id={`edit-prize-furni-${editPrize.id}`}
+              type="number"
+              min="1"
+              bind:value={editPrize.furnitureDefinitionId}
+            />
+            <button
+              type="button"
+              class="ghost-button"
+              onclick={() =>
+                (furniPicker = (item) =>
+                  (editPrize.furnitureDefinitionId = item.id))}
+              >{$t('mysteryBox.pick')}</button
+            >
+          </div>
+        </div>
+      {:else}
+        <div class="op-field">
+          <label for={`edit-prize-extra-${editPrize.id}`}>{$t('mysteryBox.extraParam')}</label>
+          <input id={`edit-prize-extra-${editPrize.id}`} bind:value={editPrize.extraParam} />
+          <small class="muted">{$t('mysteryBox.extraParamHint')}</small>
+        </div>
+      {/if}
+      <div class="op-field">
+        <label for={`edit-prize-weight-${editPrize.id}`}>{$t('mysteryBox.weight')}</label>
+        <input id={`edit-prize-weight-${editPrize.id}`} type="number" min="1" bind:value={editPrize.weight} />
+      </div>
+      <div class="op-field">
+        <label><input type="checkbox" bind:checked={editPrize.enabled} /> {$t('mysteryBox.enabled')}</label>
+      </div>
+      <div class="op-actions">
+        <button type="button" onclick={stageUpdatePrize}>{$t('mysteryBox.save')}</button>
+        <button type="button" class="ghost-button" onclick={() => { editPrizeId = null; editPrize = null; }}>
+          {$t('mysteryBox.cancel')}
+        </button>
+      </div>
+      {#if $ops.errors.updatePrize}<p class="empty-state danger">{$ops.errors.updatePrize}</p>{/if}
+    </div>
+  </Drawer>
 {/if}
 
 <ConfirmReasonModal

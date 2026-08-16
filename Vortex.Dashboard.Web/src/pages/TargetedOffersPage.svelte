@@ -21,6 +21,7 @@
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import Drawer from '../components/Drawer.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import OfferImageField from '../components/OfferImageField.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
@@ -422,86 +423,6 @@
       {/if}
     </div>
 
-    {#if newOfferOpen}
-      <div class="catalog-card-detail">
-        <div class="op-field">
-          <label for="new-offer-identifier">{$t('targetedOffers.identifierRequired')}</label>
-          <input id="new-offer-identifier" bind:value={newOffer.identifier} placeholder={$t('targetedOffers.identifierPlaceholder')} />
-        </div>
-        <div class="op-field">
-          <label for="new-offer-title">{$t('targetedOffers.offerTitle')}</label>
-          <input id="new-offer-title" bind:value={newOffer.title} />
-        </div>
-        <div class="op-field">
-          <label for="new-offer-type">{$t('targetedOffers.offerType')}</label>
-          <input id="new-offer-type" type="number" min="0" bind:value={newOffer.offerType} />
-        </div>
-        <div class="op-field">
-          <label for="new-offer-description">{$t('targetedOffers.descriptionLabel')}</label>
-          <textarea id="new-offer-description" rows="3" bind:value={newOffer.description}></textarea>
-        </div>
-        <div class="op-field">
-          <label for="new-offer-product-code">{$t('targetedOffers.productCode')}</label>
-          <input id="new-offer-product-code" bind:value={newOffer.productCode} />
-        </div>
-        <OfferImageField
-          id="new-offer-image"
-          label={$t('targetedOffers.imageUrl')}
-          {imageTemplate}
-          previewAlt={newOffer.title || newOffer.identifier}
-          images={offerImages}
-          bind:value={newOffer.imageUrl}
-        />
-        <OfferImageField
-          id="new-offer-icon"
-          label={$t('targetedOffers.iconImageUrl')}
-          {imageTemplate}
-          previewAlt={newOffer.title || newOffer.identifier}
-          images={offerImages}
-          bind:value={newOffer.iconImageUrl}
-        />
-        <div class="op-field">
-          <label for="new-offer-credits">{$t('targetedOffers.priceInCredits')}</label>
-          <input id="new-offer-credits" type="number" min="0" bind:value={newOffer.priceInCredits} />
-        </div>
-        <div class="op-field">
-          <label for="new-offer-points">{$t('targetedOffers.priceInActivityPoints')}</label>
-          <input id="new-offer-points" type="number" min="0" bind:value={newOffer.priceInActivityPoints} />
-        </div>
-        <div class="op-field">
-          <label for="new-offer-point-type">{$t('targetedOffers.activityPointType')}</label>
-          <select id="new-offer-point-type" bind:value={newOffer.activityPointType}>
-            <option value={0}>{$t('targetedOffers.activityPointTypeNone')}</option>
-            {#each activityPointCurrencyTypes as currency (currency.id)}
-              <option value={currency.activityPointType}>{currency.name}</option>
-            {/each}
-          </select>
-        </div>
-        <div class="op-field">
-          <label for="new-offer-limit">{$t('targetedOffers.purchaseLimit')}</label>
-          <input id="new-offer-limit" type="number" min="0" bind:value={newOffer.purchaseLimit} />
-        </div>
-        <div class="op-field">
-          <label for="new-offer-expires">{$t('targetedOffers.expiresAt')}</label>
-          <input id="new-offer-expires" type="datetime-local" bind:value={newOffer.expiresAt} />
-          <small class="muted">{$t('targetedOffers.expiresAtHint')}</small>
-        </div>
-        <div class="op-field">
-          <label for="new-offer-sort">{$t('targetedOffers.sortOrder')}</label>
-          <input id="new-offer-sort" type="number" bind:value={newOffer.sortOrder} />
-        </div>
-        <div class="op-field">
-          <label><input type="checkbox" bind:checked={newOffer.active} /> {$t('targetedOffers.activeLabel')}</label>
-        </div>
-        <div class="op-actions">
-          <button type="button" onclick={stageCreateOffer} disabled={$ops.busyKeys.createOffer}>{$t('targetedOffers.create')}</button>
-        </div>
-        {#if $ops.errors.createOffer}<p class="empty-state danger">{$ops.errors.createOffer}</p>{/if}
-        {#if $ops.results.createOffer}
-          <OpResult result={$ops.results.createOffer} />
-        {/if}
-      </div>
-    {/if}
 
     {#if loading}
       <p class="muted">{$t('common.loading')}</p>
@@ -543,91 +464,6 @@
               </span>
             </div>
 
-            {#if editOfferId === offer.id}
-              {#if editOfferForm}
-                <div class="catalog-card-detail">
-                  <div class="op-field">
-                    <label for={`edit-offer-identifier-${offer.id}`}>{$t('targetedOffers.identifierRequired')}</label>
-                    <input id={`edit-offer-identifier-${offer.id}`} bind:value={editOfferForm.identifier} />
-                  </div>
-                  <div class="op-field">
-                    <label for={`edit-offer-title-${offer.id}`}>{$t('targetedOffers.offerTitle')}</label>
-                    <input id={`edit-offer-title-${offer.id}`} bind:value={editOfferForm.title} />
-                  </div>
-                  <div class="op-field">
-                    <label for={`edit-offer-type-${offer.id}`}>{$t('targetedOffers.offerType')}</label>
-                    <input id={`edit-offer-type-${offer.id}`} type="number" min="0" bind:value={editOfferForm.offerType} />
-                  </div>
-                  <div class="op-field">
-                    <label for={`edit-offer-description-${offer.id}`}>{$t('targetedOffers.descriptionLabel')}</label>
-                    <textarea id={`edit-offer-description-${offer.id}`} rows="3" bind:value={editOfferForm.description}></textarea>
-                  </div>
-                  <div class="op-field">
-                    <label for={`edit-offer-product-code-${offer.id}`}>{$t('targetedOffers.productCode')}</label>
-                    <input id={`edit-offer-product-code-${offer.id}`} bind:value={editOfferForm.productCode} />
-                  </div>
-                  <OfferImageField
-                    id={`edit-offer-image-${offer.id}`}
-                    label={$t('targetedOffers.imageUrl')}
-                    {imageTemplate}
-                    previewAlt={editOfferForm.title || editOfferForm.identifier}
-                    images={offerImages}
-                    bind:value={editOfferForm.imageUrl}
-                  />
-                  <OfferImageField
-                    id={`edit-offer-icon-${offer.id}`}
-                    label={$t('targetedOffers.iconImageUrl')}
-                    {imageTemplate}
-                    previewAlt={editOfferForm.title || editOfferForm.identifier}
-                    images={offerImages}
-                    bind:value={editOfferForm.iconImageUrl}
-                  />
-                  <div class="op-field">
-                    <label for={`edit-offer-credits-${offer.id}`}>{$t('targetedOffers.priceInCredits')}</label>
-                    <input id={`edit-offer-credits-${offer.id}`} type="number" min="0" bind:value={editOfferForm.priceInCredits} />
-                  </div>
-                  <div class="op-field">
-                    <label for={`edit-offer-points-${offer.id}`}>{$t('targetedOffers.priceInActivityPoints')}</label>
-                    <input id={`edit-offer-points-${offer.id}`} type="number" min="0" bind:value={editOfferForm.priceInActivityPoints} />
-                  </div>
-                  <div class="op-field">
-                    <label for={`edit-offer-point-type-${offer.id}`}>{$t('targetedOffers.activityPointType')}</label>
-                    <select id={`edit-offer-point-type-${offer.id}`} bind:value={editOfferForm.activityPointType}>
-                      <option value={0}>{$t('targetedOffers.activityPointTypeNone')}</option>
-                      {#each activityPointCurrencyTypes as currency (currency.id)}
-                        <option value={currency.activityPointType}>{currency.name}</option>
-                      {/each}
-                    </select>
-                  </div>
-                  <div class="op-field">
-                    <label for={`edit-offer-limit-${offer.id}`}>{$t('targetedOffers.purchaseLimit')}</label>
-                    <input id={`edit-offer-limit-${offer.id}`} type="number" min="0" bind:value={editOfferForm.purchaseLimit} />
-                  </div>
-                  <div class="op-field">
-                    <label for={`edit-offer-expires-${offer.id}`}>{$t('targetedOffers.expiresAt')}</label>
-                    <input id={`edit-offer-expires-${offer.id}`} type="datetime-local" bind:value={editOfferForm.expiresAt} />
-                    <small class="muted">{$t('targetedOffers.expiresAtHint')}</small>
-                  </div>
-                  <div class="op-field">
-                    <label for={`edit-offer-sort-${offer.id}`}>{$t('targetedOffers.sortOrder')}</label>
-                    <input id={`edit-offer-sort-${offer.id}`} type="number" bind:value={editOfferForm.sortOrder} />
-                  </div>
-                  <div class="op-field">
-                    <label><input type="checkbox" bind:checked={editOfferForm.active} /> {$t('targetedOffers.activeLabel')}</label>
-                  </div>
-                  <div class="op-actions">
-                    <button type="button" onclick={stageUpdateOffer} disabled={$ops.busyKeys.updateOffer}>{$t('targetedOffers.save')}</button>
-                    <button class="ghost-button" type="button" onclick={() => { editOfferId = null; editOfferForm = null; }}>{$t('targetedOffers.cancel')}</button>
-                  </div>
-                  {#if $ops.errors.updateOffer}<p class="empty-state danger">{$ops.errors.updateOffer}</p>{/if}
-                  {#if $ops.results.updateOffer}
-                    <OpResult result={$ops.results.updateOffer} />
-                  {/if}
-                </div>
-              {:else if $ops.errors.updateOffer}
-                <div class="catalog-card-detail"><p class="empty-state danger">{$ops.errors.updateOffer}</p></div>
-              {/if}
-            {/if}
 
             {#if canManage}
               <div class="catalog-card-detail delete-bar">
@@ -653,29 +489,6 @@
                 {:else if offerDetailError}
                   <p class="empty-state danger">{offerDetailError}</p>
                 {:else if offerDetail}
-                  {#if newProductOpen}
-                    <div class="catalog-card-detail">
-                      <div class="op-field">
-                        <label for="new-product-code">{$t('targetedOffers.productCodeRequired')}</label>
-                        <input id="new-product-code" bind:value={newProduct.productCode} />
-                      </div>
-                      <div class="op-field">
-                        <label for="new-product-def">{$t('targetedOffers.furnitureDefIdOptional')}</label>
-                        <input id="new-product-def" type="number" min="0" bind:value={newProduct.furnitureDefinitionId} />
-                      </div>
-                      <div class="op-field">
-                        <label for="new-product-quantity">{$t('targetedOffers.quantity')}</label>
-                        <input id="new-product-quantity" type="number" min="1" bind:value={newProduct.quantity} />
-                      </div>
-                      <div class="op-actions">
-                        <button type="button" onclick={stageCreateProduct} disabled={$ops.busyKeys.createProduct}>{$t('targetedOffers.create')}</button>
-                      </div>
-                      {#if $ops.errors.createProduct}<p class="empty-state danger">{$ops.errors.createProduct}</p>{/if}
-                      {#if $ops.results.createProduct}
-                        <OpResult result={$ops.results.createProduct} />
-                      {/if}
-                    </div>
-                  {/if}
 
                   {#if offerDetail.products.length === 0}
                     <p class="empty-state">{$t('targetedOffers.noProducts')}</p>
@@ -705,30 +518,6 @@
                             {/if}
                           </div>
 
-                          {#if editProductId === product.id && editProductForm}
-                            <div class="catalog-card-detail">
-                              <div class="op-field">
-                                <label for={`edit-product-code-${product.id}`}>{$t('targetedOffers.productCodeRequired')}</label>
-                                <input id={`edit-product-code-${product.id}`} bind:value={editProductForm.productCode} />
-                              </div>
-                              <div class="op-field">
-                                <label for={`edit-product-def-${product.id}`}>{$t('targetedOffers.furnitureDefIdOptional')}</label>
-                                <input id={`edit-product-def-${product.id}`} type="number" min="0" bind:value={editProductForm.furnitureDefinitionId} />
-                              </div>
-                              <div class="op-field">
-                                <label for={`edit-product-qty-${product.id}`}>{$t('targetedOffers.quantity')}</label>
-                                <input id={`edit-product-qty-${product.id}`} type="number" min="1" bind:value={editProductForm.quantity} />
-                              </div>
-                              <div class="op-actions">
-                                <button type="button" onclick={stageUpdateProduct} disabled={$ops.busyKeys.updateProduct}>{$t('targetedOffers.save')}</button>
-                                <button class="ghost-button" type="button" onclick={() => { editProductId = null; editProductForm = null; }}>{$t('targetedOffers.cancel')}</button>
-                              </div>
-                              {#if $ops.errors.updateProduct}<p class="empty-state danger">{$ops.errors.updateProduct}</p>{/if}
-                              {#if $ops.results.updateProduct}
-                                <OpResult result={$ops.results.updateProduct} />
-                              {/if}
-                            </div>
-                          {/if}
 
                           {#if canManage}
                             <div class="catalog-card-detail delete-bar">
@@ -760,6 +549,230 @@
 {/if}
 
 <ConfirmStagedModal {ops} eyebrow={$t('targetedOffers.confirmEyebrow')} />
+
+{#if newOfferOpen}
+  <Drawer title={$t('targetedOffers.newOffer')} eyebrow={$t('targetedOffers.title')} onclose={() => { newOfferOpen = false; }}>
+    <div class="catalog-card-detail">
+      <div class="op-field">
+        <label for="new-offer-identifier">{$t('targetedOffers.identifierRequired')}</label>
+        <input id="new-offer-identifier" bind:value={newOffer.identifier} placeholder={$t('targetedOffers.identifierPlaceholder')} />
+      </div>
+      <div class="op-field">
+        <label for="new-offer-title">{$t('targetedOffers.offerTitle')}</label>
+        <input id="new-offer-title" bind:value={newOffer.title} />
+      </div>
+      <div class="op-field">
+        <label for="new-offer-type">{$t('targetedOffers.offerType')}</label>
+        <input id="new-offer-type" type="number" min="0" bind:value={newOffer.offerType} />
+      </div>
+      <div class="op-field">
+        <label for="new-offer-description">{$t('targetedOffers.descriptionLabel')}</label>
+        <textarea id="new-offer-description" rows="3" bind:value={newOffer.description}></textarea>
+      </div>
+      <div class="op-field">
+        <label for="new-offer-product-code">{$t('targetedOffers.productCode')}</label>
+        <input id="new-offer-product-code" bind:value={newOffer.productCode} />
+      </div>
+      <OfferImageField
+        id="new-offer-image"
+        label={$t('targetedOffers.imageUrl')}
+        {imageTemplate}
+        previewAlt={newOffer.title || newOffer.identifier}
+        images={offerImages}
+        bind:value={newOffer.imageUrl}
+      />
+      <OfferImageField
+        id="new-offer-icon"
+        label={$t('targetedOffers.iconImageUrl')}
+        {imageTemplate}
+        previewAlt={newOffer.title || newOffer.identifier}
+        images={offerImages}
+        bind:value={newOffer.iconImageUrl}
+      />
+      <div class="op-field">
+        <label for="new-offer-credits">{$t('targetedOffers.priceInCredits')}</label>
+        <input id="new-offer-credits" type="number" min="0" bind:value={newOffer.priceInCredits} />
+      </div>
+      <div class="op-field">
+        <label for="new-offer-points">{$t('targetedOffers.priceInActivityPoints')}</label>
+        <input id="new-offer-points" type="number" min="0" bind:value={newOffer.priceInActivityPoints} />
+      </div>
+      <div class="op-field">
+        <label for="new-offer-point-type">{$t('targetedOffers.activityPointType')}</label>
+        <select id="new-offer-point-type" bind:value={newOffer.activityPointType}>
+          <option value={0}>{$t('targetedOffers.activityPointTypeNone')}</option>
+          {#each activityPointCurrencyTypes as currency (currency.id)}
+            <option value={currency.activityPointType}>{currency.name}</option>
+          {/each}
+        </select>
+      </div>
+      <div class="op-field">
+        <label for="new-offer-limit">{$t('targetedOffers.purchaseLimit')}</label>
+        <input id="new-offer-limit" type="number" min="0" bind:value={newOffer.purchaseLimit} />
+      </div>
+      <div class="op-field">
+        <label for="new-offer-expires">{$t('targetedOffers.expiresAt')}</label>
+        <input id="new-offer-expires" type="datetime-local" bind:value={newOffer.expiresAt} />
+        <small class="muted">{$t('targetedOffers.expiresAtHint')}</small>
+      </div>
+      <div class="op-field">
+        <label for="new-offer-sort">{$t('targetedOffers.sortOrder')}</label>
+        <input id="new-offer-sort" type="number" bind:value={newOffer.sortOrder} />
+      </div>
+      <div class="op-field">
+        <label><input type="checkbox" bind:checked={newOffer.active} /> {$t('targetedOffers.activeLabel')}</label>
+      </div>
+      <div class="op-actions">
+        <button type="button" onclick={stageCreateOffer} disabled={$ops.busyKeys.createOffer}>{$t('targetedOffers.create')}</button>
+      </div>
+      {#if $ops.errors.createOffer}<p class="empty-state danger">{$ops.errors.createOffer}</p>{/if}
+      {#if $ops.results.createOffer}
+        <OpResult result={$ops.results.createOffer} />
+      {/if}
+    </div>
+  </Drawer>
+{/if}
+
+{#if editOfferId !== null}
+  <Drawer title={$t('targetedOffers.editOffer')} eyebrow={$t('targetedOffers.title')} onclose={() => { editOfferId = null; editOfferForm = null; }}>
+    {#if editOfferForm}
+      <div class="catalog-card-detail">
+        <div class="op-field">
+          <label for={`edit-offer-identifier-${editOfferForm.id}`}>{$t('targetedOffers.identifierRequired')}</label>
+          <input id={`edit-offer-identifier-${editOfferForm.id}`} bind:value={editOfferForm.identifier} />
+        </div>
+        <div class="op-field">
+          <label for={`edit-offer-title-${editOfferForm.id}`}>{$t('targetedOffers.offerTitle')}</label>
+          <input id={`edit-offer-title-${editOfferForm.id}`} bind:value={editOfferForm.title} />
+        </div>
+        <div class="op-field">
+          <label for={`edit-offer-type-${editOfferForm.id}`}>{$t('targetedOffers.offerType')}</label>
+          <input id={`edit-offer-type-${editOfferForm.id}`} type="number" min="0" bind:value={editOfferForm.offerType} />
+        </div>
+        <div class="op-field">
+          <label for={`edit-offer-description-${editOfferForm.id}`}>{$t('targetedOffers.descriptionLabel')}</label>
+          <textarea id={`edit-offer-description-${editOfferForm.id}`} rows="3" bind:value={editOfferForm.description}></textarea>
+        </div>
+        <div class="op-field">
+          <label for={`edit-offer-product-code-${editOfferForm.id}`}>{$t('targetedOffers.productCode')}</label>
+          <input id={`edit-offer-product-code-${editOfferForm.id}`} bind:value={editOfferForm.productCode} />
+        </div>
+        <OfferImageField
+          id={`edit-offer-image-${editOfferForm.id}`}
+          label={$t('targetedOffers.imageUrl')}
+          {imageTemplate}
+          previewAlt={editOfferForm.title || editOfferForm.identifier}
+          images={offerImages}
+          bind:value={editOfferForm.imageUrl}
+        />
+        <OfferImageField
+          id={`edit-offer-icon-${editOfferForm.id}`}
+          label={$t('targetedOffers.iconImageUrl')}
+          {imageTemplate}
+          previewAlt={editOfferForm.title || editOfferForm.identifier}
+          images={offerImages}
+          bind:value={editOfferForm.iconImageUrl}
+        />
+        <div class="op-field">
+          <label for={`edit-offer-credits-${editOfferForm.id}`}>{$t('targetedOffers.priceInCredits')}</label>
+          <input id={`edit-offer-credits-${editOfferForm.id}`} type="number" min="0" bind:value={editOfferForm.priceInCredits} />
+        </div>
+        <div class="op-field">
+          <label for={`edit-offer-points-${editOfferForm.id}`}>{$t('targetedOffers.priceInActivityPoints')}</label>
+          <input id={`edit-offer-points-${editOfferForm.id}`} type="number" min="0" bind:value={editOfferForm.priceInActivityPoints} />
+        </div>
+        <div class="op-field">
+          <label for={`edit-offer-point-type-${editOfferForm.id}`}>{$t('targetedOffers.activityPointType')}</label>
+          <select id={`edit-offer-point-type-${editOfferForm.id}`} bind:value={editOfferForm.activityPointType}>
+            <option value={0}>{$t('targetedOffers.activityPointTypeNone')}</option>
+            {#each activityPointCurrencyTypes as currency (currency.id)}
+              <option value={currency.activityPointType}>{currency.name}</option>
+            {/each}
+          </select>
+        </div>
+        <div class="op-field">
+          <label for={`edit-offer-limit-${editOfferForm.id}`}>{$t('targetedOffers.purchaseLimit')}</label>
+          <input id={`edit-offer-limit-${editOfferForm.id}`} type="number" min="0" bind:value={editOfferForm.purchaseLimit} />
+        </div>
+        <div class="op-field">
+          <label for={`edit-offer-expires-${editOfferForm.id}`}>{$t('targetedOffers.expiresAt')}</label>
+          <input id={`edit-offer-expires-${editOfferForm.id}`} type="datetime-local" bind:value={editOfferForm.expiresAt} />
+          <small class="muted">{$t('targetedOffers.expiresAtHint')}</small>
+        </div>
+        <div class="op-field">
+          <label for={`edit-offer-sort-${editOfferForm.id}`}>{$t('targetedOffers.sortOrder')}</label>
+          <input id={`edit-offer-sort-${editOfferForm.id}`} type="number" bind:value={editOfferForm.sortOrder} />
+        </div>
+        <div class="op-field">
+          <label><input type="checkbox" bind:checked={editOfferForm.active} /> {$t('targetedOffers.activeLabel')}</label>
+        </div>
+        <div class="op-actions">
+          <button type="button" onclick={stageUpdateOffer} disabled={$ops.busyKeys.updateOffer}>{$t('targetedOffers.save')}</button>
+          <button class="ghost-button" type="button" onclick={() => { editOfferId = null; editOfferForm = null; }}>{$t('targetedOffers.cancel')}</button>
+        </div>
+        {#if $ops.errors.updateOffer}<p class="empty-state danger">{$ops.errors.updateOffer}</p>{/if}
+        {#if $ops.results.updateOffer}
+          <OpResult result={$ops.results.updateOffer} />
+        {/if}
+      </div>
+    {:else if $ops.errors.updateOffer}
+      <div class="catalog-card-detail"><p class="empty-state danger">{$ops.errors.updateOffer}</p></div>
+    {/if}
+  </Drawer>
+{/if}
+
+{#if newProductOpen}
+  <Drawer title={$t('targetedOffers.newProduct')} eyebrow={$t('targetedOffers.title')} onclose={() => { newProductOpen = false; }}>
+    <div class="catalog-card-detail">
+      <div class="op-field">
+        <label for="new-product-code">{$t('targetedOffers.productCodeRequired')}</label>
+        <input id="new-product-code" bind:value={newProduct.productCode} />
+      </div>
+      <div class="op-field">
+        <label for="new-product-def">{$t('targetedOffers.furnitureDefIdOptional')}</label>
+        <input id="new-product-def" type="number" min="0" bind:value={newProduct.furnitureDefinitionId} />
+      </div>
+      <div class="op-field">
+        <label for="new-product-quantity">{$t('targetedOffers.quantity')}</label>
+        <input id="new-product-quantity" type="number" min="1" bind:value={newProduct.quantity} />
+      </div>
+      <div class="op-actions">
+        <button type="button" onclick={stageCreateProduct} disabled={$ops.busyKeys.createProduct}>{$t('targetedOffers.create')}</button>
+      </div>
+      {#if $ops.errors.createProduct}<p class="empty-state danger">{$ops.errors.createProduct}</p>{/if}
+      {#if $ops.results.createProduct}
+        <OpResult result={$ops.results.createProduct} />
+      {/if}
+    </div>
+  </Drawer>
+{/if}
+
+{#if editProductId !== null}
+  <Drawer title={$t('targetedOffers.editProduct')} eyebrow={$t('targetedOffers.title')} onclose={() => { editProductId = null; editProductForm = null; }}>
+    <div class="catalog-card-detail">
+      <div class="op-field">
+        <label for={`edit-product-code-${editProductForm.id}`}>{$t('targetedOffers.productCodeRequired')}</label>
+        <input id={`edit-product-code-${editProductForm.id}`} bind:value={editProductForm.productCode} />
+      </div>
+      <div class="op-field">
+        <label for={`edit-product-def-${editProductForm.id}`}>{$t('targetedOffers.furnitureDefIdOptional')}</label>
+        <input id={`edit-product-def-${editProductForm.id}`} type="number" min="0" bind:value={editProductForm.furnitureDefinitionId} />
+      </div>
+      <div class="op-field">
+        <label for={`edit-product-qty-${editProductForm.id}`}>{$t('targetedOffers.quantity')}</label>
+        <input id={`edit-product-qty-${editProductForm.id}`} type="number" min="1" bind:value={editProductForm.quantity} />
+      </div>
+      <div class="op-actions">
+        <button type="button" onclick={stageUpdateProduct} disabled={$ops.busyKeys.updateProduct}>{$t('targetedOffers.save')}</button>
+        <button class="ghost-button" type="button" onclick={() => { editProductId = null; editProductForm = null; }}>{$t('targetedOffers.cancel')}</button>
+      </div>
+      {#if $ops.errors.updateProduct}<p class="empty-state danger">{$ops.errors.updateProduct}</p>{/if}
+      {#if $ops.results.updateProduct}
+        <OpResult result={$ops.results.updateProduct} />
+      {/if}
+    </div>
+  </Drawer>
+{/if}
 
 <ConfirmReasonModal
   open={Boolean($deleteOps.pending)}
