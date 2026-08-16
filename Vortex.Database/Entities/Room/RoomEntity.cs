@@ -56,17 +56,20 @@ public class RoomEntity : VortexEntity
     [DefaultValue(25)]
     public required int PlayersMax { get; set; }
 
+    // Decoration ids are opaque strings on the wire, not numbers. Landscapes in particular are
+    // dotted pairs -- "4.1" and "4.10" are two different backdrops that a double collapses onto the
+    // same value, and a float round-trip would also drop the trailing zero the client expects back.
     [Column("paint_wall")]
-    [DefaultValue(0.0d)]
-    public required double PaintWall { get; set; }
+    [MaxLength(512)]
+    public string? PaintWall { get; set; }
 
     [Column("paint_floor")]
-    [DefaultValue(0.0d)]
-    public required double PaintFloor { get; set; }
+    [MaxLength(512)]
+    public string? PaintFloor { get; set; }
 
     [Column("paint_landscape")]
-    [DefaultValue(0.0d)]
-    public required double PaintLandscape { get; set; }
+    [MaxLength(512)]
+    public string? PaintLandscape { get; set; }
 
     [Column("wall_height")]
     [DefaultValue(-1)]

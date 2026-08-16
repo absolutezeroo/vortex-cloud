@@ -60,9 +60,8 @@ internal sealed partial class RoomService
             UsersNow = 0,
             PlayersMax = maxPlayers,
             TradeType = tradeType,
-            PaintWall = 0,
-            PaintFloor = 0,
-            PaintLandscape = 0,
+            // Decoration ids stay null until the owner applies one -- the grain reports the
+            // client's default surface ("0") for an unset value.
             WallHeight = -1,
             HideWalls = false,
             ThicknessWall = RoomThicknessType.Normal,

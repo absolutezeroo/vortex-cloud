@@ -218,9 +218,9 @@ public sealed class OfficialRoomsWireTests
             GroupId = null,
             GroupName = null,
             GroupBadge = null,
-            PaintWall = 0,
-            PaintFloor = 0,
-            PaintLandscape = 0,
+            PaintWall = string.Empty,
+            PaintFloor = string.Empty,
+            PaintLandscape = string.Empty,
             LastUpdatedUtc = DateTime.UnixEpoch,
         };
 

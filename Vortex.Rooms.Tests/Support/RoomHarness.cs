@@ -120,9 +120,9 @@ internal sealed class RoomHarness
             AllowBlocking = false,
             AllowPets = true,
             AllowPetsEat = false,
-            PaintWall = 0,
-            PaintFloor = 0,
-            PaintLandscape = 0,
+            PaintWall = string.Empty,
+            PaintFloor = string.Empty,
+            PaintLandscape = string.Empty,
             StaffPick = false,
             Password = string.Empty,
             ModSettings = new ModSettingsSnapshot

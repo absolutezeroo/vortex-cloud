@@ -429,9 +429,9 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                 GroupId = entity.GroupEntityId,
                 GroupName = entity.GroupEntity?.Name,
                 GroupBadge = entity.GroupEntity?.Badge,
-                PaintWall = entity.PaintWall,
-                PaintFloor = entity.PaintFloor,
-                PaintLandscape = entity.PaintLandscape,
+                PaintWall = entity.PaintWall ?? string.Empty,
+                PaintFloor = entity.PaintFloor ?? string.Empty,
+                PaintLandscape = entity.PaintLandscape ?? string.Empty,
                 Password = entity.Password ?? string.Empty,
                 ModSettings = new ModSettingsSnapshot
                 {
@@ -454,14 +454,12 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                 LastUpdatedUtc = DateTime.UtcNow,
             };
 
-            _state.RoomProperties[RoomPropertyType.WALLPAPER] = entity.PaintWall.ToString(
-                CultureInfo.InvariantCulture
+            _state.RoomProperties[RoomPropertyType.WALLPAPER] = DecorationOrDefault(
+                entity.PaintWall
             );
-            _state.RoomProperties[RoomPropertyType.FLOOR] = entity.PaintFloor.ToString(
-                CultureInfo.InvariantCulture
-            );
-            _state.RoomProperties[RoomPropertyType.LANDSCAPE] = entity.PaintLandscape.ToString(
-                CultureInfo.InvariantCulture
+            _state.RoomProperties[RoomPropertyType.FLOOR] = DecorationOrDefault(entity.PaintFloor);
+            _state.RoomProperties[RoomPropertyType.LANDSCAPE] = DecorationOrDefault(
+                entity.PaintLandscape
             );
             _state.RoomProperties[RoomPropertyType.LANDSCAPEANIM] = "0";
 
@@ -486,6 +484,13 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
             await dbCtx.DisposeAsync();
         }
     }
+
+    /// <summary>
+    /// A room property the client can read but that no decoration has been applied to yet. The
+    /// client treats "0" as "the default surface"; an empty string would render as a missing asset.
+    /// </summary>
+    private static string DecorationOrDefault(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? "0" : value;
 
     /// <summary>
     /// Loads the owning guild's membership roster and decoration policy into live state so

@@ -83,9 +83,9 @@ public sealed class NavigatorGuildBadgeWireTests
             GroupId = groupId,
             GroupName = groupName,
             GroupBadge = groupBadge,
-            PaintWall = 0,
-            PaintFloor = 0,
-            PaintLandscape = 0,
+            PaintWall = string.Empty,
+            PaintFloor = string.Empty,
+            PaintLandscape = string.Empty,
             LastUpdatedUtc = DateTime.UnixEpoch,
         };
 

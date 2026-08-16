@@ -808,9 +808,9 @@ file static class RoomQueryExtensions
                 GroupId = x.GroupEntityId,
                 GroupName = x.GroupEntity != null ? x.GroupEntity.Name : null,
                 GroupBadge = x.GroupEntity != null ? x.GroupEntity.Badge : null,
-                PaintWall = x.PaintWall,
-                PaintFloor = x.PaintFloor,
-                PaintLandscape = x.PaintLandscape,
+                PaintWall = x.PaintWall ?? string.Empty,
+                PaintFloor = x.PaintFloor ?? string.Empty,
+                PaintLandscape = x.PaintLandscape ?? string.Empty,
                 LastUpdatedUtc = DateTime.UtcNow,
             })
             .ToListAsync(ct);

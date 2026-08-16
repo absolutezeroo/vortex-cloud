@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Reflection;
@@ -162,9 +162,9 @@ public sealed class GroupDirectoryGrainCreationTests
             RoomModelEntityId = model.Id,
             UsersNow = 0,
             PlayersMax = 25,
-            PaintWall = 0,
-            PaintFloor = 0,
-            PaintLandscape = 0,
+            PaintWall = string.Empty,
+            PaintFloor = string.Empty,
+            PaintLandscape = string.Empty,
             WallHeight = -1,
             HideWalls = false,
             ThicknessWall = RoomThicknessType.Normal,

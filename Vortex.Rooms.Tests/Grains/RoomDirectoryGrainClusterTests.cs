@@ -50,9 +50,9 @@ public sealed class RoomDirectoryGrainClusterTests(VortexClusterFixture cluster)
             AllowBlocking = false,
             AllowPets = false,
             AllowPetsEat = false,
-            PaintWall = 0.0,
-            PaintFloor = 0.0,
-            PaintLandscape = 0.0,
+            PaintWall = string.Empty,
+            PaintFloor = string.Empty,
+            PaintLandscape = string.Empty,
         };
 
         await grain.UpsertActiveRoomAsync(snapshot).ConfigureAwait(true);
@@ -90,9 +90,9 @@ public sealed class RoomDirectoryGrainClusterTests(VortexClusterFixture cluster)
             AllowBlocking = false,
             AllowPets = false,
             AllowPetsEat = false,
-            PaintWall = 0.0,
-            PaintFloor = 0.0,
-            PaintLandscape = 0.0,
+            PaintWall = string.Empty,
+            PaintFloor = string.Empty,
+            PaintLandscape = string.Empty,
         };
 
         await grain.UpsertActiveRoomAsync(snapshot).ConfigureAwait(true);

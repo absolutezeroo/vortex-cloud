@@ -47,13 +47,13 @@ public record RoomInfoSnapshot : RoomSummarySnapshot
     public string? GroupBadge { get; init; }
 
     [Id(13)]
-    public required double PaintWall { get; init; }
+    public required string PaintWall { get; init; } = string.Empty;
 
     [Id(14)]
-    public required double PaintFloor { get; init; }
+    public required string PaintFloor { get; init; } = string.Empty;
 
     [Id(15)]
-    public required double PaintLandscape { get; init; }
+    public required string PaintLandscape { get; init; } = string.Empty;
 
     [Id(16)]
     public required bool StaffPick { get; init; } = false;

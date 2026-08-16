@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
@@ -38,7 +37,7 @@ public class RequestRoomPropertySetMessageHandler(IGrainFactory grainFactory)
                 new RoomPropertyMessageComposer
                 {
                     Key = RoomPropertyType.WALLPAPER,
-                    Value = snapshot.PaintWall.ToString(CultureInfo.InvariantCulture),
+                    Value = DecorationOrDefault(snapshot.PaintWall),
                 }
             )
             .ConfigureAwait(false);
@@ -47,7 +46,7 @@ public class RequestRoomPropertySetMessageHandler(IGrainFactory grainFactory)
                 new RoomPropertyMessageComposer
                 {
                     Key = RoomPropertyType.FLOOR,
-                    Value = snapshot.PaintFloor.ToString(CultureInfo.InvariantCulture),
+                    Value = DecorationOrDefault(snapshot.PaintFloor),
                 }
             )
             .ConfigureAwait(false);
@@ -56,7 +55,7 @@ public class RequestRoomPropertySetMessageHandler(IGrainFactory grainFactory)
                 new RoomPropertyMessageComposer
                 {
                     Key = RoomPropertyType.LANDSCAPE,
-                    Value = snapshot.PaintLandscape.ToString(CultureInfo.InvariantCulture),
+                    Value = DecorationOrDefault(snapshot.PaintLandscape),
                 }
             )
             .ConfigureAwait(false);
@@ -72,4 +71,9 @@ public class RequestRoomPropertySetMessageHandler(IGrainFactory grainFactory)
             )
             .ConfigureAwait(false);
     }
+
+    /// <summary>A room that has never been decorated stores no id; "0" is the client's default
+    /// surface, and an empty string would render as a missing asset.</summary>
+    private static string DecorationOrDefault(string value) =>
+        string.IsNullOrWhiteSpace(value) ? "0" : value;
 }
