@@ -184,6 +184,30 @@ public sealed class RoomModerationSystem(RoomGrain roomGrain)
             return false;
         }
 
+        return await MuteUserInternalAsync(actorCtx.PlayerId, targetPlayerId, durationSeconds, ct)
+            .ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// Mutes on a wired action's behalf. Like the wired kick there is no actor to authorize: the
+    /// room's own wiring is doing it, so the who-can-mute setting has nobody to check against.
+    /// </summary>
+    public Task<bool> MuteUserFromWiredAsync(
+        PlayerId targetPlayerId,
+        int durationSeconds,
+        CancellationToken ct
+    ) =>
+        targetPlayerId <= 0 || durationSeconds <= 0
+            ? Task.FromResult(false)
+            : MuteUserInternalAsync(PlayerId.Invalid, targetPlayerId, durationSeconds, ct);
+
+    private async Task<bool> MuteUserInternalAsync(
+        PlayerId actorPlayerId,
+        PlayerId targetPlayerId,
+        int durationSeconds,
+        CancellationToken ct
+    )
+    {
         DateTime expiresUtc = DateTime.UtcNow.AddSeconds(durationSeconds);
 
         try
@@ -199,7 +223,7 @@ public sealed class RoomModerationSystem(RoomGrain roomGrain)
             await _roomGrain
                 ._events.PublishAsync(
                     new PlayerMutedInRoomEvent(
-                        actorCtx.PlayerId,
+                        actorPlayerId,
                         targetPlayerId,
                         _roomGrain._state.RoomId.Value,
                         durationSeconds

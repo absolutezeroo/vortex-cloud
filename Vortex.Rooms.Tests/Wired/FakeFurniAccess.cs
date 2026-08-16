@@ -90,4 +90,17 @@ internal sealed class FakeFurniAccess : IRoomFurniAccess
 
     public Task<bool> KickUserFromWiredAsync(PlayerId targetPlayerId, CancellationToken ct) =>
         Task.FromResult(false);
+
+    public List<(PlayerId Target, int DurationSeconds)> Muted { get; } = [];
+
+    public Task<bool> MuteUserFromWiredAsync(
+        PlayerId targetPlayerId,
+        int durationSeconds,
+        CancellationToken ct
+    )
+    {
+        Muted.Add((targetPlayerId, durationSeconds));
+
+        return Task.FromResult(true);
+    }
 }

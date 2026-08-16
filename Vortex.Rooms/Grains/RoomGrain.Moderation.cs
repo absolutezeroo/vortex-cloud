@@ -19,6 +19,12 @@ public sealed partial class RoomGrain
     public Task<bool> KickUserFromWiredAsync(PlayerId targetPlayerId, CancellationToken ct) =>
         ModerationSystem.KickUserFromWiredAsync(targetPlayerId, ct);
 
+    public Task<bool> MuteUserFromWiredAsync(
+        PlayerId targetPlayerId,
+        int durationSeconds,
+        CancellationToken ct
+    ) => ModerationSystem.MuteUserFromWiredAsync(targetPlayerId, durationSeconds, ct);
+
     public Task<bool> MuteUserAsync(
         ActionContext actorCtx,
         PlayerId targetPlayerId,

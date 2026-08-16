@@ -212,6 +212,12 @@ public sealed partial class RoomGrain
         CancellationToken ct
     ) => KickUserFromWiredAsync(targetPlayerId, ct);
 
+    Task<bool> IRoomFurniAccess.MuteUserFromWiredAsync(
+        PlayerId targetPlayerId,
+        int durationSeconds,
+        CancellationToken ct
+    ) => MuteUserFromWiredAsync(targetPlayerId, durationSeconds, ct);
+
     Task IRoomFurniAccess.EnsureGuildRosterAsync(int groupId, CancellationToken ct) =>
         EnsureGuildRosterAsync(groupId, ct);
 

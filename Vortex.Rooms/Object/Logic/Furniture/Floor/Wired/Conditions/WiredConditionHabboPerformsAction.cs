@@ -9,6 +9,7 @@ using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
 using Vortex.Primitives.Rooms.Wired;
+using Vortex.Rooms.Wired;
 using Vortex.Rooms.Wired.Rules;
 
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Conditions;
@@ -42,16 +43,7 @@ public class WiredConditionHabboPerformsAction(
             && avatar is IRoomPlayer player
         )
         {
-            result = _wiredData.GetIntParam<int>(0) switch
-            {
-                0 => player.HasStatus(AvatarStatusType.Wave),
-                6 => player.HasStatus(AvatarStatusType.Sit),
-                7 => !player.HasStatus(AvatarStatusType.Sit, AvatarStatusType.Lay),
-                8 => player.HasStatus(AvatarStatusType.Lay),
-                10 => player.HasStatus(AvatarStatusType.Sign),
-                11 => player.DanceType != AvatarDanceType.None,
-                _ => false,
-            };
+            result = WiredUserActionMatcher.Matches(_wiredData.GetIntParam<int>(0), player);
         }
 
         return IsNegative() ? !result : result;

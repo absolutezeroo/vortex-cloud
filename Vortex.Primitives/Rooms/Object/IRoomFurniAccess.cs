@@ -45,6 +45,14 @@ public interface IRoomFurniAccess
     /// is no actor to authorize, the room's own wiring is doing it.</summary>
     Task<bool> KickUserFromWiredAsync(PlayerId targetPlayerId, CancellationToken ct);
 
+    /// <summary>Mutes a player on a wired action's behalf, for the same reason
+    /// <see cref="KickUserFromWiredAsync"/> exists: there is no actor to authorize.</summary>
+    Task<bool> MuteUserFromWiredAsync(
+        PlayerId targetPlayerId,
+        int durationSeconds,
+        CancellationToken ct
+    );
+
     /// <summary>
     /// Loads a guild's member roster into the room so <see cref="IsGuildMember"/> can answer without
     /// awaiting. Cheap to call repeatedly: the roster is cached for a short while, and the room's own
