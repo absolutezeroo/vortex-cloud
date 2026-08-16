@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
+using Vortex.Primitives.Players.Avatar;
 
 namespace Vortex.Dashboard.API.Api;
 
@@ -436,6 +437,97 @@ internal sealed partial class DashboardApiService
                     .CountAsync(ct)
                     .ConfigureAwait(false);
 
+                // Wearable avatars, and who holds a copy. Both halves are listed together because
+                // the model on its own says nothing useful — an avatar nobody was given is an
+                // avatar that does not exist as far as the hotel is concerned.
+                var avatarRows = await db
+                    .NftAvatars.AsNoTracking()
+                    .OrderBy(a => a.SortOrder)
+                    .ThenBy(a => a.Id)
+                    .Select(a => new
+                    {
+                        a.Id,
+                        a.AvatarCode,
+                        a.Name,
+                        a.Figure,
+                        a.Gender,
+                        a.ContractKey,
+                        a.EditionSize,
+                        a.Enabled,
+                        a.SortOrder,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                var copyRows = await db
+                    .PlayerNftAvatars.AsNoTracking()
+                    .Where(owned => owned.DeletedAt == null)
+                    .OrderBy(owned => owned.NftAvatarEntityId)
+                    .ThenBy(owned => owned.SerialNumber)
+                    .Select(owned => new
+                    {
+                        owned.Id,
+                        avatarId = owned.NftAvatarEntityId,
+                        owned.PlayerEntityId,
+                        owned.SerialNumber,
+                        owned.GrantNote,
+                        owned.CreatedAt,
+                    })
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                Dictionary<int, string> holderNames = await LoadPlayerNamesAsync(
+                        db,
+                        NormalizeIds(copyRows.Select(c => (int?)c.PlayerEntityId)),
+                        ct
+                    )
+                    .ConfigureAwait(false);
+
+                HashSet<int> wornCopyIds = new(
+                    await db
+                        .PlayerNftOutfits.AsNoTracking()
+                        .Where(row => row.DeletedAt == null)
+                        .Select(row => row.PlayerNftAvatarEntityId)
+                        .ToListAsync(ct)
+                        .ConfigureAwait(false)
+                );
+
+                var nftAvatars = avatarRows
+                    .Select(a => new
+                    {
+                        a.Id,
+                        a.AvatarCode,
+                        a.Name,
+                        a.Figure,
+                        a.Gender,
+                        a.ContractKey,
+                        a.EditionSize,
+                        a.Enabled,
+                        a.SortOrder,
+                        grantedCount = copyRows.Count(c => c.avatarId == a.Id),
+                        exhausted = a.EditionSize > 0
+                            && copyRows.Count(c => c.avatarId == a.Id) >= a.EditionSize,
+                        // The caption the player reads under the tile is built from this string, and
+                        // the client has no branch for one it does not know: it prints the literal
+                        // word "null" instead of a collection name.
+                        knownCollection = NftAvatarCollection.IsKnown(a.ContractKey),
+                        avatarImageUrl = _assetUrls.AvatarImage(a.Figure),
+                        holders = copyRows
+                            .Where(c => c.avatarId == a.Id)
+                            .Select(c => new
+                            {
+                                c.Id,
+                                playerId = c.PlayerEntityId,
+                                playerName = ResolvePlayerName(holderNames, c.PlayerEntityId),
+                                c.SerialNumber,
+                                c.GrantNote,
+                                grantedAt = c.CreatedAt,
+                                worn = wornCopyIds.Contains(c.Id),
+                            })
+                            .ToList(),
+                    })
+                    .ToList();
+
                 return new
                 {
                     totals = new
@@ -453,8 +545,11 @@ internal sealed partial class DashboardApiService
                         mintableTypesOpen = mintableTypes.Count(t => t.open && t.resolved),
                         mintedRelics = mintedTotal,
                         stampsHeld,
+                        nftAvatars = nftAvatars.Count,
+                        nftAvatarsGranted = nftAvatars.Sum(a => a.grantedCount),
                     },
                     collections = collectionItems,
+                    nftAvatars,
                     storeOffers,
                     mintableTypes,
                     tokenOffers,

@@ -31,6 +31,12 @@ namespace Vortex.PacketHandlers.Register;
 /// figuredata ever disagree, the symptom is players unable to change clothes at all, and waiting for
 /// a rebuild to undo that would be the wrong trade.
 /// </para>
+/// <para>
+/// This is also how a whole-avatar costume comes off. The editor sends this packet when the look was
+/// its own rather than one of the NFT tab's avatars, and sends nothing else to say so — so a saved
+/// look is the signal, and the worn avatar is dropped here. Nothing is restored: the figure the
+/// player just chose <em>is</em> what they want to look like.
+/// </para>
 /// </remarks>
 public class UpdateFigureDataMessageHandler(
     IGrainFactory grainFactory,
@@ -80,6 +86,11 @@ public class UpdateFigureDataMessageHandler(
                 AvatarGenderTypeExtensions.FromLegacyString(message.Gender),
                 ct
             )
+            .ConfigureAwait(false);
+
+        await _grainFactory
+            .GetPlayerNftWardrobeGrain(new PlayerId(ctx.PlayerId))
+            .RemoveWornAsync(ct)
             .ConfigureAwait(false);
     }
 

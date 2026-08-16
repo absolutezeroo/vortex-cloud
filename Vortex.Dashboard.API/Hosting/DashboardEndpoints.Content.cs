@@ -189,6 +189,43 @@ internal static partial class DashboardEndpoints
             (ops, body, actor, ct) => ops.DeleteRentableTermsAsync(body, actor, ct),
             body => body.TermsId > 0
         );
+        Map<NftAvatarRequest>(
+            app,
+            "/nft-avatars",
+            (ops, body, actor, ct) => ops.CreateNftAvatarAsync(body, actor, ct),
+            body =>
+                !string.IsNullOrWhiteSpace(body.AvatarCode)
+                && !string.IsNullOrWhiteSpace(body.Figure)
+                && body.EditionSize >= 0
+        );
+        Map<UpdateNftAvatarRequest>(
+            app,
+            "/nft-avatars/update",
+            (ops, body, actor, ct) => ops.UpdateNftAvatarAsync(body, actor, ct),
+            body =>
+                body.AvatarId > 0
+                && !string.IsNullOrWhiteSpace(body.AvatarCode)
+                && !string.IsNullOrWhiteSpace(body.Figure)
+                && body.EditionSize >= 0
+        );
+        Map<DeleteNftAvatarRequest>(
+            app,
+            "/nft-avatars/delete",
+            (ops, body, actor, ct) => ops.DeleteNftAvatarAsync(body, actor, ct),
+            body => body.AvatarId > 0
+        );
+        Map<NftAvatarGrantRequest>(
+            app,
+            "/nft-avatars/grant",
+            (ops, body, actor, ct) => ops.GrantNftAvatarAsync(body, actor, ct),
+            body => body.AvatarId > 0 && body.PlayerId > 0
+        );
+        Map<NftAvatarRevokeRequest>(
+            app,
+            "/nft-avatars/revoke",
+            (ops, body, actor, ct) => ops.RevokeNftAvatarAsync(body, actor, ct),
+            body => body.CopyId > 0
+        );
         Map<BadgeGrantRequest>(
             app,
             "/badges/grant",

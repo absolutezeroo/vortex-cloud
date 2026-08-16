@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Nft;
 
 internal class SaveUserNftWardrobeMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new SaveUserNftWardrobeMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new SaveUserNftWardrobeMessage { CopyId = packet.PopString() };
 }

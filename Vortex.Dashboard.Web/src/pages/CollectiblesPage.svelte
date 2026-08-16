@@ -23,7 +23,7 @@
   import PickerModal from '../components/PickerModal.svelte';
   import StatCard from '../components/StatCard.svelte';
   import Tabs from '../components/Tabs.svelte';
-  import { Gem, Boxes, TriangleAlert, Trophy, Store, Gift, Hammer, Ticket, Sparkles } from '@lucide/svelte';
+  import { Gem, Boxes, TriangleAlert, Trophy, Store, Gift, Hammer, Ticket, Sparkles, Shirt } from '@lucide/svelte';
   import { t } from '../lib/i18n.js';
 
   // Three jobs on one page -- the collections, the shop and the collector standings -- and stacking
@@ -154,6 +154,44 @@
 
   let tokenOfferForm = emptyTokenOffer();
 
+  // The three the client knows. It switches on this exact string to pick the caption and the tile
+  // colours, and has no branch for anything else -- an unknown one prints the word "null" above the
+  // avatar, so the field is a list rather than a text box.
+  const COLLECTION_OPTIONS = [
+    { value: 'habbo:avatar', key: 'collectibles.collectionAvatar' },
+    { value: 'habbo:clothes', key: 'collectibles.collectionClothes' },
+    { value: 'habbo:avatar_genesis', key: 'collectibles.collectionGenesis' },
+  ];
+
+  const emptyAvatar = () => ({
+    id: 0,
+    avatarCode: '',
+    name: '',
+    figure: '',
+    gender: 'M',
+    contractKey: 'habbo:avatar',
+    editionSize: 0,
+    enabled: true,
+    sortOrder: 0,
+  });
+
+  let avatarForm = emptyAvatar();
+
+  // Who is being given a copy, and what for. Kept beside the avatar it belongs to rather than in one
+  // form at the bottom: the note is about this avatar, and an admin handing out prizes at an event
+  // is looking at the row, not at a form.
+  let grantAvatarId = 0;
+  let grantForm = { playerId: '', playerName: '', note: '' };
+
+  const startGrant = (avatar) => {
+    grantAvatarId = avatar.id;
+    grantForm = { playerId: '', playerName: '', note: '' };
+  };
+
+  const editAvatar = (row) => {
+    avatarForm = { ...row };
+  };
+
   $: mintableIconUrl =
     (data?.mintableTypes || []).find((t) => t.productCode === mintableForm.productCode)?.iconUrl ??
     null;
@@ -263,6 +301,7 @@
       { id: 'stamps', label: $t('collectibles.tabStamps'), icon: Ticket, count: (data.tokenOffers || []).length },
       { id: 'relics', label: $t('collectibles.tabRelics'), icon: Sparkles, count: (data.assets || []).length },
       { id: 'claims', label: $t('collectibles.tabClaims'), icon: Gift, count: (data.claims || []).length },
+      { id: 'avatars', label: $t('collectibles.tabAvatars'), icon: Shirt, count: (data.nftAvatars || []).length },
       { id: 'collectors', label: $t('collectibles.tabCollectors'), icon: Trophy, count: (data.topCollectors || []).length },
     ]}
   />
@@ -1253,6 +1292,272 @@
   </section>
   {/if}
 
+  {#if tab === 'avatars'}
+  <section class="panel" style="margin-top: 12px;">
+    <div class="panel-head"><h2>{$t('collectibles.avatarsTitle')}</h2></div>
+    <p class="muted">{$t('collectibles.avatarsDescription')}</p>
+
+    {#if (data.nftAvatars || []).length === 0}
+      <EmptyState message={$t('collectibles.noAvatars')} />
+    {:else}
+      <div class="catalog-list catalog-list--cards">
+        {#each data.nftAvatars as avatar}
+          <article class="catalog-card avatar-card">
+            <header class="avatar-card__head">
+              <AssetImage src={avatar.avatarImageUrl} alt={avatar.avatarCode} size={64} />
+              <div class="avatar-card__title">
+                <strong>{avatar.name || avatar.avatarCode}</strong>
+                <code>{avatar.avatarCode}</code>
+                <span class="cell">
+                  <span class="status-badge">{avatar.gender}</span>
+                  {#if !avatar.enabled}
+                    <span class="status-badge status-badge--bad">{$t('collectibles.avatarDisabled')}</span>
+                  {/if}
+                  {#if !avatar.knownCollection}
+                    <span class="status-badge status-badge--bad" title={$t('collectibles.unknownCollectionHelp')}>
+                      {$t('collectibles.unknownCollection')}
+                    </span>
+                  {/if}
+                  {#if avatar.exhausted}
+                    <span class="status-badge status-badge--warn">{$t('collectibles.editionExhausted')}</span>
+                  {/if}
+                </span>
+              </div>
+            </header>
+
+            <dl class="avatar-card__meta">
+              <div>
+                <dt>{$t('collectibles.colCollection')}</dt>
+                <dd><code>{avatar.contractKey}</code></dd>
+              </div>
+              <div>
+                <dt>{$t('collectibles.colEdition')}</dt>
+                <dd>
+                  {formatNumber(avatar.grantedCount)}
+                  {avatar.editionSize > 0 ? `/ ${formatNumber(avatar.editionSize)}` : `/ ${$t('collectibles.unlimited')}`}
+                </dd>
+              </div>
+            </dl>
+
+            {#if (avatar.holders || []).length > 0}
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>{$t('collectibles.colSerial')}</th>
+                      <th>{$t('collectibles.colPlayer')}</th>
+                      <th>{$t('collectibles.colGrantNote')}</th>
+                      <th>{$t('collectibles.colGrantedAt')}</th>
+                      {#if canManage}<th></th>{/if}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {#each avatar.holders as holder}
+                      <tr>
+                        <td>
+                          <code>#{holder.id}</code>
+                          <small class="muted">
+                            {$t('collectibles.serialOf', {
+                              serial: holder.serialNumber,
+                              size: avatar.editionSize > 0 ? avatar.editionSize : $t('collectibles.unlimited'),
+                            })}
+                          </small>
+                        </td>
+                        <td>
+                          <span class="cell">
+                            <EntityLink type="player" id={holder.playerId} label={holder.playerName} {openPlayer} />
+                            {#if holder.worn}
+                              <span class="status-badge status-badge--good">{$t('collectibles.wearing')}</span>
+                            {/if}
+                          </span>
+                        </td>
+                        <td>{holder.grantNote || '—'}</td>
+                        <td>{formatDate(holder.grantedAt)}</td>
+                        {#if canManage}
+                          <td class="row-actions">
+                            <button
+                              type="button"
+                              class="ghost-button danger"
+                              on:click={() =>
+                                ops.ask(
+                                  '/api/v1/operations/content/nft-avatars/revoke',
+                                  { copyId: holder.id },
+                                  $t('collectibles.revokeAvatar'),
+                                  $t('collectibles.revokeAvatarSummary', {
+                                    code: avatar.avatarCode,
+                                    name: holder.playerName,
+                                  })
+                                )}
+                            >
+                              {$t('collectibles.revoke')}
+                            </button>
+                          </td>
+                        {/if}
+                      </tr>
+                    {/each}
+                  </tbody>
+                </table>
+              </div>
+            {:else}
+              <p class="muted">{$t('collectibles.noHolders')}</p>
+            {/if}
+
+            {#if canManage}
+              <div class="form-actions">
+                <button type="button" class="ghost-button" on:click={() => editAvatar(avatar)}>
+                  {$t('collectibles.edit')}
+                </button>
+                <button type="button" class="ghost-button" on:click={() => startGrant(avatar)}>
+                  {$t('collectibles.grantAvatar')}
+                </button>
+                <button
+                  type="button"
+                  class="ghost-button danger"
+                  disabled={avatar.grantedCount > 0}
+                  title={avatar.grantedCount > 0 ? $t('collectibles.deleteAvatarBlocked') : ''}
+                  on:click={() =>
+                    ops.ask(
+                      '/api/v1/operations/content/nft-avatars/delete',
+                      { avatarId: avatar.id },
+                      $t('collectibles.deleteAvatar'),
+                      $t('collectibles.deleteAvatarSummary', { code: avatar.avatarCode })
+                    )}
+                >
+                  {$t('collectibles.delete')}
+                </button>
+              </div>
+
+              {#if grantAvatarId === avatar.id}
+                <form
+                  class="inline-form editor-form"
+                  on:submit|preventDefault={() =>
+                    ops.ask(
+                      '/api/v1/operations/content/nft-avatars/grant',
+                      {
+                        avatarId: avatar.id,
+                        playerId: Number(grantForm.playerId) || 0,
+                        note: grantForm.note || '',
+                      },
+                      $t('collectibles.grantAvatar'),
+                      $t('collectibles.grantAvatarSummary', {
+                        code: avatar.avatarCode,
+                        name: grantForm.playerName || grantForm.playerId,
+                      })
+                    )}
+                >
+                  <label>
+                    {$t('common.playerRequired')}
+                    <span class="cell">
+                      <button class="ghost-button" type="button" on:click={() => (picking = 'grantPlayer')}>
+                        {$t('common.selectUser')}
+                      </button>
+                      {#if grantForm.playerId}
+                        <span class="op-chip">{grantForm.playerName} <small>#{grantForm.playerId}</small></span>
+                      {:else}
+                        <span class="muted">{$t('common.noUserSelected')}</span>
+                      {/if}
+                    </span>
+                  </label>
+                  <label>
+                    {$t('collectibles.colGrantNote')}
+                    <input bind:value={grantForm.note} placeholder={$t('collectibles.grantNotePlaceholder')} />
+                    <small class="muted">{$t('collectibles.grantNoteHelp')}</small>
+                  </label>
+                  <div class="form-actions">
+                    <button type="submit" disabled={!grantForm.playerId}>{$t('collectibles.grantAvatar')}</button>
+                    <button type="button" class="ghost-button" on:click={() => (grantAvatarId = 0)}>
+                      {$t('common.cancel')}
+                    </button>
+                  </div>
+                </form>
+              {/if}
+            {/if}
+          </article>
+        {/each}
+      </div>
+    {/if}
+
+    {#if canManage}
+      <h3 class="subhead">{$t('collectibles.avatarEditorTitle')}</h3>
+      <form
+        class="inline-form editor-form"
+        on:submit|preventDefault={() =>
+          ops.ask(
+            avatarForm.id
+              ? '/api/v1/operations/content/nft-avatars/update'
+              : '/api/v1/operations/content/nft-avatars',
+            {
+              ...(avatarForm.id ? { avatarId: avatarForm.id } : {}),
+              avatarCode: avatarForm.avatarCode,
+              name: avatarForm.name || '',
+              figure: avatarForm.figure,
+              gender: avatarForm.gender,
+              contractKey: avatarForm.contractKey,
+              editionSize: Number(avatarForm.editionSize) || 0,
+              enabled: avatarForm.enabled,
+              sortOrder: Number(avatarForm.sortOrder) || 0,
+            },
+            avatarForm.id ? $t('collectibles.updateAvatar') : $t('collectibles.addAvatar'),
+            $t('collectibles.saveAvatarSummary', { code: avatarForm.avatarCode })
+          )}
+      >
+        <label>
+          {$t('collectibles.colCode')}
+          <input bind:value={avatarForm.avatarCode} placeholder="halloween_2026_vampire" />
+          <small class="muted">{$t('collectibles.avatarCodeHelp')}</small>
+        </label>
+        <label>
+          {$t('collectibles.colName')}
+          <input bind:value={avatarForm.name} />
+        </label>
+        <label>
+          {$t('collectibles.colFigure')}
+          <input bind:value={avatarForm.figure} placeholder="hd-180-1.ch-210-66.lg-270-82" />
+          <small class="muted">{$t('collectibles.avatarFigureHelp')}</small>
+        </label>
+        <label>
+          {$t('collectibles.colGender')}
+          <select bind:value={avatarForm.gender}>
+            <option value="M">M</option>
+            <option value="F">F</option>
+          </select>
+          <small class="muted">{$t('collectibles.avatarGenderHelp')}</small>
+        </label>
+        <label>
+          {$t('collectibles.colCollection')}
+          <select bind:value={avatarForm.contractKey}>
+            {#each COLLECTION_OPTIONS as option}
+              <option value={option.value}>{$t(option.key)}</option>
+            {/each}
+          </select>
+          <small class="muted">{$t('collectibles.avatarCollectionHelp')}</small>
+        </label>
+        <label>
+          {$t('collectibles.colEdition')}
+          <input type="number" min="0" bind:value={avatarForm.editionSize} />
+          <small class="muted">{$t('collectibles.avatarEditionHelp')}</small>
+        </label>
+        <label>
+          {$t('collectibles.colSort')}
+          <input type="number" bind:value={avatarForm.sortOrder} />
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" bind:checked={avatarForm.enabled} />
+          {$t('collectibles.enabled')}
+        </label>
+        <div class="form-actions">
+          <button type="submit" disabled={!avatarForm.avatarCode.trim() || !avatarForm.figure.trim()}>
+            {avatarForm.id ? $t('collectibles.updateAvatar') : $t('collectibles.addAvatar')}
+          </button>
+          <button type="button" class="ghost-button" on:click={() => (avatarForm = emptyAvatar())}>
+            {$t('collectibles.newAvatar')}
+          </button>
+        </div>
+      </form>
+    {/if}
+  </section>
+  {/if}
+
   {#if tab === 'collectors'}
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('collectibles.leaderboardTitle')}</h2></div>
@@ -1280,13 +1585,19 @@
   {/if}
 {/if}
 
-{#if picking === 'claimPlayer'}
+{#if picking === 'claimPlayer' || picking === 'grantPlayer'}
   <PickerModal
     kind="user"
     title={$t('operations.selectPlayerTitle')}
     onSelect={(picked) => {
-      claimForm.playerId = picked.id;
-      claimForm.playerName = picked.name;
+      if (picking === 'grantPlayer') {
+        grantForm.playerId = picked.id;
+        grantForm.playerName = picked.name;
+      } else {
+        claimForm.playerId = picked.id;
+        claimForm.playerName = picked.name;
+      }
+
       picking = null;
     }}
     onClose={() => (picking = null)}
@@ -1333,6 +1644,43 @@
 />
 
 <style>
+
+  /* An avatar card is a record with a picture and a list under it, not a row: the figure is the
+     thing being judged, so it leads, and the holders sit below where the eye lands after it. */
+  .avatar-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .avatar-card__head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .avatar-card__title {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .avatar-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+    margin: 0;
+  }
+
+  .avatar-card__meta dt {
+    font-size: 0.8em;
+    opacity: 0.7;
+  }
+
+  .avatar-card__meta dd {
+    margin: 0;
+  }
 
   tr.selected {
     background: var(--surface-raised, rgba(255, 255, 255, 0.04));

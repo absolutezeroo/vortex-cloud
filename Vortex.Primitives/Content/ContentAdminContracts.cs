@@ -139,3 +139,26 @@ public sealed record RentableSpaceTermsSpec(
     int RentDurationSeconds,
     bool RequiresHc
 );
+
+/// <summary>
+/// An avatar a player can wear whole.
+/// <para>
+/// <paramref name="ContractKey"/> is not free text: the client switches on it for the caption and
+/// the tile colours, and draws the word "null" for anything outside the three it knows —
+/// <c>NftAvatarCollection</c> holds them.
+/// </para>
+/// <para>
+/// <paramref name="EditionSize"/> of 0 means unlimited. It is the only thing enforcing scarcity;
+/// there is no chain here that would.
+/// </para>
+/// </summary>
+public sealed record NftAvatarSpec(
+    string AvatarCode,
+    string Name,
+    string Figure,
+    string Gender,
+    string ContractKey,
+    int EditionSize,
+    bool Enabled,
+    int SortOrder
+);

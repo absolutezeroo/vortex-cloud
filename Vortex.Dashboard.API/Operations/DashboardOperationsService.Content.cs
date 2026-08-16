@@ -715,6 +715,146 @@ internal sealed partial class DashboardOperationsService
             ct
         );
 
+    public Task<OperationResult> CreateNftAvatarAsync(
+        NftAvatarRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        ExecuteAsync(
+            "ops.content.nftavatar.create",
+            actor,
+            request.Reason,
+            targetPlayerId: null,
+            roomId: null,
+            detail: new
+            {
+                request.AvatarCode,
+                request.ContractKey,
+                request.EditionSize,
+            },
+            work: async c =>
+                Throw(
+                    await _contentAdmin
+                        .CreateNftAvatarAsync(
+                            new NftAvatarSpec(
+                                request.AvatarCode,
+                                request.Name,
+                                request.Figure,
+                                request.Gender,
+                                request.ContractKey,
+                                request.EditionSize,
+                                request.Enabled,
+                                request.SortOrder
+                            ),
+                            c
+                        )
+                        .ConfigureAwait(false)
+                ),
+            ct
+        );
+
+    public Task<OperationResult> UpdateNftAvatarAsync(
+        UpdateNftAvatarRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        ExecuteAsync(
+            "ops.content.nftavatar.update",
+            actor,
+            request.Reason,
+            targetPlayerId: null,
+            roomId: null,
+            detail: new
+            {
+                request.AvatarId,
+                request.AvatarCode,
+                request.EditionSize,
+            },
+            work: async c =>
+                Throw(
+                    await _contentAdmin
+                        .UpdateNftAvatarAsync(
+                            request.AvatarId,
+                            new NftAvatarSpec(
+                                request.AvatarCode,
+                                request.Name,
+                                request.Figure,
+                                request.Gender,
+                                request.ContractKey,
+                                request.EditionSize,
+                                request.Enabled,
+                                request.SortOrder
+                            ),
+                            c
+                        )
+                        .ConfigureAwait(false)
+                ),
+            ct
+        );
+
+    public Task<OperationResult> DeleteNftAvatarAsync(
+        DeleteNftAvatarRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        ExecuteAsync(
+            "ops.content.nftavatar.delete",
+            actor,
+            request.Reason,
+            targetPlayerId: null,
+            roomId: null,
+            detail: new { request.AvatarId },
+            work: async c =>
+                Throw(
+                    await _contentAdmin
+                        .DeleteNftAvatarAsync(request.AvatarId, c)
+                        .ConfigureAwait(false)
+                ),
+            ct
+        );
+
+    public Task<OperationResult> GrantNftAvatarAsync(
+        NftAvatarGrantRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        ExecuteAsync(
+            "ops.content.nftavatar.grant",
+            actor,
+            request.Reason,
+            targetPlayerId: request.PlayerId,
+            roomId: null,
+            detail: new { request.AvatarId, request.Note },
+            work: async c =>
+                Throw(
+                    await _contentAdmin
+                        .GrantNftAvatarAsync(request.AvatarId, request.PlayerId, request.Note, c)
+                        .ConfigureAwait(false)
+                ),
+            ct
+        );
+
+    public Task<OperationResult> RevokeNftAvatarAsync(
+        NftAvatarRevokeRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        ExecuteAsync(
+            "ops.content.nftavatar.revoke",
+            actor,
+            request.Reason,
+            targetPlayerId: null,
+            roomId: null,
+            detail: new { request.CopyId },
+            work: async c =>
+                Throw(
+                    await _contentAdmin
+                        .RevokeNftAvatarAsync(request.CopyId, c)
+                        .ConfigureAwait(false)
+                ),
+            ct
+        );
+
     public Task<OperationResult> GrantBadgeAsync(
         BadgeGrantRequest request,
         string actor,

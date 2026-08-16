@@ -233,6 +233,12 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
 
     public DbSet<PlayerClothingEntity> PlayerClothing { get; init; } = null!;
 
+    public DbSet<NftAvatarEntity> NftAvatars { get; init; } = null!;
+
+    public DbSet<PlayerNftAvatarEntity> PlayerNftAvatars { get; init; } = null!;
+
+    public DbSet<PlayerNftOutfitEntity> PlayerNftOutfits { get; init; } = null!;
+
     public DbSet<PetPaletteEntity> PetPalettes { get; init; } = null!;
 
     public DbSet<PetVocalEntity> PetVocals { get; init; } = null!;

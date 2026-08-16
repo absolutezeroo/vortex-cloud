@@ -9,8 +9,9 @@ internal class UserNftWardrobeSelectionMessageComposerSerializer(int header)
     protected override void Serialize(
         IServerPacket packet,
         UserNftWardrobeSelectionMessageComposer message
-    )
-    {
-        //
-    }
+    ) =>
+        packet
+            .WriteString(message.TokenId)
+            .WriteString(message.FallbackFigure)
+            .WriteString(message.FallbackGender);
 }

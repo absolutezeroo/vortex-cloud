@@ -143,4 +143,31 @@ public interface IContentAdminService
     );
 
     Task<ContentAdminResult> RevokeEffectAsync(int playerId, int effectId, CancellationToken ct);
+
+    Task<ContentAdminResult> CreateNftAvatarAsync(NftAvatarSpec spec, CancellationToken ct);
+
+    Task<ContentAdminResult> UpdateNftAvatarAsync(
+        int avatarId,
+        NftAvatarSpec spec,
+        CancellationToken ct
+    );
+
+    Task<ContentAdminResult> DeleteNftAvatarAsync(int avatarId, CancellationToken ct);
+
+    /// <summary>
+    /// Hands a copy of an avatar to a player. This is the entire acquisition path: with no chain to
+    /// hold ownership, the row this writes is what makes the avatar theirs.
+    /// </summary>
+    Task<ContentAdminResult> GrantNftAvatarAsync(
+        int avatarId,
+        int playerId,
+        string note,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Takes a copy back. The copy's number is not reused and the edition does not grow back — a
+    /// revoked one is a gap in the run, which is what a revoke should look like.
+    /// </summary>
+    Task<ContentAdminResult> RevokeNftAvatarAsync(int copyId, CancellationToken ct);
 }

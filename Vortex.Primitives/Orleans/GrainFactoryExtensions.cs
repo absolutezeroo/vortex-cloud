@@ -317,6 +317,11 @@ public static class GrainFactoryExtensions
         long playerId
     ) => factory.GetGrain<IPlayerClothingGrain>(playerId);
 
+    public static IPlayerNftWardrobeGrain GetPlayerNftWardrobeGrain(
+        this IGrainFactory factory,
+        PlayerId playerId
+    ) => factory.GetGrain<IPlayerNftWardrobeGrain>(playerId.Value);
+
     public static IPlayerMysteryBoxGrain GetPlayerMysteryBoxGrain(
         this IGrainFactory factory,
         PlayerId playerId

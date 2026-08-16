@@ -1017,6 +1017,7 @@ internal static class MessageComposer
     public const int CommunityVoteReceivedComposer = 2524;
     public const int UserNftChatStylesMessageComposer = 2996;
     public const int UserNftWardrobeSelectionMessageComposer = 582;
+    public const int UserNftWardrobeMessageComposer = 2116; // AS3-verified (direct read): _SafeStr_4546[2116] = _SafeCls_2919 (parser reads int count then 5 strings per avatar), the answer to GetUserNftWardrobe@2203, handled by HabboAvatarEditor::onUserNftWardrobeMessage(). Had no header at all, so the editor's NFT tab could only ever be empty
     public const int LatencyPingResponseMessageComposer = 188;
     public const int CommunityGoalHallOfFameMessageComposer = 363;
     public const int CommunityGoalProgressMessageComposer = 283;
