@@ -20,7 +20,9 @@
 
   const BATCH_SIZE = 60;
 
-  let template = '';
+  // $state even though the markup only reaches it through iconUrl(): it was reactive under Svelte 4,
+  // and without this the grid happens to paint only because `templateLoading` flips after it is set.
+  let template = $state('');
   let templateLoading = $state(true);
   let templateError = $state('');
 

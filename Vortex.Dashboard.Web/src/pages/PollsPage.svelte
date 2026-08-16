@@ -403,11 +403,9 @@
     if (roomPickerFor === 'new') {
       newPoll.roomId = item.id;
       newPoll.roomName = item.name;
-      newPoll = newPoll;
     } else if (roomPickerFor === 'edit' && editPollForm) {
       editPollForm.roomId = item.id;
       editPollForm.roomName = item.name;
-      editPollForm = editPollForm;
     }
   }
 

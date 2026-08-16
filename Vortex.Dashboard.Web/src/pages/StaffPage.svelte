@@ -5,6 +5,7 @@
   // loop: the capability editor only offers keys that exist, so the first failure cannot be created
   // here at all.
   import { onMount } from 'svelte';
+  import { SvelteSet } from 'svelte/reactivity';
   import { apiGet } from '../lib/api.js';
   import { formatNumber, formatDate, formatDuration } from '../lib/format.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
@@ -103,7 +104,9 @@
 
   function startCapabilityEdit(role) {
     expanded = role.id;
-    capabilityDraft = { roleId: role.id, selected: new Set(role.capabilities) };
+    // SvelteSet, not Set: $state proxies this object but NOT a Set held inside it, so the
+    // add/delete below would mutate without signalling and no checkbox would move.
+    capabilityDraft = { roleId: role.id, selected: new SvelteSet(role.capabilities) };
   }
 
   function toggleCapability(key) {
@@ -114,8 +117,6 @@
     } else {
       capabilityDraft.selected.add(key);
     }
-
-    capabilityDraft = capabilityDraft;
   }
 
   function toggleArea(group, on) {
@@ -125,8 +126,6 @@
       if (on) capabilityDraft.selected.add(key);
       else capabilityDraft.selected.delete(key);
     }
-
-    capabilityDraft = capabilityDraft;
   }
 
   function saveCapabilities(role) {

@@ -1,6 +1,7 @@
 <script>
 
   import { location, push } from 'svelte-spa-router';
+  import { SvelteSet } from 'svelte/reactivity';
   import {
     Activity,
     Ban,
@@ -119,7 +120,7 @@
       const raw = localStorage.getItem(COLLAPSE_STORAGE_KEY);
 
       if (raw) {
-        return new Set(JSON.parse(raw));
+        return new SvelteSet(JSON.parse(raw));
       }
     } catch {
       // Ignore storage failures (private browsing, quota) -- fall through to the default below.
@@ -129,10 +130,14 @@
     // open at once is the state that made the sidebar unreadable; one open group is a menu.
     const active = NAV.find((item) => item.path === window.location.hash.slice(1));
 
-    return new Set(GROUP_ORDER.filter((group) => group !== (active?.group ?? 'Live')));
+    return new SvelteSet(GROUP_ORDER.filter((group) => group !== (active?.group ?? 'Live')));
   }
 
-  let collapsedGroups = $state(loadCollapsedGroups());
+  // SvelteSet, not Set: `$state` deep-proxies plain objects and arrays but leaves a Set alone, so
+  // `.add()` / `.delete()` on a plain one signal nothing. Svelte 4 papered over that with a
+  // `collapsedGroups = collapsedGroups` self-assignment, which is a no-op under runes -- assigning
+  // an identical reference is skipped. That is what silently killed every nav group toggle.
+  const collapsedGroups = loadCollapsedGroups();
 
   function toggleGroup(id) {
     if (collapsedGroups.has(id)) {
@@ -140,7 +145,6 @@
     } else {
       collapsedGroups.add(id);
     }
-    collapsedGroups = collapsedGroups;
 
     try {
       localStorage.setItem(COLLAPSE_STORAGE_KEY, JSON.stringify([...collapsedGroups]));
@@ -149,11 +153,9 @@
     }
   }
 
-  // Takes `groupsCollapsed` explicitly (not read from the outer `collapsedGroups` closure) so the
-  // `{@const}` call site below stays reactive -- see the ApiExplorerPage `filtered` reactivity note:
-  // a value read only inside a called function's body is invisible to Svelte's per-block dirty
-  // tracking, so a toggle would mutate state but never trigger a re-render without this.
   // A collapsed group still expands while actively searching, so filter results stay visible.
+  // (The set is passed in rather than closed over for readability; under runes either tracks, since
+  // a SvelteSet reports its own reads wherever they happen.)
   function isCollapsed(group, q, groupsCollapsed) {
     return groupsCollapsed.has(group.id) && !q.trim();
   }
@@ -165,7 +167,6 @@
 
     if (active && collapsedGroups.has(active.group)) {
       collapsedGroups.delete(active.group);
-      collapsedGroups = collapsedGroups;
     }
   }
 
