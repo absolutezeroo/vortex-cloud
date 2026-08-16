@@ -15,6 +15,8 @@
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer } from '../lib/session.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import Drawer from '../components/Drawer.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import EntityLink from '../components/EntityLink.svelte';
@@ -31,6 +33,8 @@
   let detail = $state(null);
   let detailLoading = $state(false);
   let picking = $state(false);
+
+  let grantOpen = $state(false);
 
   const ops = createWriteOps(async () => {
     await refresh();
@@ -99,8 +103,7 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>{$t('playerRewards.title')}</h2></div>
-  <p class="muted">{$t('playerRewards.description')}</p>
+  <PageHeader title={$t('playerRewards.title')} description={$t('playerRewards.description')} />
   <div class="toolbar">
     <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
     <button type="button" class="ghost-button" onclick={() => (picking = true)}>
@@ -282,7 +285,14 @@
 
 {#if player}
   <section class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>{$t('playerRewards.playerTitle', { name: player.name })}</h2></div>
+    <div class="panel-head">
+      <h2>{$t('playerRewards.playerTitle', { name: player.name })}</h2>
+      {#if canManage}
+        <button type="button" class="ghost-button" onclick={() => (grantOpen = true)}>
+          {$t('playerRewards.grantTitle', { name: player.name })}
+        </button>
+      {/if}
+    </div>
     {#if detailLoading}
       <p class="muted">{$t('common.loading')}</p>
     {:else if detail}
@@ -390,9 +400,12 @@
   </section>
 {/if}
 
-{#if canManage && player}
-  <section class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>{$t('playerRewards.grantTitle', { name: player.name })}</h2></div>
+{#if canManage && player && grantOpen}
+  <Drawer
+    title={$t('playerRewards.grantTitle', { name: player.name })}
+    eyebrow={$t('playerRewards.title')}
+    onclose={() => (grantOpen = false)}
+  >
     <p class="muted">{$t('playerRewards.grantHint')}</p>
 
     <form
@@ -477,7 +490,11 @@
     {#if $ops.result}
       <OpResult result={$ops.result} />
     {/if}
-  </section>
+
+    {#snippet actions()}
+      <button type="button" class="ghost-button" onclick={() => (grantOpen = false)}>{$t('common.close')}</button>
+    {/snippet}
+  </Drawer>
 {/if}
 
 {#if picking}

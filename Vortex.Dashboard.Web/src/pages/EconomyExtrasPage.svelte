@@ -14,6 +14,8 @@
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer } from '../lib/session.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
+  import Drawer from '../components/Drawer.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import AssetImage from '../components/AssetImage.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import StatCard from '../components/StatCard.svelte';
@@ -52,14 +54,14 @@
     requiresHc: false,
   });
 
-  let currencyForm = $state(emptyCurrency());
-  let tierForm = $state(emptyTier());
-  let termsForm = $state(emptyTerms());
+  let currencyForm = $state(null);
+  let tierForm = $state(null);
+  let termsForm = $state(null);
 
   // Placed-furniture ids have no picker of their own (the furniture picker searches definitions, not
   // placed items), so the id at least previews the space it points at.
   let termsPreviewUrl =
-    $derived((data?.rentableSpaces || []).find((r) => r.furnitureId === Number(termsForm.furnitureId))
+    $derived((data?.rentableSpaces || []).find((r) => r.furnitureId === Number(termsForm?.furnitureId))
       ?.iconUrl ?? null);
 
   async function refresh() {
@@ -94,11 +96,11 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>{$t('economyExtras.title')}</h2></div>
-  <p class="muted">{$t('economyExtras.description')}</p>
-  <div class="toolbar">
-    <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
-  </div>
+  <PageHeader title={$t('economyExtras.title')} description={$t('economyExtras.description')}>
+    {#snippet actions()}
+      <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
+    {/snippet}
+  </PageHeader>
 
   {#if loading}
     <p class="muted">{$t('common.loading')}</p>
@@ -208,7 +210,12 @@
 
   {#if tab === 'rentables'}
   <section class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>{$t('economyExtras.rentableTitle')}</h2></div>
+    <div class="panel-head">
+      <h2>{$t('economyExtras.rentableTitle')}</h2>
+      {#if canManage}
+        <button type="button" class="ghost-button" onclick={() => (termsForm = emptyTerms())}>{$t('economyExtras.termsEditorTitle')}</button>
+      {/if}
+    </div>
     <p class="muted">{$t('economyExtras.rentableDescription')}</p>
     <div class="table-wrap">
       <table>
@@ -256,7 +263,12 @@
 
   {#if tab === 'currencies'}
   <section class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>{$t('economyExtras.currenciesTitle')}</h2></div>
+    <div class="panel-head">
+      <h2>{$t('economyExtras.currenciesTitle')}</h2>
+      {#if canManage}
+        <button type="button" class="ghost-button" onclick={() => (currencyForm = emptyCurrency())}>{$t('economyExtras.newCurrency')}</button>
+      {/if}
+    </div>
     <div class="table-wrap">
       <table>
         <thead>
@@ -297,153 +309,169 @@
     </div>
   </section>
 
-  {#if canManage}
-    <section class="panel" style="margin-top: 12px;">
-      <div class="panel-head"><h2>{$t('economyExtras.editorTitle')}</h2></div>
-
-      <h3 class="subhead">{$t('economyExtras.currenciesTitle')}</h3>
-      <form
-        class="inline-form"
-        onsubmit={(event) => {
-          event.preventDefault();
-          ops.ask(
-            '/api/v1/operations/content/currencies',
-            {
-              currencyId: Number(currencyForm.id) || 0,
-              name: currencyForm.name,
-              currencyType: Number(currencyForm.currencyType) || 0,
-              activityPointType:
-                currencyForm.activityPointType === null || currencyForm.activityPointType === ''
-                  ? null
-                  : Number(currencyForm.activityPointType),
-              enabled: Boolean(currencyForm.enabled),
-              startingAmount: Number(currencyForm.startingAmount) || 0,
-            },
-            currencyForm.id ? $t('economyExtras.updateCurrency') : $t('economyExtras.addCurrency'),
-            $t('economyExtras.saveCurrencySummary', { name: currencyForm.name })
-          );
-        }}
-      >
-        <label>
-          {$t('economyExtras.colCurrency')}
-          <input bind:value={currencyForm.name} />
-        </label>
-        <label>
-          {$t('economyExtras.colType')}
-          <input type="number" bind:value={currencyForm.currencyType} min="0" />
-        </label>
-        <label>
-          {$t('economyExtras.colPointType')}
-          <input type="number" bind:value={currencyForm.activityPointType} />
-        </label>
-        <label>
-          {$t('economyExtras.colStarting')}
-          <input type="number" bind:value={currencyForm.startingAmount} min="0" />
-        </label>
-        <label class="check">
-          <input type="checkbox" bind:checked={currencyForm.enabled} />
-          {$t('economyExtras.colEnabled')}
-        </label>
-        <button type="submit" disabled={!currencyForm.name.trim()}>
-          {currencyForm.id ? $t('economyExtras.updateCurrency') : $t('economyExtras.addCurrency')}
-        </button>
-        {#if currencyForm.id}
-          <button type="button" class="ghost-button" onclick={() => (currencyForm = emptyCurrency())}>
-            {$t('economyExtras.newCurrency')}
-          </button>
-        {/if}
-      </form>
-
-      <h3 class="subhead">{$t('economyExtras.buildersClubTitle')}</h3>
-      <form
-        class="inline-form"
-        onsubmit={(event) => {
-          event.preventDefault();
-          ops.ask(
-            '/api/v1/operations/content/builders-club',
-            { level: Number(tierForm.level), furniLimit: Number(tierForm.furniLimit) },
-            $t('economyExtras.saveTier'),
-            $t('economyExtras.saveTierSummary', { level: tierForm.level, limit: tierForm.furniLimit })
-          );
-        }}
-      >
-        <label>
-          {$t('economyExtras.colLevel')}
-          <input type="number" bind:value={tierForm.level} min="1" />
-        </label>
-        <label>
-          {$t('economyExtras.colFurniLimit')}
-          <input type="number" bind:value={tierForm.furniLimit} min="0" />
-        </label>
-        <button type="submit">{$t('economyExtras.saveTier')}</button>
-      </form>
-
-      <h3 class="subhead">{$t('economyExtras.termsEditorTitle')}</h3>
-      <p class="muted">{$t('economyExtras.termsEditorHint')}</p>
-      <form
-        class="inline-form"
-        onsubmit={(event) => {
-          event.preventDefault();
-          ops.ask(
-            '/api/v1/operations/content/rentable-terms',
-            {
-              furnitureId: Number(termsForm.furnitureId),
-              price: Number(termsForm.price) || 0,
-              currencyTypeId: Number(termsForm.currencyTypeId),
-              rentDurationSeconds: Number(termsForm.rentDurationSeconds),
-              requiresHc: Boolean(termsForm.requiresHc),
-            },
-            $t('economyExtras.saveTerms'),
-            $t('economyExtras.saveTermsSummary', { id: termsForm.furnitureId })
-          );
-        }}
-      >
-        <label>
-          {$t('economyExtras.colFurniture')}
-          <span class="cell">
-            <input type="number" bind:value={termsForm.furnitureId} min="1" />
-            <AssetImage src={termsPreviewUrl} alt="" size={32} />
-          </span>
-        </label>
-        <label>
-          {$t('economyExtras.price')}
-          <input type="number" bind:value={termsForm.price} min="0" />
-        </label>
-        <label>
-          {$t('economyExtras.colCurrency')}
-          <select bind:value={termsForm.currencyTypeId}>
-            <option value={0}>{$t('economyExtras.pickCurrency')}</option>
-            {#each data.currencies || [] as currency}
-              <option value={currency.id}>{currency.name || `#${currency.id}`}</option>
-            {/each}
-          </select>
-        </label>
-        <label>
-          {$t('economyExtras.durationSeconds')}
-          <input type="number" bind:value={termsForm.rentDurationSeconds} min="1" />
-        </label>
-        <label class="check">
-          <input type="checkbox" bind:checked={termsForm.requiresHc} />
-          {$t('economyExtras.requiresHc')}
-        </label>
-        <button
-          type="submit"
-          disabled={!termsForm.furnitureId || !termsForm.currencyTypeId || !termsForm.rentDurationSeconds}
+{#if canManage && currencyForm}
+  <Drawer title={currencyForm.id ? $t('economyExtras.updateCurrency') : $t('economyExtras.addCurrency')} eyebrow={$t('economyExtras.currenciesTitle')} onclose={() => (currencyForm = null)}>
+        <form id="currency-form"
+          class="inline-form"
+          onsubmit={(event) => {
+            event.preventDefault();
+            ops.ask(
+              '/api/v1/operations/content/currencies',
+              {
+                currencyId: Number(currencyForm.id) || 0,
+                name: currencyForm.name,
+                currencyType: Number(currencyForm.currencyType) || 0,
+                activityPointType:
+                  currencyForm.activityPointType === null || currencyForm.activityPointType === ''
+                    ? null
+                    : Number(currencyForm.activityPointType),
+                enabled: Boolean(currencyForm.enabled),
+                startingAmount: Number(currencyForm.startingAmount) || 0,
+              },
+              currencyForm.id ? $t('economyExtras.updateCurrency') : $t('economyExtras.addCurrency'),
+              $t('economyExtras.saveCurrencySummary', { name: currencyForm.name })
+            );
+          }}
         >
-          {$t('economyExtras.saveTerms')}
-        </button>
-      </form>
+          <label>
+            {$t('economyExtras.colCurrency')}
+            <input bind:value={currencyForm.name} />
+          </label>
+          <label>
+            {$t('economyExtras.colType')}
+            <input type="number" bind:value={currencyForm.currencyType} min="0" />
+          </label>
+          <label>
+            {$t('economyExtras.colPointType')}
+            <input type="number" bind:value={currencyForm.activityPointType} />
+          </label>
+          <label>
+            {$t('economyExtras.colStarting')}
+            <input type="number" bind:value={currencyForm.startingAmount} min="0" />
+          </label>
+          <label class="check">
+            <input type="checkbox" bind:checked={currencyForm.enabled} />
+            {$t('economyExtras.colEnabled')}
+          </label>
+          <button type="submit" disabled={!currencyForm.name.trim()}>
+            {currencyForm.id ? $t('economyExtras.updateCurrency') : $t('economyExtras.addCurrency')}
+          </button>
+        </form>
 
-      {#if $ops.result}
-        <OpResult result={$ops.result} />
-      {/if}
-    </section>
-  {/if}
+    {#if $ops.error}<p class="empty-state danger">{$ops.error}</p>{/if}
+    {#if $ops.result}<OpResult result={$ops.result} />{/if}
+
+    {#snippet actions()}
+      <button type="submit" form="currency-form" disabled={!currencyForm.name.trim()}>{currencyForm.id ? $t('economyExtras.updateCurrency') : $t('economyExtras.addCurrency')}</button>
+      <button type="button" class="ghost-button" onclick={() => (currencyForm = null)}>{$t('common.cancel')}</button>
+    {/snippet}
+  </Drawer>
+{/if}
+
+{#if canManage && tierForm}
+  <Drawer title={$t('economyExtras.buildersClubTitle')} eyebrow={$t('economyExtras.editorTitle')} onclose={() => (tierForm = null)}>
+        <form id="tier-form"
+          class="inline-form"
+          onsubmit={(event) => {
+            event.preventDefault();
+            ops.ask(
+              '/api/v1/operations/content/builders-club',
+              { level: Number(tierForm.level), furniLimit: Number(tierForm.furniLimit) },
+              $t('economyExtras.saveTier'),
+              $t('economyExtras.saveTierSummary', { level: tierForm.level, limit: tierForm.furniLimit })
+            );
+          }}
+        >
+          <label>
+            {$t('economyExtras.colLevel')}
+            <input type="number" bind:value={tierForm.level} min="1" />
+          </label>
+          <label>
+            {$t('economyExtras.colFurniLimit')}
+            <input type="number" bind:value={tierForm.furniLimit} min="0" />
+          </label>
+        </form>
+
+    {#if $ops.error}<p class="empty-state danger">{$ops.error}</p>{/if}
+    {#if $ops.result}<OpResult result={$ops.result} />{/if}
+
+    {#snippet actions()}
+      <button type="submit" form="tier-form">{$t('economyExtras.saveTier')}</button>
+      <button type="button" class="ghost-button" onclick={() => (tierForm = null)}>{$t('common.cancel')}</button>
+    {/snippet}
+  </Drawer>
+{/if}
+
+{#if canManage && termsForm}
+  <Drawer title={$t('economyExtras.termsEditorTitle')} eyebrow={$t('economyExtras.editorTitle')} onclose={() => (termsForm = null)}>
+        <form id="terms-form"
+          class="inline-form"
+          onsubmit={(event) => {
+            event.preventDefault();
+            ops.ask(
+              '/api/v1/operations/content/rentable-terms',
+              {
+                furnitureId: Number(termsForm.furnitureId),
+                price: Number(termsForm.price) || 0,
+                currencyTypeId: Number(termsForm.currencyTypeId),
+                rentDurationSeconds: Number(termsForm.rentDurationSeconds),
+                requiresHc: Boolean(termsForm.requiresHc),
+              },
+              $t('economyExtras.saveTerms'),
+              $t('economyExtras.saveTermsSummary', { id: termsForm.furnitureId })
+            );
+          }}
+        >
+          <label>
+            {$t('economyExtras.colFurniture')}
+            <span class="cell">
+              <input type="number" bind:value={termsForm.furnitureId} min="1" />
+              <AssetImage src={termsPreviewUrl} alt="" size={32} />
+            </span>
+          </label>
+          <label>
+            {$t('economyExtras.price')}
+            <input type="number" bind:value={termsForm.price} min="0" />
+          </label>
+          <label>
+            {$t('economyExtras.colCurrency')}
+            <select bind:value={termsForm.currencyTypeId}>
+              <option value={0}>{$t('economyExtras.pickCurrency')}</option>
+              {#each data.currencies || [] as currency}
+                <option value={currency.id}>{currency.name || `#${currency.id}`}</option>
+              {/each}
+            </select>
+          </label>
+          <label>
+            {$t('economyExtras.durationSeconds')}
+            <input type="number" bind:value={termsForm.rentDurationSeconds} min="1" />
+          </label>
+          <label class="check">
+            <input type="checkbox" bind:checked={termsForm.requiresHc} />
+            {$t('economyExtras.requiresHc')}
+          </label>
+        </form>
+
+    {#if $ops.error}<p class="empty-state danger">{$ops.error}</p>{/if}
+    {#if $ops.result}<OpResult result={$ops.result} />{/if}
+
+    {#snippet actions()}
+      <button type="submit" form="terms-form" disabled={!termsForm.furnitureId || !termsForm.currencyTypeId || !termsForm.rentDurationSeconds}>{$t('economyExtras.saveTerms')}</button>
+      <button type="button" class="ghost-button" onclick={() => (termsForm = null)}>{$t('common.cancel')}</button>
+    {/snippet}
+  </Drawer>
+{/if}
+
   {/if}
 
   {#if tab === 'builders'}
   <section class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>{$t('economyExtras.buildersClubTitle')}</h2></div>
+    <div class="panel-head">
+      <h2>{$t('economyExtras.buildersClubTitle')}</h2>
+      {#if canManage}
+        <button type="button" class="ghost-button" onclick={() => (tierForm = emptyTier())}>{$t('economyExtras.saveTier')}</button>
+      {/if}
+    </div>
     <div class="table-wrap">
       <table>
         <thead>
