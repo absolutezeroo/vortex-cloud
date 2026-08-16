@@ -37,19 +37,44 @@
     front-end change that was built but not re-embedded looks exactly like a change that never
     worked. Editing, rebuilding and seeing nothing is not a state anybody should have to diagnose.
 
+    Assets\ is generated, not committed (see .gitignore): it is Vite's output directory, every name
+    in it is content-hashed, and tracking it meant every dashboard change rewrote ~50 files whose
+    diff nobody can read. That makes this target the ONLY source of the embedded front-end. There is
+    no committed copy to fall back on, so a missing toolchain has to be repaired or reported, never
+    quietly skipped.
+
     Set SkipDashboardFrontendBuild=true to opt out (a CI job that builds the front-end in its own
-    step, or a machine with no Node).
+    step). A build that opts out embeds whatever Assets\ already holds, which on a clean checkout
+    is nothing.
   -->
   <PropertyGroup>
     <DashboardWebDir>$(MSBuildThisFileDirectory)..\Vortex.Dashboard.Web\</DashboardWebDir>
   </PropertyGroup>
 
+  <!--
+    A clean checkout has no node_modules, and now no committed Assets\ either, so `dotnet build`
+    on a fresh clone would otherwise produce an assembly that serves a blank dashboard. `npm ci`
+    rather than `npm install`: package-lock.json is committed, and the build should not be able to
+    move a dependency on its own.
+  -->
+  <Target
+    Name="RestoreDashboardFrontend"
+    Condition="'$(SkipDashboardFrontendBuild)' != 'true' AND !Exists('$(DashboardWebDir)node_modules')"
+  >
+    <Message
+      Importance="high"
+      Text="Dashboard front-end: installing npm dependencies (no node_modules yet)."
+    />
+    <Exec Command="npm ci" WorkingDirectory="$(DashboardWebDir)" />
+  </Target>
+
   <Target
     Name="BuildDashboardFrontend"
     BeforeTargets="BeforeBuild"
-    Condition="'$(SkipDashboardFrontendBuild)' != 'true' AND Exists('$(DashboardWebDir)node_modules')"
+    DependsOnTargets="RestoreDashboardFrontend"
+    Condition="'$(SkipDashboardFrontendBuild)' != 'true'"
     Inputs="@(DashboardWebSource)"
-    Outputs="$(IntermediateOutputPath)dashboard-frontend.stamp"
+    Outputs="$(IntermediateOutputPath)dashboard-frontend.stamp;$(MSBuildThisFileDirectory)Assets\index.html"
   >
     <Exec Command="npm run build" WorkingDirectory="$(DashboardWebDir)" />
 
@@ -75,6 +100,11 @@
   <!--
     What the front-end is built from. Declared outside the target so MSBuild can compare timestamps
     and skip the whole thing when nothing has changed, so an untouched dashboard costs no build time.
+
+    Assets\index.html is listed as an output next to the stamp file for a reason: the stamp alone
+    claims the build is up to date even when the output it vouches for is gone. Now that Assets\ is
+    gitignored, a clean checkout is exactly that state, and the build has to notice the artefact is
+    missing rather than trust a stamp left over from a previous one.
   -->
   <ItemGroup>
     <DashboardWebSource
@@ -84,11 +114,20 @@
     <DashboardWebSource Include="$(DashboardWebDir)package.json;$(DashboardWebDir)vite.config.js;$(DashboardWebDir)index.html" />
   </ItemGroup>
 
+  <!--
+    Embedding nothing is the one outcome that must not pass quietly: the build succeeds, the tests
+    pass, and the dashboard serves a blank page at runtime. Since Assets\ is no longer committed,
+    an empty one after the front-end step means the step did not run, and that is an error rather
+    than a warning.
+  -->
   <Target
-    Name="WarnDashboardFrontendSkipped"
-    BeforeTargets="BeforeBuild"
-    Condition="'$(SkipDashboardFrontendBuild)' != 'true' AND !Exists('$(DashboardWebDir)node_modules')"
+    Name="VerifyDashboardFrontendEmbedded"
+    AfterTargets="BuildDashboardFrontend"
+    Condition="'$(SkipDashboardFrontendBuild)' != 'true'"
   >
-    <Warning Text="Dashboard front-end not rebuilt: $(DashboardWebDir)node_modules is missing. Run 'npm install' there, or set SkipDashboardFrontendBuild=true. The assets already committed under Assets\ are embedded as-is." />
+    <Error
+      Condition="'@(EmbeddedResource)' == ''"
+      Text="Dashboard front-end produced no assets: Assets\ is empty and nothing would be embedded, so the dashboard would serve a blank page. Run 'npm ci &amp;&amp; npm run build' in $(DashboardWebDir), or set SkipDashboardFrontendBuild=true if this build embeds the front-end another way."
+    />
   </Target>
 </Project>

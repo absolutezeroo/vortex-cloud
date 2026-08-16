@@ -41,6 +41,12 @@ plugins/*
 plugins-shadow/*
 node_modules/
 
+# Vite's output directory for the dashboard SPA, embedded into Vortex.Dashboard.API at build time
+# (see that project's BuildDashboardFrontend target). Every name in it is content-hashed, so
+# tracking it made a one-line Svelte change rewrite ~50 unreadable files. It is generated, never
+# edited: `dotnet build` produces it, and refuses to embed an empty one.
+Vortex.Dashboard.API/Assets/
+
 # VSCode
 .vscode/
 

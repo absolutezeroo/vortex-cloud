@@ -1,1 +1,0 @@
-import{A as e,I as t,L as n}from"./AccessDeniedNotice-C9qjRJZs.js";var r=new Set([`$$slots`,`$$events`,`$$legacy`]);function i(i,a){let o=t(a,r),s=[[`circle`,{cx:`12`,cy:`12`,r:`10`}],[`path`,{d:`M12 6v6l4 2`}]];e(i,n({name:`clock`},()=>o,{get iconNode(){return s}}))}export{i as t};

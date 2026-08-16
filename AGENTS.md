@@ -291,8 +291,10 @@ is missing from it. The client half still has no cross-check — a capability mi
 - Validation:
   - `grep -rn "<an existing capability string>" --include=*.cs --include=*.js .` and confirm the new
     capability appears in the same set of files
-  - `cd Vortex.Dashboard.Web && npm run build` (the SPA is served from
-    `Vortex.Dashboard.API/Assets/`; commit the regenerated output)
+  - `cd Vortex.Dashboard.Web && npm run lint` — `npm run build` does not catch an undefined
+    identifier used in markup
+  - the SPA is built into `Vortex.Dashboard.API/Assets/`, which is **generated and gitignored**:
+    `dotnet build` runs Vite itself, so there is nothing to commit and nothing to hand-build
   - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate`
   - restart the emulator — a running `Vortex.Main` holds its own DLLs, so a rebuilt binary is not
     live until it is restarted

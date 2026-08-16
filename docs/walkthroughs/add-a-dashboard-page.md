@@ -99,13 +99,17 @@ wiring above. Reuse the shared pieces instead of re-rolling them:
 - `hasDashboardCapability($identity, CAPABILITIES.ops<Domain>Manage)` gates every write
   control. The server enforces it too; this only hides what the operator cannot use.
 
-The SPA is built into the API's static assets, so a page change is not live until:
+The SPA is embedded into the API assembly, so a page change is not live until the assembly is
+rebuilt — but `dotnet build` runs Vite for you (see `BuildDashboardFrontend` in
+`Vortex.Dashboard.API.csproj`), so there is no separate front-end step to remember:
 
 ```bash
-cd Vortex.Dashboard.Web && npm run build   # emits into Vortex.Dashboard.API/Assets/
+dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudFastCheck
 ```
 
-Commit the regenerated `Assets/` output together with the source change.
+`Vortex.Dashboard.API/Assets/` is generated and gitignored — never commit it, never hand-edit it.
+While iterating on the front-end alone, `npm run dev` is faster than a full rebuild, and
+`npm run lint` catches what the build does not: an undefined identifier used in markup.
 
 ---
 
