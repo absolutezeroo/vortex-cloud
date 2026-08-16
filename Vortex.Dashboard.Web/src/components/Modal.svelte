@@ -9,7 +9,7 @@
   //     ...body...
   //     <svelte:fragment slot="actions">...buttons...</svelte:fragment>
   //   </Modal>
-  import { onDestroy, onMount } from 'svelte';
+  import { useDialogBehaviour } from '../lib/dialogBehaviour.js';
 
   
   
@@ -45,10 +45,6 @@ search box off the top of the dialog.
   } = $props();
 
   let panel = $state();
-  let previouslyFocused = null;
-
-  const FOCUSABLE =
-    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
   function close() {
     if (dismissible) {
@@ -56,60 +52,9 @@ search box off the top of the dialog.
     }
   }
 
-  // Tab and Shift+Tab wrap inside the panel. Reading the focusable list on each keypress rather than
-  // caching it keeps conditional fields (a duration input that only exists when "permanent" is
-  // unchecked) in the cycle.
-  function trapFocus(event) {
-    const focusable = Array.from(panel?.querySelectorAll(FOCUSABLE) ?? []).filter(
-      (el) => el.offsetParent !== null || el === document.activeElement
-    );
-
-    if (focusable.length === 0) {
-      event.preventDefault();
-      return;
-    }
-
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  }
-
-  function onKeydown(event) {
-    if (event.key === 'Escape') {
-      event.stopPropagation();
-      close();
-      return;
-    }
-
-    if (event.key === 'Tab') {
-      trapFocus(event);
-    }
-  }
-
-  onMount(() => {
-    previouslyFocused = document.activeElement;
-
-    // Focus the first control so the operator can start typing; falls back to the panel itself for a
-    // dialog that is only text plus a close button.
-    const target = panel?.querySelector(FOCUSABLE) ?? panel;
-    target?.focus?.();
-
-    window.addEventListener('keydown', onKeydown, true);
-  });
-
-  onDestroy(() => {
-    window.removeEventListener('keydown', onKeydown, true);
-    // Hand focus back to whatever opened the dialog, so dismissing it does not drop the caret at the
-    // top of the document.
-    previouslyFocused?.focus?.();
-  });
+  // Focus trap, Escape, and handing focus back on close -- shared with Drawer so there is one
+  // implementation rather than two that drift.
+  useDialogBehaviour(() => panel, { onClose: close });
 </script>
 
 <div class="modal-layer">
