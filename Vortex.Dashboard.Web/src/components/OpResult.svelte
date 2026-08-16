@@ -7,10 +7,21 @@
   // callers can drop it in without an outer {#if}.
   import { CircleCheck, CircleX } from '@lucide/svelte';
   import { compactCorrelation } from '../lib/format.js';
+  import { describeOpError } from '../lib/opErrors.js';
+  import { t } from '../lib/i18n.js';
 
   export let result = null;
   export let onCopy = null; // (correlationId) => void — shows a copy button when provided
   export let copyLabel = 'Copy';
+
+  // On success the server sends the literal "ok", which is not a sentence to show an operator. On a
+  // refusal it sends the domain's own code (offer_has_products); both need translating before they
+  // reach the screen. Depends on $t so the line re-renders when the locale changes.
+  $: message = result
+    ? result.ok
+      ? $t('common.resultSuccess')
+      : describeOpError(result.message)
+    : '';
 </script>
 
 {#if result}
@@ -20,7 +31,7 @@
     {:else}
       <CircleX size={16} strokeWidth={2} aria-hidden="true" />
     {/if}
-    <span class="op-result-message">{result.message}</span>
+    <span class="op-result-message">{message}</span>
     {#if result.correlationId}
       <code class="op-result-cid">cid {compactCorrelation(result.correlationId)}</code>
     {/if}

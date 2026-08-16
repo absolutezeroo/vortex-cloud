@@ -20,6 +20,7 @@ import { apiPost } from './api.js';
 import { isPermissionDeniedError } from './permissions.js';
 import { rememberReason } from './reasonHistory.js';
 import { translate } from './i18n.js';
+import { describeOpError } from './opErrors.js';
 
 const EMPTY = { pending: null, busy: false, error: '', result: null, key: '' };
 
@@ -105,7 +106,11 @@ export function createWriteOps(onSuccess) {
 
       // Kept open on a domain rejection (say achievement_has_progress) so the operator can read the
       // reason without losing what they typed.
-      const message = result.error || translate('common.resultFailed');
+      //
+      // The server puts that reason in OperationResult.message. This read `result.error`, a field no
+      // dashboard response has ever carried, so every refusal in the whole dashboard collapsed to
+      // "Failed" -- the cause travelled all the way from the domain and was dropped on this line.
+      const message = describeOpError(result.message);
 
       state.update((s) => ({
         ...s,
