@@ -337,32 +337,22 @@ internal sealed class NftCollectionsGrain(
             // The client draws every collectible — the items and both prizes — by looking a sprite
             // id up in its own furniture tables, so the picture comes from the definition rather
             // than from anything stored on the collection. Gathered in one query for the whole set.
-            string[] codes =
-            [
-                .. collections
-                    .SelectMany(collection =>
-                        (collection.Items ?? [])
-                            .Select(item => item.ProductCode)
-                            .Concat([collection.BonusProductCode, collection.RewardProductCode])
-                    )
-                    .Where(code => !string.IsNullOrWhiteSpace(code))
-                    .Select(code => code!)
-                    .Distinct(StringComparer.OrdinalIgnoreCase),
-            ];
+            IEnumerable<string?> codes = collections.SelectMany(collection =>
+                (collection.Items ?? [])
+                    .Select(item => item.ProductCode)
+                    .Concat([collection.BonusProductCode, collection.RewardProductCode])
+            );
 
-            Dictionary<string, FurnitureIdentity> definitions = await dbCtx
-                .FurnitureDefinitions.AsNoTracking()
-                .Where(definition =>
-                    codes.Contains(definition.Name) && definition.DeletedAt == null
-                )
-                .ToDictionaryAsync(
-                    definition => definition.Name,
+            Dictionary<string, FurnitureIdentity> definitions = await FurnitureDefinitionLookup
+                .ResolveByClassNameAsync(
+                    dbCtx,
+                    codes,
                     definition => new FurnitureIdentity(
                         definition.SpriteId,
                         definition.ProductType
                     ),
-                    StringComparer.OrdinalIgnoreCase,
-                    ct
+                    ct,
+                    _logger
                 )
                 .ConfigureAwait(true);
 

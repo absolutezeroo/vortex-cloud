@@ -77,6 +77,51 @@ public sealed class NftCollectionsGrainTests
     }
 
     /// <summary>
+    ///     A classname is not a key. The client's own furnidata ships duplicates —
+    ///     <c>clothing_nftshoulderdragon1</c> is two entries there — so the mirror table holds two
+    ///     live rows under one name, and keying a dictionary on it threw. The grain catches on load
+    ///     and empties its cache, so one duplicated code blanked the whole collectibles hub for
+    ///     every player: "Failed to load collectible collections", nothing shown.
+    /// </summary>
+    [Fact]
+    public async Task ACollectionSurvivesAClassnameThatNamesTwoDefinitions()
+    {
+        Harness harness = await Harness
+            .CreateAsync(withDuplicateSofaDefinition: true)
+            .ConfigureAwait(true);
+
+        ImmutableArray<NftCollectionSnapshot> collections = await harness
+            .Grain.GetCollectionsForPlayerAsync(Collector, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        collections.Should().ContainSingle();
+        collections.Single().Items.Should().HaveCount(2);
+    }
+
+    /// <summary>
+    ///     Which of the duplicates wins matters less than it being the same one on every reload — an
+    ///     item whose icon changes between restarts is worse than one drawn from the older row.
+    /// </summary>
+    [Fact]
+    public async Task ADuplicatedClassnameResolvesToItsLowestIdDefinition()
+    {
+        Harness harness = await Harness
+            .CreateAsync(withDuplicateSofaDefinition: true)
+            .ConfigureAwait(true);
+
+        ImmutableArray<NftCollectionSnapshot> collections = await harness
+            .Grain.GetCollectionsForPlayerAsync(Collector, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        CollectibleProductItemSnapshot sofa = collections
+            .Single()
+            .Items.Single(item => item.ProductCode == Sofa);
+
+        // Definitions 1 and 99 both answer to club_sofa; the harness gives each sprite id == id.
+        sofa.ItemTypeId.Should().Be("1");
+    }
+
+    /// <summary>
     ///     The two prizes go through the same resolution as the items. They used to be built with a
     ///     hardcoded product type and the classname as the item type, so every prize in every
     ///     collection was drawn from the wrong table with a nonsense id.
@@ -270,7 +315,8 @@ public sealed class NftCollectionsGrainTests
         public static async Task<Harness> CreateAsync(
             bool withCollection = true,
             int status = NftCollectionStatus.Visible,
-            string? rewardProductCode = null
+            string? rewardProductCode = null,
+            bool withDuplicateSofaDefinition = false
         )
         {
             DbContextOptions<VortexDbContext> options =
@@ -283,6 +329,15 @@ public sealed class NftCollectionsGrainTests
                 await seed
                     .FurnitureDefinitions.AddRangeAsync(Definition(1, Sofa), Definition(2, Throne))
                     .ConfigureAwait(true);
+
+                if (withDuplicateSofaDefinition)
+                {
+                    // A second live definition under the same classname, exactly as furnidata ships
+                    // it. Higher id, so the lowest-id rule has something to reject.
+                    await seed
+                        .FurnitureDefinitions.AddAsync(Definition(99, Sofa))
+                        .ConfigureAwait(true);
+                }
 
                 if (withCollection)
                 {

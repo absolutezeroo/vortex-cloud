@@ -84,11 +84,16 @@ internal sealed class NftStoreGrain(
             .CreateDbContextAsync(ct)
             .ConfigureAwait(true);
 
+        // Ordered on purpose: a classname can name several definitions (see
+        // FurnitureDefinitionLookup), and an unordered First would let the database decide which
+        // piece of furniture the player is handed. Same lowest-id rule as the shop listing, so the
+        // item bought is the item that was drawn.
         int definitionId = await dbCtx
             .FurnitureDefinitions.AsNoTracking()
             .Where(definition =>
                 definition.Name == offer.ProductCode && definition.DeletedAt == null
             )
+            .OrderBy(definition => definition.Id)
             .Select(definition => definition.Id)
             .FirstOrDefaultAsync(ct)
             .ConfigureAwait(true);
@@ -216,24 +221,20 @@ internal sealed class NftStoreGrain(
                 .ToArrayAsync(ct)
                 .ConfigureAwait(true);
 
-            string[] codes = [.. offers.Select(offer => offer.ProductCode).Distinct()];
-
             // The client draws a shop item by looking its sprite id up in its own furniture tables,
             // so both the id and which table to use come from the definition rather than from
             // anything an admin types. Getting either wrong does not fail: it silently draws a
             // different piece of furniture.
-            Dictionary<string, (int SpriteId, ProductType Type)> definitions = await dbCtx
-                .FurnitureDefinitions.AsNoTracking()
-                .Where(definition =>
-                    codes.Contains(definition.Name) && definition.DeletedAt == null
-                )
-                .ToDictionaryAsync(
-                    definition => definition.Name,
-                    definition => (definition.SpriteId, definition.ProductType),
-                    StringComparer.OrdinalIgnoreCase,
-                    ct
-                )
-                .ConfigureAwait(true);
+            Dictionary<string, (int SpriteId, ProductType Type)> definitions =
+                await FurnitureDefinitionLookup
+                    .ResolveByClassNameAsync(
+                        dbCtx,
+                        offers.Select(offer => offer.ProductCode),
+                        definition => (definition.SpriteId, definition.ProductType),
+                        ct,
+                        _logger
+                    )
+                    .ConfigureAwait(true);
 
             _offers =
             [

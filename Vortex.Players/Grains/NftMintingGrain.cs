@@ -208,23 +208,19 @@ internal sealed class NftMintingGrain(
                 .ToArrayAsync(ct)
                 .ConfigureAwait(true);
 
-            string[] codes = [.. types.Select(type => type.ProductCode).Distinct()];
-
             // The client finds the player's copies of a mintable type by looking its *sprite* id up
             // in the inventory, so the id it is sent has to come from the definition. A classname
             // here would silently match a different piece of furniture, or none at all.
-            Dictionary<string, (int SpriteId, ProductType Type)> definitions = await dbCtx
-                .FurnitureDefinitions.AsNoTracking()
-                .Where(definition =>
-                    codes.Contains(definition.Name) && definition.DeletedAt == null
-                )
-                .ToDictionaryAsync(
-                    definition => definition.Name,
-                    definition => (definition.SpriteId, definition.ProductType),
-                    StringComparer.OrdinalIgnoreCase,
-                    ct
-                )
-                .ConfigureAwait(true);
+            Dictionary<string, (int SpriteId, ProductType Type)> definitions =
+                await FurnitureDefinitionLookup
+                    .ResolveByClassNameAsync(
+                        dbCtx,
+                        types.Select(type => type.ProductCode),
+                        definition => (definition.SpriteId, definition.ProductType),
+                        ct,
+                        _logger
+                    )
+                    .ConfigureAwait(true);
 
             _mintableTypes =
             [

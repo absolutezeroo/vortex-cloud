@@ -155,19 +155,15 @@ internal sealed class PlayerNftClaimsGrain(
         CancellationToken ct
     )
     {
-        string[] codes = [.. productCodes.Distinct(StringComparer.OrdinalIgnoreCase)];
-
-        return await dbCtx
-            .FurnitureDefinitions.AsNoTracking()
-            .Where(definition => codes.Contains(definition.Name) && definition.DeletedAt == null)
-            .ToDictionaryAsync(
-                definition => definition.Name,
+        return await FurnitureDefinitionLookup
+            .ResolveByClassNameAsync(
+                dbCtx,
+                productCodes,
                 definition => new FurnitureIdentity(
                     definition.Id,
                     definition.SpriteId,
                     definition.ProductType
                 ),
-                StringComparer.OrdinalIgnoreCase,
                 ct
             )
             .ConfigureAwait(true);

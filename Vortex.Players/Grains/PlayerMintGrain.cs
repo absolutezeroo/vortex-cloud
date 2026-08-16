@@ -301,16 +301,16 @@ internal sealed class PlayerMintGrain(
 
         string[] codes = [.. assets.Select(asset => asset.ProductCode).Distinct()];
 
-        Dictionary<string, (int SpriteId, ProductType Type)> definitions = await dbCtx
-            .FurnitureDefinitions.AsNoTracking()
-            .Where(definition => codes.Contains(definition.Name) && definition.DeletedAt == null)
-            .ToDictionaryAsync(
-                definition => definition.Name,
-                definition => (definition.SpriteId, definition.ProductType),
-                StringComparer.OrdinalIgnoreCase,
-                ct
-            )
-            .ConfigureAwait(true);
+        Dictionary<string, (int SpriteId, ProductType Type)> definitions =
+            await FurnitureDefinitionLookup
+                .ResolveByClassNameAsync(
+                    dbCtx,
+                    codes,
+                    definition => (definition.SpriteId, definition.ProductType),
+                    ct,
+                    _logger
+                )
+                .ConfigureAwait(true);
 
         // What a Relic is worth is a property of the collection it belongs to, so it is read from
         // there rather than copied onto the asset: an admin re-pricing a collection item re-prices
