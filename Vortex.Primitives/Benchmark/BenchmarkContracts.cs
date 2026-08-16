@@ -37,6 +37,16 @@ public sealed record BenchmarkPlan
     /// </summary>
     public int RoomId { get; init; }
 
+    /// <summary>
+    /// Which furniture to place, by definition id. Empty picks one plain floor item automatically.
+    /// <para>
+    /// Several is closer to a real room than one repeated: the client loads a sprite per definition,
+    /// so a room of one item flatters it in a way no real room would. They are spread over the
+    /// floor together rather than in blocks, for the same reason.
+    /// </para>
+    /// </summary>
+    public ImmutableArray<int> FurnitureDefinitionIds { get; init; } = [];
+
     public required int DurationSeconds { get; init; }
 
     public int RampSeconds { get; init; } = 10;
@@ -138,3 +148,28 @@ public sealed record BenchmarkStatus
 }
 
 public sealed record BenchmarkStartResult(bool Started, string? ErrorCode);
+
+/// <summary>One past run, as the history lists it.</summary>
+public sealed record BenchmarkRunSummary
+{
+    public required string FileName { get; init; }
+    public required string Path { get; init; }
+    public required long SizeBytes { get; init; }
+    public required DateTime WrittenAtUtc { get; init; }
+    public required int Players { get; init; }
+    public required int Furniture { get; init; }
+    public required int DurationSeconds { get; init; }
+    public required string Label { get; init; }
+    public required string Phase { get; init; }
+    public required int RoomId { get; init; }
+    public required bool BorrowedRoom { get; init; }
+    public required int PeakClients { get; init; }
+    public required double WorstRttMs { get; init; }
+    public required long Failures { get; init; }
+
+    /// <summary>The stored verdict, so the list can be scanned for the bad runs without opening each
+    /// one. Empty for a report written before verdicts existed.</summary>
+    public required string Grade { get; init; }
+
+    public required string Headline { get; init; }
+}

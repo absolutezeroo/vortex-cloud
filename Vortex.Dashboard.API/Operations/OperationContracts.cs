@@ -286,6 +286,7 @@ public sealed record DeleteFurnitureDefinitionRequest(int DefinitionId, string R
 public sealed record BenchmarkStartRequest(
     int Players,
     int Furniture,
+    int[]? FurnitureIds,
     int RoomId,
     int DurationSeconds,
     int RampSeconds,

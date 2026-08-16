@@ -13,6 +13,7 @@ using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Players;
 using Vortex.Database.Entities.Room;
 using Vortex.Database.Entities.Security;
+using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
@@ -51,19 +52,13 @@ internal sealed class BenchmarkProvisioner(
     /// </summary>
     public const string Marker = "__bench__";
 
-    /// <summary>
-    /// Written into <c>extra_data</c> on every item a run places. It is how the cleanup tells the
-    /// furniture it added from the furniture that was already in a borrowed room — deleting by room
-    /// would empty somebody's room, which is the worst thing this feature could possibly do.
-    /// </summary>
-    public const string FurnitureStamp = Marker + "item";
-
     private const string BenchFigure = "hd-180-1.ch-210-66.lg-270-82.sh-290-91";
 
     public async Task<BenchmarkFixture> ProvisionAsync(
         int players,
         int furniture,
         int targetRoomId,
+        ImmutableArray<int> definitionIds,
         CancellationToken ct
     )
     {
@@ -130,21 +125,8 @@ internal sealed class BenchmarkProvisioner(
             throw new InvalidOperationException("benchmark_room_has_no_floor");
         }
 
-        // One definition, reused for every item. A run is measuring how much furniture costs, not
-        // which furniture -- and a single definition keeps the client's side of the comparison
-        // honest too, since sprite variety would change what it has to load.
-        int definitionId = await db
-            .FurnitureDefinitions.AsNoTracking()
-            .Where(f => f.CanStack && f.SpriteId > 0)
-            .OrderBy(f => f.Id)
-            .Select(f => f.Id)
-            .FirstOrDefaultAsync(ct)
+        List<int> definitions = await ResolveDefinitionsAsync(db, definitionIds, furniture, ct)
             .ConfigureAwait(false);
-
-        if (definitionId == 0 && furniture > 0)
-        {
-            throw new InvalidOperationException("benchmark_no_furniture_definition");
-        }
 
         List<PlayerEntity> accounts = [];
 
@@ -198,7 +180,7 @@ internal sealed class BenchmarkProvisioner(
         if (furniture > 0)
         {
             db.Furnitures.AddRange(
-                BuildFurniture(roomId, owner.Id, definitionId, furniture, openTiles)
+                BuildFurniture(roomId, owner.Id, definitions, furniture, openTiles)
             );
         }
 
@@ -233,6 +215,71 @@ internal sealed class BenchmarkProvisioner(
             // refuses the move and the pathfinder -- the expensive half of the load -- never runs.
             WalkTargets = [.. openTiles.Take(32)],
         };
+    }
+
+    /// <summary>
+    /// Turns the requested definition ids into a list the run can place, or explains why it cannot.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Only floor items, only one tile square. Both refusals come from the same lesson: the first
+    /// version took whatever was first in the table, which was a wall-mounted post-it, and wrote two
+    /// hundred of them at floor coordinates. They existed in the database and nowhere else.
+    /// </para>
+    /// <para>
+    /// A bigger item would overlap its neighbours once the floor is tiled one item per tile, and an
+    /// overlapping item is refused by the room — the same invisible failure wearing a different hat.
+    /// </para>
+    /// </remarks>
+    private static async Task<List<int>> ResolveDefinitionsAsync(
+        VortexDbContext db,
+        ImmutableArray<int> requested,
+        int furniture,
+        CancellationToken ct
+    )
+    {
+        if (furniture == 0)
+        {
+            return [];
+        }
+
+        IQueryable<FurnitureDefinitionEntity> placeable = db
+            .FurnitureDefinitions.AsNoTracking()
+            .Where(f =>
+                f.ProductType == ProductType.Floor
+                && f.SpriteId > 0
+                && f.Width == 1
+                && f.Length == 1
+            );
+
+        if (requested.IsEmpty)
+        {
+            int fallback = await placeable
+                .Where(f => f.Logic == "furniture_basic" || f.Logic == "none")
+                .OrderBy(f => f.Id)
+                .Select(f => f.Id)
+                .FirstOrDefaultAsync(ct)
+                .ConfigureAwait(false);
+
+            return fallback == 0
+                ? throw new InvalidOperationException("benchmark_no_furniture_definition")
+                : [fallback];
+        }
+
+        List<int> resolved = await placeable
+            .Where(f => requested.Contains(f.Id))
+            .Select(f => f.Id)
+            .ToListAsync(ct)
+            .ConfigureAwait(false);
+
+        if (resolved.Count != requested.Length)
+        {
+            // Named rather than silently dropped: a run that quietly placed half of what was asked
+            // for would be a measurement of something nobody chose.
+            throw new InvalidOperationException("benchmark_furniture_not_placeable");
+        }
+
+        return resolved;
     }
 
     /// <summary>
@@ -305,13 +352,8 @@ internal sealed class BenchmarkProvisioner(
 
             // Order matters: the furniture and the tickets point at the rooms and the players, and
             // MySQL will not let a row be deleted out from under a foreign key.
-            // Stamped items first, wherever they ended up -- a borrowed room keeps everything else
-            // it had. The room-scoped clause below only ever matches rooms the run created itself.
-            await db
-                .Furnitures.Where(f => f.ExtraData == FurnitureStamp)
-                .ExecuteDeleteAsync(ct)
-                .ConfigureAwait(false);
-
+            // Everything a bench account owns, wherever it ended up -- which is how a borrowed room
+            // keeps every item that was already in it and loses only what the run added.
             await db
                 .Furnitures.Where(f =>
                     (f.RoomEntityId != null && roomIds.Contains(f.RoomEntityId.Value))
@@ -436,11 +478,14 @@ internal sealed class BenchmarkProvisioner(
     private static IEnumerable<FurnitureEntity> BuildFurniture(
         int roomId,
         int ownerId,
-        int definitionId,
+        List<int> definitions,
         int count,
         List<(int X, int Y)> openTiles
     )
     {
+        // Deterministic on purpose. Two runs of the same plan lay the room out identically, which is
+        // what makes their numbers comparable -- a random layout would move the answer between runs
+        // and there would be no way to tell that from a change in the code.
         for (int index = 0; index < count; index++)
         {
             (int x, int y) = openTiles[index % openTiles.Count];
@@ -448,13 +493,19 @@ internal sealed class BenchmarkProvisioner(
             yield return new FurnitureEntity
             {
                 PlayerEntityId = ownerId,
-                FurnitureDefinitionEntityId = definitionId,
+                // Interleaved rather than one block per definition: a real room mixes its sprites,
+                // and the client's cost is per sprite drawn, not per sprite loaded.
+                FurnitureDefinitionEntityId = definitions[index % definitions.Count],
                 RoomEntityId = roomId,
                 X = x,
                 Y = y,
                 Z = index / openTiles.Count,
                 Rotation = Rotation.North,
-                ExtraData = FurnitureStamp,
+                // Left empty on purpose. A furni's logic reads this field, and feeding it a marker
+                // string is how a benign-looking stamp turns into a parse error at room load. The
+                // run's items are recognised by their owner instead -- a `__bench__` account -- which
+                // survives a crash just as well and cannot corrupt anything.
+                ExtraData = string.Empty,
             };
         }
     }

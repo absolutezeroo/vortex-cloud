@@ -42,6 +42,29 @@ internal static partial class DashboardEndpoints
         );
     }
 
+    /// <summary>
+    /// One past report, served as it sits on disk. The page draws its graph from this rather than
+    /// from anything held in memory, which is what lets a run from last week be read at all.
+    /// </summary>
+    public static void MapBenchmarkRunReads(WebApplication app)
+    {
+        MapReadGet(
+            app,
+            ApiBenchmark + "/runs/{file}",
+            "/api/benchmark/runs/{file}",
+            async (string file, DashboardApiService api, CancellationToken ct) =>
+            {
+                string? json = await api.BenchmarkRunAsync(file, ct).ConfigureAwait(false);
+
+                return json is null
+                    ? Results.NotFound(new { error = "run_not_found" })
+                    : Results.Content(json, "application/json");
+            },
+            Capabilities.Dashboard.BenchmarkRead,
+            TagBenchmark
+        );
+    }
+
     public static void MapBenchmarkOperations(WebApplication app)
     {
         MapPost(
@@ -87,6 +110,9 @@ internal static partial class DashboardEndpoints
         && body.Furniture is >= 0 and <= MaxFurniture
         && body.DurationSeconds is > 0 and <= MaxDurationSeconds
         && body.RoomId >= 0
+        // A run that named a hundred different items would be measuring the client's sprite loader,
+        // which is a different question and one this cannot answer honestly.
+        && (body.FurnitureIds?.Length ?? 0) <= 20
         && body.RampSeconds >= 0
         && body.WalkIntervalMs >= 0
         && body.ChatIntervalMs >= 0;

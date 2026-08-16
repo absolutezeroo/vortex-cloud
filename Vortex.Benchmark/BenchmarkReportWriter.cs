@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -30,7 +32,7 @@ namespace Vortex.Benchmark;
 /// in garbage collection looks identical from the outside to one that spent it in the pathfinder.
 /// </para>
 /// </remarks>
-internal sealed class BenchmarkReportWriter(
+internal sealed partial class BenchmarkReportWriter(
     IHostEnvironment environment,
     RoomPerformanceAggregator roomPerformance,
     ILogger<BenchmarkReportWriter> logger
@@ -78,6 +80,9 @@ internal sealed class BenchmarkReportWriter(
                     status.Error,
                     status.Residue,
                 },
+                // The judgement, made once and stored with the numbers so the file, the page and
+                // the history list can never disagree about whether a run was good.
+                verdict = BenchmarkVerdict.Evaluate(status.Samples, rooms.Tick.P99Ms),
                 client = new
                 {
                     peakClients = status.Samples.IsEmpty
@@ -133,6 +138,110 @@ internal sealed class BenchmarkReportWriter(
         {
             logger.LogWarning(ex, "Benchmark report could not be written.");
 
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// One report, read back whole.
+    /// </summary>
+    /// <remarks>
+    /// The name is checked against the pattern this writer produces rather than trusted: it arrives
+    /// from a URL, and a name is all it takes to read any file on the machine if nobody looks.
+    /// </remarks>
+    public async Task<string?> ReadAsync(string fileName, CancellationToken ct)
+    {
+        if (!ReportName().IsMatch(fileName))
+        {
+            return null;
+        }
+
+        string path = Path.Combine(Directory, fileName);
+
+        return File.Exists(path)
+            ? await File.ReadAllTextAsync(path, ct).ConfigureAwait(false)
+            : null;
+    }
+
+    [GeneratedRegex(@"^run-\d{8}-\d{6}\.json$")]
+    private static partial Regex ReportName();
+
+    /// <summary>
+    /// The runs already on disk, newest first, with just enough of each to tell them apart.
+    /// </summary>
+    /// <remarks>
+    /// Read from the files rather than kept in memory: the service holds one run at a time by
+    /// design, and the whole point of writing them down was that they outlive the process. A restart
+    /// loses nothing.
+    /// </remarks>
+    public ImmutableArray<BenchmarkRunSummary> List(int limit)
+    {
+        try
+        {
+            if (!System.IO.Directory.Exists(Directory))
+            {
+                return [];
+            }
+
+            return
+            [
+                .. new DirectoryInfo(Directory)
+                    .GetFiles("run-*.json")
+                    .OrderByDescending(file => file.CreationTimeUtc)
+                    .Take(limit)
+                    .Select(Describe)
+                    .OfType<BenchmarkRunSummary>(),
+            ];
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Benchmark reports could not be listed.");
+
+            return [];
+        }
+    }
+
+    /// <summary>
+    /// Pulls the headline out of one report. A file written by an older schema, or half-written by a
+    /// process that died mid-flush, is skipped rather than allowed to take the whole list down.
+    /// </summary>
+    private static BenchmarkRunSummary? Describe(FileInfo file)
+    {
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(File.ReadAllText(file.FullName));
+            JsonElement root = document.RootElement;
+
+            JsonElement plan = root.GetProperty("plan");
+            JsonElement outcome = root.GetProperty("outcome");
+            JsonElement client = root.GetProperty("client");
+
+            return new BenchmarkRunSummary
+            {
+                FileName = file.Name,
+                Path = file.FullName,
+                SizeBytes = file.Length,
+                WrittenAtUtc = root.GetProperty("writtenAtUtc").GetDateTime(),
+                Players = plan.GetProperty("Players").GetInt32(),
+                Furniture = plan.GetProperty("Furniture").GetInt32(),
+                DurationSeconds = plan.GetProperty("DurationSeconds").GetInt32(),
+                Label = plan.GetProperty("Label").GetString() ?? string.Empty,
+                Phase = outcome.GetProperty("phase").GetString() ?? string.Empty,
+                RoomId = outcome.GetProperty("RoomId").GetInt32(),
+                BorrowedRoom = outcome.GetProperty("BorrowedRoom").GetBoolean(),
+                PeakClients = client.GetProperty("peakClients").GetInt32(),
+                WorstRttMs = client.GetProperty("worstRttMs").GetDouble(),
+                Failures = client.GetProperty("failures").GetInt64(),
+                Grade = root.TryGetProperty("verdict", out JsonElement verdict)
+                    ? verdict.GetProperty("Grade").GetString() ?? string.Empty
+                    : string.Empty,
+                Headline = root.TryGetProperty("verdict", out JsonElement head)
+                    ? head.GetProperty("Headline").GetString() ?? string.Empty
+                    : string.Empty,
+            };
+        }
+        catch (Exception)
+        {
             return null;
         }
     }

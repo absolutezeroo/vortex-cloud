@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Benchmark;
@@ -30,6 +31,7 @@ internal sealed partial class DashboardOperationsService
             {
                 request.Players,
                 request.Furniture,
+                request.FurnitureIds,
                 request.RoomId,
                 request.DurationSeconds,
                 request.Label,
@@ -42,6 +44,7 @@ internal sealed partial class DashboardOperationsService
                         {
                             Players = request.Players,
                             Furniture = request.Furniture,
+                            FurnitureDefinitionIds = [.. request.FurnitureIds ?? []],
                             RoomId = request.RoomId,
                             DurationSeconds = request.DurationSeconds,
                             RampSeconds = request.RampSeconds,

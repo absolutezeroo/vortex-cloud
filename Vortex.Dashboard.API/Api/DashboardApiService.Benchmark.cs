@@ -76,6 +76,34 @@ internal sealed partial class DashboardApiService
             // The artefact. A number on a page cannot be attached to anything; this can.
             status.ReportPath,
             samples,
+            // The same judgement the report stores, so the page and the file always agree. The tick
+            // figure comes from the live aggregator: for a finished run it still covers its window.
+            verdict = BenchmarkVerdict.Evaluate(
+                status.Samples,
+                _roomPerformance.GetSnapshot().Tick.P99Ms
+            ),
+            // The runs already on disk. Read from the files, so the list survives a restart -- which
+            // is the whole reason a run writes one.
+            runs = _benchmark
+                .ListRuns(25)
+                .Select(run => new
+                {
+                    run.FileName,
+                    run.Path,
+                    run.SizeBytes,
+                    run.WrittenAtUtc,
+                    run.Players,
+                    run.Furniture,
+                    run.DurationSeconds,
+                    run.Label,
+                    run.Phase,
+                    run.RoomId,
+                    run.BorrowedRoom,
+                    run.PeakClients,
+                    run.WorstRttMs,
+                    run.Failures,
+                })
+                .ToList(),
             summary = samples.Count == 0
                 ? null
                 : new
@@ -91,6 +119,9 @@ internal sealed partial class DashboardApiService
                 },
         };
     }
+
+    public Task<string?> BenchmarkRunAsync(string fileName, CancellationToken ct) =>
+        _benchmark.ReadRunAsync(fileName, ct);
 
     private static double Median(System.Collections.Generic.List<double> values)
     {

@@ -104,6 +104,11 @@ internal sealed class BenchmarkService(
 
     public Task StopAsync(CancellationToken ct) => StopRunAsync(ct);
 
+    public ImmutableArray<BenchmarkRunSummary> ListRuns(int limit) => reportWriter.List(limit);
+
+    public Task<string?> ReadRunAsync(string fileName, CancellationToken ct) =>
+        reportWriter.ReadAsync(fileName, ct);
+
     public BenchmarkStatus GetStatus()
     {
         BenchmarkState state = _state;
@@ -175,7 +180,13 @@ internal sealed class BenchmarkService(
             _state = _state with { Phase = BenchmarkPhase.Provisioning };
 
             fixture = await provisioner
-                .ProvisionAsync(plan.Players, plan.Furniture, plan.RoomId, ct)
+                .ProvisionAsync(
+                    plan.Players,
+                    plan.Furniture,
+                    plan.RoomId,
+                    plan.FurnitureDefinitionIds,
+                    ct
+                )
                 .ConfigureAwait(false);
 
             _state = _state with
@@ -188,14 +199,27 @@ internal sealed class BenchmarkService(
 
             (string host, int port) = ReadListener();
 
-            Task sampler = Task.Run(() => SampleAsync(clients, ct), CancellationToken.None);
+            // Everything the run drives hangs off this, not off `ct` directly, so the duration can
+            // end the run on its own. Awaiting the sampler on a token only the Stop button cancels
+            // meant a run sat in Steady after its time was up, waiting for a human -- the duration
+            // was a suggestion.
+            using CancellationTokenSource runCts = CancellationTokenSource.CreateLinkedTokenSource(
+                ct
+            );
 
-            await RampAsync(plan, fixture, host, port, clients, ct).ConfigureAwait(false);
+            Task sampler = Task.Run(
+                () => SampleAsync(clients, runCts.Token),
+                CancellationToken.None
+            );
+
+            await RampAsync(plan, fixture, host, port, clients, runCts.Token).ConfigureAwait(false);
 
             _state = _state with { Phase = BenchmarkPhase.Steady };
 
-            await Task.Delay(TimeSpan.FromSeconds(plan.DurationSeconds), ct).ConfigureAwait(false);
+            await Task.Delay(TimeSpan.FromSeconds(plan.DurationSeconds), runCts.Token)
+                .ConfigureAwait(false);
 
+            await runCts.CancelAsync().ConfigureAwait(false);
             await sampler.ConfigureAwait(false);
         }
         catch (OperationCanceledException)

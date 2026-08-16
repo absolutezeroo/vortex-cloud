@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,4 +33,13 @@ public interface IBenchmarkService
     /// switch as it is now, not as it was when somebody last tried to start a run.
     /// </summary>
     Task<bool> ReadEnabledAsync();
+
+    /// <summary>
+    /// The runs already written to disk, newest first. Read from the files themselves, so a restart
+    /// does not lose the history — which is the whole reason they are files.
+    /// </summary>
+    ImmutableArray<BenchmarkRunSummary> ListRuns(int limit);
+
+    /// <summary>One past report, read back whole, or null if there is no such run.</summary>
+    Task<string?> ReadRunAsync(string fileName, CancellationToken ct);
 }
