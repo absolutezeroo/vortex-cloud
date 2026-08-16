@@ -4,7 +4,7 @@
 -- Additif et idempotent : ne supprime rien, ne cache rien. Déplace les offres wired qui sont
 -- déjà dans la section wired, et crée celles qui manquent.
 
-CREATE TEMPORARY TABLE wired_tri (class_name VARCHAR(200) PRIMARY KEY, famille VARCHAR(20), bucket VARCHAR(10));
+CREATE TEMPORARY TABLE wired_tri (class_name VARCHAR(200) PRIMARY KEY, famille VARCHAR(20), bucket VARCHAR(40));
 INSERT INTO wired_tri (class_name, famille, bucket) VALUES
   ('wf_trg_at_given_time','triggers','habbo'),
   ('wf_trg_at_time_long','triggers','habbo'),

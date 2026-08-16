@@ -924,6 +924,8 @@
 <ConfirmReasonModal
   open={Boolean($deleteOps.pending)}
   title={$deleteOps.pending?.title ?? ''}
+  changes={$deleteOps.pending?.changes ?? []}
+  noteOnly={$deleteOps.pending?.noteOnly ?? false}
   summary={$deleteOps.pending?.summary ?? ''}
   confirmLabel={$t('common.confirm')}
   busy={$deleteOps.busy}

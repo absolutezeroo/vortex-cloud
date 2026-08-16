@@ -6,6 +6,7 @@
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { apiGet } from '../lib/api.js';
   import { createWriteOps } from '../lib/writeOps.js';
+  import { diffFields } from '../lib/changes.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { identity } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
@@ -82,9 +83,17 @@
       '/api/v1/operations/config',
       { key: item.key, value },
       item.key,
-      '',
+      translate('config.changeSummary', { key: item.key }),
       {
         key: item.key,
+        // The old value is the thing worth auditing here and it was only ever on screen. Now it
+        // rides into the reason, so an audit line reads "Config trade.enabled — Value: true → false"
+        // instead of whatever the operator felt like typing.
+        changes: diffFields(
+          { value: item.currentValue },
+          { value },
+          [{ key: 'value', label: translate('config.value') }],
+        ),
         // Reflect the new value locally on success so "overridden"/dirty state stays accurate
         // without a full reload.
         onSuccess: () => {
@@ -172,6 +181,8 @@
 <ConfirmReasonModal
   open={Boolean($ops.pending)}
   title={$ops.pending?.title ?? ''}
+  changes={$ops.pending?.changes ?? []}
+  noteOnly={$ops.pending?.noteOnly ?? false}
   confirmLabel={$t('common.confirm')}
   busy={$ops.busy}
   error={$ops.error}

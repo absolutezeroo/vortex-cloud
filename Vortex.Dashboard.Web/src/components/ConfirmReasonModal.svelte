@@ -1,8 +1,14 @@
 <script>
-  // Reusable "confirm a destructive action + capture the mandatory reason" modal. A caller opens it
-  // with a title/summary, the operator types the reason inside the modal (no more reason input sitting
-  // beside every button), and `confirm` fires with the trimmed reason. The caller keeps the modal
-  // open on failure by passing `error` (e.g. offer_has_purchases) and clearing `busy`.
+  // Confirm a write, show what it actually changes, and collect the operator's optional note.
+  //
+  // The reason this action gets audited with is built from the action itself (lib/changes.js): the
+  // caller's summary sentence plus the fields that really differ. That is the part the system
+  // already knows, and making an operator retype it before every price change was friction that
+  // produced nothing. The free-text box is now for the part only they know -- "asked for by X" --
+  // and is required only when there is no generated sentence to stand on (`noteOnly` false).
+  //
+  // The before/after list is also the thing worth reading before confirming: "Price: 2 → 4" catches
+  // a mistyped field in a way "Save this offer?" never did.
   import Modal from './Modal.svelte';
   import { createEventDispatcher } from 'svelte';
   import { CircleX } from '@lucide/svelte';
@@ -16,21 +22,23 @@
   export let busy = false;
   export let error = '';
   export let danger = true;
+  export let changes = [];
+  export let noteOnly = true;
 
   const dispatch = createEventDispatcher();
 
-  let reason = '';
+  let note = '';
   let prevOpen = false;
   // Reset the field only on the closed -> open transition, so typing doesn't wipe it and a reused
-  // modal never carries the previous action's reason.
+  // modal never carries the previous action's note.
   $: {
     if (open && !prevOpen) {
-      reason = '';
+      note = '';
     }
     prevOpen = open;
   }
 
-  $: valid = reasonOk(reason);
+  $: valid = noteOnly || reasonOk(note);
 
   function cancel() {
     dispatch('cancel');
@@ -40,7 +48,7 @@
     if (!valid || busy) {
       return;
     }
-    dispatch('confirm', reason.trim());
+    dispatch('confirm', note.trim());
   }
 </script>
 
@@ -53,16 +61,32 @@
     on:close={cancel}
   >
     {#if summary}<p>{summary}</p>{/if}
+
+    {#if changes && changes.length}
+      <ul class="change-list">
+        {#each changes as change}
+          <li>
+            <span class="change-label">{change.label}</span>
+            <span class="change-from">{change.from}</span>
+            <span class="change-arrow" aria-hidden="true">→</span>
+            <span class="change-to">{change.to}</span>
+          </li>
+        {/each}
+      </ul>
+    {/if}
+
     <!-- Optional richer detail than a summary sentence: the config editor shows the old/new value,
          which is the thing the operator actually double-checks before confirming. -->
     <slot />
     <div class="op-field">
-      <label for="confirm-reason-input">{$t('common.reasonRequired')}</label>
+      <label for="confirm-reason-input">
+        {noteOnly ? $t('common.noteOptional') : $t('common.reasonRequired')}
+      </label>
       <!-- svelte-ignore a11y-autofocus -->
       <input
         id="confirm-reason-input"
-        bind:value={reason}
-        placeholder={$t('common.reasonPlaceholderChange')}
+        bind:value={note}
+        placeholder={noteOnly ? $t('common.notePlaceholder') : $t('common.reasonPlaceholderChange')}
         list="reason-history"
         autofocus
         on:keydown={(e) => e.key === 'Enter' && confirm()}
@@ -79,8 +103,40 @@
 {/if}
 
 <style>
-  .op-actions button.danger {
-    color: var(--danger);
-    border-color: rgba(var(--danger-rgb), 0.4);
+  .change-list {
+    list-style: none;
+    margin: 12px 0;
+    padding: 10px 12px;
+    display: grid;
+    gap: 6px;
+    border: 1px solid var(--border, rgba(128, 128, 128, 0.3));
+    border-radius: 8px;
+    font-size: 0.86rem;
+  }
+
+  .change-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .change-label {
+    flex: 1 1 40%;
+    min-width: 0;
+    opacity: 0.75;
+  }
+
+  .change-from {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+
+  .change-arrow {
+    opacity: 0.5;
+  }
+
+  .change-to {
+    font-weight: 600;
   }
 </style>

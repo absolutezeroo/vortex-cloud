@@ -25,6 +25,20 @@
     on:close={() => ops.cancel()}
   >
     <p>{$ops.pending.summary}</p>
+    {#if $ops.pending.changes?.length}
+      <!-- Same before/after read-back as ConfirmReasonModal: the line that catches a mistyped field
+           before it is written, not after. -->
+      <ul class="change-list">
+        {#each $ops.pending.changes as change}
+          <li>
+            <span class="change-label">{change.label}</span>
+            <span class="change-from">{change.from}</span>
+            <span aria-hidden="true">→</span>
+            <span class="change-to">{change.to}</span>
+          </li>
+        {/each}
+      </ul>
+    {/if}
     {#if $ops.pending.reason}
       <p class="muted">{$t('common.reasonLabel', { reason: $ops.pending.reason })}</p>
     {/if}
@@ -40,3 +54,38 @@
     </svelte:fragment>
   </Modal>
 {/if}
+
+<style>
+  .change-list {
+    list-style: none;
+    margin: 12px 0;
+    padding: 10px 12px;
+    display: grid;
+    gap: 6px;
+    border: 1px solid var(--border, rgba(128, 128, 128, 0.3));
+    border-radius: 8px;
+    font-size: 0.86rem;
+  }
+
+  .change-list li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .change-label {
+    flex: 1 1 40%;
+    min-width: 0;
+    opacity: 0.75;
+  }
+
+  .change-from {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+
+  .change-to {
+    font-weight: 600;
+  }
+</style>

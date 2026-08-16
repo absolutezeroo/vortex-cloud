@@ -21,6 +21,7 @@ import { isPermissionDeniedError } from './permissions.js';
 import { rememberReason } from './reasonHistory.js';
 import { translate } from './i18n.js';
 import { describeOpError } from './opErrors.js';
+import { autoReasonSuffices, buildAutoReason } from './changes.js';
 
 const EMPTY = { pending: null, busy: false, error: '', result: null, key: '' };
 
@@ -48,11 +49,31 @@ export function createWriteOps(onSuccess) {
       return false;
     }
 
-    current = { endpoint, body, key, reason: options.reason, onSuccess: options.onSuccess };
+    const changes = options.changes ?? [];
+
+    current = {
+      endpoint,
+      body,
+      key,
+      summary,
+      changes,
+      reason: options.reason,
+      onSuccess: options.onSuccess,
+    };
     state.update((s) => ({
       ...s,
       // `danger` is forwarded to ConfirmReasonModal, which paints a destructive write differently.
-      pending: { title, summary, reason: options.reason, danger: options.danger === true },
+      // `changes` is the before/after list the modal shows and the audited reason is built from --
+      // see lib/changes.js. `noteOnly` tells the modal the generated reason already stands on its
+      // own, so the free-text box is a note rather than a gate.
+      pending: {
+        title,
+        summary,
+        changes,
+        reason: options.reason,
+        noteOnly: Boolean(options.reason) || autoReasonSuffices(summary, changes),
+        danger: options.danger === true,
+      },
       key,
       error: '',
       errors: { ...s.errors, [key]: '' },
@@ -66,17 +87,22 @@ export function createWriteOps(onSuccess) {
   }
 
   /**
-   * Commit the staged write. `reason` comes from ConfirmReasonModal on the pages that collect it
-   * there; the authoring pages (polls, quests, targeted offers) instead carry the reason as a field
-   * of the form being saved and pass it to `ask` as `options.reason`, so they call this with no
-   * argument. Either way the write is audited with a reason -- there is no path that posts without.
+   * Commit the staged write.
+   *
+   * The argument is the operator's optional *note*, not the whole reason. What gets audited is built
+   * from the action itself -- the page's summary sentence plus the fields that actually changed --
+   * with the note appended when there is one. A page that still owns its reason as a form field
+   * (`options.reason`) keeps that as the base instead, so both styles audit a real sentence and
+   * neither can post without one.
    */
-  async function confirm(reason) {
+  async function confirm(note) {
     if (!current) return false;
 
-    const { endpoint, body, key, onSuccess: onOpSuccess } = current;
+    const { endpoint, body, key, summary, changes, onSuccess: onOpSuccess } = current;
 
-    reason = reason ?? current.reason;
+    const reason = current.reason
+      ? buildAutoReason(current.reason, [], note)
+      : buildAutoReason(summary, changes, note);
 
     state.update((s) => ({
       ...s,
@@ -90,7 +116,9 @@ export function createWriteOps(onSuccess) {
       const result = await apiPost(endpoint, { ...body, reason });
 
       if (result.ok) {
-        rememberReason(reason);
+        // Only what the operator actually typed. Remembering the generated half would fill the
+        // suggestion list with sentences nobody wrote and nobody wants offered back.
+        rememberReason(note);
         current = null;
         state.update((s) => ({
           ...s,

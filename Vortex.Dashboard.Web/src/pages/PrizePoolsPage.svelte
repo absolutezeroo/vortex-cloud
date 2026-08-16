@@ -627,6 +627,8 @@
 <ConfirmReasonModal
   open={Boolean($ops.pending)}
   title={$ops.pending?.title ?? ''}
+  changes={$ops.pending?.changes ?? []}
+  noteOnly={$ops.pending?.noteOnly ?? false}
   summary={$ops.pending?.summary ?? ''}
   confirmLabel={$ops.pending?.title ?? $t('prizePools.save')}
   busy={$ops.busy}

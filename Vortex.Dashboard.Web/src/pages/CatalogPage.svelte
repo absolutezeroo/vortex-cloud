@@ -1,5 +1,5 @@
 <script>
-  import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
+  import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { onMount } from 'svelte';
   import {
@@ -22,7 +22,8 @@
   import { createWriteOps } from '../lib/writeOps.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { reasonOk, nonNegative } from '../lib/validation.js';
+  import { nonNegative } from '../lib/validation.js';
+  import { diffFields } from '../lib/changes.js';
   import { PRODUCT_TYPES } from '../lib/furnitureEnums.js';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import PickerModal from '../components/PickerModal.svelte';
@@ -56,21 +57,21 @@
   function emptyPageForm() {
     return {
       localization: '', name: '', icon: 0, layout: 'default_3x3', sortOrder: 0, visible: true,
-      imageDataText: '', textDataText: '', reason: '',
+      imageDataText: '', textDataText: '',
     };
   }
 
   function emptyOfferForm() {
     return {
       localizationId: '', costCredits: 0, costCurrency: 0, currencyTypeId: '',
-      canGift: true, canBundle: true, clubLevel: 0, discountPercent: 0, visible: true, reason: '',
+      canGift: true, canBundle: true, clubLevel: 0, discountPercent: 0, visible: true,
     };
   }
 
   function emptyProductForm() {
     return {
       productType: 0, furnitureDefinitionId: '', furnitureName: '', furnitureIcon: '', furnitureSprite: '',
-      extraParam: '', quantity: 1, uniqueSize: 0, uniqueRemaining: 0, buildersClubEligible: false, reason: '',
+      extraParam: '', quantity: 1, uniqueSize: 0, uniqueRemaining: 0, buildersClubEligible: false,
     };
   }
 
@@ -287,14 +288,50 @@
     drillToBreadcrumb(parentChain.length - 2);
   }
 
-  const stage = (id, title, endpoint, valid, body, summary, onSuccess) =>
+  // `changes` is the before/after list for an edit (empty for a create or a delete). It is shown in
+  // the confirm dialog and becomes the audited reason, which is why none of these actions asks the
+  // operator to type one any more: the page already knows what it is about to do.
+  const stage = (id, title, endpoint, valid, body, summary, onSuccess, changes = []) =>
     ops.ask(endpoint, body, title, summary, {
       key: id,
       valid,
       invalidMessage: translate('catalogAdmin.fillFields'),
-      reason: body.reason,
+      changes,
       onSuccess,
     });
+
+  // The fields worth naming in an audit line, in the order an operator reads them. Short labels on
+  // purpose -- the form's own "Cost (credits) *" reads badly inside a sentence.
+  const OFFER_FIELDS = () => [
+    { key: 'localizationId', label: translate('catalogAdmin.fieldLocalizationId') },
+    { key: 'costCredits', label: translate('catalogAdmin.fieldCostCredits') },
+    { key: 'costCurrency', label: translate('catalogAdmin.fieldCostCurrency') },
+    { key: 'currencyTypeId', label: translate('catalogAdmin.fieldCurrencyType') },
+    { key: 'canGift', label: translate('catalogAdmin.fieldCanGift') },
+    { key: 'canBundle', label: translate('catalogAdmin.fieldCanBundle') },
+    { key: 'clubLevel', label: translate('catalogAdmin.fieldClubLevel') },
+    { key: 'discountPercent', label: translate('catalogAdmin.fieldDiscount') },
+    { key: 'visible', label: translate('catalogAdmin.fieldVisible') },
+  ];
+
+  const PAGE_FIELDS = () => [
+    { key: 'localization', label: translate('catalogAdmin.fieldLocalization') },
+    { key: 'name', label: translate('catalogAdmin.fieldName') },
+    { key: 'icon', label: translate('catalogAdmin.fieldIcon') },
+    { key: 'layout', label: translate('catalogAdmin.fieldLayout') },
+    { key: 'sortOrder', label: translate('catalogAdmin.fieldSortOrder') },
+    { key: 'visible', label: translate('catalogAdmin.fieldVisible') },
+  ];
+
+  const PRODUCT_FIELDS = () => [
+    { key: 'productType', label: translate('catalogAdmin.fieldProductType') },
+    { key: 'furnitureDefinitionId', label: translate('catalogAdmin.fieldFurniture') },
+    { key: 'extraParam', label: translate('catalogAdmin.fieldExtraParam') },
+    { key: 'quantity', label: translate('catalogAdmin.fieldQuantity') },
+    { key: 'uniqueSize', label: translate('catalogAdmin.fieldUniqueSize') },
+    { key: 'uniqueRemaining', label: translate('catalogAdmin.fieldUniqueRemaining') },
+    { key: 'buildersClubEligible', label: translate('catalogAdmin.fieldBuildersClub') },
+  ];
 
   function stageCreatePage() {
     if (!canManage) {
@@ -308,7 +345,7 @@
       'createPage',
       translate('catalogAdmin.newPage'),
       '/api/v1/operations/catalog/pages',
-      Boolean(newPage.localization.trim()) && reasonOk(newPage.reason),
+      Boolean(newPage.localization.trim()),
       {
         catalogType,
         parentId,
@@ -320,7 +357,6 @@
         textData: linesToArray(newPage.textDataText),
         sortOrder: Number(newPage.sortOrder) || 0,
         visible: newPage.visible,
-        reason: newPage.reason.trim(),
       },
       translate('catalogAdmin.createPageSummary', { name: newPage.localization.trim(), parent: parentId ? `#${parentId}` : translate('catalogAdmin.root').toLowerCase() }),
       async () => {
@@ -342,7 +378,6 @@
       visible: currentPage.visible,
       imageDataText: arrayToLines(currentPage.imageData),
       textDataText: arrayToLines(currentPage.textData),
-      reason: '',
     };
     editPageOpen = true;
   }
@@ -354,7 +389,7 @@
       'updatePage',
       translate('catalogAdmin.edit'),
       '/api/v1/operations/catalog/pages/update',
-      Boolean(editPageForm.localization.trim()) && reasonOk(editPageForm.reason),
+      Boolean(editPageForm.localization.trim()),
       {
         pageId: currentPage.id,
         parentId: currentPage.parentEntityId,
@@ -366,7 +401,6 @@
         textData: linesToArray(editPageForm.textDataText),
         sortOrder: Number(editPageForm.sortOrder) || 0,
         visible: editPageForm.visible,
-        reason: editPageForm.reason.trim(),
       },
       translate('catalogAdmin.updatePageSummary', { id: currentPage.id }),
       async () => {
@@ -379,6 +413,7 @@
           );
         }
       },
+      diffFields(currentPage, { ...editPageForm, name: editPageForm.name.trim() || null }, PAGE_FIELDS()),
     );
   }
 
@@ -389,17 +424,15 @@
       'deletePage',
       translate('catalogAdmin.deletePage'),
       '/api/v1/operations/catalog/pages/delete',
-      reasonOk(deletePageReason),
-      { pageId: currentPage.id, reason: deletePageReason.trim() },
+      true,
+      { pageId: currentPage.id },
       translate('catalogAdmin.deletePageSummary', { id: currentPage.id, name: currentPage.localization }),
       async () => {
-        deletePageReason = '';
         goUp();
       },
     );
   }
 
-  let deletePageReason = '';
 
   // "Localization id" is a free-form internal slug (see tools/catalog_converter/convert.py --
   // it's copied verbatim from the source catalog's own name column, no required format). Asking
@@ -430,7 +463,7 @@
       'createOffer',
       translate('catalogAdmin.newOffer'),
       '/api/v1/operations/catalog/offers',
-      Boolean(newOffer.localizationId.trim()) && nonNegative(newOffer.costCredits) && reasonOk(newOffer.reason),
+      Boolean(newOffer.localizationId.trim()) && nonNegative(newOffer.costCredits),
       {
         pageId: currentPage.id,
         localizationId: newOffer.localizationId.trim(),
@@ -442,7 +475,6 @@
         clubLevel: Number(newOffer.clubLevel) || 0,
         discountPercent: Number(newOffer.discountPercent) || 0,
         visible: newOffer.visible,
-        reason: newOffer.reason.trim(),
       },
       translate('catalogAdmin.createOfferSummary', { name: newOffer.localizationId.trim(), id: currentPage.id }),
       async () => {
@@ -453,8 +485,13 @@
     );
   }
 
+  // The row as it was loaded, kept so the confirm dialog can show what actually changes.
+  let editOfferOriginal = null;
+  let editProductOriginal = null;
+
   function startEditOffer(offer) {
     editOfferId = offer.id;
+    editOfferOriginal = offer;
     editOfferForm = {
       localizationId: offer.localizationId,
       costCredits: offer.costCredits,
@@ -465,7 +502,6 @@
       clubLevel: offer.clubLevel,
       discountPercent: offer.discountPercent,
       visible: offer.visible,
-      reason: '',
     };
   }
 
@@ -478,7 +514,7 @@
       'updateOffer',
       translate('catalogAdmin.edit'),
       '/api/v1/operations/catalog/offers/update',
-      Boolean(editOfferForm.localizationId.trim()) && nonNegative(editOfferForm.costCredits) && reasonOk(editOfferForm.reason),
+      Boolean(editOfferForm.localizationId.trim()) && nonNegative(editOfferForm.costCredits),
       {
         offerId: editOfferId,
         localizationId: editOfferForm.localizationId.trim(),
@@ -490,7 +526,6 @@
         clubLevel: Number(editOfferForm.clubLevel) || 0,
         discountPercent: Number(editOfferForm.discountPercent) || 0,
         visible: editOfferForm.visible,
-        reason: editOfferForm.reason.trim(),
       },
       translate('catalogAdmin.updateOfferSummary', { id: editOfferId }),
       async () => {
@@ -501,10 +536,14 @@
           await loadOfferDetail(id);
         }
       },
+      diffFields(
+        editOfferOriginal,
+        { ...editOfferForm, localizationId: editOfferForm.localizationId.trim(), currencyTypeId },
+        OFFER_FIELDS(),
+      ),
     );
   }
 
-  let deleteOfferReason = {};
 
   function stageDeleteOffer(offer) {
     if (!canManage) return;
@@ -513,11 +552,10 @@
       'deleteOffer',
       translate('catalogAdmin.deleteOffer'),
       '/api/v1/operations/catalog/offers/delete',
-      reasonOk(deleteOfferReason[offer.id]),
-      { offerId: offer.id, reason: (deleteOfferReason[offer.id] || '').trim() },
+      true,
+      { offerId: offer.id },
       translate('catalogAdmin.deleteOfferSummary', { id: offer.id, name: offer.localizationId }),
       async () => {
-        deleteOfferReason = { ...deleteOfferReason, [offer.id]: '' };
         if (selectedOfferId === offer.id) {
           selectedOfferId = null;
           offerDetail = null;
@@ -538,7 +576,7 @@
       'createProduct',
       translate('catalogAdmin.addItem'),
       '/api/v1/operations/catalog/products',
-      reasonOk(newProduct.reason),
+      true,
       {
         offerId: selectedOfferId,
         productType: Number(newProduct.productType),
@@ -548,7 +586,6 @@
         uniqueSize: Number(newProduct.uniqueSize) || 0,
         uniqueRemaining: Number(newProduct.uniqueRemaining) || 0,
         buildersClubEligible: newProduct.buildersClubEligible,
-        reason: newProduct.reason.trim(),
       },
       translate('catalogAdmin.addProductSummary', { id: selectedOfferId }),
       async () => {
@@ -561,6 +598,7 @@
 
   function startEditProduct(product) {
     editProductId = product.id;
+    editProductOriginal = product;
     editProductForm = {
       productType: product.productType,
       furnitureDefinitionId: product.furnitureDefinitionEntityId ?? '',
@@ -570,7 +608,6 @@
       uniqueSize: product.uniqueSize,
       uniqueRemaining: product.uniqueRemaining,
       buildersClubEligible: product.buildersClubEligible,
-      reason: '',
     };
   }
 
@@ -581,7 +618,7 @@
       'updateProduct',
       translate('catalogAdmin.edit'),
       '/api/v1/operations/catalog/products/update',
-      reasonOk(editProductForm.reason),
+      true,
       {
         productId: editProductId,
         productType: Number(editProductForm.productType),
@@ -591,17 +628,22 @@
         uniqueSize: Number(editProductForm.uniqueSize) || 0,
         uniqueRemaining: Number(editProductForm.uniqueRemaining) || 0,
         buildersClubEligible: editProductForm.buildersClubEligible,
-        reason: editProductForm.reason.trim(),
       },
       translate('catalogAdmin.updateProductSummary', { id: editProductId }),
       async () => {
         editProductId = null;
         await loadOfferDetail(selectedOfferId);
       },
+      diffFields(
+        // The loaded product names the definition `furnitureDefinitionEntityId`; the form uses the
+        // shorter key the endpoint takes. Aligned here so the diff compares like with like.
+        { ...editProductOriginal, furnitureDefinitionId: editProductOriginal?.furnitureDefinitionEntityId ?? '' },
+        editProductForm,
+        PRODUCT_FIELDS(),
+      ),
     );
   }
 
-  let deleteProductReason = {};
 
   function stageDeleteProduct(product) {
     if (!canManage) return;
@@ -610,11 +652,10 @@
       'deleteProduct',
       translate('catalogAdmin.deleteProduct'),
       '/api/v1/operations/catalog/products/delete',
-      reasonOk(deleteProductReason[product.id]),
-      { productId: product.id, reason: (deleteProductReason[product.id] || '').trim() },
+      true,
+      { productId: product.id },
       translate('catalogAdmin.deleteProductSummary', { id: product.id }),
       async () => {
-        deleteProductReason = { ...deleteProductReason, [product.id]: '' };
         await loadOfferDetail(selectedOfferId);
       },
     );
@@ -767,10 +808,6 @@
             <label for="edit-page-text-data">{$t('catalogAdmin.textDataOptional')}</label>
             <textarea id="edit-page-text-data" rows="3" bind:value={editPageForm.textDataText} placeholder="Welcome to our shop!"></textarea>
           </div>
-          <div class="op-field">
-            <label for="edit-page-reason">{$t('common.reasonRequired')}</label>
-            <input id="edit-page-reason" bind:value={editPageForm.reason} placeholder={$t('common.reasonPlaceholderChange')} list="reason-history" />
-          </div>
           <div class="op-actions">
             <button type="button" on:click={stageUpdatePage} disabled={$ops.busyKeys.updatePage}>{$t('catalogAdmin.save')}</button>
             <button class="ghost-button" type="button" on:click={() => (editPageOpen = false)}>{$t('catalogAdmin.cancel')}</button>
@@ -785,9 +822,7 @@
       {#if canManage}
         <div class="catalog-card-detail">
           <div class="op-field">
-            <label for="delete-page-reason">{$t('catalogAdmin.deletePageReasonLabel')}</label>
             <div class="op-pick">
-              <input id="delete-page-reason" bind:value={deletePageReason} placeholder={$t('catalogAdmin.deleteWhyPlaceholder')} style="flex: 1;" />
               <button type="button" class="ghost-button danger" on:click={stageDeletePage}>
                 <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.deletePage')}
               </button>
@@ -855,10 +890,6 @@
         <div class="op-field">
           <label for="new-page-text-data">{$t('catalogAdmin.textDataOptional')}</label>
           <textarea id="new-page-text-data" rows="3" bind:value={newPage.textDataText} placeholder="Welcome to our shop!"></textarea>
-        </div>
-        <div class="op-field">
-          <label for="new-page-reason">{$t('common.reasonRequired')}</label>
-          <input id="new-page-reason" bind:value={newPage.reason} placeholder={$t('catalogAdmin.reasonPagePlaceholder')} list="reason-history" />
         </div>
         <div class="op-actions">
           <button type="button" on:click={stageCreatePage} disabled={$ops.busyKeys.createPage}>{$t('catalogAdmin.create')}</button>
@@ -955,10 +986,6 @@
           <div class="op-field">
             <label><input type="checkbox" bind:checked={newOffer.visible} /> {$t('catalogAdmin.visible')}</label>
           </div>
-          <div class="op-field">
-            <label for="new-offer-reason">{$t('common.reasonRequired')}</label>
-            <input id="new-offer-reason" bind:value={newOffer.reason} placeholder={$t('catalogAdmin.reasonOfferPlaceholder')} list="reason-history" />
-          </div>
           <div class="op-actions">
             <button type="button" on:click={stageCreateOffer} disabled={$ops.busyKeys.createOffer}>{$t('catalogAdmin.create')}</button>
           </div>
@@ -1051,10 +1078,6 @@
                   <div class="op-field"><label><input type="checkbox" bind:checked={editOfferForm.canGift} /> {$t('catalogAdmin.canGift')}</label></div>
                   <div class="op-field"><label><input type="checkbox" bind:checked={editOfferForm.canBundle} /> {$t('catalogAdmin.canBundle')}</label></div>
                   <div class="op-field"><label><input type="checkbox" bind:checked={editOfferForm.visible} /> {$t('catalogAdmin.visible')}</label></div>
-                  <div class="op-field">
-                    <label for={`edit-offer-reason-${offer.id}`}>{$t('common.reasonRequired')}</label>
-                    <input id={`edit-offer-reason-${offer.id}`} bind:value={editOfferForm.reason} placeholder={$t('common.reasonPlaceholderChange')} list="reason-history" />
-                  </div>
                   <div class="op-actions">
                     <button type="button" on:click={stageUpdateOffer} disabled={$ops.busyKeys.updateOffer}>{$t('catalogAdmin.save')}</button>
                     <button class="ghost-button" type="button" on:click={() => (editOfferId = null)}>{$t('catalogAdmin.cancel')}</button>
@@ -1068,7 +1091,6 @@
 
               {#if canManage}
                 <div class="catalog-card-detail op-pick">
-                  <input bind:value={deleteOfferReason[offer.id]} placeholder={$t('catalogAdmin.deleteOfferReasonPlaceholder')} list="reason-history" style="flex: 1;" />
                   <button type="button" class="ghost-button danger" on:click={() => stageDeleteOffer(offer)}>
                     <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.deleteOffer')}
                   </button>
@@ -1138,10 +1160,6 @@
                         </div>
                         <div class="op-field">
                           <label><input type="checkbox" bind:checked={newProduct.buildersClubEligible} /> {$t('catalogAdmin.bcEligible')}</label>
-                        </div>
-                        <div class="op-field">
-                          <label for="new-product-reason">{$t('common.reasonRequired')}</label>
-                          <input id="new-product-reason" bind:value={newProduct.reason} placeholder={$t('catalogAdmin.reasonProductPlaceholder')} list="reason-history" />
                         </div>
                         <div class="op-actions">
                           <button type="button" on:click={stageCreateProduct} disabled={$ops.busyKeys.createProduct}>{$t('catalogAdmin.create')}</button>
@@ -1216,10 +1234,6 @@
                                   <input id={`edit-product-urem-${product.id}`} type="number" min="0" bind:value={editProductForm.uniqueRemaining} />
                                 </div>
                                 <div class="op-field"><label><input type="checkbox" bind:checked={editProductForm.buildersClubEligible} /> {$t('catalogAdmin.bcEligible')}</label></div>
-                                <div class="op-field">
-                                  <label for={`edit-product-reason-${product.id}`}>{$t('common.reasonRequired')}</label>
-                                  <input id={`edit-product-reason-${product.id}`} bind:value={editProductForm.reason} placeholder={$t('common.reasonPlaceholderChange')} list="reason-history" />
-                                </div>
                                 <div class="op-actions">
                                   <button type="button" on:click={stageUpdateProduct} disabled={$ops.busyKeys.updateProduct}>{$t('catalogAdmin.save')}</button>
                                   <button class="ghost-button" type="button" on:click={() => (editProductId = null)}>{$t('catalogAdmin.cancel')}</button>
@@ -1233,7 +1247,6 @@
 
                             {#if canManage}
                               <div class="catalog-card-detail op-pick">
-                                <input bind:value={deleteProductReason[product.id]} placeholder={$t('catalogAdmin.deleteProductReasonPlaceholder')} list="reason-history" style="flex: 1;" />
                                 <button type="button" class="ghost-button danger" on:click={() => stageDeleteProduct(product)}>
                                   <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.deleteProduct')}
                                 </button>
@@ -1286,7 +1299,19 @@
   />
 {/if}
 
-<ConfirmStagedModal {ops} eyebrow={$t('catalogAdmin.confirmEyebrow')} />
+<ConfirmReasonModal
+  open={Boolean($ops.pending)}
+  title={$ops.pending?.title ?? ''}
+  changes={$ops.pending?.changes ?? []}
+  noteOnly={$ops.pending?.noteOnly ?? false}
+  summary={$ops.pending?.summary ?? ''}
+  confirmLabel={$ops.pending?.title ?? $t('common.confirm')}
+  busy={$ops.busy}
+  error={$ops.error}
+  danger={$ops.pending?.danger ?? false}
+  on:confirm={(e) => ops.confirm(e.detail)}
+  on:cancel={() => ops.cancel()}
+/>
 
 <style>
   .catalog-tabs {
