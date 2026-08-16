@@ -8,7 +8,7 @@
   import { createWriteOps } from '../lib/writeOps.js';
   import { hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
-  import { reasonOk } from '../lib/validation.js';
+  import { diffFields } from '../lib/changes.js';
   import {
     PRODUCT_TYPES,
     FURNITURE_CATEGORIES,
@@ -48,7 +48,6 @@
       usagePolicy: 1,
       extraData: '',
       stuffDataType: 0,
-      reason: '',
     };
   }
 
@@ -124,12 +123,14 @@
     };
   }
 
-  const stage = (id, title, endpoint, valid, body, summary, onSuccess) =>
+  // No `reason` is passed: createWriteOps builds the audited sentence from this summary plus the
+  // fields that actually changed, and the confirm dialog asks for a note only as an optional extra.
+  const stage = (id, title, endpoint, valid, body, summary, onSuccess, changes = []) =>
     ops.ask(endpoint, body, title, summary, {
       key: id,
       valid,
       invalidMessage: translate('furnitureAdmin.fillFields'),
-      reason: body.reason,
+      changes,
       onSuccess,
     });
 
@@ -145,8 +146,8 @@
       'create',
       translate('furnitureAdmin.createTitle'),
       '/api/v1/operations/furniture/definitions',
-      Number(newForm.spriteId) > 0 && Boolean(newForm.name.trim()) && reasonOk(newForm.reason),
-      { ...specFrom(newForm), reason: newForm.reason.trim() },
+      Number(newForm.spriteId) > 0 && Boolean(newForm.name.trim()),
+      specFrom(newForm),
       translate('furnitureAdmin.createSummary', { name: newForm.name.trim(), sprite: newForm.spriteId }),
       async () => {
         closeDrawer();
@@ -155,10 +156,42 @@
     );
   }
 
+  // What the fields the audit compares against are called. Only these keys are diffed, so the
+  // form can hold scratch state without it reaching the audit line.
+  const diffFieldSpecs = () => [
+    { key: 'spriteId', label: 'Sprite id' },
+    { key: 'name', label: translate('furnitureAdmin.nameRequired').replace(' *', '') },
+    { key: 'productType', label: translate('furnitureAdmin.productType') },
+    { key: 'furniCategory', label: translate('furnitureAdmin.category') },
+    { key: 'logic', label: translate('furnitureAdmin.logic') },
+    { key: 'totalStates', label: translate('furnitureAdmin.totalStates') },
+    { key: 'width', label: translate('furnitureAdmin.width') },
+    { key: 'length', label: translate('furnitureAdmin.length') },
+    { key: 'stackHeight', label: translate('furnitureAdmin.stackHeight') },
+    { key: 'usagePolicy', label: translate('furnitureAdmin.usagePolicy') },
+    { key: 'stuffDataType', label: translate('furnitureAdmin.stuffDataType') },
+    { key: 'extraData', label: translate('furnitureAdmin.extraDataOptional') },
+    { key: 'canStack', label: translate('furnitureAdmin.canStack') },
+    { key: 'canWalk', label: translate('furnitureAdmin.canWalk') },
+    { key: 'canSit', label: translate('furnitureAdmin.canSit') },
+    { key: 'canLay', label: translate('furnitureAdmin.canLay') },
+    { key: 'canRecycle', label: translate('furnitureAdmin.canRecycle') },
+    { key: 'canTrade', label: translate('furnitureAdmin.canTrade') },
+    { key: 'canGroup', label: translate('furnitureAdmin.canGroup') },
+    { key: 'canSell', label: translate('furnitureAdmin.canSell') },
+  ];
+
   function startEdit(item) {
     drawer = {
       mode: 'edit',
       id: item.id,
+      // Kept so the audit can say what the value WAS, which is the half only the screen knew.
+      before: specFrom({
+        ...item,
+        name: item.name || '',
+        logic: item.logic || '',
+        extraData: item.extraData || '',
+      }),
       form: {
         spriteId: item.spriteId,
         name: item.name,
@@ -180,7 +213,6 @@
         usagePolicy: item.usagePolicy,
         extraData: item.extraData || '',
         stuffDataType: item.stuffDataType,
-        reason: '',
       },
     };
   }
@@ -195,13 +227,14 @@
       'update',
       translate('furnitureAdmin.updateTitle'),
       '/api/v1/operations/furniture/definitions/update',
-      Number(editForm.spriteId) > 0 && Boolean(editForm.name.trim()) && reasonOk(editForm.reason),
-      { definitionId: editingId, ...specFrom(editForm), reason: editForm.reason.trim() },
+      Number(editForm.spriteId) > 0 && Boolean(editForm.name.trim()),
+      { definitionId: editingId, ...specFrom(editForm) },
       translate('furnitureAdmin.updateSummary', { id: editingId }),
       async () => {
         closeDrawer();
         await definitions.refresh();
       },
+      diffFields(drawer.before, specFrom(editForm), diffFieldSpecs()),
     );
   }
 
@@ -299,10 +332,6 @@
     <label><input type="checkbox" bind:checked={form.canSell} /> {$t('furnitureAdmin.canSell')}</label>
   </div>
 
-  <div class="op-field">
-    <label for={`${prefix}-reason`}>{$t('furnitureAdmin.reasonRequired')}</label>
-    <input id={`${prefix}-reason`} bind:value={form.reason} placeholder={$t('furnitureAdmin.reasonNewPlaceholder')} list="reason-history" />
-  </div>
 {/snippet}
 
 <section class="panel">

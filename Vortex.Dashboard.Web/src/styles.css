@@ -528,7 +528,7 @@ button {
    any explicit button class (.ghost-button, .btn-*, or a page-local .catalog-tab/.crumb-button/row)
    reliably wins. Without this, `.panel button` (0,1,1) silently overrode `.ghost-button` (0,1,0),
    leaving ghost buttons gold with dark ink — which turned unreadable on the grey :hover. */
-:where(.panel, .toolbar) button {
+:where(.panel, .toolbar, .drawer-panel) button {
   border: 1px solid transparent;
   border-radius: 9px;
   background: var(--button-bg);
@@ -539,7 +539,7 @@ button {
   transition: filter 140ms ease, background 140ms ease, border-color 140ms ease;
 }
 
-:where(.panel, .toolbar) button:hover:not(:disabled) {
+:where(.panel, .toolbar, .drawer-panel) button:hover:not(:disabled) {
   filter: brightness(1.04);
 }
 
@@ -953,6 +953,7 @@ table {
 .editor-actions button,
 .question-head button,
 .op-pick button,
+.drawer-actions button,
 .tabs button {
   display: inline-flex;
   align-items: center;
