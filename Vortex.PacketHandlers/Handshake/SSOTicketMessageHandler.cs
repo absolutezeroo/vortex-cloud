@@ -110,43 +110,114 @@ public class SSOTicketMessageHandler(
                 .AddSessionToPlayerAsync(ctx.SessionKey, playerId, ct)
                 .ConfigureAwait(false);
 
-            ClubSubscriptionSnapshot sub = await _grainFactory
+            // Stamped before anything else that can fail: the mod tool's "minutes since last login"
+            // is only meaningful if every successful handshake records one. It is the one call in
+            // this handler that writes, so it stays on its own ahead of the batch below rather than
+            // joining it — otherwise any one of fifteen reads throwing would cost the stamp.
+            bool isFirstLoginOfDay = await _grainFactory
                 .GetPlayerGrain(PlayerId.Parse(playerId))
-                .GetClubSubscriptionAsync(ct)
+                .MarkLoggedInAsync(ct)
                 .ConfigureAwait(false);
+
+            // Everything the rest of this handler needs, asked for at once.
+            //
+            // These fifteen reads have no dependency on each other -- effects do not need favourites,
+            // the wallet does not need the mystery box -- and each is a grain call that activates a
+            // grain and reads the database. Awaited one after another they stacked into a login
+            // slow enough that a hundred arrivals over ten seconds produced ten-second round trips
+            // for everybody already in the room, and starved the room's own tick down to half rate.
+            // The measurement is in logs/benchmark: the hotel carried those hundred players at two
+            // milliseconds once they were in. It was the arriving that hurt.
+            //
+            // Issued together, awaited once. Calls to one grain still run one at a time inside it --
+            // that is what a grain is -- but they no longer pay a round trip each, and calls to
+            // different grains genuinely overlap. Nothing below this changes the order a single
+            // composer goes out in: the client's login sequence is a protocol, not an implementation
+            // detail, and it is untouched.
+            IPlayerGrain player = _grainFactory.GetPlayerGrain(PlayerId.Parse(playerId));
+            IPlayerWalletGrain wallet = _grainFactory.GetPlayerWalletGrain(playerId);
+
+            Task<ClubSubscriptionSnapshot> subTask = player.GetClubSubscriptionAsync(ct);
+            Task<PermissionSet> permissionsTask = _permissionService.ResolveForPlayerAsync(
+                playerId,
+                ct
+            );
+            Task<bool> nuxTask = player.IsNuxCompletedAsync(ct);
+            Task<PlayerSummarySnapshot> summaryTask = player.GetSummaryAsync(ct);
+            Task<int> homeRoomTask = _grainFactory
+                .GetPlayerNavigatorGrain(playerId)
+                .GetHomeRoomIdAsync(ct);
+            Task<ImmutableArray<int>> favouritesTask = _grainFactory
+                .GetPlayerNavigatorGrain(playerId)
+                .GetFavouriteRoomIdsAsync(ct);
+            Task<int> favouriteLimitTask = _grainFactory
+                .GetServerConfigGrain()
+                .GetIntAsync(
+                    NavigatorConfig.FavouriteLimitKey,
+                    NavigatorConfig.FavouriteLimitDefault
+                );
+            Task<ImmutableArray<AvatarEffectSnapshot>> effectsTask = _grainFactory
+                .GetPlayerEffectGrain(playerId)
+                .GetEffectsAsync(ct);
+            Task<PlayerClothingSnapshot> clothingTask = _grainFactory
+                .GetPlayerClothingGrain(ctx.PlayerId)
+                .GetUnlockedAsync(ct);
+            Task<int> creditsTask = wallet.GetAmountForCurrencyAsync(
+                new CurrencyKind { CurrencyType = CurrencyType.Credits },
+                ct
+            );
+            Task<Dictionary<int, int>> activityPointsTask = wallet.GetActivityPointsAsync(ct);
+            Task<int> silverTask = wallet.GetAmountForCurrencyAsync(
+                new CurrencyKind { CurrencyType = CurrencyType.Silver },
+                ct
+            );
+            Task<int> emeraldsTask = wallet.GetAmountForCurrencyAsync(
+                new CurrencyKind { CurrencyType = CurrencyType.Emeralds },
+                ct
+            );
+            Task<MysteryBoxTrackerSnapshot> mysteryBoxTask = _grainFactory
+                .GetPlayerMysteryBoxGrain(playerId)
+                .GetTrackerAsync(ct);
+            Task<BuildersClubSubscriptionSnapshot> buildersClubTask =
+                _buildersClubService.GetSubscriptionAsync(playerId, ct);
+
+            await Task.WhenAll(
+                    subTask,
+                    permissionsTask,
+                    nuxTask,
+                    summaryTask,
+                    homeRoomTask,
+                    favouritesTask,
+                    favouriteLimitTask,
+                    effectsTask,
+                    clothingTask,
+                    creditsTask,
+                    activityPointsTask,
+                    silverTask,
+                    emeraldsTask,
+                    mysteryBoxTask,
+                    buildersClubTask
+                )
+                .ConfigureAwait(false);
+
+            ClubSubscriptionSnapshot sub = await subTask.ConfigureAwait(false);
 
             ClubLevelType clubLevel = sub.IsActive
                 ? (sub.IsVip ? ClubLevelType.Vip : ClubLevelType.Club)
                 : ClubLevelType.None;
 
-            PermissionSet permissions = await _permissionService
-                .ResolveForPlayerAsync(playerId, ct)
-                .ConfigureAwait(false);
+            PermissionSet permissions = await permissionsTask.ConfigureAwait(false);
 
             SecurityLevelType securityLevel = SecurityLevelPolicy.Resolve(permissions);
+
+            bool nuxCompleted = await nuxTask.ConfigureAwait(false);
+            int currentHomeRoomId = await homeRoomTask.ConfigureAwait(false);
 
             // The client's new-user flow is driven entirely by these actions: 0 asks it to run the
             // look-and-name onboarding, 1 to pick a starter room. Both are read once, here — an
             // empty array means the player goes straight to the hotel view.
             // (WIN63 HabboLandingView.as::isOnboardingRequired(), and OnBoardingHcFlow's
             // AVATAR_NAME_CHANGE / NEW_ROOM_SELECT constants.)
-            // Stamped before anything else that can fail: the mod tool's "minutes since last login"
-            // is only meaningful if every successful handshake records one.
-            bool isFirstLoginOfDay = await _grainFactory
-                .GetPlayerGrain(PlayerId.Parse(playerId))
-                .MarkLoggedInAsync(ct)
-                .ConfigureAwait(false);
-
-            bool nuxCompleted = await _grainFactory
-                .GetPlayerGrain(PlayerId.Parse(playerId))
-                .IsNuxCompletedAsync(ct)
-                .ConfigureAwait(false);
-
-            int currentHomeRoomId = await _grainFactory
-                .GetPlayerNavigatorGrain(playerId)
-                .GetHomeRoomIdAsync(ct)
-                .ConfigureAwait(false);
-
             List<short> suggestedLoginActions = [];
 
             if (!nuxCompleted)
@@ -169,10 +240,7 @@ public class SSOTicketMessageHandler(
                     ct
                 )
                 .ConfigureAwait(false);
-            ImmutableArray<AvatarEffectSnapshot> effects = await _grainFactory
-                .GetPlayerEffectGrain(playerId)
-                .GetEffectsAsync(ct)
-                .ConfigureAwait(false);
+            ImmutableArray<AvatarEffectSnapshot> effects = await effectsTask.ConfigureAwait(false);
             await ctx.SendComposerAsync(new AvatarEffectsMessageComposer { Effects = effects }, ct)
                 .ConfigureAwait(false);
             int homeRoomId = currentHomeRoomId;
@@ -192,18 +260,8 @@ public class SSOTicketMessageHandler(
             // therefore made `count >= limit` true on an empty list, so "Favourites full" was shown
             // and the add packet never left the client -- the handler, the grain and the table were
             // all built and unreachable.
-            ImmutableArray<int> favouriteRoomIds = await _grainFactory
-                .GetPlayerNavigatorGrain(playerId)
-                .GetFavouriteRoomIdsAsync(ct)
-                .ConfigureAwait(false);
-
-            int favouriteLimit = await _grainFactory
-                .GetServerConfigGrain()
-                .GetIntAsync(
-                    NavigatorConfig.FavouriteLimitKey,
-                    NavigatorConfig.FavouriteLimitDefault
-                )
-                .ConfigureAwait(false);
+            ImmutableArray<int> favouriteRoomIds = await favouritesTask.ConfigureAwait(false);
+            int favouriteLimit = await favouriteLimitTask.ConfigureAwait(false);
 
             await ctx.SendComposerAsync(
                     new FavouritesMessageComposer
@@ -219,10 +277,7 @@ public class SSOTicketMessageHandler(
             // every player at every login that they own no wearable sets -- the avatar editor then
             // greys out everything they have ever redeemed, and a clothing furni they have already
             // bound asks to be redeemed a second time.
-            PlayerClothingSnapshot clothing = await _grainFactory
-                .GetPlayerClothingGrain(ctx.PlayerId)
-                .GetUnlockedAsync(ct)
-                .ConfigureAwait(false);
+            PlayerClothingSnapshot clothing = await clothingTask.ConfigureAwait(false);
 
             await ctx.SendComposerAsync(
                     new FigureSetIdsEventMessageComposer
@@ -304,16 +359,8 @@ public class SSOTicketMessageHandler(
                     .ConfigureAwait(false);
             }
 
-            IPlayerWalletGrain wallet = _grainFactory.GetPlayerWalletGrain(playerId);
-            int credits = await wallet
-                .GetAmountForCurrencyAsync(
-                    new CurrencyKind { CurrencyType = CurrencyType.Credits },
-                    ct
-                )
-                .ConfigureAwait(false);
-            Dictionary<int, int> activityPoints = await wallet
-                .GetActivityPointsAsync(ct)
-                .ConfigureAwait(false);
+            int credits = await creditsTask.ConfigureAwait(false);
+            Dictionary<int, int> activityPoints = await activityPointsTask.ConfigureAwait(false);
 
             await ctx.SendComposerAsync(
                     new CreditBalanceEventMessageComposer { Balance = $"{credits}.0" },
@@ -331,18 +378,8 @@ public class SSOTicketMessageHandler(
             // and it keeps the answer in the catalogue purse for the whole session -- so a player
             // who opens the Collectors Guild before their inventory would read both as zero, with a
             // wallet that actually holds thousands.
-            int silver = await wallet
-                .GetAmountForCurrencyAsync(
-                    new CurrencyKind { CurrencyType = CurrencyType.Silver },
-                    ct
-                )
-                .ConfigureAwait(false);
-            int emeralds = await wallet
-                .GetAmountForCurrencyAsync(
-                    new CurrencyKind { CurrencyType = CurrencyType.Emeralds },
-                    ct
-                )
-                .ConfigureAwait(false);
+            int silver = await silverTask.ConfigureAwait(false);
+            int emeralds = await emeraldsTask.ConfigureAwait(false);
 
             await ctx.SendComposerAsync(
                     new SilverBalanceMessageComposer { SilverBalance = silver },
@@ -370,10 +407,7 @@ public class SSOTicketMessageHandler(
             // The score the toolbar badge shows. It is already maintained (PlayerAchievementGrain
             // adds to it) and already sent on the profile and on the room avatar -- login was the
             // one place that reported zero, so the badge read empty until a profile was opened.
-            PlayerSummarySnapshot summary = await _grainFactory
-                .GetPlayerGrain(PlayerId.Parse(playerId))
-                .GetSummaryAsync(ct)
-                .ConfigureAwait(false);
+            PlayerSummarySnapshot summary = await summaryTask.ConfigureAwait(false);
 
             await ctx.SendComposerAsync(
                     new AchievementsScoreEventMessageComposer { Score = summary.AchievementScore },
@@ -387,10 +421,9 @@ public class SSOTicketMessageHandler(
                 .ConfigureAwait(false);
             // Drives the mystery box toolbar tracker. Sent inline rather than pushed by the grain so
             // it keeps its place in the login sequence; the grain owns every later refresh.
-            MysteryBoxTrackerSnapshot mysteryBoxTracker = await _grainFactory
-                .GetPlayerMysteryBoxGrain(playerId)
-                .GetTrackerAsync(ct)
-                .ConfigureAwait(false);
+            MysteryBoxTrackerSnapshot mysteryBoxTracker = await mysteryBoxTask.ConfigureAwait(
+                false
+            );
 
             await ctx.SendComposerAsync(
                     new MysteryBoxKeysMessageComposer
@@ -401,9 +434,9 @@ public class SSOTicketMessageHandler(
                     ct
                 )
                 .ConfigureAwait(false);
-            BuildersClubSubscriptionSnapshot buildersClub = await _buildersClubService
-                .GetSubscriptionAsync(playerId, ct)
-                .ConfigureAwait(false);
+            BuildersClubSubscriptionSnapshot buildersClub = await buildersClubTask.ConfigureAwait(
+                false
+            );
             int buildersClubSecondsLeft = buildersClub.IsActive
                 ? (int)Math.Max(0, (buildersClub.ExpiresAt!.Value - DateTime.UtcNow).TotalSeconds)
                 : 0;
