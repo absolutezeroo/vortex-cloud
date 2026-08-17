@@ -14,6 +14,7 @@ using Vortex.Primitives.Rooms.Object.Logic;
 using Vortex.Rooms.Grains;
 using Vortex.Rooms.Object.Logic.Furniture.Floor;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Freeze;
+using Vortex.Rooms.Object.Logic.Furniture.Floor.Games;
 using Vortex.Tests.Support;
 using Xunit;
 
@@ -50,7 +51,7 @@ public sealed class RoomItemIndexTests
     {
         RoomItemIndex index = new();
         IRoomItem gate = BuildItem<FurnitureFreezeGateLogic>("freeze_gate_blue");
-        IRoomItem counter = BuildItem<FurnitureFreezeCounterLogic>("freeze_counter_red");
+        IRoomItem counter = BuildItem<FurnitureScoreboardLogic>("freeze_counter_red");
 
         index.OnLogicAttached(gate);
         index.OnLogicAttached(counter);
@@ -61,7 +62,7 @@ public sealed class RoomItemIndexTests
             .ContainSingle()
             .Which.TeamColor.Should()
             .Be(GameTeamColor.Blue);
-        index.LogicsOf<FurnitureFreezeCounterLogic>().Should().ContainSingle();
+        index.LogicsOf<FurnitureScoreboardLogic>().Should().ContainSingle();
         index.LogicsOf<FurnitureFloorLogic>().Should().HaveCount(2);
     }
 

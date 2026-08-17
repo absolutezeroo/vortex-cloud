@@ -78,6 +78,9 @@
  "furniture_habbowheel": [
   "floor"
  ],
+ "furniture_hockey_score": [
+  "floor"
+ ],
  "furniture_monsterplant_seed": [
   "floor"
  ],
@@ -96,6 +99,9 @@
   "floor"
  ],
  "furniture_nft_reward_box": [
+  "floor"
+ ],
+ "furniture_score": [
   "floor"
  ],
  "furniture_static": [
@@ -322,6 +328,9 @@
   "floor"
  ],
  "wf_cnd_wears_handitem": [
+  "floor"
+ ],
+ "wf_highscore": [
   "floor"
  ],
  "wf_slc_furni_altitude": [

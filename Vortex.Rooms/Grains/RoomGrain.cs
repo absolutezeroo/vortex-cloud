@@ -74,6 +74,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     public readonly RoomGameSystem GameSystem;
     public readonly RoomFreezeSystem FreezeSystem;
     public readonly RoomGameTimerSystem GameTimerSystem;
+    public readonly RoomGameScoreboardSystem ScoreboardSystem;
 
     public readonly RoomEventModule EventModule;
     public readonly RoomFurniModule FurniModule;
@@ -154,6 +155,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         GameSystem = new RoomGameSystem(this);
         FreezeSystem = new RoomFreezeSystem(this);
         GameTimerSystem = new RoomGameTimerSystem(this);
+        ScoreboardSystem = new RoomGameScoreboardSystem(this);
         ModerationSystem = new RoomModerationSystem(this);
         MysteryBoxSystem = new RoomMysteryBoxSystem(this);
         CrackableSystem = new RoomCrackableSystem(this);
@@ -166,6 +168,9 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
         EventModule.Register(RollerSystem);
         EventModule.Register(WiredSystem);
+        // The scoreboard brick paints every game's score displays from the same events the wired
+        // boxes read, so no game refreshes a board by hand.
+        EventModule.Register(ScoreboardSystem);
     }
 
     public RoomId RoomId => _state.RoomId;

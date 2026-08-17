@@ -111,8 +111,9 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : RoomMinigameBase(roo
             await _roomGrain.GameChrome.BroadcastPlayerValueAsync(playerId, player.Lives);
         }
 
+        // The scoreboards repaint themselves: RoomGameScoreboardSystem reacts to the round events
+        // and every score change this game makes through AddTeamScoreAsync.
         await RefreshGateCountersAsync();
-        await RefreshScoreboardsAsync();
     }
 
     /// <summary>Winds the round down: clears effects, ammo and the in-flight snowballs, and leaves the
@@ -134,7 +135,6 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : RoomMinigameBase(roo
         }
 
         await RefreshGateCountersAsync();
-        await RefreshScoreboardsAsync();
     }
 
     public override Task OnPlayerLeftAsync(PlayerId playerId, CancellationToken ct)
@@ -332,8 +332,6 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : RoomMinigameBase(roo
                 now + FreezeConstants.ResetDelayMs - FreezeConstants.BlastDelayMs
             );
         }
-
-        await RefreshScoreboardsAsync();
     }
 
     private async Task FreezeOccupantsAsync(
@@ -513,8 +511,6 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : RoomMinigameBase(roo
         {
             await _roomGrain.GameChrome.BroadcastPlayerValueAsync(playerId, player.Lives);
         }
-
-        await RefreshScoreboardsAsync();
     }
 
     /// <summary>Restores every ice block in the room to intact for a fresh round.</summary>
@@ -583,18 +579,6 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : RoomMinigameBase(roo
     /// SCORE_ACHIEVED trigger exactly as a <c>wf_act_give_score</c> box would.</summary>
     private Task AddTeamScoreAsync(GameTeamColor team, int amount, CancellationToken ct) =>
         _roomGrain.GameSystem.AddTeamScoreAsync(team, amount, ct);
-
-    /// <summary>Pushes each team's live score to its <c>es_score_*</c> scoreboard (furniture_score shows
-    /// the raw state as a number).</summary>
-    private async Task RefreshScoreboardsAsync()
-    {
-        foreach (
-            FurnitureFreezeCounterLogic counter in _roomGrain._state.ItemIndex.LogicsOf<FurnitureFreezeCounterLogic>()
-        )
-        {
-            await counter.SetStateAsync(_game.GetTeamScore(counter.TeamColor));
-        }
-    }
 
     // The room Freeze game has no bespoke HUD protocol: the client shows "game mode" from the generic
     // YouArePlayingGame message, and a number over an avatar from the generic GamePlayerValue message
