@@ -1,6 +1,5 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Rooms.Object.Logic.Furniture.Floor;
 
 namespace Vortex.Rooms.Grains.Systems;
@@ -9,8 +8,8 @@ namespace Vortex.Rooms.Grains.Systems;
 /// Ticks every game-timer furni (<see cref="FurnitureGameTimerLogic"/>) in the room once per frame so
 /// running countdowns advance and their displayed value updates. It is the non-wired counterpart to
 /// the wired counter tick — game timers are ordinary furni, so they aren't part of any wired stack.
-/// Stopped timers short-circuit in <see cref="FurnitureGameTimerLogic.AdvanceAsync"/>, so this stays
-/// cheap when nothing is running.
+/// Stopped timers short-circuit in <see cref="FurnitureGameTimerLogic.AdvanceAsync"/>, and the item
+/// index makes the lookup O(timers in the room) instead of a full-room scan per 50 ms frame.
 /// </summary>
 public sealed class RoomGameTimerSystem(RoomGrain roomGrain)
 {
@@ -18,12 +17,11 @@ public sealed class RoomGameTimerSystem(RoomGrain roomGrain)
 
     public async Task ProcessAsync(long now, CancellationToken ct)
     {
-        foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
+        foreach (
+            FurnitureGameTimerLogic timer in _roomGrain._state.ItemIndex.LogicsOf<FurnitureGameTimerLogic>()
+        )
         {
-            if (item.Logic is FurnitureGameTimerLogic timer)
-            {
-                await timer.AdvanceAsync(now, ct);
-            }
+            await timer.AdvanceAsync(now, ct);
         }
     }
 }

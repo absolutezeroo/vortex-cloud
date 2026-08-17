@@ -14,6 +14,7 @@ using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Furniture.Wall;
+using Vortex.Primitives.Rooms.Object.Logic;
 using Vortex.Primitives.Rooms.Snapshots.Mapping;
 using Vortex.Rooms.Object.Logic.Furniture.Floor;
 
@@ -64,6 +65,31 @@ public sealed partial class RoomMapModule(RoomGrain roomGrain)
     public bool InBounds(int idx)
     {
         return (uint)idx < (uint)(Width * Height);
+    }
+
+    /// <summary>The first floor item on the tile whose logic is a <typeparamref name="TLogic"/>, or
+    /// null. Bounds-checks the index, so callers can pass a raw <see cref="ToIdx"/> result. This is
+    /// the game systems' "is my arena furni here?" primitive — one body instead of a per-game copy.</summary>
+    public TLogic? FirstLogicOnTile<TLogic>(int tileIdx)
+        where TLogic : class, IRoomObjectLogic
+    {
+        if (tileIdx < 0 || tileIdx >= _roomGrain._state.TileFloorStacks.Length)
+        {
+            return null;
+        }
+
+        foreach (RoomObjectId id in _roomGrain._state.TileFloorStacks[tileIdx])
+        {
+            if (
+                _roomGrain._state.ItemsById.TryGetValue(id, out IRoomItem? item)
+                && item.Logic is TLogic logic
+            )
+            {
+                return logic;
+            }
+        }
+
+        return null;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

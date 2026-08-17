@@ -111,6 +111,7 @@ public sealed partial class RoomObjectModule(RoomGrain roomGrain)
                 item.SetAction(null);
 
                 _roomGrain._state.ItemsById.Remove(item.ObjectId);
+                _roomGrain._state.ItemIndex.OnItemDetached(item);
 
                 RoomItemSnapshot snapshot = item.GetSnapshot();
 
@@ -173,6 +174,11 @@ public sealed partial class RoomObjectModule(RoomGrain roomGrain)
         IRoomObjectLogic logic = _roomGrain._logicProvider.CreateLogicInstance(logicType, ctx);
 
         roomObject.SetLogic(logic);
+
+        if (roomObject is IRoomItem indexed)
+        {
+            _roomGrain._state.ItemIndex.OnLogicAttached(indexed);
+        }
 
         await logic.OnAttachAsync(ct);
 

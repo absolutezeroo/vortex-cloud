@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Vortex.Logging.Extensions;
-using Vortex.Primitives.Messages.Outgoing.Room.Action;
 using Vortex.Primitives.Messages.Outgoing.Room.Engine;
-using Vortex.Primitives.Messages.Outgoing.Room.Session;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
@@ -16,9 +13,7 @@ using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Rooms.Grains.Systems.Freeze;
-using Vortex.Rooms.Object.Logic.Furniture.Floor;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Freeze;
-using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Triggers;
 
 namespace Vortex.Rooms.Grains.Systems;
 
@@ -35,11 +30,9 @@ namespace Vortex.Rooms.Grains.Systems;
 /// power-ups) and wear the Freeze effect set, none of which the generic team system models.
 /// </para>
 /// </summary>
-public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
+public sealed class RoomFreezeSystem(RoomGrain roomGrain) : RoomMinigameBase(roomGrain)
 {
-    public string Name => "freeze";
-
-    private readonly RoomGrain _roomGrain = roomGrain;
+    public override string Name => "freeze";
 
     // Teams and scores are the room's shared GameTeamState, not a second store of our own: the wired
     // team conditions/selectors and the SCORE_ACHIEVED trigger all read that one, and a Freeze round
@@ -52,7 +45,10 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
     private readonly PriorityQueue<List<int>, long> _resets = new();
 
     private long _currentTickMs;
-    private long _nextPlayerTickMs;
+
+    // The 1s freeze/shield countdown inside the 50ms room tick. Not readonly — GameCadence is a
+    // mutable struct; a readonly field would silently advance a copy.
+    private GameCadence _playerTick = new(FreezeConstants.FreezeTickMs);
 
     // Armed at kick-off only when two or more teams have players, so the round can end early the moment
     // one team is wiped out — while a solo/one-team game still runs to the timer instead of instantly
@@ -67,10 +63,6 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
         PlayerId Thrower
     );
 
-    public bool IsRunning => _game.IsRunning;
-
-    public GameTeamColor GetTeam(PlayerId playerId) => _game.GetTeam(playerId);
-
     // ---- lifecycle ---------------------------------------------------------
 
     public async Task OnGateWalkOnAsync(PlayerId playerId, GameTeamColor team, CancellationToken ct)
@@ -82,11 +74,10 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
             return;
         }
 
-        await BroadcastEffectAsync(
+        await _roomGrain.GameChrome.BroadcastTeamAuraAsync(
             playerId,
-            result == FreezeGateResult.Joined
-                ? FreezeConstants.TeamEffectBase + (int)team
-                : FreezeConstants.NoEffect
+            GameAuraSet.Freeze,
+            result == FreezeGateResult.Joined ? team : GameTeamColor.None
         );
 
         await RefreshGateCountersAsync();
@@ -95,7 +86,7 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
     /// <summary>Kicks off a round for whoever is standing on the gates. Driven by
     /// <see cref="RoomGameSystem"/>, which has already cleared the shared scores and fired GAME_STARTS
     /// by the time this runs — nothing calls it directly.</summary>
-    public async Task StartAsync(CancellationToken ct)
+    public override async Task StartAsync(CancellationToken ct)
     {
         _game.Settings = await FreezeConfig.ResolveAsync(
             _roomGrain._grainFactory.GetServerConfigGrain()
@@ -108,16 +99,16 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
 
         _blasts.Clear();
         _resets.Clear();
-        _nextPlayerTickMs = 0;
+        _playerTick.Reset();
         _endEarlyArmed = _game.LivingTeamCount() >= 2;
 
         await ResetBlocksAsync();
 
         foreach ((PlayerId playerId, FreezePlayerState player) in _game.Players)
         {
-            await SetPlayingModeAsync(playerId, true);
-            await BroadcastEffectAsync(playerId, player.CurrentEffect());
-            await BroadcastPlayerValueAsync(playerId, player.Lives);
+            await _roomGrain.GameChrome.SetPlayingModeAsync(playerId, true);
+            await _roomGrain.GameChrome.BroadcastEffectAsync(playerId, player.CurrentEffect());
+            await _roomGrain.GameChrome.BroadcastPlayerValueAsync(playerId, player.Lives);
         }
 
         await RefreshGateCountersAsync();
@@ -126,8 +117,8 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
 
     /// <summary>Winds the round down: clears effects, ammo and the in-flight snowballs, and leaves the
     /// scoreboards showing the final tally. Driven by <see cref="RoomGameSystem"/> after GAME_ENDS has
-    /// fired. <see cref="WinningTeam"/> stays readable afterwards.</summary>
-    public async Task EndAsync(CancellationToken ct)
+    /// fired. The winner stays readable from the shared scores afterwards.</summary>
+    public override async Task EndAsync(CancellationToken ct)
     {
         _game.Stop();
 
@@ -137,20 +128,16 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
 
         foreach ((PlayerId playerId, _) in _game.Players)
         {
-            await BroadcastEffectAsync(playerId, FreezeConstants.NoEffect);
-            await BroadcastPlayerValueAsync(playerId, 0);
-            await SetPlayingModeAsync(playerId, false);
+            await _roomGrain.GameChrome.ClearEffectAsync(playerId);
+            await _roomGrain.GameChrome.BroadcastPlayerValueAsync(playerId, 0);
+            await _roomGrain.GameChrome.SetPlayingModeAsync(playerId, false);
         }
 
         await RefreshGateCountersAsync();
         await RefreshScoreboardsAsync();
     }
 
-    /// <summary>The team that finished ahead, or <see cref="GameTeamColor.None"/> if nobody scored. Read
-    /// from the shared scores, so it survives the end of the round until the next one starts.</summary>
-    public GameTeamColor WinningTeam => _game.GetWinningTeam();
-
-    public Task OnPlayerLeftAsync(PlayerId playerId, CancellationToken ct)
+    public override Task OnPlayerLeftAsync(PlayerId playerId, CancellationToken ct)
     {
         if (_game.Remove(playerId) is null)
         {
@@ -159,18 +146,8 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
 
         // The playing-game flag is session-scoped, so it must be cleared here too — leaving the room
         // by any means other than the exit tile would otherwise strand the client in "game mode".
-        //
-        // Deliberately not awaited: this runs inside RemoveAvatarFromPlayerAsync, which the leaver's own
-        // presence grain calls while clearing its active room — including from OnDeactivateAsync, where
-        // the activation no longer dispatches incoming requests at all. Awaiting a call back into it
-        // would hang this room's turn (every player in it) until the 30s Orleans call timeout.
-        SetPlayingModeAsync(playerId, false)
-            .LogAndForget(
-                _roomGrain._logger,
-                "Failed to clear game mode for player {PlayerId} leaving room {RoomId}",
-                playerId,
-                _roomGrain.RoomId
-            );
+        // The fire-and-forget variant is mandatory on this path; the chrome carries the why.
+        _roomGrain.GameChrome.SetPlayingModeAndForget(playerId, false);
 
         return RefreshGateCountersAsync();
     }
@@ -184,16 +161,16 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
             return;
         }
 
-        await BroadcastEffectAsync(playerId, FreezeConstants.NoEffect);
-        await BroadcastPlayerValueAsync(playerId, 0);
-        await SetPlayingModeAsync(playerId, false);
+        await _roomGrain.GameChrome.ClearEffectAsync(playerId);
+        await _roomGrain.GameChrome.BroadcastPlayerValueAsync(playerId, 0);
+        await _roomGrain.GameChrome.SetPlayingModeAsync(playerId, false);
         _game.Remove(playerId);
         await RefreshGateCountersAsync();
     }
 
     /// <summary>Room-tick entry: lands due snowball blasts, resets finished ripples and runs the 1s
     /// freeze/shield countdown. Cheap when no game is running.</summary>
-    public async Task TickAsync(long now, CancellationToken ct)
+    public override async Task TickAsync(long now, CancellationToken ct)
     {
         _currentTickMs = now;
 
@@ -221,20 +198,14 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
         if (_endEarlyArmed && _game.LivingTeamCount() <= 1)
         {
             await _roomGrain.GameSystem.EndGameAsync(ct);
-            ResetGameTimers();
+            _roomGrain.GameChrome.ResetGameTimers();
 
             return;
         }
 
-        if (_nextPlayerTickMs == 0)
-        {
-            _nextPlayerTickMs = now + FreezeConstants.FreezeTickMs;
-        }
-
-        if (now >= _nextPlayerTickMs)
+        if (_playerTick.Due(now))
         {
             await TickPlayersAsync(ct);
-            _nextPlayerTickMs = now + FreezeConstants.FreezeTickMs;
         }
     }
 
@@ -244,7 +215,7 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
         {
             if (player.Tick())
             {
-                await BroadcastEffectAsync(playerId, player.CurrentEffect());
+                await _roomGrain.GameChrome.BroadcastEffectAsync(playerId, player.CurrentEffect());
             }
         }
     }
@@ -413,8 +384,14 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
             }
             else
             {
-                await BroadcastEffectAsync(victim.PlayerId, victim.CurrentEffect());
-                await BroadcastPlayerValueAsync(victim.PlayerId, victim.Lives);
+                await _roomGrain.GameChrome.BroadcastEffectAsync(
+                    victim.PlayerId,
+                    victim.CurrentEffect()
+                );
+                await _roomGrain.GameChrome.BroadcastPlayerValueAsync(
+                    victim.PlayerId,
+                    victim.Lives
+                );
             }
         }
     }
@@ -425,9 +402,9 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
         CancellationToken ct
     )
     {
-        await BroadcastEffectAsync(victim.PlayerId, FreezeConstants.NoEffect);
-        await BroadcastPlayerValueAsync(victim.PlayerId, 0);
-        await SetPlayingModeAsync(victim.PlayerId, false);
+        await _roomGrain.GameChrome.ClearEffectAsync(victim.PlayerId);
+        await _roomGrain.GameChrome.BroadcastPlayerValueAsync(victim.PlayerId, 0);
+        await _roomGrain.GameChrome.SetPlayingModeAsync(victim.PlayerId, false);
 
         if (TryFindRandomExitTile(out int exitIdx))
         {
@@ -530,11 +507,11 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
         );
 
         // A shield pick-up changes the effect the player wears; an extra life changes the lives bubble.
-        await BroadcastEffectAsync(playerId, player.CurrentEffect());
+        await _roomGrain.GameChrome.BroadcastEffectAsync(playerId, player.CurrentEffect());
 
         if (powerUp == FreezePowerUp.ExtraLife)
         {
-            await BroadcastPlayerValueAsync(playerId, player.Lives);
+            await _roomGrain.GameChrome.BroadcastPlayerValueAsync(playerId, player.Lives);
         }
 
         await RefreshScoreboardsAsync();
@@ -543,12 +520,11 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
     /// <summary>Restores every ice block in the room to intact for a fresh round.</summary>
     private async Task ResetBlocksAsync()
     {
-        foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
+        foreach (
+            FurnitureFreezeBlockLogic block in _roomGrain._state.ItemIndex.LogicsOf<FurnitureFreezeBlockLogic>()
+        )
         {
-            if (
-                item.Logic is FurnitureFreezeBlockLogic block
-                && block.GetState() != FreezeConstants.BlockIntact
-            )
+            if (block.GetState() != FreezeConstants.BlockIntact)
             {
                 await block.SetStateAsync(FreezeConstants.BlockIntact);
             }
@@ -563,55 +539,19 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
             && _roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out avatar);
     }
 
-    private FurnitureFreezeTileLogic? FindFreezeTile(int tileIdx)
-    {
-        if (tileIdx < 0 || tileIdx >= _roomGrain._state.TileFloorStacks.Length)
-        {
-            return null;
-        }
+    private FurnitureFreezeTileLogic? FindFreezeTile(int tileIdx) =>
+        _roomGrain.MapModule.FirstLogicOnTile<FurnitureFreezeTileLogic>(tileIdx);
 
-        foreach (RoomObjectId id in _roomGrain._state.TileFloorStacks[tileIdx])
-        {
-            if (
-                _roomGrain._state.ItemsById.TryGetValue(id, out IRoomItem? item)
-                && item.Logic is FurnitureFreezeTileLogic tile
-            )
-            {
-                return tile;
-            }
-        }
-
-        return null;
-    }
-
-    private FurnitureFreezeBlockLogic? FindFreezeBlock(int tileIdx)
-    {
-        if (tileIdx < 0 || tileIdx >= _roomGrain._state.TileFloorStacks.Length)
-        {
-            return null;
-        }
-
-        foreach (RoomObjectId id in _roomGrain._state.TileFloorStacks[tileIdx])
-        {
-            if (
-                _roomGrain._state.ItemsById.TryGetValue(id, out IRoomItem? item)
-                && item.Logic is FurnitureFreezeBlockLogic block
-            )
-            {
-                return block;
-            }
-        }
-
-        return null;
-    }
+    private FurnitureFreezeBlockLogic? FindFreezeBlock(int tileIdx) =>
+        _roomGrain.MapModule.FirstLogicOnTile<FurnitureFreezeBlockLogic>(tileIdx);
 
     private bool TryFindRandomExitTile(out int tileIdx)
     {
         List<int> exits = [];
 
-        foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
+        foreach (IRoomItem item in _roomGrain._state.ItemIndex.ItemsOf<FurnitureFreezeExitLogic>())
         {
-            if (item.Logic is FurnitureFreezeExitLogic && item is IRoomFloorItem floor)
+            if (item is IRoomFloorItem floor)
             {
                 exits.Add(_roomGrain.MapModule.ToIdx(floor.X, floor.Y));
             }
@@ -631,28 +571,11 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
 
     private async Task RefreshGateCountersAsync()
     {
-        foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
+        foreach (
+            FurnitureFreezeGateLogic gate in _roomGrain._state.ItemIndex.LogicsOf<FurnitureFreezeGateLogic>()
+        )
         {
-            if (item.Logic is not FurnitureFreezeGateLogic gate)
-            {
-                continue;
-            }
-
             await gate.SetStateAsync(_game.GetTeamCount(gate.TeamColor));
-        }
-    }
-
-    /// <summary>Resets the room's game-timer furni after a Freeze round finishes on its own (early-end),
-    /// so its countdown and <c>gameActive</c> flag clear and a controller can immediately start the next
-    /// round. On a normal timer expiry the furni resets itself, so this is only needed for early-end.</summary>
-    private void ResetGameTimers()
-    {
-        foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
-        {
-            if (item.Logic is FurnitureGameTimerLogic and IWiredCounter counter)
-            {
-                counter.ResetClock();
-            }
         }
     }
 
@@ -665,59 +588,16 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
     /// the raw state as a number).</summary>
     private async Task RefreshScoreboardsAsync()
     {
-        foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
+        foreach (
+            FurnitureFreezeCounterLogic counter in _roomGrain._state.ItemIndex.LogicsOf<FurnitureFreezeCounterLogic>()
+        )
         {
-            if (item.Logic is not FurnitureFreezeCounterLogic counter)
-            {
-                continue;
-            }
-
             await counter.SetStateAsync(_game.GetTeamScore(counter.TeamColor));
         }
     }
 
-    private Task BroadcastEffectAsync(PlayerId playerId, int effectId)
-    {
-        if (!_roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId))
-        {
-            return Task.CompletedTask;
-        }
-
-        if (_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar))
-        {
-            avatar.SetEffect(effectId);
-        }
-
-        return _roomGrain.SendComposerToRoomAsync(
-            new AvatarEffectMessageComposer
-            {
-                UserId = objectId,
-                EffectId = effectId,
-                DelayMilliseconds = 0,
-            }
-        );
-    }
-
     // The room Freeze game has no bespoke HUD protocol: the client shows "game mode" from the generic
     // YouArePlayingGame message, and a number over an avatar from the generic GamePlayerValue message
-    // (used here for the remaining lives). Everything else the player sees is avatar effects + furni.
-
-    private Task SetPlayingModeAsync(PlayerId playerId, bool isPlaying) =>
-        _roomGrain
-            ._grainFactory.GetPlayerPresenceGrain(playerId)
-            .SendComposerAsync(new YouArePlayingGameMessageComposer { IsPlaying = isPlaying });
-
-    /// <summary>Shows <paramref name="value"/> as a number bubble over the player's avatar (0 clears it).
-    /// Used for the remaining-lives display.</summary>
-    private Task BroadcastPlayerValueAsync(PlayerId playerId, int value)
-    {
-        if (!_roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId))
-        {
-            return Task.CompletedTask;
-        }
-
-        return _roomGrain.SendComposerToRoomAsync(
-            new GamePlayerValueMessageComposer { UserId = objectId, Value = value }
-        );
-    }
+    // (used here for the remaining lives). Everything else the player sees is avatar effects + furni —
+    // all of it sent through the shared RoomGameChrome.
 }

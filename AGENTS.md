@@ -309,12 +309,23 @@ GAME_ENDS, and it fans both out to whatever implements `IRoomMinigame`.
   - `Vortex.Rooms/Grains/Systems/IRoomMinigame.cs`
   - `Vortex.Rooms/Grains/Systems/RoomFreezeSystem.cs` as the worked example
 - Required edits:
-  1. the system implementing `IRoomMinigame`, plus its pure rules POCO holding the room's
+  1. the system deriving from `RoomMinigameBase`, plus its pure rules POCO holding the room's
      `GameTeamState`
   2. **`GameSystem.Register(<Game>System);`** in the `RoomGrain` constructor — a game that is
      never registered builds clean, tests clean and never runs
   3. a test asserting the game is registered on every room (see
      `RoomMinigameCoordinationTests.Freeze_Is_Registered_On_Every_Room`)
+- Use the shared bricks, never a private copy:
+  - client IO (effects/auras, playing mode, player value, timer reset) goes through
+    `RoomGameChrome`; the two team-aura sets are the `GameAuraSet` enum
+  - item lookups go through `RoomLiveState.ItemIndex` (`ItemsOf<T>` / `LogicsOf<T>`) and
+    `RoomMapModule.FirstLogicOnTile<T>`, never a scan of `ItemsById`
+  - balance config resolves in ONE grain round trip: `IServerConfigGrain.GetManyAsync` +
+    `ServerConfigValues` readers (see `FreezeConfig.ResolveAsync`)
+  - colour-family furni (gates, scoreboards, goals) is ONE logic class with one
+    `[RoomObjectLogic]` attribute per colour key and `GameColorKey.FromKeySuffix` — never a
+    shell subclass per colour
+  - a slow in-game clock is a `GameCadence` field, not a hand-rolled next-due long
 - Forbidden changes:
   - no per-game teams or scores; a second store is invisible to every wired team leaf
   - no direct `GameTeamState` score writes; go through `RoomGameSystem.AddTeamScoreAsync` or the
@@ -323,6 +334,9 @@ GAME_ENDS, and it fans both out to whatever implements `IRoomMinigame`.
     GAME_STARTS was published, and doing it again silently wipes what that event just awarded
   - no `StartGameAsync` / `EndGameAsync` on a per-game access interface, and no new hardcoded
     game call in `FurnitureGameTimerLogic` or `WiredActionControlClock`
+  - no awaited presence-grain call from a player-left hook; use
+    `RoomGameChrome.SetPlayingModeAndForget` (an await back into the leaver's own presence grain
+    deadlocks the room's turn)
 - Validation:
   - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate`
   - start a round from the game-timer furni button **and** from a wired `wf_act_control_clock`

@@ -134,6 +134,10 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
 
         avatar.SetRotation(startRot);
 
+        // After the avatar is resolvable by player id, so a game reacting to the entry can already
+        // address it (auras re-sync on their own through the snapshot; this is game entry state).
+        await _roomGrain.GameSystem.OnPlayerEnteredAsync(snapshot.PlayerId, ct);
+
         return avatar;
     }
 

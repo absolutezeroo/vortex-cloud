@@ -42,4 +42,9 @@ public interface IRoomMinigame
 
     /// <summary>A player left the room; drop whatever state was held for them.</summary>
     Task OnPlayerLeftAsync(PlayerId playerId, CancellationToken ct);
+
+    /// <summary>A player entered the room. Existing team auras already re-sync on their own — the
+    /// avatar snapshot carries <c>CurrentEffectId</c> — so this hook is for game-specific entry work
+    /// (roster re-entry policy, per-game HUD state), not effect replay.</summary>
+    Task OnPlayerEnteredAsync(PlayerId playerId, CancellationToken ct);
 }

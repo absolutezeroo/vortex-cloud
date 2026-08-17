@@ -106,6 +106,24 @@ internal sealed class ServerConfigGrain(
     public Task<ImmutableDictionary<string, string>> GetAllAsync() =>
         Task.FromResult(_cache.ToImmutableDictionary());
 
+    public Task<ImmutableDictionary<string, string>> GetManyAsync(ImmutableArray<string> keys)
+    {
+        ImmutableDictionary<string, string>.Builder set = ImmutableDictionary.CreateBuilder<
+            string,
+            string
+        >();
+
+        foreach (string key in keys)
+        {
+            if (_cache.TryGetValue(key, out string? value))
+            {
+                set[key] = value;
+            }
+        }
+
+        return Task.FromResult(set.ToImmutable());
+    }
+
     public Task ReloadAsync() => LoadAsync(CancellationToken.None);
 
     public Task<ImmutableArray<string>> GetMotdAsync()

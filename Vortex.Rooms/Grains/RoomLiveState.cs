@@ -19,7 +19,12 @@ public sealed class RoomLiveState
     public required RoomId RoomId { get; init; }
     public RoomSnapshot RoomSnapshot { get; set; } = default!;
 
+    // Any new mutation path for ItemsById must also notify ItemIndex — see its invariant note.
     public Dictionary<RoomObjectId, IRoomItem> ItemsById { get; } = [];
+
+    /// <summary>Items indexed by attached-logic type; kept in lockstep with
+    /// <see cref="ItemsById"/> by the object module and the two other removal sites.</summary>
+    public RoomItemIndex ItemIndex { get; } = new();
     public Dictionary<RoomObjectId, IRoomAvatar> AvatarsByObjectId { get; } = [];
     public Dictionary<PlayerId, RoomObjectId> AvatarsByPlayerId { get; } = [];
     public Dictionary<int, PetSnapshot> PetsById { get; } = [];

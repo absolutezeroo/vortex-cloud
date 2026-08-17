@@ -34,6 +34,14 @@ public interface IServerConfigGrain : IGrainWithStringKey
     /// <summary>A snapshot of every currently-set config key/value (whatever exists in the cache/DB).</summary>
     Task<ImmutableDictionary<string, string>> GetAllAsync();
 
+    /// <summary>
+    /// All requested keys that are currently set, in one round trip — the way a subsystem resolves a
+    /// whole settings group (a game's balance, a feature's knobs) without N sequential grain calls to
+    /// this cluster singleton. Missing keys are simply absent; parse with the
+    /// <c>ServerConfigValues</c> readers so fallbacks apply per key.
+    /// </summary>
+    Task<ImmutableDictionary<string, string>> GetManyAsync(ImmutableArray<string> keys);
+
     /// <summary>Re-reads the whole config from the database (for out-of-band / direct-DB edits).</summary>
     Task ReloadAsync();
 

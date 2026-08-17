@@ -172,6 +172,23 @@ public sealed class RoomMinigameCoordinationTests
         second.PlayersLeft.Should().ContainSingle().Which.Should().Be(RoomHarness.Stranger);
     }
 
+    [Fact]
+    public async Task A_Player_Entering_Reaches_Every_Registered_Game()
+    {
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
+        RecordingMinigame first = new("first");
+        RecordingMinigame second = new("second");
+        harness.Grain.GameSystem.Register(first);
+        harness.Grain.GameSystem.Register(second);
+
+        await harness
+            .Grain.GameSystem.OnPlayerEnteredAsync(RoomHarness.Stranger, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        first.PlayersEntered.Should().ContainSingle().Which.Should().Be(RoomHarness.Stranger);
+        second.PlayersEntered.Should().ContainSingle().Which.Should().Be(RoomHarness.Stranger);
+    }
+
     /// <summary>A stand-in game that counts what the coordinator did to it.</summary>
     private sealed class RecordingMinigame(string name) : IRoomMinigame
     {
@@ -184,6 +201,8 @@ public sealed class RoomMinigameCoordinationTests
         public int Ticks { get; private set; }
 
         public List<PlayerId> PlayersLeft { get; } = [];
+
+        public List<PlayerId> PlayersEntered { get; } = [];
 
         /// <summary>How many room events had been published by the time this game was started — the way
         /// to observe that the round was announced first.</summary>
@@ -224,6 +243,13 @@ public sealed class RoomMinigameCoordinationTests
         public Task OnPlayerLeftAsync(PlayerId playerId, CancellationToken ct)
         {
             PlayersLeft.Add(playerId);
+
+            return Task.CompletedTask;
+        }
+
+        public Task OnPlayerEnteredAsync(PlayerId playerId, CancellationToken ct)
+        {
+            PlayersEntered.Add(playerId);
 
             return Task.CompletedTask;
         }

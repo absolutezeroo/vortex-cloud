@@ -15,7 +15,8 @@ namespace Vortex.Rooms.Grains.Systems.Freeze;
 public static class FreezeConstants
 {
     // --- avatar effects (wire-fixed) ---
-    public const int TeamEffectBase = 39; // Red(1)->40, Green(2)->41, Blue(3)->42, Yellow(4)->43
+    // Anchored on the shared aura-set enum so the one Freeze aura base lives in one place.
+    public const int TeamEffectBase = (int)GameAuraSet.Freeze; // Red(1)->40 .. Yellow(4)->43
     public const int FrozenEffect = 12;
     public const int ProtectionEffectBonus = 9;
     public const int NoEffect = 0;

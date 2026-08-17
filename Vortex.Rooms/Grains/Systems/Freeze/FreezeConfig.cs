@@ -1,4 +1,6 @@
+using System.Collections.Immutable;
 using System.Threading.Tasks;
+using Vortex.Primitives.Server;
 using Vortex.Primitives.Server.Grains;
 
 namespace Vortex.Rooms.Grains.Systems.Freeze;
@@ -28,35 +30,76 @@ public static class FreezeConfig
     public const string PowerUpPointsKey = "freeze.points_powerup";
     public const string MaxPlayersPerTeamKey = "freeze.max_players_per_team";
 
-    /// <summary>Reads the live balance from the server config, falling back to the compiled defaults.</summary>
+    /// <summary>Every key of the group, for the one-round-trip batch resolve.</summary>
+    public static readonly ImmutableArray<string> AllKeys =
+    [
+        StartLivesKey,
+        MaxLivesKey,
+        StartSnowballsKey,
+        MaxSnowballsKey,
+        SnowballRegenTicksKey,
+        MaxBoostKey,
+        FrozenTicksKey,
+        ProtectionTicksKey,
+        LoseSnowballsKey,
+        LoseBoostKey,
+        PowerUpChanceKey,
+        ProtectionStacksKey,
+        FreezePointsKey,
+        BlockPointsKey,
+        PowerUpPointsKey,
+        MaxPlayersPerTeamKey,
+    ];
+
+    /// <summary>Reads the live balance from the server config in a single grain round trip (this runs
+    /// on the critical path of every round start), falling back to the compiled defaults.</summary>
     public static async Task<FreezeSettings> ResolveAsync(IServerConfigGrain config)
     {
         FreezeSettings d = FreezeSettings.Default;
+        ImmutableDictionary<string, string> v = await config.GetManyAsync(AllKeys);
 
         return new FreezeSettings
         {
-            StartLives = await config.GetIntAsync(StartLivesKey, d.StartLives),
-            MaxLives = await config.GetIntAsync(MaxLivesKey, d.MaxLives),
-            StartSnowballs = await config.GetIntAsync(StartSnowballsKey, d.StartSnowballs),
-            MaxSnowballs = await config.GetIntAsync(MaxSnowballsKey, d.MaxSnowballs),
-            SnowballRegenTicks = await config.GetIntAsync(
+            StartLives = ServerConfigValues.GetInt(v, StartLivesKey, d.StartLives),
+            MaxLives = ServerConfigValues.GetInt(v, MaxLivesKey, d.MaxLives),
+            StartSnowballs = ServerConfigValues.GetInt(v, StartSnowballsKey, d.StartSnowballs),
+            MaxSnowballs = ServerConfigValues.GetInt(v, MaxSnowballsKey, d.MaxSnowballs),
+            SnowballRegenTicks = ServerConfigValues.GetInt(
+                v,
                 SnowballRegenTicksKey,
                 d.SnowballRegenTicks
             ),
-            MaxExplosionBoost = await config.GetIntAsync(MaxBoostKey, d.MaxExplosionBoost),
-            FrozenTicks = await config.GetIntAsync(FrozenTicksKey, d.FrozenTicks),
-            ProtectionTicks = await config.GetIntAsync(ProtectionTicksKey, d.ProtectionTicks),
-            FreezeLoseSnowballs = await config.GetIntAsync(LoseSnowballsKey, d.FreezeLoseSnowballs),
-            FreezeLoseBoost = await config.GetIntAsync(LoseBoostKey, d.FreezeLoseBoost),
-            PowerUpChancePercent = await config.GetIntAsync(
+            MaxExplosionBoost = ServerConfigValues.GetInt(v, MaxBoostKey, d.MaxExplosionBoost),
+            FrozenTicks = ServerConfigValues.GetInt(v, FrozenTicksKey, d.FrozenTicks),
+            ProtectionTicks = ServerConfigValues.GetInt(v, ProtectionTicksKey, d.ProtectionTicks),
+            FreezeLoseSnowballs = ServerConfigValues.GetInt(
+                v,
+                LoseSnowballsKey,
+                d.FreezeLoseSnowballs
+            ),
+            FreezeLoseBoost = ServerConfigValues.GetInt(v, LoseBoostKey, d.FreezeLoseBoost),
+            PowerUpChancePercent = ServerConfigValues.GetInt(
+                v,
                 PowerUpChanceKey,
                 d.PowerUpChancePercent
             ),
-            ProtectionStacks = await config.GetBoolAsync(ProtectionStacksKey, d.ProtectionStacks),
-            FreezePlayerPoints = await config.GetIntAsync(FreezePointsKey, d.FreezePlayerPoints),
-            DestroyBlockPoints = await config.GetIntAsync(BlockPointsKey, d.DestroyBlockPoints),
-            PowerUpPoints = await config.GetIntAsync(PowerUpPointsKey, d.PowerUpPoints),
-            MaxPlayersPerTeam = await config.GetIntAsync(MaxPlayersPerTeamKey, d.MaxPlayersPerTeam),
+            ProtectionStacks = ServerConfigValues.GetBool(
+                v,
+                ProtectionStacksKey,
+                d.ProtectionStacks
+            ),
+            FreezePlayerPoints = ServerConfigValues.GetInt(
+                v,
+                FreezePointsKey,
+                d.FreezePlayerPoints
+            ),
+            DestroyBlockPoints = ServerConfigValues.GetInt(v, BlockPointsKey, d.DestroyBlockPoints),
+            PowerUpPoints = ServerConfigValues.GetInt(v, PowerUpPointsKey, d.PowerUpPoints),
+            MaxPlayersPerTeam = ServerConfigValues.GetInt(
+                v,
+                MaxPlayersPerTeamKey,
+                d.MaxPlayersPerTeam
+            ),
         };
     }
 }

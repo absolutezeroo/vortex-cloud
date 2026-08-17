@@ -25,8 +25,8 @@ in the build or the tests could see it.
 - **The round lifecycle** — `StartGameAsync` / `EndGameAsync`, which clear the scores, raise the
   wired `GAME_STARTS` / `GAME_ENDS` triggers, and fan out to the registered games.
 
-A game implements `IRoomMinigame` and is registered once. Everything else already routes
-through the coordinator.
+A game derives from `RoomMinigameBase` (the no-op-virtuals base over `IRoomMinigame`) and is
+registered once. Everything else already routes through the coordinator.
 
 ```
 game-timer furni button ─┐
@@ -43,16 +43,41 @@ avatar leaves room ──────> RoomGameSystem.OnPlayerLeftAsync ─> eve
 
 | # | File | What to add |
 |---|------|-------------|
-| 1 | `Vortex.Rooms/Grains/Systems/Room<Game>System.cs` | the system, `: IRoomMinigame`, with a lowercase constant `Name` |
+| 1 | `Vortex.Rooms/Grains/Systems/Room<Game>System.cs` | the system, `: RoomMinigameBase`, with a lowercase constant `Name`; override only the hooks you use |
 | 2 | `Vortex.Rooms/Grains/Systems/<Game>/Room<Game>Game.cs` | the pure rules POCO, no IO, holding `GameTeamState Teams { get; init; }` |
 | 3 | `Vortex.Rooms/Grains/RoomGrain.cs` | the field, the construction next to the other systems, and **`GameSystem.Register(<Game>System);`** |
-| 4 | `Vortex.Rooms/Object/Logic/Furniture/Floor/<Game>/` | one `[RoomObjectLogic("...")]` class per arena furni |
+| 4 | `Vortex.Rooms/Object/Logic/Furniture/Floor/<Game>/` | one `[RoomObjectLogic("...")]` class per arena furni family — a colour family (gates, scoreboards, goals) is ONE class with one attribute per colour key and `GameColorKey.FromKeySuffix(ctx.Definition.LogicName)` |
 | 5 | `Vortex.Primitives/Rooms/Object/IRoom<Game>Access.cs` + `RoomObjectContext.cs` + `RoomGrain.Capabilities.cs` | only the verbs the furni needs (walk-on, click, …) — **never Start/End** |
 | 6 | `Vortex.Rooms.Tests/<Game>/` | rules tests on the POCO, plus the shared-team-state tests |
 
 Step 3 is the one that matters. A game written but never registered builds clean, tests clean,
 and never runs — `RoomMinigameCoordinationTests.Freeze_Is_Registered_On_Every_Room` is the
 pattern for guarding against that; add the equivalent for the new game.
+
+## The shared bricks
+
+The point of the seam is that a game is rules + composition, not plumbing. The plumbing exists
+once; use it:
+
+- **`RoomGameChrome`** (`_roomGrain.GameChrome`) — every client-facing send a game needs:
+  `BroadcastEffectAsync`, `BroadcastTeamAuraAsync` (the two aura sets are the `GameAuraSet`
+  enum: Wired/Banzai = 33-36, Freeze = 40-43), `SetPlayingModeAsync`, `BroadcastPlayerValueAsync`
+  (the number bubble), `ResetGameTimers` (after an early round end). From a player-LEFT hook,
+  only `SetPlayingModeAndForget` — awaiting back into the leaver's presence grain deadlocks the
+  room's turn for 30 s.
+- **`RoomItemIndex`** (`_roomGrain._state.ItemIndex`) — `ItemsOf<TLogic>()` / `LogicsOf<TLogic>()`
+  instead of scanning `ItemsById`; `RoomMapModule.FirstLogicOnTile<TLogic>(tileIdx)` for "is my
+  arena furni on this tile". `LogicsOf` returns a snapshot that is safe to await across.
+- **`GameCadence`** — a slow in-game clock (Freeze's 1 s player tick) as a struct field:
+  `if (_tick.Due(now)) { … }`, `Reset()` at round start. Keep the field non-readonly.
+- **`IServerConfigGrain.GetManyAsync` + `ServerConfigValues`** — resolve the whole balance group
+  in one grain round trip (see `FreezeConfig.ResolveAsync`); round start is a hot path.
+- **`GameColorKey.FromKeySuffix`** — colour from `_red/_green/_blue/_yellow` logic keys or
+  `_r/_g/_b/_y` classnames; unknown → `None`, never a throw (a throw in a logic constructor
+  fails the item attach).
+
+Candidates deliberately not yet converted to the index: the roller, pet-nest and wired item
+scans. Convert them when touched.
 
 ---
 

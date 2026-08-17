@@ -70,6 +70,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     public readonly RoomHandItemModule HandItemModule;
     public readonly RoomAvatarTickSystem AvatarTickSystem;
     public readonly RoomChatSystem ChatSystem;
+    public readonly RoomGameChrome GameChrome;
     public readonly RoomGameSystem GameSystem;
     public readonly RoomFreezeSystem FreezeSystem;
     public readonly RoomGameTimerSystem GameTimerSystem;
@@ -147,6 +148,9 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         RollerSystem = new RoomRollerSystem(this);
         WiredSystem = new RoomWiredSystem(this);
         ChatSystem = new RoomChatSystem(this);
+        // Chrome before GameSystem, GameSystem before any game: RoomFreezeSystem's field
+        // initializer reads GameSystem.TeamState, and every game system reads GameChrome.
+        GameChrome = new RoomGameChrome(this);
         GameSystem = new RoomGameSystem(this);
         FreezeSystem = new RoomFreezeSystem(this);
         GameTimerSystem = new RoomGameTimerSystem(this);

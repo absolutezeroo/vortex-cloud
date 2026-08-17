@@ -1013,5 +1013,6 @@ public sealed partial class RoomPetSystem
         await item.Logic.OnDetachAsync(ct).ConfigureAwait(false);
         item.SetAction(null);
         _roomGrain._state.ItemsById.Remove(foodItemId);
+        _roomGrain._state.ItemIndex.OnItemDetached(item);
     }
 }

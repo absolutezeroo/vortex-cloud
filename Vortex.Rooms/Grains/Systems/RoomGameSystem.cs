@@ -4,12 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Vortex.Primitives.Action;
-using Vortex.Primitives.Messages.Outgoing.Room.Action;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Primitives.Rooms.Events;
 using Vortex.Primitives.Rooms.Object;
-using Vortex.Primitives.Rooms.Object.Avatars;
 
 namespace Vortex.Rooms.Grains.Systems;
 
@@ -27,13 +25,11 @@ namespace Vortex.Rooms.Grains.Systems;
 ///
 /// The state is ephemeral — constructed fresh each time the room grain activates, so a game naturally
 /// dies with the room, matching Habbo. Every mutation runs inside the room grain's single-threaded turn,
-/// so no locking is needed. The team aura is mirrored to the client with effect id <c>32 + team</c>
-/// (Red=33, Green=34, Blue=35, Yellow=36) via <see cref="AvatarEffectMessageComposer"/>.</summary>
+/// so no locking is needed. The team aura is mirrored to the client through
+/// <see cref="RoomGameChrome.BroadcastTeamAuraAsync"/> with the <see cref="GameAuraSet.Wired"/> set
+/// (Red=33, Green=34, Blue=35, Yellow=36).</summary>
 public sealed class RoomGameSystem(RoomGrain roomGrain)
 {
-    private const int TeamEffectBase = 32; // Red(1)->33, Green(2)->34, Blue(3)->35, Yellow(4)->36
-    private const int NoEffect = 0;
-
     private readonly RoomGrain _roomGrain = roomGrain;
     private readonly GameTeamState _state = new();
     private readonly List<IRoomMinigame> _minigames = [];
@@ -113,20 +109,18 @@ public sealed class RoomGameSystem(RoomGrain roomGrain)
 
     public int GetTeamScore(GameTeamColor team) => _state.GetTeamScore(team);
 
-    public int GetTeamMemberCount(GameTeamColor team) => _state.GetTeamMemberCount(team);
-
     public IReadOnlyList<PlayerId> GetPlayersInTeam(GameTeamColor team) =>
         _state.GetPlayersInTeam(team);
 
-    public GameTeamColor GetSmallestTeam() => _state.GetSmallestTeam();
-
     public Task JoinTeamAsync(PlayerId playerId, GameTeamColor team, CancellationToken ct) =>
         _state.JoinTeam(playerId, team)
-            ? BroadcastEffectAsync(playerId, TeamEffectBase + (int)team)
+            ? _roomGrain.GameChrome.BroadcastTeamAuraAsync(playerId, GameAuraSet.Wired, team)
             : Task.CompletedTask;
 
     public Task LeaveTeamAsync(PlayerId playerId, CancellationToken ct) =>
-        _state.LeaveTeam(playerId) ? BroadcastEffectAsync(playerId, NoEffect) : Task.CompletedTask;
+        _state.LeaveTeam(playerId)
+            ? _roomGrain.GameChrome.ClearEffectAsync(playerId)
+            : Task.CompletedTask;
 
     public async Task<bool> TryGiveScoreToPlayerTeamAsync(
         RoomObjectId box,
@@ -219,6 +213,11 @@ public sealed class RoomGameSystem(RoomGrain roomGrain)
         await ForEachMinigameAsync("player-left", game => game.OnPlayerLeftAsync(playerId, ct), ct);
     }
 
+    /// <summary>Lets every registered game react to a player entering the room. Team auras re-sync on
+    /// their own through the avatar snapshot; this is for game-specific entry state.</summary>
+    public Task OnPlayerEnteredAsync(PlayerId playerId, CancellationToken ct) =>
+        ForEachMinigameAsync("player-entered", game => game.OnPlayerEnteredAsync(playerId, ct), ct);
+
     /// <summary>
     /// Runs one lifecycle step against every registered game, keeping each game's failure to itself.
     /// The games in a room are independent, so one that throws must not stop the rest from starting,
@@ -256,38 +255,5 @@ public sealed class RoomGameSystem(RoomGrain roomGrain)
                 );
             }
         }
-    }
-
-    /// <summary>Wipes teams, scores and caps (called when a game starts/restarts), clearing every
-    /// current member's aura first so no stale effect lingers.</summary>
-    public async Task ResetGameAsync(CancellationToken ct)
-    {
-        foreach (PlayerId playerId in _state.Reset())
-        {
-            await BroadcastEffectAsync(playerId, NoEffect);
-        }
-    }
-
-    private Task BroadcastEffectAsync(PlayerId playerId, int effectId)
-    {
-        if (!_roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId))
-        {
-            return Task.CompletedTask;
-        }
-
-        // Persist the aura on the avatar so a player entering mid-game re-syncs existing team auras.
-        if (_roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar))
-        {
-            avatar.SetEffect(effectId);
-        }
-
-        return _roomGrain.SendComposerToRoomAsync(
-            new AvatarEffectMessageComposer
-            {
-                UserId = objectId,
-                EffectId = effectId,
-                DelayMilliseconds = 0,
-            }
-        );
     }
 }

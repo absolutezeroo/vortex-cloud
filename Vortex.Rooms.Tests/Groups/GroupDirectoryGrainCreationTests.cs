@@ -279,6 +279,10 @@ public sealed class GroupDirectoryGrainCreationTests
         public Task<ImmutableDictionary<string, string>> GetAllAsync() =>
             Task.FromResult(ImmutableDictionary<string, string>.Empty);
 
+        public Task<ImmutableDictionary<string, string>> GetManyAsync(
+            ImmutableArray<string> keys
+        ) => Task.FromResult(ImmutableDictionary<string, string>.Empty);
+
         public Task SetValueAsync(string key, string value, string? description) =>
             Task.CompletedTask;
 

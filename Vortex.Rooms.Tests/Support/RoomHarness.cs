@@ -439,15 +439,22 @@ internal sealed class RoomHarness
                 );
             }
 
-            // Games read their live balance from the server config on every round start. Answering with
-            // the caller's own fallback gives them the compiled defaults, which is what a hotel with no
-            // admin overrides runs on anyway.
+            // Games read their live balance from the server config on every round start. An empty
+            // batch snapshot (and the caller's own fallback for single reads) gives them the compiled
+            // defaults, which is what a hotel with no admin overrides runs on anyway.
             if (call.Method.GetGenericArguments()[0] == typeof(IServerConfigGrain))
             {
                 return FakeProxy.Create<IServerConfigGrain>(inner =>
-                    inner.Method.Name == nameof(IServerConfigGrain.GetIntAsync)
-                        ? Task.FromResult((int)inner.Args![1]!)
-                        : null
+                    inner.Method.Name switch
+                    {
+                        nameof(IServerConfigGrain.GetIntAsync) => Task.FromResult(
+                            (int)inner.Args![1]!
+                        ),
+                        nameof(IServerConfigGrain.GetManyAsync) => Task.FromResult(
+                            ImmutableDictionary<string, string>.Empty
+                        ),
+                        _ => null,
+                    }
                 );
             }
 

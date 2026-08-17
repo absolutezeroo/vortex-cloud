@@ -277,6 +277,7 @@ public sealed partial class RoomGrain
         item.SetAction(null);
 
         _state.ItemsById.Remove(objectId);
+        _state.ItemIndex.OnItemDetached(item);
 
         IRoomItem? replacement = definition.ProductType switch
         {
