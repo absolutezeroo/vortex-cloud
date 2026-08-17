@@ -63,9 +63,9 @@ public sealed class FirstLoginOfDayTests
     [Fact]
     public async Task ASecondLoginTheSameDay_IsNotTheFirst()
     {
-        Harness harness = await Harness
-            .CreateAsync(DateTime.UtcNow.AddHours(-1))
-            .ConfigureAwait(true);
+        // Midnight today, NOT "an hour ago": an hour before now falls on yesterday whenever the suite
+        // runs between 00:00 and 01:00 UTC, which made this test fail for one hour out of every day.
+        Harness harness = await Harness.CreateAsync(DateTime.UtcNow.Date).ConfigureAwait(true);
 
         bool first = await harness
             .Grain.MarkLoggedInAsync(CancellationToken.None)
