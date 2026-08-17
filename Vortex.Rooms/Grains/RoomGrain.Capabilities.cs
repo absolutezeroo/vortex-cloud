@@ -153,11 +153,6 @@ public sealed partial class RoomGrain
         CancellationToken ct
     ) => GameSystem.TryGiveScoreToPlayerTeamAsync(box, playerId, amount, cap, ct);
 
-    Task IRoomFreezeAccess.StartGameAsync(CancellationToken ct) => FreezeSystem.StartGameAsync(ct);
-
-    Task<GameTeamColor> IRoomFreezeAccess.EndGameAsync(CancellationToken ct) =>
-        FreezeSystem.EndGameAsync(ct);
-
     Task IRoomFreezeAccess.ThrowBallAsync(
         PlayerId playerId,
         int targetX,

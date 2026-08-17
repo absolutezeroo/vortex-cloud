@@ -21,14 +21,25 @@ public enum FreezeGateResult
 
 /// <summary>
 /// The pure state and rules of a room's Freeze game: which players are on which team (each with their
-/// own <see cref="FreezePlayerState"/>), the game phase, and per-team score. No IO — every effect,
-/// teleport, tile update and broadcast is done by <see cref="RoomFreezeSystem"/> from the signals this
-/// returns. Kept unit-testable in isolation, matching <see cref="GameTeamState"/>.
+/// own <see cref="FreezePlayerState"/>) and the game phase. No IO — every effect, teleport, tile update
+/// and broadcast is done by <see cref="RoomFreezeSystem"/> from the signals this returns. Kept
+/// unit-testable in isolation, matching <see cref="GameTeamState"/>.
+/// <para>
+/// Team membership and score are NOT stored here: they live in the room's shared
+/// <see cref="GameTeamState"/> (<see cref="Teams"/>), which every wired team leaf reads. This class
+/// mirrors each gate join/leave into it so a Freeze player is a team member as far as
+/// <c>wf_cnd_actor_in_team</c>, <c>wf_slc_users_team</c> and the team score/rank conditions are
+/// concerned. The default instance exists so the rules stay testable standalone; the room passes its
+/// own.
+/// </para>
 /// </summary>
 public sealed class RoomFreezeGame
 {
     private readonly Dictionary<PlayerId, FreezePlayerState> _players = [];
-    private readonly int[] _scoreByTeam = new int[5]; // indexed by (int)GameTeamColor; 0 unused
+
+    /// <summary>The room's shared team + score store. Set once by <see cref="RoomFreezeSystem"/> to the
+    /// room's <see cref="RoomGameSystem"/> state.</summary>
+    public GameTeamState Teams { get; init; } = new();
 
     /// <summary>The live balance for this game; refreshed from server config by the wrapper each round.</summary>
     public FreezeSettings Settings { get; set; } = FreezeSettings.Default;
@@ -62,8 +73,7 @@ public sealed class RoomFreezeGame
         return count;
     }
 
-    public int GetTeamScore(GameTeamColor team) =>
-        GameTeamState.IsRealTeam(team) ? _scoreByTeam[(int)team] : 0;
+    public int GetTeamScore(GameTeamColor team) => Teams.GetTeamScore(team);
 
     /// <summary>How many distinct teams still have at least one living player.</summary>
     public int LivingTeamCount()
@@ -100,6 +110,7 @@ public sealed class RoomFreezeGame
         )
         {
             _players.Remove(playerId);
+            Teams.LeaveTeam(playerId);
 
             return FreezeGateResult.Left;
         }
@@ -113,14 +124,20 @@ public sealed class RoomFreezeGame
 
         _players.Remove(playerId); // leave the old team if switching
         _players[playerId] = new FreezePlayerState(playerId, team, Settings);
+        Teams.JoinTeam(playerId, team);
 
         return FreezeGateResult.Joined;
     }
 
+    /// <summary>Takes the player out of the game — they left the room, walked onto an exit tile, or were
+    /// eliminated. They leave the shared team with it, so the wired team leaves stop counting someone who
+    /// is no longer playing.</summary>
     public FreezePlayerState? Remove(PlayerId playerId)
     {
         if (_players.Remove(playerId, out FreezePlayerState? player))
         {
+            Teams.LeaveTeam(playerId);
+
             return player;
         }
 
@@ -135,11 +152,9 @@ public sealed class RoomFreezeGame
             return false;
         }
 
-        for (int i = 0; i < _scoreByTeam.Length; i++)
-        {
-            _scoreByTeam[i] = 0;
-        }
-
+        // Last round's scores are cleared by RoomGameSystem.StartGameAsync, which always runs first and
+        // does it before GAME_STARTS is published. Clearing them again here would land AFTER that event
+        // and silently wipe whatever a GAME_STARTS-triggered score box just awarded.
         foreach (FreezePlayerState player in _players.Values)
         {
             player.Reset(Settings);
@@ -158,28 +173,5 @@ public sealed class RoomFreezeGame
         return GetWinningTeam();
     }
 
-    public GameTeamColor GetWinningTeam()
-    {
-        GameTeamColor best = GameTeamColor.None;
-        int bestScore = 0;
-
-        for (int team = 1; team < _scoreByTeam.Length; team++)
-        {
-            if (_scoreByTeam[team] > bestScore)
-            {
-                bestScore = _scoreByTeam[team];
-                best = (GameTeamColor)team;
-            }
-        }
-
-        return best;
-    }
-
-    public void AddTeamScore(GameTeamColor team, int amount)
-    {
-        if (GameTeamState.IsRealTeam(team))
-        {
-            _scoreByTeam[(int)team] = System.Math.Max(0, _scoreByTeam[(int)team] + amount);
-        }
-    }
+    public GameTeamColor GetWinningTeam() => Teams.GetLeadingTeam();
 }

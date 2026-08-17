@@ -6,13 +6,20 @@ using Vortex.Primitives.Rooms.Object;
 
 namespace Vortex.Rooms.Grains.Systems;
 
-/// <summary>The pure, grain-independent team + score state for a room's wired game. This is the single
+/// <summary>The pure, grain-independent team + score state for a room's game. This is the single
 /// source of truth: which team each player is on, each team's score, and the per-game "times in game"
 /// caps for the score actions. It has no IO — <see cref="RoomGameSystem"/> wraps it and turns the
 /// returned "changed" signals into client effect broadcasts — so all of this logic is unit-testable in
 /// isolation. Member counts are always DERIVED from the membership map (never a parallel counter that
 /// could drift). Mutators return whether a visible change happened so the caller knows when to
-/// broadcast/clear a team aura.</summary>
+/// broadcast/clear a team aura.
+/// <para>
+/// The Freeze minigame shares this same instance (see
+/// <see cref="Freeze.RoomFreezeGame.Teams"/>) rather than keeping its own teams and scores: every
+/// wired team leaf — <c>wf_cnd_actor_in_team</c>, <c>wf_cnd_team_has_score</c>,
+/// <c>wf_cnd_team_has_rank</c>, <c>wf_slc_users_team</c>, <c>wf_trg_score_achieved</c> — reads this
+/// state, so a second store would make all of them blind to a Freeze round.
+/// </para></summary>
 public sealed class GameTeamState
 {
     private readonly Dictionary<PlayerId, GameTeamColor> _teamByPlayer = [];
@@ -117,7 +124,7 @@ public sealed class GameTeamState
             return false;
         }
 
-        AddTeamScore(team, amount);
+        AddScore(team, amount);
 
         return true;
     }
@@ -130,7 +137,7 @@ public sealed class GameTeamState
             return false;
         }
 
-        AddTeamScore(team, amount);
+        AddScore(team, amount);
 
         return true;
     }
@@ -161,19 +168,54 @@ public sealed class GameTeamState
         List<PlayerId> members = [.. _teamByPlayer.Keys];
 
         _teamByPlayer.Clear();
-        Array.Clear(_scoreByTeam);
-        _giveScoreUses.Clear();
-        _giveTeamScoreUses.Clear();
+        ResetScores();
 
         return members;
     }
 
-    private void AddTeamScore(GameTeamColor team, int amount)
+    /// <summary>Zeroes every team's score and the per-game score caps while KEEPING membership — what a
+    /// fresh round needs. Freeze picks its teams at the gates before the round starts, so wiping them at
+    /// kick-off (what <see cref="Reset"/> does) would empty the arena.</summary>
+    public void ResetScores()
     {
+        Array.Clear(_scoreByTeam);
+        _giveScoreUses.Clear();
+        _giveTeamScoreUses.Clear();
+    }
+
+    /// <summary>Awards (or deducts) points to a team with no cap accounting — the direct path used by
+    /// game rules that are not the capped wired score actions, such as a Freeze freeze/block/power-up.
+    /// Ignored for <see cref="GameTeamColor.None"/>.</summary>
+    public void AddScore(GameTeamColor team, int amount)
+    {
+        if (!IsRealTeam(team))
+        {
+            return;
+        }
+
         // Team scores floor at 0 (a negative award cannot push a team below zero).
         long updated = (long)_scoreByTeam[(int)team] + amount;
 
         _scoreByTeam[(int)team] = (int)Math.Clamp(updated, 0, int.MaxValue);
+    }
+
+    /// <summary>The team with the highest score, or <see cref="GameTeamColor.None"/> when nobody has
+    /// scored. Ties resolve to the lowest colour — the same order the rank condition uses.</summary>
+    public GameTeamColor GetLeadingTeam()
+    {
+        GameTeamColor best = GameTeamColor.None;
+        int bestScore = 0;
+
+        for (int team = (int)GameTeamColor.Red; team <= (int)GameTeamColor.Yellow; team++)
+        {
+            if (_scoreByTeam[team] > bestScore)
+            {
+                bestScore = _scoreByTeam[team];
+                best = (GameTeamColor)team;
+            }
+        }
+
+        return best;
     }
 
     private static bool TryConsumeUse<TKey>(Dictionary<TKey, int> uses, TKey key, int cap)

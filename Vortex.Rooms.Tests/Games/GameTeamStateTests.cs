@@ -177,4 +177,56 @@ public sealed class GameTeamStateTests
         state.GetTeamScore(GameTeamColor.Red).Should().Be(0);
         state.GetTeamMemberCount(GameTeamColor.Blue).Should().Be(0);
     }
+
+    [Fact]
+    public void ResetScores_ClearsScoresAndCaps_ButKeepsMembership()
+    {
+        GameTeamState state = new();
+        state.JoinTeam(One, GameTeamColor.Red);
+        state.TryGiveScoreToPlayerTeam(Box, One, 7, 1); // exhausts the (Box, One) cap
+
+        state.ResetScores();
+
+        // Freeze starts a round with this: the gates already picked the teams.
+        state.GetTeam(One).Should().Be(GameTeamColor.Red);
+        state.GetTeamScore(GameTeamColor.Red).Should().Be(0);
+
+        // The per-game caps are part of "a fresh round", so they reset with the scores.
+        state.TryGiveScoreToPlayerTeam(Box, One, 3, 1).Should().BeTrue();
+        state.GetTeamScore(GameTeamColor.Red).Should().Be(3);
+    }
+
+    [Fact]
+    public void AddScore_IsUncapped_FloorsAtZero_AndIgnoresNoTeam()
+    {
+        GameTeamState state = new();
+
+        state.AddScore(GameTeamColor.Blue, 5);
+        state.AddScore(GameTeamColor.Blue, 3);
+        state.GetTeamScore(GameTeamColor.Blue).Should().Be(8);
+
+        // A Freeze friendly-fire penalty can exceed the score; it must not go negative.
+        state.AddScore(GameTeamColor.Blue, -50);
+        state.GetTeamScore(GameTeamColor.Blue).Should().Be(0);
+
+        // A teamless award is dropped rather than aliasing onto index 0.
+        state.AddScore(GameTeamColor.None, 10);
+        state.GetTeamScore(GameTeamColor.None).Should().Be(0);
+    }
+
+    [Fact]
+    public void GetLeadingTeam_PicksTheHighest_AndIsNoneWhenNobodyScored()
+    {
+        GameTeamState state = new();
+
+        state.GetLeadingTeam().Should().Be(GameTeamColor.None);
+
+        state.AddScore(GameTeamColor.Green, 4);
+        state.AddScore(GameTeamColor.Yellow, 9);
+        state.GetLeadingTeam().Should().Be(GameTeamColor.Yellow);
+
+        // A tie resolves to the lowest colour, the same order the rank condition ranks by.
+        state.AddScore(GameTeamColor.Green, 5);
+        state.GetLeadingTeam().Should().Be(GameTeamColor.Green);
+    }
 }

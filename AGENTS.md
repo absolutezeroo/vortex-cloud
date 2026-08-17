@@ -299,6 +299,35 @@ is missing from it. The client half still has no cross-check — a capability mi
   - restart the emulator — a running `Vortex.Main` holds its own DLLs, so a rebuilt binary is not
     live until it is restarted
 
+### Add a room game (Freeze, Battle Banzai, football, hockey)
+Every room game plugs into one seam so that nothing which starts or stops a round names an
+individual game. `RoomGameSystem` is the coordinator: it owns the room's single `GameTeamState`
+(teams + scores, read by every wired team leaf) and the round lifecycle that raises GAME_STARTS /
+GAME_ENDS, and it fans both out to whatever implements `IRoomMinigame`.
+- Required context files:
+  - `docs/walkthroughs/add-a-room-game.md` (full checklist and the non-obvious rules)
+  - `Vortex.Rooms/Grains/Systems/IRoomMinigame.cs`
+  - `Vortex.Rooms/Grains/Systems/RoomFreezeSystem.cs` as the worked example
+- Required edits:
+  1. the system implementing `IRoomMinigame`, plus its pure rules POCO holding the room's
+     `GameTeamState`
+  2. **`GameSystem.Register(<Game>System);`** in the `RoomGrain` constructor — a game that is
+     never registered builds clean, tests clean and never runs
+  3. a test asserting the game is registered on every room (see
+     `RoomMinigameCoordinationTests.Freeze_Is_Registered_On_Every_Room`)
+- Forbidden changes:
+  - no per-game teams or scores; a second store is invisible to every wired team leaf
+  - no direct `GameTeamState` score writes; go through `RoomGameSystem.AddTeamScoreAsync` or the
+    SCORE_ACHIEVED trigger never fires
+  - no clearing scores in your own `StartAsync`; the coordinator already did it before
+    GAME_STARTS was published, and doing it again silently wipes what that event just awarded
+  - no `StartGameAsync` / `EndGameAsync` on a per-game access interface, and no new hardcoded
+    game call in `FurnitureGameTimerLogic` or `WiredActionControlClock`
+- Validation:
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate`
+  - start a round from the game-timer furni button **and** from a wired `wf_act_control_clock`
+    box; both must reach the new game
+
 ### Refactor lookup/cache logic
 - Required context files:
   - `AGENTS.md`

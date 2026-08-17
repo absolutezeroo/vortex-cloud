@@ -35,10 +35,16 @@ namespace Vortex.Rooms.Grains.Systems;
 /// power-ups) and wear the Freeze effect set, none of which the generic team system models.
 /// </para>
 /// </summary>
-public sealed class RoomFreezeSystem(RoomGrain roomGrain)
+public sealed class RoomFreezeSystem(RoomGrain roomGrain) : IRoomMinigame
 {
+    public string Name => "freeze";
+
     private readonly RoomGrain _roomGrain = roomGrain;
-    private readonly RoomFreezeGame _game = new();
+
+    // Teams and scores are the room's shared GameTeamState, not a second store of our own: the wired
+    // team conditions/selectors and the SCORE_ACHIEVED trigger all read that one, and a Freeze round
+    // that kept its own would be invisible to every one of them.
+    private readonly RoomFreezeGame _game = new() { Teams = roomGrain.GameSystem.TeamState };
 
     // A snowball's flight: the blast lands BlastDelayMs after the throw, then the ripple resets
     // ResetDelayMs after that. Kept as time-ordered queues drained each room tick.
@@ -86,7 +92,10 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         await RefreshGateCountersAsync();
     }
 
-    public async Task StartGameAsync(CancellationToken ct)
+    /// <summary>Kicks off a round for whoever is standing on the gates. Driven by
+    /// <see cref="RoomGameSystem"/>, which has already cleared the shared scores and fired GAME_STARTS
+    /// by the time this runs — nothing calls it directly.</summary>
+    public async Task StartAsync(CancellationToken ct)
     {
         _game.Settings = await FreezeConfig.ResolveAsync(
             _roomGrain._grainFactory.GetServerConfigGrain()
@@ -115,9 +124,12 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         await RefreshScoreboardsAsync();
     }
 
-    public async Task<GameTeamColor> EndGameAsync(CancellationToken ct)
+    /// <summary>Winds the round down: clears effects, ammo and the in-flight snowballs, and leaves the
+    /// scoreboards showing the final tally. Driven by <see cref="RoomGameSystem"/> after GAME_ENDS has
+    /// fired. <see cref="WinningTeam"/> stays readable afterwards.</summary>
+    public async Task EndAsync(CancellationToken ct)
     {
-        GameTeamColor winner = _game.Stop();
+        _game.Stop();
 
         _endEarlyArmed = false;
         _blasts.Clear();
@@ -132,9 +144,11 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
 
         await RefreshGateCountersAsync();
         await RefreshScoreboardsAsync();
-
-        return winner;
     }
+
+    /// <summary>The team that finished ahead, or <see cref="GameTeamColor.None"/> if nobody scored. Read
+    /// from the shared scores, so it survives the end of the round until the next one starts.</summary>
+    public GameTeamColor WinningTeam => _game.GetWinningTeam();
 
     public Task OnPlayerLeftAsync(PlayerId playerId, CancellationToken ct)
     {
@@ -179,7 +193,7 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
 
     /// <summary>Room-tick entry: lands due snowball blasts, resets finished ripples and runs the 1s
     /// freeze/shield countdown. Cheap when no game is running.</summary>
-    public async Task ProcessAsync(long now, CancellationToken ct)
+    public async Task TickAsync(long now, CancellationToken ct)
     {
         _currentTickMs = now;
 
@@ -201,9 +215,12 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         }
 
         // A round that started with two+ teams ends the moment only one (or none) is left standing.
+        // Ending goes through the coordinator, never straight to our own EndAsync: that is what fires
+        // wf_trg_game_ends on an early finish — previously only a timer running out reached it — and
+        // what stops any other game in the room from being left running on its own.
         if (_endEarlyArmed && _game.LivingTeamCount() <= 1)
         {
-            await EndGameAsync(ct);
+            await _roomGrain.GameSystem.EndGameAsync(ct);
             ResetGameTimers();
 
             return;
@@ -385,7 +402,7 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
                         ? -_game.Settings.FreezePlayerPoints
                         : _game.Settings.FreezePlayerPoints;
 
-                _game.AddTeamScore(thrower.Team, points);
+                await AddTeamScoreAsync(thrower.Team, points, ct);
             }
 
             bool died = victim.Freeze();
@@ -470,7 +487,7 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
 
         if (thrower is not null)
         {
-            _game.AddTeamScore(thrower.Team, _game.Settings.DestroyBlockPoints);
+            await AddTeamScoreAsync(thrower.Team, _game.Settings.DestroyBlockPoints, ct);
         }
     }
 
@@ -506,7 +523,7 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
         }
 
         FreezePowerUps.Apply(powerUp, player);
-        _game.AddTeamScore(player.Team, _game.Settings.PowerUpPoints);
+        await AddTeamScoreAsync(player.Team, _game.Settings.PowerUpPoints, ct);
 
         await block.SetStateAsync(
             (state + FreezeConstants.BlockCollectedOffset) * FreezeConstants.StateWireScale
@@ -638,6 +655,11 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain)
             }
         }
     }
+
+    /// <summary>Scores for a team through the room's shared game system, so the change fires the wired
+    /// SCORE_ACHIEVED trigger exactly as a <c>wf_act_give_score</c> box would.</summary>
+    private Task AddTeamScoreAsync(GameTeamColor team, int amount, CancellationToken ct) =>
+        _roomGrain.GameSystem.AddTeamScoreAsync(team, amount, ct);
 
     /// <summary>Pushes each team's live score to its <c>es_score_*</c> scoreboard (furniture_score shows
     /// the raw state as a number).</summary>

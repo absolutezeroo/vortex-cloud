@@ -6,17 +6,13 @@ using Vortex.Primitives.Rooms.Enums.Games;
 namespace Vortex.Primitives.Rooms.Object;
 
 /// <summary>
-/// The Freeze minigame, as its arena furniture drives it. Kept apart from
-/// <see cref="IRoomGameAccess"/> on purpose: both subsystems have a Start and an End, they mean
-/// different things, and merging them would collide. Not a grain contract.
+/// The Freeze minigame's own verbs, as its arena furniture drives it — the things only Freeze furniture
+/// can ask for. Starting and ending a round is deliberately NOT here: that is the room's game lifecycle,
+/// shared with every other game, and it is driven through <see cref="IRoomGameAccess"/> so that whatever
+/// starts a round does not have to name the games the room happens to contain. Not a grain contract.
 /// </summary>
 public interface IRoomFreezeAccess
 {
-    Task StartGameAsync(CancellationToken ct);
-
-    /// <summary>Ends the round and reports the winning team.</summary>
-    Task<GameTeamColor> EndGameAsync(CancellationToken ct);
-
     /// <summary>Throws an ice ball at a tile on the player's behalf.</summary>
     Task ThrowBallAsync(PlayerId playerId, int targetX, int targetY, CancellationToken ct);
 

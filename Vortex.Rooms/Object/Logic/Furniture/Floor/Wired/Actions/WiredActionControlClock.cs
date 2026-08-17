@@ -72,7 +72,9 @@ public class WiredActionControlClock(
         }
 
         // Starting the counter starts the room game (GAME_STARTS); stopping or resetting it ends the
-        // game (GAME_ENDS). Both are idempotent, so pause/resume leave the game state untouched.
+        // game (GAME_ENDS). Both are idempotent, so pause/resume leave the game state untouched. The
+        // game system carries the round on to whichever games the room hosts — a wired clock is the
+        // other half of the timer furni's own start/stop button, and it used to move only half of it.
         if (control == ControlStart)
         {
             await _ctx.Game.StartGameAsync(ct);

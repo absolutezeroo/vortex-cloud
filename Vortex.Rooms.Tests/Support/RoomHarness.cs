@@ -35,6 +35,7 @@ using Vortex.Primitives.Rooms.Providers;
 using Vortex.Primitives.Rooms.Snapshots;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
 using Vortex.Primitives.Rooms.Snapshots.Mapping;
+using Vortex.Primitives.Server.Grains;
 using Vortex.Rooms.Configuration;
 using Vortex.Rooms.Grains;
 using Vortex.Rooms.Grains.Systems;
@@ -434,6 +435,18 @@ internal sealed class RoomHarness
                 return FakeProxy.Create<IPlayerDirectoryGrain>(inner =>
                     inner.Method.Name == nameof(IPlayerDirectoryGrain.GetPlayerNameAsync)
                         ? Task.FromResult(OwnerName)
+                        : null
+                );
+            }
+
+            // Games read their live balance from the server config on every round start. Answering with
+            // the caller's own fallback gives them the compiled defaults, which is what a hotel with no
+            // admin overrides runs on anyway.
+            if (call.Method.GetGenericArguments()[0] == typeof(IServerConfigGrain))
+            {
+                return FakeProxy.Create<IServerConfigGrain>(inner =>
+                    inner.Method.Name == nameof(IServerConfigGrain.GetIntAsync)
+                        ? Task.FromResult((int)inner.Args![1]!)
                         : null
                 );
             }

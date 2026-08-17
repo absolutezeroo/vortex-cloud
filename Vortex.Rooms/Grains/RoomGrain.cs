@@ -155,6 +155,11 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         CrackableSystem = new RoomCrackableSystem(this);
         TradingSystem = new RoomTradingSystem(this);
 
+        // Every game the room can host plugs in here, and nowhere else: the game-timer furni, the wired
+        // control-clock action, the tick loop and the avatar-left path all go through GameSystem and
+        // never name a game. Battle Banzai, football and hockey each land as one more line.
+        GameSystem.Register(FreezeSystem);
+
         EventModule.Register(RollerSystem);
         EventModule.Register(WiredSystem);
     }
@@ -288,7 +293,12 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
                 await RunTickStepAsync("wired", () => WiredSystem.ProcessWiredAsync(now, ct));
                 await RunTickStepAsync("rollers", () => RollerSystem.ProcessRollersAsync(now, ct));
                 await RunTickStepAsync("game-timer", () => GameTimerSystem.ProcessAsync(now, ct));
-                await RunTickStepAsync("freeze", () => FreezeSystem.ProcessAsync(now, ct));
+
+                foreach (IRoomMinigame minigame in GameSystem.Minigames)
+                {
+                    await RunTickStepAsync(minigame.Name, () => minigame.TickAsync(now, ct));
+                }
+
                 await RunTickStepAsync("doorbell", () => ProcessDoorbellTimeoutsAsync(now, ct));
                 await RunTickStepAsync(
                     "mystery-box",

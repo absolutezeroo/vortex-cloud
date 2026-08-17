@@ -106,8 +106,8 @@ public sealed class RoomFreezeGameTests
         game.IsRunning.Should().BeTrue();
         game.GetPlayer(P(1))!.Lives.Should().Be(FreezeSettings.Default.StartLives);
 
-        game.AddTeamScore(GameTeamColor.Blue, 30);
-        game.AddTeamScore(GameTeamColor.Red, 10);
+        game.Teams.AddScore(GameTeamColor.Blue, 30);
+        game.Teams.AddScore(GameTeamColor.Red, 10);
 
         game.Stop().Should().Be(GameTeamColor.Blue);
         game.IsRunning.Should().BeFalse();

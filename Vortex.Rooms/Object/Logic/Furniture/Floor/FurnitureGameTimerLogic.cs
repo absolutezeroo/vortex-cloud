@@ -112,7 +112,6 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
             _gameActive = false;
 
             await _ctx.Game.EndGameAsync(ct);
-            await _ctx.Freeze.EndGameAsync(ct);
         }
     }
 
@@ -122,8 +121,8 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
         {
             StartCountdown();
 
+            // The game system starts whatever games this room hosts; the button does not name them.
             await _ctx.Game.StartGameAsync(ct);
-            await _ctx.Freeze.StartGameAsync(ct);
 
             return;
         }
@@ -205,7 +204,6 @@ public class FurnitureGameTimerLogic(IStuffDataFactory stuffDataFactory, IRoomFl
             _gameActive = false;
 
             await _ctx.Game.EndGameAsync(ct);
-            await _ctx.Freeze.EndGameAsync(ct);
 
             IncreaseTimer();
         }
