@@ -16,6 +16,24 @@ public class RoomConfig : IWiredLimits
 
     public int RoomCheckMs { get; init; } = 300000;
     public int RoomDeactivationDelayMs { get; init; } = 1800000;
+
+    /// <summary>
+    /// How often the room wakes up to look at its clocks.
+    /// <para>
+    /// <b>50 does not mean twenty times a second on Windows.</b> The default system timer quantum is
+    /// 15.625 ms, so a 50 ms period is served at the next multiple — 62.5 ms, or sixteen times a
+    /// second. A benchmark run measured 63.2 ms and that is the reason; it is the operating system's
+    /// clock, not contention and not a fault in the tick. Anything below 16 Hz under load <em>is</em>
+    /// contention: a run during a login storm managed 11.
+    /// </para>
+    /// <para>
+    /// It costs nothing in pacing. Every system that cares about timing keeps its own wall-clock
+    /// boundary — avatars move on <see cref="AvatarTickMs"/>, rollers on <see cref="RollerTickMs"/>,
+    /// items flush on <see cref="DirtyItemsTickMs"/> — and this only decides how promptly a boundary
+    /// that has come due gets noticed, so the error is bounded by one tick. The single exception is
+    /// <see cref="WiredTickMs"/>, which is as fine as this one and is therefore capped by it.
+    /// </para>
+    /// </summary>
     public int RoomTickMs { get; init; } = 50;
     public int AvatarTickMs { get; init; } = 500;
 
