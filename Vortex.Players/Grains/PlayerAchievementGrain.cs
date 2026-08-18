@@ -5,11 +5,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Achievements;
 using Vortex.Players.Achievements;
+using Vortex.Players.Configuration;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Messages.Outgoing.Inventory.Achievements;
 using Vortex.Primitives.Messages.Outgoing.Notifications;
@@ -20,22 +23,73 @@ using Vortex.Primitives.Players.Snapshots;
 namespace Vortex.Players.Grains;
 
 /// <summary>
-/// Per-player achievement grain. Resolves the player's stored progress rows against the cached
-/// definitions into wire-ready snapshots (reads) and applies progression end to end (writes): DB
-/// upsert, badge replacement, currency rewards, achievement-score update and outbound composers.
-/// Orleans single-threading serialises progression per player, so no locking is needed.
+/// Per-player achievement grain. Holds the player's progress in memory for the life of the
+/// activation, resolves it against the cached definitions into wire-ready snapshots (reads) and
+/// applies progression end to end (writes): badge replacement, currency rewards, achievement-score
+/// update and outbound composers. Orleans single-threading serialises progression per player, so no
+/// locking is needed.
+///
+/// Writes are split by what is at stake. A level-up hands out a badge, currency and score, so its
+/// row is written through immediately and nothing is granted until that write lands. Plain progress
+/// — the common case, one counter bump per room entry, per respect, per furni placed — is only
+/// marked dirty and batched by the flush timer, so a busy hotel does not pay two database
+/// round-trips per player per event.
 /// </summary>
 internal sealed class PlayerAchievementGrain(
     IGrainFactory grainFactory,
     IDbContextFactory<VortexDbContext> dbCtxFactory,
+    IOptions<AchievementConfig> achievementConfig,
     ILogger<PlayerAchievementGrain> logger
 ) : Grain, IPlayerAchievementGrain
 {
+    /// <summary>
+    /// One achievement's live state. <see cref="EntityId"/> is 0 until the row exists in the
+    /// database, and <see cref="Dirty"/> marks a progress counter the flush timer still owes a
+    /// write. <see cref="LastProgressAt"/> backs the once-per-day guard.
+    /// </summary>
+    private sealed class ProgressState
+    {
+        public int EntityId { get; set; }
+        public int Progress { get; set; }
+        public int CompletedLevels { get; set; }
+        public DateTime? LastProgressAt { get; set; }
+        public bool Dirty { get; set; }
+    }
+
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly AchievementConfig _achievementConfig = achievementConfig.Value;
     private readonly ILogger<PlayerAchievementGrain> _logger = logger;
 
+    private readonly Dictionary<int, ProgressState> _stateByAchievementId = [];
+    private bool _hydrated;
+    private IDisposable? _timer;
+
     private int PlayerId => (int)this.GetPrimaryKeyLong();
+
+    public override async Task OnActivateAsync(CancellationToken ct)
+    {
+        await EnsureHydratedAsync(ct).ConfigureAwait(true);
+
+        TimeSpan interval = TimeSpan.FromMilliseconds(_achievementConfig.ProgressFlushIntervalMs);
+
+        _timer = this.RegisterGrainTimer<object?>(
+            static async (self, ct) =>
+                await ((PlayerAchievementGrain)self!).FlushDirtyProgressAsync(ct),
+            this,
+            interval,
+            interval
+        );
+
+        await base.OnActivateAsync(ct).ConfigureAwait(true);
+    }
+
+    public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken ct)
+    {
+        _timer?.Dispose();
+
+        await FlushDirtyProgressAsync(ct).ConfigureAwait(true);
+    }
 
     public async Task<AchievementListSnapshot> GetAchievementsAsync(CancellationToken ct)
     {
@@ -55,8 +109,7 @@ internal sealed class PlayerAchievementGrain(
             };
         }
 
-        Dictionary<int, PlayerAchievementEntity> progressByAchievement = await LoadProgressAsync(ct)
-            .ConfigureAwait(true);
+        await EnsureHydratedAsync(ct).ConfigureAwait(true);
 
         ImmutableArray<AchievementProgressSnapshot>.Builder builder =
             ImmutableArray.CreateBuilder<AchievementProgressSnapshot>(definitions.Length);
@@ -64,10 +117,10 @@ internal sealed class PlayerAchievementGrain(
 
         foreach (AchievementDefinitionSnapshot definition in definitions)
         {
-            progressByAchievement.TryGetValue(definition.Id, out PlayerAchievementEntity? progress);
+            _stateByAchievementId.TryGetValue(definition.Id, out ProgressState? state);
 
-            int cumulativeProgress = progress?.Progress ?? 0;
-            int completedLevels = progress?.Level ?? 0;
+            int cumulativeProgress = state?.Progress ?? 0;
+            int completedLevels = state?.CompletedLevels ?? 0;
 
             builder.Add(
                 AchievementProgressCalculator.Build(definition, cumulativeProgress, completedLevels)
@@ -118,79 +171,79 @@ internal sealed class PlayerAchievementGrain(
             return;
         }
 
-        int oldCompleted;
-        AchievementProgressResult result;
-
-        try
+        if (!await EnsureHydratedAsync(ct).ConfigureAwait(true))
         {
-            await using VortexDbContext dbCtx = await _dbCtxFactory
-                .CreateDbContextAsync(ct)
-                .ConfigureAwait(true);
-
-            PlayerAchievementEntity? row = await dbCtx
-                .PlayerAchievements.FirstOrDefaultAsync(
-                    p => p.PlayerEntityId == PlayerId && p.AchievementEntityId == definition.Id,
-                    ct
-                )
-                .ConfigureAwait(true);
-
-            // Daily achievements (e.g. Login) advance at most once per calendar day: the row's
-            // last-write date is when it last progressed, so skip if that was already today.
-            if (oncePerDay && row is not null && row.UpdatedAt.Date == DateTime.Now.Date)
-            {
-                return;
-            }
-
-            oldCompleted = row?.Level ?? 0;
-
-            result = AchievementProgressCalculator.ApplyProgress(
-                definition,
-                row?.Progress ?? 0,
-                oldCompleted,
-                amount
-            );
-
-            if (!result.ProgressChanged)
-            {
-                return;
-            }
-
-            if (row is null)
-            {
-                dbCtx.PlayerAchievements.Add(
-                    new PlayerAchievementEntity
-                    {
-                        PlayerEntityId = PlayerId,
-                        AchievementEntityId = definition.Id,
-                        Progress = result.NewProgress,
-                        Level = result.NewCompletedLevels,
-                    }
-                );
-            }
-            else
-            {
-                row.Progress = result.NewProgress;
-                row.Level = result.NewCompletedLevels;
-            }
-
-            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(
-                ex,
-                "Failed to persist achievement progress for player {PlayerId}, achievement {Name}",
-                PlayerId,
-                definition.Name
+            _logger.LogWarning(
+                "Dropping {Amount} progress on '{Name}' for player {PlayerId}: their stored progress could not be loaded, and advancing from an unknown baseline would overwrite it",
+                amount,
+                definition.Name,
+                PlayerId
             );
             return;
         }
+
+        if (!_stateByAchievementId.TryGetValue(definition.Id, out ProgressState? state))
+        {
+            state = new ProgressState();
+            _stateByAchievementId[definition.Id] = state;
+        }
+
+        DateTime now = DateTime.Now;
+
+        // Daily achievements (e.g. Login) advance at most once per calendar day. Tracked in memory
+        // and hydrated from the row's last-write date, because the row itself now lags behind by up
+        // to one flush interval.
+        if (oncePerDay && state.LastProgressAt?.Date == now.Date)
+        {
+            return;
+        }
+
+        int previousCompleted = state.CompletedLevels;
+
+        AchievementProgressResult result = AchievementProgressCalculator.ApplyProgress(
+            definition,
+            state.Progress,
+            previousCompleted,
+            amount
+        );
+
+        if (!result.ProgressChanged)
+        {
+            return;
+        }
+
+        if (result.LeveledUp)
+        {
+            // Rewards ride on this level, so the row has to be durable before any of them are
+            // handed out. A failed write leaves the in-memory state untouched and gives up: the
+            // next progress event tries the same level again.
+            if (
+                !await PersistAsync(
+                        definition.Id,
+                        state,
+                        result.NewProgress,
+                        result.NewCompletedLevels,
+                        ct
+                    )
+                    .ConfigureAwait(true)
+            )
+            {
+                return;
+            }
+        }
+        else
+        {
+            state.Progress = result.NewProgress;
+            state.Dirty = true;
+        }
+
+        state.LastProgressAt = now;
 
         IPlayerPresenceGrain presence = _grainFactory.GetPlayerPresenceGrain((long)PlayerId);
 
         if (result.LeveledUp)
         {
-            await ApplyLevelUpsAsync(definition, oldCompleted, result, presence, ct)
+            await ApplyLevelUpsAsync(definition, previousCompleted, result, presence, ct)
                 .ConfigureAwait(true);
 
             // A resolution statue can only be waiting on a level, so this is the one moment a
@@ -295,10 +348,142 @@ internal sealed class PlayerAchievementGrain(
             .ConfigureAwait(true);
     }
 
-    private async Task<Dictionary<int, PlayerAchievementEntity>> LoadProgressAsync(
+    /// <summary>
+    /// Writes one achievement's row through immediately and, only once that lands, commits the new
+    /// figures into the in-memory state. Returns false on failure with the state untouched, so the
+    /// caller never grants a reward for a level the database did not take.
+    /// </summary>
+    private async Task<bool> PersistAsync(
+        int achievementId,
+        ProgressState state,
+        int progress,
+        int completedLevels,
         CancellationToken ct
     )
     {
+        try
+        {
+            await using VortexDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(true);
+
+            PlayerAchievementEntity row = BuildRow(
+                achievementId,
+                state.EntityId,
+                progress,
+                completedLevels
+            );
+
+            if (state.EntityId == 0)
+            {
+                dbCtx.PlayerAchievements.Add(row);
+            }
+            else
+            {
+                TrackProgressUpdate(dbCtx, row, includeLevel: true);
+            }
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+            state.EntityId = row.Id;
+            state.Progress = progress;
+            state.CompletedLevels = completedLevels;
+            state.Dirty = false;
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to persist achievement level-up for player {PlayerId}, achievement {AchievementId}",
+                PlayerId,
+                achievementId
+            );
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Writes the progress counters the timer owes, in one batch. Counters only: a level change is
+    /// already durable by the time it reaches here (see <see cref="PersistAsync"/>). Rows stay dirty
+    /// when the write fails, so the next tick retries them instead of dropping them.
+    /// </summary>
+    private async Task FlushDirtyProgressAsync(CancellationToken ct)
+    {
+        KeyValuePair<int, ProgressState>[] batch = _stateByAchievementId
+            .Where(entry => entry.Value.Dirty)
+            .Take(_achievementConfig.MaxDirtyProgressPerFlush)
+            .ToArray();
+
+        if (batch.Length == 0)
+        {
+            return;
+        }
+
+        try
+        {
+            await using VortexDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(true);
+
+            List<(ProgressState State, PlayerAchievementEntity Row)> inserted = [];
+
+            foreach ((int achievementId, ProgressState state) in batch)
+            {
+                PlayerAchievementEntity row = BuildRow(
+                    achievementId,
+                    state.EntityId,
+                    state.Progress,
+                    state.CompletedLevels
+                );
+
+                if (state.EntityId == 0)
+                {
+                    dbCtx.PlayerAchievements.Add(row);
+                    inserted.Add((state, row));
+                    continue;
+                }
+
+                TrackProgressUpdate(dbCtx, row, includeLevel: false);
+            }
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+            foreach ((ProgressState state, PlayerAchievementEntity row) in inserted)
+            {
+                state.EntityId = row.Id;
+            }
+
+            foreach ((_, ProgressState state) in batch)
+            {
+                state.Dirty = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to flush {Count} dirty achievement rows for player {PlayerId}",
+                batch.Length,
+                PlayerId
+            );
+        }
+    }
+
+    /// <summary>
+    /// Loads the player's stored rows into memory, once per activation. A failed load must never be
+    /// mistaken for "this player has no progress": writing on top of that empty map would reset
+    /// every counter to zero. The flag therefore stays false so the next call retries, and callers
+    /// that would write check the result first.
+    /// </summary>
+    private async Task<bool> EnsureHydratedAsync(CancellationToken ct)
+    {
+        if (_hydrated)
+        {
+            return true;
+        }
+
         try
         {
             await using VortexDbContext dbCtx = await _dbCtxFactory
@@ -311,7 +496,21 @@ internal sealed class PlayerAchievementGrain(
                 .ToListAsync(ct)
                 .ConfigureAwait(true);
 
-            return rows.ToDictionary(r => r.AchievementEntityId);
+            _stateByAchievementId.Clear();
+
+            foreach (PlayerAchievementEntity row in rows)
+            {
+                _stateByAchievementId[row.AchievementEntityId] = new ProgressState
+                {
+                    EntityId = row.Id,
+                    Progress = row.Progress,
+                    CompletedLevels = row.Level,
+                    LastProgressAt = row.UpdatedAt,
+                };
+            }
+
+            _hydrated = true;
+            return true;
         }
         catch (Exception ex)
         {
@@ -320,7 +519,43 @@ internal sealed class PlayerAchievementGrain(
                 "Failed to load achievement progress for player {PlayerId}",
                 PlayerId
             );
-            return [];
+            return false;
+        }
+    }
+
+    private PlayerAchievementEntity BuildRow(
+        int achievementId,
+        int entityId,
+        int progress,
+        int completedLevels
+    ) =>
+        new()
+        {
+            Id = entityId,
+            PlayerEntityId = PlayerId,
+            AchievementEntityId = achievementId,
+            Progress = progress,
+            Level = completedLevels,
+        };
+
+    /// <summary>
+    /// Attaches an existing row by id and marks only the columns this write owns, so an update costs
+    /// no read first.
+    /// </summary>
+    private static void TrackProgressUpdate(
+        VortexDbContext dbCtx,
+        PlayerAchievementEntity row,
+        bool includeLevel
+    )
+    {
+        dbCtx.Attach(row);
+
+        EntityEntry<PlayerAchievementEntity> entry = dbCtx.Entry(row);
+        entry.Property(x => x.Progress).IsModified = true;
+
+        if (includeLevel)
+        {
+            entry.Property(x => x.Level).IsModified = true;
         }
     }
 }

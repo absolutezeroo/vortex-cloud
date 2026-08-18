@@ -27,6 +27,9 @@ public sealed class PlayerModule : IHostPluginModule
 
     public void ConfigureServices(IServiceCollection services, HostApplicationBuilder builder)
     {
+        services.Configure<AchievementConfig>(
+            builder.Configuration.GetSection(AchievementConfig.SECTION_NAME)
+        );
         services.Configure<ClubConfig>(builder.Configuration.GetSection(ClubConfig.SECTION_NAME));
         services.Configure<MessengerConfig>(
             builder.Configuration.GetSection(MessengerConfig.SECTION_NAME)
