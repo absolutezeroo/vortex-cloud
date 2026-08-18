@@ -19,6 +19,7 @@ using Vortex.Primitives.Messages.Outgoing.Notifications;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Snapshots;
+using Vortex.Primitives.Players.Wallet;
 
 namespace Vortex.Players.Grains;
 
@@ -302,16 +303,13 @@ internal sealed class PlayerAchievementGrain(
                 continue;
             }
 
-            if (levelUp.RewardType < 0)
-            {
-                await wallet.GrantCreditsAsync(levelUp.RewardAmount, ct).ConfigureAwait(true);
-            }
-            else
-            {
-                await wallet
-                    .GrantActivityPointsAsync(levelUp.RewardType, levelUp.RewardAmount, ct)
-                    .ConfigureAwait(true);
-            }
+            await wallet
+                .GrantCurrencyAsync(
+                    CurrencyRewardRules.KindFor(levelUp.RewardType),
+                    levelUp.RewardAmount,
+                    ct
+                )
+                .ConfigureAwait(true);
         }
 
         int newScore = await _grainFactory

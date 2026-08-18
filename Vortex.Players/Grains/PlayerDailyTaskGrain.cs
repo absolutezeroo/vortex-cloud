@@ -13,6 +13,7 @@ using Vortex.Players.Quests;
 using Vortex.Primitives.Messages.Outgoing.Quest;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
+using Vortex.Primitives.Players.Wallet;
 using Vortex.Primitives.Quests;
 using Vortex.Primitives.Quests.Grains;
 using Vortex.Primitives.Quests.Snapshots;
@@ -34,8 +35,6 @@ internal sealed class PlayerDailyTaskGrain(
     private readonly ILogger<PlayerDailyTaskGrain> _logger = logger;
 
     /// <summary>The reward kind granted as credits; anything else is an activity-point type.</summary>
-    private const string CreditsRewardType = "credits";
-
     private int PlayerId => (int)this.GetPrimaryKeyLong();
 
     private IPlayerPresenceGrain Presence => _grainFactory.GetPlayerPresenceGrain(PlayerId);
@@ -217,23 +216,10 @@ internal sealed class PlayerDailyTaskGrain(
 
         IPlayerWalletGrain wallet = _grainFactory.GetPlayerWalletGrain((long)PlayerId);
 
-        if (
-            string.Equals(
-                reward.RewardTypeId,
-                CreditsRewardType,
-                StringComparison.OrdinalIgnoreCase
-            )
-        )
-        {
-            await wallet.GrantCreditsAsync(reward.Amount, ct).ConfigureAwait(true);
-
-            return;
-        }
-
-        if (int.TryParse(reward.RewardTypeId, out int activityPointType))
+        if (CurrencyRewardRules.TryParseNamed(reward.RewardTypeId, out int rewardType))
         {
             await wallet
-                .GrantActivityPointsAsync(activityPointType, reward.Amount, ct)
+                .GrantCurrencyAsync(CurrencyRewardRules.KindFor(rewardType), reward.Amount, ct)
                 .ConfigureAwait(true);
 
             return;

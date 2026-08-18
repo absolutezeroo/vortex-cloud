@@ -18,6 +18,7 @@
   import PageHeader from '../components/PageHeader.svelte';
   import Tabs from '../components/Tabs.svelte';
   import AssetImage from '../components/AssetImage.svelte';
+  import CurrencySelect from '../components/CurrencySelect.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import Drawer from '../components/Drawer.svelte';
@@ -660,8 +661,7 @@
     </div>
     <div class="op-field">
       <label for="level-reward-type">{$t('achievements.rewardType')}</label>
-      <input id="level-reward-type" type="number" bind:value={levelForm.rewardType} />
-      <small class="muted">{$t('achievements.rewardTypeHint')}</small>
+      <CurrencySelect id="level-reward-type" bind:value={levelForm.rewardType} />
     </div>
     <div class="op-field">
       <label for="level-score">{$t('achievements.colLevelScore')}</label>

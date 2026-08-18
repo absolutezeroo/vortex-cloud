@@ -87,6 +87,8 @@ export default {
 
     // Saisie manquante ou invalide.
     badge_code_required: 'Un code de badge est obligatoire.',
+    reward_currency_unknown: "Cet hôtel n'a aucune monnaie de ce type : la récompense ne serait jamais versée.",
+    reward_currency_disabled: 'Cette monnaie est désactivée : la récompense ne serait jamais versée.',
     code_and_name_required: 'Un code et un nom sont tous deux obligatoires.',
     effect_id_required: "Un identifiant d'effet est obligatoire.",
     hand_item_id_required: "Un identifiant d'objet en main est obligatoire.",
@@ -126,6 +128,11 @@ export default {
     entry_failed: "La participation à la tombola n'a pas pu être enregistrée.",
     grant_failed: "Le versement n'a pas eu lieu. Vérifie que la devise a une ligne currency_types.",
     dashboard_staff_actor_missing: "Ton compte staff n'a pas pu être résolu pour cette action.",
+  },
+  currency: {
+    selectHint: 'En dessous de 0 donne des crédits ; 0 ou plus correspond à cette monnaie de points.',
+    selectMissing: 'Monnaie inconnue (type {type})',
+    selectMissingHint: "Aucune monnaie active ne correspond à cette récompense : elle ne serait jamais versée.",
   },
   common: {
     run: 'Lancer',
@@ -1699,11 +1706,7 @@ export default {
     disabledLabel: 'Désactivée',
     totalSteps: 'Nombre d\'étapes',
     rewardLegend: 'Récompense',
-    rewardKind: 'Type de récompense',
-    rewardKindCredits: 'Crédits',
-    rewardKindActivityPoints: "Points d'activité",
-    rewardPointType: 'Type de points',
-    rewardPointTypeHint: '0 = Duckets, les autres valeurs sont des pixels/diamants/etc.',
+    rewardKind: 'Monnaie de la récompense',
     rewardAmount: 'Montant de la récompense',
     rewardCredits: '{amount} Crédits',
     rewardDuckets: '{amount} Duckets',
@@ -1911,8 +1914,7 @@ export default {
     displayMethodNoProgress: 'Masquer la barre de progression',
     displayMethodHint: "La seule chose que le client en fait : masquez-la pour un succès en une fois, qui n'a rien à décompter.",
     rewardAmount: 'Récompense',
-    rewardType: 'Type de récompense',
-    rewardTypeHint: 'Un type négatif donne des crédits ; 0 ou plus correspond à cette devise de points.',
+    rewardType: 'Monnaie de la récompense',
     title: 'Succès',
     description:
       "Chaque palier de succès, la progression de l'hôtel dessus, et si un déclencheur vivant peut seulement le faire avancer.",

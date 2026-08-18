@@ -14,6 +14,7 @@ using Vortex.Primitives.Messages.Outgoing.Quest;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Snapshots;
+using Vortex.Primitives.Players.Wallet;
 using Vortex.Primitives.Quests;
 using Vortex.Primitives.Quests.Grains;
 using Vortex.Primitives.Quests.Snapshots;
@@ -712,16 +713,9 @@ internal sealed class PlayerQuestGrain(
 
         IPlayerWalletGrain wallet = _grainFactory.GetPlayerWalletGrain((long)PlayerId);
 
-        if (rewardType < 0)
-        {
-            await wallet.GrantCreditsAsync(rewardAmount, ct).ConfigureAwait(true);
-        }
-        else
-        {
-            await wallet
-                .GrantActivityPointsAsync(rewardType, rewardAmount, ct)
-                .ConfigureAwait(true);
-        }
+        await wallet
+            .GrantCurrencyAsync(CurrencyRewardRules.KindFor(rewardType), rewardAmount, ct)
+            .ConfigureAwait(true);
     }
 
     /// <summary>

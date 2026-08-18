@@ -7,6 +7,8 @@ using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Quests;
 using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Players.Providers;
+using Vortex.Primitives.Players.Wallet;
 using Vortex.Primitives.Quests;
 using Vortex.Primitives.Quests.Admin;
 
@@ -23,12 +25,22 @@ namespace Vortex.Players.Quests;
 internal sealed class QuestAdminService(
     IDbContextFactory<VortexDbContext> dbContextFactory,
     IGrainFactory grainFactory,
+    ICurrencyTypeProvider currencyTypes,
     ILogger<QuestAdminService> logger
 ) : IQuestAdminService
 {
     public async Task<QuestAdminResult> CreateAsync(QuestCreateSpec spec, CancellationToken ct)
     {
-        if (Validate(spec.CampaignCode, spec.LocalizationCode, spec.QuestType) is { } error)
+        if (
+            Validate(
+                spec.CampaignCode,
+                spec.LocalizationCode,
+                spec.QuestType,
+                spec.RewardType,
+                spec.RewardAmount
+            ) is
+            { } error
+        )
         {
             return QuestAdminResult.Fail(error);
         }
@@ -71,7 +83,16 @@ internal sealed class QuestAdminService(
         CancellationToken ct
     )
     {
-        if (Validate(spec.CampaignCode, spec.LocalizationCode, spec.QuestType) is { } error)
+        if (
+            Validate(
+                spec.CampaignCode,
+                spec.LocalizationCode,
+                spec.QuestType,
+                spec.RewardType,
+                spec.RewardAmount
+            ) is
+            { } error
+        )
         {
             return QuestAdminResult.Fail(error);
         }
@@ -147,10 +168,12 @@ internal sealed class QuestAdminService(
         return QuestAdminResult.Ok(questId);
     }
 
-    private static string? Validate(
+    private string? Validate(
         string? campaignCode,
         string? localizationCode,
-        string? questType
+        string? questType,
+        int rewardType,
+        int rewardAmount
     )
     {
         if (string.IsNullOrWhiteSpace(campaignCode))
@@ -168,7 +191,10 @@ internal sealed class QuestAdminService(
             return "quest_type_required";
         }
 
-        return null;
+        // A reward in a currency this hotel has no enabled row for is paid by nobody: the wallet
+        // grant no-ops and the player just finishes the quest for nothing. Refuse it here, where
+        // there is still an operator to tell.
+        return CurrencyRewardRules.Validate(currencyTypes, rewardType, rewardAmount);
     }
 
     private async Task ReloadAsync(CancellationToken ct)

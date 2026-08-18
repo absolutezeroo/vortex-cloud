@@ -89,6 +89,8 @@ export default {
 
     // Missing or malformed input.
     badge_code_required: 'A badge code is required.',
+    reward_currency_unknown: 'This hotel has no currency of that type, so the reward would never be paid.',
+    reward_currency_disabled: 'That currency is disabled, so the reward would never be paid.',
     code_and_name_required: 'A code and a name are both required.',
     effect_id_required: 'An effect id is required.',
     hand_item_id_required: 'A hand item id is required.',
@@ -128,6 +130,11 @@ export default {
     entry_failed: 'The raffle entry could not be recorded.',
     grant_failed: 'The grant did not land. Check that the currency has a currency_types row.',
     dashboard_staff_actor_missing: 'Your staff account could not be resolved for this action.',
+  },
+  currency: {
+    selectHint: 'Below 0 grants credits; 0 or above is that activity-point currency.',
+    selectMissing: 'Unknown currency (type {type})',
+    selectMissingHint: 'No enabled currency matches this reward, so it would never be paid.',
   },
   common: {
     run: 'Run',
@@ -1696,11 +1703,7 @@ export default {
     disabledLabel: 'Disabled',
     totalSteps: 'Total steps',
     rewardLegend: 'Reward',
-    rewardKind: 'Reward kind',
-    rewardKindCredits: 'Credits',
-    rewardKindActivityPoints: 'Activity points',
-    rewardPointType: 'Point type',
-    rewardPointTypeHint: '0 = Duckets, other values are pixels/diamonds/etc.',
+    rewardKind: 'Reward currency',
     rewardAmount: 'Reward amount',
     rewardCredits: '{amount} Credits',
     rewardDuckets: '{amount} Duckets',
@@ -1908,8 +1911,7 @@ export default {
     displayMethodNoProgress: 'Hide the progress bar',
     displayMethodHint: 'The only thing the client reads this for: hide it for a one-shot achievement that has nothing to count towards.',
     rewardAmount: 'Reward',
-    rewardType: 'Reward type',
-    rewardTypeHint: 'Reward type below 0 grants credits; 0 or above is that activity-point currency.',
+    rewardType: 'Reward currency',
     title: 'Achievements',
     description:
       'Every achievement ladder, how far the hotel has climbed it, and whether a live trigger can advance it at all.',

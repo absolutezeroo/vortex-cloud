@@ -12,6 +12,7 @@ using Vortex.Database.Entities.Collectibles;
 using Vortex.Primitives.Content;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Providers;
+using Vortex.Primitives.Players.Wallet;
 
 namespace Vortex.Players.Content;
 
@@ -171,6 +172,17 @@ internal sealed partial class ContentAdminService(
         if (string.IsNullOrWhiteSpace(spec.BadgeCode))
         {
             return ContentAdminResult.Fail("badge_code_required");
+        }
+
+        // A reward in a currency this hotel has no enabled row for is paid by nobody: the wallet
+        // grant no-ops and the player just never sees it. Refuse it here, where there is still an
+        // operator to tell.
+        if (
+            CurrencyRewardRules.Validate(currencyTypes, spec.RewardType, spec.RewardAmount) is
+            { } rewardError
+        )
+        {
+            return ContentAdminResult.Fail(rewardError);
         }
 
         await using VortexDbContext db = await dbContextFactory

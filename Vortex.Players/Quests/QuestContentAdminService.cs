@@ -9,6 +9,8 @@ using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Quests;
 using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Players.Providers;
+using Vortex.Primitives.Players.Wallet;
 using Vortex.Primitives.Quests;
 using Vortex.Primitives.Quests.Admin;
 
@@ -23,6 +25,7 @@ namespace Vortex.Players.Quests;
 internal sealed class QuestContentAdminService(
     IDbContextFactory<VortexDbContext> dbContextFactory,
     IGrainFactory grainFactory,
+    ICurrencyTypeProvider currencyTypes,
     ILogger<QuestContentAdminService> logger
 ) : IQuestContentAdminService
 {
@@ -168,7 +171,10 @@ internal sealed class QuestContentAdminService(
         CancellationToken ct
     )
     {
-        if (QuestContentRules.ValidateDailyTask(spec) is { } error)
+        if (
+            (QuestContentRules.ValidateDailyTask(spec) ?? ValidateRewardCurrencies(spec)) is
+            { } error
+        )
         {
             return QuestContentAdminResult.Fail(error);
         }
@@ -214,7 +220,10 @@ internal sealed class QuestContentAdminService(
         CancellationToken ct
     )
     {
-        if (QuestContentRules.ValidateDailyTask(spec) is { } error)
+        if (
+            (QuestContentRules.ValidateDailyTask(spec) ?? ValidateRewardCurrencies(spec)) is
+            { } error
+        )
         {
             return QuestContentAdminResult.Fail(error);
         }
@@ -372,5 +381,30 @@ internal sealed class QuestContentAdminService(
 
             throw;
         }
+    }
+
+    /// <summary>
+    /// Null when every reward this task pays in a currency would really be paid. A reward type that
+    /// names neither credits nor an activity-point number is an item code, which the task grain
+    /// already reports as ungranted — not this check's business.
+    /// </summary>
+    private string? ValidateRewardCurrencies(DailyTaskSpec spec)
+    {
+        foreach (DailyTaskRewardSpec reward in spec.Rewards)
+        {
+            if (
+                CurrencyRewardRules.ValidateNamed(
+                    currencyTypes,
+                    reward.RewardTypeId,
+                    reward.Amount
+                ) is
+                { } error
+            )
+            {
+                return error;
+            }
+        }
+
+        return null;
     }
 }

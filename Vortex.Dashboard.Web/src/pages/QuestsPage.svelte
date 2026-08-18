@@ -25,6 +25,7 @@
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { currencyChipClass, currencyKindFromRewardType } from '../lib/currency.js';
+  import CurrencySelect from '../components/CurrencySelect.svelte';
   import CurrencyIcon from '../components/CurrencyIcon.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
@@ -51,7 +52,7 @@
   function emptyQuestForm() {
     return {
       campaignCode: '', chainCode: '', localizationCode: '', questType: '',
-      totalSteps: 1, rewardKind: 'activityPoints', rewardPointType: 0, rewardAmount: 0,
+      totalSteps: 1, rewardType: 0, rewardAmount: 0,
       targetType: '', targetValue: '', enabled: true,
       catalogPageName: '', imageVersion: '', sortOrder: 0, easy: false,
       seasonal: false, seasonalSeconds: 0, endsAt: '',
@@ -161,7 +162,7 @@
       localizationCode: form.localizationCode.trim(),
       questType: form.questType.trim(),
       totalSteps: Number(form.totalSteps) || 1,
-      rewardType: form.rewardKind === 'credits' ? -1 : Number(form.rewardPointType) || 0,
+      rewardType: Number(form.rewardType) || 0,
       rewardAmount: Number(form.rewardAmount) || 0,
       targetType: form.targetType.trim(),
       targetValue: form.targetValue.trim(),
@@ -239,8 +240,7 @@
           localizationCode: detail.localizationCode || '',
           questType: detail.questType || '',
           totalSteps: detail.totalSteps ?? 1,
-          rewardKind: Number(detail.rewardType) < 0 ? 'credits' : 'activityPoints',
-          rewardPointType: Number(detail.rewardType) < 0 ? 0 : Number(detail.rewardType) || 0,
+          rewardType: Number(detail.rewardType) || 0,
           rewardAmount: detail.rewardAmount ?? 0,
           targetType: detail.targetType || '',
           targetValue: detail.targetValue || '',
@@ -466,18 +466,8 @@
       <legend><Gift size={13} strokeWidth={2} aria-hidden="true" /> {$t('quests.rewardLegend')}</legend>
       <div class="op-field">
         <label for="quest-reward-kind">{$t('quests.rewardKind')}</label>
-        <select id="quest-reward-kind" bind:value={questModal.form.rewardKind}>
-          <option value="credits">{$t('quests.rewardKindCredits')}</option>
-          <option value="activityPoints">{$t('quests.rewardKindActivityPoints')}</option>
-        </select>
+        <CurrencySelect id="quest-reward-kind" bind:value={questModal.form.rewardType} />
       </div>
-      {#if questModal.form.rewardKind === 'activityPoints'}
-        <div class="op-field">
-          <label for="quest-point-type">{$t('quests.rewardPointType')}</label>
-          <input id="quest-point-type" type="number" min="0" bind:value={questModal.form.rewardPointType} />
-          <small class="muted">{$t('quests.rewardPointTypeHint')}</small>
-        </div>
-      {/if}
       <div class="op-field">
         <label for="quest-reward-amount">{$t('quests.rewardAmount')}</label>
         <input id="quest-reward-amount" type="number" min="0" bind:value={questModal.form.rewardAmount} />
