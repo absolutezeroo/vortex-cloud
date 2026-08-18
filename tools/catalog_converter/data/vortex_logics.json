@@ -1,4 +1,25 @@
 {
+ "battlebanzai_gate_blue": [
+  "floor"
+ ],
+ "battlebanzai_gate_green": [
+  "floor"
+ ],
+ "battlebanzai_gate_red": [
+  "floor"
+ ],
+ "battlebanzai_gate_yellow": [
+  "floor"
+ ],
+ "battlebanzai_random_teleport": [
+  "floor"
+ ],
+ "battlebanzai_random_teleport_exclude": [
+  "floor"
+ ],
+ "battlebanzai_tile": [
+  "floor"
+ ],
  "default_avatar": [
   "any"
  ],
@@ -156,6 +177,9 @@
  "wf_act_forward_user": [
   "floor"
  ],
+ "wf_act_freeze_habbo": [
+  "floor"
+ ],
  "wf_act_give_effect": [
   "floor"
  ],
@@ -226,6 +250,9 @@
   "floor"
  ],
  "wf_act_tp_furni_to_habbo": [
+  "floor"
+ ],
+ "wf_act_unfreeze_habbo": [
   "floor"
  ],
  "wf_cnd_actor_dir": [

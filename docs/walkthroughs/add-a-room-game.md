@@ -62,9 +62,10 @@ once; use it:
 - **`RoomGameChrome`** (`_roomGrain.GameChrome`) — every client-facing send a game needs:
   `BroadcastEffectAsync`, `BroadcastTeamAuraAsync` (the two aura sets are the `GameAuraSet`
   enum: Wired/Banzai = 33-36, Freeze = 40-43), `SetPlayingModeAsync`, `BroadcastPlayerValueAsync`
-  (the number bubble), `ResetGameTimers` (after an early round end). From a player-LEFT hook,
-  only `SetPlayingModeAndForget` — awaiting back into the leaver's presence grain deadlocks the
-  room's turn for 30 s.
+  (the number bubble), `LockMovement`/`UnlockMovement` (the one "frozen in place" primitive —
+  the wired freeze-user boxes and a Freeze hit share it), `ResetGameTimers` (after an early round
+  end). From a player-LEFT hook, only `SetPlayingModeAndForget` — awaiting back into the leaver's
+  presence grain deadlocks the room's turn for 30 s.
 - **`RoomItemIndex`** (`_roomGrain._state.ItemIndex`) — `ItemsOf<TLogic>()` / `LogicsOf<TLogic>()`
   instead of scanning `ItemsById`; `RoomMapModule.FirstLogicOnTile<TLogic>(tileIdx)` for "is my
   arena furni on this tile". `LogicsOf` returns a snapshot that is safe to await across.

@@ -35,6 +35,17 @@ public sealed class RoomMinigameCoordinationTests
     }
 
     [Fact]
+    public async Task Banzai_Is_Registered_On_Every_Room()
+    {
+        RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);
+
+        harness
+            .Grain.GameSystem.Minigames.Select(game => game.Name)
+            .Should()
+            .Contain(harness.Grain.BanzaiSystem.Name);
+    }
+
+    [Fact]
     public async Task Starting_The_Round_Starts_Every_Registered_Game()
     {
         RoomHarness harness = await RoomHarness.CreateAsync().ConfigureAwait(true);

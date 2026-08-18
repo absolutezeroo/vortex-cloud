@@ -45,4 +45,11 @@ public interface IRoomGameAccess
         int cap,
         CancellationToken ct
     );
+
+    /// <summary>Roots the player where they stand until unlocked — the wired freeze-user box and a
+    /// Freeze hit share this one lock, so "frozen" means one thing.</summary>
+    void LockMovement(PlayerId playerId);
+
+    /// <summary>Releases a movement lock (wired unfreeze-user, a thaw, a round ending).</summary>
+    void UnlockMovement(PlayerId playerId);
 }

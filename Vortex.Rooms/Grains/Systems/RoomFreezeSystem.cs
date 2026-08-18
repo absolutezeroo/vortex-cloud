@@ -129,6 +129,9 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : RoomMinigameBase(roo
 
         foreach ((PlayerId playerId, _) in _game.Players)
         {
+            // A round ending mid-freeze must thaw everyone — a lock that outlives the round would
+            // strand a player until a wired unfreeze box happened to fire.
+            _roomGrain.GameChrome.UnlockMovement(playerId);
             await _roomGrain.GameChrome.ClearEffectAsync(playerId);
             await _roomGrain.GameChrome.BroadcastPlayerValueAsync(playerId, 0);
             await _roomGrain.GameChrome.SetPlayingModeAsync(playerId, false);
@@ -215,6 +218,11 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : RoomMinigameBase(roo
         {
             if (player.Tick())
             {
+                if (!player.IsFrozen)
+                {
+                    _roomGrain.GameChrome.UnlockMovement(playerId);
+                }
+
                 await _roomGrain.GameChrome.BroadcastEffectAsync(playerId, player.CurrentEffect());
             }
         }
@@ -382,6 +390,9 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : RoomMinigameBase(roo
             }
             else
             {
+                // Frozen means frozen: rooted in place until the thaw (Habbo behaviour — this is
+                // the same lock the wired freeze-user box uses).
+                _roomGrain.GameChrome.LockMovement(victim.PlayerId);
                 await _roomGrain.GameChrome.BroadcastEffectAsync(
                     victim.PlayerId,
                     victim.CurrentEffect()
@@ -400,6 +411,8 @@ public sealed class RoomFreezeSystem(RoomGrain roomGrain) : RoomMinigameBase(roo
         CancellationToken ct
     )
     {
+        // An eliminated player leaves the arena — never with a movement lock still on them.
+        _roomGrain.GameChrome.UnlockMovement(victim.PlayerId);
         await _roomGrain.GameChrome.ClearEffectAsync(victim.PlayerId);
         await _roomGrain.GameChrome.BroadcastPlayerValueAsync(victim.PlayerId, 0);
         await _roomGrain.GameChrome.SetPlayingModeAsync(victim.PlayerId, false);

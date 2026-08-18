@@ -51,6 +51,9 @@ public interface IRoomObjectContext
     /// <summary>The Freeze minigame.</summary>
     public IRoomFreezeAccess Freeze { get; }
 
+    /// <summary>The Battle Banzai minigame.</summary>
+    public IRoomBanzaiAccess Banzai { get; }
+
     /// <summary>Placement validation and the wired engine's room-level knobs.</summary>
     public IRoomFurniAccess Furni { get; }
 

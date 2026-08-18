@@ -334,6 +334,43 @@ public static class ConfigKeyCatalog
             "Freeze: max players per team",
             "Freeze"
         ),
+        // Battle Banzai balance. Keys/defaults mirror Vortex.Rooms BanzaiConfig / BanzaiSettings
+        // (duplicated here because Primitives can't reference that feature project).
+        new(
+            "banzai.points_lock_tile",
+            "1",
+            ConfigValueKind.Int,
+            "Banzai: points per locked tile (stepped and enclosed)",
+            "Banzai"
+        ),
+        new(
+            "banzai.points_fill_tile",
+            "0",
+            ConfigValueKind.Int,
+            "Banzai: points for advancing your own claim",
+            "Banzai"
+        ),
+        new(
+            "banzai.points_hijack_tile",
+            "0",
+            ConfigValueKind.Int,
+            "Banzai: points for stealing a neutral/enemy tile",
+            "Banzai"
+        ),
+        new(
+            "banzai.max_players_per_team",
+            "5",
+            ConfigValueKind.Int,
+            "Banzai: max players per team",
+            "Banzai"
+        ),
+        new(
+            "banzai.lock_batch_per_tick",
+            "32",
+            ConfigValueKind.Int,
+            "Banzai: enclosed-region tiles painted per room tick (protects the wired event queue)",
+            "Banzai"
+        ),
     ];
 
     /// <summary>The descriptor for <paramref name="key"/>, or null if the key is not a known config key.</summary>

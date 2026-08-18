@@ -53,8 +53,17 @@ public interface IRoomAvatar : IRoomObject
     /// <summary>Room-clock time the held item leaves the hand.</summary>
     public long CarryItemUntilMs { get; }
 
+    /// <summary>True while the avatar may not start walking — a wired freeze-user box or a Freeze
+    /// hit holds it. Activation-scoped, so it dies with the avatar and can never leak between
+    /// rooms or sessions.</summary>
+    public bool IsMovementLocked { get; }
+
     public bool SetGoalTileId(int tileId);
     public bool SetEffect(int effectId);
+
+    /// <summary>Sets or clears the movement lock. The caller is responsible for stopping an
+    /// in-flight walk — the lock only gates NEW walks.</summary>
+    public void SetMovementLocked(bool locked);
 
     /// <summary>Puts something in the hand until a room-clock time, or empties it when zero.</summary>
     public bool SetCarryItem(int itemId, long untilMs);

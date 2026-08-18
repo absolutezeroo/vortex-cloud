@@ -42,6 +42,8 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
 
     public int CurrentEffectId { get; private set; } = 0;
 
+    public bool IsMovementLocked { get; private set; } = false;
+
     /// <summary>What the avatar is holding, or zero for empty-handed.</summary>
     public int CarryItemId { get; private set; } = 0;
 
@@ -231,6 +233,8 @@ public abstract class RoomAvatar<TSelf, TLogic, TContext>
 
         return true;
     }
+
+    public void SetMovementLocked(bool locked) => IsMovementLocked = locked;
 
     public bool SetEffect(int effectId)
     {

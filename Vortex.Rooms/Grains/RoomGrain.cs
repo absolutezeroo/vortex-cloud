@@ -73,6 +73,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     public readonly RoomGameChrome GameChrome;
     public readonly RoomGameSystem GameSystem;
     public readonly RoomFreezeSystem FreezeSystem;
+    public readonly RoomBanzaiSystem BanzaiSystem;
     public readonly RoomGameTimerSystem GameTimerSystem;
     public readonly RoomGameScoreboardSystem ScoreboardSystem;
 
@@ -154,6 +155,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         GameChrome = new RoomGameChrome(this);
         GameSystem = new RoomGameSystem(this);
         FreezeSystem = new RoomFreezeSystem(this);
+        BanzaiSystem = new RoomBanzaiSystem(this);
         GameTimerSystem = new RoomGameTimerSystem(this);
         ScoreboardSystem = new RoomGameScoreboardSystem(this);
         ModerationSystem = new RoomModerationSystem(this);
@@ -163,8 +165,9 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
         // Every game the room can host plugs in here, and nowhere else: the game-timer furni, the wired
         // control-clock action, the tick loop and the avatar-left path all go through GameSystem and
-        // never name a game. Battle Banzai, football and hockey each land as one more line.
+        // never name a game. Football and hockey each land as one more line.
         GameSystem.Register(FreezeSystem);
+        GameSystem.Register(BanzaiSystem);
 
         EventModule.Register(RollerSystem);
         EventModule.Register(WiredSystem);

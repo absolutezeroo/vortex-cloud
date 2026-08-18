@@ -233,6 +233,13 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
         CancellationToken ct
     )
     {
+        // A frozen avatar (wired freeze-user box, a Freeze hit) starts no walk. The in-flight walk
+        // was already stopped by whoever set the lock.
+        if (avatar.IsMovementLocked)
+        {
+            return false;
+        }
+
         try
         {
             int goalTileId = _roomGrain.MapModule.ToIdx(targetX, targetY);

@@ -98,6 +98,37 @@ public sealed class RoomGameChrome(RoomGrain roomGrain)
         );
     }
 
+    /// <summary>Roots the player where they stand: locks new walks and cancels the in-flight one.
+    /// The wired freeze-user box and a Freeze hit both come through here so "frozen" means one
+    /// thing. The lock lives on the avatar, so it dies with the room presence and cannot leak.</summary>
+    public void LockMovement(PlayerId playerId)
+    {
+        if (!TryGetAvatar(playerId, out IRoomAvatar? avatar) || avatar is null)
+        {
+            return;
+        }
+
+        avatar.SetMovementLocked(true);
+        _roomGrain.AvatarModule.CancelWalk(avatar);
+    }
+
+    /// <summary>Releases a movement lock (wired unfreeze-user, a Freeze thaw, round end).</summary>
+    public void UnlockMovement(PlayerId playerId)
+    {
+        if (TryGetAvatar(playerId, out IRoomAvatar? avatar) && avatar is not null)
+        {
+            avatar.SetMovementLocked(false);
+        }
+    }
+
+    private bool TryGetAvatar(PlayerId playerId, out IRoomAvatar? avatar)
+    {
+        avatar = null;
+
+        return _roomGrain._state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId)
+            && _roomGrain._state.AvatarsByObjectId.TryGetValue(objectId, out avatar);
+    }
+
     /// <summary>Resets every game-timer furni's countdown and <c>gameActive</c> flag. Needed by any
     /// game that ends the round early (on a normal expiry the furni resets itself).</summary>
     public void ResetGameTimers()

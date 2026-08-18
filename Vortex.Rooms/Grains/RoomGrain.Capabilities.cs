@@ -32,6 +32,7 @@ public sealed partial class RoomGrain
         IRoomMapAccess,
         IRoomGameAccess,
         IRoomFreezeAccess,
+        IRoomBanzaiAccess,
         IRoomFurniAccess
 {
     private static readonly IReadOnlySet<RoomObjectId> EmptyStack = new HashSet<RoomObjectId>();
@@ -153,6 +154,10 @@ public sealed partial class RoomGrain
         CancellationToken ct
     ) => GameSystem.TryGiveScoreToPlayerTeamAsync(box, playerId, amount, cap, ct);
 
+    void IRoomGameAccess.LockMovement(PlayerId playerId) => GameChrome.LockMovement(playerId);
+
+    void IRoomGameAccess.UnlockMovement(PlayerId playerId) => GameChrome.UnlockMovement(playerId);
+
     Task IRoomFreezeAccess.ThrowBallAsync(
         PlayerId playerId,
         int targetX,
@@ -175,6 +180,26 @@ public sealed partial class RoomGrain
         GameTeamColor team,
         CancellationToken ct
     ) => FreezeSystem.OnGateWalkOnAsync(playerId, team, ct);
+
+    bool IRoomBanzaiAccess.IsRoundRunning => BanzaiSystem.IsRoundRunning;
+
+    Task IRoomBanzaiAccess.OnTileWalkOnAsync(
+        PlayerId playerId,
+        int tileIdx,
+        CancellationToken ct
+    ) => BanzaiSystem.OnTileWalkOnAsync(playerId, tileIdx, ct);
+
+    Task IRoomBanzaiAccess.OnGateWalkOnAsync(
+        PlayerId playerId,
+        GameTeamColor team,
+        CancellationToken ct
+    ) => BanzaiSystem.OnGateWalkOnAsync(playerId, team, ct);
+
+    Task IRoomBanzaiAccess.OnTeleportWalkOnAsync(
+        PlayerId playerId,
+        RoomObjectId sourceItemId,
+        CancellationToken ct
+    ) => BanzaiSystem.OnTeleportWalkOnAsync(playerId, sourceItemId, ct);
 
     Task<bool> IRoomFurniAccess.ValidateFloorItemPlacementAsync(
         ActionContext ctx,
