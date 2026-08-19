@@ -26,6 +26,16 @@ internal static class DashboardHttpContextExtensions
     }
 
     /// <summary>
+    ///     Whether the authenticated operator holds <paramref name="capability"/>. Used where the
+    ///     capability is only known at request time — a console command names its own — and so
+    ///     cannot be declared as a static authorization policy on the endpoint.
+    /// </summary>
+    public static bool HoldsCapability(this HttpContext ctx, string capability)
+    {
+        return ctx.GetDashboardPrincipal()?.Has(capability) ?? false;
+    }
+
+    /// <summary>
     ///     Adapts the request query into the <see cref="NameValueCollection" /> shape the existing
     ///     <c>DashboardApiService</c> read methods consume, so those methods stay untouched.
     /// </summary>

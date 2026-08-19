@@ -14,6 +14,7 @@ using Vortex.Primitives.Action;
 using Vortex.Primitives.Benchmark;
 using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Snapshots;
+using Vortex.Primitives.Console;
 using Vortex.Primitives.Content;
 using Vortex.Primitives.Furniture;
 using Vortex.Primitives.Moderation;
@@ -60,6 +61,7 @@ internal sealed partial class DashboardOperationsService(
     IAuditSink auditSink,
     IVortexContextAccessor context,
     IVortexMetrics metrics,
+    IConsoleCommandDispatcher consoleCommands,
     ILogger<DashboardOperationsService> logger
 )
 {
@@ -91,6 +93,7 @@ internal sealed partial class DashboardOperationsService(
     private readonly IAuditSink _auditSink = auditSink;
     private readonly IVortexContextAccessor _context = context;
     private readonly IVortexMetrics _metrics = metrics;
+    private readonly IConsoleCommandDispatcher _consoleCommands = consoleCommands;
     private readonly ILogger<DashboardOperationsService> _logger = logger;
     private readonly SemaphoreSlim _staffActorLock = new(1, 1);
     private PlayerId? _staffActorPlayerId;

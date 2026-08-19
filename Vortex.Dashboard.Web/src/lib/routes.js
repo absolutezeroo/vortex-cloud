@@ -36,6 +36,7 @@ export const NAV = [
   { path: '/infrastructure', labelKey: 'nav.infrastructure', shortKey: 'nav.infrastructureShort', group: 'Live', caps: ROUTE_PERMISSIONS.infrastructure, load: () => import('../pages/InfrastructurePage.svelte') },
   { path: '/performance', labelKey: 'nav.performance', shortKey: 'nav.performanceShort', group: 'Live', caps: ROUTE_PERMISSIONS.performance, load: () => import('../pages/PerformancePage.svelte') },
   { path: '/benchmark', labelKey: 'nav.benchmark', shortKey: 'nav.benchmarkShort', group: 'Live', caps: ROUTE_PERMISSIONS.benchmark, load: () => import('../pages/BenchmarkPage.svelte'), writes: true },
+  { path: '/console', labelKey: 'nav.console', shortKey: 'nav.consoleShort', group: 'Live', caps: ROUTE_PERMISSIONS.console, load: () => import('../pages/ConsolePage.svelte'), writes: true },
   { path: '/packets', labelKey: 'nav.packets', shortKey: 'nav.packetsShort', group: 'Live', caps: ROUTE_PERMISSIONS.packets, load: () => import('../pages/PacketsPage.svelte') },
   { path: '/incidents', labelKey: 'nav.incidents', shortKey: 'nav.incidentsShort', group: 'Live', caps: ROUTE_PERMISSIONS.incidents, load: () => import('../pages/IncidentsPage.svelte') },
 
