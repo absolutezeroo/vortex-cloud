@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Vortex.Primitives.Console;
 using Vortex.Supervisor.Configuration;
-using Vortex.Supervisor.Console;
 using Vortex.Supervisor.Health;
 using Vortex.Supervisor.Process;
 
@@ -127,7 +127,7 @@ public static class SupervisorEndpoints
     ///     Server-sent events rather than a socket: the payload is one-way, line-oriented text, and
     ///     SSE reconnects on its own when the supervisor itself restarts.
     /// </summary>
-    private static async Task StreamConsoleAsync(HttpContext http, ConsoleBuffer console)
+    private static async Task StreamConsoleAsync(HttpContext http, ServerConsoleFeed console)
     {
         http.Response.Headers.ContentType = "text/event-stream";
         http.Response.Headers.CacheControl = "no-cache";
@@ -135,7 +135,7 @@ public static class SupervisorEndpoints
         // chunks, which turns a live console into a stuttering one.
         http.Response.Headers["X-Accel-Buffering"] = "no";
 
-        using ConsoleSubscription subscription = console.Subscribe();
+        using ServerConsoleSubscription subscription = console.Subscribe();
 
         foreach (string line in subscription.Backlog)
         {

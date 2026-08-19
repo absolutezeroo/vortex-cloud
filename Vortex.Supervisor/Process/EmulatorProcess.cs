@@ -4,8 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Vortex.Primitives.Console;
 using Vortex.Supervisor.Configuration;
-using Vortex.Supervisor.Console;
 
 namespace Vortex.Supervisor.Process;
 
@@ -24,7 +24,7 @@ public enum EmulatorState
 public sealed class EmulatorProcess(
     IOptions<SupervisorConfig> config,
     IChildProcessFactory processFactory,
-    ConsoleBuffer console,
+    ServerConsoleFeed console,
     ILogger<EmulatorProcess> logger
 ) : IDisposable
 {

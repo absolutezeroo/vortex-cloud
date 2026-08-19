@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Vortex.Primitives.Console;
 using Vortex.Supervisor.Configuration;
-using Vortex.Supervisor.Console;
 using Vortex.Supervisor.Process;
 using Xunit;
 
@@ -115,7 +115,7 @@ public sealed class EmulatorProcessTests
     [Fact]
     public async Task AnUnexpectedExit_IsReflectedInTheState()
     {
-        (EmulatorProcess emulator, FakeChildProcessFactory factory, ConsoleBuffer console) =
+        (EmulatorProcess emulator, FakeChildProcessFactory factory, ServerConsoleFeed console) =
             Supervisor();
 
         await emulator.StartAsync(CancellationToken.None);
@@ -125,7 +125,7 @@ public sealed class EmulatorProcessTests
 
         emulator.State.Should().Be(EmulatorState.Stopped);
 
-        using ConsoleSubscription subscription = console.Subscribe();
+        using ServerConsoleSubscription subscription = console.Subscribe();
         subscription.Backlog.Should().Contain(line => line.Contains("exited (code 1)"));
     }
 
@@ -193,15 +193,15 @@ public sealed class EmulatorProcessTests
     }
 
     [Fact]
-    public async Task TheChildsOutput_ReachesTheConsoleBuffer()
+    public async Task TheChildsOutput_ReachesTheServerConsoleFeed()
     {
-        (EmulatorProcess emulator, FakeChildProcessFactory factory, ConsoleBuffer console) =
+        (EmulatorProcess emulator, FakeChildProcessFactory factory, ServerConsoleFeed console) =
             Supervisor();
 
         await emulator.StartAsync(CancellationToken.None);
         factory.Created[0].Output!("Room 42 loaded");
 
-        using ConsoleSubscription subscription = console.Subscribe();
+        using ServerConsoleSubscription subscription = console.Subscribe();
         subscription.Backlog.Should().Contain("Room 42 loaded");
     }
 
@@ -236,7 +236,7 @@ public sealed class EmulatorProcessTests
     private static (
         EmulatorProcess Emulator,
         FakeChildProcessFactory Factory,
-        ConsoleBuffer Console
+        ServerConsoleFeed Console
     ) Supervisor(int shutdownTimeoutSeconds = 30)
     {
         SupervisorConfig config = new()
@@ -252,7 +252,7 @@ public sealed class EmulatorProcessTests
         };
 
         FakeChildProcessFactory factory = new();
-        ConsoleBuffer console = new(200);
+        ServerConsoleFeed console = new(200);
 
         return (
             new EmulatorProcess(

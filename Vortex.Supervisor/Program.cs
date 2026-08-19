@@ -9,8 +9,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Vortex.Logging.Extensions;
+using Vortex.Primitives.Console;
 using Vortex.Supervisor.Configuration;
-using Vortex.Supervisor.Console;
 using Vortex.Supervisor.Endpoints;
 using Vortex.Supervisor.Health;
 using Vortex.Supervisor.Process;
@@ -56,7 +56,9 @@ internal static class Program
             builder.Configuration.GetSection(SupervisorConfig.SECTION_NAME).Get<SupervisorConfig>()
             ?? new SupervisorConfig();
 
-        builder.Services.AddSingleton(new ConsoleBuffer(Math.Max(1, config.ConsoleBufferLines)));
+        builder.Services.AddSingleton(
+            new ServerConsoleFeed(Math.Max(1, config.ConsoleBufferLines))
+        );
         builder.Services.AddSingleton<IChildProcessFactory, SystemChildProcessFactory>();
         builder.Services.AddSingleton<EmulatorProcess>();
         builder.Services.AddHttpClient();

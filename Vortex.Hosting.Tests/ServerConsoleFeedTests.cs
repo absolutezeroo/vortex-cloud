@@ -2,21 +2,26 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Vortex.Supervisor.Console;
+using Vortex.Primitives.Console;
 using Xunit;
 
-namespace Vortex.Supervisor.Tests;
+namespace Vortex.Hosting.Tests;
 
-public sealed class ConsoleBufferTests
+/// <summary>
+/// The ring buffer behind both consoles: the emulator's, where a logger provider feeds it, and the
+/// supervisor's, where the child process's stdout does. It is the same structure either side, which
+/// is why it lives in Primitives rather than being written twice.
+/// </summary>
+public sealed class ServerConsoleFeedTests
 {
     [Fact]
     public void AViewerArrivingLate_StillSeesWhatItMissed()
     {
-        ConsoleBuffer buffer = new(10);
+        ServerConsoleFeed buffer = new(10);
         buffer.Publish("first");
         buffer.Publish("second");
 
-        using ConsoleSubscription subscription = buffer.Subscribe();
+        using ServerConsoleSubscription subscription = buffer.Subscribe();
 
         subscription.Backlog.Should().Equal("first", "second");
     }
@@ -24,12 +29,12 @@ public sealed class ConsoleBufferTests
     [Fact]
     public void TheBuffer_DropsItsOldestLineOnceFull()
     {
-        ConsoleBuffer buffer = new(2);
+        ServerConsoleFeed buffer = new(2);
         buffer.Publish("a");
         buffer.Publish("b");
         buffer.Publish("c");
 
-        using ConsoleSubscription subscription = buffer.Subscribe();
+        using ServerConsoleSubscription subscription = buffer.Subscribe();
 
         subscription.Backlog.Should().Equal("b", "c");
     }
@@ -37,8 +42,8 @@ public sealed class ConsoleBufferTests
     [Fact]
     public async Task LinesPublishedAfterSubscribing_ReachTheViewer()
     {
-        ConsoleBuffer buffer = new(10);
-        using ConsoleSubscription subscription = buffer.Subscribe();
+        ServerConsoleFeed buffer = new(10);
+        using ServerConsoleSubscription subscription = buffer.Subscribe();
 
         buffer.Publish("live");
 
@@ -52,10 +57,10 @@ public sealed class ConsoleBufferTests
     [Fact]
     public void AnsiColourCodes_AreStripped()
     {
-        ConsoleBuffer buffer = new(10);
+        ServerConsoleFeed buffer = new(10);
         buffer.Publish("\u001b[32minfo\u001b[0m: room ready");
 
-        using ConsoleSubscription subscription = buffer.Subscribe();
+        using ServerConsoleSubscription subscription = buffer.Subscribe();
 
         subscription.Backlog.Should().Equal("info: room ready");
     }
@@ -67,8 +72,8 @@ public sealed class ConsoleBufferTests
     [Fact]
     public void AViewerThatStopsReading_NeitherBlocksNorBreaksThePublisher()
     {
-        ConsoleBuffer buffer = new(2);
-        using ConsoleSubscription stalled = buffer.Subscribe();
+        ServerConsoleFeed buffer = new(2);
+        using ServerConsoleSubscription stalled = buffer.Subscribe();
 
         for (int i = 0; i < 500; i++)
         {
@@ -76,15 +81,15 @@ public sealed class ConsoleBufferTests
         }
 
         // The publisher got through; the stalled viewer simply lost the middle.
-        using ConsoleSubscription fresh = buffer.Subscribe();
+        using ServerConsoleSubscription fresh = buffer.Subscribe();
         fresh.Backlog.Should().Equal("line 498", "line 499");
     }
 
     [Fact]
     public void ADetachedViewer_StopsReceiving()
     {
-        ConsoleBuffer buffer = new(10);
-        ConsoleSubscription subscription = buffer.Subscribe();
+        ServerConsoleFeed buffer = new(10);
+        ServerConsoleSubscription subscription = buffer.Subscribe();
         subscription.Dispose();
 
         buffer.Publish("after");
@@ -102,8 +107,8 @@ public sealed class ConsoleBufferTests
     [Fact]
     public void DisposingTwice_IsHarmless()
     {
-        ConsoleBuffer buffer = new(10);
-        ConsoleSubscription subscription = buffer.Subscribe();
+        ServerConsoleFeed buffer = new(10);
+        ServerConsoleSubscription subscription = buffer.Subscribe();
 
         subscription.Dispose();
         subscription.Dispose();

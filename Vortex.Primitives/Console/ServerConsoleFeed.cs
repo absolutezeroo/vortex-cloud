@@ -3,24 +3,29 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Channels;
 
-namespace Vortex.Supervisor.Console;
+namespace Vortex.Primitives.Console;
 
 /// <summary>
 ///     Holds the last N console lines and fans new ones out to every attached viewer.
 ///     <para>
+///     Two processes need this: the emulator, where a logger provider feeds it every line it logs so
+///     the dashboard can follow along, and the supervisor, where it carries the child process's
+///     stdout so the control page still has a console when the emulator is down.
+///     </para>
+///     <para>
 ///     Each viewer gets its own bounded channel that drops its oldest line when full, so a browser
-///     tab that stops reading slows down nothing but itself — the child process's stdout is never
-///     back-pressured by a stalled HTTP response.
+///     tab that stops reading slows down nothing but itself — neither the emulator's logging nor the
+///     child's stdout is ever back-pressured by a stalled HTTP response.
 ///     </para>
 /// </summary>
-public sealed partial class ConsoleBuffer(int capacity)
+public sealed partial class ServerConsoleFeed(int capacity)
 {
     private readonly object _gate = new();
     private readonly LinkedList<string> _history = new();
     private readonly List<Channel<string>> _viewers = [];
 
     /// <summary>Replays what is already buffered, then follows new lines. Dispose to detach.</summary>
-    public ConsoleSubscription Subscribe()
+    public ServerConsoleSubscription Subscribe()
     {
         Channel<string> channel = Channel.CreateBounded<string>(
             new BoundedChannelOptions(capacity) { FullMode = BoundedChannelFullMode.DropOldest }
@@ -34,7 +39,7 @@ public sealed partial class ConsoleBuffer(int capacity)
             _viewers.Add(channel);
         }
 
-        return new ConsoleSubscription(this, channel, backlog);
+        return new ServerConsoleSubscription(this, channel, backlog);
     }
 
     public void Publish(string line)
@@ -69,8 +74,8 @@ public sealed partial class ConsoleBuffer(int capacity)
     }
 
     /// <summary>
-    ///     The emulator's console logger emits colour, which is noise once the line is going to a
-    ///     browser rather than a terminal.
+    ///     The console logger emits colour, which is noise once the line is going to a browser rather
+    ///     than a terminal.
     /// </summary>
     private static string StripAnsi(string line) => AnsiEscapeRegex().Replace(line, string.Empty);
 
@@ -79,8 +84,8 @@ public sealed partial class ConsoleBuffer(int capacity)
 }
 
 /// <summary>One attached viewer: the lines buffered before it arrived, then everything after.</summary>
-public sealed class ConsoleSubscription(
-    ConsoleBuffer buffer,
+public sealed class ServerConsoleSubscription(
+    ServerConsoleFeed feed,
     Channel<string> channel,
     IReadOnlyList<string> backlog
 ) : IDisposable
@@ -99,6 +104,6 @@ public sealed class ConsoleSubscription(
         }
 
         _disposed = true;
-        buffer.Detach(channel);
+        feed.Detach(channel);
     }
 }
