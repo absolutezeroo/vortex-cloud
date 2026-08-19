@@ -168,6 +168,20 @@ public static class Capabilities
         public const string OpsBenchmarkRun = "dashboard.ops.benchmark.run";
 
         /// <summary>
+        /// Run an operator command from the dashboard console. Necessary but not sufficient: each
+        /// command additionally declares the capability of whatever it acts on, so this grant alone
+        /// only reaches the commands that gate on nothing else.
+        /// </summary>
+        public const string OpsServerConsole = "dashboard.ops.server.console";
+
+        /// <summary>
+        /// Change whether the emulator is running at all — the graceful <c>quit</c> command, and the
+        /// supervisor's start/stop/restart. Every player on the hotel feels this one, so it is held
+        /// apart from console access: following the logs is not permission to end the session.
+        /// </summary>
+        public const string OpsServerControl = "dashboard.ops.server.control";
+
+        /// <summary>
         /// Every <c>dashboard.*</c> capability, declared once. This is the single source the whole
         /// dashboard reads from: <c>DashboardWebHost</c> registers one authorization policy per entry
         /// and <c>DashboardAuthService</c> gates login on holding at least one of them. Both used to
@@ -226,6 +240,8 @@ public static class Capabilities
             OpsContentManage,
             BenchmarkRead,
             OpsBenchmarkRun,
+            OpsServerConsole,
+            OpsServerControl,
         ];
     }
 

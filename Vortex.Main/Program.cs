@@ -29,6 +29,7 @@ using Vortex.Observability;
 using Vortex.PacketHandlers;
 using Vortex.Players;
 using Vortex.Plugins.Extensions;
+using Vortex.Primitives.Console;
 using Vortex.Revisions.Extensions;
 using Vortex.Rooms;
 using Vortex.Runtime.AssemblyProcessing;
@@ -134,6 +135,7 @@ internal class Program
         builder.Services.AddHostPlugin<WebApiModule>(builder);
 
         builder.Services.AddSingleton<AssemblyProcessor>();
+        builder.Services.AddSingleton<IConsoleCommandDispatcher, ConsoleCommandDispatcher>();
         builder.Services.AddSingleton<ConsoleCommandService>();
 
         builder.Services.AddHostedService<VortexEmulator>();
