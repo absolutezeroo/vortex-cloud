@@ -8,13 +8,13 @@ using Vortex.Primitives.Messages.Outgoing.Help;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Permissions;
+using Vortex.Primitives.Players;
 
 namespace Vortex.PacketHandlers.Moderator;
 
 public class CloseIssuesMessageHandler(
     IGrainFactory grainFactory,
-    IPermissionService permissionService,
-    ICfhTicketService tickets
+    IPermissionService permissionService
 ) : IMessageHandler<CloseIssuesMessage>
 {
     public async ValueTask HandleAsync(
@@ -46,8 +46,12 @@ public class CloseIssuesMessageHandler(
             _ => CfhTicketCloseReason.Resolved,
         };
 
-        ImmutableArray<CfhTicketCloseOutcome> outcomes = await tickets
-            .CloseTicketsAsync(
+        // The grain closes and drops them from every other moderator's queue; this handler still
+        // owns telling the reporter, which is about them and not about the queue.
+        ImmutableArray<CfhTicketCloseOutcome> outcomes = await grainFactory
+            .GetModerationQueueGrain()
+            .CloseAsync(
+                PlayerId.Parse(ctx.PlayerId),
                 message.IssueIds,
                 reason,
                 sanctioned: reason == CfhTicketCloseReason.Sanctioned,

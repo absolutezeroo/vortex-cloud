@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -59,7 +61,7 @@ internal sealed class CfhTicketService(IDbContextFactory<VortexDbContext> dbCont
         return ticket.Id;
     }
 
-    public async Task PickTicketsAsync(
+    public async Task<ImmutableArray<CfhTicketPickOutcome>> PickTicketsAsync(
         IReadOnlyList<int> issueIds,
         int pickerPlayerId,
         CancellationToken ct = default
@@ -67,27 +69,88 @@ internal sealed class CfhTicketService(IDbContextFactory<VortexDbContext> dbCont
     {
         if (issueIds.Count == 0)
         {
-            return;
+            return [];
         }
 
         await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
+        // Tracked read-modify-write, not ExecuteUpdateAsync: a bulk statement bypasses the change
+        // tracker and so leaves no row in the audit trail, and claiming a ticket is an audited
+        // moderation action. Concurrency is handled a level up, by the single-threaded queue grain.
         List<CfhTicketEntity> tickets = await dbCtx
-            .CfhTickets.Where(t =>
-                issueIds.Contains(t.Id) && t.State == CfhTicketState.Open && t.DeletedAt == null
-            )
+            .CfhTickets.Where(t => issueIds.Contains(t.Id) && t.DeletedAt == null)
             .ToListAsync(ct)
             .ConfigureAwait(false);
 
+        Dictionary<int, CfhTicketEntity> byId = tickets.ToDictionary(t => t.Id);
+
+        // One lookup for every moderator named in the results, the caller included, so that naming
+        // the winner of a contested ticket costs no extra round trip per conflict.
+        HashSet<int> nameIds = [pickerPlayerId];
+
         foreach (CfhTicketEntity ticket in tickets)
         {
-            ticket.State = CfhTicketState.Picked;
-            ticket.PickerPlayerEntityId = pickerPlayerId;
+            if (ticket.PickerPlayerEntityId is int holder)
+            {
+                nameIds.Add(holder);
+            }
+        }
+
+        Dictionary<int, string> names = await dbCtx
+            .Players.AsNoTracking()
+            .Where(p => nameIds.Contains(p.Id))
+            .Select(p => new { p.Id, p.Name })
+            .ToDictionaryAsync(p => p.Id, p => p.Name, ct)
+            .ConfigureAwait(false);
+
+        ImmutableArray<CfhTicketPickOutcome>.Builder outcomes =
+            ImmutableArray.CreateBuilder<CfhTicketPickOutcome>(issueIds.Count);
+
+        foreach (int issueId in issueIds)
+        {
+            if (!byId.TryGetValue(issueId, out CfhTicketEntity? ticket))
+            {
+                // Never existed, or soft-deleted since the moderator's list was drawn.
+                outcomes.Add(new CfhTicketPickOutcome(issueId, false, 0, string.Empty));
+                continue;
+            }
+
+            if (ticket.State == CfhTicketState.Open)
+            {
+                ticket.State = CfhTicketState.Picked;
+                ticket.PickerPlayerEntityId = pickerPlayerId;
+
+                outcomes.Add(
+                    new CfhTicketPickOutcome(
+                        issueId,
+                        true,
+                        pickerPlayerId,
+                        names.GetValueOrDefault(pickerPlayerId, string.Empty)
+                    )
+                );
+                continue;
+            }
+
+            // Already picked or already closed. A ticket the caller themselves holds still reports
+            // as not acquired: they asked to take something that was not on offer, and the client
+            // reconciles from the issue block rather than from a second success.
+            int currentHolder = ticket.PickerPlayerEntityId ?? 0;
+
+            outcomes.Add(
+                new CfhTicketPickOutcome(
+                    issueId,
+                    false,
+                    currentHolder,
+                    names.GetValueOrDefault(currentHolder, string.Empty)
+                )
+            );
         }
 
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        return outcomes.MoveToImmutable();
     }
 
     public async Task<ImmutableArray<CfhTicketCloseOutcome>> CloseTicketsAsync(
@@ -138,14 +201,14 @@ internal sealed class CfhTicketService(IDbContextFactory<VortexDbContext> dbCont
         return outcomes.MoveToImmutable();
     }
 
-    public async Task ReleaseTicketsAsync(
+    public async Task<ImmutableArray<int>> ReleaseTicketsAsync(
         IReadOnlyList<int> issueIds,
         CancellationToken ct = default
     )
     {
         if (issueIds.Count == 0)
         {
-            return;
+            return [];
         }
 
         await using VortexDbContext dbCtx = await _dbContextFactory
@@ -166,6 +229,8 @@ internal sealed class CfhTicketService(IDbContextFactory<VortexDbContext> dbCont
         }
 
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        return tickets.Select(t => t.Id).ToImmutableArray();
     }
 
     public async Task<CfhTicketSummary?> GetTicketAsync(int issueId, CancellationToken ct = default)
@@ -292,19 +357,35 @@ internal sealed class CfhTicketService(IDbContextFactory<VortexDbContext> dbCont
         return builder.MoveToImmutable();
     }
 
-    public async Task<ImmutableArray<CfhIssueQueueEntrySnapshot>> GetOpenQueueAsync(
+    public Task<ImmutableArray<CfhIssueQueueEntrySnapshot>> GetOpenQueueAsync(
         CancellationToken ct = default
+    ) => QueryQueueEntriesAsync(t => t.State != CfhTicketState.Closed, ct);
+
+    public Task<ImmutableArray<CfhIssueQueueEntrySnapshot>> GetQueueEntriesAsync(
+        IReadOnlyList<int> issueIds,
+        CancellationToken ct = default
+    ) =>
+        issueIds.Count == 0
+            ? Task.FromResult(ImmutableArray<CfhIssueQueueEntrySnapshot>.Empty)
+            : QueryQueueEntriesAsync(t => issueIds.Contains(t.Id), ct);
+
+    /// <summary>The one projection of a ticket row into the client's issue block. Both the login
+    /// queue and the per-ticket live pushes read through here so the two can never drift.</summary>
+    private async Task<ImmutableArray<CfhIssueQueueEntrySnapshot>> QueryQueueEntriesAsync(
+        Expression<Func<CfhTicketEntity, bool>> filter,
+        CancellationToken ct
     )
     {
         await using VortexDbContext dbCtx = await _dbContextFactory
             .CreateDbContextAsync(ct)
             .ConfigureAwait(false);
 
-        System.DateTime now = System.DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow;
 
         var rows = await dbCtx
             .CfhTickets.AsNoTracking()
-            .Where(t => t.State != CfhTicketState.Closed && t.DeletedAt == null)
+            .Where(t => t.DeletedAt == null)
+            .Where(filter)
             .OrderByDescending(t => t.CreatedAt)
             .Select(t => new
             {
@@ -382,14 +463,14 @@ internal sealed class CfhTicketService(IDbContextFactory<VortexDbContext> dbCont
             .ToImmutableArray();
     }
 
-    public async Task<int> DeletePendingForReporterAsync(
+    public async Task<ImmutableArray<int>> DeletePendingForReporterAsync(
         int reporterPlayerId,
         CancellationToken ct = default
     )
     {
         if (reporterPlayerId <= 0)
         {
-            return 0;
+            return [];
         }
 
         await using VortexDbContext dbCtx = await _dbContextFactory
@@ -407,10 +488,10 @@ internal sealed class CfhTicketService(IDbContextFactory<VortexDbContext> dbCont
 
         if (pending.Count == 0)
         {
-            return 0;
+            return [];
         }
 
-        System.DateTime now = System.DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow;
 
         foreach (CfhTicketEntity ticket in pending)
         {
@@ -421,7 +502,7 @@ internal sealed class CfhTicketService(IDbContextFactory<VortexDbContext> dbCont
 
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
 
-        return pending.Count;
+        return pending.Select(t => t.Id).ToImmutableArray();
     }
 
     public async Task<ImmutableArray<PlayerSanctionSnapshot>> GetSanctionHistoryAsync(

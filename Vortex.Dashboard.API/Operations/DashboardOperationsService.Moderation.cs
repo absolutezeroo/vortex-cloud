@@ -238,8 +238,12 @@ internal sealed partial class DashboardOperationsService
             {
                 PlayerId staffActor = await ResolveStaffActorPlayerIdAsync(c).ConfigureAwait(false);
 
-                await _cfhTickets
-                    .PickTicketsAsync(request.IssueIds, staffActor.Value, c)
+                // Same queue grain the in-client mod tool goes through: an operator picking here
+                // and a moderator picking in the client are two interfaces onto one queue, and
+                // they have to contend with each other rather than overwrite each other.
+                await _grainFactory
+                    .GetModerationQueueGrain()
+                    .PickAsync(staffActor, request.IssueIds, retryEnabled: false, retryCount: 0, c)
                     .ConfigureAwait(false);
             },
             ct,
@@ -263,13 +267,21 @@ internal sealed partial class DashboardOperationsService
                 request.Reason,
                 request.Sanctioned,
             },
-            work: c =>
-                _cfhTickets.CloseTicketsAsync(
-                    request.IssueIds,
-                    (CfhTicketCloseReason)request.Reason,
-                    request.Sanctioned,
-                    c
-                ),
+            work: async c =>
+            {
+                PlayerId staffActor = await ResolveStaffActorPlayerIdAsync(c).ConfigureAwait(false);
+
+                await _grainFactory
+                    .GetModerationQueueGrain()
+                    .CloseAsync(
+                        staffActor,
+                        request.IssueIds,
+                        (CfhTicketCloseReason)request.Reason,
+                        request.Sanctioned,
+                        c
+                    )
+                    .ConfigureAwait(false);
+            },
             ct,
             AuditCategory.Moderation
         );
@@ -286,7 +298,15 @@ internal sealed partial class DashboardOperationsService
             targetPlayerId: null,
             roomId: null,
             detail: new { request.IssueIds },
-            work: c => _cfhTickets.ReleaseTicketsAsync(request.IssueIds, c),
+            work: async c =>
+            {
+                PlayerId staffActor = await ResolveStaffActorPlayerIdAsync(c).ConfigureAwait(false);
+
+                await _grainFactory
+                    .GetModerationQueueGrain()
+                    .ReleaseAsync(staffActor, request.IssueIds, c)
+                    .ConfigureAwait(false);
+            },
             ct,
             AuditCategory.Moderation
         );

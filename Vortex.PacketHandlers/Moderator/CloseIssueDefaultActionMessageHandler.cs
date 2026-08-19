@@ -12,6 +12,7 @@ using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Permissions;
+using Vortex.Primitives.Players;
 
 namespace Vortex.PacketHandlers.Moderator;
 
@@ -105,8 +106,15 @@ public class CloseIssueDefaultActionMessageHandler(
 
         List<int> allIssueIds = [message.PrimaryIssueId, .. message.OtherIssueIds];
 
-        ImmutableArray<CfhTicketCloseOutcome> outcomes = await tickets
-            .CloseTicketsAsync(allIssueIds, CfhTicketCloseReason.Sanctioned, sanctioned, ct)
+        ImmutableArray<CfhTicketCloseOutcome> outcomes = await grainFactory
+            .GetModerationQueueGrain()
+            .CloseAsync(
+                PlayerId.Parse(ctx.PlayerId),
+                allIssueIds,
+                CfhTicketCloseReason.Sanctioned,
+                sanctioned,
+                ct
+            )
             .ConfigureAwait(false);
 
         foreach (CfhTicketCloseOutcome outcome in outcomes)

@@ -110,6 +110,18 @@ public interface IPlayerGrain : IGrainWithIntegerKey
     /// <summary>Null if not currently banned, else the account's active ban expiry (far-future = permanent).</summary>
     public Task<DateTime?> GetActiveBanExpiryAsync(CancellationToken ct);
 
+    /// <summary>
+    /// Applies (or, with <paramref name="mutedUntil"/> null, lifts) a hotel-wide chat mute. Unlike a
+    /// room mute this follows the player between rooms, which is the whole point: the staff mod
+    /// tool's mute is a sanction on the person, not a rule of one room.
+    /// </summary>
+    /// <returns>The expiry now in force, so the caller can push it to the room they are standing in.</returns>
+    public Task<DateTime?> ApplyHotelMuteAsync(
+        int actorPlayerId,
+        DateTime? mutedUntil,
+        CancellationToken ct
+    );
+
     /// <summary>The account facts behind the staff mod tool's user card — including the email
     /// address and sanction counts, so callers must have checked a moderation capability first.</summary>
     public Task<PlayerModeratorInfoSnapshot> GetModeratorInfoAsync(CancellationToken ct);

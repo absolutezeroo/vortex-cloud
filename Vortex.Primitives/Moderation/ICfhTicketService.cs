@@ -17,9 +17,17 @@ public interface ICfhTicketService
         CancellationToken ct = default
     );
 
-    /// <summary>Ids that don't exist or aren't currently Open are silently skipped — the client
-    /// sends id arrays with no server-side bundling guarantee, so partial application is expected.</summary>
-    Task PickTicketsAsync(
+    /// <summary>
+    /// Claims tickets for a moderator. Ids that don't exist or aren't currently Open are not
+    /// silently dropped: every requested id comes back with a verdict, because the client has a
+    /// dedicated rejection path (IssuePickFailed, with retry) for the ones somebody else already
+    /// holds and cannot show it without being told who holds them.
+    /// </summary>
+    /// <remarks>
+    /// Serialize calls through <c>IModerationQueueGrain</c> rather than calling this concurrently:
+    /// the read-then-write inside is only race-free because that grain's turn makes it so.
+    /// </remarks>
+    Task<ImmutableArray<CfhTicketPickOutcome>> PickTicketsAsync(
         IReadOnlyList<int> issueIds,
         int pickerPlayerId,
         CancellationToken ct = default
@@ -32,9 +40,25 @@ public interface ICfhTicketService
         CancellationToken ct = default
     );
 
-    Task ReleaseTicketsAsync(IReadOnlyList<int> issueIds, CancellationToken ct = default);
+    /// <summary>Hands picked tickets back to the queue.</summary>
+    /// <returns>The ids actually released — the rest were never picked, or are already closed.</returns>
+    Task<ImmutableArray<int>> ReleaseTicketsAsync(
+        IReadOnlyList<int> issueIds,
+        CancellationToken ct = default
+    );
 
     Task<CfhTicketSummary?> GetTicketAsync(int issueId, CancellationToken ct = default);
+
+    /// <summary>
+    /// The queue blocks for specific tickets, in the same shape <see cref="GetOpenQueueAsync"/>
+    /// produces. Feeds the per-ticket pushes that keep an already-open mod tool in sync, so it
+    /// deliberately does not filter by state: a moderator watching a ticket needs to see it go to
+    /// Picked as much as they need to see it appear.
+    /// </summary>
+    Task<ImmutableArray<CfhIssueQueueEntrySnapshot>> GetQueueEntriesAsync(
+        IReadOnlyList<int> issueIds,
+        CancellationToken ct = default
+    );
 
     /// <summary>The reporter's selected evidence lines, frozen at report time — not a live
     /// re-query of the room's chatlog.</summary>
@@ -68,8 +92,11 @@ public interface ICfhTicketService
     /// shows them the pending ones. Only their own, and only ones no moderator has picked up:
     /// a report already in a moderator's hands is that moderator's to close.
     /// </summary>
-    /// <returns>How many were withdrawn.</returns>
-    Task<int> DeletePendingForReporterAsync(int reporterPlayerId, CancellationToken ct = default);
+    /// <returns>The ids withdrawn, so they can be dropped from the moderators' queues too.</returns>
+    Task<ImmutableArray<int>> DeletePendingForReporterAsync(
+        int reporterPlayerId,
+        CancellationToken ct = default
+    );
 
     /// <summary>
     /// This player's own sanction history, newest first — what their client shows under "my

@@ -22,6 +22,11 @@ public sealed class PlayerLiveState
     /// database and the badge on the avatar in the room never drift apart.</summary>
     public int FavouriteGroupId { get; set; } = 0;
     public string FavouriteGroupName { get; set; } = string.Empty;
+
+    /// <summary>Hotel-wide mute expiry, cached so the room can read it off the entry snapshot
+    /// instead of asking the database on the chat path.</summary>
+    public DateTime? MutedUntil { get; set; } = null;
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime LastUpdated { get; set; } = DateTime.UtcNow;
 

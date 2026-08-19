@@ -35,4 +35,11 @@ public sealed record PlayerSummarySnapshot
 
     [Id(8)]
     public string FavouriteGroupName { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Hotel-wide mute expiry, or null when not muted. Carried on the entry snapshot the room
+    /// already fetches so a room can enforce a staff mute without a grain call per chat line.
+    /// </summary>
+    [Id(9)]
+    public DateTime? MutedUntilUtc { get; init; }
 }

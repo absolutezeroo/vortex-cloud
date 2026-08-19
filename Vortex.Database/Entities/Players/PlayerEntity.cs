@@ -92,6 +92,14 @@ public class PlayerEntity : VortexEntity
     [Column("trading_locked_until")]
     public DateTime? TradingLockedUntil { get; set; }
 
+    /// <summary>
+    /// Hotel-wide chat mute expiry, or null when never muted. Distinct from <c>room_mutes</c>, which
+    /// a room owner sets and which stops at that room's door: this one is a staff sanction and has
+    /// to follow the player into whatever room they walk into next.
+    /// </summary>
+    [Column("muted_until")]
+    public DateTime? MutedUntil { get; set; }
+
     /// <summary>Null = the new-user flow has not been completed yet. Drives the
     /// <c>AVATAR_NAME_CHANGE</c> suggested login action: the client shows its look-and-name
     /// onboarding on every login until this is stamped.</summary>

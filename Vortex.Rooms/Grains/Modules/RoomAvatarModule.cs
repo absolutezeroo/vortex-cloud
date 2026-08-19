@@ -132,6 +132,17 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
 
         _roomGrain._state.AvatarsByPlayerId[snapshot.PlayerId] = avatar.ObjectId;
 
+        // Carried on the snapshot the entry already fetched, so a staff mute is in force from this
+        // player's first line in the room without the chat path ever asking anybody.
+        if (snapshot.MutedUntilUtc is DateTime hotelMutedUntil && hotelMutedUntil > DateTime.UtcNow)
+        {
+            _roomGrain._state.HotelMuteExpiresUtc[snapshot.PlayerId] = hotelMutedUntil;
+        }
+        else
+        {
+            _roomGrain._state.HotelMuteExpiresUtc.Remove(snapshot.PlayerId);
+        }
+
         avatar.SetRotation(startRot);
 
         // After the avatar is resolvable by player id, so a game reacting to the entry can already
@@ -166,6 +177,10 @@ public sealed partial class RoomAvatarModule(RoomGrain roomGrain)
             await _roomGrain.ObjectModule.RemoveObjectAsync(ctx, avatar, ct, -1);
 
             _roomGrain._state.AvatarsByPlayerId.Remove(playerId);
+
+            // Only tracks people who are here; leaving it behind would grow the table by one entry
+            // per visitor for as long as the room stays activated.
+            _roomGrain._state.HotelMuteExpiresUtc.Remove(playerId);
 
             // Team membership must never outlive a player's presence in the room; the game system
             // passes the departure on to each game it hosts.

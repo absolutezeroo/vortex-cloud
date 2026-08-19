@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
@@ -37,6 +38,16 @@ public interface IRoomModeration : IGrainWithIntegerKey
         PlayerId targetPlayerId,
         CancellationToken ct
     );
+
+    /// <summary>
+    /// Pushes a hotel-wide staff mute onto a player who is in this room right now, so it takes hold
+    /// on their very next line instead of on their next room change. Null lifts it.
+    /// </summary>
+    /// <remarks>
+    /// Carries no authorization of its own — the sanction was already authorized and persisted by
+    /// the caller; this only refreshes what the room has cached. A no-op if the player is not here.
+    /// </remarks>
+    public Task SetHotelMuteAsync(PlayerId targetPlayerId, DateTime? expiresUtc);
 
     /// <summary>
     /// The three room-tool checkboxes a staff member can apply to a room they do not own, in one

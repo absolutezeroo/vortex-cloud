@@ -591,6 +591,13 @@ public class SSOTicketMessageHandler(
         await ctx.SendComposerAsync(new CfhTopicsInitMessageComposer { Categories = catalog }, ct)
             .ConfigureAwait(false);
 
+        // They now hold a snapshot of the queue, so from here on they need the changes to it. The
+        // matching Unsubscribe hangs off the disconnect event, not off this handler.
+        await _grainFactory
+            .GetModerationQueueGrain()
+            .SubscribeAsync(PlayerId.Parse(playerId))
+            .ConfigureAwait(false);
+
         // Restore where they left the window. Skipped when never positioned — a rectangle of zeroes
         // would collapse the tool to nothing on open.
         // Uses the ticket's player id, never ctx.PlayerId: the MessageContext for this packet was

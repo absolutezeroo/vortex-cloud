@@ -320,6 +320,31 @@ public sealed class RoomModerationSystem(RoomGrain roomGrain)
         }
     }
 
+    /// <summary>
+    /// Refreshes this room's cached copy of a hotel-wide staff mute. Deliberately unauthorized and
+    /// unaudited: the sanction itself was authorized, persisted and audited by the caller, and this
+    /// is only the room catching up with it. A player who is not here is ignored — they will pick
+    /// the mute up from their entry snapshot wherever they go next.
+    /// </summary>
+    public Task SetHotelMuteAsync(PlayerId targetPlayerId, DateTime? expiresUtc)
+    {
+        if (!_roomGrain._state.AvatarsByPlayerId.ContainsKey(targetPlayerId))
+        {
+            return Task.CompletedTask;
+        }
+
+        if (expiresUtc is DateTime until && until > DateTime.UtcNow)
+        {
+            _roomGrain._state.HotelMuteExpiresUtc[targetPlayerId] = until;
+        }
+        else
+        {
+            _roomGrain._state.HotelMuteExpiresUtc.Remove(targetPlayerId);
+        }
+
+        return Task.CompletedTask;
+    }
+
     public async Task<bool> UnmuteUserAsync(
         ActionContext actorCtx,
         PlayerId targetPlayerId,

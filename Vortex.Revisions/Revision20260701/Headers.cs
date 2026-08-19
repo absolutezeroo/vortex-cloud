@@ -266,6 +266,12 @@ internal static class MessageEvent
     public const int GetUserChatlogMessageEvent = 1686; // AS3-verified (direct read): _composers[1686] = _SafeCls_2670(userId), constructed by UserInfoCtrl
     public const int ModAlertMessageEvent = 2183; // AS3-verified (direct read, both revisions): ModActionCtrl::onCustomSanctionButton() case 0 (trackAction('sendCaution'), alertPermission) -> connection.send(new _SafeCls_3481(...)) @2183
     public const int ModBanMessageEvent = 2507; // AS3-verified (direct read): ModActionCtrl::onCustomSanctionButton() case 2 (trackAction('ban'), banPermission) -> _SafeCls_3959 @2507
+
+    // AS3-verified (direct read): _composers[2735] = _SafeCls_3239(actionType, message, ""), sent by
+    // RoomToolCtrl::act() for the "Send caution"/"Send message" buttons. actionType is one of the
+    // class's own four constants (0/1/3/4) and carries no room id -- see ModToolRoomAlertMessage.
+    public const int ModToolRoomAlertMessageEvent = 2735;
+
     public const int ModerateRoomMessageEvent = 2939; // AS3-verified (direct read): RoomToolCtrl::act() -> _SafeCls_2501(flatId, lockDoor, changeName, kickUsers) @2939
 
     public const int ModKickMessageEvent = 1401; // AS3-verified (direct read, both revisions): ModActionCtrl::onCustomSanctionButton() case 3 (trackAction('kick'), kickPermission) -> connection.send(new _SafeCls_3834(...)) @1401
@@ -957,7 +963,12 @@ internal static class MessageComposer
     public const int RoomVisitsComposer = 497; // AS3-verified (ghost fix): onRoomVisits @ ModerationMessageHandler
     public const int SanctionInfoMessageComposer = 1634; // AS3-verified (direct read): _SafeStr_4546[1634] = _SafeCls_2679 -> onSanctions @ ModerationMessageHandler
     public const int UserBannedMessageComposer = 3621;
-    public const int UserChatlogComposer = 3732; // AS3-verified (ghost fix): onUserChatlog @ ModerationMessageHandler
+    public const int UserChatlogComposer = 3732;
+
+    // AS3-verified (direct read): _SafeStr_4546[543] = _SafeCls_2530 -> onRoomUserClassification @
+    // ModerationMessageHandler, parsed by _SafeCls_3183 as count x (int userId, string userName,
+    // string classType).
+    public const int UserClassificationComposer = 543; // AS3-verified (ghost fix): onUserChatlog @ ModerationMessageHandler
 
     public const int CraftableProductsMessageComposer = 3155; // AS3-verified: onCraftableProductsMessage @ CraftingWidgetHandler
 

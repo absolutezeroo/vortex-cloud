@@ -280,20 +280,55 @@ public sealed class RoomChatSystem(RoomGrain roomGrain)
         }
     }
 
-    private bool IsUserMuted(PlayerId playerId, out int secondsRemaining)
+    /// <summary>
+    /// Both mutes that can silence a line here: this room's own, and the hotel-wide staff sanction
+    /// the player carries between rooms. The longer of the two wins, so walking next door cannot
+    /// shorten a sanction. Both are in-memory reads — nothing on the chat path goes to the database.
+    /// </summary>
+    internal bool IsUserMuted(PlayerId playerId, out int secondsRemaining)
     {
-        if (
-            _roomGrain._state.MuteExpiresUtc.TryGetValue(playerId, out DateTime mutedUntil)
-            && mutedUntil > DateTime.UtcNow
-        )
+        DateTime now = DateTime.UtcNow;
+
+        DateTime? roomMute = ReadMute(_roomGrain._state.MuteExpiresUtc, playerId, now);
+        DateTime? hotelMute = ReadMute(_roomGrain._state.HotelMuteExpiresUtc, playerId, now);
+
+        DateTime? effective = (roomMute, hotelMute) switch
         {
-            secondsRemaining = (int)Math.Ceiling((mutedUntil - DateTime.UtcNow).TotalSeconds);
-            return true;
+            (null, null) => null,
+            (DateTime room, null) => room,
+            (null, DateTime hotel) => hotel,
+            (DateTime room, DateTime hotel) => room > hotel ? room : hotel,
+        };
+
+        if (effective is null)
+        {
+            secondsRemaining = 0;
+            return false;
         }
 
-        _roomGrain._state.MuteExpiresUtc.Remove(playerId);
-        secondsRemaining = 0;
-        return false;
+        secondsRemaining = (int)Math.Ceiling((effective.Value - now).TotalSeconds);
+        return true;
+    }
+
+    /// <summary>Reads one mute table, retiring the entry when it has run out.</summary>
+    private static DateTime? ReadMute(
+        Dictionary<PlayerId, DateTime> mutes,
+        PlayerId playerId,
+        DateTime now
+    )
+    {
+        if (!mutes.TryGetValue(playerId, out DateTime expiresUtc))
+        {
+            return null;
+        }
+
+        if (expiresUtc > now)
+        {
+            return expiresUtc;
+        }
+
+        mutes.Remove(playerId);
+        return null;
     }
 
     /// <summary>

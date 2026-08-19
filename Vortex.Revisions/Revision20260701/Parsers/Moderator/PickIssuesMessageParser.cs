@@ -20,8 +20,8 @@ internal class PickIssuesMessageParser : IParser
         return new PickIssuesMessage
         {
             IssueIds = issueIds.MoveToImmutable(),
-            AutoHandle = packet.PopBoolean(),
-            RoomId = packet.PopInt(),
+            RetryEnabled = packet.PopBoolean(),
+            RetryCount = packet.PopInt(),
             Note = packet.PopString(),
         };
     }

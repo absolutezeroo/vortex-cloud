@@ -10,6 +10,7 @@ using Vortex.Players.Quests;
 using Vortex.Primitives.Content;
 using Vortex.Primitives.Groups.Providers;
 using Vortex.Primitives.Hosting;
+using Vortex.Primitives.Moderation;
 using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.Pets.Providers;
 using Vortex.Primitives.Players;
@@ -38,6 +39,7 @@ public sealed class PlayerModule : IHostPluginModule
             builder.Configuration.GetSection(PlayerPresenceConfig.SECTION_NAME)
         );
 
+        services.AddSingleton<IUserClassificationService, UserClassificationService>();
         services.AddSingleton<ICurrencyTypeProvider, CurrencyTypeProvider>();
         services.AddSingleton<IReferenceDataProvider>(sp =>
             (IReferenceDataProvider)sp.GetRequiredService<ICurrencyTypeProvider>()

@@ -9,6 +9,7 @@ using Vortex.Primitives.Messages.Outgoing.Moderation;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Permissions;
+using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
@@ -46,6 +47,13 @@ public class GetModeratorRoomInfoMessageHandler(
         }
 
         RoomId roomId = message.RoomId;
+
+        // The room tool's caution/message buttons carry no room id, so this request is the only
+        // place the server learns which room they will mean. See ModToolRoomAlertMessage.
+        await grainFactory
+            .GetModerationQueueGrain()
+            .NoteInspectedRoomAsync(PlayerId.Parse(ctx.PlayerId), roomId.Value)
+            .ConfigureAwait(false);
 
         RoomSummarySnapshot summary = await grainFactory
             .GetRoomCore(roomId)

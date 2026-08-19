@@ -40,6 +40,10 @@ internal sealed class ModeratorMap : IRevisionMap
         );
         builder.MapParser(MessageEvent.ModAlertMessageEvent, new ModAlertMessageParser());
         builder.MapParser(MessageEvent.ModBanMessageEvent, new ModBanMessageParser());
+        builder.MapParser(
+            MessageEvent.ModToolRoomAlertMessageEvent,
+            new ModToolRoomAlertMessageParser()
+        );
         builder.MapParser(MessageEvent.ModerateRoomMessageEvent, new ModerateRoomMessageParser());
         builder.MapParser(MessageEvent.ModKickMessageEvent, new ModKickMessageParser());
         builder.MapParser(MessageEvent.ModMessageMessageEvent, new ModMessageMessageParser());

@@ -6,6 +6,7 @@ using Vortex.Primitives.Groups.Grains;
 using Vortex.Primitives.Help.Grains;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Marketplace.Grains;
+using Vortex.Primitives.Moderation.Grains;
 using Vortex.Primitives.MysteryBox.Grains;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Grains;
@@ -80,6 +81,10 @@ public static class GrainFactoryExtensions
 
     public static IRoomDirectoryGrain GetRoomDirectoryGrain(this IGrainFactory factory) =>
         factory.GetGrain<IRoomDirectoryGrain>(SingletonGrainId.GLOBAL);
+
+    /// <summary>The hotel's single CFH queue coordinator — one per hotel, hence the global key.</summary>
+    public static IModerationQueueGrain GetModerationQueueGrain(this IGrainFactory factory) =>
+        factory.GetGrain<IModerationQueueGrain>(SingletonGrainId.GLOBAL);
 
     public static IPlayerGrain GetPlayerGrain(this IGrainFactory factory, PlayerId playerId) =>
         factory.GetGrain<IPlayerGrain>((long)playerId.Value);

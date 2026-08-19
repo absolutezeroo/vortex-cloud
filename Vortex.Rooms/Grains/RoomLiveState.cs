@@ -50,7 +50,18 @@ public sealed class RoomLiveState
     /// guild members get no build rights in the base room.</summary>
     public bool GroupAdminOnlyDecoration { get; internal set; } = false;
 
+    /// <summary>Room-scoped mutes, from <c>room_mutes</c> — this room's own rule, hydrated on
+    /// activation and cleared when the room deactivates.</summary>
     public Dictionary<PlayerId, DateTime> MuteExpiresUtc { get; } = [];
+
+    /// <summary>
+    /// Hotel-wide staff mutes for the players currently in this room. Seeded from each player's
+    /// entry snapshot and updated live when a moderator mutes somebody standing here, so the chat
+    /// path can enforce it without touching the database. Kept apart from
+    /// <see cref="MuteExpiresUtc"/> on purpose: a room owner unmuting in their own room must not
+    /// be able to lift a staff sanction.
+    /// </summary>
+    public Dictionary<PlayerId, DateTime> HotelMuteExpiresUtc { get; } = [];
 
     /// <summary>Players currently waiting on a doorbell ring for a locked door, keyed by the tick
     /// timestamp (ms) the ring started — swept for timeout by <c>RoomGrain.Doorbell.cs</c>.</summary>

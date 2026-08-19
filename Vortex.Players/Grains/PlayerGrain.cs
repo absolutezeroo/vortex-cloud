@@ -213,6 +213,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
                 Gender = _state.Gender,
                 AchievementScore = _state.AchievementScore,
                 CreatedAt = _state.CreatedAt,
+                MutedUntilUtc = _state.MutedUntil,
                 FavouriteGroupId = _state.FavouriteGroupId,
                 FavouriteGroupName = _state.FavouriteGroupName,
             }
@@ -748,6 +749,41 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         return true;
     }
 
+    public async Task<DateTime?> ApplyHotelMuteAsync(
+        int actorPlayerId,
+        DateTime? mutedUntil,
+        CancellationToken ct
+    )
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
+
+        PlayerEntity? player = await dbCtx
+            .Players.FindAsync([_state.PlayerId.Value], ct)
+            .ConfigureAwait(true);
+
+        if (player is null)
+        {
+            return null;
+        }
+
+        player.MutedUntil = mutedUntil;
+
+        await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+        // Cached in the same method that persists it: the entry snapshot is read from this field,
+        // so leaving it stale would mute the player everywhere except the next room they walk into.
+        _state.MutedUntil = mutedUntil;
+
+        await _events
+            .PublishAsync(
+                new PlayerHotelMutedEvent(actorPlayerId, (int)_state.PlayerId, mutedUntil),
+                ct
+            )
+            .ConfigureAwait(true);
+
+        return mutedUntil;
+    }
+
     public async Task<DateTime?> GetActiveBanExpiryAsync(CancellationToken ct)
     {
         await using VortexDbContext dbCtx = await _dbCtxFactory.CreateDbContextAsync(ct);
@@ -924,6 +960,7 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         _state.RespectGivenToday = entity.RespectGivenToday;
         _state.RespectResetDate = entity.RespectResetDate;
         _state.CreatedAt = entity.CreatedAt;
+        _state.MutedUntil = entity.MutedUntil;
         _state.NuxCompletedAt = entity.NuxCompletedAt;
         _state.LastUpdated = entity.UpdatedAt;
 

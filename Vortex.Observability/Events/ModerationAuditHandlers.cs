@@ -173,3 +173,158 @@ public sealed class PlayerTradingLockedAuditHandler(IAuditSink audit)
         return ValueTask.CompletedTask;
     }
 }
+
+/// <summary>
+/// The room tool's three checkboxes. Audited as Warning rather than Notice: unlike a kick aimed at
+/// one person, this reaches every occupant at once and rewrites a room somebody owns.
+/// </summary>
+public sealed class RoomModeratedByStaffAuditHandler(IAuditSink audit)
+    : IEventHandler<RoomModeratedByStaffEvent>
+{
+    public ValueTask HandleAsync(
+        RoomModeratedByStaffEvent e,
+        EventContext ctx,
+        CancellationToken ct
+    )
+    {
+        audit.Emit(
+            new AuditEvent
+            {
+                Category = AuditCategory.Moderation,
+                Action = "moderation.room.moderate",
+                Severity = AuditSeverity.Warning,
+                Result = AuditResult.Success,
+                ActorPlayerId = e.ActorPlayerId,
+                RoomId = e.RoomId,
+                Data = JsonSerializer.Serialize(
+                    new
+                    {
+                        doorUnlocked = e.DoorUnlocked,
+                        nameReset = e.NameReset,
+                        usersKicked = e.UsersKicked,
+                    }
+                ),
+            }
+        );
+
+        return ValueTask.CompletedTask;
+    }
+}
+
+public sealed class CfhTicketsPickedAuditHandler(IAuditSink audit)
+    : IEventHandler<CfhTicketsPickedEvent>
+{
+    public ValueTask HandleAsync(CfhTicketsPickedEvent e, EventContext ctx, CancellationToken ct)
+    {
+        audit.Emit(
+            new AuditEvent
+            {
+                Category = AuditCategory.Moderation,
+                Action = "moderation.cfh.pick",
+                Severity = AuditSeverity.Info,
+                Result = AuditResult.Success,
+                ActorPlayerId = e.ActorPlayerId,
+                Data = JsonSerializer.Serialize(new { issueIds = e.IssueIds }),
+            }
+        );
+
+        return ValueTask.CompletedTask;
+    }
+}
+
+public sealed class CfhTicketsReleasedAuditHandler(IAuditSink audit)
+    : IEventHandler<CfhTicketsReleasedEvent>
+{
+    public ValueTask HandleAsync(CfhTicketsReleasedEvent e, EventContext ctx, CancellationToken ct)
+    {
+        audit.Emit(
+            new AuditEvent
+            {
+                Category = AuditCategory.Moderation,
+                Action = "moderation.cfh.release",
+                Severity = AuditSeverity.Info,
+                Result = AuditResult.Success,
+                ActorPlayerId = e.ActorPlayerId,
+                Data = JsonSerializer.Serialize(new { issueIds = e.IssueIds }),
+            }
+        );
+
+        return ValueTask.CompletedTask;
+    }
+}
+
+public sealed class CfhTicketsClosedAuditHandler(IAuditSink audit)
+    : IEventHandler<CfhTicketsClosedEvent>
+{
+    public ValueTask HandleAsync(CfhTicketsClosedEvent e, EventContext ctx, CancellationToken ct)
+    {
+        audit.Emit(
+            new AuditEvent
+            {
+                Category = AuditCategory.Moderation,
+                Action = "moderation.cfh.close",
+                Severity = AuditSeverity.Notice,
+                Result = AuditResult.Success,
+                ActorPlayerId = e.ActorPlayerId,
+                Data = JsonSerializer.Serialize(
+                    new
+                    {
+                        issueIds = e.IssueIds,
+                        reason = e.Reason,
+                        sanctioned = e.Sanctioned,
+                    }
+                ),
+            }
+        );
+
+        return ValueTask.CompletedTask;
+    }
+}
+
+/// <summary>
+/// The mod tool's mute. Recorded apart from the room mute because the two answer different
+/// questions: this one is "was this person silenced across the hotel, and until when".
+/// </summary>
+public sealed class PlayerHotelMutedAuditHandler(IAuditSink audit)
+    : IEventHandler<PlayerHotelMutedEvent>
+{
+    public ValueTask HandleAsync(PlayerHotelMutedEvent e, EventContext ctx, CancellationToken ct)
+    {
+        audit.Emit(
+            new AuditEvent
+            {
+                Category = AuditCategory.Moderation,
+                Action = e.MutedUntil is null ? "moderation.unmute" : "moderation.mute.hotel",
+                Severity = AuditSeverity.Notice,
+                Result = AuditResult.Success,
+                ActorPlayerId = e.ActorPlayerId,
+                TargetPlayerId = e.TargetPlayerId,
+                Data = JsonSerializer.Serialize(new { mutedUntil = e.MutedUntil }),
+            }
+        );
+
+        return ValueTask.CompletedTask;
+    }
+}
+
+public sealed class RoomAlertedByStaffAuditHandler(IAuditSink audit)
+    : IEventHandler<RoomAlertedByStaffEvent>
+{
+    public ValueTask HandleAsync(RoomAlertedByStaffEvent e, EventContext ctx, CancellationToken ct)
+    {
+        audit.Emit(
+            new AuditEvent
+            {
+                Category = AuditCategory.Moderation,
+                Action = e.IsCaution ? "moderation.room.caution" : "moderation.room.message",
+                Severity = AuditSeverity.Notice,
+                Result = AuditResult.Success,
+                ActorPlayerId = e.ActorPlayerId,
+                RoomId = e.RoomId,
+                Data = JsonSerializer.Serialize(new { message = e.Message }),
+            }
+        );
+
+        return ValueTask.CompletedTask;
+    }
+}

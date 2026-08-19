@@ -48,12 +48,35 @@ public sealed record RoomModeratedByStaffEvent(
     bool UsersKicked
 ) : IEvent;
 
+/// <summary>
+/// A staff member sent a caution or message to every occupant of a room. Audited with the text: a
+/// line broadcast to a whole room in the hotel's voice is exactly the kind of thing that has to be
+/// answerable for afterwards.
+/// </summary>
+public sealed record RoomAlertedByStaffEvent(
+    int ActorPlayerId,
+    int RoomId,
+    bool IsCaution,
+    string Message
+) : IEvent;
+
 /// <summary>A staff member suspended a player's account (null BannedUntil clears the ban).</summary>
 public sealed record PlayerAccountBannedEvent(
     int ActorPlayerId,
     int TargetPlayerId,
     DateTime? BannedUntil,
     string Reason
+) : IEvent;
+
+/// <summary>
+/// A staff member muted a player hotel-wide (null MutedUntil lifts it). Separate from
+/// <see cref="PlayerMutedInRoomEvent"/>, which is one room's rule rather than a sanction on the
+/// person, and which has a room id this one deliberately has not got.
+/// </summary>
+public sealed record PlayerHotelMutedEvent(
+    int ActorPlayerId,
+    int TargetPlayerId,
+    DateTime? MutedUntil
 ) : IEvent;
 
 /// <summary>A staff member trading-locked a player's account (null LockedUntil clears the lock).</summary>
@@ -69,3 +92,20 @@ public sealed record PlayerTradingLockedEvent(
 /// left to attach it to, and the rating stands on its own.
 /// </summary>
 public sealed record GuideSessionRatedEvent(int PlayerId, bool WasHelpful) : IEvent;
+
+/// <summary>
+/// A moderator claimed CFH tickets. Audited because a claim is the moment a report becomes one
+/// person's responsibility: "who was holding this when it went wrong" is otherwise unanswerable.
+/// </summary>
+public sealed record CfhTicketsPickedEvent(int ActorPlayerId, int[] IssueIds) : IEvent;
+
+/// <summary>A moderator handed CFH tickets back to the queue without resolving them.</summary>
+public sealed record CfhTicketsReleasedEvent(int ActorPlayerId, int[] IssueIds) : IEvent;
+
+/// <summary>A moderator closed CFH tickets, with the verdict they closed them under.</summary>
+public sealed record CfhTicketsClosedEvent(
+    int ActorPlayerId,
+    int[] IssueIds,
+    string Reason,
+    bool Sanctioned
+) : IEvent;

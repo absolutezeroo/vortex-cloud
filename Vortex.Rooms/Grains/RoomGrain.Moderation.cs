@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Action;
@@ -38,6 +39,9 @@ public sealed partial class RoomGrain
         int durationSeconds,
         CancellationToken ct
     ) => ModerationSystem.BanUserAsync(actorCtx, targetPlayerId, durationSeconds, ct);
+
+    public Task SetHotelMuteAsync(PlayerId targetPlayerId, DateTime? expiresUtc) =>
+        ModerationSystem.SetHotelMuteAsync(targetPlayerId, expiresUtc);
 
     public Task<bool> UnmuteUserAsync(
         ActionContext actorCtx,

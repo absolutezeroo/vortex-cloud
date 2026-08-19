@@ -50,7 +50,6 @@ public class ModMuteMessageHandler(
                     ct
                 )
                 .ConfigureAwait(false)
-            && targetRoomId > 0
         )
         {
             int muteMinutes = await grainFactory
@@ -61,13 +60,27 @@ public class ModMuteMessageHandler(
                 )
                 .ConfigureAwait(false);
 
-            ActionContext actorCtx = ctx.AsActionContext() with { RoomId = targetRoomId };
-            IRoomModeration roomGrain = grainFactory.GetRoomModeration(targetRoomId);
-            int durationSeconds = (int)TimeSpan.FromMinutes(muteMinutes).TotalSeconds;
+            // Hotel-wide, not room-scoped. The mod tool's mute is a sanction on the person: a room
+            // mute would end the moment they walked next door, and would be impossible to apply at
+            // all to somebody sitting in the hotel view with no room to scope it to.
+            DateTime mutedUntil = DateTime.UtcNow.AddMinutes(muteMinutes);
 
-            success = await roomGrain
-                .MuteUserAsync(actorCtx, message.UserId, durationSeconds, ct)
+            DateTime? applied = await grainFactory
+                .GetPlayerGrain(message.UserId)
+                .ApplyHotelMuteAsync(ctx.PlayerId, mutedUntil, ct)
                 .ConfigureAwait(false);
+
+            success = applied is not null;
+
+            // If they are standing somewhere, that room is holding a cached copy from their entry
+            // snapshot; without this the sanction would not bite until their next room change.
+            if (success && targetRoomId > 0)
+            {
+                await grainFactory
+                    .GetRoomModeration(targetRoomId)
+                    .SetHotelMuteAsync(message.UserId, applied)
+                    .ConfigureAwait(false);
+            }
         }
 
         await ModToolActionHelper

@@ -494,6 +494,15 @@ public sealed class GroupDirectoryGrainCreationTests
             throw new NotSupportedException();
         }
 
+        public Task<DateTime?> ApplyHotelMuteAsync(
+            int actorPlayerId,
+            DateTime? mutedUntil,
+            CancellationToken ct
+        )
+        {
+            throw new NotSupportedException();
+        }
+
         public Task<bool> ApplyTradingLockAsync(
             int actorPlayerId,
             DateTime? lockedUntil,

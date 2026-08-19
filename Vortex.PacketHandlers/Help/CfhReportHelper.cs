@@ -54,7 +54,7 @@ internal static class CfhReportHelper
             return false;
         }
 
-        await tickets
+        int issueId = await tickets
             .CreateTicketAsync(
                 topicId,
                 reporterPlayerId,
@@ -64,6 +64,13 @@ internal static class CfhReportHelper
                 evidence,
                 ct
             )
+            .ConfigureAwait(false);
+
+        // Push it at the moderators who already have the tool open. Without this the report only
+        // surfaces on their next login, which for a busy shift means never.
+        await grainFactory
+            .GetModerationQueueGrain()
+            .PublishTicketOpenedAsync(issueId)
             .ConfigureAwait(false);
 
         await grainFactory

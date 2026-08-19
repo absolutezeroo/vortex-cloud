@@ -1,5 +1,7 @@
+using Vortex.Primitives.Messages.Outgoing.Userclassification;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Revision20260701.Parsers.UserClassification;
+using Vortex.Revisions.Revision20260701.Serializers.UserClassification;
 
 namespace Vortex.Revisions.Revision20260701.Maps;
 
@@ -14,6 +16,13 @@ internal sealed class UserClassificationMap : IRevisionMap
         builder.MapParser(
             MessageEvent.RoomUsersClassificationMessageEvent,
             new RoomUsersClassificationMessageParser()
+        );
+
+        builder.MapSerializer(
+            typeof(UserClassificationMessageComposer),
+            new UserClassificationMessageComposerSerializer(
+                MessageComposer.UserClassificationComposer
+            )
         );
     }
 }

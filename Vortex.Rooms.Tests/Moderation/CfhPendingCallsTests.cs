@@ -86,9 +86,12 @@ public sealed class CfhPendingCallsTests
             await db.SaveChangesAsync();
         }
 
-        int withdrawn = await NewService(options).DeletePendingForReporterAsync(REPORTER);
+        ImmutableArray<int> withdrawn = await NewService(options)
+            .DeletePendingForReporterAsync(REPORTER);
 
-        withdrawn.Should().Be(1);
+        // The ids matter, not just the count: they are what gets pushed to the moderators so the
+        // withdrawn report leaves their queue too.
+        withdrawn.Should().Equal(1);
 
         await using VortexDbContext check = new(options);
 
@@ -126,7 +129,7 @@ public sealed class CfhPendingCallsTests
     public async Task GetPendingForReporter_RefusesAnUnboundSession()
     {
         (await NewService(NewOptions()).GetPendingForReporterAsync(0)).Should().BeEmpty();
-        (await NewService(NewOptions()).DeletePendingForReporterAsync(-1)).Should().Be(0);
+        (await NewService(NewOptions()).DeletePendingForReporterAsync(-1)).Should().BeEmpty();
     }
 
     private static DateTime DaysAgo(int days) => DateTime.UtcNow.AddDays(-days);

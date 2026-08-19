@@ -5,12 +5,16 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Messages.Incoming.Help;
-using Vortex.Primitives.Messages.Outgoing.Help;
 using Vortex.Primitives.Moderation;
-using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Help;
 
+/// <summary>
+/// The plain "report a user" entry point. Shares <see cref="CfhReportHelper"/> with the four
+/// attachment-specific variants rather than filing its own ticket, so that topic validation, the
+/// self-report guard, the acknowledgement and the push to on-duty moderators cannot drift between
+/// the paths.
+/// </summary>
 public class CallForHelpMessageHandler(IGrainFactory grainFactory, ICfhTicketService tickets)
     : IMessageHandler<CallForHelpMessage>
 {
@@ -20,43 +24,22 @@ public class CallForHelpMessageHandler(IGrainFactory grainFactory, ICfhTicketSer
         CancellationToken ct
     )
     {
-        if (ctx.PlayerId <= 0 || message.ReportedUserId <= 0 || message.TopicId <= 0)
-        {
-            return;
-        }
+        List<(int UserId, string Text)> evidence =
+        [
+            .. message.Evidence.Select(e => (e.UserId, e.Text)),
+        ];
 
-        CfhTopicSnapshot? topic = await tickets
-            .GetTopicAsync(message.TopicId, ct)
-            .ConfigureAwait(false);
-
-        if (topic is null)
-        {
-            return;
-        }
-
-        List<(int UserId, string Text)> evidence = message
-            .Evidence.Select(e => (e.UserId, e.Text))
-            .ToList();
-
-        await tickets
-            .CreateTicketAsync(
-                message.TopicId,
+        await CfhReportHelper
+            .SubmitAsync(
+                grainFactory,
+                tickets,
                 ctx.PlayerId,
+                message.TopicId,
                 message.ReportedUserId,
                 message.RoomId > 0 ? message.RoomId : null,
                 message.Message,
                 evidence,
                 ct
-            )
-            .ConfigureAwait(false);
-
-        await grainFactory
-            .GetPlayerPresenceGrain(ctx.PlayerId)
-            .SendComposerAsync(
-                new CallForHelpReplyMessageComposer
-                {
-                    Message = "Your report has been sent to our moderation team. Thank you.",
-                }
             )
             .ConfigureAwait(false);
     }
