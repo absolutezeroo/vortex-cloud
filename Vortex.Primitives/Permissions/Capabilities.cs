@@ -168,6 +168,13 @@ public static class Capabilities
         public const string OpsBenchmarkRun = "dashboard.ops.benchmark.run";
 
         /// <summary>
+        /// Follow the emulator's live console — the same lines the terminal shows. Read-only, but the
+        /// stream carries whatever the server logs, so it is at least as sensitive as the audit
+        /// trail and is held apart from running commands.
+        /// </summary>
+        public const string ServerConsoleRead = "dashboard.server.console.read";
+
+        /// <summary>
         /// Run an operator command from the dashboard console. Necessary but not sufficient: each
         /// command additionally declares the capability of whatever it acts on, so this grant alone
         /// only reaches the commands that gate on nothing else.
@@ -240,6 +247,7 @@ public static class Capabilities
             OpsContentManage,
             BenchmarkRead,
             OpsBenchmarkRun,
+            ServerConsoleRead,
             OpsServerConsole,
             OpsServerControl,
         ];

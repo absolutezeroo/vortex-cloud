@@ -792,6 +792,16 @@ export default {
     description:
       "Run the emulator's operator commands from here. Each command still requires the capability of whatever it acts on, and every line you run is recorded in the audit trail against your account.",
     accessDenied: 'You do not have permission to use the server console.',
+    liveTitle: 'Live console',
+    followAccessDenied: 'You do not have permission to follow the server console.',
+    waiting: 'Waiting for the server to say something…',
+    clear: 'Clear',
+    placeholder: 'Type a command, e.g. help',
+    connection: {
+      connecting: 'connecting',
+      live: 'live',
+      lost: 'reconnecting',
+    },
     runTitle: 'Run a command',
     runSummary: 'Run "{command}" on the server console',
     confirmEyebrow: 'Server console',

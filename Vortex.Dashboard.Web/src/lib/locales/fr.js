@@ -791,6 +791,16 @@ export default {
     description:
       "Exécutez les commandes opérateur de l'émulateur depuis ici. Chaque commande exige en plus la capacité de ce sur quoi elle agit, et chaque ligne exécutée est enregistrée dans l'audit à votre nom.",
     accessDenied: "Vous n'avez pas la permission d'utiliser la console serveur.",
+    liveTitle: 'Console en direct',
+    followAccessDenied: "Vous n'avez pas la permission de suivre la console serveur.",
+    waiting: 'En attente du serveur…',
+    clear: 'Effacer',
+    placeholder: 'Tapez une commande, ex. help',
+    connection: {
+      connecting: 'connexion',
+      live: 'en direct',
+      lost: 'reconnexion',
+    },
     runTitle: 'Exécuter une commande',
     runSummary: 'Exécuter « {command} » dans la console serveur',
     confirmEyebrow: 'Console serveur',

@@ -46,6 +46,7 @@ export const CAPABILITIES = {
   opsContentManage: 'dashboard.ops.content.manage',
   benchmarkRead: 'dashboard.benchmark.read',
   opsBenchmarkRun: 'dashboard.ops.benchmark.run',
+  serverConsoleRead: 'dashboard.server.console.read',
   opsServerConsole: 'dashboard.ops.server.console',
   opsServerControl: 'dashboard.ops.server.control',
 };
@@ -90,7 +91,7 @@ export const ROUTE_PERMISSIONS = {
   staff: [CAPABILITIES.staffRead],
   collectibles: [CAPABILITIES.collectiblesRead],
   benchmark: [CAPABILITIES.benchmarkRead],
-  console: [CAPABILITIES.opsServerConsole],
+  console: [CAPABILITIES.serverConsoleRead, CAPABILITIES.opsServerConsole],
   playerRewards: [CAPABILITIES.playersRead],
   economyExtras: [CAPABILITIES.economyRead],
   apiExplorer: [CAPABILITIES.overviewRead],

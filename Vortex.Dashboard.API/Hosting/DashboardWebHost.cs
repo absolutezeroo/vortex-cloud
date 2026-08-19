@@ -26,6 +26,7 @@ using Vortex.Dashboard.API.Security;
 using Vortex.Database.Backup;
 using Vortex.Observability.Configuration;
 using Vortex.Observability.Diagnostics;
+using Vortex.Primitives.Console;
 using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Permissions;
@@ -211,6 +212,10 @@ internal sealed class DashboardWebHost(
         typeof(DashboardAssetUrls),
         typeof(DashboardAuditEmitter),
         typeof(IDatabaseBackupService),
+        // The console stream endpoint injects this directly rather than going through an operations
+        // service, and an endpoint parameter the container cannot resolve is read as a request body
+        // instead — which fails at startup and takes the whole dashboard with it.
+        typeof(ServerConsoleFeed),
     ];
 
     /// <summary>
