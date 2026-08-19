@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Vortex.Database.Configuration;
 
@@ -11,9 +12,14 @@ namespace Vortex.Main.Configuration;
 /// collision here surfaces as an opaque clustering failure well after the host has started
 /// announcing itself.
 /// </summary>
-public sealed class OrleansHostConfigValidator(IOptions<DatabaseConfig> databaseConfig)
-    : IValidateOptions<OrleansHostConfig>
+public sealed class OrleansHostConfigValidator(
+    IOptions<DatabaseConfig> databaseConfig,
+    IConfiguration configuration
+) : IValidateOptions<OrleansHostConfig>
 {
+    /// <summary>SuperSocket's configuration root, holding one section per game listener server.</summary>
+    private const string SERVER_OPTIONS_SECTION = "serverOptions";
+
     private static readonly string[] KnownClusteringProviders = ["localhost", "adonet"];
     private static readonly string[] KnownGrainStorageProviders = ["memory", "adonet"];
 
@@ -107,8 +113,49 @@ public sealed class OrleansHostConfigValidator(IOptions<DatabaseConfig> database
             );
         }
 
+        // The silo and the game listeners bind independently, so a shared port is not a startup
+        // error — it is whichever one started first winning, and the other failing somewhere else.
+        foreach ((string serverName, int port) in GameListenerPorts())
+        {
+            if (port == options.SiloPort)
+            {
+                failures.Add(
+                    $"'{OrleansHostConfig.SECTION_NAME}:{nameof(OrleansHostConfig.SiloPort)}' is "
+                        + $"{port}, which is also a '{SERVER_OPTIONS_SECTION}:{serverName}' listener "
+                        + "port; the silo and the game listener cannot share a port."
+                );
+            }
+
+            if (port == options.GatewayPort)
+            {
+                failures.Add(
+                    $"'{OrleansHostConfig.SECTION_NAME}:{nameof(OrleansHostConfig.GatewayPort)}' is "
+                        + $"{port}, which is also a '{SERVER_OPTIONS_SECTION}:{serverName}' listener "
+                        + "port; the Orleans gateway and the game listener cannot share a port."
+                );
+            }
+        }
+
         return failures.Count > 0
             ? ValidateOptionsResult.Fail(failures)
             : ValidateOptionsResult.Success;
+    }
+
+    private IEnumerable<(string ServerName, int Port)> GameListenerPorts()
+    {
+        foreach (
+            IConfigurationSection server in configuration
+                .GetSection(SERVER_OPTIONS_SECTION)
+                .GetChildren()
+        )
+        {
+            foreach (IConfigurationSection listener in server.GetSection("listeners").GetChildren())
+            {
+                if (int.TryParse(listener["port"], out int port))
+                {
+                    yield return (server.Key, port);
+                }
+            }
+        }
     }
 }

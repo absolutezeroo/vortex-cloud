@@ -94,13 +94,6 @@ public static class HostApplicationBuilderExtensions
                     {
                         options.CollectionAge = hostConfig.GrainCollectionAge;
                     });
-                    silo.ConfigureEndpoints(
-                        hostConfig.AdvertisedIp,
-                        siloPort: hostConfig.SiloPort,
-                        gatewayPort: hostConfig.GatewayPort,
-                        listenOnAnyHostAddress: true
-                    );
-
                     if (hostConfig.ClusteringProvider == "adonet")
                     {
                         silo.UseAdoNetClustering(options =>
@@ -111,8 +104,25 @@ public static class HostApplicationBuilderExtensions
                     }
                     else
                     {
-                        silo.UseLocalhostClustering();
+                        // The parameterless overload defaults to gateway port 30000 — the port
+                        // appsettings.json gives the game TCP listener — and derives the primary
+                        // silo endpoint from its own siloPort default. Both must be the configured
+                        // values or development clustering points at a silo that isn't there.
+                        silo.UseLocalhostClustering(
+                            siloPort: hostConfig.SiloPort,
+                            gatewayPort: hostConfig.GatewayPort
+                        );
                     }
+
+                    // Last writer wins on EndpointOptions, and UseLocalhostClustering configures it
+                    // too (forcing loopback and its own ports). Applying the bound configuration
+                    // after the clustering provider keeps it authoritative for both branches.
+                    silo.ConfigureEndpoints(
+                        hostConfig.AdvertisedIp,
+                        siloPort: hostConfig.SiloPort,
+                        gatewayPort: hostConfig.GatewayPort,
+                        listenOnAnyHostAddress: true
+                    );
 
                     // PLAYER_STORE/ROOM_STORE were never wired to a [PersistentState] grain — every
                     // grain in this codebase persists through EF Core instead, so only PubSubStore

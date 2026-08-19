@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Vortex.Authentication.Configuration;
@@ -412,8 +414,26 @@ public sealed class ConfigValidationTests
     // ── Orleans ──────────────────────────────────────────────────────────────
 
     private static OrleansHostConfigValidator OrleansValidator(
-        string connectionString = "server=x"
-    ) => new(Options.Create(new DatabaseConfig { ConnectionString = connectionString }));
+        string connectionString = "server=x",
+        params int[] gameListenerPorts
+    ) =>
+        new(
+            Options.Create(new DatabaseConfig { ConnectionString = connectionString }),
+            GameListenerConfiguration(gameListenerPorts)
+        );
+
+    /// <summary>Shapes ports into the SuperSocket layout the validator reads them from.</summary>
+    private static IConfiguration GameListenerConfiguration(int[] ports)
+    {
+        Dictionary<string, string?> values = [];
+
+        for (int i = 0; i < ports.Length; i++)
+        {
+            values[$"serverOptions:TcpServer:listeners:{i}:port"] = ports[i].ToString();
+        }
+
+        return new ConfigurationBuilder().AddInMemoryCollection(values).Build();
+    }
 
     [Fact]
     public void TheDefaultOrleansEndpoint_Passes() =>
@@ -431,6 +451,32 @@ public sealed class ConfigValidationTests
         OrleansValidator()
             .Validate(null, new OrleansHostConfig { SiloPort = 11111, GatewayPort = 11111 })
             .Failed.Should()
+            .BeTrue();
+
+    [Fact]
+    public void AGatewayPortOnTheGameListener_IsRefused()
+    {
+        // The shipped appsettings.json puts the TCP listener on 30000, which is also Orleans's own
+        // default gateway port — so this collision is one careless config edit away.
+        ValidateOptionsResult result = OrleansValidator(gameListenerPorts: [30000])
+            .Validate(null, new OrleansHostConfig { GatewayPort = 30000 });
+
+        result.Failed.Should().BeTrue();
+        result.FailureMessage.Should().Contain("game listener");
+    }
+
+    [Fact]
+    public void ASiloPortOnTheGameListener_IsRefused() =>
+        OrleansValidator(gameListenerPorts: [11111])
+            .Validate(null, new OrleansHostConfig { SiloPort = 11111 })
+            .Failed.Should()
+            .BeTrue();
+
+    [Fact]
+    public void TheShippedPortLayout_Passes() =>
+        OrleansValidator(gameListenerPorts: [30000, 30001])
+            .Validate(null, new OrleansHostConfig { SiloPort = 11111, GatewayPort = 3000 })
+            .Succeeded.Should()
             .BeTrue();
 
     [Fact]
