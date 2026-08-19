@@ -46,6 +46,21 @@ public class CloseIssueDefaultActionMessageHandler(
             return;
         }
 
+        // A room report names a room and nobody, so there is no one for the topic's default sanction
+        // to land on. Resolving permissions for player 0 would compare the actor against an empty
+        // set and let the ban path run against nothing.
+        if (ticket.Value.ReportedPlayerId <= 0)
+        {
+            logger.LogInformation(
+                "CFH ticket {IssueId} has no reported player (room report); closing it without applying a default sanction.",
+                message.PrimaryIssueId
+            );
+
+            await CloseWithoutSanctionAsync(message, ctx, ct).ConfigureAwait(false);
+
+            return;
+        }
+
         PermissionSet actorPermissions = await permissionService
             .ResolveForPlayerAsync(ctx.PlayerId, ct)
             .ConfigureAwait(false);
@@ -125,6 +140,45 @@ public class CloseIssueDefaultActionMessageHandler(
                     new IssueCloseNotificationMessageComposer
                     {
                         CloseReason = (int)CfhTicketCloseReason.Sanctioned,
+                        MessageText = string.Empty,
+                    }
+                )
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Closes the bundle as resolved and tells the reporters, with no sanction applied. Used when
+    /// the ticket has nobody to sanction — a room report — so that the moderator's "close with the
+    /// default action" still clears the queue instead of failing silently.
+    /// </summary>
+    private async Task CloseWithoutSanctionAsync(
+        CloseIssueDefaultActionMessage message,
+        MessageContext ctx,
+        CancellationToken ct
+    )
+    {
+        List<int> allIssueIds = [message.PrimaryIssueId, .. message.OtherIssueIds];
+
+        ImmutableArray<CfhTicketCloseOutcome> outcomes = await grainFactory
+            .GetModerationQueueGrain()
+            .CloseAsync(
+                PlayerId.Parse(ctx.PlayerId),
+                allIssueIds,
+                CfhTicketCloseReason.Resolved,
+                sanctioned: false,
+                ct
+            )
+            .ConfigureAwait(false);
+
+        foreach (CfhTicketCloseOutcome outcome in outcomes)
+        {
+            await grainFactory
+                .GetPlayerPresenceGrain(outcome.ReporterPlayerId)
+                .SendComposerAsync(
+                    new IssueCloseNotificationMessageComposer
+                    {
+                        CloseReason = (int)CfhTicketCloseReason.Resolved,
                         MessageText = string.Empty,
                     }
                 )

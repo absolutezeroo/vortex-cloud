@@ -7,10 +7,11 @@ namespace Vortex.Primitives.Moderation;
 
 public interface ICfhTicketService
 {
+    /// <param name="reportedPlayerId">Null for a room report, which names a room and nobody.</param>
     Task<int> CreateTicketAsync(
         int topicId,
         int reporterPlayerId,
-        int reportedPlayerId,
+        int? reportedPlayerId,
         int? roomId,
         string message,
         IReadOnlyList<(int UserId, string Text)> evidence,

@@ -26,7 +26,7 @@ internal sealed class CfhTicketService(IDbContextFactory<VortexDbContext> dbCont
     public async Task<int> CreateTicketAsync(
         int topicId,
         int reporterPlayerId,
-        int reportedPlayerId,
+        int? reportedPlayerId,
         int? roomId,
         string message,
         IReadOnlyList<(int UserId, string Text)> evidence,
@@ -190,7 +190,10 @@ internal sealed class CfhTicketService(IDbContextFactory<VortexDbContext> dbCont
                 new CfhTicketCloseOutcome(
                     ticket.Id,
                     ticket.ReporterPlayerEntityId,
-                    ticket.ReportedPlayerEntityId,
+                    // Zero, not null, at the domain boundary: the wire field is an int and the
+                    // client reads "no reported user" as zero.
+                    ticket.ReportedPlayerEntityId
+                        ?? 0,
                     sanctioned
                 )
             );
@@ -247,7 +250,7 @@ internal sealed class CfhTicketService(IDbContextFactory<VortexDbContext> dbCont
                 t.State,
                 t.CfhTopicEntityId,
                 t.ReporterPlayerEntityId,
-                t.ReportedPlayerEntityId
+                t.ReportedPlayerEntityId ?? 0
             ))
             .Cast<CfhTicketSummary?>()
             .FirstOrDefaultAsync(ct)
@@ -412,7 +415,7 @@ internal sealed class CfhTicketService(IDbContextFactory<VortexDbContext> dbCont
                 0,
                 r.ReporterPlayerEntityId,
                 r.ReporterName,
-                r.ReportedPlayerEntityId,
+                r.ReportedPlayerEntityId ?? 0,
                 r.ReportedName,
                 r.PickerPlayerEntityId ?? 0,
                 r.PickerName,

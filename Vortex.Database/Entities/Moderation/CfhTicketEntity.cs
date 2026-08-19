@@ -24,8 +24,13 @@ public class CfhTicketEntity : VortexEntity
     [Column("reporter_player_id")]
     public required int ReporterPlayerEntityId { get; set; }
 
+    /// <summary>
+    /// Who was reported, or null when nobody was. A room report (the client's report type 4) names
+    /// a room and no person: the client exempts it from user selection entirely, so a ticket with
+    /// no reported player is a normal case and not a broken row.
+    /// </summary>
     [Column("reported_player_id")]
-    public required int ReportedPlayerEntityId { get; set; }
+    public int? ReportedPlayerEntityId { get; set; }
 
     [Column("room_id")]
     public int? RoomEntityId { get; set; }

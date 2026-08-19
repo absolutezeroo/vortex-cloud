@@ -51,7 +51,7 @@ internal sealed partial class DashboardApiService
                         t.CloseReason,
                         t.Sanctioned,
                         t.CfhTopicEntityId,
-                        t.ReportedPlayerEntityId
+                        t.ReportedPlayerEntityId ?? 0
                     ))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
@@ -138,7 +138,10 @@ internal sealed partial class DashboardApiService
                     })
                     .ToList();
 
-                var topReported = rows.GroupBy(r => r.ReportedPlayerEntityId)
+                // Zero means the ticket reported a room and nobody; leaving it in would put a
+                // phantom player at the top of the most-reported list.
+                var topReported = rows.Where(r => r.ReportedPlayerEntityId > 0)
+                    .GroupBy(r => r.ReportedPlayerEntityId)
                     .Select(g => new { playerId = g.Key, reportCount = g.Count() })
                     .OrderByDescending(g => g.reportCount)
                     .Take(10)

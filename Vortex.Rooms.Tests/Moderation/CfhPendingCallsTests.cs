@@ -132,6 +132,50 @@ public sealed class CfhPendingCallsTests
         (await NewService(NewOptions()).DeletePendingForReporterAsync(-1)).Should().BeEmpty();
     }
 
+    /// <summary>
+    /// A room report names a room and nobody. The client exempts report type 4 from user selection
+    /// (<c>CallForHelpManager.isChatSelectionRequired</c>) and sends its <c>-1</c> default, so a
+    /// ticket with no reported player has to be storable — the server used to reject the whole
+    /// report on that field and "report this room" did nothing at all, with nothing sent back.
+    /// </summary>
+    [Fact]
+    public async Task CreateTicket_AcceptsARoomReportThatNamesNobody()
+    {
+        DbContextOptions<VortexDbContext> options = NewOptions();
+
+        await using (VortexDbContext seed = new(options))
+        {
+            await seed.CfhTopics.AddAsync(
+                new CfhTopicEntity
+                {
+                    Id = 1,
+                    CfhCategoryEntityId = 1,
+                    Name = "Room",
+                }
+            );
+            await seed.SaveChangesAsync();
+        }
+
+        int issueId = await NewService(options)
+            .CreateTicketAsync(
+                topicId: 1,
+                reporterPlayerId: REPORTER,
+                reportedPlayerId: null,
+                roomId: 4242,
+                message: "this room is a problem",
+                evidence: []
+            );
+
+        issueId.Should().BePositive();
+
+        await using VortexDbContext check = new(options);
+        CfhTicketEntity stored = await check.CfhTickets.SingleAsync(t => t.Id == issueId);
+
+        stored.ReportedPlayerEntityId.Should().BeNull();
+        stored.RoomEntityId.Should().Be(4242);
+        stored.State.Should().Be(CfhTicketState.Open);
+    }
+
     private static DateTime DaysAgo(int days) => DateTime.UtcNow.AddDays(-days);
 
     private static DbContextOptions<VortexDbContext> NewOptions() =>
