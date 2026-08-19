@@ -19,6 +19,14 @@ internal static class CfhReportHelper
         "Your report has been sent to our moderation team. Thank you.";
 
     /// <summary>
+    /// Shown when the report names a topic this hotel has no row for. The reporter can do nothing
+    /// about it — it means the client's topic list and the server's catalog disagree — but they are
+    /// told, instead of watching the dialog close on a report that went nowhere.
+    /// </summary>
+    private const string UnknownTopicNotice =
+        "Sorry, that report category is not available on this hotel. Please pick another one.";
+
+    /// <summary>
     /// Returns false when the report was dropped — an unknown topic, or a report that names neither
     /// a person nor a room. The reporter is told either way rather than left watching a dialog close
     /// on nothing.
@@ -66,6 +74,16 @@ internal static class CfhReportHelper
 
         if (topic is null)
         {
+            // The classic report form's topic ids come from the client's own window layout, not from
+            // the wire, so a catalog that does not carry those ids drops every report filed through
+            // it. Answering makes that visible instead of looking like a report that worked.
+            await grainFactory
+                .GetPlayerPresenceGrain(reporterPlayerId)
+                .SendComposerAsync(
+                    new CallForHelpReplyMessageComposer { Message = UnknownTopicNotice }
+                )
+                .ConfigureAwait(false);
+
             return false;
         }
 

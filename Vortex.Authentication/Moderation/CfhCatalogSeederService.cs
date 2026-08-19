@@ -71,16 +71,24 @@ internal sealed class CfhCatalogSeederService(
                                 .ConfigureAwait(false);
                         }
 
-                        db.CfhTopics.Add(
-                            new CfhTopicEntity
-                            {
-                                CfhCategoryEntityId = category.Id,
-                                Name = topicSeed.Name,
-                                Consequence = topicSeed.Consequence,
-                                DefaultSanctionPresetEntityId = presetId,
-                                DisplayOrder = topicOrder++,
-                            }
-                        );
+                        CfhTopicEntity topic = new()
+                        {
+                            CfhCategoryEntityId = category.Id,
+                            Name = topicSeed.Name,
+                            Consequence = topicSeed.Consequence,
+                            DefaultSanctionPresetEntityId = presetId,
+                            DisplayOrder = topicOrder++,
+                        };
+
+                        // A forced id is not cosmetic: the client's emergency report form sends
+                        // these ids from its own layout, so a row at the wrong id is a report the
+                        // server cannot resolve.
+                        if (topicSeed.Id is int forcedId)
+                        {
+                            topic.Id = forcedId;
+                        }
+
+                        db.CfhTopics.Add(topic);
                     }
 
                     await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
