@@ -256,8 +256,11 @@ When adding packet mappings in `Vortex.Revisions/Revision20260701`:
 A dashboard capability string is duplicated across **four** files. The server half is now
 self-checking: `Capabilities.Dashboard.All` is the one list, the policy builder and the login gate
 both read it, and `CapabilityDeclarationTests` fails the build if a declared `dashboard.*` constant
-is missing from it. The client half still has no cross-check — a capability missing from
-`dashboardPermissions.js` silently hides the page from every operator.
+is missing from it. The client half is checked by `scripts/hooks/check-dashboard-capabilities.mjs`
+— nothing in `dotnet build`, `dotnet test` or `npm run build` looks at it, so that script is the only
+thing standing between a missed edit and a page that is silently hidden from every operator. It runs
+automatically after any edit to one of the four files (PostToolUse hook in `.claude/settings.json`)
+and can be run by hand at any time.
 - Required edits for every new capability:
   1. `Vortex.Primitives/Permissions/Capabilities.cs` — the `const string` **and**
      `Capabilities.Dashboard.All` (the test catches a miss; `Capabilities.All` picks it up from
@@ -289,6 +292,9 @@ is missing from it. The client half still has no cross-check — a capability mi
   - no admin write that skips reloading the manager-grain cache it feeds
   - no new endpoint left unregistered in `DashboardEndpoints.cs`
 - Validation:
+  - `node scripts/hooks/check-dashboard-capabilities.mjs` — cross-checks `Capabilities.cs` against
+    `dashboardPermissions.js`, every `ROUTE_PERMISSIONS` key and page import path named by
+    `routes.js`, and `en.js`/`fr.js` structural parity including the `nav.*` keys
   - `grep -rn "<an existing capability string>" --include=*.cs --include=*.js .` and confirm the new
     capability appears in the same set of files
   - `cd Vortex.Dashboard.Web && npm run lint` — `npm run build` does not catch an undefined
