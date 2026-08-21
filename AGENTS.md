@@ -188,6 +188,39 @@ updated in the *same* method that persists the change, and hydrated from DB on g
 - Active-room membership/discovery belongs to `RoomDirectoryGrain`; do not bypass it with ad-hoc room tracking.
 - Grain lifetime remains Orleans-managed by default; use `[KeepAlive]` only for explicitly justified directory/manager grains.
 
+## Habbo protocol behaviour: consult the specs first
+`docs/habbo-specs/` holds machine-generated behavioural specs built from the official client, the
+reference emulators and any captures available. They exist because we do not have Habbo's server:
+the structure of a packet is knowable from the client, and what the server *does* with it is not.
+
+**Before implementing or modifying any Habbo protocol behaviour:**
+1. `dotnet run --project Vortex.Specs.Cli -- analyze <feature-id|PacketName>`.
+2. Read the packet layout and the confidence on each field.
+3. Read the behavioural scenarios generated from that feature's own guards.
+4. Read the evidence cited — every claim points at a file and line.
+5. Respect `client_confirmed` structure exactly.
+6. Read the conflicts and unknowns listed. They are where the obvious change is a guess.
+7. Never turn an `unknown` into an assumption silently. If a behaviour must be picked to ship,
+   record the choice in the spec's `verified:` block with `confidence: assumed` and the reason.
+8. If you discover new evidence, put it in the tree and re-run `bootstrap`.
+9. Keep serialization in the revision tree and domain logic in the domain — the flow each feature
+   spec records is the shape it expects to find.
+10. Add or update a behavioural test when behaviour changes.
+
+The three rules the whole tree rests on:
+- Existing emulator behaviour is **evidence, not authority**.
+- Reference emulator behaviour is **evidence, not authority**.
+- Unknown official behaviour must remain **explicitly unknown**.
+
+Practical notes:
+- Specs speak in symbolic packet names. Header ids are per-revision and live only in
+  `docs/habbo-specs/revisions/`; a numeric id in a behavioural spec is a validation error.
+- `verified:` and `manual:` blocks are yours and survive regeneration. An edit inside `generated:`
+  is detected by its digest and **blocks** the next regeneration instead of being reverted.
+- Full walkthrough: `docs/walkthroughs/use-the-habbo-specs.md`.
+- Regenerate with `dotnet run --project Vortex.Specs.Cli -- bootstrap`; check with
+  `... -- validate`. An unchanged checkout regenerates byte-identically.
+
 ## Packet addition checklist (revision work)
 When adding packet mappings in `Vortex.Revisions/Revision20260701`:
 1. Update `Vortex.Revisions/Revision20260701/Headers.cs`:
@@ -347,6 +380,22 @@ GAME_ENDS, and it fans both out to whatever implements `IRoomMinigame`.
   - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate`
   - start a round from the game-timer furni button **and** from a wired `wf_act_control_clock`
     box; both must reach the new game
+
+### Change Habbo protocol behaviour (handler, composer payload, or feature flow)
+- Required context files:
+  - `docs/habbo-specs/README.md`
+  - the feature spec under `docs/habbo-specs/features/<domain>/`
+  - the packet specs it names, under `docs/habbo-specs/packets/`
+- Required first step:
+  - `dotnet run --project Vortex.Specs.Cli -- analyze <feature-id|PacketName>`
+- Forbidden changes:
+  - no behaviour implemented from a reference emulator without recording it as such
+  - no `unknown` quietly resolved into a chosen behaviour
+  - no numeric header id written into a behavioural spec
+- Validation:
+  - `dotnet run --project Vortex.Specs.Cli -- bootstrap` and confirm the diff is what you meant
+  - `dotnet run --project Vortex.Specs.Cli -- validate` reports no errors
+  - `dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate`
 
 ### Refactor lookup/cache logic
 - Required context files:
