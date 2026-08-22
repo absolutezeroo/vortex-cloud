@@ -12,6 +12,37 @@ public class ClientPacket(int header, ReadOnlyMemory<byte> payload)
     private int _pos = 0;
 
     public int Remaining => _payload.Length - _pos;
+
+    /// <summary>How far into the payload the reader has got. Only interesting once something went
+    /// wrong: it is where the parser and the client stopped agreeing.</summary>
+    public int Position => _pos;
+
+    /// <summary>
+    /// The payload as hex, with a marker at the read position.
+    /// </summary>
+    /// <remarks>
+    /// For diagnosing a parser against the bytes the client actually sent, which is the one thing
+    /// no test and no grep can tell you. Bounded on purpose: this ends up in a log, and a packet is
+    /// not always something to write down in full.
+    /// </remarks>
+    public string ToHexDump(int maxBytes = 128)
+    {
+        int length = Math.Min(_payload.Length, maxBytes);
+        StringBuilder builder = new(length * 3 + 32);
+
+        for (int i = 0; i < length; i++)
+        {
+            builder.Append(i == _pos ? '>' : ' ').Append(_payload.Span[i].ToString("x2"));
+        }
+
+        if (_payload.Length > length)
+        {
+            builder.Append(" ... (").Append(_payload.Length - length).Append(" more)");
+        }
+
+        return builder.ToString().TrimStart();
+    }
+
     public bool End => _pos >= _payload.Length;
 
     public byte PopByte()

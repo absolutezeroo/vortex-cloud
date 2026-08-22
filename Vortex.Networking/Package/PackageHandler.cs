@@ -74,11 +74,18 @@ public sealed class PackageHandler(
         }
         catch (Exception ex)
         {
+            // The bytes, not just the stack. A parser that disagrees with the client cannot be
+            // diagnosed from the exception -- the position is where the two stopped agreeing, and
+            // without the payload the next step is guesswork.
             _logger.LogError(
                 ex,
-                "Failed to process packet {Packet} for session {SessionKey}",
+                "Failed to process packet {Packet} for session {SessionKey} at byte {Position} of {Length} ({Remaining} left): {Payload}",
                 packet.Header,
-                ctx.SessionKey
+                ctx.SessionKey,
+                packet.Position,
+                packet.Position + packet.Remaining,
+                packet.Remaining,
+                packet.ToHexDump()
             );
 
             IVortexContext? context = _contextAccessor.Current;
