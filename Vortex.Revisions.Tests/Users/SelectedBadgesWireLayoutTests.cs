@@ -73,10 +73,21 @@ public sealed class SelectedBadgesWireLayoutTests
 
         body.PopInt().Should().Be(4711); // userId
         body.PopInt().Should().Be(2); // count
+
+        // Four fields per badge, not two. The client's parser for this header --
+        // _events[1292] -> _SafeCls_2067, whose parser is unknowns/_SafePkg_1891/_SafeCls_2978 --
+        // reads int, string, int, int and builds its badge from all four. Writing two left every
+        // read after the first badge off by two fields.
         body.PopInt().Should().Be(1); // slot
         body.PopString().Should().Be("ADM");
+        body.PopInt().Should().Be(0); // owner count
+        body.PopInt().Should().Be(0); // rarity
+
         body.PopInt().Should().Be(2);
         body.PopString().Should().Be("ACH_Login5");
+        body.PopInt().Should().Be(0);
+        body.PopInt().Should().Be(0);
+
         body.End.Should().BeTrue("the layout must consume the whole packet");
     }
 }
