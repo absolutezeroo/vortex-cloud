@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Game.Directory;
 
 internal class Game2StartSnowWarMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new Game2StartSnowWarMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new Game2StartSnowWarMessage { GameName = packet.PopString() };
 }

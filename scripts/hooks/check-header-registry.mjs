@@ -177,7 +177,12 @@ const unreachable = ours
   .sort();
 
 if (update) {
-  fs.writeFileSync(baselineFile, `${JSON.stringify({ unreachable }, null, 2)}\n`);
+  // Keep the file's `notes`: they say why an entry is tolerated, and regenerating the list is not a
+  // reason to lose that.
+  const notes = fs.existsSync(baselineFile)
+    ? (JSON.parse(fs.readFileSync(baselineFile, 'utf8')).notes ?? {})
+    : {};
+  fs.writeFileSync(baselineFile, `${JSON.stringify({ unreachable, notes }, null, 2)}\n`);
   console.error(`check-header-registry: baseline written (${unreachable.length} unreachable mappings).`);
   process.exit(0);
 }

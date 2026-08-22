@@ -2,17 +2,11 @@
   "unreachable": [
     "MessageComposer/CustomStackingHeightUpdateMessageComposer=9201",
     "MessageComposer/IsOfferGiftableEventMessageComposer=1750",
-    "MessageEvent/ChangeUserNameInRoomMessageEvent=3652",
-    "MessageEvent/ClickCharacterEvent=785",
-    "MessageEvent/CustomizeAvatarWithFurniMessageEvent=9012",
-    "MessageEvent/Game2LeaveGameMessageEvent=2698",
-    "MessageEvent/Game2QuickJoinGameMessageEvent=2000",
-    "MessageEvent/GetBadgePointLimitsEvent=981",
-    "MessageEvent/GetBundleDiscountRulesetVortexEvent=1811",
-    "MessageEvent/GetClubGiftInfoRequestMessageEvent=1422",
-    "MessageEvent/GetGiftWrappingConfigurationVortexEvent=9008",
-    "MessageEvent/GetIsUserPartOfCompetitionMessageEvent=2732",
-    "MessageEvent/GetRoomEntryDataMessageEvent=1250",
-    "MessageEvent/RequestRoomPropertySet=3300"
-  ]
+    "MessageEvent/GetRoomEntryDataMessageEvent=1250"
+  ],
+  "notes": {
+    "MessageEvent/GetRoomEntryDataMessageEvent=1250": "No message of this shape found anywhere in the WIN63 client, under any id. The handler builds a real room-entry payload, so the room data must reach the client another way; what the official client asks for here is unknown.",
+    "MessageComposer/CustomStackingHeightUpdateMessageComposer=9201": "Nothing in this repository sends it and the 701 client reads stacking height only from the packed HeightMapUpdate. Parked out of range, kept until someone confirms it can go.",
+    "MessageComposer/IsOfferGiftableEventMessageComposer=1750": "GetIsOfferGiftable (2564) is real and mapped, but the client registers no listener for an answer. Which message the official server replies with is unknown, so the reply is left as it was rather than guessed at."
+  }
 }

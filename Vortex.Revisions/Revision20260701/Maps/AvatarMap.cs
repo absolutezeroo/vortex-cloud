@@ -10,10 +10,6 @@ internal sealed class AvatarMap : IRevisionMap
     public void RegisterInto(IRevisionMapBuilder builder)
     {
         builder.MapParser(
-            MessageEvent.ChangeUserNameInRoomMessageEvent,
-            new ChangeUserNameInRoomMessageParser()
-        );
-        builder.MapParser(
             MessageEvent.ChangeUserNameMessageEvent,
             new ChangeUserNameMessageParser()
         );

@@ -30,10 +30,6 @@ internal sealed class CatalogMap : IRevisionMap
             MessageEvent.GetBundleDiscountRulesetEvent,
             new GetBundleDiscountRulesetMessageParser()
         );
-        builder.MapParser(
-            MessageEvent.GetBundleDiscountRulesetVortexEvent,
-            new GetBundleDiscountRulesetMessageParser()
-        );
         builder.MapParser(MessageEvent.GetCatalogIndexEvent, new GetCatalogIndexMessageParser());
         builder.MapParser(MessageEvent.GetCatalogPageEvent, new GetCatalogPageMessageParser());
         builder.MapParser(
@@ -41,17 +37,9 @@ internal sealed class CatalogMap : IRevisionMap
             new GetCatalogPageWithEarliestExpiryMessageParser()
         );
         builder.MapParser(MessageEvent.GetClubGiftMessageEvent, new GetClubGiftInfoMessageParser());
-        builder.MapParser(
-            MessageEvent.GetClubGiftInfoRequestMessageEvent,
-            new GetClubGiftInfoMessageParser()
-        );
         builder.MapParser(MessageEvent.GetClubOffersMessageEvent, new GetClubOffersMessageParser());
         builder.MapParser(
             MessageEvent.GetGiftWrappingConfigurationEvent,
-            new GetGiftWrappingConfigurationMessageParser()
-        );
-        builder.MapParser(
-            MessageEvent.GetGiftWrappingConfigurationVortexEvent,
             new GetGiftWrappingConfigurationMessageParser()
         );
         builder.MapParser(

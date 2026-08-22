@@ -65,10 +65,6 @@ internal sealed class RoomMap : IRevisionMap
         );
         builder.MapParser(MessageEvent.ChangeMottoMessageEvent, new ChangeMottoMessageParser());
         builder.MapParser(MessageEvent.ChangePostureMessageEvent, new ChangePostureMessageParser());
-        builder.MapParser(
-            MessageEvent.CustomizeAvatarWithFurniMessageEvent,
-            new CustomizeAvatarWithFurniMessageParser()
-        );
         builder.MapParser(MessageEvent.DanceMessageEvent, new DanceMessageParser());
         builder.MapParser(MessageEvent.DropCarryItemMessageEvent, new DropCarryItemMessageParser());
         builder.MapParser(MessageEvent.LookToMessageEvent, new LookToMessageParser());

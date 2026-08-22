@@ -7,11 +7,10 @@ internal static class MessageEvent
     public const int GetNftClaimsMessageEvent = 3153; // AS3-verified (direct read): RewardClaimsTab::processNextRequest() -> send(new _SafeCls_3644(walletAddress)) @3153, answered by onNftClaimsMessage; corrects a collision (was 3744 = GuildBaseSearch)
     public const int GetNftStoreOffersMessageEvent = 1809; // AS3-verified (direct read): ShopTab::requestNftStoreOffers() -> send(new _SafeCls_3050()) (no args) @1809; was 3998, which has no entry in the WIN63 registry at all
     public const int NftStorePurchaseMessageEvent = 3196; // AS3-verified (direct read): HabboCatalog sends _SafeCls_1740(offerId:String, wallet:String) @3196, the composer behind ShopTab::onClickBuy() -> showPurchaseConfirmation(NftStorePurchaseOffer); corrects a collision (was 306 = DeselectFavouriteHabboGroup)
-    public const int GetRecyclerPrizesMessageEvent = 2516;
-    public const int GetRecyclerStatusMessageEvent = 1246;
-    public const int RecycleItemsMessageEvent = 2956;
-    public const int AppealCfhMessageEvent = 1077;
-    public const int GetCfhMyReportStatus = 275;
+    public const int GetRecyclerPrizesMessageEvent = 3669; // AS3-verified 2026-08-22 (WIN63 registry + sender): _composers[3669] = _SafeCls_1777, HabboCatalog::getRecyclerPrizes(). 2516 was in no registry table.
+    public const int GetRecyclerStatusMessageEvent = 1730; // AS3-verified 2026-08-22 (WIN63 registry + sender): _composers[1730] = _SafeCls_2061, HabboCatalog::getRecyclerStatus(). 1246 was in no registry table.
+    public const int RecycleItemsMessageEvent = 1796; // AS3-verified 2026-08-22 (WIN63 registry + sender): _composers[1796] = _SafeCls_2312, HabboCatalog::sendRecycleItems(Array). 2956 was in no registry table.
+    public const int AppealCfhMessageEvent = 3028; // AS3-verified 2026-08-22 (WIN63 registry + sender): _composers[3028] = _SafeCls_3470, MyReportStatus.as:250 sends it with the report id. 1077 was in no registry table.
     public const int AddToCustomFilterMessageEvent = 2656; // AS3-verified (direct read): WIN63 registry _SafeCls_2046.as _composers[2656] = _SafeCls_2763(String word); WordFilterSettingsView is the only consumer. The previous value was a placeholder with no handler behind it
     public const int GetCustomFilterMessageEvent = 801; // AS3-verified (direct read): WIN63 registry _SafeCls_2046.as _composers[801] = _SafeCls_2412 (no payload); WordFilterSettingsView is the only consumer. The previous value was a placeholder with no handler behind it
     public const int RemoveFromCustomFilterMessageEvent = 2209; // AS3-verified (direct read): WIN63 registry _SafeCls_2046.as _composers[2209] = _SafeCls_2506(String word); WordFilterSettingsView is the only consumer. The previous value was a placeholder with no handler behind it
@@ -45,7 +44,7 @@ internal static class MessageEvent
     public const int ClaimDailyTaskEvent = 4101;
     public const int GetDailyTasksEvent = 4100;
     public const int ProgressTreasureHuntMessageEvent = 762;
-    public const int ClickCharacterEvent = 785;
+    public const int ClickCharacterEvent = 3244; // AS3-verified 2026-08-22 (WIN63 registry + sender): _composers[3244] = _SafeCls_2770(int), room/_SafeCls_1821.as:600. 785 was in no registry table.
     public const int WiredUpdateRoomEvent = 3814; // NOT wired-domain: AS3 shape (type:int,duration:int,isPermanent:bool) matches a moderation mute/freeze payload, not a wired concept. Left unimplemented on purpose - do not build a wired handler for this without re-verifying its real purpose first.
     #region Incoming
 
@@ -66,7 +65,7 @@ internal static class MessageEvent
     public const int ForwardToRandomCompetitionRoomMessageEvent = 3109; // AS3-verified 2026-08-13: _composers[3109] = _SafeCls_3352, sent with the goal code by the landing view element that tracks "click_gotocompetitionroom". The named win63_version tree agrees on the shape -- its ctor takes one String. Was 9002, invented
 
     public const int GetCurrentTimingCodeMessageEvent = 1503;
-    public const int GetIsUserPartOfCompetitionMessageEvent = 2732; // UNRESOLVED: no distinct AS3 backing found - RoomCompetitionController::sendRoomCompetitionInit()/onRoomEnter() send the only composer for this check (_SafeCls_3605/_SafeCls_2954 @1477), already correctly held by RoomCompetitionInitMessageEvent; likely a duplicate Vortex constant with no separate real message
+    public const int GetIsUserPartOfCompetitionMessageEvent = 128; // AS3-verified 2026-08-22 (WIN63 registry + sender): _composers[128] = _SafeCls_2683(String goalCode), sent by the landing-view goal widget. The earlier 2732 was in no registry table; it is a distinct message from RoomCompetitionInit after all.
     public const int GetSecondsUntilMessageEvent = 1814; // AS3-verified (old-revision trace): _SafeCls_2528 -> NewFeatureNotification() still exists in current revision at 1814
     public const int RoomCompetitionInitMessageEvent = 1477; // AS3-verified (old-revision trace): _SafeCls_3605 -> onRoomEnter() still exists in current revision at 1477
     public const int SubmitRoomToCompetitionMessageEvent = 2612; // AS3-verified (direct read, both revisions): RoomCompetitionController::onSubmit() -> connection.send(new _SafeCls_3367(goalCode,2)) @2612 (old _SafeCls_3390 mode=2 @2579; same unified composer also serves accept=1/confirm=3)
@@ -132,16 +131,12 @@ internal static class MessageEvent
     public const int BuildersClubQueryFurniCountMessageEvent = 1739;
     public const int GetBonusRareInfoMessageEvent = 251;
     public const int GetBundleDiscountRulesetEvent = 317; // AS3-verified: HabboCatalog::sendGetBundleDiscountRuleset(). Note: GetBundleDiscountRulesetVortexEvent (1811) also resolves to this same AS3 message - likely a Vortex-specific duplicate/extension with no distinct AS3 backing, left untouched
-    public const int GetBundleDiscountRulesetVortexEvent = 1811; // UNRESOLVED: not found in either official AS3 revision or in vortex-client's registry - name suggests a Vortex-specific variant of GetBundleDiscountRulesetEvent (317), but no confirming source located
     public const int GetCatalogIndexEvent = 2232;
     public const int GetCatalogPageEvent = 2093;
     public const int GetCatalogPageWithEarliestExpiryEvent = 287;
     public const int GetClubGiftMessageEvent = 472;
-    public const int GetClubGiftInfoRequestMessageEvent = 1422; // UNRESOLVED: no distinct AS3 backing found - ClubGiftController::set widget() sends the only request composer for this feature (_SafeCls_3393/_SafeCls_2457 @472), already correctly held by GetClubGiftMessageEvent (client-verified); likely a duplicate Vortex constant with no separate real message
     public const int GetClubOffersMessageEvent = 667;
     public const int GetGiftWrappingConfigurationEvent = 940; // AS3-verified: HabboCatalog::getGiftWrappingConfiguration(). Note: GetGiftWrappingConfigurationVortexEvent also resolves to this same AS3 message - likely a Vortex-specific duplicate/extension with no distinct AS3 backing, left untouched
-
-    public const int GetGiftWrappingConfigurationVortexEvent = 9008; // UNRESOLVED: collided with OpenCampaignCalendarDoorAsStaffEvent after the WIN63-202607011411 client header remap; GetGiftWrappingConfigurationVortexEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
 
     public const int GetHabboClubExtendOfferMessageEvent = 2931; // AS3-verified (direct read, both revisions): ClubDiscountPromoExtension::onClick() -> connection.send(new _SafeCls_2983()) registry@2931 (old _SafeCls_3628@1808 moved)
     public const int GetIsOfferGiftableEvent = 2564; // AS3-verified (old-revision trace): _SafeCls_2064 -> checkGiftable() still exists in current revision at 2564
@@ -195,7 +190,7 @@ internal static class MessageEvent
     public const int InterstitialShownMessageEvent = 1408;
     public const int CommandBotEvent = 3813; // AS3-verified (direct read): _composers[3813] = _SafeCls_2928(botId, commandId, data), sent by the bot-skill configuration views
     public const int GetBotCommandConfigurationDataEvent = 2311; // AS3-verified (direct read, both revisions): BotSkillConfigurationViewBase::open() -> _SafeCls_3415
-    public const int GetBadgePointLimitsEvent = 981; // UNRESOLVED: not found - only the incoming response handler (onBadgePointLimits @ inventory handler, receiving _SafeCls_3204) was located; the client-side request trigger (if any) could not be found in either official AS3 revision
+    public const int GetBadgePointLimitsEvent = 2944; // AS3-verified 2026-08-22 (WIN63 registry + sender): _composers[2944] = _SafeCls_2019(), HabboInventory.as:207. The request trigger the old comment could not find is this one; 981 was in no registry table.
     public const int GetBadgesEvent = 770;
     public const int GetIsBadgeRequestFulfilledEvent = 2236; // AS3-verified 2026-08-13: _composers[2236] = _SafeCls_3765, sent with the badge request code by the landing view's badge widget. 2236 is also an AvatarEffectExpired *composer* -- the two directions are separate id spaces, so that is not a collision. Was 9112, invented
     public const int RequestABadgeEvent = 3258;
@@ -359,8 +354,6 @@ internal static class MessageEvent
     public const int ChangeMottoMessageEvent = 2659;
     public const int ChangePostureMessageEvent = 3181;
 
-    public const int CustomizeAvatarWithFurniMessageEvent = 9012; // UNRESOLVED: collided with GetUserEventCatsMessageEvent after the WIN63-202607011411 client header remap; CustomizeAvatarWithFurniMessageEvent has no ported client counterpart yet so its real header could not be verified - placeholder pending a proper revision retrace
-
     public const int DanceMessageEvent = 48;
     public const int DropCarryItemMessageEvent = 1545; // AS3-verified (direct read, both revisions): InfoStandWidgetHandler RWUAM_DROP_CARRY_ITEM -> _SafeCls_2423
     public const int LookToMessageEvent = 2508; // AS3-verified: the client registry maps _composers[2508] to the (x,y) composer RoomObjectEventHandler.setSelectedAvatar() sends when an avatar is selected without a click-user wired (WIN63 habbo/communication/_SafeCls_2046.as:819, LookToMessageComposer in win63_version). Was 9103, a placeholder whose own comment flagged it as unresolved; the parser here already read the right two ints, so only the header was wrong
@@ -371,9 +364,9 @@ internal static class MessageEvent
 
     public const int Game2GetAccountGameStatusMessageEvent = 3377; // AS3-verified (direct read): the WIN63 registry keeps this name unobfuscated - `_composers[3377] = Game2GetAccountGameStatusMessageComposer`. The earlier pass resolved the 3377 collision the wrong way round and parked this constant at 9013; RespectUser is 3770 (SessionDataManager.as:882), so 3377 goes back to its real owner
 
-    public const int Game2LeaveGameMessageEvent = 2698; // UNRESOLVED: not found - a dedicated "leave game" composer distinct from the room-exit/game-end flows already ported elsewhere could not be located in either official AS3 revision
-    public const int Game2QuickJoinGameMessageEvent = 2000; // UNRESOLVED: no distinct AS3 backing found - HabboGameManager::startQuickSnowWarGame()/SnowWarEngine::startQuickServerGame() both send the same _SafeCls_2129, already correctly claimed by Game2StartSnowWarMessageEvent below; likely a duplicate Vortex constant with no separate real message
-    public const int Game2StartSnowWarMessageEvent = 1506; // shape+AS3-verified: HabboGameManager::startQuickSnowWarGame() (_SafeCls_2129)
+    public const int Game2LeaveGameMessageEvent = 1847; // AS3-verified 2026-08-22 (WIN63 registry + sender): _composers[1847] = _SafeCls_3649(), snowwar GameEndingViewController/GameLobbyWindowCtrl. It does exist; 2698 was in no registry table.
+    public const int Game2QuickJoinGameMessageEvent = 1506; // AS3-verified 2026-08-22 (WIN63 registry + sender): _composers[1506] = _SafeCls_2129(), HabboGameManager::startQuickSnowWarGame(). This header was held by Game2StartSnowWar below, which is why starting a snowwar landed in the quick-join handler.
+    public const int Game2StartSnowWarMessageEvent = 2109; // AS3-verified 2026-08-22 (WIN63 registry + sender): _composers[2109] = _SafeCls_2092(String gameName), HabboGameManager::startSnowWarGame()/SnowWarEngine::startServerGame(). The old 1506 is quick-join, one message up.
     public const int GetForumsListMessageEvent = 488; // AS3-verified (ghost fix): GroupForumController::openForumsList()
     public const int GetForumStatsMessageEvent = 3592; // AS3-verified (old-revision trace): GroupForumController::initForum() still exists in current revision at 3592
 
@@ -397,7 +390,6 @@ internal static class MessageEvent
     public const int GetSoundSettingsEvent = 541; // AS3-verified (direct read, both revisions): HabboSoundManagerFlash10::init() -> _SafeCls_1901
     public const int GetUserSongDisksMessageEvent = 1685; // AS3-verified (ghost fix): HabboMusicController::requestUserSongDisks()
     public const int RemoveJukeboxDiskEvent = 2003; // AS3-verified (direct read, both revisions): PlayListEditorWidgetHandler RWPLAM_REMOVE_FROM_PLAYLIST -> _SafeCls_3444
-    public const int ChangeUserNameInRoomMessageEvent = 3652; // UNRESOLVED: no distinct AS3 backing found - NameChangeController::changeName() has only one send call (_SafeCls_2633/_SafeCls_3913), already correctly claimed by ChangeUserNameMessageEvent below; likely a duplicate Vortex constant with no separate real message
     public const int ChangeUserNameMessageEvent = 1703; // AS3-verified (ghost fix): NameChangeController::changeName()
 
     // The onboarding name dialog claims a name with a DIFFERENT composer than the paid rename:
@@ -547,7 +539,7 @@ internal static class MessageEvent
     public const int UpdateRoomFilterMessageEvent = 1622; // AS3-verified (shape-only): RoomFilterCtrl::addBadWord()
     public const int RequestFurniInventoryEvent = 41;
     public const int RequestFurniInventoryWhenNotInRoomEvent = 3862; // AS3-verified (direct read, both revisions): FurniModel::requestInitialization() !_isInRoom branch -> connection.send(new _SafeCls_3731()) @3862 (old _SafeCls_3534@3674)
-    public const int RequestRoomPropertySet = 3300; // UNRESOLVED: not found - no matching "room property set" request (RoomId-only shape, per Vortex.Primitives) located in either official AS3 revision
+    public const int RequestRoomPropertySet = 2292; // AS3-verified 2026-08-22 (WIN63 registry + sender): _composers[2292] = _SafeCls_2323(int), HabboCatalog.as:3236. 3300 was in no registry table.
     public const int Game2GetFriendsLeaderboardEvent = 3467;
     public const int Game2GetTotalGroupLeaderboardEvent = 1479;
     public const int Game2GetTotalLeaderboardEvent = 3383;
@@ -633,7 +625,7 @@ internal static class MessageComposer
     public const int GetCustomFilterResultMessageComposer = 2231; // AS3-verified (direct read): WIN63 registry _SafeCls_2046.as _SafeStr_4546[2231] = _SafeCls_3579; WordFilterSettingsView is the only consumer. The previous value was a placeholder with no handler behind it
     public const int ModifyCustomFilterResultMessageComposer = 3622; // AS3-verified (direct read): WIN63 registry _SafeCls_2046.as _SafeStr_4546[3622] = _SafeCls_3793; WordFilterSettingsView is the only consumer. The previous value was a placeholder with no handler behind it
     public const int FurniListRemoveMultipleComposer = 1268; // AS3-verified (direct read): _SafeStr_4546[1268] = _SafeCls_3469 (parser _SafeCls_3854: `stripIds:Vector.<int>`), consumed by the inventory controller; was 149, which has no entry in the WIN63 registry at all
-    public const int LtdRaffleEnteredMessageComposer = 1221;
+    public const int LtdRaffleEnteredMessageComposer = 2901; // AS3-verified 2026-08-22 (WIN63 registry + sender): _events[2901] = _SafeCls_1861, HabboCatalog::onLtdRaffleEntered. 1221 was in no registry table.
     public const int LtdRaffleResultMessageComposer = 3526;
     public const int WiredSetUserPermanentVariableResultComposer = 1643; // AS3-verified (direct read): _SafeCls_2757 (parser _SafeCls_4203) -> success:Boolean; corrects a collision (was 3354, a Game2/Snowwar PlayerData broadcast)
     public const int WiredUserPermanentVariablesComposer = 1557; // AS3-verified (direct read): _SafeCls_3146 (parser _SafeCls_4091) -> WiredUserPermanentVariablesList; corrects a collision (was 2883, an empty no-arg composer unrelated to variables)
@@ -662,7 +654,7 @@ internal static class MessageComposer
     public const int UserPurchasableChatStyleChangedMessageComposer = 3971; // AS3-verified (direct read): _SafeStr_4546[3971] = _SafeCls_2210, consumed by SessionDataManager.as; was 2894, which has no entry in the WIN63 registry at all
     public const int UserPurchasableChatStylesMessageComposer = 3774; // AS3-verified (direct read): _SafeStr_4546[3774] = _SafeCls_2023, consumed by SessionDataManager.as; was 2255, which has no entry in the WIN63 registry at all
     public const int BanInfoMessageComposer = 2557;
-    public const int MyCfhReportStatusMessageComposer = 2474;
+    public const int MyCfhReportStatusMessageComposer = 3809; // AS3-verified 2026-08-22 (WIN63 registry + sender): _events[3809] = _SafeCls_1752, HabboHelp::onMyCfhReportStatusMessageEvent. 2474 was in no registry table.
     public const int WiredRoomLogsComposer = 1910; // AS3-verified (direct read): _SafeCls_3729 -> WiredLogPage; corrects a collision (was 3761)
 
     // Wired chests, from the incoming registry (_SafeStr_4546): 1174 -> _SafeCls_3156 (the parser
@@ -670,8 +662,8 @@ internal static class MessageComposer
     // _SafeCls_3882 (chest id, coins, isUpdate), read by CoinChestSubController.
     public const int WiredChestOpenComposer = 1174;
     public const int WiredChestCoinsComposer = 1022;
-    public const int TreasureHuntFailMessageComposer = 3822;
-    public const int TreasureHuntFirstWinnerMessageComposer = 1232;
+    public const int TreasureHuntFailMessageComposer = 3790; // AS3-verified 2026-08-22 (WIN63 registry + sender): _events[3790] = _SafeCls_3474, notifications::onTreasureHuntFail. 3822 was in no registry table.
+    public const int TreasureHuntFirstWinnerMessageComposer = 3257; // AS3-verified 2026-08-22 (WIN63 registry + sender): _events[3257] = _SafeCls_3856, notifications::onTreasureHuntFirstWinner. 1232 was in no registry table.
     public const int TreasureHuntUpdateMessageComposer = 377;
     public const int RecyclerFinishedMessageComposer = 3617; // AS3-verified (registry): _SafeCls_2046[3617] = _SafeCls_2078 (parser _SafeCls_2299 -> recyclerFinishedStatus:int, prizeId:int). Was 281, an id with no registry entry at all.
     public const int RecyclerPrizesMessageComposer = 3367; // AS3-verified (registry): _SafeCls_2046[3367] = _SafeCls_2027 (parser _SafeCls_2243 -> prizeLevels:Vector.<PrizeLevelMessageData>). Was 3783, an id with no registry entry at all.

@@ -6,5 +6,6 @@ namespace Vortex.Revisions.Revision20260701.Parsers.Competition;
 
 internal class GetIsUserPartOfCompetitionMessageParser : IParser
 {
-    public IMessageEvent Parse(IClientPacket packet) => new GetIsUserPartOfCompetitionMessage();
+    public IMessageEvent Parse(IClientPacket packet) =>
+        new GetIsUserPartOfCompetitionMessage { GoalCode = packet.PopString() };
 }
