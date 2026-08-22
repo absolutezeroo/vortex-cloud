@@ -40,16 +40,17 @@ const cases = [
   ],
   // ... mais un vrai kill enchaine derriere une autre commande doit toujours passer a la trappe.
   ['guard-emulator.mjs', cmd('dotnet build || taskkill /F /IM Vortex.Main.exe'), 2, 'kill enchaine apres ||'],
-  ['post-edit.mjs', edit(path.join('Vortex.Revisions', 'Revision20260701', 'Headers.cs')), 0, 'headers sous le plafond'],
+  ['post-edit.mjs', edit(path.join('Vortex.Revisions', 'Revision20260701', 'Headers.cs')), 0, 'headers connus du client'],
 ];
 
-// Scripts autonomes : pas de payload sur stdin, on les appelle avec leurs arguments.
-const headerProbe = path.join(os.tmpdir(), '__HeaderProbe.cs');
-fs.writeFileSync(headerProbe, 'public const int FabricatedMessageEvent = 9999;\npublic const int RealMessageEvent = 1234;\n');
+// Scripts autonomes : pas de payload sur stdin. Le second cas pointe le check sur une baseline vide
+// pour verifier qu'il bloque vraiment -- sinon seul le chemin passant serait teste.
+const emptyBaseline = path.join(os.tmpdir(), '__HeaderBaseline.json');
+fs.writeFileSync(emptyBaseline, '{"unreachable":[]}\n');
 
 const direct = [
-  ['check-header-ceiling.mjs', [], 0, 'plafond des headers : depot propre'],
-  ['check-header-ceiling.mjs', ['--file', headerProbe, '--ceiling', '4101'], 2, 'id fabrique au-dessus du plafond'],
+  ['check-header-registry.mjs', [], 0, 'registre headers : baseline a jour'],
+  ['check-header-registry.mjs', [], 2, 'header injoignable hors baseline', { VORTEX_HEADER_BASELINE: emptyBaseline }],
 ];
 
 let failed = 0;
@@ -61,8 +62,11 @@ for (const [script, payload, want, label] of cases) {
   if (!ok && r.stderr) console.log('     ' + r.stderr.trim().split('\n').slice(0, 4).join('\n     '));
 }
 
-for (const [script, argv, want, label] of direct) {
-  const r = spawnSync(process.execPath, [path.join('scripts', 'hooks', script), ...argv], { encoding: 'utf8' });
+for (const [script, argv, want, label, env] of direct) {
+  const r = spawnSync(process.execPath, [path.join('scripts', 'hooks', script), ...argv], {
+    encoding: 'utf8',
+    env: { ...process.env, ...env },
+  });
   const ok = r.status === want;
   if (!ok) failed++;
   console.log(`${ok ? 'OK  ' : 'FAIL'} ${label} (attendu=${want} obtenu=${r.status})`);
@@ -70,6 +74,6 @@ for (const [script, argv, want, label] of direct) {
 }
 
 fs.rmSync(probe, { force: true });
-fs.rmSync(headerProbe, { force: true });
+fs.rmSync(emptyBaseline, { force: true });
 console.log(failed ? `\n${failed} test(s) en echec.` : '\nTous les hooks se comportent comme attendu.');
 process.exit(failed ? 1 : 0);

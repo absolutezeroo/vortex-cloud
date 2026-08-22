@@ -430,7 +430,7 @@ compiler sees. They are ordinary node scripts — run any of them alone while yo
 | Check | Target | Catches |
 |---|---|---|
 | `node scripts/hooks/check-dashboard-capabilities.mjs` | FastCheck | a hidden page, an undefined route guard, a chunk that 404s, a raw i18n key in the sidebar |
-| `node scripts/hooks/check-header-ceiling.mjs` | FastCheck | a header id the client's registry does not contain: it registers, and can never fire |
+| `node scripts/hooks/check-header-registry.mjs` | FastCheck | a mapped header id the client's registry does not contain: it registers, and can never fire. 14 are known and baselined; without the client sources beside the repo it degrades to a ceiling check |
 | `dotnet run --project Vortex.Specs.Cli -- validate` | FastCheck | a malformed or contradictory behavioural spec |
 | `cd Vortex.Dashboard.Web && npm run lint` | QualityGate | an undefined identifier in Svelte markup, which `npm run build` compiles and ships |
 | `node scripts/hooks/__test/run.mjs` | QualityGate | a hook that stopped blocking what it was written to block |

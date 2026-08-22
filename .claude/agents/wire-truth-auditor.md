@@ -43,13 +43,12 @@ id in the client's message registry, rather than assuming a package layout.
    - **order** — an extra or missing field desynchronizes everything after it, not just itself
    - **width** — `readInteger` vs `readShort` vs `readByte` vs `readString` are not interchangeable
    - **bool encoding** — this client reads `flag ? 1 : 0` as a **4-byte int**, not a byte
-4. Check the header id is registered AND `<= 4101`. Ids above the client's maximum are fabricated:
-   they register without error and can never fire. `Revision20260701/Headers.cs` holds 13 constants
-   above that ceiling (4600–9201): ten are deliberate extensions (seven for the furni editor, three
-   confirmed in the vortex-client's own registry at 4600/4601) and **three are placeholders parked
-   out of range after the WIN63 header remap** — 9008, 9012, 9201. Those three cannot fire, so the
-   features behind them do not exist. `node scripts/hooks/check-header-ceiling.mjs` prints which is
-   which and refuses a new one; closing one of the three is a good use of this agent.
+4. Check the header id **exists in the client's own registry**, not merely that it is plausible.
+   `node scripts/hooks/check-header-registry.mjs` answers this for every mapped id by reading the
+   registry class out of the AS3 sources; 14 of ours are not in it, listed in
+   `scripts/hooks/header-registry-baseline.json`, and each is a handler or composer that registers
+   cleanly and can never fire. Closing one is a good use of this agent. An id above 4101 is the
+   extreme case of the same fault, not a separate rule.
 5. Check the serializer is actually mapped. A written-but-unmapped serializer is dead code that
    looks implemented — 184 of those exist repo-wide.
 

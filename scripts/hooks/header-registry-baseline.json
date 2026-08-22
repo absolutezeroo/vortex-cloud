@@ -1,0 +1,18 @@
+{
+  "unreachable": [
+    "MessageComposer/CustomStackingHeightUpdateMessageComposer=9201",
+    "MessageComposer/IsOfferGiftableEventMessageComposer=1750",
+    "MessageEvent/ChangeUserNameInRoomMessageEvent=3652",
+    "MessageEvent/ClickCharacterEvent=785",
+    "MessageEvent/CustomizeAvatarWithFurniMessageEvent=9012",
+    "MessageEvent/Game2LeaveGameMessageEvent=2698",
+    "MessageEvent/Game2QuickJoinGameMessageEvent=2000",
+    "MessageEvent/GetBadgePointLimitsEvent=981",
+    "MessageEvent/GetBundleDiscountRulesetVortexEvent=1811",
+    "MessageEvent/GetClubGiftInfoRequestMessageEvent=1422",
+    "MessageEvent/GetGiftWrappingConfigurationVortexEvent=9008",
+    "MessageEvent/GetIsUserPartOfCompetitionMessageEvent=2732",
+    "MessageEvent/GetRoomEntryDataMessageEvent=1250",
+    "MessageEvent/RequestRoomPropertySet=3300"
+  ]
+}

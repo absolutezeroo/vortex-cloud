@@ -51,14 +51,15 @@ were false and each one cost a live bug.
 ## 3. Header ids
 
 Ids are per-revision and live only in `docs/habbo-specs/revisions/` — a numeric id inside a
-behavioural spec is a validation error, specs speak in symbolic names. An id above the client's
-ceiling (4101 for `Revision20260701`) registers without error and can **never fire**:
+behavioural spec is a validation error, specs speak in symbolic names. An id the client's registry
+does not contain registers without error and can **never fire**:
 
 ```bash
-node scripts/hooks/check-header-ceiling.mjs
+node scripts/hooks/check-header-registry.mjs
 ```
 
-It refuses a new one and names the five already carried as unverified.
+It reads the registry out of the client sources and refuses a new absent id. The 14 already in that
+state are in `scripts/hooks/header-registry-baseline.json` — each one is a dead feature.
 
 ## 4. Close the loop
 

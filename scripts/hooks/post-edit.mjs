@@ -36,11 +36,11 @@ if (/^(Vortex\.Primitives\/Permissions\/Capabilities\.cs|Vortex\.Dashboard\.Web\
   if (r.status === 2) failures.push(r.stderr.trim());
 }
 
-// --- header id ceiling ----------------------------------------------------------------------------
+// --- header id vs the client's registry -----------------------------------------------------------
 // An id the client's registry does not contain registers fine and can never fire. Nothing else sees
 // it: not the build, not the tests, not a grep.
-if (/^Vortex\.Revisions\/[^/]+\/Headers\.cs$/.test(rel)) {
-  const r = spawnSync(process.execPath, [path.join(here, 'check-header-ceiling.mjs')], {
+if (/^Vortex\.Revisions\/[^/]+\/(Headers\.cs|Maps\/[A-Za-z0-9_]+\.cs)$/.test(rel)) {
+  const r = spawnSync(process.execPath, [path.join(here, 'check-header-registry.mjs')], {
     cwd: root,
     encoding: 'utf8',
   });
