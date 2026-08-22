@@ -39,6 +39,12 @@ internal static class MessageEvent
     public const int SaveWiredChestSettingsEvent = 3830;
     public const int SaveWiredChestNotificationSettingsEvent = 2905;
     public const int SetWiredChestLockEvent = 2907;
+
+    // The transaction log, asked for two ways and answered with one message: _composers[1999] =
+    // _SafeCls_3170(chestId, pageSize, page) from a chest's own history, and _composers[2016] =
+    // _SafeCls_2406(pageSize, page) from the wired menu's chests tab, which asks for the room.
+    public const int GetWiredChestTransactionsEvent = 1999;
+    public const int GetWiredRoomTransactionsEvent = 2016;
     public const int BlockListInitEvent = 798; // AS3-verified (direct read): BlockedUsersManager.as:54 -> send(new _SafeCls_3511()) (no args) @798; was 2610, which has no entry in the WIN63 registry at all
     public const int BlockUserMessageEvent = 483; // AS3-verified (direct read): BlockedUsersManager.as:94 -> send(new _SafeCls_2856(userId)) @483; was 2371, which has no entry in the WIN63 registry at all
     public const int ReplenishRespectMessageEvent = 426; // AS3-verified (direct read): SessionDataManager.as:889 -> send(new _SafeCls_1865()) (no args) @426; was 3323, which has no entry in the WIN63 registry at all
@@ -682,6 +688,10 @@ internal static class MessageComposer
     // delta afterwards (chestId, removed ids, added items).
     public const int WiredChestItemsComposer = 2323;
     public const int WiredChestItemsUpdateComposer = 2738;
+
+    // _events[2910] = _SafeCls_3439 answers both log requests. It says which list it is: type 0 is
+    // a chest and the id is the chest, type 1 is a room and the id is the room.
+    public const int WiredTransactionsComposer = 2910;
     public const int TreasureHuntFailMessageComposer = 3790; // AS3-verified 2026-08-22 (WIN63 registry + sender): _events[3790] = _SafeCls_3474, notifications::onTreasureHuntFail. 3822 was in no registry table.
     public const int TreasureHuntFirstWinnerMessageComposer = 3257; // AS3-verified 2026-08-22 (WIN63 registry + sender): _events[3257] = _SafeCls_3856, notifications::onTreasureHuntFirstWinner. 1232 was in no registry table.
     public const int TreasureHuntUpdateMessageComposer = 377;

@@ -112,6 +112,14 @@ internal sealed class UserDefinedRoomEventsMap : IRevisionMap
             new SetWiredChestLockMessageParser()
         );
         builder.MapParser(
+            MessageEvent.GetWiredChestTransactionsEvent,
+            new GetWiredChestTransactionsMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.GetWiredRoomTransactionsEvent,
+            new GetWiredRoomTransactionsMessageParser()
+        );
+        builder.MapParser(
             MessageEvent.WithdrawWiredChestCreditsEvent,
             new WithdrawWiredChestCreditsMessageParser()
         );
@@ -260,6 +268,12 @@ internal sealed class UserDefinedRoomEventsMap : IRevisionMap
         builder.MapSerializer(
             typeof(WiredChestItemsMessageComposer),
             new WiredChestItemsMessageComposerSerializer(MessageComposer.WiredChestItemsComposer)
+        );
+        builder.MapSerializer(
+            typeof(WiredTransactionsMessageComposer),
+            new WiredTransactionsMessageComposerSerializer(
+                MessageComposer.WiredTransactionsComposer
+            )
         );
         builder.MapSerializer(
             typeof(WiredChestItemsUpdateMessageComposer),

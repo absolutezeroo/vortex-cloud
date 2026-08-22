@@ -55,6 +55,31 @@ public partial interface IRoomWired
     /// the caller can tell the client what to remove from a screen it already drew.
     /// </remarks>
     /// <summary>
+    /// One chest's transaction log, a page at a time.
+    /// </summary>
+    /// <remarks>
+    /// The page carries its own list type and id, because the client re-requests later pages with
+    /// what it reads back rather than with what it asked for.
+    /// </remarks>
+    Task<WiredTransactionsSnapshot?> GetWiredChestTransactionsAsync(
+        ActionContext ctx,
+        int chestId,
+        int pageSize,
+        int page,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Every chest in this room, a page at a time.
+    /// </summary>
+    Task<WiredTransactionsSnapshot?> GetWiredRoomTransactionsAsync(
+        ActionContext ctx,
+        int pageSize,
+        int page,
+        CancellationToken ct
+    );
+
+    /// <summary>
     /// Saves the chest's settings dialog: its name, its description, who may open and donate, and
     /// how it looks when open.
     /// </summary>

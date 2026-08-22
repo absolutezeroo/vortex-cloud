@@ -16,12 +16,15 @@ using Vortex.Primitives.Furniture.Snapshots;
 using Vortex.Primitives.Furniture.StuffData;
 using Vortex.Primitives.Inventory.Snapshots;
 using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Wallet;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
+using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Snapshots.Wired;
+using Vortex.Rooms.Object.Logic.Furniture.Floor;
 
 namespace Vortex.Rooms.Grains;
 
@@ -103,6 +106,14 @@ public sealed partial class RoomGrain
 
                 return null;
             }
+
+            // Logged only here, past the wallet: a movement that was rolled back never happened,
+            // and a log that says otherwise is worse than no log.
+            dbCtx.WiredChestTransactions.Add(
+                NewManualTransaction(ctx.PlayerId, chest.Id, withdrawCoins: taken)
+            );
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
             return await SnapshotAsync(chestId, chest.Credits).ConfigureAwait(true);
         }
@@ -388,6 +399,25 @@ public sealed partial class RoomGrain
                 entity.PlayerEntityId = (int)ctx.PlayerId;
             }
 
+            dbCtx.WiredChestTransactions.Add(
+                NewManualTransaction(
+                    ctx.PlayerId,
+                    chest.Id,
+                    withdrawFurni: leaving.Count,
+                    definitionInfo: string.Join(
+                        ", ",
+                        leaving
+                            .Select(entity =>
+                                _definitionProvider
+                                    .TryGetDefinition(entity.FurnitureDefinitionEntityId)
+                                    ?.Name
+                                ?? string.Empty
+                            )
+                            .Distinct()
+                    )
+                )
+            );
+
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
             // The row is the player's now; the inventory grain still has to be told, because its
@@ -413,19 +443,12 @@ public sealed partial class RoomGrain
     }
 
     /// <summary>
-    /// Copies a chest's settings into the furni's own stuff data.
+    /// Copies a chest's saved settings onto the furni the client reads them from.
     /// </summary>
     /// <remarks>
-    /// This is not a duplicate of the columns, it is how the client learns them. Every chest dialog
-    /// prefills from the furni's map stuff data — <c>getValue("chest_name")</c>,
-    /// <c>getValue("everyone_can_open")</c>, <c>getValue("notify_mode")</c> — and never from a message
-    /// of its own. Saving to the table alone is why a reopened dialog came back empty.
-    /// <para>
-    /// Booleans go out as "1"/"0" because that is what the client compares against. Two keys are
-    /// written but not modelled: <c>capacity_level</c> and <c>is_wired_enabled</c> belong to the
-    /// upgrade purchase, and the dialog reads them unconditionally, so they exist as zero rather
-    /// than as absent.
-    /// </para>
+    /// The dialogs prefill from the furni's map stuff data, never from a message, so a chest whose
+    /// settings live only in the table shows a blank screen. The keys themselves are
+    /// <see cref="WiredChestStuffData" />'s business, not this grain's.
     /// </remarks>
     private async Task ApplyChestSettingsToStuffDataAsync(int chestId, WiredChestEntity chest)
     {
@@ -437,26 +460,7 @@ public sealed partial class RoomGrain
             return;
         }
 
-        static string Flag(bool value) => value ? "1" : "0";
-
-        map.Data["chest_name"] = chest.Name;
-        map.Data["chest_desc"] = chest.Description;
-        map.Data["everyone_can_open"] = Flag(chest.EveryoneCanOpen);
-        map.Data["everyone_can_donate"] = Flag(chest.EveryoneCanDonate);
-        map.Data["state_control_mode"] = chest.ChestState.ToString(CultureInfo.InvariantCulture);
-        map.Data["preview_mode"] = chest.PreviewItems.ToString(CultureInfo.InvariantCulture);
-        map.Data["preview_amount"] = chest.PreviewAmount.ToString(CultureInfo.InvariantCulture);
-        map.Data["notify_mode"] = chest.NotificationMode.ToString(CultureInfo.InvariantCulture);
-        map.Data["notification_chest_full"] = Flag(chest.NotifyWhenFull);
-        map.Data["notification_donation"] = Flag(chest.NotifyOnDonation);
-        map.Data["notification_someone_withdraws"] = Flag(chest.NotifyOnWithdraw);
-        map.Data["notification_chest_empty"] = Flag(chest.NotifyWhenEmpty);
-        map.Data["notification_wired_transaction"] = Flag(chest.NotifyOnAnyWiredTransaction);
-        map.Data["locked"] = Flag(chest.Locked);
-        map.Data["auto_lock"] = Flag(chest.AutoLock);
-        map.Data["capacity"] = chest.Capacity.ToString(CultureInfo.InvariantCulture);
-        map.Data["capacity_level"] = "0";
-        map.Data["is_wired_enabled"] = "0";
+        WiredChestStuffData.Apply(map, chest);
 
         await item.Logic.PersistStuffDataAsync().ConfigureAwait(true);
     }
@@ -599,4 +603,190 @@ public sealed partial class RoomGrain
             },
             ct
         );
+
+    /// <summary>A row for something a person did by hand. Type 0 is the client's MANUAL; the wired,
+    /// contract and auto-withdraw types need machinery this hotel does not have yet.</summary>
+    private WiredChestTransactionEntity NewManualTransaction(
+        PlayerId playerId,
+        int chestRowId,
+        int withdrawCoins = 0,
+        int withdrawFurni = 0,
+        string definitionInfo = ""
+    ) =>
+        new()
+        {
+            WiredChestEntityId = chestRowId,
+            RoomEntityId = (int)RoomId,
+            TransactionType = ManualTransaction,
+            DefinitionInfo = definitionInfo,
+            PlayerEntityId = (int)playerId,
+            PlayerName = ResolvePlayerName(playerId),
+            ChestCount = 1,
+            WithdrawFurniCount = withdrawFurni,
+            DepositFurniCount = 0,
+            WithdrawCoinsCount = withdrawCoins,
+            DepositCoinsCount = 0,
+        };
+
+    /// <summary>What the client calls MANUAL.</summary>
+    private const int ManualTransaction = 0;
+
+    /// <summary>The two log lists the client knows: a chest, or the room the chests stand in. It
+    /// reads the type back off the page to decide what it is looking at.</summary>
+    private const int ChestLogList = 0;
+    private const int RoomLogList = 1;
+
+    /// <summary>The page size comes straight from the client, so it is clamped. Asking for a
+    /// million rows should cost a page, not the table.</summary>
+    private const int MaxLogPageSize = 200;
+
+    /// <summary>The player's name as it is right now, for a row that will outlive it. Taken from the
+    /// room rather than the database: whoever moves something is standing in it.</summary>
+    private string ResolvePlayerName(PlayerId playerId) =>
+        _state.AvatarsByPlayerId.TryGetValue(playerId, out RoomObjectId objectId)
+        && _state.AvatarsByObjectId.TryGetValue(objectId, out IRoomAvatar? avatar)
+            ? avatar.Name
+            : string.Empty;
+
+    private static WiredTransactionSnapshot ToTransactionSnapshot(
+        WiredChestTransactionEntity row
+    ) =>
+        new()
+        {
+            TransactionId = row.Id,
+            RoomId = row.RoomEntityId,
+            TransactionType = row.TransactionType,
+            DefinitionInfo = row.DefinitionInfo,
+            PlayerId = row.PlayerEntityId,
+            PlayerName = row.PlayerName,
+            Timestamp = new DateTimeOffset(row.CreatedAt, TimeSpan.Zero).ToUnixTimeMilliseconds(),
+            ReadableTimestamp = row.CreatedAt.ToString(
+                "dd/MM/yyyy HH:mm",
+                CultureInfo.InvariantCulture
+            ),
+            ChestCount = row.ChestCount,
+            WithdrawFurniCount = row.WithdrawFurniCount,
+            DepositFurniCount = row.DepositFurniCount,
+            WithdrawCoinsCount = row.WithdrawCoinsCount,
+            DepositCoinsCount = row.DepositCoinsCount,
+        };
+
+    private async Task<WiredTransactionsSnapshot?> ReadTransactionsAsync(
+        int logListType,
+        long logListId,
+        int? chestRowId,
+        int pageSize,
+        int page,
+        CancellationToken ct
+    )
+    {
+        int size = Math.Clamp(pageSize, 1, MaxLogPageSize);
+        int wanted = Math.Max(1, page);
+
+        try
+        {
+            await using VortexDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(true);
+
+            IQueryable<WiredChestTransactionEntity> rows = dbCtx
+                .WiredChestTransactions.AsNoTracking()
+                .Where(t => t.DeletedAt == null);
+
+            rows = chestRowId is null
+                ? rows.Where(t => t.RoomEntityId == (int)RoomId)
+                : rows.Where(t => t.WiredChestEntityId == chestRowId);
+
+            int total = await rows.CountAsync(ct).ConfigureAwait(true);
+
+            List<WiredChestTransactionEntity> paged = await rows.OrderByDescending(t => t.Id)
+                .Skip((wanted - 1) * size)
+                .Take(size)
+                .ToListAsync(ct)
+                .ConfigureAwait(true);
+
+            return new WiredTransactionsSnapshot
+            {
+                LogListType = logListType,
+                LogListId = logListId,
+                TotalLogs = total,
+                CurrentPage = wanted,
+                Amount = size,
+                Logs = [.. paged.Select(ToTransactionSnapshot)],
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to read chest transactions in room {RoomId}.", RoomId);
+
+            return null;
+        }
+    }
+
+    public async Task<WiredTransactionsSnapshot?> GetWiredChestTransactionsAsync(
+        ActionContext ctx,
+        int chestId,
+        int pageSize,
+        int page,
+        CancellationToken ct
+    )
+    {
+        if (!await CanUseChestAsync(ctx, chestId).ConfigureAwait(true))
+        {
+            return null;
+        }
+
+        int? chestRowId = await ResolveChestRowIdAsync(chestId, ct).ConfigureAwait(true);
+
+        // A chest nobody has touched has no row and therefore no history. That is an empty page,
+        // not a refusal: the screen still opens.
+        return await ReadTransactionsAsync(
+                ChestLogList,
+                chestId,
+                chestRowId ?? -1,
+                pageSize,
+                page,
+                ct
+            )
+            .ConfigureAwait(true);
+    }
+
+    public async Task<WiredTransactionsSnapshot?> GetWiredRoomTransactionsAsync(
+        ActionContext ctx,
+        int pageSize,
+        int page,
+        CancellationToken ct
+    )
+    {
+        if (ctx.PlayerId <= 0)
+        {
+            return null;
+        }
+
+        RoomControllerType level = await SecurityModule
+            .GetControllerLevelAsync(ctx)
+            .ConfigureAwait(true);
+
+        if (level == RoomControllerType.None)
+        {
+            return null;
+        }
+
+        return await ReadTransactionsAsync(RoomLogList, (int)RoomId, null, pageSize, page, ct)
+            .ConfigureAwait(true);
+    }
+
+    private async Task<int?> ResolveChestRowIdAsync(int chestId, CancellationToken ct)
+    {
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(ct)
+            .ConfigureAwait(true);
+
+        WiredChestEntity? chest = await dbCtx
+            .WiredChests.AsNoTracking()
+            .FirstOrDefaultAsync(c => c.FurnitureEntityId == chestId && c.DeletedAt == null, ct)
+            .ConfigureAwait(true);
+
+        return chest?.Id;
+    }
 }
