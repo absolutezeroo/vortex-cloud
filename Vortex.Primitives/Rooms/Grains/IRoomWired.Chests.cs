@@ -55,6 +55,11 @@ public partial interface IRoomWired
     /// the caller can tell the client what to remove from a screen it already drew.
     /// </remarks>
     /// <summary>
+    /// Locks or unlocks every chest in this room at once.
+    /// </summary>
+    Task SetAllWiredChestLocksAsync(ActionContext ctx, bool locked, CancellationToken ct);
+
+    /// <summary>
     /// One chest's transaction log, a page at a time.
     /// </summary>
     /// <remarks>

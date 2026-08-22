@@ -120,6 +120,10 @@ internal sealed class UserDefinedRoomEventsMap : IRevisionMap
             new GetWiredRoomTransactionsMessageParser()
         );
         builder.MapParser(
+            MessageEvent.SetAllWiredChestLocksEvent,
+            new SetAllWiredChestLocksMessageParser()
+        );
+        builder.MapParser(
             MessageEvent.WithdrawWiredChestCreditsEvent,
             new WithdrawWiredChestCreditsMessageParser()
         );

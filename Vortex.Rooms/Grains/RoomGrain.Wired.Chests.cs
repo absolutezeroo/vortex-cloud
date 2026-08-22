@@ -789,4 +789,71 @@ public sealed partial class RoomGrain
 
         return chest?.Id;
     }
+
+    public async Task SetAllWiredChestLocksAsync(
+        ActionContext ctx,
+        bool locked,
+        CancellationToken ct
+    )
+    {
+        if (ctx.PlayerId <= 0)
+        {
+            return;
+        }
+
+        RoomControllerType level = await SecurityModule
+            .GetControllerLevelAsync(ctx)
+            .ConfigureAwait(true);
+
+        if (level == RoomControllerType.None)
+        {
+            return;
+        }
+
+        // The room's chests are the ones standing in it, which is what this grain knows; the table
+        // holds rows for chests that have been picked up since, and those are not this room's to
+        // lock.
+        List<int> chestIds =
+        [
+            .. _state
+                .ItemsById.Values.Where(item => IsChestClass(item.Definition.Name))
+                .Select(item => item.ObjectId.Value),
+        ];
+
+        if (chestIds.Count == 0)
+        {
+            return;
+        }
+
+        try
+        {
+            await using VortexDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(true);
+
+            List<WiredChestEntity> chests = await dbCtx
+                .WiredChests.Where(c =>
+                    chestIds.Contains(c.FurnitureEntityId) && c.DeletedAt == null
+                )
+                .ToListAsync(ct)
+                .ConfigureAwait(true);
+
+            foreach (WiredChestEntity chest in chests)
+            {
+                chest.Locked = locked;
+            }
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+            foreach (WiredChestEntity chest in chests)
+            {
+                await ApplyChestSettingsToStuffDataAsync(chest.FurnitureEntityId, chest)
+                    .ConfigureAwait(true);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to lock the chests of room {RoomId}.", RoomId);
+        }
+    }
 }
