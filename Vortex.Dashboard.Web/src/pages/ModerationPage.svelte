@@ -287,23 +287,23 @@
   <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); applyFilters(); }}>
     <label>
       {$t('moderation.since')}
-      <input type="datetime-local" bind:value={since} />
+      <input autocomplete="off" spellcheck="false" type="datetime-local" bind:value={since} />
     </label>
     <label>
       {$t('moderation.until')}
-      <input type="datetime-local" bind:value={until} />
+      <input autocomplete="off" spellcheck="false" type="datetime-local" bind:value={until} />
     </label>
     <label>
       {$t('moderation.actor')}
-      <input type="text" bind:value={actor} placeholder={$t('moderation.playerIdPlaceholder')} />
+      <input autocomplete="off" spellcheck="false" type="text" bind:value={actor} placeholder={$t('moderation.playerIdPlaceholder')} />
     </label>
     <label>
       {$t('moderation.target')}
-      <input type="text" bind:value={target} placeholder={$t('moderation.playerIdPlaceholder')} />
+      <input autocomplete="off" spellcheck="false" type="text" bind:value={target} placeholder={$t('moderation.playerIdPlaceholder')} />
     </label>
     <label>
       {$t('moderation.room')}
-      <input type="text" bind:value={room} placeholder={$t('moderation.roomIdPlaceholder')} />
+      <input autocomplete="off" spellcheck="false" type="text" bind:value={room} placeholder={$t('moderation.roomIdPlaceholder')} />
     </label>
     <label>
       {$t('moderation.action')}
@@ -323,7 +323,7 @@
     </label>
     <label>
       {$t('moderation.limit')}
-      <input type="number" min="10" max="500" bind:value={limit} />
+      <input autocomplete="off" spellcheck="false" type="number" min="10" max="500" bind:value={limit} />
     </label>
 
     <button type="submit">{$t('common.refresh')}</button>
@@ -336,7 +336,7 @@
   {:else if forbidden}
     <AccessDeniedNotice message={$t('moderation.accessDenied')} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 
   <div class="metric-grid compact">

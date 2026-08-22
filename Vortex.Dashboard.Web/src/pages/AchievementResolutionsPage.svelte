@@ -93,7 +93,7 @@
 
 <section>
   <header class="head">
-    <h1>{$t('achievementResolutions.title')}</h1>
+    <h2>{$t('achievementResolutions.title')}</h2>
     <p class="lede">{$t('achievementResolutions.lede')}</p>
   </header>
 
@@ -205,7 +205,7 @@
       {/if}
     {:else}
       <div class="filters">
-        <input
+        <input autocomplete="off" spellcheck="false"
           type="search"
           bind:value={search}
           placeholder={$t('achievementResolutions.searchPlaceholder')}

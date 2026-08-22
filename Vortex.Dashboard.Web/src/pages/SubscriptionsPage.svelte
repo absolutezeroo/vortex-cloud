@@ -56,7 +56,7 @@
   <p class="muted">{$t('subscriptions.description')}</p>
 
   {#if clubError}
-    <p class="empty-state danger">{clubError}</p>
+    <p class="empty-state danger" role="alert">{clubError}</p>
   {/if}
 </section>
 
@@ -67,7 +67,7 @@
     </div>
 
     {#if clubError}
-      <p class="empty-state danger">{clubError}</p>
+      <p class="empty-state danger" role="alert">{clubError}</p>
     {:else if !clubStats}
       <p class="empty-state">{$t('subscriptions.noSubData')}</p>
     {:else}
@@ -140,7 +140,7 @@
     </div>
 
     {#if clubError}
-      <p class="empty-state danger">{clubError}</p>
+      <p class="empty-state danger" role="alert">{clubError}</p>
     {:else if !clubStats}
       <p class="empty-state">{$t('subscriptions.noLifecycleData')}</p>
     {:else}

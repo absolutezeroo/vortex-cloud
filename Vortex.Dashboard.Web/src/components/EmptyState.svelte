@@ -17,7 +17,14 @@
   let Icon = $derived(ICONS[kind] || Inbox);
 </script>
 
-<p class="empty-state" class:danger={kind === 'error'}>
+<!-- These render after a request settles, so a screen reader is already past this point in the
+     page: an error has to interrupt, a still-loading notice only has to be announced. -->
+<p
+  class="empty-state"
+  class:danger={kind === 'error'}
+  role={kind === 'error' ? 'alert' : 'status'}
+  aria-busy={kind === 'loading'}
+>
   <span class="es-ico" class:spin={kind === 'loading'}>
     <Icon size={16} strokeWidth={2} aria-hidden="true" />
   </span>

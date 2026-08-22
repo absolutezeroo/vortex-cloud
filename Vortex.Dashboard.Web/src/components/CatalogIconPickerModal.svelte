@@ -111,7 +111,7 @@
   {#if templateLoading}
     <p class="empty-state">{$t('pickerModal.loading')}</p>
   {:else if templateError}
-    <p class="empty-state danger">{templateError}</p>
+    <p class="empty-state danger" role="alert">{templateError}</p>
   {:else}
     <p class="muted">
       {$t('catalogIconPicker.foundSoFar', { found: foundCount, probed: probedCount, pending: probedCount - settledCount })}

@@ -259,11 +259,11 @@
   <div class="form-grid">
     <div class="op-field">
       <label for={`${prefix}-sprite`}>{$t('furnitureAdmin.spriteIdRequired')}</label>
-      <input id={`${prefix}-sprite`} type="number" min="1" bind:value={form.spriteId} />
+      <input autocomplete="off" spellcheck="false" id={`${prefix}-sprite`} type="number" min="1" bind:value={form.spriteId} />
     </div>
     <div class="op-field">
       <label for={`${prefix}-name`}>{$t('furnitureAdmin.nameRequired')}</label>
-      <input id={`${prefix}-name`} bind:value={form.name} placeholder={$t('furnitureAdmin.namePlaceholder')} />
+      <input autocomplete="off" spellcheck="false" id={`${prefix}-name`} bind:value={form.name} placeholder={$t('furnitureAdmin.namePlaceholder')} />
     </div>
     <div class="op-field">
       <label for={`${prefix}-type`}>{$t('furnitureAdmin.productType')}</label>
@@ -289,19 +289,19 @@
     </div>
     <div class="op-field">
       <label for={`${prefix}-states`}>{$t('furnitureAdmin.totalStates')}</label>
-      <input id={`${prefix}-states`} type="number" min="0" bind:value={form.totalStates} />
+      <input autocomplete="off" spellcheck="false" id={`${prefix}-states`} type="number" min="0" bind:value={form.totalStates} />
     </div>
     <div class="op-field">
       <label for={`${prefix}-width`}>{$t('furnitureAdmin.width')}</label>
-      <input id={`${prefix}-width`} type="number" min="1" bind:value={form.width} />
+      <input autocomplete="off" spellcheck="false" id={`${prefix}-width`} type="number" min="1" bind:value={form.width} />
     </div>
     <div class="op-field">
       <label for={`${prefix}-length`}>{$t('furnitureAdmin.length')}</label>
-      <input id={`${prefix}-length`} type="number" min="1" bind:value={form.length} />
+      <input autocomplete="off" spellcheck="false" id={`${prefix}-length`} type="number" min="1" bind:value={form.length} />
     </div>
     <div class="op-field">
       <label for={`${prefix}-height`}>{$t('furnitureAdmin.stackHeight')}</label>
-      <input id={`${prefix}-height`} type="number" step="0.1" min="0" bind:value={form.stackHeight} />
+      <input autocomplete="off" spellcheck="false" id={`${prefix}-height`} type="number" step="0.1" min="0" bind:value={form.stackHeight} />
     </div>
     <div class="op-field">
       <label for={`${prefix}-usage`}>{$t('furnitureAdmin.usagePolicy')}</label>
@@ -317,19 +317,19 @@
     </div>
     <div class="op-field">
       <label for={`${prefix}-extra`}>{$t('furnitureAdmin.extraDataOptional')}</label>
-      <input id={`${prefix}-extra`} bind:value={form.extraData} />
+      <input autocomplete="off" spellcheck="false" id={`${prefix}-extra`} bind:value={form.extraData} />
     </div>
   </div>
 
   <div class="checkbox-grid">
-    <label><input type="checkbox" bind:checked={form.canStack} /> {$t('furnitureAdmin.canStack')}</label>
-    <label><input type="checkbox" bind:checked={form.canWalk} /> {$t('furnitureAdmin.canWalk')}</label>
-    <label><input type="checkbox" bind:checked={form.canSit} /> {$t('furnitureAdmin.canSit')}</label>
-    <label><input type="checkbox" bind:checked={form.canLay} /> {$t('furnitureAdmin.canLay')}</label>
-    <label><input type="checkbox" bind:checked={form.canRecycle} /> {$t('furnitureAdmin.canRecycle')}</label>
-    <label><input type="checkbox" bind:checked={form.canTrade} /> {$t('furnitureAdmin.canTrade')}</label>
-    <label><input type="checkbox" bind:checked={form.canGroup} /> {$t('furnitureAdmin.canGroup')}</label>
-    <label><input type="checkbox" bind:checked={form.canSell} /> {$t('furnitureAdmin.canSell')}</label>
+    <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={form.canStack} /> {$t('furnitureAdmin.canStack')}</label>
+    <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={form.canWalk} /> {$t('furnitureAdmin.canWalk')}</label>
+    <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={form.canSit} /> {$t('furnitureAdmin.canSit')}</label>
+    <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={form.canLay} /> {$t('furnitureAdmin.canLay')}</label>
+    <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={form.canRecycle} /> {$t('furnitureAdmin.canRecycle')}</label>
+    <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={form.canTrade} /> {$t('furnitureAdmin.canTrade')}</label>
+    <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={form.canGroup} /> {$t('furnitureAdmin.canGroup')}</label>
+    <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={form.canSell} /> {$t('furnitureAdmin.canSell')}</label>
   </div>
 
 {/snippet}
@@ -349,7 +349,7 @@
   </PageHeader>
 
   <form class="toolbar" onsubmit={(event) => { event.preventDefault(); search(); }}>
-    <input bind:value={query} placeholder={$t('furnitureAdmin.searchPlaceholder')} />
+    <input autocomplete="off" spellcheck="false" bind:value={query} placeholder={$t('furnitureAdmin.searchPlaceholder')} />
     <button type="submit" disabled={definitions.loading}>{$t('furnitureAdmin.search')}</button>
   </form>
 
@@ -358,7 +358,7 @@
   {:else if definitions.loading}
     <p class="muted">{$t('furnitureAdmin.loading')}</p>
   {:else if definitions.error}
-    <p class="empty-state danger">{definitions.error}</p>
+    <p class="empty-state danger" role="alert">{definitions.error}</p>
   {:else if items.length === 0}
     <p class="empty-state">{$t('furnitureAdmin.noMatch')}</p>
   {:else}
@@ -371,7 +371,7 @@
           <div class="furni-row">
             <span class="furni-row-icon">
               {#if item.iconUrl}
-                <img src={item.iconUrl} alt="" />
+                <img src={item.iconUrl} alt="" loading="lazy" />
               {:else}
                 <Image size={18} strokeWidth={2} aria-hidden="true" />
               {/if}
@@ -402,7 +402,7 @@
       {/each}
     </div>
 
-    {#if $ops.errors.delete}<p class="empty-state danger">{$ops.errors.delete}</p>{/if}
+    {#if $ops.errors.delete}<p class="empty-state danger" role="alert">{$ops.errors.delete}</p>{/if}
     {#if $ops.results.delete}
       <OpResult result={$ops.results.delete} />
     {/if}
@@ -427,7 +427,7 @@
     {@render definitionFields(drawer.form, drawer.mode === 'create' ? 'new-furni' : `edit-furni-${drawer.id}`)}
 
     {#if $ops.errors[drawer.mode === 'create' ? 'create' : 'update']}
-      <p class="empty-state danger">{$ops.errors[drawer.mode === 'create' ? 'create' : 'update']}</p>
+      <p class="empty-state danger" role="alert">{$ops.errors[drawer.mode === 'create' ? 'create' : 'update']}</p>
     {/if}
     {#if $ops.results[drawer.mode === 'create' ? 'create' : 'update']}
       <OpResult result={$ops.results[drawer.mode === 'create' ? 'create' : 'update']} />

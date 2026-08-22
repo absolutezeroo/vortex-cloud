@@ -424,7 +424,7 @@
     <h2>{$t('polls.title')}</h2>
     <div class="head-actions">
       <label class="filter-field">
-        <input type="checkbox" bind:checked={enabledOnly} onchange={loadPolls} />
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={enabledOnly} onchange={loadPolls} />
         {$t('polls.enabledOnly')}
       </label>
       <button type="button" class="ghost-button" onclick={loadPolls} disabled={loading}>
@@ -451,7 +451,7 @@
 
 
     {#if error}
-      <p class="empty-state danger">{error}</p>
+      <p class="empty-state danger" role="alert">{error}</p>
     {:else if loading}
       <p class="empty-state">{$t('common.loading')}</p>
     {/if}
@@ -488,7 +488,7 @@
           {#if expandedId === poll.id}
             <div class="catalog-card-detail">
               {#if detailError}
-                <p class="empty-state danger">{detailError}</p>
+                <p class="empty-state danger" role="alert">{detailError}</p>
               {:else if !detail}
                 <p class="empty-state">{$t('common.loading')}</p>
               {:else}
@@ -610,7 +610,7 @@
                   </h3>
 
                   {#if resultsError}
-                    <p class="empty-state danger">{resultsError}</p>
+                    <p class="empty-state danger" role="alert">{resultsError}</p>
                   {:else if !results}
                     <p class="empty-state">{$t('common.loading')}</p>
                   {:else}
@@ -700,36 +700,36 @@
     <div class="catalog-card-detail">
       <div class="op-field">
         <label for="new-poll-code">{$t('polls.codeRequired')}</label>
-        <input id="new-poll-code" bind:value={newPoll.code} placeholder={$t('polls.codePlaceholder')} />
+        <input autocomplete="off" spellcheck="false" id="new-poll-code" bind:value={newPoll.code} placeholder={$t('polls.codePlaceholder')} />
         <small class="muted">{$t('polls.codeHint')}</small>
       </div>
       <div class="op-field">
         <label for="new-poll-headline">{$t('polls.headlineRequired')}</label>
-        <input id="new-poll-headline" bind:value={newPoll.headline} />
+        <input autocomplete="off" spellcheck="false" id="new-poll-headline" bind:value={newPoll.headline} />
       </div>
       <div class="op-field">
         <label for="new-poll-summary">{$t('polls.summaryRequired')}</label>
-        <input id="new-poll-summary" bind:value={newPoll.summary} />
+        <input autocomplete="off" spellcheck="false" id="new-poll-summary" bind:value={newPoll.summary} />
         <small class="muted">{$t('polls.offerHint')}</small>
       </div>
       <div class="op-field">
         <label for="new-poll-start">{$t('polls.startMessage')}</label>
-        <input id="new-poll-start" bind:value={newPoll.startMessage} />
+        <input autocomplete="off" spellcheck="false" id="new-poll-start" bind:value={newPoll.startMessage} />
       </div>
       <div class="op-field">
         <label for="new-poll-end">{$t('polls.endMessage')}</label>
-        <input id="new-poll-end" bind:value={newPoll.endMessage} />
+        <input autocomplete="off" spellcheck="false" id="new-poll-end" bind:value={newPoll.endMessage} />
       </div>
       <div class="op-field">
         <label for="new-poll-type">{$t('polls.pollType')}</label>
-        <input id="new-poll-type" bind:value={newPoll.pollType} placeholder={$t('polls.pollTypePlaceholder')} />
+        <input autocomplete="off" spellcheck="false" id="new-poll-type" bind:value={newPoll.pollType} placeholder={$t('polls.pollTypePlaceholder')} />
       </div>
       <div class="op-field">
-        <label><input type="checkbox" bind:checked={newPoll.npsPoll} /> {$t('polls.npsLabel')}</label>
+        <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={newPoll.npsPoll} /> {$t('polls.npsLabel')}</label>
         <small class="muted">{$t('polls.npsHint')}</small>
       </div>
       <div class="op-field">
-        <label><input type="checkbox" bind:checked={newPoll.offerOnRoomEntry} /> {$t('polls.offerOnRoomEntry')}</label>
+        <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={newPoll.offerOnRoomEntry} /> {$t('polls.offerOnRoomEntry')}</label>
       </div>
       <div class="op-field">
         <span class="field-label">{$t('polls.roomPin')}</span>
@@ -748,10 +748,10 @@
       </div>
       <div class="op-field">
         <label for="new-poll-sort">{$t('polls.sortOrder')}</label>
-        <input id="new-poll-sort" type="number" bind:value={newPoll.sortOrder} />
+        <input autocomplete="off" spellcheck="false" id="new-poll-sort" type="number" bind:value={newPoll.sortOrder} />
       </div>
       <div class="op-field">
-        <label><input type="checkbox" bind:checked={newPoll.enabled} /> {$t('polls.enabledLabel')}</label>
+        <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={newPoll.enabled} /> {$t('polls.enabledLabel')}</label>
       </div>
       <button type="button" onclick={stageCreatePoll} disabled={$ops.busyKeys.createPoll || !canManage}>
         {$t('polls.create')}
@@ -765,33 +765,33 @@
   <Drawer title={$t('polls.editPoll')} eyebrow={$t('polls.title')} onclose={() => { editPollForm = null; }}>
     <div class="op-field">
       <label for="edit-poll-code">{$t('polls.codeRequired')}</label>
-      <input id="edit-poll-code" bind:value={editPollForm.code} />
+      <input autocomplete="off" spellcheck="false" id="edit-poll-code" bind:value={editPollForm.code} />
     </div>
     <div class="op-field">
       <label for="edit-poll-headline">{$t('polls.headlineRequired')}</label>
-      <input id="edit-poll-headline" bind:value={editPollForm.headline} />
+      <input autocomplete="off" spellcheck="false" id="edit-poll-headline" bind:value={editPollForm.headline} />
     </div>
     <div class="op-field">
       <label for="edit-poll-summary">{$t('polls.summaryRequired')}</label>
-      <input id="edit-poll-summary" bind:value={editPollForm.summary} />
+      <input autocomplete="off" spellcheck="false" id="edit-poll-summary" bind:value={editPollForm.summary} />
     </div>
     <div class="op-field">
       <label for="edit-poll-start">{$t('polls.startMessage')}</label>
-      <input id="edit-poll-start" bind:value={editPollForm.startMessage} />
+      <input autocomplete="off" spellcheck="false" id="edit-poll-start" bind:value={editPollForm.startMessage} />
     </div>
     <div class="op-field">
       <label for="edit-poll-end">{$t('polls.endMessage')}</label>
-      <input id="edit-poll-end" bind:value={editPollForm.endMessage} />
+      <input autocomplete="off" spellcheck="false" id="edit-poll-end" bind:value={editPollForm.endMessage} />
     </div>
     <div class="op-field">
       <label for="edit-poll-type">{$t('polls.pollType')}</label>
-      <input id="edit-poll-type" bind:value={editPollForm.pollType} />
+      <input autocomplete="off" spellcheck="false" id="edit-poll-type" bind:value={editPollForm.pollType} />
     </div>
     <div class="op-field">
-      <label><input type="checkbox" bind:checked={editPollForm.npsPoll} /> {$t('polls.npsLabel')}</label>
+      <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editPollForm.npsPoll} /> {$t('polls.npsLabel')}</label>
     </div>
     <div class="op-field">
-      <label><input type="checkbox" bind:checked={editPollForm.offerOnRoomEntry} /> {$t('polls.offerOnRoomEntry')}</label>
+      <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editPollForm.offerOnRoomEntry} /> {$t('polls.offerOnRoomEntry')}</label>
     </div>
     <div class="op-field">
       <span class="field-label">{$t('polls.roomPin')}</span>
@@ -809,10 +809,10 @@
     </div>
     <div class="op-field">
       <label for="edit-poll-sort">{$t('polls.sortOrder')}</label>
-      <input id="edit-poll-sort" type="number" bind:value={editPollForm.sortOrder} />
+      <input autocomplete="off" spellcheck="false" id="edit-poll-sort" type="number" bind:value={editPollForm.sortOrder} />
     </div>
     <div class="op-field">
-      <label><input type="checkbox" bind:checked={editPollForm.enabled} /> {$t('polls.enabledLabel')}</label>
+      <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editPollForm.enabled} /> {$t('polls.enabledLabel')}</label>
     </div>
     <button type="button" onclick={() => stageUpdatePoll(editPollForm.id)} disabled={$ops.busyKeys[`updatePoll:${editPollForm.id}`]}>
       {$t('polls.save')}
@@ -830,7 +830,7 @@
       </h4>
       <div class="op-field">
         <label for="question-text">{$t('polls.questionTextRequired')}</label>
-        <input id="question-text" bind:value={questionForm.questionText} />
+        <input autocomplete="off" spellcheck="false" id="question-text" bind:value={questionForm.questionText} />
       </div>
       <div class="op-field">
         <label for="question-type">{$t('polls.questionType')}</label>
@@ -849,13 +849,13 @@
       {#if questionForm.parentQuestionId}
         <div class="op-field">
           <label for="question-category">{$t('polls.questionCategory')}</label>
-          <input id="question-category" type="number" min="0" bind:value={questionForm.questionCategory} />
+          <input autocomplete="off" spellcheck="false" id="question-category" type="number" min="0" bind:value={questionForm.questionCategory} />
           <small class="muted">{$t('polls.questionCategoryHint')}</small>
         </div>
       {/if}
       <div class="op-field">
         <label for="question-sort">{$t('polls.sortOrder')}</label>
-        <input id="question-sort" type="number" bind:value={questionForm.sortOrder} />
+        <input autocomplete="off" spellcheck="false" id="question-sort" type="number" bind:value={questionForm.sortOrder} />
       </div>
 
       {#if choiceTypeSelected}
@@ -863,9 +863,9 @@
           <legend>{$t('polls.choicesLegend')}</legend>
           {#each questionForm.choices as choice, index}
             <div class="choice-row">
-              <input placeholder={$t('polls.choiceValue')} bind:value={choice.value} />
-              <input placeholder={$t('polls.choiceText')} bind:value={choice.choiceText} />
-              <input
+              <input autocomplete="off" spellcheck="false" placeholder={$t('polls.choiceValue')} bind:value={choice.value} />
+              <input autocomplete="off" spellcheck="false" placeholder={$t('polls.choiceText')} bind:value={choice.choiceText} />
+              <input autocomplete="off" spellcheck="false"
                 type="number"
                 min="0"
                 title={$t('polls.choiceTypeHint')}

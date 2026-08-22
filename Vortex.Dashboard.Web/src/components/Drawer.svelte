@@ -48,6 +48,18 @@
 
   let panel = $state();
 
+  // The drawer is the only edit surface in the dashboard, so one guard here covers every form
+  // instead of forty pages each remembering to add one. Any input inside the panel arms it; closing
+  // the drawer takes the listener away with the component. Only covers leaving the tab -- hash
+  // navigation inside the SPA does not fire beforeunload, and svelte-spa-router has no guard hook.
+  let dirty = $state(false);
+
+  function guardUnload(event) {
+    if (!dirty) return;
+    event.preventDefault();
+    event.returnValue = '';
+  }
+
   function close() {
     if (dismissible) {
       onclose?.();
@@ -57,11 +69,15 @@
   useDialogBehaviour(() => panel, { onClose: close });
 </script>
 
+<svelte:window onbeforeunload={guardUnload} />
+
 <div class="drawer-layer">
   <button class="drawer-backdrop" type="button" aria-label="Close" tabindex="-1" onclick={close}
   ></button>
   <section
     class="drawer-panel"
+    oninput={() => (dirty = true)}
+    onchange={() => (dirty = true)}
     role="dialog"
     aria-modal="true"
     aria-labelledby={title ? labelledBy : undefined}
@@ -174,6 +190,7 @@
   .drawer-body {
     flex: 1;
     overflow-y: auto;
+    overscroll-behavior: contain;
     padding: 18px 20px;
   }
 

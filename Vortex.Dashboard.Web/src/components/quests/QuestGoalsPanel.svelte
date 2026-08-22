@@ -312,7 +312,7 @@
   <AccessDeniedNotice message={$t('questContent.accessDenied')} />
 {:else}
   {#if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 
   <section class="panel">
@@ -338,31 +338,31 @@
       <div class="editor">
         <div class="op-field">
           <label for="goal-code">{$t('questContent.codeRequired')}</label>
-          <input id="goal-code" bind:value={newGoal.code} placeholder="summer_build" />
+          <input autocomplete="off" spellcheck="false" id="goal-code" bind:value={newGoal.code} placeholder="summer_build" />
         </div>
         <div class="op-field">
           <label for="goal-campaign">{$t('questContent.campaignCode')}</label>
-          <input id="goal-campaign" bind:value={newGoal.campaignCode} />
+          <input autocomplete="off" spellcheck="false" id="goal-campaign" bind:value={newGoal.campaignCode} />
           <small class="muted">{$t('questContent.campaignHint')}</small>
         </div>
         <div class="op-field">
           <label for="goal-ends">{$t('questContent.endsAt')}</label>
-          <input id="goal-ends" type="datetime-local" bind:value={newGoal.endsAt} />
+          <input autocomplete="off" spellcheck="false" id="goal-ends" type="datetime-local" bind:value={newGoal.endsAt} />
         </div>
         <div class="op-field">
           <label for="goal-sort">{$t('questContent.sortOrder')}</label>
-          <input id="goal-sort" type="number" bind:value={newGoal.sortOrder} />
+          <input autocomplete="off" spellcheck="false" id="goal-sort" type="number" bind:value={newGoal.sortOrder} />
         </div>
         <div class="op-field">
-          <label><input type="checkbox" bind:checked={newGoal.enabled} /> {$t('questContent.enabled')}</label>
+          <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={newGoal.enabled} /> {$t('questContent.enabled')}</label>
         </div>
 
         <fieldset class="op-subgroup">
           <legend>{$t('questContent.ladderLegend')}</legend>
           {#each newGoal.levels as level, index}
             <div class="row-grid">
-              <input type="number" min="0" placeholder={$t('questContent.threshold')} bind:value={level.scoreThreshold} />
-              <input type="number" min="0" placeholder={$t('questContent.rewardLimit')} bind:value={level.rewardUserLimit} />
+              <input autocomplete="off" spellcheck="false" type="number" min="0" placeholder={$t('questContent.threshold')} bind:value={level.scoreThreshold} />
+              <input autocomplete="off" spellcheck="false" type="number" min="0" placeholder={$t('questContent.rewardLimit')} bind:value={level.rewardUserLimit} />
               <button
                 type="button"
                 class="ghost-button danger"
@@ -383,7 +383,7 @@
 
         <div class="op-field">
           <label for="goal-reason">{$t('common.reason')}</label>
-          <input id="goal-reason" bind:value={newGoal.reason} />
+          <input autocomplete="off" spellcheck="false" id="goal-reason" bind:value={newGoal.reason} />
         </div>
         <button type="button" onclick={saveGoal} disabled={$ops.busyKeys.goalCreate}>
           {$t('questContent.create')}
@@ -450,30 +450,30 @@
             <div class="editor">
               <div class="op-field">
                 <label for={`edit-goal-code-${goal.id}`}>{$t('questContent.codeRequired')}</label>
-                <input id={`edit-goal-code-${goal.id}`} bind:value={editGoal.code} />
+                <input autocomplete="off" spellcheck="false" id={`edit-goal-code-${goal.id}`} bind:value={editGoal.code} />
               </div>
               <div class="op-field">
                 <label for={`edit-goal-campaign-${goal.id}`}>{$t('questContent.campaignCode')}</label>
-                <input id={`edit-goal-campaign-${goal.id}`} bind:value={editGoal.campaignCode} />
+                <input autocomplete="off" spellcheck="false" id={`edit-goal-campaign-${goal.id}`} bind:value={editGoal.campaignCode} />
               </div>
               <div class="op-field">
                 <label for={`edit-goal-ends-${goal.id}`}>{$t('questContent.endsAt')}</label>
-                <input id={`edit-goal-ends-${goal.id}`} type="datetime-local" bind:value={editGoal.endsAt} />
+                <input autocomplete="off" spellcheck="false" id={`edit-goal-ends-${goal.id}`} type="datetime-local" bind:value={editGoal.endsAt} />
               </div>
               <div class="op-field">
                 <label for={`edit-goal-sort-${goal.id}`}>{$t('questContent.sortOrder')}</label>
-                <input id={`edit-goal-sort-${goal.id}`} type="number" bind:value={editGoal.sortOrder} />
+                <input autocomplete="off" spellcheck="false" id={`edit-goal-sort-${goal.id}`} type="number" bind:value={editGoal.sortOrder} />
               </div>
               <div class="op-field">
-                <label><input type="checkbox" bind:checked={editGoal.enabled} /> {$t('questContent.enabled')}</label>
+                <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editGoal.enabled} /> {$t('questContent.enabled')}</label>
               </div>
 
               <fieldset class="op-subgroup">
                 <legend>{$t('questContent.ladderLegend')}</legend>
                 {#each editGoal.levels as level, index}
                   <div class="row-grid">
-                    <input type="number" min="0" bind:value={level.scoreThreshold} />
-                    <input type="number" min="0" bind:value={level.rewardUserLimit} />
+                    <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={level.scoreThreshold} />
+                    <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={level.rewardUserLimit} />
                     <button
                       type="button"
                       class="ghost-button danger"
@@ -493,7 +493,7 @@
 
               <div class="op-field">
                 <label for={`edit-goal-reason-${goal.id}`}>{$t('common.reason')}</label>
-                <input id={`edit-goal-reason-${goal.id}`} bind:value={editGoal.reason} />
+                <input autocomplete="off" spellcheck="false" id={`edit-goal-reason-${goal.id}`} bind:value={editGoal.reason} />
               </div>
               <div class="row-actions">
                 <button type="button" onclick={saveGoal} disabled={$ops.busyKeys[`goal:${goal.id}`]}>
@@ -537,7 +537,7 @@
       <div class="editor">
         <div class="op-field">
           <label for="task-code">{$t('questContent.taskCodeRequired')}</label>
-          <input id="task-code" bind:value={newTask.taskCode} placeholder="visit_rooms" />
+          <input autocomplete="off" spellcheck="false" id="task-code" bind:value={newTask.taskCode} placeholder="visit_rooms" />
         </div>
         <div class="op-field">
           <label for="task-type">{$t('questContent.objectiveRequired')}</label>
@@ -551,34 +551,34 @@
         </div>
         <div class="op-field">
           <label for="task-repeats">{$t('questContent.requiredRepeats')}</label>
-          <input id="task-repeats" type="number" min="1" bind:value={newTask.requiredRepeats} />
+          <input autocomplete="off" spellcheck="false" id="task-repeats" type="number" min="1" bind:value={newTask.requiredRepeats} />
         </div>
         <div class="op-field">
           <label for="task-image">{$t('questContent.imageVersion')}</label>
-          <input id="task-image" bind:value={newTask.imageVersion} />
+          <input autocomplete="off" spellcheck="false" id="task-image" bind:value={newTask.imageVersion} />
         </div>
         <div class="op-field">
           <label for="task-catalog">{$t('questContent.catalogName')}</label>
-          <input id="task-catalog" bind:value={newTask.catalogName} />
+          <input autocomplete="off" spellcheck="false" id="task-catalog" bind:value={newTask.catalogName} />
         </div>
         <div class="op-field">
           <label for="task-sort">{$t('questContent.sortOrder')}</label>
-          <input id="task-sort" type="number" bind:value={newTask.sortOrder} />
+          <input autocomplete="off" spellcheck="false" id="task-sort" type="number" bind:value={newTask.sortOrder} />
         </div>
         <div class="op-field">
-          <label><input type="checkbox" bind:checked={newTask.isBonus} /> {$t('questContent.isBonus')}</label>
+          <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={newTask.isBonus} /> {$t('questContent.isBonus')}</label>
         </div>
         <div class="op-field">
-          <label><input type="checkbox" bind:checked={newTask.enabled} /> {$t('questContent.enabled')}</label>
+          <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={newTask.enabled} /> {$t('questContent.enabled')}</label>
         </div>
 
         <fieldset class="op-subgroup">
           <legend><Gift size={13} strokeWidth={2} aria-hidden="true" /> {$t('questContent.rewardsLegend')}</legend>
           {#each newTask.rewards as reward, index}
             <div class="row-grid four">
-              <input placeholder={$t('questContent.rewardType')} bind:value={reward.rewardTypeId} />
-              <input type="number" min="0" placeholder={$t('questContent.amount')} bind:value={reward.amount} />
-              <input type="number" min="0" placeholder={$t('questContent.productType')} bind:value={reward.productItemTypeId} />
+              <input autocomplete="off" spellcheck="false" placeholder={$t('questContent.rewardType')} bind:value={reward.rewardTypeId} />
+              <input autocomplete="off" spellcheck="false" type="number" min="0" placeholder={$t('questContent.amount')} bind:value={reward.amount} />
+              <input autocomplete="off" spellcheck="false" type="number" min="0" placeholder={$t('questContent.productType')} bind:value={reward.productItemTypeId} />
               <button
                 type="button"
                 class="ghost-button danger"
@@ -599,7 +599,7 @@
 
         <div class="op-field">
           <label for="task-reason">{$t('common.reason')}</label>
-          <input id="task-reason" bind:value={newTask.reason} />
+          <input autocomplete="off" spellcheck="false" id="task-reason" bind:value={newTask.reason} />
         </div>
         <button type="button" onclick={saveTask} disabled={$ops.busyKeys.taskCreate}>
           {$t('questContent.create')}
@@ -659,7 +659,7 @@
             <div class="editor">
               <div class="op-field">
                 <label for={`edit-task-code-${task.id}`}>{$t('questContent.taskCodeRequired')}</label>
-                <input id={`edit-task-code-${task.id}`} bind:value={editTask.taskCode} />
+                <input autocomplete="off" spellcheck="false" id={`edit-task-code-${task.id}`} bind:value={editTask.taskCode} />
               </div>
               <div class="op-field">
                 <label for={`edit-task-type-${task.id}`}>{$t('questContent.objectiveRequired')}</label>
@@ -676,34 +676,34 @@
               </div>
               <div class="op-field">
                 <label for={`edit-task-repeats-${task.id}`}>{$t('questContent.requiredRepeats')}</label>
-                <input id={`edit-task-repeats-${task.id}`} type="number" min="1" bind:value={editTask.requiredRepeats} />
+                <input autocomplete="off" spellcheck="false" id={`edit-task-repeats-${task.id}`} type="number" min="1" bind:value={editTask.requiredRepeats} />
               </div>
               <div class="op-field">
                 <label for={`edit-task-image-${task.id}`}>{$t('questContent.imageVersion')}</label>
-                <input id={`edit-task-image-${task.id}`} bind:value={editTask.imageVersion} />
+                <input autocomplete="off" spellcheck="false" id={`edit-task-image-${task.id}`} bind:value={editTask.imageVersion} />
               </div>
               <div class="op-field">
                 <label for={`edit-task-catalog-${task.id}`}>{$t('questContent.catalogName')}</label>
-                <input id={`edit-task-catalog-${task.id}`} bind:value={editTask.catalogName} />
+                <input autocomplete="off" spellcheck="false" id={`edit-task-catalog-${task.id}`} bind:value={editTask.catalogName} />
               </div>
               <div class="op-field">
                 <label for={`edit-task-sort-${task.id}`}>{$t('questContent.sortOrder')}</label>
-                <input id={`edit-task-sort-${task.id}`} type="number" bind:value={editTask.sortOrder} />
+                <input autocomplete="off" spellcheck="false" id={`edit-task-sort-${task.id}`} type="number" bind:value={editTask.sortOrder} />
               </div>
               <div class="op-field">
-                <label><input type="checkbox" bind:checked={editTask.isBonus} /> {$t('questContent.isBonus')}</label>
+                <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editTask.isBonus} /> {$t('questContent.isBonus')}</label>
               </div>
               <div class="op-field">
-                <label><input type="checkbox" bind:checked={editTask.enabled} /> {$t('questContent.enabled')}</label>
+                <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editTask.enabled} /> {$t('questContent.enabled')}</label>
               </div>
 
               <fieldset class="op-subgroup">
                 <legend>{$t('questContent.rewardsLegend')}</legend>
                 {#each editTask.rewards as reward, index}
                   <div class="row-grid four">
-                    <input bind:value={reward.rewardTypeId} />
-                    <input type="number" min="0" bind:value={reward.amount} />
-                    <input type="number" min="0" bind:value={reward.productItemTypeId} />
+                    <input autocomplete="off" spellcheck="false" bind:value={reward.rewardTypeId} />
+                    <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={reward.amount} />
+                    <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={reward.productItemTypeId} />
                     <button
                       type="button"
                       class="ghost-button danger"
@@ -723,7 +723,7 @@
 
               <div class="op-field">
                 <label for={`edit-task-reason-${task.id}`}>{$t('common.reason')}</label>
-                <input id={`edit-task-reason-${task.id}`} bind:value={editTask.reason} />
+                <input autocomplete="off" spellcheck="false" id={`edit-task-reason-${task.id}`} bind:value={editTask.reason} />
               </div>
               <div class="row-actions">
                 <button type="button" onclick={saveTask} disabled={$ops.busyKeys[`task:${task.id}`]}>

@@ -166,7 +166,7 @@
   {:else if forbidden}
     <AccessDeniedNotice message={$t('staff.accessDenied')} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 
   {#if $ops.result}
@@ -287,7 +287,7 @@
               <tr>
                 <td colspan={canManage ? 6 : 5}>
                   {#if role.unknownCapabilities.length > 0}
-                    <p class="empty-state danger">
+                    <p class="empty-state danger" role="alert">
                       {$t('staff.unknownExplained')}
                       {#each role.unknownCapabilities as cap}<code class="chip">{cap}</code>{/each}
                     </p>
@@ -325,11 +325,11 @@
       >
         <label>
           {$t('staff.colKey')}
-          <input bind:value={roleForm.key} placeholder="moderator" />
+          <input autocomplete="off" spellcheck="false" bind:value={roleForm.key} placeholder="moderator" />
         </label>
         <label>
           {$t('staff.colRole')}
-          <input bind:value={roleForm.name} placeholder={$t('staff.rolePlaceholder')} />
+          <input autocomplete="off" spellcheck="false" bind:value={roleForm.name} placeholder={$t('staff.rolePlaceholder')} />
         </label>
         <button type="submit" disabled={!roleForm.key.trim() || !roleForm.name.trim()}>
           {$t('staff.addRole')}
@@ -398,7 +398,7 @@
       <form class="inline-form" onsubmit={(event) => { event.preventDefault(); searchAccounts(); }}>
         <label>
           {$t('staff.searchAccount')}
-          <input bind:value={accountQuery} placeholder={$t('staff.searchAccountPlaceholder')} />
+          <input autocomplete="off" spellcheck="false" bind:value={accountQuery} placeholder={$t('staff.searchAccountPlaceholder')} />
         </label>
         <button type="submit" disabled={accountSearching}>{$t('staff.search')}</button>
         <label>
@@ -573,19 +573,19 @@
         </label>
         <label>
           {$t('staff.colIndex')}
-          <input type="number" bind:value={presetForm.presetIndex} min="0" />
+          <input autocomplete="off" spellcheck="false" type="number" bind:value={presetForm.presetIndex} min="0" />
         </label>
         <label>
           {$t('staff.colPresetName')}
-          <input bind:value={presetForm.name} />
+          <input autocomplete="off" spellcheck="false" bind:value={presetForm.name} />
         </label>
         <label>
           {$t('staff.durationSeconds')}
-          <input type="number" bind:value={presetForm.durationSeconds} min="0" placeholder={$t('common.permanent')} />
+          <input autocomplete="off" spellcheck="false" type="number" bind:value={presetForm.durationSeconds} min="0" placeholder={$t('common.permanent')} />
         </label>
         <label>
           {$t('staff.colMessage')}
-          <input bind:value={presetForm.message} />
+          <input autocomplete="off" spellcheck="false" bind:value={presetForm.message} />
         </label>
         <button type="submit" disabled={!presetForm.name.trim()}>{$t('staff.addPreset')}</button>
       </form>
@@ -610,11 +610,11 @@
     >
       <label>
         {$t('staff.colKey')}
-        <input bind:value={roleDraft.key} required />
+        <input autocomplete="off" spellcheck="false" bind:value={roleDraft.key} required />
       </label>
       <label>
         {$t('staff.colRole')}
-        <input bind:value={roleDraft.name} required />
+        <input autocomplete="off" spellcheck="false" bind:value={roleDraft.name} required />
       </label>
       <button type="submit">{$t('staff.save')}</button>
       <button type="button" class="ghost-button" onclick={() => (roleDraft = null)}>
@@ -628,7 +628,7 @@
   <Drawer title={$t('staff.capabilitiesTitle')} eyebrow={$t('staff.title')} onclose={() => (capabilityDraft = null)}>
     <p class="muted">{$t('staff.capabilityEditorHint')}</p>
     <label class="wildcard-row">
-      <input
+      <input autocomplete="off" spellcheck="false"
         type="checkbox"
         checked={capabilityDraft.selected.has(data.wildcard)}
         onchange={() => toggleCapability(data.wildcard)}
@@ -650,7 +650,7 @@
         <div class="cap-grid">
           {#each group.capabilities as cap}
             <label class="cap-check">
-              <input
+              <input autocomplete="off" spellcheck="false"
                 type="checkbox"
                 checked={capabilityDraft.selected.has(cap)}
                 onchange={() => toggleCapability(cap)}
@@ -708,19 +708,19 @@
       </label>
       <label>
         {$t('staff.colIndex')}
-        <input type="number" bind:value={presetDraft.presetIndex} min="0" />
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={presetDraft.presetIndex} min="0" />
       </label>
       <label>
         {$t('staff.colPresetName')}
-        <input bind:value={presetDraft.name} required />
+        <input autocomplete="off" spellcheck="false" bind:value={presetDraft.name} required />
       </label>
       <label>
         {$t('staff.durationSeconds')}
-        <input type="number" bind:value={presetDraft.durationSeconds} min="0" placeholder={$t('common.permanent')} />
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={presetDraft.durationSeconds} min="0" placeholder={$t('common.permanent')} />
       </label>
       <label>
         {$t('staff.colMessage')}
-        <input bind:value={presetDraft.message} />
+        <input autocomplete="off" spellcheck="false" bind:value={presetDraft.message} />
       </label>
       <button type="submit">{$t('staff.save')}</button>
       <button type="button" class="ghost-button" onclick={() => (presetDraft = null)}>

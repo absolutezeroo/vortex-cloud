@@ -102,7 +102,7 @@
         {noteOnly ? $t('common.noteOptional') : $t('common.reasonRequired')}
       </label>
       <!-- svelte-ignore a11y_autofocus -->
-      <input
+      <input autocomplete="off" spellcheck="false"
         id="confirm-reason-input"
         bind:value={note}
         placeholder={noteOnly ? $t('common.notePlaceholder') : $t('common.reasonPlaceholderChange')}
@@ -111,7 +111,7 @@
         onkeydown={(e) => e.key === 'Enter' && confirm()}
       />
     </div>
-    {#if error}<p class="op-result danger"><CircleX size={16} strokeWidth={2} aria-hidden="true" /> {error}</p>{/if}
+    {#if error}<p class="op-result danger" role="alert"><CircleX size={16} strokeWidth={2} aria-hidden="true" /> {error}</p>{/if}
     <div class="op-actions">
       <button type="button" class:danger onclick={confirm} disabled={busy || !valid}>
         {confirmLabel || $t('common.confirm')}

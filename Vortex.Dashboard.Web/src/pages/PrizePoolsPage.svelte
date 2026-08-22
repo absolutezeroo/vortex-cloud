@@ -266,19 +266,19 @@
       <div class="op-grid">
         <div class="op-field">
           <label for="pool-code">{$t('prizePools.code')}</label>
-          <input id="pool-code" bind:value={newPool.code} />
+          <input autocomplete="off" spellcheck="false" id="pool-code" bind:value={newPool.code} />
         </div>
         <div class="op-field">
           <label for="pool-name">{$t('prizePools.name')}</label>
-          <input id="pool-name" bind:value={newPool.name} />
+          <input autocomplete="off" spellcheck="false" id="pool-name" bind:value={newPool.name} />
         </div>
         <div class="op-field">
           <label for="pool-variants">{$t('prizePools.variants')}</label>
-          <input id="pool-variants" bind:value={newPool.variants} />
+          <input autocomplete="off" spellcheck="false" id="pool-variants" bind:value={newPool.variants} />
         </div>
         <div class="op-field">
           <label for="pool-notes">{$t('prizePools.notes')}</label>
-          <input id="pool-notes" bind:value={newPool.notes} />
+          <input autocomplete="off" spellcheck="false" id="pool-notes" bind:value={newPool.notes} />
         </div>
       </div>
       <div class="op-actions">
@@ -405,7 +405,7 @@
             <div class="op-field">
               <label for="entry-definition">{$t('prizePools.furnitureDefinitionId')}</label>
               <div class="op-pick">
-                <input
+                <input autocomplete="off" spellcheck="false"
                   id="entry-definition"
                   type="number"
                   bind:value={newEntry.furnitureDefinitionId}
@@ -420,16 +420,16 @@
           {:else}
             <div class="op-field">
               <label for="entry-extra">{$t('prizePools.extraParam')}</label>
-              <input id="entry-extra" bind:value={newEntry.extraParam} />
+              <input autocomplete="off" spellcheck="false" id="entry-extra" bind:value={newEntry.extraParam} />
             </div>
           {/if}
           <div class="op-field">
             <label for="entry-variant">{$t('prizePools.variant')}</label>
-            <input id="entry-variant" bind:value={newEntry.variant} />
+            <input autocomplete="off" spellcheck="false" id="entry-variant" bind:value={newEntry.variant} />
           </div>
           <div class="op-field">
             <label for="entry-weight">{$t('prizePools.weight')}</label>
-            <input id="entry-weight" type="number" min="1" bind:value={newEntry.weight} />
+            <input autocomplete="off" spellcheck="false" id="entry-weight" type="number" min="1" bind:value={newEntry.weight} />
           </div>
         </div>
         <div class="op-actions">
@@ -474,7 +474,7 @@
       <div class="toolbar-grid">
         <label>
           {$t('prizePools.searchBindings')}
-          <input
+          <input autocomplete="off" spellcheck="false"
             type="search"
             bind:value={bindingQuery}
             oninput={() => (bindingPage = 1)}
@@ -569,7 +569,7 @@
         <div class="op-field">
           <label for="binding-definition">{$t('prizePools.furnitureDefinitionId')}</label>
           <div class="op-pick">
-            <input
+            <input autocomplete="off" spellcheck="false"
               id="binding-definition"
               type="number"
               bind:value={newBinding.furnitureDefinitionId}
@@ -590,7 +590,7 @@
         </div>
         <div class="op-field">
           <label for="binding-hits">{$t('prizePools.hitsRequired')}</label>
-          <input id="binding-hits" type="number" min="1" bind:value={newBinding.hitsRequired} />
+          <input autocomplete="off" spellcheck="false" id="binding-hits" type="number" min="1" bind:value={newBinding.hitsRequired} />
         </div>
       </div>
       <div class="op-actions">

@@ -144,7 +144,7 @@
   <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); search(); }}>
     <label>
       {$t('bots.search')}
-      <input type="search" bind:value={term} placeholder={$t('bots.searchPlaceholder')} />
+      <input autocomplete="off" spellcheck="false" type="search" bind:value={term} placeholder={$t('bots.searchPlaceholder')} />
     </label>
     <label>
       {$t('bots.owner')}
@@ -170,7 +170,7 @@
   {:else if bots.forbidden}
     <AccessDeniedNotice message={$t('bots.accessDenied')} />
   {:else if bots.error}
-    <p class="empty-state danger">{bots.error}</p>
+    <p class="empty-state danger" role="alert">{bots.error}</p>
   {/if}
 </section>
 
@@ -243,7 +243,19 @@
         </thead>
         <tbody>
           {#each list.items || [] as row}
-            <tr class:selected={selected === row.id} onclick={() => select(row)} style="cursor: pointer;">
+            <tr
+                class:selected={selected === row.id}
+                onclick={() => select(row)}
+                onkeydown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    select(row);
+                  }
+                }}
+                tabindex="0"
+                aria-selected={selected === row.id}
+                style="cursor: pointer;"
+              >
               <td>
                 <span class="bot-cell">
                   <AssetImage src={row.avatarUrl} alt={row.name} size={36} fallbackIcon={Bot} />
@@ -308,7 +320,7 @@
                   {#if detail.loading}
                     <p class="muted">{$t('common.loading')}</p>
                   {:else if detail.error}
-                    <p class="empty-state danger">{detail.error}</p>
+                    <p class="empty-state danger" role="alert">{detail.error}</p>
                   {:else if detail.data}
                     <dl class="detail-grid">
                       <div><dt>{$t('bots.detailFigure')}</dt><dd><code>{detail.data.figure}</code></dd></div>
@@ -442,21 +454,21 @@
     <div class="op-field">
       <label for="hand-item-id">{$t('bots.colHandItemId')}</label>
       <span class="bot-cell">
-        <input id="hand-item-id" type="number" bind:value={handItemForm.handItemId} min="1" />
+        <input autocomplete="off" spellcheck="false" id="hand-item-id" type="number" bind:value={handItemForm.handItemId} min="1" />
         <AssetImage src={handItemPreviewUrl} alt="" size={40} fallbackIcon={Hand} />
       </span>
     </div>
     <div class="op-field">
       <label for="hand-item-name">{$t('bots.colHandItemName')}</label>
-      <input id="hand-item-name" bind:value={handItemForm.name} />
+      <input autocomplete="off" spellcheck="false" id="hand-item-name" bind:value={handItemForm.name} />
     </div>
     <div class="op-field">
       <label for="hand-item-nutrition">{$t('bots.colNutrition')}</label>
-      <input id="hand-item-nutrition" type="number" bind:value={handItemForm.nutrition} min="0" />
+      <input autocomplete="off" spellcheck="false" id="hand-item-nutrition" type="number" bind:value={handItemForm.nutrition} min="0" />
     </div>
     <div class="op-field">
       <label for="hand-item-thirst">{$t('bots.colThirst')}</label>
-      <input id="hand-item-thirst" type="number" bind:value={handItemForm.thirst} min="0" />
+      <input autocomplete="off" spellcheck="false" id="hand-item-thirst" type="number" bind:value={handItemForm.thirst} min="0" />
     </div>
 
     {#snippet actions()}
@@ -488,15 +500,15 @@
   <Drawer title={$t('bots.updateBot')} eyebrow={$t('bots.title')} onclose={() => (botDraft = null)}>
     <div class="op-field">
       <label for="bot-name">{$t('bots.colBot')}</label>
-      <input id="bot-name" bind:value={botDraft.name} required />
+      <input autocomplete="off" spellcheck="false" id="bot-name" bind:value={botDraft.name} required />
     </div>
     <div class="op-field">
       <label for="bot-motto">{$t('bots.motto')}</label>
-      <input id="bot-motto" bind:value={botDraft.motto} />
+      <input autocomplete="off" spellcheck="false" id="bot-motto" bind:value={botDraft.motto} />
     </div>
     <div class="op-field">
       <label for="bot-figure">{$t('bots.detailFigure')}</label>
-      <input id="bot-figure" bind:value={botDraft.figure} />
+      <input autocomplete="off" spellcheck="false" id="bot-figure" bind:value={botDraft.figure} />
     </div>
     <p class="muted">{$t('bots.placedHint')}</p>
 

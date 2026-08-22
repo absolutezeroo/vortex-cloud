@@ -27,7 +27,7 @@
 
 <span class="coin">
   {#if src}
-    <img {src} {alt} loading="lazy" />
+    <img {src} {alt} width="16" height="16" loading="lazy" />
   {:else}
     <Coins size={15} strokeWidth={2} color="var(--gold)" aria-hidden="true" />
   {/if}

@@ -151,19 +151,19 @@
   <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); applyFilters(); }}>
     <label>
       {$t('audit.since')}
-      <input type="datetime-local" bind:value={since} />
+      <input autocomplete="off" spellcheck="false" type="datetime-local" bind:value={since} />
     </label>
     <label>
       {$t('audit.until')}
-      <input type="datetime-local" bind:value={until} />
+      <input autocomplete="off" spellcheck="false" type="datetime-local" bind:value={until} />
     </label>
     <label>
       {$t('audit.actor')}
-      <input type="text" bind:value={actor} placeholder={$t('audit.playerIdPlaceholder')} />
+      <input autocomplete="off" spellcheck="false" type="text" bind:value={actor} placeholder={$t('audit.playerIdPlaceholder')} />
     </label>
     <label>
       {$t('audit.target')}
-      <input type="text" bind:value={target} placeholder={$t('audit.playerIdPlaceholder')} />
+      <input autocomplete="off" spellcheck="false" type="text" bind:value={target} placeholder={$t('audit.playerIdPlaceholder')} />
     </label>
     <label>
       {$t('audit.category')}
@@ -175,11 +175,11 @@
     </label>
     <label>
       {$t('audit.action')}
-      <input type="text" bind:value={action} placeholder={$t('audit.actionPlaceholder')} />
+      <input autocomplete="off" spellcheck="false" type="text" bind:value={action} placeholder={$t('audit.actionPlaceholder')} />
     </label>
     <label>
       {$t('audit.pageSize')}
-      <input type="number" min="10" max="500" bind:value={limit} />
+      <input autocomplete="off" spellcheck="false" type="number" min="10" max="500" bind:value={limit} />
     </label>
     <button type="submit">{$t('common.filter')}</button>
   </form>
@@ -187,7 +187,7 @@
   {#if forbidden}
     <AccessDeniedNotice message={$t('audit.accessDenied')} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {:else if loading}
     <p class="muted">{$t('audit.loadingEvents')}</p>
   {:else}

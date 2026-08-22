@@ -144,7 +144,7 @@
     {:else}
       <div class="op-field">
         <label for="voucher-code">{$t('vouchers.code')}</label>
-        <input id="voucher-code" bind:value={create.code} placeholder="SUMMER2026" style="text-transform: uppercase;" />
+        <input autocomplete="off" spellcheck="false" id="voucher-code" bind:value={create.code} placeholder="SUMMER2026" style="text-transform: uppercase;" />
       </div>
       <div class="op-field">
         <label for="voucher-currency">{$t('vouchers.currency')}</label>
@@ -157,25 +157,25 @@
       {#if Number(create.currencyType) === 4}
         <div class="op-field">
           <label for="voucher-activity-type">{$t('vouchers.activityPointType')}</label>
-          <input id="voucher-activity-type" type="number" min="0" bind:value={create.activityPointType} placeholder="0" />
+          <input autocomplete="off" spellcheck="false" id="voucher-activity-type" type="number" min="0" bind:value={create.activityPointType} placeholder="0" />
         </div>
       {/if}
       <div class="op-field">
         <label for="voucher-amount">{$t('vouchers.amount')}</label>
-        <input id="voucher-amount" type="number" min="1" bind:value={create.amount} placeholder="100" />
+        <input autocomplete="off" spellcheck="false" id="voucher-amount" type="number" min="1" bind:value={create.amount} placeholder="100" />
       </div>
       <div class="op-field">
         <label for="voucher-max-redemptions">{$t('vouchers.maxRedemptions')}</label>
-        <input id="voucher-max-redemptions" type="number" min="1" bind:value={create.maxRedemptions} placeholder={$t('vouchers.unlimited')} />
+        <input autocomplete="off" spellcheck="false" id="voucher-max-redemptions" type="number" min="1" bind:value={create.maxRedemptions} placeholder={$t('vouchers.unlimited')} />
       </div>
       <div class="op-field">
         <label for="voucher-expires">{$t('vouchers.expiresAt')}</label>
-        <input id="voucher-expires" type="datetime-local" bind:value={create.expiresAt} />
+        <input autocomplete="off" spellcheck="false" id="voucher-expires" type="datetime-local" bind:value={create.expiresAt} />
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageCreate} disabled={$ops.busyKeys.create}>{$t('common.run')}</button>
       </div>
-      {#if $ops.errors.create}<p class="empty-state danger">{$ops.errors.create}</p>{/if}
+      {#if $ops.errors.create}<p class="empty-state danger" role="alert">{$ops.errors.create}</p>{/if}
       {#if $ops.results.create}
         <OpResult result={$ops.results.create} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
@@ -189,12 +189,12 @@
     {:else}
       <div class="op-field">
         <label for="deactivate-code">{$t('vouchers.code')}</label>
-        <input id="deactivate-code" bind:value={deactivate.code} placeholder="SUMMER2026" style="text-transform: uppercase;" />
+        <input autocomplete="off" spellcheck="false" id="deactivate-code" bind:value={deactivate.code} placeholder="SUMMER2026" style="text-transform: uppercase;" />
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageDeactivate} disabled={$ops.busyKeys.deactivate}>{$t('common.run')}</button>
       </div>
-      {#if $ops.errors.deactivate}<p class="empty-state danger">{$ops.errors.deactivate}</p>{/if}
+      {#if $ops.errors.deactivate}<p class="empty-state danger" role="alert">{$ops.errors.deactivate}</p>{/if}
       {#if $ops.results.deactivate}
         <OpResult result={$ops.results.deactivate} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
@@ -204,13 +204,13 @@
   <section class="panel">
     <div class="panel-head"><h2>{$t('vouchers.lookupTitle')}</h2></div>
     <form class="toolbar" onsubmit={(event) => { event.preventDefault(); lookup(); }}>
-      <input bind:value={lookupCode} placeholder={$t('vouchers.voucherCode')} style="text-transform: uppercase;" />
+      <input autocomplete="off" spellcheck="false" bind:value={lookupCode} placeholder={$t('vouchers.voucherCode')} style="text-transform: uppercase;" />
       <button type="submit" disabled={lookupLoading}>{$t('vouchers.inspect')}</button>
     </form>
     {#if lookupLoading}
       <p class="muted">{$t('pickerModal.loading')}</p>
     {:else if lookupError}
-      <p class="empty-state danger">{lookupError}</p>
+      <p class="empty-state danger" role="alert">{lookupError}</p>
     {:else if lookupResult}
       {#if !lookupResult.exists}
         <p class="empty-state">{$t('vouchers.noVoucher')}</p>

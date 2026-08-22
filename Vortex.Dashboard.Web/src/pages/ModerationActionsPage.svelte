@@ -214,23 +214,23 @@
         </div>
       </div>
       <div class="op-checkbox-field">
-        <input id="ban-permanent" type="checkbox" bind:checked={ban.permanent} />
+        <input autocomplete="off" spellcheck="false" id="ban-permanent" type="checkbox" bind:checked={ban.permanent} />
         <label for="ban-permanent">{$t('common.permanent')}</label>
       </div>
       {#if !ban.permanent}
         <div class="op-field">
           <label for="ban-duration">{$t('moderationActions.durationSeconds')}</label>
-          <input id="ban-duration" type="number" min="1" bind:value={ban.durationSeconds} placeholder="86400" />
+          <input autocomplete="off" spellcheck="false" id="ban-duration" type="number" min="1" bind:value={ban.durationSeconds} placeholder="86400" />
         </div>
       {/if}
       <div class="op-field">
         <label for="ban-reason">{$t('common.reasonRequired')}</label>
-        <input id="ban-reason" bind:value={ban.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
+        <input autocomplete="off" spellcheck="false" id="ban-reason" bind:value={ban.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageBan} disabled={$ops.busyKeys.ban}>{$t('common.run')}</button>
       </div>
-      {#if $ops.errors.ban}<p class="empty-state danger">{$ops.errors.ban}</p>{/if}
+      {#if $ops.errors.ban}<p class="empty-state danger" role="alert">{$ops.errors.ban}</p>{/if}
       {#if $ops.results.ban}
         <OpResult result={$ops.results.ban} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
@@ -267,12 +267,12 @@
       </div>
       <div class="op-field">
         <label for="unban-reason">{$t('common.reasonRequired')}</label>
-        <input id="unban-reason" bind:value={unban.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
+        <input autocomplete="off" spellcheck="false" id="unban-reason" bind:value={unban.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageUnban} disabled={$ops.busyKeys.unban}>{$t('common.run')}</button>
       </div>
-      {#if $ops.errors.unban}<p class="empty-state danger">{$ops.errors.unban}</p>{/if}
+      {#if $ops.errors.unban}<p class="empty-state danger" role="alert">{$ops.errors.unban}</p>{/if}
       {#if $ops.results.unban}
         <OpResult result={$ops.results.unban} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
@@ -310,16 +310,16 @@
       </div>
       <div class="op-field">
         <label for="mute-duration">{$t('moderationActions.durationSecondsRequired')}</label>
-        <input id="mute-duration" type="number" min="1" bind:value={mute.durationSeconds} placeholder="600" />
+        <input autocomplete="off" spellcheck="false" id="mute-duration" type="number" min="1" bind:value={mute.durationSeconds} placeholder="600" />
       </div>
       <div class="op-field">
         <label for="mute-reason">{$t('common.reasonRequired')}</label>
-        <input id="mute-reason" bind:value={mute.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
+        <input autocomplete="off" spellcheck="false" id="mute-reason" bind:value={mute.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageMute} disabled={$ops.busyKeys.mute}>{$t('common.run')}</button>
       </div>
-      {#if $ops.errors.mute}<p class="empty-state danger">{$ops.errors.mute}</p>{/if}
+      {#if $ops.errors.mute}<p class="empty-state danger" role="alert">{$ops.errors.mute}</p>{/if}
       {#if $ops.results.mute}
         <OpResult result={$ops.results.mute} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
@@ -361,23 +361,23 @@
         </div>
       </div>
       <div class="op-checkbox-field">
-        <input id="tradinglock-permanent" type="checkbox" bind:checked={tradingLock.permanent} />
+        <input autocomplete="off" spellcheck="false" id="tradinglock-permanent" type="checkbox" bind:checked={tradingLock.permanent} />
         <label for="tradinglock-permanent">{$t('common.permanent')}</label>
       </div>
       {#if !tradingLock.permanent}
         <div class="op-field">
           <label for="tradinglock-duration">{$t('moderationActions.durationSeconds')}</label>
-          <input id="tradinglock-duration" type="number" min="1" bind:value={tradingLock.durationSeconds} placeholder="86400" />
+          <input autocomplete="off" spellcheck="false" id="tradinglock-duration" type="number" min="1" bind:value={tradingLock.durationSeconds} placeholder="86400" />
         </div>
       {/if}
       <div class="op-field">
         <label for="tradinglock-reason">{$t('common.reasonRequired')}</label>
-        <input id="tradinglock-reason" bind:value={tradingLock.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
+        <input autocomplete="off" spellcheck="false" id="tradinglock-reason" bind:value={tradingLock.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageTradingLock} disabled={$ops.busyKeys.tradingLock}>{$t('common.run')}</button>
       </div>
-      {#if $ops.errors.tradingLock}<p class="empty-state danger">{$ops.errors.tradingLock}</p>{/if}
+      {#if $ops.errors.tradingLock}<p class="empty-state danger" role="alert">{$ops.errors.tradingLock}</p>{/if}
       {#if $ops.results.tradingLock}
         <OpResult result={$ops.results.tradingLock} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
@@ -420,12 +420,12 @@
       </div>
       <div class="op-field">
         <label for="tradingunlock-reason">{$t('common.reasonRequired')}</label>
-        <input id="tradingunlock-reason" bind:value={tradingUnlock.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
+        <input autocomplete="off" spellcheck="false" id="tradingunlock-reason" bind:value={tradingUnlock.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageTradingUnlock} disabled={$ops.busyKeys.tradingUnlock}>{$t('common.run')}</button>
       </div>
-      {#if $ops.errors.tradingUnlock}<p class="empty-state danger">{$ops.errors.tradingUnlock}</p>{/if}
+      {#if $ops.errors.tradingUnlock}<p class="empty-state danger" role="alert">{$ops.errors.tradingUnlock}</p>{/if}
       {#if $ops.results.tradingUnlock}
         <OpResult result={$ops.results.tradingUnlock} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}

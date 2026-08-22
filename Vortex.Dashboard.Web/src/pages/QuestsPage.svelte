@@ -341,7 +341,7 @@
     {#if loading}
       <p class="muted">{$t('common.loading')}</p>
     {:else if error}
-      <p class="empty-state danger">{error}</p>
+      <p class="empty-state danger" role="alert">{error}</p>
     {:else if quests.length === 0}
       <p class="empty-state">{$t('quests.noQuests')}</p>
     {:else}
@@ -400,7 +400,7 @@
         {/each}
       </div>
     {/if}
-    {#if $deleteOps.errors.deleteQuest}<p class="empty-state danger">{$deleteOps.errors.deleteQuest}</p>{/if}
+    {#if $deleteOps.errors.deleteQuest}<p class="empty-state danger" role="alert">{$deleteOps.errors.deleteQuest}</p>{/if}
     {#if $deleteOps.results.deleteQuest}
       <OpResult result={$deleteOps.results.deleteQuest} />
     {/if}
@@ -417,15 +417,15 @@
   >
     <div class="op-field">
       <label for="quest-campaign">{$t('quests.campaignCodeRequired')}</label>
-      <input id="quest-campaign" bind:value={questModal.form.campaignCode} placeholder={$t('quests.campaignPlaceholder')} />
+      <input autocomplete="off" spellcheck="false" id="quest-campaign" bind:value={questModal.form.campaignCode} placeholder={$t('quests.campaignPlaceholder')} />
     </div>
     <div class="op-field">
       <label for="quest-chain">{$t('quests.chainCode')}</label>
-      <input id="quest-chain" bind:value={questModal.form.chainCode} />
+      <input autocomplete="off" spellcheck="false" id="quest-chain" bind:value={questModal.form.chainCode} />
     </div>
     <div class="op-field">
       <label for="quest-localization">{$t('quests.localizationCodeRequired')}</label>
-      <input id="quest-localization" bind:value={questModal.form.localizationCode} placeholder={$t('quests.localizationPlaceholder')} />
+      <input autocomplete="off" spellcheck="false" id="quest-localization" bind:value={questModal.form.localizationCode} placeholder={$t('quests.localizationPlaceholder')} />
     </div>
     <div class="op-field">
       <label for="quest-type">{$t('quests.questTypeRequired')}</label>
@@ -440,12 +440,12 @@
           {/each}
         </select>
       {:else}
-        <input id="quest-type" bind:value={questModal.form.questType} placeholder={$t('quests.questTypePlaceholder')} />
+        <input autocomplete="off" spellcheck="false" id="quest-type" bind:value={questModal.form.questType} placeholder={$t('quests.questTypePlaceholder')} />
       {/if}
     </div>
     <div class="op-field">
       <label for="quest-steps">{$t('quests.totalSteps')}</label>
-      <input id="quest-steps" type="number" min="1" bind:value={questModal.form.totalSteps} />
+      <input autocomplete="off" spellcheck="false" id="quest-steps" type="number" min="1" bind:value={questModal.form.totalSteps} />
       <small class="muted">{$t('quests.objectiveHint')}</small>
     </div>
 
@@ -453,11 +453,11 @@
       <legend><Target size={13} strokeWidth={2} aria-hidden="true" /> {$t('quests.targetLegend')}</legend>
       <div class="op-field">
         <label for="quest-target-type">{$t('quests.targetType')}</label>
-        <input id="quest-target-type" bind:value={questModal.form.targetType} placeholder={$t('quests.targetTypePlaceholder')} />
+        <input autocomplete="off" spellcheck="false" id="quest-target-type" bind:value={questModal.form.targetType} placeholder={$t('quests.targetTypePlaceholder')} />
       </div>
       <div class="op-field">
         <label for="quest-target-value">{$t('quests.targetValue')}</label>
-        <input id="quest-target-value" bind:value={questModal.form.targetValue} placeholder={$t('quests.targetValuePlaceholder')} />
+        <input autocomplete="off" spellcheck="false" id="quest-target-value" bind:value={questModal.form.targetValue} placeholder={$t('quests.targetValuePlaceholder')} />
       </div>
       <small class="muted">{$t('quests.targetHint')}</small>
     </fieldset>
@@ -470,19 +470,19 @@
       </div>
       <div class="op-field">
         <label for="quest-reward-amount">{$t('quests.rewardAmount')}</label>
-        <input id="quest-reward-amount" type="number" min="0" bind:value={questModal.form.rewardAmount} />
+        <input autocomplete="off" spellcheck="false" id="quest-reward-amount" type="number" min="0" bind:value={questModal.form.rewardAmount} />
       </div>
     </fieldset>
 
     <fieldset class="op-subgroup">
       <legend><Clock size={13} strokeWidth={2} aria-hidden="true" /> {$t('quests.timerLegend')}</legend>
       <div class="op-field">
-        <label><input type="checkbox" bind:checked={questModal.form.seasonal} /> {$t('quests.seasonalLabel')}</label>
+        <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={questModal.form.seasonal} /> {$t('quests.seasonalLabel')}</label>
       </div>
       {#if questModal.form.seasonal}
         <div class="op-field">
           <label for="quest-seconds">{$t('quests.seasonalSeconds')}</label>
-          <input id="quest-seconds" type="number" min="0" bind:value={questModal.form.seasonalSeconds} />
+          <input autocomplete="off" spellcheck="false" id="quest-seconds" type="number" min="0" bind:value={questModal.form.seasonalSeconds} />
           <div class="preset-row">
             {#each seasonalPresets as preset}
               <button type="button" class="ghost-button preset" onclick={() => { questModal.form.seasonalSeconds = preset.seconds; questModal = questModal; }}>{$t(preset.key)}</button>
@@ -491,7 +491,7 @@
         </div>
         <div class="op-field">
           <label for="quest-ends">{$t('quests.endsAt')}</label>
-          <input id="quest-ends" type="datetime-local" bind:value={questModal.form.endsAt} />
+          <input autocomplete="off" spellcheck="false" id="quest-ends" type="datetime-local" bind:value={questModal.form.endsAt} />
           <small class="muted">{$t('quests.timerHint')}</small>
         </div>
       {/if}
@@ -499,24 +499,24 @@
 
     <div class="op-field">
       <label for="quest-catalog">{$t('quests.catalogPageName')}</label>
-      <input id="quest-catalog" bind:value={questModal.form.catalogPageName} />
+      <input autocomplete="off" spellcheck="false" id="quest-catalog" bind:value={questModal.form.catalogPageName} />
     </div>
     <div class="op-field">
       <label for="quest-image">{$t('quests.imageVersion')}</label>
-      <input id="quest-image" bind:value={questModal.form.imageVersion} />
+      <input autocomplete="off" spellcheck="false" id="quest-image" bind:value={questModal.form.imageVersion} />
     </div>
     <div class="op-field">
       <label for="quest-sort">{$t('quests.sortOrder')}</label>
-      <input id="quest-sort" type="number" bind:value={questModal.form.sortOrder} />
+      <input autocomplete="off" spellcheck="false" id="quest-sort" type="number" bind:value={questModal.form.sortOrder} />
     </div>
     <div class="op-field">
-      <label><input type="checkbox" bind:checked={questModal.form.enabled} /> {$t('quests.enabledLabel')}</label>
+      <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={questModal.form.enabled} /> {$t('quests.enabledLabel')}</label>
     </div>
     <div class="op-field">
-      <label><input type="checkbox" bind:checked={questModal.form.easy} /> {$t('quests.easyLabel')}</label>
+      <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={questModal.form.easy} /> {$t('quests.easyLabel')}</label>
     </div>
 
-    {#if $ops.errors.questForm}<p class="empty-state danger">{$ops.errors.questForm}</p>{/if}
+    {#if $ops.errors.questForm}<p class="empty-state danger" role="alert">{$ops.errors.questForm}</p>{/if}
 
     {#snippet actions()}
 

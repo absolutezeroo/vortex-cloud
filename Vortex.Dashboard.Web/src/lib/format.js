@@ -1,3 +1,15 @@
+import { get } from 'svelte/store';
+import { locale } from './i18n.js';
+
+// Dates and numbers follow the language the operator picked in the UI, not the browser and not a
+// hardcoded en-US -- a French operator reading "1,234.5" where the rest of the row says "1 234,5"
+// misreads the magnitude. BCP 47 tags, because Intl wants a region to pick separators.
+const INTL_LOCALES = { en: 'en-US', fr: 'fr-FR' };
+
+function intlLocale() {
+  return INTL_LOCALES[get(locale)] || INTL_LOCALES.en;
+}
+
 export function formatDate(value, fallback = '-') {
   if (!value) {
     return fallback;
@@ -8,12 +20,12 @@ export function formatDate(value, fallback = '-') {
     return value;
   }
 
-  return new Date(parsed).toLocaleString();
+  return new Date(parsed).toLocaleString(intlLocale());
 }
 
 export function formatNumber(value, decimals = 0) {
   const numeric = Number(value || 0);
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat(intlLocale(), {
     maximumFractionDigits: decimals,
     minimumFractionDigits: decimals,
   }).format(numeric);
@@ -62,7 +74,7 @@ export function summarizeData(value) {
       .map(([key, entryValue]) => `${key}=${entryValue}`)
       .join(' - ');
   } catch {
-    return text.length > 160 ? `${text.substring(0, 160)}...` : text;
+    return text.length > 160 ? `${text.substring(0, 160)}…` : text;
   }
 }
 
@@ -71,7 +83,7 @@ export function formatBytes(value) {
   const bytes = Number(value);
 
   if (!Number.isFinite(bytes) || bytes < 0) return '-';
-  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024) return `${bytes}\u00a0B`;
 
   const units = ['KB', 'MB', 'GB', 'TB'];
   let size = bytes / 1024;
@@ -82,5 +94,6 @@ export function formatBytes(value) {
     unit += 1;
   }
 
-  return `${size.toFixed(size >= 100 ? 0 : 1)} ${units[unit]}`;
+  // Non-breaking space: "12.4 MB" must never wrap between the number and its unit.
+  return `${size.toFixed(size >= 100 ? 0 : 1)}\u00a0${units[unit]}`;
 }

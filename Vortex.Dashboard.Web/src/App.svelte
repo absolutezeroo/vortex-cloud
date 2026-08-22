@@ -311,6 +311,13 @@
     animation: spin 900ms linear infinite;
   }
 
+  /* A spinner that never stops is the one animation an operator cannot look away from. */
+  @media (prefers-reduced-motion: reduce) {
+    :global(.spin) {
+      animation: none;
+    }
+  }
+
   @keyframes spin {
     to {
       transform: rotate(360deg);

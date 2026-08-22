@@ -43,14 +43,14 @@
     <button type="button" onclick={load}>{$t('common.refresh')}</button>
   </div>
   <form class="toolbar" onsubmit={(event) => { event.preventDefault(); load(); }}>
-    <input bind:value={roomId} placeholder={$t('roomsTimeline.roomIdPlaceholder')} />
+    <input autocomplete="off" spellcheck="false" bind:value={roomId} placeholder={$t('roomsTimeline.roomIdPlaceholder')} />
     <button type="submit">{$t('roomsTimeline.inspect')}</button>
   </form>
 
   {#if forbidden}
     <AccessDeniedNotice message={$t('roomsTimeline.accessDenied')} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 
   {#if data?.room}

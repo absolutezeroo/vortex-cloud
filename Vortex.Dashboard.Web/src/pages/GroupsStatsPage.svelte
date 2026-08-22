@@ -97,11 +97,11 @@
   <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); refresh(); }}>
     <label>
       {$t('common.since')}
-      <input type="date" bind:value={since} />
+      <input autocomplete="off" spellcheck="false" type="date" bind:value={since} />
     </label>
     <label>
       {$t('common.until')}
-      <input type="date" bind:value={until} />
+      <input autocomplete="off" spellcheck="false" type="date" bind:value={until} />
     </label>
     <label>
       {$t('common.granularity')}
@@ -118,7 +118,7 @@
   {:else if forbidden}
     <AccessDeniedNotice message={$t('groupsStats.accessDenied')} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 </section>
 

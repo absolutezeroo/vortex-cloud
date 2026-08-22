@@ -116,7 +116,7 @@
   {:else if forbidden}
     <AccessDeniedNotice message={$t('playerRewards.accessDenied')} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 </section>
 
@@ -423,7 +423,7 @@
       <label>
         {$t('playerRewards.colBadge')}
         <span class="badge-cell">
-          <input bind:value={badgeCode} placeholder="ACH_RoomEntry1" list="known-badges" />
+          <input autocomplete="off" spellcheck="false" bind:value={badgeCode} placeholder="ACH_RoomEntry1" list="known-badges" />
           <AssetImage src={badgePreviewUrl} alt={badgeCode} size={32} fallbackIcon={Award} />
         </span>
       </label>
@@ -462,13 +462,13 @@
       <label>
         {$t('playerRewards.colEffect')}
         <span class="badge-cell">
-          <input type="number" bind:value={effectId} min="1" />
+          <input autocomplete="off" spellcheck="false" type="number" bind:value={effectId} min="1" />
           <AssetImage src={effectPreviewUrl} alt="" size={44} fallbackIcon={Sparkles} />
         </span>
       </label>
       <label>
         {$t('playerRewards.durationSeconds')}
-        <input type="number" bind:value={effectDuration} min="0" placeholder={$t('common.permanent')} />
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={effectDuration} min="0" placeholder={$t('common.permanent')} />
       </label>
       <button type="submit" disabled={!effectId}>{$t('playerRewards.grantEffect')}</button>
       <button

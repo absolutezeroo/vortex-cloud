@@ -401,7 +401,7 @@
     <h2>{$t('targetedOffers.title')}</h2>
     <div class="head-actions">
       <label class="active-toggle">
-        <input type="checkbox" bind:checked={activeOnly} onchange={loadOffers} />
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={activeOnly} onchange={loadOffers} />
         {$t('targetedOffers.activeOnlyLabel')}
       </label>
       <button type="button" class="ghost-button" onclick={refreshAll} disabled={loading}>{$t('common.refresh')}</button>
@@ -427,7 +427,7 @@
     {#if loading}
       <p class="muted">{$t('common.loading')}</p>
     {:else if error}
-      <p class="empty-state danger">{error}</p>
+      <p class="empty-state danger" role="alert">{error}</p>
     {:else if offers.length === 0}
       <p class="empty-state">{$t('targetedOffers.noOffers')}</p>
     {:else}
@@ -487,7 +487,7 @@
                 {#if offerDetailLoading}
                   <p class="muted">{$t('targetedOffers.loadingProducts')}</p>
                 {:else if offerDetailError}
-                  <p class="empty-state danger">{offerDetailError}</p>
+                  <p class="empty-state danger" role="alert">{offerDetailError}</p>
                 {:else if offerDetail}
 
                   {#if offerDetail.products.length === 0}
@@ -499,7 +499,7 @@
                           <div class="catalog-row static">
                             <span class="catalog-row-icon">
                               {#if product.furnitureIconUrl}
-                                <img src={product.furnitureIconUrl} alt="" />
+                                <img src={product.furnitureIconUrl} alt="" loading="lazy" />
                               {:else}
                                 <Image size={18} strokeWidth={2} aria-hidden="true" />
                               {/if}
@@ -530,7 +530,7 @@
                       {/each}
                     </div>
                   {/if}
-                  {#if $deleteOps.errors.deleteProduct}<p class="empty-state danger">{$deleteOps.errors.deleteProduct}</p>{/if}
+                  {#if $deleteOps.errors.deleteProduct}<p class="empty-state danger" role="alert">{$deleteOps.errors.deleteProduct}</p>{/if}
                   {#if $deleteOps.results.deleteProduct}
                     <OpResult result={$deleteOps.results.deleteProduct} />
                   {/if}
@@ -541,7 +541,7 @@
         {/each}
       </div>
     {/if}
-    {#if $deleteOps.errors.deleteOffer}<p class="empty-state danger">{$deleteOps.errors.deleteOffer}</p>{/if}
+    {#if $deleteOps.errors.deleteOffer}<p class="empty-state danger" role="alert">{$deleteOps.errors.deleteOffer}</p>{/if}
     {#if $deleteOps.results.deleteOffer}
       <OpResult result={$deleteOps.results.deleteOffer} />
     {/if}
@@ -555,15 +555,15 @@
     <div class="catalog-card-detail">
       <div class="op-field">
         <label for="new-offer-identifier">{$t('targetedOffers.identifierRequired')}</label>
-        <input id="new-offer-identifier" bind:value={newOffer.identifier} placeholder={$t('targetedOffers.identifierPlaceholder')} />
+        <input autocomplete="off" spellcheck="false" id="new-offer-identifier" bind:value={newOffer.identifier} placeholder={$t('targetedOffers.identifierPlaceholder')} />
       </div>
       <div class="op-field">
         <label for="new-offer-title">{$t('targetedOffers.offerTitle')}</label>
-        <input id="new-offer-title" bind:value={newOffer.title} />
+        <input autocomplete="off" spellcheck="false" id="new-offer-title" bind:value={newOffer.title} />
       </div>
       <div class="op-field">
         <label for="new-offer-type">{$t('targetedOffers.offerType')}</label>
-        <input id="new-offer-type" type="number" min="0" bind:value={newOffer.offerType} />
+        <input autocomplete="off" spellcheck="false" id="new-offer-type" type="number" min="0" bind:value={newOffer.offerType} />
       </div>
       <div class="op-field">
         <label for="new-offer-description">{$t('targetedOffers.descriptionLabel')}</label>
@@ -571,7 +571,7 @@
       </div>
       <div class="op-field">
         <label for="new-offer-product-code">{$t('targetedOffers.productCode')}</label>
-        <input id="new-offer-product-code" bind:value={newOffer.productCode} />
+        <input autocomplete="off" spellcheck="false" id="new-offer-product-code" bind:value={newOffer.productCode} />
       </div>
       <OfferImageField
         id="new-offer-image"
@@ -591,11 +591,11 @@
       />
       <div class="op-field">
         <label for="new-offer-credits">{$t('targetedOffers.priceInCredits')}</label>
-        <input id="new-offer-credits" type="number" min="0" bind:value={newOffer.priceInCredits} />
+        <input autocomplete="off" spellcheck="false" id="new-offer-credits" type="number" min="0" bind:value={newOffer.priceInCredits} />
       </div>
       <div class="op-field">
         <label for="new-offer-points">{$t('targetedOffers.priceInActivityPoints')}</label>
-        <input id="new-offer-points" type="number" min="0" bind:value={newOffer.priceInActivityPoints} />
+        <input autocomplete="off" spellcheck="false" id="new-offer-points" type="number" min="0" bind:value={newOffer.priceInActivityPoints} />
       </div>
       <div class="op-field">
         <label for="new-offer-point-type">{$t('targetedOffers.activityPointType')}</label>
@@ -608,24 +608,24 @@
       </div>
       <div class="op-field">
         <label for="new-offer-limit">{$t('targetedOffers.purchaseLimit')}</label>
-        <input id="new-offer-limit" type="number" min="0" bind:value={newOffer.purchaseLimit} />
+        <input autocomplete="off" spellcheck="false" id="new-offer-limit" type="number" min="0" bind:value={newOffer.purchaseLimit} />
       </div>
       <div class="op-field">
         <label for="new-offer-expires">{$t('targetedOffers.expiresAt')}</label>
-        <input id="new-offer-expires" type="datetime-local" bind:value={newOffer.expiresAt} />
+        <input autocomplete="off" spellcheck="false" id="new-offer-expires" type="datetime-local" bind:value={newOffer.expiresAt} />
         <small class="muted">{$t('targetedOffers.expiresAtHint')}</small>
       </div>
       <div class="op-field">
         <label for="new-offer-sort">{$t('targetedOffers.sortOrder')}</label>
-        <input id="new-offer-sort" type="number" bind:value={newOffer.sortOrder} />
+        <input autocomplete="off" spellcheck="false" id="new-offer-sort" type="number" bind:value={newOffer.sortOrder} />
       </div>
       <div class="op-field">
-        <label><input type="checkbox" bind:checked={newOffer.active} /> {$t('targetedOffers.activeLabel')}</label>
+        <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={newOffer.active} /> {$t('targetedOffers.activeLabel')}</label>
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageCreateOffer} disabled={$ops.busyKeys.createOffer}>{$t('targetedOffers.create')}</button>
       </div>
-      {#if $ops.errors.createOffer}<p class="empty-state danger">{$ops.errors.createOffer}</p>{/if}
+      {#if $ops.errors.createOffer}<p class="empty-state danger" role="alert">{$ops.errors.createOffer}</p>{/if}
       {#if $ops.results.createOffer}
         <OpResult result={$ops.results.createOffer} />
       {/if}
@@ -639,15 +639,15 @@
       <div class="catalog-card-detail">
         <div class="op-field">
           <label for={`edit-offer-identifier-${editOfferForm.id}`}>{$t('targetedOffers.identifierRequired')}</label>
-          <input id={`edit-offer-identifier-${editOfferForm.id}`} bind:value={editOfferForm.identifier} />
+          <input autocomplete="off" spellcheck="false" id={`edit-offer-identifier-${editOfferForm.id}`} bind:value={editOfferForm.identifier} />
         </div>
         <div class="op-field">
           <label for={`edit-offer-title-${editOfferForm.id}`}>{$t('targetedOffers.offerTitle')}</label>
-          <input id={`edit-offer-title-${editOfferForm.id}`} bind:value={editOfferForm.title} />
+          <input autocomplete="off" spellcheck="false" id={`edit-offer-title-${editOfferForm.id}`} bind:value={editOfferForm.title} />
         </div>
         <div class="op-field">
           <label for={`edit-offer-type-${editOfferForm.id}`}>{$t('targetedOffers.offerType')}</label>
-          <input id={`edit-offer-type-${editOfferForm.id}`} type="number" min="0" bind:value={editOfferForm.offerType} />
+          <input autocomplete="off" spellcheck="false" id={`edit-offer-type-${editOfferForm.id}`} type="number" min="0" bind:value={editOfferForm.offerType} />
         </div>
         <div class="op-field">
           <label for={`edit-offer-description-${editOfferForm.id}`}>{$t('targetedOffers.descriptionLabel')}</label>
@@ -655,7 +655,7 @@
         </div>
         <div class="op-field">
           <label for={`edit-offer-product-code-${editOfferForm.id}`}>{$t('targetedOffers.productCode')}</label>
-          <input id={`edit-offer-product-code-${editOfferForm.id}`} bind:value={editOfferForm.productCode} />
+          <input autocomplete="off" spellcheck="false" id={`edit-offer-product-code-${editOfferForm.id}`} bind:value={editOfferForm.productCode} />
         </div>
         <OfferImageField
           id={`edit-offer-image-${editOfferForm.id}`}
@@ -675,11 +675,11 @@
         />
         <div class="op-field">
           <label for={`edit-offer-credits-${editOfferForm.id}`}>{$t('targetedOffers.priceInCredits')}</label>
-          <input id={`edit-offer-credits-${editOfferForm.id}`} type="number" min="0" bind:value={editOfferForm.priceInCredits} />
+          <input autocomplete="off" spellcheck="false" id={`edit-offer-credits-${editOfferForm.id}`} type="number" min="0" bind:value={editOfferForm.priceInCredits} />
         </div>
         <div class="op-field">
           <label for={`edit-offer-points-${editOfferForm.id}`}>{$t('targetedOffers.priceInActivityPoints')}</label>
-          <input id={`edit-offer-points-${editOfferForm.id}`} type="number" min="0" bind:value={editOfferForm.priceInActivityPoints} />
+          <input autocomplete="off" spellcheck="false" id={`edit-offer-points-${editOfferForm.id}`} type="number" min="0" bind:value={editOfferForm.priceInActivityPoints} />
         </div>
         <div class="op-field">
           <label for={`edit-offer-point-type-${editOfferForm.id}`}>{$t('targetedOffers.activityPointType')}</label>
@@ -692,31 +692,31 @@
         </div>
         <div class="op-field">
           <label for={`edit-offer-limit-${editOfferForm.id}`}>{$t('targetedOffers.purchaseLimit')}</label>
-          <input id={`edit-offer-limit-${editOfferForm.id}`} type="number" min="0" bind:value={editOfferForm.purchaseLimit} />
+          <input autocomplete="off" spellcheck="false" id={`edit-offer-limit-${editOfferForm.id}`} type="number" min="0" bind:value={editOfferForm.purchaseLimit} />
         </div>
         <div class="op-field">
           <label for={`edit-offer-expires-${editOfferForm.id}`}>{$t('targetedOffers.expiresAt')}</label>
-          <input id={`edit-offer-expires-${editOfferForm.id}`} type="datetime-local" bind:value={editOfferForm.expiresAt} />
+          <input autocomplete="off" spellcheck="false" id={`edit-offer-expires-${editOfferForm.id}`} type="datetime-local" bind:value={editOfferForm.expiresAt} />
           <small class="muted">{$t('targetedOffers.expiresAtHint')}</small>
         </div>
         <div class="op-field">
           <label for={`edit-offer-sort-${editOfferForm.id}`}>{$t('targetedOffers.sortOrder')}</label>
-          <input id={`edit-offer-sort-${editOfferForm.id}`} type="number" bind:value={editOfferForm.sortOrder} />
+          <input autocomplete="off" spellcheck="false" id={`edit-offer-sort-${editOfferForm.id}`} type="number" bind:value={editOfferForm.sortOrder} />
         </div>
         <div class="op-field">
-          <label><input type="checkbox" bind:checked={editOfferForm.active} /> {$t('targetedOffers.activeLabel')}</label>
+          <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editOfferForm.active} /> {$t('targetedOffers.activeLabel')}</label>
         </div>
         <div class="op-actions">
           <button type="button" onclick={stageUpdateOffer} disabled={$ops.busyKeys.updateOffer}>{$t('targetedOffers.save')}</button>
           <button class="ghost-button" type="button" onclick={() => { editOfferId = null; editOfferForm = null; }}>{$t('targetedOffers.cancel')}</button>
         </div>
-        {#if $ops.errors.updateOffer}<p class="empty-state danger">{$ops.errors.updateOffer}</p>{/if}
+        {#if $ops.errors.updateOffer}<p class="empty-state danger" role="alert">{$ops.errors.updateOffer}</p>{/if}
         {#if $ops.results.updateOffer}
           <OpResult result={$ops.results.updateOffer} />
         {/if}
       </div>
     {:else if $ops.errors.updateOffer}
-      <div class="catalog-card-detail"><p class="empty-state danger">{$ops.errors.updateOffer}</p></div>
+      <div class="catalog-card-detail"><p class="empty-state danger" role="alert">{$ops.errors.updateOffer}</p></div>
     {/if}
   </Drawer>
 {/if}
@@ -726,20 +726,20 @@
     <div class="catalog-card-detail">
       <div class="op-field">
         <label for="new-product-code">{$t('targetedOffers.productCodeRequired')}</label>
-        <input id="new-product-code" bind:value={newProduct.productCode} />
+        <input autocomplete="off" spellcheck="false" id="new-product-code" bind:value={newProduct.productCode} />
       </div>
       <div class="op-field">
         <label for="new-product-def">{$t('targetedOffers.furnitureDefIdOptional')}</label>
-        <input id="new-product-def" type="number" min="0" bind:value={newProduct.furnitureDefinitionId} />
+        <input autocomplete="off" spellcheck="false" id="new-product-def" type="number" min="0" bind:value={newProduct.furnitureDefinitionId} />
       </div>
       <div class="op-field">
         <label for="new-product-quantity">{$t('targetedOffers.quantity')}</label>
-        <input id="new-product-quantity" type="number" min="1" bind:value={newProduct.quantity} />
+        <input autocomplete="off" spellcheck="false" id="new-product-quantity" type="number" min="1" bind:value={newProduct.quantity} />
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageCreateProduct} disabled={$ops.busyKeys.createProduct}>{$t('targetedOffers.create')}</button>
       </div>
-      {#if $ops.errors.createProduct}<p class="empty-state danger">{$ops.errors.createProduct}</p>{/if}
+      {#if $ops.errors.createProduct}<p class="empty-state danger" role="alert">{$ops.errors.createProduct}</p>{/if}
       {#if $ops.results.createProduct}
         <OpResult result={$ops.results.createProduct} />
       {/if}
@@ -752,21 +752,21 @@
     <div class="catalog-card-detail">
       <div class="op-field">
         <label for={`edit-product-code-${editProductForm.id}`}>{$t('targetedOffers.productCodeRequired')}</label>
-        <input id={`edit-product-code-${editProductForm.id}`} bind:value={editProductForm.productCode} />
+        <input autocomplete="off" spellcheck="false" id={`edit-product-code-${editProductForm.id}`} bind:value={editProductForm.productCode} />
       </div>
       <div class="op-field">
         <label for={`edit-product-def-${editProductForm.id}`}>{$t('targetedOffers.furnitureDefIdOptional')}</label>
-        <input id={`edit-product-def-${editProductForm.id}`} type="number" min="0" bind:value={editProductForm.furnitureDefinitionId} />
+        <input autocomplete="off" spellcheck="false" id={`edit-product-def-${editProductForm.id}`} type="number" min="0" bind:value={editProductForm.furnitureDefinitionId} />
       </div>
       <div class="op-field">
         <label for={`edit-product-qty-${editProductForm.id}`}>{$t('targetedOffers.quantity')}</label>
-        <input id={`edit-product-qty-${editProductForm.id}`} type="number" min="1" bind:value={editProductForm.quantity} />
+        <input autocomplete="off" spellcheck="false" id={`edit-product-qty-${editProductForm.id}`} type="number" min="1" bind:value={editProductForm.quantity} />
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageUpdateProduct} disabled={$ops.busyKeys.updateProduct}>{$t('targetedOffers.save')}</button>
         <button class="ghost-button" type="button" onclick={() => { editProductId = null; editProductForm = null; }}>{$t('targetedOffers.cancel')}</button>
       </div>
-      {#if $ops.errors.updateProduct}<p class="empty-state danger">{$ops.errors.updateProduct}</p>{/if}
+      {#if $ops.errors.updateProduct}<p class="empty-state danger" role="alert">{$ops.errors.updateProduct}</p>{/if}
       {#if $ops.results.updateProduct}
         <OpResult result={$ops.results.updateProduct} />
       {/if}

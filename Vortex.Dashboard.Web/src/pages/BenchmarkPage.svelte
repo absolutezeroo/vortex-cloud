@@ -183,7 +183,7 @@
   {:else if forbidden}
     <AccessDeniedNotice message={$t('benchmark.accessDenied')} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 </section>
 
@@ -236,12 +236,12 @@
     </div>
 
     {#if data.error}
-      <p class="empty-state danger">{data.error}</p>
+      <p class="empty-state danger" role="alert">{data.error}</p>
     {/if}
 
     {#if data.residue}
       <!-- The one outcome that outlives the run: rows the teardown could not remove. -->
-      <p class="empty-state danger">{$t('benchmark.residue', { detail: data.residue })}</p>
+      <p class="empty-state danger" role="alert">{$t('benchmark.residue', { detail: data.residue })}</p>
     {/if}
 
     {#if liveVerdict}
@@ -430,7 +430,7 @@
     {/if}
 
     {#if openRunError}
-      <p class="empty-state danger">{openRunError}</p>
+      <p class="empty-state danger" role="alert">{openRunError}</p>
     {:else if openRun}
       <h3 class="subhead">{openRunName}</h3>
 
@@ -542,12 +542,12 @@
         </label>
         <label>
           {$t('benchmark.fieldPlayers')}
-          <input type="number" min="1" max="2000" bind:value={form.players} />
+          <input autocomplete="off" spellcheck="false" type="number" min="1" max="2000" bind:value={form.players} />
           <small class="muted">{$t('benchmark.fieldPlayersHelp')}</small>
         </label>
         <label>
           {$t('benchmark.fieldFurniture')}
-          <input type="number" min="0" max="20000" bind:value={form.furniture} />
+          <input autocomplete="off" spellcheck="false" type="number" min="0" max="20000" bind:value={form.furniture} />
           <small class="muted">{$t('benchmark.fieldFurnitureHelp')}</small>
         </label>
         <label>
@@ -575,25 +575,25 @@
         </label>
         <label>
           {$t('benchmark.fieldDuration')}
-          <input type="number" min="1" max="3600" bind:value={form.durationSeconds} />
+          <input autocomplete="off" spellcheck="false" type="number" min="1" max="3600" bind:value={form.durationSeconds} />
         </label>
         <label>
           {$t('benchmark.fieldRamp')}
-          <input type="number" min="0" bind:value={form.rampSeconds} />
+          <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={form.rampSeconds} />
           <small class="muted">{$t('benchmark.fieldRampHelp')}</small>
         </label>
         <label>
           {$t('benchmark.fieldWalk')}
-          <input type="number" min="0" step="500" bind:value={form.walkIntervalMs} />
+          <input autocomplete="off" spellcheck="false" type="number" min="0" step="500" bind:value={form.walkIntervalMs} />
           <small class="muted">{$t('benchmark.fieldWalkHelp')}</small>
         </label>
         <label>
           {$t('benchmark.fieldChat')}
-          <input type="number" min="0" step="500" bind:value={form.chatIntervalMs} />
+          <input autocomplete="off" spellcheck="false" type="number" min="0" step="500" bind:value={form.chatIntervalMs} />
         </label>
         <label>
           {$t('benchmark.fieldLabel')}
-          <input bind:value={form.label} placeholder={$t('benchmark.fieldLabelPlaceholder')} />
+          <input autocomplete="off" spellcheck="false" bind:value={form.label} placeholder={$t('benchmark.fieldLabelPlaceholder')} />
         </label>
         <div class="form-actions">
           <button type="submit" disabled={running || !enabled}>{$t('benchmark.start')}</button>

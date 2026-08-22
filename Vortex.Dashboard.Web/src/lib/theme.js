@@ -29,6 +29,16 @@ function readStoredTheme() {
 function applyTheme(value) {
   if (typeof document === 'undefined') return;
   document.documentElement.setAttribute('data-theme', value);
+
+  // Keep the browser chrome (mobile address bar, PWA shell) on the theme the page just switched
+  // to. Read back --page rather than duplicating the three hex values that live in styles.css.
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) {
+    meta.setAttribute(
+      'content',
+      getComputedStyle(document.documentElement).getPropertyValue('--page').trim(),
+    );
+  }
 }
 
 export const theme = writable(readStoredTheme());

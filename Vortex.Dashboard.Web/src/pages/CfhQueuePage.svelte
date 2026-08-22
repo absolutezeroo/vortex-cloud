@@ -148,7 +148,7 @@
   {:else if forbidden}
     <AccessDeniedNotice message={$t('cfh.accessDenied')} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 
   <table>
@@ -185,7 +185,7 @@
                   <button type="button" onclick={() => openBanDraft(entry)}>{$t('cfh.banReportedPlayer')}</button>
                 {/if}
               </div>
-              {#if rowError[entry.issueId]}<p class="empty-state danger">{rowError[entry.issueId]}</p>{/if}
+              {#if rowError[entry.issueId]}<p class="empty-state danger" role="alert">{rowError[entry.issueId]}</p>{/if}
             {:else}
               <span class="muted">{$t('cfh.readOnly')}</span>
             {/if}
@@ -208,20 +208,20 @@
   >
     <p class="muted">{banDraft.playerName || $t('cfh.player')} (#{banDraft.playerId})</p>
     <div class="op-checkbox-field">
-      <input id="cfh-ban-permanent" type="checkbox" bind:checked={banDraft.permanent} />
+      <input autocomplete="off" spellcheck="false" id="cfh-ban-permanent" type="checkbox" bind:checked={banDraft.permanent} />
       <label for="cfh-ban-permanent">{$t('common.permanent')}</label>
     </div>
     {#if !banDraft.permanent}
       <div class="op-field">
         <label for="cfh-ban-duration">{$t('cfh.durationSeconds')}</label>
-        <input id="cfh-ban-duration" type="number" min="1" bind:value={banDraft.durationSeconds} placeholder="86400" />
+        <input autocomplete="off" spellcheck="false" id="cfh-ban-duration" type="number" min="1" bind:value={banDraft.durationSeconds} placeholder="86400" />
       </div>
     {/if}
     <div class="op-field">
       <label for="cfh-ban-reason">{$t('common.reasonRequired')}</label>
-      <input id="cfh-ban-reason" bind:value={banDraft.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
+      <input autocomplete="off" spellcheck="false" id="cfh-ban-reason" bind:value={banDraft.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
     </div>
-    {#if $banOps.error}<p class="empty-state danger">{$banOps.error}</p>{/if}
+    {#if $banOps.error}<p class="empty-state danger" role="alert">{$banOps.error}</p>{/if}
     {#if $banOps.result}
       <OpResult result={$banOps.result} />
     {/if}

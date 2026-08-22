@@ -134,7 +134,7 @@
   {#if forbidden}
     <AccessDeniedNotice message={$t('infrastructure.accessDenied')} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 
   <div class="metric-grid">
@@ -316,7 +316,7 @@
       </button>
     </div>
 
-    {#if $backupOps.errors.backup}<p class="empty-state danger">{$backupOps.errors.backup}</p>{/if}
+    {#if $backupOps.errors.backup}<p class="empty-state danger" role="alert">{$backupOps.errors.backup}</p>{/if}
     {#if $backupOps.results.backup}<OpResult result={$backupOps.results.backup} />{/if}
 
     {#if backups && !backups.configured}

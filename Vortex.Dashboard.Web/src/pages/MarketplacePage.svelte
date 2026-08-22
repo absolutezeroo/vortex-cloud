@@ -90,11 +90,11 @@
   <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); marketplace.refresh(); }}>
     <label>
       {$t('common.since')}
-      <input type="date" bind:value={since} />
+      <input autocomplete="off" spellcheck="false" type="date" bind:value={since} />
     </label>
     <label>
       {$t('common.until')}
-      <input type="date" bind:value={until} />
+      <input autocomplete="off" spellcheck="false" type="date" bind:value={until} />
     </label>
     <label>
       {$t('common.granularity')}
@@ -111,7 +111,7 @@
   {:else if marketplace.forbidden}
     <AccessDeniedNotice message={$t('marketplace.accessDenied')} />
   {:else if marketplace.error}
-    <p class="empty-state danger">{marketplace.error}</p>
+    <p class="empty-state danger" role="alert">{marketplace.error}</p>
   {/if}
 </section>
 

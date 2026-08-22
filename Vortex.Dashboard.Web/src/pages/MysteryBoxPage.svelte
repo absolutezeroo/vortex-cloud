@@ -324,7 +324,7 @@
     </div>
   </div>
   <p class="muted">{$t('mysteryBox.description')}</p>
-  {#if $ops.errors.reload}<p class="empty-state danger">{$ops.errors.reload}</p>{/if}
+  {#if $ops.errors.reload}<p class="empty-state danger" role="alert">{$ops.errors.reload}</p>{/if}
   {#if $ops.results.reload}<OpResult result={$ops.results.reload} />{/if}
 </section>
 
@@ -410,7 +410,7 @@
     {#if loading}
       <p class="muted">{$t('common.loading')}</p>
     {:else if error}
-      <p class="empty-state danger">{error}</p>
+      <p class="empty-state danger" role="alert">{error}</p>
     {:else if definitions.length === 0}
       <p class="empty-state">{$t('mysteryBox.noDefinitions')}</p>
     {:else}
@@ -521,7 +521,7 @@
     {/if}
     {#if $ops.results.updatePrize}<OpResult result={$ops.results.updatePrize} />{/if}
     {#if $ops.results.deletePrize}<OpResult result={$ops.results.deletePrize} />{/if}
-    {#if $ops.errors.deletePrize}<p class="empty-state danger">{$ops.errors.deletePrize}</p>{/if}
+    {#if $ops.errors.deletePrize}<p class="empty-state danger" role="alert">{$ops.errors.deletePrize}</p>{/if}
   </section>
 
   {/if}
@@ -586,7 +586,7 @@
           <div class="op-actions">
             <button type="button" onclick={stageGrantBox}>{$t('mysteryBox.grantBox')}</button>
           </div>
-          {#if $ops.errors.grantBox}<p class="empty-state danger">{$ops.errors.grantBox}</p>{/if}
+          {#if $ops.errors.grantBox}<p class="empty-state danger" role="alert">{$ops.errors.grantBox}</p>{/if}
           {#if $ops.results.grantBox}<OpResult result={$ops.results.grantBox} />{/if}
         </div>
       {/if}
@@ -638,7 +638,7 @@
         <div class="op-actions">
           <button type="button" onclick={stageGrantKey}>{$t('mysteryBox.grantKey')}</button>
         </div>
-        {#if $ops.errors.grantKey}<p class="empty-state danger">{$ops.errors.grantKey}</p>{/if}
+        {#if $ops.errors.grantKey}<p class="empty-state danger" role="alert">{$ops.errors.grantKey}</p>{/if}
         {#if $ops.results.grantKey}<OpResult result={$ops.results.grantKey} />{/if}
       </div>
     </section>
@@ -701,7 +701,7 @@
         <div class="op-field">
           <label for="new-prize-furni">{$t('mysteryBox.furnitureDefinitionId')}</label>
           <div class="op-pick">
-            <input
+            <input autocomplete="off" spellcheck="false"
               id="new-prize-furni"
               type="number"
               min="1"
@@ -719,22 +719,22 @@
       {:else}
         <div class="op-field">
           <label for="new-prize-extra">{$t('mysteryBox.extraParam')}</label>
-          <input id="new-prize-extra" bind:value={newPrize.extraParam} />
+          <input autocomplete="off" spellcheck="false" id="new-prize-extra" bind:value={newPrize.extraParam} />
           <small class="muted">{$t('mysteryBox.extraParamHint')}</small>
         </div>
       {/if}
       <div class="op-field">
         <label for="new-prize-weight">{$t('mysteryBox.weight')}</label>
-        <input id="new-prize-weight" type="number" min="1" bind:value={newPrize.weight} />
+        <input autocomplete="off" spellcheck="false" id="new-prize-weight" type="number" min="1" bind:value={newPrize.weight} />
         <small class="muted">{$t('mysteryBox.weightHint')}</small>
       </div>
       <div class="op-field">
-        <label><input type="checkbox" bind:checked={newPrize.enabled} /> {$t('mysteryBox.enabled')}</label>
+        <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={newPrize.enabled} /> {$t('mysteryBox.enabled')}</label>
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageCreatePrize}>{$t('mysteryBox.create')}</button>
       </div>
-      {#if $ops.errors.createPrize}<p class="empty-state danger">{$ops.errors.createPrize}</p>{/if}
+      {#if $ops.errors.createPrize}<p class="empty-state danger" role="alert">{$ops.errors.createPrize}</p>{/if}
       {#if $ops.results.createPrize}<OpResult result={$ops.results.createPrize} />{/if}
     </div>
   </Drawer>
@@ -773,7 +773,7 @@
         <div class="op-field">
           <label for={`edit-prize-furni-${editPrize.id}`}>{$t('mysteryBox.furnitureDefinitionId')}</label>
           <div class="op-pick">
-            <input
+            <input autocomplete="off" spellcheck="false"
               id={`edit-prize-furni-${editPrize.id}`}
               type="number"
               min="1"
@@ -792,16 +792,16 @@
       {:else}
         <div class="op-field">
           <label for={`edit-prize-extra-${editPrize.id}`}>{$t('mysteryBox.extraParam')}</label>
-          <input id={`edit-prize-extra-${editPrize.id}`} bind:value={editPrize.extraParam} />
+          <input autocomplete="off" spellcheck="false" id={`edit-prize-extra-${editPrize.id}`} bind:value={editPrize.extraParam} />
           <small class="muted">{$t('mysteryBox.extraParamHint')}</small>
         </div>
       {/if}
       <div class="op-field">
         <label for={`edit-prize-weight-${editPrize.id}`}>{$t('mysteryBox.weight')}</label>
-        <input id={`edit-prize-weight-${editPrize.id}`} type="number" min="1" bind:value={editPrize.weight} />
+        <input autocomplete="off" spellcheck="false" id={`edit-prize-weight-${editPrize.id}`} type="number" min="1" bind:value={editPrize.weight} />
       </div>
       <div class="op-field">
-        <label><input type="checkbox" bind:checked={editPrize.enabled} /> {$t('mysteryBox.enabled')}</label>
+        <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editPrize.enabled} /> {$t('mysteryBox.enabled')}</label>
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageUpdatePrize}>{$t('mysteryBox.save')}</button>
@@ -809,7 +809,7 @@
           {$t('mysteryBox.cancel')}
         </button>
       </div>
-      {#if $ops.errors.updatePrize}<p class="empty-state danger">{$ops.errors.updatePrize}</p>{/if}
+      {#if $ops.errors.updatePrize}<p class="empty-state danger" role="alert">{$ops.errors.updatePrize}</p>{/if}
     </div>
   </Drawer>
 {/if}

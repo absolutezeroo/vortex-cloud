@@ -719,7 +719,7 @@
         <div class="page-heading">
           <span class="page-avatar">
             {#if currentPage.iconUrl}
-              <img src={currentPage.iconUrl} alt="" />
+              <img src={currentPage.iconUrl} alt="" loading="lazy" />
             {:else}
               <FolderOpen size={20} strokeWidth={2} aria-hidden="true" />
             {/if}
@@ -747,7 +747,7 @@
           {/snippet}
           {#snippet value()}
                     <strong class="icon-preview">
-              {#if currentPage.iconUrl}<img src={currentPage.iconUrl} alt="" />{/if}
+              {#if currentPage.iconUrl}<img src={currentPage.iconUrl} alt="" loading="lazy" />{/if}
               #{currentPage.icon}
             </strong>
           {/snippet}
@@ -793,7 +793,7 @@
             </div>
             <p class="muted">{$t('catalogAdmin.deletePageBlockedNote')}</p>
           </div>
-          {#if $ops.errors.deletePage}<p class="empty-state danger">{$ops.errors.deletePage}</p>{/if}
+          {#if $ops.errors.deletePage}<p class="empty-state danger" role="alert">{$ops.errors.deletePage}</p>{/if}
           {#if $ops.results.deletePage}
             <OpResult result={$ops.results.deletePage} />
           {/if}
@@ -816,7 +816,7 @@
     {#if pagesLoading}
       <p class="muted">{$t('catalogAdmin.loadingPages')}</p>
     {:else if pagesError}
-      <p class="empty-state danger">{pagesError}</p>
+      <p class="empty-state danger" role="alert">{pagesError}</p>
     {:else if pages.length === 0}
       <p class="empty-state">{$t('catalogAdmin.noSubPages')}</p>
     {:else}
@@ -825,7 +825,7 @@
           <button type="button" class="catalog-row" onclick={() => drillInto(page)}>
             <span class="catalog-row-icon">
               {#if page.iconUrl}
-                <img src={page.iconUrl} alt="" />
+                <img src={page.iconUrl} alt="" loading="lazy" />
               {:else}
                 <Folder size={18} strokeWidth={2} aria-hidden="true" />
               {/if}
@@ -894,7 +894,7 @@
                 <div class="catalog-row-sub">
                   <span class="catalog-row-icon small">
                     {#if offer.singleProduct.furnitureIconUrl}
-                      <img src={offer.singleProduct.furnitureIconUrl} alt="" />
+                      <img src={offer.singleProduct.furnitureIconUrl} alt="" loading="lazy" />
                     {:else}
                       <Image size={13} strokeWidth={2} aria-hidden="true" />
                     {/if}
@@ -933,7 +933,7 @@
                   {#if offerDetailLoading}
                     <p class="muted">{$t('catalogAdmin.loadingProducts')}</p>
                   {:else if offerDetailError}
-                    <p class="empty-state danger">{offerDetailError}</p>
+                    <p class="empty-state danger" role="alert">{offerDetailError}</p>
                   {:else if offerDetail}
 
                     {#if offerDetail.products.length === 0}
@@ -945,7 +945,7 @@
                             <div class="catalog-row static">
                               <span class="catalog-row-icon">
                                 {#if product.furnitureIconUrl}
-                                  <img src={product.furnitureIconUrl} alt="" />
+                                  <img src={product.furnitureIconUrl} alt="" loading="lazy" />
                                 {:else}
                                   <Image size={18} strokeWidth={2} aria-hidden="true" />
                                 {/if}
@@ -982,7 +982,7 @@
                         {/each}
                       </div>
                     {/if}
-                    {#if $ops.errors.deleteProduct}<p class="empty-state danger">{$ops.errors.deleteProduct}</p>{/if}
+                    {#if $ops.errors.deleteProduct}<p class="empty-state danger" role="alert">{$ops.errors.deleteProduct}</p>{/if}
                     {#if $ops.results.deleteProduct}
                       <OpResult result={$ops.results.deleteProduct} />
                     {/if}
@@ -993,7 +993,7 @@
           {/each}
         </div>
       {/if}
-      {#if $ops.errors.deleteOffer}<p class="empty-state danger">{$ops.errors.deleteOffer}</p>{/if}
+      {#if $ops.errors.deleteOffer}<p class="empty-state danger" role="alert">{$ops.errors.deleteOffer}</p>{/if}
       {#if $ops.results.deleteOffer}
         <OpResult result={$ops.results.deleteOffer} />
       {/if}
@@ -1030,11 +1030,11 @@
     <div class="catalog-card-detail">
       <div class="op-field">
         <label for="edit-page-localization">{$t('catalogAdmin.localizationKeyRequired')}</label>
-        <input id="edit-page-localization" bind:value={editPageForm.localization} />
+        <input autocomplete="off" spellcheck="false" id="edit-page-localization" bind:value={editPageForm.localization} />
       </div>
       <div class="op-field">
         <label for="edit-page-name">{$t('catalogAdmin.displayName')}</label>
-        <input id="edit-page-name" bind:value={editPageForm.name} />
+        <input autocomplete="off" spellcheck="false" id="edit-page-name" bind:value={editPageForm.name} />
       </div>
       <div class="op-field">
         <span class="op-label">{$t('catalogAdmin.icon')}</span>
@@ -1043,7 +1043,7 @@
             <Image size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.selectIcon')}
           </button>
           <span class="op-chip">
-            {#if iconUrlFor(editPageForm.icon)}<img class="op-sprite" src={iconUrlFor(editPageForm.icon)} alt="" />{:else}<span class="op-sprite">{editPageForm.icon}</span>{/if}
+            {#if iconUrlFor(editPageForm.icon)}<img class="op-sprite" src={iconUrlFor(editPageForm.icon)} alt="" loading="lazy" />{:else}<span class="op-sprite">{editPageForm.icon}</span>{/if}
             #{editPageForm.icon}
           </span>
         </div>
@@ -1056,10 +1056,10 @@
       </div>
       <div class="op-field">
         <label for="edit-page-sort">{$t('catalogAdmin.sortOrder')}</label>
-        <input id="edit-page-sort" type="number" bind:value={editPageForm.sortOrder} />
+        <input autocomplete="off" spellcheck="false" id="edit-page-sort" type="number" bind:value={editPageForm.sortOrder} />
       </div>
       <div class="op-field">
-        <label><input type="checkbox" bind:checked={editPageForm.visible} /> {$t('catalogAdmin.visible')}</label>
+        <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editPageForm.visible} /> {$t('catalogAdmin.visible')}</label>
       </div>
       <div class="op-field">
         <label for="edit-page-image-data">{$t('catalogAdmin.imageDataOptional')}</label>
@@ -1073,7 +1073,7 @@
         <button type="button" onclick={stageUpdatePage} disabled={$ops.busyKeys.updatePage}>{$t('catalogAdmin.save')}</button>
         <button class="ghost-button" type="button" onclick={() => (editPageOpen = false)}>{$t('catalogAdmin.cancel')}</button>
       </div>
-      {#if $ops.errors.updatePage}<p class="empty-state danger">{$ops.errors.updatePage}</p>{/if}
+      {#if $ops.errors.updatePage}<p class="empty-state danger" role="alert">{$ops.errors.updatePage}</p>{/if}
       {#if $ops.results.updatePage}
         <OpResult result={$ops.results.updatePage} />
       {/if}
@@ -1086,11 +1086,11 @@
     <div class="catalog-card-detail">
       <div class="op-field">
         <label for="new-page-localization">{$t('catalogAdmin.localizationKeyRequired')}</label>
-        <input id="new-page-localization" bind:value={newPage.localization} placeholder={$t('catalogAdmin.localizationPlaceholder')} />
+        <input autocomplete="off" spellcheck="false" id="new-page-localization" bind:value={newPage.localization} placeholder={$t('catalogAdmin.localizationPlaceholder')} />
       </div>
       <div class="op-field">
         <label for="new-page-name">{$t('catalogAdmin.displayName')}</label>
-        <input id="new-page-name" bind:value={newPage.name} />
+        <input autocomplete="off" spellcheck="false" id="new-page-name" bind:value={newPage.name} />
       </div>
       <div class="op-field">
         <span class="op-label">{$t('catalogAdmin.icon')}</span>
@@ -1099,7 +1099,7 @@
             <Image size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.selectIcon')}
           </button>
           <span class="op-chip">
-            {#if iconUrlFor(newPage.icon)}<img class="op-sprite" src={iconUrlFor(newPage.icon)} alt="" />{:else}<span class="op-sprite">{newPage.icon}</span>{/if}
+            {#if iconUrlFor(newPage.icon)}<img class="op-sprite" src={iconUrlFor(newPage.icon)} alt="" loading="lazy" />{:else}<span class="op-sprite">{newPage.icon}</span>{/if}
             #{newPage.icon}
           </span>
         </div>
@@ -1112,10 +1112,10 @@
       </div>
       <div class="op-field">
         <label for="new-page-sort">{$t('catalogAdmin.sortOrder')}</label>
-        <input id="new-page-sort" type="number" bind:value={newPage.sortOrder} />
+        <input autocomplete="off" spellcheck="false" id="new-page-sort" type="number" bind:value={newPage.sortOrder} />
       </div>
       <div class="op-field">
-        <label><input type="checkbox" bind:checked={newPage.visible} /> {$t('catalogAdmin.visible')}</label>
+        <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={newPage.visible} /> {$t('catalogAdmin.visible')}</label>
       </div>
       <div class="op-field">
         <label for="new-page-image-data">{$t('catalogAdmin.imageDataOptional')}</label>
@@ -1128,7 +1128,7 @@
       <div class="op-actions">
         <button type="button" onclick={stageCreatePage} disabled={$ops.busyKeys.createPage}>{$t('catalogAdmin.create')}</button>
       </div>
-      {#if $ops.errors.createPage}<p class="empty-state danger">{$ops.errors.createPage}</p>{/if}
+      {#if $ops.errors.createPage}<p class="empty-state danger" role="alert">{$ops.errors.createPage}</p>{/if}
       {#if $ops.results.createPage}
         <OpResult result={$ops.results.createPage} />
       {/if}
@@ -1141,16 +1141,16 @@
     <div class="catalog-card-detail">
       <div class="op-field">
         <label for="new-offer-localization">{$t('catalogAdmin.localizationIdRequired')}</label>
-        <input id="new-offer-localization" bind:value={newOffer.localizationId} />
+        <input autocomplete="off" spellcheck="false" id="new-offer-localization" bind:value={newOffer.localizationId} />
         <small class="muted">{$t('catalogAdmin.localizationIdHint')}</small>
       </div>
       <div class="op-field">
         <label for="new-offer-credits">{$t('catalogAdmin.costCredits')}</label>
-        <input id="new-offer-credits" type="number" min="0" bind:value={newOffer.costCredits} />
+        <input autocomplete="off" spellcheck="false" id="new-offer-credits" type="number" min="0" bind:value={newOffer.costCredits} />
       </div>
       <div class="op-field">
         <label for="new-offer-currency-amount">{$t('catalogAdmin.costSecondary')}</label>
-        <input id="new-offer-currency-amount" type="number" min="0" bind:value={newOffer.costCurrency} />
+        <input autocomplete="off" spellcheck="false" id="new-offer-currency-amount" type="number" min="0" bind:value={newOffer.costCurrency} />
       </div>
       <div class="op-field">
         <label for="new-offer-currency-type">{$t('catalogAdmin.currencyTypeOptional')}</label>
@@ -1161,25 +1161,25 @@
       </div>
       <div class="op-field">
         <label for="new-offer-club-level">{$t('catalogAdmin.clubLevel')}</label>
-        <input id="new-offer-club-level" type="number" min="0" bind:value={newOffer.clubLevel} />
+        <input autocomplete="off" spellcheck="false" id="new-offer-club-level" type="number" min="0" bind:value={newOffer.clubLevel} />
       </div>
       <div class="op-field">
         <label for="new-offer-discount">{$t('catalogAdmin.discountPercent')}</label>
-        <input id="new-offer-discount" type="number" min="0" max="100" bind:value={newOffer.discountPercent} />
+        <input autocomplete="off" spellcheck="false" id="new-offer-discount" type="number" min="0" max="100" bind:value={newOffer.discountPercent} />
       </div>
       <div class="op-field">
-        <label><input type="checkbox" bind:checked={newOffer.canGift} /> {$t('catalogAdmin.canGift')}</label>
+        <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={newOffer.canGift} /> {$t('catalogAdmin.canGift')}</label>
       </div>
       <div class="op-field">
-        <label><input type="checkbox" bind:checked={newOffer.canBundle} /> {$t('catalogAdmin.canBundle')}</label>
+        <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={newOffer.canBundle} /> {$t('catalogAdmin.canBundle')}</label>
       </div>
       <div class="op-field">
-        <label><input type="checkbox" bind:checked={newOffer.visible} /> {$t('catalogAdmin.visible')}</label>
+        <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={newOffer.visible} /> {$t('catalogAdmin.visible')}</label>
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageCreateOffer} disabled={$ops.busyKeys.createOffer}>{$t('catalogAdmin.create')}</button>
       </div>
-      {#if $ops.errors.createOffer}<p class="empty-state danger">{$ops.errors.createOffer}</p>{/if}
+      {#if $ops.errors.createOffer}<p class="empty-state danger" role="alert">{$ops.errors.createOffer}</p>{/if}
       {#if $ops.results.createOffer}
         <OpResult result={$ops.results.createOffer} />
       {/if}
@@ -1192,15 +1192,15 @@
     <div class="catalog-card-detail">
       <div class="op-field">
         <label for={`edit-offer-localization-${editOfferId}`}>{$t('catalogAdmin.localizationIdRequired')}</label>
-        <input id={`edit-offer-localization-${editOfferId}`} bind:value={editOfferForm.localizationId} />
+        <input autocomplete="off" spellcheck="false" id={`edit-offer-localization-${editOfferId}`} bind:value={editOfferForm.localizationId} />
       </div>
       <div class="op-field">
         <label for={`edit-offer-credits-${editOfferId}`}>{$t('catalogAdmin.costCredits')}</label>
-        <input id={`edit-offer-credits-${editOfferId}`} type="number" min="0" bind:value={editOfferForm.costCredits} />
+        <input autocomplete="off" spellcheck="false" id={`edit-offer-credits-${editOfferId}`} type="number" min="0" bind:value={editOfferForm.costCredits} />
       </div>
       <div class="op-field">
         <label for={`edit-offer-currency-amount-${editOfferId}`}>{$t('catalogAdmin.costSecondary')}</label>
-        <input id={`edit-offer-currency-amount-${editOfferId}`} type="number" min="0" bind:value={editOfferForm.costCurrency} />
+        <input autocomplete="off" spellcheck="false" id={`edit-offer-currency-amount-${editOfferId}`} type="number" min="0" bind:value={editOfferForm.costCurrency} />
       </div>
       <div class="op-field">
         <label for={`edit-offer-currency-type-${editOfferId}`}>{$t('catalogAdmin.currencyTypeOptional')}</label>
@@ -1211,20 +1211,20 @@
       </div>
       <div class="op-field">
         <label for={`edit-offer-club-${editOfferId}`}>{$t('catalogAdmin.clubLevel')}</label>
-        <input id={`edit-offer-club-${editOfferId}`} type="number" min="0" bind:value={editOfferForm.clubLevel} />
+        <input autocomplete="off" spellcheck="false" id={`edit-offer-club-${editOfferId}`} type="number" min="0" bind:value={editOfferForm.clubLevel} />
       </div>
       <div class="op-field">
         <label for={`edit-offer-discount-${editOfferId}`}>{$t('catalogAdmin.discountPercent')}</label>
-        <input id={`edit-offer-discount-${editOfferId}`} type="number" min="0" max="100" bind:value={editOfferForm.discountPercent} />
+        <input autocomplete="off" spellcheck="false" id={`edit-offer-discount-${editOfferId}`} type="number" min="0" max="100" bind:value={editOfferForm.discountPercent} />
       </div>
-      <div class="op-field"><label><input type="checkbox" bind:checked={editOfferForm.canGift} /> {$t('catalogAdmin.canGift')}</label></div>
-      <div class="op-field"><label><input type="checkbox" bind:checked={editOfferForm.canBundle} /> {$t('catalogAdmin.canBundle')}</label></div>
-      <div class="op-field"><label><input type="checkbox" bind:checked={editOfferForm.visible} /> {$t('catalogAdmin.visible')}</label></div>
+      <div class="op-field"><label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editOfferForm.canGift} /> {$t('catalogAdmin.canGift')}</label></div>
+      <div class="op-field"><label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editOfferForm.canBundle} /> {$t('catalogAdmin.canBundle')}</label></div>
+      <div class="op-field"><label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editOfferForm.visible} /> {$t('catalogAdmin.visible')}</label></div>
       <div class="op-actions">
         <button type="button" onclick={stageUpdateOffer} disabled={$ops.busyKeys.updateOffer}>{$t('catalogAdmin.save')}</button>
         <button class="ghost-button" type="button" onclick={() => (editOfferId = null)}>{$t('catalogAdmin.cancel')}</button>
       </div>
-      {#if $ops.errors.updateOffer}<p class="empty-state danger">{$ops.errors.updateOffer}</p>{/if}
+      {#if $ops.errors.updateOffer}<p class="empty-state danger" role="alert">{$ops.errors.updateOffer}</p>{/if}
       {#if $ops.results.updateOffer}
         <OpResult result={$ops.results.updateOffer} />
       {/if}
@@ -1253,7 +1253,7 @@
           </button>
           {#if newProduct.furnitureDefinitionId}
             <span class="op-chip">
-              {#if newProduct.furnitureIcon}<img class="op-sprite" src={newProduct.furnitureIcon} alt="" />{:else}<span class="op-sprite">{newProduct.furnitureSprite}</span>{/if}
+              {#if newProduct.furnitureIcon}<img class="op-sprite" src={newProduct.furnitureIcon} alt="" loading="lazy" />{:else}<span class="op-sprite">{newProduct.furnitureSprite}</span>{/if}
               {newProduct.furnitureName} <small>#{newProduct.furnitureDefinitionId}</small>
             </span>
             <button class="ghost-button" type="button" onclick={() => (newProduct = { ...newProduct, furnitureDefinitionId: '', furnitureName: '', furnitureIcon: '', furnitureSprite: '' })}>{$t('catalogAdmin.clear')}</button>
@@ -1264,27 +1264,27 @@
       </div>
       <div class="op-field">
         <label for="new-product-extra">{$t('catalogAdmin.extraData')}</label>
-        <input id="new-product-extra" bind:value={newProduct.extraParam} placeholder={$t('operations.extraDataPlaceholder')} />
+        <input autocomplete="off" spellcheck="false" id="new-product-extra" bind:value={newProduct.extraParam} placeholder={$t('operations.extraDataPlaceholder')} />
       </div>
       <div class="op-field">
         <label for="new-product-quantity">{$t('catalogAdmin.quantity')}</label>
-        <input id="new-product-quantity" type="number" min="1" bind:value={newProduct.quantity} />
+        <input autocomplete="off" spellcheck="false" id="new-product-quantity" type="number" min="1" bind:value={newProduct.quantity} />
       </div>
       <div class="op-field">
         <label for="new-product-unique-size">{$t('catalogAdmin.uniqueSizeHint')}</label>
-        <input id="new-product-unique-size" type="number" min="0" bind:value={newProduct.uniqueSize} />
+        <input autocomplete="off" spellcheck="false" id="new-product-unique-size" type="number" min="0" bind:value={newProduct.uniqueSize} />
       </div>
       <div class="op-field">
         <label for="new-product-unique-remaining">{$t('catalogAdmin.uniqueRemaining')}</label>
-        <input id="new-product-unique-remaining" type="number" min="0" bind:value={newProduct.uniqueRemaining} />
+        <input autocomplete="off" spellcheck="false" id="new-product-unique-remaining" type="number" min="0" bind:value={newProduct.uniqueRemaining} />
       </div>
       <div class="op-field">
-        <label><input type="checkbox" bind:checked={newProduct.buildersClubEligible} /> {$t('catalogAdmin.bcEligible')}</label>
+        <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={newProduct.buildersClubEligible} /> {$t('catalogAdmin.bcEligible')}</label>
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageCreateProduct} disabled={$ops.busyKeys.createProduct}>{$t('catalogAdmin.create')}</button>
       </div>
-      {#if $ops.errors.createProduct}<p class="empty-state danger">{$ops.errors.createProduct}</p>{/if}
+      {#if $ops.errors.createProduct}<p class="empty-state danger" role="alert">{$ops.errors.createProduct}</p>{/if}
       {#if $ops.results.createProduct}
         <OpResult result={$ops.results.createProduct} />
       {/if}
@@ -1303,30 +1303,30 @@
       </div>
       <div class="op-field">
         <label for={`edit-product-def-${editProductId}`}>{$t('catalogAdmin.furnitureDefIdOptional')}</label>
-        <input id={`edit-product-def-${editProductId}`} type="number" min="0" bind:value={editProductForm.furnitureDefinitionId} />
+        <input autocomplete="off" spellcheck="false" id={`edit-product-def-${editProductId}`} type="number" min="0" bind:value={editProductForm.furnitureDefinitionId} />
       </div>
       <div class="op-field">
         <label for={`edit-product-extra-${editProductId}`}>{$t('catalogAdmin.extraData')}</label>
-        <input id={`edit-product-extra-${editProductId}`} bind:value={editProductForm.extraParam} />
+        <input autocomplete="off" spellcheck="false" id={`edit-product-extra-${editProductId}`} bind:value={editProductForm.extraParam} />
       </div>
       <div class="op-field">
         <label for={`edit-product-qty-${editProductId}`}>{$t('catalogAdmin.quantity')}</label>
-        <input id={`edit-product-qty-${editProductId}`} type="number" min="1" bind:value={editProductForm.quantity} />
+        <input autocomplete="off" spellcheck="false" id={`edit-product-qty-${editProductId}`} type="number" min="1" bind:value={editProductForm.quantity} />
       </div>
       <div class="op-field">
         <label for={`edit-product-usize-${editProductId}`}>{$t('catalogAdmin.uniqueSizeHint')}</label>
-        <input id={`edit-product-usize-${editProductId}`} type="number" min="0" bind:value={editProductForm.uniqueSize} />
+        <input autocomplete="off" spellcheck="false" id={`edit-product-usize-${editProductId}`} type="number" min="0" bind:value={editProductForm.uniqueSize} />
       </div>
       <div class="op-field">
         <label for={`edit-product-urem-${editProductId}`}>{$t('catalogAdmin.uniqueRemaining')}</label>
-        <input id={`edit-product-urem-${editProductId}`} type="number" min="0" bind:value={editProductForm.uniqueRemaining} />
+        <input autocomplete="off" spellcheck="false" id={`edit-product-urem-${editProductId}`} type="number" min="0" bind:value={editProductForm.uniqueRemaining} />
       </div>
-      <div class="op-field"><label><input type="checkbox" bind:checked={editProductForm.buildersClubEligible} /> {$t('catalogAdmin.bcEligible')}</label></div>
+      <div class="op-field"><label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editProductForm.buildersClubEligible} /> {$t('catalogAdmin.bcEligible')}</label></div>
       <div class="op-actions">
         <button type="button" onclick={stageUpdateProduct} disabled={$ops.busyKeys.updateProduct}>{$t('catalogAdmin.save')}</button>
         <button class="ghost-button" type="button" onclick={() => (editProductId = null)}>{$t('catalogAdmin.cancel')}</button>
       </div>
-      {#if $ops.errors.updateProduct}<p class="empty-state danger">{$ops.errors.updateProduct}</p>{/if}
+      {#if $ops.errors.updateProduct}<p class="empty-state danger" role="alert">{$ops.errors.updateProduct}</p>{/if}
       {#if $ops.results.updateProduct}
         <OpResult result={$ops.results.updateProduct} />
       {/if}

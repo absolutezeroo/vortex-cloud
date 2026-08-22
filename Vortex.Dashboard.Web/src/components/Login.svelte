@@ -136,7 +136,7 @@
     outline: none;
   }
 
-  input:focus {
+  input:focus-visible {
     border-color: rgba(var(--accent-rgb), 0.58);
     box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.12);
   }

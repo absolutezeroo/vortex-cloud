@@ -107,7 +107,7 @@
   {:else if forbidden}
     <AccessDeniedNotice message={$t('economyExtras.accessDenied')} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 </section>
 
@@ -335,22 +335,22 @@
         >
           <label>
             {$t('economyExtras.colCurrency')}
-            <input bind:value={currencyForm.name} />
+            <input autocomplete="off" spellcheck="false" bind:value={currencyForm.name} />
           </label>
           <label>
             {$t('economyExtras.colType')}
-            <input type="number" bind:value={currencyForm.currencyType} min="0" />
+            <input autocomplete="off" spellcheck="false" type="number" bind:value={currencyForm.currencyType} min="0" />
           </label>
           <label>
             {$t('economyExtras.colPointType')}
-            <input type="number" bind:value={currencyForm.activityPointType} />
+            <input autocomplete="off" spellcheck="false" type="number" bind:value={currencyForm.activityPointType} />
           </label>
           <label>
             {$t('economyExtras.colStarting')}
-            <input type="number" bind:value={currencyForm.startingAmount} min="0" />
+            <input autocomplete="off" spellcheck="false" type="number" bind:value={currencyForm.startingAmount} min="0" />
           </label>
           <label class="check">
-            <input type="checkbox" bind:checked={currencyForm.enabled} />
+            <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={currencyForm.enabled} />
             {$t('economyExtras.colEnabled')}
           </label>
           <button type="submit" disabled={!currencyForm.name.trim()}>
@@ -358,7 +358,7 @@
           </button>
         </form>
 
-    {#if $ops.error}<p class="empty-state danger">{$ops.error}</p>{/if}
+    {#if $ops.error}<p class="empty-state danger" role="alert">{$ops.error}</p>{/if}
     {#if $ops.result}<OpResult result={$ops.result} />{/if}
 
     {#snippet actions()}
@@ -384,15 +384,15 @@
         >
           <label>
             {$t('economyExtras.colLevel')}
-            <input type="number" bind:value={tierForm.level} min="1" />
+            <input autocomplete="off" spellcheck="false" type="number" bind:value={tierForm.level} min="1" />
           </label>
           <label>
             {$t('economyExtras.colFurniLimit')}
-            <input type="number" bind:value={tierForm.furniLimit} min="0" />
+            <input autocomplete="off" spellcheck="false" type="number" bind:value={tierForm.furniLimit} min="0" />
           </label>
         </form>
 
-    {#if $ops.error}<p class="empty-state danger">{$ops.error}</p>{/if}
+    {#if $ops.error}<p class="empty-state danger" role="alert">{$ops.error}</p>{/if}
     {#if $ops.result}<OpResult result={$ops.result} />{/if}
 
     {#snippet actions()}
@@ -425,13 +425,13 @@
           <label>
             {$t('economyExtras.colFurniture')}
             <span class="cell">
-              <input type="number" bind:value={termsForm.furnitureId} min="1" />
+              <input autocomplete="off" spellcheck="false" type="number" bind:value={termsForm.furnitureId} min="1" />
               <AssetImage src={termsPreviewUrl} alt="" size={32} />
             </span>
           </label>
           <label>
             {$t('economyExtras.price')}
-            <input type="number" bind:value={termsForm.price} min="0" />
+            <input autocomplete="off" spellcheck="false" type="number" bind:value={termsForm.price} min="0" />
           </label>
           <label>
             {$t('economyExtras.colCurrency')}
@@ -444,15 +444,15 @@
           </label>
           <label>
             {$t('economyExtras.durationSeconds')}
-            <input type="number" bind:value={termsForm.rentDurationSeconds} min="1" />
+            <input autocomplete="off" spellcheck="false" type="number" bind:value={termsForm.rentDurationSeconds} min="1" />
           </label>
           <label class="check">
-            <input type="checkbox" bind:checked={termsForm.requiresHc} />
+            <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={termsForm.requiresHc} />
             {$t('economyExtras.requiresHc')}
           </label>
         </form>
 
-    {#if $ops.error}<p class="empty-state danger">{$ops.error}</p>{/if}
+    {#if $ops.error}<p class="empty-state danger" role="alert">{$ops.error}</p>{/if}
     {#if $ops.result}<OpResult result={$ops.result} />{/if}
 
     {#snippet actions()}

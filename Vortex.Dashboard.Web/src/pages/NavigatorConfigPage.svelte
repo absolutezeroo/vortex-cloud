@@ -159,7 +159,7 @@
   {:else if forbidden}
     <AccessDeniedNotice message={$t('navigatorConfig.accessDenied')} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 
   {#if $ops.result}
@@ -368,7 +368,7 @@
             </label>
             <label>
               {$t('navigatorConfig.order')}
-              <input type="number" bind:value={quickLinkForms[context.id].orderNum} />
+              <input autocomplete="off" spellcheck="false" type="number" bind:value={quickLinkForms[context.id].orderNum} />
             </label>
             <button type="submit" disabled={!quickLinkForms[context.id].searchCode}>
               {$t('navigatorConfig.addBlock')}
@@ -410,10 +410,10 @@
         </label>
         <label>
           {$t('navigatorConfig.order')}
-          <input type="number" bind:value={contextForm.orderNum} />
+          <input autocomplete="off" spellcheck="false" type="number" bind:value={contextForm.orderNum} />
         </label>
         <label class="check">
-          <input type="checkbox" bind:checked={contextForm.visible} />
+          <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={contextForm.visible} />
           {$t('navigatorConfig.visible')}
         </label>
         <button type="submit" disabled={!contextForm.searchCode}>{$t('navigatorConfig.addTab')}</button>
@@ -498,18 +498,18 @@
       >
         <label>
           {$t('navigatorConfig.colName')}
-          <input bind:value={categoryForm.name} placeholder={$t('navigatorConfig.categoryPlaceholder')} />
+          <input autocomplete="off" spellcheck="false" bind:value={categoryForm.name} placeholder={$t('navigatorConfig.categoryPlaceholder')} />
         </label>
         <label>
           {$t('navigatorConfig.colMinRank')}
-          <input type="number" bind:value={categoryForm.minRank} />
+          <input autocomplete="off" spellcheck="false" type="number" bind:value={categoryForm.minRank} />
         </label>
         <label>
           {$t('navigatorConfig.order')}
-          <input type="number" bind:value={categoryForm.orderNum} />
+          <input autocomplete="off" spellcheck="false" type="number" bind:value={categoryForm.orderNum} />
         </label>
         <label class="check">
-          <input type="checkbox" bind:checked={categoryForm.staffOnly} />
+          <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={categoryForm.staffOnly} />
           {$t('navigatorConfig.colStaffOnly')}
         </label>
         <button type="submit" disabled={!categoryForm.name.trim()}>{$t('navigatorConfig.addCategory')}</button>
@@ -585,10 +585,10 @@
       >
         <label>
           {$t('navigatorConfig.colName')}
-          <input bind:value={eventCategoryForm.name} />
+          <input autocomplete="off" spellcheck="false" bind:value={eventCategoryForm.name} />
         </label>
         <label class="check">
-          <input type="checkbox" bind:checked={eventCategoryForm.visible} />
+          <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={eventCategoryForm.visible} />
           {$t('navigatorConfig.visible')}
         </label>
         <button type="submit" disabled={!eventCategoryForm.name.trim()}>
@@ -623,7 +623,7 @@
             >
               <label>
                 {$t('navigatorConfig.searchCode')}
-                <input bind:value={editing.draft.searchCode} required />
+                <input autocomplete="off" spellcheck="false" bind:value={editing.draft.searchCode} required />
               </label>
               <label>
                 {$t('navigatorConfig.queryType')}
@@ -635,10 +635,10 @@
               </label>
               <label>
                 {$t('navigatorConfig.order')}
-                <input type="number" bind:value={editing.draft.orderNum} />
+                <input autocomplete="off" spellcheck="false" type="number" bind:value={editing.draft.orderNum} />
               </label>
               <label class="check">
-                <input type="checkbox" bind:checked={editing.draft.visible} />
+                <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editing.draft.visible} />
                 {$t('navigatorConfig.visible')}
               </label>
               <button type="submit">{$t('navigatorConfig.save')}</button>
@@ -671,7 +671,7 @@
                         >
                           <label>
                             {$t('navigatorConfig.searchCode')}
-                            <input bind:value={editing.draft.searchCode} required />
+                            <input autocomplete="off" spellcheck="false" bind:value={editing.draft.searchCode} required />
                           </label>
                           <label>
                             {$t('navigatorConfig.queryType')}
@@ -683,15 +683,15 @@
                           </label>
                           <label>
                             {$t('navigatorConfig.colFilter')}
-                            <input bind:value={editing.draft.filter} />
+                            <input autocomplete="off" spellcheck="false" bind:value={editing.draft.filter} />
                           </label>
                           <label>
                             {$t('navigatorConfig.colLocalization')}
-                            <input bind:value={editing.draft.localization} />
+                            <input autocomplete="off" spellcheck="false" bind:value={editing.draft.localization} />
                           </label>
                           <label>
                             {$t('navigatorConfig.order')}
-                            <input type="number" bind:value={editing.draft.orderNum} />
+                            <input autocomplete="off" spellcheck="false" type="number" bind:value={editing.draft.orderNum} />
                           </label>
                           <button type="submit">{$t('navigatorConfig.save')}</button>
                           <button type="button" class="ghost-button" onclick={() => (editing = null)}>
@@ -717,22 +717,22 @@
                     >
                       <label>
                         {$t('navigatorConfig.colName')}
-                        <input bind:value={editing.draft.name} required />
+                        <input autocomplete="off" spellcheck="false" bind:value={editing.draft.name} required />
                       </label>
                       <label>
                         {$t('navigatorConfig.colMinRank')}
-                        <input type="number" bind:value={editing.draft.minRank} />
+                        <input autocomplete="off" spellcheck="false" type="number" bind:value={editing.draft.minRank} />
                       </label>
                       <label>
                         {$t('navigatorConfig.order')}
-                        <input type="number" bind:value={editing.draft.orderNum} />
+                        <input autocomplete="off" spellcheck="false" type="number" bind:value={editing.draft.orderNum} />
                       </label>
                       <label class="check">
-                        <input type="checkbox" bind:checked={editing.draft.visible} />
+                        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editing.draft.visible} />
                         {$t('navigatorConfig.visible')}
                       </label>
                       <label class="check">
-                        <input type="checkbox" bind:checked={editing.draft.staffOnly} />
+                        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editing.draft.staffOnly} />
                         {$t('navigatorConfig.colStaffOnly')}
                       </label>
                       <button type="submit">{$t('navigatorConfig.save')}</button>
@@ -763,10 +763,10 @@
                     >
                       <label>
                         {$t('navigatorConfig.colName')}
-                        <input bind:value={editing.draft.name} required />
+                        <input autocomplete="off" spellcheck="false" bind:value={editing.draft.name} required />
                       </label>
                       <label class="check">
-                        <input type="checkbox" bind:checked={editing.draft.visible} />
+                        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editing.draft.visible} />
                         {$t('navigatorConfig.visible')}
                       </label>
                       <button type="submit">{$t('navigatorConfig.save')}</button>

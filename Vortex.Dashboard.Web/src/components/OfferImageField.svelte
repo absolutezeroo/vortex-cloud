@@ -81,7 +81,7 @@
   {#if filenameMode}
     <div class="filename-row">
       {#if prefix}<span class="filename-prefix" title={imageTemplate}>{prefix}</span>{/if}
-      <input
+      <input autocomplete="off" spellcheck="false"
         {id}
         value={filename}
         oninput={onFilenameInput}
@@ -90,7 +90,7 @@
     </div>
     <small class="muted">{$t('targetedOffers.filenameHint')}</small>
   {:else}
-    <input {id} value={v} oninput={onFullUrlInput} placeholder="https://..." />
+    <input autocomplete="off" spellcheck="false" {id} value={v} oninput={onFullUrlInput} placeholder="https://..." />
   {/if}
 
   <div class="field-actions">

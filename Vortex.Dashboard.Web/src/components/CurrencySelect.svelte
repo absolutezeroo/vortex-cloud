@@ -67,7 +67,7 @@
 </script>
 
 {#if unavailable}
-  <input {id} type="number" bind:value />
+  <input autocomplete="off" spellcheck="false" {id} type="number" bind:value />
   <small class="muted">{$t('currency.selectHint')}</small>
 {:else}
   <span class="currency-select">

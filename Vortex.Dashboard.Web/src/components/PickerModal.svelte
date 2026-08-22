@@ -151,7 +151,7 @@
   {/snippet}
 
   <form class="toolbar" onsubmit={(event) => { event.preventDefault(); load(); }}>
-    <input
+    <input autocomplete="off" spellcheck="false"
       bind:value={query}
       placeholder={$t(SEARCH_PLACEHOLDER_KEYS[kind] ?? SEARCH_PLACEHOLDER_KEYS.user)}
       disabled={!canSelect}
@@ -162,7 +162,7 @@
   {#if forbidden}
     <AccessDeniedNotice message={permissionMessage} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {:else if loading}
     <p class="empty-state">{$t('pickerModal.loading')}</p>
   {/if}
@@ -172,7 +172,7 @@
       {#if kind === 'furniture'}
         <button type="button" class="pick-row" onclick={() => choose(row)}>
           {#if row.iconUrl}
-            <img class="pick-icon" src={row.iconUrl} alt="" />
+            <img class="pick-icon" src={row.iconUrl} alt="" width="38" height="38" loading="lazy" />
           {:else}
             <span class="pick-icon" aria-hidden="true">{row.spriteId}</span>
           {/if}

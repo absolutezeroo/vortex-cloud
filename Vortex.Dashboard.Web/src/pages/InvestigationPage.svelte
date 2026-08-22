@@ -80,7 +80,7 @@
     <button type="button" onclick={search}>{$t('investigation.search')}</button>
   </div>
   <form class="toolbar" onsubmit={(event) => { event.preventDefault(); search(); }}>
-    <input bind:value={query} placeholder={$t('investigation.searchPlaceholder')} />
+    <input autocomplete="off" spellcheck="false" bind:value={query} placeholder={$t('investigation.searchPlaceholder')} />
     <button type="submit">{$t('investigation.load')}</button>
   </form>
   <p class="muted">{summary}</p>
@@ -88,7 +88,7 @@
   {#if forbidden}
     <AccessDeniedNotice message={$t('investigation.accessDenied')} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 
   {#if player}

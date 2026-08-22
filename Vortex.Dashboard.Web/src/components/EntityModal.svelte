@@ -71,7 +71,7 @@
     {:else if forbidden}
       <AccessDeniedNotice message={forbiddenMessage} />
     {:else if error}
-      <p class="empty-state danger">{$t('entityModal.unableToLoad', { error })}</p>
+      <p class="empty-state danger" role="alert">{$t('entityModal.unableToLoad', { error })}</p>
     {:else if $modal.type === 'player' && playerProfile}
       <div class="profile-headline">
         <AssetImage src={playerProfile.avatarUrl} alt={playerProfile.name} size={56} fallbackIcon={User} />

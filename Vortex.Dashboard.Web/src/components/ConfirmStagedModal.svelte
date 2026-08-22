@@ -48,7 +48,7 @@
     {#if $ops.pending.reason}
       <p class="muted">{$t('common.reasonLabel', { reason: $ops.pending.reason })}</p>
     {/if}
-    {#if $ops.error}<p class="empty-state danger">{$ops.error}</p>{/if}
+    {#if $ops.error}<p class="empty-state danger" role="alert">{$ops.error}</p>{/if}
 
     {#snippet actions()}
 

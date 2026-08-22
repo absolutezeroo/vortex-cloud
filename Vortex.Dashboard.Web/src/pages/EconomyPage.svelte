@@ -50,14 +50,14 @@
     {$t('economy.description')}
   </p>
   <form class="toolbar" onsubmit={(event) => { event.preventDefault(); refresh(); }}>
-    <input bind:value={player} placeholder={$t('audit.playerIdPlaceholder')} />
+    <input autocomplete="off" spellcheck="false" bind:value={player} placeholder={$t('audit.playerIdPlaceholder')} />
     <button type="submit">{$t('economy.load')}</button>
   </form>
 
   {#if forbidden}
     <AccessDeniedNotice message={$t('economy.accessDenied')} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 
   <table>

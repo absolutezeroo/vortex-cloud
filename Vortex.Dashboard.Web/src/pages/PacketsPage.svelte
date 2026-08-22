@@ -52,7 +52,7 @@
   {#if forbidden}
     <AccessDeniedNotice message={$t('packets.accessDenied')} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 
   <div class="metric-grid compact">

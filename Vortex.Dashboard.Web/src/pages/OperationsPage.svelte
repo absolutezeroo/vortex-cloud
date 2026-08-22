@@ -245,16 +245,16 @@
       </div>
       <div class="op-field">
         <label for="credits-amount">{$t('operations.amount')}</label>
-        <input id="credits-amount" type="number" min="1" bind:value={credits.amount} placeholder="100" />
+        <input autocomplete="off" spellcheck="false" id="credits-amount" type="number" min="1" bind:value={credits.amount} placeholder="100" />
       </div>
       <div class="op-field">
         <label for="credits-reason">{$t('common.reasonRequired')}</label>
-        <input id="credits-reason" bind:value={credits.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
+        <input autocomplete="off" spellcheck="false" id="credits-reason" bind:value={credits.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageCredits} disabled={$ops.busyKeys.credits}>{$t('common.run')}</button>
       </div>
-      {#if $ops.errors.credits}<p class="empty-state danger">{$ops.errors.credits}</p>{/if}
+      {#if $ops.errors.credits}<p class="empty-state danger" role="alert">{$ops.errors.credits}</p>{/if}
       {#if $ops.results.credits}
         <OpResult result={$ops.results.credits} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
@@ -297,20 +297,20 @@
       </div>
       <div class="op-field">
         <label for="activity-type">{$t('operations.activityPointType')}</label>
-        <input id="activity-type" type="number" min="0" bind:value={activity.type} placeholder="0" />
+        <input autocomplete="off" spellcheck="false" id="activity-type" type="number" min="0" bind:value={activity.type} placeholder="0" />
       </div>
       <div class="op-field">
         <label for="activity-amount">{$t('operations.amount')}</label>
-        <input id="activity-amount" type="number" min="1" bind:value={activity.amount} placeholder="50" />
+        <input autocomplete="off" spellcheck="false" id="activity-amount" type="number" min="1" bind:value={activity.amount} placeholder="50" />
       </div>
       <div class="op-field">
         <label for="activity-reason">{$t('common.reasonRequired')}</label>
-        <input id="activity-reason" bind:value={activity.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
+        <input autocomplete="off" spellcheck="false" id="activity-reason" bind:value={activity.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageActivity} disabled={$ops.busyKeys.activity}>{$t('common.run')}</button>
       </div>
-      {#if $ops.errors.activity}<p class="empty-state danger">{$ops.errors.activity}</p>{/if}
+      {#if $ops.errors.activity}<p class="empty-state danger" role="alert">{$ops.errors.activity}</p>{/if}
       {#if $ops.results.activity}
         <OpResult result={$ops.results.activity} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
@@ -360,16 +360,16 @@
       </div>
       <div class="op-field">
         <label for="collectibles-amount">{$t('operations.amount')}</label>
-        <input id="collectibles-amount" type="number" min="1" bind:value={collectibles.amount} placeholder="100" />
+        <input autocomplete="off" spellcheck="false" id="collectibles-amount" type="number" min="1" bind:value={collectibles.amount} placeholder="100" />
       </div>
       <div class="op-field">
         <label for="collectibles-reason">{$t('common.reasonRequired')}</label>
-        <input id="collectibles-reason" bind:value={collectibles.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
+        <input autocomplete="off" spellcheck="false" id="collectibles-reason" bind:value={collectibles.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageCollectibles} disabled={$ops.busyKeys.collectibles}>{$t('common.run')}</button>
       </div>
-      {#if $ops.errors.collectibles}<p class="empty-state danger">{$ops.errors.collectibles}</p>{/if}
+      {#if $ops.errors.collectibles}<p class="empty-state danger" role="alert">{$ops.errors.collectibles}</p>{/if}
       {#if $ops.results.collectibles}
         <OpResult result={$ops.results.collectibles} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
@@ -428,7 +428,7 @@
           {#if item.definitionId}
             <span class="op-chip">
               {#if item.defIcon}
-                <img class="op-sprite" src={item.defIcon} alt="" />
+                <img class="op-sprite" src={item.defIcon} alt="" loading="lazy" />
               {:else}
                 <span class="op-sprite">{item.defSprite}</span>
               {/if}
@@ -441,16 +441,16 @@
       </div>
       <div class="op-field">
         <label for="item-extra">{$t('operations.extraDataOptional')}</label>
-        <input id="item-extra" bind:value={item.extraData} placeholder={$t('operations.extraDataPlaceholder')} />
+        <input autocomplete="off" spellcheck="false" id="item-extra" bind:value={item.extraData} placeholder={$t('operations.extraDataPlaceholder')} />
       </div>
       <div class="op-field">
         <label for="item-reason">{$t('common.reasonRequired')}</label>
-        <input id="item-reason" bind:value={item.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
+        <input autocomplete="off" spellcheck="false" id="item-reason" bind:value={item.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageItem} disabled={$ops.busyKeys.item}>{$t('common.run')}</button>
       </div>
-      {#if $ops.errors.item}<p class="empty-state danger">{$ops.errors.item}</p>{/if}
+      {#if $ops.errors.item}<p class="empty-state danger" role="alert">{$ops.errors.item}</p>{/if}
       {#if $ops.results.item}
         <OpResult result={$ops.results.item} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
@@ -488,12 +488,12 @@
       </div>
       <div class="op-field">
         <label for="kick-reason">{$t('common.reasonRequired')}</label>
-        <input id="kick-reason" bind:value={kick.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
+        <input autocomplete="off" spellcheck="false" id="kick-reason" bind:value={kick.reason} placeholder={$t('common.reasonPlaceholder')} list="reason-history" />
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageKick} disabled={$ops.busyKeys.kick}>{$t('common.run')}</button>
       </div>
-      {#if $ops.errors.kick}<p class="empty-state danger">{$ops.errors.kick}</p>{/if}
+      {#if $ops.errors.kick}<p class="empty-state danger" role="alert">{$ops.errors.kick}</p>{/if}
       {#if $ops.results.kick}
         <OpResult result={$ops.results.kick} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}

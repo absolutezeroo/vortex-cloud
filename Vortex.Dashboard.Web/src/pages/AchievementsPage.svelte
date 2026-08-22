@@ -187,7 +187,7 @@
   {:else if forbidden}
     <AccessDeniedNotice message={$t('achievements.accessDenied')} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 </section>
 
@@ -259,7 +259,19 @@
           </thead>
           <tbody>
             {#each list.items || [] as row}
-              <tr class:selected={selected === row.id} onclick={() => select(row)} style="cursor: pointer;">
+              <tr
+                class:selected={selected === row.id}
+                onclick={() => select(row)}
+                onkeydown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    select(row);
+                  }
+                }}
+                tabindex="0"
+                aria-selected={selected === row.id}
+                style="cursor: pointer;"
+              >
                 <td>
                   <span class="badge-cell">
                     <AssetImage src={row.badgeUrl} alt={row.name} size={32} fallbackIcon={Trophy} />
@@ -570,7 +582,7 @@
   >
     <div class="op-field">
       <label for="achievement-name">{$t('achievements.colName')}</label>
-      <input id="achievement-name" bind:value={achievementForm.name} placeholder="RoomEntry" />
+      <input autocomplete="off" spellcheck="false" id="achievement-name" bind:value={achievementForm.name} placeholder="RoomEntry" />
     </div>
     <div class="op-field">
       <label for="achievement-category">{$t('achievements.colCategory')}</label>
@@ -590,7 +602,7 @@
     {#if categoryChoice === NEW_CATEGORY}
       <div class="op-field">
         <label for="achievement-category-new">{$t('achievements.categoryNewLabel')}</label>
-        <input id="achievement-category-new" bind:value={achievementForm.category} placeholder="explore" />
+        <input autocomplete="off" spellcheck="false" id="achievement-category-new" bind:value={achievementForm.category} placeholder="explore" />
       </div>
     {/if}
     <div class="op-field">
@@ -642,22 +654,22 @@
   >
     <div class="op-field">
       <label for="level-number">{$t('achievements.colLevel')}</label>
-      <input id="level-number" type="number" bind:value={levelForm.level} min="1" />
+      <input autocomplete="off" spellcheck="false" id="level-number" type="number" bind:value={levelForm.level} min="1" />
     </div>
     <div class="op-field">
       <label for="level-badge">{$t('achievements.colBadgeCode')}</label>
       <span class="badge-cell">
-        <input id="level-badge" bind:value={levelForm.badgeCode} placeholder="ACH_RoomEntry1" />
+        <input autocomplete="off" spellcheck="false" id="level-badge" bind:value={levelForm.badgeCode} placeholder="ACH_RoomEntry1" />
         <AssetImage src={badgePreviewUrl} alt={levelForm.badgeCode} size={32} fallbackIcon={Award} />
       </span>
     </div>
     <div class="op-field">
       <label for="level-requirement">{$t('achievements.colRequirement')}</label>
-      <input id="level-requirement" type="number" bind:value={levelForm.progressRequirement} min="1" />
+      <input autocomplete="off" spellcheck="false" id="level-requirement" type="number" bind:value={levelForm.progressRequirement} min="1" />
     </div>
     <div class="op-field">
       <label for="level-reward-amount">{$t('achievements.rewardAmount')}</label>
-      <input id="level-reward-amount" type="number" bind:value={levelForm.rewardAmount} min="0" />
+      <input autocomplete="off" spellcheck="false" id="level-reward-amount" type="number" bind:value={levelForm.rewardAmount} min="0" />
     </div>
     <div class="op-field">
       <label for="level-reward-type">{$t('achievements.rewardType')}</label>
@@ -665,7 +677,7 @@
     </div>
     <div class="op-field">
       <label for="level-score">{$t('achievements.colLevelScore')}</label>
-      <input id="level-score" type="number" bind:value={levelForm.scorePoints} min="0" />
+      <input autocomplete="off" spellcheck="false" id="level-score" type="number" bind:value={levelForm.scorePoints} min="0" />
     </div>
 
     {#snippet actions()}

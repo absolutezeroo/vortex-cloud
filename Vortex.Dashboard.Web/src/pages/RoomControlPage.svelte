@@ -153,7 +153,7 @@
   {:else if forbidden}
     <AccessDeniedNotice message={$t('roomControl.accessDenied')} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 
   {#if $ops.result}
@@ -195,7 +195,7 @@
               {#if occupantsLoading}
                 <p class="muted">{$t('roomControl.loadingOccupants')}</p>
               {:else if occupantsError}
-                <p class="empty-state danger">{occupantsError}</p>
+                <p class="empty-state danger" role="alert">{occupantsError}</p>
               {:else}
                 <table>
                   <thead><tr><th>{$t('roomControl.colPlayer')}</th><th>{$t('roomControl.colActions')}</th></tr></thead>

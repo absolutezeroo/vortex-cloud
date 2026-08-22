@@ -119,7 +119,7 @@
   {#if forbidden}
     <AccessDeniedNotice message={$t('performance.accessDenied')} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {:else}
     <p class="muted">{$t('performance.description', { seconds: windowSeconds })}</p>
 

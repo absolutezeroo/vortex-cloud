@@ -123,7 +123,7 @@
 {#if loading}
   <section class="panel"><p class="muted">{$t('pickerModal.loading')}</p></section>
 {:else if loadError}
-  <section class="panel"><p class="empty-state danger">{loadError}</p></section>
+  <section class="panel"><p class="empty-state danger" role="alert">{loadError}</p></section>
 {:else}
   {#if !canManage}
     <AccessDeniedNotice message={$t('config.readOnlyNotice')} />
@@ -154,9 +154,9 @@
               {:else if item.kind === 'Json'}
                 <textarea rows="2" bind:value={editValues[item.key]} disabled={!canManage}></textarea>
               {:else if item.kind === 'Int'}
-                <input type="number" bind:value={editValues[item.key]} disabled={!canManage} />
+                <input autocomplete="off" spellcheck="false" type="number" bind:value={editValues[item.key]} disabled={!canManage} />
               {:else}
-                <input type="text" bind:value={editValues[item.key]} disabled={!canManage} />
+                <input autocomplete="off" spellcheck="false" type="text" bind:value={editValues[item.key]} disabled={!canManage} />
               {/if}
               <button
                 type="button"

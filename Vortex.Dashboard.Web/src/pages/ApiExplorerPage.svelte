@@ -167,7 +167,7 @@
   </div>
 
   <div class="toolbar" style="margin-top: 12px;">
-    <input bind:value={search} placeholder={$t('apiExplorer.searchPlaceholder')} />
+    <input autocomplete="off" spellcheck="false" bind:value={search} placeholder={$t('apiExplorer.searchPlaceholder')} />
     <select bind:value={domainFilter}>
       {#each domains as value}
         <option value={value}>{value}</option>
@@ -184,7 +184,7 @@
   {#if forbidden}
     <AccessDeniedNotice message={$t('apiExplorer.accessDenied')} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {:else if filtered.length === 0}
     <p class="empty-state">{$t('apiExplorer.noEndpointMatch')}</p>
   {/if}

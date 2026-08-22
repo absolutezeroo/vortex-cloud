@@ -264,6 +264,10 @@
   let activeLabel = $derived(items.find((item) => item.path === $location)?.label || $t('nav.dashboardFallback'));
 </script>
 
+<!-- First tab stop on every page: the sidebar is ~40 links, and a keyboard operator should not
+     have to walk all of them to reach the table they came for. -->
+<a class="skip-link" href="#main-content">{$t('nav.skipToContent')}</a>
+
 <main class="app-shell">
   <aside class="sidebar">
     <div class="brand">
@@ -280,7 +284,7 @@
 
     <div class="nav-search">
       <Search size={15} strokeWidth={1.9} aria-hidden="true" />
-      <input
+      <input autocomplete="off" spellcheck="false"
         type="search"
         placeholder={$t('nav.searchPlaceholder')}
         aria-label={$t('nav.searchPlaceholder')}
@@ -347,7 +351,7 @@
     </nav>
   </aside>
 
-  <section class="workspace">
+  <section class="workspace" id="main-content" tabindex="-1">
     <header class="topline">
       <div>
         <p class="eyebrow">Vortex Cloud</p>
@@ -567,6 +571,28 @@
   .nav-copy {
     display: grid;
     gap: 2px;
+  }
+
+  /* Off-screen until focused -- it is for keyboard and screen-reader users, and showing it to
+     everyone else would be a permanent orphan link in the corner. */
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    padding: 10px 14px;
+    border-radius: 0 0 9px 0;
+    background: var(--surface-strong);
+    color: var(--ink);
+    border: 1px solid var(--line-strong);
+  }
+
+  .skip-link:focus-visible {
+    left: 0;
+  }
+
+  .workspace:focus-visible {
+    outline: none;
   }
 
   .nav-lock {

@@ -43,7 +43,7 @@
     {@const SvelteComponent = fallbackIcon}
     <SvelteComponent size={iconSize} strokeWidth={2} aria-hidden="true" />
   {:else}
-    <img src={normalizedSrc} {alt} loading="lazy" onerror={handleError} />
+    <img src={normalizedSrc} {alt} width={size} height={size} loading="lazy" onerror={handleError} />
   {/if}
 </span>
 

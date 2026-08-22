@@ -174,12 +174,10 @@
       }}
     >
       <span class="prompt">&gt;</span>
-      <input
+      <input autocomplete="off" spellcheck="false"
         id="console-command"
         bind:value={command}
         placeholder={$t('console.placeholder')}
-        autocomplete="off"
-        spellcheck="false"
         aria-label={$t('console.command')}
       />
       <button type="submit" disabled={$ops.busyKeys.run || !command.trim() || (matched && !matched.allowed)}>
@@ -188,16 +186,16 @@
     </form>
 
     {#if command.trim() && !matched}
-      <p class="empty-state danger">{$t('console.unknownCommand')}</p>
+      <p class="empty-state danger" role="alert">{$t('console.unknownCommand')}</p>
     {:else if matched && !matched.allowed}
-      <p class="empty-state danger">
+      <p class="empty-state danger" role="alert">
         {$t('console.commandDenied', { capability: matched.requiredCapability })}
       </p>
     {:else if matched}
       <p class="empty-state">{matched.description}</p>
     {/if}
 
-    {#if $ops.errors.run}<p class="empty-state danger">{$ops.errors.run}</p>{/if}
+    {#if $ops.errors.run}<p class="empty-state danger" role="alert">{$ops.errors.run}</p>{/if}
     {#if $ops.results.run}
       <OpResult result={$ops.results.run} onCopy={copy} copyLabel={$t('common.copy')} />
     {/if}
@@ -211,7 +209,7 @@
     {#if commands.loading && !commands.data}
       <p class="empty-state">{$t('common.loading')}</p>
     {:else if commands.error}
-      <p class="empty-state danger">{$t('console.commandsUnavailable')}</p>
+      <p class="empty-state danger" role="alert">{$t('console.commandsUnavailable')}</p>
     {:else}
       <table class="data-table">
         <thead>

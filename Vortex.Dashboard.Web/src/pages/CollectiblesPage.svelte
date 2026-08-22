@@ -263,7 +263,7 @@
   {:else if forbidden}
     <AccessDeniedNotice message={$t('collectibles.accessDenied')} />
   {:else if error}
-    <p class="empty-state danger">{error}</p>
+    <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 </section>
 
@@ -1147,15 +1147,15 @@
     >
       <label>
         {$t('collectibles.colCode')}
-        <input bind:value={collectionForm.collectionCode} />
+        <input autocomplete="off" spellcheck="false" bind:value={collectionForm.collectionCode} />
       </label>
       <label>
         {$t('collectibles.colCollection')}
-        <input bind:value={collectionForm.name} />
+        <input autocomplete="off" spellcheck="false" bind:value={collectionForm.name} />
       </label>
       <label>
         {$t('collectibles.colBoost')}
-        <input type="number" bind:value={collectionForm.boostScore} />
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={collectionForm.boostScore} />
       </label>
       <label>
         {$t('collectibles.colStatus')}
@@ -1170,7 +1170,7 @@
         {$t('collectibles.rewardProduct')}
         <span class="cell">
           <AssetImage src={rewardIconUrl} alt={collectionForm.rewardProductCode} size={32} />
-          <input bind:value={collectionForm.rewardProductCode} placeholder="classname" readonly />
+          <input autocomplete="off" spellcheck="false" bind:value={collectionForm.rewardProductCode} placeholder="classname" readonly />
           <button type="button" class="ghost-button" onclick={() => (picking = 'reward')}>
             {$t('collectibles.pickFurniture')}
           </button>
@@ -1193,7 +1193,7 @@
         {$t('collectibles.bonusProduct')}
         <span class="cell">
           <AssetImage src={bonusIconUrl} alt={collectionForm.bonusProductCode} size={32} />
-          <input bind:value={collectionForm.bonusProductCode} placeholder="classname" readonly />
+          <input autocomplete="off" spellcheck="false" bind:value={collectionForm.bonusProductCode} placeholder="classname" readonly />
           <button type="button" class="ghost-button" onclick={() => (picking = 'bonus')}>
             {$t('collectibles.pickFurniture')}
           </button>
@@ -1261,7 +1261,7 @@
         {$t('collectibles.colItem')}
         <span class="cell">
           <AssetImage src={itemPreviewUrl} alt={itemForm.productCode} size={32} />
-          <input bind:value={itemForm.productCode} placeholder="classname" readonly />
+          <input autocomplete="off" spellcheck="false" bind:value={itemForm.productCode} placeholder="classname" readonly />
           <button type="button" class="ghost-button" onclick={() => (picking = 'item')}>
             {$t('collectibles.pickFurniture')}
           </button>
@@ -1280,11 +1280,11 @@
       </label>
       <label>
         {$t('collectibles.colItemScore')}
-        <input type="number" bind:value={itemForm.score} min="0" />
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={itemForm.score} min="0" />
       </label>
       <label>
         {$t('collectibles.sortOrder')}
-        <input type="number" bind:value={itemForm.sortOrder} />
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={itemForm.sortOrder} />
       </label>
       <div class="form-actions">
         <button type="submit" disabled={!itemForm.productCode.trim()}>{$t('collectibles.saveItem')}</button>
@@ -1327,7 +1327,7 @@
         {$t('collectibles.colItem')}
         <span class="cell">
           <AssetImage src={offerIconUrl} alt={offerForm.productCode} size={32} />
-          <input bind:value={offerForm.productCode} placeholder="classname" readonly />
+          <input autocomplete="off" spellcheck="false" bind:value={offerForm.productCode} placeholder="classname" readonly />
           <button type="button" class="ghost-button" onclick={() => (picking = 'offer')}>
             {$t('collectibles.pickFurniture')}
           </button>
@@ -1336,12 +1336,12 @@
       </label>
       <label>
         {$t('collectibles.colPrice')}
-        <input type="number" min="0" bind:value={offerForm.emeraldPrice} />
+        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={offerForm.emeraldPrice} />
         <small class="muted">{$t('collectibles.priceHelp')}</small>
       </label>
       <label>
         {$t('collectibles.colItemScore')}
-        <input type="number" min="0" bind:value={offerForm.score} />
+        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={offerForm.score} />
         <small class="muted">{$t('collectibles.offerScoreHelp')}</small>
       </label>
       <label>
@@ -1355,23 +1355,23 @@
       </label>
       <label>
         {$t('collectibles.mintLimit')}
-        <input type="number" min="0" bind:value={offerForm.mintLimit} />
+        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={offerForm.mintLimit} />
         <small class="muted">{$t('collectibles.mintLimitHelp')}</small>
       </label>
       <label>
         {$t('collectibles.sortOrder')}
-        <input type="number" bind:value={offerForm.sortOrder} />
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={offerForm.sortOrder} />
       </label>
       <label class="check">
-        <input type="checkbox" bind:checked={offerForm.isFeatured} />
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={offerForm.isFeatured} />
         {$t('collectibles.featured')}
       </label>
       <label class="check">
-        <input type="checkbox" bind:checked={offerForm.isLimited} />
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={offerForm.isLimited} />
         {$t('collectibles.limitedEdition')}
       </label>
       <label class="check">
-        <input type="checkbox" bind:checked={offerForm.enabled} />
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={offerForm.enabled} />
         {$t('collectibles.offerEnabled')}
       </label>
       <div class="form-actions">
@@ -1415,7 +1415,7 @@
         {$t('collectibles.colItem')}
         <span class="cell">
           <AssetImage src={mintableIconUrl} alt={mintableForm.productCode} size={32} />
-          <input bind:value={mintableForm.productCode} placeholder="classname" readonly />
+          <input autocomplete="off" spellcheck="false" bind:value={mintableForm.productCode} placeholder="classname" readonly />
           <button type="button" class="ghost-button" onclick={() => (picking = 'mintable')}>
             {$t('collectibles.pickFurniture')}
           </button>
@@ -1424,37 +1424,37 @@
       </label>
       <label>
         {$t('collectibles.colStampPrice')}
-        <input type="number" min="0" bind:value={mintableForm.stampPrice} />
+        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={mintableForm.stampPrice} />
         <small class="muted">{$t('collectibles.stampPriceHelp')}</small>
       </label>
       <label>
         {$t('collectibles.opensAt')}
-        <input type="datetime-local" bind:value={mintableForm.startsAt} />
+        <input autocomplete="off" spellcheck="false" type="datetime-local" bind:value={mintableForm.startsAt} />
       </label>
       <label>
         {$t('collectibles.closesAt')}
-        <input type="datetime-local" bind:value={mintableForm.endsAt} />
+        <input autocomplete="off" spellcheck="false" type="datetime-local" bind:value={mintableForm.endsAt} />
         <small class="muted">{$t('collectibles.windowHelp')}</small>
       </label>
       <label>
         {$t('collectibles.editionSize')}
-        <input type="number" min="0" bind:value={mintableForm.editionSize} />
+        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={mintableForm.editionSize} />
         <small class="muted">{$t('collectibles.editionSizeHelp')}</small>
       </label>
       <label>
         {$t('collectibles.sortOrder')}
-        <input type="number" bind:value={mintableForm.sortOrder} />
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={mintableForm.sortOrder} />
       </label>
       <label class="check">
-        <input type="checkbox" bind:checked={mintableForm.limitedEdition} />
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={mintableForm.limitedEdition} />
         {$t('collectibles.limitedEdition')}
       </label>
       <label class="check">
-        <input type="checkbox" bind:checked={mintableForm.regionLocked} />
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={mintableForm.regionLocked} />
         {$t('collectibles.regionLocked')}
       </label>
       <label class="check">
-        <input type="checkbox" bind:checked={mintableForm.enabled} />
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={mintableForm.enabled} />
         {$t('collectibles.offerEnabled')}
       </label>
       <div class="form-actions">
@@ -1492,25 +1492,25 @@
     >
       <label>
         {$t('collectibles.colBundle')}
-        <input bind:value={tokenOfferForm.productCode} placeholder="stamps_10" />
+        <input autocomplete="off" spellcheck="false" bind:value={tokenOfferForm.productCode} placeholder="stamps_10" />
         <small class="muted">{$t('collectibles.tokenProductHelp')}</small>
       </label>
       <label>
         {$t('collectibles.colStamps')}
-        <input type="number" min="1" bind:value={tokenOfferForm.amountTokens} />
+        <input autocomplete="off" spellcheck="false" type="number" min="1" bind:value={tokenOfferForm.amountTokens} />
         <small class="muted">{$t('collectibles.amountTokensHelp')}</small>
       </label>
       <label>
         {$t('collectibles.colSilverPrice')}
-        <input type="number" min="0" bind:value={tokenOfferForm.silverPrice} />
+        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={tokenOfferForm.silverPrice} />
         <small class="muted">{$t('collectibles.silverPriceHelp')}</small>
       </label>
       <label>
         {$t('collectibles.sortOrder')}
-        <input type="number" bind:value={tokenOfferForm.sortOrder} />
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={tokenOfferForm.sortOrder} />
       </label>
       <label class="check">
-        <input type="checkbox" bind:checked={tokenOfferForm.enabled} />
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={tokenOfferForm.enabled} />
         {$t('collectibles.offerEnabled')}
       </label>
       <div class="form-actions">
@@ -1565,7 +1565,7 @@
         {$t('collectibles.colItem')}
         <span class="cell">
           <AssetImage src={claimIconUrl} alt={claimForm.productCode} size={32} />
-          <input bind:value={claimForm.productCode} placeholder="classname" readonly />
+          <input autocomplete="off" spellcheck="false" bind:value={claimForm.productCode} placeholder="classname" readonly />
           <button type="button" class="ghost-button" onclick={() => (picking = 'claim')}>
             {$t('collectibles.pickFurniture')}
           </button>
@@ -1574,17 +1574,17 @@
       </label>
       <label>
         {$t('collectibles.colSet')}
-        <input bind:value={claimForm.setId} placeholder="2025_icy_christmas" />
+        <input autocomplete="off" spellcheck="false" bind:value={claimForm.setId} placeholder="2025_icy_christmas" />
         <small class="muted">{$t('collectibles.setIdHelp')}</small>
       </label>
       <label>
         {$t('collectibles.claimLimit')}
-        <input type="number" min="1" bind:value={claimForm.claimLimit} />
+        <input autocomplete="off" spellcheck="false" type="number" min="1" bind:value={claimForm.claimLimit} />
         <small class="muted">{$t('collectibles.claimLimitHelp')}</small>
       </label>
       <label>
         {$t('collectibles.colExpires')}
-        <input type="date" bind:value={claimForm.validTo} />
+        <input autocomplete="off" spellcheck="false" type="date" bind:value={claimForm.validTo} />
         <small class="muted">{$t('collectibles.expiresHelp')}</small>
       </label>
       <div class="form-actions">
@@ -1642,7 +1642,7 @@
       </label>
       <label>
         {$t('collectibles.colGrantNote')}
-        <input bind:value={grantForm.note} placeholder={$t('collectibles.grantNotePlaceholder')} />
+        <input autocomplete="off" spellcheck="false" bind:value={grantForm.note} placeholder={$t('collectibles.grantNotePlaceholder')} />
         <small class="muted">{$t('collectibles.grantNoteHelp')}</small>
       </label>
       <div class="form-actions">
@@ -1683,16 +1683,16 @@
     >
       <label>
         {$t('collectibles.colCode')}
-        <input bind:value={avatarForm.avatarCode} placeholder="halloween_2026_vampire" />
+        <input autocomplete="off" spellcheck="false" bind:value={avatarForm.avatarCode} placeholder="halloween_2026_vampire" />
         <small class="muted">{$t('collectibles.avatarCodeHelp')}</small>
       </label>
       <label>
         {$t('collectibles.colName')}
-        <input bind:value={avatarForm.name} />
+        <input autocomplete="off" spellcheck="false" bind:value={avatarForm.name} />
       </label>
       <label>
         {$t('collectibles.colFigure')}
-        <input bind:value={avatarForm.figure} placeholder="hd-180-1.ch-210-66.lg-270-82" />
+        <input autocomplete="off" spellcheck="false" bind:value={avatarForm.figure} placeholder="hd-180-1.ch-210-66.lg-270-82" />
         <small class="muted">{$t('collectibles.avatarFigureHelp')}</small>
       </label>
       <label>
@@ -1714,15 +1714,15 @@
       </label>
       <label>
         {$t('collectibles.colEdition')}
-        <input type="number" min="0" bind:value={avatarForm.editionSize} />
+        <input autocomplete="off" spellcheck="false" type="number" min="0" bind:value={avatarForm.editionSize} />
         <small class="muted">{$t('collectibles.avatarEditionHelp')}</small>
       </label>
       <label>
         {$t('collectibles.colSort')}
-        <input type="number" bind:value={avatarForm.sortOrder} />
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={avatarForm.sortOrder} />
       </label>
       <label class="checkbox">
-        <input type="checkbox" bind:checked={avatarForm.enabled} />
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={avatarForm.enabled} />
         {$t('collectibles.enabled')}
       </label>
       <div class="form-actions">
