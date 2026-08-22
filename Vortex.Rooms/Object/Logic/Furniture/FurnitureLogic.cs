@@ -111,8 +111,19 @@ public abstract class FurnitureLogic<TObject, TSelf, TContext>
         await OnStateChangedAsync(CancellationToken.None);
     }
 
+    /// <remarks>
+    /// The first line is not a formality. <see cref="StuffDataBase.GetSnapshot" /> caches, and
+    /// <c>IMapStuffData.Data</c> / <c>INumberStuffData.Data</c> hand out the live collection — so
+    /// every caller that writes a key and then persists (the wired chest's settings, a mannequin's
+    /// figure and name, a toner's colours) saved the new value to the database and broadcast the
+    /// *previous* snapshot. The furni came back one edit behind, for everyone, and nothing threw.
+    /// Marking dirty here rather than in each of those callers is the point: this method is what
+    /// "the stuff data changed" already means, and the next writer gets it for free.
+    /// </remarks>
     public virtual Task PersistStuffDataAsync(bool refresh = true)
     {
+        StuffData.MarkDirty();
+
         if (_stuffPersistanceType == StuffPersistanceType.Persistent)
         {
             _ctx.RoomObject.ExtraData.UpdateSection(

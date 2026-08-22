@@ -5,6 +5,7 @@ using Vortex.Furniture.Providers;
 using Vortex.Primitives.Furniture;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Snapshots;
+using Vortex.Primitives.Furniture.Snapshots.StuffData;
 using Vortex.Primitives.Furniture.StuffData;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
@@ -62,6 +63,36 @@ public sealed class PersistStuffDataTests
             .Should()
             .BeTrue();
         section.GetRawText().Should().Contain("3");
+    }
+
+    [Fact]
+    public void PersistStuffData_RefreshesTheSnapshotAWriteWentBehind()
+    {
+        // The snapshot is cached and `Data` is the live dictionary, so a caller that writes a key
+        // and persists used to save the new value and broadcast the old one — the furni came back
+        // one edit behind for every client, with nothing thrown and nothing logged.
+        IExtraData extraData = new ExtraData(null);
+        FurnitureCrackableLogic logic = new(
+            new StuffDataFactory(),
+            StubContext(StuffDataType.MapKey, extraData)
+        );
+
+        // Build the snapshot once, the way a room-entry serialization would.
+        logic.StuffData.GetSnapshot();
+
+        ((IMapStuffData)logic.StuffData).Data["chest_name"] = "after";
+
+        logic.PersistStuffDataAsync(refresh: false).IsCompletedSuccessfully.Should().BeTrue();
+
+        MapStuffSnapshot snapshot = (MapStuffSnapshot)logic.StuffData.GetSnapshot();
+
+        snapshot
+            .Data["chest_name"]
+            .Should()
+            .Be(
+                "after",
+                "the snapshot the client is sent has to carry the write that was persisted"
+            );
     }
 
     private static IRoomFloorItemContext StubContext(
