@@ -405,4 +405,141 @@ public sealed partial class RoomGrain
             return [];
         }
     }
+
+    /// <summary>Loads the chest's own row, lets the caller change it, and saves. Every settings
+    /// dialog is that same three-step, so it lives once: guard, load or create, apply, save.</summary>
+    private async Task UpdateChestAsync(
+        ActionContext ctx,
+        int chestId,
+        Action<WiredChestEntity> apply,
+        CancellationToken ct
+    )
+    {
+        if (!await CanUseChestAsync(ctx, chestId).ConfigureAwait(true))
+        {
+            return;
+        }
+
+        try
+        {
+            await using VortexDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(true);
+
+            WiredChestEntity? chest = await dbCtx
+                .WiredChests.FirstOrDefaultAsync(
+                    c => c.FurnitureEntityId == chestId && c.DeletedAt == null,
+                    ct
+                )
+                .ConfigureAwait(true);
+
+            // Settings can be saved on a chest nobody has opened yet, so the row is created here too
+            // rather than only on open.
+            if (chest is null)
+            {
+                chest = new WiredChestEntity
+                {
+                    FurnitureEntityId = chestId,
+                    Credits = 0,
+                    NotificationsEnabled = true,
+                };
+
+                dbCtx.WiredChests.Add(chest);
+            }
+
+            apply(chest);
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "Failed to save settings for wired chest {ChestId} in room {RoomId}.",
+                chestId,
+                RoomId
+            );
+        }
+    }
+
+    public Task SaveWiredChestSettingsAsync(
+        ActionContext ctx,
+        int chestId,
+        string name,
+        string description,
+        bool everyoneCanOpen,
+        bool everyoneCanDonate,
+        int chestState,
+        int previewItems,
+        int previewAmount,
+        CancellationToken ct
+    ) =>
+        UpdateChestAsync(
+            ctx,
+            chestId,
+            chest =>
+            {
+                chest.Name = name;
+                chest.Description = description;
+                chest.EveryoneCanOpen = everyoneCanOpen;
+                chest.EveryoneCanDonate = everyoneCanDonate;
+                chest.ChestState = chestState;
+                chest.PreviewItems = previewItems;
+                chest.PreviewAmount = previewAmount;
+            },
+            ct
+        );
+
+    public Task SaveWiredChestNotificationSettingsAsync(
+        ActionContext ctx,
+        int chestId,
+        int notificationMode,
+        bool notifyWhenFull,
+        bool notifyOnDonation,
+        bool notifyOnWithdraw,
+        bool notifyWhenEmpty,
+        bool notifyOnAnyWiredTransaction,
+        CancellationToken ct
+    ) =>
+        UpdateChestAsync(
+            ctx,
+            chestId,
+            chest =>
+            {
+                chest.NotificationMode = notificationMode;
+                chest.NotifyWhenFull = notifyWhenFull;
+                chest.NotifyOnDonation = notifyOnDonation;
+                chest.NotifyOnWithdraw = notifyOnWithdraw;
+                chest.NotifyWhenEmpty = notifyWhenEmpty;
+                chest.NotifyOnAnyWiredTransaction = notifyOnAnyWiredTransaction;
+
+                // The one flag that predates the dialog: keep it in step with what the dialog says,
+                // so nothing reads a chest as silent while its checkboxes say otherwise.
+                chest.NotificationsEnabled =
+                    notifyWhenFull
+                    || notifyOnDonation
+                    || notifyOnWithdraw
+                    || notifyWhenEmpty
+                    || notifyOnAnyWiredTransaction;
+            },
+            ct
+        );
+
+    public Task SetWiredChestLockAsync(
+        ActionContext ctx,
+        int chestId,
+        bool locked,
+        bool autoLock,
+        CancellationToken ct
+    ) =>
+        UpdateChestAsync(
+            ctx,
+            chestId,
+            chest =>
+            {
+                chest.Locked = locked;
+                chest.AutoLock = autoLock;
+            },
+            ct
+        );
 }

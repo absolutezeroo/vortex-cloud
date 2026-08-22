@@ -32,6 +32,13 @@ internal static class MessageEvent
     // _composers[3514] = _SafeCls_3757 with the chest id alone.
     public const int WithdrawWiredChestItemsEvent = 873;
     public const int DepositToWiredChestEvent = 3514;
+
+    // The chest's three settings dialogs, all send-only: _composers[3830] = _SafeCls_3186 from
+    // ChestSettingsUI, _composers[2905] = _SafeCls_2819 from ChestNotificationSettingsUI, and
+    // _composers[2907] = _SafeCls_3366 from the wrapper view's lock row.
+    public const int SaveWiredChestSettingsEvent = 3830;
+    public const int SaveWiredChestNotificationSettingsEvent = 2905;
+    public const int SetWiredChestLockEvent = 2907;
     public const int BlockListInitEvent = 798; // AS3-verified (direct read): BlockedUsersManager.as:54 -> send(new _SafeCls_3511()) (no args) @798; was 2610, which has no entry in the WIN63 registry at all
     public const int BlockUserMessageEvent = 483; // AS3-verified (direct read): BlockedUsersManager.as:94 -> send(new _SafeCls_2856(userId)) @483; was 2371, which has no entry in the WIN63 registry at all
     public const int ReplenishRespectMessageEvent = 426; // AS3-verified (direct read): SessionDataManager.as:889 -> send(new _SafeCls_1865()) (no args) @426; was 3323, which has no entry in the WIN63 registry at all

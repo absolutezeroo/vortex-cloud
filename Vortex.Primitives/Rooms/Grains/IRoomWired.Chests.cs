@@ -54,6 +54,52 @@ public partial interface IRoomWired
     /// ids; which of the matching items leave is this method's choice. Returns the ids that left, so
     /// the caller can tell the client what to remove from a screen it already drew.
     /// </remarks>
+    /// <summary>
+    /// Saves the chest's settings dialog: its name, its description, who may open and donate, and
+    /// how it looks when open.
+    /// </summary>
+    Task SaveWiredChestSettingsAsync(
+        ActionContext ctx,
+        int chestId,
+        string name,
+        string description,
+        bool everyoneCanOpen,
+        bool everyoneCanDonate,
+        int chestState,
+        int previewItems,
+        int previewAmount,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Saves when and about what the chest notifies its owner.
+    /// </summary>
+    Task SaveWiredChestNotificationSettingsAsync(
+        ActionContext ctx,
+        int chestId,
+        int notificationMode,
+        bool notifyWhenFull,
+        bool notifyOnDonation,
+        bool notifyOnWithdraw,
+        bool notifyWhenEmpty,
+        bool notifyOnAnyWiredTransaction,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Locks a chest, or has it lock itself again after use.
+    /// </summary>
+    /// <remarks>
+    /// Capacity is deliberately not a parameter: the client sends one and it is not ours to take.
+    /// </remarks>
+    Task SetWiredChestLockAsync(
+        ActionContext ctx,
+        int chestId,
+        bool locked,
+        bool autoLock,
+        CancellationToken ct
+    );
+
     Task<ImmutableArray<int>> WithdrawWiredChestItemsAsync(
         ActionContext ctx,
         int chestId,

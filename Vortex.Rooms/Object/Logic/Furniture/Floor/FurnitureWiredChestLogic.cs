@@ -25,11 +25,13 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor;
 /// can send that request without ever clicking the furni.
 /// </para>
 /// </remarks>
-[RoomObjectLogic("wf_storage_coins1")]
-[RoomObjectLogic("wf_storage_coins2")]
-[RoomObjectLogic("wf_storage_furni1")]
-[RoomObjectLogic("wf_storage_furni2")]
-[RoomObjectLogic("wf_storage_furni_starter")]
+// Registered under the LOGIC names, not the classnames. RoomObjectModule resolves a logic with
+// Definition.LogicName -- the `logic` column, which the .nitro pack fills -- so the five classnames
+// this used to declare matched nothing: every chest fell through to default_floor and clicking one
+// did nothing at all. furniture_coinschest covers wf_storage_coins1/2, furniture_furnichest covers
+// wf_storage_furni1/2 and wf_storage_furni_starter.
+[RoomObjectLogic("furniture_coinschest")]
+[RoomObjectLogic("furniture_furnichest")]
 public class FurnitureWiredChestLogic(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,

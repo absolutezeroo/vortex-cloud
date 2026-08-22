@@ -1,0 +1,46 @@
+using System.Threading;
+using System.Threading.Tasks;
+using Orleans;
+using Vortex.Messages.Registry;
+using Vortex.Primitives.Action;
+using Vortex.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
+using Vortex.Primitives.Orleans;
+
+namespace Vortex.PacketHandlers.UserDefinedRoomEvents.Wiredtrading;
+
+/// <summary>
+/// The chest's settings dialog, saved.
+/// </summary>
+public class SaveWiredChestSettingsMessageHandler(IGrainFactory grainFactory)
+    : IMessageHandler<SaveWiredChestSettingsMessage>
+{
+    private readonly IGrainFactory _grainFactory = grainFactory;
+
+    public async ValueTask HandleAsync(
+        SaveWiredChestSettingsMessage message,
+        MessageContext ctx,
+        CancellationToken ct
+    )
+    {
+        if (ctx is null || ctx.PlayerId <= 0 || ctx.RoomId <= 0)
+        {
+            return;
+        }
+
+        await _grainFactory
+            .GetRoomWired(ctx.RoomId)
+            .SaveWiredChestSettingsAsync(
+                ActionContext.CreateForPlayer(ctx.PlayerId, ctx.RoomId),
+                message.ChestId,
+                message.Name,
+                message.Description,
+                message.EveryoneCanOpen,
+                message.EveryoneCanDonate,
+                message.ChestState,
+                message.PreviewItems,
+                message.PreviewAmount,
+                ct
+            )
+            .ConfigureAwait(false);
+    }
+}
