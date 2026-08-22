@@ -33,6 +33,13 @@ internal static class MessageEvent
     public const int WithdrawWiredChestItemsEvent = 873;
     public const int DepositToWiredChestEvent = 3514;
 
+    // The wired trade the deposit opens, all three sent by WiredTradingModel: _composers[3111] =
+    // _SafeCls_3043 (remove flag + item ids), _composers[2818] = _SafeCls_3485 (the two-step
+    // accept, false then true), _composers[2646] = _SafeCls_3348 (cancel, no payload).
+    public const int WiredTradeUpdateItemsEvent = 3111;
+    public const int WiredTradeAcceptEvent = 2818;
+    public const int WiredTradeCancelEvent = 2646;
+
     // The chest's three settings dialogs, all send-only: _composers[3830] = _SafeCls_3186 from
     // ChestSettingsUI, _composers[2905] = _SafeCls_2819 from ChestNotificationSettingsUI, and
     // _composers[2907] = _SafeCls_3366 from the wrapper view's lock row.
@@ -693,6 +700,16 @@ internal static class MessageComposer
     // delta afterwards (chestId, removed ids, added items).
     public const int WiredChestItemsComposer = 2323;
     public const int WiredChestItemsUpdateComposer = 2738;
+
+    // The other half of the deposit: the four the inventory's wired-trade screen listens for.
+    // _events[3650] opens it with the contract (requirement, presentation flags, timeout),
+    // _events[2488] is the table state (the ordinary two-sided item list plus canAccept and
+    // extra), _events[2137] closes it as done and _events[1481] as cancelled with a failure id.
+    // All four are consumed by inventory/_SafeCls_1951.
+    public const int WiredTradeInitiateComposer = 3650;
+    public const int WiredTradeItemsUpdateComposer = 2488;
+    public const int WiredTradeCompletedComposer = 2137;
+    public const int WiredTradeCancelledComposer = 1481;
 
     // _events[2910] = _SafeCls_3439 answers both log requests. It says which list it is: type 0 is
     // a chest and the id is the chest, type 1 is a room and the id is the room.

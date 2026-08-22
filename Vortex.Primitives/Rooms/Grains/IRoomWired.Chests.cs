@@ -36,6 +36,37 @@ public partial interface IRoomWired
     Task CloseWiredChestAsync(ActionContext ctx, int chestId, CancellationToken ct);
 
     /// <summary>
+    /// Opens a furniture deposit for a chest — the trade screen's half of "Start deposit".
+    /// </summary>
+    /// <remarks>
+    /// False when this player may not fill that chest, which is a different permission from opening
+    /// it: "everyone can donate" lets anyone in, while looking inside still needs decorating rights.
+    /// </remarks>
+    Task<bool> StartWiredChestDepositAsync(ActionContext ctx, int chestId, CancellationToken ct);
+
+    /// <summary>
+    /// Puts furniture on an open deposit's table, or takes it off. Null when none is open.
+    /// </summary>
+    Task<WiredDepositSnapshot?> UpdateWiredDepositItemsAsync(
+        ActionContext ctx,
+        bool remove,
+        ImmutableArray<int> itemIds,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// The accept button, then the confirmation behind it — only the second moves anything.
+    /// </summary>
+    Task<WiredDepositSnapshot?> AcceptWiredDepositAsync(
+        ActionContext ctx,
+        bool confirm,
+        CancellationToken ct
+    );
+
+    /// <summary>Drops an open deposit. Nothing had moved, so there is nothing to undo.</summary>
+    Task<bool> CancelWiredDepositAsync(ActionContext ctx, CancellationToken ct);
+
+    /// <summary>
     /// Moves credits out of a chest and into the asking player's wallet. Returns what the chest
     /// holds afterwards, or null when nothing moved.
     /// </summary>

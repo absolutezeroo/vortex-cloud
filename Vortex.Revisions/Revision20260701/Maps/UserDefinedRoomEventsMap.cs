@@ -131,6 +131,12 @@ internal sealed class UserDefinedRoomEventsMap : IRevisionMap
             MessageEvent.WithdrawAllFromWiredChestEvent,
             new WithdrawAllFromWiredChestMessageParser()
         );
+        builder.MapParser(
+            MessageEvent.WiredTradeUpdateItemsEvent,
+            new WiredTradeUpdateItemsMessageParser()
+        );
+        builder.MapParser(MessageEvent.WiredTradeAcceptEvent, new WiredTradeAcceptMessageParser());
+        builder.MapParser(MessageEvent.WiredTradeCancelEvent, new WiredTradeCancelMessageParser());
 
         builder.MapSerializer(
             typeof(OpenEventMessageComposer),
@@ -283,6 +289,30 @@ internal sealed class UserDefinedRoomEventsMap : IRevisionMap
             typeof(WiredChestItemsUpdateMessageComposer),
             new WiredChestItemsUpdateMessageComposerSerializer(
                 MessageComposer.WiredChestItemsUpdateComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(WiredTradeInitiateMessageComposer),
+            new WiredTradeInitiateMessageComposerSerializer(
+                MessageComposer.WiredTradeInitiateComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(WiredTradeItemsUpdateMessageComposer),
+            new WiredTradeItemsUpdateMessageComposerSerializer(
+                MessageComposer.WiredTradeItemsUpdateComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(WiredTradeCompletedMessageComposer),
+            new WiredTradeCompletedMessageComposerSerializer(
+                MessageComposer.WiredTradeCompletedComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(WiredTradeCancelledMessageComposer),
+            new WiredTradeCancelledMessageComposerSerializer(
+                MessageComposer.WiredTradeCancelledComposer
             )
         );
     }

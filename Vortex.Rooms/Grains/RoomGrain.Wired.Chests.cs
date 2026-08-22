@@ -784,6 +784,7 @@ public sealed partial class RoomGrain
         int chestRowId,
         int withdrawCoins = 0,
         int withdrawFurni = 0,
+        int depositFurni = 0,
         string definitionInfo = ""
     ) =>
         new()
@@ -794,9 +795,12 @@ public sealed partial class RoomGrain
             DefinitionInfo = definitionInfo,
             PlayerEntityId = (int)playerId,
             PlayerName = ResolvePlayerName(playerId),
+            // One row, one chest — the entity says as much, and nothing a player does by hand
+            // touches two. The two zeros below are facts, not placeholders: no path deposits coins
+            // into a chest, because the client has no way to name an amount.
             ChestCount = 1,
             WithdrawFurniCount = withdrawFurni,
-            DepositFurniCount = 0,
+            DepositFurniCount = depositFurni,
             WithdrawCoinsCount = withdrawCoins,
             DepositCoinsCount = 0,
         };
@@ -1048,6 +1052,8 @@ public sealed partial class RoomGrain
             DefinitionInfo = definitionInfo,
             PlayerEntityId = (int)playerId,
             PlayerName = ResolvePlayerName(playerId),
+            // Same one-row-one-chest reading as the manual builder. Both deposit counters are zero
+            // by what this path is: wiring pays *out* of a chest, it never fills one.
             ChestCount = 1,
             WithdrawFurniCount = withdrawFurni,
             DepositFurniCount = 0,

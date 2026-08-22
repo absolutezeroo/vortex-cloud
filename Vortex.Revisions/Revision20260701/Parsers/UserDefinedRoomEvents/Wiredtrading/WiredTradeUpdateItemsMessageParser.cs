@@ -1,0 +1,28 @@
+using System.Collections.Immutable;
+using Vortex.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
+using Vortex.Primitives.Networking;
+using Vortex.Primitives.Packets;
+
+namespace Vortex.Revisions.Revision20260701.Parsers.UserDefinedRoomEvents.Wiredtrading;
+
+/// <summary>
+/// The remove flag, then a counted list of item ids — the shape
+/// <c>WiredTradeUpdateItemsComposer</c> writes as <c>[remove, ids.length, ...ids]</c>.
+/// </summary>
+internal class WiredTradeUpdateItemsMessageParser : IParser
+{
+    public IMessageEvent Parse(IClientPacket packet)
+    {
+        bool remove = packet.PopBoolean();
+        int count = packet.PopInt();
+
+        ImmutableArray<int>.Builder ids = ImmutableArray.CreateBuilder<int>(count);
+
+        for (int i = 0; i < count; i++)
+        {
+            ids.Add(packet.PopInt());
+        }
+
+        return new WiredTradeUpdateItemsMessage { Remove = remove, ItemIds = ids.ToImmutable() };
+    }
+}
