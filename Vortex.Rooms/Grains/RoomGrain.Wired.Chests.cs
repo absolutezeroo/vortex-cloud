@@ -33,12 +33,25 @@ namespace Vortex.Rooms.Grains;
 /// </summary>
 public sealed partial class RoomGrain
 {
-    /// <summary>The classnames that are a chest, and which half they store.</summary>
-    private static bool IsCoinChestClass(string className) =>
-        className.StartsWith("wf_storage_coins", StringComparison.Ordinal);
+    /// <summary>
+    /// Which half a chest stores, decided on its logic rather than its classname.
+    /// </summary>
+    /// <remarks>
+    /// A classname is not a key here: furniture_definitions holds thousands of duplicates and the
+    /// furnidata itself ships them, so a prefix match on the name is a guess that happens to work.
+    /// The logic is the binding the room already resolves the furni through, it is one value per
+    /// behaviour, and it is what decides whether the object is a chest at all.
+    /// </remarks>
+    private const string CoinChestLogic = "furniture_coinschest";
 
-    private static bool IsChestClass(string className) =>
-        className.StartsWith("wf_storage_", StringComparison.Ordinal);
+    private const string FurniChestLogic = "furniture_furnichest";
+
+    private static bool IsCoinChestLogic(string logicName) =>
+        string.Equals(logicName, CoinChestLogic, StringComparison.Ordinal);
+
+    private static bool IsChestLogic(string logicName) =>
+        string.Equals(logicName, CoinChestLogic, StringComparison.Ordinal)
+        || string.Equals(logicName, FurniChestLogic, StringComparison.Ordinal);
 
     public async Task<WiredChestSnapshot?> WithdrawWiredChestCreditsAsync(
         ActionContext ctx,
@@ -137,7 +150,7 @@ public sealed partial class RoomGrain
         if (
             ctx.PlayerId <= 0
             || !_state.ItemsById.TryGetValue(chestId, out IRoomItem? item)
-            || !IsChestClass(item.Definition.Name)
+            || !IsChestLogic(item.Definition.LogicName)
         )
         {
             return false;
@@ -157,7 +170,7 @@ public sealed partial class RoomGrain
                 {
                     ChestId = chestId,
                     Credits = credits,
-                    IsCoinChest = IsCoinChestClass(item.Definition.Name),
+                    IsCoinChest = IsCoinChestLogic(item.Definition.LogicName),
                 }
                 : null
         );
@@ -171,7 +184,7 @@ public sealed partial class RoomGrain
         if (
             ctx.PlayerId <= 0
             || !_state.ItemsById.TryGetValue(chestId, out IRoomItem? item)
-            || !IsChestClass(item.Definition.Name)
+            || !IsChestLogic(item.Definition.LogicName)
         )
         {
             return null;
@@ -226,7 +239,7 @@ public sealed partial class RoomGrain
             {
                 ChestId = chestId,
                 Credits = chest.Credits,
-                IsCoinChest = IsCoinChestClass(item.Definition.Name),
+                IsCoinChest = IsCoinChestLogic(item.Definition.LogicName),
             };
         }
         catch (Exception ex)
@@ -976,7 +989,7 @@ public sealed partial class RoomGrain
         List<int> chestIds =
         [
             .. _state
-                .ItemsById.Values.Where(item => IsChestClass(item.Definition.Name))
+                .ItemsById.Values.Where(item => IsChestLogic(item.Definition.LogicName))
                 .Select(item => item.ObjectId.Value),
         ];
 
@@ -1054,7 +1067,7 @@ public sealed partial class RoomGrain
             playerId <= 0
             || (!everything && amount <= 0)
             || !_state.ItemsById.TryGetValue(chestId, out IRoomItem? item)
-            || !IsCoinChestClass(item.Definition.Name)
+            || !IsCoinChestLogic(item.Definition.LogicName)
         )
         {
             return 0;
@@ -1136,8 +1149,8 @@ public sealed partial class RoomGrain
             playerId <= 0
             || count <= 0
             || !_state.ItemsById.TryGetValue(chestId, out IRoomItem? item)
-            || !IsChestClass(item.Definition.Name)
-            || IsCoinChestClass(item.Definition.Name)
+            || !IsChestLogic(item.Definition.LogicName)
+            || IsCoinChestLogic(item.Definition.LogicName)
         )
         {
             return 0;

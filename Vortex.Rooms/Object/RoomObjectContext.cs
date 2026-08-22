@@ -40,6 +40,8 @@ public abstract class RoomObjectContext<TObject, TLogic, TSelf>(
     public IRoomFreezeAccess Freeze => _roomGrain;
 
     public IRoomChestAccess Chests => _roomGrain;
+
+    public IRoomTransactionAccess Transactions => _roomGrain;
     public IRoomBanzaiAccess Banzai => _roomGrain;
     public IRoomFurniAccess Furni => _roomGrain;
 

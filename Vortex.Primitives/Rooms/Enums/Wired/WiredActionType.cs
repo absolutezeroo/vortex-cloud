@@ -50,5 +50,11 @@ public enum WiredActionType
 
     /// <summary>Hands furniture out of a wired chest the box points at.</summary>
     GIVE_FURNI_FROM_CHEST = 46,
+
+    /// <summary>Offers a contract to the resolved users.</summary>
+    INITIATE_TRANSACTION = 47,
+
+    /// <summary>Calls off a contract that is waiting on someone.</summary>
+    CANCEL_TRANSACTION = 48,
     GIVE_EFFECT = 52,
 }

@@ -15,6 +15,7 @@ using Vortex.Primitives;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Bots;
 using Vortex.Primitives.Events;
+using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Observability;
@@ -82,6 +83,8 @@ internal sealed class RoomHarness
         Grain = GrainActivationContext.CreateWithIntegerKey<RoomGrain>(
             RoomIdValue,
             new SingleOptionsFactory(options),
+            FakeProxy.Create<IFurnitureDefinitionProvider>(_ => null),
+            FakeProxy.Create<IStuffDataFactory>(_ => null),
             Options.Create(new RoomConfig()),
             NullLogger<IRoomGrain>.Instance,
             FakeProxy.Create<IRoomModelProvider>(_ => null),

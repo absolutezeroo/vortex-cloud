@@ -9,6 +9,7 @@ using Orleans;
 using Vortex.Database.Context;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Events;
+using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Permissions;
@@ -178,6 +179,8 @@ public sealed class RoomGrainMysteryBoxAbandonTests
             Grain = GrainActivationContext.CreateWithIntegerKey<RoomGrain>(
                 ROOM_ID,
                 FakeProxy.Create<IDbContextFactory<VortexDbContext>>(_ => null),
+                FakeProxy.Create<IFurnitureDefinitionProvider>(_ => null),
+                FakeProxy.Create<IStuffDataFactory>(_ => null),
                 Options.Create(new RoomConfig()),
                 NullLogger<IRoomGrain>.Instance,
                 FakeProxy.Create<IRoomModelProvider>(_ => null),

@@ -46,6 +46,9 @@ public class WiredActionGiveCurrencyFromChest(
     /// sourced from a wired variable, which is not read yet.</summary>
     private const int LiteralAmount = 0;
 
+    /// <summary>The logic a currency chest carries.</summary>
+    private const string ChestLogic = "furniture_coinschest";
+
     public override int WiredCode => (int)WiredActionType.GIVE_CURRENCY_FROM_CHEST;
 
     public override List<IWiredParamRule> GetIntParamRules() =>
@@ -96,14 +99,20 @@ public class WiredActionGiveCurrencyFromChest(
         return true;
     }
 
-    /// <summary>The first of the box's configured furni that is actually a chest.</summary>
+    /// <summary>
+    /// The first of the box's configured furni that is a currency chest.
+    /// </summary>
+    /// <remarks>
+    /// Matched on the logic, not the classname: a classname is not a key in this database and the
+    /// logic is the one value that says what the furni actually is.
+    /// </remarks>
     private bool TryFindChest(out int chestId)
     {
         foreach (int furniId in GetStuffIds())
         {
             if (
                 _ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
-                && item.Definition.Name.StartsWith("wf_storage_", StringComparison.Ordinal)
+                && string.Equals(item.Definition.LogicName, ChestLogic, StringComparison.Ordinal)
             )
             {
                 chestId = furniId;

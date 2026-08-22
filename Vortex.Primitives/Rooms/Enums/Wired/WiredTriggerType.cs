@@ -26,4 +26,10 @@ public enum WiredTriggerType
     VARIABLE_UPDATE = 22,
     AVATAR_LEAVES_ROOM = 23,
     AVATAR_CLICKS_AVATAR = 24,
+
+    /// <summary>A contract transaction went through.</summary>
+    TRANSACTION_COMPLETED = 25,
+
+    /// <summary>A contract transaction was cancelled, refused or timed out.</summary>
+    TRANSACTION_FAILED = 26,
 }
