@@ -32,22 +32,16 @@
 
   onMount(() => {
     loadIdentity();
-
-    const retryWhenVisible = () => {
-      if (status === 'unavailable' || $connectionIssue) {
-        retryConnection(true);
-      }
-    };
-
-    window.addEventListener('online', retryWhenVisible);
-    window.addEventListener('focus', retryWhenVisible);
-
-    return () => {
-      clearRetryTimer();
-      window.removeEventListener('online', retryWhenVisible);
-      window.removeEventListener('focus', retryWhenVisible);
-    };
+    return clearRetryTimer;
   });
+
+  // Retried on <svelte:window> below: the browser coming back online, or the tab regaining focus
+  // after the emulator was restarted, are the two moments a paused connection is worth re-testing.
+  function retryWhenVisible() {
+    if (status === 'unavailable' || $connectionIssue) {
+      retryConnection(true);
+    }
+  }
 
   async function loadIdentity(options = {}) {
     const silent = options.silent === true;
@@ -163,6 +157,8 @@
     }
   });
 </script>
+
+<svelte:window ononline={retryWhenVisible} onfocus={retryWhenVisible} />
 
 <QueryClientProvider client={queryClient}>
 
