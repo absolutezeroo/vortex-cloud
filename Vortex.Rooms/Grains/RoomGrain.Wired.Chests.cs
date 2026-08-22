@@ -215,8 +215,11 @@ public sealed partial class RoomGrain
                 await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
             }
 
+            _openChests.Add(chestId);
+
             // Also on open: a chest whose settings were saved before the furni carried them would
-            // otherwise stay blank on screen forever.
+            // otherwise stay blank on screen forever. It is also what opens the lid and draws the
+            // preview, for a chest set to open when someone looks inside.
             await ApplyChestSettingsToStuffDataAsync(chestId, chest).ConfigureAwait(true);
 
             return new WiredChestSnapshot
@@ -236,6 +239,41 @@ public sealed partial class RoomGrain
             );
 
             return null;
+        }
+    }
+
+    public async Task CloseWiredChestAsync(ActionContext ctx, int chestId, CancellationToken ct)
+    {
+        if (!_openChests.Remove(chestId))
+        {
+            return;
+        }
+
+        try
+        {
+            await using VortexDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(true);
+
+            WiredChestEntity? chest = await dbCtx
+                .WiredChests.AsNoTracking()
+                .FirstOrDefaultAsync(c => c.FurnitureEntityId == chestId && c.DeletedAt == null, ct)
+                .ConfigureAwait(true);
+
+            // No row means nobody ever opened it, so there is no lid to shut.
+            if (chest is not null)
+            {
+                await ApplyChestSettingsToStuffDataAsync(chestId, chest).ConfigureAwait(true);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "Failed to close wired chest {ChestId} in room {RoomId}.",
+                chestId,
+                RoomId
+            );
         }
     }
 
@@ -427,6 +465,9 @@ public sealed partial class RoomGrain
                 .ReloadFurnitureAsync(ct)
                 .ConfigureAwait(true);
 
+            // The preview is drawn from what the chest holds, so it is now stale.
+            await ApplyChestSettingsToStuffDataAsync(chestId, chest).ConfigureAwait(true);
+
             return [.. leaving.Select(entity => entity.Id)];
         }
         catch (Exception ex)
@@ -462,8 +503,127 @@ public sealed partial class RoomGrain
 
         WiredChestStuffData.Apply(map, chest);
 
+        bool? open = ResolveChestOpenState(chest, _openChests.Contains(chestId));
+
+        if (open is not null)
+        {
+            WiredChestStuffData.ApplyState(map, open.Value);
+        }
+
+        WiredChestStuffData.ApplyPreview(
+            map,
+            BuildChestPreview(chest, await ReadChestItemsAsync(chest).ConfigureAwait(true))
+        );
+
         await item.Logic.PersistStuffDataAsync().ConfigureAwait(true);
     }
+
+    /// <summary>Which chests someone currently has open on screen.</summary>
+    /// <remarks>
+    /// Only the "open when someone looks inside" appearance needs it. It is per chest rather than
+    /// per viewer: two players looking at once share one lid, so the first to close it shuts it for
+    /// the other. A set of viewers is the fix the day that matters.
+    /// </remarks>
+    private readonly HashSet<int> _openChests = [];
+
+    /// <summary>
+    /// The state the chest should wear, or null to leave whatever it is wearing alone.
+    /// </summary>
+    /// <remarks>
+    /// The four values are the client's own dropdown, in its order: open when looked into, always
+    /// open, always closed, controlled by Wired. Only the last one is not ours to decide.
+    /// </remarks>
+    private static bool? ResolveChestOpenState(WiredChestEntity chest, bool beingLookedInto) =>
+        chest.ChestState switch
+        {
+            0 => beingLookedInto,
+            1 => true,
+            2 => false,
+            _ => null,
+        };
+
+    /// <summary>The chest's contents, as the kinds a preview is picked from.</summary>
+    private async Task<List<ChestPreviewKind>> ReadChestItemsAsync(WiredChestEntity chest)
+    {
+        // A chest with no preview to draw is the common case; do not go to the database for it.
+        if (chest.PreviewItems == 0)
+        {
+            return [];
+        }
+
+        await using VortexDbContext dbCtx = await _dbCtxFactory
+            .CreateDbContextAsync(CancellationToken.None)
+            .ConfigureAwait(true);
+
+        List<FurnitureEntity> stored = await dbCtx
+            .Furnitures.AsNoTracking()
+            .Where(f => f.WiredChestEntityId == chest.Id && f.DeletedAt == null)
+            // Row id stands in for "when it entered the chest", which no column records: nothing
+            // stamps a furni on the way in. Only the two "recent"/"oldest" modes read the order.
+            .OrderBy(f => f.Id)
+            .ToListAsync(CancellationToken.None)
+            .ConfigureAwait(true);
+
+        return
+        [
+            .. stored
+                .Select(ToChestItemSnapshot)
+                .OfType<FurnitureItemSnapshot>()
+                .Select(item => new ChestPreviewKind(
+                    item.Definition.ProductType == ProductType.Wall,
+                    item.SpriteId,
+                    item.Definition.FurniCategory == FurnitureCategory.Poster
+                        ? item.ExtraData
+                        : string.Empty
+                )),
+        ];
+    }
+
+    /// <summary>Picks what an open chest shows, from the owner's two appearance settings.</summary>
+    /// <remarks>
+    /// The modes are the client's dropdown, and the starred ones ("Random items (*)") are the same
+    /// order with duplicate kinds pushed to the back — the client's own note explains them as
+    /// "prefer to show different item types", not "show only different item types", so a chest
+    /// holding one kind still fills its slots with it.
+    /// <para>
+    /// Mode 7, "next-in-line random items to be given through Wired", is deliberately not
+    /// implemented: it names a queue of upcoming Wired rewards that nothing here keeps. It shows
+    /// nothing rather than showing something else and calling it that.
+    /// </para>
+    /// </remarks>
+    private static List<ChestPreviewKind> BuildChestPreview(
+        WiredChestEntity chest,
+        List<ChestPreviewKind> items
+    )
+    {
+        if (items.Count == 0 || chest.PreviewItems is 0 or 7)
+        {
+            return [];
+        }
+
+        IEnumerable<ChestPreviewKind> ordered = chest.PreviewItems switch
+        {
+            1 or 2 => items.OrderBy(_ => Random.Shared.Next()),
+            3 or 4 => Enumerable.Reverse(items),
+            _ => items,
+        };
+
+        List<ChestPreviewKind> candidates = [.. ordered];
+
+        if (chest.PreviewItems is 2 or 4 or 6)
+        {
+            candidates = [.. candidates.Distinct(), .. candidates];
+        }
+
+        // The dialog offers 1..4 and the client's visualization draws at most four icons; a chest
+        // saved before the setting existed has a 0 it never chose.
+        int amount = Math.Clamp(chest.PreviewAmount, 1, MaxPreviewItems);
+
+        return [.. candidates.Take(amount)];
+    }
+
+    /// <summary>What the client's furni-chest visualization can draw at once.</summary>
+    private const int MaxPreviewItems = 4;
 
     /// <summary>Loads the chest's own row, lets the caller change it, and saves. Every settings
     /// dialog is that same three-step, so it lives once: guard, load or create, apply, save.</summary>
@@ -854,6 +1014,194 @@ public sealed partial class RoomGrain
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Failed to lock the chests of room {RoomId}.", RoomId);
+        }
+    }
+
+    /// <summary>What the client calls WIRED: a box moved this, not a person.</summary>
+    private const int WiredTransaction = 1;
+
+    private WiredChestTransactionEntity NewWiredTransaction(
+        PlayerId playerId,
+        int chestRowId,
+        int withdrawCoins = 0,
+        int withdrawFurni = 0,
+        string definitionInfo = ""
+    ) =>
+        new()
+        {
+            WiredChestEntityId = chestRowId,
+            RoomEntityId = (int)RoomId,
+            TransactionType = WiredTransaction,
+            DefinitionInfo = definitionInfo,
+            PlayerEntityId = (int)playerId,
+            PlayerName = ResolvePlayerName(playerId),
+            ChestCount = 1,
+            WithdrawFurniCount = withdrawFurni,
+            DepositFurniCount = 0,
+            WithdrawCoinsCount = withdrawCoins,
+            DepositCoinsCount = 0,
+        };
+
+    public async Task<int> PayOutWiredChestCreditsAsync(
+        int chestId,
+        PlayerId playerId,
+        int amount,
+        bool everything,
+        CancellationToken ct
+    )
+    {
+        if (
+            playerId <= 0
+            || (!everything && amount <= 0)
+            || !_state.ItemsById.TryGetValue(chestId, out IRoomItem? item)
+            || !IsCoinChestClass(item.Definition.Name)
+        )
+        {
+            return 0;
+        }
+
+        try
+        {
+            await using VortexDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(true);
+
+            WiredChestEntity? chest = await dbCtx
+                .WiredChests.FirstOrDefaultAsync(
+                    c => c.FurnitureEntityId == chestId && c.DeletedAt == null,
+                    ct
+                )
+                .ConfigureAwait(true);
+
+            if (chest is null || chest.Credits <= 0 || chest.Locked)
+            {
+                return 0;
+            }
+
+            int taken = everything ? chest.Credits : Math.Min(amount, chest.Credits);
+
+            chest.Credits -= taken;
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+            bool landed = await _grainFactory
+                .GetPlayerWalletGrain(playerId)
+                .GrantCurrencyAsync(
+                    new CurrencyKind { CurrencyType = CurrencyType.Credits },
+                    taken,
+                    ct
+                )
+                .ConfigureAwait(true);
+
+            if (!landed)
+            {
+                chest.Credits += taken;
+
+                await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+                return 0;
+            }
+
+            dbCtx.WiredChestTransactions.Add(
+                NewWiredTransaction(playerId, chest.Id, withdrawCoins: taken)
+            );
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+            await ApplyChestSettingsToStuffDataAsync(chestId, chest).ConfigureAwait(true);
+
+            return taken;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "Wired pay-out failed for chest {ChestId} in room {RoomId}.",
+                chestId,
+                RoomId
+            );
+
+            return 0;
+        }
+    }
+
+    public async Task<int> PayOutWiredChestItemsAsync(
+        int chestId,
+        PlayerId playerId,
+        int count,
+        CancellationToken ct
+    )
+    {
+        if (
+            playerId <= 0
+            || count <= 0
+            || !_state.ItemsById.TryGetValue(chestId, out IRoomItem? item)
+            || !IsChestClass(item.Definition.Name)
+            || IsCoinChestClass(item.Definition.Name)
+        )
+        {
+            return 0;
+        }
+
+        try
+        {
+            await using VortexDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(true);
+
+            WiredChestEntity? chest = await dbCtx
+                .WiredChests.FirstOrDefaultAsync(
+                    c => c.FurnitureEntityId == chestId && c.DeletedAt == null,
+                    ct
+                )
+                .ConfigureAwait(true);
+
+            if (chest is null || chest.Locked)
+            {
+                return 0;
+            }
+
+            List<FurnitureEntity> leaving = await dbCtx
+                .Furnitures.Where(f => f.WiredChestEntityId == chest.Id && f.DeletedAt == null)
+                .Take(count)
+                .ToListAsync(ct)
+                .ConfigureAwait(true);
+
+            if (leaving.Count == 0)
+            {
+                return 0;
+            }
+
+            foreach (FurnitureEntity entity in leaving)
+            {
+                entity.WiredChestEntityId = null;
+                entity.RoomEntityId = null;
+                entity.PlayerEntityId = (int)playerId;
+            }
+
+            dbCtx.WiredChestTransactions.Add(
+                NewWiredTransaction(playerId, chest.Id, withdrawFurni: leaving.Count)
+            );
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+            await _grainFactory
+                .GetInventoryGrain(playerId)
+                .ReloadFurnitureAsync(ct)
+                .ConfigureAwait(true);
+
+            return leaving.Count;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "Wired furni pay-out failed for chest {ChestId} in room {RoomId}.",
+                chestId,
+                RoomId
+            );
+
+            return 0;
         }
     }
 }

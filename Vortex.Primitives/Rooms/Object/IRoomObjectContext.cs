@@ -55,6 +55,9 @@ public interface IRoomObjectContext
     public IRoomBanzaiAccess Banzai { get; }
 
     /// <summary>Placement validation and the wired engine's room-level knobs.</summary>
+    /// <summary>Chests standing in this room, for the wired boxes that pay out of them.</summary>
+    public IRoomChestAccess Chests { get; }
+
     public IRoomFurniAccess Furni { get; }
 
     /// <summary>The room clock, in milliseconds. Monotonic within an activation.</summary>

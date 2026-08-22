@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Inventory.Snapshots;
+using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Snapshots.Wired;
 
 namespace Vortex.Primitives.Rooms.Grains;
@@ -24,6 +25,15 @@ public partial interface IRoomWired
         int chestId,
         CancellationToken ct
     );
+
+    /// <summary>
+    /// The other half of <see cref="OpenWiredChestAsync" />: the screen is gone.
+    /// </summary>
+    /// <remarks>
+    /// It matters to one setting only — a chest set to open when someone looks inside has to shut
+    /// again — so a close for a chest nobody had open is silently nothing.
+    /// </remarks>
+    Task CloseWiredChestAsync(ActionContext ctx, int chestId, CancellationToken ct);
 
     /// <summary>
     /// Moves credits out of a chest and into the asking player's wallet. Returns what the chest
@@ -54,6 +64,37 @@ public partial interface IRoomWired
     /// ids; which of the matching items leave is this method's choice. Returns the ids that left, so
     /// the caller can tell the client what to remove from a screen it already drew.
     /// </remarks>
+    /// <summary>
+    /// Pays credits out of a chest to a player, on the room's behalf rather than on a player's.
+    /// </summary>
+    /// <remarks>
+    /// This is the wired path, so it asks for no decorating rights: the box is the authority, and
+    /// whoever wired it already had them. It keeps the ordering the manual withdrawal uses — the
+    /// chest is emptied first and refilled if the wallet refuses — because money that left a chest
+    /// and reached nobody is money lost. Returns what actually moved.
+    /// </remarks>
+    Task<int> PayOutWiredChestCreditsAsync(
+        int chestId,
+        PlayerId playerId,
+        int amount,
+        bool everything,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Hands furniture out of a chest to a player, on the room's behalf.
+    /// </summary>
+    /// <remarks>
+    /// Which items leave is the chest's choice, the same as the manual withdrawal by kind. Returns
+    /// how many actually moved.
+    /// </remarks>
+    Task<int> PayOutWiredChestItemsAsync(
+        int chestId,
+        PlayerId playerId,
+        int count,
+        CancellationToken ct
+    );
+
     /// <summary>
     /// Locks or unlocks every chest in this room at once.
     /// </summary>

@@ -32,6 +32,7 @@ public sealed partial class RoomGrain
         IRoomMapAccess,
         IRoomGameAccess,
         IRoomFreezeAccess,
+        IRoomChestAccess,
         IRoomBanzaiAccess,
         IRoomFurniAccess
 {
@@ -157,6 +158,21 @@ public sealed partial class RoomGrain
     void IRoomGameAccess.LockMovement(PlayerId playerId) => GameChrome.LockMovement(playerId);
 
     void IRoomGameAccess.UnlockMovement(PlayerId playerId) => GameChrome.UnlockMovement(playerId);
+
+    Task<int> IRoomChestAccess.PayOutChestCreditsAsync(
+        int chestId,
+        PlayerId playerId,
+        int amount,
+        bool everything,
+        CancellationToken ct
+    ) => PayOutWiredChestCreditsAsync(chestId, playerId, amount, everything, ct);
+
+    Task<int> IRoomChestAccess.PayOutChestItemsAsync(
+        int chestId,
+        PlayerId playerId,
+        int count,
+        CancellationToken ct
+    ) => PayOutWiredChestItemsAsync(chestId, playerId, count, ct);
 
     Task IRoomFreezeAccess.ThrowBallAsync(
         PlayerId playerId,
