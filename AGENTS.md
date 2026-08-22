@@ -219,7 +219,12 @@ Practical notes:
   is detected by its digest and **blocks** the next regeneration instead of being reverted.
 - Full walkthrough: `docs/walkthroughs/use-the-habbo-specs.md`.
 - Regenerate with `dotnet run --project Vortex.Specs.Cli -- bootstrap`; check with
-  `... -- validate`. An unchanged checkout regenerates byte-identically.
+  `... -- validate`. An unchanged checkout regenerates byte-identically. `validate` runs in
+  `VortexCloudFastCheck`, so a spec left contradictory fails the gate rather than the next reader.
+- The full verb list, beyond `analyze`/`bootstrap`/`validate`: `conflicts [--kind <k>] [--limit n]`,
+  `unknowns [--severity <s>]`, `headers`, `diff`, `scan-emulator`, `scan-client`, `scan-references`,
+  `import-capture`. `conflicts --kind field_count` is the one worth reading before touching a
+  serializer: it is where our field count disagrees with the client's own code.
 
 ## Packet addition checklist (revision work)
 When adding packet mappings in `Vortex.Revisions/Revision20260701`:
@@ -292,8 +297,9 @@ both read it, and `CapabilityDeclarationTests` fails the build if a declared `da
 is missing from it. The client half is checked by `scripts/hooks/check-dashboard-capabilities.mjs`
 — nothing in `dotnet build`, `dotnet test` or `npm run build` looks at it, so that script is the only
 thing standing between a missed edit and a page that is silently hidden from every operator. It runs
-automatically after any edit to one of the four files (PostToolUse hook in `.claude/settings.json`)
-and can be run by hand at any time.
+automatically after any edit to one of the four files (PostToolUse hook in `.claude/settings.json`),
+inside `VortexCloudFastCheck` so a commit from any author or tool is covered, and by hand at any
+time.
 - Required edits for every new capability:
   1. `Vortex.Primitives/Permissions/Capabilities.cs` — the `const string` **and**
      `Capabilities.Dashboard.All` (the test catches a miss; `Capabilities.All` picks it up from
@@ -417,6 +423,18 @@ GAME_ENDS, and it fans both out to whatever implements `IRoomMinigame`.
 dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudFastCheck
 dotnet build Vortex.Main/Vortex.Main.csproj -t:VortexCloudQualityGate
 ```
+
+Beyond build, tests, csharpier and the analyzers, these two targets also run the checks that no
+compiler sees. They are ordinary node scripts — run any of them alone while you work:
+
+| Check | Target | Catches |
+|---|---|---|
+| `node scripts/hooks/check-dashboard-capabilities.mjs` | FastCheck | a hidden page, an undefined route guard, a chunk that 404s, a raw i18n key in the sidebar |
+| `node scripts/hooks/check-header-ceiling.mjs` | FastCheck | a header id the client's registry does not contain: it registers, and can never fire |
+| `dotnet run --project Vortex.Specs.Cli -- validate` | FastCheck | a malformed or contradictory behavioural spec |
+| `cd Vortex.Dashboard.Web && npm run lint` | QualityGate | an undefined identifier in Svelte markup, which `npm run build` compiles and ships |
+| `node scripts/hooks/__test/run.mjs` | QualityGate | a hook that stopped blocking what it was written to block |
+| `node scripts/hooks/check-wire-conflicts.mjs` | QualityGate | a NEW field-count disagreement with the official client (existing ones are baselined). Skips itself where the client sources are not checked out beside the repo — CI included |
 
 ## Definition of done for AI changes
 - All modified files match nearby patterns and contract rules.

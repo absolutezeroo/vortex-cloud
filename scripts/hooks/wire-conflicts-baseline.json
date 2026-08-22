@@ -1,0 +1,27 @@
+{
+  "subjects": [
+    "incoming/AcceptFriend",
+    "incoming/DeclineFriend",
+    "incoming/PickupObject",
+    "incoming/RemoveFriend",
+    "incoming/SendRoomInvite",
+    "incoming/UnmuteUser",
+    "outgoing/AchievementResolutions",
+    "outgoing/BotSkillListUpdate",
+    "outgoing/CallForHelpPendingCalls",
+    "outgoing/CatalogPage",
+    "outgoing/CfhTopicsInit",
+    "outgoing/FloorHeightMap",
+    "outgoing/Items",
+    "outgoing/NavigatorLiftedRooms",
+    "outgoing/NavigatorMetaData",
+    "outgoing/NavigatorSavedSearches",
+    "outgoing/Objects",
+    "outgoing/ObjectsDataUpdate",
+    "outgoing/PerkAllowances",
+    "outgoing/PetFigureUpdate",
+    "outgoing/RoomDimmerPresets",
+    "outgoing/UserUpdate",
+    "outgoing/Users"
+  ]
+}

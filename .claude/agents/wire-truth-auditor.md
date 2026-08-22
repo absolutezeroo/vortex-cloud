@@ -44,11 +44,21 @@ id in the client's message registry, rather than assuming a package layout.
    - **width** — `readInteger` vs `readShort` vs `readByte` vs `readString` are not interchangeable
    - **bool encoding** — this client reads `flag ? 1 : 0` as a **4-byte int**, not a byte
 4. Check the header id is registered AND `<= 4101`. Ids above the client's maximum are fabricated:
-   they register without error and can never fire. `Revision20260701/Headers.cs` currently holds 13
-   constants above that ceiling (8003–9201); some are deliberate sentinels, so report the id and
-   what it is used for rather than assuming every one is a bug.
+   they register without error and can never fire. `Revision20260701/Headers.cs` holds 13 constants
+   above that ceiling (4600–9201): ten are deliberate extensions (seven for the furni editor, three
+   confirmed in the vortex-client's own registry at 4600/4601) and **three are placeholders parked
+   out of range after the WIN63 header remap** — 9008, 9012, 9201. Those three cannot fire, so the
+   features behind them do not exist. `node scripts/hooks/check-header-ceiling.mjs` prints which is
+   which and refuses a new one; closing one of the three is a good use of this agent.
 5. Check the serializer is actually mapped. A written-but-unmapped serializer is dead code that
    looks implemented — 184 of those exist repo-wide.
+
+## Where to start when no packet was named
+
+`scripts/hooks/wire-conflicts-baseline.json` is the standing work list: the packets whose field
+count already disagrees with the official client's own code, computed by the specs. Twenty-three of
+them. Pick one, audit it against the AS3 source, and either fix the serializer or record why the
+client's count is the wrong one — then `node scripts/hooks/check-wire-conflicts.mjs --update`.
 
 ## Rules
 

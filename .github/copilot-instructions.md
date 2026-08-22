@@ -36,11 +36,13 @@ Include in every request:
   - `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`
   - Do not generate new `Revision<id>/Parsers` or `Revision<id>/Serializers` in `vortex-cloud` for
     revisions other than the embedded `Revision20260701` default.
-- A new dashboard capability string lives in six files (`Capabilities.cs` const + `All`,
-  `DashboardWebHost.DashboardCapabilities`, `DashboardAuthService.DashboardCapabilities`,
-  `dashboardPermissions.js`, `routes.js`, `locales/en.js` + `fr.js`). Nothing cross-checks them —
-  a missing copy compiles and fails at runtime. See `AGENTS.md` and
-  `docs/walkthroughs/add-a-dashboard-page.md`.
+- A new dashboard capability string lives in **four** files (`Capabilities.cs` const + its entry in
+  `Capabilities.Dashboard.All`, `dashboardPermissions.js`, `routes.js`, `locales/en.js` + `fr.js`).
+  `DashboardWebHost` and `DashboardAuthService` read the one list — do not reintroduce per-file
+  copies. The server half is covered by `CapabilityDeclarationTests`; the client half by
+  `node scripts/hooks/check-dashboard-capabilities.mjs`, which runs in `VortexCloudFastCheck`. A
+  missing copy still compiles and still fails silently at runtime, so run the checker before you
+  call it done. See `AGENTS.md` and `docs/walkthroughs/add-a-dashboard-page.md`.
 - For extended profile flow:
   - keep handlers orchestration-only
   - do not query database contexts/repositories from handlers

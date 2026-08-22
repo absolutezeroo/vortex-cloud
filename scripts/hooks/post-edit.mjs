@@ -36,6 +36,17 @@ if (/^(Vortex\.Primitives\/Permissions\/Capabilities\.cs|Vortex\.Dashboard\.Web\
   if (r.status === 2) failures.push(r.stderr.trim());
 }
 
+// --- header id ceiling ----------------------------------------------------------------------------
+// An id the client's registry does not contain registers fine and can never fire. Nothing else sees
+// it: not the build, not the tests, not a grep.
+if (/^Vortex\.Revisions\/[^/]+\/Headers\.cs$/.test(rel)) {
+  const r = spawnSync(process.execPath, [path.join(here, 'check-header-ceiling.mjs')], {
+    cwd: root,
+    encoding: 'utf8',
+  });
+  if (r.status === 2) failures.push(r.stderr.trim());
+}
+
 // --- eslint on dashboard front-end files ----------------------------------------------------------
 // `npm run build` does not catch an undefined identifier used in markup (AGENTS.md validation note);
 // eslint does. Per-file, so it stays fast enough for a PostToolUse hook.

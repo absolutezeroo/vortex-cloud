@@ -19,6 +19,27 @@
       Command="dotnet test Vortex.Cloud.sln --no-restore"
       WorkingDirectory="$(MSBuildThisFileDirectory)"
     />
+    <!--
+      Three checks that no compiler sees. They lived only in the Claude Code PostToolUse hook, which
+      means they fired for exactly one tool and for exactly the files it happened to edit: a commit
+      from any other author, or a page whose capability was declared in a file nobody touched
+      afterwards, went through untouched. Each is under a second and needs no node_modules.
+        - capability parity : a page hidden from every operator, a chunk that 404s on navigation
+        - header ceiling    : an id the client's registry does not contain, registered and dead
+        - specs validate    : the behavioural specs AGENTS.md requires to be clean before shipping
+    -->
+    <Exec
+      Command="node scripts/hooks/check-dashboard-capabilities.mjs"
+      WorkingDirectory="$(MSBuildThisFileDirectory)"
+    />
+    <Exec
+      Command="node scripts/hooks/check-header-ceiling.mjs"
+      WorkingDirectory="$(MSBuildThisFileDirectory)"
+    />
+    <Exec
+      Command="dotnet run --project Vortex.Specs.Cli -- validate"
+      WorkingDirectory="$(MSBuildThisFileDirectory)"
+    />
   </Target>
 
   <Target Name="VortexCloudAiGovernanceCheck" Condition="'$(MSBuildProjectName)' == 'Vortex.Main'">
@@ -57,6 +78,31 @@
     Condition="'$(MSBuildProjectName)' == 'Vortex.Main'"
     DependsOnTargets="VortexCloudFastCheck;VortexCloudAiGovernanceCheck"
   >
+    <!--
+      eslint is the only thing that sees an undefined identifier used in Svelte markup: `npm run
+      build` compiles it to a global lookup and ships a page that renders blank. node_modules is
+      guaranteed here because FastCheck's build ran BuildDashboardFrontend, which runs `npm ci`.
+    -->
+    <Exec
+      Command="npm run lint"
+      WorkingDirectory="$(MSBuildThisFileDirectory)Vortex.Dashboard.Web"
+    />
+    <!-- The hooks themselves: exit 0 allows, exit 2 blocks. A broken hook fails open, silently. -->
+    <Exec
+      Command="node scripts/hooks/__test/run.mjs"
+      WorkingDirectory="$(MSBuildThisFileDirectory)"
+    />
+    <!--
+      Wire-format drift against the client that actually parses our bytes. The specs already compute
+      it; before this, nothing read the answer. Ratchet, not cleanup: the 23 known disagreements are
+      listed in scripts/hooks/wire-conflicts-baseline.json, a 24th fails here. The client sources live
+      outside this repository, so on a checkout without them the script reports that it is blind and
+      exits 0 rather than reporting a clean run it did not perform.
+    -->
+    <Exec
+      Command="node scripts/hooks/check-wire-conflicts.mjs"
+      WorkingDirectory="$(MSBuildThisFileDirectory)"
+    />
     <!--
       Was scoped to Vortex.Main.csproj only (the composition root, near-zero domain logic) — every
       analyzer/style violation in Vortex.Rooms, Vortex.PacketHandlers, Vortex.Players, etc., where the

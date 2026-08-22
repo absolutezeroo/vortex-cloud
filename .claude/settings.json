@@ -1,5 +1,22 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build:*)",
+      "Bash(dotnet test:*)",
+      "Bash(dotnet format:*)",
+      "Bash(dotnet csharpier:*)",
+      "Bash(dotnet restore:*)",
+      "Bash(dotnet tool restore:*)",
+      "Bash(dotnet run --project Vortex.Specs.Cli:*)",
+      "Bash(node scripts/hooks/:*)",
+      "Bash(npm run lint:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)"
+    ]
+  },
   "hooks": {
     "PostToolUse": [
       {

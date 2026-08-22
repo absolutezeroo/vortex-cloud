@@ -3,6 +3,7 @@
 //   node scripts/hooks/__test/run.mjs
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 
 const root = process.cwd();
@@ -39,6 +40,16 @@ const cases = [
   ],
   // ... mais un vrai kill enchaine derriere une autre commande doit toujours passer a la trappe.
   ['guard-emulator.mjs', cmd('dotnet build || taskkill /F /IM Vortex.Main.exe'), 2, 'kill enchaine apres ||'],
+  ['post-edit.mjs', edit(path.join('Vortex.Revisions', 'Revision20260701', 'Headers.cs')), 0, 'headers sous le plafond'],
+];
+
+// Scripts autonomes : pas de payload sur stdin, on les appelle avec leurs arguments.
+const headerProbe = path.join(os.tmpdir(), '__HeaderProbe.cs');
+fs.writeFileSync(headerProbe, 'public const int FabricatedMessageEvent = 9999;\npublic const int RealMessageEvent = 1234;\n');
+
+const direct = [
+  ['check-header-ceiling.mjs', [], 0, 'plafond des headers : depot propre'],
+  ['check-header-ceiling.mjs', ['--file', headerProbe, '--ceiling', '4101'], 2, 'id fabrique au-dessus du plafond'],
 ];
 
 let failed = 0;
@@ -50,6 +61,15 @@ for (const [script, payload, want, label] of cases) {
   if (!ok && r.stderr) console.log('     ' + r.stderr.trim().split('\n').slice(0, 4).join('\n     '));
 }
 
+for (const [script, argv, want, label] of direct) {
+  const r = spawnSync(process.execPath, [path.join('scripts', 'hooks', script), ...argv], { encoding: 'utf8' });
+  const ok = r.status === want;
+  if (!ok) failed++;
+  console.log(`${ok ? 'OK  ' : 'FAIL'} ${label} (attendu=${want} obtenu=${r.status})`);
+  if (!ok && r.stderr) console.log('     ' + r.stderr.trim().split('\n').slice(0, 4).join('\n     '));
+}
+
 fs.rmSync(probe, { force: true });
+fs.rmSync(headerProbe, { force: true });
 console.log(failed ? `\n${failed} test(s) en echec.` : '\nTous les hooks se comportent comme attendu.');
 process.exit(failed ? 1 : 0);
