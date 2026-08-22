@@ -1,4 +1,4 @@
-// Shared field validators for admin-action forms (OperationsPage, ModerationActionsPage, ...).
+// Shared field validators for admin-action forms (PlayerOperationsPanel, ModerationActionsPage, ...).
 // Every mutating form uses the same "reason >= 3 chars" convention so operators learn one rule.
 
 export function reasonOk(reason) {

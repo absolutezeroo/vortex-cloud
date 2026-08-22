@@ -12,7 +12,7 @@
   import { identity } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
 
-  // One state bag per action, mirroring OperationsPage's pattern.
+  // One state bag per action, mirroring PlayerOperationsPanel's pattern.
   let ban = $state({
     playerId: '',
     playerName: '',

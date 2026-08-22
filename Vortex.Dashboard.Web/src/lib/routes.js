@@ -40,8 +40,7 @@ export const NAV = [
   { path: '/packets', labelKey: 'nav.packets', shortKey: 'nav.packetsShort', group: 'Live', caps: ROUTE_PERMISSIONS.packets, load: () => import('../pages/PacketsPage.svelte') },
   { path: '/incidents', labelKey: 'nav.incidents', shortKey: 'nav.incidentsShort', group: 'Live', caps: ROUTE_PERMISSIONS.incidents, load: () => import('../pages/IncidentsPage.svelte') },
 
-  { path: '/investigation', labelKey: 'nav.investigation', shortKey: 'nav.investigationShort', group: 'Players', caps: ROUTE_PERMISSIONS.investigation, load: () => import('../pages/InvestigationPage.svelte') },
-  { path: '/operations', labelKey: 'nav.operations', shortKey: 'nav.operationsShort', group: 'Players', caps: ROUTE_PERMISSIONS.operations, load: () => import('../pages/OperationsPage.svelte'), writes: true },
+  { path: '/investigation', labelKey: 'nav.investigation', shortKey: 'nav.investigationShort', group: 'Players', caps: ROUTE_PERMISSIONS.investigation, load: () => import('../pages/InvestigationPage.svelte'), writes: true },
   { path: '/player-rewards', labelKey: 'nav.playerRewards', shortKey: 'nav.playerRewardsShort', group: 'Players', caps: ROUTE_PERMISSIONS.playerRewards, load: () => import('../pages/PlayerRewardsPage.svelte'), writes: true },
   { path: '/subscriptions', labelKey: 'nav.subscriptions', shortKey: 'nav.subscriptionsShort', group: 'Players', caps: ROUTE_PERMISSIONS.economy, load: () => import('../pages/SubscriptionsPage.svelte') },
   { path: '/moderation', labelKey: 'nav.moderation', shortKey: 'nav.moderationShort', group: 'Players', caps: ROUTE_PERMISSIONS.moderation, load: () => import('../pages/ModerationPage.svelte') },

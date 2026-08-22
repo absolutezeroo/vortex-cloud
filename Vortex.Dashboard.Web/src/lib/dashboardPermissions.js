@@ -58,7 +58,14 @@ export const ROUTE_PERMISSIONS = {
   packets: [CAPABILITIES.overviewRead],
   performance: [CAPABILITIES.performanceRead],
   economy: [CAPABILITIES.economyRead],
-  investigation: [CAPABILITIES.auditRead],
+  // The player page is both the forensics view and where the five player operations live, so an
+  // operator who can grant currency but cannot read the audit log still has to be able to open it.
+  investigation: [
+    CAPABILITIES.auditRead,
+    CAPABILITIES.opsGrantCurrency,
+    CAPABILITIES.opsGrantItem,
+    CAPABILITIES.opsKickPlayer,
+  ],
   rooms: [CAPABILITIES.auditRead],
   audit: [CAPABILITIES.auditRead],
   moderation: [CAPABILITIES.auditRead],
@@ -95,11 +102,6 @@ export const ROUTE_PERMISSIONS = {
   playerRewards: [CAPABILITIES.playersRead],
   economyExtras: [CAPABILITIES.economyRead],
   apiExplorer: [CAPABILITIES.overviewRead],
-  operations: [
-    CAPABILITIES.opsGrantCurrency,
-    CAPABILITIES.opsGrantItem,
-    CAPABILITIES.opsKickPlayer,
-  ],
 };
 
 export const OPERATION_CAPABILITIES = {
@@ -111,7 +113,7 @@ export const OPERATION_CAPABILITIES = {
 };
 
 // Per-action capability map for the moderation action forms on ModerationPage — mirrors
-// OPERATION_CAPABILITIES' role for OperationsPage.
+// OPERATION_CAPABILITIES' role for PlayerOperationsPanel.
 export const MODERATION_OPERATION_CAPABILITIES = {
   ban: CAPABILITIES.opsBanAccount,
   unban: CAPABILITIES.opsBanAccount,

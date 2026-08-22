@@ -541,6 +541,12 @@ internal sealed partial class DashboardApiService
                             player.Motto,
                             player.Figure,
                             avatarUrl = _assetUrls.AvatarImage(player.Figure),
+                            // The player page gates "kick" on this: there is nothing to disconnect
+                            // when the account is offline, and a button that always looks available
+                            // teaches the operator to ignore its result.
+                            online = _sessionGateway
+                                .GetOnlinePlayerIds()
+                                .Any(p => p.Value == player.Id),
                             createdAt = player.CreatedAt,
                             updatedAt = player.UpdatedAt,
                             player.status,
@@ -1046,12 +1052,17 @@ internal sealed partial class DashboardApiService
                         players = players.Where(p => p.Name.Contains(term));
                     }
 
-                    rows = await players
-                        .OrderBy(p => p.Name)
+                    rows = await OrderPlayers(players, query["sort"])
                         .Take(limit)
                         .Select(p => new PlayerRow(p.Id, p.Name, p.Figure))
                         .ToListAsync(ct)
                         .ConfigureAwait(false);
+                }
+
+                // Applied after the projection because "online" is session state, not a column.
+                if (string.Equals(query["online"], "true", StringComparison.OrdinalIgnoreCase))
+                {
+                    rows = rows.Where(p => online.Contains(p.Id)).ToList();
                 }
 
                 var items = rows.Select(p => new
@@ -1061,9 +1072,20 @@ internal sealed partial class DashboardApiService
                         avatarUrl = _assetUrls.AvatarImage(p.Figure),
                         online = online.Contains(p.Id),
                     })
-                    .OrderByDescending(p => p.online)
-                    .ThenBy(p => p.name)
                     .ToList();
+
+                // Online-first is the browsing default; an explicit sort is the operator overriding
+                // it, and re-sorting here would silently undo what they asked for.
+                items =
+                    (query["sort"] ?? string.Empty) switch
+                    {
+                        "id" => items.OrderBy(p => p.id).ToList(),
+                        "idDesc" => items.OrderByDescending(p => p.id).ToList(),
+                        "name" => items.OrderBy(p => p.name, StringComparer.OrdinalIgnoreCase).ToList(),
+                        _ => items.OrderByDescending(p => p.online)
+                            .ThenBy(p => p.name, StringComparer.OrdinalIgnoreCase)
+                            .ToList(),
+                    };
 
                 return new
                 {
@@ -1097,11 +1119,7 @@ internal sealed partial class DashboardApiService
                         : rooms.Where(r => r.Name.Contains(term));
                 }
 
-                var items = await rooms
-                    // Browsing shows the liveliest rooms first; a search still ranks by activity so
-                    // the busy "Lobby" beats an abandoned one of the same name.
-                    .OrderByDescending(r => r.UsersNow)
-                    .ThenByDescending(r => r.LastActive)
+                var items = await OrderRooms(rooms, query["sort"])
                     .Take(limit)
                     .Select(r => new
                     {
@@ -1200,10 +1218,17 @@ internal sealed partial class DashboardApiService
                     }
                 }
 
+                // The one filter that answers "I forgot the name but I know what it does" -- every
+                // dice, every roller, every wired action, without knowing a single classname.
+                string logic = (query["logic"] ?? string.Empty).Trim();
+                if (logic.Length > 0)
+                {
+                    definitions = definitions.Where(f => f.Logic == logic);
+                }
+
                 int total = await definitions.CountAsync(ct).ConfigureAwait(false);
 
-                var rows = await definitions
-                    .OrderBy(f => f.Name)
+                var rows = await OrderDefinitions(definitions, query["sort"])
                     .Skip(offset)
                     .Take(limit)
                     .Select(f => new
@@ -1211,6 +1236,7 @@ internal sealed partial class DashboardApiService
                         f.Id,
                         f.SpriteId,
                         f.Name,
+                        f.Logic,
                         type = f.ProductType.ToString(),
                         category = f.FurniCategory.ToString(),
                         f.Width,
@@ -1226,6 +1252,7 @@ internal sealed partial class DashboardApiService
                         id = f.Id,
                         spriteId = f.SpriteId,
                         name = f.Name,
+                        logic = f.Logic,
                         type = f.type,
                         category = f.category,
                         width = f.Width,
@@ -1248,6 +1275,42 @@ internal sealed partial class DashboardApiService
             },
             ct
         );
+
+    // Picker sorting. A picker that can only order by name is unusable the moment the operator
+    // remembers the id, the sprite or what the thing does but not what it is called. Unknown values
+    // fall back to the browsing default rather than erroring, because the sort arrives from a query
+    // string and a typo there should not be a failed search.
+    private static IQueryable<PlayerEntity> OrderPlayers(IQueryable<PlayerEntity> players, string? sort) =>
+        sort switch
+        {
+            "id" => players.OrderBy(p => p.Id),
+            "idDesc" => players.OrderByDescending(p => p.Id),
+            _ => players.OrderBy(p => p.Name),
+        };
+
+    private static IQueryable<RoomEntity> OrderRooms(IQueryable<RoomEntity> rooms, string? sort) =>
+        sort switch
+        {
+            "name" => rooms.OrderBy(r => r.Name),
+            "id" => rooms.OrderBy(r => r.Id),
+            "idDesc" => rooms.OrderByDescending(r => r.Id),
+            // Browsing shows the liveliest rooms first; a search still ranks by activity so the busy
+            // "Lobby" beats an abandoned one of the same name.
+            _ => rooms.OrderByDescending(r => r.UsersNow).ThenByDescending(r => r.LastActive),
+        };
+
+    private static IQueryable<FurnitureDefinitionEntity> OrderDefinitions(
+        IQueryable<FurnitureDefinitionEntity> definitions,
+        string? sort
+    ) =>
+        sort switch
+        {
+            "id" => definitions.OrderBy(f => f.Id),
+            "idDesc" => definitions.OrderByDescending(f => f.Id),
+            "sprite" => definitions.OrderBy(f => f.SpriteId),
+            "logic" => definitions.OrderBy(f => f.Logic).ThenBy(f => f.Name),
+            _ => definitions.OrderBy(f => f.Name),
+        };
 
     private string? BuildFurniIconUrl(string name) => _assetUrls.FurniIcon(name);
 

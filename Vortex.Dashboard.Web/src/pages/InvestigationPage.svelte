@@ -9,6 +9,10 @@
   import { User } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer, openItem } from '../lib/session.js';
+  import PickerModal from '../components/PickerModal.svelte';
+  import PlayerOperationsPanel from '../components/PlayerOperationsPanel.svelte';
+  import Tabs from '../components/Tabs.svelte';
+  import { Wrench, ScrollText } from '@lucide/svelte';
   import { t, translate } from '../lib/i18n.js';
 
   let query = $state('');
@@ -20,6 +24,23 @@
   });
   let error = $state('');
   let forbidden = $state(false);
+  // The search box takes an id or a correlation id; a name is what an operator actually remembers,
+  // and the shared picker already knows how to find one. Picking fills the box and runs the search,
+  // so both paths land on the same page state.
+  let picking = $state(false);
+  let active = $state('actions');
+
+  // $derived, not const: translate() reads the locale once, and a const would keep the tab strip in
+  // whatever language the page happened to mount in after the operator switches.
+  let tabs = $derived([
+    { id: 'actions', label: $t('playerOps.tabActions'), icon: Wrench },
+    { id: 'timeline', label: $t('investigation.tabTimeline'), icon: ScrollText },
+  ]);
+
+  function pick(chosen) {
+    query = String(chosen.id);
+    search();
+  }
 
   function push(rows, row) {
     rows.push({
@@ -82,6 +103,9 @@
   <form class="toolbar" onsubmit={(event) => { event.preventDefault(); search(); }}>
     <input autocomplete="off" spellcheck="false" bind:value={query} placeholder={$t('investigation.searchPlaceholder')} />
     <button type="submit">{$t('investigation.load')}</button>
+    <button type="button" class="ghost-button" onclick={() => (picking = true)}>
+      {$t('investigation.findByName')}
+    </button>
   </form>
   <p class="muted">{summary}</p>
 
@@ -100,9 +124,22 @@
         <small class="muted">{player.status} - {player.gender}</small>
       </div>
     </div>
+
+    <Tabs {tabs} bind:active storageKey="player" />
   {/if}
 
-  <table>
+  {#if player && active === 'actions'}
+    <PlayerOperationsPanel
+      playerId={player.id}
+      playerName={player.name}
+      online={player.online}
+      onDone={search}
+    />
+  {/if}
+
+  <!-- With no player loaded there is no tab strip, so the timeline is simply what the page shows. -->
+  {#if !player || active === 'timeline'}
+    <table>
     <thead><tr><th>{$t('investigation.colTime')}</th><th>{$t('investigation.colType')}</th><th>{$t('investigation.colActor')}</th><th>{$t('investigation.colDetails')}</th></tr></thead>
     <tbody>
       {#each rows as row}
@@ -129,7 +166,17 @@
       {/each}
     </tbody>
   </table>
+  {/if}
 </section>
+
+{#if picking}
+  <PickerModal
+    kind="user"
+    title={$t('investigation.findByName')}
+    onSelect={pick}
+    onClose={() => (picking = false)}
+  />
+{/if}
 
 <style>
   .player-headline {
