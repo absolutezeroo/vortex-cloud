@@ -1,7 +1,9 @@
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Inventory.Snapshots;
 using Vortex.Primitives.Rooms.Snapshots.Wired;
 
 namespace Vortex.Primitives.Rooms.Grains;
@@ -31,6 +33,37 @@ public partial interface IRoomWired
     /// Pass <paramref name="amount"/> as 0 or less to take everything, which is what the chest's
     /// "withdraw all" button asks for.
     /// </remarks>
+    /// <summary>
+    /// Everything a furniture chest holds, for the screen the client opens.
+    /// </summary>
+    /// <remarks>
+    /// Empty is a real answer, not a failure: the client needs a page even for an empty chest or the
+    /// screen never opens. Null means the caller had no business asking.
+    /// </remarks>
+    Task<ImmutableArray<FurnitureItemSnapshot>?> ListWiredChestItemsAsync(
+        ActionContext ctx,
+        int chestId,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Takes items of one kind out of a chest and hands them to whoever asked.
+    /// </summary>
+    /// <remarks>
+    /// The chest screen groups identical furni, so the request names a kind and a count rather than
+    /// ids; which of the matching items leave is this method's choice. Returns the ids that left, so
+    /// the caller can tell the client what to remove from a screen it already drew.
+    /// </remarks>
+    Task<ImmutableArray<int>> WithdrawWiredChestItemsAsync(
+        ActionContext ctx,
+        int chestId,
+        bool isWallItem,
+        int typeId,
+        string legacyPosterId,
+        int count,
+        CancellationToken ct
+    );
+
     Task<WiredChestSnapshot?> WithdrawWiredChestCreditsAsync(
         ActionContext ctx,
         int chestId,

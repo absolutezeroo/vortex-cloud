@@ -34,6 +34,18 @@ public partial interface IInventoryGrain
         CancellationToken ct
     );
     public Task<bool> RemoveFurnitureAsync(RoomObjectId itemId, CancellationToken ct);
+
+    /// <summary>
+    /// Rebuilds the furniture list from the database.
+    /// </summary>
+    /// <remarks>
+    /// For ownership that changed somewhere other than here — a trade committing, a wired chest
+    /// handing items back. The list is a cache built once at activation, so without this the player
+    /// keeps seeing what they owned a moment ago. It reloads everything rather than the rows that
+    /// moved: the same trade-off the trade path already takes, and one query beats bookkeeping.
+    /// </remarks>
+    public Task ReloadFurnitureAsync(CancellationToken ct);
+
     public Task GrantCatalogOfferAsync(
         CatalogOfferSnapshot offer,
         string extraParam,

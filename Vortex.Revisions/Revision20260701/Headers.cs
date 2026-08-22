@@ -26,6 +26,12 @@ internal static class MessageEvent
     // typed amount; _composers[3611] = _SafeCls_3968, the wrapper view's "withdraw all".
     public const int WithdrawWiredChestCreditsEvent = 2843;
     public const int WithdrawAllFromWiredChestEvent = 3611;
+
+    // The furni half of the same chest UI. FurniChestSubController::withdrawItemsWithType sends
+    // _composers[873] = _SafeCls_2416 as (chestId, ChestItemType, count), and DepositClick sends
+    // _composers[3514] = _SafeCls_3757 with the chest id alone.
+    public const int WithdrawWiredChestItemsEvent = 873;
+    public const int DepositToWiredChestEvent = 3514;
     public const int BlockListInitEvent = 798; // AS3-verified (direct read): BlockedUsersManager.as:54 -> send(new _SafeCls_3511()) (no args) @798; was 2610, which has no entry in the WIN63 registry at all
     public const int BlockUserMessageEvent = 483; // AS3-verified (direct read): BlockedUsersManager.as:94 -> send(new _SafeCls_2856(userId)) @483; was 2371, which has no entry in the WIN63 registry at all
     public const int ReplenishRespectMessageEvent = 426; // AS3-verified (direct read): SessionDataManager.as:889 -> send(new _SafeCls_1865()) (no args) @426; was 3323, which has no entry in the WIN63 registry at all
@@ -662,6 +668,13 @@ internal static class MessageComposer
     // _SafeCls_3882 (chest id, coins, isUpdate), read by CoinChestSubController.
     public const int WiredChestOpenComposer = 1174;
     public const int WiredChestCoinsComposer = 1022;
+
+    // The furni half's two reads, both consumed by FurniChestSubController: _events[2323] =
+    // _SafeCls_2672 is the paged listing (chestId, totalFragments, fragmentNo, items) that the view
+    // assembles until fragmentNo == totalFragments - 1, and _events[2738] = _SafeCls_3379 is the
+    // delta afterwards (chestId, removed ids, added items).
+    public const int WiredChestItemsComposer = 2323;
+    public const int WiredChestItemsUpdateComposer = 2738;
     public const int TreasureHuntFailMessageComposer = 3790; // AS3-verified 2026-08-22 (WIN63 registry + sender): _events[3790] = _SafeCls_3474, notifications::onTreasureHuntFail. 3822 was in no registry table.
     public const int TreasureHuntFirstWinnerMessageComposer = 3257; // AS3-verified 2026-08-22 (WIN63 registry + sender): _events[3257] = _SafeCls_3856, notifications::onTreasureHuntFirstWinner. 1232 was in no registry table.
     public const int TreasureHuntUpdateMessageComposer = 377;

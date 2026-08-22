@@ -18,6 +18,7 @@ using Vortex.Database.Entities.Room;
 using Vortex.Logging;
 using Vortex.Primitives;
 using Vortex.Primitives.Events;
+using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
@@ -48,6 +49,8 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
     internal readonly IRoomAvatarProvider _avatarProvider;
     internal readonly IDbContextFactory<VortexDbContext> _dbCtxFactory;
+    internal readonly IFurnitureDefinitionProvider _definitionProvider;
+    internal readonly IStuffDataFactory _stuffDataFactory;
     internal readonly IEventPublisher _events;
     internal readonly IGrainFactory _grainFactory;
     internal readonly IRoomItemsProvider _itemsLoader;
@@ -97,6 +100,8 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
 
     public RoomGrain(
         IDbContextFactory<VortexDbContext> dbCtxFactory,
+        IFurnitureDefinitionProvider definitionProvider,
+        IStuffDataFactory stuffDataFactory,
         IOptions<RoomConfig> roomConfig,
         ILogger<IRoomGrain> logger,
         IRoomModelProvider roomModelProvider,
@@ -116,6 +121,8 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     )
     {
         _dbCtxFactory = dbCtxFactory;
+        _definitionProvider = definitionProvider;
+        _stuffDataFactory = stuffDataFactory;
         _roomConfig = roomConfig.Value;
         _logger = logger;
         _roomModelProvider = roomModelProvider;

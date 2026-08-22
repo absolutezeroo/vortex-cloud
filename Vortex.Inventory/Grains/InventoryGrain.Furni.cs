@@ -38,6 +38,8 @@ namespace Vortex.Inventory.Grains;
 
 public sealed partial class InventoryGrain
 {
+    public Task ReloadFurnitureAsync(CancellationToken ct) => _furniModule.ReloadAsync(ct);
+
     public async Task<bool> AddFurnitureAsync(IFurnitureItem item, CancellationToken ct)
     {
         if (!await _furniModule.AddFurnitureAsync(item, ct))
