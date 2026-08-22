@@ -77,12 +77,26 @@ internal abstract class UpdateWiredDataParser : IParser
             }
         }
 
+        // Everything above is mandatory and always present. What follows is not, and the parser
+        // stops rather than reads past the end.
+        //
+        // The client's composer pushes both trailing lists unconditionally -- its own source ends
+        // with `push(p3.length)` then `push(p6.length)`, which is eight bytes even when both are
+        // empty. A real 2197 for a six-int action arrives with two bytes left instead of eight
+        // (observed 2026-08-22: 64-byte body, parsed cleanly through the user sources, tail `00 00`).
+        // So the wire is shorter than the composer reads, and which of the two lists the tail
+        // belongs to cannot be told apart when both are empty.
+        //
+        // Reading them only when the bytes are there loses nothing -- an absent list is an empty
+        // list either way -- and turns a message that threw away a whole box's configuration into
+        // one that keeps every field the client did send.
         List<string> variableIds = new();
-        int variableIdCount = packet.PopInt();
 
-        if (variableIdCount > 0)
+        if (packet.Remaining >= sizeof(int))
         {
-            while (variableIdCount > 0)
+            int variableIdCount = packet.PopInt();
+
+            while (variableIdCount > 0 && packet.Remaining > 0)
             {
                 variableIds.Add(packet.PopString());
 
@@ -90,14 +104,16 @@ internal abstract class UpdateWiredDataParser : IParser
             }
         }
 
-        List<object> typeSpecifics = ParseSpecifics(packet, GetRequiredTypeSpecifics());
+        List<object> typeSpecifics =
+            packet.Remaining > 0 ? ParseSpecifics(packet, GetRequiredTypeSpecifics()) : new();
 
         List<int> stuffIds2 = new();
-        int stuffId2Count = packet.PopInt();
 
-        if (stuffId2Count > 0)
+        if (packet.Remaining >= sizeof(int))
         {
-            while (stuffId2Count > 0)
+            int stuffId2Count = packet.PopInt();
+
+            while (stuffId2Count > 0 && packet.Remaining >= sizeof(int))
             {
                 stuffIds2.Add(packet.PopInt());
 
