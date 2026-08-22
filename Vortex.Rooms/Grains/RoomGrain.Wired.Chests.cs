@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using Vortex.Database.Entities.Wired;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Snapshots;
+using Vortex.Primitives.Furniture.StuffData;
 using Vortex.Primitives.Inventory.Snapshots;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Enums.Wallet;
@@ -201,6 +203,10 @@ public sealed partial class RoomGrain
 
                 await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
             }
+
+            // Also on open: a chest whose settings were saved before the furni carried them would
+            // otherwise stay blank on screen forever.
+            await ApplyChestSettingsToStuffDataAsync(chestId, chest).ConfigureAwait(true);
 
             return new WiredChestSnapshot
             {
@@ -406,6 +412,55 @@ public sealed partial class RoomGrain
         }
     }
 
+    /// <summary>
+    /// Copies a chest's settings into the furni's own stuff data.
+    /// </summary>
+    /// <remarks>
+    /// This is not a duplicate of the columns, it is how the client learns them. Every chest dialog
+    /// prefills from the furni's map stuff data — <c>getValue("chest_name")</c>,
+    /// <c>getValue("everyone_can_open")</c>, <c>getValue("notify_mode")</c> — and never from a message
+    /// of its own. Saving to the table alone is why a reopened dialog came back empty.
+    /// <para>
+    /// Booleans go out as "1"/"0" because that is what the client compares against. Two keys are
+    /// written but not modelled: <c>capacity_level</c> and <c>is_wired_enabled</c> belong to the
+    /// upgrade purchase, and the dialog reads them unconditionally, so they exist as zero rather
+    /// than as absent.
+    /// </para>
+    /// </remarks>
+    private async Task ApplyChestSettingsToStuffDataAsync(int chestId, WiredChestEntity chest)
+    {
+        if (
+            !_state.ItemsById.TryGetValue(chestId, out IRoomItem? item)
+            || item.Logic.StuffData is not IMapStuffData map
+        )
+        {
+            return;
+        }
+
+        static string Flag(bool value) => value ? "1" : "0";
+
+        map.Data["chest_name"] = chest.Name;
+        map.Data["chest_desc"] = chest.Description;
+        map.Data["everyone_can_open"] = Flag(chest.EveryoneCanOpen);
+        map.Data["everyone_can_donate"] = Flag(chest.EveryoneCanDonate);
+        map.Data["state_control_mode"] = chest.ChestState.ToString(CultureInfo.InvariantCulture);
+        map.Data["preview_mode"] = chest.PreviewItems.ToString(CultureInfo.InvariantCulture);
+        map.Data["preview_amount"] = chest.PreviewAmount.ToString(CultureInfo.InvariantCulture);
+        map.Data["notify_mode"] = chest.NotificationMode.ToString(CultureInfo.InvariantCulture);
+        map.Data["notification_chest_full"] = Flag(chest.NotifyWhenFull);
+        map.Data["notification_donation"] = Flag(chest.NotifyOnDonation);
+        map.Data["notification_someone_withdraws"] = Flag(chest.NotifyOnWithdraw);
+        map.Data["notification_chest_empty"] = Flag(chest.NotifyWhenEmpty);
+        map.Data["notification_wired_transaction"] = Flag(chest.NotifyOnAnyWiredTransaction);
+        map.Data["locked"] = Flag(chest.Locked);
+        map.Data["auto_lock"] = Flag(chest.AutoLock);
+        map.Data["capacity"] = chest.Capacity.ToString(CultureInfo.InvariantCulture);
+        map.Data["capacity_level"] = "0";
+        map.Data["is_wired_enabled"] = "0";
+
+        await item.Logic.PersistStuffDataAsync().ConfigureAwait(true);
+    }
+
     /// <summary>Loads the chest's own row, lets the caller change it, and saves. Every settings
     /// dialog is that same three-step, so it lives once: guard, load or create, apply, save.</summary>
     private async Task UpdateChestAsync(
@@ -450,6 +505,8 @@ public sealed partial class RoomGrain
             apply(chest);
 
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+            await ApplyChestSettingsToStuffDataAsync(chestId, chest).ConfigureAwait(true);
         }
         catch (Exception ex)
         {
