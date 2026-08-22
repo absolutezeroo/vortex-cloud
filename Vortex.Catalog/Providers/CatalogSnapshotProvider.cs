@@ -94,7 +94,10 @@ public sealed class CatalogSnapshotProvider<TTag>(
                             .ToImmutableArray()
                 );
 
+            // Hidden offers stay in OffersById -- a bundle or front-page item still resolves them
+            // by id -- they just are not listed on the page that owns them.
             ImmutableDictionary<int, ImmutableArray<int>> pageOfferIds = offers
+                .Where(o => o.Visible)
                 .GroupBy(o => o.CatalogPageEntityId)
                 .ToImmutableDictionary(g => g.Key, g => g.Select(x => x.Id).ToImmutableArray());
 
