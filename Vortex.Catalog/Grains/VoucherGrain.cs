@@ -175,29 +175,71 @@ public sealed class VoucherGrain(
             return FailRedeem("player_not_found");
         }
 
-        dbCtx.VoucherRedemptions.Add(
-            new VoucherRedemptionEntity
-            {
-                VoucherEntityId = _voucher.Id,
-                PlayerEntityId = playerIdInt,
-                RedeemedAt = DateTime.UtcNow,
-                PlayerEntity = playerEntity,
-            }
-        );
+        // The redemption is claimed before the currency is granted, and that order is deliberate:
+        // granting first would let a failure to record the claim hand the same voucher out twice,
+        // which creates currency. Claiming first can only ever fail the other way -- the voucher
+        // burnt and nothing paid out -- so the claim has to be released when the grant does not
+        // happen. Same shape as WalletPurchaseExtensions: claim, work, release on failure.
+        VoucherRedemptionEntity redemption = new()
+        {
+            VoucherEntityId = _voucher.Id,
+            PlayerEntityId = playerIdInt,
+            RedeemedAt = DateTime.UtcNow,
+            PlayerEntity = playerEntity,
+        };
+
+        dbCtx.VoucherRedemptions.Add(redemption);
 
         await dbCtx.SaveChangesAsync(ct);
 
         IPlayerWalletGrain wallet = grainFactory.GetPlayerWalletGrain(playerId);
 
-        if (_voucher.CurrencyType == CurrencyType.ActivityPoints)
+        try
         {
-            await wallet
-                .GrantActivityPointsAsync(_voucher.ActivityPointType!.Value, _voucher.Amount, ct)
-                .ConfigureAwait(true);
+            if (_voucher.CurrencyType == CurrencyType.ActivityPoints)
+            {
+                await wallet
+                    .GrantActivityPointsAsync(
+                        _voucher.ActivityPointType!.Value,
+                        _voucher.Amount,
+                        ct
+                    )
+                    .ConfigureAwait(true);
+            }
+            else
+            {
+                await wallet.GrantCreditsAsync(_voucher.Amount, ct).ConfigureAwait(true);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            await wallet.GrantCreditsAsync(_voucher.Amount, ct).ConfigureAwait(true);
+            logger.LogError(
+                ex,
+                "Voucher {Code} grant failed for player {PlayerId}; releasing the redemption.",
+                Code,
+                playerIdInt
+            );
+
+            // Not on `ct`: cancellation is the likeliest reason the grant threw, and releasing
+            // under the token that cancelled it would skip the release in exactly that case and
+            // leave the voucher burnt for nothing.
+            try
+            {
+                dbCtx.VoucherRedemptions.Remove(redemption);
+                await dbCtx.SaveChangesAsync(CancellationToken.None).ConfigureAwait(true);
+            }
+            catch (Exception releaseEx)
+            {
+                logger.LogCritical(
+                    releaseEx,
+                    "RELEASE FAILED for voucher {Code}: player {PlayerId} is marked as having "
+                        + "redeemed it and was granted nothing.",
+                    Code,
+                    playerIdInt
+                );
+            }
+
+            return FailRedeem("grant_failed");
         }
 
         logger.LogInformation("Voucher {Code} redeemed by player {PlayerId}", Code, playerIdInt);
