@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:fd7f58e30d91228e0c3a17083da598895271a69ba09ee8c851bcb7e7ca10e228"
+generated_digest: "sha256:f26763225625f6d8377f7fbc6c8018635200824ec40f3e8db0143ce6e3dc7391"
 generated:
   id: navigator.get_promoted_rooms
   domain: navigator
@@ -103,7 +103,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 204
+    line: 214
   - id: ev_bca43a79b6c9
     kind: emulator_flow
     authority: vortex_emulator

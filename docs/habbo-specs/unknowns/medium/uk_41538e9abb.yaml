@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:ad8a2d98962f9b9326582a5b02f9d633aa7d04a4269bf109df70ed34b39aa987"
+generated_digest: "sha256:7670467a9f4ffb1b4708fdf0222f38696e9d2649fbd8e1cdd20aac1b50e00c78"
 generated:
   id: uk_41538e9abb
   subject: "collectibles.nft_store_purchase: what the server sends when it refuses"
@@ -19,6 +19,13 @@ generated:
   resolved_by: an official capture of each guard being tripped
   feature: collectibles.nft_store_purchase
   known_evidence:
+  - id: ev_144151606547
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/NftStoreGrain.cs
+    symbol: NftStoreGrain
+    line: 61
   - id: ev_20a2d2e5ed36
     kind: emulator_flow
     authority: vortex_emulator
@@ -61,13 +68,6 @@ generated:
     source: Vortex.PacketHandlers/Collectibles/NftStorePurchaseMessageHandler.cs
     symbol: NftStorePurchaseMessageHandler
     line: 21
-  - id: ev_7549bffc291a
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/NftStoreGrain.cs
-    symbol: NftStoreGrain
-    line: 61
   - id: ev_7a660921f135
     kind: emulator_flow
     authority: vortex_emulator
@@ -75,13 +75,6 @@ generated:
     source: Vortex.Furniture/Providers/StuffDataFactory.cs
     symbol: StuffDataFactory
     line: 42
-  - id: ev_8d72e55b6aca
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/NftStoreGrain.cs
-    symbol: CachedOffer
-    line: 309
   - id: ev_94ddaa174e6d
     kind: emulator_flow
     authority: vortex_emulator
@@ -95,7 +88,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 566
+    line: 586
   - id: ev_d0cb8ee11644
     kind: emulator_flow
     authority: vortex_emulator
@@ -103,6 +96,13 @@ generated:
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
     line: 55
+  - id: ev_e224b6e2fb72
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/NftStoreGrain.cs
+    symbol: CachedOffer
+    line: 309
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

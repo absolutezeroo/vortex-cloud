@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:781b6e3a76972cf2fc3c17c3f17061141ef61d4b4ce921a5e93f1b840c2d14b4"
+generated_digest: "sha256:933c9ad11cdf8403d9479187288dce33dcff9081b40fdc2fa514b6dee1e61417"
 generated:
   id: groups.post_message
   domain: groups
@@ -33,6 +33,10 @@ generated:
     symbol: GroupForumGrain.PostAsync
     evidence: ev_76106ea21309
   - order: 2
+    layer: domain
+    symbol: WiredChestStore.FindAsync
+    evidence: ev_d3a71568179c
+  - order: 3
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
@@ -123,6 +127,13 @@ generated:
     source: Vortex.PacketHandlers/GroupForums/PostMessageMessageHandler.cs
     symbol: PostMessageMessageHandler
     line: 23
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 80
   scenarios:
   - groups.post_message.guard_0
   - groups.post_message.guard_1

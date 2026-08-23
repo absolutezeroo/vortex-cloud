@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:33aebf67ca55364ffb93ffd131c932ad98fe20dac9e9bc8fe83761f257e8ef2f"
+generated_digest: "sha256:75afa36e10927d86c1eb6227b0156fa0363aa7857b35bea206a6df2664451320"
 generated:
   feature: inventory.redeem_purchasable_clothing
   scenarios:
@@ -260,7 +260,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Factories/InventoryFurnitureLoader.cs
     symbol: InventoryFurnitureLoader
-    line: 120
+    line: 124
   - id: ev_2298dc2dabc2
     kind: emulator_flow
     authority: vortex_emulator

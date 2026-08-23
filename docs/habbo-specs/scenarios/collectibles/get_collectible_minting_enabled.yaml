@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:270a74717a86c4dad1a1c6c3b88fa0af5303bafb03c342533ff7411aaa54b8cd"
+generated_digest: "sha256:d93f7547a3ea35e1a2b8dae7481912ba8673b769eaef76cf45a3a048ed0d8d04"
 generated:
   feature: collectibles.get_collectible_minting_enabled
   scenarios:
@@ -31,14 +31,14 @@ generated:
       outcome: success
       emits:
       - CollectibleMintingEnabled
-      evidence: ev_13c1770efad0
+      evidence: ev_61b974b83353
   evidence:
-  - id: ev_13c1770efad0
+  - id: ev_61b974b83353
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/NftMintingGrain.cs
-    symbol: NftMintingGrain
-    line: 64
+    source: Vortex.PacketHandlers/Collectibles/GetCollectibleMintingEnabledMessageHandler.cs
+    symbol: GetCollectibleMintingEnabledMessageHandler
+    line: 41
 verified: {}
 manual: {}

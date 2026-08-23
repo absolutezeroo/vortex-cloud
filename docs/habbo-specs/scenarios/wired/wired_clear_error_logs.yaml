@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:0ed1753211cf2f3bbfea794c249ec1d60bf41a3cabab15acf3b23fdd5016f79d"
+generated_digest: "sha256:e7a44285a36c9ba7038faedef8823927f58aacbcd2558af2d9a423ce6d33e2f1"
 generated:
   feature: wired.wired_clear_error_logs
   scenarios:
@@ -64,6 +64,6 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredmenu/WiredClearErrorLogsMessageHandler.cs
     symbol: WiredClearErrorLogsMessageHandler
-    line: 24
+    line: 26
 verified: {}
 manual: {}

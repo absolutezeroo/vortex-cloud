@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:d4cbdea2ebe73c829bb5e00cedd229fd6c9654ba659aac5d64cfe542aeba591a"
+generated_digest: "sha256:044fadfc0c80d4264aac8fad4906850e3d066348e247ea60fbb226283ac95986"
 generated:
   id: nft.get_selected_nft_wardrobe_outfit
   domain: nft
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: PlayerNftWardrobeGrain.GetWornAsync
-    evidence: ev_5fff860b9eb2
+    evidence: ev_b7d8d8530a27
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -57,13 +57,6 @@ generated:
     source: Vortex.PacketHandlers/Nft/GetSelectedNftWardrobeOutfitMessageHandler.cs
     symbol: GetSelectedNftWardrobeOutfitMessageHandler
     line: 34
-  - id: ev_5fff860b9eb2
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerNftWardrobeGrain.cs
-    symbol: PlayerNftWardrobeGrain
-    line: 83
   - id: ev_7994b0053ed0
     kind: emulator_handler
     authority: vortex_emulator
@@ -71,6 +64,13 @@ generated:
     source: Vortex.PacketHandlers/Nft/GetSelectedNftWardrobeOutfitMessageHandler.cs
     symbol: GetSelectedNftWardrobeOutfitMessageHandler
     line: 23
+  - id: ev_b7d8d8530a27
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/PlayerNftWardrobeGrain.cs
+    symbol: PlayerNftWardrobeGrain
+    line: 83
   scenarios:
   - nft.get_selected_nft_wardrobe_outfit.guard_0
   - nft.get_selected_nft_wardrobe_outfit.guard_1

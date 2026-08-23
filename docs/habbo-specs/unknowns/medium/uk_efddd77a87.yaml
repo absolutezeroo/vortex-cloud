@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:0c9cb2808def3dece43c14bb4577b949a25c1f973fae355df6948091409d1b6b"
+generated_digest: "sha256:0fab0b43bdd57f8a3c3c226a1417cdd76b283e68e5f50ddb09294b43164931f4"
 generated:
   id: uk_efddd77a87
   subject: "groups.update_forum_read_marker: what the server sends when it refuses"
@@ -32,7 +32,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 680
+    line: 681
   - id: ev_b8deb6ce5f9d
     kind: emulator_handler
     authority: vortex_emulator

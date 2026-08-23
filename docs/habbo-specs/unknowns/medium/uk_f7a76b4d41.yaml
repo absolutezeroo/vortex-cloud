@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:0b8023a43f0367049e6f492e91e3bee2cb00404a04ee29ff01b81a995b49b2ae"
+generated_digest: "sha256:5aceed2e9a2cbaaa6b427e0b73a09f593749acb90b8e08c827562acc5a58d2e6"
 generated:
   id: uk_f7a76b4d41
   subject: "moderation.mod_trading_lock: what the server sends when it refuses"
@@ -61,6 +61,13 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.Room.cs
     symbol: PlayerPresenceGrain
     line: 27
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 80
   - id: ev_dd4e77d6bf65
     kind: emulator_flow
     authority: vortex_emulator

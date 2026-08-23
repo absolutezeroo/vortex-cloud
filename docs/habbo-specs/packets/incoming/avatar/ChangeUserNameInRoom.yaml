@@ -10,14 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:7e583a25ecca7ad05c61c19fb371f15f0b76d88ac71a28de5d2c3d633de97c56"
+generated_digest: "sha256:21caebdb7f91a6a05933998ca1f61a58fcc5ca068d272532c49bc6c0d2649e82"
 generated:
   name: ChangeUserNameInRoom
   direction: incoming
   domain: avatar
-  structure_confidence: implementation_observed
-  mapped_in_vortex: true
-  vortex_handler: ChangeUserNameInRoomMessageHandler
+  structure_confidence: unknown
+  mapped_in_vortex: false
   fields: []
   layouts_by_source:
   - origin: nitro
@@ -26,12 +25,6 @@ generated:
     partial: true
     types: []
     evidence: ev_2376b21bf28a
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 0
-    partial: false
-    types: []
-    evidence: ev_5a70497d10bf
   evidence:
   - id: ev_2376b21bf28a
     kind: client_composer
@@ -41,12 +34,5 @@ generated:
     symbol: ChangeUserNameInRoomComposer
     line: 8
     note: community client reimplementation; corroborating, never authoritative
-  - id: ev_5a70497d10bf
-    kind: emulator_parser
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Parsers/Avatar/ChangeUserNameInRoomMessageParser.cs
-    symbol: ChangeUserNameInRoomMessageParser
-    line: 7
 verified: {}
 manual: {}

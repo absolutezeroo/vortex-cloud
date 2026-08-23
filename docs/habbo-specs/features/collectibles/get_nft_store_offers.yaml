@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:948cc47ccbe9d2224635a5ca985bf411d705e76962e49197e2b557b44cba06fe"
+generated_digest: "sha256:31762e96efb56daf5cb86bb8802064eb303e2c41e74a02850a0aac96dbe134b3"
 generated:
   id: collectibles.get_nft_store_offers
   domain: collectibles
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: NftStoreGrain.GetOffersAsync
-    evidence: ev_7549bffc291a
+    evidence: ev_144151606547
   - order: 2
     layer: domain
     symbol: WiredActionBranch.Select
@@ -46,6 +46,13 @@ generated:
       evidence: ev_fd0a770fe543
   reaches_persistence: false
   evidence:
+  - id: ev_144151606547
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/NftStoreGrain.cs
+    symbol: NftStoreGrain
+    line: 54
   - id: ev_56b57db5c547
     kind: emulator_handler
     authority: vortex_emulator
@@ -53,13 +60,6 @@ generated:
     source: Vortex.PacketHandlers/Collectibles/GetNftStoreOffersMessageHandler.cs
     symbol: GetNftStoreOffersMessageHandler
     line: 22
-  - id: ev_7549bffc291a
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/NftStoreGrain.cs
-    symbol: NftStoreGrain
-    line: 54
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

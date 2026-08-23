@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:01965e5f2c51d078added385c28546a292333cd9cbe4766a37fc43927564091a"
+generated_digest: "sha256:ce25371ba80afc9fd2e4472ce4b1b53ff65e41c46c8ca3d6cde02e6a3946f09d"
 generated:
   id: users.block_user
   domain: users
@@ -32,6 +32,10 @@ generated:
     symbol: MessengerGrain.BlockUserAsync
     evidence: ev_b9c3cebcd883
   - order: 2
+    layer: domain
+    symbol: WiredChestStore.FindAsync
+    evidence: ev_d3a71568179c
+  - order: 3
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
@@ -90,6 +94,13 @@ generated:
     source: Vortex.PacketHandlers/Users/BlockUserMessageHandler.cs
     symbol: BlockUserMessageHandler
     line: 13
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 80
   scenarios:
   - users.block_user.guard_0
   - users.block_user.guard_1

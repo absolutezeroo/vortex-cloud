@@ -10,16 +10,22 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:498ca0bf31c040168b136430c931bbfc8141443f57d3fa7f60c47836841f7b1c"
+generated_digest: "sha256:85003dc744aac20c581f5696951490ea04c67ab9e0750845c5ece2a3f3f9d0f3"
 generated:
   name: GetBadgePointLimits
   direction: incoming
   domain: inventory
-  structure_confidence: implementation_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   vortex_handler: GetBadgePointLimitsMessageHandler
   fields: []
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: false
+    types: []
+    evidence: ev_114c029aef12
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -39,6 +45,14 @@ generated:
     types: []
     evidence: ev_ad67002b5a54
   evidence:
+  - id: ev_114c029aef12
+    kind: client_call_site
+    authority: client_mandated
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2020/_SafeCls_2019.as
+    symbol: _SafeCls_2019
+    line: 18
+    note: "the client constructs this composer at 1 call site(s), first at ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/inventory/HabboInventory.as:207 with 0 argument(s)"
   - id: ev_9bc8f5dc9ebd
     kind: client_composer
     authority: multi_implementation

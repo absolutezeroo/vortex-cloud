@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:5cfa5a5369d79d2f2dfa51cbdc1d5bcee5b10bfa3d5aac848265ec38b1f22ef6"
+generated_digest: "sha256:4d83f4664a9dbfc9d71348041fcc1f7ad852c4dcdb92a59223bd5a167be207d9"
 generated:
   feature: wired.update_variable
   scenarios:
@@ -35,14 +35,14 @@ generated:
   - scenario: wired.update_variable.guard_1
     title: "update variable: the guard '!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWire...' holds"
     given:
-      guard: "!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message, ct) .ConfigureAwait(false)"
+      guard: "!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message.ToRequest(), ct) .ConfigureAwait(false)"
       guard_holds: "true"
     when:
       packet: UpdateVariable
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of UpdateVariable sent while '!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message, ct) .ConfigureAwait(false)' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of UpdateVariable sent while '!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message.ToRequest(), ct) .ConfigureAwait(false)' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -154,13 +154,13 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 231
+    line: 232
   - id: ev_e87b09ae933e
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateVariableMessageHandler.cs
     symbol: UpdateVariableMessageHandler
-    line: 22
+    line: 23
 verified: {}
 manual: {}

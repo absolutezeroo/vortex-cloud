@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e946d0b24d1852cabb4fb82a04adf8d9a8b563ff35962c066dabe3a4c3be69a7"
+generated_digest: "sha256:a6feeb47b982d34a9f1eb9c10cec288b79a25182dde57ad8fdc02687209d35ff"
 generated:
   id: uk_c0949625b4
   subject: "collectibles.add_trade_assets: what the server sends when it refuses"
@@ -40,13 +40,6 @@ generated:
     source: Vortex.Primitives/Collectibles/CollectibleProductIdentity.cs
     symbol: CollectibleProductIdentity
     line: 38
-  - id: ev_56ac4e6314ba
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/FurnitureDefinitionLookup.cs
-    symbol: FurnitureDefinitionLookup
-    line: 41
   - id: ev_6938df432a77
     kind: emulator_flow
     authority: vortex_emulator
@@ -54,13 +47,6 @@ generated:
     source: Vortex.Rooms/Grains/RoomGrain.Trading.cs
     symbol: RoomGrain
     line: 19
-  - id: ev_76add128d9f3
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerMintGrain.cs
-    symbol: PlayerMintGrain
-    line: 290
   - id: ev_8172cc24f49d
     kind: emulator_handler
     authority: vortex_emulator
@@ -75,6 +61,20 @@ generated:
     source: Vortex.Rooms/Grains/RoomTradeSession.cs
     symbol: RoomTradeSession
     line: 56
+  - id: ev_963651d08ab1
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/FurnitureDefinitionLookup.cs
+    symbol: FurnitureDefinitionLookup
+    line: 41
+  - id: ev_a376b354a3ae
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/PlayerMintGrain.cs
+    symbol: PlayerMintGrain
+    line: 290
   - id: ev_a8707f5e7b6c
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:ead88231b91a8474f682659376c14fb886e9c0af0044426a8ee48c49e8f70776"
+generated_digest: "sha256:a1720e9d8e6bc2c1c2534eee1d1fb6e6b8777c83a3debd40c119fdc73ad9832c"
 generated:
   id: uk_6be22f25fa
   subject: "wired.update_trigger: what the server sends when it refuses"
@@ -32,20 +32,20 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateTriggerMessageHandler.cs
     symbol: UpdateTriggerMessageHandler
-    line: 22
+    line: 23
   - id: ev_ba6b00f67db8
     kind: emulator_handler
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateTriggerMessageHandler.cs
     symbol: UpdateTriggerMessageHandler
-    line: 11
+    line: 12
   - id: ev_e1599f76ae95
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 224
+    line: 225
 verified: {}
 manual: {}

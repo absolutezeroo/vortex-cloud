@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:7483431f5d4f0b67f41c7ddc643d20437d9e057d168b0138e801883c2cf4e7ae"
+generated_digest: "sha256:ccf1367f0ba5bbd5ffd823ac881aea91b1c924a10817cad7bf1f008ca4bba105"
 generated:
   id: uk_d6ccb7aed7
   subject: "room.close_room_for_player: what the server sends when it refuses"
@@ -130,7 +130,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 245
+    line: 255
   - id: ev_c26714967e6b
     kind: emulator_flow
     authority: vortex_emulator

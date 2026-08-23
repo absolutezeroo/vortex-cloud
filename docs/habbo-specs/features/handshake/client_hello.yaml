@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:dc20aaececee3d1fbb04cb369cb23311c37287e0b327c6ed3f3bc7763ea9140e"
+generated_digest: "sha256:e7441e0856f98f27470017c32045d55840db5e34c014b611f0d57a86946bce83"
 generated:
   id: handshake.client_hello
   domain: handshake
@@ -33,7 +33,11 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_bff19b686037
-  state_changes: []
+  state_changes:
+  - target: ctx
+    value: ctx.SetRevisionId(message.Production)
+    observed_in: vortex
+    evidence: ev_bff19b686037
   outgoing:
     ordering: unknown
     packets: []
@@ -60,5 +64,6 @@ generated:
   - cf_7e12fa4fd5
   unknowns:
   - uk_9b46b12e01
+  - uk_ac603570f8
 verified: {}
 manual: {}

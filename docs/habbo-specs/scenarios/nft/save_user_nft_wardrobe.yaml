@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:a7810ae496060d6f1ca66c4a14777755aa9de6ea49f50c44c6d1ac97aa321954"
+generated_digest: "sha256:831d817e50d78ac2566052f9fb1ddc3adf9dbfc6756b4808c63d356e723d04cd"
 generated:
   feature: nft.save_user_nft_wardrobe
   scenarios:
@@ -67,7 +67,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_5fff860b9eb2
+      evidence: ev_b7d8d8530a27
   - scenario: nft.save_user_nft_wardrobe.guard_3
     title: "save user nft wardrobe: the guard '_registry is null' holds"
     given:
@@ -120,13 +120,6 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 16
-  - id: ev_5fff860b9eb2
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerNftWardrobeGrain.cs
-    symbol: PlayerNftWardrobeGrain
-    line: 112
   - id: ev_6b4de89b3b3d
     kind: emulator_flow
     authority: vortex_emulator
@@ -134,5 +127,12 @@ generated:
     source: Vortex.PacketHandlers/Nft/SaveUserNftWardrobeMessageHandler.cs
     symbol: SaveUserNftWardrobeMessageHandler
     line: 34
+  - id: ev_b7d8d8530a27
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/PlayerNftWardrobeGrain.cs
+    symbol: PlayerNftWardrobeGrain
+    line: 112
 verified: {}
 manual: {}

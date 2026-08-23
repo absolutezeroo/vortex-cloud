@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d07eeac94270d2a1f039d3c59c17c4ffb087ebf14a9b48f48e0feb3aefb475a0"
+generated_digest: "sha256:cb3d8196b718b9a97a1f606c9c3fedecaa827195d4f7514cdc6ca699495e4810"
 generated:
   id: uk_fb31ad7149
   subject: "wired.wired_set_room_settings: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredmenu/WiredSetRoomSettingsMessageHandler.cs
     symbol: WiredSetRoomSettingsMessageHandler
-    line: 24
+    line: 25
   - id: ev_16b476be0ed1
     kind: emulator_flow
     authority: vortex_emulator
@@ -39,6 +39,6 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredmenu/WiredSetRoomSettingsMessageHandler.cs
     symbol: WiredSetRoomSettingsMessageHandler
-    line: 13
+    line: 14
 verified: {}
 manual: {}

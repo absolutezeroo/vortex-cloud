@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:153403869d3e89c9ff1e400799f5a6ad5e1d26880f3077226531f79e605c6d26"
+generated_digest: "sha256:d4aafe5f18130cab1d820c77611bd663f58a113aa21b0ac423a484cd9e5d9af9"
 generated:
   id: uk_613df422b3
   subject: "room.present_open: what the server sends when it refuses"
@@ -53,7 +53,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/PlayerPresenceGrain.Inventory.cs
     symbol: PlayerPresenceGrain
-    line: 20
+    line: 23
   - id: ev_5e51a330c801
     kind: emulator_flow
     authority: vortex_emulator
@@ -74,7 +74,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 582
+    line: 583
   - id: ev_7a660921f135
     kind: emulator_flow
     authority: vortex_emulator
@@ -116,7 +116,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 132
+    line: 152
   - id: ev_d0f936c872c4
     kind: emulator_handler
     authority: vortex_emulator
@@ -130,7 +130,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/Modules/PlayerInventoryModule.cs
     symbol: PlayerInventoryModule
-    line: 81
+    line: 84
   - id: ev_dfd698b29c69
     kind: emulator_flow
     authority: vortex_emulator

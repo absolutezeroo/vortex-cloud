@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:e9afec489c6bae6723883405c0267fbc973bb94d3cfb05f0d64b9cfed7938a46"
+generated_digest: "sha256:3b9098fe885b5daa9146847bb026bb49654617543ba3e8961810bbde667171ed"
 generated:
   id: collectibles.get_nft_asset_inventory
   domain: collectibles
@@ -30,11 +30,11 @@ generated:
   - order: 1
     layer: grain
     symbol: PlayerMintGrain.GetAssetsAsync
-    evidence: ev_76add128d9f3
+    evidence: ev_a376b354a3ae
   - order: 2
     layer: domain
     symbol: FurnitureDefinitionLookup.ResolveByClassNameAsync
-    evidence: ev_56ac4e6314ba
+    evidence: ev_963651d08ab1
   - order: 3
     layer: domain
     symbol: WiredActionBranch.Select
@@ -47,11 +47,11 @@ generated:
   - expression: assets.Length == 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_76add128d9f3
+    evidence: ev_a376b354a3ae
   - expression: codes.Length == 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_56ac4e6314ba
+    evidence: ev_963651d08ab1
   state_changes: []
   outgoing:
     ordering: unknown
@@ -69,20 +69,13 @@ generated:
     source: Vortex.Primitives/Collectibles/CollectibleProductIdentity.cs
     symbol: CollectibleProductIdentity
     line: 38
-  - id: ev_56ac4e6314ba
+  - id: ev_963651d08ab1
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/FurnitureDefinitionLookup.cs
+    source: Vortex.Collectibles/Grains/FurnitureDefinitionLookup.cs
     symbol: FurnitureDefinitionLookup
     line: 41
-  - id: ev_76add128d9f3
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerMintGrain.cs
-    symbol: PlayerMintGrain
-    line: 290
   - id: ev_98e80a4897a9
     kind: emulator_handler
     authority: vortex_emulator
@@ -90,6 +83,13 @@ generated:
     source: Vortex.PacketHandlers/Collectibles/GetNftAssetInventoryMessageHandler.cs
     symbol: GetNftAssetInventoryMessageHandler
     line: 22
+  - id: ev_a376b354a3ae
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/PlayerMintGrain.cs
+    symbol: PlayerMintGrain
+    line: 290
   - id: ev_c1fa1245297c
     kind: emulator_flow
     authority: vortex_emulator

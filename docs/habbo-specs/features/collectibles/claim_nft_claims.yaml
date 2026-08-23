@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:515ebfd355e158d655682d3eaa0b6132d6818d17c9ad53adcaffc8f63a813f37"
+generated_digest: "sha256:9ca1e1d49055663a044dcb443fc15ed3bb5bdd31c0644d1cdb4dd9863ad49007"
 generated:
   id: collectibles.claim_nft_claims
   domain: collectibles
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: PlayerNftClaimsGrain.ClaimAllAsync
-    evidence: ev_66b61a78f518
+    evidence: ev_d72434a4527c
   - order: 2
     layer: grain
     symbol: InventoryGrain.GrantFurnitureDefinitionAsync
@@ -51,7 +51,7 @@ generated:
   - expression: claims.Count == 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_66b61a78f518
+    evidence: ev_d72434a4527c
   - expression: "!string.IsNullOrEmpty(jsonData)"
     on_fail: return
     observed_in: vortex
@@ -60,7 +60,7 @@ generated:
   - target: claim.ClaimedAmount
     value: claim.ClaimLimit
     observed_in: vortex
-    evidence: ev_66b61a78f518
+    evidence: ev_d72434a4527c
   outgoing:
     ordering: unknown
     packets:
@@ -77,13 +77,6 @@ generated:
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
     line: 41
-  - id: ev_66b61a78f518
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerNftClaimsGrain.cs
-    symbol: PlayerNftClaimsGrain
-    line: 65
   - id: ev_7a660921f135
     kind: emulator_flow
     authority: vortex_emulator
@@ -111,7 +104,14 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 566
+    line: 586
+  - id: ev_d72434a4527c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/PlayerNftClaimsGrain.cs
+    symbol: PlayerNftClaimsGrain
+    line: 65
   scenarios:
   - collectibles.claim_nft_claims.guard_0
   - collectibles.claim_nft_claims.guard_1

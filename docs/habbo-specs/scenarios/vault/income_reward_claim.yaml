@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:e29de38b60f5880712d5f630f91e29d37a105972179abe2d4706720dc1bf3cfc"
+generated_digest: "sha256:9c47cf50a050020ebfde2d7b51cee9802d239de15fd04d10af67466b00851a3b"
 generated:
   feature: vault.income_reward_claim
   scenarios:
@@ -49,7 +49,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_18b2abfb072c
+      evidence: ev_64a16635906e
   - scenario: vault.income_reward_claim.success
     title: "income reward claim: the request is accepted"
     given:
@@ -76,11 +76,11 @@ generated:
     source: Vortex.PacketHandlers/Vault/IncomeRewardClaimMessageHandler.cs
     symbol: IncomeRewardClaimMessageHandler
     line: 11
-  - id: ev_18b2abfb072c
+  - id: ev_64a16635906e
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerVaultGrain.cs
+    source: Vortex.Collectibles/Grains/PlayerVaultGrain.cs
     symbol: PlayerVaultGrain
     line: 56
   - id: ev_d920210215ea

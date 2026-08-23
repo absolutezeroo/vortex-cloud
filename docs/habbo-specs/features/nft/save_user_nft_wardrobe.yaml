@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:2f9afed032ad7ccdacf2f6f1934f5e63aa5d8e99bab6f8d2bc5c30d44bb5c0d3"
+generated_digest: "sha256:0f4f4aff7f6da51c4837c6b4eb3dd11f01d7ec70bcb27d64ba7ae1aed16fce3c"
 generated:
   id: nft.save_user_nft_wardrobe
   domain: nft
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: PlayerNftWardrobeGrain.WearAsync
-    evidence: ev_5fff860b9eb2
+    evidence: ev_b7d8d8530a27
   - order: 2
     layer: domain
     symbol: WiredActionBranch.Select
@@ -63,7 +63,7 @@ generated:
   - expression: avatar is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_5fff860b9eb2
+    evidence: ev_b7d8d8530a27
   - expression: _registry is null
     on_fail: return
     observed_in: vortex
@@ -72,7 +72,7 @@ generated:
   - target: _grainFactory .GetPlayerGrain(PlayerId)
     value: _grainFactory .GetPlayerGrain(PlayerId) .SetFigureAsync( avatar.Figure, AvatarGenderTypeExtensions.FromLegacyString(avatar.Gender), ct )
     observed_in: vortex
-    evidence: ev_5fff860b9eb2
+    evidence: ev_b7d8d8530a27
   - target: _state.Figure
     value: figure
     observed_in: vortex
@@ -84,7 +84,7 @@ generated:
   - target: worn.PlayerNftAvatarEntityId
     value: copyId
     observed_in: vortex
-    evidence: ev_5fff860b9eb2
+    evidence: ev_b7d8d8530a27
   outgoing:
     ordering: unknown
     packets:
@@ -112,13 +112,6 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_5fff860b9eb2
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerNftWardrobeGrain.cs
-    symbol: PlayerNftWardrobeGrain
-    line: 92
   - id: ev_6b4de89b3b3d
     kind: emulator_flow
     authority: vortex_emulator
@@ -133,6 +126,13 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.Avatar.cs
     symbol: PlayerPresenceGrain
     line: 34
+  - id: ev_b7d8d8530a27
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/PlayerNftWardrobeGrain.cs
+    symbol: PlayerNftWardrobeGrain
+    line: 92
   - id: ev_cb62f92da55a
     kind: emulator_handler
     authority: vortex_emulator

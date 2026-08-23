@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a70fbd882e27f07407ae6a6df3cb6639d2f00cc34d7f8dd6906381b8958eaa10"
+generated_digest: "sha256:406fe62a7071c3d8ffc60587fea8c612786223fa4cef79e04e084094513d39ad"
 generated:
   id: uk_76ff2be745
   subject: "room.change_motto: what the server sends when it refuses"
@@ -60,14 +60,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 164
+    line: 165
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 245
+    line: 255
   - id: ev_bb34de375f7e
     kind: emulator_handler
     authority: vortex_emulator

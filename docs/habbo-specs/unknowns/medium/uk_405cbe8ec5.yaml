@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:29a913c78b4cf4c585605dc81dbdb0e7a21b0e401ac32a339520f8dd50f00ffd"
+generated_digest: "sha256:60481902ee721a9e4efe7ba331221e22282d32ee0cdec132a778942e427c2044"
 generated:
   id: uk_405cbe8ec5
   subject: "collectibles.mint_item: what the server sends when it refuses"
@@ -19,13 +19,6 @@ generated:
   resolved_by: an official capture of each guard being tripped
   feature: collectibles.mint_item
   known_evidence:
-  - id: ev_13c1770efad0
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/NftMintingGrain.cs
-    symbol: NftMintingGrain
-    line: 64
   - id: ev_2ec03446aa2a
     kind: emulator_flow
     authority: vortex_emulator
@@ -61,13 +54,6 @@ generated:
     source: Vortex.PacketHandlers/Collectibles/MintItemMessageHandler.cs
     symbol: MintItemMessageHandler
     line: 43
-  - id: ev_76add128d9f3
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerMintGrain.cs
-    symbol: PlayerMintGrain
-    line: 140
   - id: ev_7a660921f135
     kind: emulator_flow
     authority: vortex_emulator
@@ -82,6 +68,20 @@ generated:
     source: Vortex.Players/Grains/ServerConfigGrain.cs
     symbol: ServerConfigGrain
     line: 63
+  - id: ev_920ca1682c21
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/NftMintingGrain.cs
+    symbol: NftMintingGrain
+    line: 64
+  - id: ev_a376b354a3ae
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/PlayerMintGrain.cs
+    symbol: PlayerMintGrain
+    line: 140
   - id: ev_aaad5abd1665
     kind: emulator_handler
     authority: vortex_emulator
@@ -95,7 +95,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 749
+    line: 769
   - id: ev_d720d639bd09
     kind: emulator_flow
     authority: vortex_emulator

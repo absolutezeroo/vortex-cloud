@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:196dc01b4c87dd547bed1f8d933e31d71041d0aade70341d8910362027cff799"
+generated_digest: "sha256:f189f82c82dfeb104a5108c2aa121044689ab164255357ce1b69bbe3989abe0d"
 generated:
   id: wired.update_variable
   domain: wired
@@ -40,7 +40,7 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_e87b09ae933e
-  - expression: "!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message, ct) .ConfigureAwait(false)"
+  - expression: "!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message.ToRequest(), ct) .ConfigureAwait(false)"
     on_fail: return
     observed_in: vortex
     evidence: ev_e87b09ae933e
@@ -66,7 +66,7 @@ generated:
     observed_in: vortex
     evidence: ev_0080929ab318
   - target: _grainFactory .GetRoomFurni(ctx.RoomId)
-    value: _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message, ct)
+    value: _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message.ToRequest(), ct)
     observed_in: vortex
     evidence: ev_e87b09ae933e
   - target: wiredLogic
@@ -95,21 +95,21 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateVariableMessageHandler.cs
     symbol: UpdateVariableMessageHandler
-    line: 11
+    line: 12
   - id: ev_e1599f76ae95
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 224
+    line: 225
   - id: ev_e87b09ae933e
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateVariableMessageHandler.cs
     symbol: UpdateVariableMessageHandler
-    line: 22
+    line: 23
   scenarios:
   - wired.update_variable.guard_0
   - wired.update_variable.guard_1

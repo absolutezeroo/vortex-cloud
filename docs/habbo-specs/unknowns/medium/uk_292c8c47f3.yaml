@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:afd98628a611f1a5ef08510b60eb8aeef420c90ed2929952a24a1cd9856df3ef"
+generated_digest: "sha256:0f5efb62e68133dc5f0d6696319d251ddde3ee60ee66b2547d413162d4b41e6b"
 generated:
   id: uk_292c8c47f3
   subject: "users.join_habbo_group: what the server sends when it refuses"
@@ -61,6 +61,13 @@ generated:
     source: Vortex.Players/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
     line: 22
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 80
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

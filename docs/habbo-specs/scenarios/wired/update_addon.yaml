@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:298f9d3b2ca71b2e3c895c9990a85d22ab43152fdf3516db1b062bc1fdc98f16"
+generated_digest: "sha256:332f1ca199057167676bed358bc28eae936ff8eeaa6fd6ec6a239fe16ec8a779"
 generated:
   feature: wired.update_addon
   scenarios:
@@ -35,14 +35,14 @@ generated:
   - scenario: wired.update_addon.guard_1
     title: "update addon: the guard '!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWire...' holds"
     given:
-      guard: "!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message, ct) .ConfigureAwait(false)"
+      guard: "!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message.ToRequest(), ct) .ConfigureAwait(false)"
       guard_holds: "true"
     when:
       packet: UpdateAddon
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of UpdateAddon sent while '!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message, ct) .ConfigureAwait(false)' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of UpdateAddon sent while '!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message.ToRequest(), ct) .ConfigureAwait(false)' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -154,13 +154,13 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateAddonMessageHandler.cs
     symbol: UpdateAddonMessageHandler
-    line: 22
+    line: 23
   - id: ev_e1599f76ae95
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 231
+    line: 232
 verified: {}
 manual: {}

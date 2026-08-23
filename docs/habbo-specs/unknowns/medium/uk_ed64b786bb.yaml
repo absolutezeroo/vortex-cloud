@@ -10,12 +10,12 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:6eed09f82e95489bbeb6581fb925b59b9d0e837c6ff5dd647043e34d150a4864"
+generated_digest: "sha256:29ffb04f4f625d0837925fe5b9bd51b4f48c81ca6d3afe44881f7a3ef14ebe7f"
 generated:
   id: uk_ed64b786bb
   subject: "wired.withdraw_all_from_wired_chest: what the server sends when it refuses"
   severity: medium
-  question: wired.withdraw_all_from_wired_chest changes state and has 11 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
+  question: wired.withdraw_all_from_wired_chest changes state and has 13 guards whose refusal behaviour nothing here attests. Does the official server answer a refused request, and with what?
   resolved_by: an official capture of each guard being tripped
   feature: wired.withdraw_all_from_wired_chest
   known_evidence:
@@ -26,13 +26,13 @@ generated:
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredtrading/WithdrawAllFromWiredChestMessageHandler.cs
     symbol: WithdrawAllFromWiredChestMessageHandler
     line: 20
-  - id: ev_2e791da78924
+  - id: ev_1b62b682e0e7
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Rooms/Grains/RoomGrain.Wired.Chests.cs
-    symbol: RoomGrain
-    line: 32
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredTradeSettlement.Withdrawals.cs
+    symbol: WiredTradeSettlement
+    line: 46
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -47,6 +47,13 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
     line: 112
+  - id: ev_3fdb23ee39cd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Primitives/Permissions/PermissionSet.cs
+    symbol: PermissionSet
+    line: 33
   - id: ev_432f3c2b73af
     kind: emulator_flow
     authority: vortex_emulator
@@ -61,6 +68,27 @@ generated:
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredtrading/WithdrawAllFromWiredChestMessageHandler.cs
     symbol: WithdrawAllFromWiredChestMessageHandler
     line: 31
+  - id: ev_7aa1dee31dfd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Primitives/Permissions/RoomSecurityPolicy.cs
+    symbol: RoomSecurityPolicy
+    line: 17
+  - id: ev_7acf056f220a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestLedger.cs
+    symbol: WiredChestLedger
+    line: 75
+  - id: ev_82c2d2746361
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
+    symbol: RoomSecurityModule
+    line: 186
   - id: ev_94ddaa174e6d
     kind: emulator_flow
     authority: vortex_emulator
@@ -82,6 +110,20 @@ generated:
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
     line: 363
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 147
+  - id: ev_df80e54657de
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomGrain.WiredTrading.cs
+    symbol: RoomGrain
+    line: 61
   - id: ev_f5b4cba2f556
     kind: emulator_flow
     authority: vortex_emulator

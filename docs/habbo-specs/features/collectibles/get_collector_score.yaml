@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:d4934d4463c44a8ca6d0e1bf51de0c86fcdcaf2b427c38f8c14f48514b52d2d7"
+generated_digest: "sha256:5afcc88353a98aa6484a9a650cb9c8c4d18ba6b7a489092bd4d6957912f8aac2"
 generated:
   id: collectibles.get_collector_score
   domain: collectibles
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: NftCollectionsGrain.GetCollectorScoreAsync
-    evidence: ev_8e6fa88abbd1
+    evidence: ev_03de12ea0513
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -46,6 +46,13 @@ generated:
       evidence: ev_80ac316ce2d7
   reaches_persistence: false
   evidence:
+  - id: ev_03de12ea0513
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/NftCollectionsGrain.cs
+    symbol: NftCollectionsGrain
+    line: 67
   - id: ev_7d3d58dda1c9
     kind: emulator_handler
     authority: vortex_emulator
@@ -60,13 +67,6 @@ generated:
     source: Vortex.PacketHandlers/Collectibles/GetCollectorScoreMessageHandler.cs
     symbol: GetCollectorScoreMessageHandler
     line: 22
-  - id: ev_8e6fa88abbd1
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/NftCollectionsGrain.cs
-    symbol: NftCollectionsGrain
-    line: 67
   scenarios:
   - collectibles.get_collector_score.guard_0
   - collectibles.get_collector_score.success

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:984dfc4c7c40689a2d931c479f0efe0888a81eaefcaf476fb596bd02e44704f9"
+generated_digest: "sha256:1d280826f4c1a0fb7c4f2ee94510b17d0c3e92ff69f0bc8e3774a81da16c30c2"
 generated:
   id: users.deselect_favourite_habbo_group
   domain: users
@@ -162,7 +162,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 340
+    line: 341
   - id: ev_7fd0730f7cca
     kind: emulator_flow
     authority: vortex_emulator

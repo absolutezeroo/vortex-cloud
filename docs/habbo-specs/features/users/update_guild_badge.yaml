@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:d60de0ea1b3a4f9f32f4bf84af9ca9e1e28c0217809f6eae4f41b326ba6fa0c8"
+generated_digest: "sha256:2c389833f98abaec946a782a2f3b903bb00bbc749e3f1f199caf1b52ad38e111"
 generated:
   id: users.update_guild_badge
   domain: users
@@ -87,7 +87,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 761
+    line: 762
   - id: ev_d5f673c3c822
     kind: emulator_flow
     authority: vortex_emulator

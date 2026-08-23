@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b9d339e1c105cd68bcb87123c2922060ac4854e267257eba5c4544e9d98f5b0c"
+generated_digest: "sha256:33a6d5cf9c9bd7f93ff67cae5e051ae0caee0f42b2100bdc4ddbc4ca650d5107"
 generated:
   feature: room.present_open
   scenarios:
@@ -438,7 +438,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 588
+    line: 589
   - id: ev_845cc9ed930f
     kind: emulator_flow
     authority: vortex_emulator

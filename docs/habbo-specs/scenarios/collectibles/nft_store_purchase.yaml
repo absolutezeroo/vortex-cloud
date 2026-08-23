@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:cdf56254d7d3a837935a372bac4ab941d392246f4985483bfde7b1d5e1f44315"
+generated_digest: "sha256:a2e07a1bb90a075af9fd9fb846d52ce200fc382310647ad98bd95a3b1b7b4926"
 generated:
   feature: collectibles.nft_store_purchase
   scenarios:
@@ -49,7 +49,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7549bffc291a
+      evidence: ev_144151606547
   - scenario: collectibles.nft_store_purchase.guard_2
     title: "nft store purchase: the guard 'definitionId <= 0' holds"
     given:
@@ -67,7 +67,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7549bffc291a
+      evidence: ev_144151606547
   - scenario: collectibles.nft_store_purchase.guard_3
     title: "nft store purchase: the guard '!debit.Succeeded' holds"
     given:
@@ -85,7 +85,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_7549bffc291a
+      evidence: ev_144151606547
   - scenario: collectibles.nft_store_purchase.guard_4
     title: "nft store purchase: the guard 'update.ChangedBy != request.Amount' holds"
     given:
@@ -197,8 +197,15 @@ generated:
       - HabboActivityPointNotification
       - NftStorePurchase
       - SilverBalance
-      evidence: ev_20a2d2e5ed36
+      evidence: ev_144151606547
   evidence:
+  - id: ev_144151606547
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/NftStoreGrain.cs
+    symbol: NftStoreGrain
+    line: 73
   - id: ev_20a2d2e5ed36
     kind: emulator_flow
     authority: vortex_emulator
@@ -220,13 +227,6 @@ generated:
     source: Vortex.Players/Grains/Modules/PlayerWalletModule.cs
     symbol: PlayerWalletModule
     line: 20
-  - id: ev_7549bffc291a
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/NftStoreGrain.cs
-    symbol: NftStoreGrain
-    line: 73
   - id: ev_7a660921f135
     kind: emulator_flow
     authority: vortex_emulator

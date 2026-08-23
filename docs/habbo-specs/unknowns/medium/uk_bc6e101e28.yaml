@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:52a62a2f9b3f22790cff3c786661f9d79305a4c1472f3175be0b65036a8f9a60"
+generated_digest: "sha256:f2af56ddea7733e5c6dad312c095376217e386f91795bfdf76d900c88bdb6e8f"
 generated:
   id: uk_bc6e101e28
   subject: "register.update_figure_data: what the server sends when it refuses"
@@ -40,13 +40,6 @@ generated:
     source: Vortex.PacketHandlers/Register/UpdateFigureDataMessageHandler.cs
     symbol: UpdateFigureDataMessageHandler
     line: 41
-  - id: ev_5fff860b9eb2
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerNftWardrobeGrain.cs
-    symbol: PlayerNftWardrobeGrain
-    line: 178
   - id: ev_6d94b7c1bb77
     kind: emulator_flow
     authority: vortex_emulator
@@ -54,6 +47,13 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.Avatar.cs
     symbol: PlayerPresenceGrain
     line: 34
+  - id: ev_b7d8d8530a27
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/PlayerNftWardrobeGrain.cs
+    symbol: PlayerNftWardrobeGrain
+    line: 178
   - id: ev_c1a848c3d73c
     kind: emulator_flow
     authority: vortex_emulator

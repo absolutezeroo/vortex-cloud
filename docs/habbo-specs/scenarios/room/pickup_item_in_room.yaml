@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:61945bd4e12b7fc6668c7aa20df4149f5ec011dd275a45a89902893c88d8912c"
+generated_digest: "sha256:5b339b0142dea3e95d573d8a229e3e764bbd4f9a67080e497051cab6795d180e"
 generated:
   feature: room.pickup_item_in_room
   scenarios:
@@ -331,7 +331,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Factories/InventoryFurnitureLoader.cs
     symbol: InventoryFurnitureLoader
-    line: 120
+    line: 124
   - id: ev_2298dc2dabc2
     kind: emulator_flow
     authority: vortex_emulator

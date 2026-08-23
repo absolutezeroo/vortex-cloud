@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:4e70550325272b3cb448f16d8f5b0f141646201336e0ba81bbb336e380264b23"
+generated_digest: "sha256:36a1e2b6bc561931a775522f1fb089951cb7bd4cc672b8d9a8f86c69c0d3c817"
 generated:
   feature: vault.income_reward_status
   scenarios:
@@ -49,13 +49,13 @@ generated:
       outcome: success
       emits:
       - IncomeRewardStatus
-      evidence: ev_18b2abfb072c
+      evidence: ev_64a16635906e
   evidence:
-  - id: ev_18b2abfb072c
+  - id: ev_64a16635906e
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerVaultGrain.cs
+    source: Vortex.Collectibles/Grains/PlayerVaultGrain.cs
     symbol: PlayerVaultGrain
     line: 32
   - id: ev_fcb1a9001f34

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:0c4a433136026c338f548ede3ed82cebe66ed342a0999cb95549e58a113e2a7c"
+generated_digest: "sha256:dac550a430841d9fb309d2204ea62add9a4ddd14759f0996a0306dff654e491c"
 generated:
   id: collectibles.get_nft_collections
   domain: collectibles
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: NftCollectionsGrain.GetCollectionsForPlayerAsync
-    evidence: ev_8e6fa88abbd1
+    evidence: ev_03de12ea0513
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -39,7 +39,7 @@ generated:
   - expression: _collections.Length == 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_8e6fa88abbd1
+    evidence: ev_03de12ea0513
   state_changes: []
   outgoing:
     ordering: unknown
@@ -50,6 +50,13 @@ generated:
       evidence: ev_73561da4a983
   reaches_persistence: false
   evidence:
+  - id: ev_03de12ea0513
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/NftCollectionsGrain.cs
+    symbol: NftCollectionsGrain
+    line: 50
   - id: ev_051589fc45e5
     kind: emulator_handler
     authority: vortex_emulator
@@ -64,13 +71,6 @@ generated:
     source: Vortex.PacketHandlers/Collectibles/GetNftCollectionsMessageHandler.cs
     symbol: GetNftCollectionsMessageHandler
     line: 23
-  - id: ev_8e6fa88abbd1
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/NftCollectionsGrain.cs
-    symbol: NftCollectionsGrain
-    line: 50
   scenarios:
   - collectibles.get_nft_collections.guard_0
   - collectibles.get_nft_collections.guard_1

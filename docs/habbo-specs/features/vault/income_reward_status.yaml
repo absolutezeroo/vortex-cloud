@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:1f94dedce578b5de831f4cc947e3c8c60a66e1af1ffa7eaea4473604311bea31"
+generated_digest: "sha256:ce49150f8703ae86aa9374ae1058630b73ca9c5346f684126bd224f84a57d75f"
 generated:
   id: vault.income_reward_status
   domain: vault
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: PlayerVaultGrain.GetIncomeRewardsAsync
-    evidence: ev_18b2abfb072c
+    evidence: ev_64a16635906e
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -46,11 +46,11 @@ generated:
       evidence: ev_fcb1a9001f34
   reaches_persistence: false
   evidence:
-  - id: ev_18b2abfb072c
+  - id: ev_64a16635906e
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerVaultGrain.cs
+    source: Vortex.Collectibles/Grains/PlayerVaultGrain.cs
     symbol: PlayerVaultGrain
     line: 32
   - id: ev_c8c346973435

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d5dd5227fb6857b6db2b506fe6bc376348dd8075cac1e48ee786e34ed3b4b3da"
+generated_digest: "sha256:1eaa9b8da7e4a6183f30f0dd9fc454d2416c666064513c97a1c3f1065564625b"
 generated:
   feature: wired.wired_get_room_logs
   scenarios:
@@ -64,6 +64,6 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredmenu/WiredGetRoomLogsMessageHandler.cs
     symbol: WiredGetRoomLogsMessageHandler
-    line: 22
+    line: 24
 verified: {}
 manual: {}

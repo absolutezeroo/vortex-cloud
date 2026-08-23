@@ -10,13 +10,13 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:d4aa4b34c2d7e26f660c26d80aa806cbbc44dd9067fd3a8e75fde443b960fe79"
+generated_digest: "sha256:40d53143eb703fc0d00b24c90e9901ee7e4b47f34dd6be438bb9505deb05de47"
 generated:
   id: catalog.get_all
   domain: catalog
   title: get all
   trigger_packets:
-  - GetClubGiftInfoRequest
+  - GetClubGift
   - GetClubOffers
   - GetHabboClubExtendOffer
   observed_in:

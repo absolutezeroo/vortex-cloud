@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:a19004eca779d5fc3a0d0ed5dcc8d434d59c5da9079854231d0695d274f17655"
+generated_digest: "sha256:f7019b81afc3c172151a06a5e95029e73d696f5bc9cdc8d703adb141466737b0"
 generated:
   id: messenger.send_msg
   domain: messenger
@@ -33,10 +33,14 @@ generated:
     symbol: MessengerGrain.SendMessageAsync
     evidence: ev_c0304e5ad0cf
   - order: 2
+    layer: domain
+    symbol: WiredChestStore.FindAsync
+    evidence: ev_d3a71568179c
+  - order: 3
     layer: grain
     symbol: MessengerGrain.ReceiveMessageAsync
     evidence: ev_c0304e5ad0cf
-  - order: 3
+  - order: 4
     layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
     evidence: ev_373e76aa8a80
@@ -96,6 +100,13 @@ generated:
     source: Vortex.Players/Grains/MessengerGrain.Messaging.cs
     symbol: MessengerGrain
     line: 25
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 80
   - id: ev_df9e48a0bc86
     kind: emulator_handler
     authority: vortex_emulator

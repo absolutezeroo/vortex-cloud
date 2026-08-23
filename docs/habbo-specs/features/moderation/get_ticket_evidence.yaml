@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:aab817cfdb6b0751e2f943cb449bb370ffad2f93bc82cc83369e84fcfe556db1"
+generated_digest: "sha256:421d84937b5ea0ef17c72ea781d887c64ec527d2509aeb8c64125926173cfddc"
 generated:
   id: moderation.get_ticket_evidence
   domain: moderation
@@ -132,7 +132,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 204
+    line: 214
   - id: ev_e22d25b3670f
     kind: emulator_handler
     authority: vortex_emulator

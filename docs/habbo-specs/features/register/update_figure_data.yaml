@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:8d9e489750739445427c81195ff0eab0ab13dab4b230ef1e03c2214047b3ae9e"
+generated_digest: "sha256:29c04821a8b01f26509a3e8d6164329089ced3c0d068a8ea9d61ded939f65fdf"
 generated:
   id: register.update_figure_data
   domain: register
@@ -43,7 +43,7 @@ generated:
   - order: 4
     layer: grain
     symbol: PlayerNftWardrobeGrain.RemoveWornAsync
-    evidence: ev_5fff860b9eb2
+    evidence: ev_b7d8d8530a27
   checks:
   - expression: ctx.PlayerId < 0
     on_fail: return
@@ -108,13 +108,6 @@ generated:
     source: Vortex.PacketHandlers/Register/UpdateFigureDataMessageHandler.cs
     symbol: UpdateFigureDataMessageHandler
     line: 41
-  - id: ev_5fff860b9eb2
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerNftWardrobeGrain.cs
-    symbol: PlayerNftWardrobeGrain
-    line: 178
   - id: ev_6d94b7c1bb77
     kind: emulator_flow
     authority: vortex_emulator
@@ -122,6 +115,13 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.Avatar.cs
     symbol: PlayerPresenceGrain
     line: 34
+  - id: ev_b7d8d8530a27
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/PlayerNftWardrobeGrain.cs
+    symbol: PlayerNftWardrobeGrain
+    line: 178
   - id: ev_c1a848c3d73c
     kind: emulator_flow
     authority: vortex_emulator

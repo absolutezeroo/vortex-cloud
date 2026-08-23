@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:749aca8ff63a6d2867cdb1318fbe9f1ea2f27626fc67e7036f512236d303cacc"
+generated_digest: "sha256:4992630dd63a5b5d8404c33c373106a921d82b8294a180618a3732fb61a2d668"
 generated:
   feature: groups.get_forums_list
   scenarios:
@@ -108,6 +108,6 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 495
+    line: 496
 verified: {}
 manual: {}

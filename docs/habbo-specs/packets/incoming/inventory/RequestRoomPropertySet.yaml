@@ -10,23 +10,22 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:54c23da302d5c75c5a68928142b4ce583d5bd82a74eea19a87b620e79ede5900"
+generated_digest: "sha256:cf4d002f1ff2fa8448cc4e95679253f71a91f687e365d5643953a13590876a77"
 generated:
   name: RequestRoomPropertySet
   direction: incoming
   domain: inventory
-  structure_confidence: reference_observed
+  structure_confidence: client_confirmed
   mapped_in_vortex: true
   vortex_handler: RequestRoomPropertySetMessageHandler
-  fields:
-  - index: 0
-    name: item_id
-    type: int32
-    name_confidence: reference_observed
-    type_confidence: reference_observed
-    evidence:
-    - ev_7c51a6cff5ca
+  fields: []
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: false
+    types: []
+    evidence: ev_540f5300aadc
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -48,6 +47,14 @@ generated:
     - int32
     evidence: ev_d90ec7667278
   evidence:
+  - id: ev_540f5300aadc
+    kind: client_call_site
+    authority: client_mandated
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2324/_SafeCls_2323.as
+    symbol: _SafeCls_2323
+    line: 21
+    note: "the client constructs this composer at 4 call site(s), first at ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/catalog/HabboCatalog.as:3236 with 1 argument(s); the class writes 0 value(s) to the wire"
   - id: ev_e3c0a87cce6b
     kind: client_composer
     authority: multi_implementation

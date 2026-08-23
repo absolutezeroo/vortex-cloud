@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:8204f0e49102c9f64adbff5d8465cbb68965976a322cb10f0b9b75ce8648d639"
+generated_digest: "sha256:4ff222a0bef5b16ed802fd5c8b1da2f57ced958ea77646fe6f5ee6c1f920a503"
 generated:
   id: uk_91fc7e0d6b
   subject: "wired.update_action: what the server sends when it refuses"
@@ -32,20 +32,20 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateActionMessageHandler.cs
     symbol: UpdateActionMessageHandler
-    line: 11
+    line: 12
   - id: ev_cf228b6f602c
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateActionMessageHandler.cs
     symbol: UpdateActionMessageHandler
-    line: 22
+    line: 23
   - id: ev_e1599f76ae95
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 224
+    line: 225
 verified: {}
 manual: {}

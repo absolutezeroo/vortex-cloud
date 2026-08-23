@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1e1572ece4e482f65e6397177e7b99cfdd8ab6151b118140e9c8ed49a7115071"
+generated_digest: "sha256:f7cf13db502bed0004e868e8cc573e1155484d95f3e1da21ff03ec7d661c8ddd"
 generated:
   feature: catalog.get_all
   scenarios:
@@ -20,11 +20,11 @@ generated:
       guard: ctx.PlayerId <= 0
       guard_holds: "true"
     when:
-      packet: GetClubGiftInfoRequest
+      packet: GetClubGift
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of GetClubGiftInfoRequest sent while 'ctx.PlayerId <= 0' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of GetClubGift sent while 'ctx.PlayerId <= 0' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -38,11 +38,11 @@ generated:
       guard: baseOffer is null
       guard_holds: "true"
     when:
-      packet: GetClubGiftInfoRequest
+      packet: GetClubGift
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of GetClubGiftInfoRequest sent while 'baseOffer is null' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of GetClubGift sent while 'baseOffer is null' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
@@ -55,11 +55,11 @@ generated:
     given:
       preconditions: all guards satisfied
     when:
-      packet: GetClubGiftInfoRequest
+      packet: GetClubGift
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: an official capture of GetClubGiftInfoRequest succeeding, with every packet the server sends back and in what order
+    needs_evidence: an official capture of GetClubGift succeeding, with every packet the server sends back and in what order
     executable: false
     claims:
     - origin: vortex

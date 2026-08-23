@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:bb0aad2b19ba52dd0898c2c2ccd692fcfdcf7060ba3f8bed42c300e6a74f35bd"
+generated_digest: "sha256:5cfa7ed03289df03213f4fc8ccbd191998b66d3b1f641dd6f5ea8256e2cf1f4f"
 generated:
   id: nft.get_user_nft_wardrobe
   domain: nft
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: PlayerNftWardrobeGrain.GetWardrobeAsync
-    evidence: ev_5fff860b9eb2
+    evidence: ev_b7d8d8530a27
   - order: 2
     layer: domain
     symbol: WiredActionBranch.Select
@@ -64,11 +64,11 @@ generated:
     source: Vortex.PacketHandlers/Nft/GetUserNftWardrobeMessageHandler.cs
     symbol: GetUserNftWardrobeMessageHandler
     line: 21
-  - id: ev_5fff860b9eb2
+  - id: ev_b7d8d8530a27
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerNftWardrobeGrain.cs
+    source: Vortex.Collectibles/Grains/PlayerNftWardrobeGrain.cs
     symbol: PlayerNftWardrobeGrain
     line: 43
   - id: ev_f13d6bcce744

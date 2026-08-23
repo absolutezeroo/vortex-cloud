@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c47d5e1caadbe2942f586138a36150f2486aaf4e919fd6d0e0d01381c109a681"
+generated_digest: "sha256:0e73b0c3b4386d3a097c0db4bfde168b53b734647ac26623aaa785355c04c1c1"
 generated:
   id: uk_d438eff4e1
   subject: "users.ignore_user: what the server sends when it refuses"
@@ -40,5 +40,12 @@ generated:
     source: Vortex.Players/Grains/MessengerGrain.Friends.cs
     symbol: MessengerGrain
     line: 530
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 80
 verified: {}
 manual: {}

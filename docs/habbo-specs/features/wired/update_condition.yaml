@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:8d5fe304a2d5d701cb189ade80000cd8b3c06b0de5a6a2bbbe5f2fb65fc85ba4"
+generated_digest: "sha256:076707d560b154f0c79c5bcf374dfd2648d929fcdbb83fcc487834ea55654b44"
 generated:
   id: wired.update_condition
   domain: wired
@@ -41,7 +41,7 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_92deff5045df
-  - expression: "!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message, ct) .ConfigureAwait(false)"
+  - expression: "!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message.ToRequest(), ct) .ConfigureAwait(false)"
     on_fail: return
     observed_in: vortex
     evidence: ev_92deff5045df
@@ -67,7 +67,7 @@ generated:
     observed_in: vortex
     evidence: ev_0080929ab318
   - target: _grainFactory .GetRoomFurni(ctx.RoomId)
-    value: _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message, ct)
+    value: _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message.ToRequest(), ct)
     observed_in: vortex
     evidence: ev_92deff5045df
   - target: wiredLogic
@@ -96,21 +96,21 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateConditionMessageHandler.cs
     symbol: UpdateConditionMessageHandler
-    line: 11
+    line: 12
   - id: ev_92deff5045df
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateConditionMessageHandler.cs
     symbol: UpdateConditionMessageHandler
-    line: 22
+    line: 23
   - id: ev_e1599f76ae95
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 224
+    line: 225
   scenarios:
   - wired.update_condition.guard_0
   - wired.update_condition.guard_1

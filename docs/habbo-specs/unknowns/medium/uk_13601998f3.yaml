@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:8be7727ab1d3630dc910a38418dbc2dd38332ca37d7ddd62e0e418da74a23f73"
+generated_digest: "sha256:5374e8a3ccac15afa55e6ab950a93a7fd9f570138990e9b77ef96d58df40dd1f"
 generated:
   id: uk_13601998f3
   subject: "inventory.confirm_pet_breeding: what the server sends when it refuses"
@@ -39,7 +39,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 245
+    line: 255
   - id: ev_e3aeea05728f
     kind: emulator_flow
     authority: vortex_emulator

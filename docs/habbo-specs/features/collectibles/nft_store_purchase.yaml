@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:b5b1c81392c18431883c4ce390b2a2e174b0afb21e6a5342e642b7180ff65aa2"
+generated_digest: "sha256:f6bbd3026f88df33de27a10bf6adb90af4a51ab6381c8312c1a9a4ec470d811a"
 generated:
   id: collectibles.nft_store_purchase
   domain: collectibles
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: NftStoreGrain.PurchaseAsync
-    evidence: ev_7549bffc291a
+    evidence: ev_144151606547
   - order: 2
     layer: domain
     symbol: WiredActionBranch.Select
@@ -74,7 +74,7 @@ generated:
   - order: 12
     layer: domain
     symbol: CachedOffer.Sold
-    evidence: ev_8d72e55b6aca
+    evidence: ev_e224b6e2fb72
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -83,15 +83,15 @@ generated:
   - expression: offer is null || !IsOnSale(offer)
     on_fail: return
     observed_in: vortex
-    evidence: ev_7549bffc291a
+    evidence: ev_144151606547
   - expression: definitionId <= 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_7549bffc291a
+    evidence: ev_144151606547
   - expression: "!debit.Succeeded"
     on_fail: return
     observed_in: vortex
-    evidence: ev_7549bffc291a
+    evidence: ev_144151606547
   - expression: update.ChangedBy != request.Amount
     on_fail: throw
     observed_in: vortex
@@ -116,7 +116,7 @@ generated:
   - target: row
     value: row.SetProperty(x => x.SoldCount, x => x.SoldCount + 1)
     observed_in: vortex
-    evidence: ev_7549bffc291a
+    evidence: ev_144151606547
   outgoing:
     ordering: unknown
     packets:
@@ -142,6 +142,13 @@ generated:
       evidence: ev_432f3c2b73af
   reaches_persistence: true
   evidence:
+  - id: ev_144151606547
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/NftStoreGrain.cs
+    symbol: NftStoreGrain
+    line: 61
   - id: ev_20a2d2e5ed36
     kind: emulator_flow
     authority: vortex_emulator
@@ -184,13 +191,6 @@ generated:
     source: Vortex.PacketHandlers/Collectibles/NftStorePurchaseMessageHandler.cs
     symbol: NftStorePurchaseMessageHandler
     line: 21
-  - id: ev_7549bffc291a
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/NftStoreGrain.cs
-    symbol: NftStoreGrain
-    line: 61
   - id: ev_7a660921f135
     kind: emulator_flow
     authority: vortex_emulator
@@ -198,13 +198,6 @@ generated:
     source: Vortex.Furniture/Providers/StuffDataFactory.cs
     symbol: StuffDataFactory
     line: 42
-  - id: ev_8d72e55b6aca
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/NftStoreGrain.cs
-    symbol: CachedOffer
-    line: 309
   - id: ev_94ddaa174e6d
     kind: emulator_flow
     authority: vortex_emulator
@@ -218,7 +211,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 566
+    line: 586
   - id: ev_d0cb8ee11644
     kind: emulator_flow
     authority: vortex_emulator
@@ -226,6 +219,13 @@ generated:
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
     line: 55
+  - id: ev_e224b6e2fb72
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/NftStoreGrain.cs
+    symbol: CachedOffer
+    line: 309
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:f7d10eb5ab81c279fbaf5de603b00475e0c3f0d33997c46cc7ee90663eed4e9b"
+generated_digest: "sha256:9b64e4634153d914883d4f7db338c294f3fcb47084074c25a6a9dcfea8ac2caa"
 generated:
   id: uk_12c27ae4c1
   subject: "nft.save_user_nft_wardrobe: what the server sends when it refuses"
@@ -33,13 +33,6 @@ generated:
     source: Vortex.Events/EventSystem.cs
     symbol: EventSystem
     line: 14
-  - id: ev_5fff860b9eb2
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerNftWardrobeGrain.cs
-    symbol: PlayerNftWardrobeGrain
-    line: 92
   - id: ev_6b4de89b3b3d
     kind: emulator_flow
     authority: vortex_emulator
@@ -54,6 +47,13 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.Avatar.cs
     symbol: PlayerPresenceGrain
     line: 34
+  - id: ev_b7d8d8530a27
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/PlayerNftWardrobeGrain.cs
+    symbol: PlayerNftWardrobeGrain
+    line: 92
   - id: ev_cb62f92da55a
     kind: emulator_handler
     authority: vortex_emulator

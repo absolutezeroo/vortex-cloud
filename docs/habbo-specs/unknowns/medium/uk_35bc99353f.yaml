@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:f1acd6ebe51c9bbf4d15a2cc2bf99ea19e009c4bac3f8b983e92c6d9f4f0db14"
+generated_digest: "sha256:d36e32f71347296da772a4ee46275734532dda024d29c955d7e7386eff27a64f"
 generated:
   id: uk_35bc99353f
   subject: "messenger.follow_friend: what the server sends when it refuses"
@@ -158,7 +158,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 245
+    line: 255
   - id: ev_b4a557a65d81
     kind: emulator_flow
     authority: vortex_emulator

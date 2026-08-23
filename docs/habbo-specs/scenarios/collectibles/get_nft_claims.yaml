@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:748fbc7ea6dc980c90730cb5a87000f0716b97083fba0f7120c02277a2a0fcf3"
+generated_digest: "sha256:d6c5954598ff20b38dd2f0f56b753c2d5ac9880de433d01a9deb8d8e56c1febf"
 generated:
   feature: collectibles.get_nft_claims
   scenarios:
@@ -49,7 +49,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_66b61a78f518
+      evidence: ev_d72434a4527c
   - scenario: collectibles.get_nft_claims.success
     title: "get nft claims: the request is accepted"
     given:
@@ -67,15 +67,8 @@ generated:
       outcome: success
       emits:
       - NftClaims
-      evidence: ev_66b61a78f518
+      evidence: ev_67625979fb59
   evidence:
-  - id: ev_66b61a78f518
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerNftClaimsGrain.cs
-    symbol: PlayerNftClaimsGrain
-    line: 50
   - id: ev_67625979fb59
     kind: emulator_flow
     authority: vortex_emulator
@@ -83,5 +76,12 @@ generated:
     source: Vortex.PacketHandlers/Collectibles/GetNftClaimsMessageHandler.cs
     symbol: GetNftClaimsMessageHandler
     line: 34
+  - id: ev_d72434a4527c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/PlayerNftClaimsGrain.cs
+    symbol: PlayerNftClaimsGrain
+    line: 50
 verified: {}
 manual: {}

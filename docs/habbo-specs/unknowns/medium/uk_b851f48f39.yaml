@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:3920fbc47f4300f3e8b40bb5cbfbe0a7c90f87730334e082ef06608b1ed8971f"
+generated_digest: "sha256:5c6b98fbd720d6b2cdbd752ebdd63ba658a1b6a946b1adf39c8e37c885c30a04"
 generated:
   id: uk_b851f48f39
   subject: "inventory.redeem_purchasable_clothing: what the server sends when it refuses"
@@ -25,7 +25,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Factories/InventoryFurnitureLoader.cs
     symbol: InventoryFurnitureLoader
-    line: 120
+    line: 124
   - id: ev_2298dc2dabc2
     kind: emulator_flow
     authority: vortex_emulator
@@ -158,7 +158,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 245
+    line: 255
   - id: ev_b4a557a65d81
     kind: emulator_flow
     authority: vortex_emulator
@@ -179,7 +179,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 58
+    line: 78
   - id: ev_d720d639bd09
     kind: emulator_flow
     authority: vortex_emulator

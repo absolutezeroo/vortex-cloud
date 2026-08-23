@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:97d32e21f0440d793fd345cfe5966522010ded29705692a9eb51b91a3ea4b809"
+generated_digest: "sha256:78875d13d42dc2f6d67862209cf1e6e49ce5a6e56bab4322d6edb83732bc7760"
 generated:
   feature: collectibles.claim_nft_claims
   scenarios:
@@ -49,7 +49,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_66b61a78f518
+      evidence: ev_d72434a4527c
   - scenario: collectibles.claim_nft_claims.guard_2
     title: "claim nft claims: the guard '!string.IsNullOrEmpty(jsonData)' holds"
     given:
@@ -94,13 +94,6 @@ generated:
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
     line: 41
-  - id: ev_66b61a78f518
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerNftClaimsGrain.cs
-    symbol: PlayerNftClaimsGrain
-    line: 77
   - id: ev_7a660921f135
     kind: emulator_flow
     authority: vortex_emulator
@@ -115,5 +108,12 @@ generated:
     source: Vortex.PacketHandlers/Collectibles/ClaimNftClaimsMessageHandler.cs
     symbol: ClaimNftClaimsMessageHandler
     line: 35
+  - id: ev_d72434a4527c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/PlayerNftClaimsGrain.cs
+    symbol: PlayerNftClaimsGrain
+    line: 77
 verified: {}
 manual: {}

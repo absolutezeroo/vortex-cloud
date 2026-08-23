@@ -15,15 +15,15 @@ actually produced against the trees listed under Sources.
 
 | Direction | Count |
 |---|---:|
-| Incoming (client to server) | 587 |
-| Outgoing (server to client) | 791 |
+| Incoming (client to server) | 601 |
+| Outgoing (server to client) | 805 |
 
 ## Behaviour
 
 | | Count |
 |---|---:|
-| Features | 483 |
-| Scenarios | 1737 |
+| Features | 496 |
+| Scenarios | 1870 |
 | Captures imported | 0 |
 | Capture observations | 0 |
 
@@ -32,20 +32,20 @@ actually produced against the trees listed under Sources.
 | Level | Packets | Share |
 |---|---:|---:|
 | confirmed | 11 | 0.8% |
-| client_confirmed | 291 | 21.1% |
-| multi_reference_confirmed | 177 | 12.8% |
-| reference_observed | 396 | 28.7% |
-| implementation_observed | 350 | 25.4% |
-| unknown | 153 | 11.1% |
+| client_confirmed | 297 | 21.1% |
+| multi_reference_confirmed | 177 | 12.6% |
+| reference_observed | 395 | 28.1% |
+| implementation_observed | 373 | 26.5% |
+| unknown | 153 | 10.9% |
 
 ## Open questions
 
 | | Count |
 |---|---:|
 | Conflicts | 261 |
-| Critical unknowns | 136 |
-| Unknowns in total | 726 |
-| Fields with no attested name | 1567 of 4298 |
+| Critical unknowns | 133 |
+| Unknowns in total | 734 |
+| Fields with no attested name | 1574 of 4478 |
 
 > No captures were available to this run. Every behavioural question in this tree is
 > therefore open: the client and the implementations describe what a packet looks like
@@ -54,14 +54,14 @@ actually produced against the trees listed under Sources.
 
 ## Files
 
-- written: 0
-- unchanged: 3339
+- written: 1
+- unchanged: 3400
 - blocked by hand edits: 0
 
 ## Coverage the scan bounded
 
 - as3:PRODUCTION-201601012205-226667486: 810 classes carry no usable name and no header id that joins to this build, so they are absent from the specs
-- as3:WIN63-202607011411-782849652: 643 classes carry no usable name and no header id that joins to this build, so they are absent from the specs
+- as3:WIN63-202607011411-782849652: 618 classes carry no usable name and no header id that joins to this build, so they are absent from the specs
 - catalog.builders_club_place_room_item: 36 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - catalog.builders_club_place_wall_item: 26 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - catalog.get_flat_categories: 14 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
@@ -83,6 +83,14 @@ actually produced against the trees listed under Sources.
 - room.rentable_space_rent: 13 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - room.try_get_definition: 18 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - users.create_guild: 14 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- wired.deposit_to_wired_chest: 16 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- wired.get_wired_transaction_details: 13 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- wired.open_wired_chest: 18 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- wired.set_all_wired_chest_locks: 13 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- wired.wired_trade_accept: 19 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- wired.withdraw_all_from_wired_chest: 19 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- wired.withdraw_wired_chest_credits: 19 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
+- wired.withdraw_wired_chest_items: 18 guards observed, 12 turned into scenarios; the rest are listed in the feature spec's checks
 - 'packets/incoming/handshake/UniqueId.yaml' collides with 'packets/incoming/handshake/UniqueID.yaml' on a case-insensitive file system; written as 'packets/incoming/handshake/UniqueId~3a3b55.yaml'
 - 'packets/outgoing/navigator/NavigatorMetadata.yaml' collides with 'packets/outgoing/navigator/NavigatorMetaData.yaml' on a case-insensitive file system; written as 'packets/outgoing/navigator/NavigatorMetadata~1beb94.yaml'
 - 'packets/outgoing/handshake/UniqueMachineId.yaml' collides with 'packets/outgoing/handshake/UniqueMachineID.yaml' on a case-insensitive file system; written as 'packets/outgoing/handshake/UniqueMachineId~9e4d65.yaml'

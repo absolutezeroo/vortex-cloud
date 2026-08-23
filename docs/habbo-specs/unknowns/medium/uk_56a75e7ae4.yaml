@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:0052291f867ff0ac047436f919737ae7ccfcee91a8db166295b19165948c0798"
+generated_digest: "sha256:108d969e6196bcb725693c0966d5a80076cc85b3e4ea2200a741455dc9b9a092"
 generated:
   id: uk_56a75e7ae4
   subject: "room.present_open: who receives BadgeReceivedEvent, PetAddedToInventoryEvent"
@@ -25,13 +25,13 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/Modules/PlayerInventoryModule.cs
     symbol: PlayerInventoryModule
-    line: 83
+    line: 86
   - id: ev_d720d639bd09
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/Modules/PlayerInventoryModule.cs
     symbol: PlayerInventoryModule
-    line: 87
+    line: 90
 verified: {}
 manual: {}

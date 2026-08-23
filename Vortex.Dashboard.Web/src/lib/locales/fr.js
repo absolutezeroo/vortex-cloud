@@ -181,7 +181,7 @@ export default {
     tooManyRequests: 'Trop de requêtes. Patientez un instant puis réessayez.',
     requestFailed: 'La requête a échoué.',
     windowTooLarge: "Cette plage de dates est trop large. Choisissez une fenêtre d'un an au maximum.",
-    invalidDate: 'Une des dates est illisible. Vérifiez les filtres depuis/jusqu'à.',
+    invalidDate: "Une des dates est illisible. Vérifiez les filtres depuis/jusqu'à.",
   },
   audit: {
     wasDeleted: 'supprimé',

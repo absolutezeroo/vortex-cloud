@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:248b2fa7fcdc77f3ffc1f9d607497f67e335e730ac4c789deb6c263857718e28"
+generated_digest: "sha256:d6f046c1a37e575c3b2b5eee14eda1d29d1966b86e6403c3ddbc570f5b4697c8"
 generated:
   id: users.create_guild
   domain: users
@@ -69,6 +69,10 @@ generated:
     symbol: PlayerWalletGrain.CreditBackAsync
     evidence: ev_d0cb8ee11644
   - order: 11
+    layer: domain
+    symbol: WiredChestStore.FindAsync
+    evidence: ev_d3a71568179c
+  - order: 12
     layer: grain
     symbol: PlayerGrain.TrackCreditSpendAsync
     evidence: ev_1f83e61934ca
@@ -216,7 +220,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 84
+    line: 85
   - id: ev_86f81f4f919c
     kind: emulator_flow
     authority: vortex_emulator
@@ -252,6 +256,13 @@ generated:
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
     line: 55
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 80
   scenarios:
   - users.create_guild.guard_0
   - users.create_guild.guard_1

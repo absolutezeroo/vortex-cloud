@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a8b9eeda064e00504440125093305886d4832b14008e47d4bb568c185caee804"
+generated_digest: "sha256:f69d3a12f3b5c9135ed6c7522f43df9927f35e4cecb0a1ab65bf7432f5e929e1"
 generated:
   id: uk_48ac5b0bde
   subject: "catalog.find_by_product_code: who receives BadgeReceivedEvent, PetAddedToInventoryEvent"
@@ -25,13 +25,13 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/Modules/PlayerInventoryModule.cs
     symbol: PlayerInventoryModule
-    line: 83
+    line: 86
   - id: ev_d720d639bd09
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Players/Grains/Modules/PlayerInventoryModule.cs
     symbol: PlayerInventoryModule
-    line: 87
+    line: 90
 verified: {}
 manual: {}

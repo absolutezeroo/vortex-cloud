@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:9477955df118ca25159a626315ae04615c757e9123aebf9f289f78237a63ae7d"
+generated_digest: "sha256:37a36d2509eb71f705ca9c4a63b8ccf4170b21769a71062a5762eb6b01173517"
 generated:
   feature: collectibles.get_nft_collections
   scenarios:
@@ -49,7 +49,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_8e6fa88abbd1
+      evidence: ev_03de12ea0513
   - scenario: collectibles.get_nft_collections.success
     title: "get nft collections: the request is accepted"
     given:
@@ -67,15 +67,15 @@ generated:
       outcome: success
       emits:
       - NftCollections
-      evidence: ev_051589fc45e5
+      evidence: ev_03de12ea0513
   evidence:
-  - id: ev_051589fc45e5
-    kind: emulator_handler
+  - id: ev_03de12ea0513
+    kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.PacketHandlers/Collectibles/GetNftCollectionsMessageHandler.cs
-    symbol: GetNftCollectionsMessageHandler
-    line: 14
+    source: Vortex.Collectibles/Grains/NftCollectionsGrain.cs
+    symbol: NftCollectionsGrain
+    line: 57
   - id: ev_73561da4a983
     kind: emulator_flow
     authority: vortex_emulator
@@ -83,12 +83,5 @@ generated:
     source: Vortex.PacketHandlers/Collectibles/GetNftCollectionsMessageHandler.cs
     symbol: GetNftCollectionsMessageHandler
     line: 23
-  - id: ev_8e6fa88abbd1
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/NftCollectionsGrain.cs
-    symbol: NftCollectionsGrain
-    line: 57
 verified: {}
 manual: {}

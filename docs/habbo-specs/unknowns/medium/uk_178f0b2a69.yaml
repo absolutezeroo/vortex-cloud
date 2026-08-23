@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:325d1adb82ea7fb4dfec8d399dfaf04ae5b57c4189963c86eebdc06b7b9157e9"
+generated_digest: "sha256:6b5b26da5a2c77b62daa45f5417d67b5b04bd4af624417674b8a4641258be814"
 generated:
   id: uk_178f0b2a69
   subject: "room.dance: what the server sends when it refuses"
@@ -39,14 +39,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 184
+    line: 185
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 245
+    line: 255
   - id: ev_e202f0e0c1a0
     kind: emulator_flow
     authority: vortex_emulator

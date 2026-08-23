@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:5197f924b188422a0c00ec67d1b961bfbbb2af99637aca9f3836d3e512021c99"
+generated_digest: "sha256:22d95adf5330f185e3a2b4cc1d1d15de1439e23e5606eecbd53e09367b82a224"
 generated:
   id: room.open_mystery_trophy
   domain: room
@@ -176,7 +176,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 616
+    line: 636
   - id: ev_d6dd76076455
     kind: emulator_flow
     authority: vortex_emulator

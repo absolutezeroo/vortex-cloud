@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:1ea3e2844fd5379d04b0428b893ee6acce6e1629c47688e2b0ea8b5ff83d9216"
+generated_digest: "sha256:c68c1eac5ca21c9902f44bad4cd3dcadfa1458005c3b7b15327c5fdfcd50196a"
 generated:
   id: uk_5f06bb1af2
   subject: "collectibles.purchase_mint_token: what the server sends when it refuses"
@@ -19,13 +19,6 @@ generated:
   resolved_by: an official capture of each guard being tripped
   feature: collectibles.purchase_mint_token
   known_evidence:
-  - id: ev_13c1770efad0
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/NftMintingGrain.cs
-    symbol: NftMintingGrain
-    line: 143
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -54,13 +47,13 @@ generated:
     source: Vortex.PacketHandlers/Collectibles/PurchaseMintTokenMessageHandler.cs
     symbol: PurchaseMintTokenMessageHandler
     line: 23
-  - id: ev_76add128d9f3
+  - id: ev_920ca1682c21
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerMintGrain.cs
-    symbol: PlayerMintGrain
-    line: 63
+    source: Vortex.Collectibles/Grains/NftMintingGrain.cs
+    symbol: NftMintingGrain
+    line: 143
   - id: ev_94ddaa174e6d
     kind: emulator_flow
     authority: vortex_emulator
@@ -68,6 +61,13 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.Wallet.cs
     symbol: PlayerPresenceGrain
     line: 9
+  - id: ev_a376b354a3ae
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/PlayerMintGrain.cs
+    symbol: PlayerMintGrain
+    line: 63
   - id: ev_d0cb8ee11644
     kind: emulator_flow
     authority: vortex_emulator

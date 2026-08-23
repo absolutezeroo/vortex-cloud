@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:26306d193e5c45a121d2d349d29b7eff3c1461bd0c51e7b72cec65b196ad876f"
+generated_digest: "sha256:79b95861905bef6fbffc5b92493c5d9d9bcc906170eff0969e718465889a3246"
 generated:
   id: room.pickup_item_in_room
   domain: room
@@ -311,7 +311,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Factories/InventoryFurnitureLoader.cs
     symbol: InventoryFurnitureLoader
-    line: 120
+    line: 124
   - id: ev_2298dc2dabc2
     kind: emulator_flow
     authority: vortex_emulator
@@ -437,7 +437,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 245
+    line: 255
   - id: ev_b4a557a65d81
     kind: emulator_flow
     authority: vortex_emulator
@@ -458,7 +458,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 58
+    line: 78
   - id: ev_d720d639bd09
     kind: emulator_flow
     authority: vortex_emulator

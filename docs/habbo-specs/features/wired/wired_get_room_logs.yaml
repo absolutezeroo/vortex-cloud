@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:ebde4623c2bd71713dfea4c75dc7055dc588167028af31116ae1993fc41f64e5"
+generated_digest: "sha256:e0b680f442b8801a9ece3de972ddb29817686bdc1e9979f40bc4e3beae565ba6"
 generated:
   id: wired.wired_get_room_logs
   domain: wired
@@ -44,10 +44,6 @@ generated:
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_97aa8d4ed3db
-    - packet: WiredRoomLogs
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_266d52e7bb83
   reaches_persistence: false
   evidence:
   - id: ev_266d52e7bb83
@@ -63,18 +59,16 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredmenu/WiredGetRoomLogsMessageHandler.cs
     symbol: WiredGetRoomLogsMessageHandler
-    line: 11
+    line: 13
   - id: ev_97aa8d4ed3db
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredmenu/WiredGetRoomLogsMessageHandler.cs
     symbol: WiredGetRoomLogsMessageHandler
-    line: 22
+    line: 24
   scenarios:
   - wired.wired_get_room_logs.guard_0
   - wired.wired_get_room_logs.success
-  unknowns:
-  - uk_a1264f462a
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:9be3f76cddc0a09162025508148482c43abc4679f1e5cebbad0a96031d9145f5"
+generated_digest: "sha256:3eba3e10c81e2e19d849581fcbebaeb88a64e4afef72ccdb0c7d0e70df37298a"
 generated:
   id: uk_b9f2159d83
   subject: "messenger.accept_friend: what the server sends when it refuses"
@@ -82,6 +82,13 @@ generated:
     source: Vortex.PacketHandlers/FriendList/AcceptFriendMessageHandler.cs
     symbol: AcceptFriendMessageHandler
     line: 15
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 80
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

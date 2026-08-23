@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d1180e1f5d70e138de8a983f48941ea6145921b7adad2a58f02206a29f956345"
+generated_digest: "sha256:fc7fdfa688a5b3f2a75e75c0c628c5faecbeacf6daeaae16a38bd3baccb6ed1e"
 generated:
   id: uk_3fd13cf544
   subject: "wired.wired_clear_error_logs: what the server sends when it refuses"
@@ -32,14 +32,14 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredmenu/WiredClearErrorLogsMessageHandler.cs
     symbol: WiredClearErrorLogsMessageHandler
-    line: 13
+    line: 15
   - id: ev_ec4a4457e5fe
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredmenu/WiredClearErrorLogsMessageHandler.cs
     symbol: WiredClearErrorLogsMessageHandler
-    line: 24
+    line: 26
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

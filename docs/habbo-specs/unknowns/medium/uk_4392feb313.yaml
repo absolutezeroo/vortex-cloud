@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d17cc17bd71c5c4a386fa82a2d1911270a649643fe6e16059b067eee10378670"
+generated_digest: "sha256:368cfda17e04637ef980bfda6b80dab5c6b2d268ab9a73282846c9c3c1f08ef9"
 generated:
   id: uk_4392feb313
   subject: "room.pass_carry_item: what the server sends when it refuses"
@@ -53,13 +53,13 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 219
+    line: 220
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 555
+    line: 565
 verified: {}
 manual: {}

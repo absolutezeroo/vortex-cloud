@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:656c3b96e38c6637f4d1671aa107a8329fde58643d0ed1f5599b9d7358ae8122"
+generated_digest: "sha256:0e6a2159c2ee1782037ae696e52e93347b286b243f15e5cd2ea0455b6ef9da6a"
 generated:
   feature: collectibles.add_trade_assets
   scenarios:
@@ -85,7 +85,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_76add128d9f3
+      evidence: ev_a376b354a3ae
   - scenario: collectibles.add_trade_assets.guard_4
     title: "add trade assets: the guard 'codes.Length == 0' holds"
     given:
@@ -103,7 +103,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_56ac4e6314ba
+      evidence: ev_963651d08ab1
   - scenario: collectibles.add_trade_assets.success
     title: "add trade assets: the request is accepted"
     given:
@@ -136,18 +136,18 @@ generated:
     source: Vortex.Rooms/Grains/Systems/RoomTradingSystem.cs
     symbol: RoomTradingSystem
     line: 197
-  - id: ev_56ac4e6314ba
+  - id: ev_963651d08ab1
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/FurnitureDefinitionLookup.cs
+    source: Vortex.Collectibles/Grains/FurnitureDefinitionLookup.cs
     symbol: FurnitureDefinitionLookup
     line: 57
-  - id: ev_76add128d9f3
+  - id: ev_a376b354a3ae
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerMintGrain.cs
+    source: Vortex.Collectibles/Grains/PlayerMintGrain.cs
     symbol: PlayerMintGrain
     line: 303
   - id: ev_a8707f5e7b6c

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:b596385566711479403722ecb2ed37bebf127176503c2f8087f5af2438a92424"
+generated_digest: "sha256:4e606936176b3cab78fe73222f7c1c620e3368ebde2ad84625355202ca57a091"
 generated:
   id: uk_01e54a2ba6
   subject: "wired.update_addon: what the server sends when it refuses"
@@ -32,20 +32,20 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateAddonMessageHandler.cs
     symbol: UpdateAddonMessageHandler
-    line: 11
+    line: 12
   - id: ev_3f0c3351cfd6
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateAddonMessageHandler.cs
     symbol: UpdateAddonMessageHandler
-    line: 22
+    line: 23
   - id: ev_e1599f76ae95
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 224
+    line: 225
 verified: {}
 manual: {}

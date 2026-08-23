@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:5b8e66e7c9fd28242e132931c40c0180b40f28a88a96c098f536385c0f15af65"
+generated_digest: "sha256:070572fc7e6248c74e4f2b6cddf2e91885de21ec7b6c27224155da4bffe0d6d0"
 generated:
   id: uk_90dc6c4ca5
   subject: "moderation.mod_mute: what the server sends when it refuses"
@@ -82,6 +82,13 @@ generated:
     source: Vortex.PacketHandlers/Moderator/ModMuteMessageHandler.cs
     symbol: ModMuteMessageHandler
     line: 18
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 80
   - id: ev_dd4e77d6bf65
     kind: emulator_flow
     authority: vortex_emulator

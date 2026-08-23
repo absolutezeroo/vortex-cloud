@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:0bebe21f948fab4c47e07025abda01dff37d51cc1b99d0e0b9653be3ed1789f2"
+generated_digest: "sha256:2aba1b32232aea1122ca38d982fa4d1eac581f025899421f2a66c587ebd14bdb"
 generated:
   feature: collectibles.purchase_mint_token
   scenarios:
@@ -49,7 +49,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_76add128d9f3
+      evidence: ev_a376b354a3ae
   - scenario: collectibles.purchase_mint_token.guard_2
     title: "purchase mint token: the guard '!debit.Succeeded' holds"
     given:
@@ -67,7 +67,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_76add128d9f3
+      evidence: ev_a376b354a3ae
   - scenario: collectibles.purchase_mint_token.guard_3
     title: "purchase mint token: the guard 'update.ChangedBy != request.Amount' holds"
     given:
@@ -161,15 +161,8 @@ generated:
       - EmeraldBalance
       - HabboActivityPointNotification
       - SilverBalance
-      evidence: ev_13c1770efad0
+      evidence: ev_34bf3ac088e2
   evidence:
-  - id: ev_13c1770efad0
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/NftMintingGrain.cs
-    symbol: NftMintingGrain
-    line: 143
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -184,11 +177,11 @@ generated:
     source: Vortex.Players/Grains/Modules/PlayerWalletModule.cs
     symbol: PlayerWalletModule
     line: 20
-  - id: ev_76add128d9f3
+  - id: ev_a376b354a3ae
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerMintGrain.cs
+    source: Vortex.Collectibles/Grains/PlayerMintGrain.cs
     symbol: PlayerMintGrain
     line: 73
   - id: ev_d0cb8ee11644

@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:d9b528b088d01f2e21952a9847e095ed03f4fbb70f59b5e91cd32b5d71bc5fa3"
+generated_digest: "sha256:b31bab358e22e94c478af8653326150bce2df9df29df390e27cf69590a744729"
 generated:
   feature: collectibles.get_mint_token_offers
   scenarios:
@@ -31,13 +31,13 @@ generated:
       outcome: success
       emits:
       - CollectibleMintTokenOffers
-      evidence: ev_13c1770efad0
+      evidence: ev_920ca1682c21
   evidence:
-  - id: ev_13c1770efad0
+  - id: ev_920ca1682c21
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/NftMintingGrain.cs
+    source: Vortex.Collectibles/Grains/NftMintingGrain.cs
     symbol: NftMintingGrain
     line: 134
 verified: {}

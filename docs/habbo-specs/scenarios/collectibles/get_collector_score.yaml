@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:68d3b2fe0069195b9919f0dbb7acfa946554caeef67abb7e1c0cdacecef39c24"
+generated_digest: "sha256:12ea787c6646aaa39c89c10f26e6a5d58fa3d51c1e5c232b5e3ee9cf7fdc12fd"
 generated:
   feature: collectibles.get_collector_score
   scenarios:
@@ -49,15 +49,15 @@ generated:
       outcome: success
       emits:
       - NftCollectionsScore
-      evidence: ev_7d3d58dda1c9
+      evidence: ev_03de12ea0513
   evidence:
-  - id: ev_7d3d58dda1c9
-    kind: emulator_handler
+  - id: ev_03de12ea0513
+    kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.PacketHandlers/Collectibles/GetCollectorScoreMessageHandler.cs
-    symbol: GetCollectorScoreMessageHandler
-    line: 13
+    source: Vortex.Collectibles/Grains/NftCollectionsGrain.cs
+    symbol: NftCollectionsGrain
+    line: 67
   - id: ev_80ac316ce2d7
     kind: emulator_flow
     authority: vortex_emulator

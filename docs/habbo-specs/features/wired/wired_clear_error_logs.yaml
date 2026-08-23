@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:cf86106b7022cd4d5bfaa0470b2cc863fe334fe805618afaf634826e87f889b4"
+generated_digest: "sha256:e3c104c5627adad3dd2f67aa86412c2086b3991e7fb1b29be790093a13dd3cee"
 generated:
   id: wired.wired_clear_error_logs
   domain: wired
@@ -71,14 +71,14 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredmenu/WiredClearErrorLogsMessageHandler.cs
     symbol: WiredClearErrorLogsMessageHandler
-    line: 13
+    line: 15
   - id: ev_ec4a4457e5fe
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredmenu/WiredClearErrorLogsMessageHandler.cs
     symbol: WiredClearErrorLogsMessageHandler
-    line: 24
+    line: 26
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

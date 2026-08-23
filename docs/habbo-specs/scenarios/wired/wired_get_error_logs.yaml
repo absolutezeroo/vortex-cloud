@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:add56070c1d0d43b35bc69c882e4dd9991ba13e6479d321d886c372e00307b98"
+generated_digest: "sha256:58cedff0ef0daa85de2187390140b18c30dde9326f522e623639dee1e59e3cd0"
 generated:
   feature: wired.wired_get_error_logs
   scenarios:
@@ -57,13 +57,13 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredmenu/WiredGetErrorLogsMessageHandler.cs
     symbol: WiredGetErrorLogsMessageHandler
-    line: 12
+    line: 14
   - id: ev_6c991cec82d5
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredmenu/WiredGetErrorLogsMessageHandler.cs
     symbol: WiredGetErrorLogsMessageHandler
-    line: 23
+    line: 25
 verified: {}
 manual: {}

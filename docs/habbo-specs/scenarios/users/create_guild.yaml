@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:6c7e91a9d1e05310341f792f444f4296ea14115ae072738ac2c79258be2fa8a4"
+generated_digest: "sha256:964f02c975dcad07dc5d03d3cf218a14e746301a464ded97149d9d2e715e5260"
 generated:
   feature: users.create_guild
   scenarios:
@@ -424,7 +424,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 115
+    line: 116
   - id: ev_abaf62c0326b
     kind: emulator_flow
     authority: vortex_emulator

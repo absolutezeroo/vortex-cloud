@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:d431f9d50922a9a0b46d003c4b3f1b4214624c5ca7dc00860542106d3353cfe3"
+generated_digest: "sha256:c936dadb28e1b230401d13354fa74f260851979717757ada033660ce565bb030"
 generated:
   id: uk_0f3958c4bc
   subject: "messenger.send_msg: what the server sends when it refuses"
@@ -40,6 +40,13 @@ generated:
     source: Vortex.Players/Grains/MessengerGrain.Messaging.cs
     symbol: MessengerGrain
     line: 25
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 80
   - id: ev_df9e48a0bc86
     kind: emulator_handler
     authority: vortex_emulator

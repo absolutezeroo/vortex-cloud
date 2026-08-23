@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:6b990ec6c73494f190453eaf61470092388f5d4ee4f94540dc983f15ebe7aa4b"
+generated_digest: "sha256:def52f681a489c18f3f744c47c391f428243a6a1138f7ee17eaa56d400451b63"
 generated:
   id: wired.update_addon
   domain: wired
@@ -40,7 +40,7 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_3f0c3351cfd6
-  - expression: "!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message, ct) .ConfigureAwait(false)"
+  - expression: "!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message.ToRequest(), ct) .ConfigureAwait(false)"
     on_fail: return
     observed_in: vortex
     evidence: ev_3f0c3351cfd6
@@ -66,7 +66,7 @@ generated:
     observed_in: vortex
     evidence: ev_0080929ab318
   - target: _grainFactory .GetRoomFurni(ctx.RoomId)
-    value: _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message, ct)
+    value: _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message.ToRequest(), ct)
     observed_in: vortex
     evidence: ev_3f0c3351cfd6
   - target: wiredLogic
@@ -95,21 +95,21 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateAddonMessageHandler.cs
     symbol: UpdateAddonMessageHandler
-    line: 11
+    line: 12
   - id: ev_3f0c3351cfd6
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateAddonMessageHandler.cs
     symbol: UpdateAddonMessageHandler
-    line: 22
+    line: 23
   - id: ev_e1599f76ae95
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 224
+    line: 225
   scenarios:
   - wired.update_addon.guard_0
   - wired.update_addon.guard_1

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c94ac4aeea53662fa2601fb88b7c2f8300c61dc9b3ef6c47621b1ac874ea930c"
+generated_digest: "sha256:fc82995daab12db2726e3c190c5eebc01a97cd47dc840e7776d7c39d38ef0232"
 generated:
   id: wired.update_selector
   domain: wired
@@ -40,7 +40,7 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_f463aa277a16
-  - expression: "!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message, ct) .ConfigureAwait(false)"
+  - expression: "!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message.ToRequest(), ct) .ConfigureAwait(false)"
     on_fail: return
     observed_in: vortex
     evidence: ev_f463aa277a16
@@ -66,7 +66,7 @@ generated:
     observed_in: vortex
     evidence: ev_0080929ab318
   - target: _grainFactory .GetRoomFurni(ctx.RoomId)
-    value: _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message, ct)
+    value: _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message.ToRequest(), ct)
     observed_in: vortex
     evidence: ev_f463aa277a16
   - target: wiredLogic
@@ -95,21 +95,21 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateSelectorMessageHandler.cs
     symbol: UpdateSelectorMessageHandler
-    line: 11
+    line: 12
   - id: ev_e1599f76ae95
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 224
+    line: 225
   - id: ev_f463aa277a16
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateSelectorMessageHandler.cs
     symbol: UpdateSelectorMessageHandler
-    line: 22
+    line: 23
   scenarios:
   - wired.update_selector.guard_0
   - wired.update_selector.guard_1

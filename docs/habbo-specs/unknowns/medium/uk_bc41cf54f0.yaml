@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:e3d9bd340010d5d9559062e33f7ba99cf62caf0f31fd093917e124d272cc819d"
+generated_digest: "sha256:bc9b487273b65047116fe52c90afc913f1fe170572768971650906306cab63f1"
 generated:
   id: uk_bc41cf54f0
   subject: "moderation.publish: what the server sends when it refuses"
@@ -151,7 +151,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 245
+    line: 255
   - id: ev_b8c75d7a513e
     kind: emulator_handler
     authority: vortex_emulator

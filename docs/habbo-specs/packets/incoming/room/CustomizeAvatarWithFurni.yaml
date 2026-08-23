@@ -10,14 +10,13 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:5b8b2e8d58c9c7baee495aeff587e0ab267e8a0cb23473fabd36058809ad4329"
+generated_digest: "sha256:2f1b8df949917be301b4e5787afc711dd66827edc20ba7ea3e3b5eb64f447dbe"
 generated:
   name: CustomizeAvatarWithFurni
   direction: incoming
   domain: room
   structure_confidence: reference_observed
-  mapped_in_vortex: true
-  vortex_handler: CustomizeAvatarWithFurniMessageHandler
+  mapped_in_vortex: false
   fields:
   - index: 0
     name: item_id
@@ -40,12 +39,6 @@ generated:
     types:
     - int32
     evidence: ev_533f6f514f5a
-  - origin: vortex
-    authority: vortex_emulator
-    field_count: 0
-    partial: false
-    types: []
-    evidence: ev_1579f20e6dc3
   evidence:
   - id: ev_9a65673904ea
     kind: client_composer
@@ -63,12 +56,5 @@ generated:
     symbol: CustomizeAvatarWithFurniMessageEvent
     line: 26
     note: third-party server implementation; evidence, not authority
-  - id: ev_1579f20e6dc3
-    kind: emulator_parser
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Revisions/Revision20260701/Parsers/Room/Avatar/CustomizeAvatarWithFurniMessageParser.cs
-    symbol: CustomizeAvatarWithFurniMessageParser
-    line: 7
 verified: {}
 manual: {}

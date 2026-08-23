@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:8c1e86a808191fdb1df75b1ad629381df864eea0f36591aed62588d09878e91f"
+generated_digest: "sha256:7bdeb7b2f6282860428f2366fae88d150cdaa8858d778265cbc4db5400507769"
 generated:
   name: RecycleItems
   direction: incoming
@@ -33,6 +33,12 @@ generated:
     evidence:
     - ev_2348add7b8a7
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_a7fbb6f146d7
   - origin: arcturus
     authority: reference_emulator
     field_count: 2
@@ -42,6 +48,14 @@ generated:
     - int32
     evidence: ev_2348add7b8a7
   evidence:
+  - id: ev_a7fbb6f146d7
+    kind: client_call_site
+    authority: client_mandated
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_1778/_SafeCls_2312.as
+    symbol: _SafeCls_2312
+    line: 23
+    note: "the client constructs this composer at 1 call site(s), first at ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/catalog/HabboCatalog.as:1088 with 1 argument(s); the class writes 0 value(s) to the wire"
   - id: ev_2348add7b8a7
     kind: reference_handler
     authority: reference_emulator

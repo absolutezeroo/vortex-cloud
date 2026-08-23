@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:907d7b16d29dffabbe2153e2fd2565a6c4a0101d6548c904f2fee2302a717f36"
+generated_digest: "sha256:db50274f132b22eb2a95bb7ae8e967a30092b7daf6cdfa3e667adfe60bc7a38e"
 generated:
   feature: wired.wired_set_room_settings
   scenarios:
@@ -111,7 +111,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredmenu/WiredSetRoomSettingsMessageHandler.cs
     symbol: WiredSetRoomSettingsMessageHandler
-    line: 24
+    line: 25
   - id: ev_16b476be0ed1
     kind: emulator_flow
     authority: vortex_emulator

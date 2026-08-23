@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:4b6899ecdba7793310fee5033a130461e197348e53df909d0f9a6d57dcd8feae"
+generated_digest: "sha256:f12e3397bb805a98713f4fa750826e473011a1b8f3ffc53186c0a5539c6129fa"
 generated:
   id: uk_e9a10e01b9
   subject: "catalog.purchase_targeted_offer: what the server sends when it refuses"
@@ -102,7 +102,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 566
+    line: 586
   - id: ev_c70390fca34b
     kind: emulator_flow
     authority: vortex_emulator

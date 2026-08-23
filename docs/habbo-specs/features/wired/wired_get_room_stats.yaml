@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c91898c874a67337ae45bba66cd8cee32020c170bf9acb5fb6bbcda380827989"
+generated_digest: "sha256:da419c40249627d6035d9b4e7277f2ed33d40ba98f6216dd875a027e878f0e26"
 generated:
   id: wired.wired_get_room_stats
   domain: wired
@@ -44,10 +44,6 @@ generated:
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_5194e55eaa8f
-    - packet: WiredRoomStatsEvent
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_c1acdbcae81a
   reaches_persistence: false
   evidence:
   - id: ev_5194e55eaa8f
@@ -56,14 +52,14 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredmenu/WiredGetRoomStatsMessageHandler.cs
     symbol: WiredGetRoomStatsMessageHandler
-    line: 22
+    line: 23
   - id: ev_b7aaba4bc425
     kind: emulator_handler
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredmenu/WiredGetRoomStatsMessageHandler.cs
     symbol: WiredGetRoomStatsMessageHandler
-    line: 11
+    line: 12
   - id: ev_c1acdbcae81a
     kind: emulator_flow
     authority: vortex_emulator
@@ -74,7 +70,5 @@ generated:
   scenarios:
   - wired.wired_get_room_stats.guard_0
   - wired.wired_get_room_stats.success
-  unknowns:
-  - uk_cf27071b2c
 verified: {}
 manual: {}

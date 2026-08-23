@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:15e2a3831b04b8c32cd5d0e92f7ff0819702644930ecc3f981b8405304e4426a"
+generated_digest: "sha256:0719eb148e76d4323e3749807ee34986951d151a5d39ce640675897e5c7a5ca3"
 generated:
   feature: collectibles.get_nft_store_offers
   scenarios:
@@ -31,14 +31,14 @@ generated:
       outcome: success
       emits:
       - NftStoreOffers
-      evidence: ev_56b57db5c547
+      evidence: ev_144151606547
   evidence:
-  - id: ev_56b57db5c547
-    kind: emulator_handler
+  - id: ev_144151606547
+    kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.PacketHandlers/Collectibles/GetNftStoreOffersMessageHandler.cs
-    symbol: GetNftStoreOffersMessageHandler
-    line: 22
+    source: Vortex.Collectibles/Grains/NftStoreGrain.cs
+    symbol: NftStoreGrain
+    line: 54
 verified: {}
 manual: {}

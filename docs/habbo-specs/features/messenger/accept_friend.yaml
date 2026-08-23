@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:0a3167c9f1a28ae2656dcde7c39e3b263756f9628a1ae475cd87b9c8893f38b9"
+generated_digest: "sha256:23efcfb572dce2a9fc40307550b0a8279cb51fa5b0e765d8d3c45ed9012eeeaf"
 generated:
   id: messenger.accept_friend
   domain: messenger
@@ -40,30 +40,34 @@ generated:
     symbol: GrainFactoryExtensions.GetServerConfigGrain
     evidence: ev_09932710687b
   - order: 4
+    layer: domain
+    symbol: WiredChestStore.FindAsync
+    evidence: ev_d3a71568179c
+  - order: 5
     layer: grain
     symbol: PlayerPresenceGrain.IsOnlineAsync
     evidence: ev_373e76aa8a80
-  - order: 5
+  - order: 6
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
-  - order: 6
+  - order: 7
     layer: grain
     symbol: MessengerGrain.NotifyFriendPresenceChangedAsync
     evidence: ev_55e9c6b16f82
-  - order: 7
+  - order: 8
     layer: grain
     symbol: PlayerDirectoryGrain.GetPlayerNameAsync
     evidence: ev_7f41f2bdde62
-  - order: 8
+  - order: 9
     layer: domain
     symbol: WiredActionBranch.Select
     evidence: ev_f13d6bcce744
-  - order: 9
+  - order: 10
     layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
     evidence: ev_373e76aa8a80
-  - order: 10
+  - order: 11
     layer: grain
     symbol: MessengerGrain.GetFriendsAsync
     evidence: ev_b9c3cebcd883
@@ -169,6 +173,13 @@ generated:
     source: Vortex.PacketHandlers/FriendList/AcceptFriendMessageHandler.cs
     symbol: AcceptFriendMessageHandler
     line: 15
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 80
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:27f47c7b0773b5c9e3fb3a678dc09ed1915ea29a38024fcd790ccaf71a5e518c"
+generated_digest: "sha256:38eea716c79be03c50dcda8eb7c4ff463aaff452cc0de4c80f1cc8461ae6668c"
 generated:
   id: collectibles.get_collectible_mint_tokens
   domain: collectibles
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: PlayerMintGrain.GetTokenBalanceAsync
-    evidence: ev_76add128d9f3
+    evidence: ev_a376b354a3ae
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -60,11 +60,11 @@ generated:
     source: Vortex.PacketHandlers/Collectibles/GetCollectibleMintTokensMessageHandler.cs
     symbol: GetCollectibleMintTokensMessageHandler
     line: 19
-  - id: ev_76add128d9f3
+  - id: ev_a376b354a3ae
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerMintGrain.cs
+    source: Vortex.Collectibles/Grains/PlayerMintGrain.cs
     symbol: PlayerMintGrain
     line: 54
   scenarios:

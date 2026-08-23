@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:86c109baddf113ed3294f51ba7b6ad0f2ffc041f49000c4d53b089f193255259"
+generated_digest: "sha256:c0ed97e8a753dbbaff21fa6345ed396c02c76958b98f9411f87bf9ddae2ea537"
 generated:
   id: wired.withdraw_wired_chest_credits
   domain: wired
@@ -30,32 +30,64 @@ generated:
   - order: 1
     layer: grain
     symbol: RoomGrain.WithdrawWiredChestCreditsAsync
-    evidence: ev_2e791da78924
+    evidence: ev_df80e54657de
   - order: 2
+    layer: domain
+    symbol: WiredTradeSettlement.WithdrawWiredChestCreditsAsync
+    evidence: ev_1b62b682e0e7
+  - order: 3
+    layer: domain
+    symbol: WiredChestStore.CanUseChestAsync
+    evidence: ev_d3a71568179c
+  - order: 4
+    layer: module
+    symbol: RoomSecurityModule.GetControllerLevelAsync
+    evidence: ev_82c2d2746361
+  - order: 5
+    layer: domain
+    symbol: RoomSecurityPolicy.ResolveControllerLevel
+    evidence: ev_7aa1dee31dfd
+  - order: 6
+    layer: domain
+    symbol: PermissionSet.Has
+    evidence: ev_3fdb23ee39cd
+  - order: 7
+    layer: domain
+    symbol: WiredChestStore.FindAsync
+    evidence: ev_d3a71568179c
+  - order: 8
     layer: grain
     symbol: PlayerWalletGrain.GrantCurrencyAsync
     evidence: ev_d0cb8ee11644
-  - order: 3
+  - order: 9
     layer: domain
     symbol: CurrencyTypeProvider.GetCurrencyTypeByKind
     evidence: ev_c8f6f5149cf4
-  - order: 4
+  - order: 10
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
-  - order: 5
+  - order: 11
     layer: grain
     symbol: PlayerPresenceGrain.OnCurrencyUpdateAsync
     evidence: ev_94ddaa174e6d
-  - order: 6
+  - order: 12
     layer: module
     symbol: PlayerWalletModule.OnCurrencyUpdateAsync
     evidence: ev_432f3c2b73af
-  - order: 7
+  - order: 13
     layer: grain
     symbol: PlayerPresenceGrain.SendComposerAsync
     evidence: ev_373e76aa8a80
-  - order: 8
+  - order: 14
+    layer: domain
+    symbol: WiredChestLedger.NewManualTransaction
+    evidence: ev_7acf056f220a
+  - order: 15
+    layer: domain
+    symbol: WiredChestStore.SnapshotAsync
+    evidence: ev_d3a71568179c
+  - order: 16
     layer: domain
     symbol: ActionContext.CreateForPlayer
     evidence: ev_f5b4cba2f556
@@ -68,18 +100,54 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_1129046a0be9
-  - expression: "!await CanUseChestAsync(ctx, chestId).ConfigureAwait(true)"
+  - expression: "!await _store.CanUseChestAsync(ctx, chestId).ConfigureAwait(true)"
     on_fail: return
     observed_in: vortex
-    evidence: ev_2e791da78924
-  - expression: chest is null || chest.Credits <= 0
+    evidence: ev_1b62b682e0e7
+  - expression: chest is null || chest.Credits <= 0 || chest.Locked
     on_fail: return
     observed_in: vortex
-    evidence: ev_2e791da78924
+    evidence: ev_1b62b682e0e7
   - expression: "!landed"
     on_fail: return
     observed_in: vortex
-    evidence: ev_2e791da78924
+    evidence: ev_1b62b682e0e7
+  - expression: ctx.PlayerId <= 0 || !_roomGrain._state.ItemsById.TryGetValue(chestId, out IRoomItem? item) || !IsChestLogic(item.Definition.LogicName)
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_d3a71568179c
+  - expression: ctx.Origin == ActionOrigin.System
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_82c2d2746361
+  - expression: origin == ActionOrigin.System
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_7aa1dee31dfd
+  - expression: isExplicitOwner
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_7aa1dee31dfd
+  - expression: permissions.IsSuperUser || permissions.Has(Capabilities.Room.ModerateAny)
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_7aa1dee31dfd
+  - expression: permissions.Has(Capabilities.Room.BuildAny)
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_7aa1dee31dfd
+  - expression: group.IsAdmin
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_7aa1dee31dfd
+  - expression: group.IsMember && group.MembersCanDecorate
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_7aa1dee31dfd
+  - expression: hasExplicitRights
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_7aa1dee31dfd
   - expression: amount <= 0
     on_fail: return
     observed_in: vortex
@@ -104,7 +172,7 @@ generated:
   - target: chest.Credits
     value: taken
     observed_in: vortex
-    evidence: ev_2e791da78924
+    evidence: ev_1b62b682e0e7
   - target: entity.Amount
     value: amount
     observed_in: vortex
@@ -148,13 +216,13 @@ generated:
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredtrading/WithdrawWiredChestCreditsMessageHandler.cs
     symbol: WithdrawWiredChestCreditsMessageHandler
     line: 31
-  - id: ev_2e791da78924
+  - id: ev_1b62b682e0e7
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Rooms/Grains/RoomGrain.Wired.Chests.cs
-    symbol: RoomGrain
-    line: 32
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredTradeSettlement.Withdrawals.cs
+    symbol: WiredTradeSettlement
+    line: 46
   - id: ev_34bf3ac088e2
     kind: emulator_flow
     authority: vortex_emulator
@@ -169,6 +237,13 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.cs
     symbol: PlayerPresenceGrain
     line: 112
+  - id: ev_3fdb23ee39cd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Primitives/Permissions/PermissionSet.cs
+    symbol: PermissionSet
+    line: 33
   - id: ev_432f3c2b73af
     kind: emulator_flow
     authority: vortex_emulator
@@ -176,6 +251,27 @@ generated:
     source: Vortex.Players/Grains/Modules/PlayerWalletModule.cs
     symbol: PlayerWalletModule
     line: 15
+  - id: ev_7aa1dee31dfd
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Primitives/Permissions/RoomSecurityPolicy.cs
+    symbol: RoomSecurityPolicy
+    line: 17
+  - id: ev_7acf056f220a
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestLedger.cs
+    symbol: WiredChestLedger
+    line: 75
+  - id: ev_82c2d2746361
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
+    symbol: RoomSecurityModule
+    line: 186
   - id: ev_94ddaa174e6d
     kind: emulator_flow
     authority: vortex_emulator
@@ -197,6 +293,20 @@ generated:
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
     line: 363
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 147
+  - id: ev_df80e54657de
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomGrain.WiredTrading.cs
+    symbol: RoomGrain
+    line: 61
   - id: ev_f5b4cba2f556
     kind: emulator_flow
     authority: vortex_emulator
@@ -207,6 +317,8 @@ generated:
   scenarios:
   - wired.withdraw_wired_chest_credits.guard_0
   - wired.withdraw_wired_chest_credits.guard_1
+  - wired.withdraw_wired_chest_credits.guard_10
+  - wired.withdraw_wired_chest_credits.guard_11
   - wired.withdraw_wired_chest_credits.guard_2
   - wired.withdraw_wired_chest_credits.guard_3
   - wired.withdraw_wired_chest_credits.guard_4

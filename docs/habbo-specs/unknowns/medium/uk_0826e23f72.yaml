@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:76c9d4ddf96f6f59b62b0222f68a7f825cd2fc6113c2f9ae9e77366973166dd7"
+generated_digest: "sha256:a0892a6189f1bc049c8bd2ba2e87cf24f9aabbef13e2c72c26ef0b1b11afb7e7"
 generated:
   id: uk_0826e23f72
   subject: "messenger.open_room_for_player_id: what the server sends when it refuses"
@@ -214,7 +214,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 245
+    line: 255
   - id: ev_b4a557a65d81
     kind: emulator_flow
     authority: vortex_emulator

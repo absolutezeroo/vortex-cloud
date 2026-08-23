@@ -10,7 +10,7 @@
 
 spec: conflict
 spec_version: 1
-generated_digest: "sha256:ccf45ccdf805ce7141462cc52ef5f36591a6c5d19d4650ff877c504845c19b47"
+generated_digest: "sha256:81a5ce27cd80b2851edeb87144b88b7ac509a058b11939b9e6d9f23c65157512"
 generated:
   id: cf_690c3e0414
   kind: behaviour
@@ -40,7 +40,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateConditionMessageHandler.cs
     symbol: UpdateConditionMessageHandler
-    line: 11
+    line: 12
   official:
     status: unknown
 verified: {}

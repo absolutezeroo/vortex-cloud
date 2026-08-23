@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:17e1ab1a638098cd946ada336d44731b57588bdee0d558ccbe7d3bcfe42fbd6b"
+generated_digest: "sha256:88519d4ae096bc807eb2d285e73039c322ec195a00feb073250d889f4d775f53"
 generated:
   feature: catalog.find_by_product_code
   scenarios:
@@ -402,7 +402,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 588
+    line: 589
   - id: ev_7ef4c91324dc
     kind: emulator_flow
     authority: vortex_emulator

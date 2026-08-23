@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:f41de081578eddb244bd55c4500ae5044e4cd287590fe21f9123569dac0eef80"
+generated_digest: "sha256:d0aa0668f146b8ca9a82d4e876b160a92d58b26dc9436edcdc779128d8f42572"
 generated:
   id: users.join_habbo_group
   domain: users
@@ -33,18 +33,22 @@ generated:
     symbol: GroupGrain.JoinAsync
     evidence: ev_c4e53aab9ae9
   - order: 2
+    layer: domain
+    symbol: WiredChestStore.FindAsync
+    evidence: ev_d3a71568179c
+  - order: 3
     layer: module
     symbol: EventSystem.PublishAsync
     evidence: ev_34bf3ac088e2
-  - order: 3
+  - order: 4
     layer: domain
     symbol: GroupMemberMapper.NewRequest
     evidence: ev_12ce06c785f7
-  - order: 4
+  - order: 5
     layer: grain
     symbol: GroupGrain.GetDetailsAsync
     evidence: ev_9b02814f1589
-  - order: 5
+  - order: 6
     layer: domain
     symbol: WiredActionBranch.Select
     evidence: ev_f13d6bcce744
@@ -141,6 +145,13 @@ generated:
     source: Vortex.Players/Grains/GroupGrain.Membership.cs
     symbol: GroupGrain
     line: 22
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 80
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

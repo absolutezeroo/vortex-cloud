@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:b35d80e305aecb4b7917ff0300e09664008757d45167e1ffa87822e574570cf7"
+generated_digest: "sha256:e03a125250a6a4f27f9a6646509e38fabc1804613406070eaec7a72364c3d6a7"
 generated:
   feature: wired.withdraw_all_from_wired_chest
   scenarios:
@@ -50,42 +50,78 @@ generated:
       outcome: ignored
       emits: []
       evidence: ev_6f82551ba9d6
+  - scenario: wired.withdraw_all_from_wired_chest.guard_10
+    title: "withdraw all from wired chest: the guard 'permissions.Has(Capabilities.Room.BuildAny)' holds"
+    given:
+      guard: permissions.Has(Capabilities.Room.BuildAny)
+      guard_holds: "true"
+    when:
+      packet: WithdrawAllFromWiredChest
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of WithdrawAllFromWiredChest sent while 'permissions.Has(Capabilities.Room.BuildAny)' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
+  - scenario: wired.withdraw_all_from_wired_chest.guard_11
+    title: "withdraw all from wired chest: the guard 'group.IsAdmin' holds"
+    given:
+      guard: group.IsAdmin
+      guard_holds: "true"
+    when:
+      packet: WithdrawAllFromWiredChest
+    expected:
+      status: unknown
+      confidence: unknown
+    needs_evidence: "an official capture of WithdrawAllFromWiredChest sent while 'group.IsAdmin' holds: does the server reply, stay silent, or disconnect?"
+    executable: false
+    claims:
+    - origin: vortex
+      authority: vortex_emulator
+      outcome: ignored
+      emits: []
+      evidence: ev_7aa1dee31dfd
   - scenario: wired.withdraw_all_from_wired_chest.guard_2
-    title: "withdraw all from wired chest: the guard '!await CanUseChestAsync(ctx, chestId).ConfigureAwait(true)' holds"
+    title: "withdraw all from wired chest: the guard '!await _store.CanUseChestAsync(ctx, chestId).ConfigureAwa...' holds"
     given:
-      guard: "!await CanUseChestAsync(ctx, chestId).ConfigureAwait(true)"
+      guard: "!await _store.CanUseChestAsync(ctx, chestId).ConfigureAwait(true)"
       guard_holds: "true"
     when:
       packet: WithdrawAllFromWiredChest
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of WithdrawAllFromWiredChest sent while '!await CanUseChestAsync(ctx, chestId).ConfigureAwait(true)' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of WithdrawAllFromWiredChest sent while '!await _store.CanUseChestAsync(ctx, chestId).ConfigureAwait(true)' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2e791da78924
+      evidence: ev_1b62b682e0e7
   - scenario: wired.withdraw_all_from_wired_chest.guard_3
-    title: "withdraw all from wired chest: the guard 'chest is null || chest.Credits <= 0' holds"
+    title: "withdraw all from wired chest: the guard 'chest is null || chest.Credits <= 0 || chest.Locked' holds"
     given:
-      guard: chest is null || chest.Credits <= 0
+      guard: chest is null || chest.Credits <= 0 || chest.Locked
       guard_holds: "true"
     when:
       packet: WithdrawAllFromWiredChest
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of WithdrawAllFromWiredChest sent while 'chest is null || chest.Credits <= 0' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of WithdrawAllFromWiredChest sent while 'chest is null || chest.Credits <= 0 || chest.Locked' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2e791da78924
+      evidence: ev_1b62b682e0e7
   - scenario: wired.withdraw_all_from_wired_chest.guard_4
     title: "withdraw all from wired chest: the guard '!landed' holds"
     given:
@@ -103,97 +139,97 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_2e791da78924
+      evidence: ev_1b62b682e0e7
   - scenario: wired.withdraw_all_from_wired_chest.guard_5
-    title: "withdraw all from wired chest: the guard 'amount <= 0' holds"
+    title: "withdraw all from wired chest: the guard 'ctx.PlayerId <= 0 || !_roomGrain._state.ItemsById.TryGetV...' holds"
     given:
-      guard: amount <= 0
+      guard: ctx.PlayerId <= 0 || !_roomGrain._state.ItemsById.TryGetValue(chestId, out IRoomItem? item) || !IsChestLogic(item.Definition.LogicName)
       guard_holds: "true"
     when:
       packet: WithdrawAllFromWiredChest
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of WithdrawAllFromWiredChest sent while 'amount <= 0' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of WithdrawAllFromWiredChest sent while 'ctx.PlayerId <= 0 || !_roomGrain._state.ItemsById.TryGetValue(chestId, out IRoomItem? item) || !IsChestLogic(item.Definition.LogicName)' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d0cb8ee11644
+      evidence: ev_d3a71568179c
   - scenario: wired.withdraw_all_from_wired_chest.guard_6
-    title: "withdraw all from wired chest: the guard 'entity is null' holds"
+    title: "withdraw all from wired chest: the guard 'ctx.Origin == ActionOrigin.System' holds"
     given:
-      guard: entity is null
+      guard: ctx.Origin == ActionOrigin.System
       guard_holds: "true"
     when:
       packet: WithdrawAllFromWiredChest
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of WithdrawAllFromWiredChest sent while 'entity is null' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of WithdrawAllFromWiredChest sent while 'ctx.Origin == ActionOrigin.System' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d0cb8ee11644
+      evidence: ev_82c2d2746361
   - scenario: wired.withdraw_all_from_wired_chest.guard_7
-    title: "withdraw all from wired chest: the guard 'currencyType is null || !currencyType.Enabled' holds"
+    title: "withdraw all from wired chest: the guard 'origin == ActionOrigin.System' holds"
     given:
-      guard: currencyType is null || !currencyType.Enabled
+      guard: origin == ActionOrigin.System
       guard_holds: "true"
     when:
       packet: WithdrawAllFromWiredChest
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of WithdrawAllFromWiredChest sent while 'currencyType is null || !currencyType.Enabled' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of WithdrawAllFromWiredChest sent while 'origin == ActionOrigin.System' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_d0cb8ee11644
+      evidence: ev_7aa1dee31dfd
   - scenario: wired.withdraw_all_from_wired_chest.guard_8
-    title: "withdraw all from wired chest: the guard '_registry is null' holds"
+    title: "withdraw all from wired chest: the guard 'isExplicitOwner' holds"
     given:
-      guard: _registry is null
+      guard: isExplicitOwner
       guard_holds: "true"
     when:
       packet: WithdrawAllFromWiredChest
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of WithdrawAllFromWiredChest sent while '_registry is null' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of WithdrawAllFromWiredChest sent while 'isExplicitOwner' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_34bf3ac088e2
+      evidence: ev_7aa1dee31dfd
   - scenario: wired.withdraw_all_from_wired_chest.guard_9
-    title: "withdraw all from wired chest: the guard 'snapshot is null' holds"
+    title: "withdraw all from wired chest: the guard 'permissions.IsSuperUser || permissions.Has(Capabilities.R...' holds"
     given:
-      guard: snapshot is null
+      guard: permissions.IsSuperUser || permissions.Has(Capabilities.Room.ModerateAny)
       guard_holds: "true"
     when:
       packet: WithdrawAllFromWiredChest
     expected:
       status: unknown
       confidence: unknown
-    needs_evidence: "an official capture of WithdrawAllFromWiredChest sent while 'snapshot is null' holds: does the server reply, stay silent, or disconnect?"
+    needs_evidence: "an official capture of WithdrawAllFromWiredChest sent while 'permissions.IsSuperUser || permissions.Has(Capabilities.Room.ModerateAny)' holds: does the server reply, stay silent, or disconnect?"
     executable: false
     claims:
     - origin: vortex
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_432f3c2b73af
+      evidence: ev_7aa1dee31dfd
   - scenario: wired.withdraw_all_from_wired_chest.success
     title: "withdraw all from wired chest: the request is accepted"
     given:
@@ -224,27 +260,13 @@ generated:
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredtrading/WithdrawAllFromWiredChestMessageHandler.cs
     symbol: WithdrawAllFromWiredChestMessageHandler
     line: 20
-  - id: ev_2e791da78924
+  - id: ev_1b62b682e0e7
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Rooms/Grains/RoomGrain.Wired.Chests.cs
-    symbol: RoomGrain
-    line: 39
-  - id: ev_34bf3ac088e2
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Events/EventSystem.cs
-    symbol: EventSystem
-    line: 16
-  - id: ev_432f3c2b73af
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/Modules/PlayerWalletModule.cs
-    symbol: PlayerWalletModule
-    line: 20
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredTradeSettlement.Withdrawals.cs
+    symbol: WiredTradeSettlement
+    line: 53
   - id: ev_6f82551ba9d6
     kind: emulator_flow
     authority: vortex_emulator
@@ -252,12 +274,26 @@ generated:
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredtrading/WithdrawAllFromWiredChestMessageHandler.cs
     symbol: WithdrawAllFromWiredChestMessageHandler
     line: 31
-  - id: ev_d0cb8ee11644
+  - id: ev_7aa1dee31dfd
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/PlayerWalletGrain.cs
-    symbol: PlayerWalletGrain
-    line: 365
+    source: Vortex.Primitives/Permissions/RoomSecurityPolicy.cs
+    symbol: RoomSecurityPolicy
+    line: 43
+  - id: ev_82c2d2746361
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
+    symbol: RoomSecurityModule
+    line: 188
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 149
 verified: {}
 manual: {}

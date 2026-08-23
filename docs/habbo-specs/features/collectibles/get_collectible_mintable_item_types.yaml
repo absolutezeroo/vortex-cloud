@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:fa6050706e51449ec66e3e1929f1c6f750eafba6ab1dd5850b8a7a395bb4d5c0"
+generated_digest: "sha256:041b995e8c69356fe0a4e66554262b7f57aa916cd48dc8ddbb935cc3ab871a58"
 generated:
   id: collectibles.get_collectible_mintable_item_types
   domain: collectibles
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: NftMintingGrain.GetMintableItemTypesAsync
-    evidence: ev_13c1770efad0
+    evidence: ev_920ca1682c21
   - order: 2
     layer: domain
     symbol: WiredActionBranch.Select
@@ -39,7 +39,7 @@ generated:
   - expression: open.Length == 0
     on_fail: return
     observed_in: vortex
-    evidence: ev_13c1770efad0
+    evidence: ev_920ca1682c21
   state_changes: []
   outgoing:
     ordering: unknown
@@ -50,13 +50,6 @@ generated:
       evidence: ev_51c3289e6dec
   reaches_persistence: false
   evidence:
-  - id: ev_13c1770efad0
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/NftMintingGrain.cs
-    symbol: NftMintingGrain
-    line: 67
   - id: ev_4512e162b296
     kind: emulator_handler
     authority: vortex_emulator
@@ -71,6 +64,13 @@ generated:
     source: Vortex.PacketHandlers/Collectibles/GetCollectibleMintableItemTypesMessageHandler.cs
     symbol: GetCollectibleMintableItemTypesMessageHandler
     line: 39
+  - id: ev_920ca1682c21
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/NftMintingGrain.cs
+    symbol: NftMintingGrain
+    line: 67
   - id: ev_f13d6bcce744
     kind: emulator_flow
     authority: vortex_emulator

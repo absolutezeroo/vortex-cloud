@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:f77b9bb2186e8fb4f894efba39d3e3b4dedb3ce6b7de188f8c2e45fb1e04a3e3"
+generated_digest: "sha256:6f215d7d481cd4cfb8cf8f0a2a6e219bed33bf302c8fd39aa8b6e1d6d016a68f"
 generated:
   id: moderation.mod_trading_lock
   domain: moderation
@@ -54,9 +54,13 @@ generated:
     evidence: ev_1f83e61934ca
   - order: 7
     layer: domain
+    symbol: WiredChestStore.FindAsync
+    evidence: ev_d3a71568179c
+  - order: 8
+    layer: domain
     symbol: ModToolActionHelper.SendCautionIfPresentAsync
     evidence: ev_dd4e77d6bf65
-  - order: 8
+  - order: 9
     layer: domain
     symbol: ModToolActionHelper.SendResultAsync
     evidence: ev_dd4e77d6bf65
@@ -153,6 +157,13 @@ generated:
     source: Vortex.Players/Grains/PlayerPresenceGrain.Room.cs
     symbol: PlayerPresenceGrain
     line: 27
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 80
   - id: ev_dd4e77d6bf65
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:6c141bdabbb24006e4bcef317e7dc3358b124bf63a2196db201d66f5c9293d57"
+generated_digest: "sha256:9414acb4e9b75e9f2e6e3a63280de100b5c4e4befe0d4b834c3a56abe8f17d37"
 generated:
   id: uk_d3d1cced46
   subject: "wired.update_selector: what the server sends when it refuses"
@@ -32,20 +32,20 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateSelectorMessageHandler.cs
     symbol: UpdateSelectorMessageHandler
-    line: 11
+    line: 12
   - id: ev_e1599f76ae95
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 224
+    line: 225
   - id: ev_f463aa277a16
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateSelectorMessageHandler.cs
     symbol: UpdateSelectorMessageHandler
-    line: 22
+    line: 23
 verified: {}
 manual: {}

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:0b725fc63de27027ed45eecbe72679e942f610ee73d86ecf0f2aac5d72040cab"
+generated_digest: "sha256:a2f60a8286e81f0ace691bb5e2d25c01988cecdc827b48039bb8314638141a87"
 generated:
   id: uk_4a522cf141
   subject: "users.block_user: what the server sends when it refuses"
@@ -47,5 +47,12 @@ generated:
     source: Vortex.PacketHandlers/Users/BlockUserMessageHandler.cs
     symbol: BlockUserMessageHandler
     line: 13
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 80
 verified: {}
 manual: {}

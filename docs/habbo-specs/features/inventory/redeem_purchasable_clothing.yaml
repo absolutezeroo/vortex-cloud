@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:2efa493ad8c69c72ce4edef2e08deaed83c19985ae67c99beb4e0b73771a6137"
+generated_digest: "sha256:d2e118d1849b6c26941784dd0e999dcd92103812bdb77cf02dffbbbb0452ee76"
 generated:
   id: inventory.redeem_purchasable_clothing
   domain: inventory
@@ -390,7 +390,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Factories/InventoryFurnitureLoader.cs
     symbol: InventoryFurnitureLoader
-    line: 120
+    line: 124
   - id: ev_2298dc2dabc2
     kind: emulator_flow
     authority: vortex_emulator
@@ -523,7 +523,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 245
+    line: 255
   - id: ev_b4a557a65d81
     kind: emulator_flow
     authority: vortex_emulator
@@ -544,7 +544,7 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 58
+    line: 78
   - id: ev_d720d639bd09
     kind: emulator_flow
     authority: vortex_emulator

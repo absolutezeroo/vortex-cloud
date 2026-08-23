@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:2dca1b4dea392e3fdb88aabfcf8e1279ebc4abc13d813d83c7cb9ce2e4af3314"
+generated_digest: "sha256:bf6dab44d23237349675deb193415bb63493acbc406c3c72d68be25fab26e0c9"
 generated:
   id: wired.update_action
   domain: wired
@@ -41,7 +41,7 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_cf228b6f602c
-  - expression: "!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message, ct) .ConfigureAwait(false)"
+  - expression: "!await _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message.ToRequest(), ct) .ConfigureAwait(false)"
     on_fail: return
     observed_in: vortex
     evidence: ev_cf228b6f602c
@@ -67,7 +67,7 @@ generated:
     observed_in: vortex
     evidence: ev_0080929ab318
   - target: _grainFactory .GetRoomFurni(ctx.RoomId)
-    value: _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message, ct)
+    value: _grainFactory .GetRoomFurni(ctx.RoomId) .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message.ToRequest(), ct)
     observed_in: vortex
     evidence: ev_cf228b6f602c
   - target: wiredLogic
@@ -96,21 +96,21 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateActionMessageHandler.cs
     symbol: UpdateActionMessageHandler
-    line: 11
+    line: 12
   - id: ev_cf228b6f602c
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/UpdateActionMessageHandler.cs
     symbol: UpdateActionMessageHandler
-    line: 22
+    line: 23
   - id: ev_e1599f76ae95
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/Modules/RoomActionModule.Floor.cs
     symbol: RoomActionModule
-    line: 224
+    line: 225
   scenarios:
   - wired.update_action.guard_0
   - wired.update_action.guard_1

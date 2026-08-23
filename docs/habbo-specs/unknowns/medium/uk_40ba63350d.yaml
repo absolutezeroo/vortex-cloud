@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:9d0ea2c04ee1632521a3a6f6c5f616a7845d67dfb975e70eb445a293c12ab301"
+generated_digest: "sha256:36241ba4399748ba06411581b3e6e7971ba38165d23a609a71c8e438e0485521"
 generated:
   id: uk_40ba63350d
   subject: "collectibles.claim_nft_claims: what the server sends when it refuses"
@@ -26,13 +26,6 @@ generated:
     source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
     symbol: FurnitureDefinitionProvider
     line: 41
-  - id: ev_66b61a78f518
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerNftClaimsGrain.cs
-    symbol: PlayerNftClaimsGrain
-    line: 65
   - id: ev_7a660921f135
     kind: emulator_flow
     authority: vortex_emulator
@@ -60,6 +53,13 @@ generated:
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 566
+    line: 586
+  - id: ev_d72434a4527c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/PlayerNftClaimsGrain.cs
+    symbol: PlayerNftClaimsGrain
+    line: 65
 verified: {}
 manual: {}

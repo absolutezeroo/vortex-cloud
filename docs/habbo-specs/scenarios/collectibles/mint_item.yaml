@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:6de4a0097f0b77e87b3679f024f3cc04ce629473397efae80d57bfac883ecde7"
+generated_digest: "sha256:f3bf6d1ea54f71e27018b59c959c9f4d3345a7fe437c77d348f986442c90dfe6"
 generated:
   feature: collectibles.mint_item
   scenarios:
@@ -49,7 +49,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_76add128d9f3
+      evidence: ev_a376b354a3ae
   - scenario: collectibles.mint_item.guard_2
     title: "mint item: the guard 'item is null' holds"
     given:
@@ -67,7 +67,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_76add128d9f3
+      evidence: ev_a376b354a3ae
   - scenario: collectibles.mint_item.guard_3
     title: "mint item: the guard 'terms is null' holds"
     given:
@@ -85,7 +85,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_76add128d9f3
+      evidence: ev_a376b354a3ae
   - scenario: collectibles.mint_item.guard_4
     title: "mint item: the guard 'balance < terms.StampPrice' holds"
     given:
@@ -103,7 +103,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_76add128d9f3
+      evidence: ev_a376b354a3ae
   - scenario: collectibles.mint_item.guard_5
     title: "mint item: the guard 'terms.EditionSize > 0 && minted >= terms.EditionSize' holds"
     given:
@@ -121,7 +121,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_76add128d9f3
+      evidence: ev_a376b354a3ae
   - scenario: collectibles.mint_item.guard_6
     title: "mint item: the guard 'deleted == 0' holds"
     given:
@@ -139,7 +139,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_76add128d9f3
+      evidence: ev_a376b354a3ae
   - scenario: collectibles.mint_item.guard_7
     title: "mint item: the guard '!string.IsNullOrEmpty(jsonData)' holds"
     given:
@@ -213,15 +213,15 @@ generated:
       - CollectibleMintTokenCount
       - CollectibleMintableItemResult
       - FurniListRemoveEvent
-      evidence: ev_13c1770efad0
+      evidence: ev_2ec03446aa2a
   evidence:
-  - id: ev_13c1770efad0
+  - id: ev_2ec03446aa2a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/NftMintingGrain.cs
-    symbol: NftMintingGrain
-    line: 64
+    source: Vortex.Furniture/Providers/FurnitureDefinitionProvider.cs
+    symbol: FurnitureDefinitionProvider
+    line: 41
   - id: ev_48fa24e8d4a2
     kind: emulator_flow
     authority: vortex_emulator
@@ -236,13 +236,6 @@ generated:
     source: Vortex.PacketHandlers/Collectibles/MintItemMessageHandler.cs
     symbol: MintItemMessageHandler
     line: 43
-  - id: ev_76add128d9f3
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/PlayerMintGrain.cs
-    symbol: PlayerMintGrain
-    line: 144
   - id: ev_7a660921f135
     kind: emulator_flow
     authority: vortex_emulator
@@ -250,12 +243,19 @@ generated:
     source: Vortex.Furniture/Providers/StuffDataFactory.cs
     symbol: StuffDataFactory
     line: 46
+  - id: ev_a376b354a3ae
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/PlayerMintGrain.cs
+    symbol: PlayerMintGrain
+    line: 144
   - id: ev_c6396662000a
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Inventory/Grains/InventoryGrain.Furni.cs
     symbol: InventoryGrain
-    line: 88
+    line: 108
 verified: {}
 manual: {}

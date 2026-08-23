@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:cfb43e7d38524bc33f940987b0417346972d0493d0ff98e874fa4ed5e66195e1"
+generated_digest: "sha256:692e9334a1aa12cf96205c16fd24ae68f25cfa05ff60adefbca0ef7ebfdd348c"
 generated:
   id: users.ignore_user
   domain: users
@@ -32,6 +32,10 @@ generated:
     layer: grain
     symbol: MessengerGrain.IgnoreUserAsync
     evidence: ev_b9c3cebcd883
+  - order: 2
+    layer: domain
+    symbol: WiredChestStore.FindAsync
+    evidence: ev_d3a71568179c
   checks:
   - expression: ctx.PlayerId <= 0
     on_fail: return
@@ -76,6 +80,13 @@ generated:
     source: Vortex.Players/Grains/MessengerGrain.Friends.cs
     symbol: MessengerGrain
     line: 530
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 80
   scenarios:
   - users.ignore_user.guard_0
   - users.ignore_user.guard_1

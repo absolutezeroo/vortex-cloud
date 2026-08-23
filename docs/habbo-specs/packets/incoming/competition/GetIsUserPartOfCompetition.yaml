@@ -10,7 +10,7 @@
 
 spec: packet
 spec_version: 1
-generated_digest: "sha256:bc3e1bb3e78d9271d029802c50a904c9f609740b654b766aa3c814830c9ed14e"
+generated_digest: "sha256:90012bc6abcef780a68d30bfabf6225add44251a380b1c546037ad9ef4fd17da"
 generated:
   name: GetIsUserPartOfCompetition
   direction: incoming
@@ -18,8 +18,21 @@ generated:
   structure_confidence: implementation_observed
   mapped_in_vortex: true
   vortex_handler: GetIsUserPartOfCompetitionMessageHandler
-  fields: []
+  fields:
+  - index: 0
+    name: goal_code
+    type: string
+    name_confidence: implementation_observed
+    type_confidence: implementation_observed
+    evidence:
+    - ev_f56f3773646e
   layouts_by_source:
+  - origin: "as3:WIN63-202607011411-782849652"
+    authority: client_code
+    field_count: 0
+    partial: true
+    types: []
+    evidence: ev_d5681204545f
   - origin: nitro
     authority: multi_implementation
     field_count: 0
@@ -28,11 +41,20 @@ generated:
     evidence: ev_95cca5aeef3f
   - origin: vortex
     authority: vortex_emulator
-    field_count: 0
+    field_count: 1
     partial: false
-    types: []
+    types:
+    - string
     evidence: ev_f56f3773646e
   evidence:
+  - id: ev_d5681204545f
+    kind: client_call_site
+    authority: client_mandated
+    origin: "as3:WIN63-202607011411-782849652"
+    source: ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/unknowns/_SafePkg_2684/_SafeCls_2683.as
+    symbol: _SafeCls_2683
+    line: 17
+    note: "the client constructs this composer at 1 call site(s), first at ../vortex-modern-client/sources/WIN63-202607011411-782849652/src/com/sulake/habbo/friendbar/landingview/widget/elements/_SafeCls_4528.as:37 with 1 argument(s); the class writes 0 value(s) to the wire"
   - id: ev_95cca5aeef3f
     kind: client_composer
     authority: multi_implementation

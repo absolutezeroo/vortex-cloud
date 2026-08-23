@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:eefc9290009f3f5b897bd40a9a15cd4e63ec0467a152590122592d40c514083c"
+generated_digest: "sha256:06a39ceadab352f2af961bf9e7b21c8f2db1b0ba1d8aea33a0382ccfe164abf6"
 generated:
   feature: users.select_favourite_habbo_group
   scenarios:
@@ -284,7 +284,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 361
+    line: 362
   - id: ev_7fd0730f7cca
     kind: emulator_flow
     authority: vortex_emulator

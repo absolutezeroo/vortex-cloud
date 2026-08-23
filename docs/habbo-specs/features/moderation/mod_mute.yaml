@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:c354893bbc64332759a9df965398bcea076265446b6a42a309f9f6ac76ff9042"
+generated_digest: "sha256:15ca39f841b7dbdb32140e6ea6e8ea0858c3802bcbfbf443c5260d68c466b87f"
 generated:
   id: moderation.mod_mute
   domain: moderation
@@ -57,18 +57,22 @@ generated:
     symbol: PlayerGrain.ApplyHotelMuteAsync
     evidence: ev_1f83e61934ca
   - order: 8
+    layer: domain
+    symbol: WiredChestStore.FindAsync
+    evidence: ev_d3a71568179c
+  - order: 9
     layer: grain
     symbol: RoomGrain.SetHotelMuteAsync
     evidence: ev_bb859d4f21b2
-  - order: 9
+  - order: 10
     layer: module
     symbol: RoomModerationSystem.SetHotelMuteAsync
     evidence: ev_9eb84a2a2088
-  - order: 10
+  - order: 11
     layer: domain
     symbol: ModToolActionHelper.SendCautionIfPresentAsync
     evidence: ev_dd4e77d6bf65
-  - order: 11
+  - order: 12
     layer: domain
     symbol: ModToolActionHelper.SendResultAsync
     evidence: ev_dd4e77d6bf65
@@ -202,6 +206,13 @@ generated:
     source: Vortex.PacketHandlers/Moderator/ModMuteMessageHandler.cs
     symbol: ModMuteMessageHandler
     line: 18
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 80
   - id: ev_dd4e77d6bf65
     kind: emulator_flow
     authority: vortex_emulator

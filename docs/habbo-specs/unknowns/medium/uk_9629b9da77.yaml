@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c011239b8bf7c03c476085c21aa2fd49a0c6f5f670cd41ea023689609b75bf73"
+generated_digest: "sha256:3531be14b828cf1238b3381ce96d9afdb35aa8f4153f04fecef56437b3e790f2"
 generated:
   id: uk_9629b9da77
   subject: "room.get_room_entry_data: what the server sends when it refuses"
@@ -172,7 +172,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 437
+    line: 438
   - id: ev_b44ef304d36a
     kind: emulator_flow
     authority: vortex_emulator
@@ -186,7 +186,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 245
+    line: 255
   - id: ev_b4a557a65d81
     kind: emulator_flow
     authority: vortex_emulator

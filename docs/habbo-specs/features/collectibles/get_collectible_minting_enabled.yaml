@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:9e469fe08c0908b7997f3fed4e9334d4597683b0917c42f46a643fcb5c4c0321"
+generated_digest: "sha256:dacad90879497ee1579c1187801b0cc5d153bd2424368ccd8fe2c127029c4a9c"
 generated:
   id: collectibles.get_collectible_minting_enabled
   domain: collectibles
@@ -30,7 +30,7 @@ generated:
   - order: 1
     layer: grain
     symbol: NftMintingGrain.IsMintingEnabledAsync
-    evidence: ev_13c1770efad0
+    evidence: ev_920ca1682c21
   - order: 2
     layer: grain
     symbol: ServerConfigGrain.GetBoolAsync
@@ -46,13 +46,6 @@ generated:
       evidence: ev_61b974b83353
   reaches_persistence: false
   evidence:
-  - id: ev_13c1770efad0
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Players/Grains/NftMintingGrain.cs
-    symbol: NftMintingGrain
-    line: 64
   - id: ev_61b974b83353
     kind: emulator_flow
     authority: vortex_emulator
@@ -67,6 +60,13 @@ generated:
     source: Vortex.Players/Grains/ServerConfigGrain.cs
     symbol: ServerConfigGrain
     line: 63
+  - id: ev_920ca1682c21
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Collectibles/Grains/NftMintingGrain.cs
+    symbol: NftMintingGrain
+    line: 64
   - id: ev_f827c61a7ab0
     kind: emulator_handler
     authority: vortex_emulator

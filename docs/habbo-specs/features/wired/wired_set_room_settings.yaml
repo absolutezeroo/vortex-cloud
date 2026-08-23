@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:dc61a0eb30b2ece0982a5d1f3ee51d9e6dadb0c96ae441682b120968caecc1a1"
+generated_digest: "sha256:0ccfd36a191a28a73ad7d7e4c2dad5c9d79a994a8402e2a31a9e1d002acd60ee"
 generated:
   id: wired.wired_set_room_settings
   domain: wired
@@ -72,10 +72,6 @@ generated:
       recipient: actor
       recipient_confidence: implementation_observed
       evidence: ev_023f0d16afe7
-    - packet: WiredRoomSettingsEvent
-      recipient: unknown
-      recipient_confidence: unknown
-      evidence: ev_16b476be0ed1
   reaches_persistence: true
   evidence:
   - id: ev_023f0d16afe7
@@ -84,7 +80,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredmenu/WiredSetRoomSettingsMessageHandler.cs
     symbol: WiredSetRoomSettingsMessageHandler
-    line: 24
+    line: 25
   - id: ev_16b476be0ed1
     kind: emulator_flow
     authority: vortex_emulator
@@ -98,7 +94,7 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredmenu/WiredSetRoomSettingsMessageHandler.cs
     symbol: WiredSetRoomSettingsMessageHandler
-    line: 13
+    line: 14
   scenarios:
   - wired.wired_set_room_settings.guard_0
   - wired.wired_set_room_settings.guard_1
@@ -106,7 +102,6 @@ generated:
   - wired.wired_set_room_settings.guard_3
   - wired.wired_set_room_settings.success
   unknowns:
-  - uk_60dc6291a9
   - uk_fb31ad7149
 verified: {}
 manual: {}

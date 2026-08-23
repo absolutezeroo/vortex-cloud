@@ -10,7 +10,7 @@
 
 spec: revision
 spec_version: 1
-generated_digest: "sha256:be28590f697642098c274cc0431500365ac697c44edc0b78b81f4c144b489c28"
+generated_digest: "sha256:efef4724d2901aabcb6de0bb40ecf2e4fb0841f3925ad85e8bfdd3bea19d4d3f"
 generated:
   revision: WIN63-202607011411-782849652
   origin: vortex
@@ -38,7 +38,7 @@ generated:
     AddSpamWallPostIt: 2684
     AddToCustomFilter: 2656
     AmbassadorAlert: 3361
-    AppealCfh: 1077
+    AppealCfh: 3028
     ApplySnapshot: 2790
     ApproveAllMembershipRequests: 1621
     ApproveMembershipRequest: 3505
@@ -73,7 +73,6 @@ generated:
     ChangePosture: 3181
     ChangeQueue: 2704
     ChangeUserName: 1703
-    ChangeUserNameInRoom: 3652
     Chat: 3034
     ChatReviewGuideDecidesOnOffer: 2545
     ChatReviewGuideDetached: 349
@@ -83,7 +82,7 @@ generated:
     ClaimDailyTask: 4101
     ClaimNewUserName: 879
     ClaimNftClaims: 2898
-    ClickCharacter: 785
+    ClickCharacter: 3244
     ClickFurni: 443
     ClientHello: 4000
     CloseIssueDefaultAction: 1631
@@ -106,7 +105,6 @@ generated:
     CreateGuild: 207
     CreditFurniRedeem: 434
     CreditVaultStatus: 1645
-    CustomizeAvatarWithFurni: 9012
     CustomizePetWithFurni: 2099
     Dance: 48
     DeactivateGuild: 2725
@@ -115,6 +113,7 @@ generated:
     DeleteFavouriteRoom: 1654
     DeletePendingCallsForHelp: 3423
     DeleteRoom: 701
+    DepositToWiredChest: 3514
     DeselectFavouriteHabboGroup: 306
     DiceOff: 259
     Disconnect: 2864
@@ -144,33 +143,30 @@ generated:
     Game2GetWeeklyFriendsLeaderboard: 3867
     Game2GetWeeklyGroupLeaderboard: 1480
     Game2GetWeeklyLeaderboard: 1741
-    Game2LeaveGame: 2698
+    Game2LeaveGame: 1847
     Game2LoadStageReady: 1320
     Game2MakeSnowball: 2604
     Game2PlayAgain: 855
-    Game2QuickJoinGame: 2000
+    Game2QuickJoinGame: 1506
     Game2RequestFullStatusUpdate: 3147
     Game2SetUserMoveTarget: 172
-    Game2StartSnowWar: 1506
+    Game2StartSnowWar: 2109
     Game2ThrowSnowballAtHuman: 3738
     Game2ThrowSnowballAtPosition: 2567
     GetAchievements: 2435
-    GetBadgePointLimits: 981
+    GetBadgePointLimits: 2944
     GetBadges: 770
     GetBannedUsersFromRoom: 2702
     GetBonusRareInfo: 251
     GetBotCommandConfigurationData: 2311
     GetBotInventory: 3148
     GetBundleDiscountRuleset: 317
-    GetBundleDiscountRulesetVortex: 1811
     GetCatalogIndex: 2232
     GetCatalogPage: 2093
     GetCatalogPageWithEarliestExpiry: 287
     GetCfhChatlog: 1580
-    GetCfhMyReportStatus: 275
     GetCfhStatus: 3458
     GetClubGift: 472
-    GetClubGiftInfoRequest: 1422
     GetClubOffers: 667
     GetCollectibleMintTokens: 1554
     GetCollectibleMintableItemTypes: 3856
@@ -199,7 +195,6 @@ generated:
     GetFriendRequests: 3797
     GetFurnitureAliases: 1901
     GetGiftWrappingConfiguration: 940
-    GetGiftWrappingConfigurationVortex: 9008
     GetGuestRoom: 2603
     GetGuideReportingStatus: 2455
     GetGuildCreationInfo: 2989
@@ -216,7 +211,7 @@ generated:
     GetInterstitial: 1369
     GetIsBadgeRequestFulfilled: 2236
     GetIsOfferGiftable: 2564
-    GetIsUserPartOfCompetition: 2732
+    GetIsUserPartOfCompetition: 128
     GetItemData: 350
     GetJukeboxPlayList: 3707
     GetLimitedOfferAppearingNext: 3682
@@ -253,8 +248,8 @@ generated:
     GetPromoArticles: 3152
     GetQuests: 2895
     GetQuizQuestions: 1982
-    GetRecyclerPrizes: 2516
-    GetRecyclerStatus: 1246
+    GetRecyclerPrizes: 3669
+    GetRecyclerStatus: 1730
     GetRelationshipStatusInfo: 3219
     GetRentOrBuyoutOffer: 1583
     GetResolutionAchievements: 1760
@@ -287,6 +282,10 @@ generated:
     GetUserNftWardrobe: 2203
     GetUserSongDisks: 1685
     GetWardrobe: 2210
+    GetWiredChestTransactions: 1999
+    GetWiredContractContents: 1594
+    GetWiredRoomTransactions: 2016
+    GetWiredTransactionDetails: 475
     GetYoutubeDisplayStatus: 273
     GiveSupplementToPet: 1694
     GuideAdvertisementRead: 1850
@@ -403,7 +402,7 @@ generated:
     PurchaseVipMembershipExtension: 2441
     Quit: 3061
     RateFlat: 407
-    RecycleItems: 2956
+    RecycleItems: 1796
     RedeemMarketplaceOfferCredits: 3546
     RedeemPurchasableClothing: 3637
     RedeemVoucher: 2779
@@ -434,7 +433,7 @@ generated:
     RequestFriend: 1
     RequestFurniInventory: 41
     RequestFurniInventoryWhenNotInRoom: 3862
-    RequestRoomPropertySet: 3300
+    RequestRoomPropertySet: 2292
     ResetPhoneNumberState: 2056
     ResetResolutionAchievement: 916
     ResetUnseenItemIds: 3771
@@ -458,6 +457,9 @@ generated:
     SaveRoomSettings: 725
     SaveUserNftWardrobe: 3428
     SaveWardrobeOutfit: 116
+    SaveWiredChestNotificationSettings: 2905
+    SaveWiredChestSettings: 3830
+    SaveWiredContract: 1908
     ScrGetKickbackInfo: 1111
     ScrGetUserInfo: 1071
     SelectClubGift: 2087
@@ -466,6 +468,7 @@ generated:
     SendMsg: 3357
     SendRoomInvite: 617
     SetActivatedBadges: 2764
+    SetAllWiredChestLocks: 1630
     SetAreaHideData: 1954
     SetChatPreferences: 1149
     SetChatStylePreference: 2634
@@ -486,6 +489,7 @@ generated:
     SetSoundSettings: 3662
     SetTargetedOfferState: 2874
     SetUIFlags: 3653
+    SetWiredChestLock: 2907
     SetYoutubeDisplayPlaylist: 1672
     ShopTargetedOfferViewed: 3046
     Shout: 1763
@@ -526,6 +530,7 @@ generated:
     UpdateThread: 3206
     UpdateTrigger: 3953
     UpdateVariable: 2475
+    UpgradeWiredChest: 3407
     UseFurniture: 3353
     UseWallItem: 3590
     VerifyCode: 1846
@@ -551,10 +556,14 @@ generated:
     WiredSetObjectVariableValue: 625
     WiredSetPreferences: 3124
     WiredSetRoomSettings: 2553
+    WiredTradeAccept: 2818
+    WiredTradeCancel: 2646
+    WiredTradeUpdateItems: 3111
     WiredUpdateRoom: 3814
     WithdrawAllFromWiredChest: 3611
     WithdrawCreditVault: 1105
     WithdrawWiredChestCredits: 2843
+    WithdrawWiredChestItems: 873
   outgoing:
     AcceptFriendResult: 3407
     AccountPreferences: 724
@@ -809,7 +818,7 @@ generated:
     LimitedEditionSoldOut: 533
     LimitedOfferAppearingNext: 1084
     LoginFailedHotelClosed: 698
-    LtdRaffleEntered: 1221
+    LtdRaffleEntered: 2901
     LtdRaffleResult: 3526
     MOTDNotification: 1330
     MaintenanceStatus: 1737
@@ -833,7 +842,7 @@ generated:
     ModeratorToolPreferences: 1898
     ModeratorUserInfo: 2589
     ModifyCustomFilterResult: 3622
-    MyCfhReportStatus: 2474
+    MyCfhReportStatus: 3809
     MysteryBoxKeys: 1389
     NavigatorCollapsedCategories: 1754
     NavigatorLiftedRooms: 1761
@@ -1003,8 +1012,8 @@ generated:
     TradingOtherNotAllowed: 814
     TradingYouAreNotAllowed: 2294
     TraxSongInfo: 2278
-    TreasureHuntFail: 3822
-    TreasureHuntFirstWinner: 1232
+    TreasureHuntFail: 3790
+    TreasureHuntFirstWinner: 3257
     TreasureHuntUpdate: 377
     TryPhoneNumberResult: 2845
     TryVerificationCodeResult: 712
@@ -1044,7 +1053,13 @@ generated:
     WiredAllVariablesDiffs: 2733
     WiredAllVariablesHash: 3287
     WiredChestCoins: 1022
+    WiredChestItems: 2323
+    WiredChestItemsUpdate: 2738
     WiredChestOpen: 1174
+    WiredChestUpdateSuccess: 1957
+    WiredChestUpgradeResult: 2721
+    WiredContractContents: 2976
+    WiredContractUpdateResult: 3720
     WiredEnvironment: 2827
     WiredErrorLogs: 3419
     WiredFurniAction: 2552
@@ -1055,6 +1070,7 @@ generated:
     WiredFurniVariable: 1501
     WiredMenuError: 1230
     WiredMovements: 325
+    WiredOpenContract: 1479
     WiredPermissions: 3483
     WiredRewardResult: 2997
     WiredRoomLogs: 1910
@@ -1062,6 +1078,13 @@ generated:
     WiredRoomStats: 1964
     WiredSaveSuccess: 1192
     WiredSetUserPermanentVariableResult: 1643
+    WiredTradeCancelled: 1481
+    WiredTradeCompleted: 2137
+    WiredTradeInitiate: 3650
+    WiredTradeItemsUpdate: 2488
+    WiredTransactionDetails: 1306
+    WiredTransactionSuccess: 2677
+    WiredTransactions: 2910
     WiredUserPermanentVariables: 1557
     WiredUserVariablesList: 749
     WiredValidationError: 3201

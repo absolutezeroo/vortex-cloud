@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:ce30ae741d12e160b35c2d5e33e550887d4135aa3b39f1067826c53f85a504aa"
+generated_digest: "sha256:c529774eca289904de8ff24ac749e6a00ce27fead2ad84ac1d3966cb46c5b950"
 generated:
   feature: collectibles.get_collectible_mintable_item_types
   scenarios:
@@ -31,7 +31,7 @@ generated:
       authority: vortex_emulator
       outcome: ignored
       emits: []
-      evidence: ev_13c1770efad0
+      evidence: ev_920ca1682c21
   - scenario: collectibles.get_collectible_mintable_item_types.success
     title: "get collectible mintable item types: the request is accepted"
     given:
@@ -49,13 +49,20 @@ generated:
       outcome: success
       emits:
       - CollectableMintableItemTypes
-      evidence: ev_13c1770efad0
+      evidence: ev_4512e162b296
   evidence:
-  - id: ev_13c1770efad0
+  - id: ev_4512e162b296
+    kind: emulator_handler
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.PacketHandlers/Collectibles/GetCollectibleMintableItemTypesMessageHandler.cs
+    symbol: GetCollectibleMintableItemTypesMessageHandler
+    line: 22
+  - id: ev_920ca1682c21
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
-    source: Vortex.Players/Grains/NftMintingGrain.cs
+    source: Vortex.Collectibles/Grains/NftMintingGrain.cs
     symbol: NftMintingGrain
     line: 77
 verified: {}

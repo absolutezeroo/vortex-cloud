@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:aa7bb33148865264b88dc1f681426312b1c45442b6f3cec729e403ac069f858b"
+generated_digest: "sha256:32d75f78f24298b661bd09627b6bf888072c02f3f5b0745eea8246727e2c4392"
 generated:
   feature: groups.update_forum_read_marker
   scenarios:
@@ -81,6 +81,6 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 686
+    line: 687
 verified: {}
 manual: {}

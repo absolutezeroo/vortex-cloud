@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:a20ab0683d9bb9acd5dc5bfd895c4e0b2b8041b80d0b9abdac0bd62d2d6389cb"
+generated_digest: "sha256:b55b7ba7d28b18e41b09a43927a364f22c1b26ae1453d6d60a28d232c8d0bfb0"
 generated:
   id: uk_5b02085171
   subject: "users.create_guild: what the server sends when it refuses"
@@ -60,7 +60,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 84
+    line: 85
   - id: ev_86f81f4f919c
     kind: emulator_flow
     authority: vortex_emulator
@@ -96,5 +96,12 @@ generated:
     source: Vortex.Players/Grains/PlayerWalletGrain.cs
     symbol: PlayerWalletGrain
     line: 55
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 80
 verified: {}
 manual: {}

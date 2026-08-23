@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:28527a15f22a301d69dd8295d2c96ed204cc41b4abe506b030fd78ba6ef3952e"
+generated_digest: "sha256:8f329173bd264891c11d59535caed81b69316a84784d46ff4700290650832620"
 generated:
   id: room.try_get_definition
   domain: room
@@ -256,7 +256,7 @@ generated:
     observed_in: vortex
     evidence: ev_1b4c602bc4f6
   - target: roomGrain
-    value: roomGrain .ApplyFurniEditAsync( ctx.AsActionContext(), message, newOwnerId, newOwnerName, newDefinition, ct )
+    value: roomGrain .ApplyFurniEditAsync( ctx.AsActionContext(), new FurniEditRequest { ObjectId = message.ObjectId, Fields = message.Fields, X = message.X, Y = message.Y, ZHundredths = message.ZHundredths, Rotation = message.Rotation, WallOffset = message.WallOffset, ExtraData = message.ExtraData, DefinitionId = message.DefinitionId, }, newOwnerId, newOwnerName, newDefinition, ct )
     observed_in: vortex
     evidence: ev_f0a89813bc2a
   outgoing:

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:af25bc86b194d394ccae2c21bfea0fa31b86586704453e359b6764c71859e1d1"
+generated_digest: "sha256:eeb9384949a949a4680c35014681372877efa7783c7f54350d3c79d4c474e6e9"
 generated:
   id: uk_88f399ae45
   subject: "avatar.change_user_name: what the server sends when it refuses"
@@ -67,14 +67,14 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 164
+    line: 165
   - id: ev_b46938ec853d
     kind: emulator_flow
     authority: vortex_emulator
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.cs
     symbol: RoomGrain
-    line: 245
+    line: 255
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator

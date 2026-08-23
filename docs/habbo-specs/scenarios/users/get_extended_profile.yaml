@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:1da50ad3499b06a8d315dc982b50a4d2e7a3864112f0eb6eb24c200e10c49eef"
+generated_digest: "sha256:bbbba539bae1f308936a8c0f2b3bce28951f1158855a3784f3a36eb40f71698c"
 generated:
   feature: users.get_extended_profile
   scenarios:
@@ -150,6 +150,6 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 313
+    line: 314
 verified: {}
 manual: {}

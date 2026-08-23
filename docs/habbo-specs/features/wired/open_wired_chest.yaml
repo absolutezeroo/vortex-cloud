@@ -10,7 +10,7 @@
 
 spec: feature
 spec_version: 1
-generated_digest: "sha256:27f990a8670349898a42fe4bb0cf24a8006c06e87efa8087c76347bd949618cd"
+generated_digest: "sha256:b13c85a05acc12222730c79cfdbd7bc148b762df2b11cc40d159b2da4c2d224b"
 generated:
   id: wired.open_wired_chest
   domain: wired
@@ -30,23 +30,83 @@ generated:
   - order: 1
     layer: grain
     symbol: RoomGrain.OpenWiredChestAsync
-    evidence: ev_2e791da78924
+    evidence: ev_df80e54657de
   - order: 2
+    layer: module
+    symbol: RoomWiredTradingSystem.OpenWiredChestAsync
+    evidence: ev_84ee82d9d8e2
+  - order: 3
+    layer: domain
+    symbol: WiredChestStore.IsChestLogic
+    evidence: ev_d3a71568179c
+  - order: 4
     layer: module
     symbol: RoomSecurityModule.GetControllerLevelAsync
     evidence: ev_82c2d2746361
-  - order: 3
+  - order: 5
     layer: domain
     symbol: RoomSecurityPolicy.ResolveControllerLevel
     evidence: ev_7aa1dee31dfd
-  - order: 4
+  - order: 6
     layer: domain
     symbol: PermissionSet.Has
     evidence: ev_3fdb23ee39cd
-  - order: 5
+  - order: 7
+    layer: domain
+    symbol: WiredChestStore.GetOrOpenAsync
+    evidence: ev_d3a71568179c
+  - order: 8
+    layer: domain
+    symbol: WiredChestStore.ApplyChestSettingsToStuffDataAsync
+    evidence: ev_d3a71568179c
+  - order: 9
+    layer: module
+    symbol: RoomWiredTradingSystem.IsBeingLookedInto
+    evidence: ev_84ee82d9d8e2
+  - order: 10
+    layer: domain
+    symbol: WiredChestStuffData.ApplyState
+    evidence: ev_120b08c78fe9
+  - order: 11
+    layer: domain
+    symbol: WiredChestStuffData.ApplyPreview
+    evidence: ev_120b08c78fe9
+  - order: 12
+    layer: domain
+    symbol: FurnitureLogic.PersistStuffDataAsync
+    evidence: ev_61677fae15af
+  - order: 13
+    layer: domain
+    symbol: StuffDataBase.MarkDirty
+    evidence: ev_98ec231f8eca
+  - order: 14
+    layer: domain
+    symbol: RoomItemContext.RefreshStuffDataAsync
+    evidence: ev_acb5e282c8b3
+  - order: 15
+    layer: domain
+    symbol: WiredChestStore.IsCoinChestLogic
+    evidence: ev_d3a71568179c
+  - order: 16
     layer: domain
     symbol: ActionContext.CreateForPlayer
     evidence: ev_f5b4cba2f556
+  - order: 17
+    layer: grain
+    symbol: RoomGrain.ListWiredChestItemsAsync
+    evidence: ev_df80e54657de
+  - order: 18
+    layer: module
+    symbol: RoomWiredTradingSystem.ListWiredChestItemsAsync
+    evidence: ev_84ee82d9d8e2
+  - order: 19
+    layer: domain
+    symbol: WiredChestStore.CanUseChestAsync
+    evidence: ev_d3a71568179c
+  - order: 20
+    layer: domain
+    symbol: WiredChestStore.ReadAsync
+    evidence: ev_d3a71568179c
   checks:
   - expression: ctx is null || ctx.PlayerId <= 0 || ctx.RoomId <= 0
     on_fail: return
@@ -56,14 +116,22 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_4233fe32dbae
-  - expression: ctx.PlayerId <= 0 || !_state.ItemsById.TryGetValue(chestId, out IRoomItem? item) || !IsChestClass(item.Definition.Name)
+  - expression: chest.IsCoinChest
+    on_fail: send_and_return
+    observed_in: vortex
+    evidence: ev_4233fe32dbae
+  - expression: items is null
     on_fail: return
     observed_in: vortex
-    evidence: ev_2e791da78924
+    evidence: ev_4233fe32dbae
+  - expression: ctx.PlayerId <= 0 || !_roomGrain._state.ItemsById.TryGetValue(chestId, out IRoomItem? item) || !WiredChestStore.IsChestLogic(item.Definition.LogicName)
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_84ee82d9d8e2
   - expression: level == RoomControllerType.None
     on_fail: return
     observed_in: vortex
-    evidence: ev_2e791da78924
+    evidence: ev_84ee82d9d8e2
   - expression: ctx.Origin == ActionOrigin.System
     on_fail: return
     observed_in: vortex
@@ -96,7 +164,39 @@ generated:
     on_fail: return
     observed_in: vortex
     evidence: ev_7aa1dee31dfd
-  state_changes: []
+  - expression: chest is not null
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_d3a71568179c
+  - expression: "!_roomGrain._state.ItemsById.TryGetValue(chestId, out IRoomItem? item) || item.Logic.StuffData is not IMapStuffData map"
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_d3a71568179c
+  - expression: "!await _store.CanUseChestAsync(ctx, chestId).ConfigureAwait(true)"
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_84ee82d9d8e2
+  - expression: ctx.PlayerId <= 0 || !_roomGrain._state.ItemsById.TryGetValue(chestId, out IRoomItem? item) || !IsChestLogic(item.Definition.LogicName)
+    on_fail: return
+    observed_in: vortex
+    evidence: ev_d3a71568179c
+  state_changes:
+  - target: WiredChestStuffData
+    value: WiredChestStuffData.ApplyState(map, open.Value)
+    observed_in: vortex
+    evidence: ev_d3a71568179c
+  - target: WiredChestStuffData
+    value: WiredChestStuffData.ApplyPreview( map, BuildChestPreview(chest, await ReadChestItemsAsync(chest).ConfigureAwait(true)) )
+    observed_in: vortex
+    evidence: ev_d3a71568179c
+  - target: _ctx.RoomObject.ExtraData
+    value: _ctx.RoomObject.ExtraData.UpdateSection( ExtraDataSectionType.STUFF, JsonSerializer.SerializeToNode(StuffData, StuffData.GetType()) )
+    observed_in: vortex
+    evidence: ev_61677fae15af
+  - target: _store
+    value: _store.ApplyChestSettingsToStuffDataAsync(chestId, chest)
+    observed_in: vortex
+    evidence: ev_84ee82d9d8e2
   outgoing:
     ordering: unknown
     packets:
@@ -106,20 +206,20 @@ generated:
       evidence: ev_4233fe32dbae
   reaches_persistence: true
   evidence:
+  - id: ev_120b08c78fe9
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Object/Logic/Furniture/Floor/WiredChestStuffData.cs
+    symbol: WiredChestStuffData
+    line: 104
   - id: ev_28d51f9632e1
     kind: emulator_handler
     authority: vortex_emulator
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredtrading/OpenWiredChestMessageHandler.cs
     symbol: OpenWiredChestMessageHandler
-    line: 20
-  - id: ev_2e791da78924
-    kind: emulator_flow
-    authority: vortex_emulator
-    origin: vortex
-    source: Vortex.Rooms/Grains/RoomGrain.Wired.Chests.cs
-    symbol: RoomGrain
-    line: 146
+    line: 24
   - id: ev_3fdb23ee39cd
     kind: emulator_flow
     authority: vortex_emulator
@@ -133,7 +233,14 @@ generated:
     origin: vortex
     source: Vortex.PacketHandlers/UserDefinedRoomEvents/Wiredtrading/OpenWiredChestMessageHandler.cs
     symbol: OpenWiredChestMessageHandler
-    line: 31
+    line: 39
+  - id: ev_61677fae15af
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Object/Logic/Furniture/FurnitureLogic.cs
+    symbol: FurnitureLogic
+    line: 123
   - id: ev_7aa1dee31dfd
     kind: emulator_flow
     authority: vortex_emulator
@@ -148,6 +255,41 @@ generated:
     source: Vortex.Rooms/Grains/Modules/RoomSecurityModule.cs
     symbol: RoomSecurityModule
     line: 186
+  - id: ev_84ee82d9d8e2
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/RoomWiredTradingSystem.Chests.cs
+    symbol: RoomWiredTradingSystem
+    line: 46
+  - id: ev_98ec231f8eca
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Furniture/StuffData/StuffDataBase.cs
+    symbol: StuffDataBase
+    line: 43
+  - id: ev_acb5e282c8b3
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Object/Furniture/RoomItemContext.cs
+    symbol: RoomItemContext
+    line: 37
+  - id: ev_d3a71568179c
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/Systems/WiredTrading/WiredChestStore.cs
+    symbol: WiredChestStore
+    line: 141
+  - id: ev_df80e54657de
+    kind: emulator_flow
+    authority: vortex_emulator
+    origin: vortex
+    source: Vortex.Rooms/Grains/RoomGrain.WiredTrading.cs
+    symbol: RoomGrain
+    line: 24
   - id: ev_f5b4cba2f556
     kind: emulator_flow
     authority: vortex_emulator

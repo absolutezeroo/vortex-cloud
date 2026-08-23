@@ -10,7 +10,7 @@
 
 spec: scenarios
 spec_version: 1
-generated_digest: "sha256:96892f854b6307cd2e00abaa12b9076e807ee5940e3f5af9f55cfe9eeea6e476"
+generated_digest: "sha256:394c57f713584159aa078e575d2794a612a6ec4307795b9f0320b87fb6d61094"
 generated:
   feature: inventory.avatar_effect_selected
   scenarios:
@@ -197,7 +197,7 @@ generated:
     origin: vortex
     source: Vortex.Rooms/Grains/RoomGrain.Avatar.cs
     symbol: RoomGrain
-    line: 236
+    line: 237
   - id: ev_e6fef545a42a
     kind: emulator_flow
     authority: vortex_emulator

@@ -10,7 +10,7 @@
 
 spec: unknown
 spec_version: 1
-generated_digest: "sha256:c599edd0ef16e646ca30fa1c1e1e5a4103289ab5a39de45d3f88309a1a4e338a"
+generated_digest: "sha256:c7114acca88f0e13e49ea9ee1318b188ffce1fd65e90dfb13a677310b1603336"
 generated:
   id: uk_4cff288dfe
   subject: "users.update_guild_badge: what the server sends when it refuses"
@@ -39,7 +39,7 @@ generated:
     origin: vortex
     source: Vortex.Players/Grains/GroupDirectoryGrain.cs
     symbol: GroupDirectoryGrain
-    line: 761
+    line: 762
   - id: ev_d5f673c3c822
     kind: emulator_flow
     authority: vortex_emulator
