@@ -12,6 +12,7 @@ namespace Vortex.Dashboard.API.Security;
 /// </summary>
 internal sealed class DashboardAuthService(
     IAccountAuthenticator authenticator,
+    IAccountMfaService mfa,
     IPermissionService permissions,
     DashboardSessionStore sessions
 )
@@ -19,6 +20,7 @@ internal sealed class DashboardAuthService(
     public async Task<DashboardLoginResult> LoginAsync(
         string email,
         string password,
+        string? code,
         CancellationToken ct
     )
     {
@@ -38,6 +40,21 @@ internal sealed class DashboardAuthService(
         if (!HasDashboardAccess(perms))
         {
             return DashboardLoginResult.Forbidden;
+        }
+
+        // Checked after the capability check, so an account with no dashboard access learns nothing
+        // about whether it has a second factor.
+        if (await mfa.IsEnabledAsync(accountId.Value, ct).ConfigureAwait(false))
+        {
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                return DashboardLoginResult.MfaRequired;
+            }
+
+            if (!await mfa.VerifyAsync(accountId.Value, code, ct).ConfigureAwait(false))
+            {
+                return DashboardLoginResult.InvalidCode;
+            }
         }
 
         string normalizedEmail = email.Trim().ToLowerInvariant();
@@ -81,6 +98,12 @@ internal enum DashboardLoginOutcome
 {
     InvalidCredentials,
     Forbidden,
+
+    /// <summary>Credentials were right and the account has a second factor the request did not carry.</summary>
+    MfaRequired,
+
+    /// <summary>Credentials were right, a code was supplied, and it did not verify.</summary>
+    InvalidCode,
     Authenticated,
 }
 
@@ -95,6 +118,12 @@ internal readonly record struct DashboardLoginResult(
 
     public static DashboardLoginResult Forbidden { get; } =
         new(DashboardLoginOutcome.Forbidden, null, null);
+
+    public static DashboardLoginResult MfaRequired { get; } =
+        new(DashboardLoginOutcome.MfaRequired, null, null);
+
+    public static DashboardLoginResult InvalidCode { get; } =
+        new(DashboardLoginOutcome.InvalidCode, null, null);
 
     public static DashboardLoginResult Authenticated(
         string sessionId,

@@ -14,6 +14,7 @@ using Vortex.Dashboard.API.Api;
 using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Security;
+using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Permissions;
 
 namespace Vortex.Dashboard.API.Hosting;
@@ -76,16 +77,33 @@ internal static partial class DashboardEndpoints
                     DashboardLoginResult result = await auth.LoginAsync(
                             body.Email,
                             body.Password,
+                            body.Code,
                             ctx.RequestAborted
                         )
                         .ConfigureAwait(false);
 
                     return result.Outcome switch
                     {
-                        DashboardLoginOutcome.Authenticated => IssueSession(ctx, result),
+                        // A code that verified is the only way past the MfaRequired branch, so its
+                        // presence is the answer to "does this account have a factor" -- no re-read.
+                        DashboardLoginOutcome.Authenticated => IssueSession(
+                            ctx,
+                            result,
+                            usedMfa: !string.IsNullOrWhiteSpace(body.Code)
+                        ),
                         DashboardLoginOutcome.Forbidden => Results.Json(
                             new { error = "forbidden" },
                             statusCode: StatusCodes.Status403Forbidden
+                        ),
+                        // Both stay 401 with no session: the credentials were right, but "right
+                        // credentials" is not what opens the dashboard once a factor is enrolled.
+                        DashboardLoginOutcome.MfaRequired => Results.Json(
+                            new { error = "mfa_required" },
+                            statusCode: StatusCodes.Status401Unauthorized
+                        ),
+                        DashboardLoginOutcome.InvalidCode => Results.Json(
+                            new { error = "invalid_code" },
+                            statusCode: StatusCodes.Status401Unauthorized
                         ),
                         _ => Results.Json(
                             new { error = "invalid_credentials" },
@@ -121,15 +139,22 @@ internal static partial class DashboardEndpoints
 
         app.MapGet(
                 "/api/me",
-                (HttpContext ctx) =>
+                async (HttpContext ctx, IAccountMfaService mfa, CancellationToken ct) =>
                 {
                     DashboardPrincipal? principal = ctx.GetDashboardPrincipal();
-                    return principal is null
-                        ? Results.Json(
+
+                    if (principal is null)
+                    {
+                        return Results.Json(
                             new { error = "unauthenticated" },
                             statusCode: StatusCodes.Status401Unauthorized
-                        )
-                        : Results.Ok(BuildIdentity(principal));
+                        );
+                    }
+
+                    bool mfaEnabled = await mfa.IsEnabledAsync(principal.AccountId, ct)
+                        .ConfigureAwait(false);
+
+                    return Results.Ok(BuildIdentity(principal, mfaEnabled));
                 }
             )
             .RequireAuthorization()
@@ -329,7 +354,7 @@ internal static partial class DashboardEndpoints
             .ExcludeFromDescription();
     }
 
-    private static IResult IssueSession(HttpContext ctx, DashboardLoginResult result)
+    private static IResult IssueSession(HttpContext ctx, DashboardLoginResult result, bool usedMfa)
     {
         DashboardSessionStore sessions =
             ctx.RequestServices.GetRequiredService<DashboardSessionStore>();
@@ -347,15 +372,16 @@ internal static partial class DashboardEndpoints
             }
         );
 
-        return Results.Ok(BuildIdentity(result.Principal!));
+        return Results.Ok(BuildIdentity(result.Principal!, mfaEnabled: usedMfa));
     }
 
-    private static object BuildIdentity(DashboardPrincipal principal) =>
+    private static object BuildIdentity(DashboardPrincipal principal, bool mfaEnabled) =>
         new
         {
             email = principal.Email,
             superuser = principal.Permissions.IsSuperUser,
             capabilities = principal.Permissions.Capabilities,
+            mfaEnabled,
         };
 
     // VSTHRD003: both helpers deliberately await a task handed in by the endpoint delegate (already

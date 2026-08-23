@@ -180,6 +180,7 @@ public sealed class DashboardAuthorizationMatrixTests
         DashboardEndpoints.MapReadApi(app, () => DateTime.UnixEpoch);
         DashboardEndpoints.MapOperations(app);
         DashboardEndpoints.MapMeta(app);
+        DashboardEndpoints.MapAccountEndpoints(app);
 
         return
         [

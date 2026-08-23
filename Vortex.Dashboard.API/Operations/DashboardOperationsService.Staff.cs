@@ -246,4 +246,37 @@ internal sealed partial class DashboardOperationsService
             throw new InvalidOperationException(result.ErrorCode);
         }
     }
+
+    /// <summary>
+    /// Clears an operator's second factor when they have lost the authenticator holding it. There is
+    /// no code to present here -- that is the point of a recovery path -- so the only thing standing
+    /// in front of it is OpsStaffManage and the audit record this leaves.
+    /// </summary>
+    public Task<OperationResult> ResetAccountMfaAsync(
+        ResetAccountMfaRequest request,
+        string actor,
+        CancellationToken ct
+    ) =>
+        ExecuteAsync(
+            "ops.staff.mfa.reset",
+            actor,
+            request.Reason,
+            targetPlayerId: null,
+            roomId: null,
+            detail: new { request.AccountId },
+            work: async c =>
+            {
+                bool cleared = await _accountMfa
+                    .DisableAsync(request.AccountId, code: null, c)
+                    .ConfigureAwait(false);
+
+                if (!cleared)
+                {
+                    // A domain rejection, so ExecuteAsync reports it to the operator rather than
+                    // logging it as a fault.
+                    throw new InvalidOperationException("account_not_found");
+                }
+            },
+            ct
+        );
 }

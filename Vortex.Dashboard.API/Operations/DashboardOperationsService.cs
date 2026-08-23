@@ -11,6 +11,7 @@ using Vortex.Database.Auditing;
 using Vortex.Database.Backup;
 using Vortex.Observability.Diagnostics;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Benchmark;
 using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Snapshots;
@@ -52,6 +53,7 @@ internal sealed partial class DashboardOperationsService(
     IQuestContentAdminService questContentAdmin,
     INavigatorAdminService navigatorAdmin,
     IStaffAdminService staffAdmin,
+    IAccountMfaService accountMfa,
     IContentAdminService contentAdmin,
     IMysteryBoxAdminService mysteryBoxAdmin,
     IPrizePoolAdminService prizePoolAdmin,
@@ -84,6 +86,7 @@ internal sealed partial class DashboardOperationsService(
     private readonly IQuestContentAdminService _questContentAdmin = questContentAdmin;
     private readonly INavigatorAdminService _navigatorAdmin = navigatorAdmin;
     private readonly IStaffAdminService _staffAdmin = staffAdmin;
+    private readonly IAccountMfaService _accountMfa = accountMfa;
     private readonly IContentAdminService _contentAdmin = contentAdmin;
     private readonly IMysteryBoxAdminService _mysteryBoxAdmin = mysteryBoxAdmin;
     private readonly IPrizePoolAdminService _prizePoolAdmin = prizePoolAdmin;

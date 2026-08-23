@@ -184,6 +184,7 @@ export default {
     requestFailed: 'Request failed.',
     windowTooLarge: 'That date range is too wide. Pick a window of a year or less.',
     invalidDate: 'One of the dates could not be read. Check the since/until filters.',
+    invalidCode: 'That authenticator code is not valid.',
   },
   audit: {
     wasDeleted: 'deleted',
@@ -1233,6 +1234,25 @@ export default {
     reasonOfferPlaceholder: 'why this offer?',
     selectCatalogIcon: 'Select a catalog icon',
   },
+  mfa: {
+    title: 'Two-factor authentication',
+    short2faOn: '2FA on',
+    short2faOff: '2FA off',
+    enabled: 'Two-factor is on for this account.',
+    disabled: 'Two-factor is off for this account.',
+    enableHint:
+      'The dashboard cookie reaches the currency, the bans, the staff roster and the server console. A password alone is the only thing in front of all of it.',
+    disableHint: 'Enter a current code to confirm it is you switching the factor off.',
+    scanHint:
+      'Scan this with Google Authenticator, 1Password, Authy or any other authenticator app, then enter the code it shows. Nothing is stored until that code checks out, so closing this now changes nothing.',
+    qrAlt: 'QR code holding the authenticator secret',
+    manualHint: 'Cannot scan? Type this into the app instead:',
+    code: 'Code',
+    codePlaceholder: '6 digits',
+    enable: 'Set up two-factor',
+    confirm: 'Confirm and enable',
+    disable: 'Turn two-factor off',
+  },
   login: {
     email: 'Email',
     password: 'Password',
@@ -1240,6 +1260,9 @@ export default {
     invalidCredentials: 'Invalid email or password.',
     signIn: 'Sign in',
     signingIn: 'Signing in…',
+    code: 'Authenticator code',
+    codePlaceholder: '6 digits',
+    invalidCode: 'That code is not valid. Try the next one your authenticator shows.',
   },
   boot: {
     checkingEmulator: 'Checking emulator…',

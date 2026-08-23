@@ -26,6 +26,7 @@ using Vortex.Dashboard.API.Security;
 using Vortex.Database.Backup;
 using Vortex.Observability.Configuration;
 using Vortex.Observability.Diagnostics;
+using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Console;
 using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Observability;
@@ -183,6 +184,7 @@ internal sealed class DashboardWebHost(
         DashboardEndpoints.MapReadApi(app, startedAtUtc);
         DashboardEndpoints.MapOperations(app);
         DashboardEndpoints.MapMeta(app);
+        DashboardEndpoints.MapAccountEndpoints(app);
 
         if (_config.DashboardFrontendEnabled)
         {
@@ -216,6 +218,9 @@ internal sealed class DashboardWebHost(
         // service, and an endpoint parameter the container cannot resolve is read as a request body
         // instead — which fails at startup and takes the whole dashboard with it.
         typeof(ServerConsoleFeed),
+        // The self-service second-factor endpoints inject this directly: they act on the caller's own
+        // account, so there is no operations service between them and it.
+        typeof(IAccountMfaService),
     ];
 
     /// <summary>

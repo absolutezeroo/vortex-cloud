@@ -182,6 +182,7 @@ export default {
     requestFailed: 'La requête a échoué.',
     windowTooLarge: "Cette plage de dates est trop large. Choisissez une fenêtre d'un an au maximum.",
     invalidDate: "Une des dates est illisible. Vérifiez les filtres depuis/jusqu'à.",
+    invalidCode: "Ce code d authentification n est pas valide.",
   },
   audit: {
     wasDeleted: 'supprimé',
@@ -1233,6 +1234,25 @@ export default {
     reasonOfferPlaceholder: 'pourquoi cette offre ?',
     selectCatalogIcon: 'Choisir une icône du catalogue',
   },
+  mfa: {
+    title: 'Authentification a deux facteurs',
+    short2faOn: '2FA active',
+    short2faOff: '2FA inactive',
+    enabled: 'Le deuxieme facteur est actif sur ce compte.',
+    disabled: 'Le deuxieme facteur est inactif sur ce compte.',
+    enableHint:
+      'Le cookie du dashboard donne acces a la monnaie, aux bans, a la liste du staff et a la console serveur. Un mot de passe est aujourd hui la seule chose devant tout ca.',
+    disableHint: 'Saisissez un code valide pour confirmer que c est bien vous qui desactivez.',
+    scanHint:
+      'Scannez ceci avec Google Authenticator, 1Password, Authy ou toute autre application d authentification, puis saisissez le code affiche. Rien n est enregistre tant que ce code n a pas ete verifie : fermer maintenant ne change rien.',
+    qrAlt: 'QR code contenant le secret d authentification',
+    manualHint: 'Impossible de scanner ? Saisissez ceci dans l application :',
+    code: 'Code',
+    codePlaceholder: '6 chiffres',
+    enable: 'Activer le deuxieme facteur',
+    confirm: 'Confirmer et activer',
+    disable: 'Desactiver le deuxieme facteur',
+  },
   login: {
     email: 'Email',
     password: 'Mot de passe',
@@ -1240,6 +1260,9 @@ export default {
     invalidCredentials: 'Email ou mot de passe invalide.',
     signIn: 'Se connecter',
     signingIn: 'Connexion…',
+    code: 'Code d authentification',
+    codePlaceholder: '6 chiffres',
+    invalidCode: 'Ce code n est pas valide. Essayez le suivant affiche par votre application.',
   },
   boot: {
     checkingEmulator: "Vérification de l'émulateur…",

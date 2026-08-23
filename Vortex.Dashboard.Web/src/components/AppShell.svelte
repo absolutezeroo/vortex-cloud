@@ -48,6 +48,7 @@
     PencilLine,
   } from '@lucide/svelte';
   import { identity } from '../lib/session.js';
+  import MfaModal from './MfaModal.svelte';
   import { NAV, hasRouteAccess } from '../lib/routes.js';
   import { reasonSuggestions } from '../lib/reasonHistory.js';
   import { theme, setTheme, THEMES } from '../lib/theme.js';
@@ -263,6 +264,7 @@
     items: filteredItems.filter((item) => (item.group || 'Other') === name),
   })).filter((group) => group.items.length > 0));
   let email = $derived($identity?.email || '');
+  let mfaOpen = $state(false);
   let activeLabel = $derived(items.find((item) => item.path === $location)?.label || $t('nav.dashboardFallback'));
 </script>
 
@@ -397,6 +399,15 @@
         <button
           type="button"
           class="logout-btn"
+          title={$t('mfa.title')}
+          onclick={() => (mfaOpen = true)}
+        >
+          <ShieldCheck size={16} strokeWidth={1.9} />
+          <span>{$identity?.mfaEnabled ? $t('mfa.short2faOn') : $t('mfa.short2faOff')}</span>
+        </button>
+        <button
+          type="button"
+          class="logout-btn"
           title={$t('common.signOut')}
           disabled={logoutBusy}
           aria-busy={logoutBusy}
@@ -407,6 +418,10 @@
         </button>
       </div>
     </header>
+
+    {#if mfaOpen}
+      <MfaModal onclose={() => (mfaOpen = false)} />
+    {/if}
 
     {@render children?.()}
   </section>

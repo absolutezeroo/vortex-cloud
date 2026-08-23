@@ -80,6 +80,9 @@ GET /api/v1/targeted-offers/{offerId:int} -> dashboard.targeted_offers.read
 GET /api/v1/wired/stats -> dashboard.wired.read
 POST /api/login -> ANONYMOUS
 POST /api/logout -> ANONYMOUS
+POST /api/v1/account/mfa/begin -> AUTHENTICATED
+POST /api/v1/account/mfa/disable -> AUTHENTICATED
+POST /api/v1/account/mfa/enable -> AUTHENTICATED
 POST /api/v1/operations/benchmark/start -> dashboard.ops.benchmark.run
 POST /api/v1/operations/benchmark/stop -> dashboard.ops.benchmark.run
 POST /api/v1/operations/catalog/offers -> dashboard.ops.catalog.manage

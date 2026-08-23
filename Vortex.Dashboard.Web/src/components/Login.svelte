@@ -7,15 +7,19 @@
 
   let email = $state('');
   let password = $state('');
+  let code = $state('');
   let error = $state('');
   let busy = $state(false);
+  // Only shown once the server has said this account has a second factor. Asking every operator for
+  // a code they may not have would be noise on the one screen that has to be unambiguous.
+  let mfaRequired = $state(false);
 
   async function submit() {
     if (busy) return;
     error = '';
     busy = true;
     try {
-      await login(email, password);
+      await login(email, password, mfaRequired ? code : undefined);
       await onAuthenticated();
     } catch (e) {
       if (isConnectionError(e)) {
@@ -24,6 +28,13 @@
         error = translate('login.noAccess');
       } else if (e.status === 429) {
         error = describeApiError(e);
+      } else if (e.code === 'mfa_required') {
+        mfaRequired = true;
+        code = '';
+        error = '';
+      } else if (e.code === 'invalid_code') {
+        mfaRequired = true;
+        error = translate('login.invalidCode');
       } else {
         error = translate('login.invalidCredentials');
       }
@@ -56,6 +67,21 @@
       <span>{$t('login.password')}</span>
       <input type="password" bind:value={password} autocomplete="current-password" required />
     </label>
+
+    {#if mfaRequired}
+      <label>
+        <span>{$t('login.code')}</span>
+        <input
+          type="text"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+          maxlength="6"
+          bind:value={code}
+          placeholder={$t('login.codePlaceholder')}
+          required
+        />
+      </label>
+    {/if}
 
     {#if error}
       <p class="login-error">{error}</p>

@@ -45,6 +45,7 @@ public sealed class DashboardEndpointServiceTests
         DashboardEndpoints.MapReadApi(app, () => DateTime.UnixEpoch);
         DashboardEndpoints.MapOperations(app);
         DashboardEndpoints.MapMeta(app);
+        DashboardEndpoints.MapAccountEndpoints(app);
         DashboardEndpoints.MapFrontend(app);
 
         List<Endpoint> endpoints = [];

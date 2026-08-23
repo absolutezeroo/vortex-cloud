@@ -69,6 +69,10 @@ export function describeApiError(error) {
     return translate('errors.invalidDate');
   }
 
+  if (error?.code === 'invalid_code') {
+    return translate('errors.invalidCode');
+  }
+
   return error?.message || translate('errors.requestFailed');
 }
 
@@ -198,8 +202,10 @@ export function getIdentity(options = {}) {
   return apiGet('/api/me', options);
 }
 
-export function login(email, password) {
-  return apiPost('/api/login', { email, password }, { timeoutMs: LOGIN_TIMEOUT_MS });
+// `code` is the second factor, sent only on the retry: the server answers mfa_required to the
+// first attempt when the account has one, and the same credentials go back up with the code.
+export function login(email, password, code) {
+  return apiPost('/api/login', { email, password, code }, { timeoutMs: LOGIN_TIMEOUT_MS });
 }
 
 export function logout() {
