@@ -11,6 +11,7 @@ using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Wired;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Inventory.Snapshots;
+using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
@@ -314,6 +315,20 @@ public sealed partial class RoomGrain
 
             // What the chest floats above itself is drawn from what it holds, which just changed.
             await ApplyChestSettingsToStuffDataAsync(deposit.ChestId, chest).ConfigureAwait(true);
+
+            // And so do the windows other people have open on this chest — the handler answers only
+            // the depositor.
+            await NotifyOtherChestViewersAsync(
+                    deposit.ChestId,
+                    ctx.PlayerId,
+                    new WiredChestItemsUpdateMessageComposer
+                    {
+                        ChestId = deposit.ChestId,
+                        RemovedItemIds = ImmutableArray<int>.Empty,
+                        AddedItems = snapshot.Items,
+                    }
+                )
+                .ConfigureAwait(true);
 
             return snapshot;
         }

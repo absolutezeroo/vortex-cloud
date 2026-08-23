@@ -15,6 +15,8 @@ using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Snapshots;
 using Vortex.Primitives.Furniture.StuffData;
 using Vortex.Primitives.Inventory.Snapshots;
+using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
+using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums.Wallet;
@@ -228,7 +230,13 @@ public sealed partial class RoomGrain
                 await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
             }
 
-            _openChests.Add(chestId);
+            if (!_chestViewers.TryGetValue(chestId, out HashSet<PlayerId>? viewers))
+            {
+                viewers = [];
+                _chestViewers[chestId] = viewers;
+            }
+
+            viewers.Add(ctx.PlayerId);
 
             // Also on open: a chest whose settings were saved before the furni carried them would
             // otherwise stay blank on screen forever. It is also what opens the lid and draws the
@@ -257,10 +265,22 @@ public sealed partial class RoomGrain
 
     public async Task CloseWiredChestAsync(ActionContext ctx, int chestId, CancellationToken ct)
     {
-        if (!_openChests.Remove(chestId))
+        if (
+            !_chestViewers.TryGetValue(chestId, out HashSet<PlayerId>? viewers)
+            || !viewers.Remove(ctx.PlayerId)
+        )
         {
             return;
         }
+
+        // Someone else is still looking: nothing to shut, and re-applying would only rewrite the
+        // same state.
+        if (viewers.Count > 0)
+        {
+            return;
+        }
+
+        _chestViewers.Remove(chestId);
 
         try
         {
@@ -481,7 +501,23 @@ public sealed partial class RoomGrain
             // The preview is drawn from what the chest holds, so it is now stale.
             await ApplyChestSettingsToStuffDataAsync(chestId, chest).ConfigureAwait(true);
 
-            return [.. leaving.Select(entity => entity.Id)];
+            ImmutableArray<int> removed = [.. leaving.Select(entity => entity.Id)];
+
+            // The caller answers the player who asked; these are the other windows open on the
+            // same chest, which would otherwise keep showing rows that have left.
+            await NotifyOtherChestViewersAsync(
+                    chestId,
+                    ctx.PlayerId,
+                    new WiredChestItemsUpdateMessageComposer
+                    {
+                        ChestId = chestId,
+                        RemovedItemIds = removed,
+                        AddedItems = ImmutableArray<FurnitureItemSnapshot>.Empty,
+                    }
+                )
+                .ConfigureAwait(true);
+
+            return removed;
         }
         catch (Exception ex)
         {
@@ -516,7 +552,7 @@ public sealed partial class RoomGrain
 
         WiredChestStuffData.Apply(map, chest);
 
-        bool? open = ResolveChestOpenState(chest, _openChests.Contains(chestId));
+        bool? open = ResolveChestOpenState(chest, IsBeingLookedInto(chestId));
 
         if (open is not null)
         {
@@ -531,13 +567,104 @@ public sealed partial class RoomGrain
         await item.Logic.PersistStuffDataAsync().ConfigureAwait(true);
     }
 
-    /// <summary>Which chests someone currently has open on screen.</summary>
+    /// <summary>Who currently has each chest open on screen.</summary>
     /// <remarks>
-    /// Only the "open when someone looks inside" appearance needs it. It is per chest rather than
-    /// per viewer: two players looking at once share one lid, so the first to close it shuts it for
-    /// the other. A set of viewers is the fix the day that matters.
+    /// Two things read it, and both need the viewers rather than a flag: the lid stays open until
+    /// the *last* one leaves, and a withdrawal or a deposit has to reach the screens other people
+    /// are looking at. Without that second half, two players in the same room saw different
+    /// contents — one took items out and the other's window kept showing them.
     /// </remarks>
-    private readonly HashSet<int> _openChests = [];
+    private readonly Dictionary<int, HashSet<PlayerId>> _chestViewers = [];
+
+    /// <summary>
+    /// Forgets a leaving player's chest screens, and shuts the lids nobody is left looking into.
+    /// </summary>
+    /// <remarks>
+    /// A player who walks out or disconnects sends no close, and without this they stay a viewer
+    /// forever: the chest keeps its open appearance for the whole room, and every later delta is
+    /// posted to a presence that is not there. The two neighbours of this call — the trade and the
+    /// mystery boxes — clean up on the same event and for the same reason.
+    /// </remarks>
+    private async Task CloseChestScreensForLeavingPlayerAsync(PlayerId playerId)
+    {
+        _chestDeposits.Remove(playerId);
+
+        List<int> emptied = [];
+
+        foreach ((int chestId, HashSet<PlayerId> viewers) in _chestViewers)
+        {
+            if (viewers.Remove(playerId) && viewers.Count == 0)
+            {
+                emptied.Add(chestId);
+            }
+        }
+
+        foreach (int chestId in emptied)
+        {
+            _chestViewers.Remove(chestId);
+        }
+
+        if (emptied.Count == 0)
+        {
+            return;
+        }
+
+        try
+        {
+            await using VortexDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(CancellationToken.None)
+                .ConfigureAwait(true);
+
+            foreach (int chestId in emptied)
+            {
+                WiredChestEntity? chest = await dbCtx
+                    .WiredChests.AsNoTracking()
+                    .FirstOrDefaultAsync(c => c.FurnitureEntityId == chestId && c.DeletedAt == null)
+                    .ConfigureAwait(true);
+
+                if (chest is not null)
+                {
+                    await ApplyChestSettingsToStuffDataAsync(chestId, chest).ConfigureAwait(true);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "Failed to shut the chests {ChestIds} a leaving player had open in room {RoomId}.",
+                string.Join(", ", emptied),
+                RoomId
+            );
+        }
+    }
+
+    /// <summary>Whether anyone still has this chest's screen up.</summary>
+    private bool IsBeingLookedInto(int chestId) =>
+        _chestViewers.TryGetValue(chestId, out HashSet<PlayerId>? viewers) && viewers.Count > 0;
+
+    /// <summary>
+    /// Sends a chest update to everyone looking at it except whoever caused it.
+    /// </summary>
+    /// <remarks>
+    /// The delta message names no recipient — it is written to be broadcast — and the caller has
+    /// already answered the player who asked. This is the other screens.
+    /// </remarks>
+    private Task NotifyOtherChestViewersAsync(int chestId, PlayerId except, IComposer composer)
+    {
+        if (!_chestViewers.TryGetValue(chestId, out HashSet<PlayerId>? viewers))
+        {
+            return Task.CompletedTask;
+        }
+
+        return Task.WhenAll(
+            viewers
+                .Where(viewer => viewer != except)
+                .Select(viewer =>
+                    _grainFactory.GetPlayerPresenceGrain(viewer).SendComposerAsync(composer)
+                )
+        );
+    }
 
     /// <summary>
     /// The state the chest should wear, or null to leave whatever it is wearing alone.
