@@ -12,6 +12,8 @@
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { formatBytes } from '../lib/format.js';
+  import TableFilter from '../components/TableFilter.svelte';
+  import { filterRows } from '../lib/tableView.js';
   import { t, translate } from '../lib/i18n.js';
 
   let data = $state(null);
@@ -23,6 +25,10 @@
   // screen as the mistake is not a safety net. Restoring is not offered here either; rolling the
   // whole database back discards every change since, which belongs in a maintenance window.
   let backups = $state(null);
+
+  // One row per dump ever taken, so this is the table that quietly gets long.
+  let backupQuery = $state('');
+  let backupView = $derived(filterRows(backups?.items || [], backupQuery));
   const backupOps = createWriteOps(loadBackups);
 
   let canBackup = $derived(hasDashboardCapability($identity, CAPABILITIES.opsDatabaseBackup));
@@ -322,10 +328,11 @@
     {#if backups && !backups.configured}
       <p class="empty-state">{$t('infrastructure.backupNotConfigured')}</p>
     {:else if backups?.items?.length}
+      <TableFilter bind:query={backupQuery} shown={backupView.length} total={backups?.items?.length || 0} />
       <table>
         <thead><tr><th>{$t('infrastructure.backupFile')}</th><th>{$t('infrastructure.backupSize')}</th><th>{$t('infrastructure.backupTaken')}</th></tr></thead>
         <tbody>
-          {#each backups.items as item}
+          {#each backupView as item}
             <tr>
               <td><code>{item.fileName}</code></td>
               <td>{formatBytes(item.sizeBytes)}</td>

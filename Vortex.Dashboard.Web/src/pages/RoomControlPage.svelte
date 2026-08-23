@@ -11,12 +11,19 @@
   import ConfirmReasonModal from '../components/ConfirmReasonModal.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import { identity, openPlayer, openItem } from '../lib/session.js';
+  import TableFilter from '../components/TableFilter.svelte';
+  // Filter only: the rows are read through accessors (roomName/roomPopulation), so there are no
+  // stable field names for a key-based sort to name.
+  import { filterRows } from '../lib/tableView.js';
   import { t, translate } from '../lib/i18n.js';
 
   let loading = $state(false);
   let forbidden = $state(false);
   let error = $state('');
   let rooms = $state([]);
+
+  let roomQuery = $state('');
+  let roomView = $derived(filterRows(rooms, roomQuery));
 
   // Expanded room id -> occupant list / loading state.
   let expanded = $state(null);
@@ -160,6 +167,8 @@
     <OpResult result={$ops.result} />
   {/if}
 
+  <TableFilter bind:query={roomQuery} shown={roomView.length} total={rooms.length} />
+
   <table>
     <thead>
       <tr>
@@ -171,7 +180,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each rooms as room (roomId(room))}
+      {#each roomView as room (roomId(room))}
         <tr>
           <td>
             <button class="ghost-button" type="button" onclick={() => toggleExpand(roomId(room))}>

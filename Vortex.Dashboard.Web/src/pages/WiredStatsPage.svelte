@@ -7,12 +7,32 @@
   import AssetImage from '../components/AssetImage.svelte';
   import StatCard from '../components/StatCard.svelte';
   import { Package, Cable, DoorOpen } from '@lucide/svelte';
+  import TableFilter from '../components/TableFilter.svelte';
+  import SortTh from '../components/SortTh.svelte';
+  import { filterRows, sortRows } from '../lib/tableView.js';
   import { t } from '../lib/i18n.js';
 
   let loading = $state(false);
   let forbidden = $state(false);
   let error = $state('');
   let data = $state(null);
+
+  // One filter + sort per table: byLogic alone is one row per registered logic key, which is the
+  // table you cannot read by eye.
+  let categoryQuery = $state('');
+  let categorySort = $state({ key: '', dir: 'desc' });
+  let logicQuery = $state('');
+  let logicSort = $state({ key: '', dir: 'desc' });
+  let roomQuery = $state('');
+  let roomSort = $state({ key: '', dir: 'desc' });
+
+  let categoryRows = $derived(data?.byCategory || []);
+  let logicRows = $derived(data?.byLogic || []);
+  let roomRows = $derived(data?.topRooms || []);
+
+  let categoryView = $derived(sortRows(filterRows(categoryRows, categoryQuery), categorySort));
+  let logicView = $derived(sortRows(filterRows(logicRows, logicQuery), logicSort));
+  let roomView = $derived(sortRows(filterRows(roomRows, roomQuery), roomSort));
 
   const categoryKeys = {
     trigger: 'wiredStats.categoryTrigger',
@@ -86,11 +106,15 @@
 
   <div class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('wiredStats.byCategoryTitle')}</h2></div>
+    <TableFilter bind:query={categoryQuery} shown={categoryView.length} total={categoryRows.length} />
     <div class="table-wrap">
       <table>
-        <thead><tr><th>{$t('wiredStats.colCategory')}</th><th>{$t('wiredStats.colCount')}</th></tr></thead>
+        <thead><tr>
+          <SortTh label={$t('wiredStats.colCategory')} key="category" bind:sort={categorySort} initialDir="asc" />
+          <SortTh label={$t('wiredStats.colCount')} key="count" bind:sort={categorySort} />
+        </tr></thead>
         <tbody>
-          {#each data.byCategory || [] as row}
+          {#each categoryView as row}
             <tr><td>{categoryLabel(row.category, $t)}</td><td>{formatNumber(row.count)}</td></tr>
           {:else}
             <tr><td colspan="2" class="muted">{$t('wiredStats.noWired')}</td></tr>
@@ -102,11 +126,15 @@
 
   <div class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('wiredStats.byLogicTitle')}</h2></div>
+    <TableFilter bind:query={logicQuery} shown={logicView.length} total={logicRows.length} />
     <div class="table-wrap">
       <table>
-        <thead><tr><th>{$t('wiredStats.colLogic')}</th><th>{$t('wiredStats.colCount')}</th></tr></thead>
+        <thead><tr>
+          <SortTh label={$t('wiredStats.colLogic')} key="logic" bind:sort={logicSort} initialDir="asc" />
+          <SortTh label={$t('wiredStats.colCount')} key="count" bind:sort={logicSort} />
+        </tr></thead>
         <tbody>
-          {#each data.byLogic || [] as row}
+          {#each logicView as row}
             <tr><td><span style="display: inline-flex; align-items: center; gap: 8px;"><AssetImage src={row.furniIconUrl} alt={row.logic} size={26} fallbackIcon={Package} /><code>{row.logic}</code></span></td><td>{formatNumber(row.count)}</td></tr>
           {:else}
             <tr><td colspan="2" class="muted">{$t('wiredStats.noWired')}</td></tr>
@@ -118,11 +146,15 @@
 
   <div class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('wiredStats.topRoomsTitle')}</h2></div>
+    <TableFilter bind:query={roomQuery} shown={roomView.length} total={roomRows.length} />
     <div class="table-wrap">
       <table>
-        <thead><tr><th>{$t('wiredStats.colRoom')}</th><th>{$t('wiredStats.colWiredCount')}</th></tr></thead>
+        <thead><tr>
+          <SortTh label={$t('wiredStats.colRoom')} key="roomName" bind:sort={roomSort} initialDir="asc" />
+          <SortTh label={$t('wiredStats.colWiredCount')} key="wiredCount" bind:sort={roomSort} />
+        </tr></thead>
         <tbody>
-          {#each data.topRooms || [] as row}
+          {#each roomView as row}
             <tr><td>{row.roomName}</td><td>{formatNumber(row.wiredCount)}</td></tr>
           {:else}
             <tr><td colspan="2" class="muted">{$t('wiredStats.noWired')}</td></tr>

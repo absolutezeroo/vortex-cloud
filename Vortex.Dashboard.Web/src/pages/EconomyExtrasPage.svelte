@@ -21,12 +21,22 @@
   import StatCard from '../components/StatCard.svelte';
   import Tabs from '../components/Tabs.svelte';
   import { Ticket, Store, Coins, Hammer } from '@lucide/svelte';
+  import TableFilter from '../components/TableFilter.svelte';
+  import { filterRows } from '../lib/tableView.js';
   import { t } from '../lib/i18n.js';
 
   let loading = $state(false);
   let forbidden = $state(false);
   let error = $state('');
   let data = $state(null);
+
+  // Both grow without bound -- one row per LTD series ever run, one per rented space.
+  let ltdQuery = $state('');
+  let rentQuery = $state('');
+  let ltdRows = $derived(data?.ltdSeries || []);
+  let rentRows = $derived(data?.rentableSpaces || []);
+  let ltdView = $derived(filterRows(ltdRows, ltdQuery));
+  let rentView = $derived(filterRows(rentRows, rentQuery));
 
   const ops = createWriteOps(refresh);
 
@@ -157,6 +167,7 @@
   {#if tab === 'ltd'}
   <section class="panel" style="margin-top: 12px;">
     <div class="panel-head"><h2>{$t('economyExtras.ltdTitle')}</h2></div>
+    <TableFilter bind:query={ltdQuery} shown={ltdView.length} total={ltdRows.length} />
     <div class="table-wrap">
       <table>
         <thead>
@@ -171,7 +182,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each data.ltdSeries || [] as row}
+          {#each ltdView as row}
             <tr>
               <td>
                 <span class="cell">
@@ -217,6 +228,7 @@
       {/if}
     </div>
     <p class="muted">{$t('economyExtras.rentableDescription')}</p>
+    <TableFilter bind:query={rentQuery} shown={rentView.length} total={rentRows.length} />
     <div class="table-wrap">
       <table>
         <thead>
@@ -228,7 +240,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each data.rentableSpaces || [] as row}
+          {#each rentView as row}
             <tr>
               <td>
                 <span class="cell">

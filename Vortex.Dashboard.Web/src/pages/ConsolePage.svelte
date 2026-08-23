@@ -9,6 +9,8 @@
   import { apiGet } from '../lib/api.js';
   import { CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { identity } from '../lib/session.js';
+  import TableFilter from '../components/TableFilter.svelte';
+  import { filterRows } from '../lib/tableView.js';
   import { t, translate } from '../lib/i18n.js';
   import { get } from 'svelte/store';
   import { Lock, Trash2 } from '@lucide/svelte';
@@ -33,6 +35,11 @@
     () => apiGet('/api/v1/operations/console/commands'),
     { enabled: () => canUseConsole },
   );
+
+  // ~50 commands in one flat list: filtering is faster than reading it.
+  let commandQuery = $state('');
+  let commandRows = $derived(commands.data ?? []);
+  let commandView = $derived(filterRows(commandRows, commandQuery));
 
   const ops = createWriteOps(() => {
     const result = get(ops).results.run;
@@ -211,6 +218,8 @@
     {:else if commands.error}
       <p class="empty-state danger" role="alert">{$t('console.commandsUnavailable')}</p>
     {:else}
+      <TableFilter bind:query={commandQuery} shown={commandView.length} total={commandRows.length} />
+
       <table class="data-table">
         <thead>
           <tr>
@@ -219,7 +228,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each commands.data ?? [] as entry}
+          {#each commandView as entry}
             <tr class:denied={!entry.allowed}>
               <td>
                 <button type="button" class="linklike" onclick={() => fill(entry.usage)} disabled={!entry.allowed}>

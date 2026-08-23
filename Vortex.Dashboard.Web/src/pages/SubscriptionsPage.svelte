@@ -8,6 +8,8 @@
   import { Sparkles, Timer, ShoppingBag } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer, openItem } from '../lib/session.js';
+  import TableFilter from '../components/TableFilter.svelte';
+  import { filterRows } from '../lib/tableView.js';
   import { t, translate } from '../lib/i18n.js';
 
   let clubStats = $state(null);
@@ -17,6 +19,8 @@
   let lifecycle = $derived(clubStats?.lifecycle?.timeline || []);
   let byMonths = $derived(clubStats?.lifecycle?.byMonths || []);
   let recentEvents = $derived(clubStats?.lifecycle?.recentEvents || []);
+  let eventQuery = $state('');
+  let eventView = $derived(filterRows(recentEvents, eventQuery));
   let topExpiring = $derived(clubStats?.topExpiring || []);
   let byTypeScale = $derived(Math.max(1, ...byType.map((row) => Number(row.total || 0))));
   let lifecycleScale = $derived(Math.max(
@@ -244,6 +248,7 @@
 
       <div class="panel" style="margin-top: 14px;">
         <h3>{$t('subscriptions.recentEvents')}</h3>
+        <TableFilter bind:query={eventQuery} shown={eventView.length} total={recentEvents.length} />
         <table>
           <thead>
             <tr>
@@ -258,7 +263,7 @@
             </tr>
           </thead>
           <tbody>
-            {#each recentEvents as row}
+            {#each eventView as row}
               <tr>
                 <td>{formatDate(row.occurredAt)}</td>
                 <td>{row.action}</td>

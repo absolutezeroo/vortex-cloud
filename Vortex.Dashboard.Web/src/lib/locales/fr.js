@@ -698,6 +698,11 @@ export default {
     machine: 'Machine',
     startedUtc: 'Démarré (UTC)',
   },
+  tableFilter: {
+    placeholder: 'Filtrer ces lignes…',
+    count: '{total} lignes',
+    countFiltered: '{shown} sur {total}',
+  },
   palette: {
     title: 'Palette de commandes',
     placeholder: 'Aller à une page, un joueur, une salle, un meuble…',

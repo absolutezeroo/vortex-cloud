@@ -699,6 +699,11 @@ export default {
     machine: 'Machine',
     startedUtc: 'Started UTC',
   },
+  tableFilter: {
+    placeholder: 'Filter these rows…',
+    count: '{total} rows',
+    countFiltered: '{shown} of {total}',
+  },
   palette: {
     title: 'Command palette',
     placeholder: 'Jump to a page, player, room or furniture…',

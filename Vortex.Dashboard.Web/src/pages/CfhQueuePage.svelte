@@ -11,6 +11,9 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import EntityLink from '../components/EntityLink.svelte';
   import { identity, openPlayer, openItem } from '../lib/session.js';
+  import TableFilter from '../components/TableFilter.svelte';
+  import SortTh from '../components/SortTh.svelte';
+  import { filterRows, sortRows } from '../lib/tableView.js';
   import { t, translate } from '../lib/i18n.js';
 
   const closeReasons = [
@@ -23,6 +26,12 @@
   let forbidden = $state(false);
   let error = $state('');
   let queue = $state([]);
+
+  // The queue is one request, no paging: on a busy hotel it is the table you scroll looking for one
+  // reporter's name.
+  let queueQuery = $state('');
+  let queueSort = $state({ key: '', dir: 'desc' });
+  let queueView = $derived(sortRows(filterRows(queue, queueQuery), queueSort));
 
   // Row-scoped action state, keyed by issueId.
   let rowBusy = $state({});
@@ -151,21 +160,23 @@
     <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 
+  <TableFilter bind:query={queueQuery} shown={queueView.length} total={queue.length} />
+
   <table>
     <thead>
       <tr>
-        <th>#</th>
-        <th>{$t('cfh.colState')}</th>
-        <th>{$t('cfh.colAge')}</th>
-        <th>{$t('cfh.colReporter')}</th>
-        <th>{$t('cfh.colReported')}</th>
-        <th>{$t('cfh.colPickedBy')}</th>
+        <SortTh label="#" key="issueId" bind:sort={queueSort} initialDir="asc" />
+        <SortTh label={$t('cfh.colState')} key="state" bind:sort={queueSort} initialDir="asc" />
+        <SortTh label={$t('cfh.colAge')} key="issueAgeMs" bind:sort={queueSort} />
+        <SortTh label={$t('cfh.colReporter')} key="reporterUserName" bind:sort={queueSort} initialDir="asc" />
+        <SortTh label={$t('cfh.colReported')} key="reportedUserName" bind:sort={queueSort} initialDir="asc" />
+        <SortTh label={$t('cfh.colPickedBy')} key="pickerUserName" bind:sort={queueSort} initialDir="asc" />
         <th>{$t('cfh.colMessage')}</th>
         <th>{$t('cfh.colActions')}</th>
       </tr>
     </thead>
     <tbody>
-      {#each queue as entry (entry.issueId)}
+      {#each queueView as entry (entry.issueId)}
         <tr>
           <td>#{entry.issueId}</td>
           <td>{entry.state}</td>
