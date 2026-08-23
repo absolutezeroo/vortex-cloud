@@ -69,7 +69,9 @@ public sealed class WiredTradeContractTests
 
         packet.PopInt().Should().Be(CustomType);
         packet.PopString().Should().BeEmpty("youGetText");
-        packet.PopString().Should().BeEmpty("layoutType");
+        packet.PopString()
+            .Should()
+            .Be("generic", "an empty layoutType would name an asset that does not exist");
 
         // --- the rules definition
         packet.PopBoolean().Should().BeTrue("the give side is announced by a flag");

@@ -22,7 +22,10 @@ public sealed record WiredTradeInitiateMessageComposer : IComposer
     [Id(1)]
     public required string YouGetText { get; init; }
 
-    /// <summary>Which of the screen's layouts to wear. The client passes it through unread.</summary>
+    /// <summary>
+    /// Which of the screen's layouts to wear -- "generic" or "games". The client concatenates it
+    /// into an asset name, so empty is serialized as "generic" rather than sent as-is.
+    /// </summary>
     [Id(2)]
     public required string LayoutType { get; init; }
 

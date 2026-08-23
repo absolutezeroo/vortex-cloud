@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -72,14 +72,55 @@ public class WiredActionInitiateTransaction(
             new WiredRangeParamRule(0, int.MaxValue, 0), // timeout, seconds
         ];
 
+    /// <summary>
+    /// One entry per selection slot the client's form addresses, and it addresses three.
+    /// </summary>
+    /// <remarks>
+    /// Slot 0 is the chest the offer is served out of and slot 1 the contract that prices it --
+    /// the form titles them separately -- while slot 2 is the multiplier's source: the
+    /// "a plain number / whatever this variable says" selector is a merged input source, and the
+    /// client addresses it as furni slot 2 and player slot 1 (<c>mergedSelections()</c> returns
+    /// <c>[[2, 1]]</c> for this action's form).
+    /// <para>
+    /// Declaring none left every one of them undeclared, and the client's arrow for slot 2 read
+    /// past the end of the list it was handed. Neither this client nor the Flash one it is ported
+    /// from range-checks that lookup, so the arrow is inert at best. Both chest give-actions had
+    /// the same gap and it is fixed the same way.
+    /// </para>
+    /// <para>
+    /// The slots stay on one source list rather than splitting into the client's dual picking mode:
+    /// <see cref="FindChest"/> and <see cref="TryFindContract"/> read the box's single configured
+    /// furni list, telling one from the other by logic name.
+    /// </para>
+    /// </remarks>
+    public override List<WiredFurniSourceType[]> GetAllowedFurniSources() =>
+        [
+            [.. FurniSources],
+            [.. FurniSources],
+            [.. FurniSources],
+        ];
+
+    /// <inheritdoc cref="GetAllowedFurniSources"/>
     public override List<WiredPlayerSourceType[]> GetAllowedPlayerSources() =>
         [
-            [
-                WiredPlayerSourceType.TriggeredUser,
-                WiredPlayerSourceType.SelectorUsers,
-                WiredPlayerSourceType.SignalUsers,
-            ],
+            [.. PlayerSources],
+            [.. PlayerSources],
         ];
+
+    private static readonly WiredFurniSourceType[] FurniSources =
+    [
+        WiredFurniSourceType.SelectedItems,
+        WiredFurniSourceType.SelectorItems,
+        WiredFurniSourceType.SignalItems,
+        WiredFurniSourceType.TriggeredItem,
+    ];
+
+    private static readonly WiredPlayerSourceType[] PlayerSources =
+    [
+        WiredPlayerSourceType.TriggeredUser,
+        WiredPlayerSourceType.SelectorUsers,
+        WiredPlayerSourceType.SignalUsers,
+    ];
 
     public override async Task<bool> ExecuteAsync(IWiredExecutionContext ctx, CancellationToken ct)
     {

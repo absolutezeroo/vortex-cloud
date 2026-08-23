@@ -19,7 +19,14 @@ internal class WiredTradeInitiateMessageComposerSerializer(int header)
         packet
             .WriteInteger(message.RequirementType)
             .WriteString(message.YouGetText)
-            .WriteString(message.LayoutType);
+            // The client concatenates this straight into an asset name
+            // ("wired_chests_images_<layoutType>_payments"), so an empty string is not a neutral
+            // default -- it asks the resource manager for an image that does not exist and the
+            // trade screen opens with a blank panel. "generic" is the client's own fallback: it is
+            // LAYOUT_TYPES[0] in PaymentContract, which is what an out-of-range index clamps to.
+            .WriteString(
+                string.IsNullOrEmpty(message.LayoutType) ? DefaultLayoutType : message.LayoutType
+            );
 
         // Only a custom contract carries rules, and the client reads them off the same test — send
         // one under any other type and everything after it is read at the wrong offset.
@@ -50,4 +57,7 @@ internal class WiredTradeInitiateMessageComposerSerializer(int header)
 
     /// <summary>The one requirement type whose payload is followed by a rules block.</summary>
     private const int CustomRequirementType = 4;
+
+    /// <summary>The layout a screen wears when the contract behind it names none.</summary>
+    private const string DefaultLayoutType = "generic";
 }
