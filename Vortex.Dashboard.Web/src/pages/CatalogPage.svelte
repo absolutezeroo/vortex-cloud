@@ -1367,7 +1367,7 @@
   .catalog-tab {
     flex: 0 0 auto;
     padding: 7px 14px;
-    border-radius: 10px;
+    border-radius: 8px;
     border: 1px solid var(--line);
     background: transparent;
     color: var(--muted);
@@ -1501,7 +1501,7 @@
     display: grid;
     place-items: center;
     border: 1px solid var(--line-strong);
-    border-radius: 9px;
+    border-radius: 8px;
     background: var(--input-bg);
     color: var(--accent);
     overflow: hidden;

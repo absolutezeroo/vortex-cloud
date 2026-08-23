@@ -1025,7 +1025,7 @@
 
   .question-card {
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 10px 11px;
     background: var(--surface);
   }
@@ -1064,7 +1064,7 @@
 
   .question-form {
     border: 1px solid var(--line-strong);
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 11px 12px;
     margin-top: 8px;
   }
@@ -1078,7 +1078,7 @@
 
   .op-subgroup {
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 10px 12px;
     margin: 4px 0 8px;
   }
@@ -1106,7 +1106,7 @@
 
   .stat {
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 8px 10px;
     background: var(--surface);
     display: grid;
@@ -1122,7 +1122,7 @@
 
   .result-card {
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 10px 11px;
     margin-bottom: 8px;
     background: var(--surface);

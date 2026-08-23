@@ -333,7 +333,7 @@
     margin: 0 0 10px;
     padding: 8px 12px;
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: 8px;
     background: var(--surface-strong);
     color: var(--muted);
     font-size: 0.86rem;

@@ -698,7 +698,7 @@
 
   .step-bar {
     height: 12px;
-    border-radius: 6px;
+    border-radius: 8px;
     background: var(--surface-raised, rgba(255, 255, 255, 0.08));
     overflow: hidden;
   }
@@ -787,7 +787,7 @@
     display: inline-block;
     width: 14px;
     height: 3px;
-    border-radius: 2px;
+    border-radius: 8px;
   }
 
   .chart-key--median {

@@ -244,7 +244,7 @@
     gap: 8px;
     padding: 10px;
     border: 1px solid var(--line-strong);
-    border-radius: 14px;
+    border-radius: 10px;
     background: var(--surface);
     box-shadow: 0 26px 70px rgba(0, 0, 0, 0.46);
   }
@@ -273,7 +273,7 @@
 
   .cp-search kbd {
     border: 1px solid var(--line);
-    border-radius: 6px;
+    border-radius: 8px;
     padding: 1px 6px;
     font-size: 0.7rem;
   }
@@ -293,7 +293,7 @@
     width: 100%;
     text-align: left;
     border: 1px solid transparent;
-    border-radius: 9px;
+    border-radius: 8px;
     background: transparent;
     color: var(--ink);
     padding: 7px 9px;
@@ -310,7 +310,7 @@
     place-items: center;
     width: 26px;
     height: 26px;
-    border-radius: 7px;
+    border-radius: 8px;
     background: var(--input-bg);
     color: var(--accent);
   }

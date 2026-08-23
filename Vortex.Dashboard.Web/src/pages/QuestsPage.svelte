@@ -564,7 +564,7 @@
     display: grid;
     place-items: center;
     border: 1px solid var(--line-strong);
-    border-radius: 9px;
+    border-radius: 8px;
     background: var(--input-bg);
     color: var(--accent);
   }
@@ -591,7 +591,7 @@
 
   .op-subgroup {
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 10px 12px 4px;
     margin: 4px 0 8px;
     display: grid;

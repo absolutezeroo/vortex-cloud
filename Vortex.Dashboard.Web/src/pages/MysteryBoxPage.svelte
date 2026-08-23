@@ -897,7 +897,7 @@
 
   .stat-tile {
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: 8px;
     background: var(--surface-strong);
     padding: 10px 12px;
     display: grid;

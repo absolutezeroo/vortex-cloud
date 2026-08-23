@@ -347,7 +347,7 @@
     width: 100%;
     text-align: left;
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: 8px;
     background: var(--surface-strong);
     color: var(--ink);
     padding: 9px 11px;
@@ -375,7 +375,7 @@
     display: grid;
     place-items: center;
     border: 1px solid var(--line-strong);
-    border-radius: 9px;
+    border-radius: 8px;
     background: var(--input-bg);
     color: var(--accent);
     font-size: 0.72rem;

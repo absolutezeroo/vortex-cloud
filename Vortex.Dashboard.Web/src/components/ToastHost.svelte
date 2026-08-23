@@ -46,7 +46,7 @@
     align-items: start;
     gap: 10px;
     border: 1px solid var(--line-strong);
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 10px 11px;
     color: var(--ink);
     box-shadow: var(--shadow);
@@ -83,7 +83,7 @@
     width: 20px;
     height: 20px;
     border: 0;
-    border-radius: 6px;
+    border-radius: 8px;
     background: transparent;
     color: var(--muted-strong);
     padding: 0;

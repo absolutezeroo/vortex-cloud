@@ -800,7 +800,7 @@
 <style>
   .tab-card {
     border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 12px;
     margin-bottom: 12px;
   }

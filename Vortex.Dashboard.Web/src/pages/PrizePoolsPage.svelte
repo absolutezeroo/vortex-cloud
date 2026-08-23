@@ -692,7 +692,7 @@
     width: 100%;
     text-align: left;
     border: 1px solid var(--line-strong);
-    border-radius: 9px;
+    border-radius: 8px;
     background: var(--surface-strong);
     color: var(--ink);
     padding: 8px 12px;

@@ -116,7 +116,7 @@
     display: grid;
     gap: 2px;
     border: 1px solid var(--line-strong);
-    border-radius: 10px;
+    border-radius: 8px;
     background: var(--surface-raised);
     padding: 5px;
     box-shadow: var(--shadow);
@@ -131,7 +131,7 @@
     width: 100%;
     text-align: left;
     border: 0;
-    border-radius: 7px;
+    border-radius: 8px;
     background: transparent;
     color: var(--ink);
     padding: 7px 9px;

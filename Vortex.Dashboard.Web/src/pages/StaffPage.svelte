@@ -776,7 +776,7 @@
     align-items: center;
     gap: 4px;
     padding: 2px 6px;
-    border-radius: 6px;
+    border-radius: 8px;
     background: var(--surface-raised, rgba(255, 255, 255, 0.06));
     font-size: 0.78rem;
   }

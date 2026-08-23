@@ -19,7 +19,7 @@
 <style>
   .access-denied-notice {
     border: 1px solid var(--danger-border);
-    border-radius: 14px;
+    border-radius: 10px;
     background: var(--danger-bg);
     padding: 16px;
     color: var(--danger);

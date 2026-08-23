@@ -42,7 +42,7 @@
   .slot {
     display: inline-flex;
     margin-left: calc(var(--size) / -3);
-    border-radius: 9px;
+    border-radius: 8px;
     box-shadow: 0 0 0 2px var(--surface);
   }
 
@@ -55,7 +55,7 @@
     place-items: center;
     width: var(--size);
     height: var(--size);
-    border-radius: 9px;
+    border-radius: 8px;
     background: var(--surface-hover);
     color: var(--muted-strong);
     font-size: 0.72rem;

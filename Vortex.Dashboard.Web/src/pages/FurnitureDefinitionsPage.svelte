@@ -530,7 +530,7 @@
 
   .furni-card {
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: 10px;
     overflow: hidden;
     background: var(--surface-strong);
   }

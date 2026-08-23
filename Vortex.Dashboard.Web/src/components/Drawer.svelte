@@ -175,7 +175,7 @@
     display: grid;
     place-items: center;
     border: 1px solid var(--line);
-    border-radius: 9px;
+    border-radius: 8px;
     background: transparent;
     color: var(--muted);
     padding: 6px;

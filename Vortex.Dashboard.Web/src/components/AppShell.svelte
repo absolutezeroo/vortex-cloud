@@ -421,7 +421,7 @@
   .nav-kbd {
     flex: 0 0 auto;
     border: 1px solid var(--line);
-    border-radius: 6px;
+    border-radius: 8px;
     padding: 1px 5px;
     color: var(--muted);
     font-size: 0.66rem;
@@ -434,7 +434,7 @@
     gap: 8px;
     padding: 8px 10px;
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: 8px;
     background: var(--input-bg);
     color: var(--muted);
   }
@@ -473,7 +473,7 @@
     font-weight: 700;
     letter-spacing: 0.04em;
     cursor: pointer;
-    border-radius: 6px;
+    border-radius: 8px;
   }
 
   .nav-group-label:hover {
@@ -524,14 +524,14 @@
     gap: 2px;
     padding: 3px;
     border: 1px solid var(--line-strong);
-    border-radius: 10px;
+    border-radius: 8px;
     background: var(--surface-strong);
   }
 
   .theme-switch button,
   .locale-switch button {
     border: 0;
-    border-radius: 7px;
+    border-radius: 8px;
     background: transparent;
     color: var(--muted);
     padding: 6px 11px;
@@ -557,7 +557,7 @@
     align-items: center;
     gap: 6px;
     padding: 7px 12px;
-    border-radius: 10px;
+    border-radius: 8px;
     border: 1px solid var(--line-strong);
     background: var(--surface-strong);
     color: inherit;

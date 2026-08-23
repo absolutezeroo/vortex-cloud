@@ -119,7 +119,7 @@ another page) lands where the operator left off instead of resetting to the firs
     margin: 10px 0 14px;
     padding: 4px;
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: 10px;
     background: var(--surface-strong);
     overflow-x: auto;
     scrollbar-width: thin;
@@ -127,7 +127,7 @@ another page) lands where the operator left off instead of resetting to the firs
 
   .tab {
     border: 1px solid transparent;
-    border-radius: 9px;
+    border-radius: 8px;
     background: transparent;
     color: var(--muted);
     padding: 7px 12px;

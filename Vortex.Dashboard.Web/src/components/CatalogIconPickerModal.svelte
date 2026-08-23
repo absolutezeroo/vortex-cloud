@@ -171,7 +171,7 @@
     gap: 4px;
     padding: 8px 4px;
     border: 1px solid var(--line-strong);
-    border-radius: 9px;
+    border-radius: 8px;
     background: var(--input-bg);
     color: var(--muted);
     cursor: pointer;

@@ -144,7 +144,7 @@
     align-items: stretch;
     gap: 0;
     border: 1px solid var(--line-strong);
-    border-radius: 9px;
+    border-radius: 8px;
     overflow: hidden;
     background: var(--input-bg);
   }
@@ -205,7 +205,7 @@
     gap: 6px;
     padding: 8px;
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: 8px;
     background: var(--surface-strong);
     cursor: pointer;
     color: inherit;

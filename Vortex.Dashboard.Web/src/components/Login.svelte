@@ -81,7 +81,7 @@
     flex-direction: column;
     gap: 16px;
     padding: 28px;
-    border-radius: 16px;
+    border-radius: 10px;
     background: var(--surface);
     border: 1px solid var(--line);
     box-shadow: var(--shadow);
@@ -107,7 +107,7 @@
     place-items: center;
     width: 40px;
     height: 40px;
-    border-radius: 11px;
+    border-radius: 8px;
     background: linear-gradient(160deg, var(--gold-strong), #e0870f);
     box-shadow: 0 3px 0 #a9640a, 0 8px 16px rgba(0, 0, 0, 0.28);
     color: var(--gold-ink);
@@ -128,7 +128,7 @@
 
   input {
     padding: 10px 12px;
-    border-radius: 10px;
+    border-radius: 8px;
     border: 1px solid var(--line-strong);
     background: var(--input-bg);
     color: var(--ink);
@@ -145,7 +145,7 @@
     margin-top: 4px;
     padding: 11px 12px;
     border: 1px solid transparent;
-    border-radius: 10px;
+    border-radius: 8px;
     background: var(--button-bg);
     color: var(--button-ink);
     font-weight: 700;
