@@ -1097,16 +1097,16 @@ internal sealed partial class DashboardApiService
 
                 // Online-first is the browsing default; an explicit sort is the operator overriding
                 // it, and re-sorting here would silently undo what they asked for.
-                items =
-                    (query["sort"] ?? string.Empty) switch
-                    {
-                        "id" => items.OrderBy(p => p.id).ToList(),
-                        "idDesc" => items.OrderByDescending(p => p.id).ToList(),
-                        "name" => items.OrderBy(p => p.name, StringComparer.OrdinalIgnoreCase).ToList(),
-                        _ => items.OrderByDescending(p => p.online)
-                            .ThenBy(p => p.name, StringComparer.OrdinalIgnoreCase)
-                            .ToList(),
-                    };
+                items = (query["sort"] ?? string.Empty) switch
+                {
+                    "id" => items.OrderBy(p => p.id).ToList(),
+                    "idDesc" => items.OrderByDescending(p => p.id).ToList(),
+                    "name" => items.OrderBy(p => p.name, StringComparer.OrdinalIgnoreCase).ToList(),
+                    _ => items
+                        .OrderByDescending(p => p.online)
+                        .ThenBy(p => p.name, StringComparer.OrdinalIgnoreCase)
+                        .ToList(),
+                };
 
                 return new
                 {
@@ -1320,7 +1320,10 @@ internal sealed partial class DashboardApiService
     // remembers the id, the sprite or what the thing does but not what it is called. Unknown values
     // fall back to the browsing default rather than erroring, because the sort arrives from a query
     // string and a typo there should not be a failed search.
-    private static IQueryable<PlayerEntity> OrderPlayers(IQueryable<PlayerEntity> players, string? sort) =>
+    private static IQueryable<PlayerEntity> OrderPlayers(
+        IQueryable<PlayerEntity> players,
+        string? sort
+    ) =>
         sort switch
         {
             "id" => players.OrderBy(p => p.Id),

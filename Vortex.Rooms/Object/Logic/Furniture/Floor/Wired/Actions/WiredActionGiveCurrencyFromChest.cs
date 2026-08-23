@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,14 +60,47 @@ public class WiredActionGiveCurrencyFromChest(
             new WiredRangeParamRule(0, 1, 0), // show by default
         ];
 
+    /// <summary>
+    /// Two selection slots, not one.
+    /// </summary>
+    /// <remarks>
+    /// Slot 0 is who gets paid. Slot 1 is the amount's source: the setup form's
+    /// "give a number / give what this variable says" selector is a merged input source, and the
+    /// client addresses it as slot 1 in both lists (<c>mergedSelections()</c> returns
+    /// <c>[[1, 1]]</c> for this action's form).
+    /// <para>
+    /// Declaring one entry left slot 1 undeclared, and the client's arrow for it read past the end
+    /// of the list it was handed. That threw and took the whole wired form down, because neither
+    /// this client nor the Flash one it is ported from range-checks the lookup.
+    /// </para>
+    /// </remarks>
+    public override List<WiredFurniSourceType[]> GetAllowedFurniSources() =>
+        [
+            [.. FurniSources],
+            [.. FurniSources],
+        ];
+
+    /// <inheritdoc cref="GetAllowedFurniSources"/>
     public override List<WiredPlayerSourceType[]> GetAllowedPlayerSources() =>
         [
-            [
-                WiredPlayerSourceType.TriggeredUser,
-                WiredPlayerSourceType.SelectorUsers,
-                WiredPlayerSourceType.SignalUsers,
-            ],
+            [.. PlayerSources],
+            [.. PlayerSources],
         ];
+
+    private static readonly WiredFurniSourceType[] FurniSources =
+    [
+        WiredFurniSourceType.SelectedItems,
+        WiredFurniSourceType.SelectorItems,
+        WiredFurniSourceType.SignalItems,
+        WiredFurniSourceType.TriggeredItem,
+    ];
+
+    private static readonly WiredPlayerSourceType[] PlayerSources =
+    [
+        WiredPlayerSourceType.TriggeredUser,
+        WiredPlayerSourceType.SelectorUsers,
+        WiredPlayerSourceType.SignalUsers,
+    ];
 
     public override async Task<bool> ExecuteAsync(IWiredExecutionContext ctx, CancellationToken ct)
     {
