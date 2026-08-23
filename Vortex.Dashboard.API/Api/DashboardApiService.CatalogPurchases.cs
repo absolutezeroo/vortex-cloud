@@ -41,6 +41,9 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
+                // ponytail: grouped in memory, and it has to be -- the numbers being summed live
+                // inside the audit event's JSON payload, not in a column the database can group
+                // by. The window bound above is what keeps it honest; the real fix is a column.
                 List<CatalogPurchasePayload> purchases = events
                     .Select(e => ParseCatalogPurchasePayload(e.OccurredAt, e.Data))
                     .Where(p => p is not null)

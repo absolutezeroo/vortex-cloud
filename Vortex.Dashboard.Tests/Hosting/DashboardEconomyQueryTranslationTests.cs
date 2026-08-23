@@ -51,6 +51,18 @@ public sealed class DashboardEconomyQueryTranslationTests
         sql.Should().Contain("LEFT JOIN");
     }
 
+    [Fact]
+    public void TheMarketplaceQueryGroupsByDayAndSellerInSql()
+    {
+        using VortexDbContext db = OfflineContext();
+
+        string sql = DashboardApiService.MarketplaceSalesQuery(db, SINCE, UNTIL).ToQueryString();
+
+        sql.Should().Contain("GROUP BY");
+        sql.Should().Contain("SUM(");
+        sql.Should().Contain("COUNT(");
+    }
+
     /// <summary>
     /// The real provider, pinned to a server version so nothing tries to detect one, and a
     /// connection string that is never opened -- <c>ToQueryString</c> only needs the SQL generator.

@@ -233,18 +233,10 @@ internal sealed partial class DashboardApiService
                 (DateTime since, DateTime until) = ResolveWindow(query, DateTime.UtcNow);
                 string granularity = NormalizeGranularity(query["granularity"]);
 
-                List<(DateTime UpdatedAt, int Price, int SellerId)> sold = await db
-                    .MarketplaceOffers.AsNoTracking()
-                    .Where(o =>
-                        o.State == MarketplaceOfferState.Sold
-                        && o.UpdatedAt >= since
-                        && o.UpdatedAt <= until
-                    )
-                    .Select(o => new ValueTuple<DateTime, int, int>(
-                        o.UpdatedAt,
-                        o.Price,
-                        o.SellerEntityId
-                    ))
+                // Summed by the database, one row per (day, seller). Both aggregates below fold up
+                // from that: day is finer than any bucket the timeline offers, and a seller's totals
+                // are the sum of their days.
+                List<MarketplaceSaleRow> sold = await MarketplaceSalesQuery(db, since, until)
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
@@ -255,9 +247,9 @@ internal sealed partial class DashboardApiService
 
                 Dictionary<DateTime, (int sales, long volume)> bucketMap = new();
 
-                foreach ((DateTime updatedAt, int price, int _) in sold)
+                foreach (MarketplaceSaleRow row in sold)
                 {
-                    DateTime bucket = ResolveCalendarBucket(updatedAt, granularity);
+                    DateTime bucket = ResolveCalendarBucket(row.Day, granularity);
                     (int sales, long volume) current = bucketMap.TryGetValue(
                         bucket,
                         out (int sales, long volume) existing
@@ -265,7 +257,7 @@ internal sealed partial class DashboardApiService
                         ? existing
                         : (0, 0L);
 
-                    bucketMap[bucket] = (current.sales + 1, current.volume + price);
+                    bucketMap[bucket] = (current.sales + row.Sales, current.volume + row.Volume);
                 }
 
                 var timeline = bucketMap
@@ -279,6 +271,9 @@ internal sealed partial class DashboardApiService
                     })
                     .ToList();
 
+                int soldCount = sold.Sum(s => s.Sales);
+                long soldVolume = sold.Sum(s => s.Volume);
+
                 List<int> sellerIds = NormalizeIds(sold.Select(s => (int?)s.SellerId));
                 Dictionary<int, string> sellerNames = await LoadPlayerNamesAsync(db, sellerIds, ct)
                     .ConfigureAwait(false);
@@ -288,8 +283,8 @@ internal sealed partial class DashboardApiService
                     {
                         sellerId = g.Key,
                         sellerName = ResolvePlayerName(sellerNames, (int?)g.Key),
-                        sales = g.Count(),
-                        volume = g.Sum(s => (long)s.Price),
+                        sales = g.Sum(s => s.Sales),
+                        volume = g.Sum(s => s.Volume),
                     })
                     .OrderByDescending(s => s.volume)
                     .Take(10)
@@ -306,9 +301,12 @@ internal sealed partial class DashboardApiService
                     totals = new
                     {
                         activeListings = activeCount,
-                        soldCount = sold.Count,
-                        totalVolume = sold.Sum(s => (long)s.Price),
-                        averagePrice = sold.Count > 0 ? sold.Average(s => s.Price) : 0,
+                        // sold holds one row per (day, seller) now, so the sale count is the sum of
+                        // the grouped counts -- not the row count -- and the mean price is the
+                        // volume over that, which is what Average(price) computed before.
+                        soldCount,
+                        totalVolume = soldVolume,
+                        averagePrice = soldCount > 0 ? (double)soldVolume / soldCount : 0d,
                     },
                     timeline,
                     topSellers,
@@ -411,6 +409,9 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
+                // ponytail: grouped in memory, and it has to be -- the numbers being summed live
+                // inside the audit event's JSON payload, not in a column the database can group
+                // by. The window bound above is what keeps it honest; the real fix is a column.
                 List<ClubSubscriptionEvent> clubEvents = events
                     .Select(e => new ClubSubscriptionEvent(
                         e.OccurredAt,
@@ -740,6 +741,9 @@ internal sealed partial class DashboardApiService
         long Earned,
         int TransactionCount
     );
+
+    /// <summary>One day of one seller's marketplace sales, already summed by the database.</summary>
+    internal sealed record MarketplaceSaleRow(DateTime Day, int SellerId, int Sales, long Volume);
 
     /// <summary>One (currency, originating action) pair of spend, already summed by the database.</summary>
     internal sealed record EconomySpendCategoryRow(

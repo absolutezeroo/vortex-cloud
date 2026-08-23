@@ -334,6 +334,9 @@ internal sealed partial class DashboardApiService
                     })
                     .ToList();
 
+                // ponytail: this is why the whole window is materialised rather than paged --
+                // the sanction duration is inside the event payload. Category + the 60-day cap
+                // above are the bound; a duration column would let the rest become a page.
                 List<int> durations = events
                     .Select(e => ParseModerationDurationSeconds(e.Data))
                     .Where(seconds => seconds.HasValue && seconds.Value > 0)

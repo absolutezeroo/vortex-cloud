@@ -344,6 +344,8 @@ internal sealed partial class DashboardApiService
                     })
                     .ToList();
 
+                // ponytail: same as the catalog purchase stats -- the amounts come out of the
+                // audit payload, so the grouping cannot move into the query.
                 var topOfferGroups = purchases
                     .GroupBy(p => p.OfferId)
                     .Select(g => new

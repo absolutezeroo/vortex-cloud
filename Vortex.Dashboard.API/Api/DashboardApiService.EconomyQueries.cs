@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
+using Vortex.Database.Entities.Marketplace;
 
 namespace Vortex.Dashboard.API.Api;
 
@@ -41,6 +42,31 @@ internal sealed partial class DashboardApiService
                 g.Sum(l => l.Delta < 0 ? -l.Delta : 0L),
                 g.Sum(l => l.Delta > 0 ? l.Delta : 0L),
                 g.Count()
+            ));
+
+    /// <summary>
+    /// One row per (day, seller) of sold marketplace offers, with the sale count and credit volume
+    /// already summed. The timeline buckets by day, month or year and the top-seller list sums a
+    /// seller's days, so both fold up from this one result.
+    /// </summary>
+    internal static IQueryable<MarketplaceSaleRow> MarketplaceSalesQuery(
+        VortexDbContext db,
+        DateTime since,
+        DateTime until
+    ) =>
+        db
+            .MarketplaceOffers.AsNoTracking()
+            .Where(o =>
+                o.State == MarketplaceOfferState.Sold
+                && o.UpdatedAt >= since
+                && o.UpdatedAt <= until
+            )
+            .GroupBy(o => new { Day = o.UpdatedAt.Date, o.SellerEntityId })
+            .Select(g => new MarketplaceSaleRow(
+                g.Key.Day,
+                g.Key.SellerEntityId,
+                g.Count(),
+                g.Sum(o => (long)o.Price)
             ));
 
     /// <summary>
