@@ -453,6 +453,20 @@ public sealed partial class WiredTradeSettlement(
     }
 
     /// <summary>Takes the coins a contract asks for. False leaves the player's wallet untouched.</summary>
+    /// <remarks>
+    /// Deliberately not routed through <c>WalletPurchaseExtensions.ExecutePurchaseAsync</c>, which
+    /// every other wallet-funded flow in the codebase uses. That helper refunds the debit whenever
+    /// its work step throws, unconditionally, and this settlement has a point of no return the
+    /// helper cannot express: once the furniture has moved and the chest balance is saved, the
+    /// trade has happened and the payment stops being refundable. Under the helper, a failure
+    /// after that point — writing the ledger, for instance — would hand the coins back to a player
+    /// who is already holding the goods, which creates currency.
+    ///
+    /// So the refund here is armed before the goods move and disarmed after, and the reward grant
+    /// undoes itself into the chest rather than unwinding the trade. Both halves are pinned by
+    /// WiredContractSettlementOrderingTests: GoodsThatCannotBeSaved_GiveThePaymentBack and
+    /// ARewardTheWalletRefuses_IsNotLoggedAsPaid.
+    /// </remarks>
     private async Task<bool> TryTakeCreditsAsync(
         PlayerId playerId,
         int amount,

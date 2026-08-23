@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Reflection;
@@ -12,6 +12,7 @@ using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Catalog.Snapshots;
 using Vortex.Primitives.Events;
+using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Players.Enums.Wallet;
@@ -32,12 +33,22 @@ namespace Vortex.Database.Tests.Catalog;
 /// </summary>
 internal sealed class CatalogPurchaseHarness
 {
-    public CatalogPurchaseHarness(CatalogOfferSnapshot offer, int buyerId)
+    public CatalogPurchaseHarness(
+        CatalogOfferSnapshot offer,
+        int buyerId,
+        CatalogProductSnapshot? product = null
+    )
     {
         Offer = offer;
         BuyerId = buyerId;
+        Product = product;
         Grain = BuildGrain();
     }
+
+    /// <summary>The offer's single product, when a test needs one. Room ads read their duration
+    /// from the product's Quantity rather than from a configured field, so that arithmetic is only
+    /// reachable through here.</summary>
+    public CatalogProductSnapshot? Product { get; }
 
     public CatalogOfferSnapshot Offer { get; }
 
@@ -69,6 +80,13 @@ internal sealed class CatalogPurchaseHarness
 
     public List<IEvent> Events { get; } = [];
 
+    /// <summary>Room advertisements the purchase created: (roomId, name, expiry). The duration a
+    /// room ad buys is encoded in the product rather than configured, so what lands here is the
+    /// only place that arithmetic is observable.</summary>
+    public List<(int RoomId, string Name, DateTime ExpiresAt)> AdvertisementsCreated { get; } = [];
+
+    public bool AdvertisementThrows { get; set; }
+
     public int CreditBackCalls { get; private set; }
 
     private int _lastInventoryKey;
@@ -77,9 +95,26 @@ internal sealed class CatalogPurchaseHarness
     {
         CatalogPurchaseGrain grain = new CatalogPurchaseGrain(
             BuildGrainFactory(),
-            new StubCatalogService(Offer),
+            new StubCatalogService(Offer, Product),
             new RecordingEventPublisher(Events),
-            FakeProxy.Create<IRoomAdvertisementService>(_ => null),
+            FakeProxy.Create<IRoomAdvertisementService>(call =>
+            {
+                if (call.Method.Name != nameof(IRoomAdvertisementService.CreateAsync))
+                {
+                    return null;
+                }
+
+                if (AdvertisementThrows)
+                {
+                    throw new InvalidOperationException("advertisement service unreachable");
+                }
+
+                AdvertisementsCreated.Add(
+                    ((int)call.Args![0]!, (string)call.Args![1]!, (DateTime)call.Args![5]!)
+                );
+
+                return Task.CompletedTask;
+            }),
             NullLogger<CatalogPurchaseGrain>.Instance
         );
 
@@ -210,7 +245,10 @@ internal sealed class CatalogPurchaseHarness
         field.SetValue(grain, context);
     }
 
-    private sealed class StubCatalogService(CatalogOfferSnapshot offer) : ICatalogService
+    private sealed class StubCatalogService(
+        CatalogOfferSnapshot offer,
+        CatalogProductSnapshot? product
+    ) : ICatalogService
     {
         public CatalogSnapshot GetCatalogSnapshot(CatalogType catalogType) =>
             CatalogSnapshot.Empty with
@@ -219,6 +257,18 @@ internal sealed class CatalogPurchaseHarness
                     offer.Id,
                     offer
                 ),
+                ProductsById = product is null
+                    ? ImmutableDictionary<int, CatalogProductSnapshot>.Empty
+                    : ImmutableDictionary<int, CatalogProductSnapshot>.Empty.Add(
+                        product.Id,
+                        product
+                    ),
+                OfferProductIds = product is null
+                    ? ImmutableDictionary<int, ImmutableArray<int>>.Empty
+                    : ImmutableDictionary<int, ImmutableArray<int>>.Empty.Add(
+                        offer.Id,
+                        [product.Id]
+                    ),
             };
     }
 
@@ -263,5 +313,20 @@ internal static class CatalogOffers
             ProductIds = [],
             Products = [],
             DiscountPercent = discountPercent,
+        };
+
+    public static CatalogProductSnapshot NewProduct(int offerId, int quantity) =>
+        new()
+        {
+            Id = 1,
+            OfferId = offerId,
+            ProductType = ProductType.Floor,
+            FurniDefinitionId = 1,
+            SpriteId = 1,
+            ExtraParam = null,
+            Quantity = quantity,
+            UniqueSize = 0,
+            UniqueRemaining = 0,
+            BuildersClubEligible = false,
         };
 }
