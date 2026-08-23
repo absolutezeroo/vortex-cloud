@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Inventory.Purse;
+namespace Vortex.Protocol.Messages.Outgoing.Inventory.Purse;
 
 [GenerateSerializer, Immutable]
 public sealed record CreditBalanceEventMessageComposer : IComposer

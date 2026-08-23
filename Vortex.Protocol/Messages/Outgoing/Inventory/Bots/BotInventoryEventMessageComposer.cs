@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Bots;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Inventory.Bots;
+namespace Vortex.Protocol.Messages.Outgoing.Inventory.Bots;
 
 /// <summary>Every bot the player owns and has not placed in a room.</summary>
 [GenerateSerializer, Immutable]

@@ -13,7 +13,7 @@ using Vortex.Database.Entities.Players;
 using Vortex.Players.Effects;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Inventory.Snapshots;
-using Vortex.Primitives.Messages.Outgoing.Inventory.Avatareffect;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Avatareffect;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Players;

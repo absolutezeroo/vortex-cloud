@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
-using Vortex.Primitives.Messages.Outgoing.Help;
+using Vortex.Protocol.Messages.Outgoing.Help;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Orleans;
 

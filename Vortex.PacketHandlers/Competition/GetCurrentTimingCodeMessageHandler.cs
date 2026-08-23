@@ -1,8 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Competition;
-using Vortex.Primitives.Messages.Outgoing.Competition;
+using Vortex.Protocol.Messages.Incoming.Competition;
+using Vortex.Protocol.Messages.Outgoing.Competition;
 
 namespace Vortex.PacketHandlers.Competition;
 

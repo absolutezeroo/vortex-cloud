@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Game.Lobby;
+using Vortex.Protocol.Messages.Outgoing.Game.Lobby;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Revision20260701.Parsers.Game.Arena;
 using Vortex.Revisions.Revision20260701.Parsers.Game.Directory;

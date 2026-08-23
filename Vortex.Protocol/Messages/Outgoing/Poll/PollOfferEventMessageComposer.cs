@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Poll;
+namespace Vortex.Protocol.Messages.Outgoing.Poll;
 
 /// <summary>
 /// Offers a survey to one player: the client shows the "got a minute?" dialog with

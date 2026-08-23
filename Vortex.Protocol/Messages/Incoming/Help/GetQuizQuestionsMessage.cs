@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Help;
+namespace Vortex.Protocol.Messages.Incoming.Help;
 
 /// <summary>
 /// Opening a quiz. The client names which one — <c>HabboWay1</c> from the Habbo Way booklet,

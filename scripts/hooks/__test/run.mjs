@@ -52,7 +52,7 @@ fs.writeFileSync(emptyBaseline, '{"unreachable":[]}\n');
 // prouve plus rien : il faut une vraie violation. La sonde est un fichier de contrats qui importe le
 // protocole -- exactement ce que le mur existe pour refuser. Elle est retiree avant le cas passant.
 const wallProbe = path.join(root, 'Vortex.Primitives', 'Rooms', '__WallProbe.cs');
-fs.writeFileSync(wallProbe, 'using Vortex.Primitives.Messages.Incoming.Catalog;\n');
+fs.writeFileSync(wallProbe, 'using Vortex.Protocol.Messages.Incoming.Catalog;\n');
 
 const direct = [
   ['check-header-registry.mjs', [], 0, 'registre headers : baseline a jour'],

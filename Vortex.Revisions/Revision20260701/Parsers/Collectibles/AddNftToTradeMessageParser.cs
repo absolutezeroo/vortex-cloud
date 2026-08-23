@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
-using Vortex.Primitives.Messages.Incoming.Collectibles;
+using Vortex.Protocol.Messages.Incoming.Collectibles;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Primitives.Packets;

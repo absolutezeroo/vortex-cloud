@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Collectibles;
+namespace Vortex.Protocol.Messages.Outgoing.Collectibles;
 
 /// <summary>
 /// Whether this hotel mints collectibles. Minting is a blockchain errand — it needs a chain, a

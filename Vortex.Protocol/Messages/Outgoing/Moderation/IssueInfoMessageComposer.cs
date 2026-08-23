@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Moderation;
+namespace Vortex.Protocol.Messages.Outgoing.Moderation;
 
 /// <summary>
 /// A single ticket pushed to the mod tool outside the login queue — sent when a ticket is picked,

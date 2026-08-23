@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Inventory.Snapshots;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
+namespace Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 
 /// <summary>
 /// What is on a wired trade's table.

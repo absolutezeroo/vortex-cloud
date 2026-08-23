@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents;
+namespace Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents;
 
 /// <summary>
 /// Why a wired reward did or did not pay out (header 2997).

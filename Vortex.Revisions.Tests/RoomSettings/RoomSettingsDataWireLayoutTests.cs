@@ -2,7 +2,7 @@ using System;
 using System.Collections.Immutable;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
-using Vortex.Primitives.Messages.Outgoing.Roomsettings;
+using Vortex.Protocol.Messages.Outgoing.Roomsettings;
 using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Orleans.Snapshots.Room.Settings;

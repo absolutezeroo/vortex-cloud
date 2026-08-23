@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Inventory.Clothing;
+namespace Vortex.Protocol.Messages.Incoming.Inventory.Clothing;
 
 /// <summary>
 /// Binding a clothing furni to the account: it is consumed, and the figure sets it carries become

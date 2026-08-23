@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.Vault;
+using Vortex.Protocol.Messages.Incoming.Vault;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Vault.Enums;

@@ -1,5 +1,5 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Marketplace;
+namespace Vortex.Protocol.Messages.Incoming.Marketplace;
 
 public record BuyMarketplaceTokensMessage : IMessageEvent { }

@@ -4,7 +4,7 @@ using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Snapshots.Wired.Variables;
 
-namespace Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
+namespace Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 
 [GenerateSerializer, Immutable]
 public sealed record WiredAllVariableHoldersEventMessageComposer : IComposer

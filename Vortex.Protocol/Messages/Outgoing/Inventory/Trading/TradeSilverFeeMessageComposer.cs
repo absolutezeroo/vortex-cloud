@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Inventory.Trading;
+namespace Vortex.Protocol.Messages.Outgoing.Inventory.Trading;
 
 /// <summary>
 /// The silver fee this trade must cover before it can be confirmed (header 3497).

@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Roomsettings;
+using Vortex.Protocol.Messages.Outgoing.Roomsettings;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.RoomSettings;

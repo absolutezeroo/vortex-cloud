@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.Inventory.Clothing;
+using Vortex.Protocol.Messages.Incoming.Inventory.Clothing;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Primitives.Packets;

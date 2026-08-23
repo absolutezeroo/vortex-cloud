@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.Camera;
+using Vortex.Protocol.Messages.Incoming.Camera;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Collectibles;
+namespace Vortex.Protocol.Messages.Outgoing.Collectibles;
 
 /// <summary>
 /// How a shop purchase ended. One short, and only two values are distinguishable to the client: it

@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.Room.Layout;
+using Vortex.Protocol.Messages.Incoming.Room.Layout;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

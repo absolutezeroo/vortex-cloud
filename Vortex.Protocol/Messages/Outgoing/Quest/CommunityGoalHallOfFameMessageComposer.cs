@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Quest;
+namespace Vortex.Protocol.Messages.Outgoing.Quest;
 
 /// <summary>
 /// The leaderboard for a community goal (header 363).

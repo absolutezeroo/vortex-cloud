@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Availability;
+namespace Vortex.Protocol.Messages.Outgoing.Availability;
 
 /// <summary>
 /// The hotel is about to close (header 184).

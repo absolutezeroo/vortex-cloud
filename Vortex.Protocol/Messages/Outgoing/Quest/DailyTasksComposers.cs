@@ -4,7 +4,7 @@ using Vortex.Primitives.Networking;
 using Vortex.Primitives.Quests;
 using Vortex.Primitives.Quests.Snapshots;
 
-namespace Vortex.Primitives.Messages.Outgoing.Quest;
+namespace Vortex.Protocol.Messages.Outgoing.Quest;
 
 /// <summary>
 /// The player's whole daily-task board (header 1824). The client clears its list before applying

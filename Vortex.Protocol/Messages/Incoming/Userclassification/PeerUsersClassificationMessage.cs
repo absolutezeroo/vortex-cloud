@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Userclassification;
+namespace Vortex.Protocol.Messages.Incoming.Userclassification;
 
 /// <summary>
 /// <c>:uc hotel &lt;classification&gt;</c> — classify everyone currently online, not just the room.

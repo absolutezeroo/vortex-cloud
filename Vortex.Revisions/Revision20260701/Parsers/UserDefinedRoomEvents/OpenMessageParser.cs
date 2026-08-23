@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.Userdefinedroomevents;
+using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

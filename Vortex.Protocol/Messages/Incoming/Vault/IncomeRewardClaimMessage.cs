@@ -1,7 +1,7 @@
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Vault.Enums;
 
-namespace Vortex.Primitives.Messages.Incoming.Vault;
+namespace Vortex.Protocol.Messages.Incoming.Vault;
 
 public record IncomeRewardClaimMessage : IMessageEvent
 {

@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Players.Snapshots;
 
-namespace Vortex.Primitives.Messages.Outgoing.Game.Lobby;
+namespace Vortex.Protocol.Messages.Outgoing.Game.Lobby;
 
 /// <summary>
 /// The picker dialog: everything this statue offers, and how long is left to finish.

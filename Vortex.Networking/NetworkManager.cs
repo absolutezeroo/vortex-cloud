@@ -19,7 +19,7 @@ using Vortex.Networking.Package;
 using Vortex.Networking.Session;
 using Vortex.Networking.Tcp;
 using Vortex.Networking.Ws;
-using Vortex.Primitives.Messages.Outgoing.Handshake;
+using Vortex.Protocol.Messages.Outgoing.Handshake;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Primitives.Observability;

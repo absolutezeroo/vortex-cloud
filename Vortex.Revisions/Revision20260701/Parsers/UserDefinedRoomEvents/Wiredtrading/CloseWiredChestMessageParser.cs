@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
+using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

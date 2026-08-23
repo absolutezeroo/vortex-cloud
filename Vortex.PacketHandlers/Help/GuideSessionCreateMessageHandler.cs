@@ -4,7 +4,7 @@ using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Help;
 using Vortex.Primitives.Help.Grains;
-using Vortex.Primitives.Messages.Incoming.Help;
+using Vortex.Protocol.Messages.Incoming.Help;
 using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Help;

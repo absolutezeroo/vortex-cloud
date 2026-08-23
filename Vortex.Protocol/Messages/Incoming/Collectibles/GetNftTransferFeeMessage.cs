@@ -1,5 +1,5 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Collectibles;
+namespace Vortex.Protocol.Messages.Incoming.Collectibles;
 
 public record GetNftTransferFeeMessage : IMessageEvent;

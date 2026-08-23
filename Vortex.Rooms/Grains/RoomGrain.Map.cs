@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Logging.Extensions;
 using Vortex.Primitives.Action;
-using Vortex.Primitives.Messages.Outgoing.Room.Engine;
+using Vortex.Protocol.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Rooms.Snapshots.Mapping;
 
 namespace Vortex.Rooms.Grains;

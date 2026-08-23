@@ -3,7 +3,7 @@ using System.Linq;
 using Orleans;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Providers;
-using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
+using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;

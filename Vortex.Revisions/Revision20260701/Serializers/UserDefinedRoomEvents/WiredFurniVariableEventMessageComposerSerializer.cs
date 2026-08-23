@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents;
+using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents;
 using Vortex.Primitives.Packets;
 using Vortex.Revisions.Revision20260701.Serializers.UserDefinedRoomEvents.Data;
 

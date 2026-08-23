@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Room.Pets;
+namespace Vortex.Protocol.Messages.Incoming.Room.Pets;
 
 public record PetSelectedMessage : IMessageEvent
 {

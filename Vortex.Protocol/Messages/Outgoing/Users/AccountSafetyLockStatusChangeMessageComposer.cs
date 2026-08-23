@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Users;
+namespace Vortex.Protocol.Messages.Outgoing.Users;
 
 /// <summary>
 /// The account safety lock was engaged or released (header 3913).

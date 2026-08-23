@@ -1,5 +1,5 @@
 using Vortex.Primitives.Inventory.Snapshots;
-using Vortex.Primitives.Messages.Outgoing.Inventory.Furni;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Furni;
 using Vortex.Primitives.Packets;
 using Vortex.Revisions.Revision20260701.Serializers.Inventory.Furni.Data;
 

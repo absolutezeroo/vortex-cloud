@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Competition;
+namespace Vortex.Protocol.Messages.Incoming.Competition;
 
 /// <summary>
 /// "Take me to a room in this competition", from the landing view.

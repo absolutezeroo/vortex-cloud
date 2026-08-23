@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Polls.Snapshots;
 
-namespace Vortex.Primitives.Messages.Outgoing.Poll;
+namespace Vortex.Protocol.Messages.Outgoing.Poll;
 
 /// <summary>
 /// The whole survey, sent once when the player accepts the offer. The client drives the rest on

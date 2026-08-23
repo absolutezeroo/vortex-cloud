@@ -2,8 +2,8 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Users;
-using Vortex.Primitives.Messages.Outgoing.Users;
+using Vortex.Protocol.Messages.Incoming.Users;
+using Vortex.Protocol.Messages.Outgoing.Users;
 
 namespace Vortex.PacketHandlers.Users;
 

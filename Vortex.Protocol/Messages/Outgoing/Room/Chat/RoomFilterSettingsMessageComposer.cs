@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Chat;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Chat;
 
 /// <summary>
 /// The room's word filter (header 3208).

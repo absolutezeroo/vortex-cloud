@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Game.Lobby;
+namespace Vortex.Protocol.Messages.Outgoing.Game.Lobby;
 
 /// <summary>
 /// The congratulations screen. Note the order: the wire carries the stuff code first and the badge

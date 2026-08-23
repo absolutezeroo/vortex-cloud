@@ -1,5 +1,5 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Crafting;
+namespace Vortex.Protocol.Messages.Incoming.Crafting;
 
 public record CraftSecretMessage : IMessageEvent { }

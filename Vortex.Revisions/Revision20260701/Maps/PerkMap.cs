@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Perk;
+using Vortex.Protocol.Messages.Outgoing.Perk;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Revision20260701.Serializers.Perk;
 

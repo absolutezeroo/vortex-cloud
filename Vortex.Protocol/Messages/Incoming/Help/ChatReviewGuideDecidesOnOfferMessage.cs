@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Help;
+namespace Vortex.Protocol.Messages.Incoming.Help;
 
 /// <summary>A guardian taking the offered chat review, or passing on it.</summary>
 public record ChatReviewGuideDecidesOnOfferMessage : IMessageEvent

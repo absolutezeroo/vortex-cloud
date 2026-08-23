@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Vortex.Logging.Extensions;
-using Vortex.Primitives.Messages.Outgoing.Room.Action;
-using Vortex.Primitives.Messages.Outgoing.Room.Session;
+using Vortex.Protocol.Messages.Outgoing.Room.Action;
+using Vortex.Protocol.Messages.Outgoing.Room.Session;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums.Games;

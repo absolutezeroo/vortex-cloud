@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Enums;
 
-namespace Vortex.Primitives.Messages.Outgoing.Avatar;
+namespace Vortex.Protocol.Messages.Outgoing.Avatar;
 
 [GenerateSerializer, Immutable]
 public sealed record FigureUpdateEventMessageComposer : IComposer

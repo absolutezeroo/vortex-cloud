@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Vortex.Primitives.Messages.Incoming.Inventory.Badges;
+using Vortex.Protocol.Messages.Incoming.Inventory.Badges;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

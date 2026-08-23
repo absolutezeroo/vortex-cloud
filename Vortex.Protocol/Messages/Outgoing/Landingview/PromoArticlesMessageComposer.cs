@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Landingview;
+namespace Vortex.Protocol.Messages.Outgoing.Landingview;
 
 [GenerateSerializer, Immutable]
 public sealed record PromoArticlesMessageComposer : IComposer

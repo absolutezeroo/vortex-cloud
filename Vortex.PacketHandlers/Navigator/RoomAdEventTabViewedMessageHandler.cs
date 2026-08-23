@@ -2,7 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Navigator;
+using Vortex.Protocol.Messages.Incoming.Navigator;
 
 namespace Vortex.PacketHandlers.Navigator;
 

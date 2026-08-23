@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Action;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Action;
 
 [GenerateSerializer, Immutable]
 public sealed record SleepMessageComposer : IComposer

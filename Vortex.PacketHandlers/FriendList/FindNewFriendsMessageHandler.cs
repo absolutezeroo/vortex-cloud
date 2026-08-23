@@ -1,8 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.FriendList;
-using Vortex.Primitives.Messages.Outgoing.FriendList;
+using Vortex.Protocol.Messages.Incoming.FriendList;
+using Vortex.Protocol.Messages.Outgoing.FriendList;
 
 namespace Vortex.PacketHandlers.FriendList;
 

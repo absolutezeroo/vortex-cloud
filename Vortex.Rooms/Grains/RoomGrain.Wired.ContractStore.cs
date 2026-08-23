@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Wired;
 using Vortex.Primitives.Action;
-using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
+using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Snapshots.Wired;

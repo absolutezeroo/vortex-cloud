@@ -1,5 +1,5 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Nft;
+namespace Vortex.Protocol.Messages.Incoming.Nft;
 
 public record GetNftCreditsMessage : IMessageEvent;

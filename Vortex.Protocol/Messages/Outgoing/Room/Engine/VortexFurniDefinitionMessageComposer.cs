@@ -4,7 +4,7 @@ using Vortex.Primitives.Furniture.StuffData;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Enums;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Engine;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Engine;
 
 /// <summary>
 /// One <c>furniture_definitions</c> row, answering <c>VortexGetFurniDefinitionMessage</c> and

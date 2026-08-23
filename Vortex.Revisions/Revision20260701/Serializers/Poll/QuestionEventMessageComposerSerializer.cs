@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Poll;
+using Vortex.Protocol.Messages.Outgoing.Poll;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Poll;

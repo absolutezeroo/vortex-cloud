@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Camera;
+using Vortex.Protocol.Messages.Incoming.Camera;
 
 namespace Vortex.PacketHandlers.Camera;
 

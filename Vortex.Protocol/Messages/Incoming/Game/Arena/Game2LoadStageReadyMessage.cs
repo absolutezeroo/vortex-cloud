@@ -1,5 +1,5 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Game.Arena;
+namespace Vortex.Protocol.Messages.Incoming.Game.Arena;
 
 public record Game2LoadStageReadyMessage : IMessageEvent { }

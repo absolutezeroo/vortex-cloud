@@ -10,7 +10,7 @@ using Orleans;
 using Vortex.Database.Context;
 using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Groups.Snapshots;
-using Vortex.Primitives.Messages.Outgoing.Users;
+using Vortex.Protocol.Messages.Outgoing.Users;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;

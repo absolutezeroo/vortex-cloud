@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Help;
+namespace Vortex.Protocol.Messages.Incoming.Help;
 
 /// <summary>Reporting a whole guild-forum thread.</summary>
 public record CallForHelpFromForumThreadMessage : IMessageEvent

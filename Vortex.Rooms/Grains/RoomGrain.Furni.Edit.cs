@@ -12,7 +12,7 @@ using Vortex.Primitives.Action;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Snapshots;
-using Vortex.Primitives.Messages.Incoming.Room.Engine;
+using Vortex.Protocol.Messages.Incoming.Room.Engine;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;

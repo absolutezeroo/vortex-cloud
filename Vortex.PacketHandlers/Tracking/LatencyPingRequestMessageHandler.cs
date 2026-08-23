@@ -1,8 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Tracking;
-using Vortex.Primitives.Messages.Outgoing.Tracking;
+using Vortex.Protocol.Messages.Incoming.Tracking;
+using Vortex.Protocol.Messages.Outgoing.Tracking;
 
 namespace Vortex.PacketHandlers.Tracking;
 

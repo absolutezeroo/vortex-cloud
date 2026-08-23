@@ -1,7 +1,7 @@
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Players;
 
-namespace Vortex.Primitives.Messages.Incoming.Users;
+namespace Vortex.Protocol.Messages.Incoming.Users;
 
 public record GetExtendedProfileMessage : IMessageEvent
 {

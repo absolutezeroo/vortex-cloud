@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Vortex.Primitives.Action;
-using Vortex.Primitives.Messages.Outgoing.Room.Action;
+using Vortex.Protocol.Messages.Outgoing.Room.Action;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Players;

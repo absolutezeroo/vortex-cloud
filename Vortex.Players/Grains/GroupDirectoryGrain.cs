@@ -19,7 +19,7 @@ using Vortex.Primitives.Groups.Grains;
 using Vortex.Primitives.Groups.Providers;
 using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Groups.Snapshots;
-using Vortex.Primitives.Messages.Incoming.GroupForums;
+using Vortex.Protocol.Messages.Incoming.GroupForums;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums.Wallet;

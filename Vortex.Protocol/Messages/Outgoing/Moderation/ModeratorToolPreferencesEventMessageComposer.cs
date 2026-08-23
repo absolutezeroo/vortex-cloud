@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Moderation;
+namespace Vortex.Protocol.Messages.Outgoing.Moderation;
 
 /// <summary>
 /// Restores where the moderator last left their mod-tool window. Echoed back at login from whatever

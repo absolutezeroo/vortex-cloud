@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Moderation;
+namespace Vortex.Protocol.Messages.Outgoing.Moderation;
 
 /// <summary>
 /// Answer to the mod tool's room-tool panel. The trailing room block is optional on the wire: when

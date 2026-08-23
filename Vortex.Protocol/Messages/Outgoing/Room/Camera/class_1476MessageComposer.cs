@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Camera;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Camera;
 
 [GenerateSerializer, Immutable]
 public sealed record class_1476MessageComposer : IComposer

@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Moderation;
+namespace Vortex.Protocol.Messages.Outgoing.Moderation;
 
 /// <summary>
 /// Where a user has been, for the mod tool. Despite the name this is keyed by user, not by room —

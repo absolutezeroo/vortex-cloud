@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.Advertisement;
+using Vortex.Protocol.Messages.Incoming.Advertisement;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Collectibles;
+namespace Vortex.Protocol.Messages.Incoming.Collectibles;
 
 /// <summary>
 /// Asks for the player's collectible assets — the inventory's Collectibles tab opening, or a trade

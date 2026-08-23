@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Help;
+namespace Vortex.Protocol.Messages.Outgoing.Help;
 
 /// <summary>
 /// The pair is made. Both sides get the same packet and each reads the other out of it, which is why

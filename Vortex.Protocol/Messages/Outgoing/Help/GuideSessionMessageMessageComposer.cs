@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Help;
+namespace Vortex.Protocol.Messages.Outgoing.Help;
 
 /// <summary>
 /// A line of chat, echoed to both sides with who said it. The sender is on the wire because the

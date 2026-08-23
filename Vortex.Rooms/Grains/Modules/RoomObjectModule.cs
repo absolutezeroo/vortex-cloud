@@ -5,7 +5,7 @@ using Vortex.Logging;
 using Vortex.Logging.Extensions;
 using Vortex.Primitives;
 using Vortex.Primitives.Action;
-using Vortex.Primitives.Messages.Outgoing.Room.Engine;
+using Vortex.Protocol.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Object;

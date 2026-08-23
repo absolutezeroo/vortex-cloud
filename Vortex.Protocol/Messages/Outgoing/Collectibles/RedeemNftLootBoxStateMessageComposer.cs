@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Collectibles;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Collectibles;
+namespace Vortex.Protocol.Messages.Outgoing.Collectibles;
 
 /// <summary>
 /// A loot box being opened, pushed to the room while the animation runs. The client reads the state

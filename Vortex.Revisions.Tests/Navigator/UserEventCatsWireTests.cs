@@ -1,7 +1,7 @@
 using System;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
-using Vortex.Primitives.Messages.Outgoing.Navigator;
+using Vortex.Protocol.Messages.Outgoing.Navigator;
 using Vortex.Primitives.Orleans.Snapshots.Navigator;
 using Vortex.Primitives.Packets;
 using Vortex.Revisions.Configuration;

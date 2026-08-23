@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Talent;
+namespace Vortex.Protocol.Messages.Outgoing.Talent;
 
 [GenerateSerializer, Immutable]
 public sealed record TalentTrackMessageComposer : IComposer

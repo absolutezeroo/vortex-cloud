@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Preferences.Enums;
 
-namespace Vortex.Primitives.Messages.Outgoing.Preferences;
+namespace Vortex.Protocol.Messages.Outgoing.Preferences;
 
 /// <summary>
 /// The outcome of an add or a remove, and the word it applied to. This is what actually moves a

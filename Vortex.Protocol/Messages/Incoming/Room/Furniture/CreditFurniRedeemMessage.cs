@@ -1,7 +1,7 @@
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Object;
 
-namespace Vortex.Primitives.Messages.Incoming.Room.Furniture;
+namespace Vortex.Protocol.Messages.Incoming.Room.Furniture;
 
 /// <summary>
 /// Cashing in a credit furni. The client sends only which one — what it is worth is read from the

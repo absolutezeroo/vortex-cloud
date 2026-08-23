@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Marketplace;
+namespace Vortex.Protocol.Messages.Outgoing.Marketplace;
 
 [GenerateSerializer, Immutable]
 public sealed record MarketplaceCanMakeOfferResultMessageComposer : IComposer

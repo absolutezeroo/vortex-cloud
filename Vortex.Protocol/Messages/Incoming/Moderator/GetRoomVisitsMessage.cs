@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Moderator;
+namespace Vortex.Protocol.Messages.Incoming.Moderator;
 
 /// <summary>Keyed by user despite the name — the client's RoomVisitsCtrl asks "which rooms has this
 /// person been in", not "who visited this room".</summary>

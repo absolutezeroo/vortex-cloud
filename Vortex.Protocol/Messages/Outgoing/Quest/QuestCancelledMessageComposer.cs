@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Quests.Snapshots;
 
-namespace Vortex.Primitives.Messages.Outgoing.Quest;
+namespace Vortex.Protocol.Messages.Outgoing.Quest;
 
 /// <summary>A quest was cancelled/rejected. <see cref="Expired"/> distinguishes an expiry from a
 /// user cancellation.</summary>

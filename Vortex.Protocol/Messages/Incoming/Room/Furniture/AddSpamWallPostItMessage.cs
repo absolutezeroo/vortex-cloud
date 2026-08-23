@@ -1,7 +1,7 @@
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Object;
 
-namespace Vortex.Primitives.Messages.Incoming.Room.Furniture;
+namespace Vortex.Protocol.Messages.Incoming.Room.Furniture;
 
 /// <summary>The note's contents when the editor closes.</summary>
 public record AddSpamWallPostItMessage : IMessageEvent

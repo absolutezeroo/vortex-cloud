@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
+namespace Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 
 /// <summary>Tells the client to open a chest's screen. The client answers by asking for its
 /// contents, echoing back the same id.</summary>

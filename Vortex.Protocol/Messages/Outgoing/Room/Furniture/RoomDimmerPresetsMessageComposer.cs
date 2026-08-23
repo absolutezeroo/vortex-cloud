@@ -4,7 +4,7 @@ using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Snapshots.Furniture;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Furniture;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Furniture;
 
 /// <summary>
 /// Everything the moodlight dialog draws: the three stored presets, which one is selected, and

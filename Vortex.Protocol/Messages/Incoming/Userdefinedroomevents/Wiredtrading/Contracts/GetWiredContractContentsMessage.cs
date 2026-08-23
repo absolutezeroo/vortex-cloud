@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredtrading.Contracts;
+namespace Vortex.Protocol.Messages.Incoming.Userdefinedroomevents.Wiredtrading.Contracts;
 
 /// <summary>
 /// "What is in this contract?"

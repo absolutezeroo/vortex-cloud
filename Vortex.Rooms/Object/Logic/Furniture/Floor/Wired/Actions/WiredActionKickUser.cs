@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Primitives.Furniture.Providers;
-using Vortex.Primitives.Messages.Outgoing.Room.Chat;
+using Vortex.Protocol.Messages.Outgoing.Room.Chat;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object;

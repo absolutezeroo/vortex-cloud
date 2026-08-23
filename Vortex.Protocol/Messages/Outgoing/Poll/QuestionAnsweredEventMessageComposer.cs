@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Polls.Snapshots;
 
-namespace Vortex.Primitives.Messages.Outgoing.Poll;
+namespace Vortex.Protocol.Messages.Outgoing.Poll;
 
 /// <summary>
 /// Broadcast when someone answers the live question: it names the answering avatar so the client

@@ -1,5 +1,5 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Room.Layout;
+namespace Vortex.Protocol.Messages.Incoming.Room.Layout;
 
 public record GetRoomEntryTileMessage : IMessageEvent { }

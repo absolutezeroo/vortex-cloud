@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Quests.Snapshots;
 
-namespace Vortex.Primitives.Messages.Outgoing.Quest;
+namespace Vortex.Protocol.Messages.Outgoing.Quest;
 
 /// <summary>
 /// The daily quest response. <see cref="Quest"/> is null when no daily quest is active; the

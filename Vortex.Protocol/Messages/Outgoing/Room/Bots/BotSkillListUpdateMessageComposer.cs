@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Bots;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Bots;
 
 /// <summary>Every configured skill on a bot, replacing whatever the client held.</summary>
 [GenerateSerializer, Immutable]

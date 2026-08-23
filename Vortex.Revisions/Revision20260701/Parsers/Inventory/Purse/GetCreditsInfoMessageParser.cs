@@ -1,5 +1,5 @@
-using Vortex.Primitives.Messages.Incoming.Inventory;
-using Vortex.Primitives.Messages.Incoming.Inventory.Purse;
+using Vortex.Protocol.Messages.Incoming.Inventory;
+using Vortex.Protocol.Messages.Incoming.Inventory.Purse;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

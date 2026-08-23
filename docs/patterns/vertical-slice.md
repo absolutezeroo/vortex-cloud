@@ -26,7 +26,7 @@ knows nothing about how the wave is implemented.
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Room.Engine;
+using Vortex.Protocol.Messages.Incoming.Room.Engine;
 
 namespace Docs.Patterns;
 
@@ -64,7 +64,7 @@ module never touches sessions or sockets.
 
 ```csharp
 using System.Threading.Tasks;
-using Vortex.Primitives.Messages.Outgoing.Room.Engine;
+using Vortex.Protocol.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Players;
 
 namespace Docs.Patterns;

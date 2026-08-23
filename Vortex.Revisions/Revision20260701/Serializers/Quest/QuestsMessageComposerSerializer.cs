@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Quest;
+using Vortex.Protocol.Messages.Outgoing.Quest;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Quests.Snapshots;
 

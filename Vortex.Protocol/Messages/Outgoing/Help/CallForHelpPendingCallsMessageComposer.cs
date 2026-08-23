@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Help;
+namespace Vortex.Protocol.Messages.Outgoing.Help;
 
 /// <summary>
 /// The reports this player already has open. The client asks for these before letting them file a

@@ -9,7 +9,7 @@ using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Pets;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Furniture.Enums;
-using Vortex.Primitives.Messages.Outgoing.Room.Engine;
+using Vortex.Protocol.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Pets.Snapshots;
 using Vortex.Primitives.Players;

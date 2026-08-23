@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Help;
+namespace Vortex.Protocol.Messages.Outgoing.Help;
 
 /// <summary>
 /// The guide asking the person they are helping to come to them. The name travels with the id

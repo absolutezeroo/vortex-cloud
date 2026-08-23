@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Preferences;
+namespace Vortex.Protocol.Messages.Outgoing.Preferences;
 
 /// <summary>
 /// The player's whole personal word filter, answering

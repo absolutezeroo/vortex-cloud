@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
-using Vortex.Primitives.Messages.Outgoing.Notifications;
+using Vortex.Protocol.Messages.Outgoing.Notifications;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 using Vortex.Revisions.Configuration;

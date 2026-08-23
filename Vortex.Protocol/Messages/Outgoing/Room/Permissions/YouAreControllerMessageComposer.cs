@@ -3,7 +3,7 @@ using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Enums;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Permissions;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Permissions;
 
 [GenerateSerializer, Immutable]
 public sealed record YouAreControllerMessageComposer : IComposer

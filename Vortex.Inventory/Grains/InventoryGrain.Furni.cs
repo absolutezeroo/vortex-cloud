@@ -25,7 +25,7 @@ using Vortex.Primitives.Groups;
 using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Inventory.Furniture;
 using Vortex.Primitives.Inventory.Snapshots;
-using Vortex.Primitives.Messages.Outgoing.Inventory.Bots;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Bots;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Pets;
 using Vortex.Primitives.Pets.Snapshots;

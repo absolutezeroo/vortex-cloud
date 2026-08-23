@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Pets.Snapshots;
 
-namespace Vortex.Primitives.Messages.Outgoing.Inventory.Pets;
+namespace Vortex.Protocol.Messages.Outgoing.Inventory.Pets;
 
 /// <summary>
 /// Asks the second owner to confirm a pairing: the nest, both parents, the rarity odds the dialog

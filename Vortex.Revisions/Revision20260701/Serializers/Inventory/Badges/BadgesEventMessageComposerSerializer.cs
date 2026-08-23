@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Inventory.Badges;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Badges;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Players.Snapshots;
 

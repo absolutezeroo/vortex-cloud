@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 using Vortex.Primitives.Collectibles;
-using Vortex.Primitives.Messages.Outgoing.Collectibles;
+using Vortex.Protocol.Messages.Outgoing.Collectibles;
 using Vortex.Primitives.Packets;
 using Vortex.Revisions.Revision20260701.Serializers.Collectibles.Data;
 

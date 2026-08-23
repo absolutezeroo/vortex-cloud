@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Room.Avatar;
+namespace Vortex.Protocol.Messages.Incoming.Room.Avatar;
 
 public record AvatarExpressionMessage : IMessageEvent
 {

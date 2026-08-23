@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Collectibles;
+namespace Vortex.Protocol.Messages.Incoming.Collectibles;
 
 /// <summary>
 /// Actually moving the assets to a wallet, from the transfer tab's confirm button.

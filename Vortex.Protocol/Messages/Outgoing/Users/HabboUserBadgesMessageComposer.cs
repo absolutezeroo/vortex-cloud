@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Players.Snapshots;
 
-namespace Vortex.Primitives.Messages.Outgoing.Users;
+namespace Vortex.Protocol.Messages.Outgoing.Users;
 
 [GenerateSerializer, Immutable]
 public sealed record HabboUserBadgesMessageComposer : IComposer

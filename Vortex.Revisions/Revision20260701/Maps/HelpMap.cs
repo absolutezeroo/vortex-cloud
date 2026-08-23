@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Help;
+using Vortex.Protocol.Messages.Outgoing.Help;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Configuration;
 using Vortex.Revisions.Revision20260701.Parsers.Help;

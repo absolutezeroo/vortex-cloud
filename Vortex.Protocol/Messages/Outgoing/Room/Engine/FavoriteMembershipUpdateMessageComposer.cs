@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Engine;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Engine;
 
 /// <summary>
 /// Re-badges an avatar already standing in the room after the player changed their favourite guild.

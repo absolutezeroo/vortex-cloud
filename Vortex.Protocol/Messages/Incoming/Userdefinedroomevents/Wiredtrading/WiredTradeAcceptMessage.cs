@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
+namespace Vortex.Protocol.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
 
 /// <summary>The player accepting a wired trade, or taking that acceptance back.</summary>
 /// <remarks>

@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Room.Chat;
+using Vortex.Protocol.Messages.Outgoing.Room.Chat;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Room.Chat;

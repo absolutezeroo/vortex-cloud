@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Userdefinedroomevents;
+namespace Vortex.Protocol.Messages.Incoming.Userdefinedroomevents;
 
 public record ApplySnapshotMessage : IMessageEvent
 {

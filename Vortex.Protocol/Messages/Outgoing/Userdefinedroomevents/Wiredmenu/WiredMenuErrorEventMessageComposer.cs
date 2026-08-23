@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
+namespace Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 
 /// <summary>
 /// A wired-menu operation failed (header 1230).

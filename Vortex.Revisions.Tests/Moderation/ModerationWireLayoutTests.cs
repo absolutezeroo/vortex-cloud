@@ -1,8 +1,8 @@
 using System;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
-using Vortex.Primitives.Messages.Incoming.Moderator;
-using Vortex.Primitives.Messages.Outgoing.Moderation;
+using Vortex.Protocol.Messages.Incoming.Moderator;
+using Vortex.Protocol.Messages.Outgoing.Moderation;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;

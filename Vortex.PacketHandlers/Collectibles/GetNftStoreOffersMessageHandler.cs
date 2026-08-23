@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Collectibles;
-using Vortex.Primitives.Messages.Incoming.Collectibles;
-using Vortex.Primitives.Messages.Outgoing.Collectibles;
+using Vortex.Protocol.Messages.Incoming.Collectibles;
+using Vortex.Protocol.Messages.Outgoing.Collectibles;
 using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Collectibles;

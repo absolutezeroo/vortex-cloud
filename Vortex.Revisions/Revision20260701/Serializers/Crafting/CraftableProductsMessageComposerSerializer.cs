@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Crafting;
+using Vortex.Protocol.Messages.Outgoing.Crafting;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Crafting;

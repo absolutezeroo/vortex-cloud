@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Vault.Enums;
 
-namespace Vortex.Primitives.Messages.Outgoing.Vault;
+namespace Vortex.Protocol.Messages.Outgoing.Vault;
 
 [GenerateSerializer, Immutable]
 public sealed record IncomeRewardClaimResponseMessageComposer : IComposer

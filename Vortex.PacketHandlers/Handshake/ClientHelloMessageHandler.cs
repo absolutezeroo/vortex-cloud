@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Handshake;
+using Vortex.Protocol.Messages.Incoming.Handshake;
 
 namespace Vortex.PacketHandlers.Handshake;
 

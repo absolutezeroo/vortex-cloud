@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans.Snapshots.Navigator;
 
-namespace Vortex.Primitives.Messages.Outgoing.NewNavigator;
+namespace Vortex.Protocol.Messages.Outgoing.NewNavigator;
 
 [GenerateSerializer, Immutable]
 public sealed record NavigatorSearchResultBlocksMessageComposer : IComposer

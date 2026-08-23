@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Moderation;
+namespace Vortex.Protocol.Messages.Outgoing.Moderation;
 
 /// <summary>
 /// The mod tool's user card. The last two fields are an optional tail the client only reads while

@@ -12,7 +12,7 @@ using Vortex.Database.Entities.Achievements;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Players.Achievements;
 using Vortex.Primitives.Inventory.Grains;
-using Vortex.Primitives.Messages.Outgoing.Game.Lobby;
+using Vortex.Protocol.Messages.Outgoing.Game.Lobby;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Snapshots;

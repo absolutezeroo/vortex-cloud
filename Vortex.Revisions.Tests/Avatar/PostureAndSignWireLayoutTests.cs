@@ -1,7 +1,7 @@
 using System;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
-using Vortex.Primitives.Messages.Incoming.Room.Avatar;
+using Vortex.Protocol.Messages.Incoming.Room.Avatar;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Revisions.Configuration;

@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Inventory.Furni;
+namespace Vortex.Protocol.Messages.Outgoing.Inventory.Furni;
 
 /// <summary>
 /// Tells the client how many sheets a post-it stack has left after one was placed (header 2145).

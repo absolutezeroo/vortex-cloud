@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Navigator;
+namespace Vortex.Protocol.Messages.Outgoing.Navigator;
 
 [GenerateSerializer, Immutable]
 public sealed record ConvertedRoomIdMessageComposer : IComposer

@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Moderator;
+namespace Vortex.Protocol.Messages.Incoming.Moderator;
 
 public record ReleaseIssuesMessage : IMessageEvent
 {

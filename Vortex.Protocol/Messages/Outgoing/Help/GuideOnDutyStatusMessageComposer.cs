@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Help;
+namespace Vortex.Protocol.Messages.Outgoing.Help;
 
 /// <summary>
 /// The guide tool's header: whether this player is on duty, and how many of each role are covering

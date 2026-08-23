@@ -2,7 +2,7 @@ using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Enums;
 
-namespace Vortex.Primitives.Messages.Incoming.RoomSettings;
+namespace Vortex.Protocol.Messages.Incoming.RoomSettings;
 
 public record UpdateRoomCategoryAndTradeSettingsMessage : IMessageEvent
 {

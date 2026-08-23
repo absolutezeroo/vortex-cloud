@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Game.Lobby;
+namespace Vortex.Protocol.Messages.Outgoing.Game.Lobby;
 
 /// <summary>
 /// The progress view for a challenge already under way on this statue.

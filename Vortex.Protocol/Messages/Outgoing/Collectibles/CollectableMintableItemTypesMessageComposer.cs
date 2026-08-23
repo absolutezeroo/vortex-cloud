@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Collectibles;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Collectibles;
+namespace Vortex.Protocol.Messages.Outgoing.Collectibles;
 
 /// <summary>What can be minted. An empty list is what a hotel with no chain has to offer.</summary>
 [GenerateSerializer, Immutable]

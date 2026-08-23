@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Notifications;
+using Vortex.Protocol.Messages.Outgoing.Notifications;
 using Vortex.Primitives.Packets;
 using Vortex.Revisions.Revision20260701.Serializers.Room.Pets.Snapshots;
 

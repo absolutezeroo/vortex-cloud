@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.Crafting;
+using Vortex.Protocol.Messages.Incoming.Crafting;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

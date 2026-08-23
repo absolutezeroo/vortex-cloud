@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Help;
+namespace Vortex.Protocol.Messages.Incoming.Help;
 
 /// <summary>Reporting a photo poster. The client sends no free-text message for this one — the
 /// evidence is the image itself, identified by <see cref="PhotoId"/>.</summary>

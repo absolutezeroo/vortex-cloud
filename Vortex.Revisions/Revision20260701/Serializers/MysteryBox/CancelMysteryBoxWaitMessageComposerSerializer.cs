@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Mysterybox;
+using Vortex.Protocol.Messages.Outgoing.Mysterybox;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.MysteryBox;

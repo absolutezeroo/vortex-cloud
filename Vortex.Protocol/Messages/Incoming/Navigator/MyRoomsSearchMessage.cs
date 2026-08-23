@@ -1,5 +1,5 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Navigator;
+namespace Vortex.Protocol.Messages.Incoming.Navigator;
 
 public record MyRoomsSearchMessage : IMessageEvent;

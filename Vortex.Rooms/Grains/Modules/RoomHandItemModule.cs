@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Logging.Extensions;
-using Vortex.Primitives.Messages.Outgoing.Room.Action;
+using Vortex.Protocol.Messages.Outgoing.Room.Action;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;

@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Nft;
+using Vortex.Protocol.Messages.Outgoing.Nft;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Revision20260701.Parsers.Nft;
 using Vortex.Revisions.Revision20260701.Serializers.Nft;

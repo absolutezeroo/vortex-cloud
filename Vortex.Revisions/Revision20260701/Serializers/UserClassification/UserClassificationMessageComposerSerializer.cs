@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Userclassification;
+using Vortex.Protocol.Messages.Outgoing.Userclassification;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Packets;
 

@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Roomsettings;
+using Vortex.Protocol.Messages.Outgoing.Roomsettings;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Packets;
 

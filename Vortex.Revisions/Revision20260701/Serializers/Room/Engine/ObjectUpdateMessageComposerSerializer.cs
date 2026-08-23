@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Room.Engine;
+using Vortex.Protocol.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Packets;
 using Vortex.Revisions.Revision20260701.Serializers.Room.Engine.Data;
 

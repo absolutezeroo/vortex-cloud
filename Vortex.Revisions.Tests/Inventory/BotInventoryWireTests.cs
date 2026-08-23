@@ -2,7 +2,7 @@ using System;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Vortex.Primitives.Bots;
-using Vortex.Primitives.Messages.Outgoing.Inventory.Bots;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Bots;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Players;

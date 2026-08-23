@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Session;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Session;
 
 /// <summary>
 /// Where the player stands in a room's entry queues (header 530).

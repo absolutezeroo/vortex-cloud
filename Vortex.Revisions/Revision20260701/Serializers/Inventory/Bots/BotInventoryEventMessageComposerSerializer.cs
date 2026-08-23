@@ -1,5 +1,5 @@
 using Vortex.Primitives.Bots;
-using Vortex.Primitives.Messages.Outgoing.Inventory.Bots;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Bots;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Inventory.Bots;

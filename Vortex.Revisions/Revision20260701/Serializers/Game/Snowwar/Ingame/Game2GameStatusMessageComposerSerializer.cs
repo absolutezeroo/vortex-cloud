@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Game.Snowwar.Ingame;
+using Vortex.Protocol.Messages.Outgoing.Game.Snowwar.Ingame;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Game.Snowwar.Ingame;

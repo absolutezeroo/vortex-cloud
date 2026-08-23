@@ -1,7 +1,7 @@
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Object;
 
-namespace Vortex.Primitives.Messages.Incoming.Room.Furniture;
+namespace Vortex.Protocol.Messages.Incoming.Room.Furniture;
 
 /// <summary>Sticking a note on the wall. Placement only — the note's colour and text arrive later,
 /// through <see cref="AddSpamWallPostItMessage"/>, once the editor closes.</summary>

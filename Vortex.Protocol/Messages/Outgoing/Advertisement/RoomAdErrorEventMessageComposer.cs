@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Advertisement;
+namespace Vortex.Protocol.Messages.Outgoing.Advertisement;
 
 /// <summary>
 /// Why a room ad was rejected, and the text the filter left behind (header 2396).

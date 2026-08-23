@@ -94,17 +94,21 @@ if (dashboardWrites.length > 0) {
 }
 
 // ---------------------------------------------------------------------------------------------
-// Wall 3 -- protocol does not leak into contracts. Ratchet, not cleanup.
+// Wall 3 -- protocol does not leak into contracts.
 //
-// Vortex.Primitives is referenced by every project, and 1,092 of its files are wire messages. When
-// a grain interface takes a wire record as a domain parameter, the client's byte layout becomes the
-// domain model and every composer tweak rebuilds the world. The baseline started at ten such files
-// and is now empty: the hub is protocol-free, which is what a Contracts/Protocol split needs. Any
-// new import here fails the build rather than quietly costing every project a rebuild.
+// Vortex.Primitives is referenced by every project in the solution; Vortex.Protocol holds the 1,092
+// message records and is the highest-churn layer there is. While the two were one project, editing a
+// composer rebuilt everything, and a grain interface typed in a wire record made the client's byte
+// layout the domain model. Ten files were in that state and the baseline ratcheted them to zero, so
+// this is now a hard zero rather than a ratchet: the hub does not reference the protocol at all.
+//
+// The pattern matches Vortex.Protocol, not the old Vortex.Primitives.Messages. That rename is
+// exactly how this check could have died without anyone noticing -- it would have matched nothing
+// and reported the walls holding, which is why the hook test drives it with a real violation.
 // ---------------------------------------------------------------------------------------------
-const leak = hits('Vortex.Primitives', /^\s*using\s+Vortex\.Primitives\.Messages\b/, (f) =>
-  f.startsWith('Vortex.Primitives/Messages/')
-).map((h) => h.split(':')[0]);
+const leak = hits('Vortex.Primitives', /^\s*using\s+Vortex\.Protocol\b/).map((h) =>
+  h.split(':')[0]
+);
 const leakFiles = [...new Set(leak)].sort();
 
 if (update) {

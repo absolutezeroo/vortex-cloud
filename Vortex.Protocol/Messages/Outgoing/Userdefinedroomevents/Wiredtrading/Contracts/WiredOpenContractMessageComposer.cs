@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading.Contracts;
+namespace Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredtrading.Contracts;
 
 /// <summary>
 /// "Open this contract's editor."

@@ -1,5 +1,5 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Game.Lobby;
+namespace Vortex.Protocol.Messages.Incoming.Game.Lobby;
 
 public record GetUserGameAchievementsMessage : IMessageEvent { }

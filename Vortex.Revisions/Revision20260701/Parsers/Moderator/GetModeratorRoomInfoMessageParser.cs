@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.Moderator;
+using Vortex.Protocol.Messages.Incoming.Moderator;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

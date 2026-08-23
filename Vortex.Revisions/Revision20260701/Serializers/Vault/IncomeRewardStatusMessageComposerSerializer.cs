@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Vault;
+using Vortex.Protocol.Messages.Outgoing.Vault;
 using Vortex.Primitives.Orleans.Snapshots.Vault;
 using Vortex.Primitives.Packets;
 

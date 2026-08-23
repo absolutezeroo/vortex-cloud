@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Tracking;
+namespace Vortex.Protocol.Messages.Outgoing.Tracking;
 
 public sealed record LatencyPingResponseMessage : IComposer
 {

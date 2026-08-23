@@ -4,7 +4,7 @@ using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans.Snapshots.Room.Furniture;
 using Vortex.Primitives.Rooms.Enums;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Engine;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Engine;
 
 [GenerateSerializer, Immutable]
 public sealed record FloorHeightMapMessageComposer : IComposer

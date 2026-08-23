@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Help;
+namespace Vortex.Protocol.Messages.Incoming.Help;
 
 /// <summary>
 /// The typing indicator. Sent only when the state flips, not on every keystroke — the client keeps

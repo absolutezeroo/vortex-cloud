@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Vortex.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredmenu;
+using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents.Wiredmenu;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Rooms.Wired.Variable;

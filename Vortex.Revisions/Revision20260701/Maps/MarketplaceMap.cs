@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Marketplace;
+using Vortex.Protocol.Messages.Outgoing.Marketplace;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Revision20260701.Parsers.Marketplace;
 using Vortex.Revisions.Revision20260701.Serializers.Marketplace;

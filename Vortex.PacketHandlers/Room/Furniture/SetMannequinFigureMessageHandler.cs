@@ -2,7 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Room.Furniture;
+using Vortex.Protocol.Messages.Incoming.Room.Furniture;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Rooms.Enums;

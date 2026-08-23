@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Gifts;
+using Vortex.Protocol.Messages.Outgoing.Gifts;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Gifts;

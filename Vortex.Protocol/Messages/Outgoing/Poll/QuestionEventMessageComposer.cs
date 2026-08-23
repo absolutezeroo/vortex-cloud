@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Polls.Snapshots;
 
-namespace Vortex.Primitives.Messages.Outgoing.Poll;
+namespace Vortex.Protocol.Messages.Outgoing.Poll;
 
 /// <summary>
 /// Puts one timed question in front of everyone in the room (the client's "word quiz"). Unlike a

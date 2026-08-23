@@ -4,7 +4,7 @@ using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Chat;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Chat;
 
 [GenerateSerializer, Immutable]
 public record ChatMessageComposer : IComposer

@@ -1,5 +1,5 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Friendfurni;
+namespace Vortex.Protocol.Messages.Incoming.Friendfurni;
 
 public record FriendFurniConfirmLockMessage : IMessageEvent { }

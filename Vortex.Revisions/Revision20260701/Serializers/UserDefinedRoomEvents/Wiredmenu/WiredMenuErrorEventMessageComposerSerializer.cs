@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
+using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.UserDefinedRoomEvents.Wiredmenu;

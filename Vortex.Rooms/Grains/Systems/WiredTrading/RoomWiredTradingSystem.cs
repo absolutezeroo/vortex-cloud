@@ -15,7 +15,7 @@ using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Snapshots;
 using Vortex.Primitives.Furniture.StuffData;
 using Vortex.Primitives.Inventory.Snapshots;
-using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
+using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;

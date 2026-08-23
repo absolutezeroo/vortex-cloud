@@ -2,7 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Quest;
+using Vortex.Protocol.Messages.Incoming.Quest;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Quests;
 

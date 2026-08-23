@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Poll;
+namespace Vortex.Protocol.Messages.Incoming.Poll;
 
 /// <summary>
 /// One answered question. The client sends this for every question it walks through — including the

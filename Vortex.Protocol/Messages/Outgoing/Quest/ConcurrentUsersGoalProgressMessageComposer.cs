@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Quests;
 
-namespace Vortex.Primitives.Messages.Outgoing.Quest;
+namespace Vortex.Protocol.Messages.Outgoing.Quest;
 
 /// <summary>
 /// The landing-view "players online" goal: how many are on right now, the target, and where this

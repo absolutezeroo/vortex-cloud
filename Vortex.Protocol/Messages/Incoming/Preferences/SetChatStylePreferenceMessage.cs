@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Preferences;
+namespace Vortex.Protocol.Messages.Incoming.Preferences;
 
 public record SetChatStylePreferenceMessage : IMessageEvent
 {

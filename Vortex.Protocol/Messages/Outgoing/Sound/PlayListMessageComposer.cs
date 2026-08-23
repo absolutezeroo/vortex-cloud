@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Sound;
+namespace Vortex.Protocol.Messages.Outgoing.Sound;
 
 [GenerateSerializer, Immutable]
 public sealed record PlayListMessageComposer : IComposer

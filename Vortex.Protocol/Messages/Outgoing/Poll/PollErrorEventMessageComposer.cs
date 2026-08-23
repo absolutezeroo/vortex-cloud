@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Poll;
+namespace Vortex.Protocol.Messages.Outgoing.Poll;
 
 /// <summary>
 /// Tells the client the poll it asked for is not available, so it closes the dialog. The body is

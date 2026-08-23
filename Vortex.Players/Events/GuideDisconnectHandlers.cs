@@ -4,7 +4,7 @@ using Orleans;
 using Vortex.Events.Registry;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Help.Grains;
-using Vortex.Primitives.Messages.Outgoing.Help;
+using Vortex.Protocol.Messages.Outgoing.Help;
 using Vortex.Primitives.Orleans;
 
 namespace Vortex.Players.Events;

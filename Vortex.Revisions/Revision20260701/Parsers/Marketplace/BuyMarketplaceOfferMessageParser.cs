@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.Marketplace;
+using Vortex.Protocol.Messages.Incoming.Marketplace;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

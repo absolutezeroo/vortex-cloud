@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Bots;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Bots;
 
 /// <summary>Fills the skill-configuration dialog with what the bot is currently set to.</summary>
 [GenerateSerializer, Immutable]

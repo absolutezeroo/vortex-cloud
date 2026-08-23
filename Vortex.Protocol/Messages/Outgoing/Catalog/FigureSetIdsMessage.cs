@@ -1,5 +1,5 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Catalog;
+namespace Vortex.Protocol.Messages.Outgoing.Catalog;
 
 public sealed record FigureSetIdsMessage : IComposer;

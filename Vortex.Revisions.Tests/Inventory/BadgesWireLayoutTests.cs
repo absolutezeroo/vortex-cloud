@@ -2,7 +2,7 @@ using System;
 using System.Collections.Immutable;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
-using Vortex.Primitives.Messages.Outgoing.Inventory.Badges;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Badges;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Players.Snapshots;

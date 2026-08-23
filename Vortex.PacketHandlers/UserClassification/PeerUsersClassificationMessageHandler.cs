@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.PacketHandlers.Configuration;
-using Vortex.Primitives.Messages.Incoming.Userclassification;
+using Vortex.Protocol.Messages.Incoming.Userclassification;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans;

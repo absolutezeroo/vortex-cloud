@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Chat;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Chat;
 
 /// <summary>
 /// The room's chat settings, live. The client already receives them once inside GuestRoomData when

@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Enums.Wired;
 
-namespace Vortex.Primitives.Messages.Incoming.Userdefinedroomevents;
+namespace Vortex.Protocol.Messages.Incoming.Userdefinedroomevents;
 
 [GenerateSerializer, Immutable]
 public record UpdateWiredMessage : IMessageEvent

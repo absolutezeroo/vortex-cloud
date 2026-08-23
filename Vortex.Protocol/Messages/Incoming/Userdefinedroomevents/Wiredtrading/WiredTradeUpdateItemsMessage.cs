@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
+namespace Vortex.Protocol.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
 
 /// <summary>The player putting furniture on, or taking it off, a wired trade's table.</summary>
 /// <remarks>

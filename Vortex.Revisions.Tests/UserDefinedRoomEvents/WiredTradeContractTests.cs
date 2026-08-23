@@ -2,7 +2,7 @@
 using System.Collections.Immutable;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
-using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
+using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Rooms.Snapshots.Wired;
 using Vortex.Revisions.Configuration;

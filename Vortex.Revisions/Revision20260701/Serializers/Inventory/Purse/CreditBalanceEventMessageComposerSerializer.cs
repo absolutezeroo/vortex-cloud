@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Inventory.Purse;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Purse;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Inventory.Purse;

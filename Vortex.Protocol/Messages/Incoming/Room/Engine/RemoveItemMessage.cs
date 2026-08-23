@@ -1,7 +1,7 @@
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Object;
 
-namespace Vortex.Primitives.Messages.Incoming.Room.Engine;
+namespace Vortex.Protocol.Messages.Incoming.Room.Engine;
 
 /// <summary>
 /// Throwing a wall item away. Not a pickup — the client's sticky and photo widgets send this from

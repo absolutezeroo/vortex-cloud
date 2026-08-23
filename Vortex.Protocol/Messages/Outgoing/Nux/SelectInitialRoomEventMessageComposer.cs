@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms;
 
-namespace Vortex.Primitives.Messages.Outgoing.Nux;
+namespace Vortex.Protocol.Messages.Outgoing.Nux;
 
 /// <summary>
 /// Answers <see cref="Incoming.Nux.SelectInitialRoomMessage"/> with the room that was created.

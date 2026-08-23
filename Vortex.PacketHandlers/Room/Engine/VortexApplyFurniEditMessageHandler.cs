@@ -4,7 +4,7 @@ using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Furniture.Snapshots;
-using Vortex.Primitives.Messages.Incoming.Room.Engine;
+using Vortex.Protocol.Messages.Incoming.Room.Engine;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Players;

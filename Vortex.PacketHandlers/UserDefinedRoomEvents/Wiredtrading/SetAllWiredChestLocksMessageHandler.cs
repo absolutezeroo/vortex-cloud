@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Action;
-using Vortex.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
+using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.UserDefinedRoomEvents.Wiredtrading;

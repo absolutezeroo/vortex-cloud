@@ -2,7 +2,7 @@
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Snapshots.Wired;
 
-namespace Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
+namespace Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 
 /// <summary>
 /// Opens the inventory's wired-trade screen with the contract it has to satisfy.

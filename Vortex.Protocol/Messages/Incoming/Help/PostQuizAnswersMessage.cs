@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Help;
+namespace Vortex.Protocol.Messages.Incoming.Help;
 
 /// <summary>
 /// The finished quiz. <see cref="Answers"/> is positional: one entry per question, in the order the

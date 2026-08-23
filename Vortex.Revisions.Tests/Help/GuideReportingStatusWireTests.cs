@@ -1,7 +1,7 @@
 using System;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
-using Vortex.Primitives.Messages.Outgoing.Help;
+using Vortex.Protocol.Messages.Outgoing.Help;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 using Vortex.Revisions.Configuration;

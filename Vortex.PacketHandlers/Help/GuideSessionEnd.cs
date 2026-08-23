@@ -2,7 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Primitives.Help.Grains;
-using Vortex.Primitives.Messages.Outgoing.Help;
+using Vortex.Protocol.Messages.Outgoing.Help;
 using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Help;

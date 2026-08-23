@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Room.Layout;
+namespace Vortex.Protocol.Messages.Incoming.Room.Layout;
 
 /// <summary>
 /// Saving the floor-plan editor.

@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans.Snapshots.Vault;
 
-namespace Vortex.Primitives.Messages.Outgoing.Vault;
+namespace Vortex.Protocol.Messages.Outgoing.Vault;
 
 [GenerateSerializer, Immutable]
 public sealed record IncomeRewardStatusMessageComposer : IComposer

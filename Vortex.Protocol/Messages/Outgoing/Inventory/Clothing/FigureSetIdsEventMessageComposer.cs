@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Inventory.Clothing;
+namespace Vortex.Protocol.Messages.Outgoing.Inventory.Clothing;
 
 [GenerateSerializer, Immutable]
 public sealed record FigureSetIdsEventMessageComposer : IComposer

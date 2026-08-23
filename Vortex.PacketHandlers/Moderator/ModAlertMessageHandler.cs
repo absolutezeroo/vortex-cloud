@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Events;
-using Vortex.Primitives.Messages.Incoming.Moderator;
+using Vortex.Protocol.Messages.Incoming.Moderator;
 using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Rooms;
 

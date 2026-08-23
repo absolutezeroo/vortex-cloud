@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Snapshots.NewNavigator;
 
-namespace Vortex.Primitives.Messages.Outgoing.NewNavigator;
+namespace Vortex.Protocol.Messages.Outgoing.NewNavigator;
 
 public sealed record NavigatorLiftedRoomsMessage : IComposer
 {

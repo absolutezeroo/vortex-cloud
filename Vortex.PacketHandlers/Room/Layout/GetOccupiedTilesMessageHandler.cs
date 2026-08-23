@@ -3,8 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Room.Layout;
-using Vortex.Primitives.Messages.Outgoing.Room.Layout;
+using Vortex.Protocol.Messages.Incoming.Room.Layout;
+using Vortex.Protocol.Messages.Outgoing.Room.Layout;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Rooms.Grains;
 

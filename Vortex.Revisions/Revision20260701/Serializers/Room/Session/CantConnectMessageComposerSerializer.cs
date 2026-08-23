@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Room.Session;
+using Vortex.Protocol.Messages.Outgoing.Room.Session;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Rooms.Enums;
 

@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Quest;
+using Vortex.Protocol.Messages.Outgoing.Quest;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Quest;

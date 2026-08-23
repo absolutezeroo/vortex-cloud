@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Game.Lobby;
+namespace Vortex.Protocol.Messages.Incoming.Game.Lobby;
 
 /// <summary>
 /// "Re-select achievement" on the progress view, behind a confirmation. Throws away the challenge

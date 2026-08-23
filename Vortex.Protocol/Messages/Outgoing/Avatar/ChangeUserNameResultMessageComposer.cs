@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Avatar;
+namespace Vortex.Protocol.Messages.Outgoing.Avatar;
 
 /// <summary>
 /// Answers <see cref="Incoming.Avatar.ChangeUserNameMessage"/>. Same payload shape as the check

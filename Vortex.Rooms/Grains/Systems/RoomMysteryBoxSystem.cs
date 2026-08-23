@@ -7,7 +7,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Events;
-using Vortex.Primitives.Messages.Outgoing.Mysterybox;
+using Vortex.Protocol.Messages.Outgoing.Mysterybox;
 using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.MysteryBox.Grains;
 using Vortex.Primitives.MysteryBox.Snapshots;

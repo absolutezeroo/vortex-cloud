@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Vault;
+using Vortex.Protocol.Messages.Outgoing.Vault;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Revision20260701.Parsers.Vault;
 using Vortex.Revisions.Revision20260701.Serializers.Vault;

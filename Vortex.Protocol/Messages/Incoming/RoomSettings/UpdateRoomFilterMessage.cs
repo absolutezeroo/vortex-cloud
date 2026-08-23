@@ -1,7 +1,7 @@
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms;
 
-namespace Vortex.Primitives.Messages.Incoming.RoomSettings;
+namespace Vortex.Protocol.Messages.Incoming.RoomSettings;
 
 public record UpdateRoomFilterMessage : IMessageEvent
 {

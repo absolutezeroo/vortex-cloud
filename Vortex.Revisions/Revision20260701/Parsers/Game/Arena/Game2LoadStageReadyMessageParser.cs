@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.Game.Arena;
+using Vortex.Protocol.Messages.Incoming.Game.Arena;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

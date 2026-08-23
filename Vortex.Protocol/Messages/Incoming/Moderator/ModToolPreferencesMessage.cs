@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Moderator;
+namespace Vortex.Protocol.Messages.Incoming.Moderator;
 
 /// <summary>Where the moderator moved or resized their mod-tool window, so it can be restored at
 /// the next login.</summary>

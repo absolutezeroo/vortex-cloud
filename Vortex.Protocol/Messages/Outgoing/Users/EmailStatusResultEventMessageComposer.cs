@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Users;
+namespace Vortex.Protocol.Messages.Outgoing.Users;
 
 /// <summary>
 /// The address on the account and what may be done with it (header 2343).

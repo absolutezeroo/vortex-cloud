@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Availability;
+namespace Vortex.Protocol.Messages.Outgoing.Availability;
 
 /// <summary>
 /// Scheduled-maintenance warning (header 1737).

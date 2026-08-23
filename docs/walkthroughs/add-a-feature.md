@@ -39,7 +39,7 @@ Create the typed message the client sends. Keep it a plain data carrier; no logi
 
 ```csharp
 // Vortex.Primitives/Messages/Incoming/Room/Engine/WaveMessage.cs
-namespace Vortex.Primitives.Messages.Incoming.Room.Engine;
+namespace Vortex.Protocol.Messages.Incoming.Room.Engine;
 
 public sealed class WaveMessage
 {
@@ -58,7 +58,7 @@ public sealed class WaveMessage
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Room.Engine;
+using Vortex.Protocol.Messages.Incoming.Room.Engine;
 
 namespace Vortex.PacketHandlers.Room.Engine;
 
@@ -149,7 +149,7 @@ sessions yourself.
 // Vortex.Primitives/Messages/Outgoing/Room/Engine/WaveComposer.cs
 using Vortex.Primitives.Rooms.Object;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Engine;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Engine;
 
 public sealed class WaveComposer : IComposer
 {

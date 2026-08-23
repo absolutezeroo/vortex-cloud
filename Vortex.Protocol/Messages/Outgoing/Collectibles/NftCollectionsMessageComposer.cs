@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Collectibles;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Collectibles;
+namespace Vortex.Protocol.Messages.Outgoing.Collectibles;
 
 /// <summary>Every collection the hotel runs, as the viewing player stands in them.</summary>
 [GenerateSerializer, Immutable]

@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Vortex.Primitives.Messages.Outgoing.Preferences;
+using Vortex.Protocol.Messages.Outgoing.Preferences;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Players.Grains;

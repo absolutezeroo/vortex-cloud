@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Room.Engine;
+namespace Vortex.Protocol.Messages.Incoming.Room.Engine;
 
 /// <summary>
 /// Client asks for one <c>furniture_definitions</c> row, to populate the definition editor.

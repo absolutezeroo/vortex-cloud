@@ -8,7 +8,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Players;
 using Vortex.Primitives.FriendList.Enums;
 using Vortex.Primitives.FriendList.Grains;
-using Vortex.Primitives.Messages.Outgoing.FriendList;
+using Vortex.Protocol.Messages.Outgoing.FriendList;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Grains;

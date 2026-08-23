@@ -2,8 +2,8 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Collectibles;
-using Vortex.Primitives.Messages.Outgoing.Collectibles;
+using Vortex.Protocol.Messages.Incoming.Collectibles;
+using Vortex.Protocol.Messages.Outgoing.Collectibles;
 
 namespace Vortex.PacketHandlers.Collectibles;
 

@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Vortex.Primitives.Messages.Outgoing.Room.Action;
+using Vortex.Protocol.Messages.Outgoing.Room.Action;
 using Vortex.Primitives.Players;
 using Vortex.Rooms.Grains.Modules;
 using Vortex.Rooms.Object.Avatars.Player;

@@ -3,8 +3,8 @@ using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Catalog;
-using Vortex.Primitives.Messages.Outgoing.Catalog;
+using Vortex.Protocol.Messages.Incoming.Catalog;
+using Vortex.Protocol.Messages.Outgoing.Catalog;
 using Vortex.Primitives.Pets.Providers;
 using Vortex.Primitives.Pets.Snapshots;
 

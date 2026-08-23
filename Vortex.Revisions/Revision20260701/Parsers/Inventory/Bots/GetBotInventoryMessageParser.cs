@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.Inventory.Bots;
+using Vortex.Protocol.Messages.Incoming.Inventory.Bots;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

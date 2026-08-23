@@ -15,7 +15,7 @@ using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Furniture.Snapshots;
 using Vortex.Primitives.Furniture.StuffData;
-using Vortex.Primitives.Messages.Outgoing.Mysterybox;
+using Vortex.Protocol.Messages.Outgoing.Mysterybox;
 using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.MysteryBox.Grains;
 using Vortex.Primitives.MysteryBox.Snapshots;

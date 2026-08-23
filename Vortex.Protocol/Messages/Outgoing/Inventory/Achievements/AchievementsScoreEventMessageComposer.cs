@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Inventory.Achievements;
+namespace Vortex.Protocol.Messages.Outgoing.Inventory.Achievements;
 
 [GenerateSerializer, Immutable]
 public sealed record AchievementsScoreEventMessageComposer : IComposer

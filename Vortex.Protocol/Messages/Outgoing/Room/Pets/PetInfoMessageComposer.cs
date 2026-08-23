@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Pets.Snapshots;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Pets;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Pets;
 
 [GenerateSerializer, Immutable]
 public sealed record PetInfoMessageComposer : IComposer

@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Room.Engine;
+namespace Vortex.Protocol.Messages.Incoming.Room.Engine;
 
 /// <summary>Dropping a bot from the inventory onto a tile. (0, 0) means "anywhere that works" —
 /// the client sends it when the drop has no tile under it yet.</summary>

@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Snapshots.Furniture;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Engine;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Engine;
 
 [GenerateSerializer, Immutable]
 public sealed record ObjectAddMessageComposer : IComposer

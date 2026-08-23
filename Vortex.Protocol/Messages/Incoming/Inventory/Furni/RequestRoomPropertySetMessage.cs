@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Inventory.Furni;
+namespace Vortex.Protocol.Messages.Incoming.Inventory.Furni;
 
 public record RequestRoomPropertySetMessage : IMessageEvent
 {

@@ -1,5 +1,5 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Talent;
+namespace Vortex.Protocol.Messages.Incoming.Talent;
 
 public record GuideAdvertisementReadMessage : IMessageEvent { }

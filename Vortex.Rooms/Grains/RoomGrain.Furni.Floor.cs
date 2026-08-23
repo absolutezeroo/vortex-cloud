@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Inventory.Snapshots;
-using Vortex.Primitives.Messages.Incoming.Userdefinedroomevents;
+using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;

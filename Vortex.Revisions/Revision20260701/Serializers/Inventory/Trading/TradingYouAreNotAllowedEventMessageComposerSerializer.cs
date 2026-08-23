@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Inventory.Trading;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Trading;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Inventory.Trading;

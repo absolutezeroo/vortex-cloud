@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
-using Vortex.Primitives.Messages.Incoming.Inventory.Trading;
+using Vortex.Protocol.Messages.Incoming.Inventory.Trading;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Users;
+namespace Vortex.Protocol.Messages.Outgoing.Users;
 
 /// <summary>
 /// Whether an e-mail change was accepted (header 2050).

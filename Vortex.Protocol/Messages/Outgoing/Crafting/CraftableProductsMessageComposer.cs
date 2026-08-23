@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Crafting;
+namespace Vortex.Protocol.Messages.Outgoing.Crafting;
 
 [GenerateSerializer, Immutable]
 public sealed record CraftableProductsMessageComposer : IComposer

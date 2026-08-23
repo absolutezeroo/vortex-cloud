@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Layout;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Layout;
 
 /// <summary>
 /// The tiles the floor-plan editor must not let you edit, because something is standing on them.

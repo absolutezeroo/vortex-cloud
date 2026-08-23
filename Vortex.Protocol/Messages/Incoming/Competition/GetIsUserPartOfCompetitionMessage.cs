@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Competition;
+namespace Vortex.Protocol.Messages.Incoming.Competition;
 
 /// <summary>Asks whether the player is entered in the competition behind a goal code.</summary>
 public record GetIsUserPartOfCompetitionMessage : IMessageEvent

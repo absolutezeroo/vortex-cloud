@@ -1,7 +1,7 @@
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Snapshots.Wired;
 
-namespace Vortex.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredtrading.Contracts;
+namespace Vortex.Protocol.Messages.Incoming.Userdefinedroomevents.Wiredtrading.Contracts;
 
 /// <summary>
 /// The contract editor's save button.

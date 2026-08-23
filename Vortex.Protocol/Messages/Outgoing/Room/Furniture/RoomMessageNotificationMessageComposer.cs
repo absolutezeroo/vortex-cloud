@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Furniture;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Furniture;
 
 /// <summary>
 /// Unread guestbook/post-it messages waiting in one of the player's rooms (header 1740).

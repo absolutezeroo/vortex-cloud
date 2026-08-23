@@ -1,5 +1,5 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Vault;
+namespace Vortex.Protocol.Messages.Incoming.Vault;
 
 public record WithdrawCreditVaultMessage : IMessageEvent { }

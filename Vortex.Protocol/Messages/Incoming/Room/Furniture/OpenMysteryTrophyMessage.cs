@@ -1,7 +1,7 @@
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Object;
 
-namespace Vortex.Primitives.Messages.Incoming.Room.Furniture;
+namespace Vortex.Protocol.Messages.Incoming.Room.Furniture;
 
 /// <summary>
 /// Sent when the player confirms the mystery trophy dialog: the trophy furniture to open and the

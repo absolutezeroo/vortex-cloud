@@ -1,7 +1,7 @@
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Players;
 
-namespace Vortex.Primitives.Messages.Incoming.FriendList;
+namespace Vortex.Protocol.Messages.Incoming.FriendList;
 
 public record FollowFriendMessage : IMessageEvent
 {

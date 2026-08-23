@@ -1,5 +1,5 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Inventory.Pets;
+namespace Vortex.Protocol.Messages.Incoming.Inventory.Pets;
 
 public record GetPetInventoryMessage : IMessageEvent { }

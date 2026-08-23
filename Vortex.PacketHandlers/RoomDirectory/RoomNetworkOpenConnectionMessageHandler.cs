@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Roomdirectory;
+using Vortex.Protocol.Messages.Incoming.Roomdirectory;
 
 namespace Vortex.PacketHandlers.RoomDirectory;
 

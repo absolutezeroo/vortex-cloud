@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Roomsettings;
+namespace Vortex.Protocol.Messages.Outgoing.Roomsettings;
 
 [GenerateSerializer, Immutable]
 public sealed record RoomSettingsSaveErrorEventMessageComposer : IComposer

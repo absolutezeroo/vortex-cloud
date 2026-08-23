@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Room.Action;
+namespace Vortex.Protocol.Messages.Incoming.Room.Action;
 
 public record RemoveRightsMessage : IMessageEvent
 {

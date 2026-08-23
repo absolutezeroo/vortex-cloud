@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Notifications;
+namespace Vortex.Protocol.Messages.Outgoing.Notifications;
 
 /// <summary>
 /// Which inventory items the player has not looked at yet (header 3059) - what puts the dot on the

@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Nft;
+namespace Vortex.Protocol.Messages.Outgoing.Nft;
 
 /// <summary>
 /// Which whole avatar the player is wearing, and the look to give them back.

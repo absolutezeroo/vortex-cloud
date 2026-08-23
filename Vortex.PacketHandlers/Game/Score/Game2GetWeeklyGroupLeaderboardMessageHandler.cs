@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Game.Score;
+using Vortex.Protocol.Messages.Incoming.Game.Score;
 
 namespace Vortex.PacketHandlers.Game.Score;
 

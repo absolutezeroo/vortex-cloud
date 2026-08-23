@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Room.Bots;
+namespace Vortex.Protocol.Messages.Incoming.Room.Bots;
 
 /// <summary>Opening a skill's configuration dialog: what is this bot currently set to?</summary>
 public record GetBotCommandConfigurationDataMessage : IMessageEvent

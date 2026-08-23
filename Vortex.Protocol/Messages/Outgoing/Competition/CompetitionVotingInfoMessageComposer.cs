@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Competition;
+namespace Vortex.Protocol.Messages.Outgoing.Competition;
 
 [GenerateSerializer, Immutable]
 public sealed record CompetitionVotingInfoMessageComposer : IComposer

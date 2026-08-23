@@ -1,7 +1,7 @@
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms;
 
-namespace Vortex.Primitives.Messages.Incoming.Room.Session;
+namespace Vortex.Protocol.Messages.Incoming.Room.Session;
 
 public record OpenFlatConnectionMessage : IMessageEvent
 {

@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Snapshots;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Furniture;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Furniture;
 
 [GenerateSerializer, Immutable]
 public sealed record RentableSpaceConfigMessageComposer : IComposer

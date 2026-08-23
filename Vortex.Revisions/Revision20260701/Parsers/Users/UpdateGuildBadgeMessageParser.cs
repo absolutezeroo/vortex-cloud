@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Vortex.Primitives.Messages.Incoming.Users;
+using Vortex.Protocol.Messages.Incoming.Users;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

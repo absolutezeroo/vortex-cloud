@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Wired.Variable;
 
-namespace Vortex.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredmenu;
+namespace Vortex.Protocol.Messages.Incoming.Userdefinedroomevents.Wiredmenu;
 
 [GenerateSerializer, Immutable]
 public record WiredGetAllVariablesDiffsMessage : IMessageEvent

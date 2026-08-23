@@ -4,7 +4,7 @@ using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Catalog;
+namespace Vortex.Protocol.Messages.Outgoing.Catalog;
 
 [GenerateSerializer, Immutable]
 public sealed record HabboClubOffersMessageComposer : IComposer

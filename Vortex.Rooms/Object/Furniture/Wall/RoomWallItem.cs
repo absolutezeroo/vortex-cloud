@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Room.Engine;
+using Vortex.Protocol.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;

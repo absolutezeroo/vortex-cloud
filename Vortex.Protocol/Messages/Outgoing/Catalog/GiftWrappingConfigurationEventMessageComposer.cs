@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Snapshots.Catalog;
 
-namespace Vortex.Primitives.Messages.Outgoing.Catalog;
+namespace Vortex.Protocol.Messages.Outgoing.Catalog;
 
 [GenerateSerializer]
 [Immutable]

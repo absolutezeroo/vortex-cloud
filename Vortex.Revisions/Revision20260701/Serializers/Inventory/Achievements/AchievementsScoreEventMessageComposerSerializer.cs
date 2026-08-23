@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Inventory.Achievements;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Achievements;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Inventory.Achievements;

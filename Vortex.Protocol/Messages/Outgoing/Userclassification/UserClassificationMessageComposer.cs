@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Userclassification;
+namespace Vortex.Protocol.Messages.Outgoing.Userclassification;
 
 /// <summary>
 /// The answer to a staff <c>:uc</c> / <c>:anew</c> command: the players that matched, and the label

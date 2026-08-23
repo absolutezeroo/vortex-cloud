@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Help;
+namespace Vortex.Protocol.Messages.Incoming.Help;
 
 /// <summary>Reporting a selfie. Unlike the photo variant this one carries a written message and a
 /// share URL instead of a photo id, and no topic — the client offers a single selfie report reason.</summary>

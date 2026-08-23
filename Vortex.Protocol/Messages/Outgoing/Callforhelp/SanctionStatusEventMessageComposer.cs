@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Callforhelp;
+namespace Vortex.Protocol.Messages.Outgoing.Callforhelp;
 
 /// <summary>
 /// The player's own sanction history (header 1746) - one entry per alert, mute or ban on record.

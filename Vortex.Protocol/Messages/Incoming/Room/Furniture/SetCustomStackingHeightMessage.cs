@@ -1,7 +1,7 @@
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Object;
 
-namespace Vortex.Primitives.Messages.Incoming.Room.Furniture;
+namespace Vortex.Protocol.Messages.Incoming.Room.Furniture;
 
 /// <summary>
 /// The custom stack-height widget. The trailing flag is genuinely optional on the wire — the widget

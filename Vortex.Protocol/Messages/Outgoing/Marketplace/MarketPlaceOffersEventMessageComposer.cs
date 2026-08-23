@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Marketplace.Snapshots;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Marketplace;
+namespace Vortex.Protocol.Messages.Outgoing.Marketplace;
 
 [GenerateSerializer, Immutable]
 public sealed record MarketPlaceOffersEventMessageComposer : IComposer

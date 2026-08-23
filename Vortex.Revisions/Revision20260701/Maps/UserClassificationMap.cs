@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Userclassification;
+using Vortex.Protocol.Messages.Outgoing.Userclassification;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Revision20260701.Parsers.UserClassification;
 using Vortex.Revisions.Revision20260701.Serializers.UserClassification;

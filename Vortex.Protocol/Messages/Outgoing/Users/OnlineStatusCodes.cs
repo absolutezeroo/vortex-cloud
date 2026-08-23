@@ -1,4 +1,4 @@
-namespace Vortex.Primitives.Messages.Outgoing.Users;
+namespace Vortex.Protocol.Messages.Outgoing.Users;
 
 /// <summary>
 /// The three values <c>ExtendedProfileMessageComposer.OnlineStatus</c> can carry.

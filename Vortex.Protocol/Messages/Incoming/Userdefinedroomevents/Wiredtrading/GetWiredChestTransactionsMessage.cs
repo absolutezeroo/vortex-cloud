@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
+namespace Vortex.Protocol.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
 
 /// <summary>One chest's history, a page at a time.</summary>
 public record GetWiredChestTransactionsMessage : IMessageEvent

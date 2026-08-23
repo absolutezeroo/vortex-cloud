@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Pets.Snapshots;
 
-namespace Vortex.Primitives.Messages.Outgoing.Inventory.Pets;
+namespace Vortex.Protocol.Messages.Outgoing.Inventory.Pets;
 
 [GenerateSerializer, Immutable]
 public sealed record ConfirmBreedingResultEventMessageComposer : IComposer

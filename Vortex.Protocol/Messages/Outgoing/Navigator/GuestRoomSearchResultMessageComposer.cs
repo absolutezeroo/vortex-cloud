@@ -4,7 +4,7 @@ using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans.Snapshots.Navigator;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 
-namespace Vortex.Primitives.Messages.Outgoing.Navigator;
+namespace Vortex.Protocol.Messages.Outgoing.Navigator;
 
 /// <summary>
 /// The result of a guest-room search (header 160) - the query that produced it, the rooms it found,

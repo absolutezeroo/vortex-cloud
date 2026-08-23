@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.FriendList.Grains;
-using Vortex.Primitives.Messages.Incoming.FriendList;
+using Vortex.Protocol.Messages.Incoming.FriendList;
 using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.FriendList;

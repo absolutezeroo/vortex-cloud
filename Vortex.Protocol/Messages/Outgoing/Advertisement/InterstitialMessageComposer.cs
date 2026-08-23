@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Advertisement;
+namespace Vortex.Protocol.Messages.Outgoing.Advertisement;
 
 /// <summary>
 /// Whether the client may show an interstitial ad right now (header 3898).

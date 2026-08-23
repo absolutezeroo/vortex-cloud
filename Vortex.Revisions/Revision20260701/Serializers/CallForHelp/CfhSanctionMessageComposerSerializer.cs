@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Callforhelp;
+using Vortex.Protocol.Messages.Outgoing.Callforhelp;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.CallForHelp;

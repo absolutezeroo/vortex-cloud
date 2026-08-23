@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Collectibles;
+namespace Vortex.Protocol.Messages.Incoming.Collectibles;
 
 /// <summary>
 /// Opening the collectibles shop tab. Body-less.

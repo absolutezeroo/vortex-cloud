@@ -1,5 +1,5 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Roomdirectory;
+namespace Vortex.Protocol.Messages.Incoming.Roomdirectory;
 
 public record RoomNetworkOpenConnectionMessage : IMessageEvent { }

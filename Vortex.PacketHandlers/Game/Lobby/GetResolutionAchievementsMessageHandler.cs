@@ -2,7 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Game.Lobby;
+using Vortex.Protocol.Messages.Incoming.Game.Lobby;
 using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Game.Lobby;

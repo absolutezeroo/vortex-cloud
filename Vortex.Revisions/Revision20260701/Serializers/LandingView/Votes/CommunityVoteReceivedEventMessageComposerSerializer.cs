@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Landingview.Votes;
+using Vortex.Protocol.Messages.Outgoing.Landingview.Votes;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.LandingView.Votes;

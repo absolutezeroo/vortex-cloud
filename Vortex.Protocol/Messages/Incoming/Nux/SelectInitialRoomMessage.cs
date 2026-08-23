@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Nux;
+namespace Vortex.Protocol.Messages.Incoming.Nux;
 
 /// <summary>
 /// Picks the starter room. Carries the room TYPE the client offered (one of

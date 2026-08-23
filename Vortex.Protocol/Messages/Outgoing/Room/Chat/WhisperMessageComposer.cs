@@ -1,6 +1,6 @@
 using Orleans;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Chat;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Chat;
 
 [GenerateSerializer, Immutable]
 public sealed record WhisperMessageComposer : ChatMessageComposer;

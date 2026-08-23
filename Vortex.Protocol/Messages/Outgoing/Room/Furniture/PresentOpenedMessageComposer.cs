@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Furniture;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Furniture;
 
 [GenerateSerializer, Immutable]
 public sealed record PresentOpenedMessageComposer : IComposer

@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Quest;
+namespace Vortex.Protocol.Messages.Incoming.Quest;
 
 /// <summary>
 /// The player pressed claim on a completed daily task. The id goes out as a long and comes back as

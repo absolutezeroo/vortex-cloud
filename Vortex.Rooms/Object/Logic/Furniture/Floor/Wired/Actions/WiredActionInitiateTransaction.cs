@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Primitives.Furniture.Providers;
-using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
+using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;

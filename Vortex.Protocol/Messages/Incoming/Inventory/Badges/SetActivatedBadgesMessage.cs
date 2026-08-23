@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Inventory.Badges;
+namespace Vortex.Protocol.Messages.Incoming.Inventory.Badges;
 
 public record SetActivatedBadgesMessage : IMessageEvent
 {

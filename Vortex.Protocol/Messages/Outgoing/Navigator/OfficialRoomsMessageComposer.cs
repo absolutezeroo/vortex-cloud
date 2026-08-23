@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans.Snapshots.Navigator;
 
-namespace Vortex.Primitives.Messages.Outgoing.Navigator;
+namespace Vortex.Protocol.Messages.Outgoing.Navigator;
 
 /// <summary>
 /// The public/official rooms view. Both the old and the new navigator listen for this, so it is

@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.Landingview.Votes;
+using Vortex.Protocol.Messages.Incoming.Landingview.Votes;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

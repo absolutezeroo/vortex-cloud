@@ -7,8 +7,8 @@ using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Inventory.Snapshots;
-using Vortex.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
-using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
+using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
+using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Rooms.Snapshots.Wired;
 

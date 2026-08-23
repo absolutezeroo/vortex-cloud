@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Game.Lobby;
+namespace Vortex.Protocol.Messages.Incoming.Game.Lobby;
 
 /// <summary>
 /// Clicking a resolution statue, and also picking an achievement in the dialog it opens — the

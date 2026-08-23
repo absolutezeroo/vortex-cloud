@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Game.Directory;
+namespace Vortex.Protocol.Messages.Incoming.Game.Directory;
 
 /// <summary>Starting a snowwar on a named server game, as opposed to the quick-join flow.</summary>
 public record Game2StartSnowWarMessage : IMessageEvent

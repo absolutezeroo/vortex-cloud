@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Avatar;
+namespace Vortex.Protocol.Messages.Incoming.Avatar;
 
 public record SaveWardrobeOutfitMessage : IMessageEvent
 {

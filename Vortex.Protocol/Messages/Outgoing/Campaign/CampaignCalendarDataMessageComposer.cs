@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Campaign;
+namespace Vortex.Protocol.Messages.Outgoing.Campaign;
 
 [GenerateSerializer, Immutable]
 public sealed record CampaignCalendarDataMessageComposer : IComposer

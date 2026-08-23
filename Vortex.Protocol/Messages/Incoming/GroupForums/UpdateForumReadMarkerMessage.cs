@@ -2,7 +2,7 @@
 using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.GroupForums;
+namespace Vortex.Protocol.Messages.Incoming.GroupForums;
 
 /// <summary>
 /// Sent when the player leaves a forum view, or uses "mark all forums as read" — the client batches

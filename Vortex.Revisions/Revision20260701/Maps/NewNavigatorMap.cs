@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.NewNavigator;
+using Vortex.Protocol.Messages.Outgoing.NewNavigator;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Revision20260701.Parsers.NewNavigator;
 using Vortex.Revisions.Revision20260701.Serializers.NewNavigator;

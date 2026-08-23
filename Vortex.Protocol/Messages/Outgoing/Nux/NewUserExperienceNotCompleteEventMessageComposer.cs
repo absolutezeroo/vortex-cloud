@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Nux;
+namespace Vortex.Protocol.Messages.Outgoing.Nux;
 
 [GenerateSerializer, Immutable]
 public sealed record NewUserExperienceNotCompleteEventMessageComposer : IComposer

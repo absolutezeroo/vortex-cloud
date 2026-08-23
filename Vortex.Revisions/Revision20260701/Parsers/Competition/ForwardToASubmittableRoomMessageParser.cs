@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.Competition;
+using Vortex.Protocol.Messages.Incoming.Competition;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

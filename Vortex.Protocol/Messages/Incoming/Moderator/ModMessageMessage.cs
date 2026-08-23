@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Moderator;
+namespace Vortex.Protocol.Messages.Incoming.Moderator;
 
 /// <summary>Staff message sent straight to one user from the mod tool. Two empty strings sit
 /// between the message and the topic on the wire — the client always pushes them blank.</summary>

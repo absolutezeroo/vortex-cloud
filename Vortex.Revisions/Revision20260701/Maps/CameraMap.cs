@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Camera;
+using Vortex.Protocol.Messages.Outgoing.Camera;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Revision20260701.Parsers.Camera;
 using Vortex.Revisions.Revision20260701.Serializers.Camera;

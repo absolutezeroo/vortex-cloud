@@ -1,5 +1,5 @@
 using Vortex.Primitives.Catalog.Enums;
-using Vortex.Primitives.Messages.Incoming.Catalog;
+using Vortex.Protocol.Messages.Incoming.Catalog;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Help;
+namespace Vortex.Protocol.Messages.Incoming.Help;
 
 /// <summary>Reporting a single post inside a guild-forum thread.</summary>
 public record CallForHelpFromForumMessageMessage : IMessageEvent

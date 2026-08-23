@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
+namespace Vortex.Protocol.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
 
 /// <summary>The "buy" button on a chest's upgrade dialog.</summary>
 public record UpgradeWiredChestMessage : IMessageEvent

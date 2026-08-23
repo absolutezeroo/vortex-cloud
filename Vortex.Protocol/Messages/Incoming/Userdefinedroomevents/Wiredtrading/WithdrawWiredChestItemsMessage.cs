@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
+namespace Vortex.Protocol.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
 
 /// <summary>
 /// Taking items back out of a chest, by kind rather than by id.

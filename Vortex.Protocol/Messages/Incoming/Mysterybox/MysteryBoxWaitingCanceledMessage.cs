@@ -1,7 +1,7 @@
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Players;
 
-namespace Vortex.Primitives.Messages.Incoming.Mysterybox;
+namespace Vortex.Protocol.Messages.Incoming.Mysterybox;
 
 /// <summary>
 /// Sent when the player closes/cancels the mystery box wait dialog. The client passes the box

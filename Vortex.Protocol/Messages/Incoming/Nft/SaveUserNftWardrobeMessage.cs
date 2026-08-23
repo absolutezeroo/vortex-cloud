@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Nft;
+namespace Vortex.Protocol.Messages.Incoming.Nft;
 
 /// <summary>
 /// Putting on one of the avatars the player owns, chosen in the editor's own tab.

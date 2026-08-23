@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Moderator;
+namespace Vortex.Protocol.Messages.Incoming.Moderator;
 
 /// <summary>
 /// The room tool's "Send caution" / "Send message" buttons: one line delivered to everybody in the

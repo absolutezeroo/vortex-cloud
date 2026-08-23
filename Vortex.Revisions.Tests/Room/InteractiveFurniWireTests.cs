@@ -1,7 +1,7 @@
 using System;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
-using Vortex.Primitives.Messages.Incoming.Room.Furniture;
+using Vortex.Protocol.Messages.Incoming.Room.Furniture;
 using Vortex.Primitives.Packets;
 using Vortex.Revisions.Configuration;
 using Xunit;

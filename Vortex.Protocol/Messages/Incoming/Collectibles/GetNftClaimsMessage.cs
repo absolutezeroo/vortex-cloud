@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Collectibles;
+namespace Vortex.Protocol.Messages.Incoming.Collectibles;
 
 /// <summary>
 /// "What is waiting on this wallet?" — the claims tab. Carries the wallet address; the parser used

@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Room.Action;
+using Vortex.Protocol.Messages.Incoming.Room.Action;
 
 namespace Vortex.PacketHandlers.Room.Action;
 

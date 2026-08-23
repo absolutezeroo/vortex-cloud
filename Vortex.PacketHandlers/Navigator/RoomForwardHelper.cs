@@ -2,7 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Outgoing.Navigator;
+using Vortex.Protocol.Messages.Outgoing.Navigator;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Rooms;

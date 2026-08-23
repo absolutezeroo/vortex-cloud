@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Perk;
+namespace Vortex.Protocol.Messages.Outgoing.Perk;
 
 [GenerateSerializer, Immutable]
 public sealed record PerkAllowancesMessageComposer : IComposer

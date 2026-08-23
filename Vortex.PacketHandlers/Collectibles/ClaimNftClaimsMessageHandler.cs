@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Collectibles;
-using Vortex.Primitives.Messages.Outgoing.Collectibles;
+using Vortex.Protocol.Messages.Incoming.Collectibles;
+using Vortex.Protocol.Messages.Outgoing.Collectibles;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 

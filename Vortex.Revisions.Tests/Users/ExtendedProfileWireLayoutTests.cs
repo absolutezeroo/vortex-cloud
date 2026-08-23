@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Vortex.Primitives.Groups.Snapshots;
-using Vortex.Primitives.Messages.Outgoing.Users;
+using Vortex.Protocol.Messages.Outgoing.Users;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 using Vortex.Revisions.Configuration;

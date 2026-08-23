@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Preferences;
+namespace Vortex.Protocol.Messages.Incoming.Preferences;
 
 /// <summary>
 /// Asks for the player's personal word filter. Sent once, when the word-filter dialog is built.

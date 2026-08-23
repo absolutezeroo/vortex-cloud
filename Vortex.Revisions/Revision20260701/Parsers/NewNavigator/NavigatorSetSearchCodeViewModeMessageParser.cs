@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.NewNavigator;
+using Vortex.Protocol.Messages.Incoming.NewNavigator;
 using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;

@@ -1,7 +1,7 @@
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms;
 
-namespace Vortex.Primitives.Messages.Incoming.Navigator;
+namespace Vortex.Protocol.Messages.Incoming.Navigator;
 
 public record GetGuestRoomMessage : IMessageEvent
 {

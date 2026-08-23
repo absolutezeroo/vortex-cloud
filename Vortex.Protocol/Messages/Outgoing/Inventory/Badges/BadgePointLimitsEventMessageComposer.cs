@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Inventory.Badges;
+namespace Vortex.Protocol.Messages.Outgoing.Inventory.Badges;
 
 [GenerateSerializer, Immutable]
 public sealed record BadgePointLimitsEventMessageComposer : IComposer

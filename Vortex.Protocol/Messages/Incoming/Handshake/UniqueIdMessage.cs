@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Handshake;
+namespace Vortex.Protocol.Messages.Incoming.Handshake;
 
 public record UniqueIdMessage : IMessageEvent
 {

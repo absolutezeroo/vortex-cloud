@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
 using Vortex.Primitives.Bots;
-using Vortex.Primitives.Messages.Outgoing.Room.Engine;
+using Vortex.Protocol.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;

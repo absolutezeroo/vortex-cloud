@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Collectibles;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Collectibles;
+namespace Vortex.Protocol.Messages.Outgoing.Collectibles;
 
 /// <summary>
 /// The player's collectible assets, and the only thing that ends the inventory tab's wait.

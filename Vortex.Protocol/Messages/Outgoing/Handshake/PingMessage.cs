@@ -1,5 +1,5 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Handshake;
+namespace Vortex.Protocol.Messages.Outgoing.Handshake;
 
 public sealed record PingMessage : IComposer;

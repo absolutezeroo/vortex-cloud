@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Avatar;
+namespace Vortex.Protocol.Messages.Incoming.Avatar;
 
 /// <summary>
 /// Claims a name. Sent when the onboarding editor submits, after the check has passed.

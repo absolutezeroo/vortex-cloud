@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Notifications;
+namespace Vortex.Protocol.Messages.Outgoing.Notifications;
 
 /// <summary>
 /// A hotel-wide broadcast (header 334).

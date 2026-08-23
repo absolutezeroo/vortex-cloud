@@ -1,5 +1,5 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Room.Session;
+namespace Vortex.Protocol.Messages.Incoming.Room.Session;
 
 public record QuitMessage : IMessageEvent { }

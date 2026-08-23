@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Handshake;
+namespace Vortex.Protocol.Messages.Outgoing.Handshake;
 
 [GenerateSerializer, Immutable]
 public sealed record IdentityAccountsEventMessageComposer : IComposer

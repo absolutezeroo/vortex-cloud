@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.NewNavigator;
+using Vortex.Protocol.Messages.Outgoing.NewNavigator;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Snapshots.NewNavigator;
 

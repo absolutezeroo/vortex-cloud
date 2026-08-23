@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Inventory.Trading;
+using Vortex.Protocol.Messages.Incoming.Inventory.Trading;
 
 namespace Vortex.PacketHandlers.Inventory.Trading;
 

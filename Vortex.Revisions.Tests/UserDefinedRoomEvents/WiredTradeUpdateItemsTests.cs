@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
-using Vortex.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
+using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Packets;
 using Vortex.Revisions.Configuration;
 using Xunit;

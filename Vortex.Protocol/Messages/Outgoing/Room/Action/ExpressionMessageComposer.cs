@@ -3,7 +3,7 @@ using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Action;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Action;
 
 [GenerateSerializer, Immutable]
 public sealed record ExpressionMessageComposer : IComposer

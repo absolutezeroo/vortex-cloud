@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Enums.Wired;
 
-namespace Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
+namespace Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 
 [GenerateSerializer, Immutable]
 public sealed record WiredRoomLogsComposer : IComposer

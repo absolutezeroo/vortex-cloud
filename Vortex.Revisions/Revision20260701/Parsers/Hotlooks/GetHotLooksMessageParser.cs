@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.Hotlooks;
+using Vortex.Protocol.Messages.Incoming.Hotlooks;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

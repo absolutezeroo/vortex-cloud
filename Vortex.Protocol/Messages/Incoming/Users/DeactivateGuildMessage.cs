@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Users;
+namespace Vortex.Protocol.Messages.Incoming.Users;
 
 public record DeactivateGuildMessage : IMessageEvent
 {

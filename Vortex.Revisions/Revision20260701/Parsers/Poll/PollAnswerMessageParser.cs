@@ -1,5 +1,5 @@
 using System.Collections.Immutable;
-using Vortex.Primitives.Messages.Incoming.Poll;
+using Vortex.Protocol.Messages.Incoming.Poll;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Competition;
+namespace Vortex.Protocol.Messages.Incoming.Competition;
 
 public record GetCurrentTimingCodeMessage : IMessageEvent
 {

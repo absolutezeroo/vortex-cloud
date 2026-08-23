@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.GroupForums;
+using Vortex.Protocol.Messages.Incoming.GroupForums;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

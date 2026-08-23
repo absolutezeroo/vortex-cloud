@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Game.Arena;
+using Vortex.Protocol.Messages.Incoming.Game.Arena;
 
 namespace Vortex.PacketHandlers.Game.Arena;
 

@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Availability;
+namespace Vortex.Protocol.Messages.Outgoing.Availability;
 
 /// <summary>
 /// Login was refused because the hotel is closed (header 698), and when it opens again.

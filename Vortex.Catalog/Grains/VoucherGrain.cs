@@ -11,7 +11,7 @@ using Vortex.Database.Entities.Catalog;
 using Vortex.Database.Entities.Players;
 using Vortex.Primitives.Catalog.Grains;
 using Vortex.Primitives.Catalog.Snapshots;
-using Vortex.Primitives.Messages.Outgoing.Catalog;
+using Vortex.Protocol.Messages.Outgoing.Catalog;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums.Wallet;

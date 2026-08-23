@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Quests.Snapshots;
 
-namespace Vortex.Primitives.Messages.Outgoing.Quest;
+namespace Vortex.Protocol.Messages.Outgoing.Quest;
 
 /// <summary>A quest was completed. <see cref="ShowDialog"/> tells the client whether to pop the
 /// completion dialog.</summary>

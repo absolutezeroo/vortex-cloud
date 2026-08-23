@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Inventory.Snapshots;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Inventory.Trading;
+namespace Vortex.Protocol.Messages.Outgoing.Inventory.Trading;
 
 [GenerateSerializer, Immutable]
 public sealed record TradingItemListEventMessageComposer : IComposer

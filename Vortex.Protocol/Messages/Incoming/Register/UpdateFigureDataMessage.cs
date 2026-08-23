@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Register;
+namespace Vortex.Protocol.Messages.Incoming.Register;
 
 public record UpdateFigureDataMessage : IMessageEvent
 {

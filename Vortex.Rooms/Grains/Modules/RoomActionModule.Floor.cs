@@ -12,7 +12,7 @@ using Vortex.Primitives.Action;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Inventory.Snapshots;
-using Vortex.Primitives.Messages.Incoming.Userdefinedroomevents;
+using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;

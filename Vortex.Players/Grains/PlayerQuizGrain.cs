@@ -11,7 +11,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Help;
 using Vortex.Players.Help;
 using Vortex.Primitives.Inventory.Grains;
-using Vortex.Primitives.Messages.Outgoing.Help;
+using Vortex.Protocol.Messages.Outgoing.Help;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
 

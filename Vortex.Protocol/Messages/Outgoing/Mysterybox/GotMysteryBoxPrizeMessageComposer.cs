@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Mysterybox;
+namespace Vortex.Protocol.Messages.Outgoing.Mysterybox;
 
 /// <summary>
 /// The prize won when a mystery box is opened. <see cref="ContentType"/> is the legacy product code

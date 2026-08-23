@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.Sound;
+using Vortex.Protocol.Messages.Incoming.Sound;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

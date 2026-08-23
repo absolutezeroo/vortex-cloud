@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Catalog;
+using Vortex.Protocol.Messages.Outgoing.Catalog;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Pets.Snapshots;
 

@@ -6,8 +6,8 @@ using Vortex.Messages.Registry;
 using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Catalog.Snapshots;
-using Vortex.Primitives.Messages.Incoming.Catalog;
-using Vortex.Primitives.Messages.Outgoing.Catalog;
+using Vortex.Protocol.Messages.Incoming.Catalog;
+using Vortex.Protocol.Messages.Outgoing.Catalog;
 
 namespace Vortex.PacketHandlers.Catalog;
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Primitives.Events;
-using Vortex.Primitives.Messages.Outgoing.Moderation;
+using Vortex.Protocol.Messages.Outgoing.Moderation;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Moderation.Grains;
 using Vortex.Primitives.Networking;

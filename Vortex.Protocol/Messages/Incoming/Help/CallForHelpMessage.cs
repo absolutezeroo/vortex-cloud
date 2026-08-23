@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Help;
+namespace Vortex.Protocol.Messages.Incoming.Help;
 
 public record CallForHelpMessage : IMessageEvent
 {

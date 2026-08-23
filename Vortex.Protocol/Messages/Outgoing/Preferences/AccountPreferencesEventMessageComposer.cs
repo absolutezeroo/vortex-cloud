@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Players.Enums;
 
-namespace Vortex.Primitives.Messages.Outgoing.Preferences;
+namespace Vortex.Protocol.Messages.Outgoing.Preferences;
 
 [GenerateSerializer, Immutable]
 public sealed record AccountPreferencesEventMessageComposer : IComposer

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Quest;
+using Vortex.Protocol.Messages.Incoming.Quest;
 using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Quest;

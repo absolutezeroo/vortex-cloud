@@ -1,8 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Vortex.Primitives.Messages.Outgoing.Collectibles;
-using Vortex.Primitives.Messages.Outgoing.Inventory.Purse;
-using Vortex.Primitives.Messages.Outgoing.Notifications;
+using Vortex.Protocol.Messages.Outgoing.Collectibles;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Purse;
+using Vortex.Protocol.Messages.Outgoing.Notifications;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Snapshots;
 

@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Users;
+namespace Vortex.Protocol.Messages.Outgoing.Users;
 
 /// <summary>Broadcast when a player receives respect: the target's id and their new respect total.</summary>
 [GenerateSerializer, Immutable]

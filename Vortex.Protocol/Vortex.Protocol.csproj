@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <!--
@@ -7,11 +7,11 @@
       composer field rebuilt the whole graph, including the domains that contain no protocol at
       all. Split out so that churn stops at the projects which actually speak the wire.
 
-      The types keep their Vortex.Primitives.Messages.* namespaces. A project boundary does not
-      require a namespace change, and renaming them would touch some 1,800 files to buy nothing
-      the build graph cares about.
+      The folder is Messages/ under a Vortex.Protocol root, so the namespaces read
+      Vortex.Protocol.Messages.*: the wire vocabulary is named after the project that owns it
+      rather than after the hub it used to be filed in.
     -->
-    <RootNamespace>Vortex.Primitives.Messages</RootNamespace>
+    <RootNamespace>Vortex.Protocol</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" />

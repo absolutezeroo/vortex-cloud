@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Marketplace.Providers;
 using Vortex.Primitives.Marketplace.Snapshots;
-using Vortex.Primitives.Messages.Incoming.Marketplace;
-using Vortex.Primitives.Messages.Outgoing.Marketplace;
+using Vortex.Protocol.Messages.Incoming.Marketplace;
+using Vortex.Protocol.Messages.Outgoing.Marketplace;
 
 namespace Vortex.PacketHandlers.Marketplace;
 

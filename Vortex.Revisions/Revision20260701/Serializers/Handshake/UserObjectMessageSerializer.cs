@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Handshake;
+using Vortex.Protocol.Messages.Outgoing.Handshake;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Rooms.Enums;
 

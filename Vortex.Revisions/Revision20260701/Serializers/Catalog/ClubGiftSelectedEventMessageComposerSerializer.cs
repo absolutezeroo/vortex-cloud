@@ -1,5 +1,5 @@
 using Vortex.Primitives.Catalog.Snapshots;
-using Vortex.Primitives.Messages.Outgoing.Catalog;
+using Vortex.Protocol.Messages.Outgoing.Catalog;
 using Vortex.Primitives.Packets;
 using Vortex.Revisions.Revision20260701.Serializers.Catalog.Data;
 

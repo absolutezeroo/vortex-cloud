@@ -6,7 +6,7 @@ using Vortex.Primitives.Action;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Inventory.Snapshots;
-using Vortex.Primitives.Messages.Outgoing.Room.Engine;
+using Vortex.Protocol.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Rooms.Enums;

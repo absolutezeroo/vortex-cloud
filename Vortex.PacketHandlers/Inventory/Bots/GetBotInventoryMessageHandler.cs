@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Bots;
-using Vortex.Primitives.Messages.Incoming.Inventory.Bots;
-using Vortex.Primitives.Messages.Outgoing.Inventory.Bots;
+using Vortex.Protocol.Messages.Incoming.Inventory.Bots;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Bots;
 using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Inventory.Bots;

@@ -5,7 +5,7 @@ using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Engine;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Engine;
 
 /// <summary>
 /// The full editable server-side state of one placed furni, answering

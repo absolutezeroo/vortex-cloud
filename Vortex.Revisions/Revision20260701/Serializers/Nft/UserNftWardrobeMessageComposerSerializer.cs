@@ -1,5 +1,5 @@
 using System.Globalization;
-using Vortex.Primitives.Messages.Outgoing.Nft;
+using Vortex.Protocol.Messages.Outgoing.Nft;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Players.Grains;
 

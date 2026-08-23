@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Mysterybox;
+using Vortex.Protocol.Messages.Incoming.Mysterybox;
 using Vortex.Primitives.Rooms;
 
 namespace Vortex.PacketHandlers.MysteryBox;

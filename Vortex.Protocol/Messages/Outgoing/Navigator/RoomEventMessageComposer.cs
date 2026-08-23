@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms;
 
-namespace Vortex.Primitives.Messages.Outgoing.Navigator;
+namespace Vortex.Protocol.Messages.Outgoing.Navigator;
 
 /// <summary>Ack sent after a successful EditEventMessage -- confirms the room advertisement's
 /// updated ad copy so the client's "my events" panel can refresh without a full re-fetch.</summary>

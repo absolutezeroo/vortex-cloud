@@ -1,7 +1,7 @@
 using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Catalog;
+namespace Vortex.Protocol.Messages.Incoming.Catalog;
 
 public record GetCatalogPageMessage : IMessageEvent
 {

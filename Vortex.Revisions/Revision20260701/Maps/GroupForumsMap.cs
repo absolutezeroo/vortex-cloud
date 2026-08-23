@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Groupforums;
+using Vortex.Protocol.Messages.Outgoing.Groupforums;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Revision20260701.Parsers.GroupForums;
 using Vortex.Revisions.Revision20260701.Serializers.GroupForums;

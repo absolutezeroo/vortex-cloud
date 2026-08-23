@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
 using Vortex.Primitives.Action;
-using Vortex.Primitives.Messages.Outgoing.Room.Chat;
+using Vortex.Protocol.Messages.Outgoing.Room.Chat;
 using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Pets.Snapshots;

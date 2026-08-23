@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Userclassification;
+namespace Vortex.Protocol.Messages.Incoming.Userclassification;
 
 /// <summary>
 /// <c>:uc &lt;classification&gt;</c>, and <c>:anew</c> which sends the literal "new" — classify the

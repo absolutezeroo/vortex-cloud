@@ -2,7 +2,7 @@ using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
 
-namespace Vortex.Primitives.Messages.Incoming.Room.Engine;
+namespace Vortex.Protocol.Messages.Incoming.Room.Engine;
 
 public record MoveObjectMessage : IMessageEvent
 {

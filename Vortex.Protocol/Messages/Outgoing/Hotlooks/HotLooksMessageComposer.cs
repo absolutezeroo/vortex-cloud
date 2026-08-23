@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Hotlooks;
+namespace Vortex.Protocol.Messages.Outgoing.Hotlooks;
 
 [GenerateSerializer, Immutable]
 public sealed record HotLooksMessageComposer : IComposer

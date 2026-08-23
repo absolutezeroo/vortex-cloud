@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
-using Vortex.Primitives.Messages.Incoming.RoomSettings;
+using Vortex.Protocol.Messages.Incoming.RoomSettings;
 using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;

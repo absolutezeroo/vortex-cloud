@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Room.Furniture;
+using Vortex.Protocol.Messages.Outgoing.Room.Furniture;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Rooms.Snapshots;
 

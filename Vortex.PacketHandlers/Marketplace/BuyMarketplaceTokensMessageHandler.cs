@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Marketplace;
+using Vortex.Protocol.Messages.Incoming.Marketplace;
 
 namespace Vortex.PacketHandlers.Marketplace;
 

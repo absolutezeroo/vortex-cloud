@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.Game.Score;
+using Vortex.Protocol.Messages.Incoming.Game.Score;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Notifications;
+namespace Vortex.Protocol.Messages.Outgoing.Notifications;
 
 /// <summary>
 /// A generic server-driven dialog (header 2243): a type the client resolves to a layout, plus the

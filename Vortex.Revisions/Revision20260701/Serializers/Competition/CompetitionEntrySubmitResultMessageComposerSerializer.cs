@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Competition;
+using Vortex.Protocol.Messages.Outgoing.Competition;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Competition;

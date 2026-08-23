@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Landingview.Votes;
+using Vortex.Protocol.Messages.Incoming.Landingview.Votes;
 
 namespace Vortex.PacketHandlers.Landingview.Votes;
 

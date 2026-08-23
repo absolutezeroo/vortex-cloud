@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Snapshots.FriendList;
 
-namespace Vortex.Primitives.Messages.Outgoing.FriendList;
+namespace Vortex.Protocol.Messages.Outgoing.FriendList;
 
 [GenerateSerializer, Immutable]
 public sealed record FriendRequestsMessageComposer : IComposer

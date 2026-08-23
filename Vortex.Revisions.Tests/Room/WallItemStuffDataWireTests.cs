@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Vortex.Primitives.Furniture.Snapshots.StuffData;
-using Vortex.Primitives.Messages.Outgoing.Room.Engine;
+using Vortex.Protocol.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Players;

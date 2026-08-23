@@ -3,7 +3,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Players.Grains;
 
-namespace Vortex.Primitives.Messages.Outgoing.Nft;
+namespace Vortex.Protocol.Messages.Outgoing.Nft;
 
 /// <summary>
 /// The whole avatars a player may wear, listed in the avatar editor's own tab.

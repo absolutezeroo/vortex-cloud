@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Users;
+using Vortex.Protocol.Messages.Outgoing.Users;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Snapshots.FriendList;
 

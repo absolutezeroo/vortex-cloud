@@ -10,7 +10,7 @@ using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Polls;
 using Vortex.Players.Polls;
-using Vortex.Primitives.Messages.Outgoing.Poll;
+using Vortex.Protocol.Messages.Outgoing.Poll;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Polls;

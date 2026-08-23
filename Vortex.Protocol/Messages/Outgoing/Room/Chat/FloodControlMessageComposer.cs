@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Room.Chat;
+namespace Vortex.Protocol.Messages.Outgoing.Room.Chat;
 
 [GenerateSerializer, Immutable]
 public sealed record FloodControlMessageComposer : IComposer

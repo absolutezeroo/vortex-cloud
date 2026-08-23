@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents;
+namespace Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents;
 
 [GenerateSerializer, Immutable]
 public sealed record WiredSaveSuccessEventMessageComposer : IComposer

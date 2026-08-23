@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Logging;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Navigator;
+using Vortex.Protocol.Messages.Incoming.Navigator;
 using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Navigator;

@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Outgoing.Avatar;
+using Vortex.Protocol.Messages.Outgoing.Avatar;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Revision20260701.Parsers.Avatar;
 using Vortex.Revisions.Revision20260701.Serializers.Avatar;

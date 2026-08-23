@@ -3,7 +3,7 @@ using Vortex.Primitives.Furniture.StuffData;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Enums;
 
-namespace Vortex.Primitives.Messages.Incoming.Room.Engine;
+namespace Vortex.Protocol.Messages.Incoming.Room.Engine;
 
 /// <summary>
 /// Client rewrites one <c>furniture_definitions</c> row from the definition editor.

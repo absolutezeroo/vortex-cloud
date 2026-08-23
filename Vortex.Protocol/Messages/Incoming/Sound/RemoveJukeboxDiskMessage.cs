@@ -1,5 +1,5 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Sound;
+namespace Vortex.Protocol.Messages.Incoming.Sound;
 
 public record RemoveJukeboxDiskMessage : IMessageEvent { }

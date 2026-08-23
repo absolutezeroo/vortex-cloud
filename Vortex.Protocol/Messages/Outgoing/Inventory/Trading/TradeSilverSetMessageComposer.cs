@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Inventory.Trading;
+namespace Vortex.Protocol.Messages.Outgoing.Inventory.Trading;
 
 /// <summary>
 /// How much silver each side has staked towards the trade fee (header 1490).

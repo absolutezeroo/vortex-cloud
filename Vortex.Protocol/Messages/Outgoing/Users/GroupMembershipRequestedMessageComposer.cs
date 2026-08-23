@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Users;
+namespace Vortex.Protocol.Messages.Outgoing.Users;
 
 /// <summary>
 /// Tells a guild's admins that somebody asked to join. AS3-verified against

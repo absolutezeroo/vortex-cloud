@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Preferences;
+namespace Vortex.Protocol.Messages.Incoming.Preferences;
 
 /// <summary>
 /// Removes one word from the player's personal filter, by the word rather than by any row id — the

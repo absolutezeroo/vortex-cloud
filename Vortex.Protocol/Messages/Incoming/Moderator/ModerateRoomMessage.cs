@@ -1,6 +1,6 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Moderator;
+namespace Vortex.Protocol.Messages.Incoming.Moderator;
 
 /// <summary>The room-tool checkboxes, applied in one go. All three can be set at once.</summary>
 public record ModerateRoomMessage : IMessageEvent

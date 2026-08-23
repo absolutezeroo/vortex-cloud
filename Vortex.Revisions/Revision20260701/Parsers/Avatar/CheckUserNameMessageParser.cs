@@ -1,4 +1,4 @@
-using Vortex.Primitives.Messages.Incoming.Avatar;
+using Vortex.Protocol.Messages.Incoming.Avatar;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 

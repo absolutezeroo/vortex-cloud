@@ -2,7 +2,7 @@ using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Players.Snapshots;
 
-namespace Vortex.Primitives.Messages.Outgoing.Inventory.Achievements;
+namespace Vortex.Protocol.Messages.Outgoing.Inventory.Achievements;
 
 /// <summary>A single achievement's updated standing, pushed after progression.</summary>
 [GenerateSerializer, Immutable]

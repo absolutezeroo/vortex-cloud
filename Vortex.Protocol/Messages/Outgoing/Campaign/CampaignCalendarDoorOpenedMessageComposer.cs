@@ -1,7 +1,7 @@
 using Orleans;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Outgoing.Campaign;
+namespace Vortex.Protocol.Messages.Outgoing.Campaign;
 
 /// <summary>
 /// The result of opening an advent-calendar door (header 2164).

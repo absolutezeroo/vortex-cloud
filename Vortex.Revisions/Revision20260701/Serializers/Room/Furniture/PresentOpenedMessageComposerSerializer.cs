@@ -1,5 +1,5 @@
 using Vortex.Primitives.Furniture.Enums;
-using Vortex.Primitives.Messages.Outgoing.Room.Furniture;
+using Vortex.Protocol.Messages.Outgoing.Room.Furniture;
 using Vortex.Primitives.Packets;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Room.Furniture;

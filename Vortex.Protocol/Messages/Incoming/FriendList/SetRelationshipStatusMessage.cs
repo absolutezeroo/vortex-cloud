@@ -1,7 +1,7 @@
 using Vortex.Primitives.FriendList.Enums;
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.FriendList;
+namespace Vortex.Protocol.Messages.Incoming.FriendList;
 
 public record SetRelationshipStatusMessage : IMessageEvent
 {

@@ -1,5 +1,5 @@
 using Vortex.Primitives.Networking;
 
-namespace Vortex.Primitives.Messages.Incoming.Camera;
+namespace Vortex.Protocol.Messages.Incoming.Camera;
 
 public record RequestCameraConfigurationMessage : IMessageEvent { }

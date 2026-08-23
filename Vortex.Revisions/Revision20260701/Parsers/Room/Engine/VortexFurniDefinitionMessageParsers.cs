@@ -1,6 +1,6 @@
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.StuffData;
-using Vortex.Primitives.Messages.Incoming.Room.Engine;
+using Vortex.Protocol.Messages.Incoming.Room.Engine;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Rooms.Enums;

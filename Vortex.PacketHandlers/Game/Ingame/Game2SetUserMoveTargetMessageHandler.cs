@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Primitives.Messages.Incoming.Game.Ingame;
+using Vortex.Protocol.Messages.Incoming.Game.Ingame;
 
 namespace Vortex.PacketHandlers.Game.Ingame;
 
