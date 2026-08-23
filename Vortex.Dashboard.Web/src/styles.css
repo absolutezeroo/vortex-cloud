@@ -148,7 +148,12 @@
   /* Measured off a card edge: a hard 1px dark line directly under the element, then a short soft
      tail -- not the wide diffuse shadow that was here before. */
   --shadow: 0 1px 0 rgba(3, 17, 34, 0.55), 0 10px 26px rgba(3, 17, 34, 0.45);
-  --panel-shadow: 0 1px 0 rgba(3, 17, 34, 0.55), 0 4px 10px rgba(3, 17, 34, 0.28);
+  /* Measured across the mockup card's edges: page -> #3f6c94 border -> #1a3f65, a DARKER line just
+     inside it -> fill; and at the bottom fill -> #2c4d71 -> #31587d, two LIGHTER rows, before the
+     drop shadow. The card is not a flat fill in a 1px box -- it carries an inner bevel, and that
+     bevel is what made the mockup's cards read as raised where a plain border reads as a rectangle. */
+  --panel-shadow: inset 0 1px 0 #1a3f65, inset 0 -2px 0 #2e5376,
+    0 1px 0 rgba(3, 17, 34, 0.55), 0 4px 10px rgba(3, 17, 34, 0.28);
 }
 
 :root[data-theme='dark'] {

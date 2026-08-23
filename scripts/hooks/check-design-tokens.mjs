@@ -107,6 +107,22 @@ for (const { token, expected, actual } of drift) {
   console.error(`check-design-tokens: ${token} = ${actual}, la maquette dit ${expected}`);
 }
 
+// The card's inner bevel is the difference between "raised card" and "rectangle with a border", and
+// it is a multi-value shadow rather than a colour, so it is checked separately.
+const BEVEL = ['inset 0 1px 0 #1a3f65', 'inset 0 -2px 0 #2e5376'];
+const shadow = block.match(/\n\s*--panel-shadow\s*:\s*([^;]+);/s);
+
+if (!shadow) {
+  missing.push('--panel-shadow');
+} else {
+  const flat = shadow[1].replace(/\s+/g, ' ').toLowerCase();
+  for (const part of BEVEL) {
+    if (!flat.includes(part)) {
+      drift.push({ token: '--panel-shadow', expected: `contient "${part}"`, actual: flat });
+    }
+  }
+}
+
 if (missing.length || drift.length) {
   console.error(
     `\n${missing.length + drift.length} ecart(s) avec docs/design/habbo-unity-mockup.png. Re-echantillonnez la maquette avant de changer une valeur.`
