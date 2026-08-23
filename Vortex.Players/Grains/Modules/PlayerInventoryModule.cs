@@ -78,6 +78,9 @@ internal sealed class PlayerInventoryModule(PlayerPresenceGrain presenceGrain)
             new FurniListRemoveEventMessageComposer { ItemId = itemId }
         );
 
+    public Task OnFurnitureListInvalidatedAsync(CancellationToken ct) =>
+        _presenceGrain.SendComposerAsync(new FurniListInvalidateEventMessageComposer());
+
     public Task OnBadgeGrantedAsync(string badgeCode, CancellationToken ct) =>
         _presenceGrain.SendComposerAsync(
             new BadgeReceivedEventMessageComposer { BadgeCode = badgeCode }

@@ -252,10 +252,12 @@ public sealed partial class WiredTradeSettlement(
 
             await AnnounceContractSuccessAsync(ctx.PlayerId, session, ct).ConfigureAwait(true);
 
-            if (giving.Count > 0)
+            // Both directions, not just `giving`: a contract that only takes payment moves rows OUT
+            // of the player's inventory, and guarding on the receiving half alone left every
+            // deposited item sitting in a cache that says it is still theirs. The grain's list is
+            // built at activation and nothing reloads it on its own.
+            if (giving.Count > 0 || paying.Count > 0)
             {
-                // The row is the player's now; the inventory grain's list is a cache built at
-                // activation and nothing reloads it on its own.
                 await _roomGrain
                     ._grainFactory.GetInventoryGrain(ctx.PlayerId)
                     .ReloadFurnitureAsync(ct)

@@ -17,6 +17,9 @@ internal sealed partial class PlayerPresenceGrain
     public Task OnFurnitureRemovedAsync(RoomObjectId itemId, CancellationToken ct) =>
         _inventoryModule.OnFurnitureRemovedAsync(itemId, ct);
 
+    public Task OnFurnitureListInvalidatedAsync(CancellationToken ct) =>
+        _inventoryModule.OnFurnitureListInvalidatedAsync(ct);
+
     public Task OnBadgeGrantedAsync(string badgeCode, CancellationToken ct) =>
         _inventoryModule.OnBadgeGrantedAsync(badgeCode, ct);
 
