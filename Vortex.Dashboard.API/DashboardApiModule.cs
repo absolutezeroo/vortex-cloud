@@ -9,6 +9,7 @@ using Vortex.Dashboard.API.Infrastructure;
 using Vortex.Dashboard.API.Operations;
 using Vortex.Dashboard.API.Security;
 using Vortex.Observability.Configuration;
+using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Plugins;
 
@@ -45,6 +46,11 @@ public sealed class DashboardApiModule : IHostPluginModule
         services.TryAddSingleton<RequiredServiceGuard>();
 
         services.TryAddSingleton<DashboardSessionStore>();
+        // Registered as the shared interface too, so a password change reaches these sessions
+        // without the password service knowing how many session stores exist.
+        services.AddSingleton<IAccountSessionRevoker>(sp =>
+            sp.GetRequiredService<DashboardSessionStore>()
+        );
         services.TryAddSingleton<DashboardAuthService>();
         services.TryAddSingleton<DashboardAssetStore>();
         services.TryAddSingleton<DashboardAssetUrls>();

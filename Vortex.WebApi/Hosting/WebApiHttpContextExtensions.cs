@@ -42,4 +42,11 @@ internal static class WebApiHttpContextExtensions
                 Secure = ctx.Request.IsHttps,
             }
         );
+
+    /// <summary>
+    /// Drops the session cookie. Logout and a password change both end with the browser holding a
+    /// token that no longer resolves; the two used to spell that out separately.
+    /// </summary>
+    public static void ClearSessionCookie(this HttpContext ctx) =>
+        ctx.Response.Cookies.Delete(SessionCookieName, new CookieOptions { Path = "/" });
 }

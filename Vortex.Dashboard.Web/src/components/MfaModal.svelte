@@ -8,7 +8,11 @@
   import Modal from './Modal.svelte';
   import { t } from '../lib/i18n.js';
 
-  let { onclose } = $props();
+  let { onclose, logout } = $props();
+
+  // Two things an operator does to their own account, one dialog: the second factor and the
+  // password. Both re-prove the account rather than trusting the session cookie.
+  let tab = $state('mfa');
 
   let enrolment = $state(null);
   let qr = $state('');
@@ -60,10 +64,89 @@
       code = '';
       await refreshIdentity();
     });
+
+  let currentPassword = $state('');
+  let newPassword = $state('');
+  let newPasswordRepeat = $state('');
+  let passwordCode = $state('');
+  let passwordDone = $state(null);
+
+  let passwordReady = $derived(
+    currentPassword.length > 0 &&
+      newPassword.length >= 8 &&
+      newPassword === newPasswordRepeat &&
+      (!enabled || passwordCode.length === 6)
+  );
+
+  const changePassword = () =>
+    run(async () => {
+      const result = await apiPost('/api/v1/account/password', {
+        currentPassword,
+        newPassword,
+        code: enabled ? passwordCode : undefined,
+      });
+
+      // The change signed this session out along with every other one, so there is nothing left to
+      // do here but say so and send the operator back to the login screen.
+      passwordDone = result.sessionsRevoked ?? 0;
+      currentPassword = '';
+      newPassword = '';
+      newPasswordRepeat = '';
+      passwordCode = '';
+    });
 </script>
 
-<Modal title={$t('mfa.title')} width={520} column {onclose}>
-  {#if enabled}
+<Modal title={$t('account.title')} width={520} column {onclose}>
+  <div class="tabs">
+    <button type="button" class:active={tab === 'mfa'} onclick={() => (tab = 'mfa')}>
+      {$t('mfa.title')}
+    </button>
+    <button type="button" class:active={tab === 'password'} onclick={() => (tab = 'password')}>
+      {$t('account.password')}
+    </button>
+  </div>
+
+  {#if tab === 'password'}
+    {#if passwordDone !== null}
+      <p class="state on">{$t('account.changed', { count: passwordDone })}</p>
+      <button type="button" onclick={() => logout()}>{$t('account.backToSignIn')}</button>
+    {:else}
+      <p class="muted">{$t('account.hint')}</p>
+
+      <label>
+        <span>{$t('account.currentPassword')}</span>
+        <input type="password" autocomplete="current-password" bind:value={currentPassword} />
+      </label>
+
+      <label>
+        <span>{$t('account.newPassword')}</span>
+        <input type="password" autocomplete="new-password" bind:value={newPassword} />
+      </label>
+
+      <label>
+        <span>{$t('account.repeatPassword')}</span>
+        <input type="password" autocomplete="new-password" bind:value={newPasswordRepeat} />
+      </label>
+
+      {#if enabled}
+        <label>
+          <span>{$t('mfa.code')}</span>
+          <input
+            type="text"
+            inputmode="numeric"
+            maxlength="6"
+            autocomplete="one-time-code"
+            bind:value={passwordCode}
+            placeholder={$t('mfa.codePlaceholder')}
+          />
+        </label>
+      {/if}
+
+      <button type="button" onclick={changePassword} disabled={busy || !passwordReady}>
+        {$t('account.change')}
+      </button>
+    {/if}
+  {:else if enabled}
     <p class="state on">{$t('mfa.enabled')}</p>
     <p class="muted">{$t('mfa.disableHint')}</p>
 
@@ -141,6 +224,20 @@
     padding: 12px;
     border-radius: 8px;
     background: var(--surface-2, rgba(255, 255, 255, 0.04));
+  }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+  }
+
+  .tabs button {
+    flex: 1;
+  }
+
+  .tabs button.active {
+    /* The selected tab reads as pressed rather than as a second call to action. */
+    filter: brightness(1.25);
   }
 
   .qr {

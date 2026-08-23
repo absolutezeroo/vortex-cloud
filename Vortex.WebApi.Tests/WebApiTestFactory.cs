@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Vortex.Database.Context;
+using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Hosting;
 using Vortex.WebApi.Configuration;
 using Vortex.WebApi.Hosting;
@@ -66,6 +67,7 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
         builder.Services.AddSingleton<IWebApiAuthService>(new FakeAuthService(Sessions));
         builder.Services.AddSingleton<IWebApiPlayerService>(new FakePlayerService());
         builder.Services.AddSingleton<IOptions<WebApiConfig>>(Options.Create(config));
+        builder.Services.AddSingleton<IAccountPasswordService>(new FakePasswordService());
         builder.Services.AddSingleton<RequiredServiceGuard>();
         builder.Services.AddSingleton<IDbContextFactory<VortexDbContext>>(
             new TestDbContextFactory(

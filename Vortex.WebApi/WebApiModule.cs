@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Plugins;
 using Vortex.WebApi.Configuration;
@@ -35,6 +36,9 @@ public sealed class WebApiModule : IHostPluginModule
         services.TryAddSingleton<RequiredServiceGuard>();
 
         services.TryAddSingleton<WebApiSessionStore>();
+        services.AddSingleton<IAccountSessionRevoker>(sp =>
+            sp.GetRequiredService<WebApiSessionStore>()
+        );
         services.TryAddSingleton<IWebApiAuthService, WebApiAuthService>();
         services.TryAddSingleton<IWebApiPlayerService, WebApiPlayerService>();
 

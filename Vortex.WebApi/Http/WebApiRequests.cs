@@ -11,6 +11,20 @@ public sealed record LoginRequest(string? Email, string? Password, string? Code 
         !string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(Password);
 }
 
+/// <summary>
+/// A password change for the signed-in account. The current password is required even though the
+/// caller holds a session cookie: a stolen cookie must not be enough to take the account.
+/// </summary>
+public sealed record ChangePasswordRequest(
+    string? CurrentPassword,
+    string? NewPassword,
+    string? Code
+)
+{
+    public bool IsValid =>
+        !string.IsNullOrEmpty(CurrentPassword) && !string.IsNullOrEmpty(NewPassword);
+}
+
 public sealed record RegisterRequest(string? Email, string? Password, string? PasswordRepeated)
 {
     public bool IsValid =>

@@ -17,8 +17,10 @@ namespace Vortex.Dashboard.API.Security;
 ///     cannot drift apart again.
 ///     </para>
 /// </summary>
-internal sealed class DashboardSessionStore
+internal sealed class DashboardSessionStore : IAccountSessionRevoker
 {
+    public string SessionKind => "dashboard";
+
     private readonly AccountSessionStore<string> _sessions;
 
     public DashboardSessionStore(IOptions<ObservabilityConfig> options)

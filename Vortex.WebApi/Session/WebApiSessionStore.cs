@@ -17,8 +17,10 @@ namespace Vortex.WebApi.Session;
 /// for sessions that had already expired.
 /// </para>
 /// </summary>
-public sealed class WebApiSessionStore
+public sealed class WebApiSessionStore : IAccountSessionRevoker
 {
+    public string SessionKind => "web";
+
     private readonly AccountSessionStore<int?> _sessions;
 
     public WebApiSessionStore(IOptions<WebApiConfig> options)

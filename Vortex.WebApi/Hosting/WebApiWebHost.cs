@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Vortex.Database.Context;
+using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Hosting;
 using Vortex.WebApi.Configuration;
 using Vortex.WebApi.Services;
@@ -255,6 +256,7 @@ internal sealed class WebApiWebHost(
         services.AddSingleton(rootServices.GetRequiredService<IWebApiAuthService>());
         services.AddSingleton(rootServices.GetRequiredService<IWebApiPlayerService>());
         services.AddSingleton(rootServices.GetRequiredService<RequiredServiceGuard>());
+        services.AddSingleton(rootServices.GetRequiredService<IAccountPasswordService>());
         services.AddSingleton(
             rootServices.GetRequiredService<IDbContextFactory<VortexDbContext>>()
         );

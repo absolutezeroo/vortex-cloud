@@ -420,7 +420,7 @@
     </header>
 
     {#if mfaOpen}
-      <MfaModal onclose={() => (mfaOpen = false)} />
+      <MfaModal {logout} onclose={() => (mfaOpen = false)} />
     {/if}
 
     {@render children?.()}

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
+using Vortex.Primitives.Authentication;
 using Vortex.Primitives.Hosting;
 using Vortex.WebApi.Http;
 using Vortex.WebApi.Services;
@@ -146,6 +147,69 @@ internal static class WebApiEndpoints
             .WithTags(TagAuth);
 
         app.MapPost(
+                "/api/public/authentication/password",
+                async (
+                    HttpContext ctx,
+                    ChangePasswordRequest body,
+                    WebApiSessionStore sessions,
+                    IAccountPasswordService passwords,
+                    CancellationToken ct
+                ) =>
+                {
+                    int? accountId = ctx.AccountId(sessions);
+
+                    if (accountId is null)
+                    {
+                        return Error(
+                            StatusCodes.Status401Unauthorized,
+                            "pocket.auth.not_authenticated"
+                        );
+                    }
+
+                    if (body is null || !body.IsValid)
+                    {
+                        return Error(
+                            StatusCodes.Status400BadRequest,
+                            "pocket.auth.missing_credentials"
+                        );
+                    }
+
+                    PasswordChangeResult result = await passwords
+                        .ChangeAsync(
+                            accountId.Value,
+                            body.CurrentPassword!,
+                            body.NewPassword!,
+                            body.Code,
+                            ct
+                        )
+                        .ConfigureAwait(false);
+
+                    if (!result.Succeeded)
+                    {
+                        return Error(
+                            StatusCodes.Status400BadRequest,
+                            result.Outcome switch
+                            {
+                                PasswordChangeOutcome.MfaRequired => "pocket.auth.mfa_required",
+                                PasswordChangeOutcome.InvalidCode => "pocket.auth.invalid_code",
+                                PasswordChangeOutcome.TooShort => "pocket.auth.password_too_short",
+                                _ => "pocket.auth.wrong_password",
+                            }
+                        );
+                    }
+
+                    // Every session of the account is gone, this one included. Clearing the cookie
+                    // is what stops the browser presenting a token that no longer resolves.
+                    ctx.ClearSessionCookie();
+
+                    return Results.Json(new { sessionsRevoked = result.SessionsRevoked });
+                }
+            )
+            .WithName("ChangePassword")
+            .WithSummary("Change the signed-in account's password and end every session it has.")
+            .WithTags(TagAuth);
+
+        app.MapPost(
                 "/api/public/authentication/logout",
                 (HttpContext ctx, WebApiSessionStore sessions) =>
                 {
@@ -156,10 +220,7 @@ internal static class WebApiEndpoints
                         sessions.RemoveSession(sessionId);
                     }
 
-                    ctx.Response.Cookies.Delete(
-                        WebApiHttpContextExtensions.SessionCookieName,
-                        new CookieOptions { Path = "/" }
-                    );
+                    ctx.ClearSessionCookie();
 
                     return Results.Json(new { });
                 }

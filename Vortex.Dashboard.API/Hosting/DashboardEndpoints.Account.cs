@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Vortex.Dashboard.API.Security;
 using Vortex.Primitives.Authentication;
 
 namespace Vortex.Dashboard.API.Hosting;
@@ -133,7 +134,80 @@ internal static partial class DashboardEndpoints
             .WithName("DisableAccountMfa")
             .WithSummary("Remove the current operator's second factor, proving a current code.")
             .WithTags(TagAccount);
+
+        app.MapPost(
+                ApiV1 + "/account/password",
+                async (
+                    HttpContext ctx,
+                    AccountPasswordChangeRequest body,
+                    IAccountPasswordService passwords,
+                    CancellationToken ct
+                ) =>
+                {
+                    DashboardPrincipalIds ids = ResolveIds(ctx);
+
+                    if (ids.AccountId is null)
+                    {
+                        return Unauthenticated();
+                    }
+
+                    if (
+                        body is null
+                        || string.IsNullOrEmpty(body.CurrentPassword)
+                        || string.IsNullOrEmpty(body.NewPassword)
+                    )
+                    {
+                        return Results.BadRequest(new { error = "invalid_request" });
+                    }
+
+                    PasswordChangeResult result = await passwords
+                        .ChangeAsync(
+                            ids.AccountId.Value,
+                            body.CurrentPassword,
+                            body.NewPassword,
+                            body.Code,
+                            ct
+                        )
+                        .ConfigureAwait(false);
+
+                    if (!result.Succeeded)
+                    {
+                        return Results.BadRequest(new { error = DescribeFailure(result.Outcome) });
+                    }
+
+                    // The change revoked every session of the account, this one included -- being
+                    // signed out everywhere is what changing a password is for. Drop the cookie so
+                    // the browser stops presenting a token that no longer resolves.
+                    ctx.Response.Cookies.Delete(
+                        DashboardAuthenticationHandler.SessionCookieName,
+                        new CookieOptions { Path = "/" }
+                    );
+
+                    return Results.Ok(
+                        new { changed = true, sessionsRevoked = result.SessionsRevoked }
+                    );
+                }
+            )
+            .RequireAuthorization()
+            .WithName("ChangeAccountPassword")
+            .WithSummary("Change the current operator's password and sign them out everywhere.")
+            .WithTags(TagAccount);
     }
+
+    /// <summary>
+    /// One error code per refusal. "Too short" and "wrong password" have to be distinguishable or the
+    /// operator cannot tell a typo from a rule; the second factor's two are already familiar from the
+    /// login screen.
+    /// </summary>
+    private static string DescribeFailure(PasswordChangeOutcome outcome) =>
+        outcome switch
+        {
+            PasswordChangeOutcome.MfaRequired => "mfa_required",
+            PasswordChangeOutcome.InvalidCode => "invalid_code",
+            PasswordChangeOutcome.TooShort => "password_too_short",
+            PasswordChangeOutcome.UnknownAccount => "unknown_account",
+            _ => "wrong_password",
+        };
 
     private static DashboardPrincipalIds ResolveIds(HttpContext ctx) =>
         new(ctx.GetDashboardPrincipal()?.AccountId);
@@ -152,3 +226,14 @@ public sealed record AccountMfaEnableRequest(string? Secret, string? Code);
 
 /// <summary>A current code, proving the caller holds the factor they are switching off.</summary>
 public sealed record AccountMfaDisableRequest(string? Code);
+
+/// <summary>
+/// The current password, the new one, and a code when the account has a second factor. The current
+/// password is required even though the caller already holds a session: a stolen cookie must not be
+/// enough to take the account.
+/// </summary>
+public sealed record AccountPasswordChangeRequest(
+    string? CurrentPassword,
+    string? NewPassword,
+    string? Code
+);

@@ -162,6 +162,57 @@ public sealed class WebApiEndpointsTests
     }
 
     [Fact]
+    public async Task ChangePassword_Unauthenticated_Returns401()
+    {
+        await using WebApiTestFactory factory = new WebApiTestFactory();
+
+        HttpResponseMessage response = await factory.Client.PostAsJsonAsync(
+            "/api/public/authentication/password",
+            new { currentPassword = FakeAuthService.ValidPassword, newPassword = "another-pass" }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task ChangePassword_WrongCurrentPassword_Returns400()
+    {
+        await using WebApiTestFactory factory = new WebApiTestFactory();
+        HttpClient client = factory.CreateAuthenticatedClient();
+
+        HttpResponseMessage response = await client.PostAsJsonAsync(
+            "/api/public/authentication/password",
+            new { currentPassword = "not-it", newPassword = "another-pass" }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        (await ReadJsonAsync(response))
+            .GetProperty("error")
+            .GetString()
+            .Should()
+            .Be("pocket.auth.wrong_password");
+    }
+
+    [Fact]
+    public async Task ChangePassword_Authenticated_Returns200WithRevokedCount()
+    {
+        await using WebApiTestFactory factory = new WebApiTestFactory();
+        HttpClient client = factory.CreateAuthenticatedClient();
+
+        HttpResponseMessage response = await client.PostAsJsonAsync(
+            "/api/public/authentication/password",
+            new { currentPassword = FakeAuthService.ValidPassword, newPassword = "another-pass" }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        (await ReadJsonAsync(response))
+            .GetProperty("sessionsRevoked")
+            .GetInt32()
+            .Should()
+            .Be(FakePasswordService.SessionsRevoked);
+    }
+
+    [Fact]
     public async Task Logout_Returns200()
     {
         await using WebApiTestFactory factory = new WebApiTestFactory();

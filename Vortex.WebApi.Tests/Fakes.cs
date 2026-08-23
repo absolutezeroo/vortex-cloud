@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Primitives.Authentication;
 using Vortex.WebApi.Services;
 using Vortex.WebApi.Session;
 
@@ -135,4 +136,35 @@ internal sealed class FakePlayerService : IWebApiPlayerService
 
     public Task<AvatarInfo?> GetAvatarAsync(int playerId, CancellationToken ct) =>
         Task.FromResult<AvatarInfo?>(null);
+}
+
+/// <summary>
+/// In-memory password service: accepts <see cref="FakeAuthService.ValidPassword"/> as the current
+/// one and nothing else, so the endpoint's success and failure branches are both reachable without
+/// a database or a hasher.
+/// </summary>
+internal sealed class FakePasswordService : IAccountPasswordService
+{
+    public const int SessionsRevoked = 2;
+
+    public Task<PasswordChangeResult> ChangeAsync(
+        int accountId,
+        string currentPassword,
+        string newPassword,
+        string? code,
+        CancellationToken ct = default
+    ) =>
+        Task.FromResult(
+            currentPassword != FakeAuthService.ValidPassword
+                ? PasswordChangeResult.Failed(PasswordChangeOutcome.WrongPassword)
+            : newPassword.Length < PasswordChangeResult.MINIMUM_LENGTH
+                ? PasswordChangeResult.Failed(PasswordChangeOutcome.TooShort)
+            : PasswordChangeResult.Changed(SessionsRevoked)
+        );
+
+    public Task<PasswordChangeResult> ResetAsync(
+        int accountId,
+        string newPassword,
+        CancellationToken ct = default
+    ) => Task.FromResult(PasswordChangeResult.Changed(SessionsRevoked));
 }

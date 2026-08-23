@@ -222,6 +222,7 @@ internal sealed class DashboardWebHost(
         // The self-service second-factor endpoints inject this directly: they act on the caller's own
         // account, so there is no operations service between them and it.
         typeof(IAccountMfaService),
+        typeof(IAccountPasswordService),
     ];
 
     /// <summary>

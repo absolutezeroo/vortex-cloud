@@ -73,6 +73,14 @@ export function describeApiError(error) {
     return translate('errors.invalidCode');
   }
 
+  if (error?.code === 'wrong_password') {
+    return translate('errors.wrongPassword');
+  }
+
+  if (error?.code === 'password_too_short') {
+    return translate('errors.passwordTooShort');
+  }
+
   return error?.message || translate('errors.requestFailed');
 }
 
