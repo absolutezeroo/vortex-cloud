@@ -27,6 +27,33 @@ public class WiredConditionSelectQuantity(
     public override List<IWiredParamRule> GetIntParamRules() =>
         [new WiredBoolParamRule(false), new WiredParamRule(0), new WiredRangeParamRule(0, 2, 0)];
 
+    /// <summary>
+    /// One slot in each list: the furni/users toggle is a single merged input source, and the
+    /// client addresses it as slot 0 of both (<c>mergedSelections()</c> returns <c>[[0, 0]]</c>).
+    /// Declaring neither left its arrow reading past the end of a list that was never sent, which
+    /// neither this client nor the Flash one it is ported from range-checks -- so the toggle whose
+    /// value int param [0] carries could not be moved at all.
+    /// </summary>
+    public override List<WiredFurniSourceType[]> GetAllowedFurniSources() =>
+        [
+            [
+                WiredFurniSourceType.SelectedItems,
+                WiredFurniSourceType.SelectorItems,
+                WiredFurniSourceType.SignalItems,
+                WiredFurniSourceType.TriggeredItem,
+            ],
+        ];
+
+    /// <inheritdoc cref="GetAllowedFurniSources"/>
+    public override List<WiredPlayerSourceType[]> GetAllowedPlayerSources() =>
+        [
+            [
+                WiredPlayerSourceType.TriggeredUser,
+                WiredPlayerSourceType.SelectorUsers,
+                WiredPlayerSourceType.SignalUsers,
+            ],
+        ];
+
     public override bool Evaluate(IWiredProcessingContext ctx)
     {
         bool countUsers = _wiredData.IntParams.Count > 0 && _wiredData.GetIntParam<bool>(0);

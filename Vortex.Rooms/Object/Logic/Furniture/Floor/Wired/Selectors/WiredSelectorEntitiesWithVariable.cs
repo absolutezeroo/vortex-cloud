@@ -24,12 +24,28 @@ public class WiredSelectorEntitiesWithVariable(
 
     public override List<IWiredParamRule> GetIntParamRules() => [new WiredBoolParamRule(false)];
 
+    /// <summary>
+    /// The pool this selector reads is one merged input source, and the client addresses it as
+    /// slot 0 of both lists (<c>mergedSelections()</c> returns <c>[[0, 0]]</c>). Only the furni
+    /// half was declared, so the arrow on a selector whose whole subject is users read past the
+    /// end of the player list -- unchecked on both sides of the port.
+    /// </summary>
     public override List<WiredFurniSourceType[]> GetAllowedFurniSources() =>
         [
             [
                 WiredFurniSourceType.SelectedItems,
                 WiredFurniSourceType.SignalItems,
                 WiredFurniSourceType.TriggeredItem,
+            ],
+        ];
+
+    /// <inheritdoc cref="GetAllowedFurniSources"/>
+    public override List<WiredPlayerSourceType[]> GetAllowedPlayerSources() =>
+        [
+            [
+                WiredPlayerSourceType.TriggeredUser,
+                WiredPlayerSourceType.SelectorUsers,
+                WiredPlayerSourceType.SignalUsers,
             ],
         ];
 

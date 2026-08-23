@@ -23,6 +23,10 @@
     specs under `docs/habbo-specs/`. It observes and documents the emulator; it never constrains it.
 
 ## Hard boundaries
+Three of these are no longer prose: `scripts/hooks/check-architecture-walls.mjs` fails the build on a
+packet handler that reaches for the database, a dashboard `SaveChanges` that bypasses the owning
+grain, and a new wire-protocol import inside the contracts hub. The rest still rely on review.
+
 - Keep host composition and module registration in `Vortex.Main`; avoid leaking host concerns into domain modules.
 - Keep packet handlers focused on request/response orchestration, not persistence infrastructure wiring.
 - Keep database querying and persistence access out of packet handlers.
@@ -36,6 +40,11 @@
   - `../turbo-sample-plugin/TurboSamplePlugin/Revision/**`
   - Do not create new `Revision<id>/Parsers` or `Revision<id>/Serializers` trees in `vortex-cloud`
     for revisions other than the embedded `Revision20260701` default.
+- **The deployment thesis is single-silo.** The clustering configuration can form a multi-silo
+  cluster, but caches, metrics aggregation and room streams are silo-local, and none of them fail
+  loudly on a second silo — they just go quietly stale. A second silo is refused at startup unless
+  `Vortex:Orleans:MultiSiloReady` is set; that property's XML doc carries the current inventory of
+  what has to become cluster-aware first, and is the one place it is kept.
 - Extended profile flow boundary:
   - `Vortex.PacketHandlers/Users/*ExtendedProfile*Handler.cs` orchestrates lookup + response mapping only.
   - `Vortex.Players/Grains/PlayerDirectoryGrain.cs` owns username/id lookup semantics and cache coherence.

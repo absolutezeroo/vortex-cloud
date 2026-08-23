@@ -60,12 +60,52 @@ public class WiredAddonCustomContract(
             new WiredRangeParamRule(0, int.MaxValue, 0), // reward amount source target
         ];
 
-    /// <summary>One per side, and they are read as the furni each side accepts.</summary>
+    /// <summary>
+    /// Four slots, in the order the client's form addresses them.
+    /// </summary>
+    /// <remarks>
+    /// Slots 0 and 1 are the furni each side accepts -- payment, then reward -- and stay on the
+    /// pick list alone, because they name furni the player chose rather than a source to resolve.
+    /// Slots 2 and 3 are each side's amount when it is read off a variable instead of typed: the
+    /// "a plain number / whatever this variable says" selectors are merged input sources, and the
+    /// client addresses them as furni 2 / player 0 and furni 3 / player 1
+    /// (<c>mergedSelections()</c> returns <c>[[2, 0], [3, 1]]</c> for this form).
+    /// <para>
+    /// Stopping at two left both amount arrows reading past the end of the list they were handed,
+    /// which neither this client nor the Flash one it is ported from range-checks.
+    /// </para>
+    /// </remarks>
     public override List<WiredFurniSourceType[]> GetAllowedFurniSources() =>
         [
             [WiredFurniSourceType.SelectedItems],
             [WiredFurniSourceType.SelectedItems],
+            [.. AmountFurniSources],
+            [.. AmountFurniSources],
         ];
+
+    /// <inheritdoc cref="GetAllowedFurniSources"/>
+    public override List<WiredPlayerSourceType[]> GetAllowedPlayerSources() =>
+        [
+            [.. AmountPlayerSources],
+            [.. AmountPlayerSources],
+        ];
+
+    /// <summary>Where an amount read off a variable may be read from.</summary>
+    private static readonly WiredFurniSourceType[] AmountFurniSources =
+    [
+        WiredFurniSourceType.SelectedItems,
+        WiredFurniSourceType.SelectorItems,
+        WiredFurniSourceType.SignalItems,
+        WiredFurniSourceType.TriggeredItem,
+    ];
+
+    /// <inheritdoc cref="AmountFurniSources"/>
+    private static readonly WiredPlayerSourceType[] AmountPlayerSources =
+    [
+        WiredPlayerSourceType.TriggeredUser,
+        WiredPlayerSourceType.SelectorUsers,
+        WiredPlayerSourceType.SignalUsers,
+    ];
 
     /// <summary>An amount apiece, when it is read off a variable rather than typed.</summary>
     public override int GetMaxVariableIds() => 2;
