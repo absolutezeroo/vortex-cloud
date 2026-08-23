@@ -51,6 +51,9 @@ internal static class MessageEvent
     // _SafeCls_3170(chestId, pageSize, page) from a chest's own history, and _composers[2016] =
     // _SafeCls_2406(pageSize, page) from the wired menu's chests tab, which asks for the room.
     public const int GetWiredTransactionDetailsEvent = 475;
+    public const int GetWiredContractContentsEvent = 1594;
+    public const int SaveWiredContractEvent = 1908;
+    public const int UpgradeWiredChestEvent = 3407;
     public const int GetWiredChestTransactionsEvent = 1999;
     public const int GetWiredRoomTransactionsEvent = 2016;
 
@@ -714,6 +717,8 @@ internal static class MessageComposer
 
     // _events[2910] = _SafeCls_3439 answers both log requests. It says which list it is: type 0 is
     // a chest and the id is the chest, type 1 is a room and the id is the room.
+    public const int WiredOpenContractComposer = 1479;
+    public const int WiredContractContentsComposer = 2976;
     public const int WiredTransactionDetailsComposer = 1306;
     public const int WiredTransactionsComposer = 2910;
     public const int TreasureHuntFailMessageComposer = 3790; // AS3-verified 2026-08-22 (WIN63 registry + sender): _events[3790] = _SafeCls_3474, notifications::onTreasureHuntFail. 3822 was in no registry table.

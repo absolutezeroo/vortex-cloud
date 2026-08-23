@@ -165,7 +165,7 @@ public sealed partial class RoomGrain
         int contractId,
         PlayerId playerId,
         int chestId,
-        TradeContract contract,
+        TradeContract? contract,
         int mode,
         int multiplier,
         int timeoutSeconds,

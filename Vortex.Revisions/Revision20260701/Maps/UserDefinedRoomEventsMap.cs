@@ -1,13 +1,17 @@
+using Vortex.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredtrading.Contracts;
 using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents;
 using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
+using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading.Contracts;
 using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Revision20260701.Parsers.UserDefinedRoomEvents;
 using Vortex.Revisions.Revision20260701.Parsers.UserDefinedRoomEvents.Wiredmenu;
 using Vortex.Revisions.Revision20260701.Parsers.UserDefinedRoomEvents.Wiredtrading;
+using Vortex.Revisions.Revision20260701.Parsers.UserDefinedRoomEvents.Wiredtrading.Contracts;
 using Vortex.Revisions.Revision20260701.Serializers.UserDefinedRoomEvents;
 using Vortex.Revisions.Revision20260701.Serializers.UserDefinedRoomEvents.Wiredmenu;
 using Vortex.Revisions.Revision20260701.Serializers.UserDefinedRoomEvents.Wiredtrading;
+using Vortex.Revisions.Revision20260701.Serializers.UserDefinedRoomEvents.Wiredtrading.Contracts;
 
 namespace Vortex.Revisions.Revision20260701.Maps;
 
@@ -110,6 +114,18 @@ internal sealed class UserDefinedRoomEventsMap : IRevisionMap
         builder.MapParser(
             MessageEvent.SetWiredChestLockEvent,
             new SetWiredChestLockMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.GetWiredContractContentsEvent,
+            new GetWiredContractContentsMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.SaveWiredContractEvent,
+            new SaveWiredContractMessageParser()
+        );
+        builder.MapParser(
+            MessageEvent.UpgradeWiredChestEvent,
+            new UpgradeWiredChestMessageParser()
         );
         builder.MapParser(
             MessageEvent.GetWiredTransactionDetailsEvent,
@@ -282,6 +298,18 @@ internal sealed class UserDefinedRoomEventsMap : IRevisionMap
         builder.MapSerializer(
             typeof(WiredChestItemsMessageComposer),
             new WiredChestItemsMessageComposerSerializer(MessageComposer.WiredChestItemsComposer)
+        );
+        builder.MapSerializer(
+            typeof(WiredOpenContractMessageComposer),
+            new WiredOpenContractMessageComposerSerializer(
+                MessageComposer.WiredOpenContractComposer
+            )
+        );
+        builder.MapSerializer(
+            typeof(WiredContractContentsMessageComposer),
+            new WiredContractContentsMessageComposerSerializer(
+                MessageComposer.WiredContractContentsComposer
+            )
         );
         builder.MapSerializer(
             typeof(WiredTransactionDetailsMessageComposer),

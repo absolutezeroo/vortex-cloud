@@ -923,8 +923,10 @@ public sealed partial class RoomGrain
             PlayerEntityId = (int)playerId,
             PlayerName = ResolvePlayerName(playerId),
             // One row, one chest — the entity says as much, and nothing a player does by hand
-            // touches two. The two zeros below are facts, not placeholders: no path deposits coins
-            // into a chest, because the client has no way to name an amount.
+            // touches two. The zero below is a fact, not a placeholder: nothing a player does by
+            // hand puts coins into a chest, because the client has no way to name an amount. A
+            // contract does, and writes its own row — the amount there is the contract's, not
+            // something anyone typed.
             ChestCount = 1,
             WithdrawFurniCount = withdrawFurni,
             DepositFurniCount = depositFurni,

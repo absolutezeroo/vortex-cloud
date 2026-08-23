@@ -34,9 +34,10 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Actions;
 /// so offering again withdraws what was there, and a withdrawn offer counts as failed.
 /// </para>
 /// <para>
-/// The terms are not the contract furni's — that one ships as plain furniture and carries no form.
-/// They belong to the custom-contract add-on in this same stack, and without one there is nothing
-/// to offer: a trade screen with no price on it is worse than none at all.
+/// The terms are the contract furni's own, written in its editor. A custom-contract add-on in this
+/// stack is read as well and used when the contract has never been written — the simpler way to say
+/// a simpler thing. With neither, nothing is offered: a trade screen with no price on it is worse
+/// than none at all.
 /// </para>
 /// </remarks>
 [RoomObjectLogic("wf_act_init_transaction")]
@@ -101,14 +102,13 @@ public class WiredActionInitiateTransaction(
         // hand back, which the contract's own terms are free to say.
         int chestId = GetStuffIds().FirstOrDefault();
 
-        WiredAddonCustomContract? terms = ctx
-            .Addons.OfType<WiredAddonCustomContract>()
-            .FirstOrDefault();
+        // The add-on is a fallback, not a requirement: a contract that states its own terms needs
+        // no box beside it to repeat them.
+        TradeContract? contract = null;
 
-        if (terms is null || !terms.TryBuildContract(mode, multiplier, out TradeContract? contract))
-        {
-            return true;
-        }
+        ctx.Addons.OfType<WiredAddonCustomContract>()
+            .FirstOrDefault()
+            ?.TryBuildContract(mode, multiplier, out contract);
 
         IWiredSelectionSet selection = await ctx.GetEffectiveSelectionAsync(this, ct);
 
@@ -119,7 +119,7 @@ public class WiredActionInitiateTransaction(
                     contractId,
                     playerId,
                     chestId,
-                    contract!,
+                    contract,
                     mode,
                     multiplier,
                     cancelOnTimeout == TimeoutEnabled ? timeout : 0,

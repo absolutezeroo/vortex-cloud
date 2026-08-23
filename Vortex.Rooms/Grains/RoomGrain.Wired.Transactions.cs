@@ -9,6 +9,7 @@ using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Events.Player;
+using Vortex.Primitives.Rooms.Snapshots.Wired;
 
 namespace Vortex.Rooms.Grains;
 
@@ -20,15 +21,19 @@ namespace Vortex.Rooms.Grains;
 /// offers one (<c>wf_act_init_transaction</c>), the player accepts or refuses it on the trading
 /// screen, and it ends as completed or failed — the two states the room raises triggers for.
 /// <para>
-/// Only the offer and the failure paths exist here. Completion is what the client's own trading
-/// messages drive, and those are not mapped yet; the trigger is raised by
-/// <see cref="CompleteTransactionAsync" /> so the day they are, the wiring is already listening.
+/// The offer and the two ends are here; what actually moves furniture and coins is
+/// <c>SettleContractAsync</c>, which raises the completion through
+/// <see cref="CompleteTransactionAsync" /> so the trigger has one place to come from.
 /// </para>
 /// <para>
-/// The terms come from the custom-contract add-on in the offering box's own stack, which is where
-/// they were typed. A player shown no terms is being asked to agree to a price nobody stated, so an
-/// offer whose terms cannot be built is not made at all — the add-on says so by refusing to build
-/// them, and the box does not call this.
+/// The terms are the contract furni's own, written in its editor. A box may also carry a
+/// custom-contract add-on, and that is what is used when the contract itself has never been
+/// written — the add-on states one payment and one reward where the editor states a tree, so it is
+/// the simpler way to say the simpler thing, not a second source of truth.
+/// </para>
+/// <para>
+/// A player shown no terms is being asked to agree to a price nobody stated, so an offer with
+/// neither source is not made at all.
 /// </para>
 /// </remarks>
 public sealed partial class RoomGrain
@@ -90,7 +95,7 @@ public sealed partial class RoomGrain
         int contractId,
         PlayerId playerId,
         int chestId,
-        TradeContract contract,
+        TradeContract? contract,
         int mode,
         int multiplier,
         int timeoutSeconds,
@@ -120,9 +125,38 @@ public sealed partial class RoomGrain
             timeoutSeconds > 0 ? DateTime.UtcNow.AddSeconds(timeoutSeconds) : null
         );
 
+        WiredContractSnapshot? written = await ReadStoredContractAsync(contractId, ct)
+            .ConfigureAwait(true);
+
+        // What the contract itself says, if anyone has written it; the add-on otherwise.
+        TradeContract? terms =
+            written is { } stored
+            && (stored.YouGiveRules is not null || stored.YouGetRule is not null)
+                ? new TradeContract
+                {
+                    YouGiveRules = stored.YouGiveRules,
+                    YouGetRule = stored.YouGetRule,
+                    Mode = mode,
+                    Multiplier = Math.Max(1, multiplier),
+                    AutoMultiplierMax = Math.Max(1, multiplier),
+                }
+                : contract;
+
+        if (terms is null)
+        {
+            _logger.LogWarning(
+                "Contract {ContractId} in room {RoomId} states no terms and the box carries no "
+                    + "custom-contract add-on, so no offer was made.",
+                contractId,
+                RoomId
+            );
+
+            return false;
+        }
+
         // The screen the offer opens is the one the settlement runs on, so it exists before the
         // player can put anything on it.
-        OpenContractSession(playerId, chestId, contract, multiplier);
+        OpenContractSession(playerId, chestId, terms, multiplier);
 
         await _grainFactory
             .GetPlayerPresenceGrain(playerId)
@@ -130,14 +164,16 @@ public sealed partial class RoomGrain
                 new WiredTradeInitiateMessageComposer
                 {
                     RequirementType = CustomRequirement,
-                    YouGetText = string.Empty,
-                    LayoutType = string.Empty,
+                    // A payment contract names both of these in its own editor; anything else
+                    // leaves the screen to its defaults.
+                    YouGetText = written?.ReceiveText ?? string.Empty,
+                    LayoutType = written?.LayoutType ?? string.Empty,
                     // A price is the whole point of a contract, so it is on screen before the
                     // player puts anything up rather than after.
                     ShowRequirementsImmediate = true,
                     OverridePreviousTrade = true,
                     TimeoutSeconds = timeoutSeconds,
-                    Contract = contract,
+                    Contract = terms,
                 }
             )
             .ConfigureAwait(true);
@@ -191,9 +227,9 @@ public sealed partial class RoomGrain
     /// Closes a transaction as done and raises the trigger that waits on it.
     /// </summary>
     /// <remarks>
-    /// Nothing calls this yet: what completes a transaction is the client accepting on its trading
-    /// screen, and those messages are not mapped. It exists so the completion trigger has one place
-    /// to be raised from rather than several once they are.
+    /// Called once both sides of the contract have actually moved — see
+    /// <c>SettleContractAsync</c>. Nothing else raises the completion trigger, which is the point
+    /// of it being here rather than at the settlement's own end.
     /// </remarks>
     public async Task<bool> CompleteTransactionAsync(PlayerId playerId, CancellationToken ct)
     {

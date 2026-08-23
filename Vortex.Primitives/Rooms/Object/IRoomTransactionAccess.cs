@@ -26,14 +26,14 @@ public interface IRoomTransactionAccess
     /// for a box pointing at no chest, which can then only take and never give.
     /// </param>
     /// <param name="contract">
-    /// The terms, already read off the add-on that holds them. Built by the caller rather than here
-    /// because the form belongs to a box, not to the room.
+    /// The add-on's terms, or null when the box carries no add-on. Used only when the contract furni
+    /// itself has never been written: what a contract says about itself comes first.
     /// </param>
     Task<bool> OfferTransactionAsync(
         int contractId,
         PlayerId playerId,
         int chestId,
-        TradeContract contract,
+        TradeContract? contract,
         int mode,
         int multiplier,
         int timeoutSeconds,

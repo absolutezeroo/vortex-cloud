@@ -152,6 +152,39 @@ public partial interface IRoomWired
     );
 
     /// <summary>
+    /// One contract's terms, for the editor that writes them.
+    /// </summary>
+    /// <remarks>
+    /// A contract nobody has written yet answers with an empty one rather than with nothing: the
+    /// editor has to open before it can be filled in. Null is a refusal — not this room's furni, or
+    /// not this player's room to lay out.
+    /// </remarks>
+    Task<WiredContractSnapshot?> GetWiredContractAsync(
+        ActionContext ctx,
+        int contractId,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// Saves a contract, and answers with what was actually kept.
+    /// </summary>
+    Task<WiredContractSnapshot?> SaveWiredContractAsync(
+        ActionContext ctx,
+        WiredContractSnapshot contract,
+        CancellationToken ct
+    );
+
+    /// <summary>
+    /// The chest upgrade dialog's buy button. False when nothing was granted.
+    /// </summary>
+    Task<bool> UpgradeWiredChestAsync(
+        ActionContext ctx,
+        int chestId,
+        int upgradeType,
+        CancellationToken ct
+    );
+
+    /// <summary>
     /// One row of the log, opened: which chests it touched and what moved, kind by kind.
     /// </summary>
     /// <remarks>
