@@ -11,7 +11,7 @@
     <ProjectReference Include="..\Vortex.Database\Vortex.Database.csproj" />
     <ProjectReference Include="..\Vortex.Furniture\Vortex.Furniture.csproj" />
     <ProjectReference Include="..\Vortex.Logging\Vortex.Logging.csproj" />
+    <ProjectReference Include="..\Vortex.Runtime\Vortex.Runtime.csproj" />
     <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
-    <ProjectReference Include="..\Vortex.Players\Vortex.Players.csproj" />
   </ItemGroup>
 </Project>

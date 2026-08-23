@@ -6,7 +6,6 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Vortex.Authentication\Vortex.Authentication.csproj" />
     <ProjectReference Include="..\Vortex.Catalog\Vortex.Catalog.csproj" />
     <ProjectReference Include="..\Vortex.Crypto\Vortex.Crypto.csproj" />
     <!--
@@ -15,11 +14,9 @@
       compiler enforce that boundary instead of leaving it to review. Handlers reach persistence
       through grains. Covered by Vortex.Architecture.Tests.ProjectBoundaryTests.
     -->
-    <ProjectReference Include="..\Vortex.Furniture\Vortex.Furniture.csproj" />
     <ProjectReference Include="..\Vortex.Logging\Vortex.Logging.csproj" />
     <ProjectReference Include="..\Vortex.Messages\Vortex.Messages.csproj" />
     <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
-    <ProjectReference Include="..\Vortex.Rooms\Vortex.Rooms.csproj" />
     <ProjectReference Include="..\Vortex.Players\Vortex.Players.csproj" />
   </ItemGroup>
 </Project>

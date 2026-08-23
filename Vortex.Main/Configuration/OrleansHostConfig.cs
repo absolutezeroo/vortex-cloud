@@ -32,6 +32,25 @@ public sealed class OrleansHostConfig
     public bool AllowUnclusteredOutsideDevelopment { get; init; }
 
     /// <summary>
+    ///     The configuration can already form a multi-silo cluster; several components still assume
+    ///     they are the only silo, and none of them fail loudly when they are not:
+    ///     <list type="bullet">
+    ///         <item><c>FurnitureDefinitionProvider</c> and <c>CatalogService</c> are singletons
+    ///         whose <c>ReloadAsync</c> reloads the calling process only — after an admin edit,
+    ///         every other silo keeps serving the old definitions indefinitely.</item>
+    ///         <item><c>LiveStatsAggregator</c>, <c>RoomPerformanceAggregator</c> and incident
+    ///         detection aggregate their own node, so the dashboard reports whichever silo it
+    ///         happens to run on rather than the cluster.</item>
+    ///         <item>Room fan-out uses memory streams, which the official guidance restricts to
+    ///         development and testing where durability matters.</item>
+    ///     </list>
+    ///     So a second silo is refused at startup unless it is a deliberate decision recorded here.
+    ///     Set this only once those components are cluster-aware — the failure mode it guards
+    ///     against is silent staleness, which is the kind nobody reports as a bug.
+    /// </summary>
+    public bool MultiSiloReady { get; init; }
+
+    /// <summary>
     ///     "localhost" (default, unchanged) or "adonet" for multi-silo clustering backed by the same
     ///     MySQL database as <c>Vortex:Database:ConnectionString</c>. Selecting "adonet" requires
     ///     Orleans's official clustering SQL scripts (https://aka.ms/orleans-sql-scripts) to already

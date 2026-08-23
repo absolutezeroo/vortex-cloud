@@ -48,9 +48,14 @@ const cases = [
 const emptyBaseline = path.join(os.tmpdir(), '__HeaderBaseline.json');
 fs.writeFileSync(emptyBaseline, '{"unreachable":[]}\n');
 
+const emptyWalls = path.join(os.tmpdir(), '__WallsBaseline.json');
+fs.writeFileSync(emptyWalls, '{"protocolLeak":[]}\n');
+
 const direct = [
   ['check-header-registry.mjs', [], 0, 'registre headers : baseline a jour'],
   ['check-header-registry.mjs', [], 2, 'header injoignable hors baseline', { VORTEX_HEADER_BASELINE: emptyBaseline }],
+  ['check-architecture-walls.mjs', [], 0, 'murs archi : les trois tiennent'],
+  ['check-architecture-walls.mjs', [], 2, 'fuite protocole hors baseline', { VORTEX_WALLS_BASELINE: emptyWalls }],
 ];
 
 let failed = 0;

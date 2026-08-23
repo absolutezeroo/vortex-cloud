@@ -28,7 +28,11 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IValidateOptions<DatabaseConfig>, DatabaseConfigValidator>();
 
-        services.AddDbContextFactory<VortexDbContext>(
+        // Pooled: every caller here creates a context per operation and disposes it, which is the
+        // exact lifetime pooling is built for, and the context takes nothing but its options so it
+        // resets cleanly. ponytail: default pool size (1024); raise it only if a caller is ever
+        // found holding a context across awaits and starving the pool.
+        services.AddPooledDbContextFactory<VortexDbContext>(
             (sp, options) =>
             {
                 DatabaseConfig dbConfig = sp.GetRequiredService<IOptions<DatabaseConfig>>().Value;
