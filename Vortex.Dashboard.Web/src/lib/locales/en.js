@@ -137,6 +137,7 @@ export default {
     selectMissingHint: 'No enabled currency matches this reward, so it would never be paid.',
   },
   common: {
+    remove: 'Remove',
     close: 'Close',
     size: 'Size',
     quantityLabel: 'Quantity',

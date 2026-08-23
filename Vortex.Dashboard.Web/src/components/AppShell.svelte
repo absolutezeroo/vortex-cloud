@@ -2,6 +2,7 @@
 
   import { location, push } from 'svelte-spa-router';
   import CommandPalette from './CommandPalette.svelte';
+  import ToastHost from './ToastHost.svelte';
   import { SvelteSet } from 'svelte/reactivity';
   import {
     Activity,
@@ -270,6 +271,7 @@
 <a class="skip-link" href="#main-content">{$t('nav.skipToContent')}</a>
 
 <CommandPalette />
+<ToastHost />
 
 <main class="app-shell">
   <aside class="sidebar">
