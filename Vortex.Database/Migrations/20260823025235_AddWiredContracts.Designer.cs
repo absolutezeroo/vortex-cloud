@@ -12,7 +12,7 @@ using Vortex.Database.Context;
 namespace Vortex.Database.Migrations
 {
     [DbContext(typeof(VortexDbContext))]
-    [Migration("20260823023236_AddWiredContracts")]
+    [Migration("20260823025235_AddWiredContracts")]
     partial class AddWiredContracts
     {
         /// <inheritdoc />
@@ -9362,6 +9362,93 @@ namespace Vortex.Database.Migrations
                     b.ToTable("wired_chest_transactions");
                 });
 
+            modelBuilder.Entity("Vortex.Database.Entities.Wired.WiredContractEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ContractType")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("contract_type");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<DateTime>("CreatedAt"));
+
+                    b.Property<string>("Definition")
+                        .IsRequired()
+                        .HasMaxLength(65535)
+                        .HasColumnType("text")
+                        .HasColumnName("definition");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int>("FurnitureEntityId")
+                        .HasColumnType("int")
+                        .HasColumnName("furniture_id");
+
+                    b.Property<string>("LayoutType")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("varchar(512)")
+                        .HasColumnName("layout_type");
+
+                    b.Property<int>("PaymentMode")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("payment_mode");
+
+                    b.Property<string>("ReceiveText")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("varchar(512)")
+                        .HasColumnName("receive_text");
+
+                    b.Property<int>("RewardCategory")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("reward_category");
+
+                    b.Property<string>("RewardText")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("varchar(512)")
+                        .HasColumnName("reward_text");
+
+                    b.Property<bool>("ShowDialog")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("show_dialog");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("updated_at");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlComputedColumn(b.Property<DateTime>("UpdatedAt"));
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FurnitureEntityId")
+                        .IsUnique();
+
+                    b.ToTable("wired_contracts");
+                });
+
             modelBuilder.Entity("Vortex.Database.Entities.Wired.WiredPermanentVariableEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -10947,6 +11034,17 @@ namespace Vortex.Database.Migrations
                     b.Navigation("Room");
 
                     b.Navigation("WiredChest");
+                });
+
+            modelBuilder.Entity("Vortex.Database.Entities.Wired.WiredContractEntity", b =>
+                {
+                    b.HasOne("Vortex.Database.Entities.Furniture.FurnitureEntity", "Furniture")
+                        .WithMany()
+                        .HasForeignKey("FurnitureEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Furniture");
                 });
 
             modelBuilder.Entity("Vortex.Database.Entities.Achievements.AchievementEntity", b =>

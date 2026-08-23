@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Entities.Furniture;
@@ -30,8 +31,17 @@ public class WiredContractEntity : VortexEntity
     [DefaultValue(0)]
     public required int ContractType { get; set; }
 
-    /// <summary>The rules, as JSON. Empty until the owner has saved the contract once.</summary>
-    [Column("definition")]
+    /// <summary>
+    /// The rules, as JSON. Empty until the owner has saved the contract once.
+    /// </summary>
+    /// <remarks>
+    /// <c>text</c> rather than this model's default <c>varchar(512)</c>: a contract may name several
+    /// alternatives, each a bundle of terms, each carrying an item kind and a poster number. Five
+    /// hundred characters is a handful of terms, and the ones past it would be truncated on save
+    /// rather than refused — a contract quietly asking for less than its owner wrote.
+    /// </remarks>
+    [MaxLength(65535)]
+    [Column("definition", TypeName = "text")]
     public string Definition { get; set; } = string.Empty;
 
     /// <summary>Payment contracts only.</summary>
