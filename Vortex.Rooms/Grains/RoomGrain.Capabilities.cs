@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +10,7 @@ using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
+using Vortex.Primitives.Rooms.Snapshots.Wired;
 using Vortex.Primitives.Rooms.Wired;
 using Vortex.Primitives.Rooms.Wired.Variable;
 using Vortex.Rooms.Grains.Storage;

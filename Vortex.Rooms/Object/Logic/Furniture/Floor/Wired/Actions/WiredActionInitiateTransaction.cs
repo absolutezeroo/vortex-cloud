@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -11,6 +11,7 @@ using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
+using Vortex.Primitives.Rooms.Snapshots.Wired;
 using Vortex.Primitives.Rooms.Wired;
 using Vortex.Rooms.Grains.Systems.WiredTrading;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Addons;

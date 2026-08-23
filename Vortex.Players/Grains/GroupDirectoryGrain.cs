@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -17,6 +17,7 @@ using Vortex.Primitives.Events;
 using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Groups.Grains;
 using Vortex.Primitives.Groups.Providers;
+using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Messages.Incoming.GroupForums;
 using Vortex.Primitives.Orleans;

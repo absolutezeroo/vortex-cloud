@@ -1,4 +1,5 @@
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
+using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Messages.Incoming.GroupForums;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;

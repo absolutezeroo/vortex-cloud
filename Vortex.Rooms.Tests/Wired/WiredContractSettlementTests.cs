@@ -1,7 +1,8 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using FluentAssertions;
 using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
+using Vortex.Primitives.Rooms.Snapshots.Wired;
 using Vortex.Rooms.Wired;
 using Xunit;
 

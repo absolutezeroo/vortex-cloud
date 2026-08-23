@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
+using Vortex.Primitives.Rooms.Snapshots.Wired;
 
 namespace Vortex.Rooms.Grains.Systems.WiredTrading;
 

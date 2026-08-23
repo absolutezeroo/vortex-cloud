@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Primitives.Groups.Snapshots;
-using Vortex.Primitives.Messages.Incoming.GroupForums;
+using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Players;
 
 namespace Vortex.Primitives.Groups.Grains;

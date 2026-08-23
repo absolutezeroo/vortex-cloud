@@ -1,6 +1,5 @@
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using Orleans;
-using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 
 namespace Vortex.Primitives.Rooms.Snapshots.Wired;
 

@@ -1,7 +1,7 @@
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Players;
+using Vortex.Primitives.Rooms.Snapshots.Wired;
 
 namespace Vortex.Primitives.Rooms.Object;
 

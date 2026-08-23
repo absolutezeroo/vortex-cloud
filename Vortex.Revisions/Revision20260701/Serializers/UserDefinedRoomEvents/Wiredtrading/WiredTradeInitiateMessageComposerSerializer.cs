@@ -1,5 +1,6 @@
-using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
+﻿using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Packets;
+using Vortex.Primitives.Rooms.Snapshots.Wired;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.UserDefinedRoomEvents.Wiredtrading;
 

@@ -1,7 +1,13 @@
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using Orleans;
 
-namespace Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
+namespace Vortex.Primitives.Rooms.Snapshots.Wired;
+
+// These are a contract's terms, not a message: no IComposer, no IMessageEvent, and the room engine
+// reads and writes them as domain values. They lived in the outgoing-message tree only because that
+// is where the client first needed them, which put a wire namespace inside grain contracts and kept
+// the hub from being protocol-free. The composers and parsers that carry them import them from here
+// now -- protocol depending on contracts is the allowed direction.
 
 /// <summary>One term of a contract: so many coins, or so many of one kind of furniture.</summary>
 /// <remarks>

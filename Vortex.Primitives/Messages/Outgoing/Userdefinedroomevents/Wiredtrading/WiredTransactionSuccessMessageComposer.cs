@@ -1,5 +1,6 @@
-using Orleans;
+﻿using Orleans;
 using Vortex.Primitives.Networking;
+using Vortex.Primitives.Rooms.Snapshots.Wired;
 
 namespace Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 

@@ -30,6 +30,7 @@ using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Providers;
+using Vortex.Primitives.Rooms.Snapshots.Wired;
 using Vortex.Rooms.Configuration;
 using Vortex.Rooms.Grains;
 using Vortex.Rooms.Wired.Logs;
