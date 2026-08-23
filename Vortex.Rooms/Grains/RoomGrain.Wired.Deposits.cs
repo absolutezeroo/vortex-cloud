@@ -70,13 +70,37 @@ public sealed partial class RoomGrain
         CancellationToken ct
     )
     {
-        if (
-            ctx.PlayerId <= 0
-            || !_state.ItemsById.TryGetValue(chestId, out IRoomItem? item)
-            || !IsChestLogic(item.Definition.LogicName)
-            || IsCoinChestLogic(item.Definition.LogicName)
-        )
+        if (ctx.PlayerId <= 0 || !_state.ItemsById.TryGetValue(chestId, out IRoomItem? item))
         {
+            _logger.LogDebug(
+                "Deposit refused: {ChestId} is not an item of room {RoomId}.",
+                chestId,
+                RoomId
+            );
+
+            return false;
+        }
+
+        // Refusing tells the client nothing — it simply waits for a trade that never opens — so
+        // each gate says which one it was. A refusal is ordinary, hence debug rather than warn.
+        if (!IsChestLogic(item.Definition.LogicName))
+        {
+            _logger.LogDebug(
+                "Deposit refused: {ChestId} has logic {Logic}, which is not a chest.",
+                chestId,
+                item.Definition.LogicName
+            );
+
+            return false;
+        }
+
+        if (IsCoinChestLogic(item.Definition.LogicName))
+        {
+            _logger.LogDebug(
+                "Deposit refused: {ChestId} is a coin chest, and the client cannot name an amount.",
+                chestId
+            );
+
             return false;
         }
 
@@ -93,6 +117,8 @@ public sealed partial class RoomGrain
 
             if (chest is not null && chest.Locked)
             {
+                _logger.LogDebug("Deposit refused: chest {ChestId} is locked.", chestId);
+
                 return false;
             }
 
@@ -104,6 +130,13 @@ public sealed partial class RoomGrain
 
                 if (level == RoomControllerType.None)
                 {
+                    _logger.LogDebug(
+                        "Deposit refused: chest {ChestId} takes donations from rights-holders only, "
+                            + "and player {PlayerId} has none here.",
+                        chestId,
+                        ctx.PlayerId
+                    );
+
                     return false;
                 }
             }
