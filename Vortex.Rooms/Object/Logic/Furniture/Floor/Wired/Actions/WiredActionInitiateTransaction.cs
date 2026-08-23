@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -7,10 +7,12 @@ using Orleans;
 using Vortex.Primitives.Furniture.Providers;
 using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Rooms.Enums.Wired;
+using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
 using Vortex.Primitives.Rooms.Wired;
+using Vortex.Rooms.Grains;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Addons;
 using Vortex.Rooms.Wired.Rules;
 
@@ -98,9 +100,9 @@ public class WiredActionInitiateTransaction(
             return true;
         }
 
-        // The stock behind the counter. A box with none can still charge — it just has nothing to
-        // hand back, which the contract's own terms are free to say.
-        int chestId = GetStuffIds().FirstOrDefault();
+        // The stock behind the counter, and it has to be a chest: the picker takes the contract and
+        // the chest from one list, so the first id is as often the contract as it is the shop.
+        int chestId = FindChest();
 
         // The add-on is a fallback, not a requirement: a contract that states its own terms needs
         // no box beside it to repeat them.
@@ -130,6 +132,19 @@ public class WiredActionInitiateTransaction(
 
         return true;
     }
+
+    /// <summary>The first of the box's configured furni that is a chest, or nothing.</summary>
+    /// <remarks>
+    /// Matched on the same predicate the room itself uses, so a box and the grain cannot disagree
+    /// about what a chest is. Nothing found is a legitimate answer — a contract that only takes
+    /// coins needs no shop behind it — and the settlement refuses the rest.
+    /// </remarks>
+    private int FindChest() =>
+        GetStuffIds()
+            .FirstOrDefault(furniId =>
+                _ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
+                && RoomGrain.IsChestLogic(item.Definition.LogicName)
+            );
 
     /// <summary>The first of the box's configured furni that is a contract.</summary>
     private bool TryFindContract(out int contractId)

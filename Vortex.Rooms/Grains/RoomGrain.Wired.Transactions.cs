@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -80,6 +80,20 @@ public sealed partial class RoomGrain
         return expired;
     }
 
+    /// <summary>Drops what has run out of time, and tells the stacks that were waiting on it.</summary>
+    /// <remarks>
+    /// Runs at the top of everything that touches a transaction — the offer, the cancel, and the
+    /// two the trading screen drives. An expired offer that can still be accepted is a price with
+    /// no deadline, and the deadline is the box's own setting.
+    /// </remarks>
+    private async Task ExpireTimedOutTransactionsAsync(CancellationToken ct)
+    {
+        foreach (PlayerId timedOut in ExpireTimedOutTransactions())
+        {
+            await RaiseTransactionFailedAsync(timedOut, ct).ConfigureAwait(true);
+        }
+    }
+
     private Task RaiseTransactionFailedAsync(PlayerId playerId, CancellationToken ct) =>
         PublishRoomEventAsync(
             new WiredTransactionFailedEvent
@@ -107,10 +121,7 @@ public sealed partial class RoomGrain
             return false;
         }
 
-        foreach (PlayerId timedOut in ExpireTimedOutTransactions())
-        {
-            await RaiseTransactionFailedAsync(timedOut, ct).ConfigureAwait(true);
-        }
+        await ExpireTimedOutTransactionsAsync(ct).ConfigureAwait(true);
 
         // Replacing an offer is withdrawing it, and a withdrawn offer failed.
         if (_pendingTransactions.Remove(playerId))
@@ -156,7 +167,7 @@ public sealed partial class RoomGrain
 
         // The screen the offer opens is the one the settlement runs on, so it exists before the
         // player can put anything on it.
-        OpenContractSession(playerId, chestId, terms, multiplier);
+        OpenContractSession(playerId, contractId, chestId, terms, multiplier);
 
         await _grainFactory
             .GetPlayerPresenceGrain(playerId)
@@ -197,10 +208,7 @@ public sealed partial class RoomGrain
         CancellationToken ct
     )
     {
-        foreach (PlayerId timedOut in ExpireTimedOutTransactions())
-        {
-            await RaiseTransactionFailedAsync(timedOut, ct).ConfigureAwait(true);
-        }
+        await ExpireTimedOutTransactionsAsync(ct).ConfigureAwait(true);
 
         if (
             playerId <= 0

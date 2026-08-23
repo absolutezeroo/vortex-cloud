@@ -45,6 +45,19 @@ public class SaveWiredContractMessageHandler(IGrainFactory grainFactory)
 
         if (saved is null)
         {
+            // The editor stays open on a refusal and says why; "invalid_rules" is the one reason
+            // the texts carry — "Invalid or empty requirements".
+            await ctx.SendComposerAsync(
+                    new WiredContractUpdateResultMessageComposer
+                    {
+                        ContractId = message.Contract.ContractId,
+                        IsSuccess = false,
+                        FailCode = InvalidRules,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
+
             return;
         }
 
@@ -53,5 +66,22 @@ public class SaveWiredContractMessageHandler(IGrainFactory grainFactory)
                 ct
             )
             .ConfigureAwait(false);
+
+        // And this is what closes it. The contents reply redraws the window; only the result
+        // dismisses it, so a save answered with contents alone leaves the editor open on a contract
+        // that was already stored.
+        await ctx.SendComposerAsync(
+                new WiredContractUpdateResultMessageComposer
+                {
+                    ContractId = saved.ContractId,
+                    IsSuccess = true,
+                    FailCode = string.Empty,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
+
+    /// <summary>The one refusal the client has a text for.</summary>
+    private const string InvalidRules = "invalid_rules";
 }

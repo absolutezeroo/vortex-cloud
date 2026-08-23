@@ -642,6 +642,9 @@ public abstract class FurnitureWiredLogic(
         return true;
     }
 
+    /// <summary>The client's sentinel for "no variable chosen".</summary>
+    private const string NoVariable = "n";
+
     protected virtual bool GetValidVariableIds(
         List<string> proposed,
         out List<WiredVariableId> variableIds
@@ -654,6 +657,17 @@ public abstract class FurnitureWiredLogic(
 
         foreach (string id in proposed)
         {
+            // An unfilled slot is not a malformed one. The client sends a placeholder for every
+            // variable a box *could* take, so a box with two optional amounts and neither of them
+            // sourced from a variable sends two of these -- and every one of them used to arrive
+            // as a parse failure with a stack trace behind it. "n" is the client's own
+            // DEFAULT_VARIABLE_ID; the empty string is what the value-or-variable sections send
+            // when nothing is picked.
+            if (string.IsNullOrEmpty(id) || id == NoVariable)
+            {
+                continue;
+            }
+
             try
             {
                 WiredVariableId variableId = WiredVariableId.Parse(id);

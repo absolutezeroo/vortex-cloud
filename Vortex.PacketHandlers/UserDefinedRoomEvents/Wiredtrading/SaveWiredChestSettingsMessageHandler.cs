@@ -4,6 +4,7 @@ using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
+using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.UserDefinedRoomEvents.Wiredtrading;
@@ -39,6 +40,18 @@ public class SaveWiredChestSettingsMessageHandler(IGrainFactory grainFactory)
                 message.ChestState,
                 message.PreviewItems,
                 message.PreviewAmount,
+                ct
+            )
+            .ConfigureAwait(false);
+
+        // The screen closes on this, not on the save itself — without it the dialog sits there
+        // after a save that worked.
+        await ctx.SendComposerAsync(
+                new WiredChestUpdateSuccessMessageComposer
+                {
+                    ChestId = message.ChestId,
+                    IsNotificationPreferences = false,
+                },
                 ct
             )
             .ConfigureAwait(false);

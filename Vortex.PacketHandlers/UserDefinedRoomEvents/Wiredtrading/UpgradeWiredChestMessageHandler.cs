@@ -4,6 +4,7 @@ using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
+using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.UserDefinedRoomEvents.Wiredtrading;
@@ -32,7 +33,7 @@ public class UpgradeWiredChestMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        await _grainFactory
+        bool granted = await _grainFactory
             .GetRoomWired(ctx.RoomId)
             .UpgradeWiredChestAsync(
                 ActionContext.CreateForPlayer(ctx.PlayerId, ctx.RoomId),
@@ -41,5 +42,22 @@ public class UpgradeWiredChestMessageHandler(IGrainFactory grainFactory)
                 ct
             )
             .ConfigureAwait(false);
+
+        // The dialog closes on the answer and reads a non-zero code as
+        // `wiredchests.upgrade.result.error.N`. One is "Feature disabled", which is exactly what a
+        // hotel with no upgrade prices should be telling the player.
+        await ctx.SendComposerAsync(
+                new WiredChestUpgradeResultMessageComposer
+                {
+                    ChestId = message.ChestId,
+                    ResultCode = granted ? UpgradeGranted : UpgradeDisabled,
+                },
+                ct
+            )
+            .ConfigureAwait(false);
     }
+
+    private const int UpgradeGranted = 0;
+
+    private const int UpgradeDisabled = 1;
 }

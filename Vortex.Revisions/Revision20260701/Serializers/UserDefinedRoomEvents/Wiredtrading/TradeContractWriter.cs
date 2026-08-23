@@ -40,7 +40,7 @@ internal static class TradeContractWriter
 
             foreach (TradeContractRule rule in youGiveRules.Value)
             {
-                WriteRule(packet, rule);
+                packet.WriteRule(rule);
             }
         }
 
@@ -48,13 +48,14 @@ internal static class TradeContractWriter
 
         if (youGetRule is not null)
         {
-            WriteRule(packet, youGetRule);
+            packet.WriteRule(youGetRule);
         }
 
         return packet;
     }
 
-    private static void WriteRule(IServerPacket packet, TradeContractRule rule)
+    /// <summary>One rule on its own — a reward notification carries exactly that and nothing else.</summary>
+    public static IServerPacket WriteRule(this IServerPacket packet, TradeContractRule rule)
     {
         packet.WriteInteger(rule.Nodes.Length);
 
@@ -74,5 +75,7 @@ internal static class TradeContractWriter
                 .WriteInteger(itemType?.SpriteId ?? 0)
                 .WriteString(itemType?.LegacyPosterId ?? string.Empty);
         }
+
+        return packet;
     }
 }

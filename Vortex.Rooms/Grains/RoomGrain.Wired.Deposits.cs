@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -65,6 +65,9 @@ public sealed partial class RoomGrain
     private sealed record ChestDeposit(int ChestId, HashSet<int> ItemIds)
     {
         public TradeContract? Contract { get; init; }
+
+        /// <summary>The contract furni, so the settlement can read what it promised to say.</summary>
+        public int ContractId { get; init; }
 
         /// <summary>How many times over the contract is being taken. Never below one.</summary>
         public int Multiplier { get; init; } = 1;
@@ -188,6 +191,10 @@ public sealed partial class RoomGrain
         CancellationToken ct
     )
     {
+        // An offer that ran out of time takes its screen with it, so a client that ignored its own
+        // timer finds no session here rather than settling on a price that expired.
+        await ExpireTimedOutTransactionsAsync(ct).ConfigureAwait(true);
+
         if (!_chestDeposits.TryGetValue(ctx.PlayerId, out ChestDeposit? deposit))
         {
             return null;
@@ -243,6 +250,10 @@ public sealed partial class RoomGrain
         CancellationToken ct
     )
     {
+        // An offer that ran out of time takes its screen with it, so a client that ignored its own
+        // timer finds no session here rather than settling on a price that expired.
+        await ExpireTimedOutTransactionsAsync(ct).ConfigureAwait(true);
+
         if (!_chestDeposits.TryGetValue(ctx.PlayerId, out ChestDeposit? deposit))
         {
             return null;

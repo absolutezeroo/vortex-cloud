@@ -17,6 +17,7 @@ using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Wallet;
+using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Snapshots.Wired;
 using Vortex.Rooms.Wired;
 
@@ -60,6 +61,7 @@ public sealed partial class RoomGrain
     /// </remarks>
     private void OpenContractSession(
         PlayerId playerId,
+        int contractId,
         int chestId,
         TradeContract contract,
         int multiplier
@@ -67,6 +69,7 @@ public sealed partial class RoomGrain
         _chestDeposits[playerId] = new ChestDeposit(chestId, [])
         {
             Contract = contract,
+            ContractId = contractId,
             Multiplier = Math.Max(1, multiplier),
         };
 
@@ -105,6 +108,28 @@ public sealed partial class RoomGrain
         CancellationToken ct
     )
     {
+        // A settlement banks the stake in a chest and pays the reward out of one, so the box has to
+        // have been pointed at a chest. Without that, the row this would otherwise create is keyed
+        // to whatever furni came first — a contract, a lamp, or id 0 — and what is paid into it is
+        // reachable by nobody.
+        if (
+            !_state.ItemsById.TryGetValue(session.ChestId, out IRoomItem? chestItem)
+            || !IsChestLogic(chestItem.Definition.LogicName)
+        )
+        {
+            _logger.LogWarning(
+                "Contract settlement refused in room {RoomId}: {ChestId} is not a chest.",
+                RoomId,
+                session.ChestId
+            );
+
+            return await SnapshotContractAsync(session, staked: null, completed: false, ct)
+                .ConfigureAwait(true);
+        }
+
+        // Taken from the wallet before anything moves, so it has to go back if the move fails.
+        int refundable = 0;
+
         try
         {
             await using VortexDbContext dbCtx = await _dbCtxFactory
@@ -170,6 +195,14 @@ public sealed partial class RoomGrain
                     .ConfigureAwait(true);
             }
 
+            // A locked chest lets nothing out — see WiredChestEntity.Locked. Taking payment into
+            // one is still fine: what the lock guards is the leaving half.
+            if (chest.Locked && !reward.IsNothing)
+            {
+                return await SnapshotContractAsync(session, staked, completed: false, ct)
+                    .ConfigureAwait(true);
+            }
+
             if (
                 payment.Coins > 0
                 && !await TryTakeCreditsAsync(ctx.PlayerId, payment.Coins, ct).ConfigureAwait(true)
@@ -178,6 +211,8 @@ public sealed partial class RoomGrain
                 return await SnapshotContractAsync(session, staked, completed: false, ct)
                     .ConfigureAwait(true);
             }
+
+            refundable = payment.Coins;
 
             List<FurnitureEntity> paying =
             [
@@ -199,14 +234,16 @@ public sealed partial class RoomGrain
 
             chest.Credits += payment.Coins - reward.Coins;
 
-            dbCtx.WiredChestTransactions.Add(
-                NewContractTransaction(ctx.PlayerId, chest.Id, payment, paying, reward, giving)
-            );
-
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
-            // The one step that can still fail with the books already written, so it is the one
-            // step that undoes itself — the chest keeps what it could not hand over.
+            // The goods have moved; the payment is part of a trade that happened and is no longer
+            // owed back.
+            refundable = 0;
+
+            // The one step that can still fail with the goods already moved, so it is the one step
+            // that undoes itself — the chest keeps what it could not hand over.
+            int paidOut = reward.Coins;
+
             if (
                 reward.Coins > 0
                 && !await GiveCreditsAsync(ctx.PlayerId, reward.Coins, ct).ConfigureAwait(true)
@@ -214,12 +251,33 @@ public sealed partial class RoomGrain
             {
                 chest.Credits += reward.Coins;
 
-                await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+                paidOut = 0;
             }
+
+            // The books last, and written from what actually landed rather than from what was
+            // meant to: a movement that was rolled back never happened, and a log that says
+            // otherwise is worse than no log.
+            dbCtx.WiredChestTransactions.Add(
+                NewContractTransaction(
+                    ctx.PlayerId,
+                    chest.Id,
+                    payment,
+                    paying,
+                    reward with
+                    {
+                        Coins = paidOut,
+                    },
+                    giving
+                )
+            );
+
+            await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
             _chestDeposits.Remove(ctx.PlayerId);
 
             await CompleteTransactionAsync(ctx.PlayerId, ct).ConfigureAwait(true);
+
+            await AnnounceContractSuccessAsync(ctx.PlayerId, session, ct).ConfigureAwait(true);
 
             if (giving.Count > 0)
             {
@@ -258,7 +316,7 @@ public sealed partial class RoomGrain
                 [
                     .. giving.Select(ToChestItemSnapshot).OfType<FurnitureItemSnapshot>(),
                 ],
-                RewardCredits = reward.Coins,
+                RewardCredits = paidOut,
             };
         }
         catch (Exception ex)
@@ -270,8 +328,59 @@ public sealed partial class RoomGrain
                 RoomId
             );
 
+            // The payment left the wallet before the goods could move, so it goes back: coins taken
+            // for a trade that did not happen are coins stolen, and the screen is still open for a
+            // second attempt that would charge again. Compensated on no token, because a cancelled
+            // request is exactly the case that must not skip this.
+            if (
+                refundable > 0
+                && !await GiveCreditsAsync(ctx.PlayerId, refundable, CancellationToken.None)
+                    .ConfigureAwait(true)
+            )
+            {
+                _logger.LogError(
+                    "Player {PlayerId} paid {Coins} credits for a contract that failed to settle "
+                        + "in room {RoomId}, and the refund was refused.",
+                    ctx.PlayerId,
+                    refundable,
+                    RoomId
+                );
+            }
+
             return null;
         }
+    }
+
+    /// <summary>
+    /// Tells the player their contract went through, and what it gave them.
+    /// </summary>
+    /// <remarks>
+    /// A reward contract is the only one that carries anything beyond the announcement — its own
+    /// editor is where the pop-up text and the open-by-default flag are written, so they are read
+    /// back from the contract rather than invented here. A contract that promises nothing still
+    /// announces itself: the notification is what tells the player the trade closed.
+    /// </remarks>
+    private async Task AnnounceContractSuccessAsync(
+        PlayerId playerId,
+        ChestDeposit session,
+        CancellationToken ct
+    )
+    {
+        WiredContractSnapshot? written = await ReadStoredContractAsync(session.ContractId, ct)
+            .ConfigureAwait(true);
+
+        await _grainFactory
+            .GetPlayerPresenceGrain(playerId)
+            .SendComposerAsync(
+                new WiredTransactionSuccessMessageComposer
+                {
+                    TransactionSuccessTypeId = written?.ContractType ?? 0,
+                    Reward = written?.YouGetRule,
+                    RewardText = written?.RewardText ?? string.Empty,
+                    OpenByDefault = written?.ShowDialog ?? false,
+                }
+            )
+            .ConfigureAwait(true);
     }
 
     /// <summary>The table as a contract trade draws it: the stake on one side, the reward on the other.</summary>

@@ -718,6 +718,10 @@ internal static class MessageComposer
     // _events[2910] = _SafeCls_3439 answers both log requests. It says which list it is: type 0 is
     // a chest and the id is the chest, type 1 is a room and the id is the room.
     public const int WiredOpenContractComposer = 1479;
+    public const int WiredChestUpdateSuccessComposer = 1957;
+    public const int WiredTransactionSuccessComposer = 2677;
+    public const int WiredChestUpgradeResultComposer = 2721;
+    public const int WiredContractUpdateResultComposer = 3720;
     public const int WiredContractContentsComposer = 2976;
     public const int WiredTransactionDetailsComposer = 1306;
     public const int WiredTransactionsComposer = 2910;

@@ -305,6 +305,34 @@ internal sealed class UserDefinedRoomEventsMap : IRevisionMap
                 MessageComposer.WiredOpenContractComposer
             )
         );
+
+        builder.MapSerializer(
+            typeof(WiredChestUpdateSuccessMessageComposer),
+            new WiredChestUpdateSuccessMessageComposerSerializer(
+                MessageComposer.WiredChestUpdateSuccessComposer
+            )
+        );
+
+        builder.MapSerializer(
+            typeof(WiredTransactionSuccessMessageComposer),
+            new WiredTransactionSuccessMessageComposerSerializer(
+                MessageComposer.WiredTransactionSuccessComposer
+            )
+        );
+
+        builder.MapSerializer(
+            typeof(WiredChestUpgradeResultMessageComposer),
+            new WiredChestUpgradeResultMessageComposerSerializer(
+                MessageComposer.WiredChestUpgradeResultComposer
+            )
+        );
+
+        builder.MapSerializer(
+            typeof(WiredContractUpdateResultMessageComposer),
+            new WiredContractUpdateResultMessageComposerSerializer(
+                MessageComposer.WiredContractUpdateResultComposer
+            )
+        );
         builder.MapSerializer(
             typeof(WiredContractContentsMessageComposer),
             new WiredContractContentsMessageComposerSerializer(

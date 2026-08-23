@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
@@ -51,7 +51,7 @@ public sealed partial class RoomGrain
     private static bool IsCoinChestLogic(string logicName) =>
         string.Equals(logicName, CoinChestLogic, StringComparison.Ordinal);
 
-    private static bool IsChestLogic(string logicName) =>
+    internal static bool IsChestLogic(string logicName) =>
         string.Equals(logicName, CoinChestLogic, StringComparison.Ordinal)
         || string.Equals(logicName, FurniChestLogic, StringComparison.Ordinal);
 
@@ -80,7 +80,9 @@ public sealed partial class RoomGrain
                 )
                 .ConfigureAwait(true);
 
-            if (chest is null || chest.Credits <= 0)
+            // A locked chest refuses withdrawals — the wired pay-out already reads it this way, and
+            // a lock the owner's own withdraw button walks straight through is not a lock.
+            if (chest is null || chest.Credits <= 0 || chest.Locked)
             {
                 return null;
             }
@@ -433,7 +435,9 @@ public sealed partial class RoomGrain
                 .FirstOrDefaultAsync(c => c.FurnitureEntityId == chestId && c.DeletedAt == null, ct)
                 .ConfigureAwait(true);
 
-            if (chest is null)
+            // A locked chest refuses withdrawals, furniture included: the lock guards what leaves,
+            // and taking the stock out by hand is the plainest way for it to leave.
+            if (chest is null || chest.Locked)
             {
                 return [];
             }
@@ -588,6 +592,11 @@ public sealed partial class RoomGrain
     private async Task CloseChestScreensForLeavingPlayerAsync(PlayerId playerId)
     {
         _chestDeposits.Remove(playerId);
+
+        // An offer the player walked out on is an offer that failed, and the stack waiting on
+        // wf_trg_transaction_failed has no other way to hear about a leaver. Forgetting only the
+        // screen would leave the offer itself pending for as long as the room lives.
+        await CancelTransactionAsync(0, playerId, CancellationToken.None).ConfigureAwait(true);
 
         List<int> emptied = [];
 
