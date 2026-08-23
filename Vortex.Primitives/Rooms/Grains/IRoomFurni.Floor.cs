@@ -1,10 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Inventory.Snapshots;
-using Vortex.Primitives.Messages.Incoming.Userdefinedroomevents;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Snapshots.Furniture;
@@ -35,7 +34,7 @@ public partial interface IRoomFurni
     public Task<bool> ApplyWiredUpdateAsync(
         ActionContext ctx,
         RoomObjectId itemId,
-        UpdateWiredMessage update,
+        WiredUpdateRequest update,
         CancellationToken ct
     );
     public Task<RoomFloorItemSnapshot?> GetFloorItemSnapshotByIdAsync(

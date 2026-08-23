@@ -1,4 +1,4 @@
-using Orleans;
+﻿using Orleans;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
@@ -12,9 +12,9 @@ namespace Vortex.Primitives.Messages.Incoming.Room.Engine;
 /// Every field is present on the wire; <see cref="Fields"/> says which ones to honour. Values for
 /// unset flags are undefined and must not be read.
 /// </summary>
-/// <remarks>Serializable because it is passed whole to <c>IRoomGrain.ApplyFurniEditAsync</c>, the same
-/// way the wired <c>Update*Message</c> types are — Orleans validates every type in a grain interface
-/// signature at silo start, so a plain record here fails the host before it boots.</remarks>
+/// <remarks>The handler turns this into a <c>FurniEditRequest</c> before the room engine sees it;
+/// this record no longer crosses a grain boundary, and neither do the wired <c>Update*Message</c>
+/// types it used to be grouped with.</remarks>
 [GenerateSerializer, Immutable]
 public record VortexApplyFurniEditMessage : IMessageEvent
 {

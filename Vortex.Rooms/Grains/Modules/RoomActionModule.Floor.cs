@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -18,6 +18,7 @@ using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
+using Vortex.Primitives.Rooms.Snapshots.Wired;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired;
 
 namespace Vortex.Rooms.Grains.Modules;
@@ -224,7 +225,7 @@ public sealed partial class RoomActionModule
     public async Task<bool> ApplyWiredUpdateAsync(
         ActionContext ctx,
         RoomObjectId itemId,
-        UpdateWiredMessage update,
+        WiredUpdateRequest update,
         CancellationToken ct
     )
     {

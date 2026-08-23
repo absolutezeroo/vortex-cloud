@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -216,7 +216,7 @@ public abstract class FurnitureWiredLogic(
 
     public virtual async Task<bool> ApplyWiredUpdateAsync(
         ActionContext ctx,
-        UpdateWiredMessage update,
+        WiredUpdateRequest update,
         CancellationToken ct
     )
     {

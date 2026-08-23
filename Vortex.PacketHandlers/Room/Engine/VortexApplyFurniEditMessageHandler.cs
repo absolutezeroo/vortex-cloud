@@ -1,4 +1,4 @@
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
@@ -90,7 +90,18 @@ public class VortexApplyFurniEditMessageHandler(
         string error = await roomGrain
             .ApplyFurniEditAsync(
                 ctx.AsActionContext(),
-                message,
+                new FurniEditRequest
+                {
+                    ObjectId = message.ObjectId,
+                    Fields = message.Fields,
+                    X = message.X,
+                    Y = message.Y,
+                    ZHundredths = message.ZHundredths,
+                    Rotation = message.Rotation,
+                    WallOffset = message.WallOffset,
+                    ExtraData = message.ExtraData,
+                    DefinitionId = message.DefinitionId,
+                },
                 newOwnerId,
                 newOwnerName,
                 newDefinition,

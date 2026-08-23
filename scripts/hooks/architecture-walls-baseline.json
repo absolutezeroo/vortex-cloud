@@ -1,7 +1,3 @@
 {
-  "protocolLeak": [
-    "Vortex.Primitives/Rooms/Grains/IRoomFurni.Edit.cs",
-    "Vortex.Primitives/Rooms/Grains/IRoomFurni.Floor.cs",
-    "Vortex.Primitives/Rooms/Wired/IWiredBox.cs"
-  ]
+  "protocolLeak": []
 }

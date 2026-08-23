@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -40,7 +40,7 @@ public sealed partial class RoomGrain
 {
     public async Task<string> ApplyFurniEditAsync(
         ActionContext ctx,
-        VortexApplyFurniEditMessage edit,
+        FurniEditRequest edit,
         PlayerId? newOwnerId,
         string? newOwnerName,
         FurnitureDefinitionSnapshot? newDefinition,
@@ -145,7 +145,7 @@ public sealed partial class RoomGrain
     /// </summary>
     private string ApplyFurniEditTransform(
         IRoomItem item,
-        VortexApplyFurniEditMessage edit,
+        FurniEditRequest edit,
         FurniEditField fields
     )
     {

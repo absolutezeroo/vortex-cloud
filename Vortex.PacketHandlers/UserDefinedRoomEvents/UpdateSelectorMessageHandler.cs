@@ -1,10 +1,11 @@
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Messages.Incoming.Userdefinedroomevents;
 using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents;
 using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Rooms.Snapshots.Wired;
 
 namespace Vortex.PacketHandlers.UserDefinedRoomEvents;
 
@@ -27,7 +28,7 @@ public class UpdateSelectorMessageHandler(IGrainFactory grainFactory)
         if (
             !await _grainFactory
                 .GetRoomFurni(ctx.RoomId)
-                .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message, ct)
+                .ApplyWiredUpdateAsync(ctx.AsActionContext(), message.Id, message.ToRequest(), ct)
                 .ConfigureAwait(false)
         )
         {

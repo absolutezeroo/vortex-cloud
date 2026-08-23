@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading;
@@ -90,7 +90,7 @@ public sealed partial class RoomGrain
     public async Task<bool> ApplyWiredUpdateAsync(
         ActionContext ctx,
         RoomObjectId itemId,
-        UpdateWiredMessage update,
+        WiredUpdateRequest update,
         CancellationToken ct
     )
     {

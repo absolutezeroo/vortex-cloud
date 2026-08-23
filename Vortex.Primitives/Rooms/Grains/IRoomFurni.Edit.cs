@@ -1,9 +1,9 @@
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Furniture.Snapshots;
-using Vortex.Primitives.Messages.Incoming.Room.Engine;
 using Vortex.Primitives.Players;
+using Vortex.Primitives.Rooms.Snapshots.Furniture;
 
 namespace Vortex.Primitives.Rooms.Grains;
 
@@ -22,7 +22,7 @@ public partial interface IRoomFurni
     /// <returns>An empty string on success, otherwise a short machine-readable reason code.</returns>
     public Task<string> ApplyFurniEditAsync(
         ActionContext ctx,
-        VortexApplyFurniEditMessage edit,
+        FurniEditRequest edit,
         PlayerId? newOwnerId,
         string? newOwnerName,
         FurnitureDefinitionSnapshot? newDefinition,

@@ -1,9 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Action;
-using Vortex.Primitives.Messages.Incoming.Userdefinedroomevents;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Snapshots.Wired;
 using Vortex.Primitives.Rooms.Snapshots.Wired.Variables;
@@ -32,7 +31,7 @@ public interface IWiredBox
     public List<WiredPlayerSourceType[]> GetDefaultPlayerSources();
     public Task<bool> ApplyWiredUpdateAsync(
         ActionContext ctx,
-        UpdateWiredMessage update,
+        WiredUpdateRequest update,
         CancellationToken ct
     );
     public WiredDataSnapshot GetSnapshot();

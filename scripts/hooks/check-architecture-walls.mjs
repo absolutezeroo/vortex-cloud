@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 // The boundaries CONTEXT.md states in prose, made executable.
 //
 // Three rules that no compiler, test or grep enforces today. All three are currently respected --
@@ -98,8 +98,9 @@ if (dashboardWrites.length > 0) {
 //
 // Vortex.Primitives is referenced by every project, and 1,092 of its files are wire messages. When
 // a grain interface takes a wire record as a domain parameter, the client's byte layout becomes the
-// domain model and every composer tweak rebuilds the world. Ten files are in that state; this fails
-// on the eleventh rather than pretending the ten do not exist.
+// domain model and every composer tweak rebuilds the world. The baseline started at ten such files
+// and is now empty: the hub is protocol-free, which is what a Contracts/Protocol split needs. Any
+// new import here fails the build rather than quietly costing every project a rebuild.
 // ---------------------------------------------------------------------------------------------
 const leak = hits('Vortex.Primitives', /^\s*using\s+Vortex\.Primitives\.Messages\b/, (f) =>
   f.startsWith('Vortex.Primitives/Messages/')

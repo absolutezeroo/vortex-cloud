@@ -48,14 +48,17 @@ const cases = [
 const emptyBaseline = path.join(os.tmpdir(), '__HeaderBaseline.json');
 fs.writeFileSync(emptyBaseline, '{"unreachable":[]}\n');
 
-const emptyWalls = path.join(os.tmpdir(), '__WallsBaseline.json');
-fs.writeFileSync(emptyWalls, '{"protocolLeak":[]}\n');
+// Le mur 3 est a zero depuis que le hub est protocole-libre, donc pointer une baseline vide ne
+// prouve plus rien : il faut une vraie violation. La sonde est un fichier de contrats qui importe le
+// protocole -- exactement ce que le mur existe pour refuser. Elle est retiree avant le cas passant.
+const wallProbe = path.join(root, 'Vortex.Primitives', 'Rooms', '__WallProbe.cs');
+fs.writeFileSync(wallProbe, 'using Vortex.Primitives.Messages.Incoming.Catalog;\n');
 
 const direct = [
   ['check-header-registry.mjs', [], 0, 'registre headers : baseline a jour'],
   ['check-header-registry.mjs', [], 2, 'header injoignable hors baseline', { VORTEX_HEADER_BASELINE: emptyBaseline }],
+  ['check-architecture-walls.mjs', [], 2, 'fuite protocole introduite dans les contrats'],
   ['check-architecture-walls.mjs', [], 0, 'murs archi : les trois tiennent'],
-  ['check-architecture-walls.mjs', [], 2, 'fuite protocole hors baseline', { VORTEX_WALLS_BASELINE: emptyWalls }],
 ];
 
 let failed = 0;
@@ -68,6 +71,7 @@ for (const [script, payload, want, label] of cases) {
 }
 
 for (const [script, argv, want, label, env] of direct) {
+  if (script === 'check-architecture-walls.mjs' && want === 0) fs.rmSync(wallProbe, { force: true });
   const r = spawnSync(process.execPath, [path.join('scripts', 'hooks', script), ...argv], {
     encoding: 'utf8',
     env: { ...process.env, ...env },
@@ -80,5 +84,6 @@ for (const [script, argv, want, label, env] of direct) {
 
 fs.rmSync(probe, { force: true });
 fs.rmSync(emptyBaseline, { force: true });
+fs.rmSync(wallProbe, { force: true });
 console.log(failed ? `\n${failed} test(s) en echec.` : '\nTous les hooks se comportent comme attendu.');
 process.exit(failed ? 1 : 0);
