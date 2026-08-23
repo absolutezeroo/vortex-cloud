@@ -1,13 +1,14 @@
 ﻿#!/usr/bin/env node
 // The boundaries CONTEXT.md states in prose, made executable.
 //
-// Three rules that no compiler, test or grep enforces today. All three are currently respected --
+// Four rules that no compiler, test or grep enforces today, all of them currently respected --
 // which is exactly why encoding them is cheap: there is nothing to clean up first, only a state to
 // hold. A rule that lives in a document is a rule that erodes on the first busy afternoon; the
 // stale project references this repository carried for months are the proof.
 //
 //   node scripts/hooks/check-architecture-walls.mjs
-//   node scripts/hooks/check-architecture-walls.mjs --update   # re-baseline the protocol leak
+//   node scripts/hooks/check-architecture-walls.mjs --update   # re-baseline leaks and the
+//                                                              # protocol-free project list
 //
 // Exit 2 = a new violation. Exit 0 = the walls still stand.
 import fs from 'node:fs';
@@ -111,9 +112,54 @@ const leak = hits('Vortex.Primitives', /^\s*using\s+Vortex\.Protocol\b/).map((h)
 );
 const leakFiles = [...new Set(leak)].sort();
 
+// ---------------------------------------------------------------------------------------------
+// Wall 4 -- the projects that hold no protocol keep holding none.
+//
+// Splitting Vortex.Protocol out of the hub is worth a measured 74s -> 17s on a composer edit,
+// because the projects below stop rebuilding entirely: they contain no wire types at all. That win
+// is one ProjectReference away from being handed back, and nothing about giving it back is visible
+// -- the build simply gets slower again. So the list is held rather than trusted.
+//
+// A project earns its place here by not needing the protocol, not by deserving to. When one
+// genuinely starts speaking the wire, take it off the list on purpose and know what it costs.
+// ---------------------------------------------------------------------------------------------
+const projectsWithProtocol = fs
+  .readdirSync(root, { withFileTypes: true })
+  .filter((e) => e.isDirectory() && e.name.startsWith('Vortex.'))
+  .filter((e) => fs.existsSync(path.join(root, e.name, `${e.name}.csproj`)))
+  .filter((e) =>
+    fs
+      .readFileSync(path.join(root, e.name, `${e.name}.csproj`), 'utf8')
+      .includes('Vortex.Protocol.csproj')
+  )
+  .map((e) => e.name);
+
+const protocolFree = fs.existsSync(baselineFile)
+  ? (JSON.parse(fs.readFileSync(baselineFile, 'utf8')).protocolFree ?? [])
+  : [];
+const regressed = protocolFree.filter((p) => projectsWithProtocol.includes(p));
+if (regressed.length > 0) {
+  failures.push([
+    'A protocol-free project now references Vortex.Protocol. Every composer edit rebuilds it again.',
+    regressed,
+  ]);
+}
+
 if (update) {
-  fs.writeFileSync(baselineFile, JSON.stringify({ protocolLeak: leakFiles }, null, 2) + '\n');
-  console.log(`Baseline updated: ${leakFiles.length} file(s) importing Messages.* from contracts.`);
+  const free = fs
+    .readdirSync(root, { withFileTypes: true })
+    .filter((e) => e.isDirectory() && e.name.startsWith('Vortex.'))
+    .filter((e) => fs.existsSync(path.join(root, e.name, `${e.name}.csproj`)))
+    .map((e) => e.name)
+    .filter((n) => !projectsWithProtocol.includes(n))
+    .sort();
+  fs.writeFileSync(
+    baselineFile,
+    JSON.stringify({ protocolLeak: leakFiles, protocolFree: free }, null, 2) + '\n'
+  );
+  console.log(
+    `Baseline updated: ${leakFiles.length} leaking file(s), ${free.length} protocol-free project(s).`
+  );
   process.exit(0);
 }
 
@@ -132,7 +178,7 @@ if (newLeak.length > 0) {
 if (failures.length === 0) {
   const healed = baseline.filter((f) => !leakFiles.includes(f));
   const note = healed.length > 0 ? ` (${healed.length} baselined leak(s) now gone -- --update)` : '';
-  console.log(`Architecture walls hold: 3 checked, ${leakFiles.length} baselined leak(s)${note}.`);
+  console.log(`Architecture walls hold: 4 checked, ${leakFiles.length} baselined leak(s)${note}.`);
   process.exit(0);
 }
 

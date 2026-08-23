@@ -54,11 +54,23 @@ fs.writeFileSync(emptyBaseline, '{"unreachable":[]}\n');
 const wallProbe = path.join(root, 'Vortex.Primitives', 'Rooms', '__WallProbe.cs');
 fs.writeFileSync(wallProbe, 'using Vortex.Protocol.Messages.Incoming.Catalog;\n');
 
+// Le mur 4 garde un gain de build mesure (74s -> 17s), que rendre est invisible : la compilation
+// redevient simplement plus lente. La sonde rend vraiment la reference a un projet protege.
+const freeProject = path.join(root, 'Vortex.Marketplace', 'Vortex.Marketplace.csproj');
+const freeProjectOriginal = fs.readFileSync(freeProject, 'utf8');
+fs.writeFileSync(
+  freeProject,
+  freeProjectOriginal.replace(
+    '</ItemGroup>\n</Project>',
+    '  <ProjectReference Include="..\\Vortex.Protocol\\Vortex.Protocol.csproj" />\n</ItemGroup>\n</Project>'
+  )
+);
+
 const direct = [
   ['check-header-registry.mjs', [], 0, 'registre headers : baseline a jour'],
   ['check-header-registry.mjs', [], 2, 'header injoignable hors baseline', { VORTEX_HEADER_BASELINE: emptyBaseline }],
-  ['check-architecture-walls.mjs', [], 2, 'fuite protocole introduite dans les contrats'],
-  ['check-architecture-walls.mjs', [], 0, 'murs archi : les trois tiennent'],
+  ['check-architecture-walls.mjs', [], 2, 'fuite protocole + reference rendue a un projet protege'],
+  ['check-architecture-walls.mjs', [], 0, 'murs archi : les quatre tiennent'],
 ];
 
 let failed = 0;
@@ -71,7 +83,10 @@ for (const [script, payload, want, label] of cases) {
 }
 
 for (const [script, argv, want, label, env] of direct) {
-  if (script === 'check-architecture-walls.mjs' && want === 0) fs.rmSync(wallProbe, { force: true });
+  if (script === 'check-architecture-walls.mjs' && want === 0) {
+    fs.rmSync(wallProbe, { force: true });
+    fs.writeFileSync(freeProject, freeProjectOriginal);
+  }
   const r = spawnSync(process.execPath, [path.join('scripts', 'hooks', script), ...argv], {
     encoding: 'utf8',
     env: { ...process.env, ...env },
@@ -85,5 +100,6 @@ for (const [script, argv, want, label, env] of direct) {
 fs.rmSync(probe, { force: true });
 fs.rmSync(emptyBaseline, { force: true });
 fs.rmSync(wallProbe, { force: true });
+fs.writeFileSync(freeProject, freeProjectOriginal);
 console.log(failed ? `\n${failed} test(s) en echec.` : '\nTous les hooks se comportent comme attendu.');
 process.exit(failed ? 1 : 0);
