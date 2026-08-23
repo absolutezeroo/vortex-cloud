@@ -6,9 +6,12 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer, openItem } from '../lib/session.js';
+  import { readParam, writeParams } from '../lib/urlState.js';
+  import { onMount } from 'svelte';
   import { t } from '../lib/i18n.js';
 
-  let roomId = $state('');
+  // ?room= makes a room timeline a link, and is how the command palette hands one over.
+  let roomId = $state(readParam('room'));
   let data = $state(null);
   let error = $state('');
   let forbidden = $state(false);
@@ -20,6 +23,7 @@
 
     forbidden = false;
     error = '';
+    writeParams({ room: roomId.trim() });
 
     try {
       data = await apiGet(`/api/v1/directory/rooms/${encodeURIComponent(roomId.trim())}?limit=120`);
@@ -35,6 +39,10 @@
       data = null;
     }
   }
+
+  onMount(() => {
+    if (roomId.trim()) load();
+  });
 </script>
 
 <section class="panel">

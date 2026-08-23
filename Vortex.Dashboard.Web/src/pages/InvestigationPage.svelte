@@ -13,9 +13,11 @@
   import PlayerOperationsPanel from '../components/PlayerOperationsPanel.svelte';
   import Tabs from '../components/Tabs.svelte';
   import { Wrench, ScrollText } from '@lucide/svelte';
+  import { readParam, writeParams } from '../lib/urlState.js';
   import { t, translate } from '../lib/i18n.js';
 
-  let query = $state('');
+  // ?player= makes this page linkable, and is how the command palette hands a player over.
+  let query = $state(readParam('player'));
   let rows = $state([]);
   let player = $state(null);
   let summary = $state('');
@@ -41,6 +43,10 @@
     query = String(chosen.id);
     search();
   }
+
+  onMount(() => {
+    if (query.trim()) search();
+  });
 
   function push(rows, row) {
     rows.push({
@@ -79,6 +85,9 @@
       }
 
       rows = nextRows.sort((left, right) => right.sortTime - left.sortTime);
+      // Only a player search is worth putting in the URL: a correlation id is a one-off lookup, not
+      // a place someone comes back to.
+      writeParams({ player: player ? String(player.id) : '' });
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;

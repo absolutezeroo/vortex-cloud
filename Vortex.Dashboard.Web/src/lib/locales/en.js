@@ -699,6 +699,18 @@ export default {
     machine: 'Machine',
     startedUtc: 'Started UTC',
   },
+  palette: {
+    title: 'Command palette',
+    placeholder: 'Jump to a page, player, room or furniture…',
+    hint: 'Type to search pages, players, rooms and furniture.',
+    searching: 'Searching…',
+    noResults: 'Nothing matches.',
+    kind_nav: 'Page',
+    kind_player: 'Player',
+    kind_room: 'Room',
+    kind_furniture: 'Furniture',
+    shortcutHint: 'Ctrl K',
+  },
   playerOps: {
     tabActions: 'Actions',
     offlineKickHint: 'offline — nothing to disconnect',

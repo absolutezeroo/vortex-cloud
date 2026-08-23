@@ -698,6 +698,18 @@ export default {
     machine: 'Machine',
     startedUtc: 'Démarré (UTC)',
   },
+  palette: {
+    title: 'Palette de commandes',
+    placeholder: 'Aller à une page, un joueur, une salle, un meuble…',
+    hint: 'Tapez pour chercher dans les pages, joueurs, salles et meubles.',
+    searching: 'Recherche…',
+    noResults: 'Aucun résultat.',
+    kind_nav: 'Page',
+    kind_player: 'Joueur',
+    kind_room: 'Salle',
+    kind_furniture: 'Meuble',
+    shortcutHint: 'Ctrl K',
+  },
   playerOps: {
     tabActions: 'Actions',
     offlineKickHint: 'hors ligne — rien à déconnecter',

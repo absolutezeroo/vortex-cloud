@@ -1,4 +1,5 @@
 <script>
+  import { readNumberParam, writeParams } from '../lib/urlState.js';
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api.js';
   import { compactCorrelation, formatDate } from '../lib/format.js';
@@ -59,7 +60,11 @@
     expanded = expanded === index ? null : index;
   }
   let limit = $state(50);
-  let page = $state(1);
+  let page = $state(readNumberParam('page', 1));
+
+  $effect(() => {
+    writeParams({ page: page > 1 ? page : '' });
+  });
 
   let rows = $state([]);
   let total = $state(0);

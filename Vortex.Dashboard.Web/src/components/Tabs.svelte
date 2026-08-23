@@ -1,4 +1,5 @@
 <script>
+  import { readParam, writeParams } from '../lib/urlState.js';
   // In-page tab strip for the admin pages that do several jobs at once. Follows the WAI-ARIA tabs
   // pattern and NN/g's rules for the component: one tab is always selected, switching is instant
   // (the panels are page state, nothing refetches), and labels stay one or two words in sentence
@@ -27,12 +28,20 @@ another page) lands where the operator left off instead of resetting to the firs
 
   let buttons = $state([]);
 
+  // ?tab= wins over the remembered one: a link someone sent you names the tab it means, and the tab
+  // this browser happened to leave open last week should not quietly override it.
   if (storageKey) {
-    try {
-      const stored = sessionStorage.getItem(`vortex.tabs.${storageKey}`);
-      if (stored && tabs.some((t) => t.id === stored)) active = stored;
-    } catch {
-      // Private browsing / quota -- the default tab is a fine fallback.
+    const fromUrl = readParam('tab');
+
+    if (fromUrl && tabs.some((t) => t.id === fromUrl)) {
+      active = fromUrl;
+    } else {
+      try {
+        const stored = sessionStorage.getItem(`vortex.tabs.${storageKey}`);
+        if (stored && tabs.some((t) => t.id === stored)) active = stored;
+      } catch {
+        // Private browsing / quota -- the default tab is a fine fallback.
+      }
     }
   }
 
@@ -41,6 +50,11 @@ another page) lands where the operator left off instead of resetting to the firs
 
     active = id;
     onchange?.(id);
+
+    // The first tab is the default, so it stays out of the URL: an unfiltered page keeps a clean one.
+    if (storageKey) {
+      writeParams({ tab: id === tabs[0]?.id ? '' : id });
+    }
 
     if (storageKey) {
       try {

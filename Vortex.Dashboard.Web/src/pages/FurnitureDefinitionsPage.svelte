@@ -1,4 +1,5 @@
 <script>
+  import { readParam, readNumberParam, writeParams } from '../lib/urlState.js';
 
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
   import OpResult from '../components/OpResult.svelte';
@@ -52,9 +53,16 @@
     };
   }
 
-  let page = $state(1);
+  let page = $state(readNumberParam('page', 1));
   let limit = 40;
-  let query = $state('');
+  let query = $state(readParam('q'));
+
+  // Both live in the URL so a filtered list is a link. Effect rather than a call at each setter:
+  // the page is changed from the pagination component, the query from the toolbar, and a reader
+  // should not have to check that both remembered to write.
+  $effect(() => {
+    writeParams({ q: query, page: page > 1 ? page : '' });
+  });
 
   // One drawer for both jobs: { mode: 'create' | 'edit', id, form }. Null means closed, which is
   // also what makes "is anything being edited" a single question rather than two flags that can

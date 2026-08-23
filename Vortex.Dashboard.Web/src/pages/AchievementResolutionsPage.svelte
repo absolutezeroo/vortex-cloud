@@ -1,4 +1,5 @@
 <script>
+  import { readNumberParam, writeParams } from '../lib/urlState.js';
 
   import { onMount } from 'svelte';
   import { CheckCircle2, Clock, ListChecks, Trophy } from '@lucide/svelte';
@@ -31,7 +32,11 @@
   let tab = $state('offers');
   let stateFilter = $state('');
   let search = $state('');
-  let page = $state(1);
+  let page = $state(readNumberParam('page', 1));
+
+  $effect(() => {
+    writeParams({ page: page > 1 ? page : '' });
+  });
 
   async function load() {
     loading = true;

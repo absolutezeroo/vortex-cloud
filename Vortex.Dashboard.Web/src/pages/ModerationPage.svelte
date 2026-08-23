@@ -1,4 +1,5 @@
 <script>
+  import { readNumberParam, writeParams } from '../lib/urlState.js';
 
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api.js';
@@ -40,7 +41,11 @@
   let action = $state('');
   let result = $state('');
   let limit = $state('80');
-  let page = $state(1);
+  let page = $state(readNumberParam('page', 1));
+
+  $effect(() => {
+    writeParams({ page: page > 1 ? page : '' });
+  });
   let loading = $state(false);
   let error = $state('');
   let forbidden = $state(false);

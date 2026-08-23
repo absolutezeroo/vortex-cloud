@@ -1,4 +1,5 @@
 <script>
+  import { readNumberParam, writeParams } from '../lib/urlState.js';
 
   // Bots are authored from inside the client, so this page reads. What it adds over the raw table is
   // the decoded skill blob: a bot whose menu shows no buttons, or one configured to chat but with
@@ -33,7 +34,11 @@
   let term = $state('');
   let owner = $state(null);
   let placedFilter = $state('');
-  let page = $state(1);
+  let page = $state(readNumberParam('page', 1));
+
+  $effect(() => {
+    writeParams({ page: page > 1 ? page : '' });
+  });
   let selected = $state(null);
 
   // These sections are independent jobs that were stacked vertically, so reaching the last one

@@ -1,6 +1,7 @@
 <script>
 
   import { location, push } from 'svelte-spa-router';
+  import CommandPalette from './CommandPalette.svelte';
   import { SvelteSet } from 'svelte/reactivity';
   import {
     Activity,
@@ -268,6 +269,8 @@
      have to walk all of them to reach the table they came for. -->
 <a class="skip-link" href="#main-content">{$t('nav.skipToContent')}</a>
 
+<CommandPalette />
+
 <main class="app-shell">
   <aside class="sidebar">
     <div class="brand">
@@ -290,6 +293,9 @@
         aria-label={$t('nav.searchPlaceholder')}
         bind:value={query}
       />
+      <!-- This box only filters the sidebar. The palette is what searches players, rooms and
+           furniture, and a shortcut nobody is told about is a shortcut nobody uses. -->
+      <kbd class="nav-kbd">{$t('palette.shortcutHint')}</kbd>
     </div>
 
     <nav aria-label={$t('nav.sectionsLabel')}>
@@ -410,6 +416,16 @@
 </main>
 
 <style>
+  .nav-kbd {
+    flex: 0 0 auto;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 1px 5px;
+    color: var(--muted);
+    font-size: 0.66rem;
+    white-space: nowrap;
+  }
+
   .nav-search {
     display: flex;
     align-items: center;
