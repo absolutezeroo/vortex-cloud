@@ -32,9 +32,7 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Addons;
 /// by that logic name — a classname is not a key in this database.
 /// </para>
 /// </remarks>
-[RoomObjectLogic("wf_contract_payment")]
-[RoomObjectLogic("wf_contract_reward")]
-[RoomObjectLogic("wf_contract_trade")]
+[RoomObjectLogic("wf_xtra_custom_contract")]
 public class WiredAddonCustomContract(
     IGrainFactory grainFactory,
     IStuffDataFactory stuffDataFactory,
