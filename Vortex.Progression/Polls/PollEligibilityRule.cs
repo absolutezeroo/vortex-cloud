@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Vortex.Primitives.Polls;
 using Vortex.Primitives.Polls.Snapshots;
 
-namespace Vortex.Players.Polls;
+namespace Vortex.Progression.Polls;
 
 /// <summary>
 /// Decides whether a survey may be pushed at a player, and whether they may still answer one. Pure

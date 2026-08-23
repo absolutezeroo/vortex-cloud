@@ -1,7 +1,7 @@
 using System;
 using Vortex.Primitives.Quests.Snapshots;
 
-namespace Vortex.Players.Quests;
+namespace Vortex.Progression.Quests;
 
 /// <summary>
 /// Pure mapping from a cached quest definition + the player's stored progress (plus campaign-level

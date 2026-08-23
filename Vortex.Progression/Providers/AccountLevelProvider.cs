@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
-using Vortex.Players.Achievements;
 using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Players.Providers;
+using Vortex.Progression.Achievements;
 
-namespace Vortex.Players.Providers;
+namespace Vortex.Progression.Providers;
 
 /// <summary>
 /// Caches the account level ladder. It is reference data — a dozen rows read on every profile

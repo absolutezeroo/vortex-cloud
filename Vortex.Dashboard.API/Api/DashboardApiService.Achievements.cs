@@ -23,7 +23,7 @@ namespace Vortex.Dashboard.API.Api;
 internal sealed partial class DashboardApiService
 {
     /// <summary>Achievement names a live progression trigger calls today — mirrors
-    /// <c>Vortex.Players.Achievements.AchievementNames</c> and the call sites in
+    /// <c>Vortex.Progression.Achievements.AchievementNames</c> and the call sites in
     /// <c>AchievementProgressEventHandlers</c>. Duplicated as strings because the dashboard does not
     /// reference <c>Vortex.Players</c>; a name that drifts shows up here as "not triggered".</summary>
     private static readonly HashSet<string> TriggeredAchievements = new(StringComparer.Ordinal)

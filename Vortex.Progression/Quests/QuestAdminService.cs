@@ -12,7 +12,7 @@ using Vortex.Primitives.Players.Wallet;
 using Vortex.Primitives.Quests;
 using Vortex.Primitives.Quests.Admin;
 
-namespace Vortex.Players.Quests;
+namespace Vortex.Progression.Quests;
 
 /// <summary>
 /// CRUD for the <c>quests</c> table. A plain singleton (not a grain) opening a short-lived

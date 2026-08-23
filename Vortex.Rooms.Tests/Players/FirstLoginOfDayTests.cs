@@ -8,13 +8,15 @@ using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Players;
-using Vortex.Players.Achievements;
 using Vortex.Players.Configuration;
 using Vortex.Players.Grains;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Players.Providers;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Progression.Achievements;
+using Vortex.Progression.Configuration;
+using Vortex.Progression.Grains;
 using Vortex.Tests.Support;
 using Xunit;
 

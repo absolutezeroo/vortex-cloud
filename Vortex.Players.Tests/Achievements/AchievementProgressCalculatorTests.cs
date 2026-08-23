@@ -2,8 +2,9 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 using FluentAssertions;
-using Vortex.Players.Achievements;
 using Vortex.Primitives.Players.Snapshots;
+using Vortex.Progression.Achievements;
+using Vortex.Progression.Grains;
 using Xunit;
 
 namespace Vortex.Players.Tests.Achievements;

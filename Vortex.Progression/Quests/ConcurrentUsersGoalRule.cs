@@ -1,6 +1,6 @@
 using Vortex.Primitives.Quests;
 
-namespace Vortex.Players.Quests;
+namespace Vortex.Progression.Quests;
 
 /// <summary>
 /// Where a player stands on the hotel-wide "players online" goal. Pure so the four states can be

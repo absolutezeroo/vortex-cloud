@@ -30,6 +30,7 @@ using Vortex.PacketHandlers;
 using Vortex.Players;
 using Vortex.Plugins.Extensions;
 using Vortex.Primitives.Console;
+using Vortex.Progression;
 using Vortex.Revisions.Extensions;
 using Vortex.Rooms;
 using Vortex.Runtime.AssemblyProcessing;
@@ -127,6 +128,7 @@ internal class Program
         builder.Services.AddHostPlugin<CatalogModule>(builder);
         builder.Services.AddHostPlugin<PlayerModule>(builder);
         builder.Services.AddHostPlugin<SocialModule>(builder);
+        builder.Services.AddHostPlugin<ProgressionModule>(builder);
         builder.Services.AddHostPlugin<InventoryModule>(builder);
         builder.Services.AddHostPlugin<MarketplaceModule>(builder);
         builder.Services.AddHostPlugin<DashboardApiModule>(builder);

@@ -11,7 +11,7 @@ using Vortex.Database.Entities.Quests;
 using Vortex.Primitives.Quests.Grains;
 using Vortex.Primitives.Quests.Snapshots;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Progression.Grains;
 
 /// <summary>
 /// Loads every quest definition once and caches it for the lifetime of the kept-alive singleton, so

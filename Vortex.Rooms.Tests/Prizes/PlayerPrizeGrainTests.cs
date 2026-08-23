@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Orleans;
 using Vortex.Database.Context;
-using Vortex.Players.Grains;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Providers;
@@ -15,6 +14,7 @@ using Vortex.Primitives.Furniture.Snapshots;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Prizes;
 using Vortex.Primitives.Prizes.Snapshots;
+using Vortex.Progression.Grains;
 using Vortex.Tests.Support;
 using Xunit;
 

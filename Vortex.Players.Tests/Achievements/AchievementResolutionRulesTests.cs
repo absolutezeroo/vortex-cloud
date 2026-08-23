@@ -1,8 +1,9 @@
 using System;
 using FluentAssertions;
-using Vortex.Players.Achievements;
+using Vortex.Progression.Achievements;
+using Vortex.Progression.Grains;
 using Xunit;
-using State = Vortex.Players.Achievements.AchievementResolutionRules.ResolutionState;
+using State = Vortex.Progression.Achievements.AchievementResolutionRules.ResolutionState;
 
 namespace Vortex.Players.Tests.Achievements;
 

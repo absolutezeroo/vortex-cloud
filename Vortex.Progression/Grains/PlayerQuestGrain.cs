@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Quests;
-using Vortex.Players.Quests;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Snapshots;
@@ -18,9 +17,10 @@ using Vortex.Primitives.Quests;
 using Vortex.Primitives.Quests.Grains;
 using Vortex.Primitives.Quests.Snapshots;
 using Vortex.Primitives.Server.Grains;
+using Vortex.Progression.Quests;
 using Vortex.Protocol.Messages.Outgoing.Quest;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Progression.Grains;
 
 /// <summary>
 /// Per-player quest grain. Resolves the player's stored progress rows against the cached quest

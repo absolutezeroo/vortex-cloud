@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Vortex.Players.Quests;
+namespace Vortex.Progression.Quests;
 
 /// <summary>One rung of a community goal, as the ladder maths sees it.</summary>
 public readonly record struct CommunityGoalRung(

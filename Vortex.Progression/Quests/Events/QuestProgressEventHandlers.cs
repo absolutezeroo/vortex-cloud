@@ -7,7 +7,7 @@ using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Quests;
 using Vortex.Primitives.Quests.Grains;
 
-namespace Vortex.Players.Quests.Events;
+namespace Vortex.Progression.Quests.Events;
 
 // Quest objective progression, driven by the same domain events as achievements. A quest advances
 // when its quest_type matches the trigger name. The event pipeline isolates handler exceptions, so

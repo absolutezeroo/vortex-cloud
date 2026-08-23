@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
-using Vortex.Players.Quests;
+using Vortex.Progression.Grains;
+using Vortex.Progression.Quests;
 using Xunit;
 
 namespace Vortex.Players.Tests.Quests;

@@ -1,6 +1,6 @@
 using System;
 
-namespace Vortex.Players.Achievements;
+namespace Vortex.Progression.Achievements;
 
 /// <summary>
 /// The decisions behind a resolution statue, kept away from the grain because every one of them is

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Vortex.Players.Achievements;
+namespace Vortex.Progression.Achievements;
 
 /// <summary>
 /// Turns an achievement score into the level the profile shows. Pure, because the alternative — the

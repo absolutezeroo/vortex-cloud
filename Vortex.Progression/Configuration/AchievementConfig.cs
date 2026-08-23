@@ -1,4 +1,4 @@
-namespace Vortex.Players.Configuration;
+namespace Vortex.Progression.Configuration;
 
 /// <summary>
 /// Strongly-typed options for achievement progression. Only the write-batching knobs live here:

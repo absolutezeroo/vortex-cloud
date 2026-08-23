@@ -10,15 +10,15 @@ using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Achievements;
 using Vortex.Database.Entities.Furniture;
-using Vortex.Players.Achievements;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Snapshots;
 using Vortex.Primitives.Server.Grains;
+using Vortex.Progression.Achievements;
 using Vortex.Protocol.Messages.Outgoing.Game.Lobby;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Progression.Grains;
 
 /// <summary>
 /// The resolution statues a player owns. Orleans serialises per player, so picking a challenge and

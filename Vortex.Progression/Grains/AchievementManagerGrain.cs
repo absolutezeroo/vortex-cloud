@@ -12,7 +12,7 @@ using Vortex.Database.Entities.Achievements;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Snapshots;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Progression.Grains;
 
 /// <summary>
 /// Loads every achievement definition once and caches it for the lifetime of the (kept-alive)

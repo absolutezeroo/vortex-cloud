@@ -9,12 +9,12 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Quests;
-using Vortex.Players.Quests;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Quests.Grains;
+using Vortex.Progression.Quests;
 using Vortex.Protocol.Messages.Outgoing.Quest;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Progression.Grains;
 
 /// <summary>
 /// Owns the active community goal. Kept alive because it holds the hotel's running total: rebuilding

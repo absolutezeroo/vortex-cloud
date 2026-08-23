@@ -1,4 +1,4 @@
-namespace Vortex.Players.Achievements;
+namespace Vortex.Progression.Achievements;
 
 /// <summary>
 /// Canonical achievement identifiers (the <c>name</c> column of the <c>achievements</c> table, which

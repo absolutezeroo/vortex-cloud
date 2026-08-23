@@ -2,7 +2,7 @@ using System;
 using System.Collections.Immutable;
 using Vortex.Primitives.Players.Snapshots;
 
-namespace Vortex.Players.Achievements;
+namespace Vortex.Progression.Achievements;
 
 /// <summary>
 /// Pure mapping from a cached achievement definition + a player's stored progress to the wire-ready

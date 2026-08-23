@@ -12,7 +12,7 @@ using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Polls;
 using Vortex.Primitives.Polls.Admin;
 
-namespace Vortex.Players.Polls;
+namespace Vortex.Progression.Polls;
 
 /// <summary>
 /// CRUD for the survey tables. A plain singleton (not a grain) opening a short-lived

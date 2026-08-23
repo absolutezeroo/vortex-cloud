@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using Vortex.Players.Quests;
 using Vortex.Primitives.Quests.Snapshots;
+using Vortex.Progression.Grains;
+using Vortex.Progression.Quests;
 using Xunit;
 
 namespace Vortex.Players.Tests.Quests;

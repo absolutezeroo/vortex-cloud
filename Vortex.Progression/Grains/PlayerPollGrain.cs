@@ -9,15 +9,15 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Polls;
-using Vortex.Players.Polls;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Polls;
 using Vortex.Primitives.Polls.Grains;
 using Vortex.Primitives.Polls.Snapshots;
+using Vortex.Progression.Polls;
 using Vortex.Protocol.Messages.Outgoing.Poll;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Progression.Grains;
 
 /// <summary>
 /// Per-player survey grain. Owns the player's participation rows and their answers, and sends every

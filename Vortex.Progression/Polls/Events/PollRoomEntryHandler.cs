@@ -5,7 +5,7 @@ using Vortex.Events.Registry;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 
-namespace Vortex.Players.Polls.Events;
+namespace Vortex.Progression.Polls.Events;
 
 /// <summary>
 /// Offers a survey when a player enters a room — the only moment the client is ready to show the

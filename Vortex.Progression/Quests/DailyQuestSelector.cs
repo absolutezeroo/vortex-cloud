@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Vortex.Primitives.Quests.Snapshots;
 
-namespace Vortex.Players.Quests;
+namespace Vortex.Progression.Quests;
 
 /// <summary>
 /// Picks a player's daily quest deterministically from the daily pool for a given calendar day — the

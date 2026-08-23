@@ -14,7 +14,7 @@ using Vortex.Primitives.Prizes;
 using Vortex.Primitives.Prizes.Grains;
 using Vortex.Primitives.Prizes.Snapshots;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Progression.Grains;
 
 /// <summary>
 /// Caches every prize pool for the lifetime of the kept-alive singleton. The pools are read on each

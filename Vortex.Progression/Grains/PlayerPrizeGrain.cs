@@ -16,7 +16,7 @@ using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Prizes.Grains;
 using Vortex.Primitives.Prizes.Snapshots;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Progression.Grains;
 
 /// <summary>
 /// Grants drawn prizes to one player. A stateless gateway grain: it owns no data of its own, it

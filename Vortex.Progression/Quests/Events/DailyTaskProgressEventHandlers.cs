@@ -6,7 +6,7 @@ using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Quests;
 
-namespace Vortex.Players.Quests.Events;
+namespace Vortex.Progression.Quests.Events;
 
 // Daily tasks advance on the same domain events as quests and share their objective vocabulary, so
 // a task with quest_type_code "RoomEntry" counts room entries without any new plumbing. They are

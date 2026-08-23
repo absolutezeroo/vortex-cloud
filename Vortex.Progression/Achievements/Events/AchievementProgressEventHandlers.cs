@@ -6,7 +6,7 @@ using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
 
-namespace Vortex.Players.Achievements.Events;
+namespace Vortex.Progression.Achievements.Events;
 
 // Achievement progression triggers, wired to domain events so gameplay subsystems stay decoupled
 // from achievements. The event pipeline isolates handler exceptions, so a progression failure never

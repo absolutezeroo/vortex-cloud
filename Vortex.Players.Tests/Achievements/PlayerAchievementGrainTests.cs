@@ -10,10 +10,10 @@ using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Achievements;
-using Vortex.Players.Configuration;
-using Vortex.Players.Grains;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Snapshots;
+using Vortex.Progression.Configuration;
+using Vortex.Progression.Grains;
 using Vortex.Tests.Support;
 using Xunit;
 

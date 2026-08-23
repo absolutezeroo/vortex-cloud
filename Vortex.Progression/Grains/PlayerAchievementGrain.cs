@@ -11,17 +11,17 @@ using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Achievements;
-using Vortex.Players.Achievements;
-using Vortex.Players.Configuration;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Snapshots;
 using Vortex.Primitives.Players.Wallet;
+using Vortex.Progression.Achievements;
+using Vortex.Progression.Configuration;
 using Vortex.Protocol.Messages.Outgoing.Inventory.Achievements;
 using Vortex.Protocol.Messages.Outgoing.Notifications;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Progression.Grains;
 
 /// <summary>
 /// Per-player achievement grain. Holds the player's progress in memory for the life of the

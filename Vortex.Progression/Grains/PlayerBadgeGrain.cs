@@ -12,7 +12,7 @@ using Vortex.Database.Entities.Players;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Snapshots;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Progression.Grains;
 
 internal sealed class PlayerBadgeGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,

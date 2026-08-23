@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
-using Vortex.Players.Achievements;
+using Vortex.Progression.Achievements;
+using Vortex.Progression.Grains;
 using Xunit;
 
 namespace Vortex.Players.Tests.Achievements;

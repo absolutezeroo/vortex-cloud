@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace Vortex.Players.Achievements;
+namespace Vortex.Progression.Achievements;
 
 /// <summary>
 /// One level completed while applying progress. <see cref="RemovedBadgeCode"/> is the immediately

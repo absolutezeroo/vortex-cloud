@@ -1,6 +1,6 @@
 using System;
 
-namespace Vortex.Players.Quests;
+namespace Vortex.Progression.Quests;
 
 /// <summary>Pure quest objective-progress rule, extracted from the grain so it can be unit-tested.</summary>
 public static class QuestProgressCalculator

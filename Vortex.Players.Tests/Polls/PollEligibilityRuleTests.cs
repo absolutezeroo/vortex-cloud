@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using FluentAssertions;
-using Vortex.Players.Polls;
 using Vortex.Primitives.Polls;
 using Vortex.Primitives.Polls.Snapshots;
+using Vortex.Progression.Grains;
+using Vortex.Progression.Polls;
 using Xunit;
 
 namespace Vortex.Players.Tests.Polls;

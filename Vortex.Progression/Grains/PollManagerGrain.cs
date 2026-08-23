@@ -12,7 +12,7 @@ using Vortex.Database.Entities.Polls;
 using Vortex.Primitives.Polls.Grains;
 using Vortex.Primitives.Polls.Snapshots;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Progression.Grains;
 
 /// <summary>
 /// Loads every enabled survey once and caches the assembled question tree for the lifetime of the
