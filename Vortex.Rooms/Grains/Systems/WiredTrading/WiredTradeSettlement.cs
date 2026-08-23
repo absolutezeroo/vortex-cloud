@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,67 +12,56 @@ using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Wired;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Furniture.Enums;
+using Vortex.Primitives.Furniture.Snapshots;
+using Vortex.Primitives.Furniture.StuffData;
 using Vortex.Primitives.Inventory.Snapshots;
 using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
+using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Wallet;
+using Vortex.Primitives.Rooms.Enums;
+using Vortex.Primitives.Rooms.Events.Player;
+using Vortex.Primitives.Rooms.Object;
+using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Snapshots.Wired;
+using Vortex.Rooms.Grains;
+using Vortex.Rooms.Object.Logic.Furniture.Floor;
 using Vortex.Rooms.Wired;
 
-namespace Vortex.Rooms.Grains;
+namespace Vortex.Rooms.Grains.Systems.WiredTrading;
 
 /// <summary>
-/// Settling a contract: taking what it asks for and handing back what it promises.
+/// The execution: every place a wallet and a chest move in the same breath.
 /// </summary>
 /// <remarks>
-/// A contract trade is a deposit with a price on it, and the client says so — the same three
-/// messages drive both, because the offer arrives on the same trading screen. So it runs on the
-/// same session, and everything here is about the half a plain deposit does not have: is the stake
-/// enough, can the chest pay, and moving both sides at once.
+/// <see cref="WiredContractSettlement" /> decides what a contract takes and gives; this decides in
+/// what order it happens and what is undone when a leg refuses. There are no distributed
+/// transactions to be had -- the wallet grain is atomic per player and the room's context is atomic
+/// per save -- so what stands in for one is ordering, and compensation on the far side of it.
 /// <para>
-/// The stock is the chest the offering box points at (its first furni picker, "chests"; the second
-/// is the contract itself). Payment goes in there and the reward comes out of there — a contract is
-/// a shop counter, and the chest behind it is the shop.
-/// </para>
-/// <para>
-/// Nothing moves until everything is known to be movable. The order is: read the stake, find a rule
-/// it satisfies, check the chest can pay, debit the player, and only then write. The one step that
-/// can still fail after the write is crediting the reward, and that is compensated the way the
-/// chest pay-out already compensates it.
+/// The rule everything here follows: validate before anything moves, take payment before goods,
+/// give the payment back if the goods cannot follow, and write the books last from what actually
+/// landed. A crash between two legs still loses, but it loses in the direction that destroys
+/// credits rather than the one that invents them.
 /// </para>
 /// </remarks>
-public sealed partial class RoomGrain
+public sealed partial class WiredTradeSettlement(
+    RoomGrain roomGrain,
+    RoomWiredTradingSystem system,
+    WiredChestStore store,
+    WiredChestLedger ledger
+)
 {
-    /// <summary>The client's own transaction types, as the log screen localises them.</summary>
-    private const int ContractPaymentTransaction = 2;
+    private readonly RoomGrain _roomGrain = roomGrain;
 
-    private const int ContractRewardTransaction = 3;
+    private readonly RoomWiredTradingSystem _system = system;
 
-    private const int ContractTradeTransaction = 4;
+    private readonly WiredChestStore _store = store;
 
-    /// <summary>
-    /// Puts a contract's trade screen up for a player, with the chest that backs it.
-    /// </summary>
-    /// <remarks>
-    /// One screen per player, so this replaces whatever was open — including a plain deposit, which
-    /// is the same reading the offer itself takes when it withdraws a previous offer.
-    /// </remarks>
-    private void OpenContractSession(
-        PlayerId playerId,
-        int contractId,
-        int chestId,
-        TradeContract contract,
-        int multiplier
-    ) =>
-        _chestDeposits[playerId] = new ChestDeposit(chestId, [])
-        {
-            Contract = contract,
-            ContractId = contractId,
-            Multiplier = Math.Max(1, multiplier),
-        };
+    private readonly WiredChestLedger _ledger = ledger;
 
     /// <summary>
     /// The rows a contract can see, in the terms it is written in.
@@ -83,7 +73,7 @@ public sealed partial class RoomGrain
     /// </remarks>
     private List<ContractItem> AsContractItems(IEnumerable<FurnitureEntity> rows) =>
         [
-            .. rows.Select(entity => (entity, snapshot: ToChestItemSnapshot(entity)))
+            .. rows.Select(entity => (entity, snapshot: _store.ToChestItemSnapshot(entity)))
                 .Where(pair => pair.snapshot is not null)
                 .Select(pair => new ContractItem(
                     pair.entity.Id,
@@ -102,9 +92,9 @@ public sealed partial class RoomGrain
     /// and accept again — and with a completed one only once both sides have actually moved. It
     /// never answers "done" for a trade that did nothing.
     /// </remarks>
-    private async Task<WiredDepositSnapshot?> SettleContractAsync(
+    internal async Task<WiredDepositSnapshot?> SettleContractAsync(
         ActionContext ctx,
-        ChestDeposit session,
+        WiredTradeSession session,
         CancellationToken ct
     )
     {
@@ -113,13 +103,13 @@ public sealed partial class RoomGrain
         // to whatever furni came first — a contract, a lamp, or id 0 — and what is paid into it is
         // reachable by nobody.
         if (
-            !_state.ItemsById.TryGetValue(session.ChestId, out IRoomItem? chestItem)
-            || !IsChestLogic(chestItem.Definition.LogicName)
+            !_roomGrain._state.ItemsById.TryGetValue(session.ChestId, out IRoomItem? chestItem)
+            || !WiredChestStore.IsChestLogic(chestItem.Definition.LogicName)
         )
         {
-            _logger.LogWarning(
+            _roomGrain._logger.LogWarning(
                 "Contract settlement refused in room {RoomId}: {ChestId} is not a chest.",
-                RoomId,
+                _roomGrain.RoomId,
                 session.ChestId
             );
 
@@ -132,30 +122,13 @@ public sealed partial class RoomGrain
 
         try
         {
-            await using VortexDbContext dbCtx = await _dbCtxFactory
-                .CreateDbContextAsync(ct)
+            await using VortexDbContext dbCtx = await _roomGrain
+                ._dbCtxFactory.CreateDbContextAsync(ct)
                 .ConfigureAwait(true);
 
-            WiredChestEntity? chest = await dbCtx
-                .WiredChests.FirstOrDefaultAsync(
-                    c => c.FurnitureEntityId == session.ChestId && c.DeletedAt == null,
-                    ct
-                )
+            WiredChestEntity chest = await WiredChestStore
+                .GetOrOpenAsync(dbCtx, session.ChestId, ct)
                 .ConfigureAwait(true);
-
-            if (chest is null)
-            {
-                chest = new WiredChestEntity
-                {
-                    FurnitureEntityId = session.ChestId,
-                    Credits = 0,
-                    NotificationsEnabled = true,
-                };
-
-                dbCtx.WiredChests.Add(chest);
-
-                await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
-            }
 
             List<FurnitureEntity> staked = await dbCtx
                 .Furnitures.Where(f =>
@@ -174,7 +147,7 @@ public sealed partial class RoomGrain
                 .ConfigureAwait(true);
 
             ContractCharge? payment = WiredContractSettlement.MatchStake(
-                session.Contract!,
+                session.Terms!,
                 session.Multiplier,
                 AsContractItems(staked)
             );
@@ -182,7 +155,7 @@ public sealed partial class RoomGrain
             if (
                 payment is null
                 || !WiredContractSettlement.TryReserveReward(
-                    session.Contract!,
+                    session.Terms!,
                     session.Multiplier,
                     AsContractItems(stock),
                     chest.Credits,
@@ -258,7 +231,7 @@ public sealed partial class RoomGrain
             // meant to: a movement that was rolled back never happened, and a log that says
             // otherwise is worse than no log.
             dbCtx.WiredChestTransactions.Add(
-                NewContractTransaction(
+                _ledger.NewContractTransaction(
                     ctx.PlayerId,
                     chest.Id,
                     payment,
@@ -273,9 +246,9 @@ public sealed partial class RoomGrain
 
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
-            _chestDeposits.Remove(ctx.PlayerId);
-
-            await CompleteTransactionAsync(ctx.PlayerId, ct).ConfigureAwait(true);
+            // Closing the transaction is what forgets the session — one owner for it, so a
+            // settlement cannot leave a screen behind by taking the wrong half down itself.
+            await _system.CompleteTransactionAsync(ctx.PlayerId, ct).ConfigureAwait(true);
 
             await AnnounceContractSuccessAsync(ctx.PlayerId, session, ct).ConfigureAwait(true);
 
@@ -283,15 +256,18 @@ public sealed partial class RoomGrain
             {
                 // The row is the player's now; the inventory grain's list is a cache built at
                 // activation and nothing reloads it on its own.
-                await _grainFactory
-                    .GetInventoryGrain(ctx.PlayerId)
+                await _roomGrain
+                    ._grainFactory.GetInventoryGrain(ctx.PlayerId)
                     .ReloadFurnitureAsync(ct)
                     .ConfigureAwait(true);
             }
 
-            await ApplyChestSettingsToStuffDataAsync(session.ChestId, chest).ConfigureAwait(true);
+            await _store
+                .ApplyChestSettingsToStuffDataAsync(session.ChestId, chest)
+                .ConfigureAwait(true);
 
-            await NotifyOtherChestViewersAsync(
+            await _system
+                .NotifyOtherChestViewersAsync(
                     session.ChestId,
                     ctx.PlayerId,
                     new WiredChestItemsUpdateMessageComposer
@@ -300,7 +276,9 @@ public sealed partial class RoomGrain
                         RemovedItemIds = reward.ItemIds,
                         AddedItems =
                         [
-                            .. paying.Select(ToChestItemSnapshot).OfType<FurnitureItemSnapshot>(),
+                            .. paying
+                                .Select(_store.ToChestItemSnapshot)
+                                .OfType<FurnitureItemSnapshot>(),
                         ],
                     }
                 )
@@ -309,23 +287,26 @@ public sealed partial class RoomGrain
             return new WiredDepositSnapshot
             {
                 ChestId = session.ChestId,
-                Items = [.. paying.Select(ToChestItemSnapshot).OfType<FurnitureItemSnapshot>()],
+                Items =
+                [
+                    .. paying.Select(_store.ToChestItemSnapshot).OfType<FurnitureItemSnapshot>(),
+                ],
                 CanAccept = false,
                 Completed = true,
                 RewardItems =
                 [
-                    .. giving.Select(ToChestItemSnapshot).OfType<FurnitureItemSnapshot>(),
+                    .. giving.Select(_store.ToChestItemSnapshot).OfType<FurnitureItemSnapshot>(),
                 ],
                 RewardCredits = paidOut,
             };
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(
+            _roomGrain._logger.LogWarning(
                 ex,
                 "Failed to settle a contract against chest {ChestId} in room {RoomId}.",
                 session.ChestId,
-                RoomId
+                _roomGrain.RoomId
             );
 
             // The payment left the wallet before the goods could move, so it goes back: coins taken
@@ -338,12 +319,12 @@ public sealed partial class RoomGrain
                     .ConfigureAwait(true)
             )
             {
-                _logger.LogError(
+                _roomGrain._logger.LogError(
                     "Player {PlayerId} paid {Coins} credits for a contract that failed to settle "
                         + "in room {RoomId}, and the refund was refused.",
                     ctx.PlayerId,
                     refundable,
-                    RoomId
+                    _roomGrain.RoomId
                 );
             }
 
@@ -362,15 +343,16 @@ public sealed partial class RoomGrain
     /// </remarks>
     private async Task AnnounceContractSuccessAsync(
         PlayerId playerId,
-        ChestDeposit session,
+        WiredTradeSession session,
         CancellationToken ct
     )
     {
-        WiredContractSnapshot? written = await ReadStoredContractAsync(session.ContractId, ct)
+        WiredContractSnapshot? written = await _roomGrain
+            .ReadStoredContractAsync(session.ContractId, ct)
             .ConfigureAwait(true);
 
-        await _grainFactory
-            .GetPlayerPresenceGrain(playerId)
+        await _roomGrain
+            ._grainFactory.GetPlayerPresenceGrain(playerId)
             .SendComposerAsync(
                 new WiredTransactionSuccessMessageComposer
                 {
@@ -389,8 +371,8 @@ public sealed partial class RoomGrain
     /// so by showing less — and the accept button goes dead with it rather than accepting into a
     /// refusal.
     /// </remarks>
-    private async Task<WiredDepositSnapshot?> SnapshotContractAsync(
-        ChestDeposit session,
+    internal async Task<WiredDepositSnapshot?> SnapshotContractAsync(
+        WiredTradeSession session,
         List<FurnitureEntity>? staked,
         bool completed,
         CancellationToken ct
@@ -398,16 +380,12 @@ public sealed partial class RoomGrain
     {
         try
         {
-            await using VortexDbContext dbCtx = await _dbCtxFactory
-                .CreateDbContextAsync(ct)
+            await using VortexDbContext dbCtx = await _roomGrain
+                ._dbCtxFactory.CreateDbContextAsync(ct)
                 .ConfigureAwait(true);
 
-            WiredChestEntity? chest = await dbCtx
-                .WiredChests.AsNoTracking()
-                .FirstOrDefaultAsync(
-                    c => c.FurnitureEntityId == session.ChestId && c.DeletedAt == null,
-                    ct
-                )
+            WiredChestEntity? chest = await WiredChestStore
+                .ReadAsync(dbCtx, session.ChestId, ct)
                 .ConfigureAwait(true);
 
             staked ??= await dbCtx
@@ -426,14 +404,14 @@ public sealed partial class RoomGrain
 
             bool priceMet =
                 WiredContractSettlement.MatchStake(
-                    session.Contract!,
+                    session.Terms!,
                     session.Multiplier,
                     AsContractItems(staked)
                 )
                 is not null;
 
             bool chestCanPay = WiredContractSettlement.TryReserveReward(
-                session.Contract!,
+                session.Terms!,
                 session.Multiplier,
                 AsContractItems(stock),
                 chest?.Credits ?? 0,
@@ -443,14 +421,17 @@ public sealed partial class RoomGrain
             return new WiredDepositSnapshot
             {
                 ChestId = session.ChestId,
-                Items = [.. staked.Select(ToChestItemSnapshot).OfType<FurnitureItemSnapshot>()],
+                Items =
+                [
+                    .. staked.Select(_store.ToChestItemSnapshot).OfType<FurnitureItemSnapshot>(),
+                ],
                 CanAccept = priceMet && chestCanPay,
                 Completed = completed,
                 RewardItems =
                 [
                     .. stock
                         .Where(row => reward.ItemIds.Contains(row.Id))
-                        .Select(ToChestItemSnapshot)
+                        .Select(_store.ToChestItemSnapshot)
                         .OfType<FurnitureItemSnapshot>(),
                 ],
                 RewardCredits = reward.Coins,
@@ -458,11 +439,11 @@ public sealed partial class RoomGrain
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(
+            _roomGrain._logger.LogWarning(
                 ex,
                 "Failed to draw a contract table against chest {ChestId} in room {RoomId}.",
                 session.ChestId,
-                RoomId
+                _roomGrain.RoomId
             );
 
             return null;
@@ -476,8 +457,8 @@ public sealed partial class RoomGrain
         CancellationToken ct
     )
     {
-        WalletDebitResult result = await _grainFactory
-            .GetPlayerWalletGrain(playerId)
+        WalletDebitResult result = await _roomGrain
+            ._grainFactory.GetPlayerWalletGrain(playerId)
             .TryDebitAsync(
                 [
                     new WalletDebitRequest
@@ -494,68 +475,11 @@ public sealed partial class RoomGrain
     }
 
     private Task<bool> GiveCreditsAsync(PlayerId playerId, int amount, CancellationToken ct) =>
-        _grainFactory
-            .GetPlayerWalletGrain(playerId)
+        _roomGrain
+            ._grainFactory.GetPlayerWalletGrain(playerId)
             .GrantCurrencyAsync(
                 new CurrencyKind { CurrencyType = CurrencyType.Credits },
                 amount,
                 ct
             );
-
-    /// <summary>
-    /// A row for a contract, which is the one kind that fills all four counters.
-    /// </summary>
-    /// <remarks>
-    /// The type says which way it went — payment, reward, or both — because that is what the log
-    /// screen localises, and a trade that only takes reads wrong under the name of one that gives.
-    /// This is also the only path that deposits coins into a chest: the amount is the contract's,
-    /// not something the player typed, which is why the manual builder still writes a zero there.
-    /// </remarks>
-    private WiredChestTransactionEntity NewContractTransaction(
-        PlayerId playerId,
-        int chestRowId,
-        ContractCharge payment,
-        List<FurnitureEntity> paying,
-        ContractCharge reward,
-        List<FurnitureEntity> giving
-    )
-    {
-        bool paid = !payment.IsNothing;
-        bool given = !reward.IsNothing;
-
-        return new WiredChestTransactionEntity
-        {
-            WiredChestEntityId = chestRowId,
-            RoomEntityId = (int)RoomId,
-            TransactionType = (paid, given) switch
-            {
-                (true, true) => ContractTradeTransaction,
-                (false, true) => ContractRewardTransaction,
-                _ => ContractPaymentTransaction,
-            },
-            DefinitionInfo = DescribeItems(paying.Concat(giving)),
-            PlayerEntityId = (int)playerId,
-            PlayerName = ResolvePlayerName(playerId),
-            ChestCount = 1,
-            WithdrawFurniCount = giving.Count,
-            DepositFurniCount = paying.Count,
-            WithdrawCoinsCount = reward.Coins,
-            DepositCoinsCount = payment.Coins,
-        };
-    }
-
-    /// <summary>The names of what moved, in the order they moved, once per item.</summary>
-    /// <remarks>
-    /// Repeated rather than distinct, because the details screen counts them back out of this
-    /// string — collapsing duplicates here turns "3x sofa" into "sofa" there.
-    /// </remarks>
-    private string DescribeItems(IEnumerable<FurnitureEntity> items) =>
-        string.Join(
-            ", ",
-            items
-                .Select(entity =>
-                    _definitionProvider.TryGetDefinition(entity.FurnitureDefinitionEntityId)?.Name
-                )
-                .Where(name => !string.IsNullOrEmpty(name))
-        );
 }

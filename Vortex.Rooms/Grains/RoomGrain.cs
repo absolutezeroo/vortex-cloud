@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -35,6 +35,7 @@ using Vortex.Primitives.Rooms.Snapshots;
 using Vortex.Rooms.Configuration;
 using Vortex.Rooms.Grains.Modules;
 using Vortex.Rooms.Grains.Systems;
+using Vortex.Rooms.Grains.Systems.WiredTrading;
 using Vortex.Rooms.Wired.Logs;
 
 namespace Vortex.Rooms.Grains;
@@ -95,6 +96,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
     public readonly RoomMysteryBoxSystem MysteryBoxSystem;
     public readonly RoomCrackableSystem CrackableSystem;
     public readonly RoomTradingSystem TradingSystem;
+    public readonly RoomWiredTradingSystem WiredTradingSystem;
 
     internal IAsyncStream<RoomOutbound> _roomOutbound = default!;
 
@@ -169,6 +171,7 @@ public sealed partial class RoomGrain : Grain, IRoomGrain
         MysteryBoxSystem = new RoomMysteryBoxSystem(this);
         CrackableSystem = new RoomCrackableSystem(this);
         TradingSystem = new RoomTradingSystem(this);
+        WiredTradingSystem = new RoomWiredTradingSystem(this);
 
         // Every game the room can host plugs in here, and nowhere else: the game-timer furni, the wired
         // control-clock action, the tick loop and the avatar-left path all go through GameSystem and

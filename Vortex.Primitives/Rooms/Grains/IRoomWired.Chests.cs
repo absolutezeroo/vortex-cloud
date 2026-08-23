@@ -72,14 +72,6 @@ public partial interface IRoomWired
     Task<bool> CancelWiredDepositAsync(ActionContext ctx, CancellationToken ct);
 
     /// <summary>
-    /// Moves credits out of a chest and into the asking player's wallet. Returns what the chest
-    /// holds afterwards, or null when nothing moved.
-    /// </summary>
-    /// <remarks>
-    /// Pass <paramref name="amount"/> as 0 or less to take everything, which is what the chest's
-    /// "withdraw all" button asks for.
-    /// </remarks>
-    /// <summary>
     /// Everything a furniture chest holds, for the screen the client opens.
     /// </summary>
     /// <remarks>
@@ -92,14 +84,6 @@ public partial interface IRoomWired
         CancellationToken ct
     );
 
-    /// <summary>
-    /// Takes items of one kind out of a chest and hands them to whoever asked.
-    /// </summary>
-    /// <remarks>
-    /// The chest screen groups identical furni, so the request names a kind and a count rather than
-    /// ids; which of the matching items leave is this method's choice. Returns the ids that left, so
-    /// the caller can tell the client what to remove from a screen it already drew.
-    /// </remarks>
     /// <summary>
     /// Pays credits out of a chest to a player, on the room's behalf rather than on a player's.
     /// </summary>
@@ -253,6 +237,17 @@ public partial interface IRoomWired
         CancellationToken ct
     );
 
+    /// <summary>
+    /// Takes items of one kind out of a chest and hands them to whoever asked.
+    /// </summary>
+    /// <remarks>
+    /// The chest screen groups identical furni, so the request names a kind and a count rather than
+    /// ids; which of the matching items leave is the chest's choice. Returns the ids that left, so
+    /// the caller can tell the client what to remove from a screen it already drew.
+    /// <para>
+    /// A locked chest hands nothing over, the same as every other way value leaves one.
+    /// </para>
+    /// </remarks>
     Task<ImmutableArray<int>> WithdrawWiredChestItemsAsync(
         ActionContext ctx,
         int chestId,
@@ -263,6 +258,14 @@ public partial interface IRoomWired
         CancellationToken ct
     );
 
+    /// <summary>
+    /// Moves credits out of a chest and into the asking player's wallet. Returns what the chest
+    /// holds afterwards, or null when nothing moved.
+    /// </summary>
+    /// <remarks>
+    /// Pass <paramref name="amount"/> as 0 or less to take everything, which is what the chest's
+    /// "withdraw all" button asks for.
+    /// </remarks>
     Task<WiredChestSnapshot?> WithdrawWiredChestCreditsAsync(
         ActionContext ctx,
         int chestId,

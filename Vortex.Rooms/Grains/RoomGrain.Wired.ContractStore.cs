@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Text.Json;
@@ -202,7 +202,7 @@ public sealed partial class RoomGrain
     /// Read without a permission check on purpose: this is not the editor, it is the offer, and the
     /// player being offered a contract is not the one who may edit it.
     /// </remarks>
-    private async Task<WiredContractSnapshot?> ReadStoredContractAsync(
+    internal async Task<WiredContractSnapshot?> ReadStoredContractAsync(
         int contractId,
         CancellationToken ct
     )

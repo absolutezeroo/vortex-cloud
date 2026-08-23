@@ -12,7 +12,7 @@ using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
 using Vortex.Primitives.Rooms.Wired;
-using Vortex.Rooms.Grains;
+using Vortex.Rooms.Grains.Systems.WiredTrading;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Addons;
 using Vortex.Rooms.Wired.Rules;
 
@@ -143,7 +143,7 @@ public class WiredActionInitiateTransaction(
         GetStuffIds()
             .FirstOrDefault(furniId =>
                 _ctx.Lookup.TryFindItem(furniId, out IRoomItem? item)
-                && RoomGrain.IsChestLogic(item.Definition.LogicName)
+                && WiredChestStore.IsChestLogic(item.Definition.LogicName)
             );
 
     /// <summary>The first of the box's configured furni that is a contract.</summary>
