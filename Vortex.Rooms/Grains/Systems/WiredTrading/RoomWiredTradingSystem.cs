@@ -352,6 +352,16 @@ public sealed partial class RoomWiredTradingSystem
                 );
 
                 await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+                // The rows are the chest's now. Nothing else here tells the player's inventory:
+                // this path writes WiredChestEntityId straight through EF, so the grain's cached
+                // list -- and the client's copy of it -- still hand the item back as theirs. The
+                // database was never wrong, which is why the item did not duplicate; only the
+                // screen was.
+                await _roomGrain
+                    ._grainFactory.GetInventoryGrain(ctx.PlayerId)
+                    .ReloadFurnitureAsync(ct)
+                    .ConfigureAwait(true);
             }
 
             WiredDepositSnapshot snapshot = new()
