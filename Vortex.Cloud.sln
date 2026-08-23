@@ -93,6 +93,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vortex.Specs.Cli", "Vortex.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vortex.Specs.Tests", "Vortex.Specs.Tests\Vortex.Specs.Tests.csproj", "{D2B84C78-4F59-41FC-87DF-575C8F8D8CF2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vortex.Protocol", "Vortex.Protocol\Vortex.Protocol.csproj", "{A54C06F9-1BE8-45D7-B471-634ED45CB47D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -643,6 +645,18 @@ Global
 		{D2B84C78-4F59-41FC-87DF-575C8F8D8CF2}.Release|x64.Build.0 = Release|Any CPU
 		{D2B84C78-4F59-41FC-87DF-575C8F8D8CF2}.Release|x86.ActiveCfg = Release|Any CPU
 		{D2B84C78-4F59-41FC-87DF-575C8F8D8CF2}.Release|x86.Build.0 = Release|Any CPU
+		{A54C06F9-1BE8-45D7-B471-634ED45CB47D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A54C06F9-1BE8-45D7-B471-634ED45CB47D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A54C06F9-1BE8-45D7-B471-634ED45CB47D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A54C06F9-1BE8-45D7-B471-634ED45CB47D}.Debug|x64.Build.0 = Debug|Any CPU
+		{A54C06F9-1BE8-45D7-B471-634ED45CB47D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A54C06F9-1BE8-45D7-B471-634ED45CB47D}.Debug|x86.Build.0 = Debug|Any CPU
+		{A54C06F9-1BE8-45D7-B471-634ED45CB47D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A54C06F9-1BE8-45D7-B471-634ED45CB47D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A54C06F9-1BE8-45D7-B471-634ED45CB47D}.Release|x64.ActiveCfg = Release|Any CPU
+		{A54C06F9-1BE8-45D7-B471-634ED45CB47D}.Release|x64.Build.0 = Release|Any CPU
+		{A54C06F9-1BE8-45D7-B471-634ED45CB47D}.Release|x86.ActiveCfg = Release|Any CPU
+		{A54C06F9-1BE8-45D7-B471-634ED45CB47D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -19,5 +19,6 @@
     <ProjectReference Include="..\Vortex.Logging\Vortex.Logging.csproj" />
     <ProjectReference Include="..\Vortex.Messages\Vortex.Messages.csproj" />
     <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
+    <ProjectReference Include="..\Vortex.Protocol\Vortex.Protocol.csproj" />
   </ItemGroup>
 </Project>

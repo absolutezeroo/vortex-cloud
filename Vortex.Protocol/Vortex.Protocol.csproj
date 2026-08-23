@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <!--
+      The client's wire vocabulary: 1,092 message records, and the highest-churn layer in the
+      solution. It lived inside Vortex.Primitives, which every project references, so editing one
+      composer field rebuilt the whole graph, including the domains that contain no protocol at
+      all. Split out so that churn stops at the projects which actually speak the wire.
+
+      The types keep their Vortex.Primitives.Messages.* namespaces. A project boundary does not
+      require a namespace change, and renaming them would touch some 1,800 files to buy nothing
+      the build graph cares about.
+    -->
+    <RootNamespace>Vortex.Primitives.Messages</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Orleans.Sdk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
+  </ItemGroup>
+</Project>

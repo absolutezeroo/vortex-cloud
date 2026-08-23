@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,6 +25,7 @@ public static class EmulatorProjects
         "Vortex.Revisions",
         "Vortex.PacketHandlers",
         "Vortex.Primitives",
+        "Vortex.Protocol",
         "Vortex.Messages",
         "Vortex.Rooms",
         "Vortex.Players",
