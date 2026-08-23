@@ -73,6 +73,76 @@ public sealed class WebApiEndpointsTests
         (await ReadJsonAsync(response)).GetProperty("error").GetString().Should().NotBeNull();
     }
 
+    /// <summary>
+    /// The reason this endpoint takes a code at all: the second factor lives on the account row, and
+    /// this login issues the SSO ticket into the game. While it ignored the factor, enrolling one
+    /// protected the admin dashboard and left the game account open to the password alone.
+    /// </summary>
+    [Fact]
+    public async Task Login_WithoutCode_OnAnAccountThatHasAFactor_Returns401AndNoCookie()
+    {
+        await using WebApiTestFactory factory = new WebApiTestFactory();
+
+        HttpResponseMessage response = await factory.Client.PostAsJsonAsync(
+            "/api/public/authentication/login",
+            new { email = FakeAuthService.MfaEmail, password = FakeAuthService.ValidPassword }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        (await ReadJsonAsync(response))
+            .GetProperty("error")
+            .GetString()
+            .Should()
+            .Be("pocket.auth.mfa_required");
+        response.Headers.Contains("Set-Cookie").Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Login_WithAWrongCode_Returns401AndNoCookie()
+    {
+        await using WebApiTestFactory factory = new WebApiTestFactory();
+
+        HttpResponseMessage response = await factory.Client.PostAsJsonAsync(
+            "/api/public/authentication/login",
+            new
+            {
+                email = FakeAuthService.MfaEmail,
+                password = FakeAuthService.ValidPassword,
+                code = "000000",
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        (await ReadJsonAsync(response))
+            .GetProperty("error")
+            .GetString()
+            .Should()
+            .Be("pocket.auth.invalid_code");
+        response.Headers.Contains("Set-Cookie").Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Login_WithTheCode_Returns200AndIssuesCookie()
+    {
+        await using WebApiTestFactory factory = new WebApiTestFactory();
+
+        HttpResponseMessage response = await factory.Client.PostAsJsonAsync(
+            "/api/public/authentication/login",
+            new
+            {
+                email = FakeAuthService.MfaEmail,
+                password = FakeAuthService.ValidPassword,
+                code = FakeAuthService.MfaCode,
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response
+            .Headers.GetValues("Set-Cookie")
+            .Should()
+            .Contain(value => value.Contains("habbo-web-session="));
+    }
+
     [Fact]
     public async Task Login_WithMissingFields_Returns400()
     {

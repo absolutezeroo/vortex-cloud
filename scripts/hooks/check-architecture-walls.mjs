@@ -95,6 +95,31 @@ if (dashboardWrites.length > 0) {
 }
 
 // ---------------------------------------------------------------------------------------------
+// Wall 5 -- a password is verified in exactly one place.
+//
+// Vortex.WebApi used to carry its own copy of the credential check: same player_accounts row, same
+// BCrypt call, same constant-time dummy hash. Two copies read as harmless duplication right up until
+// the day one of them gained a second factor and the other did not -- and the one that did not was
+// the login that issues SSO tickets into the game. Verification now lives only in
+// Vortex.Authentication, behind IAccountAuthenticator, so a factor added there reaches every caller.
+//
+// Hashing is not covered: registration legitimately creates a hash where the account is created.
+// It is the *checking* that must not fork.
+// ---------------------------------------------------------------------------------------------
+const verifiers = fs
+  .readdirSync(root, { withFileTypes: true })
+  .filter((e) => e.isDirectory() && e.name.startsWith('Vortex.') && !e.name.endsWith('.Tests'))
+  .filter((e) => e.name !== 'Vortex.Authentication')
+  .flatMap((e) => hits(e.name, /BCrypt[\w.]*\.Verify\s*\(/));
+if (verifiers.length > 0) {
+  failures.push([
+    'A password is verified outside Vortex.Authentication. Go through IAccountAuthenticator, or the '
+      + 'second factor will guard one login and not the other.',
+    verifiers,
+  ]);
+}
+
+// ---------------------------------------------------------------------------------------------
 // Wall 3 -- protocol does not leak into contracts.
 //
 // Vortex.Primitives is referenced by every project in the solution; Vortex.Protocol holds the 1,092
@@ -178,7 +203,7 @@ if (newLeak.length > 0) {
 if (failures.length === 0) {
   const healed = baseline.filter((f) => !leakFiles.includes(f));
   const note = healed.length > 0 ? ` (${healed.length} baselined leak(s) now gone -- --update)` : '';
-  console.log(`Architecture walls hold: 4 checked, ${leakFiles.length} baselined leak(s)${note}.`);
+  console.log(`Architecture walls hold: 5 checked, ${leakFiles.length} baselined leak(s)${note}.`);
   process.exit(0);
 }
 

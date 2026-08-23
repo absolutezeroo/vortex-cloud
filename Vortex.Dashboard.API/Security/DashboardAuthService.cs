@@ -12,7 +12,6 @@ namespace Vortex.Dashboard.API.Security;
 /// </summary>
 internal sealed class DashboardAuthService(
     IAccountAuthenticator authenticator,
-    IAccountMfaService mfa,
     IPermissionService permissions,
     DashboardSessionStore sessions
 )
@@ -24,45 +23,40 @@ internal sealed class DashboardAuthService(
         CancellationToken ct
     )
     {
-        int? accountId = await authenticator
-            .VerifyCredentialsAsync(email, password, ct)
+        // The second factor is the authenticator's business now, not this method's -- so the web API
+        // login enforces the same factor without anyone having remembered to copy this block.
+        AccountVerification verification = await authenticator
+            .VerifyCredentialsAsync(email, password, code, ct)
             .ConfigureAwait(false);
 
-        if (accountId is null)
+        switch (verification.Outcome)
         {
-            return DashboardLoginResult.InvalidCredentials;
+            case AccountVerificationOutcome.MfaRequired:
+                return DashboardLoginResult.MfaRequired;
+            case AccountVerificationOutcome.InvalidCode:
+                return DashboardLoginResult.InvalidCode;
+            case AccountVerificationOutcome.InvalidCredentials:
+                return DashboardLoginResult.InvalidCredentials;
         }
 
         PermissionSet perms = await permissions
-            .ResolveForAccountAsync(accountId.Value, ct)
+            .ResolveForAccountAsync(verification.AccountId, ct)
             .ConfigureAwait(false);
 
+        // Authorization now runs after the factor rather than before it. That is the right order:
+        // "you have no dashboard access" is something to say to someone who has finished proving who
+        // they are, not to someone holding half a credential.
         if (!HasDashboardAccess(perms))
         {
             return DashboardLoginResult.Forbidden;
         }
 
-        // Checked after the capability check, so an account with no dashboard access learns nothing
-        // about whether it has a second factor.
-        if (await mfa.IsEnabledAsync(accountId.Value, ct).ConfigureAwait(false))
-        {
-            if (string.IsNullOrWhiteSpace(code))
-            {
-                return DashboardLoginResult.MfaRequired;
-            }
-
-            if (!await mfa.VerifyAsync(accountId.Value, code, ct).ConfigureAwait(false))
-            {
-                return DashboardLoginResult.InvalidCode;
-            }
-        }
-
         string normalizedEmail = email.Trim().ToLowerInvariant();
-        string sessionId = sessions.Create(accountId.Value, normalizedEmail);
+        string sessionId = sessions.Create(verification.AccountId, normalizedEmail);
 
         return DashboardLoginResult.Authenticated(
             sessionId,
-            new DashboardPrincipal(accountId.Value, normalizedEmail, perms)
+            new DashboardPrincipal(verification.AccountId, normalizedEmail, perms)
         );
     }
 

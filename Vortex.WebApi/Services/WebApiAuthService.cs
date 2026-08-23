@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Players;
 using Vortex.Database.Entities.Security;
+using Vortex.Primitives.Authentication;
 using Vortex.WebApi.Configuration;
 using Vortex.WebApi.Session;
 
@@ -15,52 +16,55 @@ namespace Vortex.WebApi.Services;
 
 public sealed class WebApiAuthService(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
+    IAccountAuthenticator authenticator,
     WebApiSessionStore sessions,
     IOptions<WebApiConfig> options,
     ILogger<WebApiAuthService> logger
 ) : IWebApiAuthService
 {
     private readonly IDbContextFactory<VortexDbContext> _db = dbCtxFactory;
+    private readonly IAccountAuthenticator _authenticator = authenticator;
     private readonly WebApiSessionStore _sessions = sessions;
     private readonly WebApiConfig _config = options.Value;
     private readonly ILogger<WebApiAuthService> _logger = logger;
 
-    // Pre-computed hash used when no account matches — keeps response time constant
-    // regardless of whether the email exists, preventing user enumeration via timing.
-    private const string DummyHash = "$2a$12$C6UzMDM.H6dfI/f/IKcEeO3qj8b1l1u8j0Y9o6m4w8h2tY6q0Q1Qe";
-
     public async Task<(bool Success, string? SessionId, int AccountId, string? Error)> LoginAsync(
         string email,
         string password,
+        string? code,
         CancellationToken ct
     )
     {
-        await using VortexDbContext db = await _db.CreateDbContextAsync(ct).ConfigureAwait(false);
-
-        PlayerAccountEntity? account = await db
-            .PlayerAccounts.AsNoTracking()
-            .FirstOrDefaultAsync(a => a.Email == email.ToLowerInvariant(), ct)
+        // This used to be its own copy of the password check -- same table, same dummy hash, same
+        // off-thread BCrypt as Vortex.Authentication. Two copies is how the second factor came to
+        // guard the admin cookie while the same password still opened this login and, through it, an
+        // SSO ticket into the game. One entry point, and the factor comes with it.
+        AccountVerification verification = await _authenticator
+            .VerifyCredentialsAsync(email, password, code, ct)
             .ConfigureAwait(false);
 
-        string hash = account?.PasswordHash ?? DummyHash;
-
-        // BCrypt.Verify is CPU-bound; run off the thread pool to avoid blocking the listener loop.
-        bool valid = await Task.Run(() => BCrypt.Net.BCrypt.Verify(password, hash), ct)
-            .ConfigureAwait(false);
-
-        if (!valid || account is null)
+        switch (verification.Outcome)
         {
-            _logger.LogWarning("Login failed for {Email}", email.ToLowerInvariant());
-            return (false, null, 0, "pocket.auth.login_failed");
+            case AccountVerificationOutcome.MfaRequired:
+                return (false, null, 0, "pocket.auth.mfa_required");
+
+            case AccountVerificationOutcome.InvalidCode:
+                _logger.LogWarning("Second factor rejected for {Email}", email.ToLowerInvariant());
+                return (false, null, 0, "pocket.auth.invalid_code");
+
+            case AccountVerificationOutcome.InvalidCredentials:
+                _logger.LogWarning("Login failed for {Email}", email.ToLowerInvariant());
+                return (false, null, 0, "pocket.auth.login_failed");
         }
 
-        string sessionId = _sessions.CreateSession(account.Id);
+        string sessionId = _sessions.CreateSession(verification.AccountId);
         _logger.LogInformation(
             "Account {AccountId} authenticated ({Email})",
-            account.Id,
-            account.Email
+            verification.AccountId,
+            email.ToLowerInvariant()
         );
-        return (true, sessionId, account.Id, null);
+
+        return (true, sessionId, verification.AccountId, null);
     }
 
     public async Task<(bool Success, int AccountId, string? Error)> RegisterAsync(

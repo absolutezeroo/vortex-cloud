@@ -22,12 +22,38 @@ internal sealed class FakeAuthService(WebApiSessionStore sessions) : IWebApiAuth
 
     private int _nextAccountId = AccountId + 1;
 
+    /// <summary>An account that has enrolled a second factor, and the only code it accepts.</summary>
+    public const string MfaEmail = "mfa@example.com";
+    public const string MfaCode = "424242";
+
     public Task<(bool Success, string? SessionId, int AccountId, string? Error)> LoginAsync(
         string email,
         string password,
+        string? code,
         CancellationToken ct
     )
     {
+        if (email == MfaEmail && password == ValidPassword)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                return Task.FromResult<(bool, string?, int, string?)>(
+                    (false, null, 0, "pocket.auth.mfa_required")
+                );
+            }
+
+            if (code != MfaCode)
+            {
+                return Task.FromResult<(bool, string?, int, string?)>(
+                    (false, null, 0, "pocket.auth.invalid_code")
+                );
+            }
+
+            return Task.FromResult<(bool, string?, int, string?)>(
+                (true, sessions.CreateSession(AccountId), AccountId, null)
+            );
+        }
+
         if (email != ValidEmail || password != ValidPassword)
         {
             return Task.FromResult<(bool, string?, int, string?)>(

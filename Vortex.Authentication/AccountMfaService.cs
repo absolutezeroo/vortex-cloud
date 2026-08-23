@@ -14,7 +14,7 @@ namespace Vortex.Authentication;
 /// TOTP second factor stored on <c>player_accounts.totp_secret</c>. Codes are verified by
 /// <see cref="TotpCodes" />; this type only decides what is stored, when, and on whose say-so.
 /// </summary>
-internal sealed class AccountMfaService(IDbContextFactory<VortexDbContext> dbContextFactory)
+public sealed class AccountMfaService(IDbContextFactory<VortexDbContext> dbContextFactory)
     : IAccountMfaService
 {
     private const string ISSUER = "Vortex";

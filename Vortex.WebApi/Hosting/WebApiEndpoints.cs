@@ -117,11 +117,14 @@ internal static class WebApiEndpoints
                     }
 
                     (bool success, string? sessionId, int accountId, string? error) =
-                        await auth.LoginAsync(body.Email!, body.Password!, ct)
+                        await auth.LoginAsync(body.Email!, body.Password!, body.Code, ct)
                             .ConfigureAwait(false);
 
                     if (!success)
                     {
+                        // mfa_required is not a failure the visitor can do anything about except
+                        // send a code, so it rides the same 401 as the rest: the client tells them
+                        // apart by the error string, and neither ever carries a session.
                         return Results.Json(
                             new { error },
                             statusCode: StatusCodes.Status401Unauthorized
@@ -200,9 +203,12 @@ internal static class WebApiEndpoints
                         );
                     }
 
+                    // An account created a moment ago cannot have a second factor yet, so there is
+                    // no code to pass on.
                     (bool loginOk, string? sessionId, _, _) = await auth.LoginAsync(
                             body.Email!,
                             body.Password!,
+                            code: null,
                             ct
                         )
                         .ConfigureAwait(false);

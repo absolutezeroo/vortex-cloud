@@ -5,9 +5,15 @@ namespace Vortex.WebApi.Services;
 
 public interface IWebApiAuthService
 {
+    /// <summary>
+    /// Authenticates an account and opens a web session. <paramref name="code" /> is the second
+    /// factor and is null on a first attempt; an account that has one answers
+    /// <c>pocket.auth.mfa_required</c> and the client resubmits with the code.
+    /// </summary>
     Task<(bool Success, string? SessionId, int AccountId, string? Error)> LoginAsync(
         string email,
         string password,
+        string? code,
         CancellationToken ct
     );
 

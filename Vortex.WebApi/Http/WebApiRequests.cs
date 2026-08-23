@@ -5,7 +5,7 @@ namespace Vortex.WebApi.Http;
 /// <c>IsValid</c> predicate so the endpoint can reject malformed payloads with a clean 400 before
 /// any service work happens, replacing the hand-rolled null/whitespace checks of the old listener.
 /// </summary>
-public sealed record LoginRequest(string? Email, string? Password)
+public sealed record LoginRequest(string? Email, string? Password, string? Code = null)
 {
     public bool IsValid =>
         !string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(Password);
