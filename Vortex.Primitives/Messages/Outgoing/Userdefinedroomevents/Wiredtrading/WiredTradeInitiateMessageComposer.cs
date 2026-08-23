@@ -35,4 +35,15 @@ public sealed record WiredTradeInitiateMessageComposer : IComposer
 
     [Id(5)]
     public required int TimeoutSeconds { get; init; }
+
+    /// <summary>
+    /// The rules block, written only for a custom contract.
+    /// </summary>
+    /// <remarks>
+    /// The client reads it if and only if <see cref="RequirementType"/> is 4, so the two have to
+    /// agree: a 4 with nothing here desynchronises the rest of the message, and a contract under
+    /// any other type is never read. Null for the three "any furni" types.
+    /// </remarks>
+    [Id(6)]
+    public TradeContract? Contract { get; init; }
 }
