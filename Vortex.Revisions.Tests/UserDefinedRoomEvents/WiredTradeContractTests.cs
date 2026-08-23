@@ -69,7 +69,8 @@ public sealed class WiredTradeContractTests
 
         packet.PopInt().Should().Be(CustomType);
         packet.PopString().Should().BeEmpty("youGetText");
-        packet.PopString()
+        packet
+            .PopString()
             .Should()
             .Be("generic", "an empty layoutType would name an asset that does not exist");
 
