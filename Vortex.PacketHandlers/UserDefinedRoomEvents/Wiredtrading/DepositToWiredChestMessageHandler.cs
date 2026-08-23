@@ -36,6 +36,12 @@ public class DepositToWiredChestMessageHandler(IGrainFactory grainFactory)
     /// <summary>Any tradeable furni qualifies — see the composer's own note on the four types.</summary>
     private const int RequirementAnyFurni = 2;
 
+    /// <summary>
+    /// "No chests or locked chests" in the client's own failure table
+    /// (<c>wired_transactions.notification.fail.15</c>).
+    /// </summary>
+    private const int LockedChestFailure = 15;
+
     public async ValueTask HandleAsync(
         DepositToWiredChestMessage message,
         MessageContext ctx,
@@ -56,8 +62,31 @@ public class DepositToWiredChestMessageHandler(IGrainFactory grainFactory)
             )
             .ConfigureAwait(false);
 
+        if (start == WiredDepositStart.RefusedLocked)
+        {
+            // The one refusal this client can say out loud. WiredTradingView.alertTradeCancelled
+            // feeds the code to `wired_transactions.notification.fail.<code>`, and 15 is that
+            // table's "No chests or locked chests"; the view closes the screen and shows the popup.
+            // Code 0 is deliberately silent there (WiredTradingModel's own "player closed it"
+            // sentinel), which is why refusing with 0 would be no better than saying nothing.
+            await ctx.SendComposerAsync(
+                    new WiredTradeCancelledMessageComposer
+                    {
+                        TransactionFailureTypeId = LockedChestFailure,
+                    },
+                    ct
+                )
+                .ConfigureAwait(false);
+
+            return;
+        }
+
         if (start == WiredDepositStart.Refused)
         {
+            // Every other refusal -- not a chest, a coin chest, no rights on the room -- stays
+            // silent. What the official server answers is not known (the spec's scenarios are all
+            // `expected: unknown`) and none of the client's other failure texts is close enough to
+            // pick without guessing.
             return;
         }
 
