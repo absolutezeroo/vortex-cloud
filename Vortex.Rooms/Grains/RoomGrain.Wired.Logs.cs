@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Wired;
-using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 using Vortex.Primitives.Rooms.Enums.Wired;
+using Vortex.Primitives.Rooms.Snapshots.Wired;
 
 namespace Vortex.Rooms.Grains;
 
 public sealed partial class RoomGrain
 {
-    public async Task<WiredRoomLogsComposer> GetWiredRoomLogsPageAsync(
+    public async Task<WiredRoomLogPageSnapshot> GetWiredRoomLogsPageAsync(
         int page,
         int pageSize,
         int logLevelFilter,
@@ -63,7 +63,7 @@ public sealed partial class RoomGrain
             .Take(safePageSize)
             .ToListAsync(ct);
 
-        List<WiredRoomLogEntry> entries = rows.Select(row => new WiredRoomLogEntry
+        List<WiredRoomLogSnapshot> entries = rows.Select(row => new WiredRoomLogSnapshot
             {
                 Id = row.Id,
                 LogLevel = row.LogLevel,
@@ -77,7 +77,7 @@ public sealed partial class RoomGrain
             })
             .ToList();
 
-        return new WiredRoomLogsComposer
+        return new WiredRoomLogPageSnapshot
         {
             TotalEntries = totalEntries,
             CurrentPage = safePage,

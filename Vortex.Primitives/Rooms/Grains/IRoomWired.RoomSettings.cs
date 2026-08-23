@@ -1,18 +1,18 @@
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 using Vortex.Primitives.Players;
+using Vortex.Primitives.Rooms.Snapshots.Wired;
 
 namespace Vortex.Primitives.Rooms.Grains;
 
 public partial interface IRoomWired
 {
-    public Task<WiredRoomSettingsEventMessageComposer> GetWiredRoomSettingsAsync(
+    public Task<WiredRoomSettingsSnapshot> GetWiredRoomSettingsAsync(
         PlayerId actor,
         CancellationToken ct
     );
 
-    public Task<WiredRoomSettingsEventMessageComposer?> SetWiredRoomSettingsAsync(
+    public Task<WiredRoomSettingsSnapshot?> SetWiredRoomSettingsAsync(
         PlayerId actor,
         int modifyPermissionMask,
         int readPermissionMask,

@@ -1,22 +1,22 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
+using Vortex.Primitives.Rooms.Snapshots.Wired;
 
 namespace Vortex.Rooms.Grains;
 
 public sealed partial class RoomGrain
 {
-    public Task<List<WiredErrorLogEntry>> GetWiredErrorLogsAsync(CancellationToken ct)
+    public Task<List<WiredErrorLogSnapshot>> GetWiredErrorLogsAsync(CancellationToken ct)
     {
         long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-        List<WiredErrorLogEntry> entries = _state
+        List<WiredErrorLogSnapshot> entries = _state
             .WiredErrorLogCounters.Values.Select(
                 (counter, index) =>
-                    new WiredErrorLogEntry
+                    new WiredErrorLogSnapshot
                     {
                         ErrorId = index,
                         ErrorName = counter.ErrorName,

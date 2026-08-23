@@ -3,10 +3,6 @@
     "Vortex.Primitives/Groups/Grains/IGroupDirectoryGrain.cs",
     "Vortex.Primitives/Rooms/Grains/IRoomFurni.Edit.cs",
     "Vortex.Primitives/Rooms/Grains/IRoomFurni.Floor.cs",
-    "Vortex.Primitives/Rooms/Grains/IRoomWired.ErrorLogs.cs",
-    "Vortex.Primitives/Rooms/Grains/IRoomWired.Logs.cs",
-    "Vortex.Primitives/Rooms/Grains/IRoomWired.RoomSettings.cs",
-    "Vortex.Primitives/Rooms/Grains/IRoomWired.RoomStats.cs",
     "Vortex.Primitives/Rooms/Object/IRoomTransactionAccess.cs",
     "Vortex.Primitives/Rooms/Snapshots/Wired/WiredContractSnapshot.cs",
     "Vortex.Primitives/Rooms/Wired/IWiredBox.cs"

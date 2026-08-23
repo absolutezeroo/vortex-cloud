@@ -1,12 +1,12 @@
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
-using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Snapshots.Furniture;
+using Vortex.Primitives.Rooms.Snapshots.Wired;
 
 namespace Vortex.Rooms.Grains;
 
@@ -16,9 +16,7 @@ public sealed partial class RoomGrain
     /// "no enforced limit" rather than a fabricated number.</summary>
     private const int NoEnforcedCap = int.MaxValue;
 
-    public async Task<WiredRoomStatsEventMessageComposer> GetWiredRoomStatsAsync(
-        CancellationToken ct
-    )
+    public async Task<WiredRoomStatsSnapshot> GetWiredRoomStatsAsync(CancellationToken ct)
     {
         ImmutableArray<RoomFloorItemSnapshot> floorItems = await GetAllFloorItemSnapshotsAsync(ct);
         ImmutableArray<RoomWallItemSnapshot> wallItems = await GetAllWallItemSnapshotsAsync(ct);
@@ -47,7 +45,7 @@ public sealed partial class RoomGrain
             .WiredPermanentVariables.AsNoTracking()
             .CountAsync(v => v.TargetType == WiredVariableTargetType.Global, ct);
 
-        return new WiredRoomStatsEventMessageComposer
+        return new WiredRoomStatsSnapshot
         {
             // No wired execution-cost budget/tracking system exists in this codebase — reported
             // truthfully as zero/not-heavy rather than fabricated.
