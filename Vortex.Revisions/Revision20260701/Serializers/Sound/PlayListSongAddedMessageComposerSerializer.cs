@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Sound;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Sound;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Sound;
 

@@ -1,6 +1,6 @@
-using Vortex.Protocol.Messages.Outgoing.Game.Lobby;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Players.Snapshots;
+using Vortex.Protocol.Messages.Outgoing.Game.Lobby;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Game.Lobby;
 

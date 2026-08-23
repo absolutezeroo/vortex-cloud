@@ -1,6 +1,6 @@
-using Vortex.Protocol.Messages.Outgoing.Moderation;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Moderation;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Moderation;
 

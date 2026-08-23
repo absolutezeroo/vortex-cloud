@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Catalog.Snapshots;
-using Vortex.Protocol.Messages.Outgoing.Catalog;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Catalog;
 using Vortex.Revisions.Revision20260701.Serializers.Catalog.Data;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Catalog;

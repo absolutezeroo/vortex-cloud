@@ -1,6 +1,6 @@
 using Vortex.Primitives.Inventory.Snapshots;
-using Vortex.Protocol.Messages.Outgoing.Inventory.Avatareffect;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Avatareffect;
 using Vortex.Revisions.Revision20260701.Serializers.Inventory.Avatareffect.Data;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Inventory.Avatareffect;

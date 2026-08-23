@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Error;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Error;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Error;
 

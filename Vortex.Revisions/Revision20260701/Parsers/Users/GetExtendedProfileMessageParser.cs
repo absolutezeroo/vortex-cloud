@@ -1,7 +1,7 @@
-using Vortex.Protocol.Messages.Incoming.Users;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Players;
+using Vortex.Protocol.Messages.Incoming.Users;
 
 namespace Vortex.Revisions.Revision20260701.Parsers.Users;
 

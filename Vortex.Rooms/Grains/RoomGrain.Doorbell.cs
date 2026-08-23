@@ -5,11 +5,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Vortex.Protocol.Messages.Outgoing.Navigator;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Rooms;
+using Vortex.Protocol.Messages.Outgoing.Navigator;
 
 namespace Vortex.Rooms.Grains;
 

@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Room.Permissions;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Room.Permissions;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Room.Permissions;
 

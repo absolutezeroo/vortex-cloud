@@ -1,6 +1,6 @@
-using Vortex.Protocol.Messages.Outgoing.Catalog;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Pets.Snapshots;
+using Vortex.Protocol.Messages.Outgoing.Catalog;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Catalog;
 

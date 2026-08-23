@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Vortex.Protocol.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums.Games;
@@ -10,6 +9,7 @@ using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
+using Vortex.Protocol.Messages.Outgoing.Room.Engine;
 using Vortex.Rooms.Grains.Systems.Banzai;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Banzai;
 

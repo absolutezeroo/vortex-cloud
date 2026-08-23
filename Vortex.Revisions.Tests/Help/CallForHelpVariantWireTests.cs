@@ -1,8 +1,8 @@
 using System;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
-using Vortex.Protocol.Messages.Incoming.Help;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Incoming.Help;
 using Vortex.Revisions.Configuration;
 using Xunit;
 using Rev = Vortex.Revisions.Revision20260701.Revision20260701;

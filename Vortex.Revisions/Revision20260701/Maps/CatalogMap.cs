@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Catalog;
 using Vortex.Primitives.Networking.Revisions;
+using Vortex.Protocol.Messages.Outgoing.Catalog;
 using Vortex.Revisions.Revision20260701.Parsers.Catalog;
 using Vortex.Revisions.Revision20260701.Serializers.Catalog;
 

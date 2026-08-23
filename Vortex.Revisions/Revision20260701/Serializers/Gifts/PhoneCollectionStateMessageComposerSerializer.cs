@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Gifts;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Gifts;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Gifts;
 

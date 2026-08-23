@@ -1,6 +1,6 @@
-using Vortex.Protocol.Messages.Outgoing.Inventory.Badges;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Players.Snapshots;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Badges;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Inventory.Badges;
 

@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Game.Score;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Game.Score;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Game.Score;
 

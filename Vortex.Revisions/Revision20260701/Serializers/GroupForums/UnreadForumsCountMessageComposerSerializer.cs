@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Groupforums;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Groupforums;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.GroupForums;
 

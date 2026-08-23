@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Inventory.Snapshots;
-using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;
@@ -15,6 +14,7 @@ using Vortex.Primitives.Rooms.Snapshots.Furniture;
 using Vortex.Primitives.Rooms.Snapshots.Wired;
 using Vortex.Primitives.Rooms.Snapshots.Wired.Variables;
 using Vortex.Primitives.Rooms.Wired.Variable;
+using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired;
 
 namespace Vortex.Rooms.Grains;

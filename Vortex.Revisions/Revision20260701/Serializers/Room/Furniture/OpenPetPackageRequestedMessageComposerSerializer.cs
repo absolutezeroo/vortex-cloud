@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Room.Furniture;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Room.Furniture;
 using Vortex.Revisions.Revision20260701.Serializers.Room.Pets.Snapshots;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Room.Furniture;

@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Hotlooks;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Hotlooks;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Hotlooks;
 

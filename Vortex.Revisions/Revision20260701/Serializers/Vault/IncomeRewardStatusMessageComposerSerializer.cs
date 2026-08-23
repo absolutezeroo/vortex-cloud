@@ -1,6 +1,6 @@
-using Vortex.Protocol.Messages.Outgoing.Vault;
 using Vortex.Primitives.Orleans.Snapshots.Vault;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Vault;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Vault;
 

@@ -1,6 +1,6 @@
-using Vortex.Protocol.Messages.Outgoing.Room.Furniture;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Rooms.Snapshots.Furniture;
+using Vortex.Protocol.Messages.Outgoing.Room.Furniture;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Room.Furniture;
 

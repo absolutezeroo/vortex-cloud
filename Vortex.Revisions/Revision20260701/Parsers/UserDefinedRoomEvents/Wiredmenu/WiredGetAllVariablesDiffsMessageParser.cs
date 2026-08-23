@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents.Wiredmenu;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Rooms.Wired.Variable;
+using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents.Wiredmenu;
 
 namespace Vortex.Revisions.Revision20260701.Parsers.UserDefinedRoomEvents.Wiredmenu;
 

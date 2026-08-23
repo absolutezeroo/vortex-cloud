@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Availability;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Availability;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Availability;
 

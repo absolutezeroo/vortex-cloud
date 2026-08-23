@@ -1,7 +1,7 @@
-using Vortex.Protocol.Messages.Incoming.Vault;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Vault.Enums;
+using Vortex.Protocol.Messages.Incoming.Vault;
 
 namespace Vortex.Revisions.Revision20260701.Parsers.Vault;
 

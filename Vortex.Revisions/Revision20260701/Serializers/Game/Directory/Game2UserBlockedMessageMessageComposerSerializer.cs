@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Game.Directory;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Game.Directory;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Game.Directory;
 

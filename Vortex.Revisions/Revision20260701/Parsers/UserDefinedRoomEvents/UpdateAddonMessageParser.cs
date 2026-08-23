@@ -1,6 +1,6 @@
 using System;
-using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents;
 using Vortex.Revisions.Revision20260701.Parsers.UserDefinedRoomEvents.Data;
 
 namespace Vortex.Revisions.Revision20260701.Parsers.UserDefinedRoomEvents;

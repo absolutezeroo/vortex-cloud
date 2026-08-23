@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
 using Vortex.Primitives.Action;
-using Vortex.Protocol.Messages.Outgoing.Room.Chat;
 using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Pets.Snapshots;
@@ -15,6 +14,7 @@ using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Events.Player;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
+using Vortex.Protocol.Messages.Outgoing.Room.Chat;
 using Vortex.Rooms.Object.Avatars.Player;
 
 namespace Vortex.Rooms.Grains.Systems;

@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Inventory.Clothing;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Clothing;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Inventory.Clothing;
 

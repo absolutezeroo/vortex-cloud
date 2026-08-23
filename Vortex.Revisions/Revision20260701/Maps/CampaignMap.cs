@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Campaign;
 using Vortex.Primitives.Networking.Revisions;
+using Vortex.Protocol.Messages.Outgoing.Campaign;
 using Vortex.Revisions.Revision20260701.Parsers.Campaign;
 using Vortex.Revisions.Revision20260701.Serializers.Campaign;
 

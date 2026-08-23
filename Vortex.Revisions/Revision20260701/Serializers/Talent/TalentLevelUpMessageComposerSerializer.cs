@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Talent;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Talent;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Talent;
 

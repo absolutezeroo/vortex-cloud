@@ -1,7 +1,7 @@
-using Vortex.Protocol.Messages.Incoming.NewNavigator;
 using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Incoming.NewNavigator;
 
 namespace Vortex.Revisions.Revision20260701.Parsers.NewNavigator;
 

@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Action;
-using Vortex.Protocol.Messages.Outgoing.Navigator;
-using Vortex.Protocol.Messages.Outgoing.Room.Session;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
@@ -12,6 +10,8 @@ using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Grains;
+using Vortex.Protocol.Messages.Outgoing.Navigator;
+using Vortex.Protocol.Messages.Outgoing.Room.Session;
 
 namespace Vortex.Rooms;
 

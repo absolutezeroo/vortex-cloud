@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Inventory.Avatareffect;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Avatareffect;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Inventory.Avatareffect;
 

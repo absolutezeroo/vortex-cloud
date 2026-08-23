@@ -25,7 +25,6 @@ using Vortex.Primitives.Groups;
 using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Inventory.Furniture;
 using Vortex.Primitives.Inventory.Snapshots;
-using Vortex.Protocol.Messages.Outgoing.Inventory.Bots;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Pets;
 using Vortex.Primitives.Pets.Snapshots;
@@ -33,6 +32,7 @@ using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Snapshots.Furniture;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Bots;
 
 namespace Vortex.Inventory.Grains;
 

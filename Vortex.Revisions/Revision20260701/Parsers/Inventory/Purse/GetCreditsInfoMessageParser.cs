@@ -1,7 +1,7 @@
-using Vortex.Protocol.Messages.Incoming.Inventory;
-using Vortex.Protocol.Messages.Incoming.Inventory.Purse;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Incoming.Inventory;
+using Vortex.Protocol.Messages.Incoming.Inventory.Purse;
 
 namespace Vortex.Revisions.Revision20260701.Parsers.Inventory.Purse;
 

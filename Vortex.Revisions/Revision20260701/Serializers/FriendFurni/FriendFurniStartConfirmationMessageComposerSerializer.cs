@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Friendfurni;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Friendfurni;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.FriendFurni;
 

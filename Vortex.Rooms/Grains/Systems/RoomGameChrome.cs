@@ -1,12 +1,12 @@
 using System.Threading.Tasks;
 using Vortex.Logging.Extensions;
-using Vortex.Protocol.Messages.Outgoing.Room.Action;
-using Vortex.Protocol.Messages.Outgoing.Room.Session;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
+using Vortex.Protocol.Messages.Outgoing.Room.Action;
+using Vortex.Protocol.Messages.Outgoing.Room.Session;
 using Vortex.Rooms.Object.Logic.Furniture.Floor;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Triggers;
 

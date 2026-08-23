@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Furniture.Providers;
-using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
+using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor;
 

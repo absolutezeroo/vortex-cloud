@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Landingview;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Landingview;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.LandingView;
 

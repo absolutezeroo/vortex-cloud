@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Primitives.Events;
-using Vortex.Protocol.Messages.Outgoing.Moderation;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Moderation.Grains;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
+using Vortex.Protocol.Messages.Outgoing.Moderation;
 
 namespace Vortex.Rooms.Grains;
 

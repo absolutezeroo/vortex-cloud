@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
-using Vortex.Protocol.Messages.Incoming.Inventory.Trading;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Incoming.Inventory.Trading;
 
 namespace Vortex.Revisions.Revision20260701.Parsers.Inventory.Trading;
 

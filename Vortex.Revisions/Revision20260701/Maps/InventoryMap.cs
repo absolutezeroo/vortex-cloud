@@ -1,3 +1,4 @@
+using Vortex.Primitives.Networking.Revisions;
 using Vortex.Protocol.Messages.Outgoing.Inventory.Achievements;
 using Vortex.Protocol.Messages.Outgoing.Inventory.Avatareffect;
 using Vortex.Protocol.Messages.Outgoing.Inventory.Badges;
@@ -8,7 +9,6 @@ using Vortex.Protocol.Messages.Outgoing.Inventory.Pets;
 using Vortex.Protocol.Messages.Outgoing.Inventory.Purse;
 using Vortex.Protocol.Messages.Outgoing.Inventory.Trading;
 using Vortex.Protocol.Messages.Outgoing.Users;
-using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Configuration;
 using Vortex.Revisions.Revision20260701.Parsers.Inventory.Achievements;
 using Vortex.Revisions.Revision20260701.Parsers.Inventory.Avatareffect;

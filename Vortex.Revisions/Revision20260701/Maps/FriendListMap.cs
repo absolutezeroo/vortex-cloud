@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.FriendList;
 using Vortex.Primitives.Networking.Revisions;
+using Vortex.Protocol.Messages.Outgoing.FriendList;
 using Vortex.Revisions.Configuration;
 using Vortex.Revisions.Revision20260701.Parsers.FriendList;
 using Vortex.Revisions.Revision20260701.Serializers.FriendList;

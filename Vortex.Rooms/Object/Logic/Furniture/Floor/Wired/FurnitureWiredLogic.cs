@@ -9,8 +9,6 @@ using Orleans;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Providers;
-using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents;
-using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Events;
@@ -21,6 +19,8 @@ using Vortex.Primitives.Rooms.Snapshots.Wired;
 using Vortex.Primitives.Rooms.Snapshots.Wired.Variables;
 using Vortex.Primitives.Rooms.Wired;
 using Vortex.Primitives.Rooms.Wired.Variable;
+using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents;
+using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents;
 using Vortex.Rooms.Wired;
 
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired;

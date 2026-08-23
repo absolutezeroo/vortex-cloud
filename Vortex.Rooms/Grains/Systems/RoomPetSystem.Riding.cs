@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Pets;
 using Vortex.Primitives.Action;
-using Vortex.Protocol.Messages.Outgoing.Room.Pets;
 using Vortex.Primitives.Pets.Snapshots;
 using Vortex.Primitives.Players;
+using Vortex.Protocol.Messages.Outgoing.Room.Pets;
 
 namespace Vortex.Rooms.Grains.Systems;
 

@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Vortex.Primitives.Action;
-using Vortex.Protocol.Messages.Outgoing.Room.Action;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Players;
@@ -15,6 +14,7 @@ using Vortex.Primitives.Rooms.Events.Player;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
+using Vortex.Protocol.Messages.Outgoing.Room.Action;
 
 namespace Vortex.Rooms.Grains;
 

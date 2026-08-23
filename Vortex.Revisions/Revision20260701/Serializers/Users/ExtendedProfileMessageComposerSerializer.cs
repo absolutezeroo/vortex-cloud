@@ -1,6 +1,6 @@
 using Vortex.Primitives.Groups.Snapshots;
-using Vortex.Protocol.Messages.Outgoing.Users;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Users;
 using Vortex.Revisions.Revision20260701.Serializers.Users.Data;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Users;

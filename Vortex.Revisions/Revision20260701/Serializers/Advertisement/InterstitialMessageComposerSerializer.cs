@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Advertisement;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Advertisement;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Advertisement;
 

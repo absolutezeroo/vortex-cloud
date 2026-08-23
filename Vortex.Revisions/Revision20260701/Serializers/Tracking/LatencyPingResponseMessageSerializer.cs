@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Tracking;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Tracking;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Tracking;
 

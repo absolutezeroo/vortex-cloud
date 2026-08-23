@@ -1,6 +1,6 @@
-using Vortex.Protocol.Messages.Outgoing.NewNavigator;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Snapshots.NewNavigator;
+using Vortex.Protocol.Messages.Outgoing.NewNavigator;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.NewNavigator;
 

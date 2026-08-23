@@ -1,6 +1,6 @@
-using Vortex.Protocol.Messages.Incoming.Avatar;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Incoming.Avatar;
 
 namespace Vortex.Revisions.Revision20260701.Parsers.Avatar;
 

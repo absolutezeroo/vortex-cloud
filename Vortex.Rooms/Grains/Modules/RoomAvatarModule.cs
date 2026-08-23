@@ -10,10 +10,6 @@ using Vortex.Logging.Extensions;
 using Vortex.Primitives;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Events;
-using Vortex.Protocol.Messages.Outgoing.Room.Action;
-using Vortex.Protocol.Messages.Outgoing.Room.Chat;
-using Vortex.Protocol.Messages.Outgoing.Room.Engine;
-using Vortex.Protocol.Messages.Outgoing.Users;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Grains;
@@ -21,6 +17,10 @@ using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
+using Vortex.Protocol.Messages.Outgoing.Room.Action;
+using Vortex.Protocol.Messages.Outgoing.Room.Chat;
+using Vortex.Protocol.Messages.Outgoing.Room.Engine;
+using Vortex.Protocol.Messages.Outgoing.Users;
 
 namespace Vortex.Rooms.Grains.Modules;
 

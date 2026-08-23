@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Room.Action;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Room.Action;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Room.Action;
 

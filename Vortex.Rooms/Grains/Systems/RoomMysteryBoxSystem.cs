@@ -7,7 +7,6 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Events;
-using Vortex.Protocol.Messages.Outgoing.Mysterybox;
 using Vortex.Primitives.MysteryBox;
 using Vortex.Primitives.MysteryBox.Grains;
 using Vortex.Primitives.MysteryBox.Snapshots;
@@ -17,6 +16,7 @@ using Vortex.Primitives.Prizes;
 using Vortex.Primitives.Prizes.Snapshots;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Furniture;
+using Vortex.Protocol.Messages.Outgoing.Mysterybox;
 
 namespace Vortex.Rooms.Grains.Systems;
 

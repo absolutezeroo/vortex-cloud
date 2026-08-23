@@ -1,6 +1,6 @@
-using Vortex.Protocol.Messages.Outgoing.Handshake;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Protocol.Messages.Outgoing.Handshake;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Handshake;
 

@@ -7,12 +7,12 @@ using Vortex.Database.Entities.Room;
 using Vortex.Logging.Extensions;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Bots;
-using Vortex.Protocol.Messages.Outgoing.Room.Action;
-using Vortex.Protocol.Messages.Outgoing.Room.Bots;
-using Vortex.Protocol.Messages.Outgoing.Room.Engine;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Object.Avatars;
+using Vortex.Protocol.Messages.Outgoing.Room.Action;
+using Vortex.Protocol.Messages.Outgoing.Room.Bots;
+using Vortex.Protocol.Messages.Outgoing.Room.Engine;
 
 namespace Vortex.Rooms.Grains.Systems;
 

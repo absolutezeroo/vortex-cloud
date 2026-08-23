@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Handshake;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Handshake;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Handshake;
 

@@ -1,3 +1,4 @@
+using Vortex.Primitives.Networking.Revisions;
 using Vortex.Protocol.Messages.Outgoing.Room.Action;
 using Vortex.Protocol.Messages.Outgoing.Room.Bots;
 using Vortex.Protocol.Messages.Outgoing.Room.Chat;
@@ -7,7 +8,6 @@ using Vortex.Protocol.Messages.Outgoing.Room.Layout;
 using Vortex.Protocol.Messages.Outgoing.Room.Permissions;
 using Vortex.Protocol.Messages.Outgoing.Room.Pets;
 using Vortex.Protocol.Messages.Outgoing.Room.Session;
-using Vortex.Primitives.Networking.Revisions;
 using Vortex.Revisions.Revision20260701.Parsers.Room.Action;
 using Vortex.Revisions.Revision20260701.Parsers.Room.Avatar;
 using Vortex.Revisions.Revision20260701.Parsers.Room.Bots;

@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Availability;
 using Vortex.Primitives.Networking.Revisions;
+using Vortex.Protocol.Messages.Outgoing.Availability;
 using Vortex.Revisions.Revision20260701.Serializers.Availability;
 
 namespace Vortex.Revisions.Revision20260701.Maps;

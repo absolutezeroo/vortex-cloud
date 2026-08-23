@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Users;
 using Vortex.Primitives.Networking.Revisions;
+using Vortex.Protocol.Messages.Outgoing.Users;
 using Vortex.Revisions.Revision20260701.Parsers.Users;
 using Vortex.Revisions.Revision20260701.Serializers.Users;
 

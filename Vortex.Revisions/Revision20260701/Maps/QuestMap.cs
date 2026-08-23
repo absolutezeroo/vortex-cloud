@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Quest;
 using Vortex.Primitives.Networking.Revisions;
+using Vortex.Protocol.Messages.Outgoing.Quest;
 using Vortex.Revisions.Revision20260701.Parsers.Quest;
 using Vortex.Revisions.Revision20260701.Serializers.Quest;
 

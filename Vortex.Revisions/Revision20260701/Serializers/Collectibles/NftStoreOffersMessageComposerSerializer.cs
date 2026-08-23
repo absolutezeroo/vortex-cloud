@@ -1,6 +1,6 @@
 using Vortex.Primitives.Collectibles;
-using Vortex.Protocol.Messages.Outgoing.Collectibles;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Collectibles;
 using Vortex.Revisions.Revision20260701.Serializers.Collectibles.Data;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Collectibles;

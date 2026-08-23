@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Notifications;
 using Vortex.Primitives.Networking.Revisions;
+using Vortex.Protocol.Messages.Outgoing.Notifications;
 using Vortex.Revisions.Revision20260701.Parsers.Notifications;
 using Vortex.Revisions.Revision20260701.Serializers.Notifications;
 using Vortex.Revisions.Revision20260701.Serializers.Preferences;

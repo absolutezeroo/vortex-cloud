@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Nft;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Nft;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Nft;
 

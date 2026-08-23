@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Competition;
 using Vortex.Primitives.Networking.Revisions;
+using Vortex.Protocol.Messages.Outgoing.Competition;
 using Vortex.Revisions.Revision20260701.Parsers.Competition;
 using Vortex.Revisions.Revision20260701.Serializers.Competition;
 

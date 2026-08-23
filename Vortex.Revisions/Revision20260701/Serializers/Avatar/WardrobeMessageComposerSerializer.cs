@@ -1,6 +1,6 @@
-using Vortex.Protocol.Messages.Outgoing.Avatar;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Avatar;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Avatar;
 

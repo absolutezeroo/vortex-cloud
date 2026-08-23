@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Nux;
 using Vortex.Primitives.Networking.Revisions;
+using Vortex.Protocol.Messages.Outgoing.Nux;
 using Vortex.Revisions.Revision20260701.Parsers.Nux;
 using Vortex.Revisions.Revision20260701.Serializers.Nux;
 

@@ -1,6 +1,6 @@
-using Vortex.Protocol.Messages.Outgoing.Quest;
 using Vortex.Primitives.Packets;
 using Vortex.Primitives.Quests.Snapshots;
+using Vortex.Protocol.Messages.Outgoing.Quest;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Quest;
 

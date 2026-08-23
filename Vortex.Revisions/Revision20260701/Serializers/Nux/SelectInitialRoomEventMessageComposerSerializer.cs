@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Nux;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Nux;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Nux;
 

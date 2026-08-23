@@ -9,8 +9,6 @@ using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
 using Vortex.Primitives.Action;
-using Vortex.Protocol.Messages.Outgoing.Room.Chat;
-using Vortex.Protocol.Messages.Outgoing.Roomsettings;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
@@ -19,6 +17,8 @@ using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Grains;
+using Vortex.Protocol.Messages.Outgoing.Room.Chat;
+using Vortex.Protocol.Messages.Outgoing.Roomsettings;
 
 namespace Vortex.Rooms.Grains;
 

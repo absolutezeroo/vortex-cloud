@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Perk;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Perk;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Perk;
 

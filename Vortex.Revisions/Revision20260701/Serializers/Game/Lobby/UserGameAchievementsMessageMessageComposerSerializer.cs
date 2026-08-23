@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Game.Lobby;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Game.Lobby;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Game.Lobby;
 

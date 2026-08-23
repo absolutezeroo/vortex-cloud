@@ -1,6 +1,6 @@
-using Vortex.Protocol.Messages.Incoming.Poll;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Incoming.Poll;
 
 namespace Vortex.Revisions.Revision20260701.Parsers.Poll;
 

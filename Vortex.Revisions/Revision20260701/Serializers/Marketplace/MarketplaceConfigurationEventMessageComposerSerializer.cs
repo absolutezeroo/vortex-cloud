@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Marketplace;
 using Vortex.Primitives.Packets;
+using Vortex.Protocol.Messages.Outgoing.Marketplace;
 
 namespace Vortex.Revisions.Revision20260701.Serializers.Marketplace;
 

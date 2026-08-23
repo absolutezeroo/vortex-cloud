@@ -15,14 +15,14 @@ using Vortex.Primitives.Collectibles.Grains;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Inventory.Snapshots;
-using Vortex.Protocol.Messages.Outgoing.Collectibles;
-using Vortex.Protocol.Messages.Outgoing.Inventory.Trading;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
+using Vortex.Protocol.Messages.Outgoing.Collectibles;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Trading;
 using Vortex.Rooms.Grains;
 
 namespace Vortex.Rooms.Grains.Systems;
