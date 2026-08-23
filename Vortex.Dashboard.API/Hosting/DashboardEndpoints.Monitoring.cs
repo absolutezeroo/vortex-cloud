@@ -25,7 +25,7 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiMonitoring + "/overview",
-            (DashboardApiService api, CancellationToken ct) =>
+            (DashboardMonitoringReads api, CancellationToken ct) =>
                 OkAsync(api.OverviewAsync(startedAtUtc(), ct)),
             Capabilities.Dashboard.OverviewRead,
             TagMonitoring
@@ -33,7 +33,7 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiMonitoring + "/infrastructure",
-            async (DashboardApiService api, CancellationToken ct) =>
+            async (DashboardMonitoringReads api, CancellationToken ct) =>
                 Results.Ok(await api.InfrastructureAsync(ct).ConfigureAwait(false)),
             Capabilities.Dashboard.OverviewRead,
             TagMonitoring
@@ -41,7 +41,7 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiMonitoring + "/incidents",
-            async (DashboardApiService api, CancellationToken ct) =>
+            async (DashboardMonitoringReads api, CancellationToken ct) =>
                 Results.Ok(await api.IncidentsAsync(ct).ConfigureAwait(false)),
             Capabilities.Dashboard.OverviewRead,
             TagMonitoring
@@ -49,14 +49,15 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiMonitoring + "/packet-stats",
-            (DashboardApiService api, CancellationToken ct) => OkAsync(api.PacketStatsAsync(ct)),
+            (DashboardMonitoringReads api, CancellationToken ct) =>
+                OkAsync(api.PacketStatsAsync(ct)),
             Capabilities.Dashboard.OverviewRead,
             TagMonitoring
         );
         MapReadGet(
             app,
             ApiMonitoring + "/room-performance",
-            (DashboardApiService api) => Results.Ok(api.RoomPerformance()),
+            (DashboardMonitoringReads api) => Results.Ok(api.RoomPerformance()),
             Capabilities.Dashboard.PerformanceRead,
             TagMonitoring
         );

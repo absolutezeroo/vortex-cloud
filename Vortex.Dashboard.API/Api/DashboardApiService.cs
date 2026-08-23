@@ -33,34 +33,19 @@ internal sealed partial class DashboardApiService(
     IDbContextFactory<VortexDbContext> dbContextFactory,
     IGrainFactory grainFactory,
     ISessionGateway sessionGateway,
-    ILiveStatsAggregator liveStats,
-    IIncidentDetectionService incidentDetection,
-    IInfrastructureHealthService infrastructureHealth,
-    ClubMetrics clubMetrics,
-    ClientPerformanceMetrics clientPerformanceMetrics,
     DashboardAssetUrls assetUrls,
-    IVortexMetrics metrics,
     RoomPerformanceAggregator roomPerformance,
     IBenchmarkService benchmark,
     IOptions<ObservabilityConfig> options
 )
 {
     private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
+    private readonly RoomPerformanceAggregator _roomPerformance = roomPerformance;
     private readonly DashboardAssetUrls _assetUrls = assetUrls;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
-    private readonly ILiveStatsAggregator _liveStats = liveStats;
-    private readonly IIncidentDetectionService _incidentDetection = incidentDetection;
-    private readonly IInfrastructureHealthService _infrastructureHealth = infrastructureHealth;
-    private readonly ClubMetrics _clubMetrics = clubMetrics;
-    private readonly ClientPerformanceMetrics _clientPerformanceMetrics = clientPerformanceMetrics;
-    private readonly IVortexMetrics _metrics = metrics;
-    private readonly RoomPerformanceAggregator _roomPerformance = roomPerformance;
     private readonly IBenchmarkService _benchmark = benchmark;
     private readonly ObservabilityConfig _config = options.Value;
-
-    private static readonly TimeSpan TotalsCacheTtl = TimeSpan.FromSeconds(30);
-    private volatile CachedTotals? _cachedTotals;
 
     private async Task<T> QueryAsync<T>(Func<VortexDbContext, Task<T>> work, CancellationToken ct)
     {
@@ -75,34 +60,6 @@ internal sealed partial class DashboardApiService(
             await db.DisposeAsync().ConfigureAwait(false);
         }
     }
-
-    /// <summary>
-    /// Row-count totals are full-table scans on tables that grow without bound, so they are cached
-    /// for a short interval instead of being recomputed on every overview poll. Concurrent cache
-    /// misses simply recompute the same value, so no lock is needed.
-    /// </summary>
-    private async Task<CachedTotals> GetTotalsAsync(VortexDbContext db, CancellationToken ct)
-    {
-        CachedTotals? cached = _cachedTotals;
-
-        if (cached is not null && DateTime.UtcNow - cached.AtUtc < TotalsCacheTtl)
-        {
-            return cached;
-        }
-
-        CachedTotals fresh = new CachedTotals(
-            DateTime.UtcNow,
-            await db.AuditEvents.CountAsync(ct).ConfigureAwait(false),
-            await db.EconomyLedger.CountAsync(ct).ConfigureAwait(false),
-            await db.ItemEvents.CountAsync(ct).ConfigureAwait(false)
-        );
-
-        _cachedTotals = fresh;
-
-        return fresh;
-    }
-
-    private sealed record CachedTotals(DateTime AtUtc, long Audit, long Ledger, long Items);
 
     private static TimeSpan ResolveBucketSize(DateTime since, DateTime until)
     {

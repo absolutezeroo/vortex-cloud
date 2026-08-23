@@ -207,6 +207,7 @@ internal sealed class DashboardWebHost(
     internal static readonly Type[] ForwardedServiceTypes =
     [
         typeof(DashboardApiService),
+        typeof(DashboardMonitoringReads),
         typeof(DashboardOperationsService),
         typeof(DashboardAuthService),
         typeof(DashboardSessionStore),

@@ -1,34 +1,62 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.Specialized;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
-using Vortex.Database.Entities.Audit;
-using Vortex.Database.Entities.Furniture;
-using Vortex.Database.Entities.Marketplace;
-using Vortex.Database.Entities.Players;
-using Vortex.Database.Entities.Room;
-using Vortex.Observability.Configuration;
 using Vortex.Observability.Metrics;
 using Vortex.Observability.Runtime;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
-using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Rooms.Grains;
 
 namespace Vortex.Dashboard.API.Api;
 
-internal sealed partial class DashboardApiService
+/// <summary>
+/// The health, incident and live-traffic reads behind the overview. Split out of
+/// <see cref="DashboardApiService" /> because it was the reason that class had fourteen constructor
+/// parameters: six of them -- the live stats aggregator, incident detection, infrastructure health,
+/// club metrics, client performance metrics and the meter -- were read here and nowhere else, so
+/// every one of the thirty other read partials carried them for nothing.
+///
+/// <para>
+/// The row-count cache comes with it. Those COUNT(*)s are full scans of tables that grow without
+/// bound, cached for half a minute because the overview polls; concurrent misses simply recompute
+/// the same value, so no lock is needed.
+/// </para>
+/// </summary>
+internal sealed class DashboardMonitoringReads(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    IGrainFactory grainFactory,
+    ISessionGateway sessionGateway,
+    ILiveStatsAggregator liveStats,
+    IIncidentDetectionService incidentDetection,
+    IInfrastructureHealthService infrastructureHealth,
+    ClubMetrics clubMetrics,
+    ClientPerformanceMetrics clientPerformanceMetrics,
+    IVortexMetrics metrics,
+    RoomPerformanceAggregator roomPerformance
+)
 {
+    private static readonly TimeSpan TotalsCacheTtl = TimeSpan.FromSeconds(30);
+
+    private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
+    private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly ISessionGateway _sessionGateway = sessionGateway;
+    private readonly ILiveStatsAggregator _liveStats = liveStats;
+    private readonly IIncidentDetectionService _incidentDetection = incidentDetection;
+    private readonly IInfrastructureHealthService _infrastructureHealth = infrastructureHealth;
+    private readonly ClubMetrics _clubMetrics = clubMetrics;
+    private readonly ClientPerformanceMetrics _clientPerformanceMetrics = clientPerformanceMetrics;
+    private readonly IVortexMetrics _metrics = metrics;
+    private readonly RoomPerformanceAggregator _roomPerformance = roomPerformance;
+
+    private volatile CachedTotals? _cachedTotals;
+
     public async Task<object> PacketStatsAsync(CancellationToken ct)
     {
         LiveStatsSnapshot live = await _liveStats.GetSnapshotAsync().ConfigureAwait(false);
@@ -147,4 +175,32 @@ internal sealed partial class DashboardApiService
 
     public Task<IncidentDetectionSnapshot> IncidentsAsync(CancellationToken ct) =>
         _incidentDetection.DetectAsync(ct);
+
+    /// <summary>
+    /// Row-count totals are full-table scans on tables that grow without bound, so they are cached
+    /// for a short interval instead of being recomputed on every overview poll. Concurrent cache
+    /// misses simply recompute the same value, so no lock is needed.
+    /// </summary>
+    private async Task<CachedTotals> GetTotalsAsync(VortexDbContext db, CancellationToken ct)
+    {
+        CachedTotals? cached = _cachedTotals;
+
+        if (cached is not null && DateTime.UtcNow - cached.AtUtc < TotalsCacheTtl)
+        {
+            return cached;
+        }
+
+        CachedTotals fresh = new CachedTotals(
+            DateTime.UtcNow,
+            await db.AuditEvents.CountAsync(ct).ConfigureAwait(false),
+            await db.EconomyLedger.CountAsync(ct).ConfigureAwait(false),
+            await db.ItemEvents.CountAsync(ct).ConfigureAwait(false)
+        );
+
+        _cachedTotals = fresh;
+
+        return fresh;
+    }
+
+    private sealed record CachedTotals(DateTime AtUtc, long Audit, long Ledger, long Items);
 }

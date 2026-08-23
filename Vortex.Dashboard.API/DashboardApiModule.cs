@@ -50,6 +50,7 @@ public sealed class DashboardApiModule : IHostPluginModule
         services.TryAddSingleton<DashboardAssetUrls>();
         services.TryAddSingleton<DashboardAuditEmitter>();
         services.TryAddSingleton<DashboardApiService>();
+        services.TryAddSingleton<DashboardMonitoringReads>();
         services.TryAddSingleton<DashboardOperationsService>();
 
         // The dashboard runs as a self-contained ASP.NET Core (Kestrel) app inside the generic host.
