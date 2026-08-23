@@ -16,10 +16,14 @@
    nothing ever bundled it -- so every screen has been rendering the Segoe fallback. Self-hosted
    rather than pulled from Google: the dashboard is served by the emulator, often on a LAN with no
    route out, and a font that silently fails to load is exactly the bug being fixed here.
-   Latin only: the UI ships in French and English. 400/500/700 are the weights the app uses. */
-@import "@fontsource/ubuntu/latin-400.css";
-@import "@fontsource/ubuntu/latin-500.css";
-@import "@fontsource/ubuntu/latin-700.css";
+   NOT the latin-*.css files: those ship a subset with NO unicode-range, so the browser applies the
+   font to every character and draws a tofu square for anything the subset lacks instead of falling
+   back. The arrow in "old -> new" (U+2192) appears in both confirmation modals and in the pickers'
+   sort labels, and it was a square in all of them. These files declare a range per subset, so an
+   uncovered glyph falls through to the next family in the stack, which is the whole point of one. */
+@import "@fontsource/ubuntu/400.css";
+@import "@fontsource/ubuntu/500.css";
+@import "@fontsource/ubuntu/700.css";
 
 /* Three themes, switched by setting data-theme on <html> (see lib/theme.js). "blue" is the
    original/default look and must stay pixel-identical to what shipped before theming existed --
