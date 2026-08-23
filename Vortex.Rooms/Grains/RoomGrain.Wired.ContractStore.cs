@@ -103,7 +103,7 @@ public sealed partial class RoomGrain
                 )
                 .ConfigureAwait(true);
 
-            return row is null ? EmptyContract(contractId) : ToContractSnapshot(row);
+            return ForEditor(row is null ? EmptyContract(contractId) : ToContractSnapshot(row));
         }
         catch (Exception ex)
         {
@@ -180,7 +180,7 @@ public sealed partial class RoomGrain
 
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
-            return ToContractSnapshot(row);
+            return ForEditor(ToContractSnapshot(row));
         }
         catch (Exception ex)
         {
@@ -241,15 +241,55 @@ public sealed partial class RoomGrain
         _state.ItemsById.TryGetValue(contractId, out IRoomItem? item)
             ? item.Definition.LogicName switch
             {
-                "wf_contract_payment" => 0,
-                "wf_contract_trade" => 1,
-                "wf_contract_reward" => 2,
-                _ => 0,
+                "wf_contract_payment" => PaymentContractType,
+                "wf_contract_trade" => TradeContractType,
+                "wf_contract_reward" => RewardContractType,
+                _ => PaymentContractType,
             }
-            : 0;
+            : PaymentContractType;
 
     private WiredContractSnapshot EmptyContract(int contractId) =>
         new() { ContractId = contractId, ContractType = ContractTypeOf(contractId) };
+
+    /// <summary>
+    /// The same contract, with the sides its editor refuses to open without.
+    /// </summary>
+    /// <remarks>
+    /// Each editor drops the message on the floor when the side its type is about is missing: a
+    /// payment contract needs the give side, a reward contract the receive side, a trade contract
+    /// both. A contract nobody has written has neither, so sending it as stored opened nothing at
+    /// all — the window never appeared and nothing said why.
+    /// <para>
+    /// An empty side and an absent one mean different things to the offer, where a give side that
+    /// is not there asks for nothing. So this fills them for the editor only, and the offer keeps
+    /// reading what is actually stored.
+    /// </para>
+    /// </remarks>
+    private static WiredContractSnapshot ForEditor(WiredContractSnapshot contract)
+    {
+        bool needsGive =
+            contract.ContractType == PaymentContractType
+            || contract.ContractType == TradeContractType;
+
+        bool needsGet =
+            contract.ContractType == RewardContractType
+            || contract.ContractType == TradeContractType;
+
+        return contract with
+        {
+            YouGiveRules =
+                contract.YouGiveRules
+                ?? (needsGive ? ImmutableArray<TradeContractRule>.Empty : null),
+            YouGetRule =
+                contract.YouGetRule ?? (needsGet ? new TradeContractRule { Nodes = [] } : null),
+        };
+    }
+
+    private const int PaymentContractType = 0;
+
+    private const int TradeContractType = 1;
+
+    private const int RewardContractType = 2;
 
     private WiredContractSnapshot ToContractSnapshot(WiredContractEntity row)
     {
