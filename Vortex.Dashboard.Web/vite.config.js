@@ -2,9 +2,15 @@ import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 
-export default defineConfig({
-  base: '/assets/',
+// `npm run dev` = HMR against the running emulator: Vite serves the SPA, /api is proxied to the
+// dashboard host so the session cookie stays same-origin. The build still emits under /assets/,
+// which is where DashboardEndpoints.MapFrontend serves the embedded copy from.
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? '/assets/' : '/',
   plugins: [tailwindcss(), svelte()],
+  server: {
+    proxy: { '/api': 'http://localhost:9000' },
+  },
   build: {
     outDir: '../Vortex.Dashboard.API/Assets',
     emptyOutDir: true,
@@ -16,4 +22,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));
