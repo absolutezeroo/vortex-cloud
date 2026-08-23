@@ -56,7 +56,10 @@ public sealed class CatalogGiftPurchaseTests
     [Fact]
     public async Task PurchaseOfferAsGiftAsync_GrantsToReceiverAndChargesBuyer()
     {
-        Harness harness = new Harness(NewOffer(costCredits: 50));
+        CatalogPurchaseHarness harness = new CatalogPurchaseHarness(
+            CatalogOffers.New(OFFER_ID, costCredits: 50),
+            BUYER_ID
+        );
 
         CatalogOfferSnapshot offer = await harness
             .Grain.PurchaseOfferAsGiftAsync(
@@ -80,7 +83,10 @@ public sealed class CatalogGiftPurchaseTests
     [Fact]
     public async Task PurchaseOfferAsGiftAsync_ClubOnlyOffer_NonMemberIsRefusedBeforeAnyDebit()
     {
-        Harness harness = new Harness(NewOffer(costCredits: 50, clubLevel: 1));
+        CatalogPurchaseHarness harness = new CatalogPurchaseHarness(
+            CatalogOffers.New(OFFER_ID, costCredits: 50, clubLevel: 1),
+            BUYER_ID
+        );
 
         Func<Task> act = () =>
             harness.Grain.PurchaseOfferAsGiftAsync(
@@ -104,7 +110,10 @@ public sealed class CatalogGiftPurchaseTests
     [Fact]
     public async Task PurchaseOfferAsGiftAsync_ClubMember_GetsTheOfferDiscount()
     {
-        Harness harness = new Harness(NewOffer(costCredits: 100, discountPercent: 25))
+        CatalogPurchaseHarness harness = new CatalogPurchaseHarness(
+            CatalogOffers.New(OFFER_ID, costCredits: 100, discountPercent: 25),
+            BUYER_ID
+        )
         {
             Club = new ClubSubscriptionSnapshot { IsActive = true, IsVip = false },
         };
@@ -127,7 +136,10 @@ public sealed class CatalogGiftPurchaseTests
     [Fact]
     public async Task PurchaseOfferAsGiftAsync_NonGiftableOffer_IsRefused()
     {
-        Harness harness = new Harness(NewOffer(costCredits: 50, canGift: false));
+        CatalogPurchaseHarness harness = new CatalogPurchaseHarness(
+            CatalogOffers.New(OFFER_ID, costCredits: 50, canGift: false),
+            BUYER_ID
+        );
 
         Func<Task> act = () =>
             harness.Grain.PurchaseOfferAsGiftAsync(
@@ -146,7 +158,13 @@ public sealed class CatalogGiftPurchaseTests
     [Fact]
     public async Task PurchaseOfferAsGiftAsync_GrantFails_RefundsTheBuyer()
     {
-        Harness harness = new Harness(NewOffer(costCredits: 50)) { GrantThrows = true };
+        CatalogPurchaseHarness harness = new CatalogPurchaseHarness(
+            CatalogOffers.New(OFFER_ID, costCredits: 50),
+            BUYER_ID
+        )
+        {
+            GrantThrows = true,
+        };
 
         Func<Task> act = () =>
             harness.Grain.PurchaseOfferAsGiftAsync(
@@ -165,7 +183,10 @@ public sealed class CatalogGiftPurchaseTests
     [Fact]
     public async Task PurchaseOfferAsGiftAsync_PublishesSpendAndRecipientEvents()
     {
-        Harness harness = new Harness(NewOffer(costCredits: 50));
+        CatalogPurchaseHarness harness = new CatalogPurchaseHarness(
+            CatalogOffers.New(OFFER_ID, costCredits: 50),
+            BUYER_ID
+        );
 
         await harness
             .Grain.PurchaseOfferAsGiftAsync(
@@ -192,7 +213,13 @@ public sealed class CatalogGiftPurchaseTests
     [Fact]
     public async Task PurchaseOfferAsGiftAsync_InsufficientBalance_NeverGrants()
     {
-        Harness harness = new Harness(NewOffer(costCredits: 50)) { DebitSucceeds = false };
+        CatalogPurchaseHarness harness = new CatalogPurchaseHarness(
+            CatalogOffers.New(OFFER_ID, costCredits: 50),
+            BUYER_ID
+        )
+        {
+            DebitSucceeds = false,
+        };
 
         Func<Task> act = () =>
             harness.Grain.PurchaseOfferAsGiftAsync(
@@ -210,211 +237,5 @@ public sealed class CatalogGiftPurchaseTests
 
         ex.ErrorType.Should().Be(CatalogPurchaseErrorType.NotEnoughCredits);
         harness.GrantedToPlayerIds.Should().BeEmpty();
-    }
-
-    private static CatalogOfferSnapshot NewOffer(
-        int costCredits,
-        int clubLevel = 0,
-        int discountPercent = 0,
-        bool canGift = true
-    ) =>
-        new()
-        {
-            Id = OFFER_ID,
-            PageId = 1,
-            LocalizationId = "offer",
-            Rentable = false,
-            CostCredits = costCredits,
-            CostCurrency = 0,
-            CurrencyTypeId = null,
-            CostSilver = 0,
-            CanGift = canGift,
-            CanBundle = false,
-            ClubLevel = clubLevel,
-            Visible = true,
-            ProductIds = [],
-            Products = [],
-            DiscountPercent = discountPercent,
-        };
-
-    /// <summary>
-    /// Builds a <see cref="CatalogPurchaseGrain"/> outside a silo. The grain reads its own primary
-    /// key, so the activation context is stubbed rather than left null; every collaborator is a
-    /// recording proxy so the assertions can be about who was charged and who was granted.
-    /// </summary>
-    private sealed class Harness
-    {
-        public Harness(CatalogOfferSnapshot offer)
-        {
-            Offer = offer;
-            Grain = BuildGrain();
-        }
-
-        public CatalogOfferSnapshot Offer { get; }
-
-        public CatalogPurchaseGrain Grain { get; }
-
-        public ClubSubscriptionSnapshot Club { get; set; } =
-            new ClubSubscriptionSnapshot { IsActive = false, IsVip = false };
-
-        public bool GrantThrows { get; set; }
-
-        public bool DebitSucceeds { get; set; } = true;
-
-        public List<int> GrantedToPlayerIds { get; } = [];
-
-        public List<int> DebitedPlayerIds { get; } = [];
-
-        public List<WalletDebitRequest> DebitRequests { get; } = [];
-
-        public List<int> TrackedCreditSpend { get; } = [];
-
-        public List<IEvent> Events { get; } = [];
-
-        public int CreditBackCalls { get; private set; }
-
-        private CatalogPurchaseGrain BuildGrain()
-        {
-            CatalogPurchaseGrain grain = new CatalogPurchaseGrain(
-                BuildGrainFactory(),
-                new StubCatalogService(Offer),
-                new RecordingEventPublisher(Events),
-                FakeProxy.Create<IRoomAdvertisementService>(_ => null),
-                NullLogger<CatalogPurchaseGrain>.Instance
-            );
-
-            SetGrainContext(grain, BUYER_ID);
-
-            return grain;
-        }
-
-        private IGrainFactory BuildGrainFactory()
-        {
-            IPlayerWalletGrain wallet = FakeProxy.Create<IPlayerWalletGrain>(call =>
-            {
-                switch (call.Method.Name)
-                {
-                    case nameof(IPlayerWalletGrain.TryDebitAsync):
-                        DebitedPlayerIds.Add(BUYER_ID);
-
-                        if (!DebitSucceeds)
-                        {
-                            return Task.FromResult(
-                                WalletDebitResult.InsufficientBalance(
-                                    new WalletDebitFailure
-                                    {
-                                        CurrencyKind = new CurrencyKind
-                                        {
-                                            CurrencyType = CurrencyType.Credits,
-                                        },
-                                        Amount = 50,
-                                    }
-                                )
-                            );
-                        }
-
-                        DebitRequests.AddRange((List<WalletDebitRequest>)call.Args![0]!);
-
-                        return Task.FromResult(WalletDebitResult.Success());
-
-                    case nameof(IPlayerWalletGrain.CreditBackAsync):
-                        CreditBackCalls++;
-
-                        return Task.CompletedTask;
-
-                    default:
-                        return null;
-                }
-            });
-
-            IPlayerGrain player = FakeProxy.Create<IPlayerGrain>(call =>
-                call.Method.Name switch
-                {
-                    nameof(IPlayerGrain.GetClubSubscriptionAsync) => Task.FromResult(Club),
-                    nameof(IPlayerGrain.TrackCreditSpendAsync) => TrackAsync((int)call.Args![0]!),
-                    _ => null,
-                }
-            );
-
-            IInventoryGrain inventory = FakeProxy.Create<IInventoryGrain>(call =>
-            {
-                if (call.Method.Name != nameof(IInventoryGrain.GrantCatalogOfferAsync))
-                {
-                    return null;
-                }
-
-                if (GrantThrows)
-                {
-                    throw new InvalidOperationException("grant failed");
-                }
-
-                GrantedToPlayerIds.Add(RECEIVER_ID);
-
-                return Task.CompletedTask;
-            });
-
-            return FakeProxy.Create<IGrainFactory>(call =>
-                call.Method.IsGenericMethod
-                    ? call.Method.GetGenericArguments()[0] switch
-                    {
-                        Type t when t == typeof(IPlayerWalletGrain) => wallet,
-                        Type t when t == typeof(IPlayerGrain) => player,
-                        Type t when t == typeof(IInventoryGrain) => inventory,
-                        _ => null,
-                    }
-                    : null
-            );
-        }
-
-        private Task TrackAsync(int credits)
-        {
-            TrackedCreditSpend.Add(credits);
-
-            return Task.CompletedTask;
-        }
-
-        /// <summary>The grain calls <c>this.GetPrimaryKeyLong()</c>, which resolves through the
-        /// activation context Orleans would normally install.</summary>
-        private static void SetGrainContext(Grain grain, int playerId)
-        {
-            GrainId grainId = GrainId.Create(
-                GrainType.Create("catalogpurchase"),
-                GrainIdKeyExtensions.CreateIntegerKey(playerId)
-            );
-
-            IGrainContext context = FakeProxy.Create<IGrainContext>(call =>
-                call.Method.Name == $"get_{nameof(IGrainContext.GrainId)}" ? grainId : null
-            );
-
-            FieldInfo field =
-                typeof(Grain).GetField(
-                    "<GrainContext>k__BackingField",
-                    BindingFlags.Instance | BindingFlags.NonPublic
-                ) ?? throw new InvalidOperationException("Grain.GrainContext backing field moved.");
-
-            field.SetValue(grain, context);
-        }
-    }
-
-    private sealed class StubCatalogService(CatalogOfferSnapshot offer) : ICatalogService
-    {
-        public CatalogSnapshot GetCatalogSnapshot(CatalogType catalogType) =>
-            CatalogSnapshot.Empty with
-            {
-                OffersById = ImmutableDictionary<int, CatalogOfferSnapshot>.Empty.Add(
-                    offer.Id,
-                    offer
-                ),
-            };
-    }
-
-    private sealed class RecordingEventPublisher(List<IEvent> sink) : IEventPublisher
-    {
-        public Task PublishAsync(IEvent @event, CancellationToken ct = default)
-        {
-            sink.Add(@event);
-
-            return Task.CompletedTask;
-        }
     }
 }

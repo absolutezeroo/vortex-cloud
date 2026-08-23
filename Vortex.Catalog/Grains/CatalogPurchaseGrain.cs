@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -18,6 +18,7 @@ using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Wallet;
 using Vortex.Primitives.Rooms;
+using Vortex.Primitives.Snapshots.Catalog;
 
 namespace Vortex.Catalog.Grains;
 
@@ -44,6 +45,18 @@ public sealed partial class CatalogPurchaseGrain(
     )
     {
         quantity = Math.Max(1, quantity);
+
+        // Quantity arrives straight off the wire, and only its lower bound was ever checked. Two
+        // things break above the ceiling the client is handed, both silently: the cost is computed
+        // as `CostCredits * quantity` in unchecked int arithmetic, so a large enough quantity wraps
+        // the price to zero-or-negative, drops the debit request entirely and hands the goods over
+        // for nothing; and the grant allocates one entity per copy, so an offer that happens to be
+        // free lets a single packet allocate until the host dies. The real client never exceeds the
+        // advertised ceiling, so anything above it is crafted and is refused rather than clamped.
+        if (quantity > BundleDiscountRulesetSnapshot.DEFAULT_MAX_PURCHASE_SIZE)
+        {
+            throw new CatalogPurchaseException(CatalogPurchaseErrorType.PurchaseFailed);
+        }
 
         CatalogSnapshot snapshot = _catalogService.GetCatalogSnapshot(catalogType);
 
@@ -165,7 +178,7 @@ public sealed partial class CatalogPurchaseGrain(
 
         if (offer.CostCredits > 0)
         {
-            int creditAmount = offer.CostCredits * quantity;
+            int creditAmount = Total(offer.CostCredits, quantity);
 
             if (discountPercent > 0)
             {
@@ -190,7 +203,7 @@ public sealed partial class CatalogPurchaseGrain(
                 new WalletDebitRequest
                 {
                     CurrencyKind = new CurrencyKind { CurrencyType = CurrencyType.Silver },
-                    Amount = offer.CostSilver * quantity,
+                    Amount = Total(offer.CostSilver, quantity),
                 }
             );
         }
@@ -205,12 +218,28 @@ public sealed partial class CatalogPurchaseGrain(
                         CurrencyType = CurrencyType.ActivityPoints,
                         ActivityPointType = offer.CurrencyTypeId,
                     },
-                    Amount = offer.CostCurrency * quantity,
+                    Amount = Total(offer.CostCurrency, quantity),
                 }
             );
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Multiplies a unit price by the purchase quantity without letting the product wrap. Quantity
+    /// is bounded above, so this can only trip on an offer priced past what any allowed quantity can
+    /// multiply -- a mistyped price rather than a hostile packet. It still has to be caught: a
+    /// wrapped total goes zero-or-negative, which drops the debit request and hands the goods over
+    /// for free, and nothing downstream would ever report it.
+    /// </summary>
+    private static int Total(int unitCost, int quantity)
+    {
+        long total = (long)unitCost * quantity;
+
+        return total <= int.MaxValue
+            ? (int)total
+            : throw new CatalogPurchaseException(CatalogPurchaseErrorType.OfferMisconfigured);
     }
 
     private static CatalogPurchaseException CreateInsufficientBalanceException(

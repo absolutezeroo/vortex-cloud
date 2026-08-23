@@ -20,7 +20,7 @@ public class GetBundleDiscountRulesetMessageHandler
                 new BundleDiscountRulesetMessageComposer
                 {
                     BundleDiscountRuleset = new BundleDiscountRulesetSnapshot(
-                        MaxPurchaseSize: 100,
+                        MaxPurchaseSize: BundleDiscountRulesetSnapshot.DEFAULT_MAX_PURCHASE_SIZE,
                         BundleSize: 6,
                         BundleDiscountSize: 1,
                         BonusThreshold: 0,
