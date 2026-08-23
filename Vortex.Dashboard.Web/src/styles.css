@@ -12,6 +12,15 @@
    the block back then and point it at the same values. */
 @import "tailwindcss";
 
+/* Ubuntu is Habbo's own web face, and the token below has named it since the first redesign while
+   nothing ever bundled it -- so every screen has been rendering the Segoe fallback. Self-hosted
+   rather than pulled from Google: the dashboard is served by the emulator, often on a LAN with no
+   route out, and a font that silently fails to load is exactly the bug being fixed here.
+   Latin only: the UI ships in French and English. 400/500/700 are the weights the app uses. */
+@import "@fontsource/ubuntu/latin-400.css";
+@import "@fontsource/ubuntu/latin-500.css";
+@import "@fontsource/ubuntu/latin-700.css";
+
 /* Three themes, switched by setting data-theme on <html> (see lib/theme.js). "blue" is the
    original/default look and must stay pixel-identical to what shipped before theming existed --
    :root with no attribute falls back to it too, so an unthemed load (JS not yet run, or a stored
@@ -78,7 +87,10 @@
   --field-bg-disabled: #69839d;
   --field-ink: #101633;
   --field-placeholder: #5c6168;
-  --field-border: #f5f3f0;
+  --field-border: #cfd2d6;
+  --field-border-top: #f2f0ee;
+  --field-border-bottom: #a9b0b7;
+  --field-ring: #1a3858;
 
   /* Buttons. Flat fills, measured: the mockup's primary has no gradient. */
   --button-bg: #276ab2;
@@ -93,6 +105,14 @@
   --button-danger-bg: #a94033;
   --button-danger-active: #70302f;
   --button-danger-disabled: #294c6d;
+  --ring: #0b1c31;
+  --button-border: #2d75be;
+  --button-border-top: #5a93d0;
+  --button-secondary-border: #949394;
+  --button-secondary-border-top: #e5e4e0;
+  --button-danger-border: #c04434;
+  --button-danger-border-top: #da4e31;
+  --ghost-border: #4b84b1;
 
   --ink: #ffffff;
   --muted: #cad4da;
@@ -665,14 +685,14 @@ summary,
    reliably wins. Without this, `.panel button` (0,1,1) silently overrode `.ghost-button` (0,1,0),
    leaving ghost buttons gold with dark ink — which turned unreadable on the grey :hover. */
 :where(.panel, .toolbar, .drawer-panel) button {
-  border: 1px solid transparent;
+  border: 1px solid var(--button-border);
   border-radius: 8px;
   background: var(--button-bg);
   color: var(--button-ink);
   padding: 8px 12px;
   font-weight: 700;
-  box-shadow: none;
-  transition: filter 140ms ease, background 140ms ease, border-color 140ms ease;
+  box-shadow: 0 0 0 1px var(--ring), inset 0 1px 0 var(--button-border-top);
+  transition: background 140ms ease, border-color 140ms ease;
 }
 
 :where(.panel, .toolbar, .drawer-panel) button:hover:not(:disabled) {
@@ -693,6 +713,8 @@ summary,
 :where(.panel, .toolbar, .drawer-panel) button.danger,
 button.danger {
   background: var(--button-danger-bg);
+  border-color: var(--button-danger-border);
+  box-shadow: 0 0 0 1px var(--ring), inset 0 1px 0 var(--button-danger-border-top);
   color: var(--button-ink);
 }
 
@@ -711,6 +733,8 @@ button.danger:disabled {
 :where(.panel, .toolbar, .drawer-panel) button.secondary,
 button.secondary {
   background: var(--button-secondary-bg);
+  border-color: var(--button-secondary-border);
+  box-shadow: 0 0 0 1px var(--ring), inset 0 1px 0 var(--button-secondary-border-top);
   color: var(--button-secondary-ink);
 }
 
@@ -736,13 +760,13 @@ button.secondary:active:not(:disabled) {
   justify-content: center;
   gap: 6px;
   white-space: nowrap;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--ghost-border);
   border-radius: 8px;
   background: transparent;
   color: var(--ink);
   padding: 8px 12px;
   font-weight: 700;
-  box-shadow: none;
+  box-shadow: inset 0 0 0 1px rgba(11, 28, 49, 0.55);
   transition: background 140ms ease, border-color 140ms ease;
 }
 
@@ -1495,6 +1519,8 @@ input:not([type='checkbox']):not([type='radio']) {
   border: 1px solid var(--field-border);
   border-radius: 8px;
   background: var(--field-bg);
+  box-shadow: 0 0 0 1px var(--field-ring), inset 0 1px 0 var(--field-border-top),
+    inset 0 -1px 0 var(--field-border-bottom);
   color: var(--field-ink);
   padding: 9px 10px;
   outline: none;
@@ -1510,7 +1536,9 @@ textarea:focus-visible,
 input:not([type='checkbox']):not([type='radio']):focus-visible {
   background: var(--field-bg-focus);
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.28);
+  /* Focus deepens the ring rather than adding a halo -- measured #0a325d against the #1a3858 the
+     control already carries. */
+  box-shadow: 0 0 0 2px #0a325d, inset 0 1px 0 var(--field-border-top);
 }
 
 select:disabled,

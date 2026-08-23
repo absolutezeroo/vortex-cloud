@@ -44,6 +44,18 @@ const MEASURED = {
   '--field-bg-focus': '#eaeaea',
   '--field-ink': '#101633',
   '--field-placeholder': '#5c6168',
+  // Every control in the kit is three layers, not a flat box: a 1px dark ring, a 1px border
+  // LIGHTER than the fill (lighter still along the top), then the fill.
+  '--ring': '#0b1c31',
+  '--button-border': '#2d75be',
+  '--button-border-top': '#5a93d0',
+  '--button-secondary-border': '#949394',
+  '--button-danger-border': '#c04434',
+  '--ghost-border': '#4b84b1',
+  '--field-border': '#cfd2d6',
+  '--field-border-top': '#f2f0ee',
+  '--field-border-bottom': '#a9b0b7',
+  '--field-ring': '#1a3858',
   // ramps
   '--primary-50': '#5394da',
   '--primary-300': '#0757b6',

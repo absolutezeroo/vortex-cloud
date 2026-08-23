@@ -8,6 +8,7 @@
     "lint": "eslint src"
   },
   "dependencies": {
+    "@fontsource/ubuntu": "^5.3.0",
     "@tanstack/svelte-query": "^6.1.38",
     "svelte-spa-router": "^4.0.1"
   },

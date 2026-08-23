@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
@@ -14,13 +14,9 @@
     <EmbeddedResource Include="Assets\*.html" />
     <EmbeddedResource Include="Assets\*.css" />
     <EmbeddedResource Include="Assets\*.js" />
-    <!-- Images the front-end imports. Small ones (the 17px currency sprites, ~400 bytes each) never
-         reach this folder at all: Vite inlines anything under its 4 KB threshold straight into the
-         bundle as a data URI, which the dashboard CSP already allows. Anything larger is emitted
-         here as a hashed file instead, and without these two lines it would not be embedded in the
-         assembly and would 404. Silently, at that: a missing image only shows a fallback glyph. -->
     <EmbeddedResource Include="Assets\*.png" />
     <EmbeddedResource Include="Assets\*.svg" />
+    <EmbeddedResource Include="Assets\*.woff2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Vortex.Database\Vortex.Database.csproj" />
