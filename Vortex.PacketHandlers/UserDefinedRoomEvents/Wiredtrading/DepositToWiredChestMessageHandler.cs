@@ -6,6 +6,7 @@ using Vortex.Primitives.Action;
 using Vortex.Primitives.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Orleans;
+using Vortex.Primitives.Rooms.Enums;
 
 namespace Vortex.PacketHandlers.UserDefinedRoomEvents.Wiredtrading;
 
@@ -46,7 +47,7 @@ public class DepositToWiredChestMessageHandler(IGrainFactory grainFactory)
             return;
         }
 
-        bool opened = await _grainFactory
+        WiredDepositStart start = await _grainFactory
             .GetRoomWired(ctx.RoomId)
             .StartWiredChestDepositAsync(
                 ActionContext.CreateForPlayer(ctx.PlayerId, ctx.RoomId),
@@ -55,7 +56,7 @@ public class DepositToWiredChestMessageHandler(IGrainFactory grainFactory)
             )
             .ConfigureAwait(false);
 
-        if (!opened)
+        if (start == WiredDepositStart.Refused)
         {
             return;
         }
@@ -69,7 +70,7 @@ public class DepositToWiredChestMessageHandler(IGrainFactory grainFactory)
                     YouGetText = string.Empty,
                     LayoutType = string.Empty,
                     ShowRequirementsImmediate = false,
-                    OverridePreviousTrade = true,
+                    OverridePreviousTrade = start == WiredDepositStart.Replaced,
                     TimeoutSeconds = DepositTimeoutSeconds,
                 },
                 ct

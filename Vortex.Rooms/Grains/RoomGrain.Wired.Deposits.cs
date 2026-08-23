@@ -65,7 +65,7 @@ public sealed partial class RoomGrain
     /// Filling is not the same permission as opening: a chest whose owner ticked "everyone can
     /// donate" takes from anyone, while looking inside still needs decorating rights.
     /// </remarks>
-    public async Task<bool> StartWiredChestDepositAsync(
+    public async Task<WiredDepositStart> StartWiredChestDepositAsync(
         ActionContext ctx,
         int chestId,
         CancellationToken ct
@@ -79,7 +79,7 @@ public sealed partial class RoomGrain
                 RoomId
             );
 
-            return false;
+            return WiredDepositStart.Refused;
         }
 
         // Refusing tells the client nothing — it simply waits for a trade that never opens — so
@@ -92,7 +92,7 @@ public sealed partial class RoomGrain
                 item.Definition.LogicName
             );
 
-            return false;
+            return WiredDepositStart.Refused;
         }
 
         if (IsCoinChestLogic(item.Definition.LogicName))
@@ -102,7 +102,7 @@ public sealed partial class RoomGrain
                 chestId
             );
 
-            return false;
+            return WiredDepositStart.Refused;
         }
 
         try
@@ -120,7 +120,7 @@ public sealed partial class RoomGrain
             {
                 _logger.LogDebug("Deposit refused: chest {ChestId} is locked.", chestId);
 
-                return false;
+                return WiredDepositStart.Refused;
             }
 
             if (chest is null || !chest.EveryoneCanDonate)
@@ -138,13 +138,17 @@ public sealed partial class RoomGrain
                         ctx.PlayerId
                     );
 
-                    return false;
+                    return WiredDepositStart.Refused;
                 }
             }
 
+            // Replacing tells the client to close the screen it already has up before opening this
+            // one — true only when there really is one.
+            bool replaced = _chestDeposits.ContainsKey(ctx.PlayerId);
+
             _chestDeposits[ctx.PlayerId] = new ChestDeposit(chestId, []);
 
-            return true;
+            return replaced ? WiredDepositStart.Replaced : WiredDepositStart.Opened;
         }
         catch (Exception ex)
         {
@@ -155,7 +159,7 @@ public sealed partial class RoomGrain
                 RoomId
             );
 
-            return false;
+            return WiredDepositStart.Refused;
         }
     }
 

@@ -5,6 +5,7 @@ using Orleans;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Inventory.Snapshots;
 using Vortex.Primitives.Players;
+using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Snapshots.Wired;
 
 namespace Vortex.Primitives.Rooms.Grains;
@@ -42,7 +43,11 @@ public partial interface IRoomWired
     /// False when this player may not fill that chest, which is a different permission from opening
     /// it: "everyone can donate" lets anyone in, while looking inside still needs decorating rights.
     /// </remarks>
-    Task<bool> StartWiredChestDepositAsync(ActionContext ctx, int chestId, CancellationToken ct);
+    Task<WiredDepositStart> StartWiredChestDepositAsync(
+        ActionContext ctx,
+        int chestId,
+        CancellationToken ct
+    );
 
     /// <summary>
     /// Puts furniture on an open deposit's table, or takes it off. Null when none is open.
