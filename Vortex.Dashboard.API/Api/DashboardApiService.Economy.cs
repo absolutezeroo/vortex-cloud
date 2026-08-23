@@ -128,10 +128,7 @@ internal sealed partial class DashboardApiService
                 (DateTime since, DateTime until) = ResolveWindow(query, DateTime.UtcNow);
                 string granularity = NormalizeGranularity(query["granularity"]);
 
-                List<EconomyTrendRow> rows = await db
-                    .EconomyLedger.AsNoTracking()
-                    .Where(l => l.OccurredAt >= since && l.OccurredAt <= until)
-                    .Select(l => new EconomyTrendRow(l.OccurredAt, l.Currency, l.Delta))
+                List<EconomyTrendRow> rows = await EconomyTrendQuery(db, since, until)
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
@@ -160,12 +157,15 @@ internal sealed partial class DashboardApiService
                         List<EconomyTrendRow> currencyRows = rows.Where(r => r.Currency == currency)
                             .ToList();
 
+                        long spend = currencyRows.Sum(r => r.Spend);
+                        long earned = currencyRows.Sum(r => r.Earned);
+
                         return new
                         {
-                            spend = -currencyRows.Where(r => r.Delta < 0).Sum(r => r.Delta),
-                            earned = currencyRows.Where(r => r.Delta > 0).Sum(r => r.Delta),
-                            net = currencyRows.Sum(r => r.Delta),
-                            transactionCount = currencyRows.Count,
+                            spend,
+                            earned,
+                            net = earned - spend,
+                            transactionCount = currencyRows.Sum(r => r.TransactionCount),
                         };
                     }
                 );
@@ -207,35 +207,17 @@ internal sealed partial class DashboardApiService
         CancellationToken ct
     )
     {
-        var spendRows = await (
-            from l in db.EconomyLedger.AsNoTracking()
-            where
-                l.OccurredAt >= since
-                && l.OccurredAt <= until
-                && l.Delta < 0
-                && l.CorrelationId != null
-            join a in db.AuditEvents.AsNoTracking()
-                on l.CorrelationId equals a.CorrelationId
-                into matched
-            from a in matched.DefaultIfEmpty()
-            select new
-            {
-                l.Currency,
-                l.Delta,
-                Action = a != null ? a.Action : null,
-            }
-        )
+        List<EconomySpendCategoryRow> spendRows = await SpendCategoryQuery(db, since, until)
             .ToListAsync(ct)
             .ConfigureAwait(false);
 
         return spendRows
-            .GroupBy(r => new { r.Currency, Action = r.Action ?? "uncategorized" })
-            .Select(g => new
+            .Select(r => new
             {
-                currency = g.Key.Currency,
-                action = g.Key.Action,
-                spend = -g.Sum(r => r.Delta),
-                transactionCount = g.Count(),
+                currency = r.Currency,
+                action = r.Action ?? "uncategorized",
+                spend = r.Spend,
+                transactionCount = r.TransactionCount,
             })
             .OrderByDescending(x => x.spend)
             .Select(x => (object)x)
@@ -750,7 +732,22 @@ internal sealed partial class DashboardApiService
             .ToList();
     }
 
-    private sealed record EconomyTrendRow(DateTime OccurredAt, string Currency, long Delta);
+    /// <summary>One day of one currency, already summed by the database.</summary>
+    internal sealed record EconomyTrendRow(
+        DateTime Day,
+        string Currency,
+        long Spend,
+        long Earned,
+        int TransactionCount
+    );
+
+    /// <summary>One (currency, originating action) pair of spend, already summed by the database.</summary>
+    internal sealed record EconomySpendCategoryRow(
+        string Currency,
+        string? Action,
+        long Spend,
+        int TransactionCount
+    );
 
     private static List<EconomyTrendPoint> BuildEconomyTrendPoints(
         IReadOnlyList<EconomyTrendRow> rows,
@@ -772,7 +769,7 @@ internal sealed partial class DashboardApiService
 
         foreach (EconomyTrendRow row in rows)
         {
-            DateTime bucket = ResolveCalendarBucket(row.OccurredAt, granularity);
+            DateTime bucket = ResolveCalendarBucket(row.Day, granularity);
             (long spend, long earned, int count) current = bucketMap.TryGetValue(
                 bucket,
                 out (long spend, long earned, int count) existing
@@ -780,10 +777,11 @@ internal sealed partial class DashboardApiService
                 ? existing
                 : (0, 0, 0);
 
-            bucketMap[bucket] =
-                row.Delta < 0
-                    ? (current.spend - row.Delta, current.earned, current.count + 1)
-                    : (current.spend, current.earned + row.Delta, current.count + 1);
+            bucketMap[bucket] = (
+                current.spend + row.Spend,
+                current.earned + row.Earned,
+                current.count + row.TransactionCount
+            );
         }
 
         return bucketMap
