@@ -137,6 +137,10 @@ export default {
     selectMissingHint: 'No enabled currency matches this reward, so it would never be paid.',
   },
   common: {
+    close: 'Close',
+    size: 'Size',
+    quantityLabel: 'Quantity',
+    uniqueRemaining: 'Unique remaining / edition size',
     run: 'Run',
     cancel: 'Cancel',
     confirm: 'Confirm',
@@ -775,6 +779,7 @@ export default {
     noProfileFound: 'No profile found.',
   },
   lineChart: {
+    chartLabel: 'Trend chart',
     noData: 'No data for this window.',
   },
   cfh: {
@@ -1092,6 +1097,8 @@ export default {
     deleteSummary: 'Delete “{name}” (#{id}). Blocked if it\'s still placed/owned or used by a catalog product.',
   },
   catalogAdmin: {
+    breadcrumbLabel: 'Catalog page path',
+    textDataPlaceholder: 'Welcome to our shop!',
     // Short field names for the before/after list in the confirm dialog and the audited reason. The
     // form's own labels carry "*" and "(optional)", which read badly inside a sentence.
     fieldLocalizationId: 'Localization id',
@@ -1234,6 +1241,9 @@ export default {
     readOnlyNotice: 'You can view configuration but not change it.',
   },
   nav: {
+    sectionsLabel: 'Dashboard sections',
+    languageLabel: 'Dashboard language',
+    themeLabel: 'Dashboard theme',
     groupLive: 'Live',
     groupPlayers: 'Players',
     groupRooms: 'Rooms',

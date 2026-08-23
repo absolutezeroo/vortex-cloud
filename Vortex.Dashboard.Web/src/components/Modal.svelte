@@ -10,6 +10,7 @@
   //     <svelte:fragment slot="actions">...buttons...</svelte:fragment>
   //   </Modal>
   import { useDialogBehaviour } from '../lib/dialogBehaviour.js';
+  import { t } from '../lib/i18n.js';
 
   
   
@@ -61,7 +62,7 @@ search box off the top of the dialog.
   <button
     class="modal-backdrop"
     type="button"
-    aria-label="Close"
+    aria-label={$t('common.close')}
     tabindex="-1"
     onclick={close}
   ></button>

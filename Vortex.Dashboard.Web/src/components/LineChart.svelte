@@ -181,7 +181,7 @@
   onmousemove={handleMove}
   onmouseleave={handleLeave}
   role="img"
-  aria-label="Trend chart"
+  aria-label={$t('lineChart.chartLabel')}
 >
   {#if !hasData}
     <p class="muted">{emptyMessage || $t('lineChart.noData')}</p>

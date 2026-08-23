@@ -1004,19 +1004,33 @@ internal sealed partial class DashboardApiService
                 string term = (query["q"] ?? string.Empty).Trim();
                 int limit = ParseLimit(query["limit"], 50, 200);
 
+                // Without an offset the picker could only ever reach the first page: "Load more" is
+                // driven by hasMore, and a directory that never reports one silently pretends the
+                // hotel has 200 accounts.
+                int offset = int.TryParse(query["offset"], out int parsedOffset)
+                    ? Math.Max(0, parsedOffset)
+                    : 0;
+
                 List<PlayerRow> rows;
+                int total;
 
                 if (term.Length == 0)
                 {
-                    // Browsing: surface online players first, then the most recent accounts.
+                    // Browsing: surface online players first, then the most recent accounts. Paging
+                    // walks that same order -- the online block, then the rest -- so scrolling past
+                    // the last online player continues into the offline ones instead of repeating
+                    // them.
                     List<int> onlineIds = online.ToList();
 
+                    total = await db.Players.AsNoTracking().CountAsync(ct).ConfigureAwait(false);
+
                     List<PlayerRow> onlineRows =
-                        onlineIds.Count > 0
+                        onlineIds.Count > 0 && offset < onlineIds.Count
                             ? await db
                                 .Players.AsNoTracking()
                                 .Where(p => onlineIds.Contains(p.Id))
                                 .OrderBy(p => p.Name)
+                                .Skip(offset)
                                 .Take(limit)
                                 .Select(p => new PlayerRow(p.Id, p.Name, p.Figure))
                                 .ToListAsync(ct)
@@ -1025,12 +1039,16 @@ internal sealed partial class DashboardApiService
 
                     int remaining = limit - onlineRows.Count;
 
+                    // Past the online block the offset counts from the start of the offline ones.
+                    int fillOffset = Math.Max(0, offset - onlineIds.Count);
+
                     List<PlayerRow> fillRows =
                         remaining > 0
                             ? await db
                                 .Players.AsNoTracking()
                                 .Where(p => !onlineIds.Contains(p.Id))
                                 .OrderByDescending(p => p.Id)
+                                .Skip(fillOffset)
                                 .Take(remaining)
                                 .Select(p => new PlayerRow(p.Id, p.Name, p.Figure))
                                 .ToListAsync(ct)
@@ -1052,7 +1070,10 @@ internal sealed partial class DashboardApiService
                         players = players.Where(p => p.Name.Contains(term));
                     }
 
+                    total = await players.CountAsync(ct).ConfigureAwait(false);
+
                     rows = await OrderPlayers(players, query["sort"])
+                        .Skip(offset)
                         .Take(limit)
                         .Select(p => new PlayerRow(p.Id, p.Name, p.Figure))
                         .ToListAsync(ct)
@@ -1090,6 +1111,12 @@ internal sealed partial class DashboardApiService
                 return new
                 {
                     count = items.Count,
+                    total,
+                    offset,
+                    // The online filter drops rows after the projection, so the last page can come
+                    // back short; comparing against the unfiltered total would offer a "Load more"
+                    // that returns nothing. A short page is the end of the list.
+                    hasMore = items.Count == limit && offset + items.Count < total,
                     online = online.Count,
                     items,
                 };
@@ -1109,6 +1136,9 @@ internal sealed partial class DashboardApiService
             {
                 string term = (query["q"] ?? string.Empty).Trim();
                 int limit = ParseLimit(query["limit"], 50, 200);
+                int offset = int.TryParse(query["offset"], out int parsedOffset)
+                    ? Math.Max(0, parsedOffset)
+                    : 0;
 
                 IQueryable<RoomEntity> rooms = db.Rooms.AsNoTracking();
 
@@ -1119,7 +1149,10 @@ internal sealed partial class DashboardApiService
                         : rooms.Where(r => r.Name.Contains(term));
                 }
 
+                int total = await rooms.CountAsync(ct).ConfigureAwait(false);
+
                 var items = await OrderRooms(rooms, query["sort"])
+                    .Skip(offset)
                     .Take(limit)
                     .Select(r => new
                     {
@@ -1133,7 +1166,14 @@ internal sealed partial class DashboardApiService
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                return new { count = items.Count, items };
+                return new
+                {
+                    count = items.Count,
+                    total,
+                    offset,
+                    hasMore = offset + items.Count < total,
+                    items,
+                };
             },
             ct
         );

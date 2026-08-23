@@ -292,7 +292,7 @@
       />
     </div>
 
-    <nav aria-label="Dashboard sections">
+    <nav aria-label={$t('nav.sectionsLabel')}>
       {#each groups as group}
         {@const collapsed = isCollapsed(group, query, collapsedGroups)}
         {@const SvelteComponent = collapsed ? ChevronRight : ChevronDown}
@@ -358,7 +358,7 @@
         <h1>{activeLabel}</h1>
       </div>
       <div class="session-area">
-        <div class="locale-switch" role="radiogroup" aria-label="Dashboard language">
+        <div class="locale-switch" role="radiogroup" aria-label={$t('nav.languageLabel')}>
           {#each LOCALES as loc}
             <button
               type="button"
@@ -371,7 +371,7 @@
             </button>
           {/each}
         </div>
-        <div class="theme-switch" role="radiogroup" aria-label="Dashboard theme">
+        <div class="theme-switch" role="radiogroup" aria-label={$t('nav.themeLabel')}>
           {#each THEMES as themeOption}
             <button
               type="button"

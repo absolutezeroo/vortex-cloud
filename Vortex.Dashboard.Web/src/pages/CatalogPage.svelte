@@ -18,6 +18,7 @@
     Tag,
     Trash2,
   } from '@lucide/svelte';
+  import AssetImage from '../components/AssetImage.svelte';
   import { apiGet } from '../lib/api.js';
   import { createWriteOps } from '../lib/writeOps.js';
   import { isPermissionDeniedError, hasDashboardCapability } from '../lib/permissions.js';
@@ -697,7 +698,7 @@
     {/each}
   </div>
 
-  <nav class="breadcrumb" aria-label="Catalog page path">
+  <nav class="breadcrumb" aria-label={$t('catalogAdmin.breadcrumbLabel')}>
     <button type="button" class="crumb-button" class:active={parentChain.length === 0} onclick={() => drillToBreadcrumb(-1)}>
       <Folder size={14} strokeWidth={2} aria-hidden="true" /> {$t('catalogAdmin.root')}
     </button>
@@ -717,13 +718,7 @@
     <section class="panel">
       <div class="panel-head">
         <div class="page-heading">
-          <span class="page-avatar">
-            {#if currentPage.iconUrl}
-              <img src={currentPage.iconUrl} alt="" loading="lazy" />
-            {:else}
-              <FolderOpen size={20} strokeWidth={2} aria-hidden="true" />
-            {/if}
-          </span>
+          <AssetImage src={currentPage.iconUrl} alt="" size={40} fallbackIcon={FolderOpen} />
           <div>
             <h2>{currentPage.name || currentPage.localization}</h2>
             <small class="muted">{currentPage.localization} - #{currentPage.id}</small>
@@ -823,13 +818,7 @@
       <div class="catalog-list">
         {#each pages as page (page.id)}
           <button type="button" class="catalog-row" onclick={() => drillInto(page)}>
-            <span class="catalog-row-icon">
-              {#if page.iconUrl}
-                <img src={page.iconUrl} alt="" loading="lazy" />
-              {:else}
-                <Folder size={18} strokeWidth={2} aria-hidden="true" />
-              {/if}
-            </span>
+            <AssetImage src={page.iconUrl} alt="" size={38} fallbackIcon={Folder} />
             <span class="catalog-row-main">
               <strong>{page.name || page.localization}</strong>
               <small class="muted">{page.localization} - #{page.id}</small>
@@ -892,17 +881,16 @@
 
               {#if offer.productCount === 1 && offer.singleProduct}
                 <div class="catalog-row-sub">
-                  <span class="catalog-row-icon small">
-                    {#if offer.singleProduct.furnitureIconUrl}
-                      <img src={offer.singleProduct.furnitureIconUrl} alt="" loading="lazy" />
-                    {:else}
-                      <Image size={13} strokeWidth={2} aria-hidden="true" />
-                    {/if}
-                  </span>
+                  <AssetImage
+                    src={offer.singleProduct.furnitureIconUrl}
+                    alt=""
+                    size={22}
+                    fallbackIcon={Image}
+                  />
                   <span class="muted">{offer.singleProduct.furnitureName || offer.singleProduct.productTypeLabel}</span>
-                  <span class="op-chip" title="Quantity">x{offer.singleProduct.quantity}</span>
+                  <span class="op-chip" title={$t('common.quantityLabel')}>x{offer.singleProduct.quantity}</span>
                   {#if offer.singleProduct.uniqueSize > 0}
-                    <span class="op-chip" title="Unique remaining/size">{offer.singleProduct.uniqueRemaining}/{offer.singleProduct.uniqueSize}</span>
+                    <span class="op-chip" title={$t('common.uniqueRemaining')}>{offer.singleProduct.uniqueRemaining}/{offer.singleProduct.uniqueSize}</span>
                   {/if}
                   {#if offer.singleProduct.buildersClubEligible}
                     <span class="status-badge status-badge--ok">BC</span>
@@ -943,21 +931,20 @@
                         {#each offerDetail.products as product (product.id)}
                           <div class="catalog-card">
                             <div class="catalog-row static">
-                              <span class="catalog-row-icon">
-                                {#if product.furnitureIconUrl}
-                                  <img src={product.furnitureIconUrl} alt="" loading="lazy" />
-                                {:else}
-                                  <Image size={18} strokeWidth={2} aria-hidden="true" />
-                                {/if}
-                              </span>
+                              <AssetImage
+                                src={product.furnitureIconUrl}
+                                alt=""
+                                size={38}
+                                fallbackIcon={Image}
+                              />
                               <span class="catalog-row-main">
                                 <strong>{product.furnitureName || product.productTypeLabel}</strong>
                                 <small class="muted">{product.productTypeLabel}{product.furnitureDefinitionEntityId ? ` - #${product.furnitureDefinitionEntityId}` : ''}</small>
                               </span>
                               <span class="catalog-row-meta">
-                                <span class="op-chip" title="Quantity">x{product.quantity}</span>
+                                <span class="op-chip" title={$t('common.quantityLabel')}>x{product.quantity}</span>
                                 {#if product.uniqueSize > 0}
-                                  <span class="op-chip" title="Unique remaining/size">{product.uniqueRemaining}/{product.uniqueSize}</span>
+                                  <span class="op-chip" title={$t('common.uniqueRemaining')}>{product.uniqueRemaining}/{product.uniqueSize}</span>
                                 {/if}
                                 {#if product.buildersClubEligible}
                                   <span class="status-badge status-badge--ok">BC</span>
@@ -1067,7 +1054,7 @@
       </div>
       <div class="op-field">
         <label for="edit-page-text-data">{$t('catalogAdmin.textDataOptional')}</label>
-        <textarea id="edit-page-text-data" rows="3" bind:value={editPageForm.textDataText} placeholder="Welcome to our shop!"></textarea>
+        <textarea id="edit-page-text-data" rows="3" bind:value={editPageForm.textDataText} placeholder={$t('catalogAdmin.textDataPlaceholder')}></textarea>
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageUpdatePage} disabled={$ops.busyKeys.updatePage}>{$t('catalogAdmin.save')}</button>
@@ -1123,7 +1110,7 @@
       </div>
       <div class="op-field">
         <label for="new-page-text-data">{$t('catalogAdmin.textDataOptional')}</label>
-        <textarea id="new-page-text-data" rows="3" bind:value={newPage.textDataText} placeholder="Welcome to our shop!"></textarea>
+        <textarea id="new-page-text-data" rows="3" bind:value={newPage.textDataText} placeholder={$t('catalogAdmin.textDataPlaceholder')}></textarea>
       </div>
       <div class="op-actions">
         <button type="button" onclick={stageCreatePage} disabled={$ops.busyKeys.createPage}>{$t('catalogAdmin.create')}</button>
@@ -1481,26 +1468,7 @@
     margin: 0;
   }
 
-  .page-avatar {
-    width: 40px;
-    height: 40px;
-    flex: 0 0 auto;
-    display: grid;
-    place-items: center;
-    border: 1px solid var(--line-strong);
-    border-radius: 10px;
-    background: var(--surface-raised);
-    color: var(--accent);
-    overflow: hidden;
-  }
 
-  .page-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
-  }
 
   .catalog-row {
     display: flex;
@@ -1539,19 +1507,7 @@
     overflow: hidden;
   }
 
-  .catalog-row-icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
-  }
 
-  .catalog-row-icon.small {
-    width: 22px;
-    height: 22px;
-    border-radius: 6px;
-  }
 
   /* Compact secondary line under an offer's main row, showing the single product it delivers
      without requiring a click -- see offerActionLabel()'s doc comment for why this exists. */

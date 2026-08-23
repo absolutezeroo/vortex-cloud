@@ -3,6 +3,7 @@
   import ConfirmStagedModal from '../components/ConfirmStagedModal.svelte';
   import OpResult from '../components/OpResult.svelte';
   import { Eye, EyeOff, Image, Package, Pencil, Plus, Trash2 } from '@lucide/svelte';
+  import AssetImage from '../components/AssetImage.svelte';
   import { apiGet } from '../lib/api.js';
   import { createResource } from '../lib/resource.js';
   import { createWriteOps } from '../lib/writeOps.js';
@@ -369,19 +370,13 @@
              they wanted to delete anything. The confirm dialog collects it instead. -->
         <div class="furni-card">
           <div class="furni-row">
-            <span class="furni-row-icon">
-              {#if item.iconUrl}
-                <img src={item.iconUrl} alt="" loading="lazy" />
-              {:else}
-                <Image size={18} strokeWidth={2} aria-hidden="true" />
-              {/if}
-            </span>
+            <AssetImage src={item.iconUrl} alt="" size={38} fallbackIcon={Image} />
             <span class="furni-row-main">
               <strong>{item.name}</strong>
               <small class="muted">#{item.id} - sprite {item.spriteId} - {item.productTypeLabel} - {item.furniCategoryLabel}</small>
             </span>
             <span class="furni-row-meta">
-              <span class="op-chip" title="Size">{item.width}x{item.length}</span>
+              <span class="op-chip" title={$t('common.size')}>{item.width}x{item.length}</span>
               <span class="status-badge" class:status-badge--ok={item.canTrade} class:status-badge--bad={!item.canTrade}>
                 {#if item.canTrade}<Eye size={12} strokeWidth={2} aria-hidden="true" />{:else}<EyeOff size={12} strokeWidth={2} aria-hidden="true" />{/if}
                 {$t('furnitureAdmin.trade')}
@@ -541,26 +536,7 @@
     padding: 10px 12px;
   }
 
-  .furni-row-icon {
-    width: 38px;
-    height: 38px;
-    flex: 0 0 auto;
-    display: grid;
-    place-items: center;
-    border: 1px solid var(--line-strong);
-    border-radius: 9px;
-    background: var(--input-bg);
-    color: var(--accent);
-    overflow: hidden;
-  }
 
-  .furni-row-icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
-  }
 
   .furni-row-main {
     display: grid;

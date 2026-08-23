@@ -135,6 +135,10 @@ export default {
     selectMissingHint: "Aucune monnaie active ne correspond à cette récompense : elle ne serait jamais versée.",
   },
   common: {
+    close: 'Fermer',
+    size: 'Taille',
+    quantityLabel: 'Quantité',
+    uniqueRemaining: 'Exemplaires restants / taille de l’édition',
     run: 'Lancer',
     cancel: 'Annuler',
     confirm: 'Confirmer',
@@ -774,6 +778,7 @@ export default {
     noProfileFound: 'Aucun profil trouvé.',
   },
   lineChart: {
+    chartLabel: 'Graphique de tendance',
     noData: 'Aucune donnée pour cette fenêtre.',
   },
   cfh: {
@@ -1091,6 +1096,8 @@ export default {
     deleteSummary: 'Supprimer “{name}” (#{id}). Bloqué si encore placé/possédé ou utilisé par un produit du catalogue.',
   },
   catalogAdmin: {
+    breadcrumbLabel: 'Chemin de la page catalogue',
+    textDataPlaceholder: 'Bienvenue dans notre boutique !',
     // Noms de champs courts pour la liste avant/après de la modale et la raison auditée. Les libellés
     // du formulaire portent « * » et « (optionnel) », illisibles dans une phrase.
     fieldLocalizationId: 'Identifiant de localisation',
@@ -1233,6 +1240,9 @@ export default {
     readOnlyNotice: 'Vous pouvez voir la configuration mais pas la modifier.',
   },
   nav: {
+    sectionsLabel: 'Sections du dashboard',
+    languageLabel: 'Langue du dashboard',
+    themeLabel: 'Thème du dashboard',
     groupLive: 'En direct',
     groupPlayers: 'Joueurs',
     groupRooms: 'Salles',

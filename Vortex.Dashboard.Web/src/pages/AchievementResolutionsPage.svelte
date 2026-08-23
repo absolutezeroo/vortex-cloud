@@ -295,7 +295,7 @@
     margin-bottom: 12px;
   }
 
-  h1 {
+  h2 {
     margin: 0;
     font-size: 1.35rem;
   }

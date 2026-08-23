@@ -20,6 +20,7 @@
   //     </Drawer>
   //   {/if}
   import { useDialogBehaviour } from '../lib/dialogBehaviour.js';
+  import { t } from '../lib/i18n.js';
   import { X } from '@lucide/svelte';
 
   /**
@@ -72,7 +73,7 @@
 <svelte:window onbeforeunload={guardUnload} />
 
 <div class="drawer-layer">
-  <button class="drawer-backdrop" type="button" aria-label="Close" tabindex="-1" onclick={close}
+  <button class="drawer-backdrop" type="button" aria-label={$t('common.close')} tabindex="-1" onclick={close}
   ></button>
   <section
     class="drawer-panel"
@@ -91,7 +92,7 @@
         {#if title}<h2 id={labelledBy}>{title}</h2>{/if}
       </div>
       {#if dismissible}
-        <button type="button" class="drawer-close" onclick={close} aria-label="Close">
+        <button type="button" class="drawer-close" onclick={close} aria-label={$t('common.close')}>
           <X size={18} strokeWidth={2} aria-hidden="true" />
         </button>
       {/if}
