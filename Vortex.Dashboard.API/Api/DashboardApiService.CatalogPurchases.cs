@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
+using Vortex.Database.Entities.Audit;
 using Vortex.Primitives.Observability;
 
 namespace Vortex.Dashboard.API.Api;
@@ -29,26 +30,42 @@ internal sealed partial class DashboardApiService
                 (DateTime since, DateTime until) = ResolveWindow(query, DateTime.UtcNow);
                 string granularity = NormalizeGranularity(query["granularity"]);
 
-                List<(DateTime OccurredAt, string? Data)> events = await db
+                IQueryable<AuditEventEntity> purchaseEvents = db
                     .AuditEvents.AsNoTracking()
                     .Where(a =>
                         a.Category == AuditCategory.Economy
                         && a.Action == "economy.catalog_purchase"
                         && a.OccurredAt >= since
                         && a.OccurredAt <= until
-                    )
+                    );
+
+                // Rows written since the columns exist carry their numbers where the database can
+                // read them; only the older ones still need their JSON opened. What used to be the
+                // whole window is now the tail of it, and the tail stops growing.
+                List<CatalogPurchasePayload> purchases = await purchaseEvents
+                    .Where(a => a.Amount != null)
+                    .Select(a => new CatalogPurchasePayload(
+                        a.OccurredAt,
+                        "",
+                        (int)a.ItemId!.Value,
+                        a.Quantity ?? 1,
+                        (int)a.Amount!.Value
+                    ))
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+
+                List<(DateTime OccurredAt, string? Data)> legacy = await purchaseEvents
+                    .Where(a => a.Amount == null)
                     .Select(a => new ValueTuple<DateTime, string?>(a.OccurredAt, a.Data))
                     .ToListAsync(ct)
                     .ConfigureAwait(false);
 
-                // ponytail: grouped in memory, and it has to be -- the numbers being summed live
-                // inside the audit event's JSON payload, not in a column the database can group
-                // by. The window bound above is what keeps it honest; the real fix is a column.
-                List<CatalogPurchasePayload> purchases = events
-                    .Select(e => ParseCatalogPurchasePayload(e.OccurredAt, e.Data))
-                    .Where(p => p is not null)
-                    .Select(p => p!)
-                    .ToList();
+                purchases.AddRange(
+                    legacy
+                        .Select(e => ParseCatalogPurchasePayload(e.OccurredAt, e.Data))
+                        .Where(p => p is not null)
+                        .Select(p => p!)
+                );
 
                 int purchaseCount = purchases.Count;
                 long totalCreditsSpent = purchases.Sum(p => (long)p.CreditCost);

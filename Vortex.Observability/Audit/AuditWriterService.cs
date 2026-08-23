@@ -313,6 +313,8 @@ public sealed class AuditWriterService : BackgroundService
             RoomId = record.Event.RoomId,
             ItemId = record.Event.ItemId,
             IpHash = record.Event.IpHash,
+            Amount = record.Event.Amount,
+            Quantity = record.Event.Quantity,
             Data = record.Event.Data,
         };
     }

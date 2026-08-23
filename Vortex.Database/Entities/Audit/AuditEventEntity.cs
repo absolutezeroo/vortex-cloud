@@ -66,6 +66,20 @@ public class AuditEventEntity : VortexEntity
     public string? IpHash { get; set; }
 
     /// <summary>Optional structured (JSON) payload with action-specific detail.</summary>
+    /// <summary>
+    /// The number this event is about, when it is about one: credits spent, months bought, seconds
+    /// of a sanction. It used to live only inside <see cref="Data" />, which meant every read that
+    /// wanted to sum it had to pull the whole window into memory and parse JSON -- inside the game
+    /// process. Null on the events that have no such number, and on every row written before this
+    /// column existed.
+    /// </summary>
+    [Column("amount")]
+    public long? Amount { get; set; }
+
+    /// <summary>How many of whatever it was. Same reason, same nullability.</summary>
+    [Column("quantity")]
+    public int? Quantity { get; set; }
+
     [Column("data", TypeName = "text")]
     public string? Data { get; set; }
 }

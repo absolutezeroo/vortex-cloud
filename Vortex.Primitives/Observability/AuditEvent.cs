@@ -31,5 +31,12 @@ public readonly record struct AuditEvent
     public string? IpHash { get; init; }
 
     /// <summary>Optional structured (JSON) payload carrying action-specific detail.</summary>
+    /// <summary>The number the event is about, promoted out of <see cref="Data" /> so a read can
+    /// SUM it in the database instead of parsing every row's JSON.</summary>
+    public long? Amount { get; init; }
+
+    /// <summary>How many of whatever it was.</summary>
+    public int? Quantity { get; init; }
+
     public string? Data { get; init; }
 }

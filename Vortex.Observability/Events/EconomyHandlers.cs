@@ -47,6 +47,13 @@ public sealed class CatalogPurchasedAuditHandler(IAuditSink audit)
                 Severity = AuditSeverity.Info,
                 Result = AuditResult.Success,
                 ActorPlayerId = e.PlayerId,
+                // Also in Data, and deliberately: rows written before these columns existed only
+                // have the JSON, so the read falls back to it and the two must agree.
+                // The offer goes in the id column the row already has, so the whole read groups in
+                // SQL rather than opening every payload to find out what was bought.
+                ItemId = e.OfferId,
+                Amount = e.CreditCost,
+                Quantity = e.Quantity,
                 Data = JsonSerializer.Serialize(
                     new
                     {
