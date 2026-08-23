@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Primitives.Furniture.Providers;
+using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Rooms.Enums.Wired;
 using Vortex.Primitives.Rooms.Object.Furniture;
 using Vortex.Primitives.Rooms.Object.Furniture.Floor;
 using Vortex.Primitives.Rooms.Object.Logic;
 using Vortex.Primitives.Rooms.Wired;
+using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Addons;
 using Vortex.Rooms.Wired.Rules;
 
 namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Actions;
@@ -29,6 +32,11 @@ namespace Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Actions;
 /// <para>
 /// The contract is whichever of the box's own configured furni is one. One offer stands per player,
 /// so offering again withdraws what was there, and a withdrawn offer counts as failed.
+/// </para>
+/// <para>
+/// The terms are not the contract furni's — that one ships as plain furniture and carries no form.
+/// They belong to the custom-contract add-on in this same stack, and without one there is nothing
+/// to offer: a trade screen with no price on it is worse than none at all.
 /// </para>
 /// </remarks>
 [RoomObjectLogic("wf_act_init_transaction")]
@@ -89,6 +97,15 @@ public class WiredActionInitiateTransaction(
             return true;
         }
 
+        WiredAddonCustomContract? terms = ctx
+            .Addons.OfType<WiredAddonCustomContract>()
+            .FirstOrDefault();
+
+        if (terms is null || !terms.TryBuildContract(mode, multiplier, out TradeContract? contract))
+        {
+            return true;
+        }
+
         IWiredSelectionSet selection = await ctx.GetEffectiveSelectionAsync(this, ct);
 
         foreach (int playerId in selection.SelectedPlayerIds)
@@ -97,6 +114,7 @@ public class WiredActionInitiateTransaction(
                 .Transactions.OfferTransactionAsync(
                     contractId,
                     playerId,
+                    contract!,
                     mode,
                     multiplier,
                     cancelOnTimeout == TimeoutEnabled ? timeout : 0,

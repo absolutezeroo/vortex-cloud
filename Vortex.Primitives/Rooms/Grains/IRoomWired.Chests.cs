@@ -152,6 +152,19 @@ public partial interface IRoomWired
     );
 
     /// <summary>
+    /// One row of the log, opened: which chests it touched and what moved, kind by kind.
+    /// </summary>
+    /// <remarks>
+    /// Null when the row is not this room's, or when the player is not entitled to read it — the
+    /// same entitlement the log page itself asks for.
+    /// </remarks>
+    Task<WiredTransactionDetailsSnapshot?> GetWiredTransactionDetailsAsync(
+        ActionContext ctx,
+        long transactionId,
+        CancellationToken ct
+    );
+
+    /// <summary>
     /// Every chest in this room, a page at a time.
     /// </summary>
     Task<WiredTransactionsSnapshot?> GetWiredRoomTransactionsAsync(

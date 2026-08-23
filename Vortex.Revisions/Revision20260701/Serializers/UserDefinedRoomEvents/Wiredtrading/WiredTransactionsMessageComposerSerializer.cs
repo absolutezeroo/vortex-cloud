@@ -32,20 +32,7 @@ internal class WiredTransactionsMessageComposerSerializer(int header)
 
         foreach (WiredTransactionSnapshot log in page.Logs)
         {
-            packet
-                .WriteLong(log.TransactionId)
-                .WriteInteger(log.RoomId)
-                .WriteInteger(log.TransactionType)
-                .WriteString(log.DefinitionInfo)
-                .WriteInteger(log.PlayerId)
-                .WriteString(log.PlayerName)
-                .WriteLong(log.Timestamp)
-                .WriteString(log.ReadableTimestamp)
-                .WriteInteger(log.ChestCount)
-                .WriteInteger(log.WithdrawFurniCount)
-                .WriteInteger(log.DepositFurniCount)
-                .WriteInteger(log.WithdrawCoinsCount)
-                .WriteInteger(log.DepositCoinsCount);
+            packet.WriteTransaction(log);
         }
     }
 }

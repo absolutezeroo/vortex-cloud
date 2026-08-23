@@ -1055,6 +1055,158 @@ public sealed partial class RoomGrain
             .ConfigureAwait(true);
     }
 
+    /// <summary>
+    /// One row of the log, opened.
+    /// </summary>
+    /// <remarks>
+    /// The breakdown is rebuilt from the row's own <c>DefinitionInfo</c> — the names of what moved,
+    /// in order, repeated once per item — because that is what a row stores. Names resolve back to
+    /// definitions, and two of the same name are one line with a count, which is exactly what the
+    /// window renders. A name that no longer resolves is dropped and makes the answer incomplete,
+    /// so the window says "and more" rather than quietly under-reporting.
+    /// <para>
+    /// Withdrawals and deposits are told apart by the row's own counters, not by the text: one row
+    /// is one direction, and a row that moved nothing has an empty breakdown either way.
+    /// </para>
+    /// </remarks>
+    public async Task<WiredTransactionDetailsSnapshot?> GetWiredTransactionDetailsAsync(
+        ActionContext ctx,
+        long transactionId,
+        CancellationToken ct
+    )
+    {
+        if (ctx.PlayerId <= 0 || transactionId <= 0)
+        {
+            return null;
+        }
+
+        RoomControllerType level = await SecurityModule
+            .GetControllerLevelAsync(ctx)
+            .ConfigureAwait(true);
+
+        if (level == RoomControllerType.None)
+        {
+            return null;
+        }
+
+        try
+        {
+            await using VortexDbContext dbCtx = await _dbCtxFactory
+                .CreateDbContextAsync(ct)
+                .ConfigureAwait(true);
+
+            WiredChestTransactionEntity? row = await dbCtx
+                .WiredChestTransactions.AsNoTracking()
+                .FirstOrDefaultAsync(
+                    t =>
+                        t.Id == transactionId
+                        && t.RoomEntityId == (int)RoomId
+                        && t.DeletedAt == null,
+                    ct
+                )
+                .ConfigureAwait(true);
+
+            if (row is null)
+            {
+                return null;
+            }
+
+            int chestFurniId = await dbCtx
+                .WiredChests.AsNoTracking()
+                .Where(chest => chest.Id == row.WiredChestEntityId)
+                .Select(chest => chest.FurnitureEntityId)
+                .FirstOrDefaultAsync(ct)
+                .ConfigureAwait(true);
+
+            List<WiredTransactionItemCount> moved = BuildItemBreakdown(
+                row.DefinitionInfo,
+                out bool incomplete
+            );
+
+            bool isWithdrawal = row.WithdrawFurniCount > 0;
+
+            return new WiredTransactionDetailsSnapshot
+            {
+                Info = ToTransactionSnapshot(row),
+                ChestIds = chestFurniId > 0 ? [chestFurniId] : [],
+                Deposited = isWithdrawal ? [] : [.. moved],
+                Withdrawn = isWithdrawal ? [.. moved] : [],
+                IsIncompleteData = incomplete,
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "Failed to read transaction {TransactionId} in room {RoomId}.",
+                transactionId,
+                RoomId
+            );
+
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// The names a row recorded, counted by kind.
+    /// </summary>
+    /// <remarks>
+    /// A row stores what moved as names joined by ", ", so a name containing that separator would
+    /// split wrongly — none does, and furniture names are database identifiers rather than free
+    /// text. <paramref name="incomplete" /> is set when a name resolves to nothing, which is the
+    /// only way this can lose an item.
+    /// </remarks>
+    private List<WiredTransactionItemCount> BuildItemBreakdown(
+        string definitionInfo,
+        out bool incomplete
+    )
+    {
+        incomplete = false;
+
+        List<WiredTransactionItemCount> items = [];
+
+        if (string.IsNullOrWhiteSpace(definitionInfo))
+        {
+            return items;
+        }
+
+        Dictionary<int, WiredTransactionItemCount> byDefinition = [];
+
+        foreach (string name in definitionInfo.Split(',', StringSplitOptions.TrimEntries))
+        {
+            FurnitureDefinitionSnapshot? definition = _definitionProvider.TryGetDefinitionByName(
+                name
+            );
+
+            if (definition is null)
+            {
+                incomplete = true;
+
+                continue;
+            }
+
+            byDefinition[definition.Id] = byDefinition.TryGetValue(
+                definition.Id,
+                out WiredTransactionItemCount? seen
+            )
+                ? seen with
+                {
+                    Count = seen.Count + 1,
+                }
+                : new WiredTransactionItemCount
+                {
+                    IsWallItem = definition.ProductType == ProductType.Wall,
+                    SpriteId = definition.SpriteId,
+                    LegacyPosterId = string.Empty,
+                    Count = 1,
+                };
+        }
+
+        items.AddRange(byDefinition.Values);
+
+        return items;
+    }
+
     public async Task<WiredTransactionsSnapshot?> GetWiredRoomTransactionsAsync(
         ActionContext ctx,
         int pageSize,

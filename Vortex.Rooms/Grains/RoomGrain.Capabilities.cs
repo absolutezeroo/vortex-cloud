@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Enums.Games;
@@ -163,11 +164,13 @@ public sealed partial class RoomGrain
     Task<bool> IRoomTransactionAccess.OfferTransactionAsync(
         int contractId,
         PlayerId playerId,
+        TradeContract contract,
         int mode,
         int multiplier,
         int timeoutSeconds,
         CancellationToken ct
-    ) => OfferTransactionAsync(contractId, playerId, mode, multiplier, timeoutSeconds, ct);
+    ) =>
+        OfferTransactionAsync(contractId, playerId, contract, mode, multiplier, timeoutSeconds, ct);
 
     Task<int> IRoomTransactionAccess.CancelTransactionAsync(
         int contractId,

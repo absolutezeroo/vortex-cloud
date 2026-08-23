@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Players;
 
 namespace Vortex.Primitives.Rooms.Object;
@@ -18,11 +19,16 @@ public interface IRoomTransactionAccess
     /// </summary>
     /// <remarks>
     /// One at a time per player: the client shows a single trading screen, so a second offer is the
-    /// first one being withdrawn. Returns false when the box points at no contract.
+    /// first one being withdrawn.
     /// </remarks>
+    /// <param name="contract">
+    /// The terms, already read off the add-on that holds them. Built by the caller rather than here
+    /// because the form belongs to a box, not to the room.
+    /// </param>
     Task<bool> OfferTransactionAsync(
         int contractId,
         PlayerId playerId,
+        TradeContract contract,
         int mode,
         int multiplier,
         int timeoutSeconds,
