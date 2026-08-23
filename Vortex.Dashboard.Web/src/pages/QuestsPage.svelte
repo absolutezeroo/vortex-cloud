@@ -134,7 +134,7 @@
 
     try {
       const params = campaignFilter ? `?campaign=${encodeURIComponent(campaignFilter)}` : '';
-      const data = await apiGet(`/api/quests${params}`);
+      const data = await apiGet(`/api/v1/quests${params}`);
       quests = data.items || [];
       if (!campaignFilter) {
         campaigns = data.campaigns || [];
@@ -204,7 +204,7 @@
 
     const { id, form } = questModal;
     const staged = ops.ask(
-      id === null ? '/api/operations/quests' : '/api/operations/quests/update',
+      id === null ? '/api/v1/operations/quests' : '/api/v1/operations/quests/update',
       buildQuestBody(form, id),
       id === null ? translate('quests.newQuest') : translate('quests.edit'),
       '',
@@ -230,7 +230,7 @@
     ops.clear('questForm');
 
     try {
-      const detail = await apiGet(`/api/quests/${quest.id}`);
+      const detail = await apiGet(`/api/v1/quests/${quest.id}`);
 
       questModal = {
         id: quest.id,
@@ -268,7 +268,7 @@
     if (!canManage) return;
 
     deleteOps.ask(
-      '/api/operations/quests/delete',
+      '/api/v1/operations/quests/delete',
       { questId: quest.id },
       translate('quests.deleteQuest'),
       translate('quests.deleteQuestSummary', {
@@ -282,7 +282,7 @@
   // Best-effort: the type picker degrades to a free-text input if this fails, so errors are swallowed.
   async function loadQuestTypes() {
     try {
-      const data = await apiGet('/api/quests/types');
+      const data = await apiGet('/api/v1/quests/types');
       questTypes = data.items || [];
     } catch {
       questTypes = [];

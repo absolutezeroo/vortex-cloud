@@ -22,7 +22,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiTargetedOffers,
-            "/api/targeted-offers",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.TargetedOffersAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.TargetedOffersRead,
@@ -31,7 +30,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiTargetedOffers + "/stats",
-            "/api/targeted-offers/stats",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.TargetedOffersStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.TargetedOffersRead,
@@ -40,7 +38,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiTargetedOffers + "/form-meta",
-            "/api/targeted-offers/form-meta",
             (DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.TargetedOfferFormMetaAsync(ct)),
             Capabilities.Dashboard.TargetedOffersRead,
@@ -49,7 +46,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiTargetedOffers + "/images",
-            "/api/targeted-offers/images",
             (DashboardApiService api) => Results.Ok(api.TargetedOfferImages()),
             Capabilities.Dashboard.TargetedOffersRead,
             TagTargetedOffers
@@ -57,7 +53,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiTargetedOffers + "/{offerId:int}",
-            "/api/targeted-offers/{offerId:int}",
             (int offerId, DashboardApiService api, CancellationToken ct) =>
                 OkNullableAsync(api.TargetedOfferDetailAsync(offerId, ct)),
             Capabilities.Dashboard.TargetedOffersRead,
@@ -70,7 +65,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/targeted-offers",
-            "/api/operations/targeted-offers",
             async (
                 HttpContext ctx,
                 CreateTargetedOfferRequest body,
@@ -94,7 +88,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/targeted-offers/update",
-            "/api/operations/targeted-offers/update",
             async (
                 HttpContext ctx,
                 UpdateTargetedOfferRequest body,
@@ -118,7 +111,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/targeted-offers/delete",
-            "/api/operations/targeted-offers/delete",
             async (
                 HttpContext ctx,
                 DeleteTargetedOfferRequest body,
@@ -142,7 +134,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/targeted-offers/products",
-            "/api/operations/targeted-offers/products",
             async (
                 HttpContext ctx,
                 CreateTargetedOfferProductRequest body,
@@ -166,7 +157,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/targeted-offers/products/update",
-            "/api/operations/targeted-offers/products/update",
             async (
                 HttpContext ctx,
                 UpdateTargetedOfferProductRequest body,
@@ -190,7 +180,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/targeted-offers/products/delete",
-            "/api/operations/targeted-offers/products/delete",
             async (
                 HttpContext ctx,
                 DeleteTargetedOfferProductRequest body,

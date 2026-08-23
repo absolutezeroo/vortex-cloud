@@ -21,7 +21,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiBots,
-            "/api/bots",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.BotsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.BotsRead,
@@ -30,7 +29,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiBots + "/stats",
-            "/api/bots/stats",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.BotsStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.BotsRead,
@@ -39,7 +37,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiBots + "/{botId:int}",
-            "/api/bots/{botId:int}",
             (int botId, DashboardApiService api, CancellationToken ct) =>
                 OkNullableAsync(api.BotDetailAsync(botId, ct)),
             Capabilities.Dashboard.BotsRead,
@@ -48,7 +45,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiHandItems,
-            "/api/hand-items",
             (DashboardApiService api, CancellationToken ct) => OkAsync(api.HandItemsAsync(ct)),
             Capabilities.Dashboard.BotsRead,
             TagBots

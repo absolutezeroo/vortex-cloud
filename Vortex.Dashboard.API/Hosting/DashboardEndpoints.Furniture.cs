@@ -25,7 +25,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiFurniture + "/definitions",
-            "/api/furniture/definitions",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.FurnitureDefinitionAdminListAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.FurnitureRead,
@@ -38,7 +37,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/furniture/definitions",
-            "/api/ops/furniture/definitions",
             async (
                 HttpContext ctx,
                 CreateFurnitureDefinitionRequest body,
@@ -62,7 +60,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/furniture/definitions/update",
-            "/api/ops/furniture/definitions/update",
             async (
                 HttpContext ctx,
                 UpdateFurnitureDefinitionRequest body,
@@ -86,7 +83,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/furniture/definitions/delete",
-            "/api/ops/furniture/definitions/delete",
             async (
                 HttpContext ctx,
                 DeleteFurnitureDefinitionRequest body,

@@ -23,7 +23,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiCommunityGoals,
-            "/api/community-goals",
             (DashboardApiService api, CancellationToken ct) => OkAsync(api.CommunityGoalsAsync(ct)),
             Capabilities.Dashboard.QuestsRead,
             TagQuestContent
@@ -31,7 +30,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiDailyTasks,
-            "/api/daily-tasks",
             (DashboardApiService api, CancellationToken ct) => OkAsync(api.DailyTasksAsync(ct)),
             Capabilities.Dashboard.QuestsRead,
             TagQuestContent
@@ -43,7 +41,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/community-goals",
-            "/api/operations/community-goals",
             async (
                 HttpContext ctx,
                 CreateCommunityGoalRequest body,
@@ -62,7 +59,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/community-goals/update",
-            "/api/operations/community-goals/update",
             async (
                 HttpContext ctx,
                 UpdateCommunityGoalRequest body,
@@ -81,7 +77,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/community-goals/delete",
-            "/api/operations/community-goals/delete",
             async (
                 HttpContext ctx,
                 DeleteCommunityGoalRequest body,
@@ -100,7 +95,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/daily-tasks",
-            "/api/operations/daily-tasks",
             async (
                 HttpContext ctx,
                 CreateDailyTaskRequest body,
@@ -120,7 +114,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/daily-tasks/update",
-            "/api/operations/daily-tasks/update",
             async (
                 HttpContext ctx,
                 UpdateDailyTaskRequest body,
@@ -141,7 +134,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/daily-tasks/delete",
-            "/api/operations/daily-tasks/delete",
             async (
                 HttpContext ctx,
                 DeleteDailyTaskRequest body,

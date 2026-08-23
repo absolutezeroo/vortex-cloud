@@ -20,7 +20,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiOperations + "/console/commands",
-            "/api/ops/console/commands",
             (HttpContext ctx, DashboardOperationsService ops) =>
                 Results.Ok(ops.ListConsoleCommands(ctx.HoldsCapability)),
             Capabilities.Dashboard.OpsServerConsole,
@@ -83,7 +82,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/console/run",
-            "/api/ops/console/run",
             async (
                 HttpContext ctx,
                 RunConsoleCommandRequest body,

@@ -21,7 +21,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiAchievements,
-            "/api/achievements",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.AchievementsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.AchievementsRead,
@@ -30,7 +29,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiAchievements + "/stats",
-            "/api/achievements/stats",
             (DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.AchievementsStatsAsync(ct)),
             Capabilities.Dashboard.AchievementsRead,
@@ -42,7 +40,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiAchievements + "/resolutions",
-            "/api/achievements/resolutions",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.AchievementResolutionsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.AchievementsRead,
@@ -51,7 +48,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiAchievements + "/{achievementId:int}",
-            "/api/achievements/{achievementId:int}",
             (int achievementId, DashboardApiService api, CancellationToken ct) =>
                 OkNullableAsync(api.AchievementDetailAsync(achievementId, ct)),
             Capabilities.Dashboard.AchievementsRead,

@@ -25,7 +25,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiDirectory + "/search",
-            "/api/search",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.SearchAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.AuditRead,
@@ -34,7 +33,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiDirectory + "/players",
-            "/api/players",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.PlayersAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.PlayersRead,
@@ -45,7 +43,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiDirectory + "/avatars",
-            "/api/avatars",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.AvatarsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.PlayersRead,
@@ -56,7 +53,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiDirectory + "/rooms",
-            "/api/rooms",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.RoomsDirectoryAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.AuditRead,
@@ -65,7 +61,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiDirectory + "/furniture",
-            "/api/furniture",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.FurnitureDefinitionsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.FurnitureRead,
@@ -74,7 +69,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiDirectory + "/entity/{id}",
-            "/api/item/{id}",
             (string id, HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkNullableAsync(api.ItemAsync(id, ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.AuditRead,
@@ -83,7 +77,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiDirectory + "/rooms/{roomId:int}",
-            "/api/room/{roomId:int}",
             (int roomId, HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkNullableAsync(api.RoomTimelineAsync(roomId, ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.AuditRead,

@@ -25,7 +25,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiCatalog + "/pages",
-            "/api/catalog/pages",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.CatalogPagesAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.CatalogRead,
@@ -34,7 +33,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiCatalog + "/pages/{pageId:int}",
-            "/api/catalog/pages/{pageId:int}",
             (int pageId, DashboardApiService api, CancellationToken ct) =>
                 OkNullableAsync(api.CatalogPageDetailAsync(pageId, ct)),
             Capabilities.Dashboard.CatalogRead,
@@ -43,7 +41,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiCatalog + "/offers/{offerId:int}",
-            "/api/catalog/offers/{offerId:int}",
             (int offerId, DashboardApiService api, CancellationToken ct) =>
                 OkNullableAsync(api.CatalogOfferDetailAsync(offerId, ct)),
             Capabilities.Dashboard.CatalogRead,
@@ -52,7 +49,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiCatalog + "/currency-types",
-            "/api/catalog/currency-types",
             (DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.CatalogCurrencyTypesAsync(ct)),
             Capabilities.Dashboard.CatalogRead,
@@ -61,7 +57,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiCatalog + "/icon-template",
-            "/api/catalog/icon-template",
             (DashboardApiService api) => Results.Ok(api.CatalogIconTemplate()),
             Capabilities.Dashboard.CatalogRead,
             TagCatalog
@@ -73,7 +68,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/catalog/pages",
-            "/api/ops/catalog/pages",
             async (
                 HttpContext ctx,
                 CreateCatalogPageRequest body,
@@ -100,7 +94,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/catalog/pages/update",
-            "/api/ops/catalog/pages/update",
             async (
                 HttpContext ctx,
                 UpdateCatalogPageRequest body,
@@ -128,7 +121,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/catalog/pages/delete",
-            "/api/ops/catalog/pages/delete",
             async (
                 HttpContext ctx,
                 DeleteCatalogPageRequest body,
@@ -153,7 +145,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/catalog/offers",
-            "/api/ops/catalog/offers",
             async (
                 HttpContext ctx,
                 CreateCatalogOfferRequest body,
@@ -177,7 +168,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/catalog/offers/update",
-            "/api/ops/catalog/offers/update",
             async (
                 HttpContext ctx,
                 UpdateCatalogOfferRequest body,
@@ -201,7 +191,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/catalog/offers/delete",
-            "/api/ops/catalog/offers/delete",
             async (
                 HttpContext ctx,
                 DeleteCatalogOfferRequest body,
@@ -226,7 +215,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/catalog/products",
-            "/api/ops/catalog/products",
             async (
                 HttpContext ctx,
                 CreateCatalogProductRequest body,
@@ -250,7 +238,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/catalog/products/update",
-            "/api/ops/catalog/products/update",
             async (
                 HttpContext ctx,
                 UpdateCatalogProductRequest body,
@@ -274,7 +261,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/catalog/products/delete",
-            "/api/ops/catalog/products/delete",
             async (
                 HttpContext ctx,
                 DeleteCatalogProductRequest body,

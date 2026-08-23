@@ -30,7 +30,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiSocial + "/stats",
-            "/api/social/stats",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.SocialStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.SocialRead,
@@ -39,7 +38,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiStaff,
-            "/api/staff",
             (DashboardApiService api, CancellationToken ct) => OkAsync(api.StaffAsync(ct)),
             Capabilities.Dashboard.StaffRead,
             TagStaff
@@ -47,7 +45,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiStaff + "/accounts",
-            "/api/staff/accounts",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.StaffAccountSearchAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.StaffRead,
@@ -56,7 +53,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiEconomy + "/extras",
-            "/api/economy/extras",
             (DashboardApiService api, CancellationToken ct) => OkAsync(api.EconomyExtrasAsync(ct)),
             Capabilities.Dashboard.EconomyRead,
             TagEconomy
@@ -64,7 +60,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiPlayerRewards,
-            "/api/player-rewards",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.PlayerRewardsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.PlayersRead,
@@ -73,7 +68,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiPlayerRewards + "/{playerId:int}",
-            "/api/player-rewards/{playerId:int}",
             (int playerId, DashboardApiService api, CancellationToken ct) =>
                 OkNullableAsync(api.PlayerRewardDetailAsync(playerId, ct)),
             Capabilities.Dashboard.PlayersRead,
@@ -82,7 +76,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiMonitoring + "/inventory",
-            "/api/monitoring/inventory",
             (DashboardApiService api, CancellationToken ct) => OkAsync(api.InventoryAsync(ct)),
             Capabilities.Dashboard.OverviewRead,
             TagMonitoring
@@ -90,7 +83,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiCollectibles,
-            "/api/collectibles",
             (DashboardApiService api, CancellationToken ct) => OkAsync(api.CollectiblesAsync(ct)),
             Capabilities.Dashboard.CollectiblesRead,
             TagCollectibles

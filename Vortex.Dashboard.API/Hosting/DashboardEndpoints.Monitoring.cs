@@ -25,7 +25,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiMonitoring + "/overview",
-            "/api/overview",
             (DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.OverviewAsync(startedAtUtc(), ct)),
             Capabilities.Dashboard.OverviewRead,
@@ -34,7 +33,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiMonitoring + "/infrastructure",
-            "/api/infrastructure",
             async (DashboardApiService api, CancellationToken ct) =>
                 Results.Ok(await api.InfrastructureAsync(ct).ConfigureAwait(false)),
             Capabilities.Dashboard.OverviewRead,
@@ -43,7 +41,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiMonitoring + "/incidents",
-            "/api/incidents",
             async (DashboardApiService api, CancellationToken ct) =>
                 Results.Ok(await api.IncidentsAsync(ct).ConfigureAwait(false)),
             Capabilities.Dashboard.OverviewRead,
@@ -52,7 +49,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiMonitoring + "/packet-stats",
-            "/api/packet-stats",
             (DashboardApiService api, CancellationToken ct) => OkAsync(api.PacketStatsAsync(ct)),
             Capabilities.Dashboard.OverviewRead,
             TagMonitoring
@@ -60,7 +56,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiMonitoring + "/room-performance",
-            "/api/room-performance",
             (DashboardApiService api) => Results.Ok(api.RoomPerformance()),
             Capabilities.Dashboard.PerformanceRead,
             TagMonitoring

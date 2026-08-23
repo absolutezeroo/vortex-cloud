@@ -275,7 +275,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsContent + suffix,
-            "/api/operations/content" + suffix,
             async (
                 HttpContext ctx,
                 TBody body,

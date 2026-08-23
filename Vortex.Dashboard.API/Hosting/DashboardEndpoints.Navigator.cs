@@ -23,7 +23,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiNavigator + "/config",
-            "/api/navigator/config",
             (DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.NavigatorConfigAsync(ct)),
             Capabilities.Dashboard.NavigatorRead,
@@ -36,7 +35,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsNavigator + "/contexts",
-            "/api/operations/navigator/contexts",
             async (
                 HttpContext ctx,
                 CreateNavigatorContextRequest body,
@@ -55,7 +53,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsNavigator + "/contexts/update",
-            "/api/operations/navigator/contexts/update",
             async (
                 HttpContext ctx,
                 UpdateNavigatorContextRequest body,
@@ -74,7 +71,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsNavigator + "/contexts/delete",
-            "/api/operations/navigator/contexts/delete",
             async (
                 HttpContext ctx,
                 DeleteNavigatorContextRequest body,
@@ -93,7 +89,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsNavigator + "/quick-links",
-            "/api/operations/navigator/quick-links",
             async (
                 HttpContext ctx,
                 CreateNavigatorQuickLinkRequest body,
@@ -112,7 +107,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsNavigator + "/quick-links/update",
-            "/api/operations/navigator/quick-links/update",
             async (
                 HttpContext ctx,
                 UpdateNavigatorQuickLinkRequest body,
@@ -133,7 +127,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsNavigator + "/quick-links/delete",
-            "/api/operations/navigator/quick-links/delete",
             async (
                 HttpContext ctx,
                 DeleteNavigatorQuickLinkRequest body,
@@ -152,7 +145,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsNavigator + "/categories",
-            "/api/operations/navigator/categories",
             async (
                 HttpContext ctx,
                 CreateNavigatorFlatCategoryRequest body,
@@ -171,7 +163,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsNavigator + "/categories/update",
-            "/api/operations/navigator/categories/update",
             async (
                 HttpContext ctx,
                 UpdateNavigatorFlatCategoryRequest body,
@@ -190,7 +181,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsNavigator + "/categories/delete",
-            "/api/operations/navigator/categories/delete",
             async (
                 HttpContext ctx,
                 DeleteNavigatorFlatCategoryRequest body,
@@ -209,7 +199,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsNavigator + "/event-categories",
-            "/api/operations/navigator/event-categories",
             async (
                 HttpContext ctx,
                 CreateNavigatorEventCategoryRequest body,
@@ -228,7 +217,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsNavigator + "/event-categories/update",
-            "/api/operations/navigator/event-categories/update",
             async (
                 HttpContext ctx,
                 UpdateNavigatorEventCategoryRequest body,
@@ -247,7 +235,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsNavigator + "/event-categories/delete",
-            "/api/operations/navigator/event-categories/delete",
             async (
                 HttpContext ctx,
                 DeleteNavigatorEventCategoryRequest body,
@@ -266,7 +253,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsNavigator + "/seed-defaults",
-            "/api/operations/navigator/seed-defaults",
             async (
                 HttpContext ctx,
                 SeedNavigatorDefaultsRequest body,

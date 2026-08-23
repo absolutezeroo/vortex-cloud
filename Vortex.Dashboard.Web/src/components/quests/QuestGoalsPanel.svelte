@@ -76,8 +76,8 @@
 
     try {
       const [goalData, taskData] = await Promise.all([
-        apiGet('/api/community-goals'),
-        apiGet('/api/daily-tasks'),
+        apiGet('/api/v1/community-goals'),
+        apiGet('/api/v1/daily-tasks'),
       ]);
 
       goals = goalData.items || [];
@@ -203,7 +203,7 @@
     stage(
       isEdit ? `goal:${editGoal.id}` : 'goalCreate',
       isEdit ? translate('questContent.editGoal') : translate('questContent.newGoal'),
-      isEdit ? '/api/operations/community-goals/update' : '/api/operations/community-goals',
+      isEdit ? '/api/v1/operations/community-goals/update' : '/api/v1/operations/community-goals',
       goalValid(form),
       goalBody(form, isEdit ? editGoal.id : null),
       form.code.trim(),
@@ -222,7 +222,7 @@
     stage(
       isEdit ? `task:${editTask.id}` : 'taskCreate',
       isEdit ? translate('questContent.editTask') : translate('questContent.newTask'),
-      isEdit ? '/api/operations/daily-tasks/update' : '/api/operations/daily-tasks',
+      isEdit ? '/api/v1/operations/daily-tasks/update' : '/api/v1/operations/daily-tasks',
       taskValid(form),
       taskBody(form, isEdit ? editTask.id : null),
       form.taskCode.trim(),
@@ -287,7 +287,7 @@
     const isGoal = kind === 'goal';
 
     deleteOps.ask(
-      isGoal ? '/api/operations/community-goals/delete' : '/api/operations/daily-tasks/delete',
+      isGoal ? '/api/v1/operations/community-goals/delete' : '/api/v1/operations/daily-tasks/delete',
       isGoal ? { goalId: id } : { taskId: id },
       isGoal ? translate('questContent.deleteGoal') : translate('questContent.deleteTask'),
       label,

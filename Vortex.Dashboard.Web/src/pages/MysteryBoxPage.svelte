@@ -119,7 +119,7 @@
     forbidden = false;
 
     try {
-      const data = await apiGet('/api/mystery-box');
+      const data = await apiGet('/api/v1/mystery-box');
       definitions = data.definitions?.items || [];
       prizes = data.prizes?.items || [];
       pools = data.pools || [];
@@ -152,7 +152,7 @@
   // admin surface.
   async function loadStats() {
     try {
-      stats = await apiGet(`/api/mystery-box/stats?days=${statsDays}`);
+      stats = await apiGet(`/api/v1/mystery-box/stats?days=${statsDays}`);
     } catch {
       stats = null;
     }
@@ -196,7 +196,7 @@
     stage(
       'createPrize',
       translate('mysteryBox.newPrize'),
-      '/api/operations/mystery-box/prizes',
+      '/api/v1/operations/mystery-box/prizes',
       prizeFormValid(newPrize),
       prizeBody(newPrize),
       translate('mysteryBox.createPrizeSummary', { pool: newPrize.pool }),
@@ -227,7 +227,7 @@
     stage(
       'updatePrize',
       translate('mysteryBox.edit'),
-      '/api/operations/mystery-box/prizes/update',
+      '/api/v1/operations/mystery-box/prizes/update',
       prizeFormValid(editPrize),
       { prizeId: editPrizeId, ...prizeBody(editPrize) },
       translate('mysteryBox.updatePrizeSummary', { id: editPrizeId }),
@@ -245,7 +245,7 @@
     stage(
       'deletePrize',
       translate('mysteryBox.prizesHeading'),
-      '/api/operations/mystery-box/prizes/delete',
+      '/api/v1/operations/mystery-box/prizes/delete',
       true,
       { prizeId: prize.id },
       translate('mysteryBox.deletePrizeSummary', { id: prize.id }),
@@ -259,7 +259,7 @@
     stage(
       'grantKey',
       translate('mysteryBox.grantKey'),
-      '/api/operations/mystery-box/keys',
+      '/api/v1/operations/mystery-box/keys',
       keyForm.playerId > 0 && Boolean(keyForm.color),
       { playerId: keyForm.playerId, color: keyForm.color },
       translate('mysteryBox.grantKeySummary', {
@@ -278,7 +278,7 @@
     stage(
       'grantBox',
       translate('mysteryBox.grantBox'),
-      '/api/operations/mystery-box/boxes',
+      '/api/v1/operations/mystery-box/boxes',
       boxForm.playerId > 0 && furnitureDefinitionId > 0 && Boolean(boxForm.color),
       { playerId: boxForm.playerId, furnitureDefinitionId, color: boxForm.color },
       translate('mysteryBox.grantBoxSummary', {
@@ -295,7 +295,7 @@
     stage(
       'reload',
       translate('mysteryBox.reload'),
-      '/api/operations/mystery-box/reload',
+      '/api/v1/operations/mystery-box/reload',
       true,
       {},
       translate('mysteryBox.reloadSummary'),

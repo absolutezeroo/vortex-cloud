@@ -35,7 +35,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiBenchmark,
-            "/api/benchmark",
             (DashboardApiService api, CancellationToken ct) => OkAsync(api.BenchmarkAsync(ct)),
             Capabilities.Dashboard.BenchmarkRead,
             TagBenchmark
@@ -51,7 +50,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiBenchmark + "/runs/{file}",
-            "/api/benchmark/runs/{file}",
             async (string file, DashboardApiService api, CancellationToken ct) =>
             {
                 string? json = await api.BenchmarkRunAsync(file, ct).ConfigureAwait(false);
@@ -70,7 +68,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/benchmark/start",
-            "/api/ops/benchmark/start",
             async (
                 HttpContext ctx,
                 BenchmarkStartRequest body,
@@ -90,7 +87,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/benchmark/stop",
-            "/api/ops/benchmark/stop",
             async (
                 HttpContext ctx,
                 BenchmarkStopRequest body,

@@ -48,7 +48,7 @@
     if (until) params.set('until', new Date(`${until}T23:59:59`).toISOString());
 
     try {
-      data = await apiGet(`/api/targeted-offers/stats?${params}`);
+      data = await apiGet(`/api/v1/targeted-offers/stats?${params}`);
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;

@@ -53,7 +53,6 @@ internal static partial class DashboardEndpoints
         string[] Tags,
         string[] Capabilities,
         bool RequiresAuth,
-        bool IsLegacy,
         string? DisplayName
     );
 
@@ -248,7 +247,6 @@ internal static partial class DashboardEndpoints
                                 tags,
                                 capabilities,
                                 capabilities.Length > 0,
-                                !route.StartsWith(ApiV1 + "/", StringComparison.OrdinalIgnoreCase),
                                 endpoint.DisplayName
                             );
                         })
@@ -382,16 +380,11 @@ internal static partial class DashboardEndpoints
 
     private static void MapReadGet(
         WebApplication app,
-        string v1Path,
-        string legacyPath,
+        string path,
         Delegate handler,
         string capability,
         string tag
-    )
-    {
-        app.MapGet(v1Path, handler).RequireAuthorization(capability).WithTags(tag);
-        app.MapGet(legacyPath, handler).RequireAuthorization(capability).WithTags(tag);
-    }
+    ) => app.MapGet(path, handler).RequireAuthorization(capability).WithTags(tag);
 
     /// <summary>
     /// Every dashboard write goes through here, so the two checks that used to open each endpoint's
@@ -401,22 +394,15 @@ internal static partial class DashboardEndpoints
     /// </summary>
     private static void MapPost(
         WebApplication app,
-        string v1Path,
-        string legacyPath,
+        string path,
         Delegate handler,
         string capability,
         string tag
-    )
-    {
-        app.MapPost(v1Path, handler)
+    ) =>
+        app.MapPost(path, handler)
             .RequireAuthorization(capability)
             .WithTags(tag)
             .AddEndpointFilter<DashboardRequestValidationFilter>();
-        app.MapPost(legacyPath, handler)
-            .RequireAuthorization(capability)
-            .WithTags(tag)
-            .AddEndpointFilter<DashboardRequestValidationFilter>();
-    }
 
     private static string ResolveApiDomain(string route)
     {
@@ -428,14 +414,13 @@ internal static partial class DashboardEndpoints
         string normalized = route.Trim('/');
         string[] parts = normalized.Split('/', StringSplitOptions.RemoveEmptyEntries);
 
-        if (parts.Length >= 3 && parts[0].Equals("api", StringComparison.OrdinalIgnoreCase))
+        if (
+            parts.Length >= 3
+            && parts[0].Equals("api", StringComparison.OrdinalIgnoreCase)
+            && parts[1].Equals("v1", StringComparison.OrdinalIgnoreCase)
+        )
         {
-            if (parts[1].Equals("v1", StringComparison.OrdinalIgnoreCase))
-            {
-                return parts.Length >= 3 ? parts[2] : "v1";
-            }
-
-            return "legacy";
+            return parts[2];
         }
 
         return "misc";

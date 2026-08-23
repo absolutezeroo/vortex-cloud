@@ -146,7 +146,7 @@
     loading = true;
     error = '';
     try {
-      const data = await apiGet('/api/prize-pools');
+      const data = await apiGet('/api/v1/prize-pools');
       pools = data.pools?.items ?? [];
       entries = data.entries?.items ?? [];
       totals = data.totals ?? [];
@@ -164,7 +164,7 @@
 
   async function loadStats() {
     try {
-      stats = await apiGet(`/api/prize-pools/stats?days=${statsDays}`);
+      stats = await apiGet(`/api/v1/prize-pools/stats?days=${statsDays}`);
     } catch {
       stats = null;
     }
@@ -194,7 +194,7 @@
             stage(
               $t('prizePools.reload'),
               $t('prizePools.reloaded'),
-              '/api/operations/prize-pools/reload',
+              '/api/v1/operations/prize-pools/reload',
               {}
             )}
         >
@@ -287,7 +287,7 @@
           class="btn btn-primary btn-sm"
           disabled={!newPool.code.trim() || !newPool.name.trim()}
           onclick={() =>
-            stage($t('prizePools.newPool'), newPool.code, '/api/operations/prize-pools', {
+            stage($t('prizePools.newPool'), newPool.code, '/api/v1/operations/prize-pools', {
               ...newPool,
             })}
         >
@@ -375,7 +375,7 @@
                           stage(
                             $t('prizePools.remove'),
                             entryTarget(entry),
-                            '/api/operations/prize-pools/entries/delete',
+                            '/api/v1/operations/prize-pools/entries/delete',
                             { entryId: entry.id },
                             true
                           )}
@@ -440,7 +440,7 @@
               stage(
                 $t('prizePools.newEntry'),
                 selectedPool.code,
-                '/api/operations/prize-pools/entries',
+                '/api/v1/operations/prize-pools/entries',
                 {
                   ...newEntry,
                   poolCode: selectedPool.code,
@@ -532,7 +532,7 @@
                         stage(
                           $t('prizePools.remove'),
                           binding.furnitureName ?? `#${binding.furnitureDefinitionId}`,
-                          '/api/operations/prize-pools/bindings/delete',
+                          '/api/v1/operations/prize-pools/bindings/delete',
                           { bindingId: binding.id },
                           true
                         )}
@@ -602,7 +602,7 @@
             stage(
               $t('prizePools.newBinding'),
               newBinding.poolCode,
-              '/api/operations/prize-pools/bindings',
+              '/api/v1/operations/prize-pools/bindings',
               {
                 ...newBinding,
                 furnitureDefinitionId: Number(newBinding.furnitureDefinitionId) || 0,

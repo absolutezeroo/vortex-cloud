@@ -45,7 +45,7 @@
 
     try {
       const query = stateFilter ? `?state=${encodeURIComponent(stateFilter)}` : '';
-      const data = await apiGet(`/api/achievements/resolutions${query}`);
+      const data = await apiGet(`/api/v1/achievements/resolutions${query}`);
 
       offers = data.offers || [];
       challenges = data.challenges || [];

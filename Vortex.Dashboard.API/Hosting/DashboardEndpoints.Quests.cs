@@ -22,7 +22,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiQuests,
-            "/api/quests",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.QuestsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.QuestsRead,
@@ -31,7 +30,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiQuests + "/stats",
-            "/api/quests/stats",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.QuestsStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.QuestsRead,
@@ -40,7 +38,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiQuests + "/types",
-            "/api/quests/types",
             (DashboardApiService api) => Results.Ok(api.QuestTypeOptions()),
             Capabilities.Dashboard.QuestsRead,
             TagQuests
@@ -48,7 +45,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiQuests + "/{questId:int}",
-            "/api/quests/{questId:int}",
             (int questId, DashboardApiService api, CancellationToken ct) =>
                 OkNullableAsync(api.QuestDetailAsync(questId, ct)),
             Capabilities.Dashboard.QuestsRead,
@@ -61,7 +57,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/quests",
-            "/api/operations/quests",
             async (
                 HttpContext ctx,
                 CreateQuestRequest body,
@@ -88,7 +83,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/quests/update",
-            "/api/operations/quests/update",
             async (
                 HttpContext ctx,
                 UpdateQuestRequest body,
@@ -116,7 +110,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/quests/delete",
-            "/api/operations/quests/delete",
             async (
                 HttpContext ctx,
                 DeleteQuestRequest body,

@@ -105,7 +105,7 @@
     forbidden = false;
 
     try {
-      const data = await apiGet(`/api/targeted-offers?activeOnly=${activeOnly ? 'true' : 'false'}`);
+      const data = await apiGet(`/api/v1/targeted-offers?activeOnly=${activeOnly ? 'true' : 'false'}`);
       offers = data.items || [];
     } catch (err) {
       if (isPermissionDeniedError(err)) {
@@ -130,7 +130,7 @@
     editProductId = null;
 
     try {
-      offerDetail = await apiGet(`/api/targeted-offers/${offerId}`);
+      offerDetail = await apiGet(`/api/v1/targeted-offers/${offerId}`);
     } catch (err) {
       offerDetailError = isPermissionDeniedError(err) ? translate('common.insufficientRights') : err.code || err.message;
     } finally {
@@ -202,7 +202,7 @@
     stage(
       'createOffer',
       translate('targetedOffers.newOffer'),
-      '/api/operations/targeted-offers',
+      '/api/v1/operations/targeted-offers',
       Boolean(newOffer.identifier.trim()),
       buildOfferBody(newOffer, null),
       translate('targetedOffers.createOfferSummary', { name: newOffer.identifier.trim() }),
@@ -222,7 +222,7 @@
     ops.clear('updateOffer');
 
     try {
-      const detail = await apiGet(`/api/targeted-offers/${offer.id}`);
+      const detail = await apiGet(`/api/v1/targeted-offers/${offer.id}`);
       editOfferForm = {
         identifier: detail.identifier || '',
         offerType: detail.offerType ?? 0,
@@ -254,7 +254,7 @@
     stage(
       'updateOffer',
       translate('targetedOffers.edit'),
-      '/api/operations/targeted-offers/update',
+      '/api/v1/operations/targeted-offers/update',
       Boolean(editOfferForm.identifier.trim()),
       buildOfferBody(editOfferForm, editOfferId),
       translate('targetedOffers.updateOfferSummary', { id: editOfferId }),
@@ -276,7 +276,7 @@
     stage(
       'createProduct',
       translate('targetedOffers.addProduct'),
-      '/api/operations/targeted-offers/products',
+      '/api/v1/operations/targeted-offers/products',
       Boolean(newProduct.productCode.trim()),
       {
         offerId: selectedOfferId,
@@ -309,7 +309,7 @@
     stage(
       'updateProduct',
       translate('targetedOffers.edit'),
-      '/api/operations/targeted-offers/products/update',
+      '/api/v1/operations/targeted-offers/products/update',
       Boolean(editProductForm.productCode.trim()),
       {
         productId: editProductId,
@@ -332,7 +332,7 @@
     if (!canManage) return;
 
     deleteOps.ask(
-      '/api/operations/targeted-offers/delete',
+      '/api/v1/operations/targeted-offers/delete',
       { offerId: offer.id },
       translate('targetedOffers.deleteOffer'),
       translate('targetedOffers.deleteOfferSummary', { id: offer.id, name: offer.identifier }),
@@ -355,7 +355,7 @@
     if (!canManage) return;
 
     deleteOps.ask(
-      '/api/operations/targeted-offers/products/delete',
+      '/api/v1/operations/targeted-offers/products/delete',
       { productId: product.id },
       translate('targetedOffers.deleteProduct'),
       translate('targetedOffers.deleteProductSummary', { id: product.id }),
@@ -374,7 +374,7 @@
   // image inputs and the "none" activity-point option, so failures are swallowed rather than surfaced.
   async function loadFormMeta() {
     try {
-      const meta = await apiGet('/api/targeted-offers/form-meta');
+      const meta = await apiGet('/api/v1/targeted-offers/form-meta');
       imageTemplate = meta.imageTemplate ?? null;
       currencyTypes = meta.currencyTypes || [];
     } catch {
@@ -383,7 +383,7 @@
     }
 
     try {
-      const gallery = await apiGet('/api/targeted-offers/images');
+      const gallery = await apiGet('/api/v1/targeted-offers/images');
       offerImages = gallery.items || [];
     } catch {
       offerImages = [];

@@ -23,7 +23,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiConfig,
-            "/api/config",
             (DashboardApiService api, CancellationToken ct) => OkAsync(api.ConfigListAsync(ct)),
             Capabilities.Dashboard.ConfigRead,
             TagConfig
@@ -35,7 +34,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/config",
-            "/api/ops/config",
             async (
                 HttpContext ctx,
                 SetConfigRequest body,

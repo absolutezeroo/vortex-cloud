@@ -25,7 +25,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/players/kick",
-            "/api/ops/player/kick",
             async (
                 HttpContext ctx,
                 KickPlayerRequest body,
@@ -48,7 +47,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/players/ban",
-            "/api/ops/player/ban",
             async (
                 HttpContext ctx,
                 BanPlayerRequest body,
@@ -71,7 +69,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/players/unban",
-            "/api/ops/player/unban",
             async (
                 HttpContext ctx,
                 UnbanPlayerRequest body,
@@ -94,7 +91,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/players/mute",
-            "/api/ops/player/mute",
             async (
                 HttpContext ctx,
                 MutePlayerRequest body,
@@ -117,7 +113,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/players/trading-lock",
-            "/api/ops/player/trading-lock",
             async (
                 HttpContext ctx,
                 TradingLockRequest body,
@@ -140,7 +135,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/players/trading-unlock",
-            "/api/ops/player/trading-unlock",
             async (
                 HttpContext ctx,
                 TradingUnlockRequest body,
@@ -163,7 +157,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiOperations + "/cfh/queue",
-            "/api/ops/cfh/queue",
             async (DashboardOperationsService ops, CancellationToken ct) =>
                 Results.Ok(await ops.GetCfhQueueAsync(ct).ConfigureAwait(false)),
             Capabilities.Dashboard.OpsCfhManage,
@@ -172,7 +165,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/cfh/pick",
-            "/api/ops/cfh/pick",
             async (
                 HttpContext ctx,
                 PickCfhTicketsRequest body,
@@ -195,7 +187,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/cfh/close",
-            "/api/ops/cfh/close",
             async (
                 HttpContext ctx,
                 CloseCfhTicketsRequest body,
@@ -218,7 +209,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/cfh/release",
-            "/api/ops/cfh/release",
             async (
                 HttpContext ctx,
                 ReleaseCfhTicketsRequest body,

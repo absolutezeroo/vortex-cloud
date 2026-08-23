@@ -30,7 +30,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiBackup,
-            "/api/database/backups",
             (IDatabaseBackupService backups, CancellationToken ct) =>
                 OkAsync(
                     Task.FromResult<object>(
@@ -59,7 +58,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/database/backup",
-            "/api/ops/database/backup",
             async (
                 HttpContext ctx,
                 CreateDatabaseBackupRequest body,

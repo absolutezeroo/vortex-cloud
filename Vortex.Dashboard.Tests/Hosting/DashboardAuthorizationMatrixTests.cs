@@ -101,6 +101,28 @@ public sealed class DashboardAuthorizationMatrixTests
         }
     }
 
+    /// <summary>
+    /// Every route lived at two paths until the unversioned ones were removed: <c>/api/v1/x</c> and
+    /// <c>/api/x</c>, mapped from the same helper, doubling the surface for a prefix nothing read.
+    /// The three below never had a twin. A route reappearing outside <c>/api/v1/</c> means someone
+    /// mapped one by hand instead of through <c>MapReadGet</c>/<c>MapPost</c>, which also means it
+    /// skipped whatever those two attach.
+    /// </summary>
+    [Fact]
+    public void EveryRouteIsVersioned()
+    {
+        string[] unversioned =
+        [
+            .. EnumerateRoutes()
+                .Select(route => route.Route)
+                .Where(route => !route.StartsWith("/api/v1/", StringComparison.Ordinal))
+                .Distinct(StringComparer.Ordinal)
+                .Order(StringComparer.Ordinal),
+        ];
+
+        unversioned.Should().BeEquivalentTo(["/api/login", "/api/logout", "/api/me"]);
+    }
+
     [Fact]
     public void OnlyLoginAndLogoutAnswerWithoutASession()
     {

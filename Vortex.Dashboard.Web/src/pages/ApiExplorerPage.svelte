@@ -271,7 +271,6 @@
             <th>{$t('apiExplorer.colAuth')}</th>
             <th>{$t('apiExplorer.colCapabilities')}</th>
             <th>{$t('apiExplorer.colTags')}</th>
-            <th>{$t('apiExplorer.colLegacy')}</th>
             <th>{$t('apiExplorer.colCommand')}</th>
           </tr>
         </thead>
@@ -293,7 +292,6 @@
                 {/if}
               </td>
               <td>{route.tags?.join(', ') || '-'}</td>
-              <td>{route.isLegacy ? 'legacy' : 'v1'}</td>
               <td>
                 <button
                   type="button"

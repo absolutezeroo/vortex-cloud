@@ -22,7 +22,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiChatlogs,
-            "/api/chatlogs",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.ChatlogsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.ChatlogsRead,

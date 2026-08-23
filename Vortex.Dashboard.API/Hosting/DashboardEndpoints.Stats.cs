@@ -22,7 +22,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiGroups + "/stats",
-            "/api/groups/stats",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.GroupsStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.GroupsRead,
@@ -31,7 +30,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiPets + "/stats",
-            "/api/pets/stats",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.PetsStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.PetsRead,
@@ -40,7 +38,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiCfh + "/stats",
-            "/api/cfh/stats",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.CfhStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.CfhRead,
@@ -49,7 +46,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiCatalog + "/purchases/stats",
-            "/api/catalog/purchases/stats",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.CatalogPurchasesStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.CatalogPurchasesRead,
@@ -58,7 +54,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiWired + "/stats",
-            "/api/wired/stats",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.WiredStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.WiredRead,

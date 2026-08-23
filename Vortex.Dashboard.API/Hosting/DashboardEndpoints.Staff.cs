@@ -20,7 +20,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsStaff + "/roles",
-            "/api/operations/staff/roles",
             async (
                 HttpContext ctx,
                 CreateRoleRequest body,
@@ -38,7 +37,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsStaff + "/roles/update",
-            "/api/operations/staff/roles/update",
             async (
                 HttpContext ctx,
                 UpdateRoleRequest body,
@@ -58,7 +56,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsStaff + "/roles/delete",
-            "/api/operations/staff/roles/delete",
             async (
                 HttpContext ctx,
                 DeleteRoleRequest body,
@@ -76,7 +73,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsStaff + "/roles/capabilities",
-            "/api/operations/staff/roles/capabilities",
             async (
                 HttpContext ctx,
                 SetRoleCapabilitiesRequest body,
@@ -95,7 +91,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsStaff + "/assignments",
-            "/api/operations/staff/assignments",
             async (
                 HttpContext ctx,
                 AssignRoleRequest body,
@@ -113,7 +108,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsStaff + "/assignments/delete",
-            "/api/operations/staff/assignments/delete",
             async (
                 HttpContext ctx,
                 AssignRoleRequest body,
@@ -132,7 +126,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsStaff + "/presets",
-            "/api/operations/staff/presets",
             async (
                 HttpContext ctx,
                 CreateSanctionPresetRequest body,
@@ -151,7 +144,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsStaff + "/presets/update",
-            "/api/operations/staff/presets/update",
             async (
                 HttpContext ctx,
                 UpdateSanctionPresetRequest body,
@@ -170,7 +162,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             OpsStaff + "/presets/delete",
-            "/api/operations/staff/presets/delete",
             async (
                 HttpContext ctx,
                 DeleteSanctionPresetRequest body,

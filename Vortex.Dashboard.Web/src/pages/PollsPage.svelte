@@ -104,7 +104,7 @@
     forbidden = false;
 
     try {
-      const data = await apiGet(`/api/polls${enabledOnly ? '?enabled=true' : ''}`);
+      const data = await apiGet(`/api/v1/polls${enabledOnly ? '?enabled=true' : ''}`);
       polls = data.items || [];
     } catch (err) {
       if (isPermissionDeniedError(err)) {
@@ -124,7 +124,7 @@
   // never empty just because one endpoint hiccuped.
   async function loadQuestionTypes() {
     try {
-      const data = await apiGet('/api/polls/question-types');
+      const data = await apiGet('/api/v1/polls/question-types');
       questionTypes = (data.items || []).filter((it) => it.supported);
     } catch {
       questionTypes = [];
@@ -154,7 +154,7 @@
 
   async function loadDetail(pollId) {
     try {
-      detail = await apiGet(`/api/polls/${pollId}`);
+      detail = await apiGet(`/api/v1/polls/${pollId}`);
     } catch (err) {
       detailError = err.message;
       detail = null;
@@ -165,7 +165,7 @@
     resultsError = '';
 
     try {
-      results = await apiGet(`/api/polls/${pollId}/results`);
+      results = await apiGet(`/api/v1/polls/${pollId}/results`);
     } catch (err) {
       resultsError = err.message;
       results = null;
@@ -220,7 +220,7 @@
     stage(
       'createPoll',
       translate('polls.newPoll'),
-      '/api/operations/polls',
+      '/api/v1/operations/polls',
       pollFormValid(newPoll),
       pollBody(newPoll, null),
       translate('polls.createPollSummary', { code: newPoll.code.trim() }),
@@ -255,7 +255,7 @@
     stage(
       `updatePoll:${pollId}`,
       translate('polls.editPoll'),
-      '/api/operations/polls/update',
+      '/api/v1/operations/polls/update',
       pollFormValid(editPollForm),
       pollBody(editPollForm, pollId),
       translate('polls.updatePollSummary', { code: editPollForm.code.trim() }),
@@ -346,7 +346,7 @@
     stage(
       isEdit ? `updateQuestion:${editingQuestionId}` : 'createQuestion',
       isEdit ? translate('polls.editQuestion') : translate('polls.newQuestion'),
-      isEdit ? '/api/operations/polls/questions/update' : '/api/operations/polls/questions',
+      isEdit ? '/api/v1/operations/polls/questions/update' : '/api/v1/operations/polls/questions',
       questionFormValid(questionForm),
       questionBody(questionForm, editingQuestionId),
       questionForm.questionText.trim(),
@@ -371,7 +371,7 @@
     const isPoll = target.kind === 'poll';
 
     deleteOps.ask(
-      isPoll ? '/api/operations/polls/delete' : '/api/operations/polls/questions/delete',
+      isPoll ? '/api/v1/operations/polls/delete' : '/api/v1/operations/polls/questions/delete',
       isPoll ? { pollId: target.id } : { questionId: target.id },
       isPoll ? translate('polls.deletePoll') : translate('polls.deleteQuestion'),
       target.label,

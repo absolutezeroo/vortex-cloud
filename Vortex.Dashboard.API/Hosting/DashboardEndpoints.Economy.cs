@@ -26,7 +26,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiEconomy + "/ledger",
-            "/api/economy",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.EconomyAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.EconomyRead,
@@ -35,7 +34,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiEconomy + "/subscriptions",
-            "/api/economy/subscriptions",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.ClubSubscriptionsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.EconomyRead,
@@ -44,7 +42,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiEconomy + "/trends",
-            "/api/economy/trends",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.EconomyTrendsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.EconomyRead,
@@ -53,7 +50,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiEconomy + "/marketplace",
-            "/api/economy/marketplace",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.MarketplaceSummaryAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.EconomyRead,
@@ -73,7 +69,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/currency/credits",
-            "/api/ops/currency/credits",
             async (
                 HttpContext ctx,
                 GiveCreditsRequest body,
@@ -96,7 +91,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/currency/activity-points",
-            "/api/ops/currency/activity-points",
             async (
                 HttpContext ctx,
                 GiveActivityPointsRequest body,
@@ -120,7 +114,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/currency/collectibles",
-            "/api/ops/currency/collectibles",
             async (
                 HttpContext ctx,
                 GiveCollectiblesCurrencyRequest body,
@@ -151,7 +144,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/items/grant",
-            "/api/ops/item/grant",
             async (
                 HttpContext ctx,
                 GiveFurnitureRequest body,
@@ -178,7 +170,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/vouchers",
-            "/api/ops/vouchers",
             async (
                 HttpContext ctx,
                 CreateVoucherRequest body,
@@ -205,7 +196,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/vouchers/deactivate",
-            "/api/ops/vouchers/deactivate",
             async (
                 HttpContext ctx,
                 DeactivateVoucherRequest body,
@@ -229,7 +219,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiOperations + "/vouchers/{code}",
-            "/api/ops/vouchers/{code}",
             async (string code, DashboardOperationsService ops, CancellationToken ct) =>
                 Results.Ok(await ops.GetVoucherSnapshotAsync(code, ct).ConfigureAwait(false)),
             Capabilities.Dashboard.OpsManageVouchers,

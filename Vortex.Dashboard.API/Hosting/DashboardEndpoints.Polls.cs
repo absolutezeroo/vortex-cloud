@@ -22,7 +22,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiPolls,
-            "/api/polls",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.PollsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.PollsRead,
@@ -31,7 +30,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiPolls + "/question-types",
-            "/api/polls/question-types",
             (DashboardApiService api) => Results.Ok(api.PollQuestionTypeOptions()),
             Capabilities.Dashboard.PollsRead,
             TagPolls
@@ -39,7 +37,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiPolls + "/{pollId:int}",
-            "/api/polls/{pollId:int}",
             (int pollId, DashboardApiService api, CancellationToken ct) =>
                 OkNullableAsync(api.PollDetailAsync(pollId, ct)),
             Capabilities.Dashboard.PollsRead,
@@ -48,7 +45,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiPolls + "/{pollId:int}/results",
-            "/api/polls/{pollId:int}/results",
             (int pollId, DashboardApiService api, CancellationToken ct) =>
                 OkNullableAsync(api.PollResultsAsync(pollId, ct)),
             Capabilities.Dashboard.PollsRead,
@@ -61,7 +57,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/polls",
-            "/api/operations/polls",
             async (
                 HttpContext ctx,
                 CreatePollRequest body,
@@ -88,7 +83,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/polls/update",
-            "/api/operations/polls/update",
             async (
                 HttpContext ctx,
                 UpdatePollRequest body,
@@ -116,7 +110,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/polls/delete",
-            "/api/operations/polls/delete",
             async (
                 HttpContext ctx,
                 DeletePollRequest body,
@@ -139,7 +132,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/polls/questions",
-            "/api/operations/polls/questions",
             async (
                 HttpContext ctx,
                 CreatePollQuestionRequest body,
@@ -163,7 +155,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/polls/questions/update",
-            "/api/operations/polls/questions/update",
             async (
                 HttpContext ctx,
                 UpdatePollQuestionRequest body,
@@ -191,7 +182,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/polls/questions/delete",
-            "/api/operations/polls/questions/delete",
             async (
                 HttpContext ctx,
                 DeletePollQuestionRequest body,

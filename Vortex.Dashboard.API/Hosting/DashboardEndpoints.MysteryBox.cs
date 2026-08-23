@@ -23,7 +23,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiMysteryBox,
-            "/api/mystery-box",
             (DashboardApiService api, CancellationToken ct) => OkAsync(api.MysteryBoxAsync(ct)),
             Capabilities.Dashboard.MysteryBoxRead,
             TagMysteryBox
@@ -31,7 +30,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiMysteryBox + "/stats",
-            "/api/mystery-box/stats",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.MysteryBoxStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.MysteryBoxRead,
@@ -40,7 +38,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiMysteryBox + "/colors",
-            "/api/mystery-box/colors",
             (DashboardApiService api) => Results.Ok(api.MysteryBoxColorOptions()),
             Capabilities.Dashboard.MysteryBoxRead,
             TagMysteryBox
@@ -52,7 +49,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/mystery-box/prizes",
-            "/api/operations/mystery-box/prizes",
             async (
                 HttpContext ctx,
                 CreateMysteryBoxPrizeRequest body,
@@ -80,7 +76,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/mystery-box/prizes/update",
-            "/api/operations/mystery-box/prizes/update",
             async (
                 HttpContext ctx,
                 UpdateMysteryBoxPrizeRequest body,
@@ -109,7 +104,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/mystery-box/prizes/delete",
-            "/api/operations/mystery-box/prizes/delete",
             async (
                 HttpContext ctx,
                 DeleteMysteryBoxPrizeRequest body,
@@ -133,7 +127,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/mystery-box/keys",
-            "/api/operations/mystery-box/keys",
             async (
                 HttpContext ctx,
                 GrantMysteryBoxKeyRequest body,
@@ -157,7 +150,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/mystery-box/boxes",
-            "/api/operations/mystery-box/boxes",
             async (
                 HttpContext ctx,
                 GrantMysteryBoxRequest body,
@@ -184,7 +176,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/mystery-box/reload",
-            "/api/operations/mystery-box/reload",
             async (
                 HttpContext ctx,
                 ReloadMysteryBoxRequest body,

@@ -17,7 +17,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiPrizePools,
-            "/api/prize-pools",
             (DashboardApiService api, CancellationToken ct) => OkAsync(api.PrizePoolsAsync(ct)),
             Capabilities.Dashboard.PrizePoolsRead,
             TagPrizePools
@@ -25,7 +24,6 @@ internal static partial class DashboardEndpoints
         MapReadGet(
             app,
             ApiPrizePools + "/stats",
-            "/api/prize-pools/stats",
             (HttpContext ctx, DashboardApiService api, CancellationToken ct) =>
                 OkAsync(api.PrizePoolStatsAsync(ctx.QueryAsNameValues(), ct)),
             Capabilities.Dashboard.PrizePoolsRead,
@@ -38,7 +36,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/prize-pools",
-            "/api/operations/prize-pools",
             async (
                 HttpContext ctx,
                 CreatePrizePoolRequest body,
@@ -57,7 +54,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/prize-pools/update",
-            "/api/operations/prize-pools/update",
             async (
                 HttpContext ctx,
                 UpdatePrizePoolRequest body,
@@ -78,7 +74,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/prize-pools/delete",
-            "/api/operations/prize-pools/delete",
             async (
                 HttpContext ctx,
                 DeletePrizePoolRequest body,
@@ -97,7 +92,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/prize-pools/entries",
-            "/api/operations/prize-pools/entries",
             async (
                 HttpContext ctx,
                 CreatePrizeEntryRequest body,
@@ -118,7 +112,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/prize-pools/entries/update",
-            "/api/operations/prize-pools/entries/update",
             async (
                 HttpContext ctx,
                 UpdatePrizeEntryRequest body,
@@ -140,7 +133,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/prize-pools/entries/delete",
-            "/api/operations/prize-pools/entries/delete",
             async (
                 HttpContext ctx,
                 DeletePrizeEntryRequest body,
@@ -159,7 +151,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/prize-pools/bindings",
-            "/api/operations/prize-pools/bindings",
             async (
                 HttpContext ctx,
                 CreatePrizeBindingRequest body,
@@ -180,7 +171,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/prize-pools/bindings/update",
-            "/api/operations/prize-pools/bindings/update",
             async (
                 HttpContext ctx,
                 UpdatePrizeBindingRequest body,
@@ -202,7 +192,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/prize-pools/bindings/delete",
-            "/api/operations/prize-pools/bindings/delete",
             async (
                 HttpContext ctx,
                 DeletePrizeBindingRequest body,
@@ -221,7 +210,6 @@ internal static partial class DashboardEndpoints
         MapPost(
             app,
             ApiOperations + "/prize-pools/reload",
-            "/api/operations/prize-pools/reload",
             async (
                 HttpContext ctx,
                 ReloadPrizePoolsRequest body,
