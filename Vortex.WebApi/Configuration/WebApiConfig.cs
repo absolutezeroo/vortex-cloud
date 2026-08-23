@@ -67,6 +67,12 @@ public sealed class WebApiConfig
     /// </summary>
     public string MetricsToken { get; set; } = string.Empty;
 
+    /// <summary>
+    /// How long a web session cookie stays valid. Was a day hard-coded in the session store, where
+    /// nobody could shorten it for an exposed hotel or lengthen it for a private one.
+    /// </summary>
+    public int SessionLifetimeHours { get; set; } = 24;
+
     public int MaxAvatarsPerAccount { get; set; } = 5;
 
     public string DefaultFigure { get; set; } =

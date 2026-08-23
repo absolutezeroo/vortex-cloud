@@ -1,80 +1,47 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Security.Cryptography;
+using System;
 using Microsoft.Extensions.Options;
 using Vortex.Observability.Configuration;
+using Vortex.Primitives.Authentication;
 
 namespace Vortex.Dashboard.API.Security;
 
 /// <summary>
-///     In-memory store of authenticated dashboard sessions. Session ids are 256-bit cryptographically
-///     random opaque tokens delivered as an HttpOnly cookie; the store holds only the backing account id
-///     (capabilities are re-resolved per request so role changes take effect immediately). Sessions are
-///     cleared on restart, which is acceptable for an operator dashboard and avoids any persistent token.
+///     Authenticated dashboard sessions. Session ids are 256-bit cryptographically random opaque
+///     tokens delivered as an HttpOnly cookie; the store holds only the backing account id and the
+///     operator's email for audit attribution (capabilities are re-resolved per request so role
+///     changes take effect immediately). Sessions are cleared on restart, which is acceptable for an
+///     operator dashboard and avoids any persistent token.
+///     <para>
+///     The mechanics -- token minting, expiry, pruning, revocation -- are
+///     <see cref="AccountSessionStore{TState}" />, shared with the player-facing web API so the two
+///     cannot drift apart again.
+///     </para>
 /// </summary>
 internal sealed class DashboardSessionStore
 {
-    /// <summary>Live sessions past which <see cref="Create" /> sweeps the expired ones first.</summary>
-    private const int PRUNE_THRESHOLD = 64;
-
-    private readonly TimeSpan _lifetime;
-    private readonly ConcurrentDictionary<string, Entry> _sessions = new(StringComparer.Ordinal);
+    private readonly AccountSessionStore<string> _sessions;
 
     public DashboardSessionStore(IOptions<ObservabilityConfig> options)
     {
         int minutes = Math.Max(5, options.Value.DashboardSessionLifetimeMinutes);
-        _lifetime = TimeSpan.FromMinutes(minutes);
+        _sessions = new AccountSessionStore<string>(TimeSpan.FromMinutes(minutes));
     }
 
-    public int LifetimeSeconds => (int)_lifetime.TotalSeconds;
+    public int LifetimeSeconds => _sessions.LifetimeSeconds;
 
-    public string Create(int accountId, string email)
-    {
-        // Entries are otherwise only dropped when re-presented (see Resolve), so an operator who never
-        // comes back leaves one behind until restart. Login is the only place the store grows, so it is
-        // also the only place worth sweeping -- cheaper than a timer for a handful of operators.
-        if (_sessions.Count >= PRUNE_THRESHOLD)
-        {
-            DateTime cutoff = DateTime.UtcNow;
+    public int Count => _sessions.Count;
 
-            foreach (KeyValuePair<string, Entry> pair in _sessions)
-            {
-                if (pair.Value.ExpiresAt <= cutoff)
-                {
-                    _sessions.TryRemove(pair.Key, out _);
-                }
-            }
-        }
+    public string Create(int accountId, string email) => _sessions.Create(accountId, email);
 
-        string sessionId = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
-        _sessions[sessionId] = new Entry(accountId, email, DateTime.UtcNow.Add(_lifetime));
-        return sessionId;
-    }
+    public (int AccountId, string Email)? Resolve(string? sessionId) =>
+        _sessions.Resolve(sessionId);
 
-    public (int AccountId, string Email)? Resolve(string? sessionId)
-    {
-        if (string.IsNullOrEmpty(sessionId) || !_sessions.TryGetValue(sessionId, out Entry entry))
-        {
-            return null;
-        }
+    public void Remove(string? sessionId) => _sessions.Remove(sessionId);
 
-        if (entry.ExpiresAt <= DateTime.UtcNow)
-        {
-            _sessions.TryRemove(sessionId, out _);
-            return null;
-        }
-
-        return (entry.AccountId, entry.Email);
-    }
-
-    public void Remove(string? sessionId)
-    {
-        if (!string.IsNullOrEmpty(sessionId))
-        {
-            _sessions.TryRemove(sessionId, out _);
-        }
-    }
-
-    private readonly record struct Entry(int AccountId, string Email, DateTime ExpiresAt);
+    /// <summary>
+    ///     Revokes every session of an account. Capability changes already take effect on the next
+    ///     request, but a credential change does not: the cookie is what proves the operator, and it
+    ///     keeps proving it until this is called.
+    /// </summary>
+    public int RemoveAllForAccount(int accountId) => _sessions.RemoveAllForAccount(accountId);
 }

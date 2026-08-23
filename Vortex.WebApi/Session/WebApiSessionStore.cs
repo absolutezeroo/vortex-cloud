@@ -1,68 +1,49 @@
 using System;
-using System.Collections.Concurrent;
+using Microsoft.Extensions.Options;
+using Vortex.Primitives.Authentication;
+using Vortex.WebApi.Configuration;
 
 namespace Vortex.WebApi.Session;
 
 /// <summary>
-/// In-memory store mapping session cookie IDs to authenticated account IDs.
-/// Sessions expire after 24 hours. Cleared on server restart (dev-acceptable).
+/// Authenticated web sessions, keyed by the cookie id, remembering which avatar the visitor picked.
+/// Cleared on server restart.
+///
+/// <para>
+/// The mechanics are <see cref="AccountSessionStore{TState}" />, shared with the dashboard. They used
+/// to be a second implementation here, and it had drifted: a GUID rather than 256 cryptographic
+/// bits, a day hard-coded rather than configured, expired entries dropped only if someone happened
+/// to ask, no way to revoke an account's sessions at all, and a selected-avatar read that answered
+/// for sessions that had already expired.
+/// </para>
 /// </summary>
 public sealed class WebApiSessionStore
 {
-    private static readonly TimeSpan SessionLifetime = TimeSpan.FromHours(24);
+    private readonly AccountSessionStore<int?> _sessions;
 
-    private readonly ConcurrentDictionary<string, SessionEntry> _sessions = new();
-
-    public string CreateSession(int accountId)
+    public WebApiSessionStore(IOptions<WebApiConfig> options)
     {
-        string id = Guid.NewGuid().ToString("N");
-        _sessions[id] = new SessionEntry(accountId, DateTime.UtcNow.Add(SessionLifetime));
-        return id;
+        int hours = Math.Max(1, options.Value.SessionLifetimeHours);
+        _sessions = new AccountSessionStore<int?>(TimeSpan.FromHours(hours));
     }
 
-    public int? GetAccountId(string? sessionId)
-    {
-        if (string.IsNullOrWhiteSpace(sessionId))
-        {
-            return null;
-        }
+    public int LifetimeSeconds => _sessions.LifetimeSeconds;
 
-        if (!_sessions.TryGetValue(sessionId, out SessionEntry? entry))
-        {
-            return null;
-        }
+    public string CreateSession(int accountId) => _sessions.Create(accountId, null);
 
-        if (entry.Expires < DateTime.UtcNow)
-        {
-            _sessions.TryRemove(sessionId, out _);
-            return null;
-        }
+    public int? GetAccountId(string? sessionId) => _sessions.Resolve(sessionId)?.AccountId;
 
-        return entry.AccountId;
-    }
+    public void RemoveSession(string sessionId) => _sessions.Remove(sessionId);
 
-    public void RemoveSession(string sessionId) => _sessions.TryRemove(sessionId, out _);
+    /// <summary>
+    /// Revokes every session of an account, for a password change or a sanction. Nothing calls it on
+    /// a ban yet: a web session is resolved to an account id and never re-checked against the
+    /// account's standing, so a banned visitor keeps browsing until the cookie expires.
+    /// </summary>
+    public int RemoveAllForAccount(int accountId) => _sessions.RemoveAllForAccount(accountId);
 
-    public void SetSelectedPlayer(string? sessionId, int playerId)
-    {
-        if (
-            !string.IsNullOrWhiteSpace(sessionId)
-            && _sessions.TryGetValue(sessionId, out SessionEntry? e)
-        )
-        {
-            _sessions[sessionId] = e with { SelectedPlayerId = playerId };
-        }
-    }
+    public void SetSelectedPlayer(string? sessionId, int playerId) =>
+        _sessions.TryUpdate(sessionId, _ => playerId);
 
-    public int? GetSelectedPlayer(string? sessionId)
-    {
-        if (string.IsNullOrWhiteSpace(sessionId))
-        {
-            return null;
-        }
-
-        return _sessions.TryGetValue(sessionId, out SessionEntry? e) ? e.SelectedPlayerId : null;
-    }
-
-    private record SessionEntry(int AccountId, DateTime Expires, int? SelectedPlayerId = null);
+    public int? GetSelectedPlayer(string? sessionId) => _sessions.Resolve(sessionId)?.State;
 }

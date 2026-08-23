@@ -56,7 +56,7 @@ internal sealed class WebApiTestFactory : IAsyncDisposable
 
         configure?.Invoke(config);
 
-        Sessions = new WebApiSessionStore();
+        Sessions = new WebApiSessionStore(Options.Create(config));
 
         WebApplicationBuilder builder = WebApplication.CreateSlimBuilder();
         builder.WebHost.UseTestServer();
