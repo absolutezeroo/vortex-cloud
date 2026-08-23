@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -168,89 +168,112 @@ public sealed class MarketplacePurchaseGrain(
             },
         ];
 
-        WalletPurchaseResult<bool> result = await walletGrain
-            .ExecutePurchaseAsync(
-                debitRequests,
-                async innerCt =>
-                {
-                    int commission = Math.Max(
-                        1,
-                        offer.Price * _settingsProvider.GetSettings().CommissionPercent / 100
-                    );
-                    int creditsOwed = offer.Price - commission;
+        WalletPurchaseResult<bool> result;
 
-                    // Atomically claim the offer so a concurrent buyer cannot purchase it twice.
-                    int claimed = await dbCtx
-                        .MarketplaceOffers.Where(o =>
-                            o.Id == offer.Id && o.State == MarketplaceOfferState.Active
-                        )
-                        .ExecuteUpdateAsync(
-                            up =>
-                                up.SetProperty(p => p.State, MarketplaceOfferState.Sold)
-                                    .SetProperty(p => p.CreditsOwed, creditsOwed),
-                            innerCt
-                        )
-                        .ConfigureAwait(true);
-
-                    if (claimed == 0)
+        try
+        {
+            result = await walletGrain
+                .ExecutePurchaseAsync(
+                    debitRequests,
+                    async innerCt =>
                     {
-                        throw new InvalidOperationException(
-                            $"Marketplace offer {offer.Id} is no longer active."
+                        int commission = Math.Max(
+                            1,
+                            offer.Price * _settingsProvider.GetSettings().CommissionPercent / 100
                         );
-                    }
+                        int creditsOwed = offer.Price - commission;
 
-                    IInventoryGrain inventoryGrain = _grainFactory.GetInventoryGrain(
-                        this.GetPrimaryKeyLong()
-                    );
-
-                    try
-                    {
-                        await inventoryGrain
-                            .GrantFurnitureDefinitionAsync(
-                                offer.FurnitureDefinitionEntityId,
-                                offer.ExtraData,
+                        // Atomically claim the offer so a concurrent buyer cannot purchase it twice.
+                        int claimed = await dbCtx
+                            .MarketplaceOffers.Where(o =>
+                                o.Id == offer.Id && o.State == MarketplaceOfferState.Active
+                            )
+                            .ExecuteUpdateAsync(
+                                up =>
+                                    up.SetProperty(p => p.State, MarketplaceOfferState.Sold)
+                                        .SetProperty(p => p.CreditsOwed, creditsOwed),
                                 innerCt
                             )
                             .ConfigureAwait(true);
-                    }
-                    catch (Exception)
-                    {
-                        // Compensate the claim so the offer is re-listed instead of staying
-                        // Sold with no item delivered; the shared purchase helper then refunds
-                        // the buyer when this exception bubbles up.
+
+                        if (claimed == 0)
+                        {
+                            throw new OfferNoLongerActiveException(offer.Id);
+                        }
+
+                        IInventoryGrain inventoryGrain = _grainFactory.GetInventoryGrain(
+                            this.GetPrimaryKeyLong()
+                        );
+
                         try
                         {
-                            await dbCtx
-                                .MarketplaceOffers.Where(o => o.Id == offer.Id)
-                                .ExecuteUpdateAsync(
-                                    up =>
-                                        up.SetProperty(p => p.State, MarketplaceOfferState.Active)
-                                            .SetProperty(p => p.CreditsOwed, 0),
-                                    CancellationToken.None
+                            await inventoryGrain
+                                .GrantFurnitureDefinitionAsync(
+                                    offer.FurnitureDefinitionEntityId,
+                                    offer.ExtraData,
+                                    innerCt
                                 )
                                 .ConfigureAwait(true);
                         }
-                        catch (Exception compensateEx)
+                        catch (Exception)
                         {
-                            _logger.LogError(
-                                compensateEx,
-                                "Failed to re-list marketplace offer {OfferId} after grant failure",
-                                offer.Id
-                            );
+                            // Compensate the claim so the offer is re-listed instead of staying
+                            // Sold with no item delivered; the shared purchase helper then refunds
+                            // the buyer when this exception bubbles up.
+                            try
+                            {
+                                await dbCtx
+                                    .MarketplaceOffers.Where(o => o.Id == offer.Id)
+                                    .ExecuteUpdateAsync(
+                                        up =>
+                                            up.SetProperty(
+                                                    p => p.State,
+                                                    MarketplaceOfferState.Active
+                                                )
+                                                .SetProperty(p => p.CreditsOwed, 0),
+                                        CancellationToken.None
+                                    )
+                                    .ConfigureAwait(true);
+                            }
+                            catch (Exception compensateEx)
+                            {
+                                _logger.LogError(
+                                    compensateEx,
+                                    "Failed to re-list marketplace offer {OfferId} after grant failure",
+                                    offer.Id
+                                );
+                            }
+
+                            throw;
                         }
 
-                        throw;
-                    }
-
-                    return true;
-                },
-                _logger,
-                ct
-            )
-            .ConfigureAwait(true);
+                        return true;
+                    },
+                    _logger,
+                    ct
+                )
+                .ConfigureAwait(true);
+        }
+        catch (OfferNoLongerActiveException)
+        {
+            // The buyer was already refunded by the purchase helper. Report the offer as gone
+            // rather than letting this escape: the handler does not catch, so an exception here
+            // means the client is never answered at all and its marketplace dialog simply hangs.
+            return 1;
+        }
 
         return result.Succeeded ? 0 : 2;
     }
+
+    /// <summary>
+    /// Losing the claim is ordinary traffic, not a fault: two people clicked Buy on the same offer
+    /// and one of them was second. It is thrown rather than returned because the claim happens
+    /// inside the shared purchase helper's work step, which uses the exception to trigger the
+    /// refund; <see cref="BuyOfferAsync"/> turns it back into a result code so the buyer actually
+    /// hears that the offer is gone.
+    /// </summary>
+    private sealed class OfferNoLongerActiveException(int offerId)
+        : InvalidOperationException($"Marketplace offer {offerId} is no longer active.");
 
     public async Task<int> RedeemCreditsAsync(CancellationToken ct)
     {
