@@ -80,6 +80,7 @@ export const NAV = [
   { path: '/groups-stats', labelKey: 'nav.groupsStats', shortKey: 'nav.groupsStatsShort', group: 'Social', caps: ROUTE_PERMISSIONS.groupsStats, load: () => import('../pages/GroupsStatsPage.svelte') },
   { path: '/social', labelKey: 'nav.social', shortKey: 'nav.socialShort', group: 'Social', caps: ROUTE_PERMISSIONS.social, load: () => import('../pages/SocialPage.svelte'), writes: true },
 
+  { path: '/chatlogs', labelKey: 'nav.chatlogs', shortKey: 'nav.chatlogsShort', group: 'Players', caps: ROUTE_PERMISSIONS.chatlogs, load: () => import('../pages/ChatlogsPage.svelte') },
   { path: '/audit', labelKey: 'nav.audit', shortKey: 'nav.auditShort', group: 'System', caps: ROUTE_PERMISSIONS.audit, load: () => import('../pages/AuditPage.svelte') },
   { path: '/config', labelKey: 'nav.config', shortKey: 'nav.configShort', group: 'System', caps: ROUTE_PERMISSIONS.config, load: () => import('../pages/ConfigPage.svelte'), writes: true },
   { path: '/api-explorer', labelKey: 'nav.apiExplorer', shortKey: 'nav.apiExplorerShort', group: 'System', caps: ROUTE_PERMISSIONS.apiExplorer, load: () => import('../pages/ApiExplorerPage.svelte') },

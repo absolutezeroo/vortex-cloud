@@ -96,6 +96,15 @@ public static class Capabilities
         public const string GroupsRead = "dashboard.groups.read";
         public const string PetsRead = "dashboard.pets.read";
         public const string CfhRead = "dashboard.cfh.read";
+
+        /// <summary>
+        /// Searching what players said to each other. Deliberately not folded into
+        /// <see cref="AuditRead" /> or the room and player pages that already show chat in context:
+        /// this one answers "who said this word, anywhere", which is the only chat read that does not
+        /// start from an incident an operator is already investigating. It is the most privacy-bearing
+        /// surface the dashboard has, so it is granted on its own or not at all.
+        /// </summary>
+        public const string ChatlogsRead = "dashboard.chatlogs.read";
         public const string CatalogPurchasesRead = "dashboard.catalog.purchases.read";
         public const string WiredRead = "dashboard.wired.read";
         public const string TargetedOffersRead = "dashboard.targeted_offers.read";
@@ -220,6 +229,7 @@ public static class Capabilities
             GroupsRead,
             PetsRead,
             CfhRead,
+            ChatlogsRead,
             CatalogPurchasesRead,
             WiredRead,
             TargetedOffersRead,

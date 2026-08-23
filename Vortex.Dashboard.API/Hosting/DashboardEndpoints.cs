@@ -143,6 +143,7 @@ internal static partial class DashboardEndpoints
     {
         MapMonitoringReads(app, startedAtUtc);
         MapAuditReads(app);
+        MapChatlogReads(app);
         MapEconomyReads(app);
         MapDirectoryReads(app);
         MapRoomReads(app);
