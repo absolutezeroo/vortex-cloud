@@ -93,6 +93,59 @@ public sealed class WalletPurchaseExtensionsTests
         wallet.CreditBackCalls.Should().Be(0);
     }
 
+    /// <summary>
+    /// Cancellation is the most common reason the grant step throws (client disconnect, host
+    /// shutdown, timeout), so it is the case where the refund matters most -- and the one where
+    /// refunding under the caller's own token would silently skip the refund and leave the player
+    /// paid-for-nothing. Replacing <c>CancellationToken.None</c> with <c>ct</c> in
+    /// <c>ExecutePurchaseAsync</c> is the edit this test exists to fail on.
+    /// </summary>
+    [Fact]
+    public async Task GrantCancelled_StillRefundsOnAnUncancelledToken()
+    {
+        RecordingWalletGrain wallet = new RecordingWalletGrain { DebitSucceeds = true };
+        List<WalletDebitRequest> requests = Requests(10);
+        using CancellationTokenSource cts = new CancellationTokenSource();
+        await cts.CancelAsync();
+
+        Func<Task> act = () =>
+            wallet.ExecutePurchaseAsync<int>(
+                requests,
+                ct => Task.FromCanceled<int>(ct),
+                NullLogger.Instance,
+                cts.Token
+            );
+
+        await act.Should().ThrowAsync<OperationCanceledException>();
+        wallet.CreditBackCalls.Should().Be(1);
+        wallet.CreditBackSawCancelledToken.Should().BeFalse();
+    }
+
+    /// <summary>
+    /// A refund that fails is already the worst case; swallowing the reason the purchase failed on
+    /// top of it would leave nothing to diagnose from. The original exception is what propagates.
+    /// </summary>
+    [Fact]
+    public async Task RefundFailing_DoesNotMaskTheOriginalFailure()
+    {
+        RecordingWalletGrain wallet = new RecordingWalletGrain
+        {
+            DebitSucceeds = true,
+            CreditBackThrows = true,
+        };
+
+        Func<Task> act = () =>
+            wallet.ExecutePurchaseAsync<int>(
+                Requests(10),
+                ct => throw new InvalidOperationException("grant failed"),
+                NullLogger.Instance,
+                CancellationToken.None
+            );
+
+        (await act.Should().ThrowAsync<InvalidOperationException>()).WithMessage("grant failed");
+        wallet.CreditBackCalls.Should().Be(1);
+    }
+
     private static List<WalletDebitRequest> Requests(int amount)
     {
         return
@@ -109,9 +162,16 @@ public sealed class WalletPurchaseExtensionsTests
     {
         public bool DebitSucceeds { get; init; }
 
+        public bool CreditBackThrows { get; init; }
+
         public int CreditBackCalls { get; private set; }
 
         public List<WalletDebitRequest>? CreditBackRequests { get; private set; }
+
+        /// <summary>A real wallet grain call under a cancelled token would not run; recording the
+        /// token's state at call time is how the test sees which token the refund was issued
+        /// on.</summary>
+        public bool CreditBackSawCancelledToken { get; private set; }
 
         public Task<WalletDebitResult> TryDebitAsync(
             List<WalletDebitRequest> requests,
@@ -135,8 +195,11 @@ public sealed class WalletPurchaseExtensionsTests
         {
             CreditBackCalls++;
             CreditBackRequests = requests;
+            CreditBackSawCancelledToken = ct.IsCancellationRequested;
 
-            return Task.CompletedTask;
+            return CreditBackThrows
+                ? Task.FromException(new InvalidOperationException("wallet unreachable"))
+                : Task.CompletedTask;
         }
 
         public Task<int> GetAmountForCurrencyAsync(CurrencyKind kind, CancellationToken ct)
