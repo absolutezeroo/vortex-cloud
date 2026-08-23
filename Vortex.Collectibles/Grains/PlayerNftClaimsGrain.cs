@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -16,7 +16,7 @@ using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Collectibles.Grains;
 
 /// <summary>
 /// One player's Relics: the prizes waiting in the Collectors Guild, and handing them over.

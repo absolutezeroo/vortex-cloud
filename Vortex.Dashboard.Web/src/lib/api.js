@@ -61,6 +61,14 @@ export function describeApiError(error) {
     return translate('errors.tooManyRequests');
   }
 
+  if (error?.code === 'window_too_large') {
+    return translate('errors.windowTooLarge');
+  }
+
+  if (error?.code === 'invalid_date') {
+    return translate('errors.invalidDate');
+  }
+
   return error?.message || translate('errors.requestFailed');
 }
 

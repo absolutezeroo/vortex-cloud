@@ -2,15 +2,9 @@
 // shape in exact sync -- lib/i18n.js falls back to this file for any key missing from another
 // locale, so a structural drift here silently breaks that locale's fallback too.
 export default {
-  // Domain rejection codes, as returned by the server in OperationResult.message and rendered by
-  // lib/opErrors.js. A refusal is not a fault: it is the domain saying what stands in the way, so
-  // each line says what blocks the write and, where there is one, the way out. Codes missing from
-  // here are humanised rather than hidden, so this list may lag the server without going blank.
   opError: {
     operation_failed: 'The operation failed unexpectedly. Quote the correlation id below when reporting it.',
     invalid_request: 'The request was rejected: a required field is missing or malformed.',
-
-    // Blocked by something that still depends on the target.
     offer_has_products: 'This offer still contains products. Delete them first, then delete the offer.',
     offer_has_purchases: 'This offer has already been purchased and is kept for the purchase history.',
     page_has_children: 'This page still has sub-pages. Move or delete them first.',
@@ -29,8 +23,6 @@ export default {
     role_still_assigned: 'This role is still assigned to at least one account.',
     pool_is_built_in: 'This is a built-in pool and cannot be deleted.',
     bot_is_placed: 'This bot is standing in a room. Pick it up first.',
-
-    // The target does not exist (usually a stale page -- refresh).
     account_not_found: 'No such account.',
     achievement_not_found: 'No such achievement.',
     assignment_not_found: 'No such assignment.',
@@ -68,8 +60,6 @@ export default {
     terms_not_found: 'No such rental terms.',
     tier_not_found: 'No such tier.',
     token_offer_not_found: 'No such token offer.',
-
-    // Already taken / already true.
     achievement_name_taken: 'That achievement name is already used.',
     binding_already_exists: 'That binding already exists.',
     collection_code_taken: 'That collection code is already used.',
@@ -86,8 +76,6 @@ export default {
     badge_already_held: 'The player already holds that badge.',
     level_already_reached: 'The player has already reached that level.',
     already_entered: 'The player has already entered this raffle.',
-
-    // Missing or malformed input.
     badge_code_required: 'A badge code is required.',
     reward_currency_unknown: 'This hotel has no currency of that type, so the reward would never be paid.',
     reward_currency_disabled: 'That currency is disabled, so the reward would never be paid.',
@@ -114,8 +102,6 @@ export default {
     unknown_config_key: 'No such config key.',
     page_cannot_parent_itself: 'A page cannot be its own parent.',
     parent_catalog_type_mismatch: 'The parent page belongs to a different catalogue type.',
-
-    // Refused by state rather than by input.
     insufficient_credits: 'The player does not have enough credits.',
     no_remaining: 'Nothing remains to hand out.',
     no_linked_account: 'This player has no linked account.',
@@ -153,8 +139,6 @@ export default {
     reasonRequired: 'Reason *',
     reasonPlaceholder: 'why this action?',
     reasonPlaceholderChange: 'why this change?',
-    // The audited reason is generated from the action and its before/after values, so what is left
-    // for the operator is the part only they know. Optional on purpose -- see lib/changes.js.
     noteOptional: 'Note (optional)',
     notePlaceholder: 'anything worth recording — who asked, which incident…',
     changeEmpty: '(empty)',
@@ -178,8 +162,6 @@ export default {
     resultSuccess: 'Success',
     resultDenied: 'Denied',
     resultFailed: 'Failed',
-    // Default for createWriteOps' client-side validation; the six page namespaces that used to spell
-    // this exact sentence out one by one now fall through to here.
     reasonLabel: 'Reason: {reason}',
     fillFields: 'Fill the required fields (reason needs at least 3 characters).',
     signOut: 'Sign out',
@@ -200,10 +182,10 @@ export default {
     invalidApiResponse: 'The emulator API did not return a dashboard response.',
     tooManyRequests: 'Too many requests. Wait a moment, then try again.',
     requestFailed: 'Request failed.',
+    windowTooLarge: 'That date range is too wide. Pick a window of a year or less.',
+    invalidDate: 'One of the dates could not be read. Check the since/until filters.',
   },
   audit: {
-    // The expanded row. `changes` is the before/after captured from EF's change tracker; for a
-    // delete it is the only surviving copy of the row.
     wasDeleted: 'deleted',
     opDelete: 'Deleted',
     opUpdate: 'Updated',

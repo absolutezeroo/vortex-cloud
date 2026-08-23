@@ -308,7 +308,52 @@ internal sealed partial class DashboardApiService(
             ? playerName
             : null;
 
-    private static DateTime? ParseDateTime(string? value)
+    /// <summary>
+    ///     Widest span a windowed read will scan. The economy ledger is the fastest-growing table in the
+    ///     emulator and the trend reads pull their whole window into memory to bucket it, so an
+    ///     unbounded <c>?since=</c> is a heap allocation the size of the ledger -- inside the game
+    ///     process. A year of history is more than any trend chart plots.
+    /// </summary>
+    private const int MAX_WINDOW_DAYS = 366;
+
+    /// <summary>
+    ///     Resolves the <c>since</c>/<c>until</c> pair every windowed read takes, defaulting to the last
+    ///     <paramref name="defaultSpan" /> (30 days) and refusing anything wider than
+    ///     <see cref="MAX_WINDOW_DAYS" />. An inverted pair is swapped rather than refused -- that one is
+    ///     unambiguous.
+    /// </summary>
+    internal static (DateTime Since, DateTime Until) ResolveWindow(
+        NameValueCollection query,
+        DateTime nowUtc,
+        TimeSpan? defaultSpan = null
+    )
+    {
+        DateTime until = ParseDateTime(query["until"]) ?? nowUtc;
+        DateTime since =
+            ParseDateTime(query["since"]) ?? until - (defaultSpan ?? TimeSpan.FromDays(30));
+
+        if (since > until)
+        {
+            (since, until) = (until, since);
+        }
+
+        if (until - since > TimeSpan.FromDays(MAX_WINDOW_DAYS))
+        {
+            throw new DashboardQueryException(
+                "window_too_large",
+                $"since/until must span at most {MAX_WINDOW_DAYS} days."
+            );
+        }
+
+        return (since, until);
+    }
+
+    /// <summary>
+    ///     Null for an absent value, the parsed instant for a valid one, and a 400 for anything else.
+    ///     Returning null on garbage -- the old behaviour -- drops the filter, which widens the query
+    ///     instead of rejecting it.
+    /// </summary>
+    internal static DateTime? ParseDateTime(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
@@ -325,6 +370,9 @@ internal sealed partial class DashboardApiService(
             return parsedDate;
         }
 
-        return null;
+        throw new DashboardQueryException(
+            "invalid_date",
+            $"'{value}' is not a date the dashboard can parse."
+        );
     }
 }

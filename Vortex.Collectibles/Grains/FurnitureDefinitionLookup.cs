@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Collectibles.Grains;
 
 /// <summary>
 /// Resolves furniture classnames to definition rows for the collectibles grains, which all store

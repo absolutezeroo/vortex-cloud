@@ -16,4 +16,10 @@ public enum WiredDepositStart
 
     /// <summary>A deposit is now open, and it took the place of one this player already had.</summary>
     Replaced = 2,
+
+    /// <summary>
+    /// Refused because the chest is locked -- told apart from <see cref="Refused"/> because it is
+    /// the one refusal this client has a word for, so it is the one the player can be told about.
+    /// </summary>
+    RefusedLocked = 3,
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -15,7 +15,7 @@ using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Server.Grains;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Collectibles.Grains;
 
 /// <summary>
 /// The minting side of the Collectors Guild: which furniture may be converted into a Relic, and

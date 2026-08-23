@@ -440,6 +440,76 @@ internal sealed class DashboardWebHost(
         );
         DashboardAuditEmitter emitter = app.Services.GetRequiredService<DashboardAuditEmitter>();
 
+        // Reads had no error path at all: this app's own log providers are cleared (lifecycle output
+        // comes from the parent logger), and the audit middleware at the bottom of this method does its
+        // work *after* await next(), so a throwing endpoint skipped it too. A failing panel was a bare
+        // 500 with no log line, no audit row and nothing to diagnose from -- the exact opposite of the
+        // write path, which correlates and audits everything. Outermost so it wraps both.
+        app.Use(
+            async (ctx, next) =>
+            {
+                try
+                {
+                    await next().ConfigureAwait(false);
+                }
+                catch (OperationCanceledException) when (ctx.RequestAborted.IsCancellationRequested)
+                {
+                    // The operator navigated away mid-request. Not a fault, and nothing left to write to.
+                }
+                catch (DashboardQueryException ex)
+                {
+                    await FailAsync(ctx, StatusCodes.Status400BadRequest, ex.Error, null)
+                        .ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    await FailAsync(
+                            ctx,
+                            StatusCodes.Status500InternalServerError,
+                            "internal_error",
+                            ex
+                        )
+                        .ConfigureAwait(false);
+                }
+            }
+        );
+
+        async Task FailAsync(HttpContext ctx, int status, string error, Exception? ex)
+        {
+            string path = ctx.Request.Path.Value ?? "/";
+            string correlationId = CorrelationId.New().Value;
+
+            if (ex is not null)
+            {
+                logger.LogError(
+                    VortexEventIds.DashboardFault,
+                    ex,
+                    "Dashboard request failed: {Method} {Path} ({CorrelationId})",
+                    ctx.Request.Method,
+                    path,
+                    correlationId
+                );
+            }
+
+            // Same rule as the access audit below: the API surface is what the audit trail is for, a
+            // failing frontend asset is not a security event.
+            if (path.StartsWith("/api/", StringComparison.Ordinal))
+            {
+                emitter.Emit(path, AuditResult.Failed, status, "HttpAccess", ctx.ActorEmail());
+            }
+
+            if (ctx.Response.HasStarted)
+            {
+                // Headers are already on the wire; the client sees a truncated body and the log above
+                // is the only record. Overwriting the status here would throw and lose even that.
+                return;
+            }
+
+            ctx.Response.Clear();
+            ctx.Response.StatusCode = status;
+            await ctx.Response.WriteAsJsonAsync(new { error, correlationId }).ConfigureAwait(false);
+        }
+
         // Hardened headers for the SPA + JSON API. Swagger UI ships an inline bootstrap script, so it
         // is exempt from the strict CSP (it is operator-only and same-origin).
         app.Use(

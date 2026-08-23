@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -21,7 +21,7 @@ using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Wallet;
 using Vortex.Primitives.Rooms.Object;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Collectibles.Grains;
 
 /// <summary>
 /// One player's stamps and Relics.

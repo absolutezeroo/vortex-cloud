@@ -160,7 +160,7 @@ public sealed partial class RoomWiredTradingSystem
             {
                 _roomGrain._logger.LogDebug("Deposit refused: chest {ChestId} is locked.", chestId);
 
-                return WiredDepositStart.Refused;
+                return WiredDepositStart.RefusedLocked;
             }
 
             if (chest is null || !chest.EveryoneCanDonate)

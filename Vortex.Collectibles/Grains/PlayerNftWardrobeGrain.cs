@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -15,7 +15,7 @@ using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Rooms.Enums;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Collectibles.Grains;
 
 /// <summary>
 /// One player's whole-avatar wardrobe: what they own, and what they are wearing.

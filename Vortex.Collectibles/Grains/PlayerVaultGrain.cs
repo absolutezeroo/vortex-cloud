@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +12,7 @@ using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Wallet;
 using Vortex.Primitives.Vault.Enums;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Collectibles.Grains;
 
 internal sealed class PlayerVaultGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,

@@ -214,8 +214,7 @@ internal sealed partial class DashboardApiService
         QueryAsync<object>(
             async db =>
             {
-                DateTime until = ParseDateTime(query["until"]) ?? DateTime.UtcNow;
-                DateTime since = ParseDateTime(query["since"]) ?? until.AddDays(-30);
+                (DateTime since, DateTime until) = ResolveWindow(query, DateTime.UtcNow);
                 string granularity = NormalizeGranularity(query["granularity"]);
 
                 List<(int QuestId, DateTime CompletedAt)> completions = await db

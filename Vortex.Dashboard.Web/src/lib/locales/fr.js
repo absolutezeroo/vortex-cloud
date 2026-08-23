@@ -1,14 +1,8 @@
 // French dictionary. Keep this structurally in sync with en.js -- see the note there.
 export default {
-  // Codes de refus du domaine, renvoyés par le serveur dans OperationResult.message et rendus par
-  // lib/opErrors.js. Un refus n'est pas une panne : c'est le domaine qui dit ce qui bloque, donc
-  // chaque ligne dit ce qui empêche l'écriture et, quand il y en a une, la sortie. Les codes absents
-  // d'ici sont affichés tels quels plutôt que masqués.
   opError: {
     operation_failed: "L'opération a échoué de façon inattendue. Cite l'identifiant de corrélation ci-dessous pour la signaler.",
     invalid_request: 'Requête rejetée : un champ obligatoire est manquant ou mal formé.',
-
-    // Bloqué par quelque chose qui dépend encore de la cible.
     offer_has_products: "Cette offre contient encore des produits. Supprime-les d'abord, puis l'offre.",
     offer_has_purchases: "Cette offre a déjà été achetée ; elle est conservée pour l'historique d'achat.",
     page_has_children: "Cette page a encore des sous-pages. Déplace-les ou supprime-les d'abord.",
@@ -27,8 +21,6 @@ export default {
     role_still_assigned: 'Ce rôle est encore attribué à au moins un compte.',
     pool_is_built_in: 'Ce pool est intégré et ne peut pas être supprimé.',
     bot_is_placed: "Ce bot est posé dans une salle. Ramasse-le d'abord.",
-
-    // La cible n'existe pas (souvent une page périmée — actualise).
     account_not_found: 'Compte introuvable.',
     achievement_not_found: 'Succès introuvable.',
     assignment_not_found: 'Assignation introuvable.',
@@ -66,8 +58,6 @@ export default {
     terms_not_found: 'Conditions de location introuvables.',
     tier_not_found: 'Palier introuvable.',
     token_offer_not_found: 'Offre de jetons introuvable.',
-
-    // Déjà pris / déjà vrai.
     achievement_name_taken: 'Ce nom de succès est déjà utilisé.',
     binding_already_exists: 'Cette liaison existe déjà.',
     collection_code_taken: 'Ce code de collection est déjà utilisé.',
@@ -84,8 +74,6 @@ export default {
     badge_already_held: 'Le joueur possède déjà ce badge.',
     level_already_reached: 'Le joueur a déjà atteint ce niveau.',
     already_entered: 'Le joueur a déjà participé à cette tombola.',
-
-    // Saisie manquante ou invalide.
     badge_code_required: 'Un code de badge est obligatoire.',
     reward_currency_unknown: "Cet hôtel n'a aucune monnaie de ce type : la récompense ne serait jamais versée.",
     reward_currency_disabled: 'Cette monnaie est désactivée : la récompense ne serait jamais versée.',
@@ -112,8 +100,6 @@ export default {
     unknown_config_key: 'Clé de configuration inconnue.',
     page_cannot_parent_itself: 'Une page ne peut pas être sa propre page parente.',
     parent_catalog_type_mismatch: 'La page parente appartient à un autre type de catalogue.',
-
-    // Refusé par l'état, pas par la saisie.
     insufficient_credits: "Le joueur n'a pas assez de crédits.",
     no_remaining: 'Il ne reste rien à distribuer.',
     no_linked_account: "Ce joueur n'a aucun compte lié.",
@@ -151,8 +137,6 @@ export default {
     reasonRequired: 'Raison *',
     reasonPlaceholder: 'pourquoi cette action ?',
     reasonPlaceholderChange: 'pourquoi ce changement ?',
-    // La raison auditée est générée à partir de l'action et de ses valeurs avant/après ; il ne reste
-    // à l'opérateur que ce que lui seul sait. Optionnel volontairement — voir lib/changes.js.
     noteOptional: 'Note (optionnelle)',
     notePlaceholder: "à consigner si besoin — qui a demandé, quel incident…",
     changeEmpty: '(vide)',
@@ -176,8 +160,6 @@ export default {
     resultSuccess: 'Succès',
     resultDenied: 'Refusé',
     resultFailed: 'Échoué',
-    // Défaut pour la validation côté client de createWriteOps ; les six espaces de noms qui
-    // répétaient cette phrase mot pour mot retombent maintenant ici.
     reasonLabel: 'Raison : {reason}',
     fillFields: 'Remplissez les champs requis (la raison doit faire au moins 3 caractères).',
     signOut: 'Déconnexion',
@@ -198,10 +180,10 @@ export default {
     invalidApiResponse: "L'API de l'émulateur n'a pas renvoyé de réponse du dashboard.",
     tooManyRequests: 'Trop de requêtes. Patientez un instant puis réessayez.',
     requestFailed: 'La requête a échoué.',
+    windowTooLarge: "Cette plage de dates est trop large. Choisissez une fenêtre d'un an au maximum.",
+    invalidDate: 'Une des dates est illisible. Vérifiez les filtres depuis/jusqu'à.',
   },
   audit: {
-    // La ligne dépliée. `changes` vient du change tracker EF ; sur une suppression, c'est la seule
-    // copie survivante de la ligne.
     wasDeleted: 'supprimé',
     opDelete: 'Supprimé',
     opUpdate: 'Modifié',

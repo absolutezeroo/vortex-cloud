@@ -148,13 +148,11 @@ internal sealed partial class DashboardApiService
             async db =>
             {
                 DateTime nowUtc = DateTime.UtcNow;
-                DateTime since = ParseDateTime(query["since"]) ?? nowUtc.AddHours(-24);
-                DateTime until = ParseDateTime(query["until"]) ?? nowUtc;
-
-                if (since > until)
-                {
-                    (since, until) = (until, since);
-                }
+                (DateTime since, DateTime until) = ResolveWindow(
+                    query,
+                    nowUtc,
+                    TimeSpan.FromHours(24)
+                );
 
                 if (until - since > TimeSpan.FromDays(60))
                 {

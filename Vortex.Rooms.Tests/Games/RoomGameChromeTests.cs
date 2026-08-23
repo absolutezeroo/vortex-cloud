@@ -1,9 +1,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Protocol.Messages.Outgoing.Room.Action;
 using Vortex.Protocol.Messages.Outgoing.Room.Session;
-using Vortex.Primitives.Rooms.Enums.Games;
 using Vortex.Rooms.Grains.Systems;
 using Vortex.Rooms.Object.Avatars.Player;
 using Vortex.Rooms.Tests.Support;

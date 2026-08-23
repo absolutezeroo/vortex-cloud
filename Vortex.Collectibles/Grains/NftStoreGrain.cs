@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
@@ -20,7 +20,7 @@ using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Wallet;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Collectibles.Grains;
 
 /// <summary>
 /// The Collectors Guild shop.

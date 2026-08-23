@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Options;
 using Vortex.Observability.Configuration;
@@ -14,6 +15,9 @@ namespace Vortex.Dashboard.API.Security;
 /// </summary>
 internal sealed class DashboardSessionStore
 {
+    /// <summary>Live sessions past which <see cref="Create" /> sweeps the expired ones first.</summary>
+    private const int PRUNE_THRESHOLD = 64;
+
     private readonly TimeSpan _lifetime;
     private readonly ConcurrentDictionary<string, Entry> _sessions = new(StringComparer.Ordinal);
 
@@ -27,6 +31,22 @@ internal sealed class DashboardSessionStore
 
     public string Create(int accountId, string email)
     {
+        // Entries are otherwise only dropped when re-presented (see Resolve), so an operator who never
+        // comes back leaves one behind until restart. Login is the only place the store grows, so it is
+        // also the only place worth sweeping -- cheaper than a timer for a handful of operators.
+        if (_sessions.Count >= PRUNE_THRESHOLD)
+        {
+            DateTime cutoff = DateTime.UtcNow;
+
+            foreach (KeyValuePair<string, Entry> pair in _sessions)
+            {
+                if (pair.Value.ExpiresAt <= cutoff)
+                {
+                    _sessions.TryRemove(pair.Key, out _);
+                }
+            }
+        }
+
         string sessionId = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
         _sessions[sessionId] = new Entry(accountId, email, DateTime.UtcNow.Add(_lifetime));
         return sessionId;

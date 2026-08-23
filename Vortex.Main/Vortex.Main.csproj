@@ -41,6 +41,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Vortex.Authentication\Vortex.Authentication.csproj" />
     <ProjectReference Include="..\Vortex.Catalog\Vortex.Catalog.csproj" />
+    <ProjectReference Include="..\Vortex.Collectibles\Vortex.Collectibles.csproj" />
     <ProjectReference Include="..\Vortex.Crypto\Vortex.Crypto.csproj" />
     <ProjectReference Include="..\Vortex.Database\Vortex.Database.csproj" />
     <ProjectReference Include="..\Vortex.Events\Vortex.Events.csproj" />

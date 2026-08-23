@@ -125,8 +125,7 @@ internal sealed partial class DashboardApiService
         QueryAsync<object>(
             async db =>
             {
-                DateTime until = ParseDateTime(query["until"]) ?? DateTime.UtcNow;
-                DateTime since = ParseDateTime(query["since"]) ?? until.AddDays(-30);
+                (DateTime since, DateTime until) = ResolveWindow(query, DateTime.UtcNow);
                 string granularity = NormalizeGranularity(query["granularity"]);
 
                 List<EconomyTrendRow> rows = await db
@@ -249,8 +248,7 @@ internal sealed partial class DashboardApiService
         QueryAsync<object>(
             async db =>
             {
-                DateTime until = ParseDateTime(query["until"]) ?? DateTime.UtcNow;
-                DateTime since = ParseDateTime(query["since"]) ?? until.AddDays(-30);
+                (DateTime since, DateTime until) = ResolveWindow(query, DateTime.UtcNow);
                 string granularity = NormalizeGranularity(query["granularity"]);
 
                 List<(DateTime UpdatedAt, int Price, int SellerId)> sold = await db
@@ -342,18 +340,7 @@ internal sealed partial class DashboardApiService
             async db =>
             {
                 DateTime nowUtc = DateTime.UtcNow;
-                DateTime until = ParseDateTime(query["until"]) ?? nowUtc;
-                DateTime since = ParseDateTime(query["since"]) ?? nowUtc.AddDays(-30);
-
-                if (since > until)
-                {
-                    (since, until) = (until, since);
-                }
-
-                if (until - since > TimeSpan.FromDays(365))
-                {
-                    since = until.AddDays(-365);
-                }
+                (DateTime since, DateTime until) = ResolveWindow(query, nowUtc);
 
                 var subscriptions = await db
                     .PlayerSubscriptions.AsNoTracking()

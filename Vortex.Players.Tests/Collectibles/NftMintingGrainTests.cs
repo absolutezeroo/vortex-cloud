@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -7,6 +7,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Orleans;
+using Vortex.Collectibles.Grains;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Collectibles;
 using Vortex.Database.Entities.Furniture;
