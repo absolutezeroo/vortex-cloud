@@ -27,4 +27,18 @@ public sealed record WiredDepositSnapshot
     /// <summary>Set once the items have actually moved into the chest.</summary>
     [Id(3)]
     public required bool Completed { get; init; }
+
+    /// <summary>
+    /// What a contract hands back, drawn on the other side of the table.
+    /// </summary>
+    /// <remarks>
+    /// Empty for a plain deposit, which gives nothing back and shows an empty far side. For a
+    /// contract it is what the chest can pay <em>right now</em>, so a shop that has run out says so
+    /// by showing less rather than by accepting into a refusal.
+    /// </remarks>
+    [Id(4)]
+    public ImmutableArray<FurnitureItemSnapshot> RewardItems { get; init; } = [];
+
+    [Id(5)]
+    public int RewardCredits { get; init; }
 }

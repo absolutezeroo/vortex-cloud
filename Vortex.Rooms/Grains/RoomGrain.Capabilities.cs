@@ -164,13 +164,23 @@ public sealed partial class RoomGrain
     Task<bool> IRoomTransactionAccess.OfferTransactionAsync(
         int contractId,
         PlayerId playerId,
+        int chestId,
         TradeContract contract,
         int mode,
         int multiplier,
         int timeoutSeconds,
         CancellationToken ct
     ) =>
-        OfferTransactionAsync(contractId, playerId, contract, mode, multiplier, timeoutSeconds, ct);
+        OfferTransactionAsync(
+            contractId,
+            playerId,
+            chestId,
+            contract,
+            mode,
+            multiplier,
+            timeoutSeconds,
+            ct
+        );
 
     Task<int> IRoomTransactionAccess.CancelTransactionAsync(
         int contractId,

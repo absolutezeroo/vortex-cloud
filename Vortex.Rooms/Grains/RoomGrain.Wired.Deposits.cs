@@ -12,6 +12,7 @@ using Vortex.Database.Entities.Wired;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Inventory.Snapshots;
 using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
+using Vortex.Primitives.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Object;
@@ -51,12 +52,23 @@ public sealed partial class RoomGrain
     /// </remarks>
     private const int DepositRequirementAnyFurni = 2;
 
-    /// <summary>One player's open deposit.</summary>
+    /// <summary>One player's open trade against a chest.</summary>
     /// <remarks>
     /// Keyed by player rather than by chest: a player can only have one trade screen up, while a
     /// chest can be filled by several people at once.
+    /// <para>
+    /// A plain deposit and a contract are the same session because they are the same screen — the
+    /// client drives both with the same three messages. <see cref="Contract"/> is what tells them
+    /// apart: null asks for nothing and gives nothing back, and anything else has a price.
+    /// </para>
     /// </remarks>
-    private sealed record ChestDeposit(int ChestId, HashSet<int> ItemIds);
+    private sealed record ChestDeposit(int ChestId, HashSet<int> ItemIds)
+    {
+        public TradeContract? Contract { get; init; }
+
+        /// <summary>How many times over the contract is being taken. Never below one.</summary>
+        public int Multiplier { get; init; } = 1;
+    }
 
     private readonly Dictionary<PlayerId, ChestDeposit> _chestDeposits = [];
 
@@ -211,7 +223,10 @@ public sealed partial class RoomGrain
             }
         }
 
-        return await SnapshotDepositAsync(deposit, completed: false, ct).ConfigureAwait(true);
+        return deposit.Contract is null
+            ? await SnapshotDepositAsync(deposit, completed: false, ct).ConfigureAwait(true)
+            : await SnapshotContractAsync(deposit, staked: null, completed: false, ct)
+                .ConfigureAwait(true);
     }
 
     /// <summary>
@@ -231,6 +246,15 @@ public sealed partial class RoomGrain
         if (!_chestDeposits.TryGetValue(ctx.PlayerId, out ChestDeposit? deposit))
         {
             return null;
+        }
+
+        if (deposit.Contract is not null)
+        {
+            // A contract's table is drawn from both sides, and only its own accept may settle it.
+            return confirm
+                ? await SettleContractAsync(ctx, deposit, ct).ConfigureAwait(true)
+                : await SnapshotContractAsync(deposit, staked: null, completed: false, ct)
+                    .ConfigureAwait(true);
         }
 
         if (!confirm)
@@ -349,9 +373,27 @@ public sealed partial class RoomGrain
         }
     }
 
-    /// <summary>Drops an open deposit. Nothing moved, so there is nothing to undo.</summary>
-    public Task<bool> CancelWiredDepositAsync(ActionContext ctx, CancellationToken ct) =>
-        Task.FromResult(_chestDeposits.Remove(ctx.PlayerId));
+    /// <summary>
+    /// Drops an open trade. Nothing moved, so there is nothing to undo.
+    /// </summary>
+    /// <remarks>
+    /// A contract turned down is a transaction that failed, and the wiring is listening for that —
+    /// so the offer goes with the screen rather than sitting there until it times out.
+    /// </remarks>
+    public async Task<bool> CancelWiredDepositAsync(ActionContext ctx, CancellationToken ct)
+    {
+        if (!_chestDeposits.Remove(ctx.PlayerId, out ChestDeposit? cancelled))
+        {
+            return false;
+        }
+
+        if (cancelled.Contract is not null)
+        {
+            await CancelTransactionAsync(0, ctx.PlayerId, ct).ConfigureAwait(true);
+        }
+
+        return true;
+    }
 
     /// <summary>The subset of the asked ids this player may actually put in a chest.</summary>
     private async Task<List<int>> ReadDepositableIdsAsync(

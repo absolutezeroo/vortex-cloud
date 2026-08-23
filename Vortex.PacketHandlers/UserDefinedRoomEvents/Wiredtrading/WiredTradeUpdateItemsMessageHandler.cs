@@ -72,9 +72,11 @@ internal static class WiredTradeTable
             FirstUserId = (int)ctx.PlayerId,
             FirstUserItems = deposit.Items,
             FirstUserCredits = 0,
+            // The far side is the contract's: what it hands back. A plain deposit leaves it empty,
+            // which is what a chest gives you for filling it.
             SecondUserId = 0,
-            SecondUserItems = ImmutableArray<FurnitureItemSnapshot>.Empty,
-            SecondUserCredits = 0,
+            SecondUserItems = deposit.RewardItems,
+            SecondUserCredits = deposit.RewardCredits,
             CanAccept = deposit.CanAccept,
             Extra = 0,
         };

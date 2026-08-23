@@ -66,6 +66,10 @@ public sealed partial class RoomGrain
         foreach (PlayerId playerId in expired)
         {
             _pendingTransactions.Remove(playerId);
+
+            // The screen the offer opened outlives the offer otherwise, and a trade nobody is
+            // still being offered must not settle.
+            _chestDeposits.Remove(playerId);
         }
 
         return expired;
@@ -85,6 +89,7 @@ public sealed partial class RoomGrain
     public async Task<bool> OfferTransactionAsync(
         int contractId,
         PlayerId playerId,
+        int chestId,
         TradeContract contract,
         int mode,
         int multiplier,
@@ -114,6 +119,10 @@ public sealed partial class RoomGrain
             Math.Max(1, multiplier),
             timeoutSeconds > 0 ? DateTime.UtcNow.AddSeconds(timeoutSeconds) : null
         );
+
+        // The screen the offer opens is the one the settlement runs on, so it exists before the
+        // player can put anything on it.
+        OpenContractSession(playerId, chestId, contract, multiplier);
 
         await _grainFactory
             .GetPlayerPresenceGrain(playerId)

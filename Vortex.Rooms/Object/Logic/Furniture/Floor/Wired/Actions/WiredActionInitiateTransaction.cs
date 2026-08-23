@@ -97,6 +97,10 @@ public class WiredActionInitiateTransaction(
             return true;
         }
 
+        // The stock behind the counter. A box with none can still charge — it just has nothing to
+        // hand back, which the contract's own terms are free to say.
+        int chestId = GetStuffIds().FirstOrDefault();
+
         WiredAddonCustomContract? terms = ctx
             .Addons.OfType<WiredAddonCustomContract>()
             .FirstOrDefault();
@@ -114,6 +118,7 @@ public class WiredActionInitiateTransaction(
                 .Transactions.OfferTransactionAsync(
                     contractId,
                     playerId,
+                    chestId,
                     contract!,
                     mode,
                     multiplier,

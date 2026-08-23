@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
@@ -15,9 +16,13 @@ namespace Vortex.PacketHandlers.UserDefinedRoomEvents.Wiredtrading;
 /// </summary>
 /// <remarks>
 /// The client sends this twice for one completed trade and the room decides which one moves the
-/// furniture; this only forwards, then tells the screen what happened. A completed deposit also
-/// answers with the chest's own delta, so the chest window behind the trade shows the new rows
-/// without asking for them.
+/// furniture; this only forwards, then tells the screen what happened. A completed trade also
+/// answers with the chest's own delta, so the chest window behind it shows the new rows without
+/// asking for them.
+/// <para>
+/// A contract settles through here too — it is the same screen and the same three messages, which
+/// is why there is no second accept handler for it.
+/// </para>
 /// </remarks>
 public class WiredTradeAcceptMessageHandler(IGrainFactory grainFactory)
     : IMessageHandler<WiredTradeAcceptMessage>
@@ -60,11 +65,14 @@ public class WiredTradeAcceptMessageHandler(IGrainFactory grainFactory)
         await ctx.SendComposerAsync(new WiredTradeCompletedMessageComposer(), ct)
             .ConfigureAwait(false);
 
+        // Both halves of the delta: what the trade put in, and — for a contract — what it took out
+        // to pay the player. A chest window open behind the trade would otherwise keep showing rows
+        // that have just left.
         await ctx.SendComposerAsync(
                 new WiredChestItemsUpdateMessageComposer
                 {
                     ChestId = deposit.ChestId,
-                    RemovedItemIds = [],
+                    RemovedItemIds = [.. deposit.RewardItems.Select(item => (int)item.ItemId)],
                     AddedItems = deposit.Items,
                 },
                 ct

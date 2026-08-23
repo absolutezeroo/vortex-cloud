@@ -21,6 +21,10 @@ public interface IRoomTransactionAccess
     /// One at a time per player: the client shows a single trading screen, so a second offer is the
     /// first one being withdrawn.
     /// </remarks>
+    /// <param name="chestId">
+    /// The chest that backs the contract: payment goes into it and the reward comes out of it. Zero
+    /// for a box pointing at no chest, which can then only take and never give.
+    /// </param>
     /// <param name="contract">
     /// The terms, already read off the add-on that holds them. Built by the caller rather than here
     /// because the form belongs to a box, not to the room.
@@ -28,6 +32,7 @@ public interface IRoomTransactionAccess
     Task<bool> OfferTransactionAsync(
         int contractId,
         PlayerId playerId,
+        int chestId,
         TradeContract contract,
         int mode,
         int multiplier,
