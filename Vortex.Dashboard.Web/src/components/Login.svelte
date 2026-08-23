@@ -126,19 +126,11 @@
     color: var(--muted);
   }
 
+  /* Box, colours and focus all come from the global field rule now -- this predates it and was
+     painting white text on what the kit turned into a light box. Only the size is local. */
   input {
     padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid var(--line-strong);
-    background: var(--input-bg);
-    color: var(--ink);
     font-size: 14px;
-    outline: none;
-  }
-
-  input:focus-visible {
-    border-color: rgba(var(--accent-rgb), 0.58);
-    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.12);
   }
 
   button {

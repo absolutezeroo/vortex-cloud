@@ -52,10 +52,10 @@
     box-shadow: var(--shadow);
   }
 
-  .toast.success { background: var(--success-bg); border-color: var(--success-border); }
-  .toast.info { background: var(--info-bg); border-color: var(--info-border); }
-  .toast.warning { background: var(--warning-bg); border-color: var(--warning-border); }
-  .toast.error { background: var(--danger-bg); border-color: var(--danger-border); }
+  .toast.success { background: var(--alert-success-bg); border-color: var(--success-border); }
+  .toast.info { background: var(--alert-info-bg); border-color: var(--info-border); }
+  .toast.warning { background: var(--alert-warning-bg); border-color: var(--warning-border); }
+  .toast.error { background: var(--alert-danger-bg); border-color: var(--danger-border); }
 
   .toast.success .ico { color: var(--ok); }
   .toast.info .ico { color: var(--accent-strong); }

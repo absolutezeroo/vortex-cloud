@@ -23,6 +23,7 @@
   <span class="tf-input">
     <Search size={14} strokeWidth={2} aria-hidden="true" />
     <input
+      class="bare"
       type="search"
       autocomplete="off"
       spellcheck="false"

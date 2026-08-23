@@ -170,6 +170,7 @@
         <input
           bind:this={input}
           bind:value={query}
+          class="bare"
           type="text"
           autocomplete="off"
           spellcheck="false"

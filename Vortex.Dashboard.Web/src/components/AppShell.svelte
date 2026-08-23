@@ -290,6 +290,7 @@
     <div class="nav-search">
       <Search size={15} strokeWidth={1.9} aria-hidden="true" />
       <input autocomplete="off" spellcheck="false"
+        class="bare"
         type="search"
         placeholder={$t('nav.searchPlaceholder')}
         aria-label={$t('nav.searchPlaceholder')}

@@ -10,9 +10,9 @@
 //   node scripts/hooks/check-design-tokens.mjs
 //
 // Exit 0 = the theme matches the mockup, exit 2 = it has drifted.
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const cssPath = resolve(here, '../../Vortex.Dashboard.Web/src/styles.css');
@@ -78,10 +78,10 @@ const MEASURED = {
   '--badge-support': '#43853d',
   '--badge-builder': '#b98f2c',
   '--badge-event': '#5441b2',
-  '--success-bg': '#41714a',
-  '--info-bg': '#2b6089',
-  '--warning-bg': '#605c3d',
-  '--danger-bg': '#5f3544',
+  '--alert-success-bg': '#41714a',
+  '--alert-info-bg': '#2b6089',
+  '--alert-warning-bg': '#605c3d',
+  '--alert-danger-bg': '#5f3544',
   '--muted': '#cad4da',
   '--ink': '#ffffff',
 };
@@ -135,9 +135,34 @@ if (!shadow) {
   }
 }
 
-if (missing.length || drift.length) {
+// Fields are light boxes on dark panels. A handful of inputs are NOT fields -- they sit bare inside
+// a dark well (the sidebar filter, the palette, the table filter, the filename row, the slider) and
+// draw their own box. They opt out with class="bare", which the global rule excludes; without it the
+// rule paints them light while the component keeps the white ink, and you get white on white.
+// That shipped once. This makes it fail instead.
+const componentsDir = resolve(here, '../../Vortex.Dashboard.Web/src/components');
+const bareGaps = [];
+
+for (const file of readdirSync(componentsDir)) {
+  if (!file.endsWith('.svelte')) continue;
+
+  const source = readFileSync(join(componentsDir, file), 'utf8');
+  const stylesBare = /input[^{}]*\{[^{}]*background:\s*transparent/s.test(source);
+
+  if (stylesBare && !source.includes('class="bare"')) {
+    bareGaps.push(file);
+  }
+}
+
+for (const file of bareGaps) {
   console.error(
-    `\n${missing.length + drift.length} ecart(s) avec docs/design/habbo-unity-mockup.png. Re-echantillonnez la maquette avant de changer une valeur.`
+    `check-design-tokens: components/${file} styles an input with background:transparent but never marks it class="bare" -- the global light-field rule will paint over it.`
+  );
+}
+
+if (missing.length || drift.length || bareGaps.length) {
+  console.error(
+    `\n${missing.length + drift.length + bareGaps.length} ecart(s) avec docs/design/habbo-unity-mockup.png. Re-echantillonnez la maquette avant de changer une valeur.`
   );
   process.exit(2);
 }

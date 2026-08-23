@@ -82,6 +82,7 @@
     <div class="filename-row">
       {#if prefix}<span class="filename-prefix" title={imageTemplate}>{prefix}</span>{/if}
       <input autocomplete="off" spellcheck="false"
+        class="bare"
         {id}
         value={filename}
         oninput={onFilenameInput}

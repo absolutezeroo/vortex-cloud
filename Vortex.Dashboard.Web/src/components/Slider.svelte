@@ -32,6 +32,7 @@
 
 <div class="slider" style:--pct={`${pct}%`}>
   <input
+    class="bare"
     type="range"
     bind:value
     {min}

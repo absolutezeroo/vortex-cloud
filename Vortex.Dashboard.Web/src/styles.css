@@ -91,6 +91,7 @@
   --field-border-top: #f2f0ee;
   --field-border-bottom: #a9b0b7;
   --field-ring: #1a3858;
+  --field-ink-disabled: #1e3552;
 
   /* Buttons. Flat fills, measured: the mockup's primary has no gradient. */
   --button-bg: #276ab2;
@@ -119,14 +120,21 @@
   --muted-strong: #e4ebf0;
   --muted-rgb: 202, 212, 218;
 
-  /* Alert fills are the tinted bars measured in the kit, not a computed alpha of the semantic hue. */
-  --success-bg: #41714a;
+  /* Two different things, which had been collapsed into one token and made every status pill
+     illegible. The alert BARS are the opaque fills measured in the kit, and carry white text. The
+     pills, badges and chips are a translucent wash of the same hue under text OF that hue -- put
+     --ok on top of the opaque #41714a and you get 2.2:1. */
+  --alert-success-bg: #41714a;
+  --alert-info-bg: #2b6089;
+  --alert-warning-bg: #605c3d;
+  --alert-danger-bg: #5f3544;
+  --success-bg: rgba(117, 189, 93, 0.16);
   --success-border: rgba(117, 189, 93, 0.55);
-  --info-bg: #2b6089;
+  --info-bg: rgba(46, 124, 201, 0.16);
   --info-border: rgba(63, 135, 219, 0.55);
-  --warning-bg: #605c3d;
+  --warning-bg: rgba(237, 183, 57, 0.16);
   --warning-border: rgba(237, 183, 57, 0.55);
-  --danger-bg: #5f3544;
+  --danger-bg: rgba(183, 81, 75, 0.18);
   --danger-border: rgba(183, 81, 75, 0.55);
 
   --line: rgba(59, 100, 138, 0.45);
@@ -1515,7 +1523,7 @@ code {
    makes text, date, number, search and select all identical. */
 select,
 textarea,
-input:not([type='checkbox']):not([type='radio']) {
+input:not([type='checkbox']):not([type='radio']):not(.bare) {
   border: 1px solid var(--field-border);
   border-radius: 8px;
   background: var(--field-bg);
@@ -1526,14 +1534,14 @@ input:not([type='checkbox']):not([type='radio']) {
   outline: none;
   font: inherit;
   transition: border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
-  /* Makes native affordances (the date picker's calendar glyph, number spinners) follow the app
-     theme instead of rendering a light-on-light control. */
-  color-scheme: inherit;
+  /* The field is a light box now, so its native affordances -- the date picker popup, the
+     number spinners -- have to be light too, whatever the page theme is. */
+  color-scheme: light;
 }
 
 select:focus-visible,
 textarea:focus-visible,
-input:not([type='checkbox']):not([type='radio']):focus-visible {
+input:not([type='checkbox']):not([type='radio']):not(.bare):focus-visible {
   background: var(--field-bg-focus);
   border-color: var(--accent);
   /* Focus deepens the ring rather than adding a halo -- measured #0a325d against the #1a3858 the
@@ -1543,13 +1551,16 @@ input:not([type='checkbox']):not([type='radio']):focus-visible {
 
 select:disabled,
 textarea:disabled,
-input:not([type='checkbox']):not([type='radio']):disabled {
+input:not([type='checkbox']):not([type='radio']):not(.bare):disabled {
   background: var(--field-bg-disabled);
-  color: var(--muted-strong);
+  color: var(--field-ink-disabled);
   cursor: default;
 }
 
-::placeholder {
+/* Scoped the same way: a bare input sits on the dark chrome and keeps the muted placeholder its
+   own component sets, not the dark grey meant for a light field. */
+input:not(.bare)::placeholder,
+textarea::placeholder {
   color: var(--field-placeholder);
   opacity: 1;
 }
@@ -1582,27 +1593,30 @@ input[type='time']::-webkit-calendar-picker-indicator {
 select {
   appearance: none;
   padding-right: 34px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1.5 1.75 6 6.25l4.5-4.5' stroke='%238ba3bc' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1.5 1.75 6 6.25l4.5-4.5' stroke='%235c6168' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-position: right 12px center;
   background-size: 11px 7px;
   background-repeat: no-repeat;
 }
 
 :root[data-theme='dark'] select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1.5 1.75 6 6.25l4.5-4.5' stroke='%238d9096' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1.5 1.75 6 6.25l4.5-4.5' stroke='%235c6168' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
 :root[data-theme='white'] select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1.5 1.75 6 6.25l4.5-4.5' stroke='%235f7085' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1.5 1.75 6 6.25l4.5-4.5' stroke='%235c6168' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
 select:hover {
-  background-color: var(--surface-hover);
+  /* --surface-hover is a dark navy and the select is now a light box: this hover turned the control
+     dark while its text stayed dark. Hovering a light field lightens it. */
+  background-color: var(--field-bg-focus);
 }
 
 select option {
   background: var(--field-bg);
-  color: var(--ink);
+  /* --ink is white, and the option list is light: this was white on white in every open dropdown. */
+  color: var(--field-ink);
 }
 
 textarea {
