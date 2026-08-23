@@ -1,10 +1,10 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Vortex.Protocol.Messages.Outgoing.Preferences;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Snapshots;
+using Vortex.Protocol.Messages.Outgoing.Preferences;
 
 namespace Vortex.PacketHandlers.Preferences;
 

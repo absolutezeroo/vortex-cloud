@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Inventory.Snapshots;
-using Vortex.Protocol.Messages.Outgoing.Inventory.Badges;
-using Vortex.Protocol.Messages.Outgoing.Inventory.Furni;
-using Vortex.Protocol.Messages.Outgoing.Inventory.Pets;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Pets.Snapshots;
 using Vortex.Primitives.Rooms.Object;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Badges;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Furni;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Pets;
 
 namespace Vortex.Players.Grains.Modules;
 

@@ -2,9 +2,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
+using Vortex.Primitives.Orleans;
 using Vortex.Protocol.Messages.Incoming.GroupForums;
 using Vortex.Protocol.Messages.Outgoing.Groupforums;
-using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.GroupForums;
 

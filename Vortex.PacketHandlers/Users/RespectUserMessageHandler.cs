@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Protocol.Messages.Incoming.Users;
 using Vortex.Primitives.Orleans;
+using Vortex.Protocol.Messages.Incoming.Users;
 
 namespace Vortex.PacketHandlers.Users;
 

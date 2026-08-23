@@ -30,6 +30,7 @@ public static class EmulatorProjects
         "Vortex.Rooms",
         "Vortex.Players",
         "Vortex.Collectibles",
+        "Vortex.Social",
         "Vortex.Catalog",
         "Vortex.Inventory",
         "Vortex.Navigator",

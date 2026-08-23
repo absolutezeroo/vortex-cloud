@@ -2,9 +2,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
+using Vortex.Primitives.Orleans;
 using Vortex.Protocol.Messages.Incoming.Users;
 using Vortex.Protocol.Messages.Outgoing.Users;
-using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Users;
 

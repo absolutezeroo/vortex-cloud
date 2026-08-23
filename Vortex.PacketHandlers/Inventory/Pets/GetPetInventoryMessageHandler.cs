@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Inventory.Grains;
-using Vortex.Protocol.Messages.Incoming.Inventory.Pets;
-using Vortex.Protocol.Messages.Outgoing.Inventory.Pets;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Pets.Snapshots;
+using Vortex.Protocol.Messages.Incoming.Inventory.Pets;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Pets;
 
 namespace Vortex.PacketHandlers.Inventory.Pets;
 

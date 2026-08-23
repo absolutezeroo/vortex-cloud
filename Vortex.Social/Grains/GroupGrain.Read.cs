@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -8,15 +8,15 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Groups;
-using Vortex.Players.Configuration;
-using Vortex.Players.Groups;
 using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Server.Grains;
+using Vortex.Social.Configuration;
+using Vortex.Social.Groups;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Social.Grains;
 
 /// <summary>Read paths: everything the guild windows poll while they are open.</summary>
 internal sealed partial class GroupGrain

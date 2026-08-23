@@ -3,14 +3,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Protocol.Messages.Incoming.Inventory;
-using Vortex.Protocol.Messages.Incoming.Inventory.Purse;
-using Vortex.Protocol.Messages.Outgoing.Inventory.Purse;
-using Vortex.Protocol.Messages.Outgoing.Notifications;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Wallet;
+using Vortex.Protocol.Messages.Incoming.Inventory;
+using Vortex.Protocol.Messages.Incoming.Inventory.Purse;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Purse;
+using Vortex.Protocol.Messages.Outgoing.Notifications;
 
 namespace Vortex.PacketHandlers.Inventory.Purse;
 

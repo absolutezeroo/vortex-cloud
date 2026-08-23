@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using Vortex.Database.Entities.Groups;
 using Vortex.Database.Entities.Players;
 using Vortex.Primitives.Groups;
 using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Groups.Snapshots;
 
-namespace Vortex.Players.Groups;
+namespace Vortex.Social.Groups;
 
 /// <summary>
 /// The single place a <see cref="GroupMemberSnapshot"/> is built. Five call sites in

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.Reflection;
 using System.Threading;
@@ -33,6 +33,7 @@ using Vortex.Primitives.Console;
 using Vortex.Revisions.Extensions;
 using Vortex.Rooms;
 using Vortex.Runtime.AssemblyProcessing;
+using Vortex.Social;
 using Vortex.WebApi;
 
 namespace Vortex.Main;
@@ -125,6 +126,7 @@ internal class Program
         builder.Services.AddHostPlugin<FurnitureModule>(builder);
         builder.Services.AddHostPlugin<CatalogModule>(builder);
         builder.Services.AddHostPlugin<PlayerModule>(builder);
+        builder.Services.AddHostPlugin<SocialModule>(builder);
         builder.Services.AddHostPlugin<InventoryModule>(builder);
         builder.Services.AddHostPlugin<MarketplaceModule>(builder);
         builder.Services.AddHostPlugin<DashboardApiModule>(builder);

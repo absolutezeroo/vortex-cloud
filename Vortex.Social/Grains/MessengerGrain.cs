@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -11,19 +11,19 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Messenger;
 using Vortex.Database.Entities.Players;
 using Vortex.Logging.Extensions;
-using Vortex.Players.Configuration;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.FriendList.Enums;
 using Vortex.Primitives.FriendList.Grains;
-using Vortex.Protocol.Messages.Outgoing.FriendList;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Server.Grains;
 using Vortex.Primitives.Snapshots.FriendList;
+using Vortex.Protocol.Messages.Outgoing.FriendList;
+using Vortex.Social.Configuration;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Social.Grains;
 
 /// <summary>
 ///     Lifecycle, hydration, and shared fire-and-forget/flush helpers. Friend list/requests/

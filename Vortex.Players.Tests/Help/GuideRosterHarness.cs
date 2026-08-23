@@ -1,5 +1,5 @@
-using Orleans;
-using Vortex.Players.Grains;
+﻿using Orleans;
+using Vortex.Social.Grains;
 using Vortex.Tests.Support;
 
 namespace Vortex.Players.Tests.Help;

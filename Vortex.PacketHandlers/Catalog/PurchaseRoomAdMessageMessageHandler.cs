@@ -7,12 +7,12 @@ using Vortex.Messages.Registry;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Catalog.Grains;
 using Vortex.Primitives.Catalog.Snapshots;
-using Vortex.Protocol.Messages.Incoming.Catalog;
-using Vortex.Protocol.Messages.Outgoing.Catalog;
 using Vortex.Primitives.Navigator;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Grains;
+using Vortex.Protocol.Messages.Incoming.Catalog;
+using Vortex.Protocol.Messages.Outgoing.Catalog;
 
 namespace Vortex.PacketHandlers.Catalog;
 

@@ -2,9 +2,9 @@ using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
+using Vortex.Primitives.Moderation;
 using Vortex.Protocol.Messages.Incoming.Help;
 using Vortex.Protocol.Messages.Outgoing.Help;
-using Vortex.Primitives.Moderation;
 
 namespace Vortex.PacketHandlers.Help;
 

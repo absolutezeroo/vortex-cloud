@@ -5,11 +5,11 @@ using Vortex.Messages.Registry;
 using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Inventory.Snapshots;
-using Vortex.Protocol.Messages.Incoming.Catalog;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Grains;
+using Vortex.Protocol.Messages.Incoming.Catalog;
 
 namespace Vortex.PacketHandlers.Catalog;
 

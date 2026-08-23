@@ -3,10 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Protocol.Messages.Incoming.Users;
-using Vortex.Protocol.Messages.Outgoing.Notifications;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Server.Grains;
+using Vortex.Protocol.Messages.Incoming.Users;
+using Vortex.Protocol.Messages.Outgoing.Notifications;
 
 namespace Vortex.PacketHandlers.Users;
 

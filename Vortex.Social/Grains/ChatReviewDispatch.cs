@@ -1,12 +1,12 @@
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Primitives.Help;
-using Vortex.Protocol.Messages.Outgoing.Help;
 using Vortex.Primitives.Orleans;
+using Vortex.Protocol.Messages.Outgoing.Help;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Social.Grains;
 
 /// <summary>
 /// Turns a chat-review outcome into packets for everyone it touches.

@@ -3,12 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Protocol.Messages.Incoming.Room.Pets;
-using Vortex.Protocol.Messages.Outgoing.Room.Pets;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Pets.Providers;
 using Vortex.Primitives.Pets.Snapshots;
 using Vortex.Primitives.Rooms.Grains;
+using Vortex.Protocol.Messages.Incoming.Room.Pets;
+using Vortex.Protocol.Messages.Outgoing.Room.Pets;
 
 namespace Vortex.PacketHandlers.Room.Pets;
 

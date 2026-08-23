@@ -7,10 +7,10 @@ using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Catalog;
 using Vortex.Primitives.Catalog.Providers;
-using Vortex.Protocol.Messages.Incoming.Catalog;
-using Vortex.Protocol.Messages.Outgoing.Catalog;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
+using Vortex.Protocol.Messages.Incoming.Catalog;
+using Vortex.Protocol.Messages.Outgoing.Catalog;
 
 namespace Vortex.PacketHandlers.Catalog;
 

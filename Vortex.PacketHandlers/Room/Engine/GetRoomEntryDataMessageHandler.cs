@@ -5,11 +5,6 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Action;
-using Vortex.Protocol.Messages.Incoming.Room.Engine;
-using Vortex.Protocol.Messages.Outgoing.Room.Action;
-using Vortex.Protocol.Messages.Outgoing.Room.Engine;
-using Vortex.Protocol.Messages.Outgoing.Room.Permissions;
-using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
@@ -20,6 +15,11 @@ using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Snapshots.Avatars;
 using Vortex.Primitives.Rooms.Snapshots.Furniture;
+using Vortex.Protocol.Messages.Incoming.Room.Engine;
+using Vortex.Protocol.Messages.Outgoing.Room.Action;
+using Vortex.Protocol.Messages.Outgoing.Room.Engine;
+using Vortex.Protocol.Messages.Outgoing.Room.Permissions;
+using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 
 namespace Vortex.PacketHandlers.Room.Engine;
 

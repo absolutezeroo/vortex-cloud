@@ -1,10 +1,10 @@
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Orleans;
-using Vortex.Players.Grains;
 using Vortex.Primitives.Help;
+using Vortex.Social.Grains;
 using Vortex.Tests.Support;
 using Xunit;
 

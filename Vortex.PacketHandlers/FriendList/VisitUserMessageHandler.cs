@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.FriendList.Enums;
-using Vortex.Protocol.Messages.Incoming.FriendList;
-using Vortex.Protocol.Messages.Outgoing.FriendList;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Rooms;
+using Vortex.Protocol.Messages.Incoming.FriendList;
+using Vortex.Protocol.Messages.Outgoing.FriendList;
 
 namespace Vortex.PacketHandlers.FriendList;
 

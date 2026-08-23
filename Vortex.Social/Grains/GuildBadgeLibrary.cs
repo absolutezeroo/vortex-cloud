@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Vortex.Primitives.Groups.Snapshots;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Social.Grains;
 
 /// <summary>
 ///     Helpers for guild badge code encoding / decoding. Badge part catalogue data

@@ -4,8 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Protocol.Messages.Incoming.Help;
 using Vortex.Primitives.Moderation;
+using Vortex.Protocol.Messages.Incoming.Help;
 
 namespace Vortex.PacketHandlers.Help;
 

@@ -2,9 +2,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Protocol.Messages.Incoming.Room.Furniture;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Rooms.Snapshots.Furniture;
+using Vortex.Protocol.Messages.Incoming.Room.Furniture;
 
 namespace Vortex.PacketHandlers.Room.Furniture;
 

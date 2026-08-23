@@ -2,11 +2,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Protocol.Messages.Incoming.Handshake;
-using Vortex.Protocol.Messages.Outgoing.Handshake;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Players.Grains;
+using Vortex.Protocol.Messages.Incoming.Handshake;
+using Vortex.Protocol.Messages.Outgoing.Handshake;
 
 namespace Vortex.PacketHandlers.Handshake;
 

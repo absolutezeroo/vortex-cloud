@@ -1,9 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
+using Vortex.Primitives.Rooms;
 using Vortex.Protocol.Messages.Incoming.Navigator;
 using Vortex.Protocol.Messages.Outgoing.Navigator;
-using Vortex.Primitives.Rooms;
 
 namespace Vortex.PacketHandlers.Navigator;
 

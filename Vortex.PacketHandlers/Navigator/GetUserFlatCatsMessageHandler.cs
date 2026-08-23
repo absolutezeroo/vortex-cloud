@@ -2,10 +2,10 @@ using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Protocol.Messages.Incoming.Navigator;
-using Vortex.Protocol.Messages.Outgoing.Navigator;
 using Vortex.Primitives.Navigator;
 using Vortex.Primitives.Orleans.Snapshots.Navigator;
+using Vortex.Protocol.Messages.Incoming.Navigator;
+using Vortex.Protocol.Messages.Outgoing.Navigator;
 
 namespace Vortex.PacketHandlers.Navigator;
 

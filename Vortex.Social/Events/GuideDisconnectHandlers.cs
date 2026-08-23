@@ -1,13 +1,13 @@
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Events.Registry;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Help.Grains;
-using Vortex.Protocol.Messages.Outgoing.Help;
 using Vortex.Primitives.Orleans;
+using Vortex.Protocol.Messages.Outgoing.Help;
 
-namespace Vortex.Players.Events;
+namespace Vortex.Social.Events;
 
 /// <summary>
 /// Takes a disconnecting player out of the guide subsystem.

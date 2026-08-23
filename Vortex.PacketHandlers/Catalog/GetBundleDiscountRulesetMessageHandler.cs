@@ -1,9 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
+using Vortex.Primitives.Snapshots.Catalog;
 using Vortex.Protocol.Messages.Incoming.Catalog;
 using Vortex.Protocol.Messages.Outgoing.Catalog;
-using Vortex.Primitives.Snapshots.Catalog;
 
 namespace Vortex.PacketHandlers.Catalog;
 

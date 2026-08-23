@@ -2,10 +2,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Protocol.Messages.Incoming.Room.Chat;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Quests;
 using Vortex.Primitives.Rooms.Grains;
+using Vortex.Protocol.Messages.Incoming.Room.Chat;
 
 namespace Vortex.PacketHandlers.Room.Chat;
 

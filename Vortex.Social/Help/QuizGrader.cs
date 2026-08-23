@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 
-namespace Vortex.Players.Help;
+namespace Vortex.Social.Help;
 
 /// <summary>
 /// Marks a submitted quiz. Pure, and worth being pure: the answers arrive positionally against the

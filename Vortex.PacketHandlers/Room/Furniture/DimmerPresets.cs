@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Outgoing.Room.Furniture;
 using Vortex.Primitives.Rooms.Snapshots.Furniture;
+using Vortex.Protocol.Messages.Outgoing.Room.Furniture;
 
 namespace Vortex.PacketHandlers.Room.Furniture;
 

@@ -1,9 +1,9 @@
-namespace Vortex.Revisions.Configuration;
+﻿namespace Vortex.Revisions.Configuration;
 
 /// <summary>
 ///     Wire-safety bounds on client-declared collection sizes inside packet parsers. These guard
 ///     against malformed/hostile length-prefixed fields, not business policy (see
-///     <c>Vortex.Players.Configuration.MessengerConfig</c> for the account-level friend cap).
+///     <c>Vortex.Social.Configuration.MessengerConfig</c> for the account-level friend cap).
 /// </summary>
 public sealed class ProtocolLimitsConfig
 {

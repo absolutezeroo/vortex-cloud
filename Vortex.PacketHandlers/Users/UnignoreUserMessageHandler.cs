@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.FriendList.Grains;
-using Vortex.Protocol.Messages.Incoming.Users;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
+using Vortex.Protocol.Messages.Incoming.Users;
 
 namespace Vortex.PacketHandlers.Users;
 

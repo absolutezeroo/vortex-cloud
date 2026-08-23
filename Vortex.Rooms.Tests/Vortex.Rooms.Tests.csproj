@@ -22,6 +22,7 @@
     <ProjectReference Include="..\Vortex.Furniture\Vortex.Furniture.csproj" />
     <ProjectReference Include="..\Vortex.Observability\Vortex.Observability.csproj" />
     <ProjectReference Include="..\Vortex.Players\Vortex.Players.csproj" />
+    <ProjectReference Include="..\Vortex.Social\Vortex.Social.csproj" />
     <ProjectReference Include="..\Vortex.Collectibles\Vortex.Collectibles.csproj" />
     <ProjectReference Include="..\Vortex.Primitives\Vortex.Primitives.csproj" />
     <ProjectReference Include="..\Vortex.Protocol\Vortex.Protocol.csproj" />

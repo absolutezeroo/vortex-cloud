@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -10,14 +10,14 @@ using Orleans;
 using Vortex.Database.Context;
 using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Groups.Snapshots;
-using Vortex.Protocol.Messages.Outgoing.Users;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Grains;
+using Vortex.Protocol.Messages.Outgoing.Users;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Social.Grains;
 
 /// <summary>
 /// Outbound pushes. Every method here is best-effort: a guild change must not be rolled back

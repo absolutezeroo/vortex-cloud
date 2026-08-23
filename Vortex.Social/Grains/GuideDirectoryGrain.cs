@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -9,7 +9,7 @@ using Vortex.Primitives.Help;
 using Vortex.Primitives.Help.Grains;
 using Vortex.Runtime;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Social.Grains;
 
 /// <summary>
 /// The live roster of guides on duty. One grain for the hotel, so the counts every guide tool shows

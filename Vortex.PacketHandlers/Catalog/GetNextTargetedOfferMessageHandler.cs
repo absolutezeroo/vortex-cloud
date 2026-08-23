@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Catalog.Snapshots;
-using Vortex.Protocol.Messages.Incoming.Catalog;
 using Vortex.Primitives.Orleans;
+using Vortex.Protocol.Messages.Incoming.Catalog;
 
 namespace Vortex.PacketHandlers.Catalog;
 

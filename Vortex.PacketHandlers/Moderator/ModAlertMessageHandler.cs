@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Events;
-using Vortex.Protocol.Messages.Incoming.Moderator;
 using Vortex.Primitives.Permissions;
 using Vortex.Primitives.Rooms;
+using Vortex.Protocol.Messages.Incoming.Moderator;
 
 namespace Vortex.PacketHandlers.Moderator;
 

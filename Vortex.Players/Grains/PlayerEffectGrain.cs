@@ -13,11 +13,11 @@ using Vortex.Database.Entities.Players;
 using Vortex.Players.Effects;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Inventory.Snapshots;
-using Vortex.Protocol.Messages.Outgoing.Inventory.Avatareffect;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Grains;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Avatareffect;
 
 namespace Vortex.Players.Grains;
 

@@ -7,8 +7,6 @@ using Orleans.Runtime;
 using Orleans.Streams;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Events;
-using Vortex.Protocol.Messages.Outgoing.Room.Permissions;
-using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
@@ -19,6 +17,8 @@ using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Snapshots;
+using Vortex.Protocol.Messages.Outgoing.Room.Permissions;
+using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredmenu;
 
 namespace Vortex.Players.Grains;
 

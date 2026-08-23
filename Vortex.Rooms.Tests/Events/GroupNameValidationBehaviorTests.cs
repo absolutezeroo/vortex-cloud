@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Immutable;
 using System.Reflection;
 using System.Threading;
@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Orleans;
 using Vortex.Events.Registry;
-using Vortex.Players.Events;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Server.Grains;
+using Vortex.Social.Events;
 using Xunit;
 
 namespace Vortex.Rooms.Tests.Events;

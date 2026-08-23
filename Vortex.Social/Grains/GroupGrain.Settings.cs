@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -8,15 +8,15 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Groups;
-using Vortex.Players.Configuration;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Groups;
 using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Server.Grains;
+using Vortex.Social.Configuration;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Social.Grains;
 
 /// <summary>Guild identity, join policy, and the end of the guild's life.</summary>
 internal sealed partial class GroupGrain

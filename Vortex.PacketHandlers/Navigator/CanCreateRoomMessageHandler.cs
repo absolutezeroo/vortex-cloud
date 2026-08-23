@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.PacketHandlers.Configuration;
-using Vortex.Protocol.Messages.Incoming.Navigator;
-using Vortex.Protocol.Messages.Outgoing.Navigator;
 using Vortex.Primitives.Navigator;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Server.Grains;
+using Vortex.Protocol.Messages.Incoming.Navigator;
+using Vortex.Protocol.Messages.Outgoing.Navigator;
 
 namespace Vortex.PacketHandlers.Navigator;
 

@@ -4,9 +4,9 @@ using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Groups.Snapshots;
+using Vortex.Primitives.Orleans;
 using Vortex.Protocol.Messages.Incoming.Room.Furniture;
 using Vortex.Protocol.Messages.Outgoing.Room.Furniture;
-using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Room.Furniture;
 

@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.PacketHandlers.Configuration;
-using Vortex.Protocol.Messages.Incoming.Help;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Server.Grains;
+using Vortex.Protocol.Messages.Incoming.Help;
 
 namespace Vortex.PacketHandlers.Help;
 

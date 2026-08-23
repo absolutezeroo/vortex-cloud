@@ -12,21 +12,20 @@ using Vortex.Database.Entities.Groups;
 using Vortex.Database.Entities.Players;
 using Vortex.Database.Entities.Room;
 using Vortex.Events.Registry;
-using Vortex.Players.Configuration;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Groups.Grains;
 using Vortex.Primitives.Groups.Providers;
 using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Groups.Snapshots;
-using Vortex.Protocol.Messages.Incoming.GroupForums;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Wallet;
 using Vortex.Primitives.Server.Grains;
+using Vortex.Social.Configuration;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Social.Grains;
 
 internal sealed class GroupDirectoryGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,

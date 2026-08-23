@@ -1,4 +1,4 @@
-namespace Vortex.Players.Configuration;
+﻿namespace Vortex.Social.Configuration;
 
 public sealed class MessengerConfig
 {

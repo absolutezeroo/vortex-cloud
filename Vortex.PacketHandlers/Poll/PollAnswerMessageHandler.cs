@@ -2,8 +2,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Protocol.Messages.Incoming.Poll;
 using Vortex.Primitives.Orleans;
+using Vortex.Protocol.Messages.Incoming.Poll;
 
 namespace Vortex.PacketHandlers.Poll;
 

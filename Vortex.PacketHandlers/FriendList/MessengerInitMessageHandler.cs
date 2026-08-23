@@ -8,11 +8,11 @@ using Vortex.Logging.Extensions;
 using Vortex.Messages.Registry;
 using Vortex.PacketHandlers.Configuration;
 using Vortex.Primitives.FriendList.Grains;
-using Vortex.Protocol.Messages.Incoming.FriendList;
-using Vortex.Protocol.Messages.Outgoing.FriendList;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Server.Grains;
 using Vortex.Primitives.Snapshots.FriendList;
+using Vortex.Protocol.Messages.Incoming.FriendList;
+using Vortex.Protocol.Messages.Outgoing.FriendList;
 
 namespace Vortex.PacketHandlers.FriendList;
 

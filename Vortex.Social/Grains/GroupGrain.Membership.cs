@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -8,13 +8,13 @@ using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Groups;
 using Vortex.Database.Entities.Players;
-using Vortex.Players.Groups;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Players;
+using Vortex.Social.Groups;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Social.Grains;
 
 /// <summary>Membership: who belongs to the guild, at what rank, and who is kept out.</summary>
 internal sealed partial class GroupGrain

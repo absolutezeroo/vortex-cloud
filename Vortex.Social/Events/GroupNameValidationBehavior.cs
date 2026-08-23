@@ -1,15 +1,15 @@
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Events.Registry;
-using Vortex.Players.Configuration;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Groups;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Server.Grains;
+using Vortex.Social.Configuration;
 
-namespace Vortex.Players.Events;
+namespace Vortex.Social.Events;
 
 /// <summary>
 ///     Rejects guild creation with an empty/whitespace-only or too-long name. Neither

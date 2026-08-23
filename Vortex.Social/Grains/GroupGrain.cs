@@ -1,4 +1,4 @@
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -11,7 +11,7 @@ using Vortex.Primitives.Groups.Grains;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Players;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Social.Grains;
 
 /// <summary>
 /// One guild. This grain holds no in-memory state — every operation opens its own short-lived

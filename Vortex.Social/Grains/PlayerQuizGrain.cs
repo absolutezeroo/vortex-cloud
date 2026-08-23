@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -9,13 +9,13 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Help;
-using Vortex.Players.Help;
 using Vortex.Primitives.Inventory.Grains;
-using Vortex.Protocol.Messages.Outgoing.Help;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
+using Vortex.Protocol.Messages.Outgoing.Help;
+using Vortex.Social.Help;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Social.Grains;
 
 /// <summary>
 /// Per-player quiz grain. The answer key stays here: the client is sent question numbers only, and

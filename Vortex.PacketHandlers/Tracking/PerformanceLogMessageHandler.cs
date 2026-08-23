@@ -2,8 +2,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Protocol.Messages.Incoming.Tracking;
 using Vortex.Primitives.Observability;
+using Vortex.Protocol.Messages.Incoming.Tracking;
 
 namespace Vortex.PacketHandlers.Tracking;
 

@@ -2,10 +2,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Protocol.Messages.Incoming.RoomSettings;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Grains;
+using Vortex.Protocol.Messages.Incoming.RoomSettings;
 
 namespace Vortex.PacketHandlers.RoomSettings;
 

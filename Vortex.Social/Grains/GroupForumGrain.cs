@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -9,7 +9,6 @@ using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Groups;
 using Vortex.Database.Entities.Players;
-using Vortex.Players.Configuration;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Groups.Grains;
@@ -17,8 +16,9 @@ using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Server.Grains;
+using Vortex.Social.Configuration;
 
-namespace Vortex.Players.Grains;
+namespace Vortex.Social.Grains;
 
 internal sealed class GroupForumGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,

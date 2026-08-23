@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
+using Vortex.Primitives.Orleans;
 using Vortex.Protocol.Messages.Incoming.Preferences;
 using Vortex.Protocol.Messages.Outgoing.Preferences;
-using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.Preferences;
 

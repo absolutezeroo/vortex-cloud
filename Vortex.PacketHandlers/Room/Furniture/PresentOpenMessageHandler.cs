@@ -5,10 +5,10 @@ using Vortex.Messages.Registry;
 using Vortex.Primitives.Catalog.Snapshots;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Snapshots;
-using Vortex.Protocol.Messages.Incoming.Room.Furniture;
-using Vortex.Protocol.Messages.Outgoing.Room.Furniture;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Rooms.Snapshots.Furniture;
+using Vortex.Protocol.Messages.Incoming.Room.Furniture;
+using Vortex.Protocol.Messages.Outgoing.Room.Furniture;
 
 namespace Vortex.PacketHandlers.Room.Furniture;
 

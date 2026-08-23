@@ -2,12 +2,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Protocol.Messages.Incoming.Nft;
-using Vortex.Protocol.Messages.Outgoing.Collectibles;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Wallet;
+using Vortex.Protocol.Messages.Incoming.Nft;
+using Vortex.Protocol.Messages.Outgoing.Collectibles;
 
 namespace Vortex.PacketHandlers.Nft;
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Reflection;
@@ -15,7 +15,6 @@ using Vortex.Database.Entities.Groups;
 using Vortex.Database.Entities.Players;
 using Vortex.Database.Entities.Room;
 using Vortex.Events.Registry;
-using Vortex.Players.Grains;
 using Vortex.Primitives.Events;
 using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Orleans.Snapshots.Players;
@@ -27,6 +26,7 @@ using Vortex.Primitives.Players.Wallet;
 using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Server.Grains;
 using Vortex.Rooms.Tests.Support;
+using Vortex.Social.Grains;
 using Xunit;
 
 namespace Vortex.Rooms.Tests.Groups;

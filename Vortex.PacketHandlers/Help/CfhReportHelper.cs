@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
-using Vortex.Protocol.Messages.Outgoing.Help;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Orleans;
+using Vortex.Protocol.Messages.Outgoing.Help;
 
 namespace Vortex.PacketHandlers.Help;
 

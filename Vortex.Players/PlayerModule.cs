@@ -1,4 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Vortex.Players.Configuration;
 using Vortex.Players.Content;
@@ -8,7 +8,6 @@ using Vortex.Players.Prizes;
 using Vortex.Players.Providers;
 using Vortex.Players.Quests;
 using Vortex.Primitives.Content;
-using Vortex.Primitives.Groups.Providers;
 using Vortex.Primitives.Hosting;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.MysteryBox;
@@ -32,9 +31,6 @@ public sealed class PlayerModule : IHostPluginModule
             builder.Configuration.GetSection(AchievementConfig.SECTION_NAME)
         );
         services.Configure<ClubConfig>(builder.Configuration.GetSection(ClubConfig.SECTION_NAME));
-        services.Configure<MessengerConfig>(
-            builder.Configuration.GetSection(MessengerConfig.SECTION_NAME)
-        );
         services.Configure<PlayerPresenceConfig>(
             builder.Configuration.GetSection(PlayerPresenceConfig.SECTION_NAME)
         );
@@ -43,10 +39,6 @@ public sealed class PlayerModule : IHostPluginModule
         services.AddSingleton<ICurrencyTypeProvider, CurrencyTypeProvider>();
         services.AddSingleton<IReferenceDataProvider>(sp =>
             (IReferenceDataProvider)sp.GetRequiredService<ICurrencyTypeProvider>()
-        );
-        services.AddSingleton<IGroupBadgePartProvider, GroupBadgePartProvider>();
-        services.AddSingleton<IReferenceDataProvider>(sp =>
-            (IReferenceDataProvider)sp.GetRequiredService<IGroupBadgePartProvider>()
         );
         services.AddSingleton<IPetPaletteProvider, PetPaletteProvider>();
         services.AddSingleton<IReferenceDataProvider>(sp =>

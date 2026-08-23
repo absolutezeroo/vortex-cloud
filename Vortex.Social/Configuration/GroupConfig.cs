@@ -1,4 +1,4 @@
-namespace Vortex.Players.Configuration;
+﻿namespace Vortex.Social.Configuration;
 
 /// <summary>
 /// Config keys and defaults for guild/group limits, served live from <c>IServerConfigGrain</c>

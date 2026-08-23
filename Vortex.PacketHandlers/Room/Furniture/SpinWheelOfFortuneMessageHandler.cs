@@ -1,8 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Messages.Registry;
-using Vortex.Protocol.Messages.Incoming.Room.Furniture;
 using Vortex.Primitives.Rooms;
+using Vortex.Protocol.Messages.Incoming.Room.Furniture;
 
 namespace Vortex.PacketHandlers.Room.Furniture;
 

@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.PacketHandlers.Preferences;
-using Vortex.Protocol.Messages.Incoming.Sound;
 using Vortex.Primitives.Orleans;
+using Vortex.Protocol.Messages.Incoming.Sound;
 
 namespace Vortex.PacketHandlers.Sound;
 

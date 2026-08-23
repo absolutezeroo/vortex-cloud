@@ -5,9 +5,9 @@ using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Inventory.Snapshots;
+using Vortex.Primitives.Orleans;
 using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents.Wiredtrading;
 using Vortex.Protocol.Messages.Outgoing.Userdefinedroomevents.Wiredtrading;
-using Vortex.Primitives.Orleans;
 
 namespace Vortex.PacketHandlers.UserDefinedRoomEvents.Wiredtrading;
 

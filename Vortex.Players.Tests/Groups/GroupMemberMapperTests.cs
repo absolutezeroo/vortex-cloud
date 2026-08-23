@@ -1,13 +1,14 @@
-using System;
+﻿using System;
 using FluentAssertions;
 using Vortex.Database.Entities.Groups;
 using Vortex.Database.Entities.Players;
-using Vortex.Players.Groups;
 using Vortex.Primitives.Groups;
 using Vortex.Primitives.Groups.Enums;
 using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Social.Grains;
+using Vortex.Social.Groups;
 using Xunit;
 
 namespace Vortex.Players.Tests.Groups;

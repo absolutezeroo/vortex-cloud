@@ -3,12 +3,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Protocol.Messages.Incoming.Inventory.Clothing;
-using Vortex.Protocol.Messages.Outgoing.Inventory.Clothing;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Rooms.Object;
+using Vortex.Protocol.Messages.Incoming.Inventory.Clothing;
+using Vortex.Protocol.Messages.Outgoing.Inventory.Clothing;
 
 namespace Vortex.PacketHandlers.Inventory.Clothing;
 

@@ -4,14 +4,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Protocol.Messages.Incoming.NewNavigator;
-using Vortex.Protocol.Messages.Outgoing.Navigator;
-using Vortex.Protocol.Messages.Outgoing.NewNavigator;
 using Vortex.Primitives.Navigator;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Navigator;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Snapshots.Navigator;
+using Vortex.Protocol.Messages.Incoming.NewNavigator;
+using Vortex.Protocol.Messages.Outgoing.Navigator;
+using Vortex.Protocol.Messages.Outgoing.NewNavigator;
 
 namespace Vortex.PacketHandlers.NewNavigator;
 

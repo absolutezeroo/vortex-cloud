@@ -10,7 +10,6 @@ using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Quests;
 using Vortex.Players.Quests;
-using Vortex.Protocol.Messages.Outgoing.Quest;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Snapshots;
@@ -19,6 +18,7 @@ using Vortex.Primitives.Quests;
 using Vortex.Primitives.Quests.Grains;
 using Vortex.Primitives.Quests.Snapshots;
 using Vortex.Primitives.Server.Grains;
+using Vortex.Protocol.Messages.Outgoing.Quest;
 
 namespace Vortex.Players.Grains;
 

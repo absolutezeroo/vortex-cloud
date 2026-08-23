@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
 using Vortex.PacketHandlers.Preferences;
-using Vortex.Protocol.Messages.Incoming.Users;
-using Vortex.Protocol.Messages.Outgoing.Users;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Players.Grains;
+using Vortex.Protocol.Messages.Incoming.Users;
+using Vortex.Protocol.Messages.Outgoing.Users;
 
 namespace Vortex.PacketHandlers.Users;
 

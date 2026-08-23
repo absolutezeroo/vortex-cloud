@@ -5,10 +5,10 @@ using Vortex.Catalog.Exceptions;
 using Vortex.Messages.Registry;
 using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Catalog.Snapshots;
-using Vortex.Protocol.Messages.Incoming.Catalog;
-using Vortex.Protocol.Messages.Outgoing.Catalog;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
+using Vortex.Protocol.Messages.Incoming.Catalog;
+using Vortex.Protocol.Messages.Outgoing.Catalog;
 
 namespace Vortex.PacketHandlers.Catalog;
 

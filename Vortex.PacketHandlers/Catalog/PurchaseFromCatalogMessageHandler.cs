@@ -10,16 +10,16 @@ using Vortex.Primitives.Catalog.Enums;
 using Vortex.Primitives.Catalog.Grains;
 using Vortex.Primitives.Catalog.Providers;
 using Vortex.Primitives.Catalog.Snapshots;
-using Vortex.Protocol.Messages.Incoming.Catalog;
-using Vortex.Protocol.Messages.Outgoing.Catalog;
-using Vortex.Protocol.Messages.Outgoing.Handshake;
-using Vortex.Protocol.Messages.Outgoing.Users;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Players.Enums.Wallet;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Wallet;
+using Vortex.Protocol.Messages.Incoming.Catalog;
+using Vortex.Protocol.Messages.Outgoing.Catalog;
+using Vortex.Protocol.Messages.Outgoing.Handshake;
+using Vortex.Protocol.Messages.Outgoing.Users;
 
 namespace Vortex.PacketHandlers.Catalog;
 

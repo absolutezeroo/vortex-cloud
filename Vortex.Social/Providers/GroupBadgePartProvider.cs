@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -11,7 +11,7 @@ using Vortex.Primitives.Groups.Providers;
 using Vortex.Primitives.Groups.Snapshots;
 using Vortex.Primitives.Hosting;
 
-namespace Vortex.Players.Providers;
+namespace Vortex.Social.Providers;
 
 public sealed class GroupBadgePartProvider(
     IDbContextFactory<VortexDbContext> dbCtxFactory,

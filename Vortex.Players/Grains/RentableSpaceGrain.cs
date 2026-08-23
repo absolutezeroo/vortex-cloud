@@ -13,7 +13,6 @@ using Vortex.Logging;
 using Vortex.Primitives;
 using Vortex.Primitives.Action;
 using Vortex.Primitives.Events;
-using Vortex.Protocol.Messages.Outgoing.Room.Furniture;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Players.Enums.Wallet;
@@ -24,6 +23,7 @@ using Vortex.Primitives.Rooms.Enums;
 using Vortex.Primitives.Rooms.Grains;
 using Vortex.Primitives.Rooms.Object;
 using Vortex.Primitives.Rooms.Snapshots;
+using Vortex.Protocol.Messages.Outgoing.Room.Furniture;
 
 namespace Vortex.Players.Grains;
 

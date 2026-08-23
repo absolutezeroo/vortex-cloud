@@ -1,5 +1,5 @@
-using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents;
 using Vortex.Primitives.Rooms.Snapshots.Wired;
+using Vortex.Protocol.Messages.Incoming.Userdefinedroomevents;
 
 namespace Vortex.PacketHandlers.UserDefinedRoomEvents;
 

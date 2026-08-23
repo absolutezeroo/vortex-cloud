@@ -3,11 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Protocol.Messages.Incoming.RoomSettings;
-using Vortex.Protocol.Messages.Outgoing.Roomsettings;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
 using Vortex.Primitives.Rooms.Grains;
+using Vortex.Protocol.Messages.Incoming.RoomSettings;
+using Vortex.Protocol.Messages.Outgoing.Roomsettings;
 
 namespace Vortex.PacketHandlers.RoomSettings;
 

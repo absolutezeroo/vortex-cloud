@@ -3,12 +3,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Protocol.Messages.Incoming.Nux;
-using Vortex.Protocol.Messages.Outgoing.Nux;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Protocol.Messages.Incoming.Nux;
+using Vortex.Protocol.Messages.Outgoing.Nux;
 
 namespace Vortex.PacketHandlers.Nux;
 

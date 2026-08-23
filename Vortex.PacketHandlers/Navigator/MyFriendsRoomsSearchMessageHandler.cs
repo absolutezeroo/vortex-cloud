@@ -2,8 +2,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
 using Vortex.Messages.Registry;
-using Vortex.Protocol.Messages.Incoming.Navigator;
 using Vortex.Primitives.Navigator;
+using Vortex.Protocol.Messages.Incoming.Navigator;
 
 namespace Vortex.PacketHandlers.Navigator;
 
