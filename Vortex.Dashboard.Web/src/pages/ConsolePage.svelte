@@ -153,8 +153,7 @@
         <span class="dot {connection}"></span>
         <span class="muted">{$t(`console.connection.${connection}`)}</span>
         <button type="button" class="ghost" onclick={() => (lines = [])} title={$t('console.clear')}>
-          <Trash2 size={14} strokeWidth={2} aria-hidden="true" />
-        </button>
+          {$t('common.delete')}</button>
       </div>
     {/if}
   </div>

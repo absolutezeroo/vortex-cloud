@@ -25,6 +25,7 @@
     <input
       class="bare"
       type="search"
+      name="table-filter"
       autocomplete="off"
       spellcheck="false"
       bind:value={query}

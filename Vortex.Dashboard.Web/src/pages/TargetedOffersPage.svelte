@@ -399,12 +399,13 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('targetedOffers.title')}</h2>
+    
     <div class="head-actions">
       <label class="active-toggle">
         <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={activeOnly} onchange={loadOffers} />
         {$t('targetedOffers.activeOnlyLabel')}
       </label>
-      <button type="button" class="ghost-button" onclick={refreshAll} disabled={loading}>{$t('common.refresh')}</button>
+      <button type="button" class="warning" onclick={refreshAll} disabled={loading}>{$t('common.refresh')}</button>
     </div>
   </div>
   <p class="muted">{$t('targetedOffers.description')}</p>
@@ -417,8 +418,8 @@
     <div class="panel-head">
       <h2><Target size={17} strokeWidth={2} aria-hidden="true" /> {$t('targetedOffers.offersHeading')}</h2>
       {#if canManage}
-        <button type="button" class="ghost-button" onclick={() => (newOfferOpen = !newOfferOpen)}>
-          <Plus size={14} strokeWidth={2} aria-hidden="true" /> {newOfferOpen ? $t('targetedOffers.cancel') : $t('targetedOffers.newOffer')}
+        <button type="button" class="success" onclick={() => (newOfferOpen = true)}>
+          {$t('targetedOffers.newOffer')}
         </button>
       {/if}
     </div>
@@ -442,11 +443,14 @@
               </span>
               <div class="op-actions offer-actions">
                 <button type="button" class="ghost-button" class:active={selectedOfferId === offer.id} onclick={() => toggleOfferDetail(offer.id)}>
-                  <Package size={14} strokeWidth={2} aria-hidden="true" /> {offerProductsLabel(offer, selectedOfferId, $t)}
+                  {offerProductsLabel(offer, selectedOfferId, $t)}
                 </button>
                 {#if canManage}
                   <button type="button" class="ghost-button" onclick={() => startEditOffer(offer)}>
-                    <Pencil size={14} strokeWidth={2} aria-hidden="true" /> {$t('targetedOffers.edit')}
+                    {$t('targetedOffers.edit')}
+                  </button>
+                  <button type="button" class="ghost-button danger" onclick={() => openDeleteOffer(offer)}>
+                    {$t('targetedOffers.deleteOffer')}
                   </button>
                 {/if}
               </div>
@@ -465,21 +469,14 @@
             </div>
 
 
-            {#if canManage}
-              <div class="catalog-card-detail delete-bar">
-                <button type="button" class="ghost-button danger" onclick={() => openDeleteOffer(offer)}>
-                  <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> {$t('targetedOffers.deleteOffer')}
-                </button>
-              </div>
-            {/if}
 
             {#if selectedOfferId === offer.id}
               <div class="catalog-card-detail products-panel">
                 <div class="panel-head">
                   <h3><Package size={15} strokeWidth={2} aria-hidden="true" /> {$t('targetedOffers.bundleProducts')}</h3>
                   {#if canManage}
-                    <button type="button" class="ghost-button" onclick={() => (newProductOpen = !newProductOpen)}>
-                      <Plus size={14} strokeWidth={2} aria-hidden="true" /> {newProductOpen ? $t('targetedOffers.cancel') : $t('targetedOffers.addProduct')}
+                    <button type="button" class="success" onclick={() => (newProductOpen = true)}>
+                      {$t('targetedOffers.addProduct')}
                     </button>
                   {/if}
                 </div>
@@ -513,19 +510,15 @@
                             </span>
                             {#if canManage}
                               <button type="button" class="ghost-button" onclick={() => startEditProduct(product)}>
-                                <Pencil size={14} strokeWidth={2} aria-hidden="true" /> {$t('targetedOffers.edit')}
+                                {$t('targetedOffers.edit')}
+                              </button>
+                              <button type="button" class="ghost-button danger" onclick={() => openDeleteProduct(product)}>
+                                {$t('targetedOffers.deleteProduct')}
                               </button>
                             {/if}
                           </div>
 
 
-                          {#if canManage}
-                            <div class="catalog-card-detail delete-bar">
-                              <button type="button" class="ghost-button danger" onclick={() => openDeleteProduct(product)}>
-                                <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> {$t('targetedOffers.deleteProduct')}
-                              </button>
-                            </div>
-                          {/if}
                         </div>
                       {/each}
                     </div>
@@ -622,14 +615,15 @@
       <div class="op-field">
         <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={newOffer.active} /> {$t('targetedOffers.activeLabel')}</label>
       </div>
-      <div class="op-actions">
-        <button type="button" onclick={stageCreateOffer} disabled={$ops.busyKeys.createOffer}>{$t('targetedOffers.create')}</button>
-      </div>
       {#if $ops.errors.createOffer}<p class="empty-state danger" role="alert">{$ops.errors.createOffer}</p>{/if}
       {#if $ops.results.createOffer}
         <OpResult result={$ops.results.createOffer} />
       {/if}
     </div>
+  
+    {#snippet actions()}
+      <button type="button" onclick={stageCreateOffer} disabled={$ops.busyKeys.createOffer} class="success">{$t('targetedOffers.create')}</button>
+    {/snippet}
   </Drawer>
 {/if}
 
@@ -706,10 +700,6 @@
         <div class="op-field">
           <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editOfferForm.active} /> {$t('targetedOffers.activeLabel')}</label>
         </div>
-        <div class="op-actions">
-          <button type="button" onclick={stageUpdateOffer} disabled={$ops.busyKeys.updateOffer}>{$t('targetedOffers.save')}</button>
-          <button class="ghost-button" type="button" onclick={() => { editOfferId = null; editOfferForm = null; }}>{$t('targetedOffers.cancel')}</button>
-        </div>
         {#if $ops.errors.updateOffer}<p class="empty-state danger" role="alert">{$ops.errors.updateOffer}</p>{/if}
         {#if $ops.results.updateOffer}
           <OpResult result={$ops.results.updateOffer} />
@@ -718,6 +708,11 @@
     {:else if $ops.errors.updateOffer}
       <div class="catalog-card-detail"><p class="empty-state danger" role="alert">{$ops.errors.updateOffer}</p></div>
     {/if}
+  
+    {#snippet actions()}
+      <button type="button" onclick={stageUpdateOffer} disabled={$ops.busyKeys.updateOffer}>{$t('targetedOffers.save')}</button>
+      <button class="ghost-button" type="button" onclick={() => { editOfferId = null; editOfferForm = null; }}>{$t('targetedOffers.cancel')}</button>
+    {/snippet}
   </Drawer>
 {/if}
 
@@ -736,14 +731,15 @@
         <label for="new-product-quantity">{$t('targetedOffers.quantity')}</label>
         <input autocomplete="off" spellcheck="false" id="new-product-quantity" type="number" min="1" bind:value={newProduct.quantity} />
       </div>
-      <div class="op-actions">
-        <button type="button" onclick={stageCreateProduct} disabled={$ops.busyKeys.createProduct}>{$t('targetedOffers.create')}</button>
-      </div>
       {#if $ops.errors.createProduct}<p class="empty-state danger" role="alert">{$ops.errors.createProduct}</p>{/if}
       {#if $ops.results.createProduct}
         <OpResult result={$ops.results.createProduct} />
       {/if}
     </div>
+  
+    {#snippet actions()}
+      <button type="button" onclick={stageCreateProduct} disabled={$ops.busyKeys.createProduct} class="success">{$t('targetedOffers.create')}</button>
+    {/snippet}
   </Drawer>
 {/if}
 
@@ -762,15 +758,16 @@
         <label for={`edit-product-qty-${editProductForm.id}`}>{$t('targetedOffers.quantity')}</label>
         <input autocomplete="off" spellcheck="false" id={`edit-product-qty-${editProductForm.id}`} type="number" min="1" bind:value={editProductForm.quantity} />
       </div>
-      <div class="op-actions">
-        <button type="button" onclick={stageUpdateProduct} disabled={$ops.busyKeys.updateProduct}>{$t('targetedOffers.save')}</button>
-        <button class="ghost-button" type="button" onclick={() => { editProductId = null; editProductForm = null; }}>{$t('targetedOffers.cancel')}</button>
-      </div>
       {#if $ops.errors.updateProduct}<p class="empty-state danger" role="alert">{$ops.errors.updateProduct}</p>{/if}
       {#if $ops.results.updateProduct}
         <OpResult result={$ops.results.updateProduct} />
       {/if}
     </div>
+  
+    {#snippet actions()}
+      <button type="button" onclick={stageUpdateProduct} disabled={$ops.busyKeys.updateProduct}>{$t('targetedOffers.save')}</button>
+      <button class="ghost-button" type="button" onclick={() => { editProductId = null; editProductForm = null; }}>{$t('targetedOffers.cancel')}</button>
+    {/snippet}
   </Drawer>
 {/if}
 
@@ -825,11 +822,6 @@
   .offer-meta > .cost-chip {
     height: 24px;
     box-sizing: border-box;
-  }
-
-  .delete-bar {
-    display: flex;
-    justify-content: flex-end;
   }
 
   .panel-head h2,

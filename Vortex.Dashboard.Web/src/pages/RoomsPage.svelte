@@ -3,6 +3,7 @@
   import { apiGet } from '../lib/api.js';
   import { formatDate, summarizeData } from '../lib/format.js';
   import EntityLink from '../components/EntityLink.svelte';
+  import PickerModal from '../components/PickerModal.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer, openItem } from '../lib/session.js';
@@ -12,6 +13,11 @@
 
   // ?room= makes a room timeline a link, and is how the command palette hands one over.
   let roomId = $state(readParam('room'));
+  // The room is chosen, not typed. Eleven other pages already reach for PickerModal to do
+  // exactly this; asking for a raw id here was the odd one out -- nobody knows a room by
+  // its number, and a typo returns an empty timeline rather than an error.
+  let roomName = $state('');
+  let picking = $state(false);
   let data = $state(null);
   let error = $state('');
   let forbidden = $state(false);
@@ -48,12 +54,17 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('roomsTimeline.title')}</h2>
-    <button type="button" onclick={load}>{$t('common.refresh')}</button>
+    <div class="head-actions">
+      <button type="button" onclick={load} class="warning">{$t('common.refresh')}</button>
+      <button type="button" class="ghost-button" onclick={() => (picking = true)}>
+        {roomName || (roomId ? `#${roomId}` : $t('roomsTimeline.inspect'))}
+      </button>
+    </div>
   </div>
-  <form class="toolbar" onsubmit={(event) => { event.preventDefault(); load(); }}>
-    <input autocomplete="off" spellcheck="false" bind:value={roomId} placeholder={$t('roomsTimeline.roomIdPlaceholder')} />
-    <button type="submit">{$t('roomsTimeline.inspect')}</button>
-  </form>
+  <p class="muted">{$t('roomsTimeline.description')}</p>
+</section>
+
+<section class="panel">
 
   {#if forbidden}
     <AccessDeniedNotice message={$t('roomsTimeline.accessDenied')} />
@@ -92,3 +103,17 @@
     </tbody>
   </table>
 </section>
+
+{#if picking}
+  <PickerModal
+    kind="room"
+    title={$t('roomsTimeline.title')}
+    onSelect={(item) => {
+      roomId = String(item.id);
+      roomName = item.name;
+      picking = false;
+      load();
+    }}
+    onClose={() => (picking = false)}
+  />
+{/if}

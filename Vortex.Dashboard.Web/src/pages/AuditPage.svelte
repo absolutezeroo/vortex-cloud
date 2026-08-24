@@ -1,5 +1,6 @@
 <script>
   import { readNumberParam, writeParams } from '../lib/urlState.js';
+  import PickerModal from '../components/PickerModal.svelte';
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api.js';
   import { compactCorrelation, formatDate } from '../lib/format.js';
@@ -24,6 +25,7 @@
     'Social',
     'System',
     'RentableSpace',
+    'Progression',
   ];
 
   const categoryColors = {
@@ -37,6 +39,7 @@
     Social: '#4fb3bf',
     System: '#64748b',
     RentableSpace: '#4fae8a',
+    Progression: '#c9a227',
     other: '#64748b',
   };
 
@@ -46,6 +49,9 @@
     Failed: 'status-badge--bad',
   };
 
+  let picking = $state(null);
+  let actorName = $state('');
+  let targetName = $state('');
   let since = $state('');
   let until = $state('');
   let actor = $state('');
@@ -150,8 +156,12 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('audit.title')}</h2>
-    <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
+    <button type="button" onclick={refresh} disabled={loading} class="warning">{$t('common.refresh')}</button>
   </div>
+  <p class="muted">{$t('audit.description')}</p>
+</section>
+
+<section class="panel">
 
   <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); applyFilters(); }}>
     <label>
@@ -164,11 +174,15 @@
     </label>
     <label>
       {$t('audit.actor')}
-      <input autocomplete="off" spellcheck="false" type="text" bind:value={actor} placeholder={$t('audit.playerIdPlaceholder')} />
+      <button type="button" class="picker-button" onclick={() => (picking = 'actor')}>
+        {actorName || (actor ? `#${actor}` : $t('audit.playerIdPlaceholder'))}
+      </button>
     </label>
     <label>
       {$t('audit.target')}
-      <input autocomplete="off" spellcheck="false" type="text" bind:value={target} placeholder={$t('audit.playerIdPlaceholder')} />
+      <button type="button" class="picker-button" onclick={() => (picking = 'target')}>
+        {targetName || (target ? `#${target}` : $t('audit.playerIdPlaceholder'))}
+      </button>
     </label>
     <label>
       {$t('audit.category')}
@@ -188,6 +202,10 @@
     </label>
     <button type="submit">{$t('common.filter')}</button>
   </form>
+
+</section>
+
+<section class="panel">
 
   {#if forbidden}
     <AccessDeniedNotice message={$t('audit.accessDenied')} />
@@ -278,3 +296,12 @@
     color: var(--muted-strong);
   }
 </style>
+
+{#if picking}
+    {#if picking === 'actor'}
+      <PickerModal kind="user" onSelect={(item) => { actor = String(item.id); actorName = item.name; picking = null; }} onClose={() => (picking = null)} />
+    {/if}
+    {#if picking === 'target'}
+      <PickerModal kind="user" onSelect={(item) => { target = String(item.id); targetName = item.name; picking = null; }} onClose={() => (picking = null)} />
+    {/if}
+{/if}

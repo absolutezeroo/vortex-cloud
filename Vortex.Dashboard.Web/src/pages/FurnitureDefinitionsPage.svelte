@@ -350,12 +350,15 @@
     {/snippet}
     {#snippet actions()}
       {#if canManage}
-        <button type="button" class="ghost-button" onclick={openCreate}>
-          <Plus size={14} strokeWidth={2} aria-hidden="true" /> {$t('furnitureAdmin.newDefinition')}
+        <button type="button" class="success" onclick={openCreate}>
+          {$t('furnitureAdmin.newDefinition')}
         </button>
       {/if}
     {/snippet}
   </PageHeader>
+</section>
+
+<section class="panel">
 
   <form class="toolbar" onsubmit={(event) => { event.preventDefault(); search(); }}>
     <input autocomplete="off" spellcheck="false" bind:value={query} placeholder={$t('furnitureAdmin.searchPlaceholder')} />
@@ -393,11 +396,10 @@
             {#if canManage}
               <span class="furni-row-actions">
                 <button type="button" class="ghost-button" onclick={() => startEdit(item)}>
-                  <Pencil size={14} strokeWidth={2} aria-hidden="true" /> {$t('furnitureAdmin.edit')}
+                  {$t('furnitureAdmin.edit')}
                 </button>
                 <button type="button" class="ghost-button danger" onclick={() => stageDelete(item)} aria-label={$t('furnitureAdmin.delete')}>
-                  <Trash2 size={14} strokeWidth={2} aria-hidden="true" />
-                </button>
+                  {$t('common.delete')}</button>
               </span>
             {/if}
           </div>
@@ -438,7 +440,7 @@
 
     {#snippet actions()}
       {#if drawer.mode === 'create'}
-        <button type="button" onclick={stageCreate} disabled={$ops.busyKeys.create}>{$t('furnitureAdmin.create')}</button>
+        <button type="button" onclick={stageCreate} disabled={$ops.busyKeys.create} class="success">{$t('furnitureAdmin.create')}</button>
       {:else}
         <button type="button" onclick={stageUpdate} disabled={$ops.busyKeys.update}>{$t('furnitureAdmin.save')}</button>
       {/if}

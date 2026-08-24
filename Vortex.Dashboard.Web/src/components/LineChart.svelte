@@ -22,6 +22,7 @@
    * @property {number} [height]
    * @property {any} [valueFormatter]
    * @property {string} [emptyMessage]
+   * @property {boolean} [legend] - false where the caller already names the series itself
    */
 
   /** @type {Props} */
@@ -29,7 +30,8 @@
     series = [],
     height = 220,
     valueFormatter = (v) => String(v),
-    emptyMessage = ''
+    emptyMessage = '',
+    legend = true
   } = $props();
 
   // Nonzero default so the chart renders at a sane size immediately, before the ResizeObserver
@@ -233,7 +235,10 @@
   {/if}
 </div>
 
-{#if series.length > 1 || (series.length === 1 && series[0].name)}
+<!-- Opt-out rather than removal: nine of the ten callers have nothing else naming their series,
+     so the legend stays on by default. Subscriptions states the three names, their swatches AND
+     their totals on the panel's title line, where a second copy underneath is just a repeat. -->
+{#if legend && (series.length > 1 || (series.length === 1 && series[0].name))}
   <div class="linechart-legend">
     {#each series as s}
       <span class="linechart-legend-item">

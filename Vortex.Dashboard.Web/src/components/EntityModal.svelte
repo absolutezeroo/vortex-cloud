@@ -157,7 +157,15 @@
       <div class="modal-grid">
         <article>
           <span>{$t('entityModal.item')}</span>
-          <strong>#{itemProfile.itemId}</strong>
+          <strong class="item-identity">
+            <AssetImage
+              src={itemProfile.snapshot?.furniIconUrl}
+              alt={itemProfile.snapshot?.definitionName ?? ''}
+              size={32}
+              fallbackIcon={Package}
+            />
+            #{itemProfile.itemId}
+          </strong>
           <small>{itemProfile.snapshot?.definitionName || $t('entityModal.unknownDefinition')}</small>
         </article>
         <article>
@@ -220,6 +228,14 @@
 {/if}
 
 <style>
+  /* The sprite sits with the id, the way the player card puts the head with the name -- an item
+     is recognised by what it looks like long before its number means anything. */
+  .item-identity {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
   .profile-headline {
     display: flex;
     align-items: center;

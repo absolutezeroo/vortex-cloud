@@ -173,7 +173,7 @@
   }
 
   async function toggleResults(pollId) {
-    showResults = !showResults;
+    showResults = true;
 
     if (showResults && !results) {
       await loadResults(pollId);
@@ -422,12 +422,13 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('polls.title')}</h2>
+    
     <div class="head-actions">
       <label class="filter-field">
         <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={enabledOnly} onchange={loadPolls} />
         {$t('polls.enabledOnly')}
       </label>
-      <button type="button" class="ghost-button" onclick={loadPolls} disabled={loading}>
+      <button type="button" class="warning" onclick={loadPolls} disabled={loading}>
         {$t('common.refresh')}
       </button>
     </div>
@@ -442,9 +443,8 @@
     <div class="panel-head">
       <h2><ListChecks size={17} strokeWidth={2} aria-hidden="true" /> {$t('polls.pollsHeading')}</h2>
       {#if canManage}
-        <button type="button" class="ghost-button" onclick={() => (newPollOpen = !newPollOpen)}>
-          <Plus size={14} strokeWidth={2} aria-hidden="true" />
-          {newPollOpen ? $t('polls.cancel') : $t('polls.newPoll')}
+        <button type="button" class="success" onclick={() => (newPollOpen = true)}>
+          {$t('polls.newPoll')}
         </button>
       {/if}
     </div>
@@ -466,10 +466,9 @@
             </span>
             <span class="chip-row">
               {#if !poll.enabled}<span class="chip off">{$t('polls.chipDisabled')}</span>{/if}
-              {#if poll.npsPoll}<span class="chip"><Split size={12} strokeWidth={2} aria-hidden="true" /> {$t('polls.chipNps')}</span>{/if}
+              {#if poll.npsPoll}<span class="chip">{$t('polls.chipNps')}</span>{/if}
               {#if poll.roomId}
                 <span class="chip" class:warn={poll.roomMissing}>
-                  <House size={12} strokeWidth={2} aria-hidden="true" />
                   {poll.roomMissing ? $t('polls.chipRoomMissing', { id: poll.roomId }) : poll.roomName}
                 </span>
               {/if}
@@ -495,13 +494,11 @@
                 <div class="detail-actions">
                   {#if canManage}
                     <button type="button" class="ghost-button" onclick={() => (editPollForm ? (editPollForm = null) : startEditPoll(detail))}>
-                      <Pencil size={13} strokeWidth={2} aria-hidden="true" />
                       {editPollForm ? $t('polls.cancel') : $t('polls.editPoll')}
                     </button>
                   {/if}
                   <button type="button" class="ghost-button" onclick={() => toggleResults(poll.id)}>
-                    <ChartColumn size={13} strokeWidth={2} aria-hidden="true" />
-                    {showResults ? $t('polls.hideResults') : $t('polls.showResults')}
+                    {$t('polls.showResults')}
                   </button>
                   {#if canManage}
                     <button
@@ -509,7 +506,7 @@
                       class="ghost-button danger"
                       onclick={() => askDelete({ kind: 'poll', id: poll.id, pollId: poll.id, label: poll.code })}
                     >
-                      <Trash2 size={13} strokeWidth={2} aria-hidden="true" /> {$t('polls.deletePoll')}
+                      {$t('polls.deletePoll')}
                     </button>
                   {/if}
                 </div>
@@ -537,11 +534,10 @@
                         {#if canManage}
                           <span class="row-actions">
                             <button type="button" class="ghost-button" onclick={() => startEditQuestion(poll.id, question)}>
-                              <Pencil size={12} strokeWidth={2} aria-hidden="true" />
-                            </button>
+                              {$t('common.edit')}</button>
                             {#if detail.npsPoll}
-                              <button type="button" class="ghost-button" onclick={() => startNewQuestion(poll.id, question.id)}>
-                                <Split size={12} strokeWidth={2} aria-hidden="true" /> {$t('polls.addFollowUp')}
+                              <button type="button" class="success" onclick={() => startNewQuestion(poll.id, question.id)}>
+                                {$t('polls.addFollowUp')}
                               </button>
                             {/if}
                             <button
@@ -549,8 +545,7 @@
                               class="ghost-button danger"
                               onclick={() => askDelete({ kind: 'question', id: question.id, pollId: poll.id, label: question.questionText })}
                             >
-                              <Trash2 size={12} strokeWidth={2} aria-hidden="true" />
-                            </button>
+                              {$t('common.delete')}</button>
                           </span>
                         {/if}
                       </div>
@@ -580,15 +575,13 @@
                           {#if canManage}
                             <span class="row-actions">
                               <button type="button" class="ghost-button" onclick={() => startEditFollowUp(poll.id, question.id, child)}>
-                                <Pencil size={12} strokeWidth={2} aria-hidden="true" />
-                              </button>
+                                {$t('common.edit')}</button>
                               <button
                                 type="button"
                                 class="ghost-button danger"
                                 onclick={() => askDelete({ kind: 'question', id: child.id, pollId: poll.id, label: child.questionText })}
                               >
-                                <Trash2 size={12} strokeWidth={2} aria-hidden="true" />
-                              </button>
+                                {$t('common.delete')}</button>
                             </span>
                           {/if}
                         </div>
@@ -598,81 +591,12 @@
                 </div>
 
                 {#if canManage && !questionForm}
-                  <button type="button" class="ghost-button" onclick={() => startNewQuestion(poll.id)}>
-                    <Plus size={13} strokeWidth={2} aria-hidden="true" /> {$t('polls.newQuestion')}
+                  <button type="button" class="success" onclick={() => startNewQuestion(poll.id)}>
+                    {$t('polls.newQuestion')}
                   </button>
                 {/if}
 
 
-                {#if showResults}
-                  <h3 class="section-title">
-                    <ChartColumn size={14} strokeWidth={2} aria-hidden="true" /> {$t('polls.resultsHeading')}
-                  </h3>
-
-                  {#if resultsError}
-                    <p class="empty-state danger" role="alert">{resultsError}</p>
-                  {:else if !results}
-                    <p class="empty-state">{$t('common.loading')}</p>
-                  {:else}
-                    <div class="funnel-grid">
-                      <div class="stat"><small>{$t('polls.offered')}</small><strong>{formatNumber(results.funnel.offered)}</strong></div>
-                      <div class="stat"><small>{$t('polls.pendingOffers')}</small><strong>{formatNumber(results.funnel.pending)}</strong></div>
-                      <div class="stat"><small>{$t('polls.started')}</small><strong>{formatNumber(results.funnel.started)}</strong></div>
-                      <div class="stat">
-                        <small><CircleCheck size={12} strokeWidth={2} aria-hidden="true" /> {$t('polls.completed')}</small>
-                        <strong>{formatNumber(results.funnel.completed)} <span class="muted">({results.funnel.completionRate}%)</span></strong>
-                      </div>
-                      <div class="stat">
-                        <small><ThumbsDown size={12} strokeWidth={2} aria-hidden="true" /> {$t('polls.rejected')}</small>
-                        <strong>{formatNumber(results.funnel.rejected)} <span class="muted">({results.funnel.rejectionRate}%)</span></strong>
-                      </div>
-                    </div>
-
-                    {#each results.questions as question (question.id)}
-                      <div class="result-card">
-                        <div class="catalog-row-main">
-                          <strong>{question.questionText}</strong>
-                          <small>
-                            {#if question.isFollowUp}<span class="chip small">{$t('polls.chipFollowUp')}</span>{/if}
-                            {$t('polls.respondents', { count: formatNumber(question.respondents) })}
-                          </small>
-                        </div>
-
-                        {#if question.tally.length > 0}
-                          <ul class="tally">
-                            {#each question.tally as row}
-                              <li>
-                                <span class="tally-label">
-                                  {row.text}
-                                  {#if row.retired}<span class="chip small warn">{$t('polls.chipRetiredChoice')}</span>{/if}
-                                </span>
-                                <span class="bar"><span class="bar-fill" style={`width:${row.share}%`}></span></span>
-                                <span class="tally-count">{formatNumber(row.count)} <small>{row.share}%</small></span>
-                              </li>
-                            {/each}
-                          </ul>
-                        {:else if question.freeText.length > 0}
-                          <ul class="free-text">
-                            {#each question.freeText as answer}
-                              <li>
-                                <AssetImage src={answer.avatarUrl} alt={answer.playerName ?? ''} size={28} fallbackIcon={MessageSquare} />
-                                <span class="catalog-row-main">
-                                  <strong>{answer.answer}</strong>
-                                  <small>{answer.playerName ?? `#${answer.playerId}`} - {formatDate(answer.answeredAt)}</small>
-                                </span>
-                              </li>
-                            {/each}
-                          </ul>
-                          {#if question.freeTextTruncated}
-                            <small class="muted">{$t('polls.freeTextTruncated')}</small>
-                          {/if}
-                        {:else}
-                          <p class="empty-state">{$t('polls.noAnswersYet')}</p>
-                        {/if}
-                      </div>
-                    {/each}
-                  {/if}
-                {/if}
               {/if}
             </div>
           {/if}
@@ -735,7 +659,6 @@
         <span class="field-label">{$t('polls.roomPin')}</span>
         <div class="picker-row">
           <button type="button" class="ghost-button" onclick={() => (roomPickerFor = 'new')}>
-            <House size={14} strokeWidth={2} aria-hidden="true" />
             {newPoll.roomName || $t('polls.anyRoom')}
           </button>
           {#if newPoll.roomId}
@@ -753,11 +676,15 @@
       <div class="op-field">
         <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={newPoll.enabled} /> {$t('polls.enabledLabel')}</label>
       </div>
-      <button type="button" onclick={stageCreatePoll} disabled={$ops.busyKeys.createPoll || !canManage}>
-        {$t('polls.create')}
-      </button>
       <OpResult result={$ops.results.createPoll} error={$ops.errors.createPoll} />
     </div>
+
+    {#snippet actions()}
+      <button type="button" onclick={stageCreatePoll} disabled={$ops.busyKeys.createPoll || !canManage} class="success">
+        {$t('polls.create')}
+      </button>
+      <button type="button" class="ghost-button" onclick={() => (newPollOpen = false)}>{$t('polls.cancel')}</button>
+    {/snippet}
   </Drawer>
 {/if}
 
@@ -797,7 +724,6 @@
       <span class="field-label">{$t('polls.roomPin')}</span>
       <div class="picker-row">
         <button type="button" class="ghost-button" onclick={() => (roomPickerFor = 'edit')}>
-          <House size={14} strokeWidth={2} aria-hidden="true" />
           {editPollForm.roomName || $t('polls.anyRoom')}
         </button>
         {#if editPollForm.roomId}
@@ -814,20 +740,23 @@
     <div class="op-field">
       <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editPollForm.enabled} /> {$t('polls.enabledLabel')}</label>
     </div>
-    <button type="button" onclick={() => stageUpdatePoll(editPollForm.id)} disabled={$ops.busyKeys[`updatePoll:${editPollForm.id}`]}>
-      {$t('polls.save')}
-    </button>
     <OpResult result={$ops.results[`updatePoll:${editPollForm.id}`]} error={$ops.errors[`updatePoll:${editPollForm.id}`]} />
+
+    {#snippet actions()}
+      <button type="button" onclick={() => stageUpdatePoll(editPollForm.id)} disabled={$ops.busyKeys[`updatePoll:${editPollForm.id}`]}>
+        {$t('polls.save')}
+      </button>
+      <button type="button" class="ghost-button" onclick={() => (editPollForm = null)}>{$t('polls.cancel')}</button>
+    {/snippet}
   </Drawer>
 {/if}
 
 {#if questionForm}
-  <Drawer title={$t('polls.questionEditorTitle')} eyebrow={$t('polls.title')} onclose={() => { questionForm = null; editingQuestionId = null; }}>
+  <Drawer title={editingQuestionId ? $t('polls.editQuestion') : $t('polls.newQuestion')} eyebrow={$t('polls.title')} onclose={() => { questionForm = null; editingQuestionId = null; }}>
     <div class="question-form">
-      <h4>
-        {editingQuestionId ? $t('polls.editQuestion') : $t('polls.newQuestion')}
-        {#if questionForm.parentQuestionId}<span class="chip small">{$t('polls.chipFollowUp')}</span>{/if}
-      </h4>
+      {#if questionForm.parentQuestionId}
+        <p><span class="chip small">{$t('polls.chipFollowUp')}</span></p>
+      {/if}
       <div class="op-field">
         <label for="question-text">{$t('polls.questionTextRequired')}</label>
         <input autocomplete="off" spellcheck="false" id="question-text" bind:value={questionForm.questionText} />
@@ -880,32 +809,32 @@
                   if (questionForm.choices.length === 0) questionForm.choices = [emptyChoice()];
                 }}
               >
-                <Trash2 size={12} strokeWidth={2} aria-hidden="true" />
-              </button>
+                {$t('common.delete')}</button>
             </div>
           {/each}
           <button
-            type="button"
-            class="ghost-button"
-            onclick={() => (questionForm.choices = [...questionForm.choices, emptyChoice()])}
+      type="button"
+      class="success"
+      onclick={() => (questionForm.choices = [...questionForm.choices, emptyChoice()])}
           >
-            <Plus size={12} strokeWidth={2} aria-hidden="true" /> {$t('polls.addChoice')}
+            {$t('polls.addChoice')}
           </button>
           <small class="muted">{$t('polls.choicesHint')}</small>
         </fieldset>
       {/if}
 
-      <div class="picker-row">
-        <button type="button" onclick={stageSaveQuestion}>{$t('polls.save')}</button>
-        <button type="button" class="ghost-button" onclick={() => { questionForm = null; editingQuestionId = null; }}>
-          {$t('polls.cancel')}
-        </button>
-      </div>
       <OpResult
         result={$ops.results[editingQuestionId ? `updateQuestion:${editingQuestionId}` : 'createQuestion']}
         error={$ops.errors[editingQuestionId ? `updateQuestion:${editingQuestionId}` : 'createQuestion']}
       />
     </div>
+
+    {#snippet actions()}
+      <button type="button" onclick={stageSaveQuestion}>{$t('polls.save')}</button>
+      <button type="button" class="ghost-button" onclick={() => { questionForm = null; editingQuestionId = null; }}>
+        {$t('polls.cancel')}
+      </button>
+    {/snippet}
   </Drawer>
 {/if}
 
@@ -1200,3 +1129,76 @@
   }
 
 </style>
+
+{#if showResults}
+  <Drawer
+    title={$t('polls.resultsHeading')}
+    eyebrow={detail?.code || $t('polls.title')}
+    width={720}
+    onclose={() => (showResults = false)}
+  >
+    {#if resultsError}
+      <p class="empty-state danger" role="alert">{resultsError}</p>
+    {:else if !results}
+      <p class="empty-state">{$t('common.loading')}</p>
+    {:else}
+      <div class="funnel-grid">
+        <div class="stat"><small>{$t('polls.offered')}</small><strong>{formatNumber(results.funnel.offered)}</strong></div>
+        <div class="stat"><small>{$t('polls.pendingOffers')}</small><strong>{formatNumber(results.funnel.pending)}</strong></div>
+        <div class="stat"><small>{$t('polls.started')}</small><strong>{formatNumber(results.funnel.started)}</strong></div>
+        <div class="stat">
+          <small><CircleCheck size={12} strokeWidth={2} aria-hidden="true" /> {$t('polls.completed')}</small>
+          <strong>{formatNumber(results.funnel.completed)} <span class="muted">({results.funnel.completionRate}%)</span></strong>
+        </div>
+        <div class="stat">
+          <small><ThumbsDown size={12} strokeWidth={2} aria-hidden="true" /> {$t('polls.rejected')}</small>
+          <strong>{formatNumber(results.funnel.rejected)} <span class="muted">({results.funnel.rejectionRate}%)</span></strong>
+        </div>
+      </div>
+
+      {#each results.questions as question (question.id)}
+        <div class="result-card">
+          <div class="catalog-row-main">
+            <strong>{question.questionText}</strong>
+            <small>
+              {#if question.isFollowUp}<span class="chip small">{$t('polls.chipFollowUp')}</span>{/if}
+              {$t('polls.respondents', { count: formatNumber(question.respondents) })}
+            </small>
+          </div>
+
+          {#if question.tally.length > 0}
+            <ul class="tally">
+              {#each question.tally as row}
+                <li>
+                  <span class="tally-label">
+                    {row.text}
+                    {#if row.retired}<span class="chip small warn">{$t('polls.chipRetiredChoice')}</span>{/if}
+                  </span>
+                  <span class="bar"><span class="bar-fill" style={`width:${row.share}%`}></span></span>
+                  <span class="tally-count">{formatNumber(row.count)} <small>{row.share}%</small></span>
+                </li>
+              {/each}
+            </ul>
+          {:else if question.freeText.length > 0}
+            <ul class="free-text">
+              {#each question.freeText as answer}
+                <li>
+                  <AssetImage src={answer.avatarUrl} alt={answer.playerName ?? ''} size={28} fallbackIcon={MessageSquare} />
+                  <span class="catalog-row-main">
+                    <strong>{answer.answer}</strong>
+                    <small>{answer.playerName ?? `#${answer.playerId}`} - {formatDate(answer.answeredAt)}</small>
+                  </span>
+                </li>
+              {/each}
+            </ul>
+            {#if question.freeTextTruncated}
+              <small class="muted">{$t('polls.freeTextTruncated')}</small>
+            {/if}
+          {:else}
+            <p class="empty-state">{$t('polls.noAnswersYet')}</p>
+          {/if}
+        </div>
+      {/each}
+    {/if}
+  </Drawer>
+{/if}

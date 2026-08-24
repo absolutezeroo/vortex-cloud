@@ -182,7 +182,6 @@
           <p>{bootMessage || $connectionIssue?.message || $t('boot.unreachable')}</p>
         </div>
         <button type="button" onclick={() => retryConnection(false)} disabled={retryBusy}>
-          <RefreshCw size={16} class={retryBusy ? 'spin' : ''} />
           <span>{retryBusy ? $t('boot.retrying') : $t('boot.retryNow')}</span>
         </button>
         <small>{$t('boot.autoRetry')}</small>
@@ -194,7 +193,6 @@
         <AlertTriangle size={16} />
         <span>{$connectionIssue.message}</span>
         <button type="button" onclick={() => retryConnection(true)} disabled={retryBusy}>
-          <RefreshCw size={14} class={retryBusy ? 'spin' : ''} />
           <span>{$t('common.retry')}</span>
         </button>
       </div>
@@ -207,7 +205,6 @@
         <AlertTriangle size={16} />
         <span>{$connectionIssue.message}</span>
         <button type="button" onclick={() => retryConnection(true)} disabled={retryBusy}>
-          <RefreshCw size={14} class={retryBusy ? 'spin' : ''} />
           <span>{$t('common.retry')}</span>
         </button>
       </div>

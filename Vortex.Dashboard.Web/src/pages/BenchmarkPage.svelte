@@ -172,11 +172,11 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>{$t('benchmark.title')}</h2></div>
-  <p class="muted">{$t('benchmark.description')}</p>
-  <div class="toolbar">
-    <button type="button" on:click={refresh} disabled={loading}>{$t('common.refresh')}</button>
+  <div class="panel-head">
+      <h2>{$t('benchmark.title')}</h2>
+      <button type="button" on:click={refresh} disabled={loading} class="warning">{$t('common.refresh')}</button>
   </div>
+  <p class="muted">{$t('benchmark.description')}</p>
 
   {#if loading}
     <p class="muted">{$t('common.loading')}</p>

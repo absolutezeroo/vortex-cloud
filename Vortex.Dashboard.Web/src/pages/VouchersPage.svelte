@@ -173,7 +173,7 @@
         <input autocomplete="off" spellcheck="false" id="voucher-expires" type="datetime-local" bind:value={create.expiresAt} />
       </div>
       <div class="op-actions">
-        <button type="button" onclick={stageCreate} disabled={$ops.busyKeys.create}>{$t('common.run')}</button>
+        <button class="success" type="button" onclick={stageCreate} disabled={$ops.busyKeys.create}>{$t('common.run')}</button>
       </div>
       {#if $ops.errors.create}<p class="empty-state danger" role="alert">{$ops.errors.create}</p>{/if}
       {#if $ops.results.create}
@@ -203,6 +203,9 @@
 
   <section class="panel">
     <div class="panel-head"><h2>{$t('vouchers.lookupTitle')}</h2></div>
+</section>
+
+<section class="panel">
     <form class="toolbar" onsubmit={(event) => { event.preventDefault(); lookup(); }}>
       <input autocomplete="off" spellcheck="false" bind:value={lookupCode} placeholder={$t('vouchers.voucherCode')} style="text-transform: uppercase;" />
       <button type="submit" disabled={lookupLoading}>{$t('vouchers.inspect')}</button>

@@ -5,6 +5,7 @@
   import EntityLink from '../components/EntityLink.svelte';
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import StatCard from '../components/StatCard.svelte';
+  import PageHeader from '../components/PageHeader.svelte';
   import LineChart from '../components/LineChart.svelte';
   import EmptyState from '../components/EmptyState.svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
@@ -83,18 +84,20 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head">
-    <h2>{$t('overview.title')}</h2>
-    <button type="button" onclick={refresh}>{$t('common.refresh')}</button>
-  </div>
+  <PageHeader title={$t('overview.title')} description={$t('overview.description')}>
+    {#snippet actions()}
+      <button type="button" onclick={refresh} class="warning">{$t('common.refresh')}</button>
+    {/snippet}
+  </PageHeader>
+</section>
 
-  {#if forbidden}
-    <AccessDeniedNotice message={$t('overview.accessDenied')} />
-  {:else if error}
-    <EmptyState kind="error" message={error} />
-  {/if}
+{#if forbidden}
+  <AccessDeniedNotice message={$t('overview.accessDenied')} />
+{:else if error}
+  <EmptyState kind="error" message={error} />
+{/if}
 
-  <div class="stats">
+<div class="stats" style="margin-top: 12px;">
     <StatCard label={$t('overview.status')} value={data?.status || '-'}>
       {#snippet icon()}
         <Activity size={15} strokeWidth={2} aria-hidden="true" />
@@ -140,10 +143,9 @@
         <Timer size={15} strokeWidth={2} aria-hidden="true" />
       {/snippet}
     </StatCard>
-  </div>
-</section>
+</div>
 
-<section class="panel">
+<section class="panel" style="margin-top: 12px;">
   <div class="panel-head">
     <h2>{$t('overview.liveTrend')}</h2>
     <small class="muted">{$t('overview.lastTicks', { count: trend.length || 0 })}</small>

@@ -36,7 +36,11 @@
   let tab = $state('roles');
 
   let roleForm = $state({ key: '', name: '' });
-  let roleDraft = $state(null); // { id, key, name }
+  let roleDraft = $state(null);
+  // Adding a role used to be a form permanently open under the table; it opens in the
+  // drawer, where every other create in this dashboard opens.
+  let addingRole = $state(false);
+  let addingPreset = $state(false); // { id, key, name }
   let capabilityDraft = $state(null); // { roleId, selected: Set }
   let presetForm = $state(emptyPreset());
   let presetDraft = $state(null);
@@ -152,14 +156,14 @@
 </script>
 
 <section class="panel">
-  <PageHeader title={$t('staff.title')} description={$t('staff.description')} />
-  <p class="muted">{$t('staff.description')}</p>
-  <div class="toolbar">
-    <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
-    {#if !canManage}
-      <span class="muted">{$t('staff.readOnly')}</span>
-    {/if}
-  </div>
+  <PageHeader title={$t('staff.title')} description={$t('staff.description')}>
+    {#snippet actions()}
+      {#if !canManage}
+        <span class="muted">{$t('staff.readOnly')}</span>
+      {/if}
+      <button type="button" onclick={refresh} disabled={loading} class="warning">{$t('common.refresh')}</button>
+    {/snippet}
+  </PageHeader>
 
   {#if loading}
     <p class="muted">{$t('common.loading')}</p>
@@ -219,7 +223,12 @@
 
   {#if tab === 'roles'}
   <section class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>{$t('staff.rolesTitle')}</h2></div>
+    <div class="panel-head">
+      <h2>{$t('staff.rolesTitle')}</h2>
+      {#if canManage}
+        <button type="button" class="success" onclick={() => (addingRole = true)}>{$t('staff.addRole')}</button>
+      {/if}
+    </div>
     <div class="table-wrap">
       <table>
         <thead>
@@ -309,33 +318,6 @@
         </tbody>
       </table>
     </div>
-
-    {#if canManage}
-      <form
-        class="inline-form"
-        onsubmit={(event) => {
-          event.preventDefault();
-          ask(
-            '/api/v1/operations/staff/roles',
-            { key: roleForm.key, name: roleForm.name },
-            $t('staff.addRole'),
-            $t('staff.addRoleSummary', { role: roleForm.name })
-          );
-        }}
-      >
-        <label>
-          {$t('staff.colKey')}
-          <input autocomplete="off" spellcheck="false" bind:value={roleForm.key} placeholder="moderator" />
-        </label>
-        <label>
-          {$t('staff.colRole')}
-          <input autocomplete="off" spellcheck="false" bind:value={roleForm.name} placeholder={$t('staff.rolePlaceholder')} />
-        </label>
-        <button type="submit" disabled={!roleForm.key.trim() || !roleForm.name.trim()}>
-          {$t('staff.addRole')}
-        </button>
-      </form>
-    {/if}
   </section>
 
   <section class="panel" style="margin-top: 12px;">
@@ -392,8 +374,11 @@
       </table>
     </div>
 
-    {#if canManage}
-      <h3 class="subhead">{$t('staff.assignTitle')}</h3>
+  </section>
+
+  {#if canManage}
+    <section class="panel" style="margin-top: 12px;">
+      <div class="panel-head"><h2>{$t('staff.assignTitle')}</h2></div>
       <p class="muted">{$t('staff.assignDescription')}</p>
       <form class="inline-form" onsubmit={(event) => { event.preventDefault(); searchAccounts(); }}>
         <label>
@@ -476,8 +461,8 @@
           </table>
         </div>
       {/if}
-    {/if}
-  </section>
+    </section>
+  {/if}
   {/if}
 
   {#if tab === 'presets'}
@@ -545,50 +530,7 @@
     </div>
 
     {#if canManage}
-      <form
-        class="inline-form"
-        onsubmit={(event) => {
-          event.preventDefault();
-          ask(
-            '/api/v1/operations/staff/presets',
-            {
-              kind: Number(presetForm.kind),
-              presetIndex: Number(presetForm.presetIndex),
-              name: presetForm.name,
-              durationSeconds: presetForm.durationSeconds ? Number(presetForm.durationSeconds) : null,
-              message: presetForm.message,
-            },
-            $t('staff.addPreset'),
-            $t('staff.addPresetSummary', { name: presetForm.name })
-          );
-        }}
-      >
-        <label>
-          {$t('staff.colKind')}
-          <select bind:value={presetForm.kind}>
-            {#each data.presetKinds || [] as kind}
-              <option value={kind.value}>{kind.label}</option>
-            {/each}
-          </select>
-        </label>
-        <label>
-          {$t('staff.colIndex')}
-          <input autocomplete="off" spellcheck="false" type="number" bind:value={presetForm.presetIndex} min="0" />
-        </label>
-        <label>
-          {$t('staff.colPresetName')}
-          <input autocomplete="off" spellcheck="false" bind:value={presetForm.name} />
-        </label>
-        <label>
-          {$t('staff.durationSeconds')}
-          <input autocomplete="off" spellcheck="false" type="number" bind:value={presetForm.durationSeconds} min="0" placeholder={$t('common.permanent')} />
-        </label>
-        <label>
-          {$t('staff.colMessage')}
-          <input autocomplete="off" spellcheck="false" bind:value={presetForm.message} />
-        </label>
-        <button type="submit" disabled={!presetForm.name.trim()}>{$t('staff.addPreset')}</button>
-      </form>
+      <button type="button" class="success" onclick={() => (addingPreset = true)}>{$t('staff.addPreset')}</button>
     {/if}
   </section>
   {/if}
@@ -606,8 +548,7 @@
           $t('staff.updateRole'),
           $t('staff.updateRoleSummary', { role: roleDraft.name })
         );
-      }}
-    >
+      }} id="staffpage-drawer-1">
       <label>
         {$t('staff.colKey')}
         <input autocomplete="off" spellcheck="false" bind:value={roleDraft.key} required />
@@ -616,11 +557,14 @@
         {$t('staff.colRole')}
         <input autocomplete="off" spellcheck="false" bind:value={roleDraft.name} required />
       </label>
-      <button type="submit">{$t('staff.save')}</button>
+</form>
+  
+    {#snippet actions()}
+      <button form="staffpage-drawer-1" type="submit">{$t('staff.save')}</button>
       <button type="button" class="ghost-button" onclick={() => (roleDraft = null)}>
         {$t('staff.cancel')}
       </button>
-    </form>
+    {/snippet}
   </Drawer>
 {/if}
 
@@ -661,7 +605,8 @@
         </div>
       </div>
     {/each}
-    <div class="editor-actions">
+
+    {#snippet actions()}
       <button type="button" onclick={() => saveCapabilities(capabilityDraft.role)}>
         {$t('staff.saveCapabilities')}
       </button>
@@ -671,7 +616,7 @@
       <span class="muted">
         {$t('staff.selectedCount', { count: capabilityDraft.selected.size })}
       </span>
-    </div>
+    {/snippet}
   </Drawer>
 {/if}
 
@@ -696,8 +641,7 @@
           $t('staff.updatePreset'),
           $t('staff.updatePresetSummary', { name: presetDraft.name })
         );
-      }}
-    >
+      }} id="staffpage-drawer-3">
       <label>
         {$t('staff.colKind')}
         <select bind:value={presetDraft.kind}>
@@ -722,11 +666,14 @@
         {$t('staff.colMessage')}
         <input autocomplete="off" spellcheck="false" bind:value={presetDraft.message} />
       </label>
-      <button type="submit">{$t('staff.save')}</button>
+</form>
+  
+    {#snippet actions()}
+      <button form="staffpage-drawer-3" type="submit">{$t('staff.save')}</button>
       <button type="button" class="ghost-button" onclick={() => (presetDraft = null)}>
         {$t('staff.cancel')}
       </button>
-    </form>
+    {/snippet}
   </Drawer>
 {/if}
 
@@ -828,3 +775,92 @@
   }
 
 </style>
+
+{#if addingRole}
+  <Drawer title={$t('staff.addRole')} eyebrow={$t('staff.title')} onclose={() => (addingRole = false)}>
+      <form
+        class="inline-form" id="staff-role-form"
+        onsubmit={(event) => {
+          event.preventDefault();
+          ask(
+            '/api/v1/operations/staff/roles',
+            { key: roleForm.key, name: roleForm.name },
+            $t('staff.addRole'),
+            $t('staff.addRoleSummary', { role: roleForm.name })
+          );
+        }}
+      >
+        <label>
+          {$t('staff.colKey')}
+          <input autocomplete="off" spellcheck="false" bind:value={roleForm.key} placeholder="moderator" />
+        </label>
+        <label>
+          {$t('staff.colRole')}
+          <input autocomplete="off" spellcheck="false" bind:value={roleForm.name} placeholder={$t('staff.rolePlaceholder')} />
+        </label>
+      </form>
+    {#snippet actions()}
+      <button
+        type="submit"
+        form="staff-role-form"
+        class="success"
+        disabled={!roleForm.key.trim() || !roleForm.name.trim()}
+      >{$t('staff.addRole')}</button>
+      <button type="button" class="ghost-button" onclick={() => (addingRole = false)}>{$t('staff.cancel')}</button>
+    {/snippet}
+  </Drawer>
+{/if}
+
+{#if addingPreset}
+  <Drawer title={$t('staff.addPreset')} eyebrow={$t('staff.title')} onclose={() => (addingPreset = false)}>
+      <form
+        class="inline-form" id="staff-preset-form"
+        onsubmit={(event) => {
+          event.preventDefault();
+          ask(
+            '/api/v1/operations/staff/presets',
+            {
+              kind: Number(presetForm.kind),
+              presetIndex: Number(presetForm.presetIndex),
+              name: presetForm.name,
+              durationSeconds: presetForm.durationSeconds ? Number(presetForm.durationSeconds) : null,
+              message: presetForm.message,
+            },
+            $t('staff.addPreset'),
+            $t('staff.addPresetSummary', { name: presetForm.name })
+          );
+        }}
+      >
+        <label>
+          {$t('staff.colKind')}
+          <select bind:value={presetForm.kind}>
+            {#each data.presetKinds || [] as kind}
+              <option value={kind.value}>{kind.label}</option>
+            {/each}
+          </select>
+        </label>
+        <label>
+          {$t('staff.colIndex')}
+          <input autocomplete="off" spellcheck="false" type="number" bind:value={presetForm.presetIndex} min="0" />
+        </label>
+        <label>
+          {$t('staff.colPresetName')}
+          <input autocomplete="off" spellcheck="false" bind:value={presetForm.name} />
+        </label>
+        <label>
+          {$t('staff.durationSeconds')}
+          <input autocomplete="off" spellcheck="false" type="number" bind:value={presetForm.durationSeconds} min="0" placeholder={$t('common.permanent')} />
+        </label>
+        <label>
+          {$t('staff.colMessage')}
+          <input autocomplete="off" spellcheck="false" bind:value={presetForm.message} />
+        </label>
+      </form>
+    {#snippet actions()}
+      <button type="submit" form="staff-preset-form" class="success" disabled={!presetForm.name.trim()}>
+        {$t('staff.addPreset')}
+      </button>
+      <button type="button" class="ghost-button" onclick={() => (addingPreset = false)}>{$t('staff.cancel')}</button>
+    {/snippet}
+  </Drawer>
+{/if}

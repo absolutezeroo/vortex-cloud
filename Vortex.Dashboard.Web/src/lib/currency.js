@@ -56,6 +56,32 @@ export function currencyKindFromType(currencyType, activityPointType = null) {
   }
 }
 
+/**
+ * The name the ledger stores, as `economy_ledger.currency` writes it ("Credits", "Duckets", ...).
+ * Matched case-insensitively against the kinds we have a colour for; a seasonal currency nobody has
+ * tinted yet falls through to the neutral amber rather than being guessed at.
+ */
+export function currencyKindFromName(currencyName, activityPointType) {
+  const key = String(currencyName ?? '').trim().toLowerCase();
+
+  // The ledger stores a plain label, and for every activity point that label is the same word --
+  // duckets and diamonds both arrive as "ActivityPoints". The sub-type is what tells them apart.
+  if (key === 'activitypoints') return currencyKindFromRewardType(activityPointType ?? NaN);
+
+  return CURRENCY_KIND[key] ?? CURRENCY_KIND.points;
+}
+
+/** What to call this movement's currency: the stored label, unless it is the activity-point catch-all. */
+export function currencyLabel(currencyName, activityPointType) {
+  const key = String(currencyName ?? '').trim().toLowerCase();
+
+  if (key !== 'activitypoints') return currencyName;
+
+  const kind = currencyKindFromRewardType(activityPointType ?? NaN);
+
+  return kind === CURRENCY_KIND.points ? `${currencyName} #${activityPointType}` : kind;
+}
+
 /** The classes for a price/reward pill of this kind. Pair with `.cost-chip` in styles.css. */
 export function currencyChipClass(kind) {
   return kind && kind !== CURRENCY_KIND.points

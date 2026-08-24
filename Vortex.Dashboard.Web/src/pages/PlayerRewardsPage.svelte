@@ -103,13 +103,14 @@
 </script>
 
 <section class="panel">
-  <PageHeader title={$t('playerRewards.title')} description={$t('playerRewards.description')} />
-  <div class="toolbar">
-    <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
-    <button type="button" class="ghost-button" onclick={() => (picking = true)}>
-      {player ? player.name : $t('playerRewards.inspectPlayer')}
-    </button>
-  </div>
+  <PageHeader title={$t('playerRewards.title')} description={$t('playerRewards.description')}>
+    {#snippet actions()}
+      <button type="button" onclick={refresh} disabled={loading} class="warning">{$t('common.refresh')}</button>
+      <button type="button" class="ghost-button" onclick={() => (picking = true)}>
+        {player ? player.name : $t('playerRewards.inspectPlayer')}
+      </button>
+    {/snippet}
+  </PageHeader>
 
   {#if loading}
     <p class="muted">{$t('common.loading')}</p>

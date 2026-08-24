@@ -252,11 +252,9 @@
 <section class="panel">
   <PageHeader title={$t('collectibles.title')} description={$t('collectibles.description')}>
     {#snippet actions()}
-      {/snippet}
+      <button type="button" onclick={refresh} disabled={loading} class="warning">{$t('common.refresh')}</button>
+    {/snippet}
   </PageHeader>
-  <div class="toolbar">
-    <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
-  </div>
 
   {#if loading}
     <p class="muted">{$t('common.loading')}</p>
@@ -331,7 +329,7 @@
     <div class="panel-head">
       <h2>{$t('collectibles.collectionsTitle')}</h2>
       {#if canManage}
-        <button type="button" class="ghost-button" onclick={() => (collectionForm = emptyCollection())}>{$t('collectibles.newCollection')}</button>
+        <button type="button" class="success" onclick={() => (collectionForm = emptyCollection())}>{$t('collectibles.newCollection')}</button>
       {/if}
     </div>
     {#if (data.collections || []).length === 0}
@@ -504,7 +502,7 @@
     <div class="panel-head">
       <h2>{$t('collectibles.shopTitle')}</h2>
       {#if canManage}
-        <button type="button" class="ghost-button" onclick={() => (offerForm = emptyOffer())}>{$t('collectibles.newOffer')}</button>
+        <button type="button" class="success" onclick={() => (offerForm = emptyOffer())}>{$t('collectibles.newOffer')}</button>
       {/if}
     </div>
     <p class="muted">{$t('collectibles.shopDescription')}</p>
@@ -604,7 +602,7 @@
     <div class="panel-head">
       <h2>{$t('collectibles.mintingTitle')}</h2>
       {#if canManage}
-        <button type="button" class="ghost-button" onclick={() => (mintableForm = emptyMintable())}>{$t('collectibles.newMintable')}</button>
+        <button type="button" class="success" onclick={() => (mintableForm = emptyMintable())}>{$t('collectibles.newMintable')}</button>
       {/if}
     </div>
     <p class="muted">{$t('collectibles.mintingDescription')}</p>
@@ -701,7 +699,7 @@
     <div class="panel-head">
       <h2>{$t('collectibles.stampsTitle')}</h2>
       {#if canManage}
-        <button type="button" class="ghost-button" onclick={() => (tokenOfferForm = emptyTokenOffer())}>{$t('collectibles.newTokenOffer')}</button>
+        <button type="button" class="success" onclick={() => (tokenOfferForm = emptyTokenOffer())}>{$t('collectibles.newTokenOffer')}</button>
       {/if}
     </div>
     <p class="muted">{$t('collectibles.stampsDescription')}</p>
@@ -832,7 +830,7 @@
     <div class="panel-head">
       <h2>{$t('collectibles.claimsTitle')}</h2>
       {#if canManage}
-        <button type="button" class="ghost-button" onclick={() => (claimForm = emptyClaim())}>{$t('collectibles.newClaim')}</button>
+        <button type="button" class="success" onclick={() => (claimForm = emptyClaim())}>{$t('collectibles.newClaim')}</button>
       {/if}
     </div>
     <p class="muted">{$t('collectibles.claimsDescription')}</p>
@@ -904,7 +902,7 @@
     <div class="panel-head">
       <h2>{$t('collectibles.avatarsTitle')}</h2>
       {#if canManage}
-        <button type="button" class="ghost-button" onclick={() => (avatarForm = emptyAvatar())}>{$t('collectibles.newAvatar')}</button>
+        <button type="button" class="success" onclick={() => (avatarForm = emptyAvatar())}>{$t('collectibles.newAvatar')}</button>
       {/if}
     </div>
     <p class="muted">{$t('collectibles.avatarsDescription')}</p>
@@ -979,7 +977,7 @@
                           <span class="cell">
                             <EntityLink type="player" id={holder.playerId} label={holder.playerName} {openPlayer} />
                             {#if holder.worn}
-                              <span class="status-badge status-badge--good">{$t('collectibles.wearing')}</span>
+                              <span class="status-badge status-badge--ok">{$t('collectibles.wearing')}</span>
                             {/if}
                           </span>
                         </td>
@@ -1212,25 +1210,25 @@
         </span>
         <small class="muted">{$t('collectibles.bonusProductHelp')}</small>
       </label>
-      <div class="form-actions">
-        <button type="submit" disabled={!collectionForm.collectionCode.trim() || !collectionForm.name.trim()}>
-          {collectionForm.id ? $t('collectibles.updateCollection') : $t('collectibles.addCollection')}
-        </button>
-        {#if collectionForm.id}
-          <button
-            type="button"
-            class="ghost-button"
-            onclick={() => {
-              collectionForm = emptyCollection();
-              rewardIconUrl = null;
-              bonusIconUrl = null;
-            }}
-          >
-            {$t('collectibles.newCollection')}
-          </button>
-        {/if}
-      </div>
     </form>
+  
+    {#snippet actions()}
+      <button class="success" type="submit" disabled={!collectionForm.collectionCode.trim() || !collectionForm.name.trim()}>
+      {collectionForm.id ? $t('collectibles.updateCollection') : $t('collectibles.addCollection')}
+      </button>
+      {#if collectionForm.id}
+      <button
+      type="button"
+      class="success"
+      onclick={() => {
+      collectionForm = emptyCollection();
+      rewardIconUrl = null;
+      bonusIconUrl = null;
+      }}>
+      {$t('collectibles.newCollection')}
+      </button>
+      {/if}
+    {/snippet}
   </Drawer>
 {/if}
 
@@ -1286,13 +1284,14 @@
         {$t('collectibles.sortOrder')}
         <input autocomplete="off" spellcheck="false" type="number" bind:value={itemForm.sortOrder} />
       </label>
-      <div class="form-actions">
-        <button type="submit" disabled={!itemForm.productCode.trim()}>{$t('collectibles.saveItem')}</button>
-        <button type="button" class="ghost-button" onclick={() => (itemForm = emptyItem())}>
-          {$t('collectibles.newItem')}
-        </button>
-      </div>
     </form>
+  
+    {#snippet actions()}
+      <button type="submit" disabled={!itemForm.productCode.trim()}>{$t('collectibles.saveItem')}</button>
+      <button type="button" class="success" onclick={() => (itemForm = emptyItem())}>
+      {$t('collectibles.newItem')}
+      </button>
+    {/snippet}
   </Drawer>
 {/if}
 
@@ -1374,15 +1373,16 @@
         <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={offerForm.enabled} />
         {$t('collectibles.offerEnabled')}
       </label>
-      <div class="form-actions">
-        <button type="submit" disabled={!offerForm.productCode.trim()}>
-          {offerForm.id ? $t('collectibles.updateOffer') : $t('collectibles.addOffer')}
-        </button>
-        <button type="button" class="ghost-button" onclick={() => (offerForm = emptyOffer())}>
-          {$t('collectibles.newOffer')}
-        </button>
-      </div>
     </form>
+  
+    {#snippet actions()}
+      <button class="success" type="submit" disabled={!offerForm.productCode.trim()}>
+      {offerForm.id ? $t('collectibles.updateOffer') : $t('collectibles.addOffer')}
+      </button>
+      <button type="button" class="success" onclick={() => (offerForm = emptyOffer())}>
+      {$t('collectibles.newOffer')}
+      </button>
+    {/snippet}
   </Drawer>
 {/if}
 
@@ -1457,15 +1457,16 @@
         <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={mintableForm.enabled} />
         {$t('collectibles.offerEnabled')}
       </label>
-      <div class="form-actions">
-        <button type="submit" disabled={!mintableForm.productCode.trim()}>
-          {mintableForm.id ? $t('collectibles.updateMintable') : $t('collectibles.addMintable')}
-        </button>
-        <button type="button" class="ghost-button" onclick={() => (mintableForm = emptyMintable())}>
-          {$t('collectibles.newMintable')}
-        </button>
-      </div>
     </form>
+  
+    {#snippet actions()}
+      <button class="success" type="submit" disabled={!mintableForm.productCode.trim()}>
+      {mintableForm.id ? $t('collectibles.updateMintable') : $t('collectibles.addMintable')}
+      </button>
+      <button type="button" class="success" onclick={() => (mintableForm = emptyMintable())}>
+      {$t('collectibles.newMintable')}
+      </button>
+    {/snippet}
   </Drawer>
 {/if}
 
@@ -1513,15 +1514,16 @@
         <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={tokenOfferForm.enabled} />
         {$t('collectibles.offerEnabled')}
       </label>
-      <div class="form-actions">
-        <button type="submit" disabled={!tokenOfferForm.productCode.trim()}>
-          {tokenOfferForm.id ? $t('collectibles.updateTokenOffer') : $t('collectibles.addTokenOffer')}
-        </button>
-        <button type="button" class="ghost-button" onclick={() => (tokenOfferForm = emptyTokenOffer())}>
-          {$t('collectibles.newTokenOffer')}
-        </button>
-      </div>
     </form>
+  
+    {#snippet actions()}
+      <button class="success" type="submit" disabled={!tokenOfferForm.productCode.trim()}>
+      {tokenOfferForm.id ? $t('collectibles.updateTokenOffer') : $t('collectibles.addTokenOffer')}
+      </button>
+      <button type="button" class="success" onclick={() => (tokenOfferForm = emptyTokenOffer())}>
+      {$t('collectibles.newTokenOffer')}
+      </button>
+    {/snippet}
   </Drawer>
 {/if}
 
@@ -1587,22 +1589,23 @@
         <input autocomplete="off" spellcheck="false" type="date" bind:value={claimForm.validTo} />
         <small class="muted">{$t('collectibles.expiresHelp')}</small>
       </label>
-      <div class="form-actions">
-        <button type="submit" disabled={!claimForm.productCode.trim() || !claimForm.playerId}>
-          {$t('collectibles.addClaim')}
-        </button>
-        <button
-          type="button"
-          class="ghost-button"
-          onclick={() => {
-            claimForm = emptyClaim();
-            claimIconUrl = null;
-          }}
-        >
-          {$t('collectibles.newClaim')}
-        </button>
-      </div>
     </form>
+  
+    {#snippet actions()}
+      <button type="submit" disabled={!claimForm.productCode.trim() || !claimForm.playerId} class="success">
+      {$t('collectibles.addClaim')}
+      </button>
+      <button
+      type="button"
+      class="success"
+      onclick={() => {
+      claimForm = emptyClaim();
+      claimIconUrl = null;
+      }}
+      >
+      {$t('collectibles.newClaim')}
+      </button>
+    {/snippet}
   </Drawer>
 {/if}
 
@@ -1645,13 +1648,14 @@
         <input autocomplete="off" spellcheck="false" bind:value={grantForm.note} placeholder={$t('collectibles.grantNotePlaceholder')} />
         <small class="muted">{$t('collectibles.grantNoteHelp')}</small>
       </label>
-      <div class="form-actions">
-        <button type="submit" disabled={!grantForm.playerId}>{$t('collectibles.grantAvatar')}</button>
-        <button type="button" class="ghost-button" onclick={() => (grantAvatar = null)}>
-          {$t('common.cancel')}
-        </button>
-      </div>
     </form>
+  
+    {#snippet actions()}
+      <button type="submit" disabled={!grantForm.playerId}>{$t('collectibles.grantAvatar')}</button>
+      <button type="button" class="ghost-button" onclick={() => (grantAvatar = null)}>
+      {$t('common.cancel')}
+      </button>
+    {/snippet}
   </Drawer>
 {/if}
 
@@ -1725,15 +1729,16 @@
         <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={avatarForm.enabled} />
         {$t('collectibles.enabled')}
       </label>
-      <div class="form-actions">
-        <button type="submit" disabled={!avatarForm.avatarCode.trim() || !avatarForm.figure.trim()}>
-          {avatarForm.id ? $t('collectibles.updateAvatar') : $t('collectibles.addAvatar')}
-        </button>
-        <button type="button" class="ghost-button" onclick={() => (avatarForm = emptyAvatar())}>
-          {$t('collectibles.newAvatar')}
-        </button>
-      </div>
     </form>
+  
+    {#snippet actions()}
+      <button class="success" type="submit" disabled={!avatarForm.avatarCode.trim() || !avatarForm.figure.trim()}>
+      {avatarForm.id ? $t('collectibles.updateAvatar') : $t('collectibles.addAvatar')}
+      </button>
+      <button type="button" class="success" onclick={() => (avatarForm = emptyAvatar())}>
+      {$t('collectibles.newAvatar')}
+      </button>
+    {/snippet}
   </Drawer>
 {/if}
 

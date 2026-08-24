@@ -1,5 +1,6 @@
 <script>
   import { readNumberParam, writeParams } from '../lib/urlState.js';
+  import PickerModal from '../components/PickerModal.svelte';
 
   import { onMount } from 'svelte';
   import { apiGet } from '../lib/api.js';
@@ -33,6 +34,10 @@
     other: '#64748b',
   };
 
+  let picking = $state(null);
+  let actorName = $state('');
+  let targetName = $state('');
+  let roomName = $state('');
   let since = $state('');
   let until = $state('');
   let actor = $state('');
@@ -286,8 +291,15 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('moderation.title')}</h2>
-    <button type="button" onclick={exportCsv}>{$t('moderation.exportCsv')}</button>
+    <div class="head-actions">
+      <button type="button" onclick={refresh} class="warning">{$t('common.refresh')}</button>
+      <button type="button" class="ghost-button" onclick={exportCsv}>{$t('moderation.exportCsv')}</button>
+    </div>
   </div>
+  <p class="muted">{$t('moderation.description')}</p>
+</section>
+
+<section class="panel">
 
   <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); applyFilters(); }}>
     <label>
@@ -300,15 +312,21 @@
     </label>
     <label>
       {$t('moderation.actor')}
-      <input autocomplete="off" spellcheck="false" type="text" bind:value={actor} placeholder={$t('moderation.playerIdPlaceholder')} />
+      <button type="button" class="picker-button" onclick={() => (picking = 'actor')}>
+        {actorName || (actor ? `#${actor}` : $t('moderation.playerIdPlaceholder'))}
+      </button>
     </label>
     <label>
       {$t('moderation.target')}
-      <input autocomplete="off" spellcheck="false" type="text" bind:value={target} placeholder={$t('moderation.playerIdPlaceholder')} />
+      <button type="button" class="picker-button" onclick={() => (picking = 'target')}>
+        {targetName || (target ? `#${target}` : $t('moderation.playerIdPlaceholder'))}
+      </button>
     </label>
     <label>
       {$t('moderation.room')}
-      <input autocomplete="off" spellcheck="false" type="text" bind:value={room} placeholder={$t('moderation.roomIdPlaceholder')} />
+      <button type="button" class="picker-button" onclick={() => (picking = 'room')}>
+        {roomName || (room ? `#${room}` : $t('moderation.roomIdPlaceholder'))}
+      </button>
     </label>
     <label>
       {$t('moderation.action')}
@@ -331,8 +349,12 @@
       <input autocomplete="off" spellcheck="false" type="number" min="10" max="500" bind:value={limit} />
     </label>
 
-    <button type="submit">{$t('common.refresh')}</button>
+    <button type="submit">{$t('common.filter')}</button>
   </form>
+
+</section>
+
+<section class="panel">
 
   <p class="muted">{filterSummary}</p>
 
@@ -546,3 +568,14 @@
   </div>
 </section>
 
+{#if picking}
+    {#if picking === 'actor'}
+      <PickerModal kind="user" onSelect={(item) => { actor = String(item.id); actorName = item.name; picking = null; }} onClose={() => (picking = null)} />
+    {/if}
+    {#if picking === 'target'}
+      <PickerModal kind="user" onSelect={(item) => { target = String(item.id); targetName = item.name; picking = null; }} onClose={() => (picking = null)} />
+    {/if}
+    {#if picking === 'room'}
+      <PickerModal kind="room" onSelect={(item) => { room = String(item.id); roomName = item.name; picking = null; }} onClose={() => (picking = null)} />
+    {/if}
+{/if}

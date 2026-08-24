@@ -1,6 +1,7 @@
 <script>
 
   import { onMount } from 'svelte';
+  import PickerModal from '../components/PickerModal.svelte';
   import { apiGet } from '../lib/api.js';
   import { formatDate } from '../lib/format.js';
   import EntityLink from '../components/EntityLink.svelte';
@@ -9,6 +10,8 @@
   import { openPlayer, openItem } from '../lib/session.js';
   import { t } from '../lib/i18n.js';
 
+  let picking = $state(null);
+  let playerName = $state('');
   let player = $state('');
   let rows = $state([]);
   let error = $state('');
@@ -43,16 +46,24 @@
 
 <section class="panel">
   <div class="panel-head">
-    <h2>{$t('economy.title')}</h2>
-    <button type="button" onclick={refresh}>{$t('common.refresh')}</button>
+      <h2>{$t('economy.title')}</h2>
+      <div class="head-actions">
+        <button type="button" onclick={refresh} class="warning">{$t('common.refresh')}</button>
+        <button type="button" class="ghost-button" onclick={() => (picking = 'player')}>
+          {playerName || (player ? `#${player}` : $t('economy.load'))}
+        </button>
+      </div>
   </div>
   <p class="muted">
     {$t('economy.description')}
   </p>
-  <form class="toolbar" onsubmit={(event) => { event.preventDefault(); refresh(); }}>
-    <input autocomplete="off" spellcheck="false" bind:value={player} placeholder={$t('audit.playerIdPlaceholder')} />
-    <button type="submit">{$t('economy.load')}</button>
-  </form>
+</section>
+
+<section class="panel">
+
+</section>
+
+<section class="panel">
 
   {#if forbidden}
     <AccessDeniedNotice message={$t('economy.accessDenied')} />
@@ -78,3 +89,9 @@
     </tbody>
   </table>
 </section>
+
+{#if picking}
+    {#if picking === 'player'}
+      <PickerModal kind="user" onSelect={(item) => { player = String(item.id); playerName = item.name; picking = null; refresh(); }} onClose={() => (picking = null)} />
+    {/if}
+{/if}

@@ -75,8 +75,9 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('incidents.title')}</h2>
-    <button type="button" onclick={refresh}>{$t('common.refresh')}</button>
+    <button type="button" onclick={refresh} class="warning">{$t('common.refresh')}</button>
   </div>
+  <p class="muted">{$t('incidents.description')}</p>
 
   {#if forbidden}
     <AccessDeniedNotice message={$t('incidents.accessDenied')} />
@@ -92,29 +93,30 @@
     <span>{formatDate(data?.generatedAt)}</span>
   </div>
 
-  <div class="metric-grid compact" style="margin-top: 12px;">
-    <StatCard label={$t('incidents.activeSignals')} value={formatNumber(signals.length)} sub={$t('incidents.latestSnapshot')}>
-      {#snippet icon()}
-        <Activity size={15} strokeWidth={2} aria-hidden="true" />
-      {/snippet}
-    </StatCard>
-    <StatCard label={$t('incidents.errorSpikes')} value={formatRate(data?.errorSpikesPerMinute)} sub={$t('incidents.runtimeErrorsPerMin')}>
-      {#snippet icon()}
-        <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
-      {/snippet}
-    </StatCard>
-    <StatCard label={$t('incidents.loginFailedSpikes')} value={formatRate(data?.loginFailedSpikesPerMinute)} sub={$t('incidents.authFailuresPerMin')}>
-      {#snippet icon()}
-        <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
-      {/snippet}
-    </StatCard>
-    <StatCard label={$t('incidents.topErrorGroups')} value={formatNumber(topErrorGroups.length)} sub={$t('incidents.windowAggregation')}>
-      {#snippet icon()}
-        <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
-      {/snippet}
-    </StatCard>
-  </div>
 </section>
+
+<div class="metric-grid compact" style="margin-top: 12px;">
+  <StatCard label={$t('incidents.activeSignals')} value={formatNumber(signals.length)} sub={$t('incidents.latestSnapshot')}>
+    {#snippet icon()}
+      <Activity size={15} strokeWidth={2} aria-hidden="true" />
+    {/snippet}
+  </StatCard>
+  <StatCard label={$t('incidents.errorSpikes')} value={formatRate(data?.errorSpikesPerMinute)} sub={$t('incidents.runtimeErrorsPerMin')}>
+    {#snippet icon()}
+      <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
+    {/snippet}
+  </StatCard>
+  <StatCard label={$t('incidents.loginFailedSpikes')} value={formatRate(data?.loginFailedSpikesPerMinute)} sub={$t('incidents.authFailuresPerMin')}>
+    {#snippet icon()}
+      <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
+    {/snippet}
+  </StatCard>
+  <StatCard label={$t('incidents.topErrorGroups')} value={formatNumber(topErrorGroups.length)} sub={$t('incidents.windowAggregation')}>
+    {#snippet icon()}
+      <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
+    {/snippet}
+  </StatCard>
+</div>
 
 <section class="split-grid">
   <article class="panel">

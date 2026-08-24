@@ -142,9 +142,12 @@
 <section class="panel">
   <PageHeader title={$t('bots.title')} description={$t('bots.description')}>
     {#snippet actions()}
-      <button type="button" onclick={bots.refresh} disabled={bots.loading}>{$t('common.refresh')}</button>
+      <button type="button" onclick={bots.refresh} disabled={bots.loading} class="warning">{$t('common.refresh')}</button>
     {/snippet}
   </PageHeader>
+</section>
+
+<section class="panel">
 
   <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); search(); }}>
     <label>

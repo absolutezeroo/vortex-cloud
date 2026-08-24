@@ -130,12 +130,10 @@
 
 <section class="panel">
   <div class="panel-head">
-    <div>
-      <p class="eyebrow">{$t('infrastructure.eyebrowRuntime')}</p>
-      <h2>{$t('infrastructure.title')}</h2>
-    </div>
-    <button type="button" onclick={refresh}>{$t('common.refresh')}</button>
+    <h2>{$t('infrastructure.title')}</h2>
+    <button type="button" onclick={refresh} class="warning">{$t('common.refresh')}</button>
   </div>
+  <p class="muted">{$t('infrastructure.description')}</p>
 
   {#if forbidden}
     <AccessDeniedNotice message={$t('infrastructure.accessDenied')} />
@@ -143,7 +141,9 @@
     <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 
-  <div class="metric-grid">
+</section>
+
+<div class="metric-grid" style="margin-top: 12px;">
     <StatCard label={$t('infrastructure.emulator')} sub={$t('infrastructure.process', { id: data?.runtime?.processId || '-' })}>
       {#snippet icon()}
         <Activity size={15} strokeWidth={2} aria-hidden="true" />
@@ -184,7 +184,6 @@
       {/snippet}
     </StatCard>
   </div>
-</section>
 
 <section class="split-grid">
   <div class="panel">

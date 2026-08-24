@@ -184,7 +184,12 @@
   {/snippet}
 
   <form class="toolbar" onsubmit={(event) => { event.preventDefault(); load(); }}>
-    <input autocomplete="off" spellcheck="false"
+    <input
+      autocomplete="off"
+      spellcheck="false"
+      type="search"
+      name="picker-query"
+      id="picker-query"
       bind:value={query}
       placeholder={$t(SEARCH_PLACEHOLDER_KEYS[kind] ?? SEARCH_PLACEHOLDER_KEYS.user)}
       disabled={!canSelect}
@@ -258,7 +263,7 @@
         </button>
       {:else if kind === 'room'}
         <button type="button" class="pick-row" onclick={() => choose(row)}>
-          <span class="pick-icon" aria-hidden="true"><House size={18} /></span>
+          <span class="pick-icon" aria-hidden="true"></span>
           <span class="pick-dot" class:on={row.usersNow > 0} aria-hidden="true"></span>
           <span class="pick-main">
             <strong>{row.name}</strong>
@@ -311,8 +316,10 @@
     text-transform: uppercase;
   }
 
+  /* No cap: the filter row grows its labels, so one filter takes the dialog's width and two
+     share it. A fixed 260px left a select stranded at less than half the panel. */
   .pick-filters select {
-    max-width: 260px;
+    width: 100%;
   }
 
   .pick-check {

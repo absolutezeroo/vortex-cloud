@@ -301,7 +301,7 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('questContent.title')}</h2>
-    <button type="button" class="ghost-button" onclick={load} disabled={loading}>
+    <button type="button" class="warning" onclick={load} disabled={loading}>
       {$t('common.refresh')}
     </button>
   </div>
@@ -320,15 +320,13 @@
       <h2><Trophy size={17} strokeWidth={2} aria-hidden="true" /> {$t('questContent.goalsHeading')}</h2>
       {#if canManage}
         <button
-          type="button"
-          class="ghost-button"
+          type="button" class="success"
           onclick={() => {
             editGoal = null;
             newGoal = newGoal ? null : emptyGoal();
           }}
         >
-          <Plus size={14} strokeWidth={2} aria-hidden="true" />
-          {newGoal ? $t('questContent.cancel') : $t('questContent.newGoal')}
+          {$t('questContent.newGoal')}
         </button>
       {/if}
     </div>
@@ -371,12 +369,11 @@
                   if (newGoal.levels.length === 0) newGoal.levels = [emptyLevel()];
                 }}
               >
-                <Trash2 size={12} strokeWidth={2} aria-hidden="true" />
-              </button>
+                {$t('common.delete')}</button>
             </div>
           {/each}
-          <button type="button" class="ghost-button" onclick={() => (newGoal.levels = [...newGoal.levels, emptyLevel()])}>
-            <Plus size={12} strokeWidth={2} aria-hidden="true" /> {$t('questContent.addLevel')}
+          <button type="button" class="success" onclick={() => (newGoal.levels = [...newGoal.levels, emptyLevel()])}>
+            {$t('questContent.addLevel')}
           </button>
           <small class="muted">{$t('questContent.ladderHint')}</small>
         </fieldset>
@@ -385,7 +382,7 @@
           <label for="goal-reason">{$t('common.reason')}</label>
           <input autocomplete="off" spellcheck="false" id="goal-reason" bind:value={newGoal.reason} />
         </div>
-        <button type="button" onclick={saveGoal} disabled={$ops.busyKeys.goalCreate}>
+        <button type="button" onclick={saveGoal} disabled={$ops.busyKeys.goalCreate} class="success">
           {$t('questContent.create')}
         </button>
         <OpResult result={$ops.results.goalCreate} error={$ops.errors.goalCreate} />
@@ -423,15 +420,13 @@
             {#if canManage}
               <span class="row-actions">
                 <button type="button" class="ghost-button" onclick={() => startEditGoal(goal)}>
-                  <Pencil size={12} strokeWidth={2} aria-hidden="true" />
-                </button>
+                  {$t('common.edit')}</button>
                 <button
                   type="button"
                   class="ghost-button danger"
                   onclick={() => askDelete('goal', goal.id, goal.code)}
                 >
-                  <Trash2 size={12} strokeWidth={2} aria-hidden="true" />
-                </button>
+                  {$t('common.delete')}</button>
               </span>
             {/if}
           </div>
@@ -482,12 +477,11 @@
                         if (editGoal.levels.length === 0) editGoal.levels = [emptyLevel()];
                       }}
                     >
-                      <Trash2 size={12} strokeWidth={2} aria-hidden="true" />
-                    </button>
+                      {$t('common.delete')}</button>
                   </div>
                 {/each}
-                <button type="button" class="ghost-button" onclick={() => (editGoal.levels = [...editGoal.levels, emptyLevel()])}>
-                  <Plus size={12} strokeWidth={2} aria-hidden="true" /> {$t('questContent.addLevel')}
+                <button type="button" class="success" onclick={() => (editGoal.levels = [...editGoal.levels, emptyLevel()])}>
+                  {$t('questContent.addLevel')}
                 </button>
               </fieldset>
 
@@ -519,15 +513,13 @@
       </h2>
       {#if canManage}
         <button
-          type="button"
-          class="ghost-button"
+          type="button" class="success"
           onclick={() => {
             editTask = null;
             newTask = newTask ? null : emptyTask();
           }}
         >
-          <Plus size={14} strokeWidth={2} aria-hidden="true" />
-          {newTask ? $t('questContent.cancel') : $t('questContent.newTask')}
+          {$t('questContent.newTask')}
         </button>
       {/if}
     </div>
@@ -587,12 +579,11 @@
                   if (newTask.rewards.length === 0) newTask.rewards = [emptyReward()];
                 }}
               >
-                <Trash2 size={12} strokeWidth={2} aria-hidden="true" />
-              </button>
+                {$t('common.delete')}</button>
             </div>
           {/each}
-          <button type="button" class="ghost-button" onclick={() => (newTask.rewards = [...newTask.rewards, emptyReward()])}>
-            <Plus size={12} strokeWidth={2} aria-hidden="true" /> {$t('questContent.addReward')}
+          <button type="button" class="success" onclick={() => (newTask.rewards = [...newTask.rewards, emptyReward()])}>
+            {$t('questContent.addReward')}
           </button>
           <small class="muted">{$t('questContent.rewardsHint')}</small>
         </fieldset>
@@ -601,7 +592,7 @@
           <label for="task-reason">{$t('common.reason')}</label>
           <input autocomplete="off" spellcheck="false" id="task-reason" bind:value={newTask.reason} />
         </div>
-        <button type="button" onclick={saveTask} disabled={$ops.busyKeys.taskCreate}>
+        <button type="button" onclick={saveTask} disabled={$ops.busyKeys.taskCreate} class="success">
           {$t('questContent.create')}
         </button>
         <OpResult result={$ops.results.taskCreate} error={$ops.errors.taskCreate} />
@@ -642,15 +633,13 @@
             {#if canManage}
               <span class="row-actions">
                 <button type="button" class="ghost-button" onclick={() => startEditTask(task)}>
-                  <Pencil size={12} strokeWidth={2} aria-hidden="true" />
-                </button>
+                  {$t('common.edit')}</button>
                 <button
                   type="button"
                   class="ghost-button danger"
                   onclick={() => askDelete('task', task.id, task.taskCode)}
                 >
-                  <Trash2 size={12} strokeWidth={2} aria-hidden="true" />
-                </button>
+                  {$t('common.delete')}</button>
               </span>
             {/if}
           </div>
@@ -712,12 +701,11 @@
                         if (editTask.rewards.length === 0) editTask.rewards = [emptyReward()];
                       }}
                     >
-                      <Trash2 size={12} strokeWidth={2} aria-hidden="true" />
-                    </button>
+                      {$t('common.delete')}</button>
                   </div>
                 {/each}
-                <button type="button" class="ghost-button" onclick={() => (editTask.rewards = [...editTask.rewards, emptyReward()])}>
-                  <Plus size={12} strokeWidth={2} aria-hidden="true" /> {$t('questContent.addReward')}
+                <button type="button" class="success" onclick={() => (editTask.rewards = [...editTask.rewards, emptyReward()])}>
+                  {$t('questContent.addReward')}
                 </button>
               </fieldset>
 

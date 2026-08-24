@@ -113,6 +113,17 @@
     {:else}
       <p class="muted">{$t('account.hint')}</p>
 
+      <input
+        class="pm-username"
+        type="text"
+        name="username"
+        autocomplete="username"
+        value={$identity?.email ?? ''}
+        readonly
+        tabindex="-1"
+        aria-hidden="true"
+      />
+
       <label>
         <span>{$t('account.currentPassword')}</span>
         <input type="password" autocomplete="current-password" bind:value={currentPassword} />
@@ -147,7 +158,7 @@
       </button>
     {/if}
   {:else if enabled}
-    <p class="state on">{$t('mfa.enabled')}</p>
+    <p class="state notice notice--success">{$t('mfa.enabled')}</p>
     <p class="muted">{$t('mfa.disableHint')}</p>
 
     <label>
@@ -191,7 +202,7 @@
       {$t('mfa.confirm')}
     </button>
   {:else}
-    <p class="state off">{$t('mfa.disabled')}</p>
+    <p class="state notice notice--warn">{$t('mfa.disabled')}</p>
     <p class="muted">{$t('mfa.enableHint')}</p>
 
     <button type="button" onclick={begin} disabled={busy}>{$t('mfa.enable')}</button>
@@ -208,12 +219,16 @@
     margin: 0;
   }
 
-  .state.on {
-    color: var(--ok);
-  }
-
-  .state.off {
-    color: var(--warning);
+  /* Present for the password manager, absent for everyone else. Not display:none -- a field the
+     browser cannot see is a field it will not fill, which puts us back to it hunting elsewhere. */
+  .pm-username {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    pointer-events: none;
   }
 
   .secret {

@@ -92,8 +92,12 @@
 <section class="panel">
   <PageHeader title={$t('catalogPurchases.title')} description={$t('catalogPurchases.description')}>
     {#snippet actions()}
-      {/snippet}
+      <button type="button" onclick={refresh} class="warning">{$t('common.refresh')}</button>
+    {/snippet}
   </PageHeader>
+</section>
+
+<section class="panel">
 
   <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); refresh(); }}>
     <label>

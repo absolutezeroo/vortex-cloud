@@ -201,8 +201,7 @@
               <span class="cp-dot" class:on={entry.online} aria-hidden="true"></span>
             {/if}
             {#if index === cursor}
-              <CornerDownLeft size={14} strokeWidth={2} aria-hidden="true" />
-            {/if}
+              {/if}
           </button>
         {:else}
           <p class="empty-state" role="status">

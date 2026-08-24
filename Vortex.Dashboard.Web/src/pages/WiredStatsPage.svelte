@@ -76,8 +76,8 @@
 
 <section class="panel">
   <div class="panel-head">
-    <h2>{$t('wiredStats.title')}</h2>
-    <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
+      <h2>{$t('wiredStats.title')}</h2>
+      <button type="button" onclick={refresh} disabled={loading} class="warning">{$t('common.refresh')}</button>
   </div>
   <p class="muted">{$t('wiredStats.description')}</p>
 

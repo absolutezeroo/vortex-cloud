@@ -39,8 +39,18 @@
     return translator('navigatorConfig.eventCategoriesTitle');
   }
 
+  // The same drawer, opened to create rather than to edit.
+  function addTitle(kind, translator) {
+    if (kind === 'context') return translator('navigatorConfig.addTab');
+    if (kind === 'category') return translator('navigatorConfig.addCategory');
+    if (kind === 'quickLink') return translator('navigatorConfig.addBlock');
+    return translator('navigatorConfig.addEventCategory');
+  }
+
   const ops = createWriteOps(async () => {
     editing = null;
+    adding = null;
+    addingContext = null;
     contextForm = newContext();
     categoryForm = newCategory();
     eventCategoryForm = newEventCategory();
@@ -77,6 +87,12 @@
   let categoryForm = $state(newCategory());
   let eventCategoryForm = $state(newEventCategory());
   let editing = $state(null); // { kind, id, draft }
+  // Which creation form the drawer is showing, if any. Adding used to be a form
+  // permanently open at the foot of each section; it opens where editing opens now.
+  let adding = $state(null);
+  // Which context a new block belongs to. The block editor is the one creator that is
+  // per-parent, and the drawer has no `context` in scope once it is out of the loop.
+  let addingContext = $state(null);
 
   // These sections are independent jobs that were stacked vertically, so reaching the last one
   // meant scrolling past every other. Nothing here is read against anything else -- which is
@@ -133,26 +149,26 @@
 </script>
 
 <section class="panel">
-  <PageHeader title={$t('navigatorConfig.title')} description={$t('navigatorConfig.description')} />
-
-  <div class="toolbar">
-    <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
-    {#if canManage}
-      <button
-        type="button"
-        class="ghost-button"
-        onclick={() =>
-          ask(
-            '/api/v1/operations/navigator/seed-defaults',
-            {},
-            $t('navigatorConfig.seedTitle'),
-            $t('navigatorConfig.seedSummary')
-          )}
-      >
-        {$t('navigatorConfig.seedButton')}
-      </button>
-    {/if}
-  </div>
+  <PageHeader title={$t('navigatorConfig.title')} description={$t('navigatorConfig.description')}>
+    {#snippet actions()}
+      <button type="button" onclick={refresh} disabled={loading} class="warning">{$t('common.refresh')}</button>
+      {#if canManage}
+        <button
+          type="button"
+          class="ghost-button"
+          onclick={() =>
+            ask(
+              '/api/v1/operations/navigator/seed-defaults',
+              {},
+              $t('navigatorConfig.seedTitle'),
+              $t('navigatorConfig.seedSummary')
+            )}
+        >
+          {$t('navigatorConfig.seedButton')}
+        </button>
+      {/if}
+    {/snippet}
+  </PageHeader>
 
   {#if loading}
     <p class="muted">{$t('common.loading')}</p>
@@ -224,7 +240,11 @@
 
   {#if tab === 'contexts'}
   <section class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>{$t('navigatorConfig.tabsTitle')}</h2></div>
+    <div class="panel-head"><h2>{$t('navigatorConfig.tabsTitle')}</h2>
+      {#if canManage}
+        <button type="button" class="success" onclick={() => (adding = 'context')}>{$t('navigatorConfig.addTab')}</button>
+      {/if}
+    </div>
 
     {#if (data.contexts || []).length === 0}
       <EmptyState message={$t('navigatorConfig.noTabs')} />
@@ -323,108 +343,24 @@
           </table>
         </div>
 
-        {#if canManage && quickLinkForms[context.id]}
-          <form
-            class="edit-grid"
-            onsubmit={(event) => {
-              event.preventDefault();
-              ask(
-                '/api/v1/operations/navigator/quick-links',
-                {
-                  contextId: context.id,
-                  searchCode: quickLinkForms[context.id].searchCode,
-                  filter: quickLinkForms[context.id].filter || '',
-                  localization: quickLinkForms[context.id].localization || '',
-                  queryType: quickLinkForms[context.id].queryType,
-                  orderNum: quickLinkForms[context.id].orderNum,
-                },
-                $t('navigatorConfig.addBlock'),
-                $t('navigatorConfig.addBlockSummary', {
-                  code: quickLinkForms[context.id].searchCode,
-                  tab: context.searchCode,
-                })
-              );
-            }}
-          >
-            <label>
-              {$t('navigatorConfig.searchCode')}
-              <select
-                value={quickLinkForms[context.id].searchCode}
-                onchange={(e) => onCodePicked(quickLinkForms[context.id], e.currentTarget.value)}
-              >
-                <option value="">{$t('navigatorConfig.pickCode')}</option>
-                {#each searchCodes as code}
-                  <option value={code.code}>{code.code} — {code.queryTypeLabel}</option>
-                {/each}
-              </select>
-            </label>
-            <label>
-              {$t('navigatorConfig.queryType')}
-              <select bind:value={quickLinkForms[context.id].queryType}>
-                {#each queryTypes as q}
-                  <option value={q.value}>{q.label}</option>
-                {/each}
-              </select>
-            </label>
-            <label>
-              {$t('navigatorConfig.order')}
-              <input autocomplete="off" spellcheck="false" type="number" bind:value={quickLinkForms[context.id].orderNum} />
-            </label>
-            <button type="submit" disabled={!quickLinkForms[context.id].searchCode}>
-              {$t('navigatorConfig.addBlock')}
-            </button>
-          </form>
+        {#if canManage}
+          <button type="button" class="success" onclick={() => { adding = 'quickLink'; addingContext = context.id; }}>
+            {$t('navigatorConfig.addBlock')}
+          </button>
         {/if}
       </article>
     {/each}
 
-    {#if canManage}
-      <form
-        class="edit-grid"
-        onsubmit={(event) => {
-          event.preventDefault();
-          ask(
-            '/api/v1/operations/navigator/contexts',
-            contextForm,
-            $t('navigatorConfig.addTab'),
-            $t('navigatorConfig.addTabSummary', { code: contextForm.searchCode })
-          );
-        }}
-      >
-        <label>
-          {$t('navigatorConfig.searchCode')}
-          <select value={contextForm.searchCode} onchange={(e) => onCodePicked(contextForm, e.currentTarget.value)}>
-            <option value="">{$t('navigatorConfig.pickCode')}</option>
-            {#each searchCodes.filter((c) => c.topLevel) as code}
-              <option value={code.code}>{code.code} — {code.queryTypeLabel}</option>
-            {/each}
-          </select>
-        </label>
-        <label>
-          {$t('navigatorConfig.queryType')}
-          <select bind:value={contextForm.queryType}>
-            {#each queryTypes as q}
-              <option value={q.value}>{q.label}</option>
-            {/each}
-          </select>
-        </label>
-        <label>
-          {$t('navigatorConfig.order')}
-          <input autocomplete="off" spellcheck="false" type="number" bind:value={contextForm.orderNum} />
-        </label>
-        <label class="check">
-          <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={contextForm.visible} />
-          {$t('navigatorConfig.visible')}
-        </label>
-        <button type="submit" disabled={!contextForm.searchCode}>{$t('navigatorConfig.addTab')}</button>
-      </form>
-    {/if}
   </section>
   {/if}
 
   {#if tab === 'categories'}
   <section class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>{$t('navigatorConfig.categoriesTitle')}</h2></div>
+    <div class="panel-head"><h2>{$t('navigatorConfig.categoriesTitle')}</h2>
+      {#if canManage}
+        <button type="button" class="success" onclick={() => (adding = 'category')}>{$t('navigatorConfig.addCategory')}</button>
+      {/if}
+    </div>
     <p class="muted">{$t('navigatorConfig.categoriesDescription')}</p>
     <div class="table-wrap">
       <table>
@@ -483,44 +419,16 @@
       </table>
     </div>
 
-    {#if canManage}
-      <form
-        class="edit-grid"
-        onsubmit={(event) => {
-          event.preventDefault();
-          ask(
-            '/api/v1/operations/navigator/categories',
-            categoryForm,
-            $t('navigatorConfig.addCategory'),
-            $t('navigatorConfig.addCategorySummary', { name: categoryForm.name })
-          );
-        }}
-      >
-        <label>
-          {$t('navigatorConfig.colName')}
-          <input autocomplete="off" spellcheck="false" bind:value={categoryForm.name} placeholder={$t('navigatorConfig.categoryPlaceholder')} />
-        </label>
-        <label>
-          {$t('navigatorConfig.colMinRank')}
-          <input autocomplete="off" spellcheck="false" type="number" bind:value={categoryForm.minRank} />
-        </label>
-        <label>
-          {$t('navigatorConfig.order')}
-          <input autocomplete="off" spellcheck="false" type="number" bind:value={categoryForm.orderNum} />
-        </label>
-        <label class="check">
-          <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={categoryForm.staffOnly} />
-          {$t('navigatorConfig.colStaffOnly')}
-        </label>
-        <button type="submit" disabled={!categoryForm.name.trim()}>{$t('navigatorConfig.addCategory')}</button>
-      </form>
-    {/if}
   </section>
   {/if}
 
   {#if tab === 'events'}
   <section class="panel" style="margin-top: 12px;">
-    <div class="panel-head"><h2>{$t('navigatorConfig.eventCategoriesTitle')}</h2></div>
+    <div class="panel-head"><h2>{$t('navigatorConfig.eventCategoriesTitle')}</h2>
+      {#if canManage}
+        <button type="button" class="success" onclick={() => (adding = 'eventCategory')}>{$t('navigatorConfig.addEventCategory')}</button>
+      {/if}
+    </div>
     <p class="muted">{$t('navigatorConfig.eventCategoriesDescription')}</p>
     <div class="table-wrap">
       <table>
@@ -570,32 +478,6 @@
       </table>
     </div>
 
-    {#if canManage}
-      <form
-        class="edit-grid"
-        onsubmit={(event) => {
-          event.preventDefault();
-          ask(
-            '/api/v1/operations/navigator/event-categories',
-            eventCategoryForm,
-            $t('navigatorConfig.addEventCategory'),
-            $t('navigatorConfig.addEventCategorySummary', { name: eventCategoryForm.name })
-          );
-        }}
-      >
-        <label>
-          {$t('navigatorConfig.colName')}
-          <input autocomplete="off" spellcheck="false" bind:value={eventCategoryForm.name} />
-        </label>
-        <label class="check">
-          <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={eventCategoryForm.visible} />
-          {$t('navigatorConfig.visible')}
-        </label>
-        <button type="submit" disabled={!eventCategoryForm.name.trim()}>
-          {$t('navigatorConfig.addEventCategory')}
-        </button>
-      </form>
-    {/if}
   </section>
   {/if}
 {/if}
@@ -610,7 +492,7 @@
   >
     {#if editing.kind === 'context'}
             <form
-              class="edit-grid"
+              class="edit-grid" id="navigator-editor"
               onsubmit={(event) => {
                 event.preventDefault();
                 ask(
@@ -641,16 +523,10 @@
                 <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editing.draft.visible} />
                 {$t('navigatorConfig.visible')}
               </label>
-              <button type="submit">{$t('navigatorConfig.save')}</button>
-              <button type="button" class="ghost-button" onclick={() => (editing = null)}>
-                {$t('navigatorConfig.cancel')}
-              </button>
             </form>
     {:else if editing.kind === 'quickLink'}
-                    <tr>
-                      <td colspan={canManage ? 6 : 5}>
                         <form
-                          class="edit-grid"
+                          class="edit-grid" id="navigator-editor"
                           onsubmit={(event) => {
                             event.preventDefault();
                             ask(
@@ -693,18 +569,10 @@
                             {$t('navigatorConfig.order')}
                             <input autocomplete="off" spellcheck="false" type="number" bind:value={editing.draft.orderNum} />
                           </label>
-                          <button type="submit">{$t('navigatorConfig.save')}</button>
-                          <button type="button" class="ghost-button" onclick={() => (editing = null)}>
-                            {$t('navigatorConfig.cancel')}
-                          </button>
                         </form>
-                      </td>
-                    </tr>
     {:else if editing.kind === 'category'}
-                <tr>
-                  <td colspan={canManage ? 8 : 7}>
                     <form
-                      class="edit-grid"
+                      class="edit-grid" id="navigator-editor"
                       onsubmit={(event) => {
                         event.preventDefault();
                         ask(
@@ -735,18 +603,10 @@
                         <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editing.draft.staffOnly} />
                         {$t('navigatorConfig.colStaffOnly')}
                       </label>
-                      <button type="submit">{$t('navigatorConfig.save')}</button>
-                      <button type="button" class="ghost-button" onclick={() => (editing = null)}>
-                        {$t('navigatorConfig.cancel')}
-                      </button>
                     </form>
-                  </td>
-                </tr>
     {:else if editing.kind === 'eventCategory'}
-                <tr>
-                  <td colspan={canManage ? 5 : 4}>
                     <form
-                      class="edit-grid"
+                      class="edit-grid" id="navigator-editor"
                       onsubmit={(event) => {
                         event.preventDefault();
                         ask(
@@ -769,16 +629,11 @@
                         <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editing.draft.visible} />
                         {$t('navigatorConfig.visible')}
                       </label>
-                      <button type="submit">{$t('navigatorConfig.save')}</button>
-                      <button type="button" class="ghost-button" onclick={() => (editing = null)}>
-                        {$t('navigatorConfig.cancel')}
-                      </button>
                     </form>
-                  </td>
-                </tr>
     {/if}
 
     {#snippet actions()}
+      <button type="submit" form="navigator-editor">{$t('navigatorConfig.save')}</button>
       <button type="button" class="ghost-button" onclick={() => (editing = null)}>{$t('common.cancel')}</button>
     {/snippet}
   </Drawer>
@@ -853,3 +708,164 @@
     border-left: 3px solid var(--warn, #e0a33e);
   }
 </style>
+
+{#if adding}
+  <Drawer title={addTitle(adding, $t)} eyebrow={$t('navigatorConfig.title')} onclose={() => (adding = null)}>
+    {#if adding === 'context'}
+    <form
+      class="edit-grid" id="navigator-creator"
+      onsubmit={(event) => {
+        event.preventDefault();
+        ask(
+          '/api/v1/operations/navigator/contexts',
+          contextForm,
+          $t('navigatorConfig.addTab'),
+          $t('navigatorConfig.addTabSummary', { code: contextForm.searchCode })
+        );
+      }}
+    >
+      <label>
+        {$t('navigatorConfig.searchCode')}
+        <select value={contextForm.searchCode} onchange={(e) => onCodePicked(contextForm, e.currentTarget.value)}>
+          <option value="">{$t('navigatorConfig.pickCode')}</option>
+          {#each searchCodes.filter((c) => c.topLevel) as code}
+            <option value={code.code}>{code.code} — {code.queryTypeLabel}</option>
+          {/each}
+        </select>
+      </label>
+      <label>
+        {$t('navigatorConfig.queryType')}
+        <select bind:value={contextForm.queryType}>
+          {#each queryTypes as q}
+            <option value={q.value}>{q.label}</option>
+          {/each}
+        </select>
+      </label>
+      <label>
+        {$t('navigatorConfig.order')}
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={contextForm.orderNum} />
+      </label>
+      <label class="check">
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={contextForm.visible} />
+        {$t('navigatorConfig.visible')}
+      </label>
+      </form>
+    {:else if adding === 'category'}
+    <form
+      class="edit-grid" id="navigator-creator"
+      onsubmit={(event) => {
+        event.preventDefault();
+        ask(
+          '/api/v1/operations/navigator/categories',
+          categoryForm,
+          $t('navigatorConfig.addCategory'),
+          $t('navigatorConfig.addCategorySummary', { name: categoryForm.name })
+        );
+      }}
+    >
+      <label>
+        {$t('navigatorConfig.colName')}
+        <input autocomplete="off" spellcheck="false" bind:value={categoryForm.name} placeholder={$t('navigatorConfig.categoryPlaceholder')} />
+      </label>
+      <label>
+        {$t('navigatorConfig.colMinRank')}
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={categoryForm.minRank} />
+      </label>
+      <label>
+        {$t('navigatorConfig.order')}
+        <input autocomplete="off" spellcheck="false" type="number" bind:value={categoryForm.orderNum} />
+      </label>
+      <label class="check">
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={categoryForm.staffOnly} />
+        {$t('navigatorConfig.colStaffOnly')}
+      </label>
+      </form>
+    {:else if adding === 'quickLink'}
+          <form
+            class="edit-grid" id="navigator-creator"
+            onsubmit={(event) => {
+              event.preventDefault();
+              ask(
+                '/api/v1/operations/navigator/quick-links',
+                {
+                  contextId: addingContext,
+                  searchCode: quickLinkForms[addingContext].searchCode,
+                  filter: quickLinkForms[addingContext].filter || '',
+                  localization: quickLinkForms[addingContext].localization || '',
+                  queryType: quickLinkForms[addingContext].queryType,
+                  orderNum: quickLinkForms[addingContext].orderNum,
+                },
+                $t('navigatorConfig.addBlock'),
+                $t('navigatorConfig.addBlockSummary', {
+                  code: quickLinkForms[addingContext].searchCode,
+                  tab: context.searchCode,
+                })
+              );
+            }}
+          >
+            <label>
+              {$t('navigatorConfig.searchCode')}
+              <select
+                value={quickLinkForms[addingContext].searchCode}
+                onchange={(e) => onCodePicked(quickLinkForms[addingContext], e.currentTarget.value)}
+              >
+                <option value="">{$t('navigatorConfig.pickCode')}</option>
+                {#each searchCodes as code}
+                  <option value={code.code}>{code.code} — {code.queryTypeLabel}</option>
+                {/each}
+              </select>
+            </label>
+            <label>
+              {$t('navigatorConfig.queryType')}
+              <select bind:value={quickLinkForms[addingContext].queryType}>
+                {#each queryTypes as q}
+                  <option value={q.value}>{q.label}</option>
+                {/each}
+              </select>
+            </label>
+            <label>
+              {$t('navigatorConfig.order')}
+              <input autocomplete="off" spellcheck="false" type="number" bind:value={quickLinkForms[addingContext].orderNum} />
+            </label>
+          </form>
+    {:else if adding === 'eventCategory'}
+    <form
+      class="edit-grid" id="navigator-creator"
+      onsubmit={(event) => {
+        event.preventDefault();
+        ask(
+          '/api/v1/operations/navigator/event-categories',
+          eventCategoryForm,
+          $t('navigatorConfig.addEventCategory'),
+          $t('navigatorConfig.addEventCategorySummary', { name: eventCategoryForm.name })
+        );
+      }}
+    >
+      <label>
+        {$t('navigatorConfig.colName')}
+        <input autocomplete="off" spellcheck="false" bind:value={eventCategoryForm.name} />
+      </label>
+      <label class="check">
+        <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={eventCategoryForm.visible} />
+        {$t('navigatorConfig.visible')}
+      </label>
+      </form>
+    {/if}
+
+    {#snippet actions()}
+      <button
+        type="submit"
+        form="navigator-creator"
+        class="success"
+        disabled={adding === 'context'
+          ? !contextForm.searchCode
+          : adding === 'category'
+            ? !categoryForm.name.trim()
+            : adding === 'quickLink'
+              ? !quickLinkForms[addingContext]?.searchCode
+              : !eventCategoryForm.name.trim()}
+      >{addTitle(adding, $t)}</button>
+      <button type="button" class="ghost-button" onclick={() => (adding = null)}>{$t('common.cancel')}</button>
+    {/snippet}
+  </Drawer>
+{/if}

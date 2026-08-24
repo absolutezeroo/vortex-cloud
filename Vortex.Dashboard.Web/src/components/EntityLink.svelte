@@ -4,6 +4,7 @@
   import { t } from '../lib/i18n.js';
   import AssetImage from './AssetImage.svelte';
   import { avatarCache, resolveAvatar } from '../lib/avatars.js';
+  import { openRoom } from '../lib/session.js';
 
   // Show the real Habbo avatar head next to a player's name. Resolved lazily + batched via
   // lib/avatars.js; falls back to a neutral head only if the player has no figure. Set avatar={false}
@@ -32,13 +33,21 @@
   let numId = $derived(hasId ? Number(id) : null);
   let showAvatar = $derived(type === 'player' && avatar && numId !== null && !Number.isNaN(numId));
   let avatarUrl = $derived(showAvatar ? $avatarCache.get(numId) : undefined);
-  let resolvedLabel = $derived(label || $t(type === 'item' ? 'common.itemHash' : 'common.playerHash', { id }));
+  let resolvedLabel = $derived(
+    label || $t(type === 'item' ? 'common.itemHash' : type === 'room' ? 'common.roomHash' : 'common.playerHash', { id }),
+  );
 
   onMount(() => {
     if (showAvatar) resolveAvatar(numId);
   });
 
   function open() {
+    if (type === 'room') {
+      openRoom(id);
+
+      return;
+    }
+
     if (type === 'item') {
       openItem?.(id);
       return;
@@ -55,7 +64,12 @@
       <button type="button" class="entity-player" onclick={open}>{resolvedLabel}</button>
     </span>
   {:else}
-    <button type="button" class:entity-player={type === 'player'} class:entity-item={type === 'item'} onclick={open}>
+    <button
+      type="button"
+      class:entity-player={type === 'player'}
+      class:entity-item={type === 'item' || type === 'room'}
+      onclick={open}
+    >
       {resolvedLabel}
     </button>
   {/if}

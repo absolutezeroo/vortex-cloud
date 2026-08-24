@@ -15,6 +15,7 @@ using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Marketplace;
 using Vortex.Database.Entities.Players;
 using Vortex.Database.Entities.Room;
+using Vortex.Database.Entities.Wired;
 using Vortex.Observability.Configuration;
 using Vortex.Observability.Metrics;
 using Vortex.Observability.Runtime;
@@ -84,6 +85,29 @@ internal sealed partial class DashboardApiService
                     .FirstOrDefaultAsync(ct)
                     .ConfigureAwait(false);
 
+                // BuildFurniIconUrl is not translatable to SQL, so the icon is attached once the
+                // row is in memory -- the same two-step the catalog projections use.
+                var itemSnapshotWithIcon = itemSnapshot is null
+                    ? null
+                    : new
+                    {
+                        itemSnapshot.Id,
+                        itemSnapshot.definitionId,
+                        itemSnapshot.definitionName,
+                        furniIconUrl = itemSnapshot.definitionName is null
+                            ? null
+                            : BuildFurniIconUrl(itemSnapshot.definitionName),
+                        itemSnapshot.ownerPlayerId,
+                        itemSnapshot.ownerName,
+                        itemSnapshot.roomId,
+                        itemSnapshot.roomName,
+                        itemSnapshot.roomX,
+                        itemSnapshot.roomY,
+                        itemSnapshot.roomZ,
+                        itemSnapshot.ExtraData,
+                        itemSnapshot.updatedAt,
+                    };
+
                 var rows = await q.OrderBy(i => i.OccurredAt)
                     .Skip(offset)
                     .Take(limit)
@@ -142,7 +166,7 @@ internal sealed partial class DashboardApiService
                 return new
                 {
                     itemId,
-                    snapshot = itemSnapshot,
+                    snapshot = itemSnapshotWithIcon,
                     page,
                     limit,
                     total,
@@ -256,6 +280,8 @@ internal sealed partial class DashboardApiService
                             l.PlayerId,
                             l.Currency,
                             l.Delta,
+                            l.BalanceAfter,
+                            l.ActivityPointType,
                         })
                         .ToListAsync(ct)
                         .ConfigureAwait(false);
@@ -618,6 +644,40 @@ internal sealed partial class DashboardApiService
                         itemHistory = itemHistory.Where(i => i.OccurredAt <= until.Value);
                     }
 
+                    // Chat and wired-chest movements complete the timeline. An investigation that
+                    // sees a furni leave the room but not the sentence that preceded it, nor the
+                    // chest it went into, stops one step short of the answer. Both stay under
+                    // AuditRead: these are in-context reads on a player already being investigated,
+                    // which is exactly the line ChatlogsRead draws (it guards "who said this word,
+                    // anywhere" -- the one chat read that starts from no incident at all).
+                    IQueryable<RoomChatlogEntity> chat = db
+                        .Chatlogs.AsNoTracking()
+                        .Where(c => c.PlayerEntityId == id);
+
+                    if (since is not null)
+                    {
+                        chat = chat.Where(c => c.CreatedAt >= since.Value);
+                    }
+
+                    if (until is not null)
+                    {
+                        chat = chat.Where(c => c.CreatedAt <= until.Value);
+                    }
+
+                    IQueryable<WiredChestTransactionEntity> chestMoves = db
+                        .WiredChestTransactions.AsNoTracking()
+                        .Where(t => t.PlayerEntityId == id);
+
+                    if (since is not null)
+                    {
+                        chestMoves = chestMoves.Where(t => t.CreatedAt >= since.Value);
+                    }
+
+                    if (until is not null)
+                    {
+                        chestMoves = chestMoves.Where(t => t.CreatedAt <= until.Value);
+                    }
+
                     var asActorRows = await audit
                         .OrderByDescending(a => a.OccurredAt)
                         .Skip(offset)
@@ -776,12 +836,51 @@ internal sealed partial class DashboardApiService
                                 l.Currency,
                                 l.Delta,
                                 l.BalanceAfter,
+                                l.ActivityPointType,
+                                l.CorrelationId,
                             })
                             .ToListAsync(ct)
                             .ConfigureAwait(false),
                         ledgerTotal = await ledger.CountAsync(ct).ConfigureAwait(false),
                         itemHistory = itemHistoryWithNames,
                         itemTotal = await itemHistory.CountAsync(ct).ConfigureAwait(false),
+                        chats = await chat.OrderByDescending(c => c.CreatedAt)
+                            .Skip(offset)
+                            .Take(limit)
+                            .Select(c => new
+                            {
+                                c.CreatedAt,
+                                roomId = c.RoomEntityId,
+                                roomName = c.RoomEntity != null ? c.RoomEntity.Name : null,
+                                c.Message,
+                                targetPlayerId = c.TargetPlayerEntityId,
+                                targetPlayerName = c.TargetPlayerEntity != null
+                                    ? c.TargetPlayerEntity.Name
+                                    : null,
+                            })
+                            .ToListAsync(ct)
+                            .ConfigureAwait(false),
+                        chatTotal = await chat.CountAsync(ct).ConfigureAwait(false),
+                        chestMoves = await chestMoves
+                            .OrderByDescending(t => t.CreatedAt)
+                            .Skip(offset)
+                            .Take(limit)
+                            .Select(t => new
+                            {
+                                t.CreatedAt,
+                                chestId = t.WiredChestEntityId,
+                                roomId = t.RoomEntityId,
+                                roomName = t.Room != null ? t.Room.Name : null,
+                                t.TransactionType,
+                                t.DefinitionInfo,
+                                t.WithdrawFurniCount,
+                                t.DepositFurniCount,
+                                t.WithdrawCoinsCount,
+                                t.DepositCoinsCount,
+                            })
+                            .ToListAsync(ct)
+                            .ConfigureAwait(false),
+                        chestTotal = await chestMoves.CountAsync(ct).ConfigureAwait(false),
                     };
                 }
 

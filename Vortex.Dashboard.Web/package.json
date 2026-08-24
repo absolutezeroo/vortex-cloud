@@ -5,7 +5,8 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite --host 127.0.0.1",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "reports": "node tools/reports.mjs"
   },
   "dependencies": {
     "@fontsource/ubuntu": "^5.3.0",

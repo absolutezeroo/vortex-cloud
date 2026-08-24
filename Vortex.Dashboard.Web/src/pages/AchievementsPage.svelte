@@ -166,9 +166,12 @@
 <section class="panel">
   <PageHeader title={$t('achievements.title')} description={$t('achievements.description')}>
     {#snippet actions()}
-      <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
+      <button type="button" onclick={refresh} disabled={loading} class="warning">{$t('common.refresh')}</button>
     {/snippet}
   </PageHeader>
+</section>
+
+<section class="panel">
 
   <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); refresh(); }}>
     <label>
@@ -449,13 +452,11 @@
       <div class="panel-head">
         <h2>{$t('achievements.editorTitle')}</h2>
         <div class="head-actions">
-          <button type="button" class="ghost-button" onclick={() => openAchievementEditor(emptyAchievement())}>
-            <Award size={14} strokeWidth={2} aria-hidden="true" />
+          <button type="button" class="success" onclick={() => openAchievementEditor(emptyAchievement())}>
             {$t('achievements.newAchievement')}
           </button>
           {#if selected}
             <button type="button" class="ghost-button" onclick={() => (levelForm = emptyLevel())}>
-              <Trophy size={14} strokeWidth={2} aria-hidden="true" />
               {$t('achievements.levelEditorTitle')}
             </button>
           {/if}
@@ -618,7 +619,7 @@
 
     {#snippet actions()}
 
-      <button
+      <button class="success"
         type="button"
         disabled={!achievementForm.name.trim() || !achievementForm.category.trim()}
         onclick={() =>

@@ -96,11 +96,12 @@
   onMount(load);
 </script>
 
-<section>
-  <header class="head">
+<section class="panel">
+  <div class="panel-head">
     <h2>{$t('achievementResolutions.title')}</h2>
-    <p class="lede">{$t('achievementResolutions.lede')}</p>
-  </header>
+    <button type="button" onclick={load} class="warning">{$t('common.refresh')}</button>
+  </div>
+  <p class="muted">{$t('achievementResolutions.lede')}</p>
 
   {#if forbidden}
     <AccessDeniedNotice />

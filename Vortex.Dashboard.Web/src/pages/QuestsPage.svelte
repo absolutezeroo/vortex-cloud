@@ -329,10 +329,10 @@
             {/each}
           </select>
         </label>
-        <button type="button" class="ghost-button" onclick={loadQuests} disabled={loading}>{$t('common.refresh')}</button>
+        <button type="button" class="warning" onclick={loadQuests} disabled={loading}>{$t('common.refresh')}</button>
         {#if canManage}
-          <button type="button" class="ghost-button" onclick={openCreateQuest}>
-            <Plus size={14} strokeWidth={2} aria-hidden="true" /> {$t('quests.newQuest')}
+          <button type="button" class="success" onclick={openCreateQuest}>
+            {$t('quests.newQuest')}
           </button>
         {/if}
       </div>
@@ -359,7 +359,10 @@
               <div class="op-actions offer-actions">
                 {#if canManage}
                   <button type="button" class="ghost-button" onclick={() => startEditQuest(quest)}>
-                    <Pencil size={14} strokeWidth={2} aria-hidden="true" /> {$t('quests.edit')}
+                    {$t('quests.edit')}
+                  </button>
+                  <button type="button" class="ghost-button danger" onclick={() => openDeleteQuest(quest)}>
+                    {$t('quests.deleteQuest')}
                   </button>
                 {/if}
               </div>
@@ -389,13 +392,6 @@
               {/if}
             </div>
 
-            {#if canManage}
-              <div class="catalog-card-detail delete-bar">
-                <button type="button" class="ghost-button danger" onclick={() => openDeleteQuest(quest)}>
-                  <Trash2 size={14} strokeWidth={2} aria-hidden="true" /> {$t('quests.deleteQuest')}
-                </button>
-              </div>
-            {/if}
           </div>
         {/each}
       </div>
@@ -520,7 +516,7 @@
 
     {#snippet actions()}
 
-      <button type="button" onclick={saveQuest} disabled={$ops.busyKeys.questForm}>
+      <button type="button" onclick={saveQuest} disabled={$ops.busyKeys.questForm} class="success">
         {questModal.id === null ? $t('quests.create') : $t('quests.save')}
       </button>
       <button class="ghost-button" type="button" onclick={closeQuestModal}>{$t('quests.cancel')}</button>
@@ -582,11 +578,6 @@
   .offer-meta > .cost-chip {
     height: 24px;
     box-sizing: border-box;
-  }
-
-  .delete-bar {
-    display: flex;
-    justify-content: flex-end;
   }
 
   .op-subgroup {

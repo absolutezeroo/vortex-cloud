@@ -312,13 +312,14 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('mysteryBox.title')}</h2>
+    
     <div class="head-actions">
-      <button type="button" class="ghost-button" onclick={load} disabled={loading}>
+      <button type="button" class="warning" onclick={load} disabled={loading}>
         {$t('common.refresh')}
       </button>
       {#if canManage}
         <button type="button" class="ghost-button" onclick={stageReload}>
-          <RefreshCw size={14} strokeWidth={2} aria-hidden="true" /> {$t('mysteryBox.reload')}
+          {$t('mysteryBox.reload')}
         </button>
       {/if}
     </div>
@@ -451,8 +452,7 @@
     <div class="panel-head">
       <h2><Gift size={17} strokeWidth={2} aria-hidden="true" /> {$t('mysteryBox.prizesHeading')}</h2>
       {#if canManage}
-        <button type="button" class="ghost-button" onclick={() => (newPrizeOpen = true)}>
-          <Plus size={14} strokeWidth={2} aria-hidden="true" />
+        <button type="button" class="success" onclick={() => (newPrizeOpen = true)}>
           {$t('mysteryBox.newPrize')}
         </button>
       {/if}
@@ -505,11 +505,10 @@
                   {#if canManage}
                     <div class="op-actions offer-actions">
                       <button type="button" class="ghost-button" onclick={() => startEditPrize(prize)}>
-                        <Pencil size={14} strokeWidth={2} aria-hidden="true" /> {$t('mysteryBox.edit')}
+                        {$t('mysteryBox.edit')}
                       </button>
                       <button type="button" class="ghost-button danger" onclick={() => stageDeletePrize(prize)}>
-                        <Trash2 size={14} strokeWidth={2} aria-hidden="true" />
-                      </button>
+                        {$t('common.delete')}</button>
                     </div>
                   {/if}
                 </div>
@@ -708,8 +707,7 @@
               bind:value={newPrize.furnitureDefinitionId}
             />
             <button
-              type="button"
-              class="ghost-button"
+              type="button" class="ghost-button"
               onclick={() =>
                 (furniPicker = (item) => (newPrize.furnitureDefinitionId = item.id))}
               >{$t('mysteryBox.pick')}</button
@@ -731,12 +729,13 @@
       <div class="op-field">
         <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={newPrize.enabled} /> {$t('mysteryBox.enabled')}</label>
       </div>
-      <div class="op-actions">
-        <button type="button" onclick={stageCreatePrize}>{$t('mysteryBox.create')}</button>
-      </div>
       {#if $ops.errors.createPrize}<p class="empty-state danger" role="alert">{$ops.errors.createPrize}</p>{/if}
-      {#if $ops.results.createPrize}<OpResult result={$ops.results.createPrize} />{/if}
+      {#if $ops.results.createPrize}{/if}
     </div>
+  
+    {#snippet actions()}
+      <button type="button" onclick={stageCreatePrize} class="success">{$t('mysteryBox.create')}</button>
+    {/snippet}
   </Drawer>
 {/if}
 
@@ -781,7 +780,6 @@
             />
             <button
               type="button"
-              class="ghost-button"
               onclick={() =>
                 (furniPicker = (item) =>
                   (editPrize.furnitureDefinitionId = item.id))}
@@ -803,14 +801,15 @@
       <div class="op-field">
         <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={editPrize.enabled} /> {$t('mysteryBox.enabled')}</label>
       </div>
-      <div class="op-actions">
-        <button type="button" onclick={stageUpdatePrize}>{$t('mysteryBox.save')}</button>
-        <button type="button" class="ghost-button" onclick={() => { editPrizeId = null; editPrize = null; }}>
-          {$t('mysteryBox.cancel')}
-        </button>
-      </div>
       {#if $ops.errors.updatePrize}<p class="empty-state danger" role="alert">{$ops.errors.updatePrize}</p>{/if}
     </div>
+  
+    {#snippet actions()}
+      <button type="button" onclick={stageUpdatePrize}>{$t('mysteryBox.save')}</button>
+      <button type="button" class="ghost-button" onclick={() => { editPrizeId = null; editPrize = null; }}>
+      {$t('mysteryBox.cancel')}
+      </button>
+    {/snippet}
   </Drawer>
 {/if}
 

@@ -124,6 +124,8 @@ export default {
   },
   common: {
     remove: 'Remove',
+    edit: 'Edit',
+    delete: 'Delete',
     close: 'Close',
     size: 'Size',
     quantityLabel: 'Quantity',
@@ -167,6 +169,7 @@ export default {
     signOut: 'Sign out',
     signingOut: 'Signing out…',
     retry: 'Retry',
+    roomHash: 'room #{id}',
     itemHash: 'item #{id}',
     playerHash: 'player #{id}',
     granularityDay: 'Day',
@@ -200,6 +203,7 @@ export default {
     backToSignIn: 'Back to sign in',
   },
   audit: {
+    description: "Every write anyone made through this dashboard, with the reason they gave. Filter by actor, target or window.",
     wasDeleted: 'deleted',
     opDelete: 'Deleted',
     opUpdate: 'Updated',
@@ -240,9 +244,11 @@ export default {
       Social: 'Social',
       System: 'System',
       RentableSpace: 'Rentable space',
+      Progression: 'Progression',
     },
   },
   moderation: {
+    description: "Every moderation action taken in the window: who did it, to whom, and what came of it.",
     title: 'Moderation statistics',
     accessDenied: 'You do not have permission to access moderation statistics.',
     exportCsv: 'Export CSV',
@@ -316,6 +322,7 @@ export default {
   },
   roomsTimeline: {
     title: 'Room timeline',
+    description: 'Every event in one room, in order: who entered, what was said or done, and when.',
     accessDenied: 'You do not have permission to access room timelines.',
     roomIdPlaceholder: 'room id',
     inspect: 'Inspect',
@@ -328,6 +335,14 @@ export default {
     noTimeline: 'No room timeline loaded.',
   },
   investigation: {
+    filterKind: "Kind",
+    filterKindAll: "All kinds",
+    kindAudit: "Audit",
+    kindLedger: "Ledger",
+    kindItem: "Items",
+    findPlayer: 'Find a player',
+    findItem: 'Find an item',
+    description: "Search a player or a room, then read its timeline. Start from an incident, not out of curiosity -- every search is audited.",
     findByName: 'Find by name',
     tabTimeline: 'Timeline',
     title: 'Timeline search',
@@ -337,9 +352,12 @@ export default {
     searchPlaceholder: 'player id / item id / correlation id',
     hint: 'Enter a player id, item id or correlation id.',
     noStructuredResult: 'No structured result.',
+    eventsForId: '{count} events for id {term}',
     eventsForPlayer: '{count} events for player {term}',
     linkedEventsFor: '{count} linked events for {term}',
     event: 'event',
+    balanceAfter: "balance: {balance}",
+    noReason: "no linked event",
     colTime: 'Time',
     colType: 'Type',
     colActor: 'Actor',
@@ -347,6 +365,7 @@ export default {
     noRows: 'No timeline rows.',
   },
   packets: {
+    description: "Traffic per message type: what the client and the server are actually sending, and which handler is carrying the load.",
     title: 'Packet telemetry',
     accessDenied: 'You do not have permission to access packet metrics.',
     packetsPerSec: 'Packets/sec',
@@ -534,6 +553,7 @@ export default {
     noActivity: 'No economy activity in this window.',
   },
   overview: {
+    description: "What the hotel is doing right now: sessions, rooms, throughput and latency, refreshed every ten seconds.",
     inventoryTitle: 'What the hotel contains',
     inventoryHint: 'Row counts per subsystem. A zero means unseeded or unreachable.',
     inventoryGroup: {
@@ -615,6 +635,7 @@ export default {
     noRoomTraffic: 'No room traffic yet.',
   },
   incidents: {
+    description: "Signals the emulator raised on its own: what tripped, when, and whether it is still tripping.",
     title: 'Incident signals',
     accessDenied: 'You do not have permission to access incidents.',
     overallSeverity: 'Overall severity',
@@ -647,6 +668,7 @@ export default {
     noGroupedData: 'No grouped error data for this window.',
   },
   infrastructure: {
+    description: "The emulator's own runtime and its database backups: what is running, on what, and when it was last saved.",
     eyebrowBackup: 'Safety net',
     backups: 'Database backups',
     backupNow: 'Back up now',
@@ -1026,6 +1048,12 @@ export default {
     noRoutesAfterFilter: 'No route after filtering.',
   },
   operations: {
+    notPermitted: "You do not have this permission",
+    giveCreditsHint: "Credits, straight to the wallet",
+    giveActivityPointsHint: "Duckets, diamonds or any activity point type",
+    giveCollectiblesHint: "Silver or emeralds",
+    giveFurnitureHint: "A piece of furniture into the inventory",
+    kickPlayerHint: "Disconnect them from the hotel",
     selectPlayerTitle: 'Select a player',
     selectFurnitureTitle: 'Select furniture',
     fillFields: 'Select a target and fill the fields: amounts must be positive and the reason needs at least 3 characters.',
@@ -1057,6 +1085,11 @@ export default {
   },
   moderationActions: {
     title: 'Moderation actions',
+    banAccountHint: "Blocks the account, permanently or for a duration",
+    liftAccountBanHint: 'Restores access to a banned account',
+    mutePlayerHint: 'Silences the player in room chat for a duration',
+    lockTradingHint: 'Blocks trading, permanently or for a duration',
+    liftTradingLockHint: 'Restores the ability to trade',
     description: 'Controlled sanction actions. Pick a target, give a mandatory reason, and confirm; every run is audited with a correlation id and routed through the game grains. For trend/history data see Moderation stats.',
     fillFields: 'Select a target and fill the fields: durations must be positive (unless permanent) and the reason needs at least 3 characters.',
     banAccount: 'Ban account',
@@ -1137,6 +1170,10 @@ export default {
     deleteSummary: 'Delete “{name}” (#{id}). Blocked if it\'s still placed/owned or used by a catalog product.',
   },
   catalogAdmin: {
+    editPage: "Edit page",
+    editOffer: "Edit offer",
+    newProduct: "New product",
+    editProduct: "Edit product",
     breadcrumbLabel: 'Catalog page path',
     textDataPlaceholder: 'Welcome to our shop!',
     // Short field names for the before/after list in the confirm dialog and the audited reason. The
@@ -1525,6 +1562,9 @@ export default {
     categoryOther: 'Other',
   },
   targetedOffers: {
+    editOffer: "Edit offer",
+    newProduct: "New product",
+    editProduct: "Edit product",
     title: 'Targeted offers',
     description: 'Create and manage personalised/promotional offers and the bundle products each one delivers. Changes go live immediately for connected clients — no restart needed.',
     accessDenied: 'You do not have permission to manage targeted offers.',
@@ -1605,6 +1645,7 @@ export default {
     noPurchases: 'No purchases in this window.',
   },
   achievementResolutions: {
+    description: "How each achievement resolved for the players who reached it: what was granted, and what the client was told.",
     title: 'Achievement resolutions',
     lede: 'What the resolution statues offer, and how the challenges players took on are going.',
     statOffers: 'Offers live',
@@ -1757,6 +1798,7 @@ export default {
     choiceTypeHint: 'Branch key: 0 leads to no follow-up.',
     choicesHint:
       'The value is what the client sends back and what the results are keyed on — keep it stable, or old answers will show up as retired.',
+    questionEditorTitle: 'Edit question',
     addChoice: 'Add a choice',
     questionCount: '{roots} question(s), {followUps} follow-up(s)',
     answersRecorded: '{count} answer(s)',
@@ -1785,6 +1827,7 @@ export default {
     fillFields: 'Fill the required fields (reason needs at least 3 characters).',
   },
   quests: {
+    editQuest: "Edit quest",
     tabCampaigns: 'Campaigns',
     tabGoals: 'Goals and daily tasks',
     tabCompletions: 'Completions',
@@ -1912,6 +1955,7 @@ export default {
     remove: 'Delete',
   },
   mysteryBox: {
+    editPrize: "Edit prize",
     tabOverview: 'Overview',
     tabDefinitions: 'Definitions',
     tabPrizes: 'Prizes',
@@ -2294,6 +2338,7 @@ export default {
     deleteRole: 'Delete role',
     deleteRoleSummary: 'Delete the role {role}. A role that is still assigned cannot be deleted.',
     rolePlaceholder: 'Moderator',
+    capabilitiesTitle: 'Capabilities',
     saveCapabilities: 'Save capabilities',
     saveCapabilitiesSummary: 'Set {role} to grant exactly {count} capabilities. Anything unticked is revoked.',
     capabilityEditorHint:
@@ -2489,6 +2534,10 @@ export default {
     colGender: 'Gender',
   },
   collectibles: {
+    grantTitle: "Grant a collectible",
+    itemsTitle: "Collectible item",
+    mintablesTitle: "Mintable",
+    tokenOffersTitle: "Token offer",
     pickFurniture: 'Pick furniture',
     edit: 'Edit',
     delete: 'Delete',

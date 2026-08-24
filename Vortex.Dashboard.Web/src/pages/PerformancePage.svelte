@@ -109,11 +109,8 @@
 
 <section class="panel">
   <div class="panel-head">
-    <div>
-      <p class="eyebrow">{$t('nav.performanceShort')}</p>
-      <h2>{$t('performance.title')}</h2>
-    </div>
-    <button type="button" onclick={refresh}>{$t('common.refresh')}</button>
+    <h2>{$t('performance.title')}</h2>
+    <button type="button" onclick={refresh} class="warning">{$t('common.refresh')}</button>
   </div>
 
   {#if forbidden}
@@ -122,8 +119,11 @@
     <p class="empty-state danger" role="alert">{error}</p>
   {:else}
     <p class="muted">{$t('performance.description', { seconds: windowSeconds })}</p>
+  {/if}
+</section>
 
-    <div class="metric-grid compact">
+{#if !forbidden && !error}
+    <div class="metric-grid compact" style="margin-top: 12px;">
       <StatCard label={$t('performance.tickP50')}>
         {#snippet icon()}
           <Timer size={15} strokeWidth={2} aria-hidden="true" />
@@ -154,8 +154,7 @@
         {/snippet}
       </StatCard>
     </div>
-  {/if}
-</section>
+{/if}
 
 {#if !forbidden && !error}
   <section class="panel">

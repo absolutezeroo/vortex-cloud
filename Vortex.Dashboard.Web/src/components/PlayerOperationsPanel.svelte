@@ -9,10 +9,13 @@
   import AccessDeniedNotice from './AccessDeniedNotice.svelte';
   import ConfirmStagedModal from './ConfirmStagedModal.svelte';
   import PickerModal from './PickerModal.svelte';
+  import CurrencyIcon from './CurrencyIcon.svelte';
+  import CurrencySelect from './CurrencySelect.svelte';
+  import Modal from './Modal.svelte';
   import { Coins, Zap, Gem, Package, UserX } from '@lucide/svelte';
   import { hasDashboardCapability } from '../lib/permissions.js';
   import { createWriteOps } from '../lib/writeOps.js';
-  import { OPERATION_CAPABILITIES } from '../lib/dashboardPermissions.js';
+  import { OPERATION_CAPABILITIES, MODERATION_OPERATION_CAPABILITIES } from '../lib/dashboardPermissions.js';
   import { reasonOk, positive, nonNegative } from '../lib/validation.js';
   import { identity } from '../lib/session.js';
   import { t, translate } from '../lib/i18n.js';
@@ -37,14 +40,47 @@
   let collectibles = $state({ currency: 'silver', amount: '', reason: '' });
   let item = $state({ definitionId: '', defName: '', defSprite: '', defIcon: '', extraData: '', reason: '' });
   let kick = $state({ reason: '' });
+  let ban = $state({ permanent: false, durationSeconds: '', reason: '' });
+  let unban = $state({ reason: '' });
+  let mute = $state({ durationSeconds: '', reason: '' });
+  let tradingLock = $state({ permanent: false, durationSeconds: '', reason: '' });
+  let tradingUnlock = $state({ reason: '' });
 
   let picker = $state(null);
+  // Which operation is open. One at a time: five forms at once was five reasons to fill in for
+  // one decision, and the heights never matched.
+  let openAction = $state(null);
 
   let canCredits = $derived(hasDashboardCapability($identity, OPERATION_CAPABILITIES.credits));
   let canActivity = $derived(hasDashboardCapability($identity, OPERATION_CAPABILITIES.activity));
   let canCollectibles = $derived(hasDashboardCapability($identity, OPERATION_CAPABILITIES.collectibles));
   let canItem = $derived(hasDashboardCapability($identity, OPERATION_CAPABILITIES.item));
   let canKick = $derived(hasDashboardCapability($identity, OPERATION_CAPABILITIES.kick));
+  let canBan = $derived(hasDashboardCapability($identity, MODERATION_OPERATION_CAPABILITIES.ban));
+  let canUnban = $derived(hasDashboardCapability($identity, MODERATION_OPERATION_CAPABILITIES.unban));
+  let canMute = $derived(hasDashboardCapability($identity, MODERATION_OPERATION_CAPABILITIES.mute));
+  let canTradingLock = $derived(hasDashboardCapability($identity, MODERATION_OPERATION_CAPABILITIES.tradingLock));
+  let canTradingUnlock = $derived(hasDashboardCapability($identity, MODERATION_OPERATION_CAPABILITIES.tradingUnlock));
+
+  // The list the chooser renders. Permission decides whether an entry can be opened at all,
+  // rather than opening it onto an access-denied notice.
+  let ACTIONS = $derived([
+    { key: 'credits', label: $t('operations.giveCredits'), hint: $t('operations.giveCreditsHint'), allowed: canCredits },
+    { key: 'activity', label: $t('operations.giveActivityPoints'), hint: $t('operations.giveActivityPointsHint'), allowed: canActivity },
+    { key: 'collectibles', label: $t('operations.giveCollectiblesCurrency'), hint: $t('operations.giveCollectiblesHint'), allowed: canCollectibles },
+    { key: 'item', label: $t('operations.giveFurniture'), hint: $t('operations.giveFurnitureHint'), allowed: canItem },
+    {
+      key: 'kick',
+      label: $t('operations.kickPlayer'),
+      hint: online ? $t('operations.kickPlayerHint') : $t('playerOps.offlineKickHint'),
+      allowed: canKick && online,
+    },
+    { key: 'ban', label: $t('moderationActions.banAccount'), hint: $t('moderationActions.banAccountHint'), allowed: canBan },
+    { key: 'unban', label: $t('moderationActions.liftAccountBan'), hint: $t('moderationActions.liftAccountBanHint'), allowed: canUnban },
+    { key: 'mute', label: $t('moderationActions.mutePlayer'), hint: $t('moderationActions.mutePlayerHint'), allowed: canMute },
+    { key: 'tradingLock', label: $t('moderationActions.lockTrading'), hint: $t('moderationActions.lockTradingHint'), allowed: canTradingLock },
+    { key: 'tradingUnlock', label: $t('moderationActions.liftTradingLock'), hint: $t('moderationActions.liftTradingLockHint'), allowed: canTradingUnlock },
+  ]);
 
   let who = $derived(playerName || translate('operations.player'));
 
@@ -150,6 +186,91 @@
     );
   }
 
+  function stageBan() {
+    if (!canBan) return void ops.fail('ban', translate('moderationActions.banAccessDenied'));
+
+    stage(
+      'ban',
+      translate('moderationActions.banAccount'),
+      '/api/v1/operations/players/ban',
+      (ban.permanent || positive(ban.durationSeconds)) && reasonOk(ban.reason),
+      {
+        permanent: ban.permanent,
+        durationSeconds: ban.permanent ? null : Number(ban.durationSeconds),
+        reason: ban.reason.trim(),
+      },
+      translate('moderationActions.banSummary', {
+        action: ban.permanent
+          ? translate('moderationActions.permanentlyBan')
+          : translate('moderationActions.banFor', { seconds: ban.durationSeconds }),
+        name: who,
+        id: playerId,
+      }),
+    );
+  }
+
+  function stageUnban() {
+    if (!canUnban) return void ops.fail('unban', translate('moderationActions.unbanAccessDenied'));
+
+    stage(
+      'unban',
+      translate('moderationActions.liftAccountBan'),
+      '/api/v1/operations/players/unban',
+      reasonOk(unban.reason),
+      { reason: unban.reason.trim() },
+      translate('moderationActions.liftBanSummary', { name: who, id: playerId }),
+    );
+  }
+
+  function stageMute() {
+    if (!canMute) return void ops.fail('mute', translate('moderationActions.muteAccessDenied'));
+
+    stage(
+      'mute',
+      translate('moderationActions.mutePlayer'),
+      '/api/v1/operations/players/mute',
+      positive(mute.durationSeconds) && reasonOk(mute.reason),
+      { durationSeconds: Number(mute.durationSeconds), reason: mute.reason.trim() },
+      translate('moderationActions.muteSummary', { name: who, id: playerId, seconds: mute.durationSeconds }),
+    );
+  }
+
+  function stageTradingLock() {
+    if (!canTradingLock) return void ops.fail('tradingLock', translate('moderationActions.lockAccessDenied'));
+
+    stage(
+      'tradingLock',
+      translate('moderationActions.lockTrading'),
+      '/api/v1/operations/players/trading-lock',
+      (tradingLock.permanent || positive(tradingLock.durationSeconds)) && reasonOk(tradingLock.reason),
+      {
+        permanent: tradingLock.permanent,
+        durationSeconds: tradingLock.permanent ? null : Number(tradingLock.durationSeconds),
+        reason: tradingLock.reason.trim(),
+      },
+      translate('moderationActions.lockTradingSummary', {
+        action: tradingLock.permanent
+          ? translate('moderationActions.permanentlyLock')
+          : translate('moderationActions.lockFor', { seconds: tradingLock.durationSeconds }),
+        name: who,
+        id: playerId,
+      }),
+    );
+  }
+
+  function stageTradingUnlock() {
+    if (!canTradingUnlock) return void ops.fail('tradingUnlock', translate('moderationActions.unlockAccessDenied'));
+
+    stage(
+      'tradingUnlock',
+      translate('moderationActions.liftTradingLock'),
+      '/api/v1/operations/players/trading-unlock',
+      reasonOk(tradingUnlock.reason),
+      { reason: tradingUnlock.reason.trim() },
+      translate('moderationActions.liftLockSummary', { name: who, id: playerId }),
+    );
+  }
+
   async function copy(value) {
     try {
       await navigator.clipboard.writeText(value || '');
@@ -159,11 +280,7 @@
   }
 </script>
 
-<div class="op-grid">
-  <section class="panel op-panel" style="border-left-color: var(--ok);">
-    <div class="panel-head">
-      <h3><Coins size={17} strokeWidth={2} aria-hidden="true" /> {$t('operations.giveCredits')}</h3>
-    </div>
+{#snippet creditsForm()}
     {#if !canCredits}
       <AccessDeniedNotice message={$t('operations.creditsAccessDenied')} />
     {:else}
@@ -202,26 +319,15 @@
         <OpResult result={$ops.results.credits} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
-  </section>
+{/snippet}
 
-  <section class="panel op-panel" style="border-left-color: var(--ok);">
-    <div class="panel-head">
-      <h3><Zap size={17} strokeWidth={2} aria-hidden="true" /> {$t('operations.giveActivityPoints')}</h3>
-    </div>
+{#snippet activityForm()}
     {#if !canActivity}
       <AccessDeniedNotice message={$t('operations.activityAccessDenied')} />
     {:else}
       <div class="op-field">
         <label for="activity-type">{$t('operations.activityPointType')}</label>
-        <input
-          id="activity-type"
-          type="number"
-          min="0"
-          autocomplete="off"
-          spellcheck="false"
-          bind:value={activity.type}
-          placeholder="0"
-        />
+        <CurrencySelect id="activity-type" credits={false} bind:value={activity.type} />
       </div>
       <div class="op-field">
         <label for="activity-amount">{$t('operations.amount')}</label>
@@ -258,24 +364,21 @@
         <OpResult result={$ops.results.activity} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
-  </section>
+{/snippet}
 
-  <section class="panel op-panel" style="border-left-color: var(--ok);">
-    <div class="panel-head">
-      <h3>
-        <Gem size={17} strokeWidth={2} aria-hidden="true" />
-        {$t('operations.giveCollectiblesCurrency')}
-      </h3>
-    </div>
+{#snippet collectiblesForm()}
     {#if !canCollectibles}
       <AccessDeniedNotice message={$t('operations.collectiblesAccessDenied')} />
     {:else}
       <div class="op-field">
         <label for="collectibles-currency">{$t('operations.collectiblesCurrency')}</label>
-        <select id="collectibles-currency" bind:value={collectibles.currency}>
-          <option value="silver">{$t('operations.currencySilver')}</option>
-          <option value="emeralds">{$t('operations.currencyEmeralds')}</option>
-        </select>
+        <span class="currency-select">
+          <CurrencyIcon kind={collectibles.currency} />
+          <select id="collectibles-currency" bind:value={collectibles.currency}>
+            <option value="silver">{$t('operations.currencySilver')}</option>
+            <option value="emeralds">{$t('operations.currencyEmeralds')}</option>
+          </select>
+        </span>
       </div>
       <div class="op-field">
         <label for="collectibles-amount">{$t('operations.amount')}</label>
@@ -312,12 +415,9 @@
         <OpResult result={$ops.results.collectibles} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
-  </section>
+{/snippet}
 
-  <section class="panel op-panel" style="border-left-color: var(--ok);">
-    <div class="panel-head">
-      <h3><Package size={17} strokeWidth={2} aria-hidden="true" /> {$t('operations.giveFurniture')}</h3>
-    </div>
+{#snippet itemForm()}
     {#if !canItem}
       <AccessDeniedNotice message={$t('operations.itemAccessDenied')} />
     {:else}
@@ -390,13 +490,9 @@
         <OpResult result={$ops.results.item} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
-  </section>
+{/snippet}
 
-  <section class="panel op-panel" style="border-left-color: var(--danger);">
-    <div class="panel-head">
-      <h3><UserX size={17} strokeWidth={2} aria-hidden="true" /> {$t('operations.kickPlayer')}</h3>
-      {#if !online}<small class="muted">{$t('playerOps.offlineKickHint')}</small>{/if}
-    </div>
+{#snippet kickForm()}
     {#if !canKick}
       <AccessDeniedNotice message={$t('operations.kickAccessDenied')} />
     {:else}
@@ -423,8 +519,230 @@
         <OpResult result={$ops.results.kick} onCopy={copy} copyLabel={$t('common.copy')} />
       {/if}
     {/if}
-  </section>
+{/snippet}
+
+{#snippet banForm()}
+    {#if !canBan}
+      <AccessDeniedNotice message={$t('moderationActions.banAccessDenied')} />
+    {:else}
+      <div class="op-checkbox-field">
+        <input id="ban-permanent" type="checkbox" autocomplete="off" bind:checked={ban.permanent} />
+        <label for="ban-permanent">{$t('common.permanent')}</label>
+      </div>
+      {#if !ban.permanent}
+      <div class="op-field">
+        <label for="ban-duration">{$t('moderationActions.durationSeconds')}</label>
+        <input
+          id="ban-duration"
+          type="number"
+          min="1"
+          autocomplete="off"
+          spellcheck="false"
+          bind:value={ban.durationSeconds}
+          placeholder="86400"
+        />
+      </div>
+      {/if}
+      <div class="op-field">
+        <label for="ban-reason">{$t('common.reasonRequired')}</label>
+        <input
+          id="ban-reason"
+          autocomplete="off"
+          spellcheck="false"
+          bind:value={ban.reason}
+          placeholder={$t('common.reasonPlaceholder')}
+          list="reason-history"
+        />
+      </div>
+      <div class="op-actions">
+        <button type="button" onclick={stageBan} disabled={$ops.busyKeys.ban}>{$t('common.run')}</button>
+      </div>
+      {#if $ops.errors.ban}<p class="empty-state danger" role="alert">{$ops.errors.ban}</p>{/if}
+      {#if $ops.results.ban}
+        <OpResult result={$ops.results.ban} onCopy={copy} copyLabel={$t('common.copy')} />
+      {/if}
+    {/if}
+{/snippet}
+
+{#snippet unbanForm()}
+    {#if !canUnban}
+      <AccessDeniedNotice message={$t('moderationActions.unbanAccessDenied')} />
+    {:else}
+
+      <div class="op-field">
+        <label for="unban-reason">{$t('common.reasonRequired')}</label>
+        <input
+          id="unban-reason"
+          autocomplete="off"
+          spellcheck="false"
+          bind:value={unban.reason}
+          placeholder={$t('common.reasonPlaceholder')}
+          list="reason-history"
+        />
+      </div>
+      <div class="op-actions">
+        <button type="button" onclick={stageUnban} disabled={$ops.busyKeys.unban}>{$t('common.run')}</button>
+      </div>
+      {#if $ops.errors.unban}<p class="empty-state danger" role="alert">{$ops.errors.unban}</p>{/if}
+      {#if $ops.results.unban}
+        <OpResult result={$ops.results.unban} onCopy={copy} copyLabel={$t('common.copy')} />
+      {/if}
+    {/if}
+{/snippet}
+
+{#snippet muteForm()}
+    {#if !canMute}
+      <AccessDeniedNotice message={$t('moderationActions.muteAccessDenied')} />
+    {:else}
+      <p class="muted plain">{$t('moderationActions.roomScopedNote')}</p>
+      <div class="op-field">
+        <label for="mute-duration">{$t('moderationActions.durationSeconds')}</label>
+        <input
+          id="mute-duration"
+          type="number"
+          min="1"
+          autocomplete="off"
+          spellcheck="false"
+          bind:value={mute.durationSeconds}
+          placeholder="600"
+        />
+      </div>
+      <div class="op-field">
+        <label for="mute-reason">{$t('common.reasonRequired')}</label>
+        <input
+          id="mute-reason"
+          autocomplete="off"
+          spellcheck="false"
+          bind:value={mute.reason}
+          placeholder={$t('common.reasonPlaceholder')}
+          list="reason-history"
+        />
+      </div>
+      <div class="op-actions">
+        <button type="button" onclick={stageMute} disabled={$ops.busyKeys.mute}>{$t('common.run')}</button>
+      </div>
+      {#if $ops.errors.mute}<p class="empty-state danger" role="alert">{$ops.errors.mute}</p>{/if}
+      {#if $ops.results.mute}
+        <OpResult result={$ops.results.mute} onCopy={copy} copyLabel={$t('common.copy')} />
+      {/if}
+    {/if}
+{/snippet}
+
+{#snippet tradingLockForm()}
+    {#if !canTradingLock}
+      <AccessDeniedNotice message={$t('moderationActions.lockAccessDenied')} />
+    {:else}
+      <div class="op-checkbox-field">
+        <input id="tradingLock-permanent" type="checkbox" autocomplete="off" bind:checked={tradingLock.permanent} />
+        <label for="tradingLock-permanent">{$t('common.permanent')}</label>
+      </div>
+      {#if !tradingLock.permanent}
+      <div class="op-field">
+        <label for="tradingLock-duration">{$t('moderationActions.durationSeconds')}</label>
+        <input
+          id="tradingLock-duration"
+          type="number"
+          min="1"
+          autocomplete="off"
+          spellcheck="false"
+          bind:value={tradingLock.durationSeconds}
+          placeholder="86400"
+        />
+      </div>
+      {/if}
+      <div class="op-field">
+        <label for="tradingLock-reason">{$t('common.reasonRequired')}</label>
+        <input
+          id="tradingLock-reason"
+          autocomplete="off"
+          spellcheck="false"
+          bind:value={tradingLock.reason}
+          placeholder={$t('common.reasonPlaceholder')}
+          list="reason-history"
+        />
+      </div>
+      <div class="op-actions">
+        <button type="button" onclick={stageTradingLock} disabled={$ops.busyKeys.tradingLock}>{$t('common.run')}</button>
+      </div>
+      {#if $ops.errors.tradingLock}<p class="empty-state danger" role="alert">{$ops.errors.tradingLock}</p>{/if}
+      {#if $ops.results.tradingLock}
+        <OpResult result={$ops.results.tradingLock} onCopy={copy} copyLabel={$t('common.copy')} />
+      {/if}
+    {/if}
+{/snippet}
+
+{#snippet tradingUnlockForm()}
+    {#if !canTradingUnlock}
+      <AccessDeniedNotice message={$t('moderationActions.unlockAccessDenied')} />
+    {:else}
+
+      <div class="op-field">
+        <label for="tradingUnlock-reason">{$t('common.reasonRequired')}</label>
+        <input
+          id="tradingUnlock-reason"
+          autocomplete="off"
+          spellcheck="false"
+          bind:value={tradingUnlock.reason}
+          placeholder={$t('common.reasonPlaceholder')}
+          list="reason-history"
+        />
+      </div>
+      <div class="op-actions">
+        <button type="button" onclick={stageTradingUnlock} disabled={$ops.busyKeys.tradingUnlock}>{$t('common.run')}</button>
+      </div>
+      {#if $ops.errors.tradingUnlock}<p class="empty-state danger" role="alert">{$ops.errors.tradingUnlock}</p>{/if}
+      {#if $ops.results.tradingUnlock}
+        <OpResult result={$ops.results.tradingUnlock} onCopy={copy} copyLabel={$t('common.copy')} />
+      {/if}
+    {/if}
+{/snippet}
+
+<div class="op-list">
+  {#each ACTIONS as action}
+    <button
+      type="button"
+      class="op-choice"
+      disabled={!action.allowed}
+      onclick={() => (openAction = action.key)}
+    >
+      <span class="op-choice-icon">
+        {#if action.key === 'credits'}<Coins size={17} strokeWidth={2} aria-hidden="true" />
+        {:else if action.key === 'activity'}<Zap size={17} strokeWidth={2} aria-hidden="true" />
+        {:else if action.key === 'collectibles'}<Gem size={17} strokeWidth={2} aria-hidden="true" />
+        {:else if action.key === 'item'}<Package size={17} strokeWidth={2} aria-hidden="true" />
+        {:else}<UserX size={17} strokeWidth={2} aria-hidden="true" />{/if}
+      </span>
+      <span class="op-choice-copy">
+        <strong>{action.label}</strong>
+        {#if !action.allowed}<small class="muted">{$t('operations.notPermitted')}</small>
+        {:else if action.hint}<small class="muted">{action.hint}</small>{/if}
+      </span>
+    </button>
+  {/each}
 </div>
+
+{#if openAction}
+  <Modal
+    title={ACTIONS.find((a) => a.key === openAction)?.label ?? ''}
+    eyebrow={$t('operations.confirmEyebrow')}
+    width={520}
+    column
+    onclose={() => (openAction = null)}
+  >
+    {#if openAction === 'credits'}{@render creditsForm()}
+    {:else if openAction === 'activity'}{@render activityForm()}
+    {:else if openAction === 'collectibles'}{@render collectiblesForm()}
+    {:else if openAction === 'item'}{@render itemForm()}
+    {:else if openAction === 'kick'}{@render kickForm()}
+    {:else if openAction === 'ban'}{@render banForm()}
+    {:else if openAction === 'unban'}{@render unbanForm()}
+    {:else if openAction === 'mute'}{@render muteForm()}
+    {:else if openAction === 'tradingLock'}{@render tradingLockForm()}
+    {:else if openAction === 'tradingUnlock'}{@render tradingUnlockForm()}
+    {/if}
+  </Modal>
+{/if}
+
 
 {#if picker}
   <PickerModal

@@ -148,7 +148,7 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('cfh.title')}</h2>
-    <button type="button" class="ghost-button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
+    <button type="button" class="warning" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
   </div>
   <p class="muted">{$t('cfh.description')}</p>
 
@@ -160,6 +160,9 @@
     <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 
+</section>
+
+<section class="panel">
   <TableFilter bind:query={queueQuery} shown={queueView.length} total={queue.length} />
 
   <table>

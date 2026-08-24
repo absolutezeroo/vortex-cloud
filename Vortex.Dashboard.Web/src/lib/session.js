@@ -3,6 +3,7 @@
 // props through the page tree (svelte-spa-router mounts pages without an intermediate parent).
 
 import { writable } from 'svelte/store';
+import { push } from 'svelte-spa-router';
 
 /** The authenticated principal from /api/me ({ email, superuser, capabilities }) or null. */
 export const identity = writable(null);
@@ -30,6 +31,16 @@ export function openItem(id) {
   }
 
   modal.set({ type: 'item', id, label: `item #${id}` });
+}
+
+/**
+ * A room opens on the room timeline rather than in the entity modal: that page exists, takes
+ * ?room=, and shows the whole history. There is no room inspector to duplicate it with.
+ */
+export function openRoom(id) {
+  if (id === null || id === undefined || id === '') return;
+
+  push(`/rooms?room=${encodeURIComponent(String(id))}`);
 }
 
 export function closeModal() {

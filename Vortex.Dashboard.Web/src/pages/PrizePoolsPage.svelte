@@ -181,9 +181,9 @@
 
 <section class="panel">
   <div class="panel-head">
-    <h2><Dices size={17} strokeWidth={2} aria-hidden="true" /> {$t('prizePools.title')}</h2>
-    <div class="toolbar">
-      <button type="button" class="ghost-button" onclick={load} disabled={loading}>
+    <h2>{$t('prizePools.title')}</h2>
+    <div class="head-actions">
+      <button type="button" class="warning" onclick={load} disabled={loading}>
         {$t('common.refresh')}
       </button>
       {#if canManage}
@@ -198,7 +198,6 @@
               {}
             )}
         >
-          <RefreshCw size={14} strokeWidth={2} aria-hidden="true" />
           {$t('prizePools.reload')}
         </button>
       {/if}
@@ -283,15 +282,13 @@
       </div>
       <div class="op-actions">
         <button
-          type="button"
-          class="btn btn-primary btn-sm"
-          disabled={!newPool.code.trim() || !newPool.name.trim()}
-          onclick={() =>
-            stage($t('prizePools.newPool'), newPool.code, '/api/v1/operations/prize-pools', {
-              ...newPool,
-            })}
-        >
-          <Plus size={14} strokeWidth={2} aria-hidden="true" />
+     type="button"
+     class="btn btn-primary btn-sm success"
+     disabled={!newPool.code.trim() || !newPool.name.trim()}
+     onclick={() =>
+      stage($t('prizePools.newPool'), newPool.code, '/api/v1/operations/prize-pools', {
+       ...newPool,
+      })}>
           {$t('prizePools.newPool')}
         </button>
       </div>
@@ -380,8 +377,7 @@
                             true
                           )}
                       >
-                        <Trash2 size={14} strokeWidth={2} aria-hidden="true" />
-                      </button>
+                        {$t('common.delete')}</button>
                     </td>
                   {/if}
                 </tr>
@@ -411,8 +407,7 @@
                   bind:value={newEntry.furnitureDefinitionId}
                 />
                 <button
-                  type="button"
-                  class="ghost-button"
+                  type="button" class="ghost-button"
                   onclick={() => (picking = 'entry')}>{$t('prizePools.pick')}</button
                 >
               </div>
@@ -434,8 +429,7 @@
         </div>
         <div class="op-actions">
           <button
-            type="button"
-            class="btn btn-primary btn-sm"
+            type="button" class="btn btn-primary btn-sm success"
             onclick={() =>
               stage(
                 $t('prizePools.newEntry'),
@@ -449,7 +443,8 @@
                 }
               )}
           >
-            <Plus size={14} strokeWidth={2} aria-hidden="true" />
+            {$t('prizePools.newEntry')}
+          
             {$t('prizePools.newEntry')}
           </button>
         </div>
@@ -537,8 +532,7 @@
                           true
                         )}
                     >
-                      <Trash2 size={14} strokeWidth={2} aria-hidden="true" />
-                    </button>
+                      {$t('common.delete')}</button>
                   </td>
                 {/if}
               </tr>
@@ -595,8 +589,7 @@
       </div>
       <div class="op-actions">
         <button
-          type="button"
-          class="btn btn-primary btn-sm"
+          type="button" class="btn btn-primary btn-sm success"
           disabled={!newBinding.furnitureDefinitionId || !newBinding.poolCode}
           onclick={() =>
             stage(
@@ -610,7 +603,8 @@
               }
             )}
         >
-          <Plus size={14} strokeWidth={2} aria-hidden="true" />
+          {$t('prizePools.newBinding')}
+        
           {$t('prizePools.newBinding')}
         </button>
       </div>

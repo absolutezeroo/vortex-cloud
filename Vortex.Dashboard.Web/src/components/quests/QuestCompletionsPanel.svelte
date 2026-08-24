@@ -80,6 +80,9 @@
 <section class="panel">
   <div class="panel-head"><h2>{$t('questsStats.title')}</h2></div>
   <p class="muted">{$t('questsStats.description')}</p>
+</section>
+
+<section class="panel">
 
   <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); refresh(); }}>
     <label>
@@ -98,7 +101,7 @@
         {/each}
       </select>
     </label>
-    <button type="submit" disabled={loading}>{$t('common.refresh')}</button>
+    <button type="submit" disabled={loading} class="warning">{$t('common.refresh')}</button>
   </form>
 
   {#if loading}

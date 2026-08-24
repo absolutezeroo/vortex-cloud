@@ -19,6 +19,7 @@
   //       {#snippet actions()}<button ...>Save</button>{/snippet}
   //     </Drawer>
   //   {/if}
+  import { cubicOut } from 'svelte/easing';
   import { useDialogBehaviour } from '../lib/dialogBehaviour.js';
   import { t } from '../lib/i18n.js';
   import { X } from '@lucide/svelte';
@@ -49,6 +50,28 @@
 
   let panel = $state();
 
+  // A CSS animation only ever plays on the way IN: the node is gone the moment the
+  // parent's {#if} goes false, so the drawer vanished instead of closing. A transition
+  // is what makes Svelte wait -- an {#if} block holds its outro, and outros propagate
+  // into child components, so the same directive covers both directions.
+  const REDUCED =
+    typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Written out rather than reached for from svelte/transition's `fly`: this needs a
+  // percentage of the panel's own width, whatever `width` prop it was given, and no
+  // opacity change -- a drawer that fades while it slides reads as a dialog, not a panel.
+  function slide(node, { duration = 280 } = {}) {
+    return {
+      duration: REDUCED ? 0 : duration,
+      easing: cubicOut,
+      css: (t) => `transform: translateX(${(1 - t) * 100}%)`,
+    };
+  }
+
+  function veil(node, { duration = 240 } = {}) {
+    return { duration: REDUCED ? 0 : duration, css: (t) => `opacity: ${t}` };
+  }
+
   // The drawer is the only edit surface in the dashboard, so one guard here covers every form
   // instead of forty pages each remembering to add one. Any input inside the panel arms it; closing
   // the drawer takes the listener away with the component. Only covers leaving the tab -- hash
@@ -73,7 +96,13 @@
 <svelte:window onbeforeunload={guardUnload} />
 
 <div class="drawer-layer">
-  <button class="drawer-backdrop" type="button" aria-label={$t('common.close')} tabindex="-1" onclick={close}
+  <button
+    class="drawer-backdrop"
+    type="button"
+    aria-label={$t('common.close')}
+    tabindex="-1"
+    onclick={close}
+    transition:veil
   ></button>
   <section
     class="drawer-panel"
@@ -85,6 +114,7 @@
     tabindex="-1"
     style="width: min({width}px, 100%)"
     bind:this={panel}
+    transition:slide
   >
     <header class="drawer-header">
       <div>
@@ -134,22 +164,6 @@
     background: var(--surface);
     border-left: 1px solid var(--line-strong);
     box-shadow: -18px 0 48px rgba(0, 0, 0, 0.38);
-    animation: drawer-in 160ms ease-out;
-  }
-
-  /* Slides rather than fades: the movement says where it came from, and that it is a layer over the
-     list rather than a new page. */
-  @keyframes drawer-in {
-    from {
-      transform: translateX(24px);
-      opacity: 0;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .drawer-panel {
-      animation: none;
-    }
   }
 
   .drawer-header,

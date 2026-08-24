@@ -21,10 +21,12 @@
    * @typedef {Object} Props
    * @property {string} [id] - Id for the control, so a page's <label for> still points at it.
    * @property {number} [value] - The stored reward type: negative for credits, else the point type.
+   * @property {boolean} [credits] - Offer credits. False where the caller grants activity points
+   *   only, so that -1 is not a choice the operator can make by accident.
    */
 
   /** @type {Props} */
-  let { id = '', value = $bindable(-1) } = $props();
+  let { id = '', value = $bindable(-1), credits = true } = $props();
 
   let options = $state([]);
   /** Falls back to the raw number box when the list cannot be read — a narrower capability than
@@ -45,7 +47,7 @@
 
       options = (data?.items ?? [])
         .map((row) => ({ row, rewardType: rewardTypeFor(row) }))
-        .filter((entry) => entry.rewardType !== null)
+        .filter((entry) => entry.rewardType !== null && (credits || entry.rewardType >= 0))
         .map((entry) => ({ value: entry.rewardType, label: entry.row.name || String(entry.rewardType) }));
 
       unavailable = options.length === 0;
@@ -89,17 +91,3 @@
     <small class="muted">{$t('currency.selectMissingHint')}</small>
   {/if}
 {/if}
-
-<style>
-  /* The icon reads as part of the control rather than a decoration beside it. */
-  .currency-select {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .currency-select select {
-    flex: 1;
-    min-width: 0;
-  }
-</style>

@@ -105,10 +105,16 @@
 </script>
 
 <section class="panel">
-  <div class="panel-head"><h2>{$t('economyTrends.title')}</h2></div>
+  <div class="panel-head">
+    <h2>{$t('economyTrends.title')}</h2>
+    <button type="button" onclick={refresh} class="warning">{$t('common.refresh')}</button>
+  </div>
   <p class="muted">
     {$t('economyTrends.descriptionBefore')} <code>currency_types</code> {$t('economyTrends.descriptionAfter')}
   </p>
+</section>
+
+<section class="panel">
 
   <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); refresh(); }}>
     <label>
@@ -127,7 +133,7 @@
         {/each}
       </select>
     </label>
-    <button type="submit" disabled={loading}>{$t('common.refresh')}</button>
+    <button type="submit" disabled={loading} class="warning">{$t('common.filter')}</button>
   </form>
 
   {#if loading}

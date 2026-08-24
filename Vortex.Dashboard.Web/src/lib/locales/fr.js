@@ -122,6 +122,8 @@ export default {
   },
   common: {
     remove: 'Retirer',
+    edit: 'Modifier',
+    delete: 'Supprimer',
     close: 'Fermer',
     size: 'Taille',
     quantityLabel: 'Quantité',
@@ -165,6 +167,7 @@ export default {
     signOut: 'Déconnexion',
     signingOut: 'Déconnexion…',
     retry: 'Réessayer',
+    roomHash: 'salle #{id}',
     itemHash: 'objet #{id}',
     playerHash: 'joueur #{id}',
     granularityDay: 'Jour',
@@ -198,6 +201,7 @@ export default {
     backToSignIn: 'Retour a la connexion',
   },
   audit: {
+    description: "Chaque écriture faite depuis cette dashboard, avec la raison donnée. Filtrable par auteur, cible ou fenêtre.",
     wasDeleted: 'supprimé',
     opDelete: 'Supprimé',
     opUpdate: 'Modifié',
@@ -238,9 +242,11 @@ export default {
       Social: 'Social',
       System: 'Système',
       RentableSpace: 'Espace louable',
+      Progression: 'Progression',
     },
   },
   moderation: {
+    description: "Toutes les actions de modération de la fenêtre : qui, sur qui, et ce qu'il en est advenu.",
     title: 'Statistiques de modération',
     accessDenied: "Vous n'avez pas l'autorisation d'accéder aux statistiques de modération.",
     exportCsv: 'Exporter en CSV',
@@ -313,6 +319,7 @@ export default {
     noRows: 'Aucune ligne économique.',
   },
   roomsTimeline: {
+    description: "Tous les événements d'une salle, dans l'ordre : qui est entré, ce qui a été dit ou fait, et quand.",
     title: 'Historique de room',
     accessDenied: "Vous n'avez pas l'autorisation d'accéder aux historiques de room.",
     roomIdPlaceholder: 'id room',
@@ -326,6 +333,14 @@ export default {
     noTimeline: "Aucun historique de room chargé.",
   },
   investigation: {
+    filterKind: "Type",
+    filterKindAll: "Tous les types",
+    kindAudit: "Audit",
+    kindLedger: "Mouvements",
+    kindItem: "Objets",
+    findPlayer: 'Chercher un joueur',
+    findItem: 'Chercher un objet',
+    description: "Cherchez un joueur ou une salle, puis lisez son historique. Partez d'un incident, pas par curiosité : chaque recherche est tracée.",
     findByName: 'Chercher par nom',
     tabTimeline: 'Timeline',
     title: 'Recherche de timeline',
@@ -335,9 +350,12 @@ export default {
     searchPlaceholder: 'id joueur / id objet / correlation id',
     hint: 'Entrez un id joueur, id objet ou correlation id.',
     noStructuredResult: 'Aucun résultat structuré.',
+    eventsForId: "{count} événements pour l'id {term}",
     eventsForPlayer: '{count} événements pour le joueur {term}',
     linkedEventsFor: '{count} événements liés à {term}',
     event: 'événement',
+    balanceAfter: "solde : {balance}",
+    noReason: "aucun événement lié",
     colTime: 'Heure',
     colType: 'Type',
     colActor: 'Acteur',
@@ -345,6 +363,7 @@ export default {
     noRows: 'Aucune ligne de timeline.',
   },
   packets: {
+    description: "Trafic par type de message : ce que le client et le serveur s'envoient réellement, et quel gestionnaire porte la charge.",
     title: 'Télémétrie des paquets',
     accessDenied: "Vous n'avez pas l'autorisation d'accéder aux métriques de paquets.",
     packetsPerSec: 'Paquets/sec',
@@ -533,6 +552,7 @@ export default {
     noActivity: 'Aucune activité économique dans cette fenêtre.',
   },
   overview: {
+    description: "Ce que fait l'hôtel en ce moment : sessions, salles, débit et latence, rafraîchis toutes les dix secondes.",
     inventoryTitle: "Ce que contient l'hôtel",
     inventoryHint: 'Nombre de lignes par sous-système. Un zéro = non initialisé ou inaccessible.',
     inventoryGroup: {
@@ -614,6 +634,7 @@ export default {
     noRoomTraffic: 'Aucun trafic de room pour le moment.',
   },
   incidents: {
+    description: "Les signaux que l'émulateur a levés lui-même : ce qui s'est déclenché, quand, et si c'est toujours en cours.",
     title: "Signaux d'incident",
     accessDenied: "Vous n'avez pas l'autorisation d'accéder aux incidents.",
     overallSeverity: 'Sévérité globale',
@@ -646,6 +667,7 @@ export default {
     noGroupedData: "Aucune donnée d'erreur groupée pour cette fenêtre.",
   },
   infrastructure: {
+    description: "Le runtime de l'émulateur et ses sauvegardes de base : ce qui tourne, sur quoi, et quand la dernière sauvegarde date.",
     eyebrowBackup: 'Filet de sécurité',
     backups: 'Sauvegardes de la base',
     backupNow: 'Sauvegarder maintenant',
@@ -1026,6 +1048,12 @@ export default {
     noRoutesAfterFilter: 'Aucune route après filtrage.',
   },
   operations: {
+    notPermitted: "Vous n'avez pas cette permission",
+    giveCreditsHint: "Des crédits, directement dans le porte-monnaie",
+    giveActivityPointsHint: "Duckets, diamants ou tout type de point d'activité",
+    giveCollectiblesHint: "Argent ou émeraudes",
+    giveFurnitureHint: "Un meuble dans l'inventaire",
+    kickPlayerHint: "Le déconnecter de l'hôtel",
     selectPlayerTitle: 'Choisir un joueur',
     selectFurnitureTitle: 'Choisir un mobilier',
     fillFields: 'Choisissez une cible et remplissez les champs : les montants doivent être positifs et la raison doit faire au moins 3 caractères.',
@@ -1057,6 +1085,11 @@ export default {
   },
   moderationActions: {
     title: 'Actions de modération',
+    banAccountHint: "Bloque le compte, définitivement ou pour une durée",
+    liftAccountBanHint: "Redonne l'accès à un compte banni",
+    mutePlayerHint: "Rend le joueur muet dans le chat pour une durée",
+    lockTradingHint: "Bloque l'échange, définitivement ou pour une durée",
+    liftTradingLockHint: "Redonne la possibilité d'échanger",
     description: "Actions de sanction contrôlées. Choisissez une cible, donnez une raison obligatoire, et confirmez ; chaque exécution est auditée avec un correlation id et passe par les grains du jeu. Pour l'historique/tendances voir Stats de modération.",
     fillFields: 'Choisissez une cible et remplissez les champs : les durées doivent être positives (sauf si permanent) et la raison doit faire au moins 3 caractères.',
     banAccount: 'Bannir un compte',
@@ -1137,6 +1170,10 @@ export default {
     deleteSummary: 'Supprimer “{name}” (#{id}). Bloqué si encore placé/possédé ou utilisé par un produit du catalogue.',
   },
   catalogAdmin: {
+    editPage: "Modifier la page",
+    editOffer: "Modifier l'offre",
+    newProduct: "Nouveau produit",
+    editProduct: "Modifier le produit",
     breadcrumbLabel: 'Chemin de la page catalogue',
     textDataPlaceholder: 'Bienvenue dans notre boutique !',
     // Noms de champs courts pour la liste avant/après de la modale et la raison auditée. Les libellés
@@ -1525,6 +1562,9 @@ export default {
     categoryOther: 'Autre',
   },
   targetedOffers: {
+    editOffer: "Modifier l'offre",
+    newProduct: "Nouveau produit",
+    editProduct: "Modifier le produit",
     title: 'Offres ciblées',
     description: 'Créez et gérez des offres personnalisées/promotionnelles et les produits du lot livré par chacune. Les changements sont appliqués immédiatement pour les clients connectés — aucun redémarrage requis.',
     accessDenied: "Vous n'avez pas la permission de gérer les offres ciblées.",
@@ -1605,6 +1645,7 @@ export default {
     noPurchases: 'Aucun achat sur cette période.',
   },
   achievementResolutions: {
+    description: "Comment chaque succès s'est résolu pour les joueurs qui l'ont atteint : ce qui a été accordé, et ce qui a été annoncé au client.",
     title: 'Résolutions de succès',
     lede: 'Ce que proposent les statues de résolution, et où en sont les défis pris par les joueurs.',
     statOffers: 'Offres actives',
@@ -1761,6 +1802,7 @@ export default {
     choiceTypeHint: 'Clé de branche : 0 = aucune relance.',
     choicesHint:
       "La valeur est ce que le client renvoie et la clé des résultats — gardez-la stable, sinon les anciennes réponses apparaîtront comme retirées.",
+    questionEditorTitle: 'Modifier la question',
     addChoice: 'Ajouter un choix',
     questionCount: '{roots} question(s), {followUps} relance(s)',
     answersRecorded: '{count} réponse(s)',
@@ -1789,6 +1831,7 @@ export default {
     fillFields: 'Remplissez les champs requis (la raison doit faire au moins 3 caractères).',
   },
   quests: {
+    editQuest: "Modifier la quête",
     tabCampaigns: 'Campagnes',
     tabGoals: 'Objectifs et quotidiennes',
     tabCompletions: 'Complétions',
@@ -1916,6 +1959,7 @@ export default {
     remove: 'Supprimer',
   },
   mysteryBox: {
+    editPrize: "Modifier le lot",
     tabOverview: 'Aperçu',
     tabDefinitions: 'Définitions',
     tabPrizes: 'Lots',
@@ -2299,6 +2343,7 @@ export default {
     deleteRole: 'Supprimer le rôle',
     deleteRoleSummary: 'Supprimer le rôle {role}. Un rôle encore attribué ne peut pas être supprimé.',
     rolePlaceholder: 'Modérateur',
+    capabilitiesTitle: 'Permissions',
     saveCapabilities: 'Enregistrer les capacités',
     saveCapabilitiesSummary: 'Faire en sorte que {role} accorde exactement {count} capacités. Tout ce qui est décoché est révoqué.',
     capabilityEditorHint:
@@ -2494,6 +2539,10 @@ export default {
     colGender: 'Genre',
   },
   collectibles: {
+    grantTitle: "Attribuer un objet de collection",
+    itemsTitle: "Objet de collection",
+    mintablesTitle: "Frappe",
+    tokenOffersTitle: "Offre en jetons",
     pickFurniture: 'Choisir un furni',
     edit: 'Modifier',
     delete: 'Supprimer',

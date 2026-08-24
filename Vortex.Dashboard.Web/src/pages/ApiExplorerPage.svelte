@@ -143,8 +143,8 @@
 
 <section class="panel">
   <div class="panel-head">
-    <h2>{$t('apiExplorer.title')}</h2>
-    <button type="button" onclick={refresh} disabled={loading}>
+      <h2>{$t('apiExplorer.title')}</h2>
+      <button type="button" class="warning" onclick={refresh} disabled={loading}>
       {loading ? $t('apiExplorer.refreshing') : $t('common.refresh')}
     </button>
   </div>
@@ -152,8 +152,10 @@
   <p class="muted">
     {$t('apiExplorer.descriptionBefore')} <strong>/api/v1/meta/endpoints</strong>, {$t('apiExplorer.descriptionAfter')}
   </p>
+</section>
 
-  <div class="split-grid" style="margin-top: 12px;">
+<section class="panel" style="margin-top: 12px;">
+  <div class="split-grid">
     <article>
       <span>{$t('apiExplorer.generation')}</span>
       <strong>{formatDate(data?.generatedAt)}</strong>

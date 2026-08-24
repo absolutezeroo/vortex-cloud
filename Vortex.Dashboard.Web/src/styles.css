@@ -436,8 +436,26 @@ summary,
   display: block;
 }
 
-.brand small,
-.muted,
+/* Secondary text -- hints, captions, counts. A colour, and nothing else.
+
+   `.muted` was grouped with `.sidebar nav` and inherited the sidebar's scrolling layout:
+   display: grid, flex: 1 1 auto, min-height: 0, overflow-y: auto, a scrollbar colour. It
+   is the ONLY place `.muted` appears in this file, so it never got a colour at all -- every
+   hint, count and caption in the app has been rendering at full --ink, as a grid box. The
+   drawer's "the value is what the client sends back…" line is one of them.
+
+   `.brand small` came along the same way; it is already display: block from the rule above. */
+.muted {
+  color: var(--muted);
+}
+
+/* A hint under a control reads as a caption, not as a run-on of the label above it. */
+small.muted {
+  display: block;
+  margin-top: 6px;
+  line-height: 1.35;
+}
+
 .sidebar nav {
   display: grid;
   align-content: start;
@@ -696,7 +714,7 @@ summary,
    any explicit button class (.ghost-button, .btn-*, or a page-local .catalog-tab/.crumb-button/row)
    reliably wins. Without this, `.panel button` (0,1,1) silently overrode `.ghost-button` (0,1,0),
    leaving ghost buttons gold with dark ink — which turned unreadable on the grey :hover. */
-:where(.panel, .toolbar, .drawer-panel) button {
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button {
   border: 1px solid var(--button-border);
   border-radius: 8px;
   background: var(--button-bg);
@@ -707,22 +725,22 @@ summary,
   transition: background 140ms ease, border-color 140ms ease;
 }
 
-:where(.panel, .toolbar, .drawer-panel) button:hover:not(:disabled) {
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:hover:not(:disabled) {
   background: var(--button-bg-hover);
 }
 
-:where(.panel, .toolbar, .drawer-panel) button:active:not(:disabled) {
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:active:not(:disabled) {
   background: var(--button-bg-active);
 }
 
-:where(.panel, .toolbar, .drawer-panel) button:disabled {
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:disabled {
   background: var(--button-bg-disabled);
   color: var(--muted);
   cursor: default;
 }
 
 /* Danger and secondary as modifiers, so a page opts in with one class instead of an inline style. */
-:where(.panel, .toolbar, .drawer-panel) button.danger,
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.danger,
 button.danger {
   background: var(--button-danger-bg);
   border-color: var(--button-danger-border);
@@ -730,19 +748,19 @@ button.danger {
   color: var(--button-ink);
 }
 
-:where(.panel, .toolbar, .drawer-panel) button.danger:hover:not(:disabled),
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.danger:hover:not(:disabled),
 button.danger:hover:not(:disabled),
-:where(.panel, .toolbar, .drawer-panel) button.danger:active:not(:disabled),
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.danger:active:not(:disabled),
 button.danger:active:not(:disabled) {
   background: var(--button-danger-active);
 }
 
-:where(.panel, .toolbar, .drawer-panel) button.danger:disabled,
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.danger:disabled,
 button.danger:disabled {
   background: var(--button-danger-disabled);
 }
 
-:where(.panel, .toolbar, .drawer-panel) button.secondary,
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.secondary,
 button.secondary {
   background: var(--button-secondary-bg);
   border-color: var(--button-secondary-border);
@@ -750,13 +768,13 @@ button.secondary {
   color: var(--button-secondary-ink);
 }
 
-:where(.panel, .toolbar, .drawer-panel) button.secondary:hover:not(:disabled),
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.secondary:hover:not(:disabled),
 button.secondary:hover:not(:disabled) {
   background: var(--button-secondary-hover);
   color: var(--ink);
 }
 
-:where(.panel, .toolbar, .drawer-panel) button.secondary:active:not(:disabled),
+:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button.secondary:active:not(:disabled),
 button.secondary:active:not(:disabled) {
   background: var(--button-secondary-active);
   color: var(--ink);
@@ -881,11 +899,19 @@ button.secondary:active:not(:disabled) {
   gap: 8px;
 }
 
+/* The trailing cell was a fixed 56px, which fits the count it used to hold ("12") and not the
+   sentence it holds now -- "1/2 active - 50.39 d remaining" folded into a 56x96 column of one
+   word per line. It sizes to its content; the bar's 1fr gives the room back. */
 .bar-row {
   display: grid;
-  grid-template-columns: 130px 1fr 56px;
+  grid-template-columns: 130px 1fr auto;
   align-items: center;
   gap: 10px;
+}
+
+.bar-row > :last-child {
+  white-space: nowrap;
+  text-align: right;
 }
 
 .bar-label {
@@ -1223,10 +1249,17 @@ table {
   flex-wrap: wrap;
 }
 
+/* `.op-actions` carries a form footer's separator -- 16px above, 14px of padding and a
+   rule across the top -- which is right when it IS the last row of a form and wrong when
+   the class is reused INSIDE a horizontal row. `.offer-actions` marks exactly that reuse
+   (it pushes itself to the row's end with margin-left: auto), and the separator was drawing
+   an empty bordered box hovering above every Edit/Delete pair in the prize, quest and offer
+   lists. */
 .offer-actions {
   margin-left: auto;
   flex-wrap: wrap;
 }
+
 
 /* Wrap any table that can realistically overflow its panel (many columns, long free-text cells)
    in this so only the table scrolls horizontally, not the whole page. The bare `table` selector
@@ -1682,10 +1715,23 @@ textarea {
   image-rendering: crisp-edges;
 }
 
+/* `.op-actions` is a row of buttons. It was also carrying a form footer's separator --
+   16px above, 14px of padding, a rule across the top -- which is right when the row CLOSES
+   a form and wrong for the same class reused inside a card header. Listing the containers
+   to exempt did not hold: the class turns up in eleven different shapes, and each one
+   missed drew another empty bordered box hovering above its buttons.
+   Inverted: a plain row by default, and the separator only where fields actually precede it. */
 .op-actions {
   display: flex;
   gap: 8px;
   align-items: center;
+}
+
+form > .op-actions,
+.editor-form > .op-actions,
+.op-field + .op-actions,
+.drawer-body > .op-actions,
+.modal-panel > .op-actions {
   margin-top: 16px;
   padding-top: 14px;
   border-top: 1px solid var(--line);
@@ -2142,3 +2188,1396 @@ textarea {
 .role-badge--support { background: var(--badge-support); }
 .role-badge--builder { background: var(--badge-builder); color: var(--gold-ink); }
 .role-badge--event { background: var(--badge-event); }
+
+
+/* ============================================================================
+   DARK THEME CONTROLS — Habbo's own buttons and fields.
+
+   Lifted from the live site's stylesheet (vortex-modern-client/mockup/habbo.css)
+   rather than sampled off a screenshot or approximated. Five controls, each named
+   by the selector it was taken from:
+
+     blue    .form__submit           #0f7dbc / edge #2a9cde   white ink
+     green   .form__submit--inline   #00813e / edge #8eda55   white ink
+     red     .report-form__submit    #c0174e / edge #f37387   white ink
+     yellow  .room__enter-button     #ffb900 / edge #ffea00   BLACK ink
+     field   .form__input            #ccd8df, 3px #275d8e, inset top highlight
+
+   What makes a Habbo button read as a physical key rather than a coloured rectangle
+   is not the fill. It is three things together: an edge LIGHTER than the face (a lit
+   top on a saturated body), a hard 3px drop with no blur at all, and a press that
+   drops the key 2px onto a 1px shadow so the travel is visible. All three are here.
+   The site also restates border-bottom-width on :hover/:active; that is a no-op
+   against its own base rule and is not reproduced.
+
+   Habbo's own metrics are NOT reproduced. Its key is padding 12px 24px at 16px type
+   and its field is 16px type on a 320px-wide page; this dashboard is a dense desktop
+   tool and the app's existing 8px/12px padding is kept. What is taken is the
+   construction, not the scale.
+
+   HEIGHT. Field and key are built to the same box on purpose, because they sit side
+   by side in every toolbar: key = 8px padding + 2px border, field = 7px padding +
+   3px border, and both are pinned to line-height 1.2 (Habbo's own value) so the sum
+   is identical. Leave one of the three numbers alone and the pair goes crooked --
+   that is exactly what a 5px/3px field did next to an 8px/2px key.
+
+   Scoped to the dark theme deliberately. "blue" is the Habbo Unity mockup and is
+   required to stay pixel-identical to it (see the note at the top of this file), and
+   "white" is a light theme these saturated fills are not built for.
+
+   The neutral (.ghost-button, 218 uses — the app's secondary button) takes the
+   GEOMETRY above but keeps the dark theme's own surface tokens. Habbo's neutral key
+   is .toast-button, a light #efefef box; correct on habbo.com, where it appears in
+   toasts, but this app puts 218 of them on near-black chrome including the whole top
+   bar. Construction is authentic, colour stays in the theme.
+   ========================================================================== */
+
+:root[data-theme='dark'] {
+  /* Blue — the primary key. */
+  --button-bg: #0f7dbc;
+  --button-border: #2a9cde;
+  --button-bg-hover: #2a9cde;
+  --button-border-hover: #53bdf9;
+  --button-bg-active: #084d74;
+  --button-border-active: #1e7b9e;
+  --button-ink: #ffffff;
+
+  /* Red — destructive. */
+  --button-danger-bg: #c0174e;
+  --button-danger-border: #f37387;
+  --button-danger-hover: #f9586d;
+  --button-danger-border-hover: #ff9598;
+  --button-danger-active: #820022;
+  --button-danger-border-active: #b73e56;
+
+  /* Green — confirm/commit. */
+  --button-success-bg: #00813e;
+  --button-success-border: #8eda55;
+  --button-success-hover: #00ab54;
+  --button-success-border-hover: #b9f373;
+  --button-success-active: #006743;
+  --button-success-border-active: #5abb37;
+
+  /* Yellow — the only one with black ink; white on #ffb900 is 1.9:1. */
+  --button-warning-bg: #ffb900;
+  --button-warning-border: #ffea00;
+  --button-warning-hover: #ffd400;
+  --button-warning-border-hover: #fffd70;
+  --button-warning-active: #f89400;
+  --button-warning-border-active: #ffce37;
+  --button-warning-ink: #000000;
+
+  /* Neutral — Habbo's construction, this theme's colours (see the note above). */
+  --button-neutral-bg: #212228;
+  --button-neutral-border: #3d3f47;
+  --button-neutral-hover: #2b2c33;
+  --button-neutral-border-hover: #4e515a;
+  --button-neutral-active: #17181c;
+  --button-neutral-border-active: #303239;
+
+  --key-drop: 0 3px 0 1px rgba(0, 0, 0, 0.3);
+  --key-drop-pressed: 0 1px 0 1px rgba(0, 0, 0, 0.3);
+
+  /* .form__input — a light field, which is what Habbo puts on its dark pages too. */
+  --field-bg: #ccd8df;
+  --field-bg-focus: #ffffff;
+  --field-border: #275d8e;
+  --field-border-focus: #0074a6;
+  --field-border-invalid: #903352;
+  --field-inset: #9ebecc;
+  --field-ink: #444444;
+  --field-placeholder: #888888;
+  --field-bg-disabled: #9aa6ad;
+  --field-ink-disabled: #5c6168;
+}
+
+/* Not a key. `:where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button` deliberately catches
+   EVERY button inside a panel, and this app writes its table links, breadcrumbs,
+   tabs, expandable rows, tiles and close crosses as buttons too — 23 classes of
+   them, counted off the markup rather than guessed. Left in, they took the key
+   treatment: a table link rendered as "PLAYER #1000", uppercase, with a 3px drop
+   under it.
+
+   This is an explicit list and not a specificity trick, and that is the second
+   attempt. The first leaned on :where() to keep these rules at (0,0,1) so a
+   component-scoped `.linklike.svelte-xxxxxx` at (0,2,0) would win — which worked for
+   the links and then quietly lost every button whose component sets its own radius,
+   leaving half the app on 8px corners with no drop. Specificity cannot separate
+   "declares its own look" from "is not a button"; only a list can. Add to it when a
+   new row/link/tile button appears.
+
+   .ghost-button/.btn/.icon-btn are in the list for a different reason: they ARE keys,
+   they just are not the BLUE one. `button:not(...)` scores (0,3,1) against the neutral
+   rule's (0,3,0), so without them listed the primary fill won and every secondary
+   button in a panel came out blue -- "Annuler" included. They get their geometry from
+   the rule below, which names them directly. */
+/* --- The key: one geometry, four fills ------------------------------------- */
+
+:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ghost-button, .btn, .icon-btn),
+:root[data-theme='dark'] .ghost-button,
+:root[data-theme='dark'] .btn,
+:root[data-theme='dark'] .icon-btn {
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 5px;
+  box-shadow: var(--key-drop);
+  text-transform: uppercase;
+  font-weight: 700;
+  line-height: 1.2;
+  /* No transform in the transition: the press must be instant, or the key floats
+     down instead of clicking. */
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ghost-button, .btn, .icon-btn):active:not(:disabled),
+:root[data-theme='dark'] .ghost-button:active:not(:disabled),
+:root[data-theme='dark'] .btn:active:not(:disabled),
+:root[data-theme='dark'] .icon-btn:active:not(:disabled) {
+  box-shadow: var(--key-drop-pressed);
+  transform: translate(0, 2px);
+}
+
+:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:disabled,
+:root[data-theme='dark'] .ghost-button:disabled,
+:root[data-theme='dark'] .btn:disabled,
+:root[data-theme='dark'] .icon-btn:disabled {
+  opacity: 0.4;
+}
+
+/* Blue. The bare button inside a panel/toolbar IS the primary in this app; .btn-primary
+   is the same key reached through the shared component. */
+:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ghost-button, .btn, .icon-btn, .danger, .success, .warning),
+:root[data-theme='dark'] .btn-primary {
+  background-color: var(--button-bg);
+  border-color: var(--button-border);
+  color: var(--button-ink);
+}
+
+:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ghost-button, .btn, .icon-btn, .danger, .success, .warning):hover:not(:disabled),
+:root[data-theme='dark'] .btn-primary:hover:not(:disabled) {
+  background-color: var(--button-bg-hover);
+  border-color: var(--button-border-hover);
+  /* The kit reaches for brightness() on hover; Habbo names the lit colour, so drop it. */
+  filter: none;
+}
+
+:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .ghost-button, .btn, .icon-btn, .danger, .success, .warning):active:not(:disabled),
+:root[data-theme='dark'] .btn-primary:active:not(:disabled) {
+  background-color: var(--button-bg-active);
+  border-color: var(--button-border-active);
+}
+
+/* Neutral. Two classes deep so it beats the blue rule above on specificity rather
+   than on source order: .ghost-button is the app's secondary and turns up inside
+   panels constantly. */
+:root[data-theme='dark'] .ghost-button,
+:root[data-theme='dark'] .btn-ghost,
+:root[data-theme='dark'] .icon-btn {
+  background-color: var(--button-neutral-bg);
+  border-color: var(--button-neutral-border);
+  color: var(--ink);
+}
+
+:root[data-theme='dark'] .ghost-button:hover:not(:disabled),
+:root[data-theme='dark'] .btn-ghost:hover:not(:disabled),
+:root[data-theme='dark'] .icon-btn:hover:not(:disabled) {
+  background-color: var(--button-neutral-hover);
+  border-color: var(--button-neutral-border-hover);
+}
+
+:root[data-theme='dark'] .ghost-button:active:not(:disabled),
+:root[data-theme='dark'] .btn-ghost:active:not(:disabled),
+:root[data-theme='dark'] .icon-btn:active:not(:disabled) {
+  background-color: var(--button-neutral-active);
+  border-color: var(--button-neutral-border-active);
+}
+
+/* Red. .ghost-button.danger is how the app already writes a destructive action
+   (43 of them); it was a translucent red wash, which reads as a disabled state next
+   to a solid key. */
+:root[data-theme='dark'] .ghost-button.danger,
+:root[data-theme='dark'] .btn-danger,
+:root[data-theme='dark'] button.danger {
+  background-color: var(--button-danger-bg);
+  border-color: var(--button-danger-border);
+  color: #ffffff;
+}
+
+:root[data-theme='dark'] .ghost-button.danger:hover:not(:disabled),
+:root[data-theme='dark'] .btn-danger:hover:not(:disabled),
+:root[data-theme='dark'] button.danger:hover:not(:disabled) {
+  background-color: var(--button-danger-hover);
+  border-color: var(--button-danger-border-hover);
+  filter: none;
+}
+
+:root[data-theme='dark'] .ghost-button.danger:active:not(:disabled),
+:root[data-theme='dark'] .btn-danger:active:not(:disabled),
+:root[data-theme='dark'] button.danger:active:not(:disabled) {
+  background-color: var(--button-danger-active);
+  border-color: var(--button-danger-border-active);
+}
+
+/* Green. */
+:root[data-theme='dark'] .ghost-button.success,
+:root[data-theme='dark'] .btn-success,
+:root[data-theme='dark'] button.success {
+  background-color: var(--button-success-bg);
+  border-color: var(--button-success-border);
+  color: #ffffff;
+}
+
+:root[data-theme='dark'] .ghost-button.success:hover:not(:disabled),
+:root[data-theme='dark'] .btn-success:hover:not(:disabled),
+:root[data-theme='dark'] button.success:hover:not(:disabled) {
+  background-color: var(--button-success-hover);
+  border-color: var(--button-success-border-hover);
+}
+
+:root[data-theme='dark'] .ghost-button.success:active:not(:disabled),
+:root[data-theme='dark'] .btn-success:active:not(:disabled),
+:root[data-theme='dark'] button.success:active:not(:disabled) {
+  background-color: var(--button-success-active);
+  border-color: var(--button-success-border-active);
+}
+
+/* Yellow. */
+:root[data-theme='dark'] .ghost-button.warning,
+:root[data-theme='dark'] .btn-warning,
+:root[data-theme='dark'] button.warning {
+  background-color: var(--button-warning-bg);
+  border-color: var(--button-warning-border);
+  color: var(--button-warning-ink);
+}
+
+:root[data-theme='dark'] .ghost-button.warning:hover:not(:disabled),
+:root[data-theme='dark'] .btn-warning:hover:not(:disabled),
+:root[data-theme='dark'] button.warning:hover:not(:disabled) {
+  background-color: var(--button-warning-hover);
+  border-color: var(--button-warning-border-hover);
+}
+
+:root[data-theme='dark'] .ghost-button.warning:active:not(:disabled),
+:root[data-theme='dark'] .btn-warning:active:not(:disabled),
+:root[data-theme='dark'] button.warning:active:not(:disabled) {
+  background-color: var(--button-warning-active);
+  border-color: var(--button-warning-border-active);
+}
+
+/* --- The field: .form__input ----------------------------------------------- */
+
+/* background-COLOR, never the `background` shorthand. The shorthand resets
+   background-image/position/repeat/size along with the colour, and the select's
+   chevron is a background-image positioned once at the right edge: reset, it fell
+   back to repeat/0 0 and tiled a wall of chevrons across every dropdown in the app.
+   Same trap, opposite direction, as the ordering note in the skin generator. */
+:root[data-theme='dark'] select,
+:root[data-theme='dark'] textarea,
+:root[data-theme='dark'] input:not([type='checkbox']):not([type='radio']):not(.bare),
+:root[data-theme='dark'] .op-field input:not([type='checkbox']):not([type='radio']),
+:root[data-theme='dark'] .toolbar input:not(.bare):not([type='checkbox']):not([type='radio']) {
+  border: 3px solid var(--field-border);
+  border-radius: 5px;
+  background-color: var(--field-bg);
+  /* The whole field treatment: a 2px light bar inside the top edge, so the box reads
+     as recessed under the border rather than painted flat inside it. */
+  box-shadow: inset 0 2px 0 0 var(--field-inset);
+  color: var(--field-ink);
+  padding: 7px 12px;
+  line-height: 1.2;
+  /* Pinned, not merely computed. Padding + border + line-height give 39px only when the
+     font-size is the page's; inside a .toolbar-grid the label sets a smaller one and the
+     field inherits it through `font: inherit`, which quietly produced 35px fields beside
+     39px keys in every filter bar. */
+  min-height: 39px;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+/* A textarea is the one field that is meant to be taller than a key. */
+:root[data-theme='dark'] textarea {
+  min-height: 60px;
+}
+
+/* The chevron needs its lane back: the padding above is shorthand and overrides the
+   34px right gutter the base `select` rule sets for it. */
+:root[data-theme='dark'] select {
+  padding-right: 34px;
+}
+
+:root[data-theme='dark'] select:focus-visible,
+:root[data-theme='dark'] textarea:focus-visible,
+:root[data-theme='dark'] input:not([type='checkbox']):not([type='radio']):not(.bare):focus-visible,
+:root[data-theme='dark'] .op-field input:not([type='checkbox']):not([type='radio']):focus-visible,
+:root[data-theme='dark'] .toolbar input:not(.bare):not([type='checkbox']):not([type='radio']):focus-visible {
+  background-color: var(--field-bg-focus);
+  border-color: var(--field-border-focus);
+  box-shadow: inset 0 2px 0 0 var(--field-inset);
+}
+
+:root[data-theme='dark'] select:hover:not(:disabled) {
+  background-color: var(--field-bg-focus);
+}
+
+:root[data-theme='dark'] select:disabled,
+:root[data-theme='dark'] textarea:disabled,
+:root[data-theme='dark'] input:not([type='checkbox']):not([type='radio']):not(.bare):disabled {
+  background-color: var(--field-bg-disabled);
+  color: var(--field-ink-disabled);
+}
+
+
+/* --- Consistency pass ------------------------------------------------------- */
+
+/* The chevron's three longhands, pinned. The base `select:focus-visible` and
+   `select:hover` rules still paint with the `background` SHORTHAND, which resets
+   background-position/repeat/size along with the colour -- so the chevron sat right
+   at rest and tiled across the whole control the moment the select was focused or
+   hovered. Setting the colour alone is not enough to hold it; measured
+   `repeat=no-repeat pos=calc(100% - 12px) 50%` at rest turning into
+   `repeat=repeat pos=0% 0%` on focus. These win at (0,2,1) over the (0,1,1) they
+   were losing to, in every state. */
+:root[data-theme='dark'] select {
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 11px 7px;
+}
+
+/* A sortable column header is a <button> for keyboard reasons -- SortTh.svelte says so
+   in its own comment -- not because it is a key. Its scoped style asks for a flat
+   transparent cell at (0,2,0) and lost to the key rules at (0,3,1), which turned every
+   sortable header in the app into a blue key with a drop shadow. */
+:root[data-theme='dark'] :is(.panel, .toolbar, .drawer-panel, .workspace, .modal-panel, .page-header) th button {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background-color: transparent;
+  color: inherit;
+  font-weight: inherit;
+  text-transform: inherit;
+  transform: none;
+}
+
+/* One key size everywhere. The app had grown three: 8px/12px for a panel button and a
+   .ghost-button, 9px/14px for a .btn, and a 34px square for an .icon-btn -- so the same
+   action was a different height depending on which page wrote it. Pinned to the field's
+   39px so a toolbar reads as one row of controls. .btn-sm stays deliberately smaller;
+   it is the one that means "smaller". */
+:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button, .btn-sm),
+:root[data-theme='dark'] .ghost-button:not(.btn-sm),
+:root[data-theme='dark'] .btn:not(.btn-sm) {
+  padding: 8px 12px;
+  min-height: 39px;
+}
+
+:root[data-theme='dark'] .icon-btn {
+  width: 39px;
+  height: 39px;
+  min-height: 39px;
+  padding: 0;
+}
+
+/* Rows, not columns, and not stretched. Both containers defaulted to align-items:
+   stretch, which is why a button next to a labelled field came out as tall as the
+   label AND the field stacked -- the "buttons far too big" in every filter bar. The
+   grid is align-items: end so a bare button sits on the fields' bottom edge, where a
+   label would have pushed it down. */
+:root[data-theme='dark'] .toolbar {
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+:root[data-theme='dark'] .toolbar-grid {
+  align-items: end;
+}
+
+
+/* A picker button stands where a <select> would: it shows the current choice and opens a
+   list. It is a <button> only because the choice comes from a modal rather than a native
+   dropdown, so it takes the FIELD's look, not a key's -- as a blue primary it shouted
+   "ANY PLAYER" louder than the Filter button that actually runs the search. */
+:root[data-theme='dark'] .picker-button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  /* Full width only where it IS the column -- inside a labelled field slot. Standalone in a
+     toolbar it is one control in a row, and 100% pushed everything after it onto its own
+     line. See the rule below. */
+  min-width: 180px;
+  border: 3px solid var(--field-border);
+  border-radius: 5px;
+  background-color: var(--field-bg);
+  box-shadow: inset 0 2px 0 0 var(--field-inset);
+  color: var(--field-ink);
+  padding: 7px 12px;
+  min-height: 39px;
+  line-height: 1.2;
+  font-weight: 400;
+  text-transform: none;
+  text-align: left;
+  transform: none;
+}
+
+:root[data-theme='dark'] .picker-button:hover:not(:disabled) {
+  background-color: var(--field-bg-focus);
+  border-color: var(--field-border-focus);
+}
+
+
+/* The row filter above a table. Its input carries class="bare" -- an explicit opt-out of
+   the global field rule, because the component draws the box itself on the wrapper rather
+   than the input, so the search icon can sit inside it. That opt-out predates this theme
+   and left one dark 8px-radius box among light Habbo fields on every table page. The box
+   moves to the field's look; the input inside stays transparent, as its own style intends. */
+:root[data-theme='dark'] .table-filter .tf-input {
+  border: 3px solid var(--field-border);
+  border-radius: 5px;
+  background-color: var(--field-bg);
+  box-shadow: inset 0 2px 0 0 var(--field-inset);
+  color: var(--field-placeholder);
+  min-height: 39px;
+}
+
+:root[data-theme='dark'] .table-filter .tf-input:focus-within {
+  background-color: var(--field-bg-focus);
+  border-color: var(--field-border-focus);
+}
+
+:root[data-theme='dark'] .table-filter .tf-input input {
+  color: var(--field-ink);
+  line-height: 1.2;
+}
+
+:root[data-theme='dark'] .table-filter .tf-input input::placeholder {
+  color: var(--field-placeholder);
+  opacity: 1;
+}
+
+
+/* A <td> has to stay a table-cell. `.row-actions` is written `display: inline-flex` so its
+   buttons sit in a row, which is right for the <div> it was made for and wrong for the
+   <td> several pages also give it: the cell drops out of the table's column algorithm and
+   the row stops short of the table's own width. The buttons still sit in a row -- they are
+   inline-flex themselves, and nowrap keeps them on one line. */
+td.row-actions {
+  display: table-cell;
+  white-space: nowrap;
+  /* The actions column is the last one and takes whatever width the table has left over,
+     so left-aligned buttons ended up stranded in the middle of a wide row. They belong on
+     the row's trailing edge, where the eye already goes looking for them. */
+  text-align: right;
+}
+
+/* Checkboxes and radios, matched to the field. They are the one control the global field
+   rule deliberately skips, so they kept the browser's own blue-on-white box next to Habbo's
+   light-on-dark-blue fields. Same paper, same ink, same border; checked is the primary
+   key's blue so a ticked box reads as an action taken. */
+:root[data-theme='dark'] input[type='checkbox'],
+:root[data-theme='dark'] input[type='radio'] {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  margin: 0;
+  border: 2px solid var(--field-border);
+  background-color: var(--field-bg);
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+:root[data-theme='dark'] input[type='checkbox'] {
+  border-radius: 3px;
+}
+
+:root[data-theme='dark'] input[type='radio'] {
+  border-radius: 50%;
+}
+
+:root[data-theme='dark'] input[type='checkbox']:checked {
+  background-color: var(--button-bg);
+  border-color: var(--button-border);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='8' viewBox='0 0 10 8'%3E%3Cpath d='M1 4.2 3.5 6.8 9 1.2' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 10px 8px;
+}
+
+:root[data-theme='dark'] input[type='radio']:checked {
+  background-color: var(--button-bg);
+  border-color: var(--button-border);
+  /* The dot is the field's own paper punched out of the fill, so it matches the box it sits in. */
+  box-shadow: inset 0 0 0 3px var(--field-bg);
+}
+
+:root[data-theme='dark'] input[type='checkbox']:hover:not(:disabled),
+:root[data-theme='dark'] input[type='radio']:hover:not(:disabled) {
+  border-color: var(--field-border-focus);
+}
+
+:root[data-theme='dark'] input[type='checkbox']:disabled,
+:root[data-theme='dark'] input[type='radio']:disabled {
+  background-color: var(--field-bg-disabled);
+  cursor: default;
+}
+
+
+/* A button sitting inside a filter <label> is a field, whatever class it carries. The
+   pages disagree on that class -- ChatlogsPage writes .picker-button, BotsPage writes
+   .ghost-button for the same "Any owner" control -- so one came out as a light field and
+   the other as a black key in the same row. Matching on the ROLE (a labelled control in a
+   filter row) rather than on the class covers both, and any future third spelling. */
+:root[data-theme='dark'] :is(.toolbar-grid, .toolbar, .edit-grid, .inline-form) label > button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  border: 3px solid var(--field-border);
+  border-radius: 5px;
+  background-color: var(--field-bg);
+  box-shadow: inset 0 2px 0 0 var(--field-inset);
+  color: var(--field-ink);
+  padding: 7px 12px;
+  min-height: 39px;
+  line-height: 1.2;
+  font-weight: 400;
+  text-transform: none;
+  text-align: left;
+  transform: none;
+}
+
+:root[data-theme='dark'] :is(.toolbar-grid, .toolbar, .edit-grid, .inline-form) label > button:hover:not(:disabled) {
+  background-color: var(--field-bg-focus);
+  border-color: var(--field-border-focus);
+}
+
+/* A checkbox label in a filter row occupies the same band as the fields beside it, so the
+   box sits at their middle instead of hanging off their bottom edge. */
+:root[data-theme='dark'] :is(.toolbar-grid, .edit-grid, .inline-form) label.check {
+  min-height: 39px;
+  align-items: center;
+}
+
+
+/* The header's own hover. Resetting the base state was not enough: the blue fill's
+   :hover rule scores (0,5,1) and the flat-header reset only (0,3,2), so every sortable
+   column still flooded blue under the pointer. A column header is not a key -- it
+   lightens the way a row does, and nothing more. */
+:root[data-theme='dark'] :is(.panel, .toolbar, .drawer-panel, .workspace, .modal-panel, .page-header) th button:hover:not(:disabled),
+:root[data-theme='dark'] :is(.panel, .toolbar, .drawer-panel, .workspace, .modal-panel, .page-header) th button:active:not(:disabled) {
+  background-color: var(--surface-hover);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--ink);
+  transform: none;
+  filter: none;
+}
+
+
+/* A bare button in a filter grid is an action, not a field: it takes the width of its
+   label, not the width of the column. Grid items stretch by default, so "Filter" and
+   "Add event category" were being drawn as wide as the 160px-minimum columns beside them.
+   Buttons inside a <label> are excluded -- those ARE fields (see the picker rule) and
+   must keep the column's width. */
+/* A key never stretches to fill its cell. justify-self only has meaning for a grid item,
+   so this is inert everywhere else and fixes every grid at once: .toolbar-grid gave a bare
+   "Filter" the width of a 160px column, and .catalog-list -- a single-column grid -- gave
+   "+ New offer" and "Delete offer" the entire width of the panel. A button is as wide as
+   what it says. Fields are exempt: a picker inside a <label> IS the column. */
+:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .workspace, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice, .picker-button),
+:root[data-theme='dark'] .ghost-button,
+:root[data-theme='dark'] .btn {
+  justify-self: start;
+}
+
+:root[data-theme='dark'] label > button {
+  justify-self: stretch;
+}
+
+
+/* The buttons that are NOT keys still inherit the base panel-button rule's
+   `box-shadow: 0 0 0 1px var(--ring), inset 0 1px 0 var(--button-border-top)`. Their own
+   scoped styles say `border: none; background: transparent` and stop there -- a shadow is
+   not a border, so it survived. --button-border-top is one of the 51 tokens the dark theme
+   never redefined, so it still carries the BLUE theme's #5a93d0: every catalog row, table
+   link and tile wore a light-blue hairline across its top edge. Same list as the key rules,
+   inverted. */
+:root[data-theme='dark'] :is(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell,
+  .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item,
+  .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop,
+  .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice) {
+  box-shadow: none;
+}
+
+/* And the token itself, so anything else reaching for it stops painting in the blue
+   theme's colours. */
+:root[data-theme='dark'] {
+  --button-border-top: rgba(255, 255, 255, 0.08);
+  --button-secondary-border-top: rgba(255, 255, 255, 0.08);
+  --ghost-border: var(--button-neutral-border);
+  --ring: rgba(0, 0, 0, 0.4);
+  --field-border-top: transparent;
+  --field-border-bottom: transparent;
+  --field-ring: transparent;
+}
+
+
+/* An editor form inside the drawer. `.edit-grid` is a wrapping flex row, which is right on
+   a full-width page and ragged in a 540px drawer: fields, checkboxes and buttons all wrapped
+   into whatever order they happened to fit, leaving Save stranded mid-form and Cancel alone
+   on the last line.
+
+   Two columns, and three placement rules do the rest:
+     a field spans both columns  -> one input per row, full width
+     the first checkbox starts a new row -> the checkboxes group on their own line
+     the first button starts a new row   -> Save and Cancel sit together, last
+
+   No markup change: the grouping comes from where each item is allowed to start, not from
+   wrappers the four editors would each need. */
+:root[data-theme='dark'] :is(.drawer-panel, .modal-panel) .edit-grid,
+:root[data-theme='dark'] :is(.drawer-panel, .modal-panel) .inline-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: end;
+  gap: 12px;
+}
+
+:root[data-theme='dark'] :is(.drawer-panel, .modal-panel) .edit-grid > label:not(.check),
+:root[data-theme='dark'] :is(.drawer-panel, .modal-panel) .inline-form > label:not(.check) {
+  grid-column: 1 / -1;
+}
+
+:root[data-theme='dark'] :is(.drawer-panel, .modal-panel) .edit-grid > label.check:first-of-type,
+:root[data-theme='dark'] :is(.drawer-panel, .modal-panel) .edit-grid > button:first-of-type,
+:root[data-theme='dark'] :is(.drawer-panel, .modal-panel) .inline-form > button:first-of-type {
+  grid-column-start: 1;
+}
+
+:root[data-theme='dark'] :is(.drawer-panel, .modal-panel) .edit-grid > button:first-of-type {
+  margin-top: 6px;
+}
+
+
+/* A key is one line. Several containers never got the shared `display: inline-flex` rule
+   (only twelve were listed), so a button whose label is preceded by an icon laid the icon
+   and the text out as two block rows -- "+ / ADD A CHOICE" stacked, twice the height of
+   every other key beside it. */
+:root[data-theme='dark'] :where(.panel, .toolbar, .drawer-panel, .workspace, .modal-panel, .page-header) button:not(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell, .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill, .catalog-tab, .tab, .crumb-button, .nav-group-label, .drawer-backdrop, .modal-backdrop, .cp-backdrop, .drawer-close, .chip-x, .chip-remove, .op-choice),
+:root[data-theme='dark'] .ghost-button,
+:root[data-theme='dark'] .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+/* Nothing in the drawer may push past its edge. A fieldset of choices laid out in three
+   columns was wider than the 560px panel and simply ran off the right-hand side, with no
+   way to reach it -- the panel is the only thing that scrolls, and it scrolls vertically. */
+:root[data-theme='dark'] :is(.drawer-body, .modal-body) {
+  overflow-x: hidden;
+}
+
+:root[data-theme='dark'] :is(.drawer-body, .modal-body) fieldset,
+:root[data-theme='dark'] :is(.drawer-body, .modal-body) .edit-grid,
+:root[data-theme='dark'] :is(.drawer-body, .modal-body) form {
+  max-width: 100%;
+  min-width: 0;
+}
+
+
+/* The drawer is the box. Three wrappers draw a bordered card of their own -- right when the
+   editor was spliced into the page, redundant once it opens in a panel that already has a
+   title bar, a border and its own padding. Nesting them read as a card inside a card. */
+:root[data-theme='dark'] :is(.drawer-body, .modal-body) > .catalog-card-detail,
+:root[data-theme='dark'] :is(.drawer-body, .modal-body) > .editor-form,
+:root[data-theme='dark'] :is(.drawer-body, .modal-body) > .question-form,
+:root[data-theme='dark'] :is(.drawer-body, .modal-body) > .op-subgroup {
+  border: 0;
+  border-radius: 0;
+  background: none;
+  padding: 0;
+  margin-top: 0;
+}
+
+/* A field in a drawer fills its cell and is allowed to shrink. `1fr` is `minmax(auto, 1fr)`,
+   and a column's auto minimum is its content's min-content width -- for an <input> that is
+   the browser's default ~177px plus this theme's padding and 3px border, whatever the layout
+   asks for. Two such columns plus a 78px one overflowed the 560px panel, and the drawer only
+   scrolls vertically, so the last column was simply unreachable. */
+/* .modal-panel, not .modal-body: a Modal renders its content straight into the panel, with no
+   body wrapper -- so this rule reached every drawer and no modal, and the selects in the picker
+   kept their intrinsic width inside a 620px dialog. */
+:root[data-theme='dark'] :is(.drawer-body, .modal-body, .modal-panel) input:not([type='checkbox']):not([type='radio']),
+:root[data-theme='dark'] :is(.drawer-body, .modal-body, .modal-panel) select,
+:root[data-theme='dark'] :is(.drawer-body, .modal-body, .modal-panel) textarea {
+  min-width: 0;
+  width: 100%;
+}
+
+
+/* A checkbox is not a text field. The global field rule excludes checkbox and radio, but the
+   `.op-field input` branch beside it never did -- so inside an .op-field a checkbox took the
+   field's own box: 7px padding, a 3px border and min-height 39px, measured 28x39 against the
+   16x16 it asks for. The two exclusions are now on both branches; this is the belt. */
+:root[data-theme='dark'] input[type='checkbox'],
+:root[data-theme='dark'] input[type='radio'] {
+  width: 16px;
+  height: 16px;
+  min-height: 0;
+  padding: 0;
+  align-self: center;
+  justify-self: start;
+  box-shadow: none;
+}
+
+/* And a label that holds a checkbox is a sentence, not a field caption: .op-field label is
+   0.74rem uppercase 700, which is right above an input and wrong beside a tickbox. */
+:root[data-theme='dark'] .op-field label:has(> input[type='checkbox']),
+:root[data-theme='dark'] .op-field label:has(> input[type='radio']) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  text-transform: none;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+
+/* --- Movement ---------------------------------------------------------------
+
+   Page changes are animated through the PANELS, not through the router. Wrapping
+   svelte-spa-router in a {#key $location} block would give a clean transition and
+   would also destroy and recreate the Router on every navigation, re-running route
+   resolution and its conditionsFailed path. Panels are recreated by the route swap
+   anyway, so animating their entry costs no JS and cannot affect routing.
+
+   It does not replay on a data refresh: Svelte updates a panel's contents in place
+   rather than remounting it, so the overview's ten-second poll leaves the animation
+   alone. Only a genuinely new panel plays it.
+
+   The stagger is short on purpose -- 30ms a step, four steps. Enough to read as one
+   surface arriving in order, not as a list dealing itself out. */
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.workspace .panel {
+  animation: panel-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.workspace .panel:nth-of-type(2) { animation-delay: 30ms; }
+.workspace .panel:nth-of-type(3) { animation-delay: 60ms; }
+.workspace .panel:nth-of-type(n + 4) { animation-delay: 90ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace .panel {
+    animation: none;
+  }
+}
+
+
+/* The one spinner. `.spin` existed only inside EmptyState.svelte's scoped <style>, so
+   RouteLoading -- which asks for the same class on its RefreshCw -- never got it: the
+   page-change indicator has always been a STATIC refresh glyph. Scoped styles would not
+   have reached it anyway, because the class lands on a child component's <svg>. */
+.spin,
+.spin svg,
+svg.spin {
+  animation: spin 0.9s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* The page-change placeholder. It is the only thing on screen between two routes, so it
+   holds the height a page starts at instead of collapsing to one line and letting the
+   layout jump when the real panels arrive. */
+.route-loading {
+  min-height: 120px;
+  justify-content: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin,
+  .spin svg,
+  svg.spin {
+    animation: none;
+  }
+}
+
+
+/* A header row whose title has gone. The page name is already the shell's <h1>, and 25 of the
+   44 routes were spelling it a second time at the top of their first panel -- "Chat search"
+   above "Chat search". Where the two strings were byte-identical the panel's copy is gone; the
+   16 routes whose panel title says something MORE than the route label keep theirs, because
+   there it is information rather than an echo.
+
+   What is left in those heads is the actions alone, and space-between pushes a single child
+   to the left. These send it back to the right, where it sat when a title held that side. */
+.panel-head:not(:has(h2)):not(:has(h3)) {
+  justify-content: flex-end;
+  /* And it stops reserving a heading's worth of space. With the title gone the head is one row
+     of buttons; keeping the full margin under it left a visible empty band above the text. */
+  margin-bottom: 4px;
+}
+
+
+/* A badge is one line. `.status-badge` is already inline-flex, but nothing stopped its text
+   from wrapping under its icon when the cell got narrow -- which is what a StatCard's value
+   slot is. Same for the price and meta chips beside it. */
+.status-badge,
+.chip,
+.cost-chip,
+.op-chip {
+  white-space: nowrap;
+}
+
+/* Tabs and breadcrumbs. They are navigation, not actions, so they are in the not-a-key list
+   and kept whatever their page gave them -- which after the retheme was a stray blue outline
+   next to Habbo's controls. They take the theme's own surfaces and its 5px corner, and stay
+   FLAT: no lit edge, no drop. What is raised is what you press to do something. */
+/* A tab is not a button in a box. Given a full border each, two tabs side by side read as two
+   buttons and nothing says they are alternatives -- which is exactly what was reported. They
+   share one baseline and the current one is the one attached to it; the others sit above it. */
+:root[data-theme='dark'] .tabs {
+  border-bottom: 1px solid var(--line-strong);
+  gap: 2px;
+}
+
+:root[data-theme='dark'] .tabs button {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 4px 4px 0 0;
+  background: none;
+  box-shadow: none;
+  color: var(--muted);
+  padding: 8px 14px;
+  margin-bottom: -1px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  transform: none;
+}
+
+:root[data-theme='dark'] .tabs button:hover:not(:disabled) {
+  color: var(--ink);
+  background: var(--button-neutral-bg);
+  border-color: transparent;
+  transform: none;
+}
+
+:root[data-theme='dark'] .tabs button.active {
+  color: var(--ink);
+  border-bottom-color: var(--button-border);
+  background: none;
+}
+
+:root[data-theme='dark'] :is(.catalog-tab, .crumb-button, .domain-pill) {
+  border: 2px solid var(--button-neutral-border);
+  border-radius: 5px;
+  background-color: var(--button-neutral-bg);
+  color: var(--muted);
+  padding: 6px 12px;
+  font-weight: 700;
+  box-shadow: none;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+:root[data-theme='dark'] :is(.catalog-tab, .crumb-button, .domain-pill):hover:not(:disabled) {
+  background-color: var(--button-neutral-hover);
+  border-color: var(--button-neutral-border-hover);
+  color: var(--ink);
+}
+
+/* The current one is named by its edge, the way the field's focus is -- not by a fill, which
+   would make a tab look like the primary key sitting next to it. */
+:root[data-theme='dark'] :is(.catalog-tab, .crumb-button, .domain-pill).active {
+  border-color: var(--button-border);
+  color: var(--ink);
+}
+
+
+/* A picker that fills a labelled slot behaves like the field it replaces; one standing on its
+   own in a toolbar sizes to its content, so the button beside it stays on the same line. */
+:root[data-theme='dark'] label > .picker-button,
+:root[data-theme='dark'] .toolbar-grid > .picker-button {
+  width: 100%;
+}
+
+
+/* A control that sits ON a heading line is compact by definition. The capability groups'
+   All / None are the size of a form's primary key -- 39px tall with 12px of side padding --
+   which makes six group headers read as six toolbars. They keep the key's construction, at
+   the size of the line they belong to. */
+:root[data-theme='dark'] .cap-area-head button.ghost-button,
+:root[data-theme='dark'] .cap-area-head button,
+:root[data-theme='dark'] .question-head button.ghost-button,
+:root[data-theme='dark'] .question-head button,
+:root[data-theme='dark'] .btn-sm {
+  min-height: 0;
+  padding: 4px 9px;
+  font-size: 0.74rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.3);
+}
+
+:root[data-theme='dark'] .cap-area-head button.ghost-button:active:not(:disabled),
+:root[data-theme='dark'] .cap-area-head button:active:not(:disabled),
+:root[data-theme='dark'] .question-head button.ghost-button:active:not(:disabled),
+:root[data-theme='dark'] .question-head button:active:not(:disabled),
+:root[data-theme='dark'] .btn-sm:active:not(:disabled) {
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.3);
+  transform: translate(0, 1px);
+}
+
+
+/* Capability groups need a real edge. They were separated by 10px of margin and nothing else,
+   so twenty checkboxes read as one undifferentiated list and the group name floated in it.
+   A rule above each group and room to breathe; the first one needs neither, since the drawer's
+   own header already closes the space above it. */
+:root[data-theme='dark'] :is(.drawer-body, .modal-body) .cap-area + .cap-area {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line-strong);
+}
+
+/* The group's name sits ON its rule rather than beside its buttons: it is a heading, and it
+   was reading as a third button in the row. */
+:root[data-theme='dark'] .cap-area-head {
+  margin-bottom: 10px;
+}
+
+:root[data-theme='dark'] .cap-area-head strong {
+  margin-right: auto;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted-strong);
+}
+
+
+
+
+
+
+/* Totals stated on a chart's title line. They are the series' own numbers, so each carries the
+   swatch of the line it belongs to -- which also makes the head double as the legend, instead
+   of five more cards under the five KPIs above. */
+.head-totals {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.head-total {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.head-total b {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.head-total .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.dot--purchases { background: rgb(var(--accent-rgb)); }
+.dot--renewals { background: rgb(var(--ok-rgb)); }
+.dot--expired { background: rgb(var(--danger-rgb)); }
+
+/* The duration breakdown is a different measure from the type breakdown beside it, so it is a
+   different colour -- two identical blue charts side by side read as one split in half. */
+.bar-fill--duration {
+  background: linear-gradient(90deg, rgba(var(--purple-rgb, 173, 114, 227), 0.95), rgba(var(--purple-rgb, 173, 114, 227), 0.55));
+}
+
+
+/* --- The top bar ------------------------------------------------------------
+
+   Measured before touching: four heights in one row -- the language switch at 38px, the theme
+   switch at 38 with 30px buttons inside it, the identity chip at 42, and the two actions at 36
+   -- across two corner radii. The bar was in none of the kit's container lists, so nothing had
+   ever brought it in line.
+
+   One height for everything, and the kit's own key for the two real buttons. The identity chip
+   keeps its pill shape: it is a status, not something you press. */
+:root[data-theme='dark'] :is(.locale-switch, .theme-switch, .logout-btn) {
+  min-height: 39px;
+}
+
+/* min-height only ever raises, and this one was already 42 -- its own padding. Scoped to the
+   bar so the status pills used elsewhere in the app keep their own size. */
+:root[data-theme='dark'] .session-area .status-pill {
+  height: 39px;
+  padding: 0 14px;
+}
+
+:root[data-theme='dark'] .logout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 2px solid var(--button-neutral-border);
+  border-radius: 5px;
+  background-color: var(--button-neutral-bg);
+  color: var(--ink);
+  padding: 8px 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  box-shadow: var(--key-drop);
+}
+
+:root[data-theme='dark'] .logout-btn:hover:not(:disabled) {
+  background-color: var(--button-neutral-hover);
+  border-color: var(--button-neutral-border-hover);
+}
+
+:root[data-theme='dark'] .logout-btn:active:not(:disabled) {
+  background-color: var(--button-neutral-active);
+  border-color: var(--button-neutral-border-active);
+  box-shadow: var(--key-drop-pressed);
+  transform: translate(0, 2px);
+}
+
+/* The two segmented switches are one control each, so the group carries the border and the
+   segments inside it carry none -- otherwise every segment reads as its own button. */
+:root[data-theme='dark'] :is(.locale-switch, .theme-switch) {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: 2px solid var(--button-neutral-border);
+  border-radius: 5px;
+  background-color: var(--button-neutral-bg);
+  padding: 3px;
+}
+
+:root[data-theme='dark'] :is(.locale-switch, .theme-switch) button {
+  min-height: 0;
+  height: 27px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 3px;
+  background: none;
+  box-shadow: none;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+}
+
+:root[data-theme='dark'] :is(.locale-switch, .theme-switch) button:hover:not(:disabled) {
+  color: var(--ink);
+  background-color: var(--button-neutral-hover);
+  transform: none;
+}
+
+:root[data-theme='dark'] :is(.locale-switch, .theme-switch) button.active {
+  background-color: var(--button-bg);
+  border-color: var(--button-border);
+  color: var(--button-ink);
+}
+
+
+/* A labelled field inside a dialog.
+   `.modal-panel.column` is a flex column, and a <label> in it had no layout of its own -- so its
+   caption and its control flowed inline, leaving "Current password" beside a 244px input in a
+   486px row. A caption belongs above the thing it names, and the control takes the width it was
+   given. `.check` is exempt: there the caption belongs BESIDE the box, which is the whole point
+   of a tickbox. */
+:root[data-theme='dark'] :is(.modal-panel, .drawer-body) label:has(> input, > select, > textarea):not(:has(> input[type='checkbox'])):not(:has(> input[type='radio'])) {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 5px;
+  width: 100%;
+}
+
+:root[data-theme='dark'] :is(.modal-panel, .drawer-body) label:has(> input, > select, > textarea):not(:has(> input[type='checkbox'])):not(:has(> input[type='radio'])) > span {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+/* And the dialog's own stack gets room between fields, rather than the fields touching. */
+:root[data-theme='dark'] .modal-panel.column {
+  gap: 12px;
+}
+
+
+/* --- Notices ----------------------------------------------------------------
+
+   A line that explains what a panel is, or warns about what it does, is information -- not
+   body copy. The dashboard had no shape for it: --alert-info-bg and its three siblings were
+   defined but wired only into toasts, so every such line was a grey paragraph indistinguishable
+   from any other text on the page.
+
+   Applied by position rather than by editing forty pages: the paragraph that directly follows a
+   panel's head or a page header IS that panel's description, everywhere in this app. A page that
+   wants a plain paragraph there can still opt out with .plain. */
+.notice,
+.panel > .panel-head + p.muted:not(.plain),
+/* PageHeader renders its description INSIDE <header class="page-header">, not beside it, so an
+   adjacent-sibling selector could never reach it -- which is why the same line was a notice on a
+   page that writes its own head and plain text on a page that uses the component. */
+.page-header > p.muted:not(.plain),
+.page-header + p.muted:not(.plain) {
+  display: block;
+  border-left: 3px solid rgba(var(--accent-rgb), 0.65);
+  border-radius: 0 6px 6px 0;
+  background: rgba(var(--accent-rgb), 0.07);
+  padding: 9px 12px;
+  color: var(--muted-strong);
+  margin: 0 0 12px;
+}
+
+/* Inside a PageHeader the description is a CHILD of the header, so nothing separates it from
+   the title row -- the notice hugged the title on every page written that way, while a page
+   using .panel-head got the head's own 14px and looked spaced. Same gap either way. */
+.page-header > p.muted:not(.plain) {
+  margin-top: 12px;
+}
+
+/* Each variant states its own ink: .notice sets a neutral one, and a status that has a colour
+   is saying something with it. */
+.notice--success {
+  border-left-color: rgba(var(--ok-rgb), 0.7);
+  background: rgba(var(--ok-rgb), 0.08);
+  color: var(--ok);
+}
+
+.notice--warn {
+  border-left-color: rgba(var(--warning-rgb), 0.7);
+  background: rgba(var(--warning-rgb), 0.08);
+  color: var(--warning);
+}
+
+.notice--danger {
+  border-left-color: rgba(var(--danger-rgb), 0.7);
+  background: rgba(var(--danger-rgb), 0.08);
+  color: var(--danger);
+}
+
+
+/* Actions group at the end of a head, they do not spread across it. `.panel-head` is
+   space-between, which is right for a title and one button and wrong for a title and two:
+   Room timeline showed Refresh stranded in the middle of the row. */
+.panel-head > button:first-of-type,
+.panel-head > .op-actions,
+.panel-head > .toolbar {
+  margin-left: auto;
+}
+
+
+/* A tickbox and its text are one line, in a dialog as anywhere else. Previously this was granted
+   by naming the classes that mean "checkbox row" -- .check, .cap-check -- which missed
+   .pick-check in the picker and left a lone box floating above its own label. */
+:root[data-theme='dark'] label:has(> input[type='checkbox']),
+:root[data-theme='dark'] label:has(> input[type='radio']) {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+}
+
+
+/* The picker's filter row. Its labels are flex items in a wrapping row, so they sized to their
+   own text and a "Default order" select sat at 260px in a 620px dialog. Growing them fills the
+   row: one filter takes the width, two share it. */
+:root[data-theme='dark'] .pick-filters > label:not(:has(> input[type='checkbox'])) {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+/* A tickbox takes the width of its own text. Left growing like the fields, it split the row in
+   half and the sort select came out at 288px instead of the ~500 that were free. */
+:root[data-theme='dark'] .pick-filters > label:has(> input[type='checkbox']) {
+  flex: 0 0 auto;
+}
+
+
+/* --- The pager --------------------------------------------------------------
+
+   It already had its own look -- neutral pages, the current one gold -- and lost it: the key
+   rules score the same (0,3,1) and come later in this file, so every page button came out as
+   the same blue key and nothing said which one you were on.
+
+   The current page is FILLED, the others are not. Filled beats gold here because gold is now
+   the refresh colour, and a gold thing that is not a button to press would read as one. */
+:root[data-theme='dark'] .pager .pager-pages button {
+  min-width: 34px;
+  height: 34px;
+  min-height: 0;
+  padding: 0 10px;
+  border: 2px solid var(--button-neutral-border);
+  border-radius: 5px;
+  background-color: var(--button-neutral-bg);
+  color: var(--muted);
+  box-shadow: none;
+  transform: none;
+}
+
+:root[data-theme='dark'] .pager .pager-pages button:hover:not(:disabled) {
+  background-color: var(--button-neutral-hover);
+  border-color: var(--button-neutral-border-hover);
+  color: var(--ink);
+  transform: none;
+}
+
+:root[data-theme='dark'] .pager .pager-pages button.active {
+  background-color: var(--button-bg);
+  border-color: var(--button-border);
+  color: var(--button-ink);
+  cursor: default;
+}
+
+
+/* Link-shaped buttons do not fill on hover.
+   `.entity-item` sets `background: transparent` at (0,1,0); the app's own
+   `:where(.panel, ...) button:hover` scores (0,1,1) and has no exclusions, so it painted every
+   one of these with the primary hover fill. That was true before the retheme too -- it just went
+   from a dim navy to Habbo's #2a9cde, which is when it started being noticed. Measured:
+   background rgba(0,0,0,0) at rest, rgb(42,156,222) on hover.
+
+   They brighten and keep their underline, like a link. */
+:root[data-theme='dark'] :is(.linklike, .link-cell, .entity-player, .entity-item, .icon-cell,
+  .catalog-row, .cp-row, .poll-row, .pick-row, .pool-tile, .gallery-item, .item, .domain-pill,
+  .crumb-button, .nav-group-label, .chip-x, .chip-remove, .op-choice):hover:not(:disabled) {
+  background-color: transparent;
+  filter: brightness(1.25);
+}
+
+
+/* --- Player operations ------------------------------------------------------
+
+   A list of what can be done, not five open forms. Each row says the action and, under it, what
+   it actually does -- because "Give activity points" does not tell an operator that duckets and
+   diamonds are the same control. An entry the account may not use is disabled here rather than
+   opening onto an access-denied notice. */
+.op-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 10px;
+}
+
+:root[data-theme='dark'] .op-choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  white-space: normal;
+  text-align: left;
+  padding: 12px 14px;
+  border: 2px solid var(--button-neutral-border);
+  border-radius: 5px;
+  background-color: var(--button-neutral-bg);
+  color: var(--ink);
+  box-shadow: var(--key-drop);
+  text-transform: none;
+  min-height: 0;
+}
+
+:root[data-theme='dark'] .op-choice:hover:not(:disabled) {
+  background-color: var(--button-neutral-hover);
+  border-color: var(--button-neutral-border-hover);
+}
+
+:root[data-theme='dark'] .op-choice:active:not(:disabled) {
+  box-shadow: var(--key-drop-pressed);
+  transform: translate(0, 2px);
+}
+
+
+.op-choice-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 5px;
+  background: var(--input-bg);
+  color: var(--muted-strong);
+}
+
+.op-choice-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.op-choice-copy strong {
+  font-weight: 700;
+}
+
+.op-choice-copy small {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+
+/* The timeline's own filter row -- the same shape as a page's filter grid, at the size a row of
+   three controls needs rather than a full-width grid. */
+.timeline-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.timeline-filters > label {
+  display: grid;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  min-width: 0;
+}
+
+/* A wallet movement is two facts, not one sentence: what moved, and what caused it. Run together
+   on one line the amount, the currency, the balance and the cause read as a single grey string --
+   the amount is what an operator scans for, so it gets the line. */
+:root[data-theme='dark'] .ledger-move {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+:root[data-theme='dark'] .ledger-why {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* The icon reads as part of the control rather than a decoration beside it. */
+.currency-select {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.currency-select select {
+  flex: 1;
+  min-width: 0;
+}

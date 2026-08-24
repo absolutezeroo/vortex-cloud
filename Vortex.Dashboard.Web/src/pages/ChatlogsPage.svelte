@@ -101,13 +101,16 @@
 
 <section class="panel">
   <div class="panel-head">
-    <h2>{$t('chatlogs.title')}</h2>
-    <button type="button" onclick={refresh} disabled={loading || !hasFilter}>
+      <h2>{$t('chatlogs.title')}</h2>
+      <button type="button" onclick={refresh} disabled={loading || !hasFilter} class="warning">
       {$t('common.refresh')}
     </button>
   </div>
 
   <p class="muted">{$t('chatlogs.privacyNotice')}</p>
+</section>
+
+<section class="panel">
 
   <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); applyFilters(); }}>
     <label>
@@ -151,6 +154,10 @@
       </button>
     {/if}
   </form>
+
+</section>
+
+<section class="panel">
 
   {#if forbidden}
     <AccessDeniedNotice message={$t('chatlogs.accessDenied')} />

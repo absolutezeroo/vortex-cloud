@@ -148,8 +148,8 @@
 
 <section class="panel">
   <div class="panel-head">
-    <h2>{$t('roomControl.title')}</h2>
-    <button type="button" class="ghost-button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
+      <h2>{$t('roomControl.title')}</h2>
+      <button type="button" class="warning" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
   </div>
   <p class="muted">
     {$t('roomControl.description')}
@@ -167,6 +167,9 @@
     <OpResult result={$ops.result} />
   {/if}
 
+</section>
+
+<section class="panel">
   <TableFilter bind:query={roomQuery} shown={roomView.length} total={rooms.length} />
 
   <table>
@@ -184,7 +187,7 @@
         <tr>
           <td>
             <button class="ghost-button" type="button" onclick={() => toggleExpand(roomId(room))}>
-              {#if expanded === roomId(room)}<ChevronDown size={14} strokeWidth={2} aria-hidden="true" />{:else}<ChevronRight size={14} strokeWidth={2} aria-hidden="true" />{/if} {roomName(room)} <small>#{roomId(room)}</small>
+              {#if expanded === roomId(room)}{:else}{/if} {roomName(room)} <small>#{roomId(room)}</small>
             </button>
           </td>
           <td><EntityLink id={roomOwnerId(room)} label={roomOwnerName(room)} {openPlayer} {openItem} /></td>

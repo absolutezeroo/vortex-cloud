@@ -31,6 +31,16 @@ search box off the top of the dialog.
    * @property {() => void} [onclose] - called when the operator dismisses the dialog
    */
 
+  // A full-viewport overlay only works if no ancestor boxes it in: any transform, filter or
+  // `contain` between here and the root turns `position: fixed` into "fixed to that ancestor", and
+  // the backdrop then dims one section instead of the screen. Where a modal is rendered from is not
+  // something its callers should have to think about, so it moves itself out of their subtree.
+  function portal(node) {
+    document.body.appendChild(node);
+
+    return { destroy: () => node.remove() };
+  }
+
   /** @type {Props} */
   let {
     title = '',
@@ -58,7 +68,7 @@ search box off the top of the dialog.
   useDialogBehaviour(() => panel, { onClose: close });
 </script>
 
-<div class="modal-layer">
+<div class="modal-layer" use:portal>
   <button
     class="modal-backdrop"
     type="button"

@@ -80,13 +80,16 @@
 <section class="panel">
   <PageHeader title={$t('marketplace.title')} description={$t('marketplace.description')}>
     {#snippet actions()}
-      <button type="button" onclick={marketplace.refresh} disabled={marketplace.loading}>{$t('common.refresh')}</button>
+      <button type="button" onclick={marketplace.refresh} disabled={marketplace.loading} class="warning">{$t('common.refresh')}</button>
     {/snippet}
   </PageHeader>
 
   <!-- Changing a field already re-reads (it changes the key), so this button no longer means "apply
        the filters" -- it means "read again now", which is why it invalidates rather than refetches
        blindly. -->
+</section>
+
+<section class="panel">
   <form class="toolbar-grid" onsubmit={(event) => { event.preventDefault(); marketplace.refresh(); }}>
     <label>
       {$t('common.since')}

@@ -46,8 +46,9 @@
 <section class="panel">
   <div class="panel-head">
     <h2>{$t('packets.title')}</h2>
-    <button type="button" onclick={refresh}>{$t('common.refresh')}</button>
+    <button type="button" onclick={refresh} class="warning">{$t('common.refresh')}</button>
   </div>
+  <p class="muted">{$t('packets.description')}</p>
 
   {#if forbidden}
     <AccessDeniedNotice message={$t('packets.accessDenied')} />
@@ -55,35 +56,36 @@
     <p class="empty-state danger" role="alert">{error}</p>
   {/if}
 
-  <div class="metric-grid compact">
-    <StatCard label={$t('packets.packetsPerSec')} value={formatNumber(data?.packetsPerSecond, 2)}>
-      {#snippet icon()}
-        <Gauge size={15} strokeWidth={2} aria-hidden="true" />
-      {/snippet}
-    </StatCard>
-    <StatCard label={$t('packets.errorsPerMin')} value={formatNumber(data?.errorsPerMinute, 2)}>
-      {#snippet icon()}
-        <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
-      {/snippet}
-    </StatCard>
-    <StatCard label={$t('packets.latencyP50')}>
-      {#snippet icon()}
-        <Timer size={15} strokeWidth={2} aria-hidden="true" />
-      {/snippet}
-      {#snippet value()}
-        <span>{formatNumber(data?.latencyP50Ms, 2)} ms</span>
-      {/snippet}
-    </StatCard>
-    <StatCard label={$t('packets.latencyP95')}>
-      {#snippet icon()}
-        <Timer size={15} strokeWidth={2} aria-hidden="true" />
-      {/snippet}
-      {#snippet value()}
-        <span>{formatNumber(data?.latencyP95Ms, 2)} ms</span>
-      {/snippet}
-    </StatCard>
-  </div>
 </section>
+
+<div class="metric-grid compact" style="margin-top: 12px;">
+  <StatCard label={$t('packets.packetsPerSec')} value={formatNumber(data?.packetsPerSecond, 2)}>
+    {#snippet icon()}
+      <Gauge size={15} strokeWidth={2} aria-hidden="true" />
+    {/snippet}
+  </StatCard>
+  <StatCard label={$t('packets.errorsPerMin')} value={formatNumber(data?.errorsPerMinute, 2)}>
+    {#snippet icon()}
+      <TriangleAlert size={15} strokeWidth={2} aria-hidden="true" />
+    {/snippet}
+  </StatCard>
+  <StatCard label={$t('packets.latencyP50')}>
+    {#snippet icon()}
+      <Timer size={15} strokeWidth={2} aria-hidden="true" />
+    {/snippet}
+    {#snippet value()}
+      <span>{formatNumber(data?.latencyP50Ms, 2)} ms</span>
+    {/snippet}
+  </StatCard>
+  <StatCard label={$t('packets.latencyP95')}>
+    {#snippet icon()}
+      <Timer size={15} strokeWidth={2} aria-hidden="true" />
+    {/snippet}
+    {#snippet value()}
+      <span>{formatNumber(data?.latencyP95Ms, 2)} ms</span>
+    {/snippet}
+  </StatCard>
+</div>
 
 <section class="split-grid">
   <div class="panel">

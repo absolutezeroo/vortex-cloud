@@ -108,7 +108,7 @@
 <section class="panel">
   <PageHeader title={$t('economyExtras.title')} description={$t('economyExtras.description')}>
     {#snippet actions()}
-      <button type="button" onclick={refresh} disabled={loading}>{$t('common.refresh')}</button>
+      <button type="button" onclick={refresh} disabled={loading} class="warning">{$t('common.refresh')}</button>
     {/snippet}
   </PageHeader>
 
@@ -278,7 +278,7 @@
     <div class="panel-head">
       <h2>{$t('economyExtras.currenciesTitle')}</h2>
       {#if canManage}
-        <button type="button" class="ghost-button" onclick={() => (currencyForm = emptyCurrency())}>{$t('economyExtras.newCurrency')}</button>
+        <button type="button" class="success" onclick={() => (currencyForm = emptyCurrency())}>{$t('economyExtras.newCurrency')}</button>
       {/if}
     </div>
     <div class="table-wrap">
@@ -365,7 +365,7 @@
             <input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={currencyForm.enabled} />
             {$t('economyExtras.colEnabled')}
           </label>
-          <button type="submit" disabled={!currencyForm.name.trim()}>
+          <button class="success" type="submit" disabled={!currencyForm.name.trim()}>
             {currencyForm.id ? $t('economyExtras.updateCurrency') : $t('economyExtras.addCurrency')}
           </button>
         </form>
@@ -374,7 +374,7 @@
     {#if $ops.result}<OpResult result={$ops.result} />{/if}
 
     {#snippet actions()}
-      <button type="submit" form="currency-form" disabled={!currencyForm.name.trim()}>{currencyForm.id ? $t('economyExtras.updateCurrency') : $t('economyExtras.addCurrency')}</button>
+      <button class="success" type="submit" form="currency-form" disabled={!currencyForm.name.trim()}>{currencyForm.id ? $t('economyExtras.updateCurrency') : $t('economyExtras.addCurrency')}</button>
       <button type="button" class="ghost-button" onclick={() => (currencyForm = null)}>{$t('common.cancel')}</button>
     {/snippet}
   </Drawer>

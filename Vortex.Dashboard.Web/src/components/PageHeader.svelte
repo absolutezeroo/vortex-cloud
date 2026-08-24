@@ -12,7 +12,7 @@
   //
   //   <PageHeader title={$t('bots.title')} description={$t('bots.description')}>
   //     {#snippet actions()}
-  //       <button type="button" onclick={bots.refresh}>{$t('common.refresh')}</button>
+  //       <button type="button" onclick={bots.refresh} class="warning">{$t('common.refresh')}</button>
   //     {/snippet}
   //   </PageHeader>
 
@@ -55,6 +55,12 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+  }
+
+  /* With no title the actions are the row's only child, and space-between puts them on the
+     left. The pages that pass title="" do it because the shell's <h1> already says it. */
+  .page-header-row:not(:has(h2)) {
+    justify-content: flex-end;
   }
 
   .page-header-row h2 {

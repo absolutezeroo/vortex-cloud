@@ -44,7 +44,6 @@ export const NAV = [
   { path: '/player-rewards', labelKey: 'nav.playerRewards', shortKey: 'nav.playerRewardsShort', group: 'Players', caps: ROUTE_PERMISSIONS.playerRewards, load: () => import('../pages/PlayerRewardsPage.svelte'), writes: true },
   { path: '/subscriptions', labelKey: 'nav.subscriptions', shortKey: 'nav.subscriptionsShort', group: 'Players', caps: ROUTE_PERMISSIONS.economy, load: () => import('../pages/SubscriptionsPage.svelte') },
   { path: '/moderation', labelKey: 'nav.moderation', shortKey: 'nav.moderationShort', group: 'Players', caps: ROUTE_PERMISSIONS.moderation, load: () => import('../pages/ModerationPage.svelte') },
-  { path: '/moderation-actions', labelKey: 'nav.moderationActions', shortKey: 'nav.moderationActionsShort', group: 'Players', caps: ROUTE_PERMISSIONS.moderationActions, load: () => import('../pages/ModerationActionsPage.svelte'), writes: true },
   { path: '/cfh', labelKey: 'nav.cfh', shortKey: 'nav.cfhShort', group: 'Players', caps: ROUTE_PERMISSIONS.cfh, load: () => import('../pages/CfhQueuePage.svelte'), writes: true },
   { path: '/cfh-stats', labelKey: 'nav.cfhStats', shortKey: 'nav.cfhStatsShort', group: 'Players', caps: ROUTE_PERMISSIONS.cfhStats, load: () => import('../pages/CfhStatsPage.svelte') },
   { path: '/staff', labelKey: 'nav.staff', shortKey: 'nav.staffShort', group: 'Players', caps: ROUTE_PERMISSIONS.staff, load: () => import('../pages/StaffPage.svelte'), writes: true },
