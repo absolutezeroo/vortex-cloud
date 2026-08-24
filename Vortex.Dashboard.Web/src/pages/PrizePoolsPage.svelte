@@ -333,7 +333,7 @@
                 <th>{$t('prizePools.expected')}</th>
                 <th>{$t('prizePools.actual')}</th>
                 <th>{$t('prizePools.draws')}</th>
-                {#if canManage}<th></th>{/if}
+                {#if canManage}<th>{$t('common.actions')}</th>{/if}
               </tr>
             </thead>
             <tbody>
@@ -494,7 +494,7 @@
               <th>{$t('prizePools.furnitureDefinitionId')}</th>
               <th>{$t('prizePools.pool')}</th>
               <th>{$t('prizePools.hitsRequired')}</th>
-              {#if canManage}<th></th>{/if}
+              {#if canManage}<th>{$t('common.actions')}</th>{/if}
             </tr>
           </thead>
           <tbody>

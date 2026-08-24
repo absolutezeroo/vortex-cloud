@@ -257,7 +257,7 @@
               <th>{$t('achievements.colStarted')}</th>
               <th>{$t('achievements.colCompleted')}</th>
               <th>{$t('achievements.colBadges')}</th>
-              {#if canManage}<th></th>{/if}
+              {#if canManage}<th>{$t('common.actions')}</th>{/if}
             </tr>
           </thead>
           <tbody>
@@ -346,7 +346,7 @@
                               <th>{$t('achievements.colReward')}</th>
                               <th>{$t('achievements.colLevelScore')}</th>
                               <th>{$t('achievements.colPlayersAtLevel')}</th>
-                              {#if canManage}<th></th>{/if}
+                              {#if canManage}<th>{$t('common.actions')}</th>{/if}
                             </tr>
                           </thead>
                           <tbody>

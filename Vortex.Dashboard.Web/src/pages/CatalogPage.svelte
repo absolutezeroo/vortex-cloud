@@ -6,8 +6,6 @@
     Activity,
     ChevronRight,
     Coins,
-    Eye,
-    EyeOff,
     Folder,
     FolderOpen,
     Hash,
@@ -772,7 +770,6 @@
           {#snippet value()}
                     <span>
               <span class="status-badge" class:status-badge--ok={currentPage.visible} class:status-badge--bad={!currentPage.visible}>
-                {#if currentPage.visible}<Eye size={12} strokeWidth={2} aria-hidden="true" />{:else}<EyeOff size={12} strokeWidth={2} aria-hidden="true" />{/if}
                 {currentPage.visible ? $t('catalogAdmin.visible') : $t('catalogAdmin.hidden')}
               </span>
             </span>
@@ -830,7 +827,7 @@
               <span class="op-chip" title={$t('catalogAdmin.subPagesTooltip')}>{page.childCount}</span>
               <span class="op-chip" title={$t('catalogAdmin.offersTooltip')}>{page.offerCount}</span>
               <span class="status-badge" class:status-badge--ok={page.visible} class:status-badge--bad={!page.visible}>
-                {#if page.visible}{:else}{/if}
+                {#if page.visible}{$t('catalogAdmin.visible')}{:else}{$t('catalogAdmin.hidden')}{/if}
               </span>
             </span>
             </button>
@@ -861,7 +858,30 @@
                 <span class="catalog-row-icon"><Tag size={18} strokeWidth={2} aria-hidden="true" /></span>
                 <span class="catalog-row-main">
                   <strong>{offer.localizationId}</strong>
-                  <small class="muted">#{offer.id}{offer.clubLevel > 0 ? ` - HC${offer.clubLevel}` : ''}{offer.discountPercent > 0 ? ` - -${offer.discountPercent}%` : ''}</small>
+                  <!-- The id and the single product it delivers are one line about the same offer.
+                       The product used to be a block of its own below the whole row, which read as
+                       a second record rather than as this one's detail. -->
+                  <span class="catalog-row-line">
+                    {#if offer.productCount === 1 && offer.singleProduct}
+                      <AssetImage
+                        src={offer.singleProduct.furnitureIconUrl}
+                        alt=""
+                        size={22}
+                        fallbackIcon={Image}
+                      />
+                    {/if}
+                    <span class="catalog-row-id muted">#{offer.id}{offer.clubLevel > 0 ? ` - HC${offer.clubLevel}` : ''}{offer.discountPercent > 0 ? ` - -${offer.discountPercent}%` : ''}</span>
+                    {#if offer.productCount === 1 && offer.singleProduct}
+                      <span class="catalog-row-product">{offer.singleProduct.furnitureName || offer.singleProduct.productTypeLabel}</span>
+                      <span class="op-chip" title={$t('common.quantityLabel')}>x{offer.singleProduct.quantity}</span>
+                      {#if offer.singleProduct.uniqueSize > 0}
+                        <span class="op-chip" title={$t('common.uniqueRemaining')}>{offer.singleProduct.uniqueRemaining}/{offer.singleProduct.uniqueSize}</span>
+                      {/if}
+                      {#if offer.singleProduct.buildersClubEligible}
+                        <span class="status-badge status-badge--ok">BC</span>
+                      {/if}
+                    {/if}
+                  </span>
                 </span>
                 <span class="catalog-row-meta">
                   {#if offer.costCredits > 0 || !offer.currencyTypeId}
@@ -878,7 +898,7 @@
                     </span>
                   {/if}
                   <span class="status-badge" class:status-badge--ok={offer.visible} class:status-badge--bad={!offer.visible}>
-                    {#if offer.visible}<Eye size={12} strokeWidth={2} aria-hidden="true" />{:else}<EyeOff size={12} strokeWidth={2} aria-hidden="true" />{/if}
+                    {#if offer.visible}{$t('catalogAdmin.visible')}{:else}{$t('catalogAdmin.hidden')}{/if}
                   </span>
                 </span>
                 <div class="op-actions">
@@ -889,31 +909,15 @@
                     <button type="button" class="ghost-button" onclick={() => startEditOffer(offer)}>
                       {$t('catalogAdmin.edit')}
                     </button>
+                    <!-- "Delete offer" beside Manage and Edit was twice their length for no extra
+                         meaning: the row is an offer. The confirmation still names it in full. -->
                     <button type="button" class="ghost-button danger" onclick={() => stageDeleteOffer(offer)}>
-                      {$t('catalogAdmin.deleteOffer')}
+                      {$t('common.delete')}
                     </button>
                   {/if}
                 </div>
               </div>
 
-              {#if offer.productCount === 1 && offer.singleProduct}
-                <div class="catalog-row-sub">
-                  <AssetImage
-                    src={offer.singleProduct.furnitureIconUrl}
-                    alt=""
-                    size={22}
-                    fallbackIcon={Image}
-                  />
-                  <span class="muted">{offer.singleProduct.furnitureName || offer.singleProduct.productTypeLabel}</span>
-                  <span class="op-chip" title={$t('common.quantityLabel')}>x{offer.singleProduct.quantity}</span>
-                  {#if offer.singleProduct.uniqueSize > 0}
-                    <span class="op-chip" title={$t('common.uniqueRemaining')}>{offer.singleProduct.uniqueRemaining}/{offer.singleProduct.uniqueSize}</span>
-                  {/if}
-                  {#if offer.singleProduct.buildersClubEligible}
-                    <span class="status-badge status-badge--ok">BC</span>
-                  {/if}
-                </div>
-              {/if}
 
 
 
@@ -1521,21 +1525,41 @@
 
 
 
-  /* Compact secondary line under an offer's main row, showing the single product it delivers
-     without requiring a click -- see offerActionLabel()'s doc comment for why this exists. */
-  .catalog-row-sub {
+  /* The offer's second line: its id, and the single product it delivers when there is only one --
+     see offerActionLabel()'s doc comment for why that is shown without a click. */
+  .catalog-row-line {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 8px;
-    padding: 0 12px 10px 46px;
     font-size: 0.82rem;
   }
 
-  .catalog-row-sub .op-chip,
-  .catalog-row-sub .status-badge {
+  /* Every box on the line is the same height and the text is pinned to it, so nothing rides high
+     or low: a flex row centres line-boxes, and a <small> next to a 22px sprite has a line-box of
+     its own height, which is what made the two look off by a pixel or two. */
+  .catalog-row-line > * {
     height: 22px;
+    line-height: 22px;
     box-sizing: border-box;
+  }
+
+  .catalog-row-line :global(.asset-image) {
+    border-radius: 5px;
+  }
+
+  /* The product is what the offer delivers -- the one thing on this line worth reading. It was
+     `muted` like the id beside it, which is the colour for what you skip over. */
+  .catalog-row-product {
+    color: var(--ink);
+    font-size: 0.86rem;
+  }
+
+  /* Whole pixels, deliberately. A <small> here inherited 0.82rem and took its own 0.8em of that,
+     landing on ~10.5px -- a fractional size renders soft, which is what read as blur. */
+  .catalog-row-id {
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
   }
 
   .catalog-row-meta {
@@ -1555,6 +1579,14 @@
   .catalog-row-meta > .cost-chip {
     height: 24px;
     box-sizing: border-box;
+  }
+
+  /* The chips state facts and the buttons do things; sharing the row's gap ran the two groups
+     together into one undifferentiated line of boxes. */
+  .catalog-row-meta + :global(.op-actions) {
+    margin-left: 10px;
+    padding-left: 14px;
+    border-left: 1px solid var(--line);
   }
 
   .icon-preview {

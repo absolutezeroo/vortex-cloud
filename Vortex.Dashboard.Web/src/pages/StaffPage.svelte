@@ -238,7 +238,7 @@
             <th>{$t('staff.colCapabilities')}</th>
             <th>{$t('staff.colHolders')}</th>
             <th>{$t('staff.colIssues')}</th>
-            {#if canManage}<th></th>{/if}
+            {#if canManage}<th>{$t('common.actions')}</th>{/if}
           </tr>
         </thead>
         <tbody>
@@ -405,7 +405,7 @@
                 <th>{$t('staff.colEmail')}</th>
                 <th>{$t('staff.colPlayers')}</th>
                 <th>{$t('staff.colRoles')}</th>
-                <th></th>
+                <th>{$t('common.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -478,7 +478,7 @@
             <th>{$t('staff.colPresetName')}</th>
             <th>{$t('staff.colDuration')}</th>
             <th>{$t('staff.colMessage')}</th>
-            {#if canManage}<th></th>{/if}
+            {#if canManage}<th>{$t('common.actions')}</th>{/if}
           </tr>
         </thead>
         <tbody>

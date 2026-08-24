@@ -246,8 +246,14 @@
     gap: 4px;
   }
 
+  /* The global tab strip is `white-space: nowrap; flex-shrink: 0`, which is right on a page wide
+     enough to hold it. In a 520px dialog "Two-factor authentication" and "Password" together are
+     wider than that, and since neither could give, the panel itself grew a horizontal scrollbar. */
   .tabs button {
     flex: 1;
+    min-width: 0;
+    flex-shrink: 1;
+    white-space: normal;
   }
 
   .tabs button.active {

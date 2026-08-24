@@ -187,7 +187,12 @@
         <tr>
           <td>
             <button class="ghost-button" type="button" onclick={() => toggleExpand(roomId(room))}>
-              {#if expanded === roomId(room)}{:else}{/if} {roomName(room)} <small>#{roomId(room)}</small>
+              {#if expanded === roomId(room)}
+                <ChevronDown size={15} strokeWidth={2} aria-hidden="true" />
+              {:else}
+                <ChevronRight size={15} strokeWidth={2} aria-hidden="true" />
+              {/if}
+              {roomName(room)} <small>#{roomId(room)}</small>
             </button>
           </td>
           <td><EntityLink id={roomOwnerId(room)} label={roomOwnerName(room)} {openPlayer} {openItem} /></td>

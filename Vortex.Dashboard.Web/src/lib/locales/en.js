@@ -123,6 +123,7 @@ export default {
     selectMissingHint: 'No enabled currency matches this reward, so it would never be paid.',
   },
   common: {
+    actions: "Actions",
     remove: 'Remove',
     edit: 'Edit',
     delete: 'Delete',

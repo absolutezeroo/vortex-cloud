@@ -246,7 +246,7 @@
             <th>{$t('bots.colSkills')}</th>
             <th>{$t('bots.colPhrases')}</th>
             <th>{$t('bots.colAutoChat')}</th>
-            {#if canManage}<th></th>{/if}
+            {#if canManage}<th>{$t('common.actions')}</th>{/if}
           </tr>
         </thead>
         <tbody>
@@ -406,7 +406,7 @@
               <th>{$t('bots.colHandItemName')}</th>
               <th>{$t('bots.colNutrition')}</th>
               <th>{$t('bots.colThirst')}</th>
-              {#if canManage}<th></th>{/if}
+              {#if canManage}<th>{$t('common.actions')}</th>{/if}
             </tr>
           </thead>
           <tbody>

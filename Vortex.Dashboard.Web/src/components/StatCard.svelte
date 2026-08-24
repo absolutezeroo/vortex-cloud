@@ -21,6 +21,10 @@
 
   // A snippet is a function and text is not, which is the only distinction the markup below needs.
   const isSnippet = (slot) => typeof slot === 'function';
+
+  // The tile is sized for a counter. A word -- "Development", a hostname, a status -- runs past the
+  // card at the numeral size, so a long text value drops a size rather than overflowing.
+  let longValue = $derived(!isSnippet(value) && String(value ?? '').length > 9);
 </script>
 
 <article class="stat" class:accent style={color ? `border-left: 3px solid ${color};` : undefined}>
@@ -28,7 +32,7 @@
     {#if icon}<span class="stat-ico">{@render icon()}</span>{/if}
     {label}
   </span>
-  <span class="stat-value">
+  <span class="stat-value" class:stat-value--long={longValue}>
     {#if isSnippet(value)}{@render value()}{:else}{value}{/if}
   </span>
   {#if sub}

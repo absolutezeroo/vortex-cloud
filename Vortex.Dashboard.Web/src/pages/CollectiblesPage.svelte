@@ -346,7 +346,7 @@
               <th>{$t('collectibles.colBoost')}</th>
               <th>{$t('collectibles.colStatus')}</th>
               <th>{$t('collectibles.colReleased')}</th>
-              {#if canManage}<th></th>{/if}
+              {#if canManage}<th>{$t('common.actions')}</th>{/if}
             </tr>
           </thead>
           <tbody>
@@ -422,7 +422,7 @@
                             <th>{$t('collectibles.colRarity')}</th>
                             <th>{$t('collectibles.colItemScore')}</th>
                             <th>{$t('collectibles.colResolved')}</th>
-                            {#if canManage}<th></th>{/if}
+                            {#if canManage}<th>{$t('common.actions')}</th>{/if}
                           </tr>
                         </thead>
                         <tbody>
@@ -519,7 +519,7 @@
               <th>{$t('collectibles.colRarity')}</th>
               <th>{$t('collectibles.colStock')}</th>
               <th>{$t('collectibles.colOnSale')}</th>
-              {#if canManage}<th></th>{/if}
+              {#if canManage}<th>{$t('common.actions')}</th>{/if}
             </tr>
           </thead>
           <tbody>
@@ -618,7 +618,7 @@
               <th>{$t('collectibles.colEdition')}</th>
               <th>{$t('collectibles.colWindow')}</th>
               <th>{$t('collectibles.colOnSale')}</th>
-              {#if canManage}<th></th>{/if}
+              {#if canManage}<th>{$t('common.actions')}</th>{/if}
             </tr>
           </thead>
           <tbody>
@@ -714,7 +714,7 @@
               <th>{$t('collectibles.colStamps')}</th>
               <th>{$t('collectibles.colSilverPrice')}</th>
               <th>{$t('collectibles.colOnSale')}</th>
-              {#if canManage}<th></th>{/if}
+              {#if canManage}<th>{$t('common.actions')}</th>{/if}
             </tr>
           </thead>
           <tbody>
@@ -846,7 +846,7 @@
               <th>{$t('collectibles.colRemaining')}</th>
               <th>{$t('collectibles.colSet')}</th>
               <th>{$t('collectibles.colExpires')}</th>
-              {#if canManage}<th></th>{/if}
+              {#if canManage}<th>{$t('common.actions')}</th>{/if}
             </tr>
           </thead>
           <tbody>
@@ -958,7 +958,7 @@
                       <th>{$t('collectibles.colPlayer')}</th>
                       <th>{$t('collectibles.colGrantNote')}</th>
                       <th>{$t('collectibles.colGrantedAt')}</th>
-                      {#if canManage}<th></th>{/if}
+                      {#if canManage}<th>{$t('common.actions')}</th>{/if}
                     </tr>
                   </thead>
                   <tbody>

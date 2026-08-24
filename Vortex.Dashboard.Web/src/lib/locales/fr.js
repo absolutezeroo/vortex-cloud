@@ -121,6 +121,7 @@ export default {
     selectMissingHint: "Aucune monnaie active ne correspond à cette récompense : elle ne serait jamais versée.",
   },
   common: {
+    actions: "Actions",
     remove: 'Retirer',
     edit: 'Modifier',
     delete: 'Supprimer',

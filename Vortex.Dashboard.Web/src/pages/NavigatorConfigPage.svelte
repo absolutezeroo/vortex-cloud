@@ -297,7 +297,7 @@
                 <th>{$t('navigatorConfig.colFilter')}</th>
                 <th>{$t('navigatorConfig.colLocalization')}</th>
                 <th>{$t('navigatorConfig.colOrder')}</th>
-                {#if canManage}<th></th>{/if}
+                {#if canManage}<th>{$t('common.actions')}</th>{/if}
               </tr>
             </thead>
             <tbody>
@@ -373,7 +373,7 @@
             <th>{$t('navigatorConfig.colStaffOnly')}</th>
             <th>{$t('navigatorConfig.colMinRank')}</th>
             <th>{$t('navigatorConfig.colOrder')}</th>
-            {#if canManage}<th></th>{/if}
+            {#if canManage}<th>{$t('common.actions')}</th>{/if}
           </tr>
         </thead>
         <tbody>
@@ -438,7 +438,7 @@
             <th>{$t('navigatorConfig.colName')}</th>
             <th>{$t('navigatorConfig.colActiveAds')}</th>
             <th>{$t('navigatorConfig.colVisible')}</th>
-            {#if canManage}<th></th>{/if}
+            {#if canManage}<th>{$t('common.actions')}</th>{/if}
           </tr>
         </thead>
         <tbody>

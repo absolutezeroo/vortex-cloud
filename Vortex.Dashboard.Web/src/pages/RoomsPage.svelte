@@ -7,7 +7,10 @@
   import AccessDeniedNotice from '../components/AccessDeniedNotice.svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { openPlayer, openItem } from '../lib/session.js';
-  import { readParam, writeParams } from '../lib/urlState.js';
+  import { readParam, readNumberParam, writeParams } from '../lib/urlState.js';
+  import Pagination from '../components/Pagination.svelte';
+  import TableFilter from '../components/TableFilter.svelte';
+  import { filterRows } from '../lib/tableView.js';
   import { onMount } from 'svelte';
   import { t } from '../lib/i18n.js';
 
@@ -22,6 +25,47 @@
   let error = $state('');
   let forbidden = $state(false);
 
+  // The request already returns the whole window, so narrowing it is a reading operation rather
+  // than another call: event type, free text and a date range, all applied to what is here.
+  const PAGE_SIZE = 25;
+  let page = $state(readNumberParam('page', 1));
+  let kindFilter = $state(readParam('kind'));
+  let textFilter = $state('');
+  let fromFilter = $state('');
+  let toFilter = $state('');
+
+  let allRows = $derived(data?.timeline || []);
+
+  // The list of event types comes from the rows themselves: a hard-coded list goes stale the day
+  // the server emits a new one, and silently offers filters that match nothing.
+  let kinds = $derived([...new Set(allRows.map((row) => row.eventType).filter(Boolean))].sort());
+
+  let visibleRows = $derived(
+    filterRows(
+      allRows.filter((row) => {
+        if (kindFilter && row.eventType !== kindFilter) return false;
+
+        const at = Date.parse(row.createdAt);
+
+        if (fromFilter && at < Date.parse(fromFilter)) return false;
+        // An end date with no time means the whole of that day.
+        if (toFilter && at > Date.parse(toFilter) + 86_399_000) return false;
+
+        return true;
+      }),
+      textFilter,
+    ),
+  );
+
+  let pageCount = $derived(Math.max(1, Math.ceil(visibleRows.length / PAGE_SIZE)));
+  let pageRows = $derived(visibleRows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE));
+
+  // Narrowing the list moves the ground under the pager, so it goes back to the first page.
+  function narrowed() {
+    page = 1;
+    writeParams({ page: '', kind: kindFilter || '' });
+  }
+
   async function load() {
     if (!roomId.trim()) {
       return;
@@ -33,6 +77,12 @@
 
     try {
       data = await apiGet(`/api/v1/directory/rooms/${encodeURIComponent(roomId.trim())}?limit=120`);
+
+      // Keep the page only while it still exists in the new room's timeline.
+      if (page > Math.ceil((data?.timeline?.length || 0) / PAGE_SIZE)) {
+        page = 1;
+        writeParams({ page: '' });
+      }
     } catch (err) {
       if (isPermissionDeniedError(err)) {
         forbidden = true;
@@ -64,27 +114,60 @@
   <p class="muted">{$t('roomsTimeline.description')}</p>
 </section>
 
-<section class="panel">
+<!-- Nothing chosen yet means nothing to say about a room: the panel only exists once it has a
+     summary or a problem to report. -->
+{#if forbidden || error || data?.room}
+  <section class="panel">
 
-  {#if forbidden}
-    <AccessDeniedNotice message={$t('roomsTimeline.accessDenied')} />
-  {:else if error}
-    <p class="empty-state danger" role="alert">{error}</p>
-  {/if}
+    {#if forbidden}
+      <AccessDeniedNotice message={$t('roomsTimeline.accessDenied')} />
+    {:else if error}
+      <p class="empty-state danger" role="alert">{error}</p>
+    {/if}
 
-  {#if data?.room}
-    <div class="room-summary">
-      <strong>{data.room.name || data.room.roomName} #{data.room.roomId || data.room.id}</strong>
-      <span>{data.room.usersNow ?? data.room.roomUsersNow}/{data.room.playersMax ?? data.room.roomPlayersMax} {$t('roomsTimeline.players')}</span>
-      <span>{data.room.modelName || data.room.roomModelName}</span>
-      <EntityLink id={data.room.roomOwnerId || data.room.ownerPlayerId} label={data.room.roomOwnerName || ''} {openPlayer} {openItem} />
+    {#if data?.room}
+      <div class="room-summary">
+        <strong>{data.room.name || data.room.roomName} #{data.room.roomId || data.room.id}</strong>
+        <span>{data.room.usersNow ?? data.room.roomUsersNow}/{data.room.playersMax ?? data.room.roomPlayersMax} {$t('roomsTimeline.players')}</span>
+        <span>{data.room.modelName || data.room.roomModelName}</span>
+        <EntityLink id={data.room.roomOwnerId || data.room.ownerPlayerId} label={data.room.roomOwnerName || ''} {openPlayer} {openItem} />
+      </div>
+    {/if}
+  </section>
+{/if}
+
+{#if allRows.length}
+  <section class="panel">
+    <div class="timeline-filters">
+      <label>
+        {$t('investigation.filterKind')}
+        <select bind:value={kindFilter} onchange={narrowed}>
+          <option value="">{$t('investigation.filterKindAll')}</option>
+          {#each kinds as kind}
+            <option value={kind}>{kind}</option>
+          {/each}
+        </select>
+      </label>
+      <label>
+        {$t('common.since')}
+        <input autocomplete="off" spellcheck="false" type="date" bind:value={fromFilter} onchange={narrowed} />
+      </label>
+      <label>
+        {$t('common.until')}
+        <input autocomplete="off" spellcheck="false" type="date" bind:value={toFilter} onchange={narrowed} />
+      </label>
     </div>
-  {/if}
+
+    <TableFilter bind:query={textFilter} shown={visibleRows.length} total={allRows.length} />
+  </section>
+{/if}
+
+<section class="panel">
 
   <table>
     <thead><tr><th>{$t('roomsTimeline.colTime')}</th><th>{$t('roomsTimeline.colEvent')}</th><th>{$t('roomsTimeline.colActor')}</th><th>{$t('roomsTimeline.colTarget')}</th><th>{$t('roomsTimeline.colMessage')}</th></tr></thead>
     <tbody>
-      {#each data?.timeline || [] as row}
+      {#each pageRows as row}
         <tr>
           <td>{formatDate(row.createdAt)}</td>
           <td><span class={`event-${row.eventType}`}>{row.eventType}</span></td>
@@ -102,6 +185,22 @@
       {/each}
     </tbody>
   </table>
+
+  {#if pageCount > 1}
+    <Pagination
+      page={page}
+      pageCount={pageCount}
+      total={visibleRows.length}
+      pageSize={PAGE_SIZE}
+      pageWord={$t('common.page')}
+      prevLabel={$t('common.prev')}
+      nextLabel={$t('common.next')}
+      onchange={(next) => {
+        page = next;
+        writeParams({ page: next > 1 ? next : '' });
+      }}
+    />
+  {/if}
 </section>
 
 {#if picking}

@@ -730,7 +730,7 @@
         <label><input autocomplete="off" spellcheck="false" type="checkbox" bind:checked={newPrize.enabled} /> {$t('mysteryBox.enabled')}</label>
       </div>
       {#if $ops.errors.createPrize}<p class="empty-state danger" role="alert">{$ops.errors.createPrize}</p>{/if}
-      {#if $ops.results.createPrize}{/if}
+      {#if $ops.results.createPrize}<OpResult result={$ops.results.createPrize} />{/if}
     </div>
   
     {#snippet actions()}

@@ -1068,6 +1068,19 @@ table {
   margin-top: 10px;
 }
 
+/* Rows separated by nothing but a gap read as one wall of text. The rule goes between rows, so the
+   first keeps a clean top edge -- and the cards modifier is excluded, since those are already
+   separate tiles rather than rows in a list.
+   `:root` is here for weight, not for scope: a row is a <button> and its page's scoped
+   `.catalog-row { border: none }` matches at the same specificity but is injected after this
+   sheet, so without it the separator lost every time. */
+:root .catalog-list:not(.catalog-list--cards) > * + * {
+  border-top: 1px solid var(--line-strong);
+  /* A separator drawn on a rounded box curls down at both ends. These are rows in a divided list,
+     not cards, so they square off -- which also lets the hover fill run edge to edge. */
+  border-radius: 0;
+}
+
 /* Three across instead of one per row.
    A single column is right when a card expands in place -- the catalogue's offers open an editor
    underneath themselves, and reading that in a third of the width would be worse. It is wrong when
@@ -1452,7 +1465,11 @@ code {
   overscroll-behavior: contain;
   width: min(1040px, 100%);
   max-height: 90vh;
-  overflow: auto;
+  /* A dialog scrolls down, never sideways. Anything genuinely wider than it -- a table, a code
+     block -- carries its own `overflow-x: auto`, so a horizontal bar here only ever means a child
+     overshot by a few pixels, and dragging the whole dialog to see them is not the answer. */
+  overflow-y: auto;
+  overflow-x: hidden;
   background: var(--surface);
   border: 1px solid var(--line-strong);
   border-radius: 10px;
@@ -1460,6 +1477,13 @@ code {
   padding: 16px;
   display: grid;
   gap: 14px;
+}
+
+/* A grid item will not go narrower than its own min-content unless told to, so one unshrinkable
+   child -- a tab strip, a long code, a wide table -- makes the whole dialog scroll sideways
+   instead of the child handling its own overflow. */
+.modal-panel > * {
+  min-width: 0;
 }
 
 .modal-header {
@@ -2476,14 +2500,14 @@ form > .op-actions,
 :root[data-theme='dark'] input:not([type='checkbox']):not([type='radio']):not(.bare),
 :root[data-theme='dark'] .op-field input:not([type='checkbox']):not([type='radio']),
 :root[data-theme='dark'] .toolbar input:not(.bare):not([type='checkbox']):not([type='radio']) {
-  border: 3px solid var(--field-border);
+  border: 2px solid var(--field-border);
   border-radius: 5px;
   background-color: var(--field-bg);
   /* The whole field treatment: a 2px light bar inside the top edge, so the box reads
      as recessed under the border rather than painted flat inside it. */
   box-shadow: inset 0 2px 0 0 var(--field-inset);
   color: var(--field-ink);
-  padding: 7px 12px;
+  padding: 8px 12px;
   line-height: 1.2;
   /* Pinned, not merely computed. Padding + border + line-height give 39px only when the
      font-size is the page's; inside a .toolbar-grid the label sets a smaller one and the
@@ -2603,12 +2627,12 @@ form > .op-actions,
      toolbar it is one control in a row, and 100% pushed everything after it onto its own
      line. See the rule below. */
   min-width: 180px;
-  border: 3px solid var(--field-border);
+  border: 2px solid var(--field-border);
   border-radius: 5px;
   background-color: var(--field-bg);
   box-shadow: inset 0 2px 0 0 var(--field-inset);
   color: var(--field-ink);
-  padding: 7px 12px;
+  padding: 8px 12px;
   min-height: 39px;
   line-height: 1.2;
   font-weight: 400;
@@ -2629,7 +2653,7 @@ form > .op-actions,
    and left one dark 8px-radius box among light Habbo fields on every table page. The box
    moves to the field's look; the input inside stays transparent, as its own style intends. */
 :root[data-theme='dark'] .table-filter .tf-input {
-  border: 3px solid var(--field-border);
+  border: 2px solid var(--field-border);
   border-radius: 5px;
   background-color: var(--field-bg);
   box-shadow: inset 0 2px 0 0 var(--field-inset);
@@ -2730,12 +2754,12 @@ td.row-actions {
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-  border: 3px solid var(--field-border);
+  border: 2px solid var(--field-border);
   border-radius: 5px;
   background-color: var(--field-bg);
   box-shadow: inset 0 2px 0 0 var(--field-inset);
   color: var(--field-ink);
-  padding: 7px 12px;
+  padding: 8px 12px;
   min-height: 39px;
   line-height: 1.2;
   font-weight: 400;
@@ -3580,4 +3604,65 @@ svg.spin {
 .currency-select select {
   flex: 1;
   min-width: 0;
+}
+
+/* Badges and pills spoke a different green, red and yellow from the buttons beside them: they were
+   built on --ok/--danger/--warning, which predate the Habbo key colours. Same four hues, as a tint
+   rather than a fill -- a badge states a fact, it is not something you press. */
+:root[data-theme='dark'] .status-badge--ok,
+:root[data-theme='dark'] .status-badge--healthy,
+:root[data-theme='dark'] .status-pill.ok {
+  color: var(--button-success-border);
+  background: rgba(0, 129, 62, 0.22);
+  border-color: rgba(142, 218, 85, 0.42);
+}
+
+:root[data-theme='dark'] .status-badge--warn,
+:root[data-theme='dark'] .status-pill.warning {
+  color: var(--button-warning-border);
+  background: rgba(255, 185, 0, 0.18);
+  border-color: rgba(255, 234, 0, 0.4);
+}
+
+:root[data-theme='dark'] .status-badge--bad,
+:root[data-theme='dark'] .status-pill.danger {
+  color: var(--button-danger-border);
+  background: rgba(192, 23, 78, 0.22);
+  border-color: rgba(243, 115, 135, 0.42);
+}
+
+:root[data-theme='dark'] .status-badge--unknown {
+  color: var(--muted-strong);
+  background: var(--button-neutral-bg);
+  border-color: var(--button-neutral-border);
+}
+
+/* A metric tile is sized for a counter; a word value ("Development", a hostname) ran past its card
+   at the numeral size. */
+.stat .stat-value--long {
+  font-size: 1.35rem;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+/* One border weight across the theme. Keys were 2px and everything around them 1px -- a badge or a
+   panel edge beside a button read as a different material. The pill radius goes with it: a chip
+   next to a 5px key was the only fully-round thing on the page. */
+:root[data-theme='dark'] .status-badge,
+:root[data-theme='dark'] .status-pill,
+:root[data-theme='dark'] .cost-chip,
+:root[data-theme='dark'] .op-chip {
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 5px;
+}
+
+/* .table-wrap is deliberately absent: it is a scroll container with no border of its own, so
+   giving it a style and no colour drew a currentColor box around every table on the site. */
+:root[data-theme='dark'] .panel,
+:root[data-theme='dark'] .modal-panel,
+:root[data-theme='dark'] .drawer-panel,
+:root[data-theme='dark'] .stat {
+  border-width: 2px;
+  border-radius: 5px;
 }

@@ -259,7 +259,7 @@
       {#each data?.orleansCluster?.silos || [] as silo}
         <tr>
           <td><code>{silo.address}</code></td>
-          <td class={statusClass(silo.status)}>{silo.status}</td>
+          <td><span class={statusClass(silo.status)}>{silo.status}</span></td>
         </tr>
       {:else}
         <tr><td colspan="2" class="muted">{$t('infrastructure.noSiloData')}</td></tr>

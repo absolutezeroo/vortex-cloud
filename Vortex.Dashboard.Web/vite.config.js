@@ -10,6 +10,8 @@ export default defineConfig(({ command }) => ({
   base: command === 'build' ? '/assets/' : '/',
   plugins: [tailwindcss(), svelte(), uiReports()],
   server: {
+    port: 9001,
+    strictPort: true,
     proxy: { '/api': 'http://localhost:9000' },
   },
   build: {

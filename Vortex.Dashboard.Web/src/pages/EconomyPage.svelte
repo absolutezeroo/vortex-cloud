@@ -61,10 +61,6 @@
 
 <section class="panel">
 
-</section>
-
-<section class="panel">
-
   {#if forbidden}
     <AccessDeniedNotice message={$t('economy.accessDenied')} />
   {:else if error}

@@ -292,7 +292,7 @@
             <th>{$t('economyExtras.colStarting')}</th>
             <th>{$t('economyExtras.colWallets')}</th>
             <th>{$t('economyExtras.colHeld')}</th>
-            {#if canManage}<th></th>{/if}
+            {#if canManage}<th>{$t('common.actions')}</th>{/if}
           </tr>
         </thead>
         <tbody>
@@ -490,7 +490,7 @@
           <tr>
             <th>{$t('economyExtras.colLevel')}</th>
             <th>{$t('economyExtras.colFurniLimit')}</th>
-            {#if canManage}<th></th>{/if}
+            {#if canManage}<th>{$t('common.actions')}</th>{/if}
           </tr>
         </thead>
         <tbody>

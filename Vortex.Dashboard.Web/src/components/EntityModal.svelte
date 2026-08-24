@@ -5,6 +5,9 @@
   import EntityLink from './EntityLink.svelte';
   import AccessDeniedNotice from './AccessDeniedNotice.svelte';
   import AssetImage from './AssetImage.svelte';
+  import CurrencyIcon from './CurrencyIcon.svelte';
+  import { currencyChipClass, currencyKindFromName, currencyLabel } from '../lib/currency.js';
+  import { formatNumber } from '../lib/format.js';
   import { User, Package } from '@lucide/svelte';
   import { isPermissionDeniedError } from '../lib/permissions.js';
   import { modal, closeModal, openPlayer, openItem } from '../lib/session.js';
@@ -103,7 +106,11 @@
         <h3>{$t('entityModal.wallets')}</h3>
         <div class="inline-list">
           {#each playerProfile.wallets || [] as wallet}
-            <span>{wallet.currency}: <strong>{wallet.amount}</strong></span>
+            <span class={currencyChipClass(currencyKindFromName(wallet.currency, wallet.activityPointType))}>
+              <CurrencyIcon kind={currencyKindFromName(wallet.currency, wallet.activityPointType)} size={13} />
+              <strong>{formatNumber(wallet.amount ?? 0)}</strong>
+              {currencyLabel(wallet.currency, wallet.activityPointType)}
+            </span>
           {:else}
             <span class="muted">{$t('entityModal.noWalletRows')}</span>
           {/each}
@@ -112,7 +119,8 @@
 
       <section class="modal-section">
         <h3>{$t('entityModal.recentItems')}</h3>
-        <table>
+        <div class="table-wrap">
+          <table>
           <thead><tr><th>{$t('entityModal.colItem')}</th><th>{$t('entityModal.colDefinition')}</th><th>{$t('entityModal.colRoom')}</th></tr></thead>
           <tbody>
             {#each playerProfile.inventory?.latest || [] as item}
@@ -131,11 +139,13 @@
             {/each}
           </tbody>
         </table>
+        </div>
       </section>
 
       <section class="modal-section">
         <h3>{$t('entityModal.recentActivity')}</h3>
-        <table>
+        <div class="table-wrap">
+          <table>
           <thead><tr><th>{$t('entityModal.colTime')}</th><th>{$t('entityModal.colType')}</th><th>{$t('entityModal.colDetails')}</th></tr></thead>
           <tbody>
             {#each playerProfile.timeline?.items || [] as entry}
@@ -152,6 +162,7 @@
             {/each}
           </tbody>
         </table>
+        </div>
       </section>
     {:else if $modal.type === 'item' && itemProfile}
       <div class="modal-grid">
@@ -197,7 +208,8 @@
 
       <section class="modal-section">
         <h3>{$t('entityModal.history')}</h3>
-        <table>
+        <div class="table-wrap">
+          <table>
           <thead><tr><th>{$t('entityModal.colTime')}</th><th>{$t('entityModal.colEvent')}</th><th>{$t('entityModal.colActor')}</th><th>{$t('entityModal.colRoom')}</th><th>{$t('entityModal.colDetails')}</th></tr></thead>
           <tbody>
             {#each itemProfile.history || [] as row}
@@ -220,6 +232,7 @@
             {/each}
           </tbody>
         </table>
+        </div>
       </section>
     {:else}
       <p class="empty-state">{$t('entityModal.noProfileFound')}</p>
