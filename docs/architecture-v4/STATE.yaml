@@ -22,7 +22,7 @@ baseline:
 
 references_verified: 2026-08-25
 
-phase: wired   # W1 landed; W2-W4 need the actions half of the host (see plans/SLICE-W1.md)
+phase: shorts  # the wired extraction is done; what is left is Q2 and the closing slice
 
 active_slices: []
 
@@ -94,19 +94,18 @@ completed:
   - PR-W2  # WiredTriggerIndex + WiredStackResolver, tested on a fake host
   - PR-W3  # WiredExecutionPolicy (seeded RNG) + WiredExecutionScheduler (versioned keys)
   - PR-W4a # WiredCallChainGuard: the cycle set and the depth limit told apart
+  - PR-W4b # IWiredRoomActions: the engine no longer knows what a RoomGrain is
   - PR-F1  # a logic name claimed twice is a collision (ADR-000, D-V4-9)
   - PR-Q1  # both furniture definition indexes published as one version
   - PR-S1  # CatalogFulfillmentPlanner: what an offer promises, worked out purely
 
 # What the roadmap still has, and what each one is waiting on.
 remaining:
-  - id: PR-W4b
-    what: the selection engine, and WiredEngine as the assembler
-    blocked_on: >
-      the actions half of the host. WiredContext/WiredExecutionContext take a RoomGrain and carry the
-      box capability surface (map moves, avatar walks, five bot operations, the room composer, hand
-      items) - 21 call sites over ~18 members. Mechanical, but it is what RoomWiredSystem still needs
-      a grain for, so it is the slice that finally makes the whole pipeline constructible on a fake.
+  - id: wired-parity-matrix
+    what: the behavioural parity matrix the V4 note asks for (§6.4)
+    note: >
+      unblocked now. RoomWiredSystem takes an IWiredRoomHost, so the whole pipeline runs on a fake
+      room with a fake clock and a seeded RNG. 49 engine tests exist; the matrix is the rest of them.
   - id: PR-S2
     what: strategies per ProductType contributing to the plan
     note: >
