@@ -44,6 +44,10 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
         // predict.
         _policy = new WiredExecutionPolicy(_host.Diagnostics, Random.Shared);
         _schedule = new WiredExecutionScheduler();
+
+        // The depth is read through a lambda rather than captured: it comes from configuration, and
+        // an operator changing it should not have to restart the room to be heard (RFW-101).
+        _callChain = new WiredCallChainGuard(_host.Diagnostics, () => _host.View.MaxCallChainDepth);
     }
 
     private readonly Queue<RoomEvent> _eventQueue = new();
@@ -65,27 +69,9 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
     private readonly WiredStackResolver _stacks;
     private readonly WiredExecutionPolicy _policy;
     private readonly WiredExecutionScheduler _schedule;
+    private readonly WiredCallChainGuard _callChain;
 
     private bool _firstRun = true;
-
-    // Tiles whose pile is somewhere in the current "execute stacks" chain. A pile that calls itself,
-    // or two piles that call each other, would otherwise recurse until the room fell over; a tile
-    // already in this set is skipped rather than entered twice.
-    private readonly HashSet<int> _callChainTiles = [];
-
-    /// <summary>
-    /// How deep one "execute stacks" chain may go. The tile guard already makes a cycle impossible;
-    /// this bounds the cost of a wide, legitimate chain.
-    /// <para>
-    /// It used to be a private const of 8 while <c>RoomConfig.WiredMaxDepth</c> said 20 and was read
-    /// by nothing (RFW-101): an operator raising the setting changed the room's behaviour not at
-    /// all. The setting is the source of truth now, and its default was lowered to 8 rather than the
-    /// engine's ceiling being raised to 20 — 8 is what every room has actually been running, and the
-    /// depth Habbo itself allows is <c>UNKNOWN</c> (OQ-1). Changing the value and changing where it
-    /// is read are two decisions; this is only the second.
-    /// </para>
-    /// </summary>
-    private int MaxCallChainDepth => Room.MaxCallChainDepth;
 
     // Boxes currently lit by FlashActivationStateAsync, mapped to the room-clock time their visual
     // state reverts to unlit. Re-flashing a box simply pushes its revert time back.
@@ -755,55 +741,35 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
             return 0;
         }
 
-        if (_callChainTiles.Count >= MaxCallChainDepth)
+        if (!_callChain.HasRoomToDescend())
         {
-            Diagnostics.ChainStopped(WiredStopReason.DEPTH);
-
             return 0;
         }
 
-        bool holdsCaller = callerTileIdx >= 0 && _callChainTiles.Add(callerTileIdx);
+        // The caller's own tile is held for the duration, so a pile cannot execute itself.
+        using WiredCallChainGuard.Hold caller = _callChain.Enter(callerTileIdx);
+
         int executed = 0;
 
-        try
+        foreach (int furniId in targetFurniIds)
         {
-            foreach (int furniId in targetFurniIds)
+            if (!Room.TryGetItem(furniId, out IRoomItem? item) || item is not IRoomFloorItem floor)
             {
-                if (
-                    !Room.TryGetItem(furniId, out IRoomItem? item)
-                    || item is not IRoomFloorItem floor
-                )
-                {
-                    continue;
-                }
-
-                int tileIdx = Room.ToIdx(floor.X, floor.Y);
-
-                if (!_callChainTiles.Add(tileIdx))
-                {
-                    Diagnostics.ChainStopped(WiredStopReason.CYCLE);
-
-                    continue;
-                }
-
-                try
-                {
-                    if (await ExecuteCalledStackAsync(tileIdx, inheritedSelection, ct))
-                    {
-                        executed++;
-                    }
-                }
-                finally
-                {
-                    _callChainTiles.Remove(tileIdx);
-                }
+                continue;
             }
-        }
-        finally
-        {
-            if (holdsCaller)
+
+            int tileIdx = Room.ToIdx(floor.X, floor.Y);
+
+            using WiredCallChainGuard.Hold target = _callChain.Enter(tileIdx);
+
+            if (target.IsCycle)
             {
-                _callChainTiles.Remove(callerTileIdx);
+                continue;
+            }
+
+            if (await ExecuteCalledStackAsync(tileIdx, inheritedSelection, ct))
+            {
+                executed++;
             }
         }
 
