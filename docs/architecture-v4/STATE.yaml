@@ -108,14 +108,10 @@ completed:
   - PR-Q2c # both sides follow their delegations; the queue 64 -> 46, 17 of them read
   - PR-Z1b # the wired and furni walkthroughs, and the acceptance matrix (5 requirements unmet)
   - PR-Z1c # three of the five closed: StuffData round-trip, the facade wall, reference provenance
+  - PR-S2  # one strategy per ProductType; the planner composes instead of switching
 
 # What the roadmap still has, and what each one is waiting on.
 remaining:
-  - id: PR-S2
-    what: strategies per ProductType contributing to the plan
-    note: >
-      the planner already isolates every rule and is fully tested; splitting it into one strategy per
-      type is structure, not correctness, and earns itself when a third caller needs one.
   - id: PR-Q2
     what: the 29 wire disagreements nobody has read yet
     note: >

@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Vortex.Inventory.Fulfillment;
+using Vortex.Inventory.Fulfillment.Strategies;
 using Vortex.Logging;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Furniture.Providers;
@@ -244,6 +246,67 @@ public sealed class CatalogFulfillmentPlannerTests
         Plan(quantity: 1, CatalogOffers.Product(1, ProductType.Badge, extraParam: "   "))
             .IsEmpty.Should()
             .BeTrue();
+    }
+
+    /// <summary>
+    /// A product type nothing answers for promises nothing, rather than refusing the purchase. A
+    /// catalogue carries rows for features an emulator may not have yet, and a bundle containing one
+    /// of them should still grant the rest.
+    /// </summary>
+    [Fact]
+    public void AProductTypeNoStrategyClaims_ContributesNothing()
+    {
+        CatalogFulfillmentPlanner planner = new([new BadgeFulfillmentStrategy()]);
+
+        FulfillmentPlan plan = planner.Plan(
+            CatalogOffers.Offer(
+                1,
+                10,
+                CatalogOffers.Product(1, ProductType.Floor, definitionId: 1),
+                CatalogOffers.Product(2, ProductType.Badge, extraParam: "ACH_Test1")
+            ),
+            string.Empty,
+            1,
+            null
+        );
+
+        plan.BadgeCodes.Should().Equal(["ACH_Test1"]);
+        plan.Furniture.Should().BeEmpty("no strategy answers for floor furniture in this planner");
+        plan.IsEmpty.Should().BeFalse();
+    }
+
+    /// <summary>
+    /// A later strategy replaces an earlier one for the same product type. That is the whole point of
+    /// the seam: a hotel with its own rule for a type does not have to filter the built-in out first.
+    /// </summary>
+    [Fact]
+    public void AStrategyRegisteredLast_ReplacesTheOneBeforeIt()
+    {
+        CatalogFulfillmentPlanner planner = new([
+            new BadgeFulfillmentStrategy(),
+            new AlwaysOneFixedBadge(),
+        ]);
+
+        FulfillmentPlan plan = planner.Plan(
+            CatalogOffers.Offer(
+                1,
+                10,
+                CatalogOffers.Product(2, ProductType.Badge, extraParam: "ACH_Test1")
+            ),
+            string.Empty,
+            1,
+            null
+        );
+
+        plan.BadgeCodes.Should().Equal(["OVERRIDDEN"]);
+    }
+
+    private sealed class AlwaysOneFixedBadge : IFulfillmentStrategy
+    {
+        public IReadOnlyList<ProductType> Handles { get; } = [ProductType.Badge];
+
+        public void Contribute(in FulfillmentRequest request, FulfillmentPlanBuilder into) =>
+            into.AddBadge("OVERRIDDEN");
     }
 
     private static FulfillmentPlan Plan(
