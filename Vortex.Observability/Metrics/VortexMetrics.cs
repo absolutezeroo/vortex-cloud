@@ -29,6 +29,7 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
     private readonly Counter<long> _wiredChainStopped;
     private readonly Counter<long> _commerceOperation;
     private readonly Counter<long> _commerceStepReplayed;
+    private readonly Counter<long> _furnitureLogicFallback;
     private readonly ILiveStatsAggregator _liveStats;
 
     public bool Enabled => _enabled;
@@ -96,6 +97,12 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
             unit: "{step}",
             description: "Post-pivot steps that found their own receipt and skipped their work."
         );
+        _furnitureLogicFallback = _meter.CreateCounter<long>(
+            "Vortex.furniture.logic.fallback",
+            unit: "{object}",
+            description: "Room objects built on the family default because their logic name is not "
+                + "registered - the size of the unimplemented-behaviour backlog, by name."
+        );
     }
 
     public void PacketReceived(string operation, long? actorId = null, int? roomId = null)
@@ -160,6 +167,18 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
                 1,
                 new KeyValuePair<string, object?>("flow", kind.ToString()),
                 new KeyValuePair<string, object?>("state", state.ToString())
+            );
+        }
+    }
+
+    public void FurnitureLogicFallback(string logicName, string family)
+    {
+        if (_enabled)
+        {
+            _furnitureLogicFallback.Add(
+                1,
+                new KeyValuePair<string, object?>("logic_name", logicName),
+                new KeyValuePair<string, object?>("family", family)
             );
         }
     }

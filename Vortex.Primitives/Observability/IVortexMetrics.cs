@@ -54,6 +54,13 @@ public interface IVortexMetrics
     void CommerceStepReplayed(string stepKey);
 
     /// <summary>
+    /// A furniture definition asked for a logic nobody registered and got the family default. The
+    /// warning that used to be the only signal is the to-do list for implementing behaviour; a
+    /// counter is how a hotel finds out how much of its catalogue is on it.
+    /// </summary>
+    void FurnitureLogicFallback(string logicName, string family);
+
+    /// <summary>
     /// A wired chain stopped short of running everything it could have.
     /// <paramref name="reason"/> is one of <see cref="WiredStopReason"/> — a closed set, so it is
     /// safe as a tag. Nothing before this could answer how often a room actually hits its depth
