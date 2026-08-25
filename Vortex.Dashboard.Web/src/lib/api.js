@@ -16,6 +16,9 @@ export class ApiError extends Error {
     this.status = options.status || 0;
     this.path = options.path || '';
     this.connection = options.connection === true;
+    // The server puts one on every reply, header included, so a refusal with no body at all -- a 403
+    // from authorization, a 429 from the limiter -- still gives the operator something to quote.
+    this.correlationId = options.correlationId || '';
 
     if (options.cause) {
       this.cause = options.cause;
@@ -133,7 +136,12 @@ async function request(path, options, requestOptions = {}) {
     if (!response.ok) {
       const code = data && data.error ? data.error : `HTTP ${response.status}`;
 
-      throw new ApiError(code, { code, status: response.status, path });
+      throw new ApiError(code, {
+        code,
+        status: response.status,
+        path,
+        correlationId: (data && data.correlationId) || response.headers.get('X-Correlation-Id') || '',
+      });
     }
 
     return data;

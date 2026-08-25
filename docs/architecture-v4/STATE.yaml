@@ -101,6 +101,7 @@ completed:
   - PR-W5  # the behavioural parity matrix (§6.4), run on a fake room and a fake clock
   - PR-D1  # dashboard control-plane observability (dashboard-api-security §17)
   - PR-D2  # step-up MFA on the critical capabilities (§7), server + dialog
+  - PR-D3  # one correlation id per request, and no raw EF message on an operator's screen (§10)
 
 # What the roadmap still has, and what each one is waiting on.
 remaining:
@@ -120,11 +121,10 @@ remaining:
       §17 done (PR-D1). §7 done (PR-D2): the critical set is named by capability rather than by
       route, so an endpoint written tomorrow under OpsGrantCurrency arrives protected;
       `Vortex:Observability:DashboardStepUpMinutes` is 0 by default, and turning it on is the whole
-      switch. Still open: §10 ProblemDetails — 98 endpoints answer `{ error }` and the SPA reads
-      `data.error`, which already satisfies "a stable code for the Web"; what is missing is the
-      correlation id on the payloads that are not operation results, and a domain rejection that
-      returns `ex.Message` where a stable code is required (an EF InvalidOperationException would
-      reach the operator's screen verbatim).
+      switch. §10 done (PR-D3): all seven invariants hold. The `ProblemDetails` *shape* was not
+      adopted — the note makes it optional ("le shape exact peut suivre ProblemDetails") and
+      `{ error }` already is the stable code, read by the SPA at lib/api.js. Nothing of substance is
+      left in this document.
     partial:
       - id: §5 ActorSecurityContext
         state: >
@@ -146,6 +146,18 @@ remaining:
           table. An observable gauge would run a COUNT per scrape, which spends the database the
           control plane exists to protect. If it is wanted, count the transitions the grain already
           publishes and read the backlog as opened-minus-closed.
+      - id: §10 ProblemDetails shape
+        why: >
+          the invariants were the frozen part and all seven hold; the shape is explicitly optional in
+          the note. Adopting it means rewriting 98 endpoint literals and the SPA's error reader for a
+          renamed field, with no invariant gained. `type`/`title`/`detail` would be three constants
+          per code and nothing reads them.
+      - id: correlation id middleware test
+        why: >
+          the request-scoped id is opened inside the pipeline's outermost lambda, which builds only
+          with Orleans and a database behind it. The rule that can leak silently -- which exception
+          messages reach an operator -- is unit-tested (DomainRejectionMessageTests); the header stamp
+          fails visibly (no header) rather than silently.
       - id: step-up default
         why: >
           DashboardStepUpMinutes is 0 out of the box. Turning it on for a hotel whose operators have

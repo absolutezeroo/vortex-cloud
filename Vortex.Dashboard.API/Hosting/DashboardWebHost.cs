@@ -204,6 +204,13 @@ internal sealed class DashboardWebHost(
     ///     parameters". <c>DashboardEndpointServiceTests</c> maps every endpoint against exactly this
     ///     list so the omission is a failing test rather than a degraded emulator.
     /// </summary>
+    /// <summary>
+    ///     The response header every dashboard reply carries its correlation id in. A header rather
+    ///     than only a body field because the refusals that matter most have no body: a 403 from the
+    ///     authorization middleware and a 429 from the rate limiter never reach a handler.
+    /// </summary>
+    internal const string CorrelationHeader = "X-Correlation-Id";
+
     internal static readonly Type[] ForwardedServiceTypes =
     [
         typeof(DashboardApiService),
@@ -451,6 +458,7 @@ internal sealed class DashboardWebHost(
             app.Services.GetRequiredService<DashboardAssetUrls>().ImgSrcOrigins
         );
         DashboardAuditEmitter emitter = app.Services.GetRequiredService<DashboardAuditEmitter>();
+        IVortexContextAccessor context = app.Services.GetRequiredService<IVortexContextAccessor>();
 
         // Reads had no error path at all: this app's own log providers are cleared (lifecycle output
         // comes from the parent logger), and the audit middleware at the bottom of this method does its
@@ -460,6 +468,31 @@ internal sealed class DashboardWebHost(
         app.Use(
             async (ctx, next) =>
             {
+                // One id for the whole request, opened here so everything below shares it: the
+                // operation's own audit row, the HTTP access row the middleware at the bottom writes,
+                // the log line, and the error payload. Before this each of those minted its own or
+                // had none -- an access row for a failed read carried no correlation id at all, so a
+                // 500 gave the operator an id that appeared in exactly one place and matched nothing
+                // they could be sent to look at.
+                using IVortexTraceScope requestScope = context.BeginScope(
+                    $"{ctx.Request.Method} {ctx.Request.Path.Value ?? "/"}"
+                );
+
+                string correlationId = requestScope.Context.CorrelationId.Value;
+
+                // Set on the way out rather than now: a bodiless refusal -- a 403 from the
+                // authorization middleware, a 429 from the limiter -- never reaches a handler that
+                // could put the id in a payload, and the header is the only place left to say it.
+                ctx.Response.OnStarting(() =>
+                {
+                    if (!ctx.Response.Headers.ContainsKey(CorrelationHeader))
+                    {
+                        ctx.Response.Headers[CorrelationHeader] = correlationId;
+                    }
+
+                    return Task.CompletedTask;
+                });
+
                 try
                 {
                     await next().ConfigureAwait(false);
@@ -489,7 +522,11 @@ internal sealed class DashboardWebHost(
         async Task FailAsync(HttpContext ctx, int status, string error, Exception? ex)
         {
             string path = ctx.Request.Path.Value ?? "/";
-            string correlationId = CorrelationId.New().Value;
+
+            // The request's id, not a fresh one. Minting here produced an id the operator could quote
+            // and nobody could find: the audit row written two lines down carried a different one.
+            string correlationId =
+                context.Current?.CorrelationId.Value ?? CorrelationId.New().Value;
 
             if (ex is not null)
             {

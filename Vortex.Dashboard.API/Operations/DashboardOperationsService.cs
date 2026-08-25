@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -157,7 +158,10 @@ internal sealed partial class DashboardOperationsService(
         AuditCategory category = AuditCategory.Staff
     )
     {
-        CorrelationId correlationId = CorrelationId.New();
+        // The request's id when there is one, so the operation's audit row, the HTTP access row and
+        // the error the operator is holding all name the same thing. A fresh id here meant three ids
+        // for one failed click.
+        CorrelationId correlationId = _context.Current?.CorrelationId ?? CorrelationId.New();
 
         using IVortexTraceScope scope = _context.BeginScope(
             action,
@@ -198,11 +202,17 @@ internal sealed partial class DashboardOperationsService(
 
             return OperationResult.Succeeded(correlationId.Value);
         }
-        catch (InvalidOperationException ex)
+        catch (InvalidOperationException ex) when (IsDomainCode(ex.Message))
         {
             // Expected domain-validation rejection (e.g. duplicate voucher code) rather than an
             // infrastructure fault — logged at a lower severity and the reason is surfaced to the
             // operator instead of the generic "operation_failed".
+            //
+            // Guarded by the shape of the message, because InvalidOperationException is not only the
+            // domain's: EF throws it too ("Sequence contains no elements", "The instance of entity
+            // type cannot be tracked..."), and this branch put whatever it said on the operator's
+            // screen. One filtered `when` sends those to the fault branch below instead, which logs
+            // the exception and answers a generic code -- no schema, no query, no stack.
             Measure(action, "rejected", startedAt);
 
             _logger.LogInformation(
@@ -258,6 +268,19 @@ internal sealed partial class DashboardOperationsService(
             return OperationResult.Failed(correlationId.Value);
         }
     }
+
+    /// <summary>
+    ///     Whether an exception message is one of the domain's own rejection codes rather than a
+    ///     framework sentence. Every deliberate one is lowercase snake_case — <c>offer_has_products</c>,
+    ///     <c>account_not_found</c> — and nothing thrown by EF, Orleans or the BCL looks like that.
+    /// </summary>
+    internal static bool IsDomainCode(string? message) =>
+        !string.IsNullOrEmpty(message)
+        && message.Length <= 64
+        && DomainCodePattern().IsMatch(message);
+
+    [GeneratedRegex("^[a-z][a-z0-9_]*$")]
+    private static partial Regex DomainCodePattern();
 
     private void Measure(string action, string outcome, long startedAt) =>
         _metrics.DashboardOperationCompleted(
