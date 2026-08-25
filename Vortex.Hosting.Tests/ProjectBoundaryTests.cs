@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using Vortex.Hosting.Tests.Architecture;
 using Xunit;
 
 namespace Vortex.Hosting.Tests;
@@ -22,7 +23,11 @@ public sealed class ProjectBoundaryTests
     public void PacketHandlers_DoNotReferenceTheDatabaseProject()
     {
         string csproj = File.ReadAllText(
-            Path.Combine(RepositoryRoot(), "Vortex.PacketHandlers", "Vortex.PacketHandlers.csproj")
+            Path.Combine(
+                RepositoryPaths.Root(),
+                "Vortex.PacketHandlers",
+                "Vortex.PacketHandlers.csproj"
+            )
         );
 
         csproj
@@ -37,7 +42,7 @@ public sealed class ProjectBoundaryTests
     [Fact]
     public void PacketHandlers_ContainNoDatabaseUsings()
     {
-        string handlers = Path.Combine(RepositoryRoot(), "Vortex.PacketHandlers");
+        string handlers = Path.Combine(RepositoryPaths.Root(), "Vortex.PacketHandlers");
 
         string[] offenders = Directory
             .EnumerateFiles(handlers, "*.cs", SearchOption.AllDirectories)
@@ -53,23 +58,5 @@ public sealed class ProjectBoundaryTests
             .ToArray();
 
         offenders.Should().BeEmpty();
-    }
-
-    /// <summary>Walks up from the test binaries until the solution file is found.</summary>
-    private static string RepositoryRoot()
-    {
-        DirectoryInfo? directory = new(AppContext.BaseDirectory);
-
-        while (directory is not null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "Vortex.Cloud.sln")))
-            {
-                return directory.FullName;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new InvalidOperationException("Could not locate the repository root.");
     }
 }

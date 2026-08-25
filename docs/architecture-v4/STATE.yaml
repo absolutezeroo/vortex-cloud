@@ -1,0 +1,77 @@
+# Vortex Cloud — V4 runtime refactor: state carried between sessions.
+#
+# This file is the source of truth for "where is the refactor". A session starts by reading it and
+# ends by updating it. Its schema is asserted by
+# Vortex.Hosting.Tests/Architecture/WorkflowStateTests.cs, which runs inside VortexCloudFastCheck —
+# a state file that drifts out of shape fails the build rather than the next reader.
+#
+# SYNC rule (ARCHITECTURE-V4 §12.1): for each audit below, run
+#   git diff <vortex_sha>..HEAD -- <watched_paths>
+# No file touched  -> the audit stays `valid`, do not re-audit.
+# A file touched   -> mark it `stale` and revalidate ONLY that audit's paths.
+
+workflow_version: 4
+
+baseline:
+  repository: absolutezeroo/vortex-cloud
+  # The V4 document was written against afc485be. Every structurant claim it makes (A1-A6, A15) was
+  # re-read line by line at the sha below and still holds; the commits in between are dashboard and
+  # forensics work that does not touch the commerce topology.
+  commit: 426efc4f836be7292b982e1cc5722f3c9fff7eaf
+  document: docs/architecture/architecture-workflow.md
+
+references_verified: 2026-08-25
+
+phase: p0
+
+active_slices: []
+
+accepted_decisions:
+  - ADR-000
+
+open_questions:
+  - OQ-1
+  - OQ-2
+  - OQ-3
+  - OQ-4
+  - OQ-5
+  - OQ-6
+  - OQ-7
+  - OQ-8
+
+audits:
+  commerce:
+    vortex_sha: 426efc4f836be7292b982e1cc5722f3c9fff7eaf
+    watched_paths:
+      - Vortex.Catalog/**
+      - Vortex.Marketplace/**
+      - Vortex.Inventory/**
+      - Vortex.Players/Grains/PlayerWalletGrain.cs
+      - Vortex.Players/Grains/PlayerEffectGrain.cs
+      - Vortex.Primitives/Players/Wallet/**
+      - Vortex.Events/**
+    status: valid
+  wired:
+    vortex_sha: 426efc4f836be7292b982e1cc5722f3c9fff7eaf
+    watched_paths:
+      - Vortex.Rooms/**
+      - Vortex.Primitives/Rooms/**
+    status: valid
+  furniture:
+    vortex_sha: 426efc4f836be7292b982e1cc5722f3c9fff7eaf
+    watched_paths:
+      - Vortex.Rooms/Providers/**
+      - Vortex.Rooms/Object/**
+      - Vortex.Furniture/**
+    status: valid
+
+forbidden:
+  - implementation_before_architecture_gate
+  - split_room_into_item_or_wired_grains
+  - manual_locks_inside_grains
+  - reference_emulator_as_protocol_authority
+  - shadow_engine_without_adr
+  - behavior_change_inside_structural_slice
+  - value_moving_slice_without_commerce_contract
+
+cross_domain_findings: []
