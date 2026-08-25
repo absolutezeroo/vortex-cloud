@@ -47,7 +47,7 @@ public sealed class WiredStackResolverTests
         room.With(Box(4, new TestAddon(4)), TILE);
         room.With(Box(5, new TestAction(5)), TILE);
 
-        WiredStack stack = await Resolve(room);
+        WiredStack stack = await ResolveAsync(room);
 
         stack.StackId.Should().Be(TILE);
         stack.Triggers.Should().ContainSingle();
@@ -69,7 +69,7 @@ public sealed class WiredStackResolverTests
         room.With(Box(1, new TestVariable(1)), TILE);
         room.With(Box(2, new TestAction(2)), TILE);
 
-        WiredStack stack = await Resolve(room);
+        WiredStack stack = await ResolveAsync(room);
 
         stack.Actions.Should().ContainSingle();
         stack.Triggers.Should().BeEmpty();
@@ -86,7 +86,7 @@ public sealed class WiredStackResolverTests
         room.With(WiredTestBoxes.FloorItem(1, FakeProxy.Create<IFurnitureLogic>(_ => null)), TILE);
         room.With(Box(2, new TestAction(2)), TILE);
 
-        (await Resolve(room)).Actions.Should().ContainSingle();
+        (await ResolveAsync(room)).Actions.Should().ContainSingle();
     }
 
     /// <summary>
@@ -101,7 +101,7 @@ public sealed class WiredStackResolverTests
         room.With(Box(10, new TestAction(10)), TILE);
         room.With(Box(20, new TestAction(20)), TILE);
 
-        WiredStack stack = await Resolve(room);
+        WiredStack stack = await ResolveAsync(room);
 
         stack
             .Actions.Select(a => ((FurnitureWiredLogic)a).ObjectId.Value)
@@ -117,7 +117,7 @@ public sealed class WiredStackResolverTests
         room.With(Box(1, new TestAction(1, hydrationThrows: true)), TILE);
         room.With(Box(2, new TestAction(2)), TILE);
 
-        WiredStack stack = await Resolve(room);
+        WiredStack stack = await ResolveAsync(room);
 
         stack
             .Actions.Should()
@@ -139,7 +139,7 @@ public sealed class WiredStackResolverTests
         room.With(Box(1, new TestAction(1)), TILE);
         room.With(Box(2, new TestAction(2)), TILE + 1);
 
-        (await Resolve(room)).Actions.Should().ContainSingle();
+        (await ResolveAsync(room)).Actions.Should().ContainSingle();
     }
 
     [Theory]
@@ -160,7 +160,7 @@ public sealed class WiredStackResolverTests
     }
 
     [Fact]
-    public async Task ABoxStillOnItsTileIsRecognised()
+    public void ABoxStillOnItsTileIsRecognised()
     {
         FakeWiredRoomHost room = new();
         room.With(Box(1, new TestAction(1)), TILE);
@@ -170,11 +170,9 @@ public sealed class WiredStackResolverTests
         resolver.IsOnTile(new RoomObjectId(1), TILE).Should().BeTrue();
         resolver.IsOnTile(new RoomObjectId(1), TILE + 1).Should().BeFalse();
         resolver.IsOnTile(new RoomObjectId(2), TILE).Should().BeFalse();
-
-        await Task.CompletedTask;
     }
 
-    private static Task<WiredStack> Resolve(FakeWiredRoomHost room) =>
+    private static Task<WiredStack> ResolveAsync(FakeWiredRoomHost room) =>
         new WiredStackResolver(room.View, room.Diagnostics).BuildFromTileAsync(
             TILE,
             CancellationToken.None

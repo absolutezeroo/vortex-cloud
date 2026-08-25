@@ -43,14 +43,10 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
         // three firings" has behaviour worth pinning, and pinning it needs a sequence a test can
         // predict.
         _policy = new WiredExecutionPolicy(_host.Diagnostics, Random.Shared);
+        _schedule = new WiredExecutionScheduler();
     }
 
     private readonly Queue<RoomEvent> _eventQueue = new();
-
-    private readonly Dictionary<
-        WiredExecutionKey,
-        WiredPendingStackExecution
-    > _pendingStackExecutions = [];
 
     private readonly RoomGrain _roomGrain;
 
@@ -68,12 +64,9 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
     private readonly WiredTriggerIndex _triggers;
     private readonly WiredStackResolver _stacks;
     private readonly WiredExecutionPolicy _policy;
-
-    private readonly PriorityQueue<(WiredExecutionKey key, long version), long> _stackSchedule =
-        new();
+    private readonly WiredExecutionScheduler _schedule;
 
     private bool _firstRun = true;
-    private long _nextStackExecutionId;
 
     // Tiles whose pile is somewhere in the current "execute stacks" chain. A pile that calls itself,
     // or two piles that call each other, would otherwise recurse until the room fell over; a tile
@@ -459,11 +452,6 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
             return;
         }
 
-        WiredExecutionKey key = new(
-            ctx.Stack.StackId,
-            Interlocked.Increment(ref _nextStackExecutionId)
-        );
-
         WiredPendingStackExecution pending = new()
         {
             Stack = ctx.Stack,
@@ -474,61 +462,18 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
             SelectorPool = ctx.SelectorPool,
             Signal = ctx.Signal,
             ProcessingContext = ctx,
-            Version = 1,
-            DueAtMs = dueAtMs,
             NextActionIndex = 0,
         };
 
-        _pendingStackExecutions[key] = pending;
-        _stackSchedule.Enqueue((key, pending.Version), pending.DueAtMs);
+        _schedule.Schedule(ctx.Stack.StackId, pending, dueAtMs);
     }
 
-    private async Task RunDueScheduledStackExecutionsAsync(long now, CancellationToken ct)
-    {
-        int budget = Room.MaxScheduledPerTick;
-
-        while (budget-- > 0 && _stackSchedule.Count > 0)
-        {
-            ((WiredExecutionKey key, long version) entry, long dueAtMs) = PeekSchedule();
-
-            if (dueAtMs > now)
-            {
-                break;
-            }
-
-            _stackSchedule.Dequeue();
-
-            (WiredExecutionKey key, long version) = entry;
-
-            if (
-                !_pendingStackExecutions.TryGetValue(key, out WiredPendingStackExecution? pending)
-                || pending.Version != version
-            )
-            {
-                continue;
-            }
-
-            if (pending.DueAtMs > now)
-            {
-                continue;
-            }
-
-            if (await ExecuteStackChainAsync(key, pending, now, ct))
-            {
-                _pendingStackExecutions.Remove(key);
-            }
-        }
-
-        ((WiredExecutionKey key, long version) entry, long dueAtMs) PeekSchedule()
-        {
-            if (_stackSchedule.TryPeek(out (WiredExecutionKey key, long version) k, out long p))
-            {
-                return (k, p);
-            }
-
-            return (default, long.MaxValue);
-        }
-    }
+    private Task RunDueScheduledStackExecutionsAsync(long now, CancellationToken ct) =>
+        _schedule.DrainDueAsync(
+            now,
+            Room.MaxScheduledPerTick,
+            (key, pending) => ExecuteStackChainAsync(key, pending, now, ct)
+        );
 
     private async Task<bool> ExecuteStackChainAsync(
         WiredExecutionKey key,
@@ -565,7 +510,7 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
                 {
                     pending.WaitingActionIndex = i;
 
-                    RescheduleStack(key, pending, now + delayMs);
+                    _schedule.Reschedule(key, pending, now + delayMs);
 
                     return false;
                 }
@@ -745,23 +690,6 @@ public sealed partial class RoomWiredSystem : IRoomEventListener
                 Message = message,
             }
         );
-    }
-
-    private void RescheduleStack(
-        WiredExecutionKey key,
-        WiredPendingStackExecution pending,
-        long dueAtMs
-    )
-    {
-        if (pending.DueAtMs != dueAtMs)
-        {
-            pending.Version++;
-        }
-
-        pending.DueAtMs = dueAtMs;
-
-        _pendingStackExecutions[key] = pending;
-        _stackSchedule.Enqueue((key, pending.Version), pending.DueAtMs);
     }
 
     private Task FlushWiredContextAsync(WiredExecutionContext ctx)
