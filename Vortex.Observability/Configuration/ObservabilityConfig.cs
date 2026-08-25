@@ -35,6 +35,36 @@ public sealed class ObservabilityConfig
     /// <summary>Delay between retry attempts for failed durable audit writes.</summary>
     public int AuditWriteRetryDelayMs { get; init; } = 250;
 
+    /// <summary>
+    /// How long the audit trail is kept, in days. 0 keeps it for ever. This is what a dispute is
+    /// settled with months later, so it outlives the privacy-bearing tables below by design.
+    /// </summary>
+    public int AuditRetentionDays { get; init; } = 180;
+
+    /// <summary>
+    /// How long item provenance is kept, in days. 0 (the default) keeps it for ever: an item's
+    /// history is the item, and a rare furni outlives every retention window worth setting.
+    /// </summary>
+    public int ItemEventRetentionDays { get; init; }
+
+    /// <summary>How long room chat is kept, in days. 0 keeps it for ever.</summary>
+    public int ChatRetentionDays { get; init; } = 90;
+
+    /// <summary>How long room visit history is kept, in days. 0 keeps it for ever.</summary>
+    public int RoomVisitRetentionDays { get; init; } = 90;
+
+    /// <summary>Hours between retention sweeps. Minimum one hour.</summary>
+    public int RetentionSweepIntervalHours { get; init; } = 24;
+
+    /// <summary>Rows deleted per statement, so a sweep never holds the table for long.</summary>
+    public int RetentionBatchSize { get; init; } = 5_000;
+
+    /// <summary>
+    /// Ceiling on rows removed from one table per sweep. A hotel enabling retention for the first
+    /// time works through its backlog over several cycles rather than in one long delete.
+    /// </summary>
+    public int RetentionMaxRowsPerCycle { get; init; } = 200_000;
+
     /// <summary>Path to dead-letter file for batches that cannot be written to DB.</summary>
     public string AuditDeadLetterPath { get; init; } = "logs/audit-dead-letter.jsonl";
 
@@ -252,6 +282,21 @@ public sealed class ObservabilityConfig
 
     /// <summary>Critical threshold for login-failed rate (fails/minute).</summary>
     public int LoginFailedSpikesCriticalPerMinute { get; init; } = 20;
+
+    /// <summary>
+    /// Degraded threshold for one account's audited actions (actions/minute). The other two spike
+    /// signals are about the hotel; this one is about a single account, and it is what catches a
+    /// script long before a person notices the pattern by hand.
+    /// </summary>
+    /// <remarks>
+    /// Set well above what a person can produce. Playing normally, an account files a few audited
+    /// actions a minute; sustaining dozens means something is driving the client. Too low and every
+    /// busy player becomes an alert, which is the failure mode that gets alerting switched off.
+    /// </remarks>
+    public int AccountActionSpikesDegradedPerMinute { get; init; } = 40;
+
+    /// <summary>Critical threshold for one account's audited actions (actions/minute).</summary>
+    public int AccountActionSpikesCriticalPerMinute { get; init; } = 100;
 
     /// <summary>Number of top error groups returned in an incident snapshot.</summary>
     public int IncidentTopErrorGroups { get; init; } = 5;

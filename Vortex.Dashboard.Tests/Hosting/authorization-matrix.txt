@@ -168,6 +168,7 @@ POST /api/v1/operations/navigator/quick-links/delete -> dashboard.ops.navigator.
 POST /api/v1/operations/navigator/quick-links/update -> dashboard.ops.navigator.manage
 POST /api/v1/operations/navigator/seed-defaults -> dashboard.ops.navigator.manage
 POST /api/v1/operations/players/ban -> dashboard.ops.player.ban
+POST /api/v1/operations/players/forensics-purge -> dashboard.ops.player.forensics_purge
 POST /api/v1/operations/players/kick -> dashboard.ops.player.kick
 POST /api/v1/operations/players/mute -> dashboard.ops.player.mute
 POST /api/v1/operations/players/trading-lock -> dashboard.ops.player.trading_lock

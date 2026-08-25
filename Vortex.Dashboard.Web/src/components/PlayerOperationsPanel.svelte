@@ -45,6 +45,7 @@
   let mute = $state({ durationSeconds: '', reason: '' });
   let tradingLock = $state({ permanent: false, durationSeconds: '', reason: '' });
   let tradingUnlock = $state({ reason: '' });
+  let forensicsPurge = $state({ reason: '' });
 
   let picker = $state(null);
   // Which operation is open. One at a time: five forms at once was five reasons to fill in for
@@ -61,6 +62,7 @@
   let canMute = $derived(hasDashboardCapability($identity, MODERATION_OPERATION_CAPABILITIES.mute));
   let canTradingLock = $derived(hasDashboardCapability($identity, MODERATION_OPERATION_CAPABILITIES.tradingLock));
   let canTradingUnlock = $derived(hasDashboardCapability($identity, MODERATION_OPERATION_CAPABILITIES.tradingUnlock));
+  let canForensicsPurge = $derived(hasDashboardCapability($identity, OPERATION_CAPABILITIES.forensicsPurge));
 
   // The list the chooser renders. Permission decides whether an entry can be opened at all,
   // rather than opening it onto an access-denied notice.
@@ -80,6 +82,7 @@
     { key: 'mute', label: $t('moderationActions.mutePlayer'), hint: $t('moderationActions.mutePlayerHint'), allowed: canMute },
     { key: 'tradingLock', label: $t('moderationActions.lockTrading'), hint: $t('moderationActions.lockTradingHint'), allowed: canTradingLock },
     { key: 'tradingUnlock', label: $t('moderationActions.liftTradingLock'), hint: $t('moderationActions.liftTradingLockHint'), allowed: canTradingUnlock },
+    { key: 'forensicsPurge', label: $t('operations.purgeForensics'), hint: $t('operations.purgeForensicsHint'), allowed: canForensicsPurge },
   ]);
 
   let who = $derived(playerName || translate('operations.player'));
@@ -183,6 +186,20 @@
       reasonOk(kick.reason),
       { reason: kick.reason.trim() },
       translate('operations.kickSummary', { name: who, id: playerId }),
+    );
+  }
+
+  function stageForensicsPurge() {
+    if (!canForensicsPurge)
+      return void ops.fail('forensicsPurge', translate('operations.purgeForensicsAccessDenied'));
+
+    stage(
+      'forensicsPurge',
+      translate('operations.purgeForensics'),
+      '/api/v1/operations/players/forensics-purge',
+      reasonOk(forensicsPurge.reason),
+      { reason: forensicsPurge.reason.trim() },
+      translate('operations.purgeForensicsSummary', { name: who, id: playerId }),
     );
   }
 
@@ -521,6 +538,43 @@
     {/if}
 {/snippet}
 
+{#snippet forensicsPurgeForm()}
+    {#if !canForensicsPurge}
+      <AccessDeniedNotice message={$t('operations.purgeForensicsAccessDenied')} />
+    {:else}
+      <!-- Spelled out rather than left to the confirm dialog: this is the one operation on the panel
+           that destroys evidence, and the operator should read what survives before running it. -->
+      <p class="muted">{$t('operations.purgeForensicsScope')}</p>
+      <div class="op-field">
+        <label for="forensics-purge-reason">{$t('common.reasonRequired')}</label>
+        <input
+          id="forensics-purge-reason"
+          autocomplete="off"
+          spellcheck="false"
+          bind:value={forensicsPurge.reason}
+          placeholder={$t('operations.purgeForensicsReasonPlaceholder')}
+          list="reason-history"
+        />
+      </div>
+      <div class="op-actions">
+        <button
+          type="button"
+          class="danger"
+          onclick={stageForensicsPurge}
+          disabled={$ops.busyKeys.forensicsPurge}
+        >
+          {$t('common.run')}
+        </button>
+      </div>
+      {#if $ops.errors.forensicsPurge}
+        <p class="empty-state danger" role="alert">{$ops.errors.forensicsPurge}</p>
+      {/if}
+      {#if $ops.results.forensicsPurge}
+        <OpResult result={$ops.results.forensicsPurge} onCopy={copy} copyLabel={$t('common.copy')} />
+      {/if}
+    {/if}
+{/snippet}
+
 {#snippet banForm()}
     {#if !canBan}
       <AccessDeniedNotice message={$t('moderationActions.banAccessDenied')} />
@@ -739,6 +793,7 @@
     {:else if openAction === 'mute'}{@render muteForm()}
     {:else if openAction === 'tradingLock'}{@render tradingLockForm()}
     {:else if openAction === 'tradingUnlock'}{@render tradingUnlockForm()}
+    {:else if openAction === 'forensicsPurge'}{@render forensicsPurgeForm()}
     {/if}
   </Modal>
 {/if}

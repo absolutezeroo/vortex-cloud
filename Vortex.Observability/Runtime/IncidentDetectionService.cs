@@ -48,6 +48,14 @@ public sealed class IncidentDetectionService(
         0,
         options.Value.LoginFailedSpikesCriticalPerMinute
     );
+    private readonly int _accountActionSpikesDegraded = Math.Max(
+        0,
+        options.Value.AccountActionSpikesDegradedPerMinute
+    );
+    private readonly int _accountActionSpikesCritical = Math.Max(
+        0,
+        options.Value.AccountActionSpikesCriticalPerMinute
+    );
     private readonly int _loginFailedSpikesDegraded = Math.Max(
         0,
         options.Value.LoginFailedSpikesDegradedPerMinute
@@ -110,11 +118,32 @@ public sealed class IncidentDetectionService(
                 .ToListAsync(ct)
                 .ConfigureAwait(false);
 
+            // The busiest single account in the window. Grouped in the database rather than pulled
+            // and counted here: on a busy hotel the window holds tens of thousands of rows, and the
+            // answer is one of them.
+            var busiestActor = await db
+                .AuditEvents.AsNoTracking()
+                .Where(e => e.OccurredAt >= since && e.ActorPlayerId != null)
+                .GroupBy(e => e.ActorPlayerId)
+                .Select(g => new { PlayerId = g.Key, Count = g.Count() })
+                .OrderByDescending(row => row.Count)
+                .FirstOrDefaultAsync(ct)
+                .ConfigureAwait(false);
+
             double errorSpikes = errorCount / windowMinutes;
             double loginFailedSpikes = loginFailedCount / windowMinutes;
 
             EvaluateErrorSpikes(errorSpikes, incidents);
             EvaluateLoginFailedSpikes(loginFailedSpikes, incidents);
+
+            if (busiestActor is not null)
+            {
+                EvaluateAccountActionSpikes(
+                    busiestActor.Count / windowMinutes,
+                    busiestActor.PlayerId,
+                    incidents
+                );
+            }
 
             return BuildSnapshot(incidents, topGroups, errorSpikes, loginFailedSpikes, now);
         }
@@ -311,6 +340,51 @@ public sealed class IncidentDetectionService(
                     $"Failed logins in last {_config.IncidentLookbackMinutes} min: {loginFailedSpikes:0.0}/min.",
                     loginFailedSpikes,
                     _loginFailedSpikesDegraded,
+                    DateTime.UtcNow
+                )
+            );
+        }
+    }
+
+    /// <summary>
+    /// One account producing far more audited actions than a person can. The other two spike signals
+    /// are about the hotel's health; this one names a player, because that is the only useful thing
+    /// to say about it -- an operator's next move is to open that account's timeline.
+    /// </summary>
+    private void EvaluateAccountActionSpikes(
+        double actionsPerMinute,
+        long? playerId,
+        List<IncidentSignal> incidents
+    )
+    {
+        // A threshold of 0 would fire on every account with any activity at all, so it means off
+        // rather than "alert always" -- the same reading as the retention windows.
+        if (_accountActionSpikesCritical > 0 && actionsPerMinute >= _accountActionSpikesCritical)
+        {
+            incidents.Add(
+                new IncidentSignal(
+                    "account.actions.critical",
+                    "critical",
+                    "Account action rate spike",
+                    $"Player {playerId} filed {actionsPerMinute:0.0} audited actions/min over the last {_lookbackMinutes} min.",
+                    actionsPerMinute,
+                    _accountActionSpikesCritical,
+                    DateTime.UtcNow
+                )
+            );
+            return;
+        }
+
+        if (_accountActionSpikesDegraded > 0 && actionsPerMinute >= _accountActionSpikesDegraded)
+        {
+            incidents.Add(
+                new IncidentSignal(
+                    "account.actions.degraded",
+                    "degraded",
+                    "Account action rate spike",
+                    $"Player {playerId} filed {actionsPerMinute:0.0} audited actions/min over the last {_lookbackMinutes} min.",
+                    actionsPerMinute,
+                    _accountActionSpikesDegraded,
                     DateTime.UtcNow
                 )
             );

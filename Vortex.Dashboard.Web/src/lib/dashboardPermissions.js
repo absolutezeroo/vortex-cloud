@@ -10,6 +10,7 @@ export const CAPABILITIES = {
   opsBanAccount: 'dashboard.ops.player.ban',
   opsMutePlayer: 'dashboard.ops.player.mute',
   opsTradingLock: 'dashboard.ops.player.trading_lock',
+  opsForensicsPurge: 'dashboard.ops.player.forensics_purge',
   opsCfhManage: 'dashboard.ops.cfh.manage',
   opsRoomsManage: 'dashboard.ops.rooms.manage',
   opsManageVouchers: 'dashboard.ops.vouchers.manage',
@@ -112,6 +113,7 @@ export const OPERATION_CAPABILITIES = {
   collectibles: CAPABILITIES.opsGrantCurrency,
   item: CAPABILITIES.opsGrantItem,
   kick: CAPABILITIES.opsKickPlayer,
+  forensicsPurge: CAPABILITIES.opsForensicsPurge,
 };
 
 // Per-action capability map for the moderation action forms on ModerationPage — mirrors

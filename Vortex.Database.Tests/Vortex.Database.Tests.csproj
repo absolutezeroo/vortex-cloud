@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
@@ -20,6 +20,7 @@
     <ProjectReference Include="..\Vortex.Database\Vortex.Database.csproj" />
     <ProjectReference Include="..\Vortex.Inventory\Vortex.Inventory.csproj" />
     <ProjectReference Include="..\Vortex.Furniture\Vortex.Furniture.csproj" />
+    <ProjectReference Include="..\Vortex.Observability\Vortex.Observability.csproj" />
     <ProjectReference Include="..\Vortex.Tests.Support\Vortex.Tests.Support.csproj" />
   </ItemGroup>
 </Project>

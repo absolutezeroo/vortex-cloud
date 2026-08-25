@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
@@ -11,6 +11,7 @@
     <!-- The aggregator's instrument names are a telemetry detail, not public API. The tests assert
          on them, so they are shared rather than promoted to public. -->
     <InternalsVisibleTo Include="Vortex.Rooms.Tests" />
+    <InternalsVisibleTo Include="Vortex.Database.Tests" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Vortex.Database\Vortex.Database.csproj" />

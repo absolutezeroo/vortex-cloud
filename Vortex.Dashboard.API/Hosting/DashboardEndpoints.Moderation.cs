@@ -154,6 +154,35 @@ internal static partial class DashboardEndpoints
             Capabilities.Dashboard.OpsTradingLock,
             TagOperations
         );
+        // Erasure on request. Not a sanction, which is why it carries its own capability rather than
+        // riding on the ones above: holding the power to ban somebody is no reason to hold the power
+        // to erase the record of what they did.
+        MapPost(
+            app,
+            ApiOperations + "/players/forensics-purge",
+            async (
+                HttpContext ctx,
+                PurgePlayerForensicsRequest body,
+                DashboardOperationsService ops,
+                CancellationToken ct
+            ) =>
+            {
+                // The reason is required by the same rule the sanctions follow, and more so here:
+                // this is the one operation that destroys evidence, so "why" is the only thing
+                // separating a lawful erasure from a cover-up.
+                if (body.PlayerId <= 0 || string.IsNullOrWhiteSpace(body.Reason))
+                {
+                    return Results.BadRequest(new { error = "invalid_request" });
+                }
+
+                return Results.Ok(
+                    await ops.PurgePlayerForensicsAsync(body, ctx.ActorEmail(), ct)
+                        .ConfigureAwait(false)
+                );
+            },
+            Capabilities.Dashboard.OpsForensicsPurge,
+            TagOperations
+        );
         MapReadGet(
             app,
             ApiOperations + "/cfh/queue",

@@ -88,6 +88,13 @@ public static class Capabilities
         public const string OpsBanAccount = "dashboard.ops.player.ban";
         public const string OpsMutePlayer = "dashboard.ops.player.mute";
         public const string OpsTradingLock = "dashboard.ops.player.trading_lock";
+
+        /// <summary>
+        /// Erasing a player's personal content from the forensic tables on request. Granted on its
+        /// own and to almost nobody: it is the only operator action that destroys evidence rather
+        /// than producing it, and the sanctions above are no reason at all to hold it.
+        /// </summary>
+        public const string OpsForensicsPurge = "dashboard.ops.player.forensics_purge";
         public const string OpsCfhManage = "dashboard.ops.cfh.manage";
         public const string OpsRoomsManage = "dashboard.ops.rooms.manage";
         public const string CatalogRead = "dashboard.catalog.read";
@@ -221,6 +228,7 @@ public static class Capabilities
             OpsBanAccount,
             OpsMutePlayer,
             OpsTradingLock,
+            OpsForensicsPurge,
             OpsCfhManage,
             OpsRoomsManage,
             CatalogRead,

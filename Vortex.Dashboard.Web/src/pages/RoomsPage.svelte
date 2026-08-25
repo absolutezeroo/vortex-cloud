@@ -60,6 +60,25 @@
   let pageCount = $derived(Math.max(1, Math.ceil(visibleRows.length / PAGE_SIZE)));
   let pageRows = $derived(visibleRows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE));
 
+  // Replay: a moment and a window around it, sent to the server rather than filtered here. The
+  // date filters below narrow what was already fetched, which is the wrong tool for "what happened
+  // in this room at 21:14" -- the incident is usually older than the last 120 events.
+  let replayAt = $state('');
+  let replayMinutes = $state('15');
+
+  function replayWindow() {
+    const at = Date.parse(replayAt);
+
+    if (!replayAt || Number.isNaN(at)) {
+      return '';
+    }
+
+    const half = Math.max(1, Number(replayMinutes) || 15) * 60_000;
+    const iso = (ms) => new Date(ms).toISOString();
+
+    return `&since=${encodeURIComponent(iso(at - half))}&until=${encodeURIComponent(iso(at + half))}`;
+  }
+
   // Narrowing the list moves the ground under the pager, so it goes back to the first page.
   function narrowed() {
     page = 1;
@@ -76,7 +95,9 @@
     writeParams({ room: roomId.trim() });
 
     try {
-      data = await apiGet(`/api/v1/directory/rooms/${encodeURIComponent(roomId.trim())}?limit=120`);
+      data = await apiGet(
+        `/api/v1/directory/rooms/${encodeURIComponent(roomId.trim())}?limit=${replayAt ? 500 : 120}${replayWindow()}`,
+      );
 
       // Keep the page only while it still exists in the new room's timeline.
       if (page > Math.ceil((data?.timeline?.length || 0) / PAGE_SIZE)) {
@@ -112,6 +133,32 @@
     </div>
   </div>
   <p class="muted">{$t('roomsTimeline.description')}</p>
+
+  <!-- Replay. Left empty this is the plain "last 120 events" view; give it a moment and the request
+       asks the server for the window around it instead, which is the only way to reach an incident
+       older than the tail of the timeline. -->
+  <div class="timeline-filters">
+    <label>
+      {$t('roomsTimeline.replayAt')}
+      <input autocomplete="off" spellcheck="false" type="datetime-local" bind:value={replayAt} />
+    </label>
+    <label>
+      {$t('roomsTimeline.replayWindow')}
+      <select bind:value={replayMinutes}>
+        <option value="5">± 5 min</option>
+        <option value="15">± 15 min</option>
+        <option value="60">± 60 min</option>
+      </select>
+    </label>
+    <button type="button" onclick={load} disabled={!roomId.trim()}>
+      {replayAt ? $t('roomsTimeline.replayRun') : $t('common.refresh')}
+    </button>
+    {#if replayAt}
+      <button type="button" class="ghost-button" onclick={() => { replayAt = ''; load(); }}>
+        {$t('roomsTimeline.replayClear')}
+      </button>
+    {/if}
+  </div>
 </section>
 
 <!-- Nothing chosen yet means nothing to say about a room: the panel only exists once it has a

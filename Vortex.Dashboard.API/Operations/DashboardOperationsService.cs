@@ -59,6 +59,7 @@ internal sealed partial class DashboardOperationsService(
     IPrizePoolAdminService prizePoolAdmin,
     IFurnitureAdminService furnitureAdmin,
     IDatabaseBackupService databaseBackups,
+    IForensicsPurgeService forensicsPurge,
     IBenchmarkService benchmark,
     IAuditSink auditSink,
     IVortexContextAccessor context,
@@ -92,6 +93,7 @@ internal sealed partial class DashboardOperationsService(
     private readonly IPrizePoolAdminService _prizePoolAdmin = prizePoolAdmin;
     private readonly IFurnitureAdminService _furnitureAdmin = furnitureAdmin;
     private readonly IDatabaseBackupService _databaseBackups = databaseBackups;
+    private readonly IForensicsPurgeService _forensicsPurge = forensicsPurge;
     private readonly IBenchmarkService _benchmark = benchmark;
     private readonly IAuditSink _auditSink = auditSink;
     private readonly IVortexContextAccessor _context = context;

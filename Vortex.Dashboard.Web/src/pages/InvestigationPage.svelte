@@ -37,6 +37,11 @@
   // so both paths land on the same page state.
   let picking = $state(null);
 
+  // The second account of a multi-account case. Empty is the ordinary single-player investigation;
+  // filled, the timeline carries both and says which line belongs to whom.
+  let compareQuery = $state(readParam('compare'));
+  let comparePlayer = $state(null);
+
   // The timeline is paged client-side: the search already returns the whole window, so paging
   // is a reading aid, not another round trip.
   const PAGE_SIZE = 25;
@@ -45,14 +50,20 @@
   // The search returns the whole window in one go, so narrowing it is a reading operation, not
   // another request: kind, free text and a date range, all applied to what is already here.
   let kindFilter = $state(readParam('kind'));
+  let categoryFilter = $state(readParam('category'));
   let textFilter = $state('');
   let fromFilter = $state('');
   let toFilter = $state('');
+
+  // Built from what actually came back rather than a hardcoded list: the server grows categories
+  // (Progression was the last one) and a list written here would quietly stop offering the newest.
+  let categories = $derived([...new Set(rows.map((row) => row.category).filter(Boolean))].sort());
 
   let visibleRows = $derived(
     filterRows(
       rows.filter((row) => {
         if (kindFilter && row.kind !== kindFilter) return false;
+        if (categoryFilter && row.category !== categoryFilter) return false;
         if (fromFilter && row.sortTime < Date.parse(fromFilter)) return false;
         // An end date with no time means the whole of that day.
         if (toFilter && row.sortTime > Date.parse(toFilter) + 86_399_000) return false;
@@ -77,7 +88,55 @@
   // Narrowing the list moves the ground under the pager, so it goes back to the first page.
   function narrowed() {
     page = 1;
-    writeParams({ page: '', kind: kindFilter || '' });
+    writeParams({ page: '', kind: kindFilter || '', category: categoryFilter || '' });
+  }
+
+  // Exports what is on screen, not everything loaded: the operator narrowed the list on purpose,
+  // and an export that quietly ignores their filters is a different question's answer.
+  function exportCsv() {
+    const columns = ['time', 'account', 'kind', 'category', 'action', 'actor', 'target', 'room', 'item', 'correlationId', 'detail'];
+    const cell = (value) => {
+      const text = value === null || value === undefined ? '' : String(value);
+
+      // Excel and every other reader treat a bare quote as a delimiter, so a chat line containing
+      // one would shift every column after it.
+      return /[",\n\r]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+    };
+
+    const lines = [
+      columns.join(','),
+      ...visibleRows.map((row) =>
+        [
+          row.time ?? '',
+          row.account ?? '',
+          row.kind ?? '',
+          row.category ?? '',
+          row.action ?? row.eventType ?? '',
+          row.actorPlayerName ?? row.actorPlayerId ?? row.playerId ?? '',
+          row.targetPlayerName ?? row.targetPlayerId ?? '',
+          row.roomName ?? row.roomId ?? '',
+          row.itemId ?? '',
+          row.correlationId ?? '',
+          summarizeData(row.data ?? row.Data),
+        ]
+          .map(cell)
+          .join(','),
+      ),
+    ];
+
+    // A BOM, because the export is opened in Excel more often than anywhere else and Excel reads a
+    // UTF-8 file without one as the local codepage -- which mangles every accented player name.
+    // Built from its code point rather than typed: the character itself is invisible in an editor,
+    // and eslint rejects it on sight as irregular whitespace.
+    const bom = String.fromCharCode(0xfeff);
+    const blob = new Blob([bom + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = `investigation-${player?.id ?? (query.trim() || 'export')}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
   }
   let active = $state('actions');
 
@@ -125,6 +184,34 @@
       .join(' ');
   }
 
+  // One account's rows, tagged with whose they are. Split out of search() so the comparison run can
+  // feed the same list a second time instead of duplicating every mapping.
+  function collectPlayerRows(data, into, term, account) {
+    (data.asActor || []).forEach((row) => push(into, { kind: 'audit', account, ...row }));
+    (data.ledger || []).forEach((row) => push(into, { kind: 'ledger', playerId: term, account, ...row }));
+    (data.itemHistory || []).forEach((row) => push(into, { kind: 'item', account, ...row }));
+    (data.chats || []).forEach((row) =>
+      push(into, {
+        kind: 'chat',
+        playerId: term,
+        action: 'chat.said',
+        data: row.message,
+        account,
+        ...row,
+      }),
+    );
+    (data.chestMoves || []).forEach((row) =>
+      push(into, {
+        kind: 'chest',
+        playerId: term,
+        action: chestAction(row),
+        data: chestDetail(row),
+        account,
+        ...row,
+      }),
+    );
+  }
+
   async function search() {
     const term = query.trim();
     if (!term) {
@@ -134,6 +221,7 @@
     forbidden = false;
     error = '';
     player = null;
+    comparePlayer = null;
     try {
       // limit applies per source, and the noisy ones (room entries, sessions) would otherwise fill
       // the default 50 on their own and push everything rarer -- a badge, an achievement, a chest
@@ -143,24 +231,33 @@
 
       if (data.kind === 'id') {
         player = data.playerProfile || null;
-        (data.asActor || []).forEach((row) => push(nextRows, { kind: 'audit', ...row }));
-        (data.ledger || []).forEach((row) => push(nextRows, { kind: 'ledger', playerId: term, ...row }));
-        (data.itemHistory || []).forEach((row) => push(nextRows, { kind: 'item', ...row }));
-        (data.chats || []).forEach((row) =>
-          push(nextRows, { kind: 'chat', playerId: term, action: 'chat.said', data: row.message, ...row })
-        );
-        (data.chestMoves || []).forEach((row) =>
-          push(nextRows, {
-            kind: 'chest',
-            playerId: term,
-            action: chestAction(row),
-            data: chestDetail(row),
-            ...row,
-          })
-        );
-        summary = player
-          ? translate('investigation.eventsForPlayer', { count: nextRows.length, term })
-          : translate('investigation.eventsForId', { count: nextRows.length, term });
+        collectPlayerRows(data, nextRows, term, player?.name || term);
+
+        // The second account, interleaved into the same list rather than shown beside it. Two
+        // columns of timestamps is exactly the comparison a person cannot do by eye; one ordered
+        // list with a name against each line is the whole point of asking.
+        const otherTerm = compareQuery.trim();
+
+        if (otherTerm && otherTerm !== term) {
+          const other = await apiGet(
+            `/api/v1/directory/search?q=${encodeURIComponent(otherTerm)}&limit=200`,
+          );
+
+          if (other.kind === 'id') {
+            comparePlayer = other.playerProfile || null;
+            collectPlayerRows(other, nextRows, otherTerm, comparePlayer?.name || otherTerm);
+          }
+        }
+
+        summary = comparePlayer
+          ? translate('investigation.eventsForPair', {
+              count: nextRows.length,
+              term,
+              other: otherTerm,
+            })
+          : player
+            ? translate('investigation.eventsForPlayer', { count: nextRows.length, term })
+            : translate('investigation.eventsForId', { count: nextRows.length, term });
       } else if (data.kind === 'correlationId') {
         (data.audit || []).forEach((row) => push(nextRows, { kind: 'audit', ...row }));
         (data.ledger || []).forEach((row) => push(nextRows, { kind: 'ledger', ...row }));
@@ -178,6 +275,7 @@
 
       writeParams({
         player: player ? String(player.id) : '',
+        compare: compareQuery.trim(),
         page: page > 1 ? page : '',
       });
     } catch (err) {
@@ -207,6 +305,15 @@
 <section class="panel">
   <form class="toolbar" onsubmit={(event) => { event.preventDefault(); search(); }}>
     <input autocomplete="off" spellcheck="false" bind:value={query} placeholder={$t('investigation.searchPlaceholder')} />
+    <!-- Optional second account. A multi-account case is the one question the single-player
+         timeline cannot answer, and it is answered by ordering both together, not by opening the
+         page twice. -->
+    <input
+      autocomplete="off"
+      spellcheck="false"
+      bind:value={compareQuery}
+      placeholder={$t('investigation.comparePlaceholder')}
+    />
     <button type="submit">{$t('investigation.load')}</button>
     <button type="button" class="ghost-button" onclick={() => (picking = 'user')}>
       {$t('investigation.findPlayer')}
@@ -262,8 +369,23 @@
           <option value="audit">{$t('investigation.kindAudit')}</option>
           <option value="ledger">{$t('investigation.kindLedger')}</option>
           <option value="item">{$t('investigation.kindItem')}</option>
+          <option value="chat">{$t('investigation.kindChat')}</option>
+          <option value="chest">{$t('investigation.kindChest')}</option>
         </select>
       </label>
+      <!-- Only the audit rows carry a category, so the control stays out of the way until the
+           result set actually has some to choose between. -->
+      {#if categories.length > 1}
+        <label>
+          {$t('investigation.filterCategory')}
+          <select bind:value={categoryFilter} onchange={narrowed}>
+            <option value="">{$t('investigation.filterCategoryAll')}</option>
+            {#each categories as category}
+              <option value={category}>{category}</option>
+            {/each}
+          </select>
+        </label>
+      {/if}
       <label>
         {$t('common.since')}
         <input autocomplete="off" spellcheck="false" type="date" bind:value={fromFilter} onchange={narrowed} />
@@ -272,6 +394,9 @@
         {$t('common.until')}
         <input autocomplete="off" spellcheck="false" type="date" bind:value={toFilter} onchange={narrowed} />
       </label>
+      <button type="button" class="ghost-button" onclick={exportCsv} disabled={visibleRows.length === 0}>
+        {$t('investigation.exportCsv')}
+      </button>
     </div>
 
   </section>
@@ -280,11 +405,14 @@
     <TableFilter bind:query={textFilter} shown={visibleRows.length} total={rows.length} />
 
     <table>
-    <thead><tr><th>{$t('investigation.colTime')}</th><th>{$t('investigation.colType')}</th><th>{$t('investigation.colActor')}</th><th>{$t('investigation.colDetails')}</th></tr></thead>
+    <thead><tr><th>{$t('investigation.colTime')}</th>{#if comparePlayer}<th>{$t('investigation.colAccount')}</th>{/if}<th>{$t('investigation.colType')}</th><th>{$t('investigation.colActor')}</th><th>{$t('investigation.colDetails')}</th></tr></thead>
     <tbody>
       {#each pageRows as row}
         <tr>
           <td>{formatDate(row.time)}</td>
+          <!-- Only while comparing: a column that reads the same on every line of a single-player
+               investigation is a column that costs width and says nothing. -->
+          {#if comparePlayer}<td>{row.account ?? ''}</td>{/if}
           <td>{row.kind}</td>
           <td>
             {#if row.kind === 'item' && row.itemId}
