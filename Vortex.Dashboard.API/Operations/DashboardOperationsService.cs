@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -170,9 +171,16 @@ internal sealed partial class DashboardOperationsService(
         // and the row itself was gone -- there was nowhere left to read what it had been.
         using IEntityChangeCapture capture = EntityChangeCapture.Begin();
 
+        // One timestamp for all three exits. The audit row says what happened and the trail is
+        // queryable, but a table is not an alert: an action that has started failing, or one that has
+        // quietly gone from 40ms to four seconds, is invisible until somebody thinks to look.
+        long startedAt = Stopwatch.GetTimestamp();
+
         try
         {
             await work(ct).ConfigureAwait(false);
+
+            Measure(action, "success", startedAt);
 
             Emit(
                 action,
@@ -195,6 +203,8 @@ internal sealed partial class DashboardOperationsService(
             // Expected domain-validation rejection (e.g. duplicate voucher code) rather than an
             // infrastructure fault — logged at a lower severity and the reason is surfaced to the
             // operator instead of the generic "operation_failed".
+            Measure(action, "rejected", startedAt);
+
             _logger.LogInformation(
                 VortexEventIds.DashboardFault,
                 "Dashboard operation {Action} rejected: {Reason}",
@@ -222,6 +232,8 @@ internal sealed partial class DashboardOperationsService(
         }
         catch (Exception ex)
         {
+            Measure(action, "failed", startedAt);
+
             _logger.LogError(
                 VortexEventIds.DashboardFault,
                 ex,
@@ -246,6 +258,13 @@ internal sealed partial class DashboardOperationsService(
             return OperationResult.Failed(correlationId.Value);
         }
     }
+
+    private void Measure(string action, string outcome, long startedAt) =>
+        _metrics.DashboardOperationCompleted(
+            action,
+            outcome,
+            Stopwatch.GetElapsedTime(startedAt).TotalMilliseconds
+        );
 
     private void Emit(
         string action,

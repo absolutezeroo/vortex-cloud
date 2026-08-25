@@ -13,11 +13,13 @@ namespace Vortex.Observability.Audit;
 public sealed class ChannelAuditSink(
     AuditChannel channel,
     IVortexContextAccessor contextAccessor,
+    IVortexMetrics metrics,
     ILogger<ChannelAuditSink> logger
 ) : IAuditSink
 {
     private readonly AuditChannel _channel = channel;
     private readonly IVortexContextAccessor _contextAccessor = contextAccessor;
+    private readonly IVortexMetrics _metrics = metrics;
     private readonly ILogger<ChannelAuditSink> _logger = logger;
 
     public void Emit(in AuditEvent auditEvent)
@@ -31,6 +33,13 @@ public sealed class ChannelAuditSink(
         if (!_channel.TryWrite(record))
         {
             // Never block the caller; a saturated channel means the writer cannot keep up.
+            //
+            // Counted as well as logged: this is the point where a privileged mutation stops being
+            // accounted for, and a warning in a log nobody is tailing is not a signal. The stage tag
+            // separates it from a batch the writer accepted and then failed to persist -- the same
+            // loss, but one is back-pressure and the other is the database.
+            _metrics.AuditWriteFailed("enqueue");
+
             _logger.LogWarning(
                 VortexEventIds.AuditDropped,
                 "Audit event dropped (channel saturated): {Category}/{Action}",

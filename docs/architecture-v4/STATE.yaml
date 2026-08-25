@@ -98,14 +98,11 @@ completed:
   - PR-F1  # a logic name claimed twice is a collision (ADR-000, D-V4-9)
   - PR-Q1  # both furniture definition indexes published as one version
   - PR-S1  # CatalogFulfillmentPlanner: what an offer promises, worked out purely
+  - PR-W5  # the behavioural parity matrix (§6.4), run on a fake room and a fake clock
+  - PR-D1  # dashboard control-plane observability (dashboard-api-security §17)
 
 # What the roadmap still has, and what each one is waiting on.
 remaining:
-  - id: wired-parity-matrix
-    what: the behavioural parity matrix the V4 note asks for (§6.4)
-    note: >
-      unblocked now. RoomWiredSystem takes an IWiredRoomHost, so the whole pipeline runs on a fake
-      room with a fake clock and a seeded RNG. 49 engine tests exist; the matrix is the rest of them.
   - id: PR-S2
     what: strategies per ProductType contributing to the plan
     note: >
@@ -116,7 +113,22 @@ remaining:
   - id: PR-Z1
     what: closing benchmarks against the P0-C baseline, docs, ADR review
   - id: dashboard
-    what: docs/architecture/dashboard-api-security.md
-    blocked_on: >
-      another session is editing Vortex.Dashboard.API and Vortex.Dashboard.Web in this working tree.
-      That chantier is FROZEN and separate by its own rule; starting it here would collide.
+    what: docs/architecture/dashboard-api-security.md, the parts §17 does not cover
+    note: >
+      unblocked: the other session's dashboard work landed at ce04752b and the tree is clean.
+      §17 is done (PR-D1). Audited as absent and still open: §7 step-up MFA for the
+      destructive operations, §10 ProblemDetails with a urn:vortex type and the correlation id in
+      the error payload (98 endpoints answer `{ error }` today and the SPA reads `data.error`),
+      §5 ActorSecurityContext.
+    deliberate_gaps:
+      - id: dashboard.mfa.recovery
+        why: >
+          recovery codes do not exist in this product -- no match for "recovery" anywhere in
+          Vortex.Authentication. A counter for an event that cannot happen is a dial that reads zero
+          for a reason nobody can look up. Add it with the feature.
+      - id: dashboard.cfh.queue.size
+        why: >
+          no in-memory source. IModerationQueueGrain holds subscribers, not tickets; the queue is a
+          table. An observable gauge would run a COUNT per scrape, which spends the database the
+          control plane exists to protect. If it is wanted, count the transitions the grain already
+          publishes and read the backlog as opened-minus-closed.

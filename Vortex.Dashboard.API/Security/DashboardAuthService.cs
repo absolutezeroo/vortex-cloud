@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Authentication;
+using Vortex.Primitives.Observability;
 using Vortex.Primitives.Permissions;
 
 namespace Vortex.Dashboard.API.Security;
@@ -13,7 +14,8 @@ namespace Vortex.Dashboard.API.Security;
 internal sealed class DashboardAuthService(
     IAccountAuthenticator authenticator,
     IPermissionService permissions,
-    DashboardSessionStore sessions
+    DashboardSessionStore sessions,
+    IVortexMetrics metrics
 )
 {
     public async Task<DashboardLoginResult> LoginAsync(
@@ -29,13 +31,22 @@ internal sealed class DashboardAuthService(
             .VerifyCredentialsAsync(email, password, code, ct)
             .ConfigureAwait(false);
 
+        // Counted by outcome rather than as a bare success/failure pair: a run of invalid-code is
+        // someone holding a password and working the second factor, and that reads nothing like a run
+        // of invalid-credentials. Collapsing the two would hide the only one worth waking up for.
         switch (verification.Outcome)
         {
             case AccountVerificationOutcome.MfaRequired:
+                metrics.DashboardAuthAttempt("mfa-required");
+
                 return DashboardLoginResult.MfaRequired;
             case AccountVerificationOutcome.InvalidCode:
+                metrics.DashboardAuthAttempt("invalid-code");
+
                 return DashboardLoginResult.InvalidCode;
             case AccountVerificationOutcome.InvalidCredentials:
+                metrics.DashboardAuthAttempt("invalid-credentials");
+
                 return DashboardLoginResult.InvalidCredentials;
         }
 
@@ -48,8 +59,12 @@ internal sealed class DashboardAuthService(
         // they are, not to someone holding half a credential.
         if (!HasDashboardAccess(perms))
         {
+            metrics.DashboardAuthAttempt("forbidden");
+
             return DashboardLoginResult.Forbidden;
         }
+
+        metrics.DashboardAuthAttempt("authenticated");
 
         string normalizedEmail = email.Trim().ToLowerInvariant();
         string sessionId = sessions.Create(verification.AccountId, normalizedEmail);

@@ -14,6 +14,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Audit;
 using Vortex.Observability.Configuration;
 using Vortex.Observability.Diagnostics;
+using Vortex.Primitives.Observability;
 
 namespace Vortex.Observability.Audit;
 
@@ -38,6 +39,7 @@ public sealed class AuditWriterService : BackgroundService
     private readonly IDbContextFactory<VortexDbContext> _dbContextFactory;
     private readonly string _deadLetterPath;
     private readonly ILogger<AuditWriterService> _logger;
+    private readonly IVortexMetrics _metrics;
     private readonly int _retryAttempts;
     private readonly int _retryDelayMs;
 
@@ -45,11 +47,13 @@ public sealed class AuditWriterService : BackgroundService
         AuditChannel channel,
         IDbContextFactory<VortexDbContext> dbContextFactory,
         IOptions<ObservabilityConfig> options,
+        IVortexMetrics metrics,
         ILogger<AuditWriterService> logger
     )
     {
         _channel = channel;
         _dbContextFactory = dbContextFactory;
+        _metrics = metrics;
         _batchSize = Math.Max(1, options.Value.AuditBatchSize);
         _retryAttempts = Math.Max(0, options.Value.AuditWriteRetryAttempts);
         _retryDelayMs = Math.Max(0, options.Value.AuditWriteRetryDelayMs);
@@ -201,6 +205,11 @@ public sealed class AuditWriterService : BackgroundService
 
     private async Task WriteDeadLetterAsync(List<DurableRecord> batch)
     {
+        // Counted here rather than at either call site, and before the path check: reaching this
+        // method at all means the batch is not in the table, and the case where no dead-letter path
+        // is configured is the one where it is not anywhere else either.
+        _metrics.AuditWriteFailed("persist");
+
         if (string.IsNullOrWhiteSpace(_deadLetterPath))
         {
             return;

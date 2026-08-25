@@ -238,6 +238,11 @@ internal sealed class DashboardWebHost(
         }
 
         services.AddSingleton(options);
+
+        // Not in ForwardedServiceTypes: that list is the set of types an endpoint delegate may take
+        // as a parameter, and DashboardEndpointServiceTests reads it as precisely that. This one is
+        // resolved by the middleware below, never by an endpoint signature.
+        services.AddSingleton(rootServices.GetRequiredService<IVortexMetrics>());
     }
 
     private static void ConfigureAuth(IServiceCollection services)
@@ -535,6 +540,8 @@ internal sealed class DashboardWebHost(
                 await next().ConfigureAwait(false);
             }
         );
+
+        DashboardControlPlaneMetrics.Use(app, app.Services.GetRequiredService<IVortexMetrics>());
 
         if (_config.DashboardHttpsEnabled)
         {

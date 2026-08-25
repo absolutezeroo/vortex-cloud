@@ -31,6 +31,12 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
     private readonly Counter<long> _commerceStepReplayed;
     private readonly Counter<long> _furnitureLogicFallback;
     private readonly Counter<long> _referenceDataPublished;
+    private readonly Counter<long> _dashboardAuth;
+    private readonly Counter<long> _dashboardAuthorizationDenied;
+    private readonly Counter<long> _dashboardOperation;
+    private readonly Histogram<double> _dashboardOperationDuration;
+    private readonly Counter<long> _dashboardHttpError;
+    private readonly Counter<long> _auditWriteFailure;
     private readonly ILiveStatsAggregator _liveStats;
 
     public bool Enabled => _enabled;
@@ -108,6 +114,39 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
             unit: "{object}",
             description: "Room objects built on the family default because their logic name is not "
                 + "registered - the size of the unimplemented-behaviour backlog, by name."
+        );
+        _dashboardAuth = _meter.CreateCounter<long>(
+            "Vortex.dashboard.auth",
+            unit: "{attempt}",
+            description: "Dashboard login attempts by outcome (authenticated, invalid-credentials, "
+                + "mfa-required, invalid-code, forbidden)."
+        );
+        _dashboardAuthorizationDenied = _meter.CreateCounter<long>(
+            "Vortex.dashboard.authorization.denied",
+            unit: "{request}",
+            description: "Requests from an authenticated operator refused for want of a capability, "
+                + "by capability."
+        );
+        _dashboardOperation = _meter.CreateCounter<long>(
+            "Vortex.dashboard.operation",
+            unit: "{operation}",
+            description: "Dashboard write operations by action and outcome."
+        );
+        _dashboardOperationDuration = _meter.CreateHistogram<double>(
+            "Vortex.dashboard.operation.duration",
+            unit: "ms",
+            description: "Wall time of a dashboard write operation, by action."
+        );
+        _dashboardHttpError = _meter.CreateCounter<long>(
+            "Vortex.dashboard.http.error",
+            unit: "{request}",
+            description: "Dashboard API responses with an error status, by status code."
+        );
+        _auditWriteFailure = _meter.CreateCounter<long>(
+            "Vortex.audit.write.failure",
+            unit: "{event}",
+            description: "Audit events that will not reach the table, by the stage that lost them "
+                + "(enqueue: channel saturated; persist: dead-lettered after retries)."
         );
     }
 
@@ -235,6 +274,61 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
                 elapsedMilliseconds,
                 new KeyValuePair<string, object?>("method", method)
             );
+        }
+    }
+
+    public void DashboardAuthAttempt(string outcome)
+    {
+        if (_enabled)
+        {
+            _dashboardAuth.Add(1, new KeyValuePair<string, object?>("outcome", outcome));
+        }
+    }
+
+    public void DashboardAuthorizationDenied(string capability)
+    {
+        if (_enabled)
+        {
+            _dashboardAuthorizationDenied.Add(
+                1,
+                new KeyValuePair<string, object?>("capability", capability)
+            );
+        }
+    }
+
+    public void DashboardOperationCompleted(
+        string action,
+        string outcome,
+        double elapsedMilliseconds
+    )
+    {
+        if (_enabled)
+        {
+            _dashboardOperation.Add(
+                1,
+                new KeyValuePair<string, object?>("action", action),
+                new KeyValuePair<string, object?>("outcome", outcome)
+            );
+            _dashboardOperationDuration.Record(
+                elapsedMilliseconds,
+                new KeyValuePair<string, object?>("action", action)
+            );
+        }
+    }
+
+    public void DashboardHttpError(int statusCode)
+    {
+        if (_enabled)
+        {
+            _dashboardHttpError.Add(1, new KeyValuePair<string, object?>("code", statusCode));
+        }
+    }
+
+    public void AuditWriteFailed(string stage)
+    {
+        if (_enabled)
+        {
+            _auditWriteFailure.Add(1, new KeyValuePair<string, object?>("stage", stage));
         }
     }
 
