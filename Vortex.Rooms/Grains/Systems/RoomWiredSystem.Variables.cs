@@ -98,10 +98,8 @@ public sealed partial class RoomWiredSystem
 
         IEnumerable<int> candidateIds = snapshot.TargetType switch
         {
-            WiredVariableTargetType.User => _roomGrain._state.AvatarsByPlayerId.Keys.Select(p =>
-                p.Value
-            ),
-            WiredVariableTargetType.Furni => _roomGrain._state.ItemsById.Keys.Select(i => i.Value),
+            WiredVariableTargetType.User => Room.AllAvatarPlayerIds(),
+            WiredVariableTargetType.Furni => Room.AllItemIds(),
             _ => [0],
         };
 
@@ -120,8 +118,7 @@ public sealed partial class RoomWiredSystem
 
     private Task ProcessInternalVariablesAsync(long now, CancellationToken ct)
     {
-        IEnumerable<IWiredVariable> variables =
-            _roomGrain._wiredVariablesProvider.BuildVariablesForRoom(_roomGrain);
+        IEnumerable<IWiredVariable> variables = _host.InternalVariables();
 
         foreach (IWiredVariable variable in variables)
         {
@@ -154,7 +151,7 @@ public sealed partial class RoomWiredSystem
         RemoveVariableBox(boxId);
 
         if (
-            !_roomGrain._state.ItemsById.TryGetValue(boxId, out IRoomItem? item)
+            !Room.TryGetItem(boxId, out IRoomItem? item)
             || item.Logic is not FurnitureWiredVariableLogic variable
         )
         {
@@ -217,7 +214,7 @@ public sealed partial class RoomWiredSystem
             Variables = snapshots,
         };
 
-        _roomGrain._state.AllVariablesHash = allVariablesSnapshot.AllVariablesHash;
+        Room.AllVariablesHash = allVariablesSnapshot.AllVariablesHash;
 
         return allVariablesSnapshot;
     }

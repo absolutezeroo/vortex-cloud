@@ -17,12 +17,12 @@ baseline:
   # The V4 document was written against afc485be. Every structurant claim it makes (A1-A6, A15) was
   # re-read line by line at the sha below and still holds; the commits in between are dashboard and
   # forensics work that does not touch the commerce topology.
-  commit: 426efc4f836be7292b982e1cc5722f3c9fff7eaf
+  commit: 7402bb9059b230a11badcc4399d25f2800d115a5
   document: docs/architecture/architecture-workflow.md
 
 references_verified: 2026-08-25
 
-phase: p0
+phase: wired
 
 active_slices: []
 
@@ -43,7 +43,7 @@ open_questions:
 
 audits:
   commerce:
-    vortex_sha: 426efc4f836be7292b982e1cc5722f3c9fff7eaf
+    vortex_sha: 7402bb9059b230a11badcc4399d25f2800d115a5
     watched_paths:
       - Vortex.Catalog/**
       - Vortex.Marketplace/**
@@ -56,13 +56,13 @@ audits:
       - Vortex.Events/**
     status: valid
   wired:
-    vortex_sha: 426efc4f836be7292b982e1cc5722f3c9fff7eaf
+    vortex_sha: 7402bb9059b230a11badcc4399d25f2800d115a5
     watched_paths:
       - Vortex.Rooms/**
       - Vortex.Primitives/Rooms/**
     status: valid
   furniture:
-    vortex_sha: 426efc4f836be7292b982e1cc5722f3c9fff7eaf
+    vortex_sha: 7402bb9059b230a11badcc4399d25f2800d115a5
     watched_paths:
       - Vortex.Rooms/Providers/**
       - Vortex.Rooms/Object/**
@@ -79,3 +79,14 @@ forbidden:
   - value_moving_slice_without_commerce_contract
 
 cross_domain_findings: []
+
+# Landed so far, in the order the V4 note asks for them.
+completed:
+  - PR-G1  # workflow memory + the guards that are tests rather than prose
+  - PR-G2  # RFW-101: WiredMaxDepth read, wired stop-reason counters
+  - PR-C1  # the eight commerce windows, characterised by fault injection
+  - PR-C2  # CommerceOperationId, the journal, receipts, operation metrics
+  - PR-C3  # wallet receipts inside the transaction the debit already opens
+  - PR-C4  # the single-commit local grant (ADR-001) - catalog, gift, targeted
+  - PR-C5  # marketplace: four flows reordered or made replayable (ADR-002)
+  - PR-C6  # critical events relayed from the journal, consumers deduplicated

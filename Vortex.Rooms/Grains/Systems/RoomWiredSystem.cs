@@ -25,6 +25,7 @@ using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Selectors;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Triggers;
 using Vortex.Rooms.Object.Logic.Furniture.Floor.Wired.Variables;
 using Vortex.Rooms.Wired;
+using Vortex.Rooms.Wired.Engine;
 using Vortex.Rooms.Wired.Logs;
 
 namespace Vortex.Rooms.Grains.Systems;
@@ -39,6 +40,15 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
     > _pendingStackExecutions = [];
 
     private readonly RoomGrain _roomGrain = roomGrain;
+
+    // Everything the engine needs from the room, and nothing else. It used to reach into the grain's
+    // fields; going through the host is what will let the pipeline be tested without building most
+    // of a room (the leaves have always been testable, the orchestrator never was).
+    private readonly IWiredRoomHost _host = new RoomGrainWiredHost(roomGrain);
+
+    private IWiredRoomView Room => _host.View;
+
+    private IWiredDiagnostics Diagnostics => _host.Diagnostics;
 
     // Trigger box registries — NOT caches of resolved stacks. They only hold references to the trigger
     // boxes present in the room; a box's tile is read live at fire time and the pile it drives is
@@ -84,7 +94,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
     /// is read are two decisions; this is only the second.
     /// </para>
     /// </summary>
-    private int MaxCallChainDepth => _roomGrain._roomConfig.WiredMaxDepth;
+    private int MaxCallChainDepth => Room.MaxCallChainDepth;
 
     // Boxes currently lit by FlashActivationStateAsync, mapped to the room-clock time their visual
     // state reverts to unlit. Re-flashing a box simply pushes its revert time back.
@@ -98,7 +108,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
     // Reset effect) can re-anchor schedules to "now" without threading the value through every call.
     private long _currentTickMs;
 
-    private int _tickMs => _roomGrain._roomConfig.WiredTickMs;
+    private int _tickMs => Room.WiredTickMs;
 
     public Task OnRoomEventAsync(RoomEvent evt, CancellationToken ct)
     {
@@ -151,10 +161,10 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         // WiredMaxEventsPerTick bounds the tick's work; this bounds the queue's memory under a
         // sustained storm. Rejecting the incoming event (rather than evicting an older one) keeps
         // trigger ordering intact for what was already accepted.
-        if (_eventQueue.Count >= _roomGrain._roomConfig.WiredMaxQueuedEvents)
+        if (_eventQueue.Count >= Room.MaxQueuedEvents)
         {
             _droppedEventCount++;
-            _roomGrain._metrics.WiredChainStopped(WiredStopReason.QUEUE_DROP);
+            Diagnostics.ChainStopped(WiredStopReason.QUEUE_DROP);
 
             return;
         }
@@ -164,12 +174,12 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
 
     public async Task ProcessWiredAsync(long now, CancellationToken ct)
     {
-        if (now < _roomGrain._state.NextWiredBoundaryMs)
+        if (now < Room.NextWiredBoundaryMs)
         {
             return;
         }
 
-        _roomGrain._state.NextWiredBoundaryMs = _roomGrain.AdvanceBoundaryPast(now, _tickMs);
+        Room.NextWiredBoundaryMs = Room.AdvanceBoundaryPast(now, _tickMs);
 
         _currentTickMs = now;
 
@@ -216,7 +226,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
 
         await ProcessTimedTriggersAsync(now, ct);
 
-        int budget = _roomGrain._roomConfig.WiredMaxEventsPerTick;
+        int budget = Room.MaxEventsPerTick;
 
         while (budget-- > 0 && _eventQueue.Count > 0)
         {
@@ -244,7 +254,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             }
 
             // A box lingering in the registry after being picked up: skip it and reindex next tick.
-            if (!_roomGrain._state.ItemsById.ContainsKey(trigger.ObjectId))
+            if (!Room.HasItem(trigger.ObjectId))
             {
                 _indexDirty = true;
 
@@ -264,8 +274,8 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
                 trigger,
                 new PeriodicRoomEvent
                 {
-                    RoomId = _roomGrain.RoomId,
-                    CausedBy = ActionContext.CreateForWired(_roomGrain.RoomId),
+                    RoomId = Room.RoomId,
+                    CausedBy = ActionContext.CreateForWired(Room.RoomId),
                 },
                 stack,
                 now,
@@ -308,7 +318,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         // _indexDirty; iterate a copy so that never disturbs this loop.
         foreach (FurnitureWiredTriggerLogic trigger in triggers.ToList())
         {
-            if (!_roomGrain._state.ItemsById.ContainsKey(trigger.ObjectId))
+            if (!Room.HasItem(trigger.ObjectId))
             {
                 _indexDirty = true;
 
@@ -371,11 +381,11 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             }
             catch (Exception ex)
             {
-                _roomGrain._logger.LogWarning(
+                Diagnostics.Logger.LogWarning(
                     ex,
                     "Wired addon {AddonType} failed to mutate the policy in room {RoomId}.",
                     addon.GetType().Name,
-                    _roomGrain.RoomId
+                    Room.RoomId
                 );
             }
         }
@@ -388,11 +398,11 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             }
             catch (Exception ex)
             {
-                _roomGrain._logger.LogWarning(
+                Diagnostics.Logger.LogWarning(
                     ex,
                     "Wired condition {ConditionType} failed to prepare in room {RoomId}; it will be evaluated without its data.",
                     condition.GetType().Name,
-                    _roomGrain.RoomId
+                    Room.RoomId
                 );
             }
         }
@@ -416,7 +426,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         bool conditionsPassed = EvaluateConditions(ctx.Stack.Conditions, ctx);
 
         ctx.Trigger?.FlashActivationStateAsync(ct)
-            .LogAndForget(_roomGrain._logger, "Failed to flash activation state for trigger.");
+            .LogAndForget(Diagnostics.Logger, "Failed to flash activation state for trigger.");
 
         // Before/AfterEffects addon hooks run in ExecuteStackChainAsync, around the chain's actual
         // execution — which can be ticks later than this scheduling when actions carry delays.
@@ -484,7 +494,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
 
     private async Task RunDueScheduledStackExecutionsAsync(long now, CancellationToken ct)
     {
-        int budget = _roomGrain._roomConfig.WiredMaxScheduledPerTick;
+        int budget = Room.MaxScheduledPerTick;
 
         while (budget-- > 0 && _stackSchedule.Count > 0)
         {
@@ -576,10 +586,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             // such an action must not fire. key.StackId is the tile the trigger fired from.
             if (
                 action is FurnitureWiredLogic actionBox
-                && (
-                    !_roomGrain._state.ItemsById.ContainsKey(actionBox.ObjectId)
-                    || !IsOnTile(actionBox.ObjectId, key.StackId)
-                )
+                && (!Room.HasItem(actionBox.ObjectId) || !IsOnTile(actionBox.ObjectId, key.StackId))
             )
             {
                 pending.NextActionIndex = i + 1;
@@ -601,14 +608,14 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
                 action
                     .FlashActivationStateAsync(ct)
                     .LogAndForget(
-                        _roomGrain._logger,
+                        Diagnostics.Logger,
                         "Failed to flash activation state for action."
                     );
 
                 await action.ExecuteAsync(ctx, ct);
 
                 FlushWiredContextAsync(ctx)
-                    .LogAndForget(_roomGrain._logger, "Failed to flush wired execution context.");
+                    .LogAndForget(Diagnostics.Logger, "Failed to flush wired execution context.");
 
                 WriteWiredRoomLog(
                     WiredLogLevel.Info,
@@ -618,12 +625,12 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             }
             catch (Exception ex)
             {
-                _roomGrain._logger.LogWarning(
+                Diagnostics.Logger.LogWarning(
                     ex,
                     "Failed to execute pending wired action {ActionIndex} for stack {StackKey} in room {RoomId}.",
                     i,
                     key,
-                    _roomGrain.RoomId
+                    Room.RoomId
                 );
 
                 RecordWiredErrorLog(ex, action, now);
@@ -664,12 +671,12 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             }
             catch (Exception ex)
             {
-                _roomGrain._logger.LogWarning(
+                Diagnostics.Logger.LogWarning(
                     ex,
                     "Wired addon {AddonType} {Hook} hook failed in room {RoomId}.",
                     addon.GetType().Name,
                     before ? "BeforeEffects" : "AfterEffects",
-                    _roomGrain.RoomId
+                    Room.RoomId
                 );
             }
         }
@@ -679,7 +686,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
     /// <c>WiredFlashDurationMs</c>. Re-flashing an already-lit box pushes its revert back.</summary>
     public void ScheduleFlashRevert(RoomObjectId objectId)
     {
-        _flashRevertAtMs[objectId] = _currentTickMs + _roomGrain._roomConfig.WiredFlashDurationMs;
+        _flashRevertAtMs[objectId] = _currentTickMs + Room.FlashDurationMs;
     }
 
     private async Task ProcessFlashRevertsAsync(long now, CancellationToken ct)
@@ -710,7 +717,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
 
             // A box picked up (or replaced) while lit simply has no revert to apply.
             if (
-                !_roomGrain._state.ItemsById.TryGetValue(objectId, out IRoomItem? item)
+                !Room.TryGetItem(objectId, out IRoomItem? item)
                 || item.Logic is not FurnitureWiredLogic wiredLogic
             )
             {
@@ -723,46 +730,25 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             }
             catch (Exception ex)
             {
-                _roomGrain._logger.LogWarning(
+                Diagnostics.Logger.LogWarning(
                     ex,
                     "Failed to revert the flash state of wired item {ItemId} in room {RoomId}.",
                     objectId,
-                    _roomGrain.RoomId
+                    Room.RoomId
                 );
             }
         }
     }
 
-    private void RecordWiredErrorLog(Exception ex, IWiredAction action, long now)
-    {
-        string errorName = ex.GetType().Name;
-
-        if (
-            !_roomGrain._state.WiredErrorLogCounters.TryGetValue(
-                errorName,
-                out WiredErrorLogCounter? counter
-            )
-        )
-        {
-            counter = new WiredErrorLogCounter
-            {
-                ErrorName = errorName,
-                Category = action.GetType().Name,
-            };
-
-            _roomGrain._state.WiredErrorLogCounters[errorName] = counter;
-        }
-
-        counter.ThrowCount++;
-        counter.LastOccurrenceMs = now;
-    }
+    private void RecordWiredErrorLog(Exception ex, IWiredAction action, long now) =>
+        Diagnostics.RecordError(ex.GetType().Name, action.GetType().Name, now);
 
     private void WriteWiredRoomLog(WiredLogLevel level, WiredLogSource source, string message)
     {
-        _roomGrain._wiredLogChannel.TryWrite(
+        Diagnostics.WriteRoomLog(
             new RoomWiredLogEntry
             {
-                RoomId = _roomGrain.RoomId.Value,
+                RoomId = Room.RoomId.Value,
                 LogLevel = level,
                 LogSource = source,
                 Message = message,
@@ -805,7 +791,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
                         UserDirections = ctx.UserDirections,
                     }
                 )
-                .LogAndForget(_roomGrain._logger, "Failed to broadcast wired movements.");
+                .LogAndForget(Diagnostics.Logger, "Failed to broadcast wired movements.");
         }
 
         if (ctx.FloorItemStateUpdates.Count > 0)
@@ -813,7 +799,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             ctx.SendComposerToRoomAsync(
                     new ObjectsDataUpdateMessageComposer { StuffDatas = ctx.FloorItemStateUpdates }
                 )
-                .LogAndForget(_roomGrain._logger, "Failed to broadcast floor item state updates.");
+                .LogAndForget(Diagnostics.Logger, "Failed to broadcast floor item state updates.");
         }
 
         if (ctx.WallItemStateUpdates.Count > 0)
@@ -821,7 +807,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             ctx.SendComposerToRoomAsync(
                     new ItemsStateUpdateMessageComposer { ObjectStates = ctx.WallItemStateUpdates }
                 )
-                .LogAndForget(_roomGrain._logger, "Failed to broadcast wall item state updates.");
+                .LogAndForget(Diagnostics.Logger, "Failed to broadcast wall item state updates.");
         }
 
         return Task.CompletedTask;
@@ -832,7 +818,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
         _triggersByEventType.Clear();
         _timedTriggers.Clear();
 
-        foreach (IRoomItem item in _roomGrain._state.ItemsById.Values)
+        foreach (IRoomItem item in Room.AllItems())
         {
             if (item.Logic is not FurnitureWiredTriggerLogic trigger)
             {
@@ -846,11 +832,11 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             }
             catch (Exception ex)
             {
-                _roomGrain._logger.LogWarning(
+                Diagnostics.Logger.LogWarning(
                     ex,
                     "Failed to hydrate wired trigger {ItemId} in room {RoomId}.",
                     item.ObjectId,
-                    _roomGrain.RoomId
+                    Room.RoomId
                 );
 
                 continue;
@@ -891,17 +877,17 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
     {
         WiredStack stack = new() { StackId = tileIdx };
 
-        if (tileIdx < 0 || tileIdx >= _roomGrain._state.TileFloorStacks.Length)
+        if (tileIdx < 0 || tileIdx >= Room.TileCount)
         {
             return stack;
         }
 
-        foreach (
-            RoomObjectId id in _roomGrain._state.TileFloorStacks[tileIdx].OrderBy(x => x.Value)
-        )
+        foreach (IRoomFloorItem stackItem in Room.EnumerateTileFloorStack(tileIdx))
         {
+            IRoomItem item = stackItem;
+
             if (
-                !_roomGrain._state.ItemsById.TryGetValue(id, out IRoomItem? item)
+                item is null
                 || item.Logic is not FurnitureWiredLogic wiredLogic
                 || wiredLogic is FurnitureWiredVariableLogic
             )
@@ -934,11 +920,11 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             }
             catch (Exception ex)
             {
-                _roomGrain._logger.LogWarning(
+                Diagnostics.Logger.LogWarning(
                     ex,
                     "Failed to load wired logic for item {ItemId} in room {RoomId}.",
                     item.ObjectId,
-                    _roomGrain.RoomId
+                    Room.RoomId
                 );
             }
         }
@@ -971,7 +957,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
 
         if (_callChainTiles.Count >= MaxCallChainDepth)
         {
-            _roomGrain._metrics.WiredChainStopped(WiredStopReason.DEPTH);
+            Diagnostics.ChainStopped(WiredStopReason.DEPTH);
 
             return 0;
         }
@@ -984,18 +970,18 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             foreach (int furniId in targetFurniIds)
             {
                 if (
-                    !_roomGrain._state.ItemsById.TryGetValue(furniId, out IRoomItem? item)
+                    !Room.TryGetItem(furniId, out IRoomItem? item)
                     || item is not IRoomFloorItem floor
                 )
                 {
                     continue;
                 }
 
-                int tileIdx = _roomGrain.MapModule.ToIdx(floor.X, floor.Y);
+                int tileIdx = Room.ToIdx(floor.X, floor.Y);
 
                 if (!_callChainTiles.Add(tileIdx))
                 {
-                    _roomGrain._metrics.WiredChainStopped(WiredStopReason.CYCLE);
+                    Diagnostics.ChainStopped(WiredStopReason.CYCLE);
 
                     continue;
                 }
@@ -1042,8 +1028,8 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             // No trigger and no triggering event: this pile ran because another one said so.
             Event = new WiredStackCalledEvent
             {
-                RoomId = _roomGrain.RoomId,
-                CausedBy = ActionContext.CreateForWired(_roomGrain.RoomId),
+                RoomId = Room.RoomId,
+                CausedBy = ActionContext.CreateForWired(Room.RoomId),
             },
             Stack = stack,
             Trigger = null,
@@ -1064,26 +1050,24 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             }
             catch (Exception ex)
             {
-                _roomGrain._logger.LogWarning(
+                Diagnostics.Logger.LogWarning(
                     ex,
                     "Wired addon {AddonType} failed to mutate the policy of a called pile in room {RoomId}.",
                     addon.GetType().Name,
-                    _roomGrain.RoomId
+                    Room.RoomId
                 );
             }
         }
 
         // Conditions are deliberately not evaluated, so the positive branch is what runs.
-        ScheduleStackExecution(ctx, _roomGrain.NowMs(), conditionsPassed: true);
+        ScheduleStackExecution(ctx, Room.NowMs(), conditionsPassed: true);
 
         return true;
     }
 
     /// <summary>True if the given object currently sits on <paramref name="tileIdx"/>'s floor pile.</summary>
     private bool IsOnTile(RoomObjectId objectId, int tileIdx) =>
-        tileIdx >= 0
-        && tileIdx < _roomGrain._state.TileFloorStacks.Length
-        && _roomGrain._state.TileFloorStacks[tileIdx].Contains(objectId);
+        tileIdx >= 0 && Room.IsOnTile(tileIdx, objectId);
 
     private List<IWiredAction> ChooseActions(
         int stackId,
@@ -1134,7 +1118,7 @@ public sealed partial class RoomWiredSystem(RoomGrain roomGrain) : IRoomEventLis
             return true;
         }
 
-        _roomGrain._metrics.WiredChainStopped(WiredStopReason.EXECUTION_LIMIT);
+        Diagnostics.ChainStopped(WiredStopReason.EXECUTION_LIMIT);
 
         return false;
     }
