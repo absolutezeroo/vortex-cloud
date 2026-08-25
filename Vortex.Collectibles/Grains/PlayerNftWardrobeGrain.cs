@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Players;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Players;
@@ -23,11 +24,13 @@ namespace Vortex.Collectibles.Grains;
 internal sealed class PlayerNftWardrobeGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
+    IEventPublisher events,
     ILogger<PlayerNftWardrobeGrain> logger
 ) : Grain, IPlayerNftWardrobeGrain
 {
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly IEventPublisher _events = events;
     private readonly ILogger<PlayerNftWardrobeGrain> _logger = logger;
 
     private PlayerId PlayerId => new((int)this.GetPrimaryKeyLong());
@@ -172,6 +175,10 @@ internal sealed class PlayerNftWardrobeGrain(
             avatar.AvatarCode
         );
 
+        await _events
+            .PublishAsync(new NftAvatarWornEvent(PlayerId, copyId), ct)
+            .ConfigureAwait(true);
+
         return await ReadWornAsync(dbCtx, ct).ConfigureAwait(true);
     }
 
@@ -190,6 +197,8 @@ internal sealed class PlayerNftWardrobeGrain(
             )
             .ExecuteDeleteAsync(ct)
             .ConfigureAwait(true);
+
+        await _events.PublishAsync(new NftAvatarWornEvent(PlayerId, null), ct).ConfigureAwait(true);
     }
 
     private async Task<NftOutfitSnapshot?> ReadWornAsync(

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Quests;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Wallet;
@@ -27,11 +28,13 @@ namespace Vortex.Progression.Grains;
 internal sealed class PlayerDailyTaskGrain(
     IGrainFactory grainFactory,
     IDbContextFactory<VortexDbContext> dbCtxFactory,
+    IEventPublisher events,
     ILogger<PlayerDailyTaskGrain> logger
 ) : Grain, IPlayerDailyTaskGrain
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IEventPublisher _events = events;
     private readonly ILogger<PlayerDailyTaskGrain> _logger = logger;
 
     /// <summary>The reward kind granted as credits; anything else is an activity-point type.</summary>
@@ -199,6 +202,10 @@ internal sealed class PlayerDailyTaskGrain(
                     SecondsLeft = SecondsLeft(assignment.ExpiresAt),
                 }
             )
+            .ConfigureAwait(true);
+
+        await _events
+            .PublishAsync(new DailyTaskClaimedEvent(PlayerId, assignment.Id), ct)
             .ConfigureAwait(true);
     }
 

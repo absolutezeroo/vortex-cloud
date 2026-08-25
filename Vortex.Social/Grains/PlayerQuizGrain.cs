@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Help;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
@@ -24,11 +25,13 @@ namespace Vortex.Social.Grains;
 internal sealed class PlayerQuizGrain(
     IGrainFactory grainFactory,
     IDbContextFactory<VortexDbContext> dbCtxFactory,
+    IEventPublisher events,
     ILogger<PlayerQuizGrain> logger
 ) : Grain, IPlayerQuizGrain
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IEventPublisher _events = events;
     private readonly ILogger<PlayerQuizGrain> _logger = logger;
 
     private int PlayerId => (int)this.GetPrimaryKeyLong();
@@ -136,6 +139,10 @@ internal sealed class PlayerQuizGrain(
                         WrongQuestionIds = wrong,
                     }
                 )
+                .ConfigureAwait(true);
+
+            await _events
+                .PublishAsync(new QuizSubmittedEvent(PlayerId, quiz.Code), ct)
                 .ConfigureAwait(true);
         }
         catch (Exception ex)

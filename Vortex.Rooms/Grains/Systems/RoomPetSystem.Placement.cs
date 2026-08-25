@@ -12,6 +12,7 @@ using Vortex.Database.Entities.Pets;
 using Vortex.Logging;
 using Vortex.Primitives;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Pets.Snapshots;
 using Vortex.Primitives.Players;
@@ -121,6 +122,13 @@ public sealed partial class RoomPetSystem
 
         await SendPetAddedAsync(snapshot, ct).ConfigureAwait(false);
 
+        await _roomGrain
+            ._events.PublishAsync(
+                new PetPlacedEvent(ctx.PlayerId, pet.Id, _roomGrain.RoomId.Value),
+                ct
+            )
+            .ConfigureAwait(false);
+
         return snapshot;
     }
 
@@ -227,6 +235,13 @@ public sealed partial class RoomPetSystem
             .ConfigureAwait(false);
 
         await SendPetAddedToInventoryAsync(snapshot, ct).ConfigureAwait(false);
+
+        await _roomGrain
+            ._events.PublishAsync(
+                new PetPickedUpEvent(ctx.PlayerId, pet.Id, _roomGrain.RoomId.Value),
+                ct
+            )
+            .ConfigureAwait(false);
 
         return snapshot;
     }

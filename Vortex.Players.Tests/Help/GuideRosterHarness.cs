@@ -1,4 +1,6 @@
-﻿using Orleans;
+﻿using System.Threading.Tasks;
+using Orleans;
+using Vortex.Primitives.Events;
 using Vortex.Social.Grains;
 using Vortex.Tests.Support;
 
@@ -16,7 +18,13 @@ namespace Vortex.Players.Tests.Help;
 internal static class GuideRosterHarness
 {
     public static GuideDirectoryGrain New() =>
-        GrainActivationContext.CreateWithIntegerKey<GuideDirectoryGrain>(0, StubFactory());
+        GrainActivationContext.CreateWithIntegerKey<GuideDirectoryGrain>(
+            0,
+            StubFactory(),
+            // The roster raises request/session records for the audit trail. These tests are about
+            // the roster's own bookkeeping, so the publisher only has to be awaitable.
+            FakeProxy.Create<IEventPublisher>(_ => Task.CompletedTask)
+        );
 
     private static IGrainFactory StubFactory() =>
         FakeProxy.Create<IGrainFactory>(call =>

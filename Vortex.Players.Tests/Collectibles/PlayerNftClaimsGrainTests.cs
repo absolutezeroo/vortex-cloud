@@ -13,6 +13,7 @@ using Vortex.Database.Entities.Collectibles;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Players.Grains;
 using Vortex.Primitives.Collectibles;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Tests.Support;
@@ -184,6 +185,7 @@ public sealed class PlayerNftClaimsGrainTests
                     PlayerId,
                     new SingleOptionsFactory(options),
                     grainFactory,
+                    FakeProxy.Create<IEventPublisher>(_ => Task.CompletedTask),
                     NullLogger<PlayerNftClaimsGrain>.Instance
                 );
 

@@ -61,7 +61,13 @@ public sealed class AccountAuthenticatorTests
             db.PlayerAccounts.Add(account);
             await db.SaveChangesAsync();
 
-            return (new AccountAuthenticator(factory, new AccountMfaService(factory)), account.Id);
+            return (
+                new AccountAuthenticator(
+                    factory,
+                    new AccountMfaService(factory, new RecordingEventPublisher())
+                ),
+                account.Id
+            );
         }
     }
 

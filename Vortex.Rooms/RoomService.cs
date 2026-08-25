@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
@@ -39,7 +40,8 @@ internal sealed partial class RoomService(
     ISessionGateway sessionGateway,
     IGrainFactory grainFactory,
     IDbContextFactory<VortexDbContext> dbContextFactory,
-    IRoomModerationStore roomModerationStore
+    IRoomModerationStore roomModerationStore,
+    IEventPublisher events
 ) : IRoomService
 {
     private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
@@ -48,6 +50,7 @@ internal sealed partial class RoomService(
     private readonly RoomConfig _roomConfig = roomConfig.Value;
     private readonly IRoomModerationStore _roomModerationStore = roomModerationStore;
     private readonly ISessionGateway _sessionGateway = sessionGateway;
+    private readonly IEventPublisher _events = events;
 
     public async Task OpenRoomForPlayerIdAsync(
         ActionContext ctx,

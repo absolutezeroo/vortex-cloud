@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Vortex.Crypto;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Players;
 using Vortex.Primitives.Authentication;
+using Vortex.Primitives.Events;
 
 namespace Vortex.Authentication;
 
@@ -14,8 +16,10 @@ namespace Vortex.Authentication;
 /// TOTP second factor stored on <c>player_accounts.totp_secret</c>. Codes are verified by
 /// <see cref="TotpCodes" />; this type only decides what is stored, when, and on whose say-so.
 /// </summary>
-public sealed class AccountMfaService(IDbContextFactory<VortexDbContext> dbContextFactory)
-    : IAccountMfaService
+public sealed class AccountMfaService(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    IEventPublisher events
+) : IAccountMfaService
 {
     private const string ISSUER = "Vortex";
 
@@ -133,6 +137,25 @@ public sealed class AccountMfaService(IDbContextFactory<VortexDbContext> dbConte
 
         account.TotpSecret = secret;
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        // Same reason as the password write: the audit is searched by character, and an account
+        // holds several. See AccountPasswordChangedEvent.
+        ImmutableArray<int> playerIds =
+        [
+            .. await db
+                .Players.AsNoTracking()
+                .Where(p => p.PlayerAccountEntityId == accountId)
+                .Select(p => p.Id)
+                .ToListAsync(ct)
+                .ConfigureAwait(false),
+        ];
+
+        await events
+            .PublishAsync(
+                new AccountMfaChangedEvent(accountId, playerIds, Enabled: secret is not null),
+                ct
+            )
+            .ConfigureAwait(false);
 
         return true;
     }

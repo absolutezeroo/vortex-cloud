@@ -12,6 +12,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Collectibles;
 using Vortex.Primitives.Collectibles;
 using Vortex.Primitives.Collectibles.Grains;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Orleans;
@@ -35,11 +36,13 @@ namespace Vortex.Collectibles.Grains;
 internal sealed class NftStoreGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
+    IEventPublisher events,
     ILogger<NftStoreGrain> logger
 ) : Grain, INftStoreGrain
 {
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly IEventPublisher _events = events;
     private readonly ILogger<NftStoreGrain> _logger = logger;
 
     private ImmutableArray<CachedOffer> _offers = [];
@@ -184,6 +187,13 @@ internal sealed class NftStoreGrain(
             offer.ProductCode,
             offer.EmeraldPrice
         );
+
+        await _events
+            .PublishAsync(
+                new NftStorePurchasedEvent(playerId, offer.ProductCode, offer.EmeraldPrice),
+                ct
+            )
+            .ConfigureAwait(true);
 
         return NftStorePurchaseOutcome.Sold;
     }

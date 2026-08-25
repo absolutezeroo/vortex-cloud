@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Quests;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Snapshots;
@@ -30,11 +31,13 @@ namespace Vortex.Progression.Grains;
 internal sealed class PlayerQuestGrain(
     IGrainFactory grainFactory,
     IDbContextFactory<VortexDbContext> dbCtxFactory,
+    IEventPublisher events,
     ILogger<PlayerQuestGrain> logger
 ) : Grain, IPlayerQuestGrain
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IEventPublisher _events = events;
     private readonly ILogger<PlayerQuestGrain> _logger = logger;
 
     /// <summary>Campaign whose quests form the rotating daily pool (shown via the daily section, not
@@ -339,6 +342,18 @@ internal sealed class PlayerQuestGrain(
             await Presence
                 .SendComposerAsync(new QuestMessageComposer { Quest = snapshot })
                 .ConfigureAwait(true);
+
+            await _events
+                .PublishAsync(
+                    new QuestAcceptedEvent(
+                        PlayerId,
+                        snapshot.Id,
+                        snapshot.CampaignCode,
+                        snapshot.LocalizationCode
+                    ),
+                    ct
+                )
+                .ConfigureAwait(true);
         }
 
         // The single-quest update above is what drives the tracker/details/completed popups,
@@ -595,6 +610,20 @@ internal sealed class PlayerQuestGrain(
                     .GetCommunityGoalGrain()
                     .ContributeAsync(PlayerId, snapshot.CampaignCode, amount: 1, ct)
                     .ConfigureAwait(true);
+
+                await _events
+                    .PublishAsync(
+                        new QuestCompletedEvent(
+                            PlayerId,
+                            snapshot.Id,
+                            snapshot.CampaignCode,
+                            snapshot.LocalizationCode,
+                            snapshot.ActivityPointType,
+                            snapshot.RewardCurrencyAmount
+                        ),
+                        ct
+                    )
+                    .ConfigureAwait(true);
             }
             else
             {
@@ -692,6 +721,19 @@ internal sealed class PlayerQuestGrain(
             await Presence
                 .SendComposerAsync(
                     new QuestCancelledMessageComposer { Expired = false, Quest = snapshot }
+                )
+                .ConfigureAwait(true);
+
+            await _events
+                .PublishAsync(
+                    new QuestAbandonedEvent(
+                        PlayerId,
+                        snapshot.Id,
+                        snapshot.CampaignCode,
+                        snapshot.LocalizationCode,
+                        Rejected: questId is not null
+                    ),
+                    ct
                 )
                 .ConfigureAwait(true);
         }

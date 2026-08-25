@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Achievements;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Snapshots;
 using Vortex.Progression.Configuration;
@@ -95,6 +97,34 @@ public sealed class PlayerAchievementGrainTests
     }
 
     [Fact]
+    public async Task ALevelUp_PublishesTheEventTheForensicsTimelineReads()
+    {
+        Harness harness = await Harness.CreateAsync().ConfigureAwait(true);
+
+        await harness
+            .Grain.ProgressAsync(RoomEntry, 4, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        harness
+            .Published.Should()
+            .BeEmpty("progress short of a level is not something a player unlocked");
+
+        await harness
+            .Grain.ProgressAsync(RoomEntry, 1, CancellationToken.None)
+            .ConfigureAwait(true);
+
+        AchievementLevelUpEvent published = harness
+            .Published.OfType<AchievementLevelUpEvent>()
+            .Should()
+            .ContainSingle()
+            .Subject;
+
+        published.PlayerId.Value.Should().Be(PlayerId);
+        published.AchievementId.Should().Be(AchievementId);
+        published.Level.Should().Be(1);
+    }
+
+    [Fact]
     public async Task AReactivatedGrain_PicksUpFromTheStoredCounter()
     {
         Harness harness = await Harness.CreateAsync(seededProgress: 4).ConfigureAwait(true);
@@ -156,15 +186,20 @@ public sealed class PlayerAchievementGrainTests
         private Harness(
             PlayerAchievementGrain grain,
             DbContextOptions<VortexDbContext> options,
-            CountingDbContextFactory factory
+            CountingDbContextFactory factory,
+            List<IEvent> published
         )
         {
             Grain = grain;
             _options = options;
             Factory = factory;
+            Published = published;
         }
 
         public PlayerAchievementGrain Grain { get; }
+
+        /// <summary>Everything the grain raised, in order. The forensics timeline reads these.</summary>
+        public List<IEvent> Published { get; }
 
         private CountingDbContextFactory Factory { get; }
 
@@ -215,6 +250,7 @@ public sealed class PlayerAchievementGrainTests
             }
 
             CountingDbContextFactory factory = new(options);
+            List<IEvent> published = [];
 
             PlayerAchievementGrain grain =
                 GrainActivationContext.CreateWithIntegerKey<PlayerAchievementGrain>(
@@ -222,12 +258,21 @@ public sealed class PlayerAchievementGrainTests
                     BuildGrainFactory(),
                     factory,
                     Options.Create(new AchievementConfig()),
+                    FakeProxy.Create<IEventPublisher>(call =>
+                    {
+                        if (call.Args?[0] is IEvent raised)
+                        {
+                            published.Add(raised);
+                        }
+
+                        return Task.CompletedTask;
+                    }),
                     NullLogger<PlayerAchievementGrain>.Instance
                 );
 
             await grain.OnActivateAsync(CancellationToken.None).ConfigureAwait(true);
 
-            return new Harness(grain, options, factory);
+            return new Harness(grain, options, factory, published);
         }
 
         /// <summary>

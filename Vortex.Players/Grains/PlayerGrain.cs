@@ -123,6 +123,10 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
 
     public async Task SetNameAsync(string name, CancellationToken ct)
     {
+        // Captured before the write: the old name is what a report, a chatlog or a ban appeal
+        // actually names, and after this line nothing else remembers it.
+        string previousName = _state.Name;
+
         _state.Name = name;
 
         await WriteToDatabaseAsync(ct);
@@ -136,6 +140,17 @@ internal sealed partial class PlayerGrain : Grain, IPlayerGrain
         );
 
         await playerPresence.OnPlayerUpdatedAsync(await GetSummaryAsync(ct), ct);
+
+        await _events
+            .PublishAsync(
+                new PlayerNameChangedEvent(
+                    PlayerId.Parse((int)this.GetPrimaryKeyLong()),
+                    previousName,
+                    name
+                ),
+                ct
+            )
+            .ConfigureAwait(true);
     }
 
     public Task<bool> IsNuxCompletedAsync(CancellationToken ct) =>

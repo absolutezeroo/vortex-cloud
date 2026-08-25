@@ -13,6 +13,13 @@ public enum AuditCategory
     Social,
     System,
     RentableSpace,
+
+    /// <summary>
+    /// Player progression: achievements, quests, badges. The player-life events that are neither
+    /// social nor economic, and that an investigation reads as "what did this account actually do".
+    /// Stored as a string, so appending here needs no migration.
+    /// </summary>
+    Progression,
 }
 
 /// <summary>Severity of an audit record, used for incident triage and retention policy.</summary>

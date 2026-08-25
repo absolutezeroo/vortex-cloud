@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Networking;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
@@ -67,6 +68,20 @@ internal sealed partial class RoomService
                 notifyTargets.Select(id =>
                     _grainFactory.GetPlayerPresenceGrain(id).SendComposerAsync(occupantComposer)
                 )
+            )
+            .ConfigureAwait(false);
+
+        // Published before the two branches part: the answer is one act whichever way it went, and
+        // the refusal path returns early.
+        await _events
+            .PublishAsync(
+                new RoomDoorbellAnsweredEvent(
+                    actorCtx.PlayerId,
+                    targetPlayerId,
+                    actorCtx.RoomId.Value,
+                    admit
+                ),
+                ct
             )
             .ConfigureAwait(false);
 

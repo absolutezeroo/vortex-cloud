@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -160,6 +160,10 @@ internal sealed partial class MessengerGrain
                 CancellationToken.None
             )
         );
+
+        await events
+            .PublishAsync(new FriendRequestSentEvent(playerId, targetIdInt), ct)
+            .ConfigureAwait(true);
 
         return null;
     }
@@ -356,6 +360,11 @@ internal sealed partial class MessengerGrain
                     r.RequestedPlayerEntityId == (int)SelfId && r.DeletedAt == null
                 )
                 .ExecuteDeleteAsync(ct);
+
+            await events
+                .PublishAsync(new FriendRequestDeclinedEvent(SelfId, null), ct)
+                .ConfigureAwait(true);
+
             return;
         }
 
@@ -377,6 +386,14 @@ internal sealed partial class MessengerGrain
                 && r.DeletedAt == null
             )
             .ExecuteDeleteAsync(ct);
+
+        // One per requester: the person who was turned down is the one who might complain about it.
+        foreach (int requesterId in removedRequesterIds)
+        {
+            await events
+                .PublishAsync(new FriendRequestDeclinedEvent(SelfId, requesterId), ct)
+                .ConfigureAwait(true);
+        }
     }
 
     public async Task<List<int>> RemoveFriendsAsync(List<int> friendIds, CancellationToken ct)

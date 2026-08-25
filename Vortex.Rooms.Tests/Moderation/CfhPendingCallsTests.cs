@@ -6,7 +6,9 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Moderation;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Moderation;
+using Vortex.Tests.Support;
 using Xunit;
 
 namespace Vortex.Rooms.Tests.Moderation;
@@ -184,7 +186,10 @@ public sealed class CfhPendingCallsTests
             .Options;
 
     private static ICfhTicketService NewService(DbContextOptions<VortexDbContext> options) =>
-        new CfhTicketService(new SingleOptionsFactory(options));
+        new CfhTicketService(
+            new SingleOptionsFactory(options),
+            FakeProxy.Create<IEventPublisher>(_ => Task.CompletedTask)
+        );
 
     private static CfhTicketEntity NewTicket(
         int id,

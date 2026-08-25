@@ -253,6 +253,103 @@ public sealed class CfhTicketsReleasedAuditHandler(IAuditSink audit)
     }
 }
 
+/// <summary>
+/// A player filed a report. Both sides are named so the line surfaces from either timeline: the
+/// account asking for help, and the account it names. Only the moderator half of a ticket's life was
+/// audited before this, which left the two questions an abuse pattern is made of unanswerable --
+/// who keeps getting reported, and who keeps filing.
+/// </summary>
+public sealed class CfhTicketOpenedAuditHandler(IAuditSink audit)
+    : IEventHandler<CfhTicketOpenedEvent>
+{
+    public ValueTask HandleAsync(CfhTicketOpenedEvent e, EventContext ctx, CancellationToken ct)
+    {
+        audit.Emit(
+            new AuditEvent
+            {
+                Category = AuditCategory.Moderation,
+                Action = "moderation.cfh.opened",
+                Severity = AuditSeverity.Notice,
+                Result = AuditResult.Success,
+                ActorPlayerId = e.ReporterPlayerId,
+                TargetPlayerId = e.ReportedPlayerId,
+                RoomId = e.RoomId,
+                Data = JsonSerializer.Serialize(new { e.IssueId, e.TopicId }),
+            }
+        );
+
+        return ValueTask.CompletedTask;
+    }
+}
+
+/// <summary>
+/// The guide pipeline. It runs entirely in one grain's memory, so nothing about it survived a
+/// restart -- and it is the one feature that puts two strangers into a private conversation on the
+/// hotel's own initiative, which is exactly what an investigation needs to be able to reconstruct.
+/// </summary>
+public sealed class GuideRequestCreatedAuditHandler(IAuditSink audit)
+    : IEventHandler<GuideRequestCreatedEvent>
+{
+    public ValueTask HandleAsync(GuideRequestCreatedEvent e, EventContext ctx, CancellationToken ct)
+    {
+        audit.Emit(
+            new AuditEvent
+            {
+                Category = AuditCategory.Social,
+                Action = "social.guide_request_created",
+                Severity = AuditSeverity.Info,
+                Result = AuditResult.Success,
+                ActorPlayerId = e.RequesterPlayerId,
+                Data = JsonSerializer.Serialize(new { type = e.HelpRequestType }),
+            }
+        );
+
+        return ValueTask.CompletedTask;
+    }
+}
+
+public sealed class GuideSessionStartedAuditHandler(IAuditSink audit)
+    : IEventHandler<GuideSessionStartedEvent>
+{
+    public ValueTask HandleAsync(GuideSessionStartedEvent e, EventContext ctx, CancellationToken ct)
+    {
+        audit.Emit(
+            new AuditEvent
+            {
+                Category = AuditCategory.Social,
+                Action = "social.guide_session_started",
+                Severity = AuditSeverity.Info,
+                Result = AuditResult.Success,
+                ActorPlayerId = e.GuidePlayerId,
+                TargetPlayerId = e.RequesterPlayerId,
+            }
+        );
+
+        return ValueTask.CompletedTask;
+    }
+}
+
+public sealed class GuideSessionEndedAuditHandler(IAuditSink audit)
+    : IEventHandler<GuideSessionEndedEvent>
+{
+    public ValueTask HandleAsync(GuideSessionEndedEvent e, EventContext ctx, CancellationToken ct)
+    {
+        audit.Emit(
+            new AuditEvent
+            {
+                Category = AuditCategory.Social,
+                Action = "social.guide_session_ended",
+                Severity = AuditSeverity.Info,
+                Result = AuditResult.Success,
+                ActorPlayerId = e.ActorPlayerId,
+                TargetPlayerId = e.PartnerPlayerId,
+            }
+        );
+
+        return ValueTask.CompletedTask;
+    }
+}
+
 public sealed class CfhTicketsClosedAuditHandler(IAuditSink audit)
     : IEventHandler<CfhTicketsClosedEvent>
 {

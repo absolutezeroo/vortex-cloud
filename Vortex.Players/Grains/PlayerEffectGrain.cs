@@ -12,6 +12,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Players;
 using Vortex.Players.Effects;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Inventory.Snapshots;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
@@ -29,11 +30,13 @@ namespace Vortex.Players.Grains;
 internal sealed class PlayerEffectGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
+    IEventPublisher events,
     ILogger<PlayerEffectGrain> logger
 ) : Grain, IPlayerEffectGrain
 {
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly IEventPublisher _events = events;
     private readonly ILogger<PlayerEffectGrain> _logger = logger;
 
     private IGrainTimer? _expiryTimer;
@@ -188,6 +191,13 @@ internal sealed class PlayerEffectGrain(
             }
 
             await ArmNextExpiryAsync(ct).ConfigureAwait(true);
+
+            await _events
+                .PublishAsync(
+                    new AvatarEffectActivatedEvent(OwnerId, effectId, inactive.TotalDuration),
+                    ct
+                )
+                .ConfigureAwait(true);
         }
         catch (Exception ex)
         {

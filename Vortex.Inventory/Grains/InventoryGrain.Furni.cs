@@ -542,6 +542,10 @@ public sealed partial class InventoryGrain
             );
 
             await presence.OnBadgeGrantedAsync(badgeCode, ct).ConfigureAwait(true);
+
+            await _events
+                .PublishAsync(new BadgeGrantedEvent((int)this.GetPrimaryKeyLong(), badgeCode), ct)
+                .ConfigureAwait(true);
         }
         finally
         {

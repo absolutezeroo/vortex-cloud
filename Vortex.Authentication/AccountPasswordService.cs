@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Players;
 using Vortex.Primitives.Authentication;
+using Vortex.Primitives.Events;
 
 namespace Vortex.Authentication;
 
@@ -26,6 +28,7 @@ public sealed class AccountPasswordService(
     IDbContextFactory<VortexDbContext> dbContextFactory,
     IAccountAuthenticator authenticator,
     IEnumerable<IAccountSessionRevoker> revokers,
+    IEventPublisher events,
     ILogger<AccountPasswordService> logger
 ) : IAccountPasswordService
 {
@@ -36,6 +39,7 @@ public sealed class AccountPasswordService(
     private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
     private readonly IAccountAuthenticator _authenticator = authenticator;
     private readonly IAccountSessionRevoker[] _revokers = [.. revokers];
+    private readonly IEventPublisher _events = events;
     private readonly ILogger<AccountPasswordService> _logger = logger;
 
     public async Task<PasswordChangeResult> ChangeAsync(
@@ -158,6 +162,30 @@ public sealed class AccountPasswordService(
                 );
             }
         }
+
+        // The characters on the account, so the record is findable from any of their profiles --
+        // read here rather than in the handler, which has no database of its own.
+        ImmutableArray<int> playerIds =
+        [
+            .. await db
+                .Players.AsNoTracking()
+                .Where(p => p.PlayerAccountEntityId == accountId)
+                .Select(p => p.Id)
+                .ToListAsync(ct)
+                .ConfigureAwait(false),
+        ];
+
+        await _events
+            .PublishAsync(
+                new AccountPasswordChangedEvent(
+                    accountId,
+                    playerIds,
+                    StaffReset: how == "reset",
+                    revoked
+                ),
+                ct
+            )
+            .ConfigureAwait(false);
 
         return PasswordChangeResult.Changed(revoked);
     }

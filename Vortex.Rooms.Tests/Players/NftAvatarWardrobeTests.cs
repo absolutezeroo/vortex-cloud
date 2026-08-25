@@ -11,6 +11,7 @@ using Vortex.Collectibles.Grains;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Players;
 using Vortex.Players.Grains;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums;
@@ -304,6 +305,7 @@ public sealed class NftAvatarWardrobeTests
                     PlayerId,
                     new TestDbContextFactory(options),
                     grainFactory,
+                    FakeProxy.Create<IEventPublisher>(_ => Task.CompletedTask),
                     NullLogger<PlayerNftWardrobeGrain>.Instance
                 ),
                 options

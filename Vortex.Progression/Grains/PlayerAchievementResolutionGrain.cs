@@ -10,6 +10,7 @@ using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Achievements;
 using Vortex.Database.Entities.Furniture;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
@@ -27,6 +28,7 @@ namespace Vortex.Progression.Grains;
 internal sealed class PlayerAchievementResolutionGrain(
     IGrainFactory grainFactory,
     IDbContextFactory<VortexDbContext> dbCtxFactory,
+    IEventPublisher events,
     ILogger<PlayerAchievementResolutionGrain> logger
 ) : Grain, IPlayerAchievementResolutionGrain
 {
@@ -154,6 +156,10 @@ internal sealed class PlayerAchievementResolutionGrain(
             dbCtx.PlayerAchievementResolutions.Remove(challenge);
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
+            await events
+                .PublishAsync(new AchievementResolutionResetEvent(PlayerId, stuffId), ct)
+                .ConfigureAwait(true);
+
             await AnswerAsync(dbCtx, statue, challenge: null, DateTime.UtcNow, ct)
                 .ConfigureAwait(true);
         }
@@ -235,6 +241,19 @@ internal sealed class PlayerAchievementResolutionGrain(
                                 .ConfigureAwait(true),
                             BadgeCode = badge,
                         }
+                    )
+                    .ConfigureAwait(true);
+
+                await events
+                    .PublishAsync(
+                        new AchievementResolutionWonEvent(
+                            PlayerId,
+                            challenge.ItemEntityId,
+                            achievementId,
+                            challenge.TargetLevel,
+                            badge
+                        ),
+                        ct
                     )
                     .ConfigureAwait(true);
             }

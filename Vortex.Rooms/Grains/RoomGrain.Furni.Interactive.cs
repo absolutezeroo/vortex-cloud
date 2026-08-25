@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture;
 using Vortex.Primitives.Furniture.StuffData;
 using Vortex.Primitives.Rooms.Enums;
@@ -453,7 +454,24 @@ public sealed partial class RoomGrain
             return null;
         }
 
-        return await ConsumeItemAsync(ctx, item, ct).ConfigureAwait(true) ? contents : null;
+        if (!await ConsumeItemAsync(ctx, item, ct).ConfigureAwait(true))
+        {
+            return null;
+        }
+
+        await _events
+            .PublishAsync(
+                new PresentOpenedEvent(
+                    itemId.Value,
+                    ctx.PlayerId.Value,
+                    _state.RoomId.Value,
+                    contents.OfferId
+                ),
+                ct
+            )
+            .ConfigureAwait(true);
+
+        return contents;
     }
 
     public async Task<RoomDimmerStateSnapshot?> GetDimmerStateAsync(

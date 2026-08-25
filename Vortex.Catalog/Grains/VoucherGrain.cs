@@ -11,6 +11,7 @@ using Vortex.Database.Entities.Catalog;
 using Vortex.Database.Entities.Players;
 using Vortex.Primitives.Catalog.Grains;
 using Vortex.Primitives.Catalog.Snapshots;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums.Wallet;
@@ -22,6 +23,7 @@ namespace Vortex.Catalog.Grains;
 public sealed class VoucherGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
+    IEventPublisher events,
     ILogger<VoucherGrain> logger
 ) : Grain, IVoucherGrain
 {
@@ -243,6 +245,18 @@ public sealed class VoucherGrain(
         }
 
         logger.LogInformation("Voucher {Code} redeemed by player {PlayerId}", Code, playerIdInt);
+
+        await events
+            .PublishAsync(
+                new VoucherRedeemedEvent(
+                    playerIdInt,
+                    Code,
+                    _voucher.Amount,
+                    _voucher.ActivityPointType
+                ),
+                ct
+            )
+            .ConfigureAwait(true);
 
         return new VoucherRedeemResult { Success = true, ErrorCode = string.Empty };
     }

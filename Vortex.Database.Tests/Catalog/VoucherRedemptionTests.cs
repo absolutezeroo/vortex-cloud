@@ -13,6 +13,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Catalog;
 using Vortex.Database.Entities.Players;
 using Vortex.Primitives.Catalog.Snapshots;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Players.Enums.Wallet;
@@ -217,6 +218,7 @@ public sealed class VoucherRedemptionTests
             h._grain = new VoucherGrain(
                 new TestDbContextFactory(h._options),
                 h.BuildGrainFactory(),
+                FakeProxy.Create<IEventPublisher>(_ => Task.CompletedTask),
                 NullLogger<VoucherGrain>.Instance
             );
 

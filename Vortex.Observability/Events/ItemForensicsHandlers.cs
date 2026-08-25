@@ -152,3 +152,51 @@ public sealed class ItemDeletedForensicsHandler(IItemForensics forensics)
         return ValueTask.CompletedTask;
     }
 }
+
+/// <summary>
+/// Opening a present is recorded twice on purpose: as an item event on the parcel, which is the row
+/// that closes out its life, and (by the audit handler below) as a line on the opener's timeline.
+/// The parcel and the contents are different items, so one record cannot serve both questions.
+/// </summary>
+public sealed class PresentOpenedForensicsHandler(IItemForensics forensics)
+    : IEventHandler<PresentOpenedEvent>
+{
+    public ValueTask HandleAsync(PresentOpenedEvent e, EventContext ctx, CancellationToken ct)
+    {
+        forensics.Record(
+            new ItemForensicEvent
+            {
+                ItemId = e.ItemId,
+                EventType = ItemEventType.Deleted,
+                ActorPlayerId = e.ActorPlayerId,
+                FromOwnerId = e.ActorPlayerId,
+                RoomId = e.RoomId,
+                Data = JsonSerializer.Serialize(new { reason = "present_opened", e.OfferId }),
+            }
+        );
+
+        return ValueTask.CompletedTask;
+    }
+}
+
+public sealed class PresentOpenedAuditHandler(IAuditSink audit) : IEventHandler<PresentOpenedEvent>
+{
+    public ValueTask HandleAsync(PresentOpenedEvent e, EventContext ctx, CancellationToken ct)
+    {
+        audit.Emit(
+            new AuditEvent
+            {
+                Category = AuditCategory.Item,
+                Action = "item.present_opened",
+                Severity = AuditSeverity.Info,
+                Result = AuditResult.Success,
+                ActorPlayerId = e.ActorPlayerId,
+                RoomId = e.RoomId,
+                ItemId = e.ItemId,
+                Data = JsonSerializer.Serialize(new { e.OfferId }),
+            }
+        );
+
+        return ValueTask.CompletedTask;
+    }
+}

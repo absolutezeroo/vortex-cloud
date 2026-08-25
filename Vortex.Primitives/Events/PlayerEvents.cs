@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using Vortex.Primitives.Players;
 
 namespace Vortex.Primitives.Events;
@@ -31,3 +32,120 @@ public sealed record PlayerMottoChangedEvent(PlayerId PlayerId, string Motto) : 
 
 /// <summary>Player changed their avatar figure (look).</summary>
 public sealed record PlayerFigureChangedEvent(PlayerId PlayerId, string Figure) : IEvent;
+
+/// <summary>
+/// A player completed one or more levels of an achievement. Raised once per level-up, after the row
+/// and every reward have landed, so a record here means the player really holds the badge.
+/// </summary>
+public sealed record AchievementLevelUpEvent(
+    PlayerId PlayerId,
+    int AchievementId,
+    string AchievementName,
+    int Level,
+    string BadgeCode,
+    int ScoreGained
+) : IEvent;
+
+/// <summary>
+/// A player was granted a badge they did not already hold. Re-grants are silent: the grain returns
+/// early on an owned badge, so one record here means one badge actually entered the collection.
+/// </summary>
+public sealed record BadgeGrantedEvent(PlayerId PlayerId, string BadgeCode) : IEvent;
+
+/// <summary>
+/// A player changed which badges they wear. Carries the full new selection ordered by slot, because
+/// the interesting question is what they chose to show, not which slot moved.
+/// </summary>
+public sealed record BadgesEquippedEvent(PlayerId PlayerId, ImmutableArray<string> BadgeCodes)
+    : IEvent;
+
+/// <summary>
+/// A player finished a quest. Raised once per completion, after the reward has been granted, so a
+/// re-run of the same progress pass never doubles the record.
+/// </summary>
+public sealed record QuestCompletedEvent(
+    PlayerId PlayerId,
+    int QuestId,
+    string CampaignCode,
+    string LocalizationCode,
+    int RewardType,
+    int RewardAmount
+) : IEvent;
+
+/// <summary>A player accepted a quest and made it their active one.</summary>
+public sealed record QuestAcceptedEvent(
+    PlayerId PlayerId,
+    int QuestId,
+    string CampaignCode,
+    string LocalizationCode
+) : IEvent;
+
+/// <summary>
+/// A player dropped a quest. <paramref name="Rejected"/> separates turning one down outright from
+/// abandoning the one already in progress -- the same grain path, but not the same intent.
+/// </summary>
+public sealed record QuestAbandonedEvent(
+    PlayerId PlayerId,
+    int QuestId,
+    string CampaignCode,
+    string LocalizationCode,
+    bool Rejected
+) : IEvent;
+
+/// <summary>
+/// A player activated an avatar effect from their inventory. Activation is the moment the effect
+/// starts burning its duration, and the moment it becomes visible to everyone else.
+/// </summary>
+public sealed record AvatarEffectActivatedEvent(
+    PlayerId PlayerId,
+    int EffectId,
+    int DurationSeconds
+) : IEvent;
+
+/// <summary>
+/// A survey was finished. Deliberately the completion and not each answer: a survey is answered one
+/// question at a time, and a record per question would drown the timeline it belongs to.
+/// </summary>
+public sealed record PollCompletedEvent(PlayerId PlayerId, int PollId, string PollCode) : IEvent;
+
+/// <summary>A survey was declined before it was started.</summary>
+public sealed record PollRejectedEvent(PlayerId PlayerId, int PollId) : IEvent;
+
+/// <summary>A completed daily task paid out. Only once per task: a second click never reaches here.</summary>
+public sealed record DailyTaskClaimedEvent(PlayerId PlayerId, int TaskId) : IEvent;
+
+/// <summary>
+/// A wardrobe slot was saved. The figure is kept because a saved outfit is a look the account can
+/// return to in one click -- which is what makes it worth having on record next to
+/// <see cref="PlayerFigureChangedEvent"/> rather than only the look currently worn.
+/// </summary>
+public sealed record WardrobeOutfitSavedEvent(PlayerId PlayerId, int SlotId, string Figure)
+    : IEvent;
+
+/// <summary>
+/// A resolution challenge on a statue was won and its badge handed out. The statue is named because
+/// the challenge lives on a piece of furniture that can be traded away afterwards.
+/// </summary>
+public sealed record AchievementResolutionWonEvent(
+    PlayerId PlayerId,
+    int ItemId,
+    int AchievementId,
+    int TargetLevel,
+    string BadgeCode
+) : IEvent;
+
+/// <summary>A resolution challenge still in progress was cleared off its statue.</summary>
+public sealed record AchievementResolutionResetEvent(PlayerId PlayerId, int ItemId) : IEvent;
+
+/// <summary>
+/// A client preference was saved. <paramref name="Setting"/> names the pane -- sound, chat, room
+/// invites, camera, UI flags -- because turning a setting off is sometimes the first move of an
+/// incident, and one undifferentiated "preferences changed" line cannot show which.
+/// </summary>
+public sealed record AccountPreferenceChangedEvent(PlayerId PlayerId, string Setting) : IEvent;
+
+/// <summary>A clothing item was redeemed off a furni and unlocked permanently on the account.</summary>
+public sealed record ClothingRedeemedEvent(PlayerId PlayerId, int ItemId) : IEvent;
+
+/// <summary>A player answered a quiz.</summary>
+public sealed record QuizSubmittedEvent(PlayerId PlayerId, string QuizCode) : IEvent;

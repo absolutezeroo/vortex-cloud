@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Orleans;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Help;
 using Vortex.Primitives.Help.Grains;
 using Vortex.Runtime;
@@ -23,9 +24,12 @@ namespace Vortex.Social.Grains;
 /// somebody who is not there.
 /// </remarks>
 [KeepAlive]
-internal sealed class GuideDirectoryGrain(IGrainFactory grainFactory) : Grain, IGuideDirectoryGrain
+internal sealed class GuideDirectoryGrain(IGrainFactory grainFactory, IEventPublisher events)
+    : Grain,
+        IGuideDirectoryGrain
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly IEventPublisher _events = events;
 
     /// <summary>
     /// The client's own entry points: <c>createHelpRequest(0)</c> and <c>(2)</c> are tour requests
@@ -112,7 +116,7 @@ internal sealed class GuideDirectoryGrain(IGrainFactory grainFactory) : Grain, I
         return Task.CompletedTask;
     }
 
-    public Task<GuideRequestOutcome> CreateRequestAsync(
+    public async Task<GuideRequestOutcome> CreateRequestAsync(
         int requesterId,
         int helpRequestType,
         string description,
@@ -121,7 +125,7 @@ internal sealed class GuideDirectoryGrain(IGrainFactory grainFactory) : Grain, I
     {
         if (requesterId <= 0)
         {
-            return Task.FromResult(Failed(requesterId));
+            return Failed(requesterId);
         }
 
         // One request per player. Without this a client that resends -- or a player who reopens the
@@ -132,7 +136,7 @@ internal sealed class GuideDirectoryGrain(IGrainFactory grainFactory) : Grain, I
             || _sessionsByPlayer.ContainsKey(requesterId)
         )
         {
-            return Task.FromResult(Failed(requesterId));
+            return Failed(requesterId);
         }
 
         PendingRequest request = new(helpRequestType, description);
@@ -141,16 +145,20 @@ internal sealed class GuideDirectoryGrain(IGrainFactory grainFactory) : Grain, I
 
         if (guideId == 0)
         {
-            return Task.FromResult(Failed(requesterId));
+            return Failed(requesterId);
         }
 
         _pendingByRequester[requesterId] = request;
         _requesterByOfferedGuide[guideId] = requesterId;
 
-        return Task.FromResult(Offered(requesterId, guideId, request));
+        await _events
+            .PublishAsync(new GuideRequestCreatedEvent(requesterId, helpRequestType), ct)
+            .ConfigureAwait(true);
+
+        return Offered(requesterId, guideId, request);
     }
 
-    public Task<GuideRequestOutcome> GuideDecidesAsync(
+    public async Task<GuideRequestOutcome> GuideDecidesAsync(
         int guideId,
         bool accepted,
         CancellationToken ct
@@ -160,12 +168,12 @@ internal sealed class GuideDirectoryGrain(IGrainFactory grainFactory) : Grain, I
         {
             // Nothing was in front of them. A late answer to a request that has since gone
             // elsewhere lands here, and must not disturb whoever holds it now.
-            return Task.FromResult(new GuideRequestOutcome());
+            return new GuideRequestOutcome();
         }
 
         if (!_pendingByRequester.TryGetValue(requesterId, out PendingRequest? request))
         {
-            return Task.FromResult(new GuideRequestOutcome());
+            return new GuideRequestOutcome();
         }
 
         if (accepted)
@@ -183,11 +191,15 @@ internal sealed class GuideDirectoryGrain(IGrainFactory grainFactory) : Grain, I
             _sessionsByPlayer[requesterId] = session;
             _sessionsByPlayer[guideId] = session;
 
-            return Task.FromResult(
-                new GuideRequestOutcome { RequesterId = requesterId, Session = session }
-            );
+            await _events
+                .PublishAsync(new GuideSessionStartedEvent(guideId, requesterId), ct)
+                .ConfigureAwait(true);
+
+            return new GuideRequestOutcome { RequesterId = requesterId, Session = session };
         }
 
+        // A refusal is not recorded: the request simply moves to the next guide, and a line per
+        // guide who passed would say more about who was online than about the player asking.
         request.Declined.Add(guideId);
 
         int nextGuideId = FindAvailableGuide(request, requesterId);
@@ -196,12 +208,12 @@ internal sealed class GuideDirectoryGrain(IGrainFactory grainFactory) : Grain, I
         {
             _pendingByRequester.Remove(requesterId);
 
-            return Task.FromResult(Failed(requesterId));
+            return Failed(requesterId);
         }
 
         _requesterByOfferedGuide[nextGuideId] = requesterId;
 
-        return Task.FromResult(Offered(requesterId, nextGuideId, request));
+        return Offered(requesterId, nextGuideId, request);
     }
 
     public Task<GuideSessionSnapshot?> GetSessionAsync(int playerId, CancellationToken ct) =>
@@ -210,7 +222,7 @@ internal sealed class GuideDirectoryGrain(IGrainFactory grainFactory) : Grain, I
     public Task<int> GetPartnerAsync(int playerId, CancellationToken ct) =>
         Task.FromResult(PartnerOf(playerId));
 
-    public Task<int> EndSessionAsync(int playerId, CancellationToken ct)
+    public async Task<int> EndSessionAsync(int playerId, CancellationToken ct)
     {
         // A request that never found a guide is cleared too: a requester who walks away before
         // anyone accepted would otherwise leave their offer sitting in front of a guide.
@@ -230,13 +242,17 @@ internal sealed class GuideDirectoryGrain(IGrainFactory grainFactory) : Grain, I
 
         if (partnerId == 0)
         {
-            return Task.FromResult(0);
+            return 0;
         }
 
         _sessionsByPlayer.Remove(playerId);
         _sessionsByPlayer.Remove(partnerId);
 
-        return Task.FromResult(partnerId);
+        await _events
+            .PublishAsync(new GuideSessionEndedEvent(playerId, partnerId), ct)
+            .ConfigureAwait(true);
+
+        return partnerId;
     }
 
     public async Task<ChatReviewOutcome> CreateChatReviewAsync(

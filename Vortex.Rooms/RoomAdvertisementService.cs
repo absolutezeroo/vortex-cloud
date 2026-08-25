@@ -4,14 +4,18 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Rooms;
 
 namespace Vortex.Rooms;
 
-internal sealed class RoomAdvertisementService(IDbContextFactory<VortexDbContext> dbContextFactory)
-    : IRoomAdvertisementService
+internal sealed class RoomAdvertisementService(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    IEventPublisher events
+) : IRoomAdvertisementService
 {
     private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
+    private readonly IEventPublisher _events = events;
 
     public async Task<RoomAdvertisementSnapshot?> EditAsync(
         int advertisementId,
@@ -45,6 +49,18 @@ internal sealed class RoomAdvertisementService(IDbContextFactory<VortexDbContext
             description is not null && description.Length > 255 ? description[..255] : description;
 
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        await _events
+            .PublishAsync(
+                new RoomAdvertisementChangedEvent(
+                    actorPlayerId,
+                    advertisementId,
+                    entity.RoomEntityId,
+                    "edited"
+                ),
+                ct
+            )
+            .ConfigureAwait(false);
 
         return new RoomAdvertisementSnapshot
         {
@@ -84,6 +100,18 @@ internal sealed class RoomAdvertisementService(IDbContextFactory<VortexDbContext
         entity.ExpiresAt = now;
 
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        await _events
+            .PublishAsync(
+                new RoomAdvertisementChangedEvent(
+                    actorPlayerId,
+                    advertisementId,
+                    entity.RoomEntityId,
+                    "cancelled"
+                ),
+                ct
+            )
+            .ConfigureAwait(false);
 
         return entity.RoomEntityId;
     }

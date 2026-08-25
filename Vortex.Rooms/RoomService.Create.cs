@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Players;
 using Vortex.Database.Entities.Room;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Navigator.Enums;
 using Vortex.Primitives.Players;
 using Vortex.Primitives.Rooms;
@@ -90,6 +91,10 @@ internal sealed partial class RoomService
             trimmedName,
             playerId
         );
+
+        await _events
+            .PublishAsync(new RoomCreatedEvent(playerId, room.Id, trimmedName), ct)
+            .ConfigureAwait(false);
 
         return (room.Id, trimmedName);
     }

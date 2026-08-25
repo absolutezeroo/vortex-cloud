@@ -53,3 +53,14 @@ public sealed record LtdRaffleWonEvent(
     int SerialNumber,
     int FurniDefinitionId
 ) : IEvent;
+
+/// <summary>
+/// A voucher code was redeemed. The wallet credit lands in the ledger either way; this says which
+/// code bought it, which is the only way to notice one code being spread around.
+/// </summary>
+public sealed record VoucherRedeemedEvent(
+    int PlayerId,
+    string Code,
+    int Amount,
+    int? ActivityPointType
+) : IEvent;

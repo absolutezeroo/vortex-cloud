@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Players;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Inventory.Snapshots;
 using Vortex.Primitives.Orleans;
@@ -35,11 +36,13 @@ namespace Vortex.Players.Grains;
 internal sealed class PlayerClothingGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
+    IEventPublisher events,
     ILogger<PlayerClothingGrain> logger
 ) : Grain, IPlayerClothingGrain
 {
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly IEventPublisher _events = events;
     private readonly ILogger<PlayerClothingGrain> _logger = logger;
 
     private PlayerId PlayerId => new((int)this.GetPrimaryKeyLong());
@@ -193,6 +196,12 @@ internal sealed class PlayerClothingGrain(
             productCode,
             string.Join(", ", missing)
         );
+
+        // Raised after the furni has actually left the inventory: the trade is a piece of furniture
+        // for a permanent unlock, and a record of the unlock without the loss reads as a duplication.
+        await _events
+            .PublishAsync(new ClothingRedeemedEvent(PlayerId, item.Definition.Id), ct)
+            .ConfigureAwait(true);
 
         return new ClothingRedeemResult
         {

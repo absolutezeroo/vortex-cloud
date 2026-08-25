@@ -17,3 +17,15 @@ public sealed record RespectGivenEvent(int ActorPlayerId, int TargetPlayerId) : 
 
 /// <summary>A player received a respect point; <paramref name="RespectTotal"/> is their new total.</summary>
 public sealed record RespectReceivedEvent(int PlayerId, int RespectTotal) : IEvent;
+
+/// <summary>
+/// A friend request was sent. Recorded because the request, not the friendship, is what a player
+/// being pestered actually reports -- and a refused one leaves no friendship behind at all.
+/// </summary>
+public sealed record FriendRequestSentEvent(int ActorPlayerId, int TargetPlayerId) : IEvent;
+
+/// <summary>
+/// A friend request was turned down. <paramref name="RequesterPlayerId"/> is null for the client's
+/// "decline all", which names nobody.
+/// </summary>
+public sealed record FriendRequestDeclinedEvent(int ActorPlayerId, int? RequesterPlayerId) : IEvent;

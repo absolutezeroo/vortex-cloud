@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Players;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Players.Snapshots;
 
@@ -16,10 +17,12 @@ namespace Vortex.Progression.Grains;
 
 internal sealed class PlayerBadgeGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
+    IEventPublisher events,
     ILogger<PlayerBadgeGrain> logger
 ) : Grain, IPlayerBadgeGrain
 {
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IEventPublisher _events = events;
     private readonly ILogger<PlayerBadgeGrain> _logger = logger;
 
     private int PlayerId => (int)this.GetPrimaryKeyLong();
@@ -95,6 +98,23 @@ internal sealed class PlayerBadgeGrain(
 
                 await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
             }
+
+            // Published for an empty selection too: taking every badge off is a change worth a line,
+            // and a timeline that only ever records putting them on cannot show the difference.
+            await _events
+                .PublishAsync(
+                    new BadgesEquippedEvent(
+                        PlayerId,
+                        [
+                            .. slots
+                                .Where(s => s.SlotId > 0 && !string.IsNullOrWhiteSpace(s.BadgeCode))
+                                .OrderBy(s => s.SlotId)
+                                .Select(s => s.BadgeCode),
+                        ]
+                    ),
+                    ct
+                )
+                .ConfigureAwait(true);
         }
         catch (Exception ex)
         {

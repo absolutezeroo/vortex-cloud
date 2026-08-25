@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Players;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 
 namespace Vortex.Players.Grains;
@@ -46,6 +47,7 @@ internal sealed partial class PlayerGrain
         CancellationToken ct
     ) =>
         UpdateAccountPreferencesAsync(
+            "sound",
             e =>
             {
                 e.UiVolume = ClampVolume(uiVolume);
@@ -56,18 +58,25 @@ internal sealed partial class PlayerGrain
         );
 
     public Task SetFreeFlowChatDisabledAsync(bool disabled, CancellationToken ct) =>
-        UpdateAccountPreferencesAsync(e => e.FreeFlowChatDisabled = disabled, ct);
+        UpdateAccountPreferencesAsync("chat", e => e.FreeFlowChatDisabled = disabled, ct);
 
     public Task SetRoomInvitesIgnoredAsync(bool ignored, CancellationToken ct) =>
-        UpdateAccountPreferencesAsync(e => e.RoomInvitesIgnored = ignored, ct);
+        UpdateAccountPreferencesAsync("room_invites", e => e.RoomInvitesIgnored = ignored, ct);
 
     public Task SetRoomCameraFollowDisabledAsync(bool disabled, CancellationToken ct) =>
-        UpdateAccountPreferencesAsync(e => e.RoomCameraFollowDisabled = disabled, ct);
+        UpdateAccountPreferencesAsync("camera", e => e.RoomCameraFollowDisabled = disabled, ct);
 
     public Task SetUiFlagsAsync(int flags, CancellationToken ct) =>
-        UpdateAccountPreferencesAsync(e => e.UiFlags = flags, ct);
+        UpdateAccountPreferencesAsync("ui_flags", e => e.UiFlags = flags, ct);
 
+    /// <summary>
+    /// The one write path for every preference, so the record is raised here rather than in five
+    /// setters that would each have to remember. <paramref name="setting"/> names which pane the
+    /// client changed: "he turned free-flow chat off just before the incident" is a real question,
+    /// and a single "preferences changed" line cannot answer it.
+    /// </summary>
     private async Task UpdateAccountPreferencesAsync(
+        string setting,
         Action<PlayerAccountPreferencesEntity> mutate,
         CancellationToken ct
     )
@@ -100,6 +109,10 @@ internal sealed partial class PlayerGrain
         mutate(entity);
 
         await dbCtx.SaveChangesAsync(ct);
+
+        await _events
+            .PublishAsync(new AccountPreferenceChangedEvent(_state.PlayerId, setting), ct)
+            .ConfigureAwait(true);
     }
 
     private static int ClampVolume(int volume) => Math.Clamp(volume, 0, 100);

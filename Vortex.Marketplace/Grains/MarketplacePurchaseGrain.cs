@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Marketplace;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Inventory.Snapshots;
@@ -26,12 +27,14 @@ public sealed class MarketplacePurchaseGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
     IMarketplaceSettingsProvider settingsProvider,
+    IEventPublisher events,
     ILogger<MarketplacePurchaseGrain> logger
 ) : Grain, IMarketplacePurchaseGrain
 {
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IMarketplaceSettingsProvider _settingsProvider = settingsProvider;
+    private readonly IEventPublisher _events = events;
     private readonly ILogger<MarketplacePurchaseGrain> _logger = logger;
 
     public async Task<(int Result, int OfferId)> MakeOfferAsync(
@@ -98,6 +101,18 @@ public sealed class MarketplacePurchaseGrain(
         dbCtx.MarketplaceOffers.Add(offer);
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
+        await _events
+            .PublishAsync(
+                new MarketplaceOfferListedEvent(
+                    (int)this.GetPrimaryKeyLong(),
+                    offer.Id,
+                    offer.FurnitureDefinitionEntityId,
+                    price
+                ),
+                ct
+            )
+            .ConfigureAwait(true);
+
         return (0, offer.Id);
     }
 
@@ -130,6 +145,18 @@ public sealed class MarketplacePurchaseGrain(
         IInventoryGrain inventoryGrain = _grainFactory.GetInventoryGrain(this.GetPrimaryKeyLong());
         await inventoryGrain
             .GrantFurnitureDefinitionAsync(offer.FurnitureDefinitionEntityId, offer.ExtraData, ct)
+            .ConfigureAwait(true);
+
+        await _events
+            .PublishAsync(
+                new MarketplaceOfferCancelledEvent(
+                    (int)this.GetPrimaryKeyLong(),
+                    offer.Id,
+                    offer.FurnitureDefinitionEntityId,
+                    offer.Price
+                ),
+                ct
+            )
             .ConfigureAwait(true);
 
         return true;
@@ -262,6 +289,22 @@ public sealed class MarketplacePurchaseGrain(
             return 1;
         }
 
+        if (result.Succeeded)
+        {
+            await _events
+                .PublishAsync(
+                    new MarketplaceOfferBoughtEvent(
+                        (int)this.GetPrimaryKeyLong(),
+                        offer.SellerEntityId,
+                        offer.Id,
+                        offer.FurnitureDefinitionEntityId,
+                        offer.Price
+                    ),
+                    ct
+                )
+                .ConfigureAwait(true);
+        }
+
         return result.Succeeded ? 0 : 2;
     }
 
@@ -307,6 +350,17 @@ public sealed class MarketplacePurchaseGrain(
         await _grainFactory
             .GetPlayerWalletGrain(this.GetPrimaryKeyLong())
             .GrantCreditsAsync(totalCredits, ct)
+            .ConfigureAwait(true);
+
+        await _events
+            .PublishAsync(
+                new MarketplaceCreditsRedeemedEvent(
+                    (int)this.GetPrimaryKeyLong(),
+                    totalCredits,
+                    soldOffers.Count
+                ),
+                ct
+            )
             .ConfigureAwait(true);
 
         return totalCredits;

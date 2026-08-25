@@ -179,3 +179,36 @@ public sealed class LtdRaffleWonAuditHandler(IAuditSink audit) : IEventHandler<L
         return ValueTask.CompletedTask;
     }
 }
+
+/// <summary>
+/// A voucher code was redeemed. The ledger already carries the credit, so this record exists for
+/// the code itself: one code turning up across many accounts is a leak, and the ledger alone cannot
+/// show that.
+/// </summary>
+public sealed class VoucherRedeemedAuditHandler(IAuditSink audit)
+    : IEventHandler<VoucherRedeemedEvent>
+{
+    public ValueTask HandleAsync(VoucherRedeemedEvent e, EventContext ctx, CancellationToken ct)
+    {
+        audit.Emit(
+            new AuditEvent
+            {
+                Category = AuditCategory.Economy,
+                Action = "economy.voucher.redeemed",
+                Severity = AuditSeverity.Notice,
+                Result = AuditResult.Success,
+                ActorPlayerId = e.PlayerId,
+                Data = JsonSerializer.Serialize(
+                    new
+                    {
+                        e.Code,
+                        e.Amount,
+                        e.ActivityPointType,
+                    }
+                ),
+            }
+        );
+
+        return ValueTask.CompletedTask;
+    }
+}

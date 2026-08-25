@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Moderation;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Moderation;
 
 namespace Vortex.Rooms;
@@ -18,10 +19,13 @@ namespace Vortex.Rooms;
 /// Owns cfh_tickets and the cfh_categories/cfh_topics catalog. Ticket volume is low (staff/report
 /// action rate, not a hot path) so every method opens its own short-lived context.
 /// </summary>
-internal sealed class CfhTicketService(IDbContextFactory<VortexDbContext> dbContextFactory)
-    : ICfhTicketService
+internal sealed class CfhTicketService(
+    IDbContextFactory<VortexDbContext> dbContextFactory,
+    IEventPublisher events
+) : ICfhTicketService
 {
     private readonly IDbContextFactory<VortexDbContext> _dbContextFactory = dbContextFactory;
+    private readonly IEventPublisher _events = events;
 
     public async Task<int> CreateTicketAsync(
         int topicId,
@@ -57,6 +61,19 @@ internal sealed class CfhTicketService(IDbContextFactory<VortexDbContext> dbCont
 
         dbCtx.CfhTickets.Add(ticket);
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(false);
+
+        await _events
+            .PublishAsync(
+                new CfhTicketOpenedEvent(
+                    ticket.Id,
+                    reporterPlayerId,
+                    reportedPlayerId,
+                    roomId,
+                    topicId
+                ),
+                ct
+            )
+            .ConfigureAwait(false);
 
         return ticket.Id;
     }

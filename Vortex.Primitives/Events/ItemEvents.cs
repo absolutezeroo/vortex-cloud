@@ -82,3 +82,11 @@ public sealed record ItemPickedUpEvent(
 /// </summary>
 public sealed record ItemDeletedEvent(int ItemId, int OwnerId, int? ActorPlayerId, string? Reason)
     : IEvent;
+
+/// <summary>
+/// A wrapped present was opened. The parcel is consumed and the contents land in the opener's
+/// inventory as brand-new items, so without this record the chain from "who sent it" to "what came
+/// out" breaks exactly at the interesting point.
+/// </summary>
+public sealed record PresentOpenedEvent(long ItemId, int ActorPlayerId, int RoomId, int OfferId)
+    : IEvent;

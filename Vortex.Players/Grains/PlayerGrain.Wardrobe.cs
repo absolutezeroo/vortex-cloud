@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Players;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 
 namespace Vortex.Players.Grains;
@@ -71,5 +72,9 @@ internal sealed partial class PlayerGrain
         }
 
         await dbCtx.SaveChangesAsync(ct);
+
+        await _events
+            .PublishAsync(new WardrobeOutfitSavedEvent(_state.PlayerId, slotId, figure), ct)
+            .ConfigureAwait(true);
     }
 }

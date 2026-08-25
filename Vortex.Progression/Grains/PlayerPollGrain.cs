@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Polls;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
 using Vortex.Primitives.Polls;
@@ -26,11 +27,13 @@ namespace Vortex.Progression.Grains;
 internal sealed class PlayerPollGrain(
     IGrainFactory grainFactory,
     IDbContextFactory<VortexDbContext> dbCtxFactory,
+    IEventPublisher events,
     ILogger<PlayerPollGrain> logger
 ) : Grain, IPlayerPollGrain
 {
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
+    private readonly IEventPublisher _events = events;
     private readonly ILogger<PlayerPollGrain> _logger = logger;
 
     private int PlayerId => (int)this.GetPrimaryKeyLong();
@@ -200,6 +203,10 @@ internal sealed class PlayerPollGrain(
         }
 
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+        await _events
+            .PublishAsync(new PollRejectedEvent(PlayerId, pollId), ct)
+            .ConfigureAwait(true);
     }
 
     public async Task AnswerAsync(
@@ -326,6 +333,10 @@ internal sealed class PlayerPollGrain(
         await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
 
         _logger.LogInformation("Player {PlayerId} completed poll {PollCode}.", PlayerId, poll.Code);
+
+        await _events
+            .PublishAsync(new PollCompletedEvent(PlayerId, poll.Id, poll.Code), ct)
+            .ConfigureAwait(true);
     }
 
     private async Task<Dictionary<int, PollParticipationState>> LoadStatesAsync(

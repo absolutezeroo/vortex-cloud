@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Pets;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Pets;
 using Vortex.Primitives.Pets.Snapshots;
 using Vortex.Primitives.Players;
@@ -51,6 +52,18 @@ public sealed partial class InventoryGrain
 
             dbCtx.Pets.Add(entity);
             await dbCtx.SaveChangesAsync(ct).ConfigureAwait(true);
+
+            await _events
+                .PublishAsync(
+                    new PetAdoptedEvent(
+                        (int)this.GetPrimaryKeyLong(),
+                        entity.Id,
+                        entity.Name,
+                        entity.Type
+                    ),
+                    ct
+                )
+                .ConfigureAwait(true);
 
             return ToSnapshot(entity);
         }

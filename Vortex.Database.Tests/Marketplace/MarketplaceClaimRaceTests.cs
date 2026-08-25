@@ -13,6 +13,7 @@ using Orleans.Runtime;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Marketplace;
 using Vortex.Marketplace.Grains;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Marketplace.Providers;
 using Vortex.Primitives.Marketplace.Snapshots;
@@ -193,6 +194,7 @@ public sealed class MarketplaceClaimRaceTests : IAsyncLifetime
                     }
                     : null
             ),
+            FakeProxy.Create<IEventPublisher>(_ => Task.CompletedTask),
             NullLogger<MarketplacePurchaseGrain>.Instance
         );
 

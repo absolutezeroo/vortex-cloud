@@ -11,6 +11,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Collectibles;
 using Vortex.Primitives.Collectibles;
 using Vortex.Primitives.Collectibles.Grains;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Orleans;
@@ -24,11 +25,13 @@ namespace Vortex.Collectibles.Grains;
 internal sealed class PlayerNftClaimsGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
+    IEventPublisher events,
     ILogger<PlayerNftClaimsGrain> logger
 ) : Grain, IPlayerNftClaimsGrain
 {
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly IEventPublisher _events = events;
     private readonly ILogger<PlayerNftClaimsGrain> _logger = logger;
 
     private PlayerId PlayerId => new((int)this.GetPrimaryKeyLong());
@@ -128,6 +131,13 @@ internal sealed class PlayerNftClaimsGrain(
             PlayerId,
             granted
         );
+
+        if (granted > 0)
+        {
+            await _events
+                .PublishAsync(new NftClaimsCollectedEvent(PlayerId, granted), ct)
+                .ConfigureAwait(true);
+        }
 
         return granted;
     }

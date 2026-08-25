@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Room;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Observability;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Room;
@@ -161,6 +162,18 @@ public sealed partial class RoomGrain
                 )
                 .ConfigureAwait(true);
 
+            await _events
+                .PublishAsync(
+                    new RoomSettingsUpdatedEvent(
+                        actor,
+                        _state.RoomId.Value,
+                        _state.RoomSnapshot.Name,
+                        "settings"
+                    ),
+                    ct
+                )
+                .ConfigureAwait(true);
+
             return true;
         }
         catch (Exception ex)
@@ -213,6 +226,13 @@ public sealed partial class RoomGrain
             {
                 await _grainFactory.GetRoomDirectoryGrain().RemoveActiveRoomAsync(_state.RoomId);
             }
+
+            await _events
+                .PublishAsync(
+                    new RoomDeletedEvent(actor, _state.RoomId.Value, _state.RoomSnapshot.Name),
+                    ct
+                )
+                .ConfigureAwait(true);
 
             await DeactivateRoomAsync().ConfigureAwait(true);
 
@@ -339,6 +359,18 @@ public sealed partial class RoomGrain
                 )
                 .ConfigureAwait(true);
 
+            await _events
+                .PublishAsync(
+                    new RoomSettingsUpdatedEvent(
+                        actor,
+                        _state.RoomId.Value,
+                        _state.RoomSnapshot.Name,
+                        "category_trade"
+                    ),
+                    ct
+                )
+                .ConfigureAwait(true);
+
             return true;
         }
         catch (Exception ex)
@@ -408,6 +440,13 @@ public sealed partial class RoomGrain
 
             await SecurityModule
                 .RefreshControllerLevelForPlayerAsync(target, ct)
+                .ConfigureAwait(true);
+
+            await _events
+                .PublishAsync(
+                    new RoomRightsChangedEvent(actor, _state.RoomId.Value, target, "granted"),
+                    ct
+                )
                 .ConfigureAwait(true);
         }
         catch (Exception ex)
@@ -481,6 +520,18 @@ public sealed partial class RoomGrain
                     )
                 )
                 .ConfigureAwait(true);
+
+            // One record per target rather than one for the batch: an investigation searches by the
+            // account that lost the rights at least as often as by the owner who took them away.
+            foreach (PlayerId target in targets)
+            {
+                await _events
+                    .PublishAsync(
+                        new RoomRightsChangedEvent(actor, _state.RoomId.Value, target, "removed"),
+                        ct
+                    )
+                    .ConfigureAwait(true);
+            }
         }
         catch (Exception ex)
         {
@@ -535,6 +586,15 @@ public sealed partial class RoomGrain
                     targets.Select(target =>
                         SecurityModule.RefreshControllerLevelForPlayerAsync(target, ct)
                     )
+                )
+                .ConfigureAwait(true);
+
+            // No target: "cleared the room's rights" is one act, and the individual losses are not
+            // separate decisions the way a targeted removal is.
+            await _events
+                .PublishAsync(
+                    new RoomRightsChangedEvent(actor, _state.RoomId.Value, null, "removed_all"),
+                    ct
                 )
                 .ConfigureAwait(true);
         }
@@ -592,6 +652,18 @@ public sealed partial class RoomGrain
                 Tags = RoomTagMapper.ToTags(entity.Tag1, entity.Tag2),
                 LastUpdatedUtc = DateTime.UtcNow,
             };
+
+            await _events
+                .PublishAsync(
+                    new RoomSettingsUpdatedEvent(
+                        actor,
+                        _state.RoomId.Value,
+                        _state.RoomSnapshot.Name,
+                        "tags"
+                    ),
+                    ct
+                )
+                .ConfigureAwait(true);
 
             return true;
         }
@@ -657,6 +729,10 @@ public sealed partial class RoomGrain
                 Score = entity.Score,
                 LastUpdatedUtc = DateTime.UtcNow,
             };
+
+            await _events
+                .PublishAsync(new RoomRatedEvent(actor, _state.RoomId.Value, sign), ct)
+                .ConfigureAwait(true);
 
             return true;
         }
@@ -749,6 +825,13 @@ public sealed partial class RoomGrain
 
             await SecurityModule
                 .RefreshControllerLevelForPlayerAsync(actor, ct)
+                .ConfigureAwait(true);
+
+            await _events
+                .PublishAsync(
+                    new RoomRightsChangedEvent(actor, _state.RoomId.Value, actor, "gave_up"),
+                    ct
+                )
                 .ConfigureAwait(true);
         }
         catch (Exception ex)

@@ -12,6 +12,7 @@ using Vortex.Database.Entities.Pets;
 using Vortex.Logging;
 using Vortex.Primitives;
 using Vortex.Primitives.Action;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Players;
 using Vortex.Primitives.Pets.Snapshots;
@@ -416,6 +417,13 @@ public sealed partial class RoomPetSystem
 
         if (leveledUp)
         {
+            await _roomGrain
+                ._events.PublishAsync(
+                    new PetLeveledUpEvent(updated.PetId, _roomGrain.RoomId.Value, updated.Level),
+                    ct
+                )
+                .ConfigureAwait(false);
+
             await _roomGrain
                 .SendComposerToRoomAsync(
                     new PetLevelUpdateMessageComposer

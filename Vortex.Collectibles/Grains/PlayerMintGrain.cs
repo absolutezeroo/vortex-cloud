@@ -11,6 +11,7 @@ using Vortex.Database.Context;
 using Vortex.Database.Entities.Collectibles;
 using Vortex.Primitives.Collectibles;
 using Vortex.Primitives.Collectibles.Grains;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Furniture.Enums;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Inventory.Snapshots;
@@ -42,11 +43,13 @@ namespace Vortex.Collectibles.Grains;
 internal sealed class PlayerMintGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IGrainFactory grainFactory,
+    IEventPublisher events,
     ILogger<PlayerMintGrain> logger
 ) : Grain, IPlayerMintGrain
 {
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly IEventPublisher _events = events;
     private readonly ILogger<PlayerMintGrain> _logger = logger;
 
     private PlayerId PlayerId => new((int)this.GetPrimaryKeyLong());
@@ -113,6 +116,13 @@ internal sealed class PlayerMintGrain(
                 offer.SilverPrice,
                 balance
             );
+
+            await _events
+                .PublishAsync(
+                    new MintTokensPurchasedEvent(PlayerId, offer.AmountTokens, offer.SilverPrice),
+                    ct
+                )
+                .ConfigureAwait(true);
 
             return new MintTokenPurchaseResult { Purchased = true, Balance = balance };
         }
@@ -221,6 +231,11 @@ internal sealed class PlayerMintGrain(
             return MintOutcome.NotOwned;
         }
 
+        // Carried out of the try so the record raised further down can name the Relic that was
+        // actually written; the entity itself is scoped to the block that saves it.
+        int mintedAssetId;
+        int mintedSerialNumber;
+
         try
         {
             NftAssetEntity asset = new()
@@ -253,6 +268,9 @@ internal sealed class PlayerMintGrain(
             );
 
             await SpendTokensAsync(dbCtx, terms.StampPrice, ct).ConfigureAwait(true);
+
+            mintedAssetId = asset.Id;
+            mintedSerialNumber = asset.SerialNumber;
         }
         catch (Exception ex)
         {
@@ -283,6 +301,19 @@ internal sealed class PlayerMintGrain(
             itemId,
             terms.StampPrice
         );
+
+        await _events
+            .PublishAsync(
+                new RelicMintedEvent(
+                    PlayerId,
+                    mintedAssetId,
+                    item.Definition.Id,
+                    mintedSerialNumber,
+                    terms.StampPrice
+                ),
+                ct
+            )
+            .ConfigureAwait(true);
 
         return MintOutcome.Minted;
     }

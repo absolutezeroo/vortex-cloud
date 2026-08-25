@@ -82,8 +82,12 @@ public sealed class AccountPasswordServiceTests
 
         AccountPasswordService service = new(
             factory,
-            new AccountAuthenticator(factory, new AccountMfaService(factory)),
+            new AccountAuthenticator(
+                factory,
+                new AccountMfaService(factory, new RecordingEventPublisher())
+            ),
             new List<IAccountSessionRevoker> { dashboard, web },
+            new RecordingEventPublisher(),
             NullLogger<AccountPasswordService>.Instance
         );
 

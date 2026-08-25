@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Achievements;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Inventory.Grains;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Players.Grains;
@@ -40,6 +41,7 @@ internal sealed class PlayerAchievementGrain(
     IGrainFactory grainFactory,
     IDbContextFactory<VortexDbContext> dbCtxFactory,
     IOptions<AchievementConfig> achievementConfig,
+    IEventPublisher events,
     ILogger<PlayerAchievementGrain> logger
 ) : Grain, IPlayerAchievementGrain
 {
@@ -60,6 +62,7 @@ internal sealed class PlayerAchievementGrain(
     private readonly IGrainFactory _grainFactory = grainFactory;
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly AchievementConfig _achievementConfig = achievementConfig.Value;
+    private readonly IEventPublisher _events = events;
     private readonly ILogger<PlayerAchievementGrain> _logger = logger;
 
     private readonly Dictionary<int, ProgressState> _stateByAchievementId = [];
@@ -343,6 +346,22 @@ internal sealed class PlayerAchievementGrain(
 
         await presence
             .SendComposerAsync(new AchievementsScoreEventMessageComposer { Score = newScore })
+            .ConfigureAwait(true);
+
+        // Published last, once the badge, the currency and the score have all landed: an audit line
+        // that says a player unlocked something they do not hold is worse than no line at all.
+        await _events
+            .PublishAsync(
+                new AchievementLevelUpEvent(
+                    PlayerId,
+                    definition.Id,
+                    definition.Name,
+                    result.NewCompletedLevels,
+                    finalBadge,
+                    scoreGained
+                ),
+                ct
+            )
             .ConfigureAwait(true);
     }
 

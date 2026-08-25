@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Orleans;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Players;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Orleans;
 using Vortex.Primitives.Orleans.Snapshots.Vault;
 using Vortex.Primitives.Players.Grains;
@@ -16,11 +17,13 @@ namespace Vortex.Collectibles.Grains;
 
 internal sealed class PlayerVaultGrain(
     IDbContextFactory<VortexDbContext> dbCtxFactory,
-    IGrainFactory grainFactory
+    IGrainFactory grainFactory,
+    IEventPublisher events
 ) : Grain, IPlayerVaultGrain
 {
     private readonly IDbContextFactory<VortexDbContext> _dbCtxFactory = dbCtxFactory;
     private readonly IGrainFactory _grainFactory = grainFactory;
+    private readonly IEventPublisher _events = events;
 
     private readonly List<PlayerVaultIncomeRewardEntity> _pendingRewards = [];
 
@@ -90,6 +93,17 @@ internal sealed class PlayerVaultGrain(
             .ConfigureAwait(true);
 
         _pendingRewards.RemoveAll(r => (VaultRewardCategoryType)r.RewardCategory == category);
+
+        await _events
+            .PublishAsync(
+                new VaultIncomeClaimedEvent(
+                    (int)this.GetPrimaryKeyLong(),
+                    category.ToString(),
+                    toGrant.Count
+                ),
+                ct
+            )
+            .ConfigureAwait(true);
 
         return true;
     }

@@ -7,9 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using Vortex.Database.Context;
 using Vortex.Database.Entities.Moderation;
 using Vortex.Database.Entities.Players;
+using Vortex.Primitives.Events;
 using Vortex.Primitives.Moderation;
 using Vortex.Primitives.Players.Enums;
 using Vortex.Primitives.Rooms.Enums;
+using Vortex.Tests.Support;
 using Xunit;
 
 namespace Vortex.Rooms.Tests.Moderation;
@@ -168,7 +170,10 @@ public sealed class CfhTicketPickContentionTests
     }
 
     private static ICfhTicketService NewService(DbContextOptions<VortexDbContext> options) =>
-        new CfhTicketService(new SingleOptionsFactory(options));
+        new CfhTicketService(
+            new SingleOptionsFactory(options),
+            FakeProxy.Create<IEventPublisher>(_ => Task.CompletedTask)
+        );
 
     private static PlayerEntity NewPlayer(int id, string name) =>
         new()
