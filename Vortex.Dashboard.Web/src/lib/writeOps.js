@@ -24,8 +24,38 @@ import { rememberReason } from './reasonHistory.js';
 import { translate } from './i18n.js';
 import { describeOpError } from './opErrors.js';
 import { autoReasonSuffices, buildAutoReason } from './changes.js';
+import { requestStepUp } from './stepUp.js';
 
 const EMPTY = { pending: null, busy: false, error: '', result: null, key: '' };
+
+// The two 403s that are about the operator's second factor rather than their capabilities.
+const STEP_UP_CODES = new Set(['mfa_step_up_required', 'mfa_enrolment_required']);
+
+/**
+ * Post a write, and if the server refuses it for want of a recent second factor, collect one and try
+ * the same write again.
+ *
+ * Once, deliberately. A second refusal after a code the server just accepted is not a code problem,
+ * and looping on it would sit an operator in front of a dialog that never closes.
+ *
+ * `mfa_enrolment_required` is not retried at all: no dialog helps somebody who has no factor to
+ * prove, and it falls through to the message that tells them to enrol one.
+ */
+async function postWithStepUp(endpoint, payload) {
+  try {
+    return await apiPost(endpoint, payload);
+  } catch (err) {
+    if (err?.code !== 'mfa_step_up_required') {
+      throw err;
+    }
+
+    if (!(await requestStepUp())) {
+      throw err;
+    }
+
+    return apiPost(endpoint, payload);
+  }
+}
 
 export function createWriteOps(onSuccess) {
   const state = writable({ ...EMPTY, results: {}, errors: {}, busyKeys: {} });
@@ -115,7 +145,7 @@ export function createWriteOps(onSuccess) {
     }));
 
     try {
-      const result = await apiPost(endpoint, { ...body, reason });
+      const result = await postWithStepUp(endpoint, { ...body, reason });
 
       if (result.ok) {
         // Only what the operator actually typed. Remembering the generated half would fill the
@@ -154,10 +184,14 @@ export function createWriteOps(onSuccess) {
       return false;
     } catch (err) {
       // A 403 here means the session lost the capability between the page load and the write; say so
-      // rather than surfacing a bare HTTP code the operator cannot act on.
-      const message = isPermissionDeniedError(err)
-        ? translate('common.insufficientRightsAction')
-        : err.code || err.message;
+      // rather than surfacing a bare HTTP code the operator cannot act on. A step-up refusal is also
+      // a 403 and is emphatically not that, so it is read first -- telling an operator they lack
+      // rights they do hold sends them to an administrator for a code dialog.
+      const message = STEP_UP_CODES.has(err?.code)
+        ? translate(`opError.${err.code}`)
+        : isPermissionDeniedError(err)
+          ? translate('common.insufficientRightsAction')
+          : err.code || err.message;
 
       state.update((s) => ({
         ...s,

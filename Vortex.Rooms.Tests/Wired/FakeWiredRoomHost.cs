@@ -213,19 +213,22 @@ internal sealed class FakeWiredRoomHost
         WiredBotChatType chatType,
         PlayerId? whisperTo,
         CancellationToken ct
-    ) => Record(botId, $"say:{text}");
+    ) => RecordAsync(botId, $"say:{text}");
 
     public Task BotTeleportAsync(int botId, int x, int y, CancellationToken ct) =>
-        Record(botId, $"teleport:{x},{y}");
+        RecordAsync(botId, $"teleport:{x},{y}");
 
     public Task BotWalkToAsync(int botId, int x, int y, CancellationToken ct) =>
-        Record(botId, $"walk:{x},{y}");
+        RecordAsync(botId, $"walk:{x},{y}");
 
     public Task BotSetFollowTargetAsync(int botId, PlayerId? target, CancellationToken ct) =>
-        Record(botId, $"follow:{target?.Value.ToString(CultureInfo.InvariantCulture) ?? "none"}");
+        RecordAsync(
+            botId,
+            $"follow:{target?.Value.ToString(CultureInfo.InvariantCulture) ?? "none"}"
+        );
 
     public Task BotSetFigureAsync(int botId, string figure, CancellationToken ct) =>
-        Record(botId, $"figure:{figure}");
+        RecordAsync(botId, $"figure:{figure}");
 
     public Task SendComposerToRoomAsync(IComposer composer)
     {
@@ -241,7 +244,7 @@ internal sealed class FakeWiredRoomHost
         return true;
     }
 
-    private Task Record(int botId, string what)
+    private Task RecordAsync(int botId, string what)
     {
         BotCommands.Add((botId, what));
 

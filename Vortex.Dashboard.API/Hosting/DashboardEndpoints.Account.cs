@@ -136,6 +136,57 @@ internal static partial class DashboardEndpoints
             .WithTags(TagAccount);
 
         app.MapPost(
+                ApiAccountMfa + "/step-up",
+                async (
+                    HttpContext ctx,
+                    AccountMfaStepUpRequest body,
+                    IAccountMfaService mfa,
+                    DashboardSessionStore sessions,
+                    CancellationToken ct
+                ) =>
+                {
+                    DashboardPrincipalIds ids = ResolveIds(ctx);
+
+                    if (ids.AccountId is null)
+                    {
+                        return Unauthenticated();
+                    }
+
+                    if (body is null || string.IsNullOrWhiteSpace(body.Code))
+                    {
+                        return Results.BadRequest(new { error = "invalid_request" });
+                    }
+
+                    if (
+                        !await mfa.VerifyAsync(ids.AccountId.Value, body.Code, ct)
+                            .ConfigureAwait(false)
+                    )
+                    {
+                        return Results.BadRequest(new { error = "invalid_code" });
+                    }
+
+                    // Stamped on the session, not the account: a second window opened with a stolen
+                    // cookie must not inherit a step-up the real operator did in theirs. A false here
+                    // means the cookie names no live session, which the authentication layer would
+                    // have caught -- unless the session expired between the two, and then saying so
+                    // is better than reporting a step-up nothing is holding.
+                    string? sessionId = ctx.Request.Cookies[
+                        DashboardAuthenticationHandler.SessionCookieName
+                    ];
+
+                    return sessions.MarkSteppedUp(sessionId)
+                        ? Results.Ok(new { steppedUp = true })
+                        : Unauthenticated();
+                }
+            )
+            .RequireAuthorization()
+            .WithName("StepUpAccountMfa")
+            .WithSummary(
+                "Prove a current second-factor code, unlocking critical operations for a while."
+            )
+            .WithTags(TagAccount);
+
+        app.MapPost(
                 ApiV1 + "/account/password",
                 async (
                     HttpContext ctx,
@@ -226,6 +277,12 @@ public sealed record AccountMfaEnableRequest(string? Secret, string? Code);
 
 /// <summary>A current code, proving the caller holds the factor they are switching off.</summary>
 public sealed record AccountMfaDisableRequest(string? Code);
+
+/// <summary>
+/// A current code, proving the operator is still the operator before a critical operation runs.
+/// Carries nothing else on purpose: what the step-up is <em>for</em> is not the browser's to say.
+/// </summary>
+public sealed record AccountMfaStepUpRequest(string? Code);
 
 /// <summary>
 /// The current password, the new one, and a code when the account has a second factor. The current

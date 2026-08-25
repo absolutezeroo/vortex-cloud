@@ -17,6 +17,7 @@
   import AppShell from './components/AppShell.svelte';
   import Login from './components/Login.svelte';
   import EntityModal from './components/EntityModal.svelte';
+  import StepUpModal from './components/StepUpModal.svelte';
 
   // One client for the whole dashboard: it is the cache, so navigating away from a page and back
   // reuses what was already read instead of asking again. Per-read policy (staleness, what counts as
@@ -215,6 +216,7 @@
     </AppShell>
 
     <EntityModal />
+    <StepUpModal />
   {/if}
 
 </QueryClientProvider>

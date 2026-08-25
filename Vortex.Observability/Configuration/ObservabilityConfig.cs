@@ -122,6 +122,20 @@ public sealed class ObservabilityConfig
     /// <summary>Lifetime of an authenticated dashboard session in minutes (minimum 5).</summary>
     public int DashboardSessionLifetimeMinutes { get; init; } = 480;
 
+    /// <summary>
+    /// How recently an operator must have proved a second factor before the dashboard will run an
+    /// operation marked critical -- clearing an account's factor, moving currency, changing the staff
+    /// roster, running a console command, taking a database backup. Zero disables the requirement.
+    /// </summary>
+    /// <remarks>
+    /// Off by default, and that is a deliberate choice rather than an oversight. Turning it on for a
+    /// hotel whose operators have not enrolled a factor refuses every one of those operations until
+    /// they do — correct, and not something to inflict on an existing installation by upgrading.
+    /// A session's stamp is set only by <c>/api/v1/account/mfa/step-up</c>, never by logging in:
+    /// an eight-hour session must not carry a factor proved eight hours ago.
+    /// </remarks>
+    public int DashboardStepUpMinutes { get; init; }
+
     /// <summary>When set, the dashboard also listens on HTTPS and redirects HTTP traffic to it.</summary>
     public bool DashboardHttpsEnabled { get; init; }
 

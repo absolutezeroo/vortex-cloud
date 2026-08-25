@@ -1,6 +1,10 @@
 // French dictionary. Keep this structurally in sync with en.js -- see the note there.
 export default {
   opError: {
+    mfa_step_up_required:
+      'Cette operation demande un code de second facteur recent. Confirmez que c est bien vous et elle se lancera.',
+    mfa_enrolment_required:
+      'Cette operation demande un second facteur et ce compte n en a pas. Activez d abord la double authentification sur votre compte.',
     operation_failed: "L'opération a échoué de façon inattendue. Cite l'identifiant de corrélation ci-dessous pour la signaler.",
     invalid_request: 'Requête rejetée : un champ obligatoire est manquant ou mal formé.',
     offer_has_products: "Cette offre contient encore des produits. Supprime-les d'abord, puis l'offre.",
@@ -1325,6 +1329,14 @@ export default {
     enable: 'Activer le deuxieme facteur',
     confirm: 'Confirmer et activer',
     disable: 'Desactiver le deuxieme facteur',
+  },
+  stepUp: {
+    title: 'Confirmez que c est bien vous',
+    body: 'Cette operation fait partie des operations critiques. Saisissez un code courant de votre application d authentification pour la lancer.',
+    codeLabel: 'Code d authentification',
+    codePlaceholder: '6 chiffres',
+    verify: 'Confirmer',
+    verifying: 'Verification...',
   },
   login: {
     email: 'Email',

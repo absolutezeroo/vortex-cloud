@@ -100,6 +100,7 @@ completed:
   - PR-S1  # CatalogFulfillmentPlanner: what an offer promises, worked out purely
   - PR-W5  # the behavioural parity matrix (§6.4), run on a fake room and a fake clock
   - PR-D1  # dashboard control-plane observability (dashboard-api-security §17)
+  - PR-D2  # step-up MFA on the critical capabilities (§7), server + dialog
 
 # What the roadmap still has, and what each one is waiting on.
 remaining:
@@ -113,13 +114,26 @@ remaining:
   - id: PR-Z1
     what: closing benchmarks against the P0-C baseline, docs, ADR review
   - id: dashboard
-    what: docs/architecture/dashboard-api-security.md, the parts §17 does not cover
+    what: docs/architecture/dashboard-api-security.md, the parts §17 and §7 do not cover
     note: >
       unblocked: the other session's dashboard work landed at ce04752b and the tree is clean.
-      §17 is done (PR-D1). Audited as absent and still open: §7 step-up MFA for the
-      destructive operations, §10 ProblemDetails with a urn:vortex type and the correlation id in
-      the error payload (98 endpoints answer `{ error }` today and the SPA reads `data.error`),
-      §5 ActorSecurityContext.
+      §17 done (PR-D1). §7 done (PR-D2): the critical set is named by capability rather than by
+      route, so an endpoint written tomorrow under OpsGrantCurrency arrives protected;
+      `Vortex:Observability:DashboardStepUpMinutes` is 0 by default, and turning it on is the whole
+      switch. Still open: §10 ProblemDetails — 98 endpoints answer `{ error }` and the SPA reads
+      `data.error`, which already satisfies "a stable code for the Web"; what is missing is the
+      correlation id on the payloads that are not operation results, and a domain rejection that
+      returns `ex.Message` where a stable code is required (an EF InvalidOperationException would
+      reach the operator's screen verbatim).
+    partial:
+      - id: §5 ActorSecurityContext
+        state: >
+          half. The security *decisions* moved off the string: step-up is decided at the HTTP
+          boundary from the session and the principal, and no request field can assert it. What
+          remains is that DashboardOperationsService still takes `string actor`, which is now purely
+          audit attribution rather than "the unique security context" the note forbids. Folding the
+          principal into that signature is ~95 mechanical call sites and buys nothing until an
+          operation needs to make its own security decision.
     deliberate_gaps:
       - id: dashboard.mfa.recovery
         why: >
@@ -132,3 +146,9 @@ remaining:
           table. An observable gauge would run a COUNT per scrape, which spends the database the
           control plane exists to protect. If it is wanted, count the transitions the grain already
           publishes and read the backlog as opened-minus-closed.
+      - id: step-up default
+        why: >
+          DashboardStepUpMinutes is 0 out of the box. Turning it on for a hotel whose operators have
+          not enrolled a factor refuses every critical operation until they do -- correct, and not
+          something to inflict by upgrading. The note asks that the operations be *able* to require
+          a recent factor, which they now are.

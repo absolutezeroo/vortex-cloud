@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using Microsoft.Extensions.Options;
 using Vortex.Observability.Configuration;
@@ -23,14 +24,14 @@ internal sealed class DashboardSessionStore : IAccountSessionRevoker, IDisposabl
 {
     public string SessionKind => "dashboard";
 
-    private readonly AccountSessionStore<string> _sessions;
+    private readonly AccountSessionStore<DashboardSessionState> _sessions;
     private readonly Meter? _meter;
     private readonly Counter<long>? _revoked;
 
     public DashboardSessionStore(IOptions<ObservabilityConfig> options, IMeterFactory meterFactory)
     {
         int minutes = Math.Max(5, options.Value.DashboardSessionLifetimeMinutes);
-        _sessions = new AccountSessionStore<string>(TimeSpan.FromMinutes(minutes));
+        _sessions = new AccountSessionStore<DashboardSessionState>(TimeSpan.FromMinutes(minutes));
 
         if (!options.Value.MetricsEnabled)
         {
@@ -61,10 +62,40 @@ internal sealed class DashboardSessionStore : IAccountSessionRevoker, IDisposabl
 
     public int Count => _sessions.Count;
 
-    public string Create(int accountId, string email) => _sessions.Create(accountId, email);
+    public string Create(int accountId, string email) =>
+        _sessions.Create(accountId, new DashboardSessionState(email, null));
 
-    public (int AccountId, string Email)? Resolve(string? sessionId) =>
-        _sessions.Resolve(sessionId);
+    public (int AccountId, string Email)? Resolve(string? sessionId)
+    {
+        (int AccountId, DashboardSessionState State)? found = _sessions.Resolve(sessionId);
+
+        return found is null ? null : (found.Value.AccountId, found.Value.State.Email);
+    }
+
+    /// <summary>
+    ///     When this session last proved a second factor, or null if it never has. Read by the
+    ///     step-up filter; the freshness window itself is the filter's business, not the store's.
+    /// </summary>
+    public DateTime? SteppedUpAtUtc(string? sessionId) =>
+        _sessions.Resolve(sessionId)?.State.SteppedUpAtUtc;
+
+    /// <summary>
+    ///     Stamps the session as having just proved a second factor. False when the token is unknown
+    ///     or expired -- writing to a dead session must not revive it, which is
+    ///     <see cref="AccountSessionStore{TState}.TryUpdate" />'s rule and the reason this goes
+    ///     through it rather than replacing the entry.
+    /// </summary>
+    /// <param name="atUtc">
+    ///     When the factor was proved. Defaults to now, and exists so a test can stamp a step-up that
+    ///     has already aged out -- the alternative is a clock abstraction for one subtraction, and the
+    ///     rule worth testing (a stale stamp does not pass) is otherwise unreachable in any test that
+    ///     does not sleep.
+    /// </param>
+    public bool MarkSteppedUp(string? sessionId, DateTime? atUtc = null) =>
+        _sessions.TryUpdate(
+            sessionId,
+            state => state with { SteppedUpAtUtc = atUtc ?? DateTime.UtcNow }
+        );
 
     public void Remove(string? sessionId)
     {
@@ -93,10 +124,19 @@ internal sealed class DashboardSessionStore : IAccountSessionRevoker, IDisposabl
     }
 
     private void Revoked(string reason) =>
-        _revoked?.Add(
-            1,
-            new System.Collections.Generic.KeyValuePair<string, object?>("reason", reason)
-        );
+        _revoked?.Add(1, new KeyValuePair<string, object?>("reason", reason));
 
     public void Dispose() => _meter?.Dispose();
 }
+
+/// <summary>
+///     What a dashboard session remembers besides its account: the operator's email for audit
+///     attribution, and when this session last proved a second factor.
+/// </summary>
+/// <remarks>
+///     The step-up stamp is per <em>session</em>, not per account. That is the whole point of it: a
+///     second window opened with a stolen cookie has not stepped up merely because the real operator
+///     did so in theirs, and one that has stepped up loses it when the session ends rather than
+///     lingering on the account.
+/// </remarks>
+internal readonly record struct DashboardSessionState(string Email, DateTime? SteppedUpAtUtc);

@@ -418,17 +418,31 @@ internal static partial class DashboardEndpoints
     /// <see cref="DashboardRequestValidationFilter"/> instead of being remembered 47 times. Endpoints
     /// keep their own field rules.
     /// </summary>
+    /// <remarks>
+    /// It also decides, from the capability alone, whether the route needs a recent second factor —
+    /// see <see cref="StepUpRequired.Capabilities"/>. Deciding it here rather than per route is what
+    /// makes the rule hold for endpoints nobody has written yet: a new route that grants currency
+    /// carries the requirement because of what it is allowed to do, not because its author
+    /// remembered.
+    /// </remarks>
     private static void MapPost(
         WebApplication app,
         string path,
         Delegate handler,
         string capability,
         string tag
-    ) =>
-        app.MapPost(path, handler)
+    )
+    {
+        RouteHandlerBuilder route = app.MapPost(path, handler)
             .RequireAuthorization(capability)
             .WithTags(tag)
             .AddEndpointFilter<DashboardRequestValidationFilter>();
+
+        if (StepUpRequired.Capabilities.Contains(capability))
+        {
+            route.WithMetadata(StepUpRequired.Instance).AddEndpointFilter<DashboardStepUpFilter>();
+        }
+    }
 
     private static string ResolveApiDomain(string route)
     {

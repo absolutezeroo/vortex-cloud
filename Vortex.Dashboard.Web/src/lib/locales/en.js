@@ -3,6 +3,10 @@
 // locale, so a structural drift here silently breaks that locale's fallback too.
 export default {
   opError: {
+    mfa_step_up_required:
+      'This operation needs a fresh second-factor code. Confirm it is you, then it will run.',
+    mfa_enrolment_required:
+      'This operation needs a second factor and this account has none. Set two-factor up on your account first.',
     operation_failed: 'The operation failed unexpectedly. Quote the correlation id below when reporting it.',
     invalid_request: 'The request was rejected: a required field is missing or malformed.',
     offer_has_products: 'This offer still contains products. Delete them first, then delete the offer.',
@@ -1322,6 +1326,14 @@ export default {
     enable: 'Set up two-factor',
     confirm: 'Confirm and enable',
     disable: 'Turn two-factor off',
+  },
+  stepUp: {
+    title: 'Confirm it is you',
+    body: 'This operation is one of the critical ones. Enter a current code from your authenticator to run it.',
+    codeLabel: 'Authenticator code',
+    codePlaceholder: '6 digits',
+    verify: 'Confirm',
+    verifying: 'Checking...',
   },
   login: {
     email: 'Email',
