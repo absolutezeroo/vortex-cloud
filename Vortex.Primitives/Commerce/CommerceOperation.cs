@@ -1,0 +1,119 @@
+using System;
+using Orleans;
+
+namespace Vortex.Primitives.Commerce;
+
+/// <summary>
+/// The identity of one value-moving operation, from the moment it is prepared until it completes or
+/// is escalated. Every flow that debits a wallet mints one.
+/// <para>
+/// It exists because Orleans is at-most-once by default and does not deduplicate durably in the
+/// presence of retries: without an identity on the operation, a replayed refund credits twice and a
+/// crash between a durable debit and its delivery leaves nothing to resume from.
+/// </para>
+/// </summary>
+/// <remarks>
+/// A version 7 GUID rather than a ULID library: it is time-ordered the same way, so the journal's
+/// primary key stays insert-friendly, and it costs no dependency.
+/// </remarks>
+[GenerateSerializer, Immutable]
+public readonly record struct CommerceOperationId(Guid Value)
+{
+    public static CommerceOperationId New() => new(Guid.CreateVersion7());
+
+    public static readonly CommerceOperationId None = new(Guid.Empty);
+
+    public bool IsNone => Value == Guid.Empty;
+
+    public override string ToString() => Value.ToString("N");
+}
+
+/// <summary>
+/// Where an operation is. The pivot is the one transition that matters: before it, failure is
+/// compensated and the player is made whole; after it, failure is retried until it succeeds or an
+/// operator is called. There is no state that means "refund an operation that already pivoted".
+/// </summary>
+public enum CommerceOperationState
+{
+    /// <summary>Preflight passed. Nothing durable has happened yet, and nothing has to be undone.</summary>
+    Prepared = 0,
+
+    /// <summary>The wallet debit is committed. Compensation is still the correct response to a failure.</summary>
+    Debited = 1,
+
+    /// <summary>
+    /// The pivot is past. The operation is now owed to the player, and the only ways out are
+    /// completion or intervention — never a refund.
+    /// </summary>
+    Pivoted = 2,
+
+    /// <summary>Post-pivot steps are running or being retried.</summary>
+    Completing = 3,
+
+    /// <summary>Every step is done.</summary>
+    Completed = 4,
+
+    /// <summary>Failed while compensation was still correct, and was compensated.</summary>
+    FailedBeforePivot = 5,
+
+    /// <summary>
+    /// Retries are exhausted after the pivot. An operator has to look at it. Nothing is ever
+    /// compensated from here — an invented compensation after the pivot is how one bug becomes two.
+    /// </summary>
+    NeedsIntervention = 6,
+}
+
+/// <summary>Which flow an operation belongs to. Bounded, so it is safe as a metric tag.</summary>
+public enum CommerceOperationKind
+{
+    CatalogPurchase = 0,
+    Gift = 1,
+    TargetedOffer = 2,
+    MarketplaceList = 3,
+    MarketplaceCancel = 4,
+    MarketplaceBuy = 5,
+    MarketplaceRedeem = 6,
+}
+
+/// <summary>
+/// The step keys a receipt is written under. A step key is scoped to its operation, so the same name
+/// may mean different work in two flows; what matters is that one operation applies one step once.
+/// </summary>
+public static class CommerceStepKeys
+{
+    /// <summary>The wallet debit that funds the operation.</summary>
+    public const string DEBIT = "debit";
+
+    /// <summary>The compensating credit, before the pivot only.</summary>
+    public const string REFUND = "refund";
+
+    /// <summary>The local inventory batch: furniture, badges, pets and bots in one commit.</summary>
+    public const string LOCAL_GRANT = "local-grant";
+
+    /// <summary>One avatar effect. Suffixed by index, because an offer may grant several.</summary>
+    public const string EFFECT = "effect";
+
+    /// <summary>Wrapping a purchased offer as a present for the recipient.</summary>
+    public const string GIFT_WRAP = "gift-wrap";
+
+    /// <summary>The targeted offer's per-player purchase counter.</summary>
+    public const string TARGETED_COUNT = "targeted-count";
+
+    /// <summary>Handing the bought item to the buyer, after the marketplace claim.</summary>
+    public const string MARKETPLACE_DELIVER = "marketplace-deliver";
+
+    /// <summary>Returning a cancelled offer's item to its seller.</summary>
+    public const string MARKETPLACE_RESTORE = "marketplace-restore";
+
+    /// <summary>Paying a seller what their sold offers owe them.</summary>
+    public const string MARKETPLACE_CREDIT = "marketplace-credit";
+
+    /// <summary>Removing the listed item from the seller's inventory.</summary>
+    public const string MARKETPLACE_WITHDRAW = "marketplace-withdraw";
+
+    /// <summary>The critical business event the journal relays once the operation is terminal.</summary>
+    public const string RELAY = "relay";
+
+    /// <summary>One step of an operation that repeats, e.g. the nth effect of a bundle.</summary>
+    public static string Indexed(string step, int index) => $"{step}:{index}";
+}

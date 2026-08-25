@@ -38,6 +38,22 @@ public interface IVortexMetrics
     void RoomTickCompleted(double elapsedMilliseconds);
 
     /// <summary>
+    /// A value-moving operation changed state. Before this there was no signal at all for the
+    /// commerce flows — an operation stuck past its pivot was indistinguishable from one that
+    /// completed, for as long as nobody happened to look at the table.
+    /// </summary>
+    void CommerceOperationTransitioned(
+        Vortex.Primitives.Commerce.CommerceOperationKind kind,
+        Vortex.Primitives.Commerce.CommerceOperationState state
+    );
+
+    /// <summary>
+    /// A post-pivot step was asked to run again and found its own receipt. Expected traffic on a
+    /// retry; a rising rate means something upstream is failing after doing its work.
+    /// </summary>
+    void CommerceStepReplayed(string stepKey);
+
+    /// <summary>
     /// A wired chain stopped short of running everything it could have.
     /// <paramref name="reason"/> is one of <see cref="WiredStopReason"/> — a closed set, so it is
     /// safe as a tag. Nothing before this could answer how often a room actually hits its depth

@@ -27,6 +27,8 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
     private readonly Histogram<double> _roomTickDuration;
     private readonly Histogram<double> _roomDirectoryCallDuration;
     private readonly Counter<long> _wiredChainStopped;
+    private readonly Counter<long> _commerceOperation;
+    private readonly Counter<long> _commerceStepReplayed;
     private readonly ILiveStatsAggregator _liveStats;
 
     public bool Enabled => _enabled;
@@ -83,6 +85,17 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
             description: "Wired chains that stopped short of running everything they could have, "
                 + "by reason (depth, cycle, queue-drop, execution-limit)."
         );
+        _commerceOperation = _meter.CreateCounter<long>(
+            "Vortex.commerce.operation",
+            unit: "{operation}",
+            description: "Value-moving operations by flow and state. A rising count of "
+                + "needs-intervention is money nobody has delivered."
+        );
+        _commerceStepReplayed = _meter.CreateCounter<long>(
+            "Vortex.commerce.step.replayed",
+            unit: "{step}",
+            description: "Post-pivot steps that found their own receipt and skipped their work."
+        );
     }
 
     public void PacketReceived(string operation, long? actorId = null, int? roomId = null)
@@ -133,6 +146,29 @@ public sealed class VortexMetrics : IVortexMetrics, IDisposable
         if (_enabled)
         {
             _wiredChainStopped.Add(1, new KeyValuePair<string, object?>("reason", reason));
+        }
+    }
+
+    public void CommerceOperationTransitioned(
+        Vortex.Primitives.Commerce.CommerceOperationKind kind,
+        Vortex.Primitives.Commerce.CommerceOperationState state
+    )
+    {
+        if (_enabled)
+        {
+            _commerceOperation.Add(
+                1,
+                new KeyValuePair<string, object?>("flow", kind.ToString()),
+                new KeyValuePair<string, object?>("state", state.ToString())
+            );
+        }
+    }
+
+    public void CommerceStepReplayed(string stepKey)
+    {
+        if (_enabled)
+        {
+            _commerceStepReplayed.Add(1, new KeyValuePair<string, object?>("step", stepKey));
         }
     }
 

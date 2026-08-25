@@ -5,9 +5,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Vortex.Database.Auditing;
 using Vortex.Database.Backup;
+using Vortex.Database.Commerce;
 using Vortex.Database.Configuration;
 using Vortex.Database.Context;
 using Vortex.Database.Delegates;
+using Vortex.Primitives.Commerce;
 using Vortex.Primitives.Plugins;
 
 namespace Vortex.Database.Extensions;
@@ -62,6 +64,10 @@ public static class ServiceCollectionExtensions
         services
             .AddOptions<DatabaseBackupConfig>()
             .Bind(builder.Configuration.GetSection(DatabaseBackupConfig.SECTION_NAME));
+
+        // The durable record every value-moving flow writes its progress to. Stateless over the
+        // context factory, so a singleton.
+        services.AddSingleton<ICommerceJournal, CommerceJournal>();
 
         services.AddSingleton<IDatabaseBackupService, DatabaseBackupService>();
         services.AddHostedService<DatabaseBackupScheduler>();

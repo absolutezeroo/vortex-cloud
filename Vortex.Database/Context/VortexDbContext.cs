@@ -3,6 +3,7 @@ using Vortex.Database.Entities.Achievements;
 using Vortex.Database.Entities.Audit;
 using Vortex.Database.Entities.Catalog;
 using Vortex.Database.Entities.Collectibles;
+using Vortex.Database.Entities.Commerce;
 using Vortex.Database.Entities.Errors;
 using Vortex.Database.Entities.Furniture;
 using Vortex.Database.Entities.Groups;
@@ -32,6 +33,15 @@ public class VortexDbContext(DbContextOptions<VortexDbContext> options)
     public DbSet<AuditEventEntity> AuditEvents { get; init; } = null!;
 
     public DbSet<EconomyLedgerEntity> EconomyLedger { get; init; } = null!;
+
+    /// <summary>
+    /// Every value-moving operation in flight, and every post-pivot step already applied. Queryable
+    /// on purpose: recovery and operations both need to ask "what is stuck past its pivot", which a
+    /// grain per operation cannot answer.
+    /// </summary>
+    public DbSet<CommerceOperationEntity> CommerceOperations { get; init; } = null!;
+
+    public DbSet<CommerceReceiptEntity> CommerceReceipts { get; init; } = null!;
 
     public DbSet<ItemEventEntity> ItemEvents { get; init; } = null!;
 
